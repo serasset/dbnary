@@ -2,7 +2,12 @@ package org.getalp.blexisma.wiktionary;
 
 public class WiktionaryIndexerException extends Exception {
 
-	public WiktionaryIndexerException(String string, Exception ex) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -2515397066864410470L;
+
+    public WiktionaryIndexerException(String string, Exception ex) {
 		super(string, ex);
 	}
 	

@@ -19,6 +19,9 @@ import java.util.Set;
  */
 public class WiktionaryIndex implements Map<String, String> {
 
+    // TODO: Create a static map to hold shared instances (1 per dump file) and avoid allocating more than one 
+    // WiktionaryIndexer per wiktionary language.
+    
     /**
 	 * 
 	 */
@@ -195,6 +198,9 @@ public class WiktionaryIndex implements Map<String, String> {
         throw new RuntimeException("entrySet: unsupported method.");
     }
 
+    /* (non-Javadoc)
+     * @see java.util.Map#get(java.lang.Object)
+     */
     public String get(Object key) {
         OffsetValue ofs = map.get(key);
         String res = null;
@@ -235,6 +241,10 @@ public class WiktionaryIndex implements Map<String, String> {
 
     public Collection<String> values() {
         throw new RuntimeException("values: unsupported method.");        
+    }
+    
+    public String getTextOfPage(Object key) {
+        return WiktionaryIndexer.getTextElementContent(this.get(key));
     }
     
     public static void main(String[] args) throws WiktionaryIndexerException {

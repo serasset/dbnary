@@ -2,45 +2,42 @@ package org.getalp.blexisma.wiktionary;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.StringReader;
 import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-
 public class WiktionaryIndexer {
 
     public static final String pageTag = "page";
     public static final String titleTag = "title";
-    public static final int tagSize = pageTag.length() + 3;  
+    public static final int tagSize = pageTag.length() + 3;
 
-    public static void createIndex(File dumpFile, Map<String, OffsetValue> map) throws WiktionaryIndexerException {
-        // get a factory instance
-        XMLInputFactory xmlif = null;
+    public static final XMLInputFactory xmlif;
 
+    static {
         try {
             xmlif = XMLInputFactory.newInstance();
             xmlif.setProperty(XMLInputFactory.IS_VALIDATING, Boolean.FALSE);
             xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
         } catch (Exception ex) {
-            throw new WiktionaryIndexerException("Cannot initialize XMLInputFactory", ex);
+            System.err.println("Cannot intialize XMLInputFactory while classloading WiktionaryIndexer.");
+            throw new RuntimeException("Cannot initialize XMLInputFactory", ex);
         }
+    }
+
+    public static void createIndex(File dumpFile, Map<String, OffsetValue> map) throws WiktionaryIndexerException {
 
         // create new XMLStreamReader
-
-        // TODO: Use a valid way to log traces when verbose mode is on
-        // System.out.println("");
-        // System.out.println("FACTORY: " + xmlif);
-        // System.out.println("filename = " + dumpFile.getPath());
-        // System.out.println("");
 
         long starttime = System.currentTimeMillis();
         int nbPages = 0;
 
-        XMLStreamReader xmlr = null;;
+        XMLStreamReader xmlr = null;
         try {
-            // pass the file name.. all relative entity references will be
+            // pass the file name. all relative entity references will be
             // resolved against this as base URI.
             xmlr = xmlif.createXMLStreamReader(new FileInputStream(dumpFile));
 
@@ -58,7 +55,7 @@ public class WiktionaryIndexer {
                     title = xmlr.getElementText();
                 } else if (xmlr.isEndElement() && xmlr.getLocalName().equals(pageTag)) {
                     eoffset = xmlr.getLocation().getCharacterOffset();
-                    if (! title.equals(""))
+                    if (!title.equals(""))
                         map.put(title, new OffsetValue(boffset, (eoffset - boffset) + tagSize));
                 }
             }
@@ -72,7 +69,8 @@ public class WiktionaryIndexer {
             ex.printStackTrace();
         } finally {
             try {
-                if (xmlr != null) xmlr.close();
+                if (xmlr != null)
+                    xmlr.close();
             } catch (XMLStreamException ex) {
                 ex.printStackTrace();
             }
@@ -80,6 +78,39 @@ public class WiktionaryIndexer {
 
         long endtime = System.currentTimeMillis();
         System.out.println(" Parsing Time = " + (endtime - starttime) + "; " + nbPages + " pages parsed.");
+    }
+
+    public static String getTextElementContent(String wiktionaryPageContent) {
+        StringReader sr = new StringReader(wiktionaryPageContent);
+        XMLStreamReader xmlr = null;
+        try {
+            xmlr = xmlif.createXMLStreamReader(sr);
+
+            // check if there are more events in the input stream
+            while (xmlr.hasNext()) {
+                xmlr.next();
+                if (xmlr.isStartElement() && xmlr.getLocalName().equals("text")) {
+                    return xmlr.getElementText(); 
+                 }
+            }
+        } catch (XMLStreamException ex) {
+            System.out.println(ex.getMessage());
+
+            if (ex.getNestedException() != null) {
+                ex.getNestedException().printStackTrace();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (xmlr != null)
+                    xmlr.close();
+            } catch (XMLStreamException ex) {
+                ex.printStackTrace();
+            }
+        }
+        // This happens only when no text element is found in the page.
+        return null;
     }
 
 }

@@ -1,7 +1,15 @@
 * text=auto !eol
-modules/wiktionary-support/pom.xml -text svneol=unset#text/plain
+modules/wiktionary-support/pom.xml -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/CharsetConvert.java -text svneol=unset#text/plain
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/FrenchWiktionaryExtractor.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/OffsetValue.java -text svneol=unset#text/plain
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndex.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexer.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexerException.java -text
+modules/wiktionary-support/src/main/resources/wiktionary_elements.jape -text
+modules/wiktionary-support/src/main/resources/wiktionary_main.gapp -text
+modules/wiktionary-support/src/main/resources/wiktionary_main.jape -text
+modules/wiktionary-support/src/main/resources/wiktionary_regions.jape -text
+modules/wiktionary-support/src/main/resources/wiktionary_structural_tokens.jape -text
+modules/wiktionary-support/src/main/resources/wiktionary_tokens.jape -text

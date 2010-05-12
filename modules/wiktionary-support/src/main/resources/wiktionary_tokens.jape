@@ -1,0 +1,158 @@
+/*
+* Blexisma Wiktionary Extractor
+*
+*/
+
+Phase:	Wiktionary_tokenizer
+Input: Token  
+Options: control = appelt
+
+Macro: OLINK
+(
+ {Token.string=="["}
+)[2]
+
+Macro: CLINK
+(
+ {Token.string=="]"}
+)[2]
+
+Macro: OMACRO
+(
+  {Token.string == "{"}
+)[2]
+
+Macro: CMACRO
+(
+  {Token.string == "}"}
+)[2]
+
+Macro: T2
+(
+  {Token.string == "="}
+)[2]
+
+Macro: T3
+(
+  {Token.string == "="}
+)[3]
+
+Macro: T4
+(
+  {Token.string == "="}
+)[4]
+
+
+Macro: REMOVE_INPUT_TOKENS          // separate  
+:match                                              // lines  
+{
+
+    AnnotationSet matchedAnns = bindings.get("match");  
+
+    inputAS.removeAll(matchedAnns);
+}  
+
+// Opening and closing of links
+
+Rule: OpeningLinks
+(
+ OLINK
+)
+:match
+--> :match.Token = {length = 2, kind = "wolink", string = "[["} , REMOVE_INPUT_TOKENS
+
+Rule: ClosingLinks
+(
+ CLINK
+)
+:match
+--> :match.Token = {length = 2, kind = "wclink", string="]]"}, REMOVE_INPUT_TOKENS 
+
+// Opening and closings of macros
+Rule: OpeningMacro
+(
+ OMACRO
+)
+:match
+--> :match.Token = {length = 2, kind = "womacro", string = "{{"} , REMOVE_INPUT_TOKENS
+
+Rule: ClosingMacro
+(
+ CMACRO
+)
+:match
+--> :match.Token = {length = 2, kind = "wcmacro", string="}}"}, REMOVE_INPUT_TOKENS 
+
+//============= Words with ending dashes (-) should be splited =======================
+// WARN: should we re-merge such words after wiktionary elements recognition ?
+
+Rule: NoEndingdash
+(
+  {Token.kind == word, Token.string =~ "-$"}
+):word
+-->
+{
+  gate.AnnotationSet aset = (gate.AnnotationSet)bindings.get("word");
+  gate.Annotation firstToken = (gate.Annotation) aset.iterator().next();
+  String firstTokenText = (String)firstToken.getFeatures().get("string");
+  //System.out.println("Word \"" + firstTokenText + "\" ended with a dash");
+
+  // remove old annotation and create a new one for the word and another one for the dash.
+    outputAS.removeAll(aset);
+    //create the new tokens
+    Long ofs0 = firstToken.getStartNode().getOffset();
+    Long ofs1 = new Long(firstToken.getEndNode().getOffset().longValue() - 1);
+    Long ofs2 = firstToken.getEndNode().getOffset();
+    try{
+      gate.FeatureMap features;
+      if(!ofs0.equals(ofs1)){
+        features = Factory.newFeatureMap();
+        features.put("kind", "word");
+        String text = firstTokenText.substring(0, firstTokenText.length() - 1);
+        features.put("string", text);
+        features.put("length", Integer.toString(text.length()));
+        features.put("orth", firstToken.getFeatures().get("orth"));
+        outputAS.add(ofs0, ofs1, "Token", features);
+      }
+
+      features = Factory.newFeatureMap();
+      features.put("kind", "punctuation");
+      features.put("string", "-");
+      features.put("length", "1");
+      features.put("subkind", "dashpunct");
+      outputAS.add(ofs1, ofs2, "Token", features);
+    }catch(Exception e){
+      e.printStackTrace();
+    }
+}
+
+//============== Ignore Formatting Attributes =========================
+
+Macro: ITALIC
+(
+  {Token.string == "'"}
+)[2]
+
+Macro: BOLD
+(
+  {Token.string == "'"}
+)[3]
+
+Macro: BOLDITALIC
+(
+  {Token.string == "'"}
+)[5]
+
+Rule: IgnoreItalics
+(
+ ITALIC
+)
+:match
+--> :match.IgnorableWMacro = {length = 2, kind = "ignorableWMacro", string="''"}, REMOVE_INPUT_TOKENS 
+
+Rule: IgnoreBolds
+(
+ BOLD
+)
+:match
+--> :match.IgnorableWMacro = {length = 3, kind = "ignorableWMacro", string="'''"}, REMOVE_INPUT_TOKENS 

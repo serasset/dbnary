@@ -19,7 +19,7 @@
   	</dependency>
   	<dependency>
   		<groupId>org.getalp.blexisma</groupId>
-  		<artifactId>blexisma-core</artifactId>
+  		<artifactId>blexisma-api</artifactId>
   		<version>1.0-SNAPSHOT</version>
   		<scope>compile</scope>
   	</dependency>

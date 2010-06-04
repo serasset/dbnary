@@ -5,7 +5,7 @@ modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/FrenchWi
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/ISO639_1.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/OffsetValue.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/SimpleSemanticNetwork.java -text svneol=unset#text/plain
-modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.java -text svneol=unset#text/plain
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndex.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexer.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexerException.java -text

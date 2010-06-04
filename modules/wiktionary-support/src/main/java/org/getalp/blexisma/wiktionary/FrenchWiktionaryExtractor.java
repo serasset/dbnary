@@ -65,7 +65,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
      * @see org.getalp.blexisma.wiktionary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
      */
     @Override
-    public void extractData(String wiktionaryPageName, SemanticNetwork semnet) {
+    public void extractData(String wiktionaryPageName, SemanticNetwork<String, String> semnet) {
         String pageContent = wiktionaryIndex.getTextOfPage(wiktionaryPageName);
         
         // System.out.println(pageContent);
@@ -83,11 +83,11 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         languageFilter.find();
         int frenchSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
         
-        extractDefinitions(pageContent, frenchSectionStartOffset, frenchSectionEndOffset, semnet);
-        extractTranslations(pageContent, frenchSectionStartOffset, frenchSectionEndOffset, semnet);
+        extractDefinitions(wiktionaryPageName, pageContent, frenchSectionStartOffset, frenchSectionEndOffset, semnet);
+        extractTranslations(wiktionaryPageName, pageContent, frenchSectionStartOffset, frenchSectionEndOffset, semnet);
      }
 
-    private void extractTranslations(String pageContent, int startOffset, int endOffset, SemanticNetwork semnet) {        
+    private void extractTranslations(String wiktionaryPageName, String pageContent, int startOffset, int endOffset, SemanticNetwork<String, String> semnet) {        
         Matcher m = macroPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         // TODO: should I use a macroOrLink pattern to detect translations that are not macro based ?
@@ -102,6 +102,8 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
             case TRADBLOCK:
                 String g1 = m.group(1);
                 if (g1.equals("trad+") || g1.equals("trad-")) {
+                    // TODO: what is the difference between trad+ and trad-
+                    // TODO: keep the glose in the semantic network
                     String g2 = m.group(2);
                     int i1, i2, i3;
                     String lang, word, remaining = "";
@@ -113,13 +115,13 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                             word = g2.substring(i1+1, i2);
                         }
                         if (ISO639_1.sharedInstance.getBib3Code(lang) == null) System.out.println("Unknown language: " + lang);
-                        System.out.println("translation: " + lang + " --> " + word); nbtrad++;
+                        semnet.addRelation(wiktionaryPageName, new String(lang + "|" + word), 1, "trad"); nbtrad++;
                     }
                 } else if (g1.equals("boîte début")) {
                     // Get the glose that should help disambiguate the source acception
                     String g2 = m.group(2);
                     // Ignore glose if it is a macro
-                    if (! g2.startsWith("{{")) {
+                    if (g2 != null && ! g2.startsWith("{{")) {
                         currentGlose = g2;
                     }
                 } else if (g1.equals("-")) {
@@ -142,15 +144,12 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         System.out.println(""+ nbtrad + " Translations extracted");
     }
 
-    private void extractDefinitions(String pageContent, int startOffset, int endOffset, SemanticNetwork semnet) {
+    private void extractDefinitions(String wiktionaryPageName, String pageContent, int startOffset, int endOffset, SemanticNetwork<String, String> semnet) {
         Matcher definitionMatcher = definitionPattern.matcher(pageContent);
         definitionMatcher.region(startOffset, endOffset);
         while (definitionMatcher.find()) {
-            // TODO: do not allocate new Strings, but use region in original String
-            System.out.println(definitionMatcher.group(1));
-            System.out.println(cleanUpMarkup(definitionMatcher.group(1)));
-        }
-        
+            semnet.addRelation(wiktionaryPageName, cleanUpMarkup(definitionMatcher.group(1)), 1, "def");
+        }      
     }
 
     public String cleanUpMarkup(String str) {
@@ -177,24 +176,22 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     
     public static void main(String args[]) throws Exception {
         long startTime = System.currentTimeMillis();
-        FrenchWiktionaryExtractor fwi = new FrenchWiktionaryExtractor(new WiktionaryIndex(args[0]));
+        WiktionaryIndex wi = new WiktionaryIndex(args[0]);
         long endloadTime = System.currentTimeMillis();
-        System.out.println("Loaded index in " + (endloadTime - startTime));
-        fwi.extractData("dictionnaire", null); 
-        long endextractTime = System.currentTimeMillis();
-        System.out.println("Extrated dictionnaire in " + (endextractTime - endloadTime));
-        endloadTime = endextractTime;
-        fwi.extractData("table", null);
-        endextractTime = System.currentTimeMillis();
-        System.out.println("Extrated table in " + (endextractTime - endloadTime));
-        endloadTime = endextractTime;
-        fwi.extractData("Wiktionnaire:Historique des effacements", null);
-        endextractTime = System.currentTimeMillis();
-        System.out.println("Extrated non-french in " + (endextractTime - endloadTime)); 
-        
-        String[] languages = Locale.getISOLanguages();
-        for (int i = 0; i < languages.length; i++) {
-            System.out.println(languages[i] + "={{T|" + languages[i] + "}}");
+        System.out.println("Loaded index in " + (endloadTime - startTime) +"ms.");
+         
+        FrenchWiktionaryExtractor fwe = new FrenchWiktionaryExtractor(wi);
+        SimpleSemanticNetwork<String, String> s = new SimpleSemanticNetwork<String, String>();
+        startTime = System.currentTimeMillis();
+        int nbpages = 0;
+        for (String page : wi.keySet()) {
+            System.out.println("Extracting: " + page);
+            fwe.extractData(page, s); 
+            // System.out.println("Extracted: " + page + " in: " + (System.currentTimeMillis() - startTime));
+            nbpages++;
+            if (nbpages == 100000) break;
         }
+        System.out.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
+        System.out.println("Semnet contains: " + s.getNbNodes() + " nodes and " + s.getNbEdges() + " edges.");
     }
 }

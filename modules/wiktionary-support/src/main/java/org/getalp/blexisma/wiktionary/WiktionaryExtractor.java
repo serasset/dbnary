@@ -18,6 +18,6 @@ public abstract class WiktionaryExtractor {
         return wiktionaryIndex;
     }
     
-    public abstract void extractData(String wiktionaryPageName, SemanticNetwork semnet);
+    public abstract void extractData(String wiktionaryPageName, SemanticNetwork<String, String> semnet);
     
 }

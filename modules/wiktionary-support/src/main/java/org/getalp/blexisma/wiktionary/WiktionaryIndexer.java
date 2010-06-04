@@ -9,19 +9,23 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.codehaus.stax2.XMLInputFactory2;
+import org.codehaus.stax2.XMLStreamReader2;
+
 public class WiktionaryIndexer {
 
     public static final String pageTag = "page";
     public static final String titleTag = "title";
     public static final int tagSize = pageTag.length() + 3;
 
-    public static final XMLInputFactory xmlif;
+    public static final XMLInputFactory2 xmlif;
 
     static {
         try {
-            xmlif = XMLInputFactory.newInstance();
+            xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
             xmlif.setProperty(XMLInputFactory.IS_VALIDATING, Boolean.FALSE);
             xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+            xmlif.setProperty(XMLInputFactory2.P_PRESERVE_LOCATION, Boolean.TRUE);
         } catch (Exception ex) {
             System.err.println("Cannot intialize XMLInputFactory while classloading WiktionaryIndexer.");
             throw new RuntimeException("Cannot initialize XMLInputFactory", ex);
@@ -35,28 +39,28 @@ public class WiktionaryIndexer {
         long starttime = System.currentTimeMillis();
         int nbPages = 0;
 
-        XMLStreamReader xmlr = null;
+        XMLStreamReader2 xmlr = null;
         try {
             // pass the file name. all relative entity references will be
             // resolved against this as base URI.
-            xmlr = xmlif.createXMLStreamReader(new FileInputStream(dumpFile));
+            xmlr = xmlif.createXMLStreamReader(dumpFile);
 
             // check if there are more events in the input stream
-            int boffset = 0, eoffset = 0;
+            long boffset = 0, eoffset = 0;
             String title = "";
             while (xmlr.hasNext()) {
                 xmlr.next();
                 if (xmlr.isStartElement() && xmlr.getLocalName().equals(pageTag)) {
-                    boffset = xmlr.getLocation().getCharacterOffset();
+                    boffset = xmlr.getLocationInfo().getStartingCharOffset();
                     title = "";
                     eoffset = 0;
                     nbPages++;
                 } else if (xmlr.isStartElement() && xmlr.getLocalName().equals(titleTag)) {
                     title = xmlr.getElementText();
                 } else if (xmlr.isEndElement() && xmlr.getLocalName().equals(pageTag)) {
-                    eoffset = xmlr.getLocation().getCharacterOffset();
+                    eoffset = xmlr.getLocationInfo().getEndingCharOffset();
                     if (!title.equals(""))
-                        map.put(title, new OffsetValue(boffset, (eoffset - boffset) + tagSize));
+                        map.put(title, new OffsetValue(boffset, (int)(eoffset - boffset) ));
                 }
             }
         } catch (XMLStreamException ex) {

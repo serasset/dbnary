@@ -29,6 +29,7 @@ public class WiktionaryIndex implements Map<String, String> {
     private static final int AVERAGE_PAGE_SIZE = 730; // figure taken from French Wiktionary
     private static final String UTF_16 = "UTF-16";
     private static final String UTF_8 = "UTF-8";
+    private static final String INDEX_SIGNATURE = "Wkt!01";
 
     File dumpFile;
     File indexFile;
@@ -80,7 +81,33 @@ public class WiktionaryIndex implements Map<String, String> {
 
     // TODO: check if index content is up to date ?
     public boolean indexIsUpToDate() {
-        return indexFile.canRead();
+        if (indexFile.canRead()) {
+            RandomAccessFile in = null;
+            try {
+                in = new RandomAccessFile(indexFile, "r");
+                FileChannel fc = in.getChannel();
+                
+                ByteBuffer buf = ByteBuffer.allocate(4098);
+                
+                fc.read(buf);
+                buf.flip();
+                byte[] signature = INDEX_SIGNATURE.getBytes(UTF_8); // Hence the byte array has the exact expected size; 
+                buf.get(signature, 0, signature.length);
+                String signatureString = new String(signature, UTF_8);
+                if (signatureString.equals(INDEX_SIGNATURE)) 
+                    return true;
+              } catch(IOException e) {
+                  return false;
+              } finally {
+                  if (in != null)
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        // Just ignore the exception
+                    }
+              }
+        }
+        return false;
     }
 
     public void dumpIndex() throws WiktionaryIndexerException {
@@ -91,16 +118,16 @@ public class WiktionaryIndex implements Map<String, String> {
             ByteBuffer buf = ByteBuffer.allocate(4098);
             
             // Write index signature out.write(...)
-            buf.put("Wkt!00".getBytes(UTF_8));
+            buf.put(INDEX_SIGNATURE.getBytes(UTF_8));
             buf.putInt(map.size());
             for (Map.Entry<String,OffsetValue> entry : map.entrySet()) {
                 // TODO: it may be more efficient to create a Charset decoder or use a reusable byte[]
                 // but it seems that it is not possible in jdk1.5... has to wait for jdk 1.6
                 byte[] bk = entry.getKey().getBytes(UTF_8);
                 OffsetValue v = entry.getValue();
-                // I serialize 1 int, the string, 2 int --> bk.length + 12 bytes;
+                // I serialize 1 int, the string, 1 long and 1 int --> bk.length + 16 bytes;
                 // If there is not enough room left in the buffer, first write it out, then proceed
-                if (buf.remaining() < bk.length+12 ) {
+                if (buf.remaining() < bk.length+16 ) {
                     buf.flip();
                     fc.write(buf);
                     buf.clear();
@@ -108,7 +135,7 @@ public class WiktionaryIndex implements Map<String, String> {
                 
                 buf.putInt(bk.length);
                 buf.put(bk);
-                buf.putInt(v.start);
+                buf.putLong(v.start);
                 buf.putInt(v.length);
             }
             buf.flip();
@@ -120,18 +147,19 @@ public class WiktionaryIndex implements Map<String, String> {
     }
 
     public void loadIndex() throws WiktionaryIndexerException {
+        RandomAccessFile in = null;
         try {
-            RandomAccessFile in = new RandomAccessFile(indexFile, "r");
+            in = new RandomAccessFile(indexFile, "r");
             FileChannel fc = in.getChannel();
             
             ByteBuffer buf = ByteBuffer.allocate(4098);
             
             fc.read(buf);
             buf.flip();
-            byte[] signature = new byte[6]; 
+            byte[] signature = INDEX_SIGNATURE.getBytes(UTF_8); // Hence the byte array has the exact expected size; 
             buf.get(signature, 0, signature.length);
             String signatureString = new String(signature, UTF_8);
-            if (! signatureString.equals("Wkt!00")) 
+            if (! signatureString.equals(INDEX_SIGNATURE)) 
                 throw new WiktionaryIndexerException("Index file seems to be corrupted", null);
             
             int mapSize = buf.getInt();
@@ -146,19 +174,26 @@ public class WiktionaryIndex implements Map<String, String> {
                 }
                 int kSize = buf.getInt();
                 // Check if the whole entry is already in the buffer, else advance buffer to fit whole entry
-                if (buf.remaining() < kSize + 12) { // kSize byte + 2 ints...
+                if (buf.remaining() < kSize + 16) { // kSize byte + 2 ints...
                     readNextChunk(fc, buf);
                 }
                 // read the entry
                 buf.get(bk, 0, kSize);
                 String key = new String(bk, 0, kSize, UTF_8);
-                int vstart = buf.getInt();
+                long vstart = buf.getLong();
                 int vlength = buf.getInt();
                 map.put(key, new OffsetValue(vstart, vlength));               
             }
-            in.close();
+            
           } catch(IOException e) {
               throw new WiktionaryIndexerException("IOException when reading map from index file", e);
+          } finally {
+              if (in != null)
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    // Just ignore the exception
+                }
           }
     }
 

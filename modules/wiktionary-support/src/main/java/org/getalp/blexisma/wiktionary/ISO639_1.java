@@ -111,24 +111,28 @@ public final class ISO639_1 {
     }
  
     public String getLanguageNameInFrench(String langcode) {
-        return langMap.get(langcode).fr;
+        Lang l = langMap.get(langcode);
+        return (l != null) ? l.fr : null ;
     }
     
     public String getLanguageNameInEnglish(String langcode) {
-        return langMap.get(langcode).en;
+        Lang l = langMap.get(langcode);
+        return (l != null) ? l.en : null ;
     }
     
     public String getBib3Code(String langcode) {
-        return langMap.get(langcode).a3b;
+        Lang l = langMap.get(langcode);
+        return (l != null) ? l.a3b : null ;
     }
     
     public String getTerm3Code(String langcode) {
         Lang l = langMap.get(langcode);
-        return (l.a3t == null) ? l.a3b : l.a3t;
+        return (l != null) ? (l.a3t == null) ? l.a3b : l.a3t : null ;
     }
     
     public String getTerm2Code(String langcode) {
-        return langMap.get(langcode).a2;
+        Lang l = langMap.get(langcode);
+        return (l != null) ? l.a2 : null ;
     }
     
     public Lang getLang(String langcode) {

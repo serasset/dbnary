@@ -28,11 +28,14 @@ public class WiktionaryIndex implements Map<String, String> {
     private static final long serialVersionUID = 7658718925280104333L;
     private static final int AVERAGE_PAGE_SIZE = 730; // figure taken from French Wiktionary
     private static final String UTF_16 = "UTF-16";
+    private static final String UTF_16BE = "UTF-16BE";
+    private static final String UTF_16LE = "UTF-16LE";
     private static final String UTF_8 = "UTF-8";
     private static final String INDEX_SIGNATURE = "Wkt!01";
 
     File dumpFile;
     File indexFile;
+    String encoding;
     HashMap<String, OffsetValue> map;
     RandomAccessFile xmlf ;
     
@@ -73,7 +76,20 @@ public class WiktionaryIndex implements Map<String, String> {
             this.initIndex();
         }
         try {
-            xmlf = new RandomAccessFile(dumpFile,"r");  
+            xmlf = new RandomAccessFile(dumpFile,"r");
+            // Read the BOM at the start of the file to determine the correct encoding.
+            byte[] bom = new byte[2];
+            xmlf.readFully(bom);
+            if (bom[0] == (byte)0xFE && bom[1] == (byte)0xFF) {
+            	// Big Endian
+            	encoding = UTF_16BE;
+            } else if (bom[0] == (byte)0xFF && bom[1] == (byte)0xFE) {
+            	// Little endian
+            	encoding = UTF_16LE;
+            } else {
+            	// no BOM, use UTF-16
+            	encoding = UTF_16;
+            }
         } catch (IOException ex) {
             throw new WiktionaryIndexerException("Could not open wiktionary dump file " + dumpFile.getPath(), ex);
         }
@@ -243,7 +259,7 @@ public class WiktionaryIndex implements Map<String, String> {
             xmlf.seek(ofs.start*2 + 2); // in utf-16, 2 first bytes for the BOM
             byte[] b = new byte[ofs.length*2];
             xmlf.readFully(b);
-            res = new String(b, UTF_16);
+            res = new String(b, encoding);
         } catch (IOException ex) {
             res = null;
         }

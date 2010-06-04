@@ -141,7 +141,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                 assert false : "Unexpected state while extracting translations from dictionary.";
             } 
         }
-        System.out.println(""+ nbtrad + " Translations extracted");
+        // System.out.println(""+ nbtrad + " Translations extracted");
     }
 
     private void extractDefinitions(String wiktionaryPageName, String pageContent, int startOffset, int endOffset, SemanticNetwork<String, String> semnet) {
@@ -163,7 +163,8 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
             } else if ((leftGroup = m.group(3)) != null) {
                 // It's a link, only keep the alternate string if present.
                 rightGroup = m.group(4);
-                String replacement = (rightGroup == null) ? leftGroup : rightGroup; 
+                String replacement = (rightGroup == null) ? leftGroup : rightGroup;
+                replacement = replacement.replaceAll("\\\\", "\\\\\\\\");
                 m.appendReplacement(sb, replacement);
             } else {
                 // This really should not happen
@@ -185,11 +186,11 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         startTime = System.currentTimeMillis();
         int nbpages = 0;
         for (String page : wi.keySet()) {
-            System.out.println("Extracting: " + page);
+            // System.out.println("Extracting: " + page);
             fwe.extractData(page, s); 
             // System.out.println("Extracted: " + page + " in: " + (System.currentTimeMillis() - startTime));
             nbpages++;
-            if (nbpages == 100000) break;
+            //if (nbpages == 100000) break;
         }
         System.out.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
         System.out.println("Semnet contains: " + s.getNbNodes() + " nodes and " + s.getNbEdges() + " edges.");

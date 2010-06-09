@@ -39,71 +39,73 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
         }
     }
     
-    private ArrayList<N> nodes;
-    private ArrayList<R> relationLabels;
+    private HashMap<N,N> nodes;
+    private HashMap<R,R> relationLabels;
     
     private HashMap<R,Collection<Relation>> labelToRelations;
     private HashMap<N,Collection<Relation>> outgoingRelations;
  //   private HashMap<N,Relation> incomingRelations;
 
+    // TODO: remove the nodes and relationLabels HashMap as evrything is present in label and outgoingrels
     public SimpleSemanticNetwork() {
-        nodes = new ArrayList<N>();
-        relationLabels = new ArrayList<R>();
+        nodes = new HashMap<N,N>();
+        relationLabels = new HashMap<R,R>();
         labelToRelations = new HashMap<R, Collection<Relation>>();
         outgoingRelations = new HashMap<N, Collection<Relation>>();
     }
     
     public SimpleSemanticNetwork(int originalNodesSize, int originalRelationsSize) {
-        nodes = new ArrayList<N>(originalNodesSize);
-        relationLabels = new ArrayList<R>(originalRelationsSize);
+        nodes = new HashMap<N,N>(originalNodesSize);
+        relationLabels = new HashMap<R,R>(originalRelationsSize);
         labelToRelations = new HashMap<R, Collection<Relation>>(originalRelationsSize);
         outgoingRelations = new HashMap<N, Collection<Relation>>(originalNodesSize);
     }
     
     @Override
     public void addNode(N node) {
-        nodes.add(node);
+    	if (! nodes.containsKey(node))
+    		nodes.put(node, node);
     }
 
     @Override
     public void addRelation(N origin, N destination, float confidence, R relationLabel) {
-        int nodeIndex; int relIndex;
+        N n; R r;
 
         // Add or canonicalize origin node 
-        if ((nodeIndex = nodes.indexOf(origin)) == -1) {
-            nodes.add(origin);
+        if ((n = nodes.get(origin)) == null) {
+            nodes.put(origin, origin);
         } else {
-            origin = nodes.get(nodeIndex);
+            origin = n;
         }
         // Add or canonicalize destination node
-        if ((nodeIndex = nodes.indexOf(destination)) == -1) {
-            nodes.add(destination);
+        if ((n = nodes.get(destination)) == null) {
+            nodes.put(destination,destination);
         } else {
-            destination = nodes.get(nodeIndex);
+            destination = n;
         }
         // Add or canonicalize relation label 
-        if ((relIndex = relationLabels.indexOf(relationLabel)) == -1) {
-            relationLabels.add(relationLabel);
+        if ((r = relationLabels.get(relationLabel)) == null) {
+            relationLabels.put(relationLabel,relationLabel);
         } else {
-            relationLabel = relationLabels.get(relIndex);
+            relationLabel = r;
         }
         
-        Relation r = new Relation(origin, destination, relationLabel, confidence);
+        Relation rel = new Relation(origin, destination, relationLabel, confidence);
 
         Collection<Relation> rels;
         if ((rels = labelToRelations.get(relationLabel)) != null) {
-            rels.add(r);
+            rels.add(rel);
         } else {
             rels = new ArrayList<Relation>();
-            rels.add(r);
+            rels.add(rel);
             labelToRelations.put(relationLabel, rels);
         }
         
         if ((rels = outgoingRelations.get(origin)) != null) {
-            rels.add(r);
+            rels.add(rel);
         } else {
             rels = new ArrayList<Relation>();
-            rels.add(r);
+            rels.add(rel);
             outgoingRelations.put(origin, rels);
         }    
     }

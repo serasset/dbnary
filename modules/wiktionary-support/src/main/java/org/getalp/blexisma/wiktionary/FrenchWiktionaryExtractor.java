@@ -113,7 +113,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                         } else {
                             word = g2.substring(i1+1, i2);
                         }
-                        if (ISO639_1.sharedInstance.getBib3Code(lang) == null) System.out.println("Unknown language: " + lang);
+                        // if (ISO639_1.sharedInstance.getBib3Code(lang) == null) System.out.println("Unknown language: " + lang);
                         String rel = "trad|" + lang + ((currentGlose == null) ? "" : "|" + currentGlose);
                         semnet.addRelation(wiktionaryPageName, new String(lang + "|" + word), 1, rel ); nbtrad++;
                     }
@@ -182,10 +182,11 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         System.out.println("Loaded index in " + (endloadTime - startTime) +"ms.");
          
         FrenchWiktionaryExtractor fwe = new FrenchWiktionaryExtractor(wi);
-        SimpleSemanticNetwork<String, String> s = new SimpleSemanticNetwork<String, String>();
+        SimpleSemanticNetwork<String, String> s = new SimpleSemanticNetwork<String, String>(100000, 1000000);
         startTime = System.currentTimeMillis();
-        long totalRelevantTime = 0, relevantstartTime = 0;
+        long totalRelevantTime = 0, relevantstartTime = 0, relevantTimeOfLastThousands;
         int nbpages = 0, nbrelevantPages = 0;
+        relevantTimeOfLastThousands = System.currentTimeMillis();
         for (String page : wi.keySet()) {
             // System.out.println("Extracting: " + page);
             int nbnodes = s.getNbNodes();
@@ -195,17 +196,14 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
             if (nbnodes != s.getNbNodes()) {
                 totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
                 nbrelevantPages++;
-                if (nbpages % 1000 == 0) {
-                    System.out.println("Extracted: " + nbpages + " pages in: " + totalRelevantTime + " / Average = " 
-                            + (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + nbpages 
-                            + " processed Pages in " + (System.currentTimeMillis() - relevantstartTime) + " ms)");
+                if (nbrelevantPages % 1000 == 0) {
+                    System.out.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = " 
+                            + (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbpages 
+                            + " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbpages + ")" );
+                    relevantTimeOfLastThousands = System.currentTimeMillis();
                 }
             }
-            
-            // System.out.println("Extracted: " + page + " in: " + (System.currentTimeMillis() - startTime));
-           
-            //if (nbpages == 100000) break;
-        }
+                    }
 //        fwe.extractData("dictionnaire", s);
 //        fwe.extractData("amour", s);
 //        fwe.extractData("bateau", s);
@@ -216,4 +214,5 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
             System.out.println(e.getRelation() + " --> " + e.getDestination());
         }
     }
+    
 }

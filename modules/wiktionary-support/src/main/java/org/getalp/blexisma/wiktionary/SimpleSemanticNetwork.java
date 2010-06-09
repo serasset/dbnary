@@ -7,15 +7,36 @@ import java.util.Map.Entry;
 
 import org.getalp.blexisma.api.SemanticNetwork;
 
-public class SimpleSemanticNetwork<N, R> implements SemanticNetwork<N, R> {
-    public class Relation {
-        protected Relation(N o, N d, R r, int c) {
+public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
+    public class Relation extends SemanticNetwork<N,R>.Edge{
+        protected Relation(N o, N d, R r, float c) {
             this.origin = o; this.destination = d; this.label = r; this.confidence = c;
         }
         
         public N origin, destination;
         public R label;
-        public int confidence;
+        public float confidence;
+        
+        @Override
+        public float getConfidence() {
+            return this.confidence;
+        }
+
+        @Override
+        public N getDestination() {
+            return this.destination;
+        }
+
+        @Override
+        public N getOrigin() {
+            return this.origin;
+        }
+
+        @Override
+        public R getRelation() {
+            // TODO Auto-generated method stub
+            return this.label;
+        }
     }
     
     private ArrayList<N> nodes;
@@ -45,7 +66,7 @@ public class SimpleSemanticNetwork<N, R> implements SemanticNetwork<N, R> {
     }
 
     @Override
-    public void addRelation(N origin, N destination, int confidence, R relationLabel) {
+    public void addRelation(N origin, N destination, float confidence, R relationLabel) {
         int nodeIndex; int relIndex;
 
         // Add or canonicalize origin node 
@@ -101,12 +122,20 @@ public class SimpleSemanticNetwork<N, R> implements SemanticNetwork<N, R> {
     public int getNbNodes() {
         return nodes.size();
     }
-
+    
+    @Override
+    public Collection<Relation> getEdges(N origin) {
+        return (Collection<Relation>) outgoingRelations.get(origin);
+    }
+    
     public void clear() {
         nodes.clear();
         relationLabels.clear();
         labelToRelations.clear();
         outgoingRelations.clear();
     }
+
+
+
     
 }

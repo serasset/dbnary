@@ -3,7 +3,6 @@
  */
 package org.getalp.blexisma.wiktionary;
 
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -102,7 +101,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
             case TRADBLOCK:
                 String g1 = m.group(1);
                 if (g1.equals("trad+") || g1.equals("trad-")) {
-                    // TODO: what is the difference between trad+ and trad-
+                    // TODO: what is the difference between trad+ and trad- ?
                     // TODO: keep the glose in the semantic network
                     String g2 = m.group(2);
                     int i1, i2, i3;
@@ -115,7 +114,8 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                             word = g2.substring(i1+1, i2);
                         }
                         if (ISO639_1.sharedInstance.getBib3Code(lang) == null) System.out.println("Unknown language: " + lang);
-                        semnet.addRelation(wiktionaryPageName, new String(lang + "|" + word), 1, "trad"); nbtrad++;
+                        String rel = "trad|" + lang + ((currentGlose == null) ? "" : "|" + currentGlose);
+                        semnet.addRelation(wiktionaryPageName, new String(lang + "|" + word), 1, rel ); nbtrad++;
                     }
                 } else if (g1.equals("boîte début")) {
                     // Get the glose that should help disambiguate the source acception
@@ -184,15 +184,36 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         FrenchWiktionaryExtractor fwe = new FrenchWiktionaryExtractor(wi);
         SimpleSemanticNetwork<String, String> s = new SimpleSemanticNetwork<String, String>();
         startTime = System.currentTimeMillis();
-        int nbpages = 0;
+        long totalRelevantTime = 0, relevantstartTime = 0;
+        int nbpages = 0, nbrelevantPages = 0;
         for (String page : wi.keySet()) {
             // System.out.println("Extracting: " + page);
+            int nbnodes = s.getNbNodes();
+            relevantstartTime = System.currentTimeMillis();
             fwe.extractData(page, s); 
+            nbpages ++;
+            if (nbnodes != s.getNbNodes()) {
+                totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
+                nbrelevantPages++;
+                if (nbpages % 1000 == 0) {
+                    System.out.println("Extracted: " + nbpages + " pages in: " + totalRelevantTime + " / Average = " 
+                            + (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + nbpages 
+                            + " processed Pages in " + (System.currentTimeMillis() - relevantstartTime) + " ms)");
+                }
+            }
+            
             // System.out.println("Extracted: " + page + " in: " + (System.currentTimeMillis() - startTime));
-            nbpages++;
+           
             //if (nbpages == 100000) break;
         }
+//        fwe.extractData("dictionnaire", s);
+//        fwe.extractData("amour", s);
+//        fwe.extractData("bateau", s);
+        
         System.out.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
         System.out.println("Semnet contains: " + s.getNbNodes() + " nodes and " + s.getNbEdges() + " edges.");
+        for (SemanticNetwork<String,String>.Edge e : s.getEdges("dictionnaire")) {
+            System.out.println(e.getRelation() + " --> " + e.getDestination());
+        }
     }
 }

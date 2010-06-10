@@ -1,7 +1,6 @@
 package org.getalp.blexisma.wiktionary;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.StringReader;
 import java.util.Map;
 

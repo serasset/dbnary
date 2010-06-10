@@ -304,19 +304,19 @@ public class WiktionaryIndex implements Map<String, String> {
         long endtime = System.currentTimeMillis();
         System.out.println(" Indexing Time = " + (endtime - starttime) + "; " + wi.map.size() + " pages indexed.");
         
-        System.out.println("accueil : " +wi.get("accueil"));
+        System.out.println("enfoncer : " +wi.get("enfoncer"));
         System.out.println("dictionnaire : " +wi.get("dictionnaire"));
-        System.out.println("amour : " +wi.get("amour"));
+        System.out.println("acide désoxyribonucléique : " +wi.get("acide désoxyribonucléique"));
         
         long startloadtime = System.currentTimeMillis();
         System.out.println("Loading map");
-        wi.loadIndex();
-        long endloadtime = System.currentTimeMillis();
-        System.out.println(" Loading Time = " + (endloadtime - startloadtime) + "; ");
-        
-        System.out.println("accueil : " +wi.get("accueil"));
-        System.out.println("dictionnaire : " +wi.get("dictionnaire"));
-        System.out.println("amour : " +wi.get("amour"));
+//        wi.loadIndex();
+//        long endloadtime = System.currentTimeMillis();
+//        System.out.println(" Loading Time = " + (endloadtime - startloadtime) + "; ");
+//        
+//        System.out.println("accueil : " +wi.get("accueil"));
+//        System.out.println("dictionnaire : " +wi.get("dictionnaire"));
+//        System.out.println("amour : " +wi.get("amour"));
   
      }
 }

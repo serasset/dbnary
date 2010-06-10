@@ -9,6 +9,7 @@ modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/Wiktiona
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndex.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexer.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexerException.java -text
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GetRawEntry.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/ISO639-eponym.data -text
 modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/ISO639.data -text
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/ISO639Test.java -text svneol=unset#text/plain

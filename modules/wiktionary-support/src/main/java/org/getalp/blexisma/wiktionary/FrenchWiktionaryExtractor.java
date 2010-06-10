@@ -15,7 +15,7 @@ import org.getalp.blexisma.api.SemanticNetwork;
 public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
     protected final static String languageSectionPatternString = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
-    protected final static String definitionPatternString = "^#{1,2}([^\\*#].*)$";
+    protected final static String definitionPatternString = "^#{1,2}([^\\*#:].*)$";
     protected final static String macroPatternString;
     protected final static String linkPatternString;
     protected final static String macroOrLinkPatternString;
@@ -103,9 +103,10 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                 if (g1.equals("trad+") || g1.equals("trad-")) {
                     // TODO: what is the difference between trad+ and trad- ?
                     // TODO: keep the glose in the semantic network
+                    // TODO: Sometimes translation links have a remaining info after the word
                     String g2 = m.group(2);
-                    int i1, i2, i3;
-                    String lang, word, remaining = "";
+                    int i1, i2;
+                    String lang, word;
                     if ((i1 = g2.indexOf('|')) != -1) {
                         lang = g2.substring(0, i1);
                         if ((i2 = g2.indexOf('|', i1+1)) == -1) {
@@ -148,6 +149,10 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         Matcher definitionMatcher = definitionPattern.matcher(pageContent);
         definitionMatcher.region(startOffset, endOffset);
         while (definitionMatcher.find()) {
+            String def = definitionMatcher.group(0);
+            if (def.startsWith("##")) {
+                System.out.println(wiktionaryPageName + " --> " + def);
+            }
             semnet.addRelation(wiktionaryPageName, cleanUpMarkup(definitionMatcher.group(1)), 1, "def");
         }      
     }
@@ -200,10 +205,11 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     System.out.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = " 
                             + (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbpages 
                             + " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbpages + ")" );
+                    System.out.println("      NbNodes = " + s.getNbNodes());
                     relevantTimeOfLastThousands = System.currentTimeMillis();
-                }
-            }
                     }
+                }
+             }
 //        fwe.extractData("dictionnaire", s);
 //        fwe.extractData("amour", s);
 //        fwe.extractData("bateau", s);

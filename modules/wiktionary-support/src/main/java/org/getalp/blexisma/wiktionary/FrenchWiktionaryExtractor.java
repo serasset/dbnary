@@ -315,7 +315,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     String g2 = m.group(2);
                     int i1, i2;
                     String lang, word;
-                    if ((i1 = g2.indexOf('|')) != -1) {
+                    if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
                         lang = g2.substring(0, i1);
                         if ((i2 = g2.indexOf('|', i1+1)) == -1) {
                             word = g2.substring(i1+1);
@@ -449,7 +449,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     System.out.println("      NbNodes = " + s.getNbNodes());
                     relevantTimeOfLastThousands = System.currentTimeMillis();
                 }
-                if (nbrelevantPages == 3000) break;
+                if (nbrelevantPages == 10000) break;
             }
         }
 //        fwe.extractData("dictionnaire", s);

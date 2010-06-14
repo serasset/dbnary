@@ -1,5 +1,6 @@
 package org.getalp.blexisma.wiktionary;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -130,6 +131,7 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
         return (Collection<Relation>) outgoingRelations.get(origin);
     }
     
+    @Override
     public void clear() {
         nodes.clear();
         relationLabels.clear();
@@ -138,6 +140,15 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
     }
 
 
-
+    public void dumpToWriter(PrintStream out) {
+        for(Entry<N, Collection<Relation>> e: outgoingRelations.entrySet()) {
+            out.println("-O- " +e.getKey().toString());
+            for (Relation r: e.getValue()) {
+                out.println("  -R- " + r.getRelation());
+                out.println("  -C- " + r.getConfidence());
+                out.println("  -D- " + r.getDestination());
+            }
+        }
+    }
     
 }

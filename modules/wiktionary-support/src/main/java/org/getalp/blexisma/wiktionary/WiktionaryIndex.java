@@ -254,6 +254,7 @@ public class WiktionaryIndex implements Map<String, String> {
      */
     public String get(Object key) {
         OffsetValue ofs = map.get(key);
+        if (ofs == null) return null;
         String res = null;
         try {
             xmlf.seek(ofs.start*2 + 2); // in utf-16, 2 first bytes for the BOM

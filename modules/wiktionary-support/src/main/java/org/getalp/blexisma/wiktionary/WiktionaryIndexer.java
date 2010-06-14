@@ -84,6 +84,7 @@ public class WiktionaryIndexer {
     }
 
     public static String getTextElementContent(String wiktionaryPageContent) {
+        if (wiktionaryPageContent == null) return null;
         StringReader sr = new StringReader(wiktionaryPageContent);
         XMLStreamReader xmlr = null;
         try {

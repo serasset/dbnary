@@ -19,9 +19,6 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
     protected final static String languageSectionPatternString = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
     protected final static String definitionPatternString = "^#{1,2}([^\\*#:].*)$";
-    protected final static String macroPatternString;
-    protected final static String linkPatternString;
-    protected final static String macroOrLinkPatternString;
 
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
@@ -36,24 +33,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     private static HashSet<String> unsupportedMarkers = new HashSet<String>();
     
     static {
-        linkPatternString = 
-            new StringBuilder()
-            .append("\\[\\[")
-            .append("([^\\]\\|]*)(?:\\|([^\\]]*))?")
-            .append("\\]\\]")
-            .toString();
-        macroPatternString = 
-            new StringBuilder().append("\\{\\{")
-            .append("([^\\}\\|]*)(?:\\|([^\\}]*))?")
-            .append("\\}\\}")
-            .toString();
-        macroOrLinkPatternString = new StringBuilder()
-        .append("(?:")
-        .append(macroPatternString)
-        .append(")|(?:")
-        .append(linkPatternString)
-        .append(")").toString();
-        
+       
         posMarkers = new HashSet<String>(130);
         ignorablePosMarkers = new HashSet<String>(130);
 
@@ -164,7 +144,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         posMarkers.add("-signe-");
         posMarkers.add("-sin-");
         posMarkers.add("-subst-pron-pers-");
-        posMarkers.add("-suf-");
+        ignorablePosMarkers.add("-suf-");
         ignorablePosMarkers.add("-flex-suf-");
         posMarkers.add("type");
         posMarkers.add("-var-typo-");
@@ -195,14 +175,10 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
     protected final static Pattern languageSectionPattern;
     protected final static Pattern definitionPattern;
-    protected final static Pattern macroPattern;
-    protected final static Pattern macroOrLinkPattern;
 
     static {
         languageSectionPattern = Pattern.compile(languageSectionPatternString);
         definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
-        macroPattern = Pattern.compile(macroPatternString);
-        macroOrLinkPattern = Pattern.compile(macroOrLinkPatternString);
     }
 
     int state = NODATA;
@@ -390,35 +366,11 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         Matcher definitionMatcher = definitionPattern.matcher(pageContent);
         definitionMatcher.region(startOffset, endOffset);
         while (definitionMatcher.find()) {
-            // String def = definitionMatcher.group(0);
-            // if (def.startsWith("##")) {
-                // System.out.println(wiktionaryPageName + " --> " + def);
-            // }
-            semnet.addRelation(wiktionaryPageName, cleanUpMarkup(definitionMatcher.group(1)), 1, "def");
-        }      
-    }
-
-    public String cleanUpMarkup(String str) {
-        Matcher m = macroOrLinkPattern.matcher(str);
-        StringBuffer sb = new StringBuffer(str.length());
-        String leftGroup, rightGroup;
-        while (m.find()) {
-            if ((leftGroup = m.group(1)) != null) {
-                // It's a macro, ignore it for now
-                m.appendReplacement(sb, "");
-            } else if ((leftGroup = m.group(3)) != null) {
-                // It's a link, only keep the alternate string if present.
-                rightGroup = m.group(4);
-                String replacement = (rightGroup == null) ? leftGroup : rightGroup;
-                replacement = replacement.replaceAll("\\\\", "\\\\\\\\");
-                m.appendReplacement(sb, replacement);
-            } else {
-                // This really should not happen
-                assert false : "The detected wiktionary markup is neither a link nor a macro.";
+            String def = definitionMatcher.group(1);
+            if (def != null && ! def.equals("")) {
+                semnet.addRelation(wiktionaryPageName, cleanUpMarkup(definitionMatcher.group(1)), 1, "def");
             }
-        }
-        m.appendTail(sb);
-        return sb.toString();
+        }      
     }
     
     public static void main(String args[]) throws Exception {

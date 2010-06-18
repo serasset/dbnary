@@ -18,7 +18,6 @@ import org.getalp.blexisma.api.SemanticNetwork;
 public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
     protected final static String languageSectionPatternString = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
-    protected final static String definitionPatternString = "^#{1,2}([^\\*#:].*)$";
 
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
@@ -174,32 +173,20 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     }
 
     protected final static Pattern languageSectionPattern;
-    protected final static Pattern definitionPattern;
 
     static {
         languageSectionPattern = Pattern.compile(languageSectionPatternString);
-        definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
     }
 
     int state = NODATA;
     int definitionBlockStart = -1;
     int orthBlockStart = -1;
-    SemanticNetwork<String, String> semnet;
-    String wiktionaryPageName;
-    String pageContent;
     
     /* (non-Javadoc)
      * @see org.getalp.blexisma.wiktionary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
      */
     @Override
-    public void extractData(String wiktionaryPageName, SemanticNetwork<String, String> semnet) {
-        this.wiktionaryPageName = wiktionaryPageName;
-        this.semnet = semnet;
-        
-        pageContent = wiktionaryIndex.getTextOfPage(wiktionaryPageName);
-        
-        if (pageContent == null) return;
-        
+    public void extractData() {
         // System.out.println(pageContent);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
         while (languageFilter.find() && ! languageFilter.group(1).equals("fr")) {
@@ -251,7 +238,6 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         int nbtrad = 0;
         String currentGlose = null;
         while (m.find()) {
-            String currentToken = m.group();
             if (! sectionMarkers.contains(m.group(1))) unsupportedMarkers.add(m.group(1));
             switch (state) {
             case NODATA:
@@ -361,18 +347,6 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         // System.out.println(""+ nbtrad + " Translations extracted");
     }
 
-    private void extractDefinitions(int startOffset, int endOffset) {
-        
-        Matcher definitionMatcher = definitionPattern.matcher(pageContent);
-        definitionMatcher.region(startOffset, endOffset);
-        while (definitionMatcher.find()) {
-            String def = definitionMatcher.group(1);
-            if (def != null && ! def.equals("")) {
-                semnet.addRelation(wiktionaryPageName, cleanUpMarkup(definitionMatcher.group(1)), 1, "def");
-            }
-        }      
-    }
-    
     public static void main(String args[]) throws Exception {
         long startTime = System.currentTimeMillis();
         WiktionaryIndex wi = new WiktionaryIndex(args[0]);

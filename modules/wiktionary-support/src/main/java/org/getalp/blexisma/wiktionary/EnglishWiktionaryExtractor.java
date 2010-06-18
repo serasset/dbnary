@@ -19,7 +19,6 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
 
     // protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
     protected final static String sectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
-    protected final static String definitionPatternString = "^#{1,2}([^\\*#:].*)$";
     //protected final static String subSectionPatternString = "===\\s*([^=]*)\\s*===";
     //protected final static String subsubSectionPatternString = "====\\s*([^=]*)\\s*====";
 
@@ -33,14 +32,12 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     }
 
     // protected final static Pattern languageSectionPattern;
-    protected final static Pattern definitionPattern;
     protected final static Pattern sectionPattern;
     
     protected final static HashSet<String> posMarkers;
 
     static {
         // languageSectionPattern = Pattern.compile(languageSectionPatternString);
-        definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
        
         sectionPattern = Pattern.compile(sectionPatternString);
         
@@ -55,21 +52,12 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     int definitionBlockStart = -1;
     int orthBlockStart = -1;
     int translationBlockStart = -1;
-    SemanticNetwork<String, String> semnet;
-    String wiktionaryPageName;
-    String pageContent;
     
     /* (non-Javadoc)
      * @see org.getalp.blexisma.wiktionary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
      */
     @Override
-    public void extractData(String wiktionaryPageName, SemanticNetwork<String, String> semnet) {
-        this.wiktionaryPageName = wiktionaryPageName;
-        this.semnet = semnet;
-        
-        pageContent = wiktionaryIndex.getTextOfPage(wiktionaryPageName);
-        
-        if (pageContent == null) return;
+    public void extractData() {
         
         // System.out.println(pageContent);
         Matcher languageFilter = sectionPattern.matcher(pageContent);
@@ -133,9 +121,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         m.region(startOffset, endOffset);
         gotoNoData(m);
         // TODO: should I use a macroOrLink pattern to detect translations that are not macro based ?
-        int nbtrad = 0;
         while (m.find()) {
-            String currentToken = m.group();
             switch (state) {
             case NODATA:
                 if (m.group(1).equals("Translations")) {
@@ -214,19 +200,6 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
             assert false : "Unexpected state while extracting translations from dictionary.";
         } 
         // System.out.println(""+ nbtrad + " Translations extracted");
-    }
-
-    private void extractDefinitions(int startOffset, int endOffset) {
-        
-        Matcher definitionMatcher = definitionPattern.matcher(pageContent);
-        definitionMatcher.region(startOffset, endOffset);
-        while (definitionMatcher.find()) {
-            // String def = definitionMatcher.group(0);
-            // if (def.startsWith("##")) {
-                // System.out.println(wiktionaryPageName + " --> " + def);
-            // }
-            semnet.addRelation(wiktionaryPageName, cleanUpMarkup(definitionMatcher.group(1)), 1, "def");
-        }      
     }
     
    private void extractOrthoAlt(int startOffset, int endOffset) {

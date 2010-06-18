@@ -11,6 +11,7 @@ public abstract class WiktionaryExtractor {
     protected final static String macroPatternString;
     protected final static String linkPatternString;
     protected final static String macroOrLinkPatternString;
+    protected final static String definitionPatternString = "^#{1,2}([^\\*#:].*)$";
 
     static {
         linkPatternString = 
@@ -34,13 +35,17 @@ public abstract class WiktionaryExtractor {
     
     protected final static Pattern macroPattern;
     protected final static Pattern macroOrLinkPattern;
+    protected final static Pattern definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
 
     static {
         macroPattern = Pattern.compile(macroPatternString);
         macroOrLinkPattern = Pattern.compile(macroOrLinkPatternString);
     }
-    
+
     protected WiktionaryIndex wiktionaryIndex;
+    protected SemanticNetwork<String, String> semnet;
+    protected String wiktionaryPageName;
+    protected String pageContent;
 
     public WiktionaryExtractor(WiktionaryIndex wi) {
         super();
@@ -54,7 +59,31 @@ public abstract class WiktionaryExtractor {
         return wiktionaryIndex;
     }
     
-    public abstract void extractData(String wiktionaryPageName, SemanticNetwork<String, String> semnet);
+    public void extractData(String wiktionaryPageName, SemanticNetwork<String, String> semnet) {
+        this.wiktionaryPageName = wiktionaryPageName;
+        this.semnet = semnet;
+        
+        pageContent = wiktionaryIndex.getTextOfPage(wiktionaryPageName);
+        
+        if (pageContent == null) return;
+        
+        extractData();
+     }
+
+    public abstract void extractData();
+    
+    
+    protected void extractDefinitions(int startOffset, int endOffset) {
+        
+        Matcher definitionMatcher = definitionPattern.matcher(this.pageContent);
+        definitionMatcher.region(startOffset, endOffset);
+        while (definitionMatcher.find()) {
+            String def = definitionMatcher.group(1);
+            if (def != null && ! def.equals("")) {
+                this.semnet.addRelation(this.wiktionaryPageName, cleanUpMarkup(definitionMatcher.group(1)), 1, "def");
+            }
+        }      
+    }
     
     // Some utility methods that should be common to all languages
     public String cleanUpMarkup(String str) {
@@ -78,6 +107,25 @@ public abstract class WiktionaryExtractor {
             }
         }
         m.appendTail(sb);
+        // normalize whitespaces
+        int l = 0;
+        int i = 0; boolean previousCharIsASpace = true;
+        while (i != sb.length()) {
+            if (Character.isSpaceChar(sb.charAt(i))) {
+                if (! previousCharIsASpace) {
+                    previousCharIsASpace = true;
+                    sb.setCharAt(l, ' ');
+                    l++;
+                } 
+            } else {
+                previousCharIsASpace = false;
+                sb.setCharAt(l, sb.charAt(i));
+                l++;
+            }
+            i++;
+        }
+        if (l > 0 && sb.charAt(l-1) == ' ') l--;
+        sb.setLength(l);
         return sb.toString();
     }
 

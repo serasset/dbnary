@@ -1,7 +1,7 @@
 * text=auto !eol
 modules/wiktionary-support/pom.xml -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/CharsetConvert.java -text svneol=unset#text/plain
-modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/EnglishWiktionaryExtractor.java -text svneol=unset#text/plain
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/EnglishWiktionaryExtractor.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/FrenchMacroExtractor.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/FrenchWiktionaryExtractor.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/ISO639_1.java -text
@@ -16,3 +16,4 @@ modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GetR
 modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/ISO639-eponym.data -text
 modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/ISO639.data -text
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/ISO639Test.java -text svneol=unset#text/plain
+modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text svneol=unset#text/plain

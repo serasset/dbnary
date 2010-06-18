@@ -78,9 +78,9 @@ public abstract class WiktionaryExtractor {
         Matcher definitionMatcher = definitionPattern.matcher(this.pageContent);
         definitionMatcher.region(startOffset, endOffset);
         while (definitionMatcher.find()) {
-            String def = definitionMatcher.group(1);
+            String def = cleanUpMarkup(definitionMatcher.group(1));
             if (def != null && ! def.equals("")) {
-                this.semnet.addRelation(this.wiktionaryPageName, cleanUpMarkup(definitionMatcher.group(1)), 1, "def");
+                this.semnet.addRelation(this.wiktionaryPageName, def, 1, "def");
             }
         }      
     }

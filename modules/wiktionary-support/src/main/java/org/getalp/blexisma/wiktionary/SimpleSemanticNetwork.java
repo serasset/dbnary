@@ -144,7 +144,12 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
     public Iterator<N> getNodesIterator() {
         throw new RuntimeException("Unimplemented abstract method.");
     }
-    
+
+    @Override
+    public  Iterator<N> getInfiniteNodesIterator() {
+        throw new RuntimeException("Unimplemented abstract method.");
+    }
+     
     @Override
     public Iterator<Edge> getEdgesIterator() {
         throw new RuntimeException("Unimplemented abstract method.");
@@ -154,7 +159,8 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
     public  Iterator<Edge> getInfiniteEdgesIterator() {
         throw new RuntimeException("Unimplemented abstract method.");
     }
-    
+   
+   
     public void dumpToWriter(PrintStream out) {
         for(Entry<N, Collection<Relation>> e: outgoingRelations.entrySet()) {
             out.println("-O- " +e.getKey().toString());

@@ -4,9 +4,11 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import org.getalp.blexisma.api.SemanticNetwork;
+import org.getalp.blexisma.semnet.RAM_SemanticNetwork.Edge;
 
 public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
     public class Relation extends SemanticNetwork<N,R>.Edge{
@@ -47,7 +49,7 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
     private HashMap<N,Collection<Relation>> outgoingRelations;
  //   private HashMap<N,Relation> incomingRelations;
 
-    // TODO: remove the nodes and relationLabels HashMap as evrything is present in label and outgoingrels
+    // TODO: remove the nodes and relationLabels HashMap as everything is present in label and outgoingrels
     public SimpleSemanticNetwork() {
         nodes = new HashMap<N,N>();
         relationLabels = new HashMap<R,R>();
@@ -139,7 +141,21 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
         outgoingRelations.clear();
     }
 
-
+    @Override
+    public Iterator<N> getNodesIterator() {
+        throw new RuntimeException("Unimplemented abstract method.");
+    }
+    
+    @Override
+    public Iterator<Edge> getEdgesIterator() {
+        throw new RuntimeException("Unimplemented abstract method.");
+    }
+    
+    @Override
+    public  Iterator<Edge> getInfiniteEdgesIterator() {
+        throw new RuntimeException("Unimplemented abstract method.");
+    }
+    
     public void dumpToWriter(PrintStream out) {
         for(Entry<N, Collection<Relation>> e: outgoingRelations.entrySet()) {
             out.println("-O- " +e.getKey().toString());

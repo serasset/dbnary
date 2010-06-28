@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import org.getalp.blexisma.api.SemanticNetwork;
-import org.getalp.blexisma.semnet.RAM_SemanticNetwork.Edge;
 
 public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
     public class Relation extends SemanticNetwork<N,R>.Edge{

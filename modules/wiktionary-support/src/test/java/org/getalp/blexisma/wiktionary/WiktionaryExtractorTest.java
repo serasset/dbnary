@@ -41,4 +41,39 @@ public class WiktionaryExtractorTest {
         String result = we.cleanUpMarkup("");
         assertEquals("cleanUp failed", "", result);
     }
+    
+    @Test
+    public void testMacroIsIgnored() {
+        WiktionaryExtractor we = new FrenchWiktionaryExtractor(null);
+        String result = we.cleanUpMarkup("{{toto|titi}} XYZ");
+        assertEquals("cleanUp failed", "XYZ", result);
+    }
+    
+    @Test
+    public void testLinkIsKeptInHumanReadableForm() {
+        WiktionaryExtractor we = new FrenchWiktionaryExtractor(null);
+        String result = we.cleanUpMarkup("[[lemma|occurence]] XYZ", true);
+        assertEquals("cleanUp failed", "occurence XYZ", result);
+    }
+    
+    @Test
+    public void testLinkIsKeptInDefaultForm() {
+        WiktionaryExtractor we = new FrenchWiktionaryExtractor(null);
+        String result = we.cleanUpMarkup("[[lemma|occurence]] XYZ");
+        assertEquals("cleanUp failed", "#{lemma}# XYZ", result);
+    }
+    
+    @Test
+    public void testLinkWithoutOccurenceIsKeptInDefaultForm() {
+        WiktionaryExtractor we = new FrenchWiktionaryExtractor(null);
+        String result = we.cleanUpMarkup("[[lemma]] XYZ");
+        assertEquals("cleanUp failed", "#{lemma}# XYZ", result);
+    }
+    
+    @Test
+    public void testLinkWithoutOccurenceIsHumanReadableForm() {
+        WiktionaryExtractor we = new FrenchWiktionaryExtractor(null);
+        String result = we.cleanUpMarkup("[[lemma]] XYZ", true);
+        assertEquals("cleanUp failed", "lemma XYZ", result);
+    }
 }

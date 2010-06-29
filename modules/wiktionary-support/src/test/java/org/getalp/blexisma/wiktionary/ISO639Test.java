@@ -25,6 +25,14 @@ public class ISO639Test {
     }
     
     @Test
+    public void testEnglishName() {
+        ISO639_1 isoLanguages = ISO639_1.sharedInstance;
+        String en = isoLanguages.getLanguageNameInEnglish("eng");
+        
+        assertEquals("eng is not English", "English", en);
+    }
+
+    @Test
     public void testFrenchIsFrancais() {
         ISO639_1 isoLanguages = ISO639_1.sharedInstance;
         ISO639_1.Lang french = isoLanguages.getLang("fre");

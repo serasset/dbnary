@@ -31,8 +31,10 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     
     private static HashSet<String> unsupportedMarkers = new HashSet<String>();
     
+    
     static {
-       
+        langPrefix = "#" + ISO639_1.sharedInstance.getBib3Code("fra") + "|";
+           
         posMarkers = new HashSet<String>(130);
         ignorablePosMarkers = new HashSet<String>(130);
 
@@ -217,7 +219,8 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     void gotoDefBlock(Matcher m){
         state = DEFBLOCK;
         definitionBlockStart = m.end();
-        semnet.addRelation(wiktionaryPageName, m.group(1), 1, "pos"); // TODO: mark the semnet node with the pos
+        currentPos = m.group(1);
+        semnet.addRelation(wiktionaryPageName, POS_PREFIX + currentPos, 1, POS_RELATION);
     }
     
     void gotoOrthoAltBlock(Matcher m) {
@@ -227,6 +230,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     
     void leaveDefBlock(Matcher m) {
         extractDefinitions(definitionBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        currentPos = null;
         definitionBlockStart = -1;
     }
     
@@ -234,7 +238,9 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         Matcher m = macroPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         gotoNoData(m);
-        // TODO: should I use a macroOrLink pattern to detect translations that are not macro based ?
+        // TODO: (priority: low) should I use a macroOrLink pattern to detect translations that are not macro based ?
+        // DONE: (priority: top) link the definition node with the current Part of Speech
+        // TODO: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
         int nbtrad = 0;
         String currentGlose = null;
         while (m.find()) {
@@ -279,12 +285,19 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     String lang, word;
                     if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
                         lang = g2.substring(0, i1);
+                     // normalize language code
+                        String normLangCode;
+                        if ((normLangCode = ISO639_1.sharedInstance.getBib3Code(lang)) != null) {
+                            lang = "#" + normLangCode;
+                        } else {
+                            lang = "#" + lang;
+                        }
                         if ((i2 = g2.indexOf('|', i1+1)) == -1) {
                             word = g2.substring(i1+1);
                         } else {
                             word = g2.substring(i1+1, i2);
                         }
-                        String rel = "trad|" + lang + ((currentGlose == null) ? "" : "|" + currentGlose);
+                        String rel = "trad|" + lang + ((currentGlose == null || currentGlose.equals("")) ? "" : "|" + currentGlose);
                         semnet.addRelation(wiktionaryPageName, new String(lang + "|" + word), 1, rel ); nbtrad++;
                     }
                 } else if (g1.equals("boîte début")) {

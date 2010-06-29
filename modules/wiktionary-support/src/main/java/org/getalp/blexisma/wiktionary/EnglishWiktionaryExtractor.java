@@ -26,7 +26,11 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     private final int TRADBLOCK = 1;
     private final int DEFBLOCK = 2;
     private final int ORTHOALTBLOCK = 3;
-           
+        
+    static {
+        langPrefix = "#" + ISO639_1.sharedInstance.getBib3Code("eng") + "|";    
+    }
+    
     public EnglishWiktionaryExtractor(WiktionaryIndex wi) {
         super(wi);
     }
@@ -93,7 +97,8 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     void gotoDefBlock(Matcher m){
         state = DEFBLOCK;
         definitionBlockStart = m.end();
-        semnet.addRelation(wiktionaryPageName, m.group(1), 1, "pos"); // TODO: mark the semnet node with the pos
+        currentPos = m.group(1);
+        semnet.addRelation(wiktionaryPageName, POS_PREFIX + currentPos, 1, POS_RELATION); 
     }
     
     void gotoOrthoAltBlock(Matcher m) {
@@ -103,6 +108,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     
     void leaveDefBlock(Matcher m) {
         extractDefinitions(definitionBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        currentPos = null;
         definitionBlockStart = -1;
     }
     
@@ -121,6 +127,9 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         m.region(startOffset, endOffset);
         gotoNoData(m);
         // TODO: should I use a macroOrLink pattern to detect translations that are not macro based ?
+        // DONE: (priority: top) link the definition node with the current Part of Speech
+        // TODO: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
+        // TODO: add alternative spelling
         while (m.find()) {
             switch (state) {
             case NODATA:
@@ -221,12 +230,19 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                String lang, word;
                if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
                    lang = g2.substring(0, i1);
-                   if ((i2 = g2.indexOf('|', i1+1)) == -1) {
+                   // normalize language code
+                   String normLangCode;
+                   if ((normLangCode = ISO639_1.sharedInstance.getBib3Code(lang)) != null) {
+                       lang = "#" + normLangCode;
+                   } else {
+                       lang = "#" + lang;
+                   }
+                       if ((i2 = g2.indexOf('|', i1+1)) == -1) {
                        word = g2.substring(i1+1);
                    } else {
                        word = g2.substring(i1+1, i2);
                    }
-                   String rel = "trad|" + lang + ((currentGlose == null) ? "" : "|" + currentGlose);
+                   String rel = "trad|" + lang + ((currentGlose == null || currentGlose.equals("")) ? "" : "|" + currentGlose);
                    semnet.addRelation(wiktionaryPageName, new String(lang + "|" + word), 1, rel );
                }
            } else if (g1.equals("trans-top")) {
@@ -266,7 +282,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
             if (nbnodes != s.getNbNodes()) {
                 totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
                 nbrelevantPages++;
-                if (nbrelevantPages % 1000 == 0) {
+                if (nbrelevantPages % 100 == 0) {
                     System.out.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = " 
                             + (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbpages 
                             + " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbpages + ")" );

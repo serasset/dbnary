@@ -13,6 +13,7 @@ public abstract class WiktionaryExtractor {
     protected final static String macroOrLinkPatternString;
     protected final static String definitionPatternString = "^#{1,2}([^\\*#:].*)$";
 
+    protected static  String langPrefix = "";
     static {
         linkPatternString = 
             new StringBuilder()
@@ -42,6 +43,12 @@ public abstract class WiktionaryExtractor {
         macroOrLinkPattern = Pattern.compile(macroOrLinkPatternString);
     }
 
+    protected final static String POS_RELATION = "pos";
+    protected final static String DEF_RELATION = "def";
+    protected final static String TRANSLATION_RELATION = "trad";
+    protected final static String POS_PREFIX = "#" + POS_RELATION + "|";
+    protected final static String DEF_PREFIX = "#" + DEF_RELATION + "|";
+    
     protected WiktionaryIndex wiktionaryIndex;
     protected SemanticNetwork<String, String> semnet;
     protected String wiktionaryPageName;
@@ -60,7 +67,7 @@ public abstract class WiktionaryExtractor {
     }
     
     public void extractData(String wiktionaryPageName, SemanticNetwork<String, String> semnet) {
-        this.wiktionaryPageName = wiktionaryPageName;
+        this.wiktionaryPageName = langPrefix + wiktionaryPageName;
         this.semnet = semnet;
         
         pageContent = wiktionaryIndex.getTextOfPage(wiktionaryPageName);
@@ -72,21 +79,31 @@ public abstract class WiktionaryExtractor {
 
     public abstract void extractData();
     
+    protected String currentPos = "";
     
-    protected void extractDefinitions(int startOffset, int endOffset) {
-        
+    protected void extractDefinitions(int startOffset, int endOffset) { 
         Matcher definitionMatcher = definitionPattern.matcher(this.pageContent);
         definitionMatcher.region(startOffset, endOffset);
         while (definitionMatcher.find()) {
             String def = cleanUpMarkup(definitionMatcher.group(1));
             if (def != null && ! def.equals("")) {
-                this.semnet.addRelation(this.wiktionaryPageName, def, 1, "def");
+                def = DEF_PREFIX + def;
+                this.semnet.addRelation(this.wiktionaryPageName, def, 1, DEF_RELATION);
+                if (currentPos != null && ! currentPos.equals("")) {
+                    this.semnet.addRelation(def, currentPos, 1, POS_RELATION);
+                }
             }
         }      
     }
     
+    public String cleanUpMarkup(String group) {
+        // TODO Auto-generated method stub
+        return cleanUpMarkup(group, false);
+    }
+
     // Some utility methods that should be common to all languages
-    public String cleanUpMarkup(String str) {
+    // DONE: (priority: top) keep annotated lemma (#{lemma}#) in definitions.
+    public String cleanUpMarkup(String str, boolean humanReadable) {
         Matcher m = macroOrLinkPattern.matcher(str);
         StringBuffer sb = new StringBuffer(str.length());
         String leftGroup, rightGroup;
@@ -97,7 +114,14 @@ public abstract class WiktionaryExtractor {
             } else if ((leftGroup = m.group(3)) != null) {
                 // It's a link, only keep the alternate string if present.
                 rightGroup = m.group(4);
-                String replacement = (rightGroup == null) ? leftGroup : rightGroup;
+                String replacement ;
+                if (rightGroup == null && humanReadable) {
+                    replacement = leftGroup;
+                } else if (humanReadable) {
+                    replacement = rightGroup;
+                } else {
+                    replacement = "#{" + leftGroup + "}#";
+                }
                 replacement = replacement.replaceAll("\\\\", "\\\\\\\\");
                 replacement = replacement.replaceAll("\\$", "\\\\\\$");   
                 m.appendReplacement(sb, replacement);

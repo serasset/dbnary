@@ -49,7 +49,7 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
         
         private Iterator<Entry<N,N>> entrySetIterator;
         
-        public SemnetInfiniteNodesIterator(SimpleSemanticNetwork<N, R> backingSemnet) {
+        public SemnetInfiniteNodesIterator() {
             entrySetIterator = nodes.entrySet().iterator();
             int startingPos = rand.nextInt(nodes.size());
             for (int i=0; i < startingPos; i++) {
@@ -181,7 +181,7 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
 
     @Override
     public  Iterator<N> getInfiniteNodesIterator() {
-        throw new RuntimeException("Unimplemented abstract method.");
+        return new SemnetInfiniteNodesIterator();
     }
      
     @Override

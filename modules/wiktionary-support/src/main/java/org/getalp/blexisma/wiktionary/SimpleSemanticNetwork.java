@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.getalp.blexisma.api.SemanticNetwork;
@@ -41,6 +44,37 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
         }
     }
     
+    private static final Random rand = new Random();
+    public class SemnetInfiniteNodesIterator implements Iterator<N> {
+        
+        private Iterator<Entry<N,N>> entrySetIterator;
+        
+        public SemnetInfiniteNodesIterator(SimpleSemanticNetwork<N, R> backingSemnet) {
+            entrySetIterator = nodes.entrySet().iterator();
+            int startingPos = rand.nextInt(nodes.size());
+            for (int i=0; i < startingPos; i++) {
+                entrySetIterator.next();
+            }
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return true;
+        }
+
+        @Override
+        public N next() {
+            if (entrySetIterator.hasNext()) return entrySetIterator.next().getValue();
+            entrySetIterator = nodes.entrySet().iterator();
+            return entrySetIterator.next().getValue();
+        }
+
+        @Override
+        public void remove() {
+            entrySetIterator.remove();
+        }
+        
+    }
     private HashMap<N,N> nodes;
     private HashMap<R,R> relationLabels;
     

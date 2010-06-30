@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+// TODO : use the iso-639-3 file that contains a language id + other fields.
 public final class ISO639_1 {
     public class Lang {
         String a3b, a3t, a2, fr, en, epo;

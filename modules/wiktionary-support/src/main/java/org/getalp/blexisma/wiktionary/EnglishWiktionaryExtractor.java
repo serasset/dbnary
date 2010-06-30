@@ -9,8 +9,6 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.SemanticNetwork;
-
 /**
  * @author serasset
  *

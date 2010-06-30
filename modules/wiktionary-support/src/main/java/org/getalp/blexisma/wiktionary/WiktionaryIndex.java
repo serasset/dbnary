@@ -309,7 +309,7 @@ public class WiktionaryIndex implements Map<String, String> {
         System.out.println("dictionnaire : " +wi.get("dictionnaire"));
         System.out.println("acide désoxyribonucléique : " +wi.get("acide désoxyribonucléique"));
         
-        long startloadtime = System.currentTimeMillis();
+        // long startloadtime = System.currentTimeMillis();
         System.out.println("Loading map");
 //        wi.loadIndex();
 //        long endloadtime = System.currentTimeMillis();

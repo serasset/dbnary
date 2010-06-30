@@ -3,8 +3,6 @@ package org.getalp.blexisma.wiktionary;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 
-import org.getalp.blexisma.api.SemanticNetwork;
-
 public class FrenchMacroExtractor extends FrenchWiktionaryExtractor {
 
     public FrenchMacroExtractor(WiktionaryIndex wi) {

@@ -103,6 +103,8 @@ public abstract class WiktionaryExtractor {
 
     // Some utility methods that should be common to all languages
     // DONE: (priority: top) keep annotated lemma (#{lemma}#) in definitions.
+    // TODO: handle ''...'' ans '''...'''.
+    // TODO: suppress affixes that follow links, like: e in [[français]]e.
     public String cleanUpMarkup(String str, boolean humanReadable) {
         Matcher m = macroOrLinkPattern.matcher(str);
         StringBuffer sb = new StringBuffer(str.length());

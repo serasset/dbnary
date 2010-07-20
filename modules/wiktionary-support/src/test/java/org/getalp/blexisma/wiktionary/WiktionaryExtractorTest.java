@@ -76,4 +76,25 @@ public class WiktionaryExtractorTest {
         String result = we.cleanUpMarkup("[[lemma]] XYZ", true);
         assertEquals("cleanUp failed", "lemma XYZ", result);
     }
+    
+    @Test
+    public void testLinkWithStupidlyEncodedMorphology() {
+        WiktionaryExtractor we = new FrenchWiktionaryExtractor(null);
+        String result = we.cleanUpMarkup("[[avion]]s", false);
+        assertEquals("cleanUp failed", "#{avion}#", result);
+    }
+    
+    @Test
+    public void testDefWithStupidlyEncodedMorphology() {
+        WiktionaryExtractor we = new EnglishWiktionaryExtractor(null);
+        String result = we.cleanUpMarkup("A failing grade in a class or course.  The next best grade is a [[D]].  Some institutions issue [[E]]s instead of [[F]]s.", false);
+        assertEquals("cleanUp failed", "A failing grade in a class or course. The next best grade is a #{D}#. Some institutions issue #{E}# instead of #{F}#.", result);
+    }
+    
+    @Test
+    public void testEmphasized() {
+        WiktionaryExtractor we = new EnglishWiktionaryExtractor(null);
+        String result = we.cleanUpMarkup("'''l'action''' ''compte''", false);
+        assertEquals("cleanUp failed", "l'action compte", result);
+    }
 }

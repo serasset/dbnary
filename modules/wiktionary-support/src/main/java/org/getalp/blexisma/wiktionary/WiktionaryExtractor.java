@@ -31,6 +31,8 @@ public abstract class WiktionaryExtractor {
         .append(macroPatternString)
         .append(")|(?:")
         .append(linkPatternString)
+        .append(")|(?:")
+        .append("'{2,3}")
         .append(")").toString();
     }
     
@@ -101,11 +103,14 @@ public abstract class WiktionaryExtractor {
         return cleanUpMarkup(group, false);
     }
 
+    // public static Set<String> affixesToDiscardFromLinks = null;
+    
     // Some utility methods that should be common to all languages
     // DONE: (priority: top) keep annotated lemma (#{lemma}#) in definitions.
-    // TODO: handle ''...'' ans '''...'''.
-    // TODO: suppress affixes that follow links, like: e in [[français]]e.
+    // DONE: handle ''...'' and '''...'''.
+    // DONE: suppress affixes that follow links, like: e in [[français]]e.
     public String cleanUpMarkup(String str, boolean humanReadable) {
+        String original = str;
         Matcher m = macroOrLinkPattern.matcher(str);
         StringBuffer sb = new StringBuffer(str.length());
         String leftGroup, rightGroup;
@@ -124,12 +129,24 @@ public abstract class WiktionaryExtractor {
                 } else {
                     replacement = "#{" + leftGroup + "}#";
                 }
-                replacement = replacement.replaceAll("\\\\", "\\\\\\\\");
-                replacement = replacement.replaceAll("\\$", "\\\\\\$");   
+                replacement = Matcher.quoteReplacement(replacement);
                 m.appendReplacement(sb, replacement);
+                // Discard stupidly encoded morphological affixes.
+                if (!humanReadable && str.length() > m.end() && Character.isLetter(str.charAt(m.end()))) {
+                    int i = m.end();
+                    StringBuffer affix = new StringBuffer();
+                    while(i < str.length() && Character.isLetter(str.charAt(i))) {
+                        affix.append(str.charAt(i));
+                        i++;
+                    }
+                    // TODO Do I have to keep a test here for German ?
+                    if (affixesShouldBeDiscardedFromLinks(affix.toString())) {
+                        str = str.substring(i);
+                        m.reset(str); 
+                    }
+                }
             } else {
-                // This really should not happen
-                assert false : "The detected wiktionary markup is neither a link nor a macro.";
+                m.appendReplacement(sb, "");
             }
         }
         m.appendTail(sb);
@@ -154,5 +171,7 @@ public abstract class WiktionaryExtractor {
         sb.setLength(l);
         return sb.toString();
     }
+
+    public abstract boolean affixesShouldBeDiscardedFromLinks(String string) ;
 
 }

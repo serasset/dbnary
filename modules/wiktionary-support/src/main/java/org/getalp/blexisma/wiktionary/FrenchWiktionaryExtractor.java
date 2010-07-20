@@ -6,6 +6,7 @@ package org.getalp.blexisma.wiktionary;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,6 +30,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     
     private static HashSet<String> unsupportedMarkers = new HashSet<String>();
     
+    private static Set<String> affixesToDiscardFromLinks = null;
     
     static {
         langPrefix = "#" + ISO639_1.sharedInstance.getBib3Code("fra") + "|";
@@ -165,7 +167,10 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         sectionMarkers.add("-voc-");
         sectionMarkers.add("-trad-");
         // TODO trouver tous les modèles de section...
-
+        
+        
+        affixesToDiscardFromLinks = new HashSet<String>();
+        affixesToDiscardFromLinks.add("s");
     }
     
     public FrenchWiktionaryExtractor(WiktionaryIndex wi) {
@@ -358,6 +363,11 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         // System.out.println(""+ nbtrad + " Translations extracted");
     }
 
+    @Override
+    public boolean affixesShouldBeDiscardedFromLinks(String affix) {
+        return true;
+    }
+    
     public static void main(String args[]) throws Exception {
         long startTime = System.currentTimeMillis();
         WiktionaryIndex wi = new WiktionaryIndex(args[0]);
@@ -402,5 +412,6 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         //    System.out.println(e.getRelation() + " --> " + e.getDestination());
         //}
     }
-    
+
+
 }

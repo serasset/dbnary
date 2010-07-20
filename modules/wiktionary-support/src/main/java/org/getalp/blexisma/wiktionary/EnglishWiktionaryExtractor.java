@@ -48,6 +48,93 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         posMarkers.add("Adjective");
         posMarkers.add("Adverb");
         posMarkers.add("Verb");
+        
+/*        affixesToDiscardFromLinks = new HashSet<String>();
+        affixesToDiscardFromLinks.add("s");
+        affixesToDiscardFromLinks.add("n");
+        affixesToDiscardFromLinks.add("en");
+        affixesToDiscardFromLinks.add("ne");
+        affixesToDiscardFromLinks.add("es");
+        affixesToDiscardFromLinks.add("e");
+        affixesToDiscardFromLinks.add("d");
+        affixesToDiscardFromLinks.add("ed");
+        affixesToDiscardFromLinks.add("ted");
+        affixesToDiscardFromLinks.add("red");
+        affixesToDiscardFromLinks.add("led");
+        affixesToDiscardFromLinks.add("ped");
+        affixesToDiscardFromLinks.add("med");
+        affixesToDiscardFromLinks.add("ned");
+        affixesToDiscardFromLinks.add("ged");
+        affixesToDiscardFromLinks.add("ded");
+        
+        affixesToDiscardFromLinks.add("ized");
+
+        affixesToDiscardFromLinks.add("ten");
+        affixesToDiscardFromLinks.add("ren");
+        affixesToDiscardFromLinks.add("len");
+        affixesToDiscardFromLinks.add("pen");
+        affixesToDiscardFromLinks.add("men");
+        affixesToDiscardFromLinks.add("nen");
+        affixesToDiscardFromLinks.add("gen");
+        affixesToDiscardFromLinks.add("den");
+
+        affixesToDiscardFromLinks.add("ish");
+        affixesToDiscardFromLinks.add("ishly");
+
+        affixesToDiscardFromLinks.add("ic");
+        affixesToDiscardFromLinks.add("im");
+        affixesToDiscardFromLinks.add("tic");
+        affixesToDiscardFromLinks.add("ing");
+        affixesToDiscardFromLinks.add("ings");
+        affixesToDiscardFromLinks.add("ting");
+        affixesToDiscardFromLinks.add("ling");
+        affixesToDiscardFromLinks.add("ping");
+        affixesToDiscardFromLinks.add("ming");
+        affixesToDiscardFromLinks.add("ning");
+        affixesToDiscardFromLinks.add("ding");
+        affixesToDiscardFromLinks.add("ging");
+        affixesToDiscardFromLinks.add("ring");
+        affixesToDiscardFromLinks.add("bing");
+        
+        affixesToDiscardFromLinks.add("r");
+        affixesToDiscardFromLinks.add("t");
+        affixesToDiscardFromLinks.add("er");
+        affixesToDiscardFromLinks.add("est");
+        affixesToDiscardFromLinks.add("or");
+        affixesToDiscardFromLinks.add("edness");
+        affixesToDiscardFromLinks.add("mer");
+        affixesToDiscardFromLinks.add("ness");
+        affixesToDiscardFromLinks.add("ess");
+        affixesToDiscardFromLinks.add("iness");
+        
+        affixesToDiscardFromLinks.add("able");
+        affixesToDiscardFromLinks.add("an");
+        affixesToDiscardFromLinks.add("y");
+        affixesToDiscardFromLinks.add("ly");
+        affixesToDiscardFromLinks.add("ally");
+        affixesToDiscardFromLinks.add("edly");
+        affixesToDiscardFromLinks.add("l");
+        
+        affixesToDiscardFromLinks.add("ity");
+        affixesToDiscardFromLinks.add("ty");
+
+        affixesToDiscardFromLinks.add("ion");
+
+        affixesToDiscardFromLinks.add("ment");
+        affixesToDiscardFromLinks.add("lame");
+        affixesToDiscardFromLinks.add("dish");
+        affixesToDiscardFromLinks.add("like");
+        affixesToDiscardFromLinks.add("al");
+        affixesToDiscardFromLinks.add("ial");
+        affixesToDiscardFromLinks.add("ian");
+        affixesToDiscardFromLinks.add("ous");
+        affixesToDiscardFromLinks.add("ously");
+        affixesToDiscardFromLinks.add("ward");
+        affixesToDiscardFromLinks.add("wards");
+        affixesToDiscardFromLinks.add("ation");
+        affixesToDiscardFromLinks.add("lation");
+        */
+
     }
 
     int state = NODATA;
@@ -272,22 +359,23 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         int nbpages = 0, nbrelevantPages = 0;
         relevantTimeOfLastThousands = System.currentTimeMillis();
         for (String page : wi.keySet()) {
+            nbpages ++;
+            if (nbpages < 160000) continue;
             // System.out.println("Extracting: " + page);
             int nbnodes = s.getNbNodes();
             relevantstartTime = System.currentTimeMillis();
             fwe.extractData(page, s); 
-            nbpages ++;
             if (nbnodes != s.getNbNodes()) {
                 totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
                 nbrelevantPages++;
-                if (nbrelevantPages % 100 == 0) {
+                if (nbrelevantPages % 1000 == 0) {
                     System.out.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = " 
                             + (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbpages 
                             + " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbpages + ")" );
                     System.out.println("      NbNodes = " + s.getNbNodes());
                     relevantTimeOfLastThousands = System.currentTimeMillis();
                 }
-                if (nbrelevantPages == 1000) break;
+                if (nbrelevantPages == 10000) break;
             }
         }
 //        fwe.extractData("dictionnaire", s);
@@ -300,6 +388,11 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         //for (SemanticNetwork<String,String>.Edge e : s.getEdges("dictionnaire")) {
         //    System.out.println(e.getRelation() + " --> " + e.getDestination());
         //}
+    }
+
+    @Override
+    public boolean affixesShouldBeDiscardedFromLinks(String string) {
+        return true;
     }
     
 }

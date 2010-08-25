@@ -12,6 +12,7 @@ public abstract class WiktionaryExtractor {
     protected final static String linkPatternString;
     protected final static String macroOrLinkPatternString;
     protected final static String definitionPatternString = "^#{1,2}([^\\*#:].*)$";
+    protected final static String bulletListPatternString = "\\*\\s*(.*)";
 
     protected static  String langPrefix = "";
     static {
@@ -39,14 +40,19 @@ public abstract class WiktionaryExtractor {
     protected final static Pattern macroPattern;
     protected final static Pattern macroOrLinkPattern;
     protected final static Pattern definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
+    protected final static Pattern bulletListPattern;
 
     static {
         macroPattern = Pattern.compile(macroPatternString);
         macroOrLinkPattern = Pattern.compile(macroOrLinkPatternString);
+        bulletListPattern = Pattern.compile(bulletListPatternString);
     }
 
     protected final static String POS_RELATION = "pos";
     protected final static String DEF_RELATION = "def";
+    protected final static String ALT_RELATION = "alt";
+    protected final static String SYN_RELATION = "syn";
+    protected final static String ANT_RELATION = "ant";
     protected final static String TRANSLATION_RELATION = "trad";
     protected final static String POS_PREFIX = "#" + POS_RELATION + "|";
     protected final static String DEF_PREFIX = "#" + DEF_RELATION + "|";
@@ -92,7 +98,7 @@ public abstract class WiktionaryExtractor {
                 def = DEF_PREFIX + def;
                 this.semnet.addRelation(this.wiktionaryPageName, def, 1, DEF_RELATION);
                 if (currentPos != null && ! currentPos.equals("")) {
-                    this.semnet.addRelation(def, currentPos, 1, POS_RELATION);
+                    this.semnet.addRelation(def, POS_PREFIX + currentPos, 1, POS_RELATION);
                 }
             }
         }      
@@ -110,7 +116,6 @@ public abstract class WiktionaryExtractor {
     // DONE: handle ''...'' and '''...'''.
     // DONE: suppress affixes that follow links, like: e in [[français]]e.
     public String cleanUpMarkup(String str, boolean humanReadable) {
-        String original = str;
         Matcher m = macroOrLinkPattern.matcher(str);
         StringBuffer sb = new StringBuffer(str.length());
         String leftGroup, rightGroup;
@@ -172,6 +177,18 @@ public abstract class WiktionaryExtractor {
         return sb.toString();
     }
 
+    protected void extractOrthoAlt(int startOffset, int endOffset) {
+        Matcher bulletListMatcher = WiktionaryExtractor.bulletListPattern.matcher(this.pageContent);
+        bulletListMatcher.region(startOffset, endOffset);
+        while (bulletListMatcher.find()) {
+            String alt = cleanUpMarkup(bulletListMatcher.group(1), true);
+            if (alt != null && ! alt.equals("")) {
+                alt = langPrefix + alt;
+                this.semnet.addRelation(this.wiktionaryPageName, alt, 1, ALT_RELATION);
+            }
+        }      
+     }
+     
     public abstract boolean affixesShouldBeDiscardedFromLinks(String string) ;
 
 }

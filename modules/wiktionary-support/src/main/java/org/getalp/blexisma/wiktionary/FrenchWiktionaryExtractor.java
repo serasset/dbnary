@@ -229,8 +229,14 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     void gotoOrthoAltBlock(Matcher m) {
         state = ORTHOALTBLOCK;    
         orthBlockStart = m.end();
+        System.out.println("Alternative spelling for: " + wiktionaryPageName);
     }
-    
+
+    void leaveOrthoAltBlock(Matcher m) {
+        extractOrthoAlt(orthBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        orthBlockStart = -1;
+    }
+
     void leaveDefBlock(Matcher m) {
         extractDefinitions(definitionBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
         currentPos = null;
@@ -243,7 +249,10 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         gotoNoData(m);
         // TODO: (priority: low) should I use a macroOrLink pattern to detect translations that are not macro based ?
         // DONE: (priority: top) link the definition node with the current Part of Speech
-        // TODO: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
+        // DONE: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
+        // DONE: handle alternative spelling
+        // TODO: extract synonyms
+        // TODO: extract antonyms
         int nbtrad = 0;
         String currentGlose = null;
         while (m.find()) {
@@ -331,14 +340,17 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                 }
                 break;
             case ORTHOALTBLOCK:
-                // TODO: Handle spelling variants
                 if (m.group(1).equals("-trad-")) {
+                    leaveOrthoAltBlock(m);
                     gotoTradBlock(m);
                 } else if (posMarkers.contains(m.group(1))) {
+                    leaveOrthoAltBlock(m);
                     gotoDefBlock(m);
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
+                    leaveOrthoAltBlock(m);
                     gotoNoData(m);
                 } else if (sectionMarkers.contains(m.group(1))) {
+                    leaveOrthoAltBlock(m);
                     gotoNoData(m);
                 }
                 break;

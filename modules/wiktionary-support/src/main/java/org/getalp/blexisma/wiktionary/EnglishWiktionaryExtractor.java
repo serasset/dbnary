@@ -17,13 +17,11 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
 
     // protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
     protected final static String sectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
-    //protected final static String subSectionPatternString = "===\\s*([^=]*)\\s*===";
-    //protected final static String subsubSectionPatternString = "====\\s*([^=]*)\\s*====";
-
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
     private final int DEFBLOCK = 2;
     private final int ORTHOALTBLOCK = 3;
+    private final int SYNONYMBLOCK = 4;
         
     static {
         langPrefix = "#" + ISO639_1.sharedInstance.getBib3Code("eng") + "|";    
@@ -35,7 +33,6 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
 
     // protected final static Pattern languageSectionPattern;
     protected final static Pattern sectionPattern;
-    
     protected final static HashSet<String> posMarkers;
 
     static {
@@ -141,6 +138,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     int definitionBlockStart = -1;
     int orthBlockStart = -1;
     int translationBlockStart = -1;
+    private int nymBlockStart = -1;
     
     /* (non-Javadoc)
      * @see org.getalp.blexisma.wiktionary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
@@ -207,14 +205,28 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         orthBlockStart = -1;
     }
 
+
+    private void gotoSynBlock(Matcher m) {
+        state = SYNONYMBLOCK;    
+        nymBlockStart = m.end();      
+     }
+
+    private void leaveSynBlock(Matcher m) {
+        extractNyms(SYN_RELATION, nymBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        nymBlockStart = -1;         
+     }
+
+
     private void extractEnglishData(int startOffset, int endOffset) {        
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         gotoNoData(m);
         // TODO: should I use a macroOrLink pattern to detect translations that are not macro based ?
         // DONE: (priority: top) link the definition node with the current Part of Speech
-        // TODO: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
-        // TODO: add alternative spelling
+        // DONE: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
+        // DONE: handle alternative spelling
+        // TODO: extract synonyms
+        // TODO: extract antonyms
         while (m.find()) {
             switch (state) {
             case NODATA:
@@ -224,7 +236,10 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                     gotoDefBlock(m);
                 } else if (m.group(1).equals("Alternative spellings")) {
                     gotoOrthoAltBlock(m);
+                } else if (m.group(1).equals("Synonyms")) {
+                    gotoSynBlock(m);
                 } 
+                
                 break;
             case DEFBLOCK:
                 // Iterate until we find a new section
@@ -237,6 +252,9 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (m.group(1).equals("Alternative spellings")) {
                     leaveDefBlock(m);
                     gotoOrthoAltBlock(m);
+                } else if (m.group(1).equals("Synonyms")) {
+                    leaveDefBlock(m);
+                    gotoSynBlock(m);
                 } else {
                     leaveDefBlock(m);
                     gotoNoData(m);
@@ -252,13 +270,15 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (m.group(1).equals("Alternative spellings")) {
                     leaveTradBlock(m);
                     gotoOrthoAltBlock(m);
+                } else if (m.group(1).equals("Synonyms")) {
+                    leaveTradBlock(m);
+                    gotoSynBlock(m);
                 } else {
                     leaveTradBlock(m);
                     gotoNoData(m);
                 }
                 break;
             case ORTHOALTBLOCK:
-                // TODO: Handle spelling variants
                 if (m.group(1).equals("Translations")) {
                     leaveOrthoAltBlock(m);
                     gotoTradBlock(m);
@@ -268,11 +288,31 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (m.group(1).equals("Alternative spellings")) {
                     leaveOrthoAltBlock(m);
                     gotoOrthoAltBlock(m);
+                } else if (m.group(1).equals("Synonyms")) {
+                    leaveOrthoAltBlock(m);
+                    gotoSynBlock(m);
                 } else {
                     leaveOrthoAltBlock(m);
                     gotoNoData(m);
                 }
                 break;
+            case SYNONYMBLOCK:
+                if (m.group(1).equals("Translations")) {
+                    leaveSynBlock(m);
+                    gotoTradBlock(m);
+                } else if (posMarkers.contains(m.group(1))) {
+                    leaveSynBlock(m);
+                    gotoDefBlock(m);
+                } else if (m.group(1).equals("Alternative spellings")) {
+                    leaveSynBlock(m);
+                    gotoOrthoAltBlock(m);
+                } else if (m.group(1).equals("Synonyms")) {
+                    leaveSynBlock(m);
+                    gotoSynBlock(m);
+                } else {
+                    leaveSynBlock(m);
+                    gotoNoData(m);
+                }
             default:
                 assert false : "Unexpected state while extracting translations from dictionary.";
             } 
@@ -296,11 +336,8 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         // System.out.println(""+ nbtrad + " Translations extracted");
     }
     
-   private void extractOrthoAlt(int startOffset, int endOffset) {
-        // TODO: implement alternate spelling extraction.     
-    }
-    
-   private void extractTranslations(int startOffset, int endOffset) {
+
+private void extractTranslations(int startOffset, int endOffset) {
        Matcher macroMatcher = macroPattern.matcher(pageContent);
        macroMatcher.region(startOffset, endOffset);
        String currentGlose = null;
@@ -346,6 +383,11 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
        }
    }
     
+private void extractNyms(String synRelation, int startOffset, int endOffset) {
+    System.out.println(wiktionaryPageName + " contains: " + pageContent.substring(startOffset, endOffset));
+    
+}
+
     public static void main(String args[]) throws Exception {
         long startTime = System.currentTimeMillis();
         WiktionaryIndex wi = new WiktionaryIndex(args[0]);

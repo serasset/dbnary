@@ -5,6 +5,7 @@ package org.getalp.blexisma.wiktionary;
 
 import java.io.PrintStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -22,11 +23,14 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     private final int TRADBLOCK = 1;
     private final int DEFBLOCK = 2;
     private final int ORTHOALTBLOCK = 3;
-    
+    private final int NYMBLOCK = 4;
+
     private static HashSet<String> posMarkers;
     private static HashSet<String> ignorablePosMarkers;
     private static HashSet<String> sectionMarkers;
-    private static HashSet<String> ontologyMarkers;
+    private static HashSet<String> nymMarkers;
+    
+    private final static HashMap<String, String> nymMarkerToNymName;
     
     private static HashSet<String> unsupportedMarkers = new HashSet<String>();
     
@@ -147,26 +151,48 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         posMarkers.add("-subst-pron-pers-");
         ignorablePosMarkers.add("-suf-");
         ignorablePosMarkers.add("-flex-suf-");
+        ignorablePosMarkers.add("-symb-");
         posMarkers.add("type");
         posMarkers.add("-var-typo-");
         posMarkers.add("-verb-");
         posMarkers.add("-verb-pr-");
         
-        ontologyMarkers = new HashSet<String>();
-        ontologyMarkers.add("-mero-"); // ??
-        ontologyMarkers.add("-hyper-");
-        ontologyMarkers.add("-hypo-");
-        ontologyMarkers.add("-méton-");
+        nymMarkers = new HashSet<String>(20);
+        nymMarkers.add("-méro-"); // ??
+        nymMarkers.add("-hyper-");
+        nymMarkers.add("-hypo-");
+        nymMarkers.add("-holo-");
+        nymMarkers.add("-méton-");
+        nymMarkers.add("-syn-");
+        nymMarkers.add("-ant-");
+        
+        nymMarkerToNymName = new HashMap<String, String>(20);
+        nymMarkerToNymName.put("-méro-", "mero");
+        nymMarkerToNymName.put("-hyper-", "hyper");
+        nymMarkerToNymName.put("-hypo-", "hypo");
+        nymMarkerToNymName.put("-holo-", "holo");
+        nymMarkerToNymName.put("-méton-", "meto");
+        nymMarkerToNymName.put("-syn-", "syn");
+        nymMarkerToNymName.put("-ant-", "ant");
         
         sectionMarkers = new HashSet<String>(200);
         sectionMarkers.addAll(posMarkers);
-        sectionMarkers.addAll(ontologyMarkers);
+        sectionMarkers.addAll(nymMarkers);
         sectionMarkers.add("-étym-");
-        sectionMarkers.add("-syn-");
-        sectionMarkers.add("-ant-");
         sectionMarkers.add("-voc-");
         sectionMarkers.add("-trad-");
-        // TODO trouver tous les modèles de section...
+        sectionMarkers.add("-note-");
+        sectionMarkers.add("-réf-");
+        sectionMarkers.add("clé de tri");
+        sectionMarkers.add("-anagr-");
+        sectionMarkers.add("-drv-");
+        sectionMarkers.add("-voir-");
+        sectionMarkers.add("-pron-");
+        sectionMarkers.add("-gent-");
+        sectionMarkers.add("-apr-");
+        sectionMarkers.add("-paro-");
+        sectionMarkers.add("-homo-");
+       // TODO trouver tous les modèles de section...
         
         
         affixesToDiscardFromLinks = new HashSet<String>();
@@ -186,7 +212,10 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     int state = NODATA;
     int definitionBlockStart = -1;
     int orthBlockStart = -1;
-    
+    private int nymBlockStart = -1;
+
+    private String currentNym = null;
+
     /* (non-Javadoc)
      * @see org.getalp.blexisma.wiktionary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
      */
@@ -229,7 +258,6 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     void gotoOrthoAltBlock(Matcher m) {
         state = ORTHOALTBLOCK;    
         orthBlockStart = m.end();
-        System.out.println("Alternative spelling for: " + wiktionaryPageName);
     }
 
     void leaveOrthoAltBlock(Matcher m) {
@@ -243,6 +271,18 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         definitionBlockStart = -1;
     }
     
+    private void gotoSynBlock(Matcher m) {
+        state = NYMBLOCK;
+        currentNym = nymMarkerToNymName.get(m.group(1));
+        nymBlockStart = m.end();      
+     }
+
+    private void leaveSynBlock(Matcher m) {
+        extractNyms(currentNym, nymBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        currentNym = null;
+        nymBlockStart = -1;         
+     }
+
     private void extractFrenchData(int startOffset, int endOffset) {        
         Matcher m = macroPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
@@ -265,9 +305,12 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     gotoDefBlock(m);
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
                     // TODO: maybe also ignore trads and co...
-                } else if (m.group(1).equals("-ortho-alt-")) {
+                } else if (nymMarkers.contains(m.group(1))) {
                     gotoOrthoAltBlock(m);
+                } else if (m.group(1).equals("-syn-")) {
+                    gotoSynBlock(m);
                 } 
+
                 break;
             case DEFBLOCK:
                 // Iterate until we find a new section
@@ -283,6 +326,9 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (m.group(1).equals("-ortho-alt-")) {
                     leaveDefBlock(m);
                     gotoOrthoAltBlock(m);
+                } else if (nymMarkers.contains(m.group(1))) {
+                    leaveDefBlock(m);
+                    gotoSynBlock(m);
                 } else if (sectionMarkers.contains(m.group(1))) {
                     leaveDefBlock(m);
                     gotoNoData(m);
@@ -335,6 +381,8 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     gotoNoData(m);
                 } else if (m.group(1).equals("-ortho-alt-")) {
                     gotoOrthoAltBlock(m);
+                } else if (nymMarkers.contains(m.group(1))) {
+                    gotoSynBlock(m);
                 } else if (sectionMarkers.contains(m.group(1))) {
                     gotoNoData(m);
                 }
@@ -349,11 +397,33 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
                     leaveOrthoAltBlock(m);
                     gotoNoData(m);
+                } else if (nymMarkers.contains(m.group(1))) {
+                    leaveOrthoAltBlock(m);
+                    gotoSynBlock(m);
                 } else if (sectionMarkers.contains(m.group(1))) {
                     leaveOrthoAltBlock(m);
                     gotoNoData(m);
                 }
                 break;
+            case NYMBLOCK:
+                if (m.group(1).equals("-trad-")) {
+                    leaveSynBlock(m);
+                    gotoTradBlock(m);
+                } else if (posMarkers.contains(m.group(1))) {
+                    leaveSynBlock(m);
+                    gotoDefBlock(m);
+                } else if (ignorablePosMarkers.contains(m.group(1))) {
+                    leaveSynBlock(m);
+                    gotoNoData(m);
+                } else if (nymMarkers.contains(m.group(1))) {
+                    leaveSynBlock(m);
+                    gotoSynBlock(m);
+                } else if (sectionMarkers.contains(m.group(1))) {
+                    leaveSynBlock(m);
+                    gotoNoData(m);
+                }
+                break;
+                
             default:
                 assert false : "Unexpected state while extracting translations from dictionary.";
             } 
@@ -368,12 +438,17 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         case TRADBLOCK:
             break;
         case ORTHOALTBLOCK:
+            leaveOrthoAltBlock(m);
             break;
+        case NYMBLOCK:
+            leaveSynBlock(m);
+           break;
         default:
             assert false : "Unexpected state while extracting translations from dictionary.";
         } 
         // System.out.println(""+ nbtrad + " Translations extracted");
     }
+
 
     @Override
     public boolean affixesShouldBeDiscardedFromLinks(String affix) {
@@ -417,7 +492,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         
         System.out.println(unsupportedMarkers);
         
-        s.dumpToWriter(new PrintStream(args[1] + new Date()));
+        // s.dumpToWriter(new PrintStream(args[1] + new Date()));
         System.out.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
         System.out.println("Semnet contains: " + s.getNbNodes() + " nodes and " + s.getNbEdges() + " edges.");
         //for (SemanticNetwork<String,String>.Edge e : s.getEdges("dictionnaire")) {

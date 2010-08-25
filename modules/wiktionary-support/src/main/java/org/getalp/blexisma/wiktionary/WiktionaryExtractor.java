@@ -38,13 +38,16 @@ public abstract class WiktionaryExtractor {
     }
     
     protected final static Pattern macroPattern;
+    protected final static Pattern linkPattern;
     protected final static Pattern macroOrLinkPattern;
-    protected final static Pattern definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
+    protected final static Pattern definitionPattern;
     protected final static Pattern bulletListPattern;
 
     static {
         macroPattern = Pattern.compile(macroPatternString);
+        linkPattern = Pattern.compile(linkPatternString);
         macroOrLinkPattern = Pattern.compile(macroOrLinkPatternString);
+        definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
         bulletListPattern = Pattern.compile(bulletListPatternString);
     }
 
@@ -188,7 +191,22 @@ public abstract class WiktionaryExtractor {
             }
         }      
      }
-     
+ 
+    protected void extractNyms(String synRelation, int startOffset, int endOffset) {
+        // System.out.println(wiktionaryPageName + " contains: " + pageContent.substring(startOffset, endOffset));
+        // Extract all links
+        Matcher linkMatcher = WiktionaryExtractor.linkPattern.matcher(this.pageContent);
+        linkMatcher.region(startOffset, endOffset);
+        while (linkMatcher.find()) {
+            // It's a link, only keep the alternate string if present.
+            String leftGroup = linkMatcher.group(1) ;
+            if (leftGroup != null && ! leftGroup.equals("") && ! leftGroup.startsWith("Wikisaurus:")) {
+                leftGroup = langPrefix + leftGroup;
+                this.semnet.addRelation(this.wiktionaryPageName, leftGroup, 1, synRelation);
+            }
+        }      
+    }
+    
     public abstract boolean affixesShouldBeDiscardedFromLinks(String string) ;
 
 }

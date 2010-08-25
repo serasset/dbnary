@@ -5,6 +5,7 @@ package org.getalp.blexisma.wiktionary;
 
 import java.io.PrintStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,13 +16,13 @@ import java.util.regex.Pattern;
  */
 public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
 
-    // protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
+    //TODO: Handle Wikisaurus entries.
     protected final static String sectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
     private final int DEFBLOCK = 2;
     private final int ORTHOALTBLOCK = 3;
-    private final int SYNONYMBLOCK = 4;
+    private final int NYMBLOCK = 4;
         
     static {
         langPrefix = "#" + ISO639_1.sharedInstance.getBib3Code("eng") + "|";    
@@ -34,103 +35,34 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     // protected final static Pattern languageSectionPattern;
     protected final static Pattern sectionPattern;
     protected final static HashSet<String> posMarkers;
+    protected final static HashSet<String> nymMarkers;
+    protected final static HashMap<String, String> nymMarkerToNymName;
 
     static {
         // languageSectionPattern = Pattern.compile(languageSectionPatternString);
        
         sectionPattern = Pattern.compile(sectionPatternString);
         
-        posMarkers = new HashSet<String>(130);
+        posMarkers = new HashSet<String>(20);
         posMarkers.add("Noun");
         posMarkers.add("Adjective");
         posMarkers.add("Adverb");
         posMarkers.add("Verb");
+        posMarkers.add("Proper noun");
         
-/*        affixesToDiscardFromLinks = new HashSet<String>();
-        affixesToDiscardFromLinks.add("s");
-        affixesToDiscardFromLinks.add("n");
-        affixesToDiscardFromLinks.add("en");
-        affixesToDiscardFromLinks.add("ne");
-        affixesToDiscardFromLinks.add("es");
-        affixesToDiscardFromLinks.add("e");
-        affixesToDiscardFromLinks.add("d");
-        affixesToDiscardFromLinks.add("ed");
-        affixesToDiscardFromLinks.add("ted");
-        affixesToDiscardFromLinks.add("red");
-        affixesToDiscardFromLinks.add("led");
-        affixesToDiscardFromLinks.add("ped");
-        affixesToDiscardFromLinks.add("med");
-        affixesToDiscardFromLinks.add("ned");
-        affixesToDiscardFromLinks.add("ged");
-        affixesToDiscardFromLinks.add("ded");
+        nymMarkers = new HashSet<String>(20);
+        nymMarkers.add("Synonyms");
+        nymMarkers.add("Antonyms");
+        nymMarkers.add("Hyponyms");
+        nymMarkers.add("Hypernyms");
+        nymMarkers.add("Meronyms");
         
-        affixesToDiscardFromLinks.add("ized");
-
-        affixesToDiscardFromLinks.add("ten");
-        affixesToDiscardFromLinks.add("ren");
-        affixesToDiscardFromLinks.add("len");
-        affixesToDiscardFromLinks.add("pen");
-        affixesToDiscardFromLinks.add("men");
-        affixesToDiscardFromLinks.add("nen");
-        affixesToDiscardFromLinks.add("gen");
-        affixesToDiscardFromLinks.add("den");
-
-        affixesToDiscardFromLinks.add("ish");
-        affixesToDiscardFromLinks.add("ishly");
-
-        affixesToDiscardFromLinks.add("ic");
-        affixesToDiscardFromLinks.add("im");
-        affixesToDiscardFromLinks.add("tic");
-        affixesToDiscardFromLinks.add("ing");
-        affixesToDiscardFromLinks.add("ings");
-        affixesToDiscardFromLinks.add("ting");
-        affixesToDiscardFromLinks.add("ling");
-        affixesToDiscardFromLinks.add("ping");
-        affixesToDiscardFromLinks.add("ming");
-        affixesToDiscardFromLinks.add("ning");
-        affixesToDiscardFromLinks.add("ding");
-        affixesToDiscardFromLinks.add("ging");
-        affixesToDiscardFromLinks.add("ring");
-        affixesToDiscardFromLinks.add("bing");
-        
-        affixesToDiscardFromLinks.add("r");
-        affixesToDiscardFromLinks.add("t");
-        affixesToDiscardFromLinks.add("er");
-        affixesToDiscardFromLinks.add("est");
-        affixesToDiscardFromLinks.add("or");
-        affixesToDiscardFromLinks.add("edness");
-        affixesToDiscardFromLinks.add("mer");
-        affixesToDiscardFromLinks.add("ness");
-        affixesToDiscardFromLinks.add("ess");
-        affixesToDiscardFromLinks.add("iness");
-        
-        affixesToDiscardFromLinks.add("able");
-        affixesToDiscardFromLinks.add("an");
-        affixesToDiscardFromLinks.add("y");
-        affixesToDiscardFromLinks.add("ly");
-        affixesToDiscardFromLinks.add("ally");
-        affixesToDiscardFromLinks.add("edly");
-        affixesToDiscardFromLinks.add("l");
-        
-        affixesToDiscardFromLinks.add("ity");
-        affixesToDiscardFromLinks.add("ty");
-
-        affixesToDiscardFromLinks.add("ion");
-
-        affixesToDiscardFromLinks.add("ment");
-        affixesToDiscardFromLinks.add("lame");
-        affixesToDiscardFromLinks.add("dish");
-        affixesToDiscardFromLinks.add("like");
-        affixesToDiscardFromLinks.add("al");
-        affixesToDiscardFromLinks.add("ial");
-        affixesToDiscardFromLinks.add("ian");
-        affixesToDiscardFromLinks.add("ous");
-        affixesToDiscardFromLinks.add("ously");
-        affixesToDiscardFromLinks.add("ward");
-        affixesToDiscardFromLinks.add("wards");
-        affixesToDiscardFromLinks.add("ation");
-        affixesToDiscardFromLinks.add("lation");
-        */
+        nymMarkerToNymName = new HashMap<String,String>(20);
+        nymMarkerToNymName.put("Synonyms", "syn");
+        nymMarkerToNymName.put("Antonyms", "ant");
+        nymMarkerToNymName.put("Hyponyms", "hypo");
+        nymMarkerToNymName.put("Hypernyms", "hyper");
+        nymMarkerToNymName.put("Meronyms", "mero");
 
     }
 
@@ -139,6 +71,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     int orthBlockStart = -1;
     int translationBlockStart = -1;
     private int nymBlockStart = -1;
+    private String currentNym = null;
     
     /* (non-Javadoc)
      * @see org.getalp.blexisma.wiktionary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
@@ -167,8 +100,17 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         extractEnglishData(englishSectionStartOffset, englishSectionEndOffset);
      }
 
+    private HashSet<String> unsupportedSections = new HashSet<String>(100);
     void gotoNoData(Matcher m) {
         state = NODATA;
+        try {
+            if (! unsupportedSections.contains(m.group(1))) {
+                unsupportedSections.add(m.group(1));
+                System.out.println(m.group(1));
+            }
+        } catch (IllegalStateException e) {
+            // nop
+        }
     }
 
     
@@ -206,13 +148,15 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     }
 
 
-    private void gotoSynBlock(Matcher m) {
-        state = SYNONYMBLOCK;    
+    private void gotoNymBlock(Matcher m) {
+        state = NYMBLOCK; 
+        currentNym = nymMarkerToNymName.get(m.group(1));
         nymBlockStart = m.end();      
      }
 
-    private void leaveSynBlock(Matcher m) {
-        extractNyms(SYN_RELATION, nymBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+    private void leaveNymBlock(Matcher m) {
+        extractNyms(currentNym, nymBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        currentNym = null;
         nymBlockStart = -1;         
      }
 
@@ -236,8 +180,8 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                     gotoDefBlock(m);
                 } else if (m.group(1).equals("Alternative spellings")) {
                     gotoOrthoAltBlock(m);
-                } else if (m.group(1).equals("Synonyms")) {
-                    gotoSynBlock(m);
+                } else if (nymMarkers.contains(m.group(1))) {
+                    gotoNymBlock(m);
                 } 
                 
                 break;
@@ -252,9 +196,9 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (m.group(1).equals("Alternative spellings")) {
                     leaveDefBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (m.group(1).equals("Synonyms")) {
+                } else if (nymMarkers.contains(m.group(1))) {
                     leaveDefBlock(m);
-                    gotoSynBlock(m);
+                    gotoNymBlock(m);
                 } else {
                     leaveDefBlock(m);
                     gotoNoData(m);
@@ -270,9 +214,9 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (m.group(1).equals("Alternative spellings")) {
                     leaveTradBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (m.group(1).equals("Synonyms")) {
+                } else if (nymMarkers.contains(m.group(1))) {
                     leaveTradBlock(m);
-                    gotoSynBlock(m);
+                    gotoNymBlock(m);
                 } else {
                     leaveTradBlock(m);
                     gotoNoData(m);
@@ -288,29 +232,29 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (m.group(1).equals("Alternative spellings")) {
                     leaveOrthoAltBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (m.group(1).equals("Synonyms")) {
+                } else if (nymMarkers.contains(m.group(1))) {
                     leaveOrthoAltBlock(m);
-                    gotoSynBlock(m);
+                    gotoNymBlock(m);
                 } else {
                     leaveOrthoAltBlock(m);
                     gotoNoData(m);
                 }
                 break;
-            case SYNONYMBLOCK:
+            case NYMBLOCK:
                 if (m.group(1).equals("Translations")) {
-                    leaveSynBlock(m);
+                    leaveNymBlock(m);
                     gotoTradBlock(m);
                 } else if (posMarkers.contains(m.group(1))) {
-                    leaveSynBlock(m);
+                    leaveNymBlock(m);
                     gotoDefBlock(m);
                 } else if (m.group(1).equals("Alternative spellings")) {
-                    leaveSynBlock(m);
+                    leaveNymBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (m.group(1).equals("Synonyms")) {
-                    leaveSynBlock(m);
-                    gotoSynBlock(m);
+                } else if (nymMarkers.contains(m.group(1))) {
+                    leaveNymBlock(m);
+                    gotoNymBlock(m);
                 } else {
-                    leaveSynBlock(m);
+                    leaveNymBlock(m);
                     gotoNoData(m);
                 }
             default:
@@ -329,6 +273,9 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
             break;
         case ORTHOALTBLOCK:
             leaveOrthoAltBlock(m);
+            break;
+        case NYMBLOCK:
+            leaveNymBlock(m);
             break;
         default:
             assert false : "Unexpected state while extracting translations from dictionary.";
@@ -383,10 +330,6 @@ private void extractTranslations(int startOffset, int endOffset) {
        }
    }
     
-private void extractNyms(String synRelation, int startOffset, int endOffset) {
-    System.out.println(wiktionaryPageName + " contains: " + pageContent.substring(startOffset, endOffset));
-    
-}
 
     public static void main(String args[]) throws Exception {
         long startTime = System.currentTimeMillis();

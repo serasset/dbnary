@@ -77,6 +77,7 @@ public abstract class WiktionaryExtractor {
         return wiktionaryIndex;
     }
     
+    // TODO: filter out pages that are in specific Namespaces (Wiktionary:, Categories:, ...)
     public void extractData(String wiktionaryPageName, SemanticNetwork<String, String> semnet) {
         this.wiktionaryPageName = langPrefix + wiktionaryPageName;
         this.semnet = semnet;
@@ -108,7 +109,6 @@ public abstract class WiktionaryExtractor {
     }
     
     public String cleanUpMarkup(String group) {
-        // TODO Auto-generated method stub
         return cleanUpMarkup(group, false);
     }
 
@@ -147,11 +147,8 @@ public abstract class WiktionaryExtractor {
                         affix.append(str.charAt(i));
                         i++;
                     }
-                    // TODO Do I have to keep a test here for German ?
-                    if (affixesShouldBeDiscardedFromLinks(affix.toString())) {
-                        str = str.substring(i);
-                        m.reset(str); 
-                    }
+                    str = str.substring(i);
+                    m.reset(str); 
                 }
             } else {
                 m.appendReplacement(sb, "");
@@ -207,6 +204,5 @@ public abstract class WiktionaryExtractor {
         }      
     }
     
-    public abstract boolean affixesShouldBeDiscardedFromLinks(String string) ;
 
 }

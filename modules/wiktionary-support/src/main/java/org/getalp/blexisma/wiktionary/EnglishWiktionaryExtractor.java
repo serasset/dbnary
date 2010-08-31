@@ -25,7 +25,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     private final int NYMBLOCK = 4;
         
     static {
-        langPrefix = "#" + ISO639_1.sharedInstance.getBib3Code("eng") + "|";    
+        langPrefix = "#" + ISO639_3.sharedInstance.getIdCode("eng") + "|";    
     }
     
     public EnglishWiktionaryExtractor(WiktionaryIndex wi) {
@@ -100,17 +100,17 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         extractEnglishData(englishSectionStartOffset, englishSectionEndOffset);
      }
 
-    private HashSet<String> unsupportedSections = new HashSet<String>(100);
+//    private HashSet<String> unsupportedSections = new HashSet<String>(100);
     void gotoNoData(Matcher m) {
         state = NODATA;
-        try {
-            if (! unsupportedSections.contains(m.group(1))) {
-                unsupportedSections.add(m.group(1));
-                System.out.println(m.group(1));
-            }
-        } catch (IllegalStateException e) {
-            // nop
-        }
+//        try {
+//            if (! unsupportedSections.contains(m.group(1))) {
+//                unsupportedSections.add(m.group(1));
+//                System.out.println(m.group(1));
+//            }
+//        } catch (IllegalStateException e) {
+//            // nop
+//        }
     }
 
     
@@ -165,12 +165,12 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         gotoNoData(m);
-        // TODO: should I use a macroOrLink pattern to detect translations that are not macro based ?
+        // WONTDO: should I use a macroOrLink pattern to detect translations that are not macro based ?
         // DONE: (priority: top) link the definition node with the current Part of Speech
         // DONE: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
         // DONE: handle alternative spelling
-        // TODO: extract synonyms
-        // TODO: extract antonyms
+        // DONE: extract synonyms
+        // DONE: extract antonyms
         while (m.find()) {
             switch (state) {
             case NODATA:
@@ -293,7 +293,7 @@ private void extractTranslations(int startOffset, int endOffset) {
            String g1 = macroMatcher.group(1);
 
            if (g1.equals("t+") || g1.equals("t-") || g1.equals("tø")) {
-               // TODO: Sometimes translation links have a remaining info after the word
+               // DONE: Sometimes translation links have a remaining info after the word, keep it.
                String g2 = macroMatcher.group(2);
                int i1, i2;
                String lang, word;
@@ -301,17 +301,20 @@ private void extractTranslations(int startOffset, int endOffset) {
                    lang = g2.substring(0, i1);
                    // normalize language code
                    String normLangCode;
-                   if ((normLangCode = ISO639_1.sharedInstance.getBib3Code(lang)) != null) {
+                   if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
                        lang = "#" + normLangCode;
                    } else {
                        lang = "#" + lang;
                    }
-                       if ((i2 = g2.indexOf('|', i1+1)) == -1) {
+                   String usage = null;
+                   if ((i2 = g2.indexOf('|', i1+1)) == -1) {
                        word = g2.substring(i1+1);
                    } else {
                        word = g2.substring(i1+1, i2);
+                       usage = g2.substring(i2+1);
                    }
-                   String rel = "trad|" + lang + ((currentGlose == null || currentGlose.equals("")) ? "" : "|" + currentGlose);
+                   String rel = "trad|" + lang + ((currentGlose == null) ? "" : "|" + currentGlose);
+                   rel = rel + ((usage == null) ? "" : "|" + usage);
                    semnet.addRelation(wiktionaryPageName, new String(lang + "|" + word), 1, rel );
                }
            } else if (g1.equals("trans-top")) {
@@ -375,9 +378,6 @@ private void extractTranslations(int startOffset, int endOffset) {
         //}
     }
 
-    @Override
-    public boolean affixesShouldBeDiscardedFromLinks(String string) {
-        return true;
-    }
+
     
 }

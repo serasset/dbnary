@@ -70,7 +70,7 @@ public class WiktionaryIndex implements Map<String, String> {
     public WiktionaryIndex(File file) throws WiktionaryIndexerException {
         dumpFile = file;
         indexFile = indexFile(file);
-        if (this.indexIsUpToDate()) {
+        if (this.isAValidIndexFile()) {
             this.loadIndex();
         } else {
             this.initIndex();
@@ -95,8 +95,8 @@ public class WiktionaryIndex implements Map<String, String> {
         }
     }
 
-    // TODO: check if index content is up to date ?
-    public boolean indexIsUpToDate() {
+    // WONTDO: check if index content is up to date ?
+    public boolean isAValidIndexFile() {
         if (indexFile.canRead()) {
             RandomAccessFile in = null;
             try {

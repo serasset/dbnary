@@ -37,7 +37,6 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
 
         @Override
         public R getRelation() {
-            // TODO Auto-generated method stub
             return this.label;
         }
     }

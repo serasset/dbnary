@@ -37,7 +37,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     private static Set<String> affixesToDiscardFromLinks = null;
     
     static {
-        langPrefix = "#" + ISO639_1.sharedInstance.getBib3Code("fra") + "|";
+        langPrefix = "#" + ISO639_3.sharedInstance.getIdCode("fra") + "|";
            
         posMarkers = new HashSet<String>(130);
         ignorablePosMarkers = new HashSet<String>(130);
@@ -287,12 +287,12 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         Matcher m = macroPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         gotoNoData(m);
-        // TODO: (priority: low) should I use a macroOrLink pattern to detect translations that are not macro based ?
+        // WONTDO: (priority: low) should I use a macroOrLink pattern to detect translations that are not macro based ?
         // DONE: (priority: top) link the definition node with the current Part of Speech
         // DONE: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
         // DONE: handle alternative spelling
-        // TODO: extract synonyms
-        // TODO: extract antonyms
+        // DONE: extract synonyms
+        // DONE: extract antonyms
         int nbtrad = 0;
         String currentGlose = null;
         while (m.find()) {
@@ -304,7 +304,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (posMarkers.contains(m.group(1))) {
                     gotoDefBlock(m);
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
-                    // TODO: maybe also ignore trads and co...
+                    // nop
                 } else if (nymMarkers.contains(m.group(1))) {
                     gotoOrthoAltBlock(m);
                 } else if (m.group(1).equals("-syn-")) {
@@ -337,7 +337,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
             case TRADBLOCK:
                 String g1 = m.group(1);
                 if (g1.equals("trad+") || g1.equals("trad-") || g1.equals("trad")) {
-                    // TODO: Sometimes translation links have a remaining info after the word
+                    // DONE: Sometimes translation links have a remaining info after the word, keep it.
                     String g2 = m.group(2);
                     int i1, i2;
                     String lang, word;
@@ -345,17 +345,20 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                         lang = g2.substring(0, i1);
                      // normalize language code
                         String normLangCode;
-                        if ((normLangCode = ISO639_1.sharedInstance.getBib3Code(lang)) != null) {
+                        if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
                             lang = "#" + normLangCode;
                         } else {
                             lang = "#" + lang;
                         }
+                        String usage = null;
                         if ((i2 = g2.indexOf('|', i1+1)) == -1) {
                             word = g2.substring(i1+1);
                         } else {
                             word = g2.substring(i1+1, i2);
+                            usage = g2.substring(i2+1);
                         }
                         String rel = "trad|" + lang + ((currentGlose == null || currentGlose.equals("")) ? "" : "|" + currentGlose);
+                        rel = rel + ((usage == null) ? "" : "|" + usage);
                         semnet.addRelation(wiktionaryPageName, new String(lang + "|" + word), 1, rel ); nbtrad++;
                     }
                 } else if (g1.equals("boîte début")) {
@@ -450,11 +453,6 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     }
 
 
-    @Override
-    public boolean affixesShouldBeDiscardedFromLinks(String affix) {
-        return true;
-    }
-    
     public static void main(String args[]) throws Exception {
         long startTime = System.currentTimeMillis();
         WiktionaryIndex wi = new WiktionaryIndex(args[0]);

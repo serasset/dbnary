@@ -13,7 +13,12 @@ modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/Wiktiona
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexerException.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GetExtractedSemnet.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GetRawEntry.java -text svneol=unset#text/plain
-modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/ISO639-eponym.data -text
+modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/ISO639-eponym.tab -text
+modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/ISO639-fr.tab -text
 modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/ISO639.data -text
+modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/iso-639-3-macrolanguages.tab -text
+modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/iso-639-3.tab -text
+modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/iso-639-3_Name_Index.tab -text
+modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/iso-639-3_Retirements.tab -text
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/ISO639Test.java -text
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text

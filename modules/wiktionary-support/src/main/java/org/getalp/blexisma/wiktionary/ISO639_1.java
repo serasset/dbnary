@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// TODO : use the iso-639-3 file that contains a language id + other fields.
+// DONE: use the iso-639-3 file that contains a language id + other fields.
 public final class ISO639_1 {
     public class Lang {
         String a3b, a3t, a2, fr, en, epo;
@@ -18,7 +18,7 @@ public final class ISO639_1 {
     private final static String linePatternString =
         "^(.*?)\\|(.*?)\\|(.*?)\\|(.*?)\\|(.*?)$";
     private final static String epolinePatternString =
-        "^(.*?)\\|(.*?)$";
+        "^(.*?)\t(.*?)$";
     private final static Pattern linePattern = Pattern.compile(linePatternString);
     private final static Pattern epolinePattern = Pattern.compile(epolinePatternString);
        
@@ -59,21 +59,21 @@ public final class ISO639_1 {
             
             
         } catch (UnsupportedEncodingException e) {
-            
+            // This should really never happen
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            // don't know what I should do here, as the data should be bundled with the code.
             e.printStackTrace();
         } finally {
             if (fis != null)
                 try {
                     fis.close();
                 } catch (IOException e) {
-                    
+                    // nop
                 }
         }
         fis = null;
         try {
-            fis = this.getClass().getResourceAsStream("ISO639-eponym.data");
+            fis = this.getClass().getResourceAsStream("ISO639-eponym.tab");
             BufferedReader br = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
             
             Matcher matcher = epolinePattern.matcher(new String(""));
@@ -97,7 +97,6 @@ public final class ISO639_1 {
         } catch (UnsupportedEncodingException e) {
             
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             if (fis != null)

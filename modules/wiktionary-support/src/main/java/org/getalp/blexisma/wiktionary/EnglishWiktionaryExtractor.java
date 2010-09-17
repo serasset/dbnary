@@ -63,6 +63,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         nymMarkerToNymName.put("Hyponyms", "hypo");
         nymMarkerToNymName.put("Hypernyms", "hyper");
         nymMarkerToNymName.put("Meronyms", "mero");
+        // TODO: metonymie ?
 
     }
 
@@ -91,7 +92,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         }
         int englishSectionStartOffset = languageFilter.end();
         // Advance till end of sequence or new language section
-        while (languageFilter.find() && (languageFilter.start(1) - languageFilter.start()) != 2) {
+        while (languageFilter.find() && languageFilter.group().charAt(2) == '=') {
             ;
         }
         // languageFilter.find();

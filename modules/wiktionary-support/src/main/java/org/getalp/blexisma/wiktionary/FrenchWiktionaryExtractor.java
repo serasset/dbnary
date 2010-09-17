@@ -481,7 +481,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     System.out.println("      NbNodes = " + s.getNbNodes());
                     relevantTimeOfLastThousands = System.currentTimeMillis();
                 }
-                if (nbrelevantPages == 10000) break;
+                // if (nbrelevantPages == 10000) break;
             }
         }
 //        fwe.extractData("dictionnaire", s);
@@ -490,7 +490,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         
         System.out.println(unsupportedMarkers);
         
-        // s.dumpToWriter(new PrintStream(args[1] + new Date()));
+        s.dumpToWriter(new PrintStream(args[1] + new Date()));
         System.out.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
         System.out.println("Semnet contains: " + s.getNbNodes() + " nodes and " + s.getNbEdges() + " edges.");
         //for (SemanticNetwork<String,String>.Edge e : s.getEdges("dictionnaire")) {

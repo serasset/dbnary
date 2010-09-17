@@ -349,7 +349,7 @@ private void extractTranslations(int startOffset, int endOffset) {
         relevantTimeOfLastThousands = System.currentTimeMillis();
         for (String page : wi.keySet()) {
             nbpages ++;
-            if (nbpages < 160000) continue;
+            // if (nbpages < 160000) continue;
             // System.out.println("Extracting: " + page);
             int nbnodes = s.getNbNodes();
             relevantstartTime = System.currentTimeMillis();
@@ -364,7 +364,7 @@ private void extractTranslations(int startOffset, int endOffset) {
                     System.out.println("      NbNodes = " + s.getNbNodes());
                     relevantTimeOfLastThousands = System.currentTimeMillis();
                 }
-                if (nbrelevantPages == 10000) break;
+                // if (nbrelevantPages == 10000) break;
             }
         }
 //        fwe.extractData("dictionnaire", s);

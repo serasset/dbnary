@@ -1,0 +1,23 @@
+ ------
+ Introduction
+ ------
+ Gilles Sérasset
+ ------
+ September 2010
+ ------
+
+
+Wiktionary Support
+
+  Wiktionary wupport allows you to extract a lexical network from a wiktionary dump file.
+
+* Provided command lines
+
+  The wiktionary support module provides several command lines.
+
+  * <<<GetRawEntry>>> dumps the wiki syntax of the requeste entry in the standard output.
+    This is useful to view the original entry used to extract the lexical data, especially when the dump file weights more than 2 GB. 
+
+  * <<<GetExtractedSemnet>>> extract the lexical network from one or several entries given as command line arguments.
+  
+  []

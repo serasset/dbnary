@@ -6,10 +6,24 @@
 		<groupId>org.getalp.blexisma</groupId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
+	
 	<groupId>org.getalp.blexisma</groupId>
 	<artifactId>wiktionary-support</artifactId>
 	<version>1.0-SNAPSHOT</version>
-	<name>Support for wiktionary database dumps</name>
+	<packaging>jar</packaging>
+	
+	<name>Wiktionary Support</name>
+	<description>
+    The Wiktionary support module provides tools to extract lexical networks from wiktionary sumps in English, French and German.
+  </description>
+  <inceptionYear>2010</inceptionYear>
+
+  <contributors>
+    <contributor>
+      <name>Gilles Sérasset</name>
+    </contributor>
+  </contributors>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.codehaus.woodstox</groupId>

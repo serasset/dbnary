@@ -124,7 +124,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         state = DEFBLOCK;
         definitionBlockStart = m.end();
         currentPos = m.group(1);
-        semnet.addRelation(wiktionaryPageName, POS_PREFIX + currentPos, 1, POS_RELATION); 
+        semnet.addRelation(wiktionaryPageNameWithLangPrefix, POS_PREFIX + currentPos, 1, POS_RELATION); 
     }
     
     void gotoOrthoAltBlock(Matcher m) {
@@ -316,7 +316,7 @@ private void extractTranslations(int startOffset, int endOffset) {
                    }
                    String rel = "trad|" + lang + ((currentGlose == null) ? "" : "|" + currentGlose);
                    rel = rel + ((usage == null) ? "" : "|" + usage);
-                   semnet.addRelation(wiktionaryPageName, new String(lang + "|" + word), 1, rel );
+                   semnet.addRelation(wiktionaryPageNameWithLangPrefix, new String(lang + "|" + word), 1, rel );
                }
            } else if (g1.equals("trans-top")) {
                // Get the glose that should help disambiguate the source acception

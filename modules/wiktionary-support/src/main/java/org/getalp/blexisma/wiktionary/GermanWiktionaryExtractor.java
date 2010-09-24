@@ -175,7 +175,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
     void gotoDefBlock(Matcher m) {
         state = DEFBLOCK;
         definitionBlockStart = m.end();
-        semnet.addRelation(wiktionaryPageName, POS_PREFIX + currentPos, 1, POS_RELATION);
+        semnet.addRelation(wiktionaryPageNameWithLangPrefix, POS_PREFIX + currentPos, 1, POS_RELATION);
     }
 
     void gotoOrthoAltBlock(Matcher m) {
@@ -439,7 +439,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                     // TODO: Should I keep the transcription ?
                     // rel = rel + ((transcription == null) ? "" : "|" + usage);
                     if (word != null && word.length() != 0) {
-                        semnet.addRelation(wiktionaryPageName, new String(lang + "|" + word), 1, rel);
+                        semnet.addRelation(wiktionaryPageNameWithLangPrefix, new String(lang + "|" + word), 1, rel);
                     }
                 }
             } else if (g1.equals("Ü-links")) {
@@ -462,7 +462,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
             String def = cleanUpMarkup(definitionMatcher.group(1));
             if (def != null && !def.equals("")) {
                 def = DEF_PREFIX + def;
-                this.semnet.addRelation(this.wiktionaryPageName, def, 1, DEF_RELATION);
+                this.semnet.addRelation(this.wiktionaryPageNameWithLangPrefix, def, 1, DEF_RELATION);
                 if (currentPos != null && !currentPos.equals("")) {
                     this.semnet.addRelation(def, POS_PREFIX + currentPos, 1, POS_RELATION);
                 }

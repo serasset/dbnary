@@ -30,6 +30,10 @@ modules/wiktionary-support/src/main/java/org/getalp/blexisma/target
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/.classpath
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/.project
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/.settings
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/.classpath
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/.project
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/.settings
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/target
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/target
 modules/wiktionary-support/src/main/java/org/getalp/target
 modules/wiktionary-support/src/main/java/org/target

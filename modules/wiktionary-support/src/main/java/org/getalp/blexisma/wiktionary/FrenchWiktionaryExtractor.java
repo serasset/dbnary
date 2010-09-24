@@ -18,7 +18,8 @@ import java.util.regex.Pattern;
 public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
     protected final static String languageSectionPatternString = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
-
+    protected final static String catOrInterwikiLink = "^\\s*\\[\\[([^\\:\\]]*)\\:([^\\]])*\\]\\]\\s*$";
+    
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
     private final int DEFBLOCK = 2;
@@ -36,9 +37,14 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     
     private static Set<String> affixesToDiscardFromLinks = null;
     
+    protected final static Pattern categoryOrInterwikiLinkPattern;
+
     static {
         langPrefix = "#" + ISO639_3.sharedInstance.getIdCode("fra") + "|";
-           
+      
+        
+        categoryOrInterwikiLinkPattern = Pattern.compile(catOrInterwikiLink, Pattern.MULTILINE);
+        
         posMarkers = new HashSet<String>(130);
         ignorablePosMarkers = new HashSet<String>(130);
 
@@ -192,6 +198,9 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         sectionMarkers.add("-apr-");
         sectionMarkers.add("-paro-");
         sectionMarkers.add("-homo-");
+        sectionMarkers.add("-exp-");
+        sectionMarkers.add("-compos-");
+        
        // TODO trouver tous les modèles de section...
         
         
@@ -239,6 +248,21 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         extractFrenchData(frenchSectionStartOffset, frenchSectionEndOffset);
      }
 
+    int computeRegionEnd(Matcher m) {
+        if (m.hitEnd()) {
+            // Take out categories and interwiki links.
+            Matcher links = categoryOrInterwikiLinkPattern.matcher(pageContent);
+            links.region(definitionBlockStart, m.regionEnd());
+            while (links.find()) {
+                if (links.group(1).equals("Catégorie") || links.group(2).equals(this.wiktionaryPageName))
+                    return links.start();
+            } 
+            return m.regionEnd();
+        } else {
+            return m.start();
+        }
+    }
+    
     void gotoNoData(Matcher m) {
         state = NODATA;
     }
@@ -252,7 +276,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         state = DEFBLOCK;
         definitionBlockStart = m.end();
         currentPos = m.group(1);
-        semnet.addRelation(wiktionaryPageName, POS_PREFIX + currentPos, 1, POS_RELATION);
+        semnet.addRelation(wiktionaryPageNameWithLangPrefix, POS_PREFIX + currentPos, 1, POS_RELATION);
     }
     
     void gotoOrthoAltBlock(Matcher m) {
@@ -261,12 +285,14 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     }
 
     void leaveOrthoAltBlock(Matcher m) {
-        extractOrthoAlt(orthBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        extractOrthoAlt(orthBlockStart, computeRegionEnd(m));
         orthBlockStart = -1;
     }
 
+    
     void leaveDefBlock(Matcher m) {
-        extractDefinitions(definitionBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        
+        extractDefinitions(definitionBlockStart, computeRegionEnd(m));
         currentPos = null;
         definitionBlockStart = -1;
     }
@@ -278,7 +304,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
      }
 
     private void leaveSynBlock(Matcher m) {
-        extractNyms(currentNym, nymBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        extractNyms(currentNym, nymBlockStart, computeRegionEnd(m));
         currentNym = null;
         nymBlockStart = -1;         
      }
@@ -293,23 +319,28 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         // DONE: handle alternative spelling
         // DONE: extract synonyms
         // DONE: extract antonyms
+        // TODO: add an IGNOREPOS state to ignore the entire part of speech
         int nbtrad = 0;
         String currentGlose = null;
         while (m.find()) {
             if (! sectionMarkers.contains(m.group(1))) unsupportedMarkers.add(m.group(1));
             switch (state) {
             case NODATA:
+                
+                // Iterate until we find a new section
                 if (m.group(1).equals("-trad-")) {
                     gotoTradBlock(m);
                 } else if (posMarkers.contains(m.group(1))) {
                     gotoDefBlock(m);
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
-                    // nop
-                } else if (nymMarkers.contains(m.group(1))) {
+                    //nop
+                } else if (m.group(1).equals("-ortho-alt-")) {
                     gotoOrthoAltBlock(m);
-                } else if (m.group(1).equals("-syn-")) {
+                } else if (nymMarkers.contains(m.group(1))) {
                     gotoSynBlock(m);
-                } 
+                } else if (sectionMarkers.contains(m.group(1))) {
+                    // nop
+                }
 
                 break;
             case DEFBLOCK:
@@ -359,7 +390,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                         }
                         String rel = "trad|" + lang + ((currentGlose == null || currentGlose.equals("")) ? "" : "|" + currentGlose);
                         rel = rel + ((usage == null) ? "" : "|" + usage);
-                        semnet.addRelation(wiktionaryPageName, new String(lang + "|" + word), 1, rel ); nbtrad++;
+                        semnet.addRelation(wiktionaryPageNameWithLangPrefix, new String(lang + "|" + word), 1, rel ); nbtrad++;
                     }
                 } else if (g1.equals("boîte début")) {
                     // Get the glose that should help disambiguate the source acception

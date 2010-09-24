@@ -62,6 +62,7 @@ public abstract class WiktionaryExtractor {
     
     protected WiktionaryIndex wiktionaryIndex;
     protected SemanticNetwork<String, String> semnet;
+    protected String wiktionaryPageNameWithLangPrefix;
     protected String wiktionaryPageName;
     protected String pageContent;
 
@@ -78,8 +79,11 @@ public abstract class WiktionaryExtractor {
     }
     
     // TODO: filter out pages that are in specific Namespaces (Wiktionary:, Categories:, ...)
+    // TODO: take Redirect page into account as alternate spelling.
+    // TODO: take homography into account (ex: mousse) and separate different definitions for the same pos.
     public void extractData(String wiktionaryPageName, SemanticNetwork<String, String> semnet) {
-        this.wiktionaryPageName = langPrefix + wiktionaryPageName;
+        this.wiktionaryPageName = wiktionaryPageName;
+        this.wiktionaryPageNameWithLangPrefix = langPrefix + wiktionaryPageName;
         this.semnet = semnet;
         
         pageContent = wiktionaryIndex.getTextOfPage(wiktionaryPageName);
@@ -100,7 +104,7 @@ public abstract class WiktionaryExtractor {
             String def = cleanUpMarkup(definitionMatcher.group(1));
             if (def != null && ! def.equals("")) {
                 def = DEF_PREFIX + def;
-                this.semnet.addRelation(this.wiktionaryPageName, def, 1, DEF_RELATION);
+                this.semnet.addRelation(this.wiktionaryPageNameWithLangPrefix, def, 1, DEF_RELATION);
                 if (currentPos != null && ! currentPos.equals("")) {
                     this.semnet.addRelation(def, POS_PREFIX + currentPos, 1, POS_RELATION);
                 }
@@ -184,7 +188,7 @@ public abstract class WiktionaryExtractor {
             String alt = cleanUpMarkup(bulletListMatcher.group(1), true);
             if (alt != null && ! alt.equals("")) {
                 alt = langPrefix + alt;
-                this.semnet.addRelation(this.wiktionaryPageName, alt, 1, ALT_RELATION);
+                this.semnet.addRelation(this.wiktionaryPageNameWithLangPrefix, alt, 1, ALT_RELATION);
             }
         }      
      }
@@ -192,6 +196,11 @@ public abstract class WiktionaryExtractor {
     protected void extractNyms(String synRelation, int startOffset, int endOffset) {
         // System.out.println(wiktionaryPageName + " contains: " + pageContent.substring(startOffset, endOffset));
         // Extract all links
+//        String nym = pageContent.substring(startOffset, endOffset);
+//        if (nym.contains(",")) {
+//            System.out.println(this.wiktionaryPageNameWithLangPrefix + " ---> ");
+//            System.out.println(nym);
+//        }
         Matcher linkMatcher = WiktionaryExtractor.linkPattern.matcher(this.pageContent);
         linkMatcher.region(startOffset, endOffset);
         while (linkMatcher.find()) {
@@ -199,7 +208,7 @@ public abstract class WiktionaryExtractor {
             String leftGroup = linkMatcher.group(1) ;
             if (leftGroup != null && ! leftGroup.equals("") && ! leftGroup.startsWith("Wikisaurus:")) {
                 leftGroup = langPrefix + leftGroup;
-                this.semnet.addRelation(this.wiktionaryPageName, leftGroup, 1, synRelation);
+                this.semnet.addRelation(this.wiktionaryPageNameWithLangPrefix, leftGroup, 1, synRelation);
             }
         }      
     }

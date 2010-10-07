@@ -31,4 +31,5 @@ modules/wiktionary-support/src/site/apt/index.apt -text
 modules/wiktionary-support/src/site/fml/faq.fml -text
 modules/wiktionary-support/src/site/site.xml -text
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/ISO639Test.java -text
+modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/SimpleSemanticNetworkTest.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text

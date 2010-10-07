@@ -193,6 +193,7 @@ public abstract class WiktionaryExtractor {
         }      
      }
  
+    // TODO: Some nyms can be placed in sublists and lists (hence with ** or ***). In this case, we currently extract the additional stars.
     protected void extractNyms(String synRelation, int startOffset, int endOffset) {
         // System.out.println(wiktionaryPageName + " contains: " + pageContent.substring(startOffset, endOffset));
         // Extract all links

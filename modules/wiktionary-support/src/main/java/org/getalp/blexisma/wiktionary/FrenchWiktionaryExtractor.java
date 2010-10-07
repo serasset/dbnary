@@ -248,11 +248,11 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         extractFrenchData(frenchSectionStartOffset, frenchSectionEndOffset);
      }
 
-    int computeRegionEnd(Matcher m) {
+    int computeRegionEnd(int blockStart, Matcher m) {
         if (m.hitEnd()) {
             // Take out categories and interwiki links.
             Matcher links = categoryOrInterwikiLinkPattern.matcher(pageContent);
-            links.region(definitionBlockStart, m.regionEnd());
+            links.region(blockStart, m.regionEnd());
             while (links.find()) {
                 if (links.group(1).equals("Catégorie") || links.group(2).equals(this.wiktionaryPageName))
                     return links.start();
@@ -285,14 +285,14 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     }
 
     void leaveOrthoAltBlock(Matcher m) {
-        extractOrthoAlt(orthBlockStart, computeRegionEnd(m));
+        extractOrthoAlt(orthBlockStart, computeRegionEnd(orthBlockStart, m));
         orthBlockStart = -1;
     }
 
     
     void leaveDefBlock(Matcher m) {
         
-        extractDefinitions(definitionBlockStart, computeRegionEnd(m));
+        extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
         currentPos = null;
         definitionBlockStart = -1;
     }
@@ -304,7 +304,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
      }
 
     private void leaveSynBlock(Matcher m) {
-        extractNyms(currentNym, nymBlockStart, computeRegionEnd(m));
+        extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
         currentNym = null;
         nymBlockStart = -1;         
      }

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import org.getalp.blexisma.api.SemanticNetwork;
 
@@ -72,6 +72,62 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
         }
         
     }
+
+    public class SemnetNodesIterator implements Iterator<N> {
+        
+        private Iterator<Entry<N,N>> entrySetIterator;
+        
+        public SemnetNodesIterator() {
+            entrySetIterator = nodes.entrySet().iterator();
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return entrySetIterator.hasNext();
+        }
+
+        @Override
+        public N next() {
+            return entrySetIterator.next().getValue();
+        }
+
+        @Override
+        public void remove() {
+            entrySetIterator.remove();
+        }
+        
+    }
+
+    public class SemnetEdgesIterator implements Iterator<Edge> {
+        
+        private Iterator<Entry<N,Collection<Relation>>> origins;
+        private Iterator<Relation> relations;
+        
+        public SemnetEdgesIterator() {
+            origins = outgoingRelations.entrySet().iterator();
+            relations = (new ArrayList<Relation>()).iterator();
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return (relations.hasNext() || origins.hasNext());
+        }
+
+        @Override
+        public Edge next() {
+            while (! relations.hasNext()) {
+                relations = origins.next().getValue().iterator();
+            }
+            return relations.next();
+        }
+
+        @Override
+        public void remove() {
+            relations.remove();
+        }
+        
+    }
+
     private HashMap<N,N> nodes;
     private HashMap<R,R> relationLabels;
     
@@ -80,6 +136,7 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
  //   private HashMap<N,Relation> incomingRelations;
 
     // TODO: remove the nodes and relationLabels HashMap as everything is present in label and outgoingrels
+    // TODO [important]: Do I need label to relation association here ? It seems quite expensive in memory for nothing...
     public SimpleSemanticNetwork() {
         nodes = new HashMap<N,N>();
         relationLabels = new HashMap<R,R>();
@@ -173,7 +230,7 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
 
     @Override
     public Iterator<N> getNodesIterator() {
-        throw new RuntimeException("Unimplemented abstract method.");
+        return nodes.values().iterator();
     }
 
     @Override
@@ -183,7 +240,7 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
      
     @Override
     public Iterator<Edge> getEdgesIterator() {
-        throw new RuntimeException("Unimplemented abstract method.");
+        return new SemnetEdgesIterator();
     }
     
     @Override
@@ -202,5 +259,7 @@ public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
             }
         }
     }
+    
+
     
 }

@@ -19,12 +19,12 @@ public abstract class WiktionaryExtractor {
         linkPatternString = 
             new StringBuilder()
             .append("\\[\\[")
-            .append("([^\\]\\|]*)(?:\\|([^\\]]*))?")
+            .append("([^\\]\\|\n\r]*)(?:\\|([^\\]\n\r]*))?")
             .append("\\]\\]")
             .toString();
         macroPatternString = 
             new StringBuilder().append("\\{\\{")
-            .append("([^\\}\\|]*)(?:\\|([^\\}]*))?")
+            .append("([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?")
             .append("\\}\\}")
             .toString();
         macroOrLinkPatternString = new StringBuilder()

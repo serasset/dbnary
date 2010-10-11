@@ -3,6 +3,8 @@
  */
 package org.getalp.blexisma.wiktionary;
 
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,6 +27,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     private final int DEFBLOCK = 2;
     private final int ORTHOALTBLOCK = 3;
     private final int NYMBLOCK = 4;
+	private final int IGNOREPOS = 5;
 
     private static HashSet<String> posMarkers;
     private static HashSet<String> ignorablePosMarkers;
@@ -303,6 +306,10 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         nymBlockStart = m.end();      
      }
 
+    private void gotoIgnorePos(Matcher m) {
+        state = IGNOREPOS;
+     }
+
     private void leaveSynBlock(Matcher m) {
         extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
         currentNym = null;
@@ -333,7 +340,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (posMarkers.contains(m.group(1))) {
                     gotoDefBlock(m);
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
-                    //nop
+                    gotoIgnorePos(m);
                 } else if (m.group(1).equals("-ortho-alt-")) {
                     gotoOrthoAltBlock(m);
                 } else if (nymMarkers.contains(m.group(1))) {
@@ -353,7 +360,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     gotoDefBlock(m);
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
                     leaveDefBlock(m);
-                    gotoNoData(m);
+                    gotoIgnorePos(m);
                 } else if (m.group(1).equals("-ortho-alt-")) {
                     leaveDefBlock(m);
                     gotoOrthoAltBlock(m);
@@ -412,7 +419,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (posMarkers.contains(m.group(1))) {
                     gotoDefBlock(m);
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
-                    gotoNoData(m);
+                    gotoIgnorePos(m);
                 } else if (m.group(1).equals("-ortho-alt-")) {
                     gotoOrthoAltBlock(m);
                 } else if (nymMarkers.contains(m.group(1))) {
@@ -430,7 +437,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     gotoDefBlock(m);
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
                     leaveOrthoAltBlock(m);
-                    gotoNoData(m);
+                    gotoIgnorePos(m);
                 } else if (nymMarkers.contains(m.group(1))) {
                     leaveOrthoAltBlock(m);
                     gotoSynBlock(m);
@@ -448,7 +455,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     gotoDefBlock(m);
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
                     leaveSynBlock(m);
-                    gotoNoData(m);
+                    gotoIgnorePos(m);
                 } else if (nymMarkers.contains(m.group(1))) {
                     leaveSynBlock(m);
                     gotoSynBlock(m);
@@ -457,7 +464,18 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     gotoNoData(m);
                 }
                 break;
-                
+            case IGNOREPOS:
+            	if (m.group(1).equals("-trad-")) {
+                    // nop
+                } else if (posMarkers.contains(m.group(1))) {
+                	gotoDefBlock(m);
+                } else if (ignorablePosMarkers.contains(m.group(1))) {
+                    // nop
+                } else if (nymMarkers.contains(m.group(1))) {
+                    //nop
+                } else if (sectionMarkers.contains(m.group(1))) {
+                	//nop
+                }
             default:
                 assert false : "Unexpected state while extracting translations from dictionary.";
             } 
@@ -477,6 +495,8 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         case NYMBLOCK:
             leaveSynBlock(m);
            break;
+        case IGNOREPOS:
+        	break;
         default:
             assert false : "Unexpected state while extracting translations from dictionary.";
         } 
@@ -512,7 +532,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     System.out.println("      NbNodes = " + s.getNbNodes());
                     relevantTimeOfLastThousands = System.currentTimeMillis();
                 }
-                // if (nbrelevantPages == 10000) break;
+                // if (nbrelevantPages == 1100) break;
             }
         }
 //        fwe.extractData("dictionnaire", s);
@@ -521,12 +541,12 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         
         System.out.println(unsupportedMarkers);
         
-        s.dumpToWriter(new PrintStream(args[1] + new Date()));
+        StringSemNetGraphMLizer gout = new StringSemNetGraphMLizer(new OutputStreamWriter(new FileOutputStream(args[1] + new Date())));
+        gout.dump(s);
+        // s.dumpToWriter(new PrintStream(args[1] + new Date()));
         System.out.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
         System.out.println("Semnet contains: " + s.getNbNodes() + " nodes and " + s.getNbEdges() + " edges.");
-        //for (SemanticNetwork<String,String>.Edge e : s.getEdges("dictionnaire")) {
-        //    System.out.println(e.getRelation() + " --> " + e.getDestination());
-        //}
+        
     }
 
 

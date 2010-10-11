@@ -8,8 +8,9 @@ modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/GermanWi
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/ISO639_1.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/ISO639_3.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/OffsetValue.java -text
-modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/SemNetGraphMLizer.java -text svneol=unset#text/plain
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/SemNetGraphMLizer.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/SimpleSemanticNetwork.java -text
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/StringSemNetGraphMLizer.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/TextOnlySemnetReader.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndex.java -text
@@ -35,4 +36,5 @@ modules/wiktionary-support/src/site/site.xml -text
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/ISO639Test.java -text
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/SemNetGraphMLizerTest.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/SimpleSemanticNetworkTest.java -text
+modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/StringSemNetGraphMLizerTest.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text

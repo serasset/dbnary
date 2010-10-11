@@ -14,18 +14,18 @@ import org.getalp.blexisma.api.SemanticNetworkGraphMLizer;
 
 public class SemNetGraphMLizer extends SemanticNetworkGraphMLizer {
 
-    public static final String xmlHeader1 = "<?xml version=\"1.0\" encoding=\"";
-    public static final String xmlHeader2 = "\"?>";
-    public static final String graphmlHeader = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" "
+    protected static final String xmlHeader1 = "<?xml version=\"1.0\" encoding=\"";
+    protected static final String xmlHeader2 = "\"?>";
+    protected static final String graphmlHeader = "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" "
             + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " + "xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns "
             + " http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">";
-    public static final String graphMLFooter = "</graphml>";
+    protected static final String graphMLFooter = "</graphml>";
 
-    private OutputStreamWriter out = null;
-    private InputStreamReader in = null;
-    private String encoding = "";
-    private String EOL = "\n";
-    private String graphId = "G";
+    protected OutputStreamWriter out = null;
+    protected InputStreamReader in = null;
+    protected String encoding = "";
+    protected String EOL = "\n";
+    protected String graphId = "G";
 
     /**
      * @return the eOL

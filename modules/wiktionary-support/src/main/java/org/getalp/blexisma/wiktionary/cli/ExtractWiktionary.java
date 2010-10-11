@@ -78,8 +78,8 @@ public class ExtractWiktionary {
 		try {
 			cmd = parser.parse(options, args);
 		} catch (ParseException e) {
-			System.err.println("Error parsing arguments");
-			e.printStackTrace();
+			System.err.println("Error parsing arguments: " + e.getLocalizedMessage());
+			printUsage();
 			System.exit(1);
 		}
 		

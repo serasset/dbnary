@@ -30,6 +30,7 @@ modules/wiktionary-support/src/main/scripts/README.txt -text
 modules/wiktionary-support/src/main/scripts/extract-def -text
 modules/wiktionary-support/src/main/scripts/extract-nbsens -text
 modules/wiktionary-support/src/main/scripts/extract-terme -text
+modules/wiktionary-support/src/main/scripts/intersect.sh -text
 modules/wiktionary-support/src/site/apt/cli.apt -text
 modules/wiktionary-support/src/site/apt/index.apt -text
 modules/wiktionary-support/src/site/fml/faq.fml -text

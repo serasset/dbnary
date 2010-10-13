@@ -28,6 +28,7 @@ modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/iso
 modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/iso-639-3_Retirements.tab -text
 modules/wiktionary-support/src/main/scripts/README.txt -text
 modules/wiktionary-support/src/main/scripts/extract-def -text
+modules/wiktionary-support/src/main/scripts/extract-defNoyau -text
 modules/wiktionary-support/src/main/scripts/extract-nbsens -text
 modules/wiktionary-support/src/main/scripts/extract-terme -text
 modules/wiktionary-support/src/main/scripts/intersect.sh -text

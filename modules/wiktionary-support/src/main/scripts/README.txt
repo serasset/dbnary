@@ -17,11 +17,11 @@ usage : extract-nbsens [-f | -e | -d] [file]
 
 --> le fichier file.nbsens donne le degré de polysémie de chacun des termes définis (ordre décroissant)
 
------------- extract-defNoyau
-usage : extract-defNoyau [-f | -e | -d] [file]
--f : french  -e : english  -d : deutsch / la langue du fichier doit correspondre
+------------ [fr|en|de]_extract-defNoyau
+usage : [fr|en|de]_extract-defNoyau [file]
+la langue du fichier doit correspondre au préfixe du script
 
---> le fichier file.Noyau donne toutes les définitions (-D-) d'un même terme (-O-)
+--> le fichier file.Noyau donne toutes les définitions (-D-) d'un même terme (-O-) (avec le pos associé à chaque def)
 
 # format d'entrée : Gilles
-# sorties : file.Noyau : toutes les définitions d'un terme (non trié)
+# sorties : file.Noyau : toutes les définitions d'un terme et le pos tag associé (non trié)

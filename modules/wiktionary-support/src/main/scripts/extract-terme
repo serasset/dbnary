@@ -9,11 +9,11 @@ echo "-f : french  -e : english  -d : deutsch"
 exit
 fi
 
-if (( $1 == "-f" )) ; then  
+if [[ $1 == "-f" ]] ; then  
 L="#fra"
-elif (( $1 == "-e" )) ; then
+elif [[ $1 == "-e" ]] ; then
 L="#eng"
-elif (( $1 == "-d")) ; then
+elif [[ $1 == "-d" ]] ; then
 L="#deu"
 fi
 

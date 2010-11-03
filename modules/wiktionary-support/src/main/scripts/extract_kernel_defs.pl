@@ -1,21 +1,27 @@
 #!/usr/bin/perl -w
 use strict;
 use utf8;
+use Encode;
+use URI::Escape;
 
 use constant false => 0;
 use constant true  => 1;
 
+binmode STDOUT, ":utf8";
+binmode STDERR, ":utf8";
+
 my $numArgs = $#ARGV + 1;
 
-if ($numArgs != 3) {
-  print STDERR "Usage: extract_kernel_defs.pl lang kernel fr_extract\n";
+if ($numArgs < 3) {
+  print STDERR "Usage: extract_kernel_defs.pl lang kernel fr_extract MAN\n";
   print STDERR "  Where: lang in fr, en, de\n";
   exit -1;
 }
 
-my $lang = $ARGV[0];
-my $kernelFile = $ARGV[1];
-my $extractFile = $ARGV[2];
+my $lang = shift @ARGV;
+my $kernelFile = shift @ARGV;
+my $extractFile = shift @ARGV;
+my @MANFolder = @ARGV;
 
 my $lcode = "\\#fra\\|";
 
@@ -32,7 +38,7 @@ display_unavailable_kernel_entries();
 
 
 sub load_kernel {
-  open K_FH, "<",  "$kernelFile" or die $1;
+  open K_FH, "<:utf8",  "$kernelFile" or die $1;
   my $i = 0;
   
     while(<K_FH>) {
@@ -49,8 +55,8 @@ sub extract_kernel_defs {
   my $fname = $extractFile;
   my $i=0;
   
-    open ED_FH, "<",  "$fname" or die $1;
-    open XED_FH, ">$fname.kdefs";
+    open ED_FH, "<:utf8",  "$fname" or die $1;
+    open XED_FH, ">:utf8", "$fname.kdefs";
     my $current_entry = "";
     my $ignoring_current_entry = true;
     
@@ -64,6 +70,10 @@ sub extract_kernel_defs {
             $current_entry = $w;
             $kernel{$w} = 2;
             print XED_FH "-O- $1$2\n";
+            my $mandata = read_man_files($w);
+            if ($mandata ne "") {
+              print XED_FH "$mandata";
+            }
           } else {
             $ignoring_current_entry = true;
             $current_entry = "";
@@ -94,4 +104,53 @@ sub display_unavailable_kernel_entries {
       print STDERR "unavailable kernel entry : \"$key\"\n";
     }
   }
+}
+
+sub read_man_files {
+  my $entry = shift;
+  
+  # œ is not a latin 1 character, so it cannot be url encoded in older MAN kernels.
+  $entry =~ s/œ/oe/g;
+  $entry =~ s/\’/_/g;
+  $entry =~ s/ /_/g;
+  
+  my $fc = substr($entry, 0, 1);
+  
+  $entry = uri_escape( $entry);
+  $fc = uri_escape($fc);
+  
+  my $content = "";
+  my $p = "";
+  
+  foreach (@MANFolder) {
+    $content .= read_man_file("$_/$fc/$entry");
+  } 
+   
+  
+  return $content;
+}
+
+sub read_man_file {
+  my $mfn = shift;
+  my $content = "";
+if (-e $mfn) {
+  $content .= "--- man: $mfn:\n";
+  open MF_FH, "<:encoding(iso-8859-1)", $mfn;
+  while (my $line = <MF_FH>) {
+    trim($line);
+    if ($line ne "") {
+      #print STDERR "$line\n";
+      $content .= "$line\n";
+    }
+  }
+  close MF_FH;
+}
+return $content;
+}
+
+sub trim {
+    # Trim the string (modifying it)
+    $_[0] =~ s/^\s+//;
+    $_[0] =~ s/\s+$//;
+    $_[0];
 }

@@ -12,8 +12,8 @@ binmode STDERR, ":utf8";
 
 my $numArgs = $#ARGV + 1;
 
-if ($numArgs < 3) {
-  print STDERR "Usage: extract_kernel_defs.pl lang kernel fr_extract MAN\n";
+if ($numArgs < 4) {
+  print STDERR "Usage: extract_kernel_defs.pl lang kernel fr_extract Thesaurus MAN\n";
   print STDERR "  Where: lang in fr, en, de\n";
   exit -1;
 }
@@ -21,6 +21,7 @@ if ($numArgs < 3) {
 my $lang = shift @ARGV;
 my $kernelFile = shift @ARGV;
 my $extractFile = shift @ARGV;
+my $thesaurus = shift @ARGV;
 my @MANFolder = @ARGV;
 
 my $lcode = "\\#fra\\|";
@@ -122,8 +123,10 @@ sub read_man_files {
   my $content = "";
   my $p = "";
   
+  $content .= read_man_file("$thesaurus/$fc/$entry", ("N", "V", "ADJ", "ADV"));
+
   foreach (@MANFolder) {
-    $content .= read_man_file("$_/$fc/$entry");
+    $content .= read_man_file("$_/$fc/$entry", (""));
   } 
    
   
@@ -131,21 +134,26 @@ sub read_man_files {
 }
 
 sub read_man_file {
-  my $mfn = shift;
+  my $fname = shift;
+  my @suffixes = shift;
+
   my $content = "";
-if (-e $mfn) {
-  $content .= "--- man: $mfn:\n";
-  open MF_FH, "<:encoding(iso-8859-1)", $mfn;
-  while (my $line = <MF_FH>) {
-    trim($line);
-    if ($line ne "") {
-      #print STDERR "$line\n";
-      $content .= "$line\n";
-    }
+  foreach my $suffix (@suffixes) {
+    my $mfn = "$fname$suffix";
+    if (-e $mfn) {
+      $content .= "--- man: $mfn:\n";
+      open MF_FH, "<:encoding(iso-8859-1)", $mfn;
+      while (my $line = <MF_FH>) {
+        trim($line);
+        if ($line ne "") {
+          #print STDERR "$line\n";
+          $content .= "--- $line\n";
+        }
+      }
+    close MF_FH;
   }
-  close MF_FH;
-}
-return $content;
+  }
+  return $content;
 }
 
 sub trim {

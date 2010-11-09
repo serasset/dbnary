@@ -134,8 +134,8 @@ sub read_man_files {
 }
 
 sub read_man_file {
-  my $fname = shift;
-  my @suffixes = shift;
+  my ($fname, @suffixes) = @_;
+
 
   my $content = "";
   foreach my $suffix (@suffixes) {

@@ -7,10 +7,10 @@ import java.util.regex.Pattern;
 
 public class TextOnlySemnetReader {
 
-    private final static String nodeMatcher = "^\\s*-O-\\s*(.)*$";
-    private final static String relMatcher = "^\\s*-R-\\s*(.)*$";
-    private final static String confidenceMatcher = "^\\s*-C-\\s*(.)*$";
-    private final static String targetMatcher = "^\\s*-D-\\s*(.)*$";
+    private final static String nodeMatcher = "^\\s*-O-\\s*(.*)$";
+    private final static String relMatcher = "^\\s*-R-\\s*(.*)$";
+    private final static String confidenceMatcher = "^\\s*-C-\\s*(.*)$";
+    private final static String targetMatcher = "^\\s*-D-\\s*(.*)$";
     
     private final static String dumpMatcher = new StringBuilder()
     .append("(?:")
@@ -28,10 +28,10 @@ public class TextOnlySemnetReader {
     // TODO, take this out and put it in an external class
     public static void readFromReader(SimpleSemanticNetwork<String, String> semnet, BufferedReader in) throws IOException {
         String cl;
+        String currentOrigin = null, currentRelation = null;
+        float currentConfidence = 0;
         while((cl = in.readLine()) != null) {
             Matcher m = dumpPattern.matcher(cl);
-            String currentOrigin = null, currentRelation = null;
-            float currentConfidence = 0;
             if (m.matches()) {
                 if (m.group(1) != null) {
                     currentOrigin = m.group(1);
@@ -49,5 +49,6 @@ public class TextOnlySemnetReader {
                 }
             } 
         }
+        System.out.println("");
     }
 }

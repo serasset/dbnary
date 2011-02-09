@@ -326,7 +326,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         // DONE: handle alternative spelling
         // DONE: extract synonyms
         // DONE: extract antonyms
-        // TODO: add an IGNOREPOS state to ignore the entire part of speech
+        // DONE: add an IGNOREPOS state to ignore the entire part of speech
         int nbtrad = 0;
         String currentGlose = null;
         while (m.find()) {

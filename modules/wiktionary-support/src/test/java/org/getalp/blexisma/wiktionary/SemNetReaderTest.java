@@ -53,4 +53,9 @@ public class SemNetReaderTest {
 		assertEquals(13, n);
 	}
 	
+//	@Test
+//	public void testOutput() throws Exception {
+//		StringSemNetGraphMLizer sout = new StringSemNetGraphMLizer(StringSemNetGraphMLizer.MULLING_OUTPUT);
+//		sout.dump(sn);
+//	}
 }

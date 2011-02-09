@@ -13,7 +13,7 @@ import org.junit.Test;
 public class StringSemNetGraphMLizerTest {
     
     SemanticNetwork<String, String> sm = new SimpleSemanticNetwork<String, String>();
-    StringSemNetGraphMLizer gout = new StringSemNetGraphMLizer();
+    StringSemNetGraphMLizer gout = new StringSemNetGraphMLizer(StringSemNetGraphMLizer.MULLING_OUTPUT);
     @Before
     public void setUp() throws Exception {
         sm.addRelation("A", "B", 1.0f, "def");

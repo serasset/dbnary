@@ -168,7 +168,7 @@ public class ExtractWiktionary {
         }
         
         if (outputFormat.equals("graphml")) {
-        	StringSemNetGraphMLizer gout = new StringSemNetGraphMLizer(new OutputStreamWriter(new FileOutputStream(outputFile)));
+        	StringSemNetGraphMLizer gout = new StringSemNetGraphMLizer(new OutputStreamWriter(new FileOutputStream(outputFile)), StringSemNetGraphMLizer.MULLING_OUTPUT);
         	gout.dump(s);
         } else {  
         	s.dumpToWriter(new PrintStream(outputFile));
@@ -182,7 +182,7 @@ public class ExtractWiktionary {
     	HelpFormatter formatter = new HelpFormatter();
 		formatter.printHelp("java -cp /path/to/wiktionary.jar [OPTIONS] dumpFile", 
 				"With OPTIONS in:", options, 
-				"dumpFile must be a Wiktionary dump file in UTF-16 encoding. dumpFile directory must be writable to store the index.", true);
+				"dumpFile must be a Wiktionary dump file in UTF-16 encoding. dumpFile directory must be writable to store the index.", false);
     }
 
 }

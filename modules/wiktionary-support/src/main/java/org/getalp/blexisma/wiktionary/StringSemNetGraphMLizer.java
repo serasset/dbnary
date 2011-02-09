@@ -23,11 +23,17 @@ public class StringSemNetGraphMLizer {
             + " http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">";
     protected static final String graphMLFooter = "</graphml>";
 
+    /**
+     * Option stating that the semnet should be exported with default values for attributes needed by Mulling.
+     */
+    public static final int MULLING_OUTPUT = 0x1;
+    
     protected OutputStreamWriter out = null;
-    protected InputStreamReader in = null;
     protected String encoding = "";
     protected String EOL = "\n";
     protected String graphId = "G";
+    
+    protected int outputOptions = 0;
 
     /**
      * @return the eOL
@@ -61,32 +67,49 @@ public class StringSemNetGraphMLizer {
 
     // Constructors
     public StringSemNetGraphMLizer() {
-        in = new InputStreamReader(System.in);
-        out = new OutputStreamWriter(System.out);
+        this(new OutputStreamWriter(System.out));
     }
 
+    // Constructors
+    public StringSemNetGraphMLizer(int options) {
+        this(new OutputStreamWriter(System.out), options);
+    }
+    
     public StringSemNetGraphMLizer(OutputStream out, String encoding) throws UnsupportedEncodingException {
         this.out = new OutputStreamWriter(out, encoding);
         this.encoding = encoding;
     }
 
+    public StringSemNetGraphMLizer(OutputStream out, String encoding, int options) throws UnsupportedEncodingException {
+        this.out = new OutputStreamWriter(out, encoding);
+        this.encoding = encoding;
+        this.outputOptions = options;
+    }
+    
     public StringSemNetGraphMLizer(OutputStream out, String encoding, String endOfLine) throws UnsupportedEncodingException {
         this.out = new OutputStreamWriter(out, encoding);
         this.encoding = encoding;
         this.EOL = endOfLine;
+    }
+    
+    public StringSemNetGraphMLizer(OutputStream out, String encoding, String endOfLine, int options) throws UnsupportedEncodingException {
+        this.out = new OutputStreamWriter(out, encoding);
+        this.encoding = encoding;
+        this.EOL = endOfLine;
+        this.outputOptions = options;
     }
 
     public StringSemNetGraphMLizer(OutputStreamWriter out) {
         this.out = out;
         this.encoding = out.getEncoding();
     }
-
-    public void load(SemanticNetwork<? extends String, ? extends String> sm) {
-        // TODO Auto-generated method stub
-
+    
+    public StringSemNetGraphMLizer(OutputStreamWriter out, int options) {
+        this.out = out;
+        this.encoding = out.getEncoding();
+        this.outputOptions = options;
     }
 
-    // TODO [urgent]: Export xml using Stax interface to avoid generating non valid xml.
     public void dump(SemanticNetwork<? extends String, ? extends String> sm) throws IOException {
         out.write(xmlHeader1 + encoding + xmlHeader2);
         out.write(EOL);
@@ -94,6 +117,28 @@ public class StringSemNetGraphMLizer {
 
         Iterator<? extends SemanticNetwork<? extends String, ? extends String>.Edge> edges = sm.getEdgesIterator();
         Iterator<? extends String> nodes = sm.getNodesIterator();
+
+        // Write out mulling specific attributes if needed
+        if ((outputOptions & MULLING_OUTPUT) != 0) {
+        	out.write("  <key id=\"k0\" for=\"node\"");
+            out.write(" attr.name=\"_lvl\"");
+            out.write(" attr.type=\"int\" ");
+            out.write(">" + EOL);
+            out.write("    <default>0</default>" + EOL);
+            out.write("  </key>" + EOL);
+            out.write("  <key id=\"k1\" for=\"edge\"");
+            out.write(" attr.name=\"_lvl\"");
+            out.write(" attr.type=\"int\" ");
+            out.write(">" + EOL);
+            out.write("    <default>0</default>" + EOL);
+            out.write("  </key>" + EOL);
+            out.write("  <key id=\"k2\" for=\"edge\"");
+            out.write(" attr.name=\"_typ\"");
+            out.write(" attr.type=\"int\" ");
+            out.write(">" + EOL);
+            out.write("    <default>1</default>" + EOL);
+            out.write("  </key>" + EOL);
+        }
 
         // Write out key descriptions.
         out.write("  <key id=\"dn0\" for=\"node\"");

@@ -11,7 +11,7 @@ import java.util.Random;
 import org.getalp.blexisma.api.SemanticNetwork;
 
 public class SimpleSemanticNetwork<N, R> extends SemanticNetwork<N, R> {
-    public class Relation extends SemanticNetwork<N,R>.Edge{
+    public class Relation extends SemanticNetwork<N,R>.Edge {
         protected Relation(N o, N d, R r, float c) {
             this.origin = o; this.destination = d; this.label = r; this.confidence = c;
         }

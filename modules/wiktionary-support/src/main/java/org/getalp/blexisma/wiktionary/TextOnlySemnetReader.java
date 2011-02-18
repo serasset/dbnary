@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.getalp.blexisma.api.SemanticNetwork;
+
 public class TextOnlySemnetReader {
 
     private final static String nodeMatcher = "^\\s*-O-\\s*(.*)$";
@@ -26,7 +28,7 @@ public class TextOnlySemnetReader {
     private final static Pattern dumpPattern = Pattern.compile(dumpMatcher);
    
     // TODO, take this out and put it in an external class
-    public static void readFromReader(SimpleSemanticNetwork<String, String> semnet, BufferedReader in) throws IOException {
+    public static void readFromReader(SemanticNetwork<String, String> semnet, BufferedReader in) throws IOException {
         String cl;
         String currentOrigin = null, currentRelation = null;
         float currentConfidence = 0;

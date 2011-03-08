@@ -294,7 +294,6 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
     
     void leaveDefBlock(Matcher m) {
-        
         extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
         currentPos = null;
         definitionBlockStart = -1;

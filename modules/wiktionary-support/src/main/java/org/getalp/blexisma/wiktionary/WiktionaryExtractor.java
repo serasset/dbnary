@@ -59,7 +59,7 @@ public abstract class WiktionaryExtractor {
     protected final static String TRANSLATION_RELATION = "trad";
     protected final static String POS_PREFIX = "#" + POS_RELATION + "|";
     protected final static String DEF_PREFIX = "#" + DEF_RELATION + "|";
-    
+        
     protected WiktionaryIndex wiktionaryIndex;
     protected SemanticNetwork<String, String> semnet;
     protected String wiktionaryPageNameWithLangPrefix;
@@ -117,12 +117,28 @@ public abstract class WiktionaryExtractor {
         return cleanUpMarkup(group, false);
     }
 
-    // public static Set<String> affixesToDiscardFromLinks = null;
     
     // Some utility methods that should be common to all languages
     // DONE: (priority: top) keep annotated lemma (#{lemma}#) in definitions.
     // DONE: handle ''...'' and '''...'''.
     // DONE: suppress affixes that follow links, like: e in [[français]]e.
+    // TODO: Extract lemma AND OCCURENCE of links in non human readable form
+
+    /**
+     * cleans up the wiktionary markup from a string in the following maner: <br/>
+     * str is the string to be cleaned up.
+     * the result depends on the value of humanReadable.
+     * Wiktionary macros are always discarded.
+     * Wiktionary links are modified depending on the value of humanReadable.
+     * e.g. str = "{{a Macro}} will be [[discard]]ed and [[feed|fed]] to the [[void]]."
+     * if humanReadable is true, it will produce:
+     * "will be discarded and fed to the void."
+     * if humanReadable is false, it will produce:
+     * "will be #{discard|discarded}# and #{feed|fed}# to the #{void|void}#."
+     * @param str
+     * @param humanReadable
+     * @return
+     */
     public String cleanUpMarkup(String str, boolean humanReadable) {
         Matcher m = macroOrLinkPattern.matcher(str);
         StringBuffer sb = new StringBuffer(str.length());
@@ -140,20 +156,26 @@ public abstract class WiktionaryExtractor {
                 } else if (humanReadable) {
                     replacement = rightGroup;
                 } else {
-                    replacement = "#{" + leftGroup + "}#";
+                    replacement = "#{" + leftGroup + "|" + ((rightGroup == null) ? leftGroup : rightGroup);
                 }
-                replacement = Matcher.quoteReplacement(replacement);
-                m.appendReplacement(sb, replacement);
                 // Discard stupidly encoded morphological affixes.
-                if (!humanReadable && str.length() > m.end() && Character.isLetter(str.charAt(m.end()))) {
+                if (!humanReadable ) { // && str.length() > m.end() && Character.isLetter(str.charAt(m.end()))
                     int i = m.end();
                     StringBuffer affix = new StringBuffer();
                     while(i < str.length() && Character.isLetter(str.charAt(i))) {
                         affix.append(str.charAt(i));
                         i++;
                     }
+                    replacement = replacement + affix.toString();
+                	replacement = replacement + "}#";
+                	replacement = Matcher.quoteReplacement(replacement);
+                    m.appendReplacement(sb, replacement);
+                    // Start over the match after discarded affix
                     str = str.substring(i);
                     m.reset(str); 
+                } else {
+                	 replacement = Matcher.quoteReplacement(replacement);
+                     m.appendReplacement(sb, replacement);
                 }
             } else {
                 m.appendReplacement(sb, "");

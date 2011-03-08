@@ -60,14 +60,14 @@ public class WiktionaryExtractorTest {
     public void testLinkIsKeptInDefaultForm() {
         WiktionaryExtractor we = new FrenchWiktionaryExtractor(null);
         String result = we.cleanUpMarkup("[[lemma|occurence]] XYZ");
-        assertEquals("cleanUp failed", "#{lemma}# XYZ", result);
+        assertEquals("cleanUp failed", "#{lemma|occurence}# XYZ", result);
     }
     
     @Test
     public void testLinkWithoutOccurenceIsKeptInDefaultForm() {
         WiktionaryExtractor we = new FrenchWiktionaryExtractor(null);
         String result = we.cleanUpMarkup("[[lemma]] XYZ");
-        assertEquals("cleanUp failed", "#{lemma}# XYZ", result);
+        assertEquals("cleanUp failed", "#{lemma|lemma}# XYZ", result);
     }
     
     @Test
@@ -81,16 +81,30 @@ public class WiktionaryExtractorTest {
     public void testLinkWithStupidlyEncodedMorphology() {
         WiktionaryExtractor we = new FrenchWiktionaryExtractor(null);
         String result = we.cleanUpMarkup("[[avion]]s", false);
-        assertEquals("cleanUp failed", "#{avion}#", result);
+        assertEquals("cleanUp failed", "#{avion|avions}#", result);
     }
     
     @Test
     public void testDefWithStupidlyEncodedMorphology() {
         WiktionaryExtractor we = new EnglishWiktionaryExtractor(null);
         String result = we.cleanUpMarkup("A failing grade in a class or course.  The next best grade is a [[D]].  Some institutions issue [[E]]s instead of [[F]]s.", false);
-        assertEquals("cleanUp failed", "A failing grade in a class or course. The next best grade is a #{D}#. Some institutions issue #{E}# instead of #{F}#.", result);
+        assertEquals("cleanUp failed", "A failing grade in a class or course. The next best grade is a #{D|D}#. Some institutions issue #{E|Es}# instead of #{F|Fs}#.", result);
     }
     
+    @Test  
+    public void testDocumentationExampleNonHumanReadable() {
+        WiktionaryExtractor we = new EnglishWiktionaryExtractor(null);
+        String result = we.cleanUpMarkup("{{a Macro}} will be [[discard]]ed and [[feed|fed]] to the [[void]].", false);
+        assertEquals("cleanUp failed", "will be #{discard|discarded}# and #{feed|fed}# to the #{void|void}#.", result);
+    }
+
+    @Test  
+    public void testDocumentationExampleHumanReadable() {
+        WiktionaryExtractor we = new EnglishWiktionaryExtractor(null);
+        String result = we.cleanUpMarkup("{{a Macro}} will be [[discard]]ed and [[feed|fed]] to the [[void]].", true);
+        assertEquals("cleanUp failed", "will be discarded and fed to the void.", result);
+    }
+
     @Test
     public void testEmphasized() {
         WiktionaryExtractor we = new EnglishWiktionaryExtractor(null);

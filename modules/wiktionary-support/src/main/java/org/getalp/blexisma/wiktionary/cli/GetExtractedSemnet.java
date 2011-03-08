@@ -44,7 +44,7 @@ public class GetExtractedSemnet {
     public static void printUsage() {
         System.err.println("Usage: ");
         System.err.println("  java org.getalp.blexisma.wiktionary.cli.GetExtractedSemnet languagecode wiktionaryDumpFile entryname ...");
-        System.err.println("    where languagecode is either \"fr\" or \"en\".");
+        System.err.println("    where languagecode is either \"fr\" or \"en\" or \"de\".");
         System.err.println("Displays the extracted semnet of the wiktionary page named \"entryname\".");
     }
 

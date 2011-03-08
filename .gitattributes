@@ -37,6 +37,7 @@ modules/wiktionary-support/src/main/scripts/extract_kernel_defs.pl -text
 modules/wiktionary-support/src/main/scripts/fr_extract-defposNoyau -text
 modules/wiktionary-support/src/main/scripts/intersect.sh -text
 modules/wiktionary-support/src/main/scripts/kernel_dir_file.pl -text
+modules/wiktionary-support/src/main/scripts/update_wiktionary_dumps.sh -text
 modules/wiktionary-support/src/site/apt/cli.apt -text
 modules/wiktionary-support/src/site/apt/index.apt -text
 modules/wiktionary-support/src/site/fml/faq.fml -text

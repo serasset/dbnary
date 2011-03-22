@@ -57,8 +57,8 @@ mkdir -p $result
 
 for lg in $languages
 do
-  compl1file="$result/${lg}_${stamp1}_compl_${stamp2}.graphml"
-  compl2file="$result/${lg}_${stamp2}_compl_${stamp1}.graphml"
+  compl1file="$result/${lg}_lost_elements_${stamp1}_compl_${stamp2}.graphml"
+  compl2file="$result/${lg}_adidtional_elements_${stamp2}_compl_${stamp1}.graphml"
   symdifffile="$result/${lg}_symdiff_${stamp1}_${stamp2}.graphml"
   if [ -f ./${wfile} ]
   then

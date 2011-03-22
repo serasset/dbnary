@@ -16,6 +16,8 @@ public abstract class WiktionaryExtractor {
 
     protected static  String langPrefix = "";
     static {
+    	// DONE: Validate the fact that links and macro should be on one line or may be on several...
+    	// DONE: for this, evaluate the difference in extraction !
         linkPatternString = 
             new StringBuilder()
             .append("\\[\\[")

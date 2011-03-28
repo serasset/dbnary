@@ -157,10 +157,10 @@ public class ExtractWiktionary {
                 totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
                 nbrelevantPages++;
                 if (nbrelevantPages % 1000 == 0) {
-                    System.out.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = " 
+                    System.err.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = " 
                             + (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbpages 
                             + " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbpages + ")" );
-                    System.out.println("      NbNodes = " + s.getNbNodes());
+                    System.err.println("      NbNodes = " + s.getNbNodes());
                     relevantTimeOfLastThousands = System.currentTimeMillis();
                 }
                 // if (nbrelevantPages == 1100) break;

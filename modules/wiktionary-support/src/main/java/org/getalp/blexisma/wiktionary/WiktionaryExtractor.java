@@ -7,6 +7,8 @@ import org.getalp.blexisma.api.SemanticNetwork;
 
 public abstract class WiktionaryExtractor {
     
+	// TODO: Alter the extraction process by allowing multiple lines in a macro and evaluate the final result
+	// TODO: Determine how many nested macro are used in the different wiktionary languages.
     // These should be independant of the language
     protected final static String macroPatternString;
     protected final static String linkPatternString;

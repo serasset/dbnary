@@ -70,23 +70,23 @@ public class ConvertSemnet {
 	
 	private void convert() throws IOException {
 		// TODO: take into account the inputformat and outputformat options.
-		long start = System.currentTimeMillis();
+		//long start = System.currentTimeMillis();
 		SimpleSemanticNetwork<String,String> sn = new SimpleSemanticNetwork<String,String>(500000,1000000);
 		
 		TextOnlySemnetReader.readFromReader(sn, new BufferedReader(input));
-		long end = System.currentTimeMillis();
-		System.out.println("Loaded semnet in: " + (end-start) + "ms.");
+		//long end = System.currentTimeMillis();
+		//System.err.println("Loaded semnet in: " + (end-start) + "ms.");
 
-		long tmem = Runtime.getRuntime().totalMemory();
-		long fmem = Runtime.getRuntime().freeMemory();
+		//long tmem = Runtime.getRuntime().totalMemory();
+		//long fmem = Runtime.getRuntime().freeMemory();
 		
-		System.out.println("Memory usage before gc: " + (tmem-fmem));
+		//System.err.println("Memory usage before gc: " + (tmem-fmem));
 		
-		System.gc();
-		tmem = Runtime.getRuntime().totalMemory();
-		fmem = Runtime.getRuntime().freeMemory();
+		//System.gc();
+		//tmem = Runtime.getRuntime().totalMemory();
+		//fmem = Runtime.getRuntime().freeMemory();
 		
-		System.out.println("Memory usage after gc: " + (tmem-fmem));
+		//System.err.println("Memory usage after gc: " + (tmem-fmem));
 		
 		StringSemNetGraphMLizer os = new StringSemNetGraphMLizer(output, encoding, StringSemNetGraphMLizer.MULLING_OUTPUT);
 		os.dump(sn);

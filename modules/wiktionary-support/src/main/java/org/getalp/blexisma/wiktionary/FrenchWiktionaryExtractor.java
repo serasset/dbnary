@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.getalp.blexisma.api.ISO639_3;
+
 /**
  * @author serasset
  *

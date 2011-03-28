@@ -7,10 +7,13 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.getalp.blexisma.api.ISO639_3;
+
 public class GermanWiktionaryExtractor extends WiktionaryExtractor {
 
     protected final static String languageSectionPatternString = "={2}\\s*([^\\(]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
     protected final static String partOfSpeechPatternString = "={3}\\s*\\{\\{Wortart\\|([^\\}\\|]*)\\|([^\\}]*)\\}\\}.*={3}";
+    // protected final static String tabellePatternString = "\\{\\{(?:Substantiv|Verb)-Tabelle\\|([^\\}\\|]*)\\|([^\\}]*)\\}\\}";
     protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
     protected final static String germanDefinitionPatternString = "^:{1,3}\\[[^\\]]*]\\s*(.*)$";
     private final int NODATA = 0;
@@ -31,6 +34,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
     protected final static String macroOrPOSPatternString;
     protected final static Pattern languageSectionPattern;
     protected final static Pattern germanDefinitionPattern;
+    protected final static String multilineMacroPatternString;
     protected final static Pattern macroOrPOSPattern; // Combine macro pattern
                                                       // and pos pattern.
     protected final static HashSet<String> posMarkers;
@@ -43,8 +47,16 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
         // Pattern.compile(languageSectionPatternString);
 
         languageSectionPattern = Pattern.compile(languageSectionPatternString);
+        multilineMacroPatternString = 
+            new StringBuilder().append("\\{\\{")
+            .append("([^\\}\\|]*)(?:\\|([^\\}]*))?")
+            .append("\\}\\}")
+            .toString();
+        
         macroOrPOSPatternString = new StringBuilder().append("(?:").append(macroPatternString).append(")|(?:").append(
-                partOfSpeechPatternString).append(")|(?:").append(subSection4PatternString).append(")").toString();
+                partOfSpeechPatternString).append(")|(?:").append(subSection4PatternString).append(")")
+                .append("|(?:").append(multilineMacroPatternString).append(")")
+                .toString();
 
         macroOrPOSPattern = Pattern.compile(macroOrPOSPatternString);
         germanDefinitionPattern = Pattern.compile(germanDefinitionPatternString, Pattern.MULTILINE);
@@ -237,11 +249,14 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (m.group(3) != null) {
                     // partOfSpeech
                     registerNewPartOfSpeech(m);
-                } else {
+                } else if (m.group(5) != null) {
                     // translations
                     if (m.group(5).trim().equals("Übersetzungen")) {
                         gotoTradBlock(m);
                     }
+                } else {
+                	// Multiline macro
+                	System.out.println(m.group());
                 }
 
                 break;
@@ -269,12 +284,15 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                     leaveDefBlock(m);
                     registerNewPartOfSpeech(m);
                     gotoNoData(m);
-                } else {
+                } else if (m.group(5) != null) {
                     // translations
                     if (m.group(5).trim().equals("Übersetzungen")) {
                         leaveDefBlock(m);
                         gotoTradBlock(m);
                     }
+                } else {
+                	// Multiline macro
+                	System.out.println(m.group());
                 }
 
                 break;
@@ -302,12 +320,15 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                     leaveTradBlock(m);
                     registerNewPartOfSpeech(m);
                     gotoNoData(m);
-                } else {
+                } else if (m.group(5) != null) {
                     // translations
                     if (m.group(5).trim().equals("Übersetzungen")) {
                         leaveTradBlock(m);
                         gotoTradBlock(m);
                     }
+                } else {
+                	// Multiline macro
+                	System.out.println(m.group());
                 }
 
                 break;
@@ -335,12 +356,15 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                     leaveOrthoAltBlock(m);
                     registerNewPartOfSpeech(m);
                     gotoNoData(m);
-                } else {
+                } else if (m.group(5) != null) {
                     // translations
                     if (m.group(5).trim().equals("Übersetzungen")) {
                         leaveOrthoAltBlock(m);
                         gotoTradBlock(m);
                     }
+                } else {
+                	// Multiline macro
+                	System.out.println(m.group());
                 }
 
                 break;
@@ -369,12 +393,15 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                     leaveNymBlock(m);
                     registerNewPartOfSpeech(m);
                     gotoNoData(m);
-                } else {
+                } else if (m.group(5) != null) {
                     // translations
                     if (m.group(5).trim().equals("Übersetzungen")) {
                         leaveNymBlock(m);
                         gotoTradBlock(m);
                     }
+                } else {
+                	// Multiline macro
+                	System.out.println(m.group());
                 }
 
             default:

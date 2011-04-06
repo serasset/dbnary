@@ -11,6 +11,7 @@ modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/SimpleSe
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/StringSemNetGraphMLizer.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/TextOnlySemnetReader.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.java -text
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryGrep.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndex.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexer.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexerException.java -text
@@ -18,6 +19,7 @@ modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/Conv
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/ExtractWiktionary.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GetExtractedSemnet.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GetRawEntry.java -text svneol=unset#text/plain
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GrepInWiktionary.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/scripts/README.txt -text
 modules/wiktionary-support/src/main/scripts/compare_extracts.sh -text
 modules/wiktionary-support/src/main/scripts/de_extract-defposNoyau -text

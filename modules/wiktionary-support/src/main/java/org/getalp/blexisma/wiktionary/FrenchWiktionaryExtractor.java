@@ -5,11 +5,9 @@ package org.getalp.blexisma.wiktionary;
 
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +38,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     
     private static HashSet<String> unsupportedMarkers = new HashSet<String>();
     
-    private static Set<String> affixesToDiscardFromLinks = null;
+    // private static Set<String> affixesToDiscardFromLinks = null;
     
     protected final static Pattern categoryOrInterwikiLinkPattern;
 
@@ -209,8 +207,8 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
        // TODO trouver tous les modèles de section...
         
         
-        affixesToDiscardFromLinks = new HashSet<String>();
-        affixesToDiscardFromLinks.add("s");
+        // affixesToDiscardFromLinks = new HashSet<String>();
+        // affixesToDiscardFromLinks.add("s");
     }
     
     public FrenchWiktionaryExtractor(WiktionaryIndex wi) {

@@ -231,7 +231,23 @@ public abstract class WiktionaryExtractor {
 //        }
         Matcher linkMatcher = WiktionaryExtractor.linkPattern.matcher(this.pageContent);
         linkMatcher.region(startOffset, endOffset);
+        int lastNymEndOffset = startOffset;
+        int lastNymStartOffset = startOffset;
+        
         while (linkMatcher.find()) {
+        	// TODO: remove debug specific treatment for nym extraction and take a better heuristic
+//        	if (lastNymEndOffset != startOffset) {
+//        		String inbetween = this.pageContent.substring(lastNymEndOffset, linkMatcher.start());
+//        		if (inbetween.contains("{{-réf-}}"))
+//        			System.out.println(this.pageContent.substring(lastNymStartOffset,linkMatcher.end()));
+////        		if (! inbetween.matches(".*[,\\r\\n].*")) {	
+////        			System.out.println(this.pageContent.substring(lastNymStartOffset,linkMatcher.end()));
+////        		}
+//        	}
+        	lastNymStartOffset = linkMatcher.start();
+        	lastNymEndOffset = linkMatcher.end();
+        	// End of debug specific treatment for nym extraction...
+        	
             // It's a link, only keep the alternate string if present.
             String leftGroup = linkMatcher.group(1) ;
             if (leftGroup != null && ! leftGroup.equals("") && ! leftGroup.startsWith("Wikisaurus:")) {

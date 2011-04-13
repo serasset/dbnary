@@ -11,10 +11,10 @@ force=0
 while getopts j:p:d:o:s:f o
 do	case "$o" in
 	j)	wktextractjar="$OPTARG";;
-	p)	wktextractprefix="$OPTARGS";;
+	p)	wktextractprefix="$OPTARG";;
 	d)	dumpfolder="$OPTARG";;
 	o)  outfolder="$OPTARG";;
-	s)	stamp="$OPTARGS";;
+	s)	stamp="$OPTARG";;
 	f)	force=1;;
 	[?])	print >&2 "Usage: $0 [-j wiktionary-support-jar] [-p wiktionary-support-prefix] [-d dumpfolder] [-o outputfolder] [-s stamp] [-f] [lg ...]"
 		exit 1;;
@@ -40,7 +40,7 @@ fi
 
 if [ -d $outfolder/$stamp -a $force -eq 0 ]
 then
-  echo Output folder already exist, use -f to force execution
+  echo "Output folder ($outfolder/$stamp) already exist, use -f to force execution"
   exit 1
 else
   mkdir -p $outfolder/$stamp

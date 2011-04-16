@@ -231,22 +231,23 @@ public abstract class WiktionaryExtractor {
 //        }
         Matcher linkMatcher = WiktionaryExtractor.linkPattern.matcher(this.pageContent);
         linkMatcher.region(startOffset, endOffset);
-        int lastNymEndOffset = startOffset;
-        int lastNymStartOffset = startOffset;
-        
+//        int lastNymEndOffset = startOffset;
+//        int lastNymStartOffset = startOffset;
+//        System.out.println("---- In: " + wiktionaryPageName + " ----");
+//        System.out.println(this.pageContent.substring(startOffset, endOffset));
         while (linkMatcher.find()) {
         	// TODO: remove debug specific treatment for nym extraction and take a better heuristic
 //        	if (lastNymEndOffset != startOffset) {
 //        		String inbetween = this.pageContent.substring(lastNymEndOffset, linkMatcher.start());
-//        		if (inbetween.contains("{{-réf-}}"))
+//        		// if (! inbetween.matches(".*[,\\r\\n].*")) {	
+//        		if (inbetween.equals(" ")) {
+//        			System.out.println("---- In: " + wiktionaryPageName + " ----");
 //        			System.out.println(this.pageContent.substring(lastNymStartOffset,linkMatcher.end()));
-////        		if (! inbetween.matches(".*[,\\r\\n].*")) {	
-////        			System.out.println(this.pageContent.substring(lastNymStartOffset,linkMatcher.end()));
-////        		}
+//        		}
 //        	}
-        	lastNymStartOffset = linkMatcher.start();
-        	lastNymEndOffset = linkMatcher.end();
-        	// End of debug specific treatment for nym extraction...
+//        	lastNymStartOffset = linkMatcher.start();
+//        	lastNymEndOffset = linkMatcher.end();
+//        	// End of debug specific treatment for nym extraction...
         	
             // It's a link, only keep the alternate string if present.
             String leftGroup = linkMatcher.group(1) ;

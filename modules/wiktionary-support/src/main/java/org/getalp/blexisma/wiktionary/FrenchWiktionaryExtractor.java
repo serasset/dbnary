@@ -20,7 +20,7 @@ import org.getalp.blexisma.api.ISO639_3;
 public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
     protected final static String languageSectionPatternString = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
-    protected final static String catOrInterwikiLink = "^\\s*\\[\\[([^\\:\\]]*)\\:([^\\]])*\\]\\]\\s*$";
+    protected final static String catOrInterwikiLink = "^\\s*\\[\\[([^\\:\\]]*)\\:([^\\]]*)\\]\\]\\s*$";
     
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
@@ -173,6 +173,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         nymMarkers.add("-holo-");
         nymMarkers.add("-méton-");
         nymMarkers.add("-syn-");
+        nymMarkers.add("-q-syn-");
         nymMarkers.add("-ant-");
         
         nymMarkerToNymName = new HashMap<String, String>(20);
@@ -182,6 +183,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         nymMarkerToNymName.put("-holo-", "holo");
         nymMarkerToNymName.put("-méton-", "meto");
         nymMarkerToNymName.put("-syn-", "syn");
+        nymMarkerToNymName.put("-q-syn-", "qsyn");
         nymMarkerToNymName.put("-ant-", "ant");
         
         sectionMarkers = new HashSet<String>(200);
@@ -203,6 +205,8 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         sectionMarkers.add("-homo-");
         sectionMarkers.add("-exp-");
         sectionMarkers.add("-compos-");
+        // TODO: prendre en compte la variante orthographique
+        sectionMarkers.add("-var-ortho-");
         
        // TODO trouver tous les modèles de section...
         
@@ -251,6 +255,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         extractFrenchData(frenchSectionStartOffset, frenchSectionEndOffset);
      }
 
+    // TODO: apply this end stripping method to all languages.
     int computeRegionEnd(int blockStart, Matcher m) {
         if (m.hitEnd()) {
             // Take out categories and interwiki links.

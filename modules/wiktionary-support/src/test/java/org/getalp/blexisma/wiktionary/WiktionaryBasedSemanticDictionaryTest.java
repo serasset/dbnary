@@ -62,7 +62,7 @@ public class WiktionaryBasedSemanticDictionaryTest {
 		    will(returnValue(ConceptualVector.randomisedCV(2000, 2000000, 5, 5)));
 	    }});
 
-		SemanticDefinition sdef = dict.getDefinition("#fra|dictionnaire");
+		SemanticDefinition sdef = dict.getDefinition("dictionnaire","fra");
 		
 		assertEquals("Incorrect number of senses.", sdef.getSenseList().size(), 10);
 		assertTrue("Morpho should be a noun.", sdef.getSenseList().get(0).getMorpho().contains(MorphoProperties.NOUN));

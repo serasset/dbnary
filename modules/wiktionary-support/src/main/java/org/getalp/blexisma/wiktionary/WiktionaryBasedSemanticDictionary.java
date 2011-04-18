@@ -87,7 +87,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	}
 	
 	@Override
-	public SemanticDefinition getDefinition(String txt) {
+	public SemanticDefinition getDefinition(String txt, String lg) {
 		Collection<? extends SemanticNetwork<String,String>.Edge> edges = wiktionaryNetwork.getEdges(txt);
 		ArrayList<Sense> senses = new ArrayList<Sense>();
 		
@@ -105,12 +105,12 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	}
 
 	@Override
-	public ConceptualVector getVector(String txt) {
+	public ConceptualVector getVector(String txt, String lg) {
 		return vectorialBase.getVector(txt);
 	}
 
 	@Override
-	public void setVector(String txt, ConceptualVector cv) {
+	public void setVector(String txt, String lg, ConceptualVector cv) {
 		vectorialBase.addVector(txt, cv);
 	}
 
@@ -124,6 +124,14 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 			}
 		}
 		return other;
+	}
+
+	public SemanticNetwork<String, String> getNetwork() {
+		return wiktionaryNetwork;
+	}
+
+	public VectorialBase getBase() {
+		return vectorialBase;
 	}
 	
 	

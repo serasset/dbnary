@@ -6,17 +6,19 @@ languages="fr"	# default languages
 dumpfolder="$HOME/dev/wiktionary/latest"
 outfolder="$HOME/dev/wiktionary/extracts"
 stamp=`date +%Y%m%d%k%M`
+format=graphml
 force=0
 
-while getopts j:p:d:o:s:f o
+while getopts j:p:d:o:s:f:F o
 do	case "$o" in
 	j)	wktextractjar="$OPTARG";;
 	p)	wktextractprefix="$OPTARG";;
 	d)	dumpfolder="$OPTARG";;
 	o)  outfolder="$OPTARG";;
 	s)	stamp="$OPTARG";;
-	f)	force=1;;
-	[?])	print >&2 "Usage: $0 [-j wiktionary-support-jar] [-p wiktionary-support-prefix] [-d dumpfolder] [-o outputfolder] [-s stamp] [-f] [lg ...]"
+	f)	format="$OPTARG";;
+	F)	force=1;;
+	[?])	print >&2 "Usage: $0 [-j wiktionary-support-jar] [-p wiktionary-support-prefix] [-d dumpfolder] [-o outputfolder] [-s stamp] [-f raw] [-F] [lg ...]"
 		exit 1;;
 	esac
 done
@@ -56,7 +58,7 @@ do
   then
     rm -f ./${wfile}
   fi
-  cmd="java -Xmx2G -Dfile.encoding=UTF-8 -cp ${wktextractprefix}/${wktextractjar} org.getalp.blexisma.wiktionary.cli.ExtractWiktionary -l ${lg} -o ./${wfile} -f graphml ${dumpfile}"
+  cmd="java -Xmx2G -Dfile.encoding=UTF-8 -cp ${wktextractprefix}/${wktextractjar} org.getalp.blexisma.wiktionary.cli.ExtractWiktionary -l ${lg} -o ./${wfile} -f ${format} ${dumpfile}"
   echo Extracting data from ${lg} dump.
   echo $cmd
   $cmd

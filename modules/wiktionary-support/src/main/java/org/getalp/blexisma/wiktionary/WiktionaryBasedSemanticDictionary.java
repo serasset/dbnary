@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.getalp.blexisma.api.ConceptualVector;
+import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.SemanticDefinition;
 import org.getalp.blexisma.api.SemanticDictionary;
 import org.getalp.blexisma.api.SemanticNetwork;
@@ -88,7 +89,8 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	
 	@Override
 	public SemanticDefinition getDefinition(String txt, String lg) {
-		Collection<? extends SemanticNetwork<String,String>.Edge> edges = wiktionaryNetwork.getEdges(txt);
+		String nodename = getNodeName(txt, lg);
+		Collection<? extends SemanticNetwork<String,String>.Edge> edges = wiktionaryNetwork.getEdges(nodename);
 		ArrayList<Sense> senses = new ArrayList<Sense>();
 		
 		for (SemanticNetwork<String,String>.Edge edge : edges) {
@@ -100,18 +102,23 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 				senses.add(s);
 			}
 		}
-		ConceptualVector mcv = vectorialBase.getVector(txt);
+		ConceptualVector mcv = vectorialBase.getVector(nodename);
 		return new SemanticDefinition(mcv, senses);
+	}
+
+	private static String getNodeName(String txt, String lg) {
+		String lang = ISO639_3.sharedInstance.getIdCode(lg);
+		return "#" + lang + "|" + txt;
 	}
 
 	@Override
 	public ConceptualVector getVector(String txt, String lg) {
-		return vectorialBase.getVector(txt);
+		return vectorialBase.getVector(getNodeName(txt, lg));
 	}
 
 	@Override
 	public void setVector(String txt, String lg, ConceptualVector cv) {
-		vectorialBase.addVector(txt, cv);
+		vectorialBase.addVector(getNodeName(txt, lg), cv);
 	}
 
 	

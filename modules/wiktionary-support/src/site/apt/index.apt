@@ -21,3 +21,19 @@ Wiktionary Support
   * <<<GetExtractedSemnet>>> extract the lexical network from one or several entries given as command line arguments.
   
   []
+  
+Developper's notes
+  
+* DONE
+  
+* TO BE EVALUATED
+
+  * Filtrage des liens "nym" qui pointent sur une cible "Catégorie". 
+    Ces liens peuvent apparaître malgrés le filtrage des lien interwiki. En effet, les liens 
+    interwikis sont sensés apparaître en fin d'entrée mais il semble que certains de ces liens apparaissent 
+    avant la section "-réf-" (au moins sur le wiktionnaire français)
+  
+* TO IMPLEMENT
+  
+  * Filter out interwiki links in German and English (as it is done in French, when we come up to the end of the entry),
+  * Filter out page names that are not wiktionary entries (e.g. Category:, Modèle:, etc.),

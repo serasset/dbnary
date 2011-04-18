@@ -220,15 +220,11 @@ public abstract class WiktionaryExtractor {
         }      
      }
  
+   
     // TODO: Some nyms can be placed in sublists and lists (hence with ** or ***). In this case, we currently extract the additional stars.
     protected void extractNyms(String synRelation, int startOffset, int endOffset) {
         // System.out.println(wiktionaryPageName + " contains: " + pageContent.substring(startOffset, endOffset));
         // Extract all links
-//        String nym = pageContent.substring(startOffset, endOffset);
-//        if (nym.contains(",")) {
-//            System.out.println(this.wiktionaryPageNameWithLangPrefix + " ---> ");
-//            System.out.println(nym);
-//        }
         Matcher linkMatcher = WiktionaryExtractor.linkPattern.matcher(this.pageContent);
         linkMatcher.region(startOffset, endOffset);
 //        int lastNymEndOffset = startOffset;
@@ -251,7 +247,9 @@ public abstract class WiktionaryExtractor {
         	
             // It's a link, only keep the alternate string if present.
             String leftGroup = linkMatcher.group(1) ;
-            if (leftGroup != null && ! leftGroup.equals("") && ! leftGroup.startsWith("Wikisaurus:")) {
+            if (leftGroup != null && ! leftGroup.equals("") && 
+            		! leftGroup.startsWith("Wikisaurus:") &&
+            		! leftGroup.startsWith("Catégorie:")) {
                 leftGroup = langPrefix + leftGroup;
                 this.semnet.addRelation(this.wiktionaryPageNameWithLangPrefix, leftGroup, 1, synRelation);
             }

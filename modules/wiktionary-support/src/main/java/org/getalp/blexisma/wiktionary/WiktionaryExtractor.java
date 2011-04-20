@@ -123,7 +123,7 @@ public abstract class WiktionaryExtractor {
         }      
     }
     
-    public String cleanUpMarkup(String group) {
+    public static String cleanUpMarkup(String group) {
         return cleanUpMarkup(group, false);
     }
 

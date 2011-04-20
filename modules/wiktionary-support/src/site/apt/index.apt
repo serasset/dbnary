@@ -32,8 +32,11 @@ Developper's notes
     Ces liens peuvent apparaître malgrés le filtrage des lien interwiki. En effet, les liens 
     interwikis sont sensés apparaître en fin d'entrée mais il semble que certains de ces liens apparaissent 
     avant la section "-réf-" (au moins sur le wiktionnaire français)
+    
+  * Suppression de la fin des articles (liens interwiki et liens vers catégories), dans les 3 langues.
   
 * TO IMPLEMENT
   
   * Filter out interwiki links in German and English (as it is done in French, when we come up to the end of the entry),
+  
   * Filter out page names that are not wiktionary entries (e.g. Category:, Modèle:, etc.),

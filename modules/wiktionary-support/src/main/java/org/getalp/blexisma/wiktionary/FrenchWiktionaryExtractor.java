@@ -20,7 +20,6 @@ import org.getalp.blexisma.api.ISO639_3;
 public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
     protected final static String languageSectionPatternString = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
-    protected final static String catOrInterwikiLink = "^\\s*\\[\\[([^\\:\\]]*)\\:([^\\]]*)\\]\\]\\s*$";
     
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
@@ -40,14 +39,10 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     
     // private static Set<String> affixesToDiscardFromLinks = null;
     
-    protected final static Pattern categoryOrInterwikiLinkPattern;
-
     static {
         langPrefix = "#" + ISO639_3.sharedInstance.getIdCode("fra") + "|";
       
-        
-        categoryOrInterwikiLinkPattern = Pattern.compile(catOrInterwikiLink, Pattern.MULTILINE);
-        
+                
         posMarkers = new HashSet<String>(130);
         ignorablePosMarkers = new HashSet<String>(130);
 
@@ -255,21 +250,6 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         extractFrenchData(frenchSectionStartOffset, frenchSectionEndOffset);
      }
 
-    // TODO: apply this end stripping method to all languages.
-    int computeRegionEnd(int blockStart, Matcher m) {
-        if (m.hitEnd()) {
-            // Take out categories and interwiki links.
-            Matcher links = categoryOrInterwikiLinkPattern.matcher(pageContent);
-            links.region(blockStart, m.regionEnd());
-            while (links.find()) {
-                if (links.group(1).equals("Catégorie") || links.group(2).equals(this.wiktionaryPageName))
-                    return links.start();
-            } 
-            return m.regionEnd();
-        } else {
-            return m.start();
-        }
-    }
     
     void gotoNoData(Matcher m) {
         state = NODATA;

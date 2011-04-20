@@ -16,6 +16,9 @@ public abstract class WiktionaryExtractor {
     protected final static String definitionPatternString = "^#{1,2}([^\\*#:].*)$";
     protected final static String bulletListPatternString = "\\*\\s*(.*)";
 
+    protected final static String catOrInterwikiLink = "^\\s*\\[\\[([^\\:\\]]*)\\:([^\\]]*)\\]\\]\\s*$";
+    protected final static Pattern categoryOrInterwikiLinkPattern;
+
     protected static  String langPrefix = "";
     static {
     	// DONE: Validate the fact that links and macro should be on one line or may be on several...
@@ -39,6 +42,9 @@ public abstract class WiktionaryExtractor {
         .append(")|(?:")
         .append("'{2,3}")
         .append(")").toString();
+        
+        categoryOrInterwikiLinkPattern = Pattern.compile(catOrInterwikiLink, Pattern.MULTILINE);
+
     }
     
     protected final static Pattern macroPattern;
@@ -143,7 +149,7 @@ public abstract class WiktionaryExtractor {
      * @param humanReadable
      * @return
      */
-    public String cleanUpMarkup(String str, boolean humanReadable) {
+    public static String cleanUpMarkup(String str, boolean humanReadable) {
         Matcher m = macroOrLinkPattern.matcher(str);
         StringBuffer sb = new StringBuffer(str.length());
         String leftGroup, rightGroup;
@@ -208,6 +214,19 @@ public abstract class WiktionaryExtractor {
         return sb.toString();
     }
 
+    private static String  definitionMarkupString = "#\\{([^\\|]*)\\|([^\\}]*)\\}\\#";
+    private static Pattern definitionMarkup = Pattern.compile(definitionMarkupString);
+    public static String convertToHumanReadableForm(String def) {
+    	Matcher m = definitionMarkup.matcher(def);
+        StringBuffer sb = new StringBuffer(def.length());
+        while (m.find()) {
+        	m.appendReplacement(sb, m.group(2));
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+    
+    
     protected void extractOrthoAlt(int startOffset, int endOffset) {
         Matcher bulletListMatcher = WiktionaryExtractor.bulletListPattern.matcher(this.pageContent);
         bulletListMatcher.region(startOffset, endOffset);
@@ -220,6 +239,25 @@ public abstract class WiktionaryExtractor {
         }      
      }
  
+    int computeRegionEnd(int blockStart, Matcher m) {
+        if (m.hitEnd()) {
+            // Take out categories and interwiki links.
+            Matcher links = categoryOrInterwikiLinkPattern.matcher(pageContent);
+            links.region(blockStart, m.regionEnd());
+            while (links.find()) {
+                if 	(	links.group(2).equals(this.wiktionaryPageName) ||
+                		links.group(1).equals("Catégorie") ||
+                		links.group(1).equals("Category") ||
+                		links.group(1).equals("Kategorie")
+                		)
+                    return links.start();
+            } 
+            return m.regionEnd();
+        } else {
+            return m.start();
+        }
+    }
+
    
     // TODO: Some nyms can be placed in sublists and lists (hence with ** or ***). In this case, we currently extract the additional stars.
     protected void extractNyms(String synRelation, int startOffset, int endOffset) {

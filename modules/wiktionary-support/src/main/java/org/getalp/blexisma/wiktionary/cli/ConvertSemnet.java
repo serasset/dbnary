@@ -5,13 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -69,11 +67,19 @@ public class ConvertSemnet {
 	}
 	
 	private void convert() throws IOException {
-		// TODO: take into account the inputformat and outputformat options.
+		// TODO: use graphml as an input format for semantic networks.
 		//long start = System.currentTimeMillis();
 		SimpleSemanticNetwork<String,String> sn = new SimpleSemanticNetwork<String,String>(500000,1000000);
 		
-		TextOnlySemnetReader.readFromReader(sn, new BufferedReader(input));
+		if ("raw".equals(inputFormat)) {
+			TextOnlySemnetReader.readFromReader(sn, new BufferedReader(input));
+		} else if ("graphml".equals(inputFormat)) {
+			System.err.println("graphml format is currently unsupported as an input format");
+			System.exit(1);
+		} else {
+			System.err.println("Unsupported input format: " + inputFormat);
+			System.exit(1);
+		}
 		//long end = System.currentTimeMillis();
 		//System.err.println("Loaded semnet in: " + (end-start) + "ms.");
 
@@ -87,9 +93,15 @@ public class ConvertSemnet {
 		//fmem = Runtime.getRuntime().freeMemory();
 		
 		//System.err.println("Memory usage after gc: " + (tmem-fmem));
-		
-		StringSemNetGraphMLizer os = new StringSemNetGraphMLizer(output, encoding, StringSemNetGraphMLizer.MULLING_OUTPUT);
-		os.dump(sn);
+		if ("graphml".equals(outputFormat)) {
+			StringSemNetGraphMLizer os = new StringSemNetGraphMLizer(output, encoding, StringSemNetGraphMLizer.MULLING_OUTPUT);
+			os.dump(sn);
+		} else if ("raw".equals(outputFormat)) {
+			sn.dumpToWriter(new PrintStream(output));
+		} else {
+			System.err.println("Unsupported output format: " + outputFormat);
+			System.exit(1);
+		}
 	}
 
 	/**

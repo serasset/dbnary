@@ -111,4 +111,13 @@ public class WiktionaryExtractorTest {
         String result = we.cleanUpMarkup("'''l'action''' ''compte''", false);
         assertEquals("cleanUp failed", "l'action compte", result);
     }
+    
+    @Test  
+    public void testDefinitionToHumanReadable() {
+    	String data = "{{a Macro}} will be [[discard]]ed and [[feed|fed]] to the [[void]].";
+        String result1 = WiktionaryExtractor.cleanUpMarkup(data, true);
+        String def = WiktionaryExtractor.cleanUpMarkup(data, false);
+        String result2 = WiktionaryExtractor.convertToHumanReadableForm(def);
+        assertEquals("Hman readable form should be the same in both results", result1, result2);
+    }
 }

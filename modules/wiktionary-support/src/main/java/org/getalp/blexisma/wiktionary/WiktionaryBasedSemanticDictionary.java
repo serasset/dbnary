@@ -98,12 +98,12 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 				String def = edge.getDestination();
 				ConceptualVector cv = vectorialBase.getVector(def);
 				List<MorphoProperties> morph = getMorphoProperties(def);
-				Sense s = new Sense(cv, morph);
+				Sense s = new Sense(def ,cv, morph);
 				senses.add(s);
 			}
 		}
 		ConceptualVector mcv = vectorialBase.getVector(nodename);
-		return new SemanticDefinition(mcv, senses);
+		return new SemanticDefinition(nodename, mcv, senses);
 	}
 
 	private static String getNodeName(String txt, String lg) {

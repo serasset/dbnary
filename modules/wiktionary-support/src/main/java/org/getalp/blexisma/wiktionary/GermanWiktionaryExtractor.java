@@ -196,18 +196,18 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
     }
 
     void leaveDefBlock(Matcher m) {
-        extractDefinitions(definitionBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        extractDefinitions(definitionBlockStart, computeRegionEnd(orthBlockStart, m));
         currentPos = null;
         definitionBlockStart = -1;
     }
 
     void leaveTradBlock(Matcher m) {
-        extractTranslations(translationBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        extractTranslations(translationBlockStart, computeRegionEnd(orthBlockStart, m));
         translationBlockStart = -1;
     }
 
     void leaveOrthoAltBlock(Matcher m) {
-        extractOrthoAlt(orthBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        extractOrthoAlt(orthBlockStart, computeRegionEnd(orthBlockStart, m));
         orthBlockStart = -1;
     }
 
@@ -218,7 +218,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
     }
 
     private void leaveNymBlock(Matcher m) {
-        extractNyms(currentNym, nymBlockStart, (m.hitEnd()) ? m.regionEnd() : m.start());
+        extractNyms(currentNym, nymBlockStart, computeRegionEnd(orthBlockStart, m));
         currentNym = null;
         nymBlockStart = -1;
     }

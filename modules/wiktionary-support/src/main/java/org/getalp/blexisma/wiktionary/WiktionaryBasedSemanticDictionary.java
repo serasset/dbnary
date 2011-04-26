@@ -147,4 +147,5 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	{
 		//TODO procedure de sauvegarde de l'ensemble des données
 	}
+	
 }

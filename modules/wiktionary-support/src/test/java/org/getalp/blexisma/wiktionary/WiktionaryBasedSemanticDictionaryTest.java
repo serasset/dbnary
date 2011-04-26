@@ -55,6 +55,7 @@ public class WiktionaryBasedSemanticDictionaryTest {
 		fis.close();
 		fis = null;
 	}
+
 	@Test
 	public void testSemanticDictionary() {
 		context.checking(new Expectations() {{
@@ -66,6 +67,20 @@ public class WiktionaryBasedSemanticDictionaryTest {
 		
 		assertEquals("Incorrect number of senses.", sdef.getSenseList().size(), 10);
 		assertTrue("Morpho should be a noun.", sdef.getSenseList().get(0).getMorpho().contains(MorphoProperties.NOUN));
+	}
+
+	@Test
+	public void testDefinitionIsNotNull() {
+		context.checking(new Expectations() {{
+			allowing(vb).getVector(with(aNonNull(String.class)));    // The turtle can be asked about its pen any number of times and will always
+		    will(returnValue(ConceptualVector.randomisedCV(2000, 2000000, 5, 5)));
+	    }});
+
+		SemanticDefinition sdef = dict.getDefinition("tagada","fra");
+		
+		assertNotNull("getDefinition should never return null.", sdef);
+		assertNotNull("Sense list should not be null.", sdef.getSenseList());
+		assertEquals("Sense list should be empty.", sdef.getSenseList().size(), 0);
 	}
 
 }

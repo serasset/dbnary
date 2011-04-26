@@ -141,5 +141,8 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 		return vectorialBase;
 	}
 	
-	
+	public void saveDictionary(String pathBase, String pathNetwork)
+	{
+		//TODO procedure de sauvegarde de l'ensemble des données
+	}
 }

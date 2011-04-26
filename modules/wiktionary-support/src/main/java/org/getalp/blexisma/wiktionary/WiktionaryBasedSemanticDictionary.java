@@ -92,6 +92,9 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 		String nodename = getNodeName(txt, lg);
 		Collection<? extends SemanticNetwork<String,String>.Edge> edges = wiktionaryNetwork.getEdges(nodename);
 		ArrayList<Sense> senses = new ArrayList<Sense>();
+		ConceptualVector mcv = vectorialBase.getVector(nodename);
+		
+		if (null == edges) return new SemanticDefinition(nodename, mcv, senses);
 		
 		for (SemanticNetwork<String,String>.Edge edge : edges) {
 			if (edge.getRelation().equals(WiktionaryExtractor.DEF_RELATION)) {
@@ -102,7 +105,6 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 				senses.add(s);
 			}
 		}
-		ConceptualVector mcv = vectorialBase.getVector(nodename);
 		return new SemanticDefinition(nodename, mcv, senses);
 	}
 

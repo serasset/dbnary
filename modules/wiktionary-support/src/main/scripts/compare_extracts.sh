@@ -68,10 +68,14 @@ do
   cmd2="$mullingprefix/mixgraphs compl ${stamp2}/${lg}_extract.graphml ${stamp1}/${lg}_extract.graphml > $compl2file"
   cmd3="$mullingprefix/mixgraphs symdiff ${stamp1}/${lg}_extract.graphml ${stamp2}/${lg}_extract.graphml > $symdifffile"
   
-  echo "$cmd1 &"
+  $cmd1 & PIDS="$! $PIDS"
     
-  echo "$cmd2 &"
+  $cmd2 & PIDS="$! $PIDS"
   
-  echo "$cmd3 &"
+  $cmd3 & PIDS="$! $PIDS"
   
 done
+
+echo $PIDS
+
+wait $PIDS

@@ -48,12 +48,19 @@ else
   mkdir -p $outfolder/$stamp
 fi
 
+if [ $format == "graphml" ]
+then
+    suffix=.grapml
+else
+    suffix=.raw
+fi
+
 cd $outfolder/$stamp
 
 for lg in $languages
 do
   dumpfile="$dumpfolder/${lg}wkt.xml"
-  wfile="${lg}_extract.graphml"
+  wfile="${lg}_extract${suffix}"
   if [ -f ./${wfile} ]
   then
     rm -f ./${wfile}

@@ -11,6 +11,7 @@ import org.getalp.blexisma.api.ConceptualVector;
 import org.getalp.blexisma.api.SemanticDefinition;
 import org.getalp.blexisma.api.VectorialBase;
 import org.getalp.blexisma.api.syntaxanalysis.MorphoProperties;
+import org.getalp.blexisma.impl.vectorialbase.RAM_VectorialBase;
 import org.jmock.Mockery;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JMock;
@@ -30,7 +31,7 @@ public class WiktionaryBasedSemanticDictionaryTest {
     
 
 	SimpleSemanticNetwork<String, String> wn;
-	VectorialBase vb = context.mock(VectorialBase.class);
+	RAM_VectorialBase vb = context.mock(RAM_VectorialBase.class);
 	BufferedReader br;
 	InputStream fis;
 	

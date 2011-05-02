@@ -1,5 +1,12 @@
 package org.getalp.blexisma.wiktionary;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,6 +21,7 @@ import org.getalp.blexisma.api.SemanticNetwork;
 import org.getalp.blexisma.api.Sense;
 import org.getalp.blexisma.api.VectorialBase;
 import org.getalp.blexisma.api.syntaxanalysis.MorphoProperties;
+import org.getalp.blexisma.impl.vectorialbase.RAM_VectorialBase;
 
 import static org.getalp.blexisma.api.syntaxanalysis.MorphoProperties.*;
 
@@ -80,11 +88,73 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	}
 	
 	private SemanticNetwork<String, String> wiktionaryNetwork;
-	private VectorialBase vectorialBase;
+	private RAM_VectorialBase vectorialBase;
+	private String vectorialBasePath;
+	private String wiktionaryNetworkPath;
 	
-	public WiktionaryBasedSemanticDictionary(VectorialBase vectorialBase, SemanticNetwork<String, String> wiktionaryNetwork) {
-		this.wiktionaryNetwork = wiktionaryNetwork;
-		this.vectorialBase = vectorialBase;
+	public WiktionaryBasedSemanticDictionary(String vectorialBasePath, String wiktionaryNetworkPath) {
+		this.vectorialBasePath = vectorialBasePath;
+		this.wiktionaryNetworkPath = wiktionaryNetworkPath;
+		try {
+			loadNetwork(new BufferedReader(new InputStreamReader(new FileInputStream(new File(wiktionaryNetworkPath)),"UTF-8")));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		loadVectorBase(vectorialBasePath);
+	}
+	
+	public WiktionaryBasedSemanticDictionary(String vectorialBasePath, BufferedReader br) {
+		this.vectorialBasePath = vectorialBasePath;
+		this.wiktionaryNetworkPath = null;
+		loadNetwork(br);
+		loadVectorBase(vectorialBasePath);
+	}
+	
+	public WiktionaryBasedSemanticDictionary(String vectorialBasePath, SimpleSemanticNetwork<String,String> sn) {
+		this.vectorialBasePath = vectorialBasePath;
+		this.wiktionaryNetworkPath = null;
+		this.wiktionaryNetwork = sn;
+		loadVectorBase(vectorialBasePath);
+	}
+	
+	public WiktionaryBasedSemanticDictionary(RAM_VectorialBase vb, BufferedReader br) {
+		this.vectorialBasePath = null;
+		this.wiktionaryNetworkPath = null;
+		loadNetwork(br);
+		this.vectorialBase = vb;
+	}
+	
+	public WiktionaryBasedSemanticDictionary(RAM_VectorialBase vb, SimpleSemanticNetwork<String,String> sn) {
+		this.vectorialBasePath = null;
+		this.wiktionaryNetworkPath = null;
+		this.wiktionaryNetwork = sn;
+		this.vectorialBase = vb;
+	}
+	
+	public void loadNetwork(BufferedReader br) {
+		
+		this.wiktionaryNetwork = new SimpleSemanticNetwork<String,String>();
+		
+		try {
+			TextOnlySemnetReader.readFromReader(this.wiktionaryNetwork, br);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void loadVectorBase(String vectorialBasePath) {
+			
+		// NOTA: this dependency to RAM_Vectorial Base is the only reason for the dependency to blexisma-core.
+		// TODO: Hence an architecture redesign may be a good thing to do...
+		if (this.vectorialBasePath != null) {
+			this.vectorialBase = RAM_VectorialBase.load(vectorialBasePath);
+		} else {
+			this.vectorialBase = new RAM_VectorialBase();
+		}
+		
 	}
 	
 	@Override
@@ -143,9 +213,12 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 		return vectorialBase;
 	}
 	
+	@Override
 	public void saveDictionary()
 	{
-		
+		if (this.vectorialBasePath != null) {
+			this.vectorialBase.save(this.vectorialBasePath);
+		}
 	}
 	
 }

@@ -246,11 +246,12 @@ public abstract class WiktionaryExtractor {
             links.region(blockStart, m.regionEnd());
             while (links.find()) {
                 if 	(	links.group(2).equals(this.wiktionaryPageName) ||
-                		links.group(1).equals("Catégorie") ||
-                		links.group(1).equals("Category") ||
-                		links.group(1).equals("Kategorie") ||
-                		links.group(1).equals("Annexe") || 
-                		links.group(1).equals("Image") 
+                		links.group(1).equalsIgnoreCase("Catégorie") ||
+                		links.group(1).equalsIgnoreCase("Category") ||
+                		links.group(1).equalsIgnoreCase("Kategorie") ||
+                		links.group(1).equalsIgnoreCase("Annexe") || 
+                		links.group(1).equalsIgnoreCase("Image") || 
+                		links.group(1).equalsIgnoreCase("File") 
                 		)
                     return links.start();
                 else if (links.group(1) != null) {

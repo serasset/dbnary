@@ -135,13 +135,13 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     }
     
     void leaveDefBlock(Matcher m) {
-        extractDefinitions(definitionBlockStart, computeRegionEnd(orthBlockStart, m));
+        extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
         currentPos = null;
         definitionBlockStart = -1;
     }
     
     void leaveTradBlock(Matcher m) {
-        extractTranslations(translationBlockStart, computeRegionEnd(orthBlockStart, m));
+        extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m));
         translationBlockStart = -1;
     }
 
@@ -158,7 +158,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
      }
 
     private void leaveNymBlock(Matcher m) {
-        extractNyms(currentNym, nymBlockStart, computeRegionEnd(orthBlockStart, m));
+        extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
         currentNym = null;
         nymBlockStart = -1;         
      }

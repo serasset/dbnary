@@ -1,19 +1,12 @@
 package org.getalp.blexisma.wiktionary.cli;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -21,20 +14,16 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.codehaus.stax2.XMLInputFactory2;
-import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.blexisma.wiktionary.EnglishWiktionaryExtractor;
 import org.getalp.blexisma.wiktionary.FrenchWiktionaryExtractor;
 import org.getalp.blexisma.wiktionary.GermanWiktionaryExtractor;
-import org.getalp.blexisma.wiktionary.OffsetValue;
 import org.getalp.blexisma.wiktionary.SimpleSemanticNetwork;
 import org.getalp.blexisma.wiktionary.StringSemNetGraphMLizer;
 import org.getalp.blexisma.wiktionary.WiktionaryExtractor;
 import org.getalp.blexisma.wiktionary.WiktionaryIndex;
-import org.getalp.blexisma.wiktionary.WiktionaryIndexer;
 import org.getalp.blexisma.wiktionary.WiktionaryIndexerException;
 
-public class ExtractWiktionary {
+public class ExtractWiktionaryUsingIndex {
 
 	private static Options options = null; // Command line options
 
@@ -48,16 +37,14 @@ public class ExtractWiktionary {
 	private static final String DEFAULT_OUTPUT_FILE = "fr_extract";
 	
 	private static final String SUFFIX_OUTPUT_FILE_OPTION = "s";
-
-    public static final XMLInputFactory2 xmlif;
-
-
+	
+	
 	private CommandLine cmd = null; // Command Line arguments
 	
 	private String outputFile = DEFAULT_OUTPUT_FILE;
 	private String outputFormat = DEFAULT_OUTPUT_FORMAT;
 	private String language = DEFAULT_LANGUAGE;
-	private File dumpFile;
+	private String dumpFile;
 	private String outputFileSuffix = "";
 	static{
 		options = new Options();
@@ -70,25 +57,13 @@ public class ExtractWiktionary {
 		options.addOption(OUTPUT_FILE_OPTION, true, "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");	
 	}
 	
-	static {
-        try {
-            xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
-            xmlif.setProperty(XMLInputFactory.IS_VALIDATING, Boolean.FALSE);
-            xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
-            xmlif.setProperty(XMLInputFactory2.P_PRESERVE_LOCATION, Boolean.TRUE);
-        } catch (Exception ex) {
-            System.err.println("Cannot intialize XMLInputFactory while classloading WiktionaryIndexer.");
-            throw new RuntimeException("Cannot initialize XMLInputFactory", ex);
-        }
-    }
-	
 	/**
 	 * @param args
 	 * @throws IOException 
 	 * @throws WiktionaryIndexerException 
 	 */
 	public static void main(String[] args) throws WiktionaryIndexerException, IOException {
-		ExtractWiktionary cliProg = new ExtractWiktionary();
+		ExtractWiktionaryUsingIndex cliProg = new ExtractWiktionaryUsingIndex();
 		cliProg.loadArgs(args);
 		cliProg.extract();
 	}
@@ -143,10 +118,14 @@ public class ExtractWiktionary {
 		
 		outputFile = outputFile + outputFileSuffix;
 		 
-		dumpFile = new File(remainingArgs[0]);
+		dumpFile = remainingArgs[0];
 	}
 	
     public void extract() throws WiktionaryIndexerException, IOException {
+        
+        long startTime = System.currentTimeMillis();
+
+        WiktionaryIndex wi = new WiktionaryIndex(dumpFile);
         
         WiktionaryExtractor we = null;
         if (language.equals("fr")) {
@@ -160,70 +139,35 @@ public class ExtractWiktionary {
             System.exit(1);
         }
 
+        long endloadTime = System.currentTimeMillis();
+        System.err.println("Loaded index in " + (endloadTime - startTime) +"ms.");
+         
         SimpleSemanticNetwork<String, String> s = new SimpleSemanticNetwork<String, String>(100000, 1000000);
-        
-        // create new XMLStreamReader
-
-        long startTime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
         long totalRelevantTime = 0, relevantstartTime = 0, relevantTimeOfLastThousands;
         int nbpages = 0, nbrelevantPages = 0;
         relevantTimeOfLastThousands = System.currentTimeMillis();
-
-        XMLStreamReader2 xmlr = null;
-        try {
-            // pass the file name. all relative entity references will be
-            // resolved against this as base URI.
-            xmlr = xmlif.createXMLStreamReader(dumpFile);
-
-            // check if there are more events in the input stream
-            String title = "";
-            String page = "";
-            while (xmlr.hasNext()) {
-                xmlr.next();
-                if (xmlr.isStartElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
-                    title = "";
-                    page = "";
-                } else if (xmlr.isStartElement() && xmlr.getLocalName().equals(WiktionaryIndexer.titleTag)) {
-                    title = xmlr.getElementText();
-                } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("text")) {
-                	page = xmlr.getElementText();
-                } else if (xmlr.isEndElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
-                	if (!title.equals("")) {               	
-                        nbpages++;
-                        int nbnodes = s.getNbNodes();
-                		we.extractData(title, page, s);
-                		if (nbnodes != s.getNbNodes()) {
-                			totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
-                			nbrelevantPages++;
-                			if (nbrelevantPages % 1000 == 0) {
-                				System.err.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = " 
-                						+ (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbpages 
-                						+ " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbpages + ")" );
-                				System.err.println("      NbNodes = " + s.getNbNodes());
-                				relevantTimeOfLastThousands = System.currentTimeMillis();
-                			}
-                			// if (nbrelevantPages == 1100) break;
-                		}	
-                	}
+        for (String page : wi.keySet()) {
+            // System.out.println("Extracting: " + page);
+            int nbnodes = s.getNbNodes();
+            relevantstartTime = System.currentTimeMillis();
+            String pageContent = wi.getTextOfPage(page);
+            we.extractData(page, pageContent, s); 
+            nbpages ++;
+            if (nbnodes != s.getNbNodes()) {
+                totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
+                nbrelevantPages++;
+                if (nbrelevantPages % 1000 == 0) {
+                    System.err.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = " 
+                            + (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbpages 
+                            + " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbpages + ")" );
+                    System.err.println("      NbNodes = " + s.getNbNodes());
+                    relevantTimeOfLastThousands = System.currentTimeMillis();
                 }
-            }
-        } catch (XMLStreamException ex) {
-            System.out.println(ex.getMessage());
-
-            if (ex.getNestedException() != null) {
-                ex.getNestedException().printStackTrace();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (xmlr != null)
-                    xmlr.close();
-            } catch (XMLStreamException ex) {
-                ex.printStackTrace();
+                // if (nbrelevantPages == 1100) break;
             }
         }
-                
+        
         if (outputFormat.equals("graphml")) {
         	StringSemNetGraphMLizer gout = new StringSemNetGraphMLizer(new OutputStreamWriter(new FileOutputStream(outputFile)), StringSemNetGraphMLizer.MULLING_OUTPUT);
         	gout.dump(s);

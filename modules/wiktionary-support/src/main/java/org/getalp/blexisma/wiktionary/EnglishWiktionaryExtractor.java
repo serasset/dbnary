@@ -30,8 +30,8 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         langPrefix = "#" + ISO639_3.sharedInstance.getIdCode("eng") + "|";    
     }
     
-    public EnglishWiktionaryExtractor(WiktionaryIndex wi) {
-        super(wi);
+    public EnglishWiktionaryExtractor() {
+        super();
     }
 
     // protected final static Pattern languageSectionPattern;
@@ -343,7 +343,7 @@ private void extractTranslations(int startOffset, int endOffset) {
         long endloadTime = System.currentTimeMillis();
         System.out.println("Loaded index in " + (endloadTime - startTime) +"ms.");
          
-        EnglishWiktionaryExtractor fwe = new EnglishWiktionaryExtractor(wi);
+        EnglishWiktionaryExtractor fwe = new EnglishWiktionaryExtractor();
         SimpleSemanticNetwork<String, String> s = new SimpleSemanticNetwork<String, String>(100000, 1000000);
         startTime = System.currentTimeMillis();
         long totalRelevantTime = 0, relevantstartTime = 0, relevantTimeOfLastThousands;
@@ -355,7 +355,8 @@ private void extractTranslations(int startOffset, int endOffset) {
             // System.out.println("Extracting: " + page);
             int nbnodes = s.getNbNodes();
             relevantstartTime = System.currentTimeMillis();
-            fwe.extractData(page, s); 
+            String pageContent = wi.getTextOfPage(page);
+            fwe.extractData(page, pageContent, s); 
             if (nbnodes != s.getNbNodes()) {
                 totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
                 nbrelevantPages++;

@@ -70,34 +70,34 @@ public abstract class WiktionaryExtractor {
     protected final static String POS_PREFIX = "#" + POS_RELATION + "|";
     protected final static String DEF_PREFIX = "#" + DEF_RELATION + "|";
         
-    protected WiktionaryIndex wiktionaryIndex;
+    // protected WiktionaryIndex wiktionaryIndex;
     protected SemanticNetwork<String, String> semnet;
     protected String wiktionaryPageNameWithLangPrefix;
     protected String wiktionaryPageName;
     protected String pageContent;
 
-    public WiktionaryExtractor(WiktionaryIndex wi) {
+    public WiktionaryExtractor() {
         super();
-        this.wiktionaryIndex = wi;
+    //    this.wiktionaryIndex = wi;
     }
 
     /**
      * @return the wiktionaryIndex
      */
-    public WiktionaryIndex getWiktionaryIndex() {
-        return wiktionaryIndex;
-    }
+    // public WiktionaryIndex getWiktionaryIndex() {
+    //    return wiktionaryIndex;
+    //}
     
     // TODO: filter out pages that are in specific Namespaces (Wiktionary:, Categories:, ...)
     // TODO: take Redirect page into account as alternate spelling.
     // TODO: take homography into account (ex: mousse) and separate different definitions for the same pos.
     // TODO: some xml comments may be in the string values. Remove them.
-    public void extractData(String wiktionaryPageName, SemanticNetwork<String, String> semnet) {
+    public void extractData(String wiktionaryPageName, String pageContent, SemanticNetwork<String, String> semnet) {
         this.wiktionaryPageName = wiktionaryPageName;
         this.wiktionaryPageNameWithLangPrefix = langPrefix + wiktionaryPageName;
         this.semnet = semnet;
         
-        pageContent = wiktionaryIndex.getTextOfPage(wiktionaryPageName);
+        this.pageContent = pageContent;
         
         if (pageContent == null) return;
         
@@ -248,9 +248,15 @@ public abstract class WiktionaryExtractor {
                 if 	(	links.group(2).equals(this.wiktionaryPageName) ||
                 		links.group(1).equals("Catégorie") ||
                 		links.group(1).equals("Category") ||
-                		links.group(1).equals("Kategorie")
+                		links.group(1).equals("Kategorie") ||
+                		links.group(1).equals("Annexe") || 
+                		links.group(1).equals("Image") 
                 		)
                     return links.start();
+                else if (links.group(1) != null) {
+                	System.out.println("--- In: " + this.wiktionaryPageName + " --->");
+                	System.out.println(links.group());
+                }
             } 
             return m.regionEnd();
         } else {

@@ -26,8 +26,8 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
         langPrefix = "#" + ISO639_3.sharedInstance.getIdCode("deu") + "|";
     }
 
-    public GermanWiktionaryExtractor(WiktionaryIndex wi) {
-        super(wi);
+    public GermanWiktionaryExtractor() {
+        super();
     }
 
     // protected final static Pattern languageSectionPattern;
@@ -503,7 +503,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
         long endloadTime = System.currentTimeMillis();
         System.out.println("Loaded index in " + (endloadTime - startTime) + "ms.");
 
-        GermanWiktionaryExtractor fwe = new GermanWiktionaryExtractor(wi);
+        GermanWiktionaryExtractor fwe = new GermanWiktionaryExtractor();
         SimpleSemanticNetwork<String, String> s = new SimpleSemanticNetwork<String, String>(100000, 1000000);
         startTime = System.currentTimeMillis();
         long totalRelevantTime = 0, relevantstartTime = 0, relevantTimeOfLastThousands;
@@ -514,7 +514,8 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
             // System.out.println("Extracting: " + page);
             int nbnodes = s.getNbNodes();
             relevantstartTime = System.currentTimeMillis();
-            fwe.extractData(page, s);
+            String pageContent = wi.getTextOfPage(page);
+            fwe.extractData(page, pageContent, s);
             if (nbnodes != s.getNbNodes()) {
                 totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
                 nbrelevantPages++;

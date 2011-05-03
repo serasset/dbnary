@@ -20,11 +20,11 @@ public class GetExtractedSemnet {
         
         WiktionaryExtractor we = null;
         if (args[0].equals("fr")) {
-            we = new FrenchWiktionaryExtractor(wi);
+            we = new FrenchWiktionaryExtractor();
         } else if (args[0].equals("en")) {
-            we = new EnglishWiktionaryExtractor(wi);
+            we = new EnglishWiktionaryExtractor();
         } else if (args[0].equals("de")) {
-            we = new GermanWiktionaryExtractor(wi);
+            we = new GermanWiktionaryExtractor();
         } else {
             printUsage();
             System.exit(1);
@@ -34,7 +34,8 @@ public class GetExtractedSemnet {
         SimpleSemanticNetwork<String, String> s = new SimpleSemanticNetwork<String, String>(5000, 5000);
         s.clear();
         for(int i = 2; i < args.length; i++) {
-            we.extractData(args[i], s);
+        	String pageContent = wi.getTextOfPage(args[i]);
+            we.extractData(args[i], pageContent, s);
             s.dumpToWriter(System.out);
             s.clear();
         }

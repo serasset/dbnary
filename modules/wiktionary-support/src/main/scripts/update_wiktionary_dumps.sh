@@ -15,7 +15,7 @@ do	case "$o" in
 	o)	outfolder="$OPTARG";;
 	d)  wdate="$OPTARG";;
 	f)	force=1;;
-	[?])	print >&2 "Usage: $0 [-s server] [-o outputfolder] [-d dumpdate] [-f] lg ..."
+	[?])	echo >&2 "Usage: $0 [-s server] [-o outputfolder] [-d dumpdate] [-f] lg ..."
 		exit 1;;
 	esac
 done

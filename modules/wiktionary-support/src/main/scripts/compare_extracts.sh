@@ -10,7 +10,7 @@ do	case "$o" in
 	p)	mullingprefix="$OPTARGS";;
 	o)  outfolder="$OPTARG";;
 	f)	force=1;;
-	[?])	print >&2 "Usage: $0 [-p mulling-prefix] [-o outputfolder] [-f] stamp1 stamp2 [lg ...]"
+	[?])	echo >&2 "Usage: $0 [-p mulling-prefix] [-o outputfolder] [-f] stamp1 stamp2 [lg ...]"
 		exit 1;;
 	esac
 done
@@ -18,7 +18,7 @@ shift `expr $OPTIND - 1`
 
 if [ $# -lt 2 ]
 then
-  print >&2 "Usage: $0 [-p mulling-prefix] [-o outputfolder] [-f] stamp1 stamp2 [lg ...]"
+  echo >&2 "Usage: $0 [-p mulling-prefix] [-o outputfolder] [-f] stamp1 stamp2 [lg ...]"
   exit 1
 fi
  
@@ -68,14 +68,18 @@ do
   cmd2="$mullingprefix/mixgraphs compl ${stamp2}/${lg}_extract.graphml ${stamp1}/${lg}_extract.graphml > $compl2file"
   cmd3="$mullingprefix/mixgraphs symdiff ${stamp1}/${lg}_extract.graphml ${stamp2}/${lg}_extract.graphml > $symdifffile"
   
-  $cmd1 & PIDS="$! $PIDS"
-    
-  $cmd2 & PIDS="$! $PIDS"
+  echo "$cmd1 " 
+  echo "$cmd2 "
+  echo "$cmd3 " 
   
-  $cmd3 & PIDS="$! $PIDS"
+ ## $cmd1 & PIDS="$! $PIDS"
+ ##   
+ ## $cmd2 & PIDS="$! $PIDS"
+ ## 
+ ## $cmd3 & PIDS="$! $PIDS"
   
 done
 
-echo $PIDS
+##echo $PIDS
+##wait $PIDS
 
-wait $PIDS

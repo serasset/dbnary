@@ -18,7 +18,7 @@ do	case "$o" in
 	s)	stamp="$OPTARG";;
 	f)	format="$OPTARG";;
 	F)	force=1;;
-	[?])	print >&2 "Usage: $0 [-j wiktionary-support-jar] [-p wiktionary-support-prefix] [-d dumpfolder] [-o outputfolder] [-s stamp] [-f raw] [-F] [lg ...]"
+	[?])	echo >&2 "Usage: $0 [-j wiktionary-support-jar] [-p wiktionary-support-prefix] [-d dumpfolder] [-o outputfolder] [-s stamp] [-f raw] [-F] [lg ...]"
 		exit 1;;
 	esac
 done

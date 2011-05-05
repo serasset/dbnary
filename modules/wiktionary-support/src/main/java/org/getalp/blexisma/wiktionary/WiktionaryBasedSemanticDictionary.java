@@ -146,15 +146,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	}
 	
 	public void loadVectorBase(String vectorialBasePath) {
-			
-		// NOTA: this dependency to RAM_Vectorial Base is the only reason for the dependency to blexisma-core.
-		// TODO: Hence an architecture redesign may be a good thing to do...
-		if (this.vectorialBasePath != null) {
-			this.vectorialBase = RAM_VectorialBase.load(vectorialBasePath);
-		} else {
-			this.vectorialBase = new RAM_VectorialBase();
-		}
-		
+		this.vectorialBase = RAM_VectorialBase.load(vectorialBasePath);
 	}
 	
 	@Override
@@ -205,10 +197,12 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 		return other;
 	}
 
+	@Override
 	public SemanticNetwork<String, String> getNetwork() {
 		return wiktionaryNetwork;
 	}
 
+	@Override
 	public VectorialBase getBase() {
 		return vectorialBase;
 	}

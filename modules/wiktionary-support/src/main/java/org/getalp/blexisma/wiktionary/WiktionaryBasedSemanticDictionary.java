@@ -183,7 +183,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 				.getEdges(nodename);
 		ArrayList<Sense> senses = new ArrayList<Sense>();
 		ConceptualVector mcv = vectorialBase.getVector(nodename);
-		
+
 		if (null == edges)
 			return new SemanticDefinition(nodename, mcv, senses);
 
@@ -214,7 +214,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 
 	@Override
 	public void setVector(String txt, String lg, ConceptualVector cv) {
-		vectorialBase.addVector(getNodeName(txt, lg), cv);
+		vectorialBase.addVector(txt, cv);
 	}
 
 	private List<MorphoProperties> getMorphoProperties(String def) {

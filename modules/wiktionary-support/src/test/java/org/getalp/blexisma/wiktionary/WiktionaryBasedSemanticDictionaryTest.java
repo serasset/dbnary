@@ -60,8 +60,8 @@ public class WiktionaryBasedSemanticDictionaryTest {
 	@Test
 	public void testSemanticDictionary() {
 		context.checking(new Expectations() {{
-			allowing(vb).getVector(with(aNonNull(String.class)));    // The turtle can be asked about its pen any number of times and will always
-		    will(returnValue(ConceptualVector.randomisedCV(2000, 2000000, 5, 5)));
+			allowing(vb).getVector(with(aNonNull(String.class)));   
+			will(returnValue(ConceptualVector.randomisedCV(2000, 2000000, 5, 5)));
 	    }});
 
 		SemanticDefinition sdef = dict.getDefinition("dictionnaire","fra");

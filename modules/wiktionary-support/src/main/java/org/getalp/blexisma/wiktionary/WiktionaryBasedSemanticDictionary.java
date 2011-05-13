@@ -247,4 +247,9 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 		}
 	}
 
+	@Override
+	public String getBaseDirectory() {
+		return new File(vectorialBasePath).getParent();
+	}
+
 }

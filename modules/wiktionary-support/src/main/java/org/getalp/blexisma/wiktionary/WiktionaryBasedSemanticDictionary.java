@@ -201,6 +201,21 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 		}
 		return new SemanticDefinition(nodename, mcv, senses);
 	}
+	
+	public ArrayList<String> getProx(String l, int nb) {
+		ArrayList<String> list = new ArrayList<String>();
+		ArrayList<VectorialBase.EntryDist> tmpList = null;
+		ConceptualVector vec = vectorialBase.getVector(l);
+		
+		if (vec!=null) {
+			tmpList = vectorialBase.getProx(vec, nb);
+			for (int i=0; i<tmpList.size(); i++) {
+				list.add(tmpList.get(i).lexObj);
+			}
+		}
+		
+		return list;
+	}
 
 	private static String getNodeName(String txt, String lg) {
 		String lang = ISO639_3.sharedInstance.getIdCode(lg);

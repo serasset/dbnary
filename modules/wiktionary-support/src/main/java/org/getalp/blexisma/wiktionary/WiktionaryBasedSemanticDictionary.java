@@ -202,12 +202,14 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 		return new SemanticDefinition(nodename, mcv, senses);
 	}
 	
-	public ArrayList<String> getProx(String l, int nb) {
-		ArrayList<String> list = new ArrayList<String>();
+	public ArrayList<String> getProx(String lemme, String lang, int nb) {
+		ArrayList<String> list = null;
 		ArrayList<VectorialBase.EntryDist> tmpList = null;
+		String l = getNodeName(lemme,lang);
 		ConceptualVector vec = vectorialBase.getVector(l);
 		
 		if (vec!=null) {
+			list = new ArrayList<String>();
 			tmpList = vectorialBase.getProx(vec, nb);
 			for (int i=0; i<tmpList.size(); i++) {
 				list.add(tmpList.get(i).lexObj);

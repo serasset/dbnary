@@ -226,6 +226,10 @@ public abstract class WiktionaryExtractor {
         return sb.toString();
     }
     
+    public static String getHumanReadableForm(String id) {
+    	String def = id.substring(id.indexOf("|")+1);
+    	return convertToHumanReadableForm(def);
+    }
     
     protected void extractOrthoAlt(int startOffset, int endOffset) {
         Matcher bulletListMatcher = WiktionaryExtractor.bulletListPattern.matcher(this.pageContent);

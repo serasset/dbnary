@@ -219,6 +219,27 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 		return list;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.getalp.blexisma.api.SemanticDictionary#getProx(java.lang.String, java.lang.String, java.lang.String, int)
+	 */
+	@Override
+	public ArrayList<String> getProx(String lemme, String lang, String regex,
+			int nb) {
+		ArrayList<String> list = null;
+		ArrayList<VectorialBase.EntryDist> tmpList = null;
+		String l = getNodeName(lemme,lang);
+		ConceptualVector vec = vectorialBase.getVector(l);
+		
+		if (vec!=null) {
+			list = new ArrayList<String>();
+			tmpList = vectorialBase.getProx(vec, nb, regex);
+			for (int i=0; i<tmpList.size(); i++) {
+				list.add(tmpList.get(i).lexObj);
+			}
+		}
+		return list;
+	}
+
 	private static String getNodeName(String txt, String lg) {
 		String lang = ISO639_3.sharedInstance.getIdCode(lg);
 		return "#" + lang + "|" + txt;

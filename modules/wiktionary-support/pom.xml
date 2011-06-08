@@ -1,19 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<artifactId>blexisma-modules-parent</artifactId>
-		<groupId>org.getalp.blexisma</groupId>
-		<version>1.1-SNAPSHOT</version>
-	</parent>
-	
-	<groupId>org.getalp.blexisma</groupId>
-	<artifactId>wiktionary-support</artifactId>
-	<version>1.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
-	
-	<name>Wiktionary Support</name>
-	<description>
-    The Wiktionary support module provides tools to extract lexical networks from wiktionary sumps in English, French and German.
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>blexisma-modules-parent</artifactId>
+    <groupId>org.getalp.blexisma</groupId>
+    <version>1.1-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.getalp.blexisma</groupId>
+  <artifactId>wiktionary-support</artifactId>
+  <version>1.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Wiktionary Support</name>
+  <description>
+    The Wiktionary support module provides tools to extract lexical networks from wiktionary dumps in English, French and German.
   </description>
   <inceptionYear>2010</inceptionYear>
 
@@ -23,48 +24,56 @@
     </contributor>
   </contributors>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.codehaus.woodstox</groupId>
-			<artifactId>woodstox-core-lgpl</artifactId>
-			<version>4.0.8</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.getalp.blexisma</groupId>
-			<artifactId>blexisma-api</artifactId>
-			<version>1.1-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-cli</groupId>
-			<artifactId>commons-cli</artifactId>
-			<version>1.2</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.getalp.blexisma</groupId>
-			<artifactId>blexisma-core</artifactId>
-			<version>1.1-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies>
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<version>2.2-beta-5</version>
-					<configuration>
+  <dependencies>
+    <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>woodstox-core-lgpl</artifactId>
+      <version>4.0.8</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.getalp.blexisma</groupId>
+      <artifactId>blexisma-api</artifactId>
+      <version>1.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>1.2</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.getalp.blexisma</groupId>
+      <artifactId>blexisma-core</artifactId>
+      <version>1.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <!-- NOTE: We don't need a groupId specification because the group 
+          is org.apache.maven.plugins ...which is assumed by default. -->
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2.1</version>
+        <configuration>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
         </configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

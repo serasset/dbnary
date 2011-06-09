@@ -11,7 +11,7 @@ modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/StringSe
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/TextOnlySemnetReader.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryBasedSemanticDictionary.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.java -text
-modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryGrep.java -text svneol=unset#text/plain
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryGrep.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndex.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexer.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexerException.java -text

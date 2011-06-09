@@ -1,16 +1,12 @@
 package org.getalp.blexisma.wiktionary;
 
 import java.io.File;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;

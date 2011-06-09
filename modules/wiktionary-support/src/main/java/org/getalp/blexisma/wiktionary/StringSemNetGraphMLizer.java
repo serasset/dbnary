@@ -1,17 +1,13 @@
 package org.getalp.blexisma.wiktionary;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.getalp.blexisma.api.GraphMLizableElement;
 import org.getalp.blexisma.api.SemanticNetwork;
-import org.getalp.blexisma.api.SemanticNetworkGraphMLizer;
 
 public class StringSemNetGraphMLizer {
 

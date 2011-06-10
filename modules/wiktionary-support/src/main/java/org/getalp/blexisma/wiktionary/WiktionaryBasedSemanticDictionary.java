@@ -92,8 +92,9 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	private RAM_VectorialBase vectorialBase;
 	private String vectorialBasePath;
 	private String wiktionaryNetworkPath;
-	private int cvEncodingSize;
-	private int cvDimension;
+	private final int cvEncodingSize;
+	private final int cvDimension;
+	private double coeffVar=1.5;
 
 	public WiktionaryBasedSemanticDictionary(String vectorialBasePath,
 			String wiktionaryNetworkPath, int cvEncodingSize, int cvDimension)
@@ -191,7 +192,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 				String def = edge.getDestination();
 				ConceptualVector cv = vectorialBase.getVector(def);
 				if (cv == null) {
-					cv = vectorialBase.nextRandomCV();
+					cv = vectorialBase.nextRandomCV(coeffVar);
 					vectorialBase.addVector(def, cv);
 				}
 				List<MorphoProperties> morph = getMorphoProperties(def);
@@ -290,4 +291,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 		return new File(vectorialBasePath).getParent();
 	}
 
+	public void setCoeffVar(double c) {
+		this.coeffVar=c;
+	}
 }

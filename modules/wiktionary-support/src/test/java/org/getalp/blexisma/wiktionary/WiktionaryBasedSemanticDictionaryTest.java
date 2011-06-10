@@ -82,6 +82,8 @@ public class WiktionaryBasedSemanticDictionaryTest {
 		assertNotNull("getDefinition should never return null.", sdef);
 		assertNotNull("Sense list should not be null.", sdef.getSenseList());
 		assertEquals("Sense list should be empty.", sdef.getSenseList().size(), 0);
+		
+		
 	}
 
 }

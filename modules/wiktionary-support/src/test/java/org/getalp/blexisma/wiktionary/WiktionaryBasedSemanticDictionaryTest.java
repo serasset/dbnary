@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.getalp.blexisma.api.ConceptualVector;
+import org.getalp.blexisma.api.ConceptualVectorRandomizer;
+import org.getalp.blexisma.api.DeviationBasedCVRandomizer;
 import org.getalp.blexisma.api.SemanticDefinition;
 import org.getalp.blexisma.api.VectorialBase;
 import org.getalp.blexisma.api.syntaxanalysis.MorphoProperties;
@@ -34,7 +36,8 @@ public class WiktionaryBasedSemanticDictionaryTest {
 	RAM_VectorialBase vb = context.mock(RAM_VectorialBase.class);
 	BufferedReader br;
 	InputStream fis;
-	
+    ConceptualVectorRandomizer randomizer = new DeviationBasedCVRandomizer(2000, 2000000);
+
 	WiktionaryBasedSemanticDictionary dict;
 	
 	@Before
@@ -61,7 +64,7 @@ public class WiktionaryBasedSemanticDictionaryTest {
 	public void testSemanticDictionary() {
 		context.checking(new Expectations() {{
 			allowing(vb).getVector(with(aNonNull(String.class)));   
-			will(returnValue(ConceptualVector.randomisedCV(2000, 2000000, 5, 5)));
+			will(returnValue(randomizer.nextVector()));
 	    }});
 
 		SemanticDefinition sdef = dict.getDefinition("dictionnaire","fra");
@@ -74,7 +77,7 @@ public class WiktionaryBasedSemanticDictionaryTest {
 	public void testDefinitionIsNotNull() {
 		context.checking(new Expectations() {{
 			allowing(vb).getVector(with(aNonNull(String.class)));    // The turtle can be asked about its pen any number of times and will always
-		    will(returnValue(ConceptualVector.randomisedCV(2000, 2000000, 5, 5)));
+		    will(returnValue(randomizer.nextVector()));
 	    }});
 
 		SemanticDefinition sdef = dict.getDefinition("tagada","fra");

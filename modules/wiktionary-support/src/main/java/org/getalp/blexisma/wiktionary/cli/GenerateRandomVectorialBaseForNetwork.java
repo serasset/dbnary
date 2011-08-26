@@ -24,7 +24,7 @@ import org.getalp.blexisma.wiktionary.StringSemNetGraphMLizer;
 import org.getalp.blexisma.wiktionary.TextOnlySemnetReader;
 import org.getalp.blexisma.wiktionary.WiktionaryIndexerException;
 
-public class GenerateRandowVectorialBaseForNetwork {
+public class GenerateRandomVectorialBaseForNetwork {
 
 	private static Options options = null; // Command line options
 
@@ -72,7 +72,7 @@ public class GenerateRandowVectorialBaseForNetwork {
 	 * @throws WiktionaryIndexerException 
 	 */
 	public static void main(String[] args) throws WiktionaryIndexerException, IOException {
-		GenerateRandowVectorialBaseForNetwork cliProg = new GenerateRandowVectorialBaseForNetwork();
+		GenerateRandomVectorialBaseForNetwork cliProg = new GenerateRandomVectorialBaseForNetwork();
 		cliProg.loadArgs(args);
 		cliProg.generate();
 	}
@@ -175,7 +175,7 @@ public class GenerateRandowVectorialBaseForNetwork {
 	
 	 public static void printUsage() {
 	    	HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("java -cp /path/to/wiktionary.jar " + GenerateRandowVectorialBaseForNetwork.class.getCanonicalName() + " [OPTIONS] lexical_network_file vectorial_base_file", 
+			formatter.printHelp("java -cp /path/to/wiktionary.jar " + GenerateRandomVectorialBaseForNetwork.class.getCanonicalName() + " [OPTIONS] lexical_network_file vectorial_base_file", 
 					"With OPTIONS in:", options, 
 					"specify - as the inputfile to input semnet from STDIN.", false);
 	 }

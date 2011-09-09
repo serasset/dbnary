@@ -14,6 +14,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.getalp.blexisma.api.ConceptualVector;
+import org.getalp.blexisma.api.ConceptualVectorRandomizer;
+import org.getalp.blexisma.api.ConceptualVectorRandomizer.UninitializedRandomizerException;
+import org.getalp.blexisma.api.ConceptualVectorRandomizerFactory;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.IncompatibleVectorialBaseException;
 import org.getalp.blexisma.api.SemanticDefinition;
@@ -95,6 +98,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	private final int cvEncodingSize;
 	private final int cvDimension;
 	private double coeffVar=1.5;
+	private ConceptualVectorRandomizer randomizer;
 
 	public WiktionaryBasedSemanticDictionary(String vectorialBasePath,
 			String wiktionaryNetworkPath, int cvEncodingSize, int cvDimension)
@@ -171,6 +175,8 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 				|| this.vectorialBase.getCVEncodingSize() != cvEncodingSize) {
 			throw new IncompatibleVectorialBaseException("Loaded Vectorial base is not of the expected dimension or encoding size.");
 		}
+		randomizer = ConceptualVectorRandomizerFactory.createRandomizer(this.cvDimension, this.cvEncodingSize);
+		randomizer.setOption("coefVar", coeffVar);
 	}
 
 	/* (non-Javadoc)
@@ -192,7 +198,12 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 				String def = edge.getDestination();
 				ConceptualVector cv = vectorialBase.getVector(def);
 				if (cv == null) {
-					cv = vectorialBase.nextRandomCV(coeffVar);
+					try {
+						cv = randomizer.nextVector();
+					} catch (UninitializedRandomizerException e) {
+						// The randomizer should be initialized correctly.
+						e.printStackTrace();
+					}
 					vectorialBase.addVector(def, cv);
 				}
 				List<MorphoProperties> morph = getMorphoProperties(def);

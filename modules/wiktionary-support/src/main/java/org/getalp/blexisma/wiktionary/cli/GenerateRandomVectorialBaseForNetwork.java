@@ -18,6 +18,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.getalp.blexisma.api.ConceptualVectorRandomizer;
+import org.getalp.blexisma.api.ConceptualVectorRandomizer.UninitializedRandomizerException;
+import org.getalp.blexisma.api.ConceptualVectorRandomizerFactory;
 import org.getalp.blexisma.impl.vectorialbase.RAM_VectorialBase;
 import org.getalp.blexisma.wiktionary.SimpleSemanticNetwork;
 import org.getalp.blexisma.wiktionary.StringSemNetGraphMLizer;
@@ -43,18 +46,24 @@ public class GenerateRandomVectorialBaseForNetwork {
 	private static final String ENCODING_OPTION = "e";
 	private static final String DEFAULT_ENCODING = "UTF-8";
 
+	private static final String RANDOMIZER_CLASS_OPTION = "r";
+	private static final String DEFAULT_RANDOMIZER_CLASS = "org.getalp.blexisma.api.DeviationBasedCVRandomizer";
+
 	
 	private CommandLine cmd = null; // Command Line arguments
 	
 	private String inputFormat = DEFAULT_INPUT_FORMAT;
 	private double coeffVar = DEFAULT_COEFF_VAR;
 	private String encoding = DEFAULT_ENCODING;
+	private String randomizerClass = DEFAULT_RANDOMIZER_CLASS;
 	private int dimension, encodingSize;
 	
 	private InputStreamReader input;
 
 	private String output;
 
+	private ConceptualVectorRandomizer randomizer;
+	
 	static{
 		options = new Options();
 		options.addOption("h", false, "Prints usage and exits. ");	
@@ -64,20 +73,22 @@ public class GenerateRandomVectorialBaseForNetwork {
 		options.addOption(ENCODING_SIZE_OPTION, true, "Specifies the dimension of vectors. " + DEFAULT_ENCODING_SIZE + " by default.");	
 		options.addOption(ENCODING_OPTION, true, 
 				"Encoding of input and output. " + DEFAULT_ENCODING + " by default.");
-	}
+		options.addOption(RANDOMIZER_CLASS_OPTION, true, 
+				"fully qualified classname for the randdomizer. " + DEFAULT_RANDOMIZER_CLASS + " by default.");	}
 	
 	/**
 	 * @param args
 	 * @throws IOException 
 	 * @throws WiktionaryIndexerException 
+	 * @throws UninitializedRandomizerException 
 	 */
-	public static void main(String[] args) throws WiktionaryIndexerException, IOException {
+	public static void main(String[] args) throws WiktionaryIndexerException, IOException, UninitializedRandomizerException {
 		GenerateRandomVectorialBaseForNetwork cliProg = new GenerateRandomVectorialBaseForNetwork();
 		cliProg.loadArgs(args);
 		cliProg.generate();
 	}
 	
-	private void generate() throws IOException {
+	private void generate() throws IOException, UninitializedRandomizerException {
 		// TODO: use graphml as an input format for semantic networks.
 		//long start = System.currentTimeMillis();
 		SimpleSemanticNetwork<String,String> sn = new SimpleSemanticNetwork<String,String>(500000,1000000);
@@ -98,7 +109,7 @@ public class GenerateRandomVectorialBaseForNetwork {
 		
 		while(it.hasNext()) {
 			String elem = it.next();
-			vb.addVector(elem, vb.nextRandomCV(coeffVar));
+			vb.addVector(elem, randomizer.nextVector());
 		}
 		
 		vb.save(output);
@@ -144,6 +155,10 @@ public class GenerateRandomVectorialBaseForNetwork {
 		if (cmd.hasOption(ENCODING_OPTION)){
 			encoding = cmd.getOptionValue(ENCODING_OPTION);
 		}
+		
+		if (cmd.hasOption(RANDOMIZER_CLASS_OPTION)){
+			randomizerClass = cmd.getOptionValue(RANDOMIZER_CLASS_OPTION);
+		}
 
 		String[] remainingArgs = cmd.getArgs();
 		if (remainingArgs.length != 2) {
@@ -151,6 +166,9 @@ public class GenerateRandomVectorialBaseForNetwork {
 			System.exit(1);
 		}
 
+		randomizer = ConceptualVectorRandomizerFactory.createRandomizer(dimension, encodingSize, randomizerClass);
+		randomizer.setOption("coefVar", coeffVar);
+		
 		try {
 
 			String infn = remainingArgs[0];

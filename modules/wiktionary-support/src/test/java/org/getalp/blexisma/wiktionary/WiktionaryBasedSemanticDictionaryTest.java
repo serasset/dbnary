@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.getalp.blexisma.api.ConceptualVectorRandomizer;
+import org.getalp.blexisma.api.ConceptualVectorRandomizer.UninitializedRandomizerException;
 import org.getalp.blexisma.api.DeviationBasedCVRandomizer;
 import org.getalp.blexisma.api.SemanticDefinition;
 import org.getalp.blexisma.api.syntaxanalysis.MorphoProperties;
@@ -60,7 +61,7 @@ public class WiktionaryBasedSemanticDictionaryTest {
 	}
 
 	@Test
-	public void testSemanticDictionary() {
+	public void testSemanticDictionary() throws UninitializedRandomizerException {
 		context.checking(new Expectations() {{
 			allowing(vb).getVector(with(aNonNull(String.class)));   
 			will(returnValue(randomizer.nextVector()));
@@ -73,9 +74,9 @@ public class WiktionaryBasedSemanticDictionaryTest {
 	}
 
 	@Test
-	public void testDefinitionIsNotNull() {
+	public void testDefinitionIsNotNull() throws UninitializedRandomizerException {
 		context.checking(new Expectations() {{
-			allowing(vb).getVector(with(aNonNull(String.class)));    // The turtle can be asked about its pen any number of times and will always
+			allowing(vb).getVector(with(aNonNull(String.class)));
 		    will(returnValue(randomizer.nextVector()));
 	    }});
 

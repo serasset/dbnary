@@ -14,7 +14,7 @@ import org.getalp.blexisma.api.ConceptualVectorRandomizer.UninitializedRandomize
 import org.getalp.blexisma.api.DeviationBasedCVRandomizer;
 import org.getalp.blexisma.api.SemanticDefinition;
 import org.getalp.blexisma.api.syntaxanalysis.MorphoProperties;
-import org.getalp.blexisma.impl.vectorialbase.RAM_VectorialBase;
+import org.getalp.blexisma.impl.vectorialbase.String_RAM_VectorialBase;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
@@ -33,7 +33,7 @@ public class WiktionaryBasedSemanticDictionaryTest {
     
 
 	SimpleSemanticNetwork<String, String> wn;
-	RAM_VectorialBase vb = context.mock(RAM_VectorialBase.class);
+	String_RAM_VectorialBase vb = context.mock(String_RAM_VectorialBase.class);
 	BufferedReader br;
 	InputStream fis;
     ConceptualVectorRandomizer randomizer = new DeviationBasedCVRandomizer(2000, 2000000);

@@ -25,7 +25,7 @@ import org.getalp.blexisma.api.SemanticNetwork;
 import org.getalp.blexisma.api.Sense;
 import org.getalp.blexisma.api.VectorialBase;
 import org.getalp.blexisma.api.syntaxanalysis.MorphoProperties;
-import org.getalp.blexisma.impl.vectorialbase.RAM_VectorialBase;
+import org.getalp.blexisma.impl.vectorialbase.String_RAM_VectorialBase;
 
 import static org.getalp.blexisma.api.syntaxanalysis.MorphoProperties.*;
 
@@ -92,7 +92,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	}
 
 	private SemanticNetwork<String, String> wiktionaryNetwork;
-	private RAM_VectorialBase vectorialBase;
+	private String_RAM_VectorialBase vectorialBase;
 	private String vectorialBasePath;
 	private String wiktionaryNetworkPath;
 	private final int cvEncodingSize;
@@ -138,7 +138,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 		loadVectorBase(vectorialBasePath);
 	}
 
-	public WiktionaryBasedSemanticDictionary(RAM_VectorialBase vb,
+	public WiktionaryBasedSemanticDictionary(String_RAM_VectorialBase vb,
 			BufferedReader br) throws IOException {
 		this.vectorialBasePath = null;
 		this.wiktionaryNetworkPath = null;
@@ -148,7 +148,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 		this.cvEncodingSize = this.vectorialBase.getCVEncodingSize();
 	}
 
-	public WiktionaryBasedSemanticDictionary(RAM_VectorialBase vb,
+	public WiktionaryBasedSemanticDictionary(String_RAM_VectorialBase vb,
 			SimpleSemanticNetwork<String, String> sn) {
 		this.vectorialBasePath = null;
 		this.wiktionaryNetworkPath = null;
@@ -165,10 +165,10 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 
 	public void loadVectorBase(String vectorialBasePath)
 			throws IncompatibleVectorialBaseException {
-		this.vectorialBase = RAM_VectorialBase.load(vectorialBasePath);
+		this.vectorialBase = String_RAM_VectorialBase.load(vectorialBasePath);
 		if (this.vectorialBase == null) {
 			// The vectorial base was not readable or file did not exist
-			this.vectorialBase = new RAM_VectorialBase(this.cvEncodingSize,
+			this.vectorialBase = new String_RAM_VectorialBase(this.cvEncodingSize,
 					this.cvDimension);
 			this.vectorialBase.save(this.vectorialBasePath);
 		} else if (this.vectorialBase.getCVDimension() != this.cvDimension
@@ -216,7 +216,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	
 	public ArrayList<String> getProx(String lemme, String lang, int nb) {
 		ArrayList<String> list = null;
-		ArrayList<VectorialBase.EntryDist> tmpList = null;
+		ArrayList<String_RAM_VectorialBase.EntryDist> tmpList = null;
 		String l = getNodeName(lemme,lang);
 		ConceptualVector vec = vectorialBase.getVector(l);
 		
@@ -238,7 +238,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	public ArrayList<String> getProx(String lemme, String lang, String regex,
 			int nb) {
 		ArrayList<String> list = null;
-		ArrayList<VectorialBase.EntryDist> tmpList = null;
+		ArrayList<String_RAM_VectorialBase.EntryDist> tmpList = null;
 		String l = getNodeName(lemme,lang);
 		ConceptualVector vec = vectorialBase.getVector(l);
 		
@@ -255,7 +255,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	@Override
 	public ArrayList<String> getProx(ConceptualVector cv, int nb) {
 		ArrayList<String> list = null;
-		ArrayList<VectorialBase.EntryDist> tmpList = null;
+		ArrayList<String_RAM_VectorialBase.EntryDist> tmpList = null;
 		
 		if (cv!=null) {
 			list = new ArrayList<String>();

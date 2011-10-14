@@ -21,7 +21,7 @@ import org.apache.commons.cli.PosixParser;
 import org.getalp.blexisma.api.ConceptualVectorRandomizer;
 import org.getalp.blexisma.api.ConceptualVectorRandomizer.UninitializedRandomizerException;
 import org.getalp.blexisma.api.ConceptualVectorRandomizerFactory;
-import org.getalp.blexisma.impl.vectorialbase.RAM_VectorialBase;
+import org.getalp.blexisma.impl.vectorialbase.String_RAM_VectorialBase;
 import org.getalp.blexisma.wiktionary.SimpleSemanticNetwork;
 import org.getalp.blexisma.wiktionary.StringSemNetGraphMLizer;
 import org.getalp.blexisma.wiktionary.TextOnlySemnetReader;
@@ -103,7 +103,7 @@ public class GenerateRandomVectorialBaseForNetwork {
 			System.exit(1);
 		}
 		
-		RAM_VectorialBase vb = new RAM_VectorialBase(encodingSize, dimension);
+		String_RAM_VectorialBase vb = new String_RAM_VectorialBase(encodingSize, dimension);
 		
 		Iterator<String> it = sn.getNodesIterator();
 		

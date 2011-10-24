@@ -15,6 +15,8 @@ import org.getalp.blexisma.api.DeviationBasedCVRandomizer;
 import org.getalp.blexisma.api.SemanticDefinition;
 import org.getalp.blexisma.api.syntaxanalysis.MorphoProperties;
 import org.getalp.blexisma.impl.vectorialbase.String_RAM_VectorialBase;
+import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
+import org.getalp.blexisma.semnet.TextOnlySemnetReader;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;

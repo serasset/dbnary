@@ -22,9 +22,9 @@ import org.getalp.blexisma.api.ConceptualVectorRandomizer;
 import org.getalp.blexisma.api.ConceptualVectorRandomizer.UninitializedRandomizerException;
 import org.getalp.blexisma.api.ConceptualVectorRandomizerFactory;
 import org.getalp.blexisma.impl.vectorialbase.String_RAM_VectorialBase;
-import org.getalp.blexisma.wiktionary.SimpleSemanticNetwork;
-import org.getalp.blexisma.wiktionary.StringSemNetGraphMLizer;
-import org.getalp.blexisma.wiktionary.TextOnlySemnetReader;
+import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
+import org.getalp.blexisma.semnet.StringSemNetGraphMLizer;
+import org.getalp.blexisma.semnet.TextOnlySemnetReader;
 import org.getalp.blexisma.wiktionary.WiktionaryIndexerException;
 
 public class GenerateRandomVectorialBaseForNetwork {

@@ -1,9 +1,9 @@
 package org.getalp.blexisma.wiktionary.cli;
 
+import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
 import org.getalp.blexisma.wiktionary.EnglishWiktionaryExtractor;
 import org.getalp.blexisma.wiktionary.FrenchWiktionaryExtractor;
 import org.getalp.blexisma.wiktionary.GermanWiktionaryExtractor;
-import org.getalp.blexisma.wiktionary.SimpleSemanticNetwork;
 import org.getalp.blexisma.wiktionary.WiktionaryExtractor;
 import org.getalp.blexisma.wiktionary.WiktionaryIndex;
 import org.getalp.blexisma.wiktionary.WiktionaryIndexerException;

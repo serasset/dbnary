@@ -12,6 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
+import org.getalp.blexisma.semnet.StringSemNetGraphMLizer;
 
 /**
  * @author serasset

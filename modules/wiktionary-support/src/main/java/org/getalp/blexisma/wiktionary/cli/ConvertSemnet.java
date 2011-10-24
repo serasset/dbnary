@@ -17,9 +17,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.getalp.blexisma.wiktionary.SimpleSemanticNetwork;
-import org.getalp.blexisma.wiktionary.StringSemNetGraphMLizer;
-import org.getalp.blexisma.wiktionary.TextOnlySemnetReader;
+import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
+import org.getalp.blexisma.semnet.StringSemNetGraphMLizer;
+import org.getalp.blexisma.semnet.TextOnlySemnetReader;
 import org.getalp.blexisma.wiktionary.WiktionaryIndexerException;
 
 public class ConvertSemnet {

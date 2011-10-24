@@ -26,6 +26,8 @@ import org.getalp.blexisma.api.Sense;
 import org.getalp.blexisma.api.VectorialBase;
 import org.getalp.blexisma.api.syntaxanalysis.MorphoProperties;
 import org.getalp.blexisma.impl.vectorialbase.String_RAM_VectorialBase;
+import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
+import org.getalp.blexisma.semnet.TextOnlySemnetReader;
 
 import static org.getalp.blexisma.api.syntaxanalysis.MorphoProperties.*;
 

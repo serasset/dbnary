@@ -298,11 +298,15 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 	}
 
 
-	@Override
-	public Iterator<String> getInfiniteLemmaIterator() {
+	public Iterator<String> getInfiniteNodeIterator() {
 		return wiktionaryNetwork.getInfiniteNodesIterator();
 	}
+	
+	public String getNextToLearn(){
+		return wiktionaryNetwork.getInfiniteNodesIterator().next();
+	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public VectorialBase getBase() {
 		return vectorialBase;

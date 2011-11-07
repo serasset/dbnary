@@ -37,4 +37,3 @@ modules/wiktionary-support/src/site/fml/faq.fml -text
 modules/wiktionary-support/src/site/site.xml -text
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryBasedSemanticDictionaryTest.java -text
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
-modules/wiktionary-support/src/test/resources/org/getalp/blexisma/wiktionary/sample-semnet.snet -text

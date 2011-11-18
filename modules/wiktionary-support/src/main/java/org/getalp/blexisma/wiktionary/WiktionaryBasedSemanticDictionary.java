@@ -209,7 +209,7 @@ public class WiktionaryBasedSemanticDictionary implements SemanticDictionary {
 					vectorialBase.addVector(def, cv);
 				}
 				List<MorphoProperties> morph = getMorphoProperties(def);
-				Sense s = new Sense(def, cv, morph);
+				Sense s = new Sense(def,def, cv, morph);
 				senses.add(s);
 			}
 		}

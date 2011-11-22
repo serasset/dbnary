@@ -5,7 +5,6 @@ modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/EnglishW
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/FrenchWiktionaryExtractor.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/GermanWiktionaryExtractor.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/OffsetValue.java -text
-modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryBasedSemanticDictionary.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryGrep.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndex.java -text
@@ -35,6 +34,5 @@ modules/wiktionary-support/src/site/apt/cli.apt -text
 modules/wiktionary-support/src/site/apt/index.apt -text
 modules/wiktionary-support/src/site/fml/faq.fml -text
 modules/wiktionary-support/src/site/site.xml -text
-modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryBasedSemanticDictionaryTest.java -text
 modules/wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
 modules/wiktionary-support/src/test/resources/org/getalp/blexisma/wiktionary/sample-semnet.snet -text

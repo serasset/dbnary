@@ -27,12 +27,8 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     private final int ORTHOALTBLOCK = 3;
     private final int NYMBLOCK = 4;
         
-    static {
-        langPrefix = "#" + ISO639_3.sharedInstance.getIdCode("eng") + "|";    
-    }
-    
-    public EnglishWiktionaryExtractor() {
-        super();
+    public EnglishWiktionaryExtractor(WiktionaryDataHandler wdh) {
+        super(wdh);
     }
 
     // protected final static Pattern languageSectionPattern;
@@ -126,8 +122,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     void gotoDefBlock(Matcher m){
         state = DEFBLOCK;
         definitionBlockStart = m.end();
-        currentPos = m.group(1);
-        semnet.addRelation(wiktionaryPageNameWithLangPrefix, POS_PREFIX + currentPos, 1, POS_RELATION); 
+        wdh.addPartOfSpeech(m.group(1));
     }
     
     void gotoOrthoAltBlock(Matcher m) {
@@ -137,7 +132,6 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     
     void leaveDefBlock(Matcher m) {
         extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
-        currentPos = null;
         definitionBlockStart = -1;
     }
     
@@ -168,6 +162,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     private void extractEnglishData(int startOffset, int endOffset) {        
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
+        wdh.initializeEntryExtraction(wiktionaryPageName);
         gotoNoData(m);
         // WONTDO: should I use a macroOrLink pattern to detect translations that are not macro based ?
         // DONE: (priority: top) link the definition node with the current Part of Speech
@@ -282,13 +277,13 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
             leaveNymBlock(m);
             break;
         default:
-            assert false : "Unexpected state while extracting translations from dictionary.";
+            assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
         } 
-        // System.out.println(""+ nbtrad + " Translations extracted");
+        wdh.finalizeEntryExtraction();
     }
     
 
-private void extractTranslations(int startOffset, int endOffset) {
+    private void extractTranslations(int startOffset, int endOffset) {
        Matcher macroMatcher = macroPattern.matcher(pageContent);
        macroMatcher.region(startOffset, endOffset);
        String currentGlose = null;
@@ -317,9 +312,7 @@ private void extractTranslations(int startOffset, int endOffset) {
                        word = g2.substring(i1+1, i2);
                        usage = g2.substring(i2+1);
                    }
-                   String rel = "trad|" + lang + ((currentGlose == null) ? "" : "|" + currentGlose);
-                   rel = rel + ((usage == null) ? "" : "|" + usage);
-                   semnet.addRelation(wiktionaryPageNameWithLangPrefix, new String(lang + "|" + word), 1, rel );
+                   wdh.registerTranslation(lang, currentGlose, usage, word);
                }
            } else if (g1.equals("trans-top")) {
                // Get the glose that should help disambiguate the source acception
@@ -336,53 +329,5 @@ private void extractTranslations(int startOffset, int endOffset) {
            }
        }
    }
-    
-
-    public static void main(String args[]) throws Exception {
-        long startTime = System.currentTimeMillis();
-        WiktionaryIndex wi = new WiktionaryIndex(args[0]);
-        long endloadTime = System.currentTimeMillis();
-        System.out.println("Loaded index in " + (endloadTime - startTime) +"ms.");
-         
-        EnglishWiktionaryExtractor fwe = new EnglishWiktionaryExtractor();
-        SimpleSemanticNetwork<String, String> s = new SimpleSemanticNetwork<String, String>(100000, 1000000);
-        startTime = System.currentTimeMillis();
-        long totalRelevantTime = 0, relevantstartTime = 0, relevantTimeOfLastThousands;
-        int nbpages = 0, nbrelevantPages = 0;
-        relevantTimeOfLastThousands = System.currentTimeMillis();
-        for (String page : wi.keySet()) {
-            nbpages ++;
-            // if (nbpages < 160000) continue;
-            // System.out.println("Extracting: " + page);
-            int nbnodes = s.getNbNodes();
-            relevantstartTime = System.currentTimeMillis();
-            String pageContent = wi.getTextOfPage(page);
-            fwe.extractData(page, pageContent, s); 
-            if (nbnodes != s.getNbNodes()) {
-                totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
-                nbrelevantPages++;
-                if (nbrelevantPages % 1000 == 0) {
-                    System.out.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = " 
-                            + (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbpages 
-                            + " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbpages + ")" );
-                    System.out.println("      NbNodes = " + s.getNbNodes());
-                    relevantTimeOfLastThousands = System.currentTimeMillis();
-                }
-                // if (nbrelevantPages == 10000) break;
-            }
-        }
-//        fwe.extractData("dictionnaire", s);
-//        fwe.extractData("amour", s);
-//        fwe.extractData("bateau", s);
-                
-        s.dumpToWriter(new PrintStream(args[1] + new Date()));
-        System.out.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
-        System.out.println("Semnet contains: " + s.getNbNodes() + " nodes and " + s.getNbEdges() + " edges.");
-        //for (SemanticNetwork<String,String>.Edge e : s.getEdges("dictionnaire")) {
-        //    System.out.println(e.getRelation() + " --> " + e.getDestination());
-        //}
-    }
-
-
     
 }

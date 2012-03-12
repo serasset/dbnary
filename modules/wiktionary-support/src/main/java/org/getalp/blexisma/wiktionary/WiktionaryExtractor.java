@@ -3,13 +3,13 @@ package org.getalp.blexisma.wiktionary;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.SemanticNetwork;
+import org.getalp.blexisma.api.ISO639_3;
 
 public abstract class WiktionaryExtractor {
     
 	// TODO: Alter the extraction process by allowing multiple lines in a macro and evaluate the final result
 	// TODO: Determine how many nested macro are used in the different wiktionary languages.
-    // These should be independant of the language
+    // These should be independent of the language
     protected final static String macroPatternString;
     protected final static String linkPatternString;
     protected final static String macroOrLinkPatternString;
@@ -19,7 +19,6 @@ public abstract class WiktionaryExtractor {
     protected final static String catOrInterwikiLink = "^\\s*\\[\\[([^\\:\\]]*)\\:([^\\]]*)\\]\\]\\s*$";
     protected final static Pattern categoryOrInterwikiLinkPattern;
 
-    protected static  String langPrefix = "";
     static {
     	// DONE: Validate the fact that links and macro should be on one line or may be on several...
     	// DONE: for this, evaluate the difference in extraction !
@@ -34,6 +33,7 @@ public abstract class WiktionaryExtractor {
             .append("([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?")
             .append("\\}\\}")
             .toString();
+        // TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
         macroOrLinkPatternString = new StringBuilder()
         .append("(?:")
         .append(macroPatternString)
@@ -41,6 +41,8 @@ public abstract class WiktionaryExtractor {
         .append(linkPatternString)
         .append(")|(?:")
         .append("'{2,3}")
+        .append(")|(?:")
+        .append("<!--.*-->")
         .append(")").toString();
         
         categoryOrInterwikiLinkPattern = Pattern.compile(catOrInterwikiLink, Pattern.MULTILINE);
@@ -60,24 +62,14 @@ public abstract class WiktionaryExtractor {
         definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
         bulletListPattern = Pattern.compile(bulletListPatternString);
     }
-
-    protected final static String POS_RELATION = "pos";
-    protected final static String DEF_RELATION = "def";
-    protected final static String ALT_RELATION = "alt";
-    protected final static String SYN_RELATION = "syn";
-    protected final static String ANT_RELATION = "ant";
-    protected final static String TRANSLATION_RELATION = "trad";
-    protected final static String POS_PREFIX = "#" + POS_RELATION + "|";
-    protected final static String DEF_PREFIX = "#" + DEF_RELATION + "|";
-        
-    // protected WiktionaryIndex wiktionaryIndex;
-    protected SemanticNetwork<String, String> semnet;
-    protected String wiktionaryPageNameWithLangPrefix;
-    protected String wiktionaryPageName;
+    
     protected String pageContent;
-
-    public WiktionaryExtractor() {
+    protected WiktionaryDataHandler wdh;
+	protected String wiktionaryPageName;
+    
+    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
         super();
+        this.wdh = wdh;
     //    this.wiktionaryIndex = wi;
     }
 
@@ -88,25 +80,30 @@ public abstract class WiktionaryExtractor {
     //    return wiktionaryIndex;
     //}
     
-    // TODO: filter out pages that are in specific Namespaces (Wiktionary:, Categories:, ...)
+    // DONE: filter out pages that are in specific Namespaces (Wiktionary:, Categories:, ...)
     // TODO: take Redirect page into account as alternate spelling.
     // TODO: take homography into account (ex: mousse) and separate different definitions for the same pos.
     // TODO: some xml comments may be in the string values. Remove them.
-    public void extractData(String wiktionaryPageName, String pageContent, SemanticNetwork<String, String> semnet) {
+    public void extractData(String wiktionaryPageName, String pageContent) {
+    	// Entries containing the special char ":" are pages belonging to specific namespaces.(Wiktionary:, Categories:, ...).
+    	// Such pages are simply ingnored.
+    	if (wiktionaryPageName.contains(":")) {
+    		return;
+    	}
         this.wiktionaryPageName = wiktionaryPageName;
-        this.wiktionaryPageNameWithLangPrefix = langPrefix + wiktionaryPageName;
-        this.semnet = semnet;
         
         this.pageContent = pageContent;
         
         if (pageContent == null) return;
-        
-        extractData();
+        try {
+        	extractData();
+        } catch (RuntimeException e) {
+        	System.err.println("Caught RuntimeException while parsing entry [" + this.wiktionaryPageName + "]");
+        	throw e;
+        }
      }
 
     public abstract void extractData();
-    
-    protected String currentPos = "";
     
     protected void extractDefinitions(int startOffset, int endOffset) { 
         Matcher definitionMatcher = definitionPattern.matcher(this.pageContent);
@@ -114,16 +111,12 @@ public abstract class WiktionaryExtractor {
         while (definitionMatcher.find()) {
             String def = cleanUpMarkup(definitionMatcher.group(1));
             if (def != null && ! def.equals("")) {
-                def = DEF_PREFIX + def;
-                this.semnet.addRelation(this.wiktionaryPageNameWithLangPrefix, def, 1, DEF_RELATION);
-                if (currentPos != null && ! currentPos.equals("")) {
-                    this.semnet.addRelation(def, POS_PREFIX + currentPos, 1, POS_RELATION);
-                }
+            	wdh.registerNewDefinition(definitionMatcher.group(1));
             }
         }      
     }
     
-    public static String cleanUpMarkup(String group) {
+	public static String cleanUpMarkup(String group) {
         return cleanUpMarkup(group, false);
     }
 
@@ -132,13 +125,14 @@ public abstract class WiktionaryExtractor {
     // DONE: (priority: top) keep annotated lemma (#{lemma}#) in definitions.
     // DONE: handle ''...'' and '''...'''.
     // DONE: suppress affixes that follow links, like: e in [[français]]e.
-    // TODO: Extract lemma AND OCCURENCE of links in non human readable form
+    // DONE: Extract lemma AND OCCURENCE of links in non human readable form
 
     /**
      * cleans up the wiktionary markup from a string in the following maner: <br/>
      * str is the string to be cleaned up.
      * the result depends on the value of humanReadable.
      * Wiktionary macros are always discarded.
+     * xml/xhtml comments are always discarded.
      * Wiktionary links are modified depending on the value of humanReadable.
      * e.g. str = "{{a Macro}} will be [[discard]]ed and [[feed|fed]] to the [[void]]."
      * if humanReadable is true, it will produce:
@@ -231,21 +225,26 @@ public abstract class WiktionaryExtractor {
     	return convertToHumanReadableForm(def);
     }
     
-    protected void extractOrthoAlt(int startOffset, int endOffset) {
+    // TODO: dissociates entry parsing and structure building in 2 classes.
+    // So that we will factorize the matching code.
+   protected void extractOrthoAlt(int startOffset, int endOffset) {
         Matcher bulletListMatcher = WiktionaryExtractor.bulletListPattern.matcher(this.pageContent);
         bulletListMatcher.region(startOffset, endOffset);
         while (bulletListMatcher.find()) {
             String alt = cleanUpMarkup(bulletListMatcher.group(1), true);
             if (alt != null && ! alt.equals("")) {
-                alt = langPrefix + alt;
-                this.semnet.addRelation(this.wiktionaryPageNameWithLangPrefix, alt, 1, ALT_RELATION);
+            	wdh.registerAlternateSpelling(alt);
             }
         }      
      }
  
+    // TODO: There are entries where Files, Fichier or Iage Links are inside the entry and not at the end of it...
+    // links.group(1).equalsIgnoreCase("Image") || 
+    // links.group(1).equalsIgnoreCase("File") ||
+    // links.group(1).equalsIgnoreCase("Fichier")
     int computeRegionEnd(int blockStart, Matcher m) {
         if (m.hitEnd()) {
-            // Take out categories and interwiki links.
+            // Take out categories, files and interwiki links.
             Matcher links = categoryOrInterwikiLinkPattern.matcher(pageContent);
             links.region(blockStart, m.regionEnd());
             while (links.find()) {
@@ -253,14 +252,13 @@ public abstract class WiktionaryExtractor {
                 		links.group(1).equalsIgnoreCase("Catégorie") ||
                 		links.group(1).equalsIgnoreCase("Category") ||
                 		links.group(1).equalsIgnoreCase("Kategorie") ||
-                		links.group(1).equalsIgnoreCase("Annexe") || 
-                		links.group(1).equalsIgnoreCase("Image") || 
-                		links.group(1).equalsIgnoreCase("File") 
+                		links.group(1).equalsIgnoreCase("Annexe") ||
+                		ISO639_3.sharedInstance.getLang(links.group(1)) != null
                 		)
                     return links.start();
                 else if (links.group(1) != null) {
-                	System.out.println("--- In: " + this.wiktionaryPageName + " --->");
-                	System.out.println(links.group());
+                	// System.out.println("--- In: " + this.wiktionaryPageName + " --->");
+                	// System.out.println(links.group());
                 }
             } 
             return m.regionEnd();
@@ -299,11 +297,11 @@ public abstract class WiktionaryExtractor {
             if (leftGroup != null && ! leftGroup.equals("") && 
             		! leftGroup.startsWith("Wikisaurus:") &&
             		! leftGroup.startsWith("Catégorie:")) {
-                leftGroup = langPrefix + leftGroup;
-                this.semnet.addRelation(this.wiktionaryPageNameWithLangPrefix, leftGroup, 1, synRelation);
+            	wdh.registerNymRelation(leftGroup, synRelation);  
             }
         }      
     }
-    
+
+
 
 }

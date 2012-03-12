@@ -14,7 +14,6 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
 
     protected final static String languageSectionPatternString = "={2}\\s*([^\\(]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
     protected final static String partOfSpeechPatternString = "={3}\\s*\\{\\{Wortart\\|([^\\}\\|]*)\\|([^\\}]*)\\}\\}.*={3}";
-    // protected final static String tabellePatternString = "\\{\\{(?:Substantiv|Verb)-Tabelle\\|([^\\}\\|]*)\\|([^\\}]*)\\}\\}";
     protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
     protected final static String germanDefinitionPatternString = "^:{1,3}\\[[^\\]]*]\\s*(.*)$";
     private final int NODATA = 0;
@@ -23,12 +22,8 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
     private final int ORTHOALTBLOCK = 3;
     private final int NYMBLOCK = 4;
 
-    static {
-        langPrefix = "#" + ISO639_3.sharedInstance.getIdCode("deu") + "|";
-    }
-
-    public GermanWiktionaryExtractor() {
-        super();
+    public GermanWiktionaryExtractor(WiktionaryDataHandler wdh) {
+        super(wdh);
     }
 
     // protected final static Pattern languageSectionPattern;
@@ -171,6 +166,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
     int translationBlockStart = -1;
     private int nymBlockStart = -1;
     private String currentNym = null;
+	private String curPos;
 
     void gotoNoData(Matcher m) {
         state = NODATA;
@@ -182,13 +178,13 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
     }
 
     void registerNewPartOfSpeech(Matcher m) {
-        currentPos = m.group(4).equals("Deutsch") ? m.group(3) : null;
+        curPos = m.group(4).equals("Deutsch") ? m.group(3) : null;
     }
 
     void gotoDefBlock(Matcher m) {
         state = DEFBLOCK;
         definitionBlockStart = m.end();
-        semnet.addRelation(wiktionaryPageNameWithLangPrefix, POS_PREFIX + currentPos, 1, POS_RELATION);
+        wdh.addPartOfSpeech(curPos);
     }
 
     void gotoOrthoAltBlock(Matcher m) {
@@ -198,7 +194,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
 
     void leaveDefBlock(Matcher m) {
         extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
-        currentPos = null;
+        curPos = null;
         definitionBlockStart = -1;
     }
 
@@ -229,6 +225,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
     private void extractGermanData(int startOffset, int endOffset) {
         Matcher m = macroOrPOSPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
+        wdh.initializeEntryExtraction(wiktionaryPageName);
         gotoNoData(m);
         while (m.find()) {
             switch (state) {
@@ -428,7 +425,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
         default:
             assert false : "Unexpected state while extracting translations from dictionary.";
         }
-        // System.out.println(""+ nbtrad + " Translations extracted");
+        wdh.finalizeEntryExtraction();
     }
 
     private void extractTranslations(int startOffset, int endOffset) {
@@ -463,12 +460,8 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                         transcription = g2.substring(i1 + 1, i2);
                         word = g2.substring(i2 + 1);
                     }
-                    String rel = "trad|" + lang + ((currentGlose == null) ? "" : "|" + currentGlose);
                     // TODO: Should I keep the transcription ?
-                    // rel = rel + ((transcription == null) ? "" : "|" + usage);
-                    if (word != null && word.length() != 0) {
-                        semnet.addRelation(wiktionaryPageNameWithLangPrefix, new String(lang + "|" + word), 1, rel);
-                    }
+                    wdh.registerTranslation(lang, currentGlose, transcription, word);
                 }
             } else if (g1.equals("Ü-links")) {
                 // German wiktionary does not provide a glose to disambiguate.
@@ -484,66 +477,17 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
 
     @Override
     protected void extractDefinitions(int startOffset, int endOffset) {
-        Matcher definitionMatcher = germanDefinitionPattern.matcher(this.pageContent);
+    	// TODO: The definition pattern is the only one that changes. Hence, we should normalize this processing and put the macro in language specific parameters.
+    	Matcher definitionMatcher = germanDefinitionPattern.matcher(this.pageContent);
         definitionMatcher.region(startOffset, endOffset);
         while (definitionMatcher.find()) {
             String def = cleanUpMarkup(definitionMatcher.group(1));
             if (def != null && !def.equals("")) {
-                def = DEF_PREFIX + def;
-                this.semnet.addRelation(this.wiktionaryPageNameWithLangPrefix, def, 1, DEF_RELATION);
-                if (currentPos != null && !currentPos.equals("")) {
-                    this.semnet.addRelation(def, POS_PREFIX + currentPos, 1, POS_RELATION);
-                }
+            	wdh.registerNewDefinition(definitionMatcher.group(1));
             }
         }
     }
+    
 
-    public static void main(String args[]) throws Exception {
-        long startTime = System.currentTimeMillis();
-        WiktionaryIndex wi = new WiktionaryIndex(args[0]);
-        long endloadTime = System.currentTimeMillis();
-        System.out.println("Loaded index in " + (endloadTime - startTime) + "ms.");
-
-        GermanWiktionaryExtractor fwe = new GermanWiktionaryExtractor();
-        SimpleSemanticNetwork<String, String> s = new SimpleSemanticNetwork<String, String>(100000, 1000000);
-        startTime = System.currentTimeMillis();
-        long totalRelevantTime = 0, relevantstartTime = 0, relevantTimeOfLastThousands;
-        int nbpages = 0, nbrelevantPages = 0;
-        relevantTimeOfLastThousands = System.currentTimeMillis();
-        for (String page : wi.keySet()) {
-            nbpages++;
-            // System.out.println("Extracting: " + page);
-            int nbnodes = s.getNbNodes();
-            relevantstartTime = System.currentTimeMillis();
-            String pageContent = wi.getTextOfPage(page);
-            fwe.extractData(page, pageContent, s);
-            if (nbnodes != s.getNbNodes()) {
-                totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
-                nbrelevantPages++;
-                if (nbrelevantPages % 1000 == 0) {
-                    System.out.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = "
-                            + (totalRelevantTime / nbrelevantPages) + " ms/extracted page ("
-                            + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbpages
-                            + " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = "
-                            + (System.currentTimeMillis() - startTime) / nbpages + ")");
-                    System.out.println("      NbNodes = " + s.getNbNodes());
-                    relevantTimeOfLastThousands = System.currentTimeMillis();
-                }
-                // if (nbrelevantPages == 10000)
-                //    break;
-            }
-        }
-        // fwe.extractData("dictionnaire", s);
-        // fwe.extractData("amour", s);
-        // fwe.extractData("bateau", s);
-
-        s.dumpToWriter(new PrintStream(args[1] + new Date()));
-        System.out.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
-        System.out.println("Semnet contains: " + s.getNbNodes() + " nodes and " + s.getNbEdges() + " edges.");
-        // for (SemanticNetwork<String,String>.Edge e :
-        // s.getEdges("dictionnaire")) {
-        // System.out.println(e.getRelation() + " --> " + e.getDestination());
-        // }
-    }
 
 }

@@ -25,7 +25,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
-    private final int DEFBLOCK = 2;
+    protected final int DEFBLOCK = 2;
     private final int ORTHOALTBLOCK = 3;
     private final int NYMBLOCK = 4;
 	private final int IGNOREPOS = 5;
@@ -42,9 +42,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     // private static Set<String> affixesToDiscardFromLinks = null;
     
     static {
-        langPrefix = "#" + ISO639_3.sharedInstance.getIdCode("fra") + "|";
-      
-                
+    	
         posMarkers = new HashSet<String>(130);
         ignorablePosMarkers = new HashSet<String>(130);
 
@@ -202,18 +200,17 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         sectionMarkers.add("-homo-");
         sectionMarkers.add("-exp-");
         sectionMarkers.add("-compos-");
-        // TODO: prendre en compte la variante orthographique
+        // DONE: prendre en compte la variante orthographique (différences avec -ortho-alt- ?)
         sectionMarkers.add("-var-ortho-");
         
        // TODO trouver tous les modèles de section...
-        
         
         // affixesToDiscardFromLinks = new HashSet<String>();
         // affixesToDiscardFromLinks.add("s");
     }
     
-    public FrenchWiktionaryExtractor() {
-        super();
+    public FrenchWiktionaryExtractor(WiktionaryDataHandler wdh) {
+        super(wdh);
     }
 
     protected final static Pattern languageSectionPattern;
@@ -262,11 +259,11 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         state = TRADBLOCK;
     }
 
-    void gotoDefBlock(Matcher m){
+    // TODO: put up in root class extractor.
+    void gotoDefBlock(Matcher m) {
         state = DEFBLOCK;
         definitionBlockStart = m.end();
-        currentPos = m.group(1);
-        semnet.addRelation(wiktionaryPageNameWithLangPrefix, POS_PREFIX + currentPos, 1, POS_RELATION);
+        wdh.addPartOfSpeech(m.group(1));
     }
     
     void gotoOrthoAltBlock(Matcher m) {
@@ -282,29 +279,29 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     
     void leaveDefBlock(Matcher m) {
         extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
-        currentPos = null;
         definitionBlockStart = -1;
     }
     
-    private void gotoSynBlock(Matcher m) {
+    void gotoSynBlock(Matcher m) {
         state = NYMBLOCK;
         currentNym = nymMarkerToNymName.get(m.group(1));
         nymBlockStart = m.end();      
      }
 
-    private void gotoIgnorePos(Matcher m) {
+    void gotoIgnorePos(Matcher m) {
         state = IGNOREPOS;
      }
 
-    private void leaveSynBlock(Matcher m) {
+    void leaveSynBlock(Matcher m) {
         extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
         currentNym = null;
         nymBlockStart = -1;         
      }
-
-    private void extractFrenchData(int startOffset, int endOffset) {        
+    
+    protected void extractFrenchData(int startOffset, int endOffset) {        
         Matcher m = macroPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
+        wdh.initializeEntryExtraction(wiktionaryPageName);
         gotoNoData(m);
         // WONTDO: (priority: low) should I use a macroOrLink pattern to detect translations that are not macro based ?
         // DONE: (priority: top) link the definition node with the current Part of Speech
@@ -313,7 +310,6 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         // DONE: extract synonyms
         // DONE: extract antonyms
         // DONE: add an IGNOREPOS state to ignore the entire part of speech
-        int nbtrad = 0;
         String currentGlose = null;
         while (m.find()) {
             if (! sectionMarkers.contains(m.group(1))) unsupportedMarkers.add(m.group(1));
@@ -327,7 +323,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     gotoDefBlock(m);
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
                     gotoIgnorePos(m);
-                } else if (m.group(1).equals("-ortho-alt-")) {
+                } else if (m.group(1).equals("-ortho-alt-") || m.group(1).equals("-var-ortho-")) {
                     gotoOrthoAltBlock(m);
                 } else if (nymMarkers.contains(m.group(1))) {
                     gotoSynBlock(m);
@@ -347,7 +343,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
                     leaveDefBlock(m);
                     gotoIgnorePos(m);
-                } else if (m.group(1).equals("-ortho-alt-")) {
+                } else if (m.group(1).equals("-ortho-alt-") || m.group(1).equals("-var-ortho-")) {
                     leaveDefBlock(m);
                     gotoOrthoAltBlock(m);
                 } else if (nymMarkers.contains(m.group(1))) {
@@ -370,10 +366,8 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                      // normalize language code
                         String normLangCode;
                         if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-                            lang = "#" + normLangCode;
-                        } else {
-                            lang = "#" + lang;
-                        }
+                            lang = normLangCode;
+                        } 
                         String usage = null;
                         if ((i2 = g2.indexOf('|', i1+1)) == -1) {
                             word = g2.substring(i1+1);
@@ -381,11 +375,9 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                             word = g2.substring(i1+1, i2);
                             usage = g2.substring(i2+1);
                         }
-                        String rel = "trad|" + lang + ((currentGlose == null || currentGlose.equals("")) ? "" : "|" + currentGlose);
-                        rel = rel + ((usage == null) ? "" : "|" + usage);
-                        semnet.addRelation(wiktionaryPageNameWithLangPrefix, new String(lang + "|" + word), 1, rel ); nbtrad++;
+                        wdh.registerTranslation(lang, currentGlose, usage, word);
                     }
-                } else if (g1.equals("boîte début")) {
+                } else if (g1.equals("boîte début") || g1.equals("(")) {
                     // Get the glose that should help disambiguate the source acception
                     String g2 = m.group(2);
                     // Ignore glose if it is a macro
@@ -406,7 +398,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                     gotoDefBlock(m);
                 } else if (ignorablePosMarkers.contains(m.group(1))) {
                     gotoIgnorePos(m);
-                } else if (m.group(1).equals("-ortho-alt-")) {
+                } else if (m.group(1).equals("-ortho-alt-") || m.group(1).equals("-var-ortho-")) {
                     gotoOrthoAltBlock(m);
                 } else if (nymMarkers.contains(m.group(1))) {
                     gotoSynBlock(m);
@@ -486,54 +478,8 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         default:
             assert false : "Unexpected state while extracting translations from dictionary.";
         } 
-        // System.out.println(""+ nbtrad + " Translations extracted");
-    }
-
-
-    public static void main(String args[]) throws Exception {
-        long startTime = System.currentTimeMillis();
-        WiktionaryIndex wi = new WiktionaryIndex(args[0]);
-        long endloadTime = System.currentTimeMillis();
-        System.out.println("Loaded index in " + (endloadTime - startTime) +"ms.");
-         
-        FrenchWiktionaryExtractor fwe = new FrenchWiktionaryExtractor();
-        SimpleSemanticNetwork<String, String> s = new SimpleSemanticNetwork<String, String>(100000, 1000000);
-        startTime = System.currentTimeMillis();
-        long totalRelevantTime = 0, relevantstartTime = 0, relevantTimeOfLastThousands;
-        int nbpages = 0, nbrelevantPages = 0;
-        relevantTimeOfLastThousands = System.currentTimeMillis();
-        for (String page : wi.keySet()) {
-            // System.out.println("Extracting: " + page);
-            int nbnodes = s.getNbNodes();
-            relevantstartTime = System.currentTimeMillis();
-            String pageContent = wi.getTextOfPage(page);
-            fwe.extractData(page, pageContent, s); 
-            nbpages ++;
-            if (nbnodes != s.getNbNodes()) {
-                totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
-                nbrelevantPages++;
-                if (nbrelevantPages % 1000 == 0) {
-                    System.out.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = " 
-                            + (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbpages 
-                            + " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbpages + ")" );
-                    System.out.println("      NbNodes = " + s.getNbNodes());
-                    relevantTimeOfLastThousands = System.currentTimeMillis();
-                }
-                // if (nbrelevantPages == 1100) break;
-            }
-        }
-//        fwe.extractData("dictionnaire", s);
-//        fwe.extractData("amour", s);
-//        fwe.extractData("bateau", s);
         
-        System.out.println(unsupportedMarkers);
-        
-        StringSemNetGraphMLizer gout = new StringSemNetGraphMLizer(new OutputStreamWriter(new FileOutputStream(args[1] + new Date())));
-        gout.dump(s);
-        // s.dumpToWriter(new PrintStream(args[1] + new Date()));
-        System.out.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
-        System.out.println("Semnet contains: " + s.getNbNodes() + " nodes and " + s.getNbEdges() + " edges.");
-        
+        wdh.finalizeEntryExtraction();
     }
 
 

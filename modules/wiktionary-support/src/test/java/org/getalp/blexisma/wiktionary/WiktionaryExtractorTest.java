@@ -97,6 +97,18 @@ public class WiktionaryExtractorTest {
         assertEquals("cleanUp failed", "l'action compte", result);
     }
     
+    @Test
+    public void testXmlComments1() {
+        String result = WiktionaryExtractor.cleanUpMarkup("   X<!-- tagada ploum -- -->Y   Z ");
+        assertEquals("cleanUp failed", "XY Z", result);
+    }
+
+    @Test
+    public void testXmlComments2() {
+        String result = WiktionaryExtractor.cleanUpMarkup("   X<!-- {{toto}} -->Y   Z ");
+        assertEquals("cleanUp failed", "XY Z", result);
+    }
+
     @Test  
     public void testDefinitionToHumanReadable() {
     	String data = "{{a Macro}} will be [[discard]]ed and [[feed|fed]] to the [[void]].";

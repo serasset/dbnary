@@ -23,12 +23,16 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
+import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
 import org.getalp.blexisma.semnet.StringSemNetGraphMLizer;
 import org.getalp.blexisma.wiktionary.EnglishWiktionaryExtractor;
+import org.getalp.blexisma.wiktionary.FrenchRDFWiktionaryExtractor;
 import org.getalp.blexisma.wiktionary.FrenchWiktionaryExtractor;
 import org.getalp.blexisma.wiktionary.GermanWiktionaryExtractor;
 import org.getalp.blexisma.wiktionary.OffsetValue;
+import org.getalp.blexisma.wiktionary.SemnetWiktionaryDataHandler;
+import org.getalp.blexisma.wiktionary.WiktionaryDataHandler;
 import org.getalp.blexisma.wiktionary.WiktionaryExtractor;
 import org.getalp.blexisma.wiktionary.WiktionaryIndex;
 import org.getalp.blexisma.wiktionary.WiktionaryIndexer;
@@ -59,12 +63,21 @@ public class ExtractWiktionary {
 	private String language = DEFAULT_LANGUAGE;
 	private File dumpFile;
 	private String outputFileSuffix = "";
+	WiktionaryIndex wi;
+	String[] remainingArgs;
+	WiktionaryExtractor we;
+
+	private SimpleSemanticNetwork<String, String> s = null;
+
+	private WiktionaryDataHandler wdh;
+
+	
 	static{
 		options = new Options();
 		options.addOption("h", false, "Prints usage and exits. ");	
 		options.addOption(SUFFIX_OUTPUT_FILE_OPTION, false, "Add a unique suffix to output file. ");	
 		options.addOption(LANGUAGE_OPTION, true, 
-				"Language (fr, en or de). " + DEFAULT_LANGUAGE + " by default.");
+				"Language (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_LANGUAGE + " by default.");
 		options.addOption(OUTPUT_FORMAT_OPTION, true, 
 				"Output format (graphml or raw). " + DEFAULT_OUTPUT_FORMAT + " by default.");
 		options.addOption(OUTPUT_FILE_OPTION, true, "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");	
@@ -122,6 +135,7 @@ public class ExtractWiktionary {
 		if (cmd.hasOption(OUTPUT_FORMAT_OPTION)){
 			outputFormat = cmd.getOptionValue(OUTPUT_FORMAT_OPTION);
 		}
+		outputFormat = outputFormat.toUpperCase();
 				
 		if (cmd.hasOption(OUTPUT_FILE_OPTION)){
 			outputFile = cmd.getOptionValue(OUTPUT_FILE_OPTION);
@@ -129,7 +143,8 @@ public class ExtractWiktionary {
 		
 		if (cmd.hasOption(LANGUAGE_OPTION)){
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
-			if (! (language.equals("fr") || language.equals("en") || language.equals("de"))) {
+			language = ISO639_3.sharedInstance.getIdCode(language);
+			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu"))) {
 				printUsage();
 				System.exit(1);
 			}
@@ -141,26 +156,39 @@ public class ExtractWiktionary {
 			System.exit(1);
 		}
 		
+		we = null;
+		if (	outputFormat.equals("RDF") || 
+				outputFormat.equals("TURTLE") ||
+				outputFormat.equals("NTRIPLE") ||
+				outputFormat.equals("N3") ||
+				outputFormat.equals("TTL") ||
+				outputFormat.equals("RDFABBREV") ) {
+			wdh = new FrenchRDFWiktionaryExtractor();
+		} else if (outputFormat.equals("RAW") || outputFormat.equals("GRAPHML")) {
+			s = new SimpleSemanticNetwork<String, String>();
+			wdh = new SemnetWiktionaryDataHandler(s, language);
+		} else {
+			System.err.println("unsupported format :" + outputFormat);
+			System.exit(1);
+		}
+		
+		if (language.equals("fra")) {
+			we = new FrenchWiktionaryExtractor(wdh);
+		} else if (language.equals("eng")) {
+			we = new EnglishWiktionaryExtractor(wdh);
+		} else if (language.equals("deu")) {
+			we = new GermanWiktionaryExtractor(wdh);
+		} else {
+			System.err.println("Wiktionary Extraction not yet available for " + ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+			System.exit(1);
+		}
+		
 		outputFile = outputFile + outputFileSuffix;
 		 
 		dumpFile = new File(remainingArgs[0]);
 	}
 	
     public void extract() throws WiktionaryIndexerException, IOException {
-        
-        WiktionaryExtractor we = null;
-        if (language.equals("fr")) {
-            we = new FrenchWiktionaryExtractor();
-        } else if (language.equals("en")) {
-            we = new EnglishWiktionaryExtractor();
-        } else if (language.equals("de")) {
-            we = new GermanWiktionaryExtractor();
-        } else {
-            printUsage();
-            System.exit(1);
-        }
-
-        SimpleSemanticNetwork<String, String> s = new SimpleSemanticNetwork<String, String>(100000, 1000000);
         
         // create new XMLStreamReader
 
@@ -190,16 +218,16 @@ public class ExtractWiktionary {
                 } else if (xmlr.isEndElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
                 	if (!title.equals("")) {               	
                         nbpages++;
-                        int nbnodes = s.getNbNodes();
-                		we.extractData(title, page, s);
-                		if (nbnodes != s.getNbNodes()) {
+                        int nbnodes = wdh.nbEntries();
+                		we.extractData(title, page);
+                		if (nbnodes != wdh.nbEntries()) {
                 			totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
                 			nbrelevantPages++;
                 			if (nbrelevantPages % 1000 == 0) {
                 				System.err.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = " 
                 						+ (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbpages 
                 						+ " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbpages + ")" );
-                				System.err.println("      NbNodes = " + s.getNbNodes());
+                				// System.err.println("      NbNodes = " + s.getNbNodes());
                 				relevantTimeOfLastThousands = System.currentTimeMillis();
                 			}
                 			// if (nbrelevantPages == 1100) break;
@@ -223,15 +251,29 @@ public class ExtractWiktionary {
                 ex.printStackTrace();
             }
         }
-                
-        if (outputFormat.equals("graphml")) {
+           
+        System.err.println("Dumping " + outputFormat + " representation of the extracted data.");
+        if (outputFormat.equals("GRAPHML")) {
         	StringSemNetGraphMLizer gout = new StringSemNetGraphMLizer(new OutputStreamWriter(new FileOutputStream(outputFile)), StringSemNetGraphMLizer.MULLING_OUTPUT);
         	gout.dump(s);
-        } else {  
+        } else if (outputFormat.equals("RAW")) {  
         	s.dumpToWriter(new PrintStream(outputFile));
-        }
+        } else if (outputFormat.equals("RDF")) {
+        	((FrenchRDFWiktionaryExtractor) wdh).dump(new PrintStream(outputFile));
+        } else if (outputFormat.equals("TURTLE")) {
+        	((FrenchRDFWiktionaryExtractor) wdh).dump(new PrintStream(outputFile), "TURTLE");
+        } else if (outputFormat.equals("NTRIPLE")) {
+        	((FrenchRDFWiktionaryExtractor) wdh).dump(new PrintStream(outputFile), "N-TRIPLE");
+        } else if (outputFormat.equals("N3")) {
+        	((FrenchRDFWiktionaryExtractor) wdh).dump(new PrintStream(outputFile), "N3");
+        } else if (outputFormat.equals("TTL")) {
+        	((FrenchRDFWiktionaryExtractor) wdh).dump(new PrintStream(outputFile), "TTL");
+        } else if (outputFormat.equals("RDFABBREV")) {
+        	((FrenchRDFWiktionaryExtractor) wdh).dump(new PrintStream(outputFile), "RDF/XML-ABBREV");
+        } 
+  
         System.err.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
-        System.err.println("Semnet contains: " + s.getNbNodes() + " nodes and " + s.getNbEdges() + " edges.");
+        System.err.println("Semnet contains: " + wdh.nbEntries() + " nodes.");
     }
 
     

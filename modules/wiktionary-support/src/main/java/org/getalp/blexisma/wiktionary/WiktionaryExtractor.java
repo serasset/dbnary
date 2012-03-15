@@ -63,8 +63,18 @@ public abstract class WiktionaryExtractor {
         bulletListPattern = Pattern.compile(bulletListPatternString);
     }
     
+    /**
+	 * @uml.property  name="pageContent"
+	 */
     protected String pageContent;
+    /**
+	 * @uml.property  name="wdh"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
     protected WiktionaryDataHandler wdh;
+	/**
+	 * @uml.property  name="wiktionaryPageName"
+	 */
 	protected String wiktionaryPageName;
     
     public WiktionaryExtractor(WiktionaryDataHandler wdh) {

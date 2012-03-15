@@ -11,7 +11,7 @@ import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
 import org.getalp.blexisma.semnet.StringSemNetGraphMLizer;
 import org.getalp.blexisma.wiktionary.EnglishWiktionaryExtractor;
-import org.getalp.blexisma.wiktionary.FrenchRDFWiktionaryExtractor;
+import org.getalp.blexisma.wiktionary.LMFBasedRDFDataHandler;
 import org.getalp.blexisma.wiktionary.FrenchWiktionaryExtractor;
 import org.getalp.blexisma.wiktionary.GermanWiktionaryExtractor;
 import org.getalp.blexisma.wiktionary.SemnetWiktionaryDataHandler;
@@ -30,9 +30,19 @@ public class GetExtractedSemnet {
 	private static final String OUTPUT_FORMAT_OPTION = "f";
 	private static final String DEFAULT_OUTPUT_FORMAT = "raw";	
 
+	/**
+	 * @uml.property  name="cmd"
+	 * @uml.associationEnd  
+	 */
 	private CommandLine cmd = null; // Command Line arguments
 
+	/**
+	 * @uml.property  name="outputFormat"
+	 */
 	private String outputFormat = DEFAULT_OUTPUT_FORMAT;
+	/**
+	 * @uml.property  name="language"
+	 */
 	private String language = DEFAULT_LANGUAGE;
 	static{
 		options = new Options();
@@ -43,10 +53,29 @@ public class GetExtractedSemnet {
 				"Output format (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_OUTPUT_FORMAT + " by default.");
 	}	
 	
+	/**
+	 * @uml.property  name="wi"
+	 * @uml.associationEnd  
+	 */
 	WiktionaryIndex wi;
+	/**
+	 * @uml.property  name="remainingArgs" multiplicity="(0 -1)" dimension="1"
+	 */
 	String[] remainingArgs;
+	/**
+	 * @uml.property  name="we"
+	 * @uml.associationEnd  
+	 */
 	WiktionaryExtractor we;
+	/**
+	 * @uml.property  name="wdh"
+	 * @uml.associationEnd  
+	 */
 	WiktionaryDataHandler wdh;
+	/**
+	 * @uml.property  name="s"
+	 * @uml.associationEnd  
+	 */
 	SimpleSemanticNetwork<String, String> s;
 	
 	/**
@@ -98,7 +127,7 @@ public class GetExtractedSemnet {
 				outputFormat.equals("N3") ||
 				outputFormat.equals("TTL") ||
 				outputFormat.equals("RDFABBREV") ) {
-			wdh = new FrenchRDFWiktionaryExtractor();
+			wdh = new LMFBasedRDFDataHandler(language);
 		} else if (outputFormat.equals("RAW") || outputFormat.equals("GRAPHML")) {
 			s = new SimpleSemanticNetwork<String, String>();
 			wdh = new SemnetWiktionaryDataHandler(s, language);
@@ -141,17 +170,17 @@ public class GetExtractedSemnet {
         } else if (outputFormat.equals("RAW")) {  
         	s.dumpToWriter(System.out);
         } else if (outputFormat.equals("RDF")) {
-        	((FrenchRDFWiktionaryExtractor) wdh).dump(System.out);
+        	((LMFBasedRDFDataHandler) wdh).dump(System.out);
         } else if (outputFormat.equals("TURTLE")) {
-        	((FrenchRDFWiktionaryExtractor) wdh).dump(System.out, "TURTLE");
+        	((LMFBasedRDFDataHandler) wdh).dump(System.out, "TURTLE");
         } else if (outputFormat.equals("NTRIPLE")) {
-        	((FrenchRDFWiktionaryExtractor) wdh).dump(System.out, "N-TRIPLE");
+        	((LMFBasedRDFDataHandler) wdh).dump(System.out, "N-TRIPLE");
         } else if (outputFormat.equals("N3")) {
-        	((FrenchRDFWiktionaryExtractor) wdh).dump(System.out, "N3");
+        	((LMFBasedRDFDataHandler) wdh).dump(System.out, "N3");
         } else if (outputFormat.equals("TTL")) {
-        	((FrenchRDFWiktionaryExtractor) wdh).dump(System.out, "TTL");
+        	((LMFBasedRDFDataHandler) wdh).dump(System.out, "TTL");
         } else if (outputFormat.equals("RDFABBREV")) {
-        	((FrenchRDFWiktionaryExtractor) wdh).dump(System.out, "RDF/XML-ABBREV");
+        	((LMFBasedRDFDataHandler) wdh).dump(System.out, "RDF/XML-ABBREV");
         } 
 	}
 

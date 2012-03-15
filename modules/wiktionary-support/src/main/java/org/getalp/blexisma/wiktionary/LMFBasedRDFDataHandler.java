@@ -17,52 +17,163 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
 
-public class FrenchRDFWiktionaryExtractor implements WiktionaryDataHandler {
+public class LMFBasedRDFDataHandler implements WiktionaryDataHandler {
 
-	protected static final String NS = "http://getalp.org/dbnary#";
+	protected static final String NSprefix = "http://getalp.org/dbnary/";
 	protected static final String LMF = "http://www.lexicalmarkupframework.org/lmf/r14#";
 	
+	/**
+	 * @uml.property  name="lexEntryType"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Resource lexEntryType;
+	/**
+	 * @uml.property  name="lemmaType"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Resource lemmaType;
+	/**
+	 * @uml.property  name="translationType"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Resource translationType;
+	/**
+	 * @uml.property  name="senseType"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Resource senseType;
+	/**
+	 * @uml.property  name="definitionType"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Resource definitionType;
+	/**
+	 * @uml.property  name="lexicalEntryRelationType"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Resource lexicalEntryRelationType;
 
+	/**
+	 * @uml.property  name="posProperty"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Property posProperty;
+	/**
+	 * @uml.property  name="formProperty"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Property formProperty;
+	/**
+	 * @uml.property  name="isPartOf"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Property isPartOf;
+	/**
+	 * @uml.property  name="langProperty"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Property langProperty;
+	/**
+	 * @uml.property  name="equivalentTargetProperty"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Property equivalentTargetProperty;
+	/**
+	 * @uml.property  name="gloseProperty"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Property gloseProperty;
+	/**
+	 * @uml.property  name="usageProperty"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Property usageProperty;
+	/**
+	 * @uml.property  name="textProperty"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Property textProperty;
+	/**
+	 * @uml.property  name="senseNumberProperty"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Property senseNumberProperty;
+	/**
+	 * @uml.property  name="entryRelationTargetProperty"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Property entryRelationTargetProperty;
+	/**
+	 * @uml.property  name="entryRelationLabelProperty"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	protected Property entryRelationLabelProperty;
 
+	/**
+	 * @uml.property  name="aBox"
+	 * @uml.associationEnd  multiplicity="(0 -1)" elementType="com.hp.hpl.jena.rdf.model.Statement"
+	 */
 	Model aBox;
+	/**
+	 * @uml.property  name="tBox"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
 	Model tBox;
 
 	// States used for processing
+	/**
+	 * @uml.property  name="currentLexEntry"
+	 * @uml.associationEnd  
+	 */
 	protected Resource currentLexEntry;
+	/**
+	 * @uml.property  name="currentSense"
+	 * @uml.associationEnd  
+	 */
 	private Resource currentSense;
+	/**
+	 * @uml.property  name="currentSenseNumber"
+	 */
 	private int currentSenseNumber;
+	/**
+	 * @uml.property  name="currentTranslationNumber"
+	 */
 	private int currentTranslationNumber;
+	/**
+	 * @uml.property  name="currentRelationNumber"
+	 */
 	private int currentRelationNumber;
 
+	/**
+	 * @uml.property  name="currentStatements"
+	 */
 	private Set<Statement> currentStatements = new HashSet<Statement>();
+	/**
+	 * @uml.property  name="currentPos"
+	 */
 	private String currentPos;
 
+	/**
+	 * @uml.property  name="nbEntries"
+	 */
 	protected int nbEntries = 0;
-	private String encodedPageName;
+	/**
+	 * @uml.property  name="encodedPageName"
+	 */
+	protected String encodedPageName;
+	/**
+	 * @uml.property  name="nS"
+	 */
+	protected String NS;
 	
-	public FrenchRDFWiktionaryExtractor() {
+	public LMFBasedRDFDataHandler(String lang) {
 		super();
+		
+		NS = NSprefix + lang + "#";
 		
 		// Create T-Box and read rdf schema associated to it.
 		tBox = ModelFactory.createDefaultModel();
-		InputStream fis = FrenchRDFWiktionaryExtractor.class.getResourceAsStream("LMF-rdf-rev14.xml");
+		InputStream fis = LMFBasedRDFDataHandler.class.getResourceAsStream("LMF-rdf-rev14.xml");
 		tBox.read( fis, LMF );
 			
 		// Create aBox
@@ -103,7 +214,7 @@ public class FrenchRDFWiktionaryExtractor implements WiktionaryDataHandler {
         currentLexEntry = aBox.createResource(NS + encodedPageName);
 
         // DONE: Do not create anonymous nodes to avoid pb with the interpretation of blank nodes.
-        // Create the ressource without typing so that the type statement is added only if the currentStatement are added to the model.
+        // Create the resource without typing so that the type statement is added only if the currentStatement are added to the model.
         Resource lemma = aBox.createResource(computeLemmaId(encodedPageName));
 
         // Retain these statements to be inserted in the model when we will know that the entry corresponds to a proper part of speech

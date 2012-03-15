@@ -36,14 +36,33 @@ public class ConvertSemnet {
 	private static final String DEFAULT_ENCODING = "UTF-8";
 
 	
+	/**
+	 * @uml.property  name="cmd"
+	 * @uml.associationEnd  
+	 */
 	private CommandLine cmd = null; // Command Line arguments
 	
+	/**
+	 * @uml.property  name="inputFormat"
+	 */
 	private String inputFormat = DEFAULT_INPUT_FORMAT;
+	/**
+	 * @uml.property  name="outputFormat"
+	 */
 	private String outputFormat = DEFAULT_OUTPUT_FORMAT;
+	/**
+	 * @uml.property  name="encoding"
+	 */
 	private String encoding = DEFAULT_ENCODING;
 
+	/**
+	 * @uml.property  name="input"
+	 */
 	private InputStreamReader input;
 
+	/**
+	 * @uml.property  name="output"
+	 */
 	private OutputStream output;
 
 	static{

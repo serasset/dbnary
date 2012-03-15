@@ -6,8 +6,10 @@ modules/.project
 modules/.settings
 modules/target
 modules/wiktionary-support/.classpath
+modules/wiktionary-support/.euml2
 modules/wiktionary-support/.project
 modules/wiktionary-support/.settings
+modules/wiktionary-support/.umlproject
 modules/wiktionary-support/src/.classpath
 modules/wiktionary-support/src/.project
 modules/wiktionary-support/src/.settings

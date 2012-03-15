@@ -2,13 +2,14 @@
 modules/wiktionary-support/pom.xml -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/CharsetConvert.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/EnglishWiktionaryExtractor.java -text
-modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/FrenchRDFWiktionaryExtractor.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/FrenchWiktionaryExtractor.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/GermanWiktionaryExtractor.java -text
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/OffsetValue.java -text
-modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/SemnetWiktionaryDataHandler.java -text svneol=unset#text/plain
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/SemnetWiktionaryDataHandler.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryDataHandler.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.java -text
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.ucd -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryGrep.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndex.java -text
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexer.java -text
@@ -20,6 +21,7 @@ modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GetE
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GetRawEntry.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GrepInWiktionary.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/RDFDiff.java -text svneol=unset#text/plain
+modules/wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/StatRDFExtract.java -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
 modules/wiktionary-support/src/main/scripts/README.txt -text
 modules/wiktionary-support/src/main/scripts/compare_extracts.sh -text

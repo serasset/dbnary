@@ -3,15 +3,12 @@
  */
 package org.getalp.blexisma.wiktionary;
 
-import java.io.PrintStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
 
 /**
  * @author serasset
@@ -20,11 +17,26 @@ import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
 public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
 
     //TODO: Handle Wikisaurus entries.
-    protected final static String sectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
+    protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
+    /**
+	 * @uml.property  name="nODATA"
+	 */
     private final int NODATA = 0;
+    /**
+	 * @uml.property  name="tRADBLOCK"
+	 */
     private final int TRADBLOCK = 1;
+    /**
+	 * @uml.property  name="dEFBLOCK"
+	 */
     private final int DEFBLOCK = 2;
+    /**
+	 * @uml.property  name="oRTHOALTBLOCK"
+	 */
     private final int ORTHOALTBLOCK = 3;
+    /**
+	 * @uml.property  name="nYMBLOCK"
+	 */
     private final int NYMBLOCK = 4;
         
     public EnglishWiktionaryExtractor(WiktionaryDataHandler wdh) {
@@ -66,11 +78,30 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
 
     }
 
+    /**
+	 * @uml.property  name="state"
+	 */
     int state = NODATA;
+    /**
+	 * @uml.property  name="definitionBlockStart"
+	 */
     int definitionBlockStart = -1;
+    /**
+	 * @uml.property  name="orthBlockStart"
+	 */
     int orthBlockStart = -1;
+    /**
+	 * @uml.property  name="translationBlockStart"
+	 */
     int translationBlockStart = -1;
+    /**
+	 * @uml.property  name="nymBlockStart"
+	 */
     private int nymBlockStart = -1;
+    /**
+	 * @uml.property  name="currentNym"
+	 * @uml.associationEnd  qualifier="key:java.lang.String java.lang.String"
+	 */
     private String currentNym = null;
     
     /* (non-Javadoc)
@@ -100,6 +131,16 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         extractEnglishData(englishSectionStartOffset, englishSectionEndOffset);
      }
 
+    protected Pattern getLanguageSectionPattern() {
+    	return sectionPattern;
+    }
+    
+    protected boolean languageSectionKind(Matcher m) {
+    	return false;
+    }
+    
+    
+    
 //    private HashSet<String> unsupportedSections = new HashSet<String>(100);
     void gotoNoData(Matcher m) {
         state = NODATA;
@@ -301,10 +342,8 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                    // normalize language code
                    String normLangCode;
                    if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-                       lang = "#" + normLangCode;
-                   } else {
-                       lang = "#" + lang;
-                   }
+                       lang = normLangCode;
+                   } 
                    String usage = null;
                    if ((i2 = g2.indexOf('|', i1+1)) == -1) {
                        word = g2.substring(i1+1);
@@ -321,6 +360,9 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                if (g2 != null && ! g2.startsWith("{{")) {
                    currentGlose = g2;
                }
+           } else if (g1.equals("checktrans-top")) {
+        	   // forget glose.
+        	   currentGlose = null;
            } else if (g1.equals("trans-mid")) {
                // just ignore it
            } else if (g1.equals("trans-bottom")) {

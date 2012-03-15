@@ -7,7 +7,13 @@ public class OffsetValue implements Serializable {
      * 
      */
     private static final long serialVersionUID = -570466055812338894L;
+    /**
+	 * @uml.property  name="start"
+	 */
     public long start;
+	/**
+	 * @uml.property  name="length"
+	 */
 	public int length;
 
 	public OffsetValue(long start, int length) {

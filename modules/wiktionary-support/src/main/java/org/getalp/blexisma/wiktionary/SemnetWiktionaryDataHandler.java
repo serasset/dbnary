@@ -7,6 +7,9 @@ import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
 public class SemnetWiktionaryDataHandler implements WiktionaryDataHandler {
 
     protected static  String langPrefix = "no-language-specified";
+    /**
+	 * @uml.property  name="lang"
+	 */
     protected  String lang = "no-language-specified";
         
     protected final static String POS_RELATION = "pos";
@@ -19,11 +22,27 @@ public class SemnetWiktionaryDataHandler implements WiktionaryDataHandler {
     protected final static String DEF_PREFIX = "#" + DEF_RELATION + "|";
         
     // protected WiktionaryIndex wiktionaryIndex;
+    /**
+	 * @uml.property  name="semnet"
+	 * @uml.associationEnd  multiplicity="(1 1)"
+	 */
     protected SemanticNetwork<String, String> semnet;
+    /**
+	 * @uml.property  name="wiktionaryPageNameWithLangPrefix"
+	 */
     protected String wiktionaryPageNameWithLangPrefix;
+    /**
+	 * @uml.property  name="wiktionaryPageName"
+	 */
     protected String wiktionaryPageName;
 
+    /**
+	 * @uml.property  name="currentPos"
+	 */
     protected String currentPos = "";
+    /**
+	 * @uml.property  name="nbEntries"
+	 */
     protected int nbEntries = 0;
 
     public SemnetWiktionaryDataHandler(String lang) {

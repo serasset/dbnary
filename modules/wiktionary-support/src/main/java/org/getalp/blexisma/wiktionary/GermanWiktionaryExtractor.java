@@ -13,13 +13,28 @@ import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
 public class GermanWiktionaryExtractor extends WiktionaryExtractor {
 
     protected final static String languageSectionPatternString = "={2}\\s*([^\\(]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
-    protected final static String partOfSpeechPatternString = "={3}\\s*\\{\\{Wortart\\|([^\\}\\|]*)\\|([^\\}]*)\\}\\}.*={3}";
+    protected final static String partOfSpeechPatternString = "={3}[^\\{]*\\{\\{Wortart\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
     protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
     protected final static String germanDefinitionPatternString = "^:{1,3}\\[[^\\]]*]\\s*(.*)$";
+    /**
+	 * @uml.property  name="nODATA"
+	 */
     private final int NODATA = 0;
+    /**
+	 * @uml.property  name="tRADBLOCK"
+	 */
     private final int TRADBLOCK = 1;
+    /**
+	 * @uml.property  name="dEFBLOCK"
+	 */
     private final int DEFBLOCK = 2;
+    /**
+	 * @uml.property  name="oRTHOALTBLOCK"
+	 */
     private final int ORTHOALTBLOCK = 3;
+    /**
+	 * @uml.property  name="nYMBLOCK"
+	 */
     private final int NYMBLOCK = 4;
 
     public GermanWiktionaryExtractor(WiktionaryDataHandler wdh) {
@@ -49,10 +64,12 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
             .append("\\}\\}")
             .toString();
         
-        macroOrPOSPatternString = new StringBuilder().append("(?:").append(macroPatternString).append(")|(?:").append(
-                partOfSpeechPatternString).append(")|(?:").append(subSection4PatternString).append(")")
-                .append("|(?:").append(multilineMacroPatternString).append(")")
-                .toString();
+        macroOrPOSPatternString = new StringBuilder()
+        	.append("(?:").append(macroPatternString)
+        	.append(")|(?:").append(partOfSpeechPatternString)
+        	.append(")|(?:").append(subSection4PatternString).append(")")
+            .append("|(?:").append(multilineMacroPatternString).append(")")
+            .toString();
 
         macroOrPOSPattern = Pattern.compile(macroOrPOSPatternString);
         germanDefinitionPattern = Pattern.compile(germanDefinitionPatternString, Pattern.MULTILINE);
@@ -151,22 +168,39 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
         }
         int germanSectionStartOffset = languageFilter.end();
         // Advance till end of sequence or new language section
-        while (languageFilter.find() && (languageFilter.start(1) - languageFilter.start()) != 2) {
-            ;
-        }
+        // WHY filter on section level ?: while (languageFilter.find() && (languageFilter.start(1) - languageFilter.start()) != 2) {
+        languageFilter.find();
         // languageFilter.find();
         int germanSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
         extractGermanData(germanSectionStartOffset, germanSectionEndOffset);
     }
 
+    /**
+	 * @uml.property  name="state"
+	 */
     int state = NODATA;
+    /**
+	 * @uml.property  name="definitionBlockStart"
+	 */
     int definitionBlockStart = -1;
+    /**
+	 * @uml.property  name="orthBlockStart"
+	 */
     int orthBlockStart = -1;
+    /**
+	 * @uml.property  name="translationBlockStart"
+	 */
     int translationBlockStart = -1;
+    /**
+	 * @uml.property  name="nymBlockStart"
+	 */
     private int nymBlockStart = -1;
+    /**
+	 * @uml.property  name="currentNym"
+	 * @uml.associationEnd  qualifier="key:java.lang.String java.lang.String"
+	 */
     private String currentNym = null;
-	private String curPos;
 
     void gotoNoData(Matcher m) {
         state = NODATA;
@@ -178,13 +212,16 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
     }
 
     void registerNewPartOfSpeech(Matcher m) {
-        curPos = m.group(4).equals("Deutsch") ? m.group(3) : null;
+    	// if (m.group(4) != null && ! m.group(4).equals("Deutsch"))
+    	//	System.err.println("lang = " + m.group(4) + " where pos = " + m.group(3) + " in page: " + wiktionaryPageName);
+    	// TODO: language in group 4 is the language of origin of the entry. Maybe we should keep it.
+    	// TODO: filter out ignorable part of speech;
+        wdh.addPartOfSpeech(m.group(3));
     }
 
     void gotoDefBlock(Matcher m) {
         state = DEFBLOCK;
         definitionBlockStart = m.end();
-        wdh.addPartOfSpeech(curPos);
     }
 
     void gotoOrthoAltBlock(Matcher m) {
@@ -194,7 +231,6 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
 
     void leaveDefBlock(Matcher m) {
         extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
-        curPos = null;
         definitionBlockStart = -1;
     }
 
@@ -254,7 +290,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                     }
                 } else {
                 	// Multiline macro
-                	System.out.println(m.group());
+                	// System.out.println(m.group());
                 }
 
                 break;
@@ -290,7 +326,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                     }
                 } else {
                 	// Multiline macro
-                	System.out.println(m.group());
+                	// System.out.println(m.group());
                 }
 
                 break;
@@ -326,7 +362,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                     }
                 } else {
                 	// Multiline macro
-                	System.out.println(m.group());
+                	// System.out.println(m.group());
                 }
 
                 break;
@@ -362,7 +398,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                     }
                 } else {
                 	// Multiline macro
-                	System.out.println(m.group());
+                	// System.out.println(m.group());
                 }
 
                 break;
@@ -399,7 +435,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                     }
                 } else {
                 	// Multiline macro
-                	System.out.println(m.group());
+                	// System.out.println(m.group());
                 }
 
             default:
@@ -449,9 +485,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                     // normalize language code
                     String normLangCode;
                     if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-                        lang = "#" + normLangCode;
-                    } else {
-                        lang = "#" + lang;
+                        lang = normLangCode;
                     }
                     String transcription = null;
                     if ((i2 = g2.indexOf('|', i1 + 1)) == -1) {

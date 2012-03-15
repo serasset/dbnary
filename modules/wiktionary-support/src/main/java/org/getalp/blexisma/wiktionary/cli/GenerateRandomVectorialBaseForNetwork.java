@@ -50,18 +50,52 @@ public class GenerateRandomVectorialBaseForNetwork {
 	private static final String DEFAULT_RANDOMIZER_CLASS = "org.getalp.blexisma.api.DeviationBasedCVRandomizer";
 
 	
+	/**
+	 * @uml.property  name="cmd"
+	 * @uml.associationEnd  
+	 */
 	private CommandLine cmd = null; // Command Line arguments
 	
+	/**
+	 * @uml.property  name="inputFormat"
+	 */
 	private String inputFormat = DEFAULT_INPUT_FORMAT;
+	/**
+	 * @uml.property  name="coeffVar"
+	 */
 	private double coeffVar = DEFAULT_COEFF_VAR;
+	/**
+	 * @uml.property  name="encoding"
+	 */
 	private String encoding = DEFAULT_ENCODING;
+	/**
+	 * @uml.property  name="randomizerClass"
+	 */
 	private String randomizerClass = DEFAULT_RANDOMIZER_CLASS;
-	private int dimension, encodingSize;
+	/**
+	 * @uml.property  name="dimension"
+	 */
+	private int dimension;
+
+	/**
+	 * @uml.property  name="encodingSize"
+	 */
+	private int encodingSize;
 	
+	/**
+	 * @uml.property  name="input"
+	 */
 	private InputStreamReader input;
 
+	/**
+	 * @uml.property  name="output"
+	 */
 	private String output;
 
+	/**
+	 * @uml.property  name="randomizer"
+	 * @uml.associationEnd  
+	 */
 	private ConceptualVectorRandomizer randomizer;
 	
 	static{

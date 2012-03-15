@@ -3,17 +3,12 @@
  */
 package org.getalp.blexisma.wiktionary;
 
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
-import org.getalp.blexisma.semnet.StringSemNetGraphMLizer;
 
 /**
  * @author serasset
@@ -23,11 +18,29 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
     protected final static String languageSectionPatternString = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
     
+    /**
+	 * @uml.property  name="nODATA"
+	 */
     private final int NODATA = 0;
+    /**
+	 * @uml.property  name="tRADBLOCK"
+	 */
     private final int TRADBLOCK = 1;
+    /**
+	 * @uml.property  name="dEFBLOCK"
+	 */
     protected final int DEFBLOCK = 2;
+    /**
+	 * @uml.property  name="oRTHOALTBLOCK"
+	 */
     private final int ORTHOALTBLOCK = 3;
+    /**
+	 * @uml.property  name="nYMBLOCK"
+	 */
     private final int NYMBLOCK = 4;
+	/**
+	 * @uml.property  name="iGNOREPOS"
+	 */
 	private final int IGNOREPOS = 5;
 
     private static HashSet<String> posMarkers;
@@ -219,11 +232,27 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         languageSectionPattern = Pattern.compile(languageSectionPatternString);
     }
 
+    /**
+	 * @uml.property  name="state"
+	 */
     int state = NODATA;
+    /**
+	 * @uml.property  name="definitionBlockStart"
+	 */
     int definitionBlockStart = -1;
+    /**
+	 * @uml.property  name="orthBlockStart"
+	 */
     int orthBlockStart = -1;
+    /**
+	 * @uml.property  name="nymBlockStart"
+	 */
     private int nymBlockStart = -1;
 
+    /**
+	 * @uml.property  name="currentNym"
+	 * @uml.associationEnd  qualifier="key:java.lang.String java.lang.String"
+	 */
     private String currentNym = null;
 
     /* (non-Javadoc)

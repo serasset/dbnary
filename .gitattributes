@@ -1,4 +1,23 @@
 * text=auto !eol
+doc/articles/lrec2012/biblio.bib -text
+doc/articles/lrec2012/chat-en-2012.ttl.pdf -text
+doc/articles/lrec2012/chat-en-2012.txt.pdf -text
+doc/articles/lrec2012/chat-fr-2012.txt.pdf -text
+doc/articles/lrec2012/chat.graffle -text
+doc/articles/lrec2012/chat.pdf -text
+doc/articles/lrec2012/chat1.pdf -text
+doc/articles/lrec2012/chat1.png -text
+doc/articles/lrec2012/chat2.pdf -text
+doc/articles/lrec2012/chatrdfen-uml.graffle -text
+doc/articles/lrec2012/chatrdfen-uml.pdf -text
+doc/articles/lrec2012/chatrdfen-uml.png -text
+doc/articles/lrec2012/chatrdfen.pdf -text
+doc/articles/lrec2012/image1-eps-converted-to.pdf -text
+doc/articles/lrec2012/lrec2006.bst -text
+doc/articles/lrec2012/lrec2006.sty -text
+doc/articles/lrec2012/lrec_2012_wiktionary_support.bbl -text
+doc/articles/lrec2012/lrec_2012_wiktionary_support.pdf -text
+doc/articles/lrec2012/lrec_2012_wiktionary_support.tex -text
 /pom.xml -text
 src/main/java/org/getalp/blexisma/wiktionary/CharsetConvert.java -text svneol=unset#text/plain
 src/main/java/org/getalp/blexisma/wiktionary/EnglishWiktionaryExtractor.java -text

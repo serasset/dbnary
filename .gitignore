@@ -20,10 +20,6 @@ src/main/java/org/getalp/blexisma/.classpath
 src/main/java/org/getalp/blexisma/.project
 src/main/java/org/getalp/blexisma/.settings
 src/main/java/org/getalp/blexisma/target
-src/main/java/org/getalp/blexisma/wiktionary/.classpath
-src/main/java/org/getalp/blexisma/wiktionary/.project
-src/main/java/org/getalp/blexisma/wiktionary/.settings
-src/main/java/org/getalp/blexisma/wiktionary/target
 src/main/java/org/getalp/dbnary/cli/.classpath
 src/main/java/org/getalp/dbnary/cli/.project
 src/main/java/org/getalp/dbnary/cli/.settings

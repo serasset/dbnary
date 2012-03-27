@@ -8,7 +8,7 @@
  * visit http://www.davidflanagan.com/javaexamples2.
  */
 
-package org.getalp.dbnary;
+package org.getalp.dbnary.cli;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

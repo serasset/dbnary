@@ -19,7 +19,6 @@ doc/articles/lrec2012/lrec_2012_wiktionary_support.bbl -text
 doc/articles/lrec2012/lrec_2012_wiktionary_support.pdf -text
 doc/articles/lrec2012/lrec_2012_wiktionary_support.tex -text
 /pom.xml -text
-src/main/java/org/getalp/dbnary/CharsetConvert.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/EnglishWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/FrenchWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/GermanWiktionaryExtractor.java -text
@@ -33,6 +32,7 @@ src/main/java/org/getalp/dbnary/WiktionaryGrep.java -text
 src/main/java/org/getalp/dbnary/WiktionaryIndex.java -text
 src/main/java/org/getalp/dbnary/WiktionaryIndexer.java -text
 src/main/java/org/getalp/dbnary/WiktionaryIndexerException.java -text
+src/main/java/org/getalp/dbnary/cli/CharsetConvert.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/ConvertSemnet.java -text
 src/main/java/org/getalp/dbnary/cli/ExtractWiktionary.java -text
 src/main/java/org/getalp/dbnary/cli/GenerateRandomVectorialBaseForNetwork.java -text

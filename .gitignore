@@ -16,10 +16,6 @@ src/main/java/org/.settings
 src/main/java/org/getalp/.classpath
 src/main/java/org/getalp/.project
 src/main/java/org/getalp/.settings
-src/main/java/org/getalp/blexisma/.classpath
-src/main/java/org/getalp/blexisma/.project
-src/main/java/org/getalp/blexisma/.settings
-src/main/java/org/getalp/blexisma/target
 src/main/java/org/getalp/dbnary/cli/.classpath
 src/main/java/org/getalp/dbnary/cli/.project
 src/main/java/org/getalp/dbnary/cli/.settings

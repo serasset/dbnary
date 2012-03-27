@@ -1,44 +1,44 @@
 * text=auto !eol
-wiktionary-support/pom.xml -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/CharsetConvert.java -text svneol=unset#text/plain
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/EnglishWiktionaryExtractor.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/FrenchWiktionaryExtractor.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/GermanWiktionaryExtractor.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/OffsetValue.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/SemnetWiktionaryDataHandler.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryDataHandler.java -text svneol=unset#text/plain
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.ucd -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryGrep.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndex.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexer.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexerException.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/ConvertSemnet.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/ExtractWiktionary.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GenerateRandomVectorialBaseForNetwork.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GetExtractedSemnet.java -text
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GetRawEntry.java -text svneol=unset#text/plain
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/GrepInWiktionary.java -text svneol=unset#text/plain
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/RDFDiff.java -text svneol=unset#text/plain
-wiktionary-support/src/main/java/org/getalp/blexisma/wiktionary/cli/StatRDFExtract.java -text svneol=unset#text/plain
-wiktionary-support/src/main/resources/org/getalp/blexisma/wiktionary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
-wiktionary-support/src/main/scripts/README.txt -text
-wiktionary-support/src/main/scripts/compare_extracts.sh -text
-wiktionary-support/src/main/scripts/de_extract-defposNoyau -text
-wiktionary-support/src/main/scripts/en_extract-defposNoyau -text
-wiktionary-support/src/main/scripts/extract-def -text
-wiktionary-support/src/main/scripts/extract-nbsens -text
-wiktionary-support/src/main/scripts/extract-terme -text
-wiktionary-support/src/main/scripts/extract_as_graphml.sh -text
-wiktionary-support/src/main/scripts/extract_kernel_defs.pl -text
-wiktionary-support/src/main/scripts/fr_extract-defposNoyau -text
-wiktionary-support/src/main/scripts/intersect.sh -text
-wiktionary-support/src/main/scripts/kernel_dir_file.pl -text
-wiktionary-support/src/main/scripts/update_wiktionary_dumps.sh -text
-wiktionary-support/src/site/apt/cli.apt -text
-wiktionary-support/src/site/apt/index.apt -text
-wiktionary-support/src/site/fml/faq.fml -text
-wiktionary-support/src/site/site.xml -text
-wiktionary-support/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
-wiktionary-support/src/test/resources/org/getalp/blexisma/wiktionary/sample-semnet.snet -text
+/pom.xml -text
+src/main/java/org/getalp/blexisma/wiktionary/CharsetConvert.java -text svneol=unset#text/plain
+src/main/java/org/getalp/blexisma/wiktionary/EnglishWiktionaryExtractor.java -text
+src/main/java/org/getalp/blexisma/wiktionary/FrenchWiktionaryExtractor.java -text
+src/main/java/org/getalp/blexisma/wiktionary/GermanWiktionaryExtractor.java -text
+src/main/java/org/getalp/blexisma/wiktionary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
+src/main/java/org/getalp/blexisma/wiktionary/OffsetValue.java -text
+src/main/java/org/getalp/blexisma/wiktionary/SemnetWiktionaryDataHandler.java -text
+src/main/java/org/getalp/blexisma/wiktionary/WiktionaryDataHandler.java -text svneol=unset#text/plain
+src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.java -text
+src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.ucd -text
+src/main/java/org/getalp/blexisma/wiktionary/WiktionaryGrep.java -text
+src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndex.java -text
+src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexer.java -text
+src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexerException.java -text
+src/main/java/org/getalp/blexisma/wiktionary/cli/ConvertSemnet.java -text
+src/main/java/org/getalp/blexisma/wiktionary/cli/ExtractWiktionary.java -text
+src/main/java/org/getalp/blexisma/wiktionary/cli/GenerateRandomVectorialBaseForNetwork.java -text
+src/main/java/org/getalp/blexisma/wiktionary/cli/GetExtractedSemnet.java -text
+src/main/java/org/getalp/blexisma/wiktionary/cli/GetRawEntry.java -text svneol=unset#text/plain
+src/main/java/org/getalp/blexisma/wiktionary/cli/GrepInWiktionary.java -text svneol=unset#text/plain
+src/main/java/org/getalp/blexisma/wiktionary/cli/RDFDiff.java -text svneol=unset#text/plain
+src/main/java/org/getalp/blexisma/wiktionary/cli/StatRDFExtract.java -text svneol=unset#text/plain
+src/main/resources/org/getalp/blexisma/wiktionary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
+src/main/scripts/README.txt -text
+src/main/scripts/compare_extracts.sh -text
+src/main/scripts/de_extract-defposNoyau -text
+src/main/scripts/en_extract-defposNoyau -text
+src/main/scripts/extract-def -text
+src/main/scripts/extract-nbsens -text
+src/main/scripts/extract-terme -text
+src/main/scripts/extract_as_graphml.sh -text
+src/main/scripts/extract_kernel_defs.pl -text
+src/main/scripts/fr_extract-defposNoyau -text
+src/main/scripts/intersect.sh -text
+src/main/scripts/kernel_dir_file.pl -text
+src/main/scripts/update_wiktionary_dumps.sh -text
+src/site/apt/cli.apt -text
+src/site/apt/index.apt -text
+src/site/fml/faq.fml -text
+src/site/site.xml -text
+src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
+src/test/resources/org/getalp/blexisma/wiktionary/sample-semnet.snet -text

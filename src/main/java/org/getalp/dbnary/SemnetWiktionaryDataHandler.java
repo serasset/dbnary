@@ -1,4 +1,4 @@
-package org.getalp.blexisma.wiktionary;
+package org.getalp.dbnary;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.SemanticNetwork;

@@ -19,28 +19,28 @@ doc/articles/lrec2012/lrec_2012_wiktionary_support.bbl -text
 doc/articles/lrec2012/lrec_2012_wiktionary_support.pdf -text
 doc/articles/lrec2012/lrec_2012_wiktionary_support.tex -text
 /pom.xml -text
-src/main/java/org/getalp/blexisma/wiktionary/CharsetConvert.java -text svneol=unset#text/plain
-src/main/java/org/getalp/blexisma/wiktionary/EnglishWiktionaryExtractor.java -text
-src/main/java/org/getalp/blexisma/wiktionary/FrenchWiktionaryExtractor.java -text
-src/main/java/org/getalp/blexisma/wiktionary/GermanWiktionaryExtractor.java -text
-src/main/java/org/getalp/blexisma/wiktionary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
-src/main/java/org/getalp/blexisma/wiktionary/OffsetValue.java -text
-src/main/java/org/getalp/blexisma/wiktionary/SemnetWiktionaryDataHandler.java -text
-src/main/java/org/getalp/blexisma/wiktionary/WiktionaryDataHandler.java -text svneol=unset#text/plain
-src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.java -text
-src/main/java/org/getalp/blexisma/wiktionary/WiktionaryExtractor.ucd -text
-src/main/java/org/getalp/blexisma/wiktionary/WiktionaryGrep.java -text
-src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndex.java -text
-src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexer.java -text
-src/main/java/org/getalp/blexisma/wiktionary/WiktionaryIndexerException.java -text
-src/main/java/org/getalp/blexisma/wiktionary/cli/ConvertSemnet.java -text
-src/main/java/org/getalp/blexisma/wiktionary/cli/ExtractWiktionary.java -text
-src/main/java/org/getalp/blexisma/wiktionary/cli/GenerateRandomVectorialBaseForNetwork.java -text
-src/main/java/org/getalp/blexisma/wiktionary/cli/GetExtractedSemnet.java -text
-src/main/java/org/getalp/blexisma/wiktionary/cli/GetRawEntry.java -text svneol=unset#text/plain
-src/main/java/org/getalp/blexisma/wiktionary/cli/GrepInWiktionary.java -text svneol=unset#text/plain
-src/main/java/org/getalp/blexisma/wiktionary/cli/RDFDiff.java -text svneol=unset#text/plain
-src/main/java/org/getalp/blexisma/wiktionary/cli/StatRDFExtract.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/CharsetConvert.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/EnglishWiktionaryExtractor.java -text
+src/main/java/org/getalp/dbnary/FrenchWiktionaryExtractor.java -text
+src/main/java/org/getalp/dbnary/GermanWiktionaryExtractor.java -text
+src/main/java/org/getalp/dbnary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/OffsetValue.java -text
+src/main/java/org/getalp/dbnary/SemnetWiktionaryDataHandler.java -text
+src/main/java/org/getalp/dbnary/WiktionaryDataHandler.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/WiktionaryExtractor.java -text
+src/main/java/org/getalp/dbnary/WiktionaryExtractor.ucd -text
+src/main/java/org/getalp/dbnary/WiktionaryGrep.java -text
+src/main/java/org/getalp/dbnary/WiktionaryIndex.java -text
+src/main/java/org/getalp/dbnary/WiktionaryIndexer.java -text
+src/main/java/org/getalp/dbnary/WiktionaryIndexerException.java -text
+src/main/java/org/getalp/dbnary/cli/ConvertSemnet.java -text
+src/main/java/org/getalp/dbnary/cli/ExtractWiktionary.java -text
+src/main/java/org/getalp/dbnary/cli/GenerateRandomVectorialBaseForNetwork.java -text
+src/main/java/org/getalp/dbnary/cli/GetExtractedSemnet.java -text
+src/main/java/org/getalp/dbnary/cli/GetRawEntry.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/cli/GrepInWiktionary.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/cli/RDFDiff.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/cli/StatRDFExtract.java -text svneol=unset#text/plain
 src/main/resources/org/getalp/blexisma/wiktionary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
 src/main/scripts/README.txt -text
 src/main/scripts/compare_extracts.sh -text

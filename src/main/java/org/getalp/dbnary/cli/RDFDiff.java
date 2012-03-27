@@ -1,4 +1,4 @@
-package org.getalp.blexisma.wiktionary.cli;
+package org.getalp.dbnary.cli;
 
 import java.util.Map.Entry;
 

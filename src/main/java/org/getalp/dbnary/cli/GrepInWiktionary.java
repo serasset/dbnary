@@ -1,17 +1,17 @@
-package org.getalp.blexisma.wiktionary.cli;
+package org.getalp.dbnary.cli;
 
 import java.io.File;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.wiktionary.EnglishWiktionaryExtractor;
-import org.getalp.blexisma.wiktionary.FrenchWiktionaryExtractor;
-import org.getalp.blexisma.wiktionary.GermanWiktionaryExtractor;
-import org.getalp.blexisma.wiktionary.WiktionaryExtractor;
-import org.getalp.blexisma.wiktionary.WiktionaryGrep;
-import org.getalp.blexisma.wiktionary.WiktionaryIndex;
-import org.getalp.blexisma.wiktionary.WiktionaryIndexerException;
+import org.getalp.dbnary.EnglishWiktionaryExtractor;
+import org.getalp.dbnary.FrenchWiktionaryExtractor;
+import org.getalp.dbnary.GermanWiktionaryExtractor;
+import org.getalp.dbnary.WiktionaryExtractor;
+import org.getalp.dbnary.WiktionaryGrep;
+import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.WiktionaryIndexerException;
 
 public class GrepInWiktionary {
 
@@ -35,7 +35,7 @@ public class GrepInWiktionary {
     
     public static void printUsage() {
         System.err.println("Usage: ");
-        System.err.println("  java org.getalp.blexisma.wiktionary.cli.GrepInWiktionary pattern wiktionaryDumpFile");
+        System.err.println("  java org.getalp.dbnary.cli.GrepInWiktionary pattern wiktionaryDumpFile");
         System.err.println("Displays the title of the first entry text of the wiktionary page named \"entryname\".");
         System.err.println("OPTIONS:");
         System.err.println("  --all (-a): Display all the xml elements defining the page.");

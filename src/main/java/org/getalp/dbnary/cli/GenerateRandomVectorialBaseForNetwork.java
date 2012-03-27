@@ -1,4 +1,4 @@
-package org.getalp.blexisma.wiktionary.cli;
+package org.getalp.dbnary.cli;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -25,7 +25,7 @@ import org.getalp.blexisma.impl.vectorialbase.String_RAM_VectorialBase;
 import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
 import org.getalp.blexisma.semnet.StringSemNetGraphMLizer;
 import org.getalp.blexisma.semnet.TextOnlySemnetReader;
-import org.getalp.blexisma.wiktionary.WiktionaryIndexerException;
+import org.getalp.dbnary.WiktionaryIndexerException;
 
 public class GenerateRandomVectorialBaseForNetwork {
 

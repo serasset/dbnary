@@ -23,11 +23,11 @@ src/main/java/org/getalp/blexisma/target
 src/main/java/org/getalp/blexisma/wiktionary/.classpath
 src/main/java/org/getalp/blexisma/wiktionary/.project
 src/main/java/org/getalp/blexisma/wiktionary/.settings
-src/main/java/org/getalp/blexisma/wiktionary/cli/.classpath
-src/main/java/org/getalp/blexisma/wiktionary/cli/.project
-src/main/java/org/getalp/blexisma/wiktionary/cli/.settings
-src/main/java/org/getalp/blexisma/wiktionary/cli/target
 src/main/java/org/getalp/blexisma/wiktionary/target
+src/main/java/org/getalp/dbnary/cli/.classpath
+src/main/java/org/getalp/dbnary/cli/.project
+src/main/java/org/getalp/dbnary/cli/.settings
+src/main/java/org/getalp/dbnary/cli/target
 src/main/java/org/getalp/target
 src/main/java/org/target
 src/main/java/target

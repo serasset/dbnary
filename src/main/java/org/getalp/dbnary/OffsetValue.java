@@ -1,4 +1,4 @@
-package org.getalp.blexisma.wiktionary;
+package org.getalp.dbnary;
 
 import java.io.Serializable;
 

@@ -8,7 +8,7 @@
  * visit http://www.davidflanagan.com/javaexamples2.
  */
 
-package org.getalp.blexisma.wiktionary;
+package org.getalp.dbnary;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

@@ -1,4 +1,4 @@
-package org.getalp.blexisma.wiktionary;
+package org.getalp.dbnary;
 
 import java.io.PrintStream;
 import java.util.Date;
@@ -150,7 +150,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
      * (non-Javadoc)
      * 
      * @see
-     * org.getalp.blexisma.wiktionary.WiktionaryExtractor#extractData(java.lang
+     * org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang
      * .String, org.getalp.blexisma.semnet.SemanticNetwork)
      */
     @Override

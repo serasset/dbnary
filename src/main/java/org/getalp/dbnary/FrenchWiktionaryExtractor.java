@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.getalp.blexisma.wiktionary;
+package org.getalp.dbnary;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -256,7 +256,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     private String currentNym = null;
 
     /* (non-Javadoc)
-     * @see org.getalp.blexisma.wiktionary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
+     * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
      */
     @Override
     public void extractData() {

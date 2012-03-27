@@ -1,4 +1,4 @@
-package org.getalp.blexisma.wiktionary.cli;
+package org.getalp.dbnary.cli;
 
 import java.io.InputStream;
 import java.util.HashSet;
@@ -14,7 +14,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.wiktionary.LMFBasedRDFDataHandler;
+import org.getalp.dbnary.LMFBasedRDFDataHandler;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -80,7 +80,7 @@ public class StatRDFExtract {
 	private String countLanguages = DEFAULT_COUNT_LANGUAGE;
 	/**
 	 * @uml.property  name="counts"
-	 * @uml.associationEnd  inverse="this$0:org.getalp.blexisma.wiktionary.cli.StatRDFExtract$IncrementableInt" qualifier="lang:java.lang.String org.getalp.blexisma.wiktionary.cli.StatRDFExtract$IncrementableInt"
+	 * @uml.associationEnd  inverse="this$0:org.getalp.dbnary.cli.StatRDFExtract$IncrementableInt" qualifier="lang:java.lang.String org.getalp.dbnary.cli.StatRDFExtract$IncrementableInt"
 	 */
 	private SortedMap<String, IncrementableInt> counts = new TreeMap<String,IncrementableInt>();
 	
@@ -409,7 +409,7 @@ public class StatRDFExtract {
 			"url must point on an RDF model file extracted from wiktionary." +
 			System.getProperty("line.separator", "\n") +
 			"Displays stats on the LMF based RDF dump.";
-		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.blexisma.wiktionary.cli.StatRDFExtract [OPTIONS] url", 
+		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.cli.StatRDFExtract [OPTIONS] url", 
 				"With OPTIONS in:", options, 
 				help, false);
 	}

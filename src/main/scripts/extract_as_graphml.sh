@@ -65,7 +65,7 @@ do
   then
     rm -f ./${wfile}
   fi
-  cmd="java -Xmx2G -Dfile.encoding=UTF-8 -cp ${wktextractprefix}/${wktextractjar} org.getalp.blexisma.wiktionary.cli.ExtractWiktionary -l ${lg} -o ./${wfile} -f ${format} ${dumpfile}"
+  cmd="java -Xmx2G -Dfile.encoding=UTF-8 -cp ${wktextractprefix}/${wktextractjar} org.getalp.dbnary.cli.ExtractWiktionary -l ${lg} -o ./${wfile} -f ${format} ${dumpfile}"
   echo Extracting data from ${lg} dump.
   echo $cmd
   $cmd

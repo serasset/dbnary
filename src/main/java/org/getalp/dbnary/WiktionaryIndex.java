@@ -1,4 +1,4 @@
-package org.getalp.blexisma.wiktionary;
+package org.getalp.dbnary;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class WiktionaryIndex implements Map<String, String> {
     String encoding;
     /**
 	 * @uml.property  name="map"
-	 * @uml.associationEnd  qualifier="key:java.lang.String org.getalp.blexisma.wiktionary.OffsetValue"
+	 * @uml.associationEnd  qualifier="key:java.lang.String org.getalp.dbnary.OffsetValue"
 	 */
     HashMap<String, OffsetValue> map;
     /**

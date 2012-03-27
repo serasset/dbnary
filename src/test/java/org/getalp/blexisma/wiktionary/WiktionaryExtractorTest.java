@@ -2,6 +2,7 @@ package org.getalp.blexisma.wiktionary;
 
 import static org.junit.Assert.assertEquals;
 
+import org.getalp.dbnary.WiktionaryExtractor;
 import org.junit.Test;
 
 

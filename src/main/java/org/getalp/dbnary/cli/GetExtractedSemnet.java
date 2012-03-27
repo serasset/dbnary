@@ -1,4 +1,4 @@
-package org.getalp.blexisma.wiktionary.cli;
+package org.getalp.dbnary.cli;
 
 import java.io.IOException;
 import org.apache.commons.cli.CommandLine;
@@ -10,15 +10,15 @@ import org.apache.commons.cli.PosixParser;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
 import org.getalp.blexisma.semnet.StringSemNetGraphMLizer;
-import org.getalp.blexisma.wiktionary.EnglishWiktionaryExtractor;
-import org.getalp.blexisma.wiktionary.LMFBasedRDFDataHandler;
-import org.getalp.blexisma.wiktionary.FrenchWiktionaryExtractor;
-import org.getalp.blexisma.wiktionary.GermanWiktionaryExtractor;
-import org.getalp.blexisma.wiktionary.SemnetWiktionaryDataHandler;
-import org.getalp.blexisma.wiktionary.WiktionaryDataHandler;
-import org.getalp.blexisma.wiktionary.WiktionaryExtractor;
-import org.getalp.blexisma.wiktionary.WiktionaryIndex;
-import org.getalp.blexisma.wiktionary.WiktionaryIndexerException;
+import org.getalp.dbnary.EnglishWiktionaryExtractor;
+import org.getalp.dbnary.FrenchWiktionaryExtractor;
+import org.getalp.dbnary.GermanWiktionaryExtractor;
+import org.getalp.dbnary.LMFBasedRDFDataHandler;
+import org.getalp.dbnary.SemnetWiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryExtractor;
+import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.WiktionaryIndexerException;
 
 public class GetExtractedSemnet {
 
@@ -190,7 +190,7 @@ public class GetExtractedSemnet {
 			"dumpFile must be a Wiktionary dump file in UTF-16 encoding. dumpFile directory must be writable to store the index." +
 			System.getProperty("line.separator", "\n") +
 			"Displays the extracted semnet of the wiktionary page(s) named \"entryname\", ...";
-		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.blexisma.wiktionary.cli.GetExtractedSemnet [OPTIONS] dumpFile entryname ...", 
+		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.cli.GetExtractedSemnet [OPTIONS] dumpFile entryname ...", 
 				"With OPTIONS in:", options, 
 				help, false);
 	}

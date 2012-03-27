@@ -1,7 +1,7 @@
-package org.getalp.blexisma.wiktionary.cli;
+package org.getalp.dbnary.cli;
 
-import org.getalp.blexisma.wiktionary.WiktionaryIndex;
-import org.getalp.blexisma.wiktionary.WiktionaryIndexerException;
+import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.WiktionaryIndexerException;
 
 public class GetRawEntry {
 
@@ -44,7 +44,7 @@ public class GetRawEntry {
     
     public static void printUsage() {
         System.err.println("Usage: ");
-        System.err.println("  java org.getalp.blexisma.wiktionary.cli.GetRawEntry [OPTIONS] wiktionaryDumpFile entryname ...");
+        System.err.println("  java org.getalp.dbnary.cli.GetRawEntry [OPTIONS] wiktionaryDumpFile entryname ...");
         System.err.println("Displays the raw text of the wiktionary page named \"entryname\".");
         System.err.println("OPTIONS:");
         System.err.println("  --all (-a): Display all the xml elements defining the page.");

@@ -1,4 +1,4 @@
-package org.getalp.blexisma.wiktionary.cli;
+package org.getalp.dbnary.cli;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -20,7 +20,7 @@ import org.apache.commons.cli.PosixParser;
 import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
 import org.getalp.blexisma.semnet.StringSemNetGraphMLizer;
 import org.getalp.blexisma.semnet.TextOnlySemnetReader;
-import org.getalp.blexisma.wiktionary.WiktionaryIndexerException;
+import org.getalp.dbnary.WiktionaryIndexerException;
 
 public class ConvertSemnet {
 

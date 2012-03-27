@@ -1,10 +1,6 @@
 /.classpath
 /.project
 /.settings
-modules/.classpath
-modules/.project
-modules/.settings
-modules/target
 src/.classpath
 src/.project
 src/.settings

@@ -39,6 +39,10 @@ src/main/scripts/update_wiktionary_dumps.sh -text
 src/site/apt/cli.apt -text
 src/site/apt/index.apt -text
 src/site/fml/faq.fml -text
+src/site/resources/images/dbnary-12.png -text
+src/site/resources/images/dbnary-right-10.png -text
+src/site/resources/images/dbnary-right-12.png -text
+src/site/resources/robots.txt -text svneol=unset#text/plain
 src/site/site.xml -text
 src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
 src/test/resources/org/getalp/blexisma/wiktionary/sample-semnet.snet -text

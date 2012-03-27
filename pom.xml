@@ -1,28 +1,64 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>blexisma-modules-parent</artifactId>
-    <groupId>org.getalp.blexisma</groupId>
-    <version>1.1-SNAPSHOT</version>
-  </parent>
+  <!--parent> <artifactId>blexisma-modules-parent</artifactId> <groupId>org.getalp.blexisma</groupId> 
+    <version>1.1-SNAPSHOT</version> </parent -->
 
-  <groupId>org.getalp.blexisma</groupId>
-  <artifactId>wiktionary-support</artifactId>
+  <groupId>org.getalp</groupId>
+  <artifactId>dbnary</artifactId>
   <version>1.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Wiktionary Support</name>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <name>Wiktionary Multilingual Data Extraction</name>
   <description>
-    The Wiktionary support module provides tools to extract lexical networks from wiktionary dumps in English, French and German.
+    The dbnary project provides tools to extract lexical networks from wiktionary dumps in English, French and German. More languages to ba added later.
   </description>
   <inceptionYear>2010</inceptionYear>
+  <url>http://dbnary.forge.imag.fr/</url>
+  <licenses>
+    <license>
+      <name>LGPL 2.1</name>
+      <url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
-  <contributors>
-    <contributor>
+  <issueManagement>
+    <system>gforge</system>
+    <url>https://forge.imag.fr/tracker/?group_id=362</url>
+  </issueManagement>
+
+  <developers>
+    <developer>
       <name>Gilles Sérasset</name>
-    </contributor>
-  </contributors>
+    </developer>
+  </developers>
+
+  <organization>
+    <name>GETALP</name>
+    <url>http://getalp.imag.fr/</url>
+  </organization>
+
+  <distributionManagement>
+    <site>
+      <id>dbnary.website</id>
+      <url>scp://dbnary.forge.imag.fr/home/groups/dbnary/htdocs/</url>
+    </site>
+    <repository>
+      <id>getalp.repository</id>
+      <name>Getalp Projects and thid party repository</name>
+      <url>scp://getalp.imag.fr/opt/www/m2</url>
+    </repository>
+  </distributionManagement>
+  <scm>
+    <connection>scm:svn:svn://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/trunk</connection>
+    <developerConnection>scm:svn:svn+ssh://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/trunk</developerConnection>
+    <url>https://forge.imag.fr/scm/browser.php?group_id=362</url>
+  </scm>
 
   <dependencies>
     <dependency>
@@ -52,15 +88,33 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-    	<groupId>com.hp.hpl.jena</groupId>
-    	<artifactId>jena</artifactId>
-    	<version>2.6.4</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
+      <groupId>com.hp.hpl.jena</groupId>
+      <artifactId>jena</artifactId>
+      <version>2.6.4</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <fork>true</fork>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+
       <plugin>
         <!-- NOTE: We don't need a groupId specification because the group 
           is org.apache.maven.plugins ...which is assumed by default. -->
@@ -81,6 +135,26 @@
           </execution>
         </executions>
       </plugin>
-    </plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.0</version>
+        <configuration>
+          <outputEncoding>UTF-8</outputEncoding>
+        </configuration>
+      </plugin>
+      <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-release-plugin</artifactId>
+      <version>2.2.2</version>
+      <configuration>
+        <tagBase>svn+ssh://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/tags</tagBase>
+        <useReleaseProfile>false</useReleaseProfile>
+        <preparationGoals>clean install</preparationGoals>
+        <goals>deploy</goals>
+        <arguments>-Prelease</arguments>
+      </configuration>
+    </plugin>
+</plugins>
   </build>
 </project>

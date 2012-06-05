@@ -248,7 +248,7 @@ public abstract class WiktionaryExtractor {
         }      
      }
  
-    // TODO: There are entries where Files, Fichier or Iage Links are inside the entry and not at the end of it...
+    // TODO: There are entries where Files, Fichier or Image Links are inside the entry and not at the end of it...
     // links.group(1).equalsIgnoreCase("Image") || 
     // links.group(1).equalsIgnoreCase("File") ||
     // links.group(1).equalsIgnoreCase("Fichier")
@@ -286,8 +286,8 @@ public abstract class WiktionaryExtractor {
         linkMatcher.region(startOffset, endOffset);
 //        int lastNymEndOffset = startOffset;
 //        int lastNymStartOffset = startOffset;
-//        System.out.println("---- In: " + wiktionaryPageName + " ----");
-//        System.out.println(this.pageContent.substring(startOffset, endOffset));
+//        System.err.println("---- In: " + wiktionaryPageName + " ----");
+//        System.err.println(this.pageContent.substring(startOffset, endOffset));
         while (linkMatcher.find()) {
         	// TODO: remove debug specific treatment for nym extraction and take a better heuristic
 //        	if (lastNymEndOffset != startOffset) {
@@ -301,7 +301,8 @@ public abstract class WiktionaryExtractor {
 //        	lastNymStartOffset = linkMatcher.start();
 //        	lastNymEndOffset = linkMatcher.end();
 //        	// End of debug specific treatment for nym extraction...
-        	
+//            System.err.println("Matched: " + linkMatcher.group(0));
+
             // It's a link, only keep the alternate string if present.
             String leftGroup = linkMatcher.group(1) ;
             if (leftGroup != null && ! leftGroup.equals("") && 

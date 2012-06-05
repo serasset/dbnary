@@ -9,6 +9,13 @@ fileprefix="wiktionary-"
 filesuffix="-pages-articles.xml.bz2"
 force=0
 
+ICONV="iconv"
+if [ -z `command -v ${ICONV} ]
+then
+	# assumes CLASSPATH contains dbnary.jar
+	ICONV="java org.getalp.dbnary.cli.IConv"
+fi
+
 while getopts s:o:d:f o
 do	case "$o" in
 	s)	dumpserver="$OPTARG";;
@@ -47,5 +54,5 @@ do
   fi
   wget $url
   echo Uncompressing and converting the downloaded file...
-  bzcat ./${wfile} | iconv -f UTF-8 -t UTF-16 > ${lg}wkt.xml
+  bzcat ./${wfile} | ${ICONV} -f UTF-8 -t UTF-16 > ${lg}wkt.xml
 done

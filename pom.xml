@@ -18,7 +18,7 @@
     The dbnary project provides tools to extract lexical networks from wiktionary dumps in English, French and German. More languages to ba added later.
   </description>
   <inceptionYear>2010</inceptionYear>
-  <url>http://dbnary.forge.imag.fr/</url>
+  <url>http://getalp.imag.fr/dbnary</url>
   <licenses>
     <license>
       <name>LGPL 2.1</name>
@@ -46,12 +46,12 @@
   <distributionManagement>
     <site>
       <id>dbnary.website</id>
-      <url>scp://dbnary.forge.imag.fr/home/groups/dbnary/htdocs/</url>
+      <url>scpexe://getalp.imag.fr/opt/www/dbnary/</url>
     </site>
     <repository>
       <id>getalp.repository</id>
       <name>Getalp Projects and thid party repository</name>
-      <url>scp://getalp.imag.fr/opt/www/m2</url>
+      <url>scpexe://getalp.imag.fr/opt/www/m2</url>
     </repository>
   </distributionManagement>
   <scm>

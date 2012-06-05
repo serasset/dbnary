@@ -25,7 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
-public class CharsetConvert {
+public class IConv {
 
     public static void convert(File fromFile, String fromCharsetName, File toFile, String toCharsetName) throws IOException {
         Charset fromCharset = Charset.forName(fromCharsetName);
@@ -36,7 +36,6 @@ public class CharsetConvert {
     
     
     public static void convert(File infile, Charset from, File outfile, Charset to) throws IOException, UnsupportedEncodingException {
-          // Set up byte streams.
           InputStream in;
           if (infile != null)
             in = new FileInputStream(infile);
@@ -48,7 +47,6 @@ public class CharsetConvert {
           else
             out = System.out;
 
-          // Use default encoding if no encoding is specified.
           if (from == null)
             from = Charset.forName(System.getProperty("file.encoding"));
           if (to == null)
@@ -58,17 +56,12 @@ public class CharsetConvert {
           Reader r = new BufferedReader(new InputStreamReader(in, from));
           Writer w = new BufferedWriter(new OutputStreamWriter(out, to));
 
-          // Copy characters from input to output. The InputStreamReader
-          // converts from the input encoding to Unicode, and the
-          // OutputStreamWriter converts from Unicode to the output encoding.
-          // Characters that cannot be represented in the output encoding are
-          // output as '?'
           char[] buffer = new char[4096];
           int len;
-          while ((len = r.read(buffer)) != -1) // Read a block of input.
-            w.write(buffer, 0, len); // And write it out.
-          r.close(); // Close the input.
-          w.close(); // Flush and close output.
+          while ((len = r.read(buffer)) != -1) 
+            w.write(buffer, 0, len); 
+          r.close(); 
+          w.close(); 
     }
       
     /**
@@ -77,12 +70,12 @@ public class CharsetConvert {
     public static void main(String[] args) {
         String from = null, to = null;
         String infile = null, outfile = null;
-        for (int i = 0; i < args.length; i++) { // Parse command-line arguments.
+        for (int i = 0; i < args.length; i++) { 
           if (i == args.length - 1)
-            usage(); // All args require another.
-          if (args[i].equals("-from"))
+            usage(); 
+          if (args[i].equals("-from") || args[i].equals("-f"))
             from = args[++i];
-          else if (args[i].equals("-to"))
+          else if (args[i].equals("-to") || args[i].equals("-t"))
             to = args[++i];
           else if (args[i].equals("-in"))
             infile = args[++i];
@@ -93,19 +86,15 @@ public class CharsetConvert {
         }
 
         try {
-            long st1 = System.currentTimeMillis();
             convert(new File(infile), Charset.forName(from), new File(outfile), Charset.forName(to));
-            long et1 = System.currentTimeMillis();
-            System.out.println("Conversion took : " + (et1 - st1) + " ms.");
-        } // Attempt conversion.
-        catch (Exception e) { // Handle exceptions.
-          e.printStackTrace();
+        } catch (Exception e) { 
+          e.printStackTrace(System.err);
           System.exit(1);
         }
       }
 
       public static void usage() {
-        System.err.println("Usage: java CharsetConvert <options>\n"
+        System.err.println("Usage: java" + IConv.class.getCanonicalName() + " <options>\n"
             + "Options:\n\t-from <encoding>\n\t" + "-to <encoding>\n\t"
             + "-in <file>\n\t-out <file>");
         System.exit(1);

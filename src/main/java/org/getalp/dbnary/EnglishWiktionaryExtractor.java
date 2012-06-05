@@ -78,30 +78,11 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
 
     }
 
-    /**
-	 * @uml.property  name="state"
-	 */
     int state = NODATA;
-    /**
-	 * @uml.property  name="definitionBlockStart"
-	 */
     int definitionBlockStart = -1;
-    /**
-	 * @uml.property  name="orthBlockStart"
-	 */
     int orthBlockStart = -1;
-    /**
-	 * @uml.property  name="translationBlockStart"
-	 */
     int translationBlockStart = -1;
-    /**
-	 * @uml.property  name="nymBlockStart"
-	 */
     private int nymBlockStart = -1;
-    /**
-	 * @uml.property  name="currentNym"
-	 * @uml.associationEnd  qualifier="key:java.lang.String java.lang.String"
-	 */
     private String currentNym = null;
     
     /* (non-Javadoc)
@@ -130,15 +111,6 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         
         extractEnglishData(englishSectionStartOffset, englishSectionEndOffset);
      }
-
-    protected Pattern getLanguageSectionPattern() {
-    	return sectionPattern;
-    }
-    
-    protected boolean languageSectionKind(Matcher m) {
-    	return false;
-    }
-    
     
     
 //    private HashSet<String> unsupportedSections = new HashSet<String>(100);

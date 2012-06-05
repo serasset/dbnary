@@ -31,6 +31,7 @@ import org.getalp.dbnary.FrenchWiktionaryExtractor;
 import org.getalp.dbnary.GermanWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
 import org.getalp.dbnary.OffsetValue;
+import org.getalp.dbnary.PortugueseWiktionaryExtractor;
 import org.getalp.dbnary.SemnetWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryExtractor;
@@ -43,7 +44,7 @@ public class ExtractWiktionary {
 	private static Options options = null; // Command line options
 
 	private static final String LANGUAGE_OPTION = "l";
-	private static final String DEFAULT_LANGUAGE = "fr";
+	private static final String DEFAULT_LANGUAGE = "fra";
 
 	private static final String OUTPUT_FORMAT_OPTION = "f";
 	private static final String DEFAULT_OUTPUT_FORMAT = "raw";
@@ -115,9 +116,9 @@ public class ExtractWiktionary {
 		options.addOption("h", false, "Prints usage and exits. ");	
 		options.addOption(SUFFIX_OUTPUT_FILE_OPTION, false, "Add a unique suffix to output file. ");	
 		options.addOption(LANGUAGE_OPTION, true, 
-				"Language (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_LANGUAGE + " by default.");
+				"Language (fra, eng, por). " + DEFAULT_LANGUAGE + " by default.");
 		options.addOption(OUTPUT_FORMAT_OPTION, true, 
-				"Output format (graphml or raw). " + DEFAULT_OUTPUT_FORMAT + " by default.");
+				"Output format  (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_OUTPUT_FORMAT + " by default.");
 		options.addOption(OUTPUT_FILE_OPTION, true, "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");	
 	}
 	
@@ -182,7 +183,7 @@ public class ExtractWiktionary {
 		if (cmd.hasOption(LANGUAGE_OPTION)){
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
 			language = ISO639_3.sharedInstance.getIdCode(language);
-			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu"))) {
+			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por"))) {
 				printUsage();
 				System.exit(1);
 			}
@@ -216,6 +217,8 @@ public class ExtractWiktionary {
 			we = new EnglishWiktionaryExtractor(wdh);
 		} else if (language.equals("deu")) {
 			we = new GermanWiktionaryExtractor(wdh);
+		} else if (language.equals("por")) {
+			we = new PortugueseWiktionaryExtractor(wdh);
 		} else {
 			System.err.println("Wiktionary Extraction not yet available for " + ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
 			System.exit(1);
@@ -317,7 +320,7 @@ public class ExtractWiktionary {
     
     public static void printUsage() {
     	HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.cli.ExtractWiktionaryUsingIndex [OPTIONS] dumpFile", 
+		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.cli.ExtractWiktionary [OPTIONS] dumpFile", 
 				"With OPTIONS in:", options, 
 				"dumpFile must be a Wiktionary dump file in UTF-16 encoding. dumpFile directory must be writable to store the index.", false);
     }

@@ -14,6 +14,7 @@ import org.getalp.dbnary.EnglishWiktionaryExtractor;
 import org.getalp.dbnary.FrenchWiktionaryExtractor;
 import org.getalp.dbnary.GermanWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
+import org.getalp.dbnary.PortugueseWiktionaryExtractor;
 import org.getalp.dbnary.SemnetWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryExtractor;
@@ -48,7 +49,7 @@ public class GetExtractedSemnet {
 		options = new Options();
 		options.addOption("h", false, "Prints usage and exits. ");	
 		options.addOption(LANGUAGE_OPTION, true, 
-				"Language (fr, en or de). " + DEFAULT_LANGUAGE + " by default.");
+				"Language (fr, en, de or pt). " + DEFAULT_LANGUAGE + " by default.");
 		options.addOption(OUTPUT_FORMAT_OPTION, true, 
 				"Output format (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_OUTPUT_FORMAT + " by default.");
 	}	
@@ -108,7 +109,8 @@ public class GetExtractedSemnet {
 		if (cmd.hasOption(LANGUAGE_OPTION)){
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
 			language = ISO639_3.sharedInstance.getIdCode(language);
-			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu"))) {
+			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por"))) {
+				System.err.println("Unknown Language.");
 				printUsage();
 				System.exit(1);
 			}
@@ -142,6 +144,8 @@ public class GetExtractedSemnet {
 			we = new EnglishWiktionaryExtractor(wdh);
 		} else if (language.equals("deu")) {
 			we = new GermanWiktionaryExtractor(wdh);
+		} else if (language.equals("por")) {
+			we = new PortugueseWiktionaryExtractor(wdh);
 		} else {
 			System.err.println("Wiktionary Extraction not yet available for " + ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
 			System.exit(1);

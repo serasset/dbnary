@@ -7,13 +7,27 @@
  ------
 
 
-Wiktionary Support
+What is Dbnary Extractor
 
-  Wiktionary support allows you to extract a lexical network from a wiktionary dump file.
+  Dbnary Extractor allows you to extract a lexical network from a wiktionary dump file. I currently supports extraction of French, 
+  English and German language editions of wiktionary. The extracted data is structured as a lexical network in RDF (most formats are supported).
+  The organization of the network is based on the Lexical Markup Framework (LMF) ISO standard. 
 
-* Provided command lines
+Using Dbnary Extractor
 
-  The wiktionary support module provides several command lines.
+* Getting wiktionary data
+
+  * Get wiktionary data: Dbnary Extractor uses wiktionary dumps to extract data from. Hence, you have to download the rquired wiktionary dump files from 
+  http://dumps.wikimedia.org/ You should download the "page articles" dump file (e.g. frwiktionary-latest-pages-articles.xml).
+  
+  * Convert extracted data to UTF-16: For technical reasons, the Dbnary Extractor needs data to be in UTF-16. Hence, you should convert the dumps
+  to this encoding. You can use the iconv utility: <<<iconv -f UTF-8 -t UTF-16 < frwiktionary-latest-pages-articles.xml > frwkt.xml>>> 
+  If your system does not contain the iconv Utility, you can use the provided CharsetConvert command line.
+  
+
+* Provided commands
+
+  The Dbnary Extractor tool provides several command lines.
 
   * <<<GetRawEntry>>> dumps the wiki syntax of the requested entry in the standard output.
     This is useful to view the original entry used to extract the lexical data, especially when the dump file weights more than 2 GB. 

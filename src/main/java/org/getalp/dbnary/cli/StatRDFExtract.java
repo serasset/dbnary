@@ -58,7 +58,7 @@ public class StatRDFExtract {
 	private static final String DEFAULT_OUTPUT_FORMAT = "turtle";	
 
 	private static final String COUNT_LANGUAGE_OPTION = "c";
-	private static final String DEFAULT_COUNT_LANGUAGE = "eng,fra,deu";	
+	private static final String DEFAULT_COUNT_LANGUAGE = "eng,fra,deu,por";	
 
 	/**
 	 * @uml.property  name="cmd"
@@ -258,10 +258,10 @@ public class StatRDFExtract {
 		}
 		outputFormat = outputFormat.toUpperCase();
 
-		if (cmd.hasOption(LANGUAGE_OPTION)){
+		if (cmd.hasOption(LANGUAGE_OPTION)) {
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
 			language = ISO639_3.sharedInstance.getIdCode(language);
-			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu"))) {
+			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por"))) {
 				printUsage();
 				System.exit(1);
 			}

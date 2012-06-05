@@ -16,31 +16,17 @@ import org.getalp.blexisma.api.ISO639_3;
  */
 public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
+	// NOTE: to subclass the extractor, you need to define how a language section is recognized.
+	// then, how are sections recognized and what is their semantics.
+	// then, how to extract specific elements from the particular sections
+	
     protected final static String languageSectionPatternString = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
     
-    /**
-	 * @uml.property  name="nODATA"
-	 */
     private final int NODATA = 0;
-    /**
-	 * @uml.property  name="tRADBLOCK"
-	 */
     private final int TRADBLOCK = 1;
-    /**
-	 * @uml.property  name="dEFBLOCK"
-	 */
     protected final int DEFBLOCK = 2;
-    /**
-	 * @uml.property  name="oRTHOALTBLOCK"
-	 */
     private final int ORTHOALTBLOCK = 3;
-    /**
-	 * @uml.property  name="nYMBLOCK"
-	 */
     private final int NYMBLOCK = 4;
-	/**
-	 * @uml.property  name="iGNOREPOS"
-	 */
 	private final int IGNOREPOS = 5;
 
     private static HashSet<String> posMarkers;
@@ -232,27 +218,12 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         languageSectionPattern = Pattern.compile(languageSectionPatternString);
     }
 
-    /**
-	 * @uml.property  name="state"
-	 */
     int state = NODATA;
-    /**
-	 * @uml.property  name="definitionBlockStart"
-	 */
     int definitionBlockStart = -1;
-    /**
-	 * @uml.property  name="orthBlockStart"
-	 */
+    int translationBlockStart = -1;
     int orthBlockStart = -1;
-    /**
-	 * @uml.property  name="nymBlockStart"
-	 */
     private int nymBlockStart = -1;
 
-    /**
-	 * @uml.property  name="currentNym"
-	 * @uml.associationEnd  qualifier="key:java.lang.String java.lang.String"
-	 */
     private String currentNym = null;
 
     /* (non-Javadoc)
@@ -285,6 +256,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
     
     void gotoTradBlock(Matcher m) {
+        translationBlockStart = m.end();
         state = TRADBLOCK;
     }
 
@@ -303,6 +275,11 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     void leaveOrthoAltBlock(Matcher m) {
         extractOrthoAlt(orthBlockStart, computeRegionEnd(orthBlockStart, m));
         orthBlockStart = -1;
+    }
+
+    void leaveTradBlock(Matcher m) {
+        extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m));
+        translationBlockStart = -1;
     }
 
     
@@ -384,57 +361,27 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                 }
                 break;
             case TRADBLOCK:
-                String g1 = m.group(1);
-                if (g1.equals("trad+") || g1.equals("trad-") || g1.equals("trad")) {
-                    // DONE: Sometimes translation links have a remaining info after the word, keep it.
-                    String g2 = m.group(2);
-                    int i1, i2;
-                    String lang, word;
-                    if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
-                        lang = g2.substring(0, i1);
-                     // normalize language code
-                        String normLangCode;
-                        if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-                            lang = normLangCode;
-                        } 
-                        String usage = null;
-                        if ((i2 = g2.indexOf('|', i1+1)) == -1) {
-                            word = g2.substring(i1+1);
-                        } else {
-                            word = g2.substring(i1+1, i2);
-                            usage = g2.substring(i2+1);
-                        }
-                        wdh.registerTranslation(lang, currentGlose, usage, word);
-                    }
-                } else if (g1.equals("boîte début") || g1.equals("(")) {
-                    // Get the glose that should help disambiguate the source acception
-                    String g2 = m.group(2);
-                    // Ignore glose if it is a macro
-                    if (g2 != null && ! g2.startsWith("{{")) {
-                        currentGlose = g2;
-                    }
-                } else if (g1.equals("-")) {
-                    // just ignore it
-                } else if (g1.equals(")")) {
-                    // Forget the current glose
-                    currentGlose = null;
-                } else if (g1.equals("T")) {
-                    // this a a language identifier, 
-                    
-                } else if (m.group(1).equals("-trad-")) {
-                    gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
-                    gotoDefBlock(m);
-                } else if (ignorablePosMarkers.contains(m.group(1))) {
-                    gotoIgnorePos(m);
-                } else if (m.group(1).equals("-ortho-alt-") || m.group(1).equals("-var-ortho-")) {
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
-                    gotoSynBlock(m);
-                } else if (sectionMarkers.contains(m.group(1))) {
-                    gotoNoData(m);
-                }
-                break;
+            	 if (m.group(1).equals("-trad-")) {
+                     leaveTradBlock(m);
+                     gotoTradBlock(m);
+                 } else if (posMarkers.contains(m.group(1))) {
+                	 leaveTradBlock(m);
+                     gotoDefBlock(m);
+                 } else if (ignorablePosMarkers.contains(m.group(1))) {
+                	 leaveTradBlock(m);
+                     gotoIgnorePos(m);
+                 } else if (m.group(1).equals("-ortho-alt-") || m.group(1).equals("-var-ortho-")) {
+                	 leaveTradBlock(m);
+                     gotoOrthoAltBlock(m);
+                 } else if (nymMarkers.contains(m.group(1))) {
+                	 leaveTradBlock(m);
+                     gotoSynBlock(m);
+                 } else if (sectionMarkers.contains(m.group(1))) {
+                	 leaveTradBlock(m);
+                     gotoNoData(m);
+                 }
+                 break;
+            	// DONE: standardize translation extraction through an extractTranslation method
             case ORTHOALTBLOCK:
                 if (m.group(1).equals("-trad-")) {
                     leaveOrthoAltBlock(m);
@@ -510,6 +457,54 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
         
         wdh.finalizeEntryExtraction();
     }
+    
+    private void extractTranslations(int startOffset, int endOffset) {
+    	Matcher macroMatcher = macroPattern.matcher(pageContent);
+    	macroMatcher.region(startOffset, endOffset);
+    	String currentGlose = null;
 
+    	while (macroMatcher.find()) {
+    		String g1 = macroMatcher.group(1);
+
+    		if (g1.equals("trad+") || g1.equals("trad-") || g1.equals("trad") || g1.equals("t+") || g1.equals("t-")) {
+    			// DONE: Sometimes translation links have a remaining info after the word, keep it.
+    			String g2 = macroMatcher.group(2);
+    			int i1, i2;
+    			String lang, word;
+    			if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
+    				lang = g2.substring(0, i1);
+    				// normalize language code
+    				String normLangCode;
+    				if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
+    					lang = normLangCode;
+    				} 
+    				String usage = null;
+    				if ((i2 = g2.indexOf('|', i1+1)) == -1) {
+    					word = g2.substring(i1+1);
+    				} else {
+    					word = g2.substring(i1+1, i2);
+    					usage = g2.substring(i2+1);
+    				}
+    				wdh.registerTranslation(lang, currentGlose, usage, word);
+    			}
+    		} else if (g1.equals("boîte début") || g1.equals("(")) {
+    			// Get the glose that should help disambiguate the source acception
+    			String g2 = macroMatcher.group(2);
+    			// Ignore glose if it is a macro
+    			if (g2 != null && ! g2.startsWith("{{")) {
+    				currentGlose = g2;
+    			}
+    		} else if (g1.equals("-")) {
+    			// just ignore it
+    		} else if (g1.equals(")")) {
+    			// Forget the current glose
+    			currentGlose = null;
+    		} else if (g1.equals("T")) {
+    			// this a a language identifier, just ignore it as we get the language id from the trad macro parameter.
+
+    		}
+    		break;
+    	}
+    }
 
 }

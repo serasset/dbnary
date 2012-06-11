@@ -116,7 +116,7 @@ public class ExtractWiktionary {
 		options.addOption("h", false, "Prints usage and exits. ");	
 		options.addOption(SUFFIX_OUTPUT_FILE_OPTION, false, "Add a unique suffix to output file. ");	
 		options.addOption(LANGUAGE_OPTION, true, 
-				"Language (fra, eng, por). " + DEFAULT_LANGUAGE + " by default.");
+				"Language (fra, eng, deu or por). " + DEFAULT_LANGUAGE + " by default.");
 		options.addOption(OUTPUT_FORMAT_OPTION, true, 
 				"Output format  (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_OUTPUT_FORMAT + " by default.");
 		options.addOption(OUTPUT_FILE_OPTION, true, "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");	

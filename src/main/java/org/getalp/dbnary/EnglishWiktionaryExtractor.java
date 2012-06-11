@@ -18,25 +18,10 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
 
     //TODO: Handle Wikisaurus entries.
     protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
-    /**
-	 * @uml.property  name="nODATA"
-	 */
     private final int NODATA = 0;
-    /**
-	 * @uml.property  name="tRADBLOCK"
-	 */
     private final int TRADBLOCK = 1;
-    /**
-	 * @uml.property  name="dEFBLOCK"
-	 */
     private final int DEFBLOCK = 2;
-    /**
-	 * @uml.property  name="oRTHOALTBLOCK"
-	 */
     private final int ORTHOALTBLOCK = 3;
-    /**
-	 * @uml.property  name="nYMBLOCK"
-	 */
     private final int NYMBLOCK = 4;
         
     public EnglishWiktionaryExtractor(WiktionaryDataHandler wdh) {

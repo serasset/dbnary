@@ -261,7 +261,8 @@ public class StatRDFExtract {
 		if (cmd.hasOption(LANGUAGE_OPTION)) {
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
 			language = ISO639_3.sharedInstance.getIdCode(language);
-			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por"))) {
+			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por") || language.equals("ita") || language.equals("fin") )) {
+				System.err.println("Unknown language: " + language);
 				printUsage();
 				System.exit(1);
 			}

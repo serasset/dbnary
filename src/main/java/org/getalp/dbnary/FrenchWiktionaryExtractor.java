@@ -503,7 +503,6 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     			// this a a language identifier, just ignore it as we get the language id from the trad macro parameter.
 
     		}
-    		break;
     	}
     }
 

@@ -107,6 +107,8 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <!--  TODO: Change plugins versions to current stable versions -->
+        <version>2.3.2</version>
         <configuration>
           <fork>true</fork>
           <source>1.6</source>
@@ -118,6 +120,7 @@
         <!-- NOTE: We don't need a groupId specification because the group 
           is org.apache.maven.plugins ...which is assumed by default. -->
         <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2.1</version>
         <configuration>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -136,6 +139,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
+        <version>3.0</version>
         <configuration>
           <outputEncoding>UTF-8</outputEncoding>
         </configuration>
@@ -143,6 +147,7 @@
       <plugin>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-release-plugin</artifactId>
+      <version>2.2.2</version>
       <configuration>
         <tagBase>svn+ssh://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/tags</tagBase>
         <useReleaseProfile>false</useReleaseProfile>

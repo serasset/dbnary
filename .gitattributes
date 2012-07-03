@@ -1,4 +1,5 @@
 * text=auto !eol
+doc/articles/lrec2012/387_Paper.pdf -text
 doc/articles/lrec2012/biblio.bib -text
 doc/articles/lrec2012/chat-en-2012.ttl.pdf -text
 doc/articles/lrec2012/chat-en-2012.txt.pdf -text

@@ -3,8 +3,6 @@
  */
 package org.getalp.dbnary;
 
-import java.io.PrintStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.Matcher;
@@ -96,9 +94,6 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
     	if (filter.group(1) != null)
     		if (filter.group(1).equals("it"))
     			return false;
-    	if (filter.group(2) != null)
-    		if (filter.group(2).equals("italiano"))
-    			return false;
     	
     	return true;
     }
@@ -122,9 +117,9 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
         int italianSectionStartOffset = languageFilter.end();
         // Advance till end of sequence or new language section
         languageFilter.find();
-        int portugueseSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+        int italianSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
         
-        extractItalianData(italianSectionStartOffset, portugueseSectionEndOffset);
+        extractItalianData(italianSectionStartOffset, italianSectionEndOffset);
      }
 
 //    private HashSet<String> unsupportedSections = new HashSet<String>(100);
@@ -299,45 +294,267 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
         } 
         wdh.finalizeEntryExtraction();
     }
+	
+    // la fonction de supression des parentheses 
+
+	public static String supParenthese(String s){
+		final int A= 0; 
+		final int B = 1;
+
+		int ET = A;
+		String resultat="";
+		int debut =0;
+		int fin =0 ;    // la fin de partie qui nous inter
+		int i= 0; 
+
+		while(i!=s.length()){
+			switch (ET){
+			case A:
+				if(s.charAt(i)=='('){
+					// On a trouvé un debut de parenthese 
+
+					//On place la fin de la partie qui nous interesse
+					fin= i;
+					//on change d'etat
+					ET=B;
+					resultat = resultat +s.substring(debut, fin);
+				}
+				break;
+			case B:
+				if(s.charAt(i)==')'){
+					// On a trouvé la fin du commentaire 
+
+					// on place le debut se le partie qui nous interesse 
+					debut= i+1;;
+					// on change d'etat 
+					ET=A;
+				}
+				break;
+
+			default:
+				System.err.println("Unexpected state number:" + ET);
+				break;	
+			}
+
+			// On passe au caractère suivant ;
+			i=i+1;
+
+		}
+		if (i==s.length()) {
+			switch (ET){
+			case A:
+				resultat = resultat +s.substring(debut);
+				break;
+			case B:
+				break;
+
+			default:
+				System.err.println("Unexpected state number:" + ET);
+				break;	
+			}
+		}
+		return resultat;
+	}
+    
+    
+    protected final static String carPatternString;
+	protected final static String macroOrLinkOrcarPatternString;
+	
+   
+    static {
+		// les caractères visible 
+		carPatternString=
+				new StringBuilder().append("(.)")
+				.toString();
+
+		// TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
+		macroOrLinkOrcarPatternString = new StringBuilder()
+		.append("(?:")
+		.append(macroPatternString)
+		.append(")|(?:")
+		.append(linkPatternString)
+		.append(")|(?:")
+		.append("(:*\\*)")
+		.append(")|(?:")
+		.append(carPatternString)
+		.append(")").toString();
+    }
+    protected final static Pattern macroOrLinkOrcarPattern;
+    protected final static Pattern carPattern;
+    static {
+		carPattern = Pattern.compile(carPatternString);
+		macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL);
+		
+	}
+    
+	protected final int INIT = 1;
+	protected final int LANGUE = 2;
+	protected final int TRAD = 3;  
+    
     
     private void extractTranslations(int startOffset, int endOffset) {
-    	Matcher macroOrLinkMatcher = macroOrLinkPattern.matcher(pageContent);
-        macroOrLinkMatcher.region(startOffset, endOffset);
-       
-        String currentGlose = null;
-        String lang=null, word= null; 
-        String usage = null;
+	Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(pageContent);
+		macroOrLinkOrcarMatcher.region(startOffset, endOffset);
+		int ETAT = INIT;
 
-        while (macroOrLinkMatcher.find()) {
+		String currentGlose = null;
+		String lang=null, word= null; 
+		String usage = "";       
+		String langname = "";
 
-            String g1 = macroOrLinkMatcher.group(1);
-            
-           
-            if (g1 != null && g1.equals("top")) {
-                // Get the glose that should help disambiguate the source acception
-                String g2 = macroOrLinkMatcher.group(2);
-                // Ignore glose if it is a macro
-                if (g2 != null && ! g2.startsWith("{{")) {
-                    currentGlose = g2;
-                }
-            } else if (g1 != null && g1.equals("mid")) {
-                // just ignore it
-            } else if (g1 != null && (g1.equals("-trans2-") || g1.equals(")"))) {
-                // Forget the current glose
-                currentGlose = null;
-            } else if (  g1 != null ) { // c'est une macro de langue...
-            	lang = g1;
-            	System.err.println(g1);
-            	// normalize language code
-            	String normLangCode;
-            	if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-            		lang = normLangCode;
-            	}
-            } else if ( macroOrLinkMatcher.group(3) != null ) { // c'est un lien (une traduction)
-           	 	word = macroOrLinkMatcher.group(3);
-           	 	System.err.println(word);
-                wdh.registerTranslation(lang, currentGlose, usage , word);           
-            }   
+        while (macroOrLinkOrcarMatcher.find()) {
+
+			String g1 = macroOrLinkOrcarMatcher.group(1);
+			String g3 = macroOrLinkOrcarMatcher.group(3);
+			String g5 = macroOrLinkOrcarMatcher.group(5);
+			String g6 = macroOrLinkOrcarMatcher.group(6);
+
+			switch (ETAT) {
+
+			case INIT:
+				if (g1!=null) {
+					if (g1.equals("top"))  {
+						if (macroOrLinkOrcarMatcher.group(2) != null) {
+							currentGlose = macroOrLinkOrcarMatcher.group(2);
+						} else {
+							currentGlose = null;
+						}
+
+					} else if (g1.equals("-trans2-")) {
+						currentGlose = null;
+					} else if (g1.equals("mid")) {
+						//ignore
+					}
+				} else if(g3!=null) {
+					//System.err.println("Unexpected link while in INIT state.");
+				} else if (g5 != null) {
+					ETAT = LANGUE;
+				} else if (g6 != null) {
+					if (g6.equals(":")) {
+						//System.err.println("Skipping ':' while in INIT state.");
+					} else if (g6.equals("\n") || g6.equals("\r")) {
+
+					} else if (g6.equals(",")) {
+						//System.err.println("Skipping ',' while in INIT state.");
+					} else {
+						//System.err.println("Skipping " + g5 + " while in INIT state.");
+					}
+				}
+
+				break;
+
+			case LANGUE:
+
+				if (g1!=null) {
+					if (g1.equals("top"))  {
+						if (macroOrLinkOrcarMatcher.group(2) != null) {
+							currentGlose = macroOrLinkOrcarMatcher.group(2);
+						} else {
+							currentGlose = null;
+						}
+						langname = ""; word = ""; usage = "";
+						ETAT = INIT;
+					} else if (g1.equals("-trans2-")) {
+						currentGlose = null;
+						langname = ""; word = ""; usage = "";
+						ETAT = INIT;
+					} else if (g1.equals("mid")) {
+						langname = ""; word = ""; usage = "";
+						ETAT = INIT;
+					} else {
+						langname = g1;
+						String l = ISO639_3.sharedInstance.getIdCode(langname);
+						if (l != null) {
+							langname = l;
+						}
+					}
+				} else if(g3!=null) {
+					//System.err.println("Unexpected link while in LANGUE state.");
+				} else if (g5 != null) {
+					//System.err.println("Skipping '*' while in LANGUE state.");
+				} else if (g6 != null) {
+					if (g6.equals(":")) {
+						lang = langname.trim();
+						langname = "";
+						ETAT = TRAD;
+					} else if (g6.equals("\n") || g6.equals("\r")) {
+						//System.err.println("Skipping newline while in LANGUE state.");
+					} else if (g6.equals(",")) {
+						//System.err.println("Skipping ',' while in LANGUE state.");
+					} else {
+						langname = langname + g6;
+					}
+				} 
+
+				break ;
+			case TRAD:
+				if (g1!=null) {
+					if (g1.equals("top"))  {
+						if (macroOrLinkOrcarMatcher.group(2) != null) {
+							currentGlose = macroOrLinkOrcarMatcher.group(2);
+						} else {
+							currentGlose = null;
+						}
+						if (word != null && word.length() != 0) {
+							lang=supParenthese(lang);
+							wdh.registerTranslation(lang, currentGlose, usage, word);
+						}
+						langname = ""; word = ""; usage = ""; lang=null;
+						ETAT = INIT;
+					} else if (g1.equals("-tans2-")) {
+						if (word != null && word.length() != 0) {
+							lang=supParenthese(lang);
+							wdh.registerTranslation(lang, currentGlose, usage, word);
+						}
+						currentGlose = null;
+						langname = ""; word = ""; usage = ""; lang=null;
+						ETAT = INIT;
+					} else if (g1.equals("mid")) {
+						if (word != null && word.length() != 0) {
+							lang=supParenthese(lang);
+							wdh.registerTranslation(lang, currentGlose, usage, word);
+						}
+						langname = ""; word = ""; usage = ""; lang = null;
+						ETAT = INIT;
+					} else {
+						usage = usage + "{{" + g1 + "}}";
+					}
+				} else if (g3!=null) {
+					word = g3;
+				} else if (g5 != null) {
+					//System.err.println("Skipping '*' while in LANGUE state.");
+				} else if (g6 != null) {
+					if (g6.equals("\n") || g6.equals("\r")) {
+						usage = usage.trim();
+						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+						if (word != null && word.length() != 0) {
+							lang=supParenthese(lang);
+							wdh.registerTranslation(lang, currentGlose, usage, word);
+						}
+						lang = null; 
+						usage = "";
+						word = null;
+						ETAT = INIT;
+					} else if (g6.equals(",")) {
+						usage = usage.trim();
+						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+						if (word != null && word.length() != 0) {
+							lang=supParenthese(lang);
+							wdh.registerTranslation(lang, currentGlose, usage, word);
+						}
+						usage = "";
+						word = null;
+					} else {
+						usage = usage + g6;
+					}
+				}
+				break;
+			default: 
+				System.err.println("Unexpected state number:" + ETAT);
+				break; 
+			}
+        	
+
         }
     }
     

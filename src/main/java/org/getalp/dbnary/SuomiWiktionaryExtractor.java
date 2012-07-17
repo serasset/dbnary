@@ -5,10 +5,12 @@ package org.getalp.dbnary;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.blexisma.api.ISO639_3.Lang;
 
 /**
  * @author serasset
@@ -24,8 +26,6 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 	protected final static String carPatternString;
 	protected final static String linkPatternString;
 	protected final static String macroOrLinkOrcarPatternString;
-	protected final static String debutOrfinDecomPatternString;
-
 
 
 	static {
@@ -39,7 +39,7 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 		.toString();
 		macroPatternString = 
 				new StringBuilder().append("\\{\\{")
-				.append("([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?")
+				.append("([^\\}\\|\n\r]*)(?:\\|([^\\}]*))?")
 				.append("\\}\\}")
 				.toString();
 
@@ -55,9 +55,9 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 		.append(")|(?:")
 		.append(linkPatternString)
 		.append(")|(?:")
-		.append(carPatternString)
+		.append("(:*\\*)")
 		.append(")|(?:")
-		.append("<!--.*-->")
+		.append(carPatternString)
 		.append(")").toString();
 
 
@@ -70,28 +70,19 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 		.append("<!--.*-->")
 		.append(")").toString();
 
-		debutOrfinDecomPatternString=new StringBuilder()
-		.append("(?:")
-		.append("(<!--)")
-		.append(")|(?:")
-		.append("(-->)")
-		.append(")")
-		.toString();
-
-
 	}
 	protected final static Pattern macroPattern;
 	protected final static Pattern linkPattern;
 	protected final static Pattern carPattern;
 	protected final static Pattern macroOrLinkOrcarPattern;
-	protected final static Pattern debutOrfinDecomPattern;
+
 
 	static {
 		macroPattern = Pattern.compile(macroPatternString);
 		linkPattern = Pattern.compile(linkPatternString);
 		carPattern = Pattern.compile(carPatternString);
-		macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL);
-		debutOrfinDecomPattern=Pattern.compile(debutOrfinDecomPatternString, Pattern.DOTALL);
+		macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.MULTILINE|Pattern.DOTALL);
+		
 	}
 
 	private final int NODATA = 0;
@@ -153,19 +144,72 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 	}
 
 
-	public String supParenthese(String s){
-		String resultat;
-		int debut;
-		if(s.indexOf("(")!=-1){
-			debut = s.indexOf("(");
-			resultat=s.substring(0,debut);
-		}else{
-			resultat=s;
+
+	public static String supParenthese(String s){
+		final int A= 0; 
+		final int B = 1;
+
+		int ET = A;
+		String resultat="";
+		int debut =0;
+		int fin =0 ;    // la fin de partie qui nous inter
+		int i= 0; 
+
+		while(i!=s.length()){
+			switch (ET){
+			case A:
+				if(s.charAt(i)=='('){
+					// On a trouvé un debut de parenthese 
+
+					//On place la fin de la partie qui nous interesse
+					fin= i;
+					//on change d'etat
+					ET=B;
+					resultat = resultat +s.substring(debut, fin);
+				}
+				break;
+			case B:
+				if(s.charAt(i)==')'){
+					// On a trouvé la fin du commentaire 
+
+					// on place le debut se le partie qui nous interesse 
+					debut= i+1;;
+					// on change d'etat 
+					ET=A;
+				}
+				break;
+
+			default:
+				System.err.println("Unexpected state number:" + ET);
+				break;	
+			}
+
+			// On passe au caractère suivant ;
+			i=i+1;
+
 		}
-		resultat.trim();
+		if (i==s.length()) {
+			switch (ET){
+			case A:
+				resultat = resultat +s.substring(debut);
+				break;
+			case B:
+				break;
+
+			default:
+				System.err.println("Unexpected state number:" + ET);
+				break;	
+			}
+		}
 		return resultat;
 	}
-
+	public void afficherLang(){
+		Iterator<Lang> it = ISO639_3.sharedInstance.knownLanguagesIterator();
+		while (it.hasNext()) {
+			Lang l = it.next();
+			
+		}
+	}
 	int state = NODATA;
 	int definitionBlockStart = -1;
 	int orthBlockStart = -1;
@@ -178,74 +222,7 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 	 */  // 7630@Override
 
 
-	//Supprimer les commentaires 
-	private final int A= 0; 
-	private final int B = 1;
-
-	int ET = A;
-	public String effacerComm(String s){
-		// le matcher 
-		Matcher debutOrfinDecomMatcher = debutOrfinDecomPattern.matcher(s);
-
-
-		int indexEnd=0;   // index du debut de la partie qui nous interesse 
-		int indexBegin=0; // index de la fin de la partie qui nous interesse 
-
-		String resultat=""; // la nouvelles chaine de caracteres
-
-		while(debutOrfinDecomMatcher.find()) {
-			String g1 = debutOrfinDecomMatcher.group(1); // g1 =<!-- ou null
-			String g2 = debutOrfinDecomMatcher.group(2); // g2=-> ou null 
-
-			switch (ET){
-			case A:
-				if(g1!=null){
-					// On a trouvé un debut de commentaire 
-
-					//On place la fin de la partie qui nous interesse
-					indexEnd= debutOrfinDecomMatcher.start(1);
-					//on change d'etat
-					ET=B;
-					resultat = resultat +s.substring(indexBegin, indexEnd);
-				}
-				break;
-			case B:
-				if(g2!=null){
-					// On a trouvé la fin du commentaire 
-
-					// on place le debut se le partie qui nous interesse 
-					indexBegin= debutOrfinDecomMatcher.end(2);
-					// on change d'etat 
-					ET=A;
-				}
-				break;
-
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
-			}
-
-		}
-		if (debutOrfinDecomMatcher.hitEnd()) {
-			switch (ET){
-			case A:
-				resultat = resultat +s.substring(indexBegin);
-				break;
-			case B:
-				break;
-
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
-			}
-		}
-	   return resultat;
-
-	}
-
-
 	public void extractData() {
-			pageContent=effacerComm(pageContent);
 		
 		// System.out.println(pageContent);
 		Matcher languageFilter = languagePattern.matcher(pageContent);
@@ -466,16 +443,19 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 		wdh.finalizeEntryExtraction();
 	}
 
-	protected final int ZERO = 0;
-	protected final int INIT = 1;
-	protected final int LANGUE = 2;
-	protected final int TRAD = 3;
-
+	
 
 
 	private void extractTranslations(int startOffset, int endOffset) {
 		Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(pageContent);
 		macroOrLinkOrcarMatcher.region(startOffset, endOffset);
+		final int ZERO = 0;
+		final int INIT = 1;
+		final int LANGUE = 2;
+		final int TRAD = 3;
+
+	
+		
 		int ETAT = INIT;
 
 		String currentGlose = null;
@@ -484,66 +464,38 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 		String langname = "";
 
 		while (macroOrLinkOrcarMatcher.find()) {
+
 			String g1 = macroOrLinkOrcarMatcher.group(1);
 			String g3 = macroOrLinkOrcarMatcher.group(3);
 			String g5 = macroOrLinkOrcarMatcher.group(5);
+			String g6 = macroOrLinkOrcarMatcher.group(6);
 
 			switch (ETAT) {
-			case ZERO:
-				if (g1!=null) {
-					if (g1.equals("ylä"))  {
-						if (macroOrLinkOrcarMatcher.group(2) != null) {
-							currentGlose = macroOrLinkOrcarMatcher.group(2);
-						} else {
-							currentGlose = null;
-						}
-						ETAT=INIT;
-					} else if (g1.equals("ala")) {
-						currentGlose = null;
-					} else if (g1.equals("keski")) {
 
-					}
-				} else if(g3!=null) {
-					//System.err.println("Unexpected link while in ZERO state.");
-				} else if (g5 != null) {
-					if (g5.equals("*")) {
-						//System.err.println("Skipping '*' while in LANGUE state.");
-					} else if (g5.equals(":")) {
-						//System.err.println("Skipping '*' while in LANGUE state.");
-					} else if (g5.equals("\n") || g5.equals("\r")) {
-						//System.err.println("Skipping newline while in LANGUE state.");
-					} else if (g5.equals(",")) {
-						//System.err.println("Skipping ',' while in LANGUE state.");
-					} else {
-											}
-				}
-
-				break;
 			case INIT:
 				if (g1!=null) {
-					if (g1.equals("ylä"))  {
+					if (g1.equalsIgnoreCase("ylä"))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
 						} else {
 							currentGlose = null;
 						}
 
-					} else if (g1.equals("ala")) {
-						ETAT=ZERO;
+					} else if (g1.equalsIgnoreCase("ala")) {
 						currentGlose = null;
-					} else if (g1.equals("keski")) {
+					} else if (g1.equalsIgnoreCase("keski")) {
 						//ignore
 					}
 				} else if(g3!=null) {
 					//System.err.println("Unexpected link while in INIT state.");
 				} else if (g5 != null) {
-					if (g5.equals("*")) {
-						ETAT = LANGUE;
-					} else if (g5.equals(":")) {
+					ETAT = LANGUE;
+				} else if (g6 != null) {
+					if (g6.equals(":")) {
 						//System.err.println("Skipping ':' while in INIT state.");
-					} else if (g5.equals("\n") || g5.equals("\r")) {
+					} else if (g6.equals("\n") || g6.equals("\r")) {
 
-					} else if (g5.equals(",")) {
+					} else if (g6.equals(",")) {
 						//System.err.println("Skipping ',' while in INIT state.");
 					} else {
 						//System.err.println("Skipping " + g5 + " while in INIT state.");
@@ -555,7 +507,7 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 			case LANGUE:
 
 				if (g1!=null) {
-					if (g1.equals("ylä"))  {
+					if (g1.equalsIgnoreCase("ylä"))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
 						} else {
@@ -563,11 +515,11 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 						}
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
-					} else if (g1.equals("ala")) {
+					} else if (g1.equalsIgnoreCase("ala")) {
 						currentGlose = null;
 						langname = ""; word = ""; usage = "";
-						ETAT = ZERO;
-					} else if (g1.equals("keski")) {
+						ETAT = INIT;
+					} else if (g1.equalsIgnoreCase("keski")) {
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
 					} else {
@@ -580,48 +532,53 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 				} else if(g3!=null) {
 					//System.err.println("Unexpected link while in LANGUE state.");
 				} else if (g5 != null) {
-					if (g5.equals("*")) {
-						//System.err.println("Skipping '*' while in LANGUE state.");
-					} else if (g5.equals(":")) {
+					//System.err.println("Skipping '*' while in LANGUE state.");
+				} else if (g6 != null) {
+					if (g6.equals(":")) {
 						lang = langname.trim();
+						lang=supParenthese(lang);
+						lang =SuomiLangToCode.triletterCode(lang);
 						langname = "";
 						ETAT = TRAD;
-					} else if (g5.equals("\n") || g5.equals("\r")) {
+					} else if (g6.equals("\n") || g6.equals("\r")) {
 						//System.err.println("Skipping newline while in LANGUE state.");
-					} else if (g5.equals(",")) {
+					} else if (g6.equals(",")) {
 						//System.err.println("Skipping ',' while in LANGUE state.");
 					} else {
-						langname = langname + g5;
+						langname = langname + g6;
 					}
 				} 
 
 				break ;
 			case TRAD:
 				if (g1!=null) {
-					if (g1.equals("ylä"))  {
+					if (g1.equalsIgnoreCase("ylä"))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
 						} else {
 							currentGlose = null;
 						}
 						if (word != null && word.length() != 0) {
-							lang=supParenthese(lang);
-							wdh.registerTranslation(lang, currentGlose, usage, word);
+							if(lang!=null){
+								wdh.registerTranslation(lang, currentGlose, usage, word);
+							}
 						}
 						langname = ""; word = ""; usage = ""; lang=null;
 						ETAT = INIT;
-					} else if (g1.equals("ala")) {
+					} else if (g1.equalsIgnoreCase("ala")) {
 						if (word != null && word.length() != 0) {
-							lang=supParenthese(lang);
-							wdh.registerTranslation(lang, currentGlose, usage, word);
+							if(lang!=null){
+								wdh.registerTranslation(lang, currentGlose, usage, word);
+							}
 						}
 						currentGlose = null;
 						langname = ""; word = ""; usage = ""; lang=null;
-						ETAT = ZERO;
-					} else if (g1.equals("keski")) {
+						ETAT = INIT;
+					} else if (g1.equalsIgnoreCase("kski")) {
 						if (word != null && word.length() != 0) {
-							lang=supParenthese(lang);
-							wdh.registerTranslation(lang, currentGlose, usage, word);
+							if(lang!=null){
+								wdh.registerTranslation(lang, currentGlose, usage, word);
+							}
 						}
 						langname = ""; word = ""; usage = ""; lang = null;
 						ETAT = INIT;
@@ -631,28 +588,32 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 				} else if (g3!=null) {
 					word = g3;
 				} else if (g5 != null) {
-					if (g5.equals("\n") || g5.equals("\r")) {
+					//System.err.println("Skipping '*' while in LANGUE state.");
+				} else if (g6 != null) {
+					if (g6.equals("\n") || g6.equals("\r")) {
 						usage = usage.trim();
 						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
 						if (word != null && word.length() != 0) {
-							lang=supParenthese(lang);
-							wdh.registerTranslation(lang, currentGlose, usage, word);
+							if(lang!=null){
+								wdh.registerTranslation(lang, currentGlose, usage, word);
+							}
 						}
 						lang = null; 
 						usage = "";
 						word = null;
 						ETAT = INIT;
-					} else if (g5.equals(",")) {
+					} else if (g6.equals(",")) {
 						usage = usage.trim();
 						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
 						if (word != null && word.length() != 0) {
-							lang=supParenthese(lang);
-							wdh.registerTranslation(lang, currentGlose, usage, word);
+							if(lang!=null){
+								wdh.registerTranslation(lang, currentGlose, usage, word);
+							}
 						}
 						usage = "";
 						word = null;
 					} else {
-						usage = usage + g5;
+						usage = usage + g6;
 					}
 				}
 				break;

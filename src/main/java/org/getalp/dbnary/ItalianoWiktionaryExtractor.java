@@ -294,68 +294,6 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
         } 
         wdh.finalizeEntryExtraction();
     }
-	
-    // la fonction de supression des parentheses 
-
-	public static String supParenthese(String s){
-		final int A= 0; 
-		final int B = 1;
-
-		int ET = A;
-		String resultat="";
-		int debut =0;
-		int fin =0 ;    // la fin de partie qui nous inter
-		int i= 0; 
-
-		while(i!=s.length()){
-			switch (ET){
-			case A:
-				if(s.charAt(i)=='('){
-					// On a trouvé un debut de parenthese 
-
-					//On place la fin de la partie qui nous interesse
-					fin= i;
-					//on change d'etat
-					ET=B;
-					resultat = resultat +s.substring(debut, fin);
-				}
-				break;
-			case B:
-				if(s.charAt(i)==')'){
-					// On a trouvé la fin du commentaire 
-
-					// on place le debut se le partie qui nous interesse 
-					debut= i+1;;
-					// on change d'etat 
-					ET=A;
-				}
-				break;
-
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
-			}
-
-			// On passe au caractère suivant ;
-			i=i+1;
-
-		}
-		if (i==s.length()) {
-			switch (ET){
-			case A:
-				resultat = resultat +s.substring(debut);
-				break;
-			case B:
-				break;
-
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
-			}
-		}
-		return resultat;
-	}
-    
     
     protected final static String carPatternString;
 	protected final static String macroOrLinkOrcarPatternString;

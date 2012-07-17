@@ -145,64 +145,7 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 
 
 
-	public static String supParenthese(String s){
-		final int A= 0; 
-		final int B = 1;
 
-		int ET = A;
-		String resultat="";
-		int debut =0;
-		int fin =0 ;    // la fin de partie qui nous inter
-		int i= 0; 
-
-		while(i!=s.length()){
-			switch (ET){
-			case A:
-				if(s.charAt(i)=='('){
-					// On a trouvé un debut de parenthese 
-
-					//On place la fin de la partie qui nous interesse
-					fin= i;
-					//on change d'etat
-					ET=B;
-					resultat = resultat +s.substring(debut, fin);
-				}
-				break;
-			case B:
-				if(s.charAt(i)==')'){
-					// On a trouvé la fin du commentaire 
-
-					// on place le debut se le partie qui nous interesse 
-					debut= i+1;;
-					// on change d'etat 
-					ET=A;
-				}
-				break;
-
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
-			}
-
-			// On passe au caractère suivant ;
-			i=i+1;
-
-		}
-		if (i==s.length()) {
-			switch (ET){
-			case A:
-				resultat = resultat +s.substring(debut);
-				break;
-			case B:
-				break;
-
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
-			}
-		}
-		return resultat;
-	}
 	public void afficherLang(){
 		Iterator<Lang> it = ISO639_3.sharedInstance.knownLanguagesIterator();
 		while (it.hasNext()) {
@@ -459,7 +402,7 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 		int ETAT = INIT;
 
 		String currentGlose = null;
-		String lang=null, word= null; 
+		String lang=null, word= ""; 
 		String usage = "";       
 		String langname = "";
 
@@ -558,11 +501,11 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 						} else {
 							currentGlose = null;
 						}
-						if (word != null && word.length() != 0) {
-							if(lang!=null){
-								wdh.registerTranslation(lang, currentGlose, usage, word);
-							}
-						}
+						//if (word != null && word.length() != 0) {
+						//	if(lang!=null){
+						//		wdh.registerTranslation(lang, currentGlose, usage, word);
+						//	}
+						//}
 						langname = ""; word = ""; usage = ""; lang=null;
 						ETAT = INIT;
 					} else if (g1.equalsIgnoreCase("ala")) {
@@ -586,7 +529,7 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 						usage = usage + "{{" + g1 + "}}";
 					}
 				} else if (g3!=null) {
-					word = g3;
+					word = word + " " + g3;
 				} else if (g5 != null) {
 					//System.err.println("Skipping '*' while in LANGUE state.");
 				} else if (g6 != null) {
@@ -600,7 +543,7 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 						}
 						lang = null; 
 						usage = "";
-						word = null;
+						word = "";
 						ETAT = INIT;
 					} else if (g6.equals(",")) {
 						usage = usage.trim();
@@ -611,7 +554,7 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 							}
 						}
 						usage = "";
-						word = null;
+						word = "";
 					} else {
 						usage = usage + g6;
 					}

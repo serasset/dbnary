@@ -315,6 +315,7 @@ public class LMFBasedRDFDataHandler implements WiktionaryDataHandler {
 	@Override
     public void registerTranslation(String lang, String currentGlose,
 			String usage, String word) {
+		word = word.trim();
     	Resource trans = aBox.createResource(computeTransId(lang), translationType);
     	aBox.add(aBox.createStatement(trans, isPartOf, currentLexEntry));
     	aBox.add(aBox.createStatement(trans, langProperty, lang));

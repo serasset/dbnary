@@ -27,7 +27,7 @@ public class miseEnFormlang {
 	}
 
 	public static String [] afficherLang(){
-		String lang ;
+
 		
 		int n= 300;
 		String []t = new String [n];
@@ -35,7 +35,7 @@ public class miseEnFormlang {
 		int i=0;
 		while (it.hasNext()) {
 			Lang l = it.next();
-			lang = l.getId();
+			
 			String l1 = l.getPart1();
 			String l2b = l.getPart2b();
 			if(!l2b.equals(null) && !l2b.equals("") && (l1.equals(null)||l1.equals(""))) {

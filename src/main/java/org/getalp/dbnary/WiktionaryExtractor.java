@@ -83,6 +83,92 @@ public abstract class WiktionaryExtractor {
     //    this.wiktionaryIndex = wi;
     }
 
+    
+  // Suppression des commentaires  d'un text 
+    
+    protected final static String debutOrfinDecomPatternString;
+
+	static {
+		debutOrfinDecomPatternString=new StringBuilder()
+		.append("(?:")
+		.append("(<!--)")
+		.append(")|(?:")
+		.append("(-->)")
+		.append(")")
+		.toString();
+	}
+	protected final static Pattern debutOrfinDecomPattern;
+
+	static {
+		debutOrfinDecomPattern=Pattern.compile(debutOrfinDecomPatternString, Pattern.DOTALL);
+	}
+	
+	private final int A= 0; 
+	private final int B = 1;
+
+	int ET = A;
+	public String effacerComm(String s){
+		// le matcher 
+		Matcher debutOrfinDecomMatcher = debutOrfinDecomPattern.matcher(s);
+
+
+		int indexEnd=0;   // index du debut de la partie qui nous interesse 
+		int indexBegin=0; // index de la fin de la partie qui nous interesse 
+
+		String resultat=""; // la nouvelles chaine de caracteres
+
+		while(debutOrfinDecomMatcher.find()) {
+			String g1 = debutOrfinDecomMatcher.group(1); // g1 =<!-- ou null
+			String g2 = debutOrfinDecomMatcher.group(2); // g2=-> ou null 
+
+			switch (ET){
+			case A:
+				if(g1!=null){
+					// On a trouvé un debut de commentaire 
+
+					//On place la fin de la partie qui nous interesse
+					indexEnd= debutOrfinDecomMatcher.start(1);
+					//on change d'etat
+					ET=B;
+					resultat = resultat +s.substring(indexBegin, indexEnd);
+				}
+				break;
+			case B:
+				if(g2!=null){
+					// On a trouvé la fin du commentaire 
+
+					// on place le debut se le partie qui nous interesse 
+					indexBegin= debutOrfinDecomMatcher.end(2);
+					// on change d'etat 
+					ET=A;
+				}
+				break;
+
+			default:
+				System.err.println("Unexpected state number:" + ET);
+				break;	
+			}
+
+		}
+		if (debutOrfinDecomMatcher.hitEnd()) {
+			switch (ET){
+			case A:
+				resultat = resultat +s.substring(indexBegin);
+				break;
+			case B:
+				break;
+
+			default:
+				System.err.println("Unexpected state number:" + ET);
+				break;	
+			}
+		}
+	   return resultat;
+
+	}
+    
+    
+    
     /**
      * @return the wiktionaryIndex
      */
@@ -102,7 +188,7 @@ public abstract class WiktionaryExtractor {
     	}
         this.wiktionaryPageName = wiktionaryPageName;
         
-        this.pageContent = pageContent;
+        this.pageContent = effacerComm(pageContent);
         
         if (pageContent == null) return;
         try {

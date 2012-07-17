@@ -23,8 +23,7 @@ public class miseEnFormlang {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 
-		  String lang= "saksa";
-		  System.out.println(SuomiLangToCode.triletterCode(lang));
+		  afficherLang();
 	}
 
 	public static String [] afficherLang(){

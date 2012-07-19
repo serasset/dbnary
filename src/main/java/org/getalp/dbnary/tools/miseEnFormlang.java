@@ -23,7 +23,15 @@ public class miseEnFormlang {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 
-		  afficherLang();
+		  String[] t = afficherLang();
+		  int i=0;
+		  while(i!=t.length&& t[i]!=null){
+			
+			  
+			  System.out.println(t[i]);
+			  
+			  i++;
+		  }
 	}
 
 	public static String [] afficherLang(){
@@ -38,11 +46,11 @@ public class miseEnFormlang {
 			
 			String l1 = l.getPart1();
 			String l2b = l.getPart2b();
-			if(!l2b.equals(null) && !l2b.equals("") && (l1.equals(null)||l1.equals(""))) {
+			if(!l1.equals(null) && !l1.equals("")) {
 				
-				System.out.println("{{"+l2b+"}}" );
+				System.out.println("{{"+l1+"}}" );
 				System.out.println();
-				t[i]=l2b;
+				t[i]=l1;
 				i=i+1;
 				
 			}
@@ -52,33 +60,4 @@ public class miseEnFormlang {
 		return t ;
 	}
 
-/*	public  static void affiche() throws IOException {
-		String ligne = "";
-		String fichier = "";
-
-		fichier = "C:\\Users\\Mariam\\Desktop\\Stage\\dumps\\pour_voir.txt";
-		BufferedReader ficTexte;
-		try {
-			ficTexte = new BufferedReader(new FileReader(new File(fichier)));
-			if (ficTexte == null) {
-				throw new FileNotFoundException("Fichier non trouvé: "
-						+ fichier);
-			}
-			do {
-				ligne = ficTexte.readLine();
-				if (ligne != null) {
-					System.out.println(ligne);
-				}
-			} while (ficTexte != null);
-			ficTexte.close();
-			System.out.println("\n");
-		} catch (FileNotFoundException e) {
-			System.out.println(e.getMessage());
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
-		}
-
-	}*/
-
 }
-

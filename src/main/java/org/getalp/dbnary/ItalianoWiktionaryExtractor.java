@@ -351,16 +351,16 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
 
 			case INIT:
 				if (g1!=null) {
-					if (g1.equals("top"))  {
+					if (g1.equalsIgnoreCase("top"))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
 						} else {
 							currentGlose = null;
 						}
 
-					} else if (g1.equals("-trans2-")) {
+					} else if (g1.equalsIgnoreCase("-trans2-")) {
 						currentGlose = null;
-					} else if (g1.equals("mid")) {
+					} else if (g1.equalsIgnoreCase("mid")) {
 						//ignore
 					}
 				} else if(g3!=null) {
@@ -384,7 +384,7 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
 			case LANGUE:
 
 				if (g1!=null) {
-					if (g1.equals("top"))  {
+					if (g1.equalsIgnoreCase("top"))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
 						} else {
@@ -392,11 +392,11 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
 						}
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
-					} else if (g1.equals("-trans2-")) {
+					} else if (g1.equalsIgnoreCase("-trans2-")) {
 						currentGlose = null;
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
-					} else if (g1.equals("mid")) {
+					} else if (g1.equalsIgnoreCase("mid")) {
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
 					} else {
@@ -413,6 +413,8 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
 				} else if (g6 != null) {
 					if (g6.equals(":")) {
 						lang = langname.trim();
+						lang=supParenthese(lang);
+						lang =ItalianLangToCode.triletterCode(lang);
 						langname = "";
 						ETAT = TRAD;
 					} else if (g6.equals("\n") || g6.equals("\r")) {
@@ -427,30 +429,32 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
 				break ;
 			case TRAD:
 				if (g1!=null) {
-					if (g1.equals("top"))  {
+					if (g1.equalsIgnoreCase("top"))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
 						} else {
 							currentGlose = null;
 						}
-						if (word != null && word.length() != 0) {
-							lang=supParenthese(lang);
-							wdh.registerTranslation(lang, currentGlose, usage, word);
-						}
+						//if (word != null && word.length() != 0) {
+							//lang=supParenthese(lang);
+							//wdh.registerTranslation(lang, currentGlose, usage, word);
+						//}
 						langname = ""; word = ""; usage = ""; lang=null;
 						ETAT = INIT;
-					} else if (g1.equals("-tans2-")) {
+					} else if (g1.equalsIgnoreCase("-tans2-")) {
 						if (word != null && word.length() != 0) {
-							lang=supParenthese(lang);
+							if(lang!=null){
 							wdh.registerTranslation(lang, currentGlose, usage, word);
+							}
 						}
 						currentGlose = null;
 						langname = ""; word = ""; usage = ""; lang=null;
 						ETAT = INIT;
-					} else if (g1.equals("mid")) {
+					} else if (g1.equalsIgnoreCase("mid")) {
 						if (word != null && word.length() != 0) {
-							lang=supParenthese(lang);
+							if(lang!=null){
 							wdh.registerTranslation(lang, currentGlose, usage, word);
+							}
 						}
 						langname = ""; word = ""; usage = ""; lang = null;
 						ETAT = INIT;
@@ -466,8 +470,9 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
 						usage = usage.trim();
 						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
 						if (word != null && word.length() != 0) {
-							lang=supParenthese(lang);
+							if(lang!=null){
 							wdh.registerTranslation(lang, currentGlose, usage, word);
+							}
 						}
 						lang = null; 
 						usage = "";
@@ -477,8 +482,9 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
 						usage = usage.trim();
 						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
 						if (word != null && word.length() != 0) {
-							lang=supParenthese(lang);
+							if (lang!=null){
 							wdh.registerTranslation(lang, currentGlose, usage, word);
+							}
 						}
 						usage = "";
 						word = null;

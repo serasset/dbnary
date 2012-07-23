@@ -22,6 +22,7 @@ doc/articles/lrec2012/lrec_2012_wiktionary_support.tex -text
 /pom.xml -text
 src/main/java/org/getalp/dbnary/EnglishLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/EnglishWiktionaryExtractor.java -text
+src/main/java/org/getalp/dbnary/FrenchLangtoCodde.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/FrenchWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/GermanLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/GermanWiktionaryExtractor.java -text

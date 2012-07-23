@@ -29,6 +29,7 @@ src/main/java/org/getalp/dbnary/ItalianLangToCode.java -text svneol=unset#text/p
 src/main/java/org/getalp/dbnary/ItalianoWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/OffsetValue.java -text
+src/main/java/org/getalp/dbnary/PortugueseLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/PortugueseWiktionaryExtractor.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/SemnetWiktionaryDataHandler.java -text
 src/main/java/org/getalp/dbnary/SuomiLangToCode.java -text svneol=unset#text/plain

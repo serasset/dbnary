@@ -323,8 +323,14 @@ public class ItalianLangToCode {
 			if (ISO639_3.sharedInstance.getIdCode(s) != null) {
 				resultat =ISO639_3.sharedInstance.getIdCode(s);
 			}else{
-				resultat=null;
-				//resultat=s;
+				if(italianLangNameToLangCode.containsKey(s)){
+					s=italianLangNameToLangCode.get(s);
+					
+						resultat =ISO639_3.sharedInstance.getIdCode(s);
+					
+				}else {
+					resultat=null;
+				}
 			}
 			return resultat;
 		}else{

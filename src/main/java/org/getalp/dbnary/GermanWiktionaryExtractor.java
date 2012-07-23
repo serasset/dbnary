@@ -495,7 +495,10 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                         word = g2.substring(i2 + 1);
                     }
                     // TODO: Should I keep the transcription ?
-                    wdh.registerTranslation(lang, currentGlose, transcription, word);
+                    lang=GermanLangToCode.triletterCode(lang);
+                    if(lang!=null){
+                 	   wdh.registerTranslation(lang, currentGlose, transcription, word);
+                    }
                 }
             } else if (g1.equals("Ü-links")) {
                 // German wiktionary does not provide a glose to disambiguate.

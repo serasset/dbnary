@@ -37,7 +37,7 @@ public class miseEnFormlang {
 	public static String [] afficherLang(){
 
 		
-		int n= 300;
+		int n= 570;
 		String []t = new String [n];
 		Iterator<Lang> it = ISO639_3.sharedInstance.knownLanguagesIterator();
 		int i=0;
@@ -53,6 +53,12 @@ public class miseEnFormlang {
 				t[i]=l1;
 				i=i+1;
 				
+			}else if(!l2b.equals(null) && !l2b.equals("") && (l1.equals(null)||l1.equals(""))){
+				
+				System.out.println("{{"+l2b+"}}" );
+				System.out.println();
+				t[i]=l2b;
+				i=i+1;
 			}
 			//String l2b = l.getPart2b();
    

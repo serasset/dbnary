@@ -326,7 +326,15 @@ static HashMap<String,String> suomiLangNameToLangCode = new HashMap<String,Strin
 		if (ISO639_3.sharedInstance.getIdCode(s) != null) {
 			resultat =ISO639_3.sharedInstance.getIdCode(s);
 		}else{
-			resultat=null;
+			if(suomiLangNameToLangCode.containsKey(s)){
+				s=suomiLangNameToLangCode.get(s);
+				
+					resultat =ISO639_3.sharedInstance.getIdCode(s);
+				
+			}else {
+				resultat=null;
+			}
+			
 		}
 		return resultat;
 	}else{

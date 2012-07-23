@@ -336,7 +336,7 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
 		int ETAT = INIT;
 
 		String currentGlose = null;
-		String lang=null, word= null; 
+		String lang=null, word= ""; 
 		String usage = "";       
 		String langname = "";
 
@@ -462,7 +462,7 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
 						usage = usage + "{{" + g1 + "}}";
 					}
 				} else if (g3!=null) {
-					word = g3;
+					word =word+" " +g3;
 				} else if (g5 != null) {
 					//System.err.println("Skipping '*' while in LANGUE state.");
 				} else if (g6 != null) {
@@ -476,7 +476,7 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
 						}
 						lang = null; 
 						usage = "";
-						word = null;
+						word="";
 						ETAT = INIT;
 					} else if (g6.equals(",")) {
 						usage = usage.trim();
@@ -487,7 +487,7 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
 							}
 						}
 						usage = "";
-						word = null;
+						word = "";
 					} else {
 						usage = usage + g6;
 					}

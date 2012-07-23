@@ -440,7 +440,10 @@ public class PortugueseWiktionaryExtractor extends WiktionaryExtractor {
                         word = g2.substring(i1+1, i2);
                         usage = g2.substring(i2+1);
                     }
-                    wdh.registerTranslation(lang, currentGlose, usage, word);
+                    lang=EnglishLangToCode.triletterCode(lang);
+                    if(lang!=null){
+                 	   wdh.registerTranslation(lang, currentGlose, usage, word);
+                    }
                 }
             } else if (g1.equals("tradini")) {
                 // Get the glose that should help disambiguate the source acception

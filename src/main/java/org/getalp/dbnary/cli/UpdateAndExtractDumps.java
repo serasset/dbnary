@@ -81,7 +81,9 @@ public class UpdateAndExtractDumps {
 			client.changeWorkingDirectory(lang+"wiktionary");
 
 			SortedSet<String> dirs = new TreeSet<String>();
+			System.err.println("Retrieving directory list.");
 			FTPFile[] ftpFiles = client.listFiles();
+			System.err.println("Retrieved: " + ftpFiles);
 			for (FTPFile ftpFile : ftpFiles) {
 				if (ftpFile.getType() == FTPFile.DIRECTORY_TYPE && ! ftpFile.getName().startsWith(".")) {
 					dirs.add(ftpFile.getName());

@@ -164,7 +164,7 @@ public class UpdateAndExtractDumps {
 				File file = new File(filename);
 				if (file.exists() && !force) {
 					System.err.println("Dump file " + filename + " already retrieved.");
-					return null;
+					return lastDir;
 				}
 				File dumpFile = new File(dumpdir);
 				dumpFile.mkdirs();
@@ -208,6 +208,12 @@ public class UpdateAndExtractDumps {
 		try {
 			String compressedDumpFile = outputDir + "/" + dir + "/" + dumpFileName(prefix, dir);
 			String uncompressedDumpFile = uncompressDumpFileName(prefix, dir);
+			
+			File file = new File(uncompressedDumpFile);
+			if (file.exists() && !force) {
+				System.err.println("Uncompressed dump file " + uncompressedDumpFile + " already exists.");
+				return;
+			}
 			
 			System.err.println("uncompressing file : " + compressedDumpFile + " to " + uncompressedDumpFile);
 
@@ -266,10 +272,19 @@ public class UpdateAndExtractDumps {
 
 	private void extractDumpFile(String lang, String dir) {
 		if (null == dir || dir.equals("")) return;
-
+		File d = new File(extractDir);
+		d.mkdirs();
+	
+		String extractFile = extractDir + "/" + lang + "-extract-" + dir + ".tut";
+		File file = new File(extractFile);
+		if (file.exists() && !force) {
+			System.err.println("Extracted wiktionary file " + extractFile + " already exists.");
+			return;
+		}
+		
 		String[] args = new String[] {"-f", "turtle", 
 				"-l", lang, 
-				"-o", extractDir + "/" + lang + "-extract-" + dir + ".tut",
+				"-o", extractFile,
 				uncompressDumpFileName(lang, dir)
 				};
 		

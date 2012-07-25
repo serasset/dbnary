@@ -208,7 +208,8 @@ public class UpdateAndExtractDumps {
 		try {
 			String compressedDumpFile = outputDir + "/" + dir + "/" + dumpFileName(prefix, dir);
 			String uncompressedDumpFile = uncompressDumpFileName(prefix, dir);
-			
+			System.err.println("Uncompressing " + compressedDumpFile);
+
 			File file = new File(uncompressedDumpFile);
 			if (file.exists() && !force) {
 				System.err.println("Uncompressed dump file " + uncompressedDumpFile + " already exists.");

@@ -21,6 +21,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.getalp.blexisma.api.ISO639_3;
@@ -162,6 +163,7 @@ public class UpdateAndExtractDumps {
 				}
 				File dumpFile = new File(dumpdir);
 				dumpFile.mkdirs();
+				client.setFileType(FTP.BINARY_FILE_TYPE);
 				FileOutputStream dfile = new FileOutputStream(file);
 				System.err.println("Retreiving " + filename);
 				long s = System.currentTimeMillis();

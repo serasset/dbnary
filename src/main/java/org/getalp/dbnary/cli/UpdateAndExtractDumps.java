@@ -161,7 +161,7 @@ public class UpdateAndExtractDumps {
 			outputDir = cmd.getOptionValue(OUTPUT_DIR_OPTION);
 		}
 				
-		String[] remainingArgs = cmd.getArgs();
+		remainingArgs = cmd.getArgs();
 		if (remainingArgs.length == 0) {
 			printUsage();
 			System.exit(1);

@@ -75,7 +75,7 @@ public class UpdateAndExtractDumps {
 			}
 			client.login( "anonymous", "" );
 			System.err.println("Logged in...");
-			
+			client.enterLocalPassiveMode();
 			client.changeWorkingDirectory(url.getPath());
 
 			client.changeWorkingDirectory(lang+"wiktionary");

@@ -73,7 +73,7 @@ public class UpdateAndExtractDumps {
 
 	private String dumpFileName(String lang, String date) {
 
-		return lang + "wiktionary-"+date+"-pages-meta-history.xml.bz2";
+		return lang + "wiktionary-"+date+"-pages-articles.xml.bz2";
 	}
 
 	/**

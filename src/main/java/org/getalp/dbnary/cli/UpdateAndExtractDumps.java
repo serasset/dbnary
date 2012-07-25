@@ -40,11 +40,14 @@ public class UpdateAndExtractDumps {
 	private static final String OUTPUT_DIR_OPTION = "o";
 	private static final String DEFAULT_OUTPUT_DIR = "dumps";
 
+	private static final String EXTRACT_DIR_OPTION = "e";
+	private static final String DEFAULT_EXTRACT_DIR = "extracts";
 
 
 	private CommandLine cmd = null; // Command Line arguments
 
 	private String outputDir = DEFAULT_OUTPUT_DIR;
+	private String extractDir = DEFAULT_EXTRACT_DIR;
 	private boolean force = DEFAULT_FORCE;
 	private String server = DEFAULT_SERVER_URL;
 
@@ -56,7 +59,8 @@ public class UpdateAndExtractDumps {
 		options.addOption(SERVER_URL_OPTION, true, "give the URL pointing to a wikimedia mirror. ");	
 		options.addOption(FORCE_OPTION, false, 
 				"force the updating even if a file with the same name already exists in the output directory. " + DEFAULT_FORCE + " by default.");
-		options.addOption(OUTPUT_DIR_OPTION, true, "Output file. " + DEFAULT_OUTPUT_DIR + " by default ");	
+		options.addOption(OUTPUT_DIR_OPTION, true, "directory containing the wiktionary dumps. " + DEFAULT_OUTPUT_DIR + " by default ");	
+		options.addOption(EXTRACT_DIR_OPTION, true, "directory containing the extraction result. " + DEFAULT_EXTRACT_DIR + " by default ");	
 	}
 
 	/**
@@ -118,6 +122,7 @@ public class UpdateAndExtractDumps {
 	public void updateAndExtract() throws WiktionaryIndexerException, IOException {
 		String [] dirs = updateDumpFiles(remainingArgs);
 		uncompressDumpFiles(remainingArgs, dirs);
+		extractDumpFiles(remainingArgs, dirs);
 	}
 
 	private String updateDumpFile(String lang) {
@@ -158,8 +163,8 @@ public class UpdateAndExtractDumps {
 				String filename = dumpdir + "/" + dumpFileName(lang,lastDir);
 				File file = new File(filename);
 				if (file.exists() && !force) {
-					System.err.println("Dump file " + filename + " already retreived.");
-					return lastDir;
+					System.err.println("Dump file " + filename + " already retrieved.");
+					return null;
 				}
 				File dumpFile = new File(dumpdir);
 				dumpFile.mkdirs();
@@ -196,13 +201,15 @@ public class UpdateAndExtractDumps {
 	}
 
 	private void uncompressDumpFile(String prefix, String dir) {
+		if (null == dir || dir.equals("")) return;
+		
 		Reader r = null;
 		Writer w = null;
 		try {
 			String compressedDumpFile = outputDir + "/" + dir + "/" + dumpFileName(prefix, dir);
-			String uncompressedDumpFile = outputDir + "/" + dir + "/" + prefix + "wkt.xml";
+			String uncompressedDumpFile = uncompressDumpFileName(prefix, dir);
 			
-			System.err.println("uncompressing file :" + compressedDumpFile + " to " + uncompressedDumpFile);
+			System.err.println("uncompressing file : " + compressedDumpFile + " to " + uncompressedDumpFile);
 
 			BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(new FileInputStream(compressedDumpFile));
 			r = new BufferedReader(new InputStreamReader(bzIn, "UTF-8"));
@@ -236,6 +243,11 @@ public class UpdateAndExtractDumps {
 		}
 	}
 
+	private String uncompressDumpFileName(String prefix, String dir) {
+		return outputDir + "/" + dir + "/" + prefix + "wkt-" + dir + ".xml";
+	}
+
+
 	private String[] updateDumpFiles(String[] langs) {
 		String[] res = new String[langs.length];
 		int i = 0;
@@ -245,6 +257,33 @@ public class UpdateAndExtractDumps {
 		}
 		return res;
 	}
+
+	private void extractDumpFiles(String[] langs, String[] dirs) {
+		for (int i = 0; i < langs.length; i++) {
+			extractDumpFile(langs[i], dirs[i]);
+		}
+	}
+
+	private void extractDumpFile(String lang, String dir) {
+		if (null == dir || dir.equals("")) return;
+
+		String[] args = new String[] {"-f", "turtle", 
+				"-l", lang, 
+				"-o", extractDir + "/" + lang + "-extract-" + dir + ".tut",
+				uncompressDumpFileName(lang, dir)
+				};
+		
+		try {
+			ExtractWiktionary.main(args);
+		} catch (WiktionaryIndexerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 
 	public static void printUsage() {
 		HelpFormatter formatter = new HelpFormatter();

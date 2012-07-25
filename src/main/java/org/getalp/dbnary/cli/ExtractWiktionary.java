@@ -59,61 +59,23 @@ public class ExtractWiktionary {
     public static final XMLInputFactory2 xmlif;
 
 
-	/**
-	 * @uml.property  name="cmd"
-	 * @uml.associationEnd  
-	 */
 	private CommandLine cmd = null; // Command Line arguments
 	
-	/**
-	 * @uml.property  name="outputFile"
-	 */
 	private String outputFile = DEFAULT_OUTPUT_FILE;
-	/**
-	 * @uml.property  name="outputFormat"
-	 */
 	private String outputFormat = DEFAULT_OUTPUT_FORMAT;
-	/**
-	 * @uml.property  name="language"
-	 */
 	private String language = DEFAULT_LANGUAGE;
-	/**
-	 * @uml.property  name="dumpFile"
-	 */
 	private File dumpFile;
-	/**
-	 * @uml.property  name="outputFileSuffix"
-	 */
 	private String outputFileSuffix = "";
-	/**
-	 * @uml.property  name="wi"
-	 * @uml.associationEnd  readOnly="true"
-	 */
+
 	WiktionaryIndex wi;
-	/**
-	 * @uml.property  name="remainingArgs" multiplicity="(0 -1)" dimension="1"
-	 */
 	String[] remainingArgs;
-	/**
-	 * @uml.property  name="we"
-	 * @uml.associationEnd  
-	 */
 	WiktionaryExtractor we;
 
-	/**
-	 * @uml.property  name="s"
-	 * @uml.associationEnd  
-	 */
 	private SimpleSemanticNetwork<String, String> s = null;
 
-	/**
-	 * @uml.property  name="wdh"
-	 * @uml.associationEnd  
-	 */
 	private WiktionaryDataHandler wdh;
 
-	
-	static{
+	static {
 		options = new Options();
 		options.addOption("h", false, "Prints usage and exits. ");	
 		options.addOption(SUFFIX_OUTPUT_FILE_OPTION, false, "Add a unique suffix to output file. ");	
@@ -185,7 +147,12 @@ public class ExtractWiktionary {
 		if (cmd.hasOption(LANGUAGE_OPTION)){
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
 			language = ISO639_3.sharedInstance.getIdCode(language);
-			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por")|| language.equals("ita")|| language.equals("fin"))) {
+			if (! ( language.equals("fra") || 
+					language.equals("eng") || 
+					language.equals("deu") || 
+					language.equals("por")|| 
+					language.equals("ita")|| 
+					language.equals("fin"))) {
 				System.err.println("Unknown language: " + language);
 				printUsage();
 				System.exit(1);

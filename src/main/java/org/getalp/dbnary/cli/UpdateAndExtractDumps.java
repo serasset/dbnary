@@ -273,10 +273,12 @@ public class UpdateAndExtractDumps {
 
 	private void extractDumpFile(String lang, String dir) {
 		if (null == dir || dir.equals("")) return;
-		File d = new File(extractDir);
+		
+		String odir = extractDir + "/" + lang;
+		File d = new File(odir);
 		d.mkdirs();
 	
-		String extractFile = extractDir + "/" + lang + "-extract-" + dir + ".tut";
+		String extractFile = odir + "/" + lang +"-extract-" + dir + ".tut";
 		File file = new File(extractFile);
 		if (file.exists() && !force) {
 			System.err.println("Extracted wiktionary file " + extractFile + " already exists.");

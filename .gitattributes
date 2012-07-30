@@ -51,6 +51,7 @@ src/main/java/org/getalp/dbnary/cli/IConv.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/RDFDiff.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/StatRDFExtract.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/tools/DiffFichier.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
 src/main/scripts/README.txt -text

@@ -39,6 +39,9 @@ public class UpdateAndExtractDumps {
 
 	private static final String OUTPUT_DIR_OPTION = "o";
 	private static final String DEFAULT_OUTPUT_DIR = "dumps";
+	
+	private static final String HISTORY_SIZE_OPTION = "k";
+	private static final String DEFAULT_HISTORY_SIZE = "5";
 
 	private static final String EXTRACT_DIR_OPTION = "e";
 	private static final String DEFAULT_EXTRACT_DIR = "extracts";
@@ -48,6 +51,7 @@ public class UpdateAndExtractDumps {
 
 	private String outputDir = DEFAULT_OUTPUT_DIR;
 	private String extractDir = DEFAULT_EXTRACT_DIR;
+	private int historySize;
 	private boolean force = DEFAULT_FORCE;
 	private String server = DEFAULT_SERVER_URL;
 
@@ -59,6 +63,7 @@ public class UpdateAndExtractDumps {
 		options.addOption(SERVER_URL_OPTION, true, "give the URL pointing to a wikimedia mirror. ");	
 		options.addOption(FORCE_OPTION, false, 
 				"force the updating even if a file with the same name already exists in the output directory. " + DEFAULT_FORCE + " by default.");
+		options.addOption(HISTORY_SIZE_OPTION, true, "number of dumps to be kept in output directory. " + DEFAULT_HISTORY_SIZE + " by default ");	
 		options.addOption(OUTPUT_DIR_OPTION, true, "directory containing the wiktionary dumps. " + DEFAULT_OUTPUT_DIR + " by default ");	
 		options.addOption(EXTRACT_DIR_OPTION, true, "directory containing the extraction result. " + DEFAULT_EXTRACT_DIR + " by default ");	
 	}
@@ -72,6 +77,13 @@ public class UpdateAndExtractDumps {
 		UpdateAndExtractDumps cliProg = new UpdateAndExtractDumps();
 		cliProg.loadArgs(args);
 		cliProg.updateAndExtract();
+		cliProg.cleanupDumps();
+	}
+
+
+	private void cleanupDumps() {
+		// TODO Auto-generated method stub
+		
 	}
 
 
@@ -101,6 +113,9 @@ public class UpdateAndExtractDumps {
 			System.exit(0);
 		}
 
+		String h = cmd.getOptionValue(HISTORY_SIZE_OPTION, DEFAULT_HISTORY_SIZE);
+		historySize = Integer.parseInt(h);
+		
 		if (cmd.hasOption(SERVER_URL_OPTION)) {
 			server = cmd.getOptionValue(SERVER_URL_OPTION);
 		}
@@ -123,7 +138,21 @@ public class UpdateAndExtractDumps {
 		String [] dirs = updateDumpFiles(remainingArgs);
 		uncompressDumpFiles(remainingArgs, dirs);
 		extractDumpFiles(remainingArgs, dirs);
+		cleanUpDumpFiles(remainingArgs);
+		cleanUpExtractFiles(remainingArgs);
 	}
+
+	private void cleanUpExtractFiles(String[] remainingArgs2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private void cleanUpDumpFiles(String[] langs) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	private String updateDumpFile(String lang) {
 		FTPClient client = new FTPClient();
@@ -159,7 +188,7 @@ public class UpdateAndExtractDumps {
 			client.changeWorkingDirectory(lastDir);
 
 			try {
-				String dumpdir = outputDir + "/" + lastDir;
+				String dumpdir = outputDir + "/" + lang + "/" + lastDir;
 				String filename = dumpdir + "/" + dumpFileName(lang,lastDir);
 				File file = new File(filename);
 				if (file.exists() && !force) {

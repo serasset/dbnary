@@ -11,7 +11,7 @@ import org.getalp.blexisma.api.ISO639_3;
  * @author Mariam
  *
  */
-public class FrenchLangtoCodde {
+public class FrenchLangtoCode {
 
 	static HashMap<String,String> frenchLangNameToLangCode = new HashMap<String,String>();
 	static{

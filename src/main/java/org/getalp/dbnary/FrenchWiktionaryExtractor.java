@@ -485,7 +485,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     					word = g2.substring(i1+1, i2);
     					usage = g2.substring(i2+1);
     				}
-    				 lang=FrenchLangtoCodde.triletterCode(lang);
+    				 lang=FrenchLangtoCode.triletterCode(lang);
                      if(lang!=null){
                   	   wdh.registerTranslation(lang, currentGlose, usage, word);
                      }

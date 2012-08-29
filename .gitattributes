@@ -22,19 +22,26 @@ doc/articles/lrec2012/lrec_2012_wiktionary_support.tex -text
 /pom.xml -text
 src/main/java/org/getalp/dbnary/EnglishLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/EnglishWiktionaryExtractor.java -text
-src/main/java/org/getalp/dbnary/FrenchLangtoCodde.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/FrenchLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/FrenchWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/GermanLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/GermanWiktionaryExtractor.java -text
+src/main/java/org/getalp/dbnary/GreekLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ItalianLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ItalianoWiktionaryExtractor.java -text
+src/main/java/org/getalp/dbnary/JapaneseLangtoCode.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/KoreanLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/OffsetValue.java -text
 src/main/java/org/getalp/dbnary/PortugueseLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/PortugueseWiktionaryExtractor.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/RussianLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/SemnetWiktionaryDataHandler.java -text
 src/main/java/org/getalp/dbnary/SuomiLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/SuomiWiktionaryExtractor.java -text
+src/main/java/org/getalp/dbnary/TurkishLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/WiktionaryDataHandler.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/WiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/WiktionaryGrep.java -text

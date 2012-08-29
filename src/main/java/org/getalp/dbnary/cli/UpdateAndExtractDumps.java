@@ -72,13 +72,6 @@ public class UpdateAndExtractDumps {
 		UpdateAndExtractDumps cliProg = new UpdateAndExtractDumps();
 		cliProg.loadArgs(args);
 		cliProg.updateAndExtract();
-		cliProg.cleanupDumps();
-	}
-
-
-	private void cleanupDumps() {
-		// TODO Auto-generated method stub
-		
 	}
 
 
@@ -116,6 +109,7 @@ public class UpdateAndExtractDumps {
 		}
 
 		force = cmd.hasOption(FORCE_OPTION);
+		
 		String prefixDir = DEFAULT_PREFIX_DIR;
 		if (cmd.hasOption(PREFIX_DIR_OPTION)) {
 			prefixDir = cmd.getOptionValue(PREFIX_DIR_OPTION);
@@ -146,7 +140,66 @@ public class UpdateAndExtractDumps {
 
 
 	private void cleanUpDumpFiles(String[] langs) {
-		// TODO Auto-generated method stub
+		// keep at most "historySize" number of compressed dumps and only 1 uncompressed dump
+		for (int i = 0; i < langs.length; i++) {
+			cleanUpDumps(langs[i]);
+		}
+	}
+
+
+	private void cleanUpDumps(String lang) {
+		String langDir = outputDir + "/" + lang;
+		File[] dirs = new File(langDir).listFiles();
+		
+		if (null == dirs || dirs.length == 0) return;
+		
+		SortedSet<String> versions = new TreeSet<String>();
+		for (File dir : dirs) {
+	        if (dir.isDirectory()) {
+	            versions.add(dir.getName());
+	        } else {
+	            System.err.println("Ignoring unexpected file: " + dir.getName());
+	        }
+	    }
+		
+		int vsize = versions.size();
+		
+		for (String v : versions) {
+			if (vsize > historySize) {
+				deleteDump(lang, v);
+				vsize--;
+			}
+		}
+	}
+
+
+	private void deleteDump(String lang, String dir) {
+		String dumpdir = outputDir + "/" + lang + "/" + dir;
+		String filename = dumpdir + "/" + dumpFileName(lang,dir);
+		
+		File f = new File(filename);
+		
+		if (f.exists()) {
+			System.err.println("Deleting compressed dump: " + f.getName());
+			f.delete();
+		}
+		
+		filename = uncompressDumpFileName(lang, dir);
+		
+		f = new File(filename);
+		
+		if (f.exists()) {
+			System.err.println("Deleting uncompressed dump: " + f.getName());
+			f.delete();
+		}
+		
+		f = new File(dumpdir);
+		
+		if (f.listFiles().length == 0) {
+			f.delete();
+		} else {
+			System.err.println("Could not delete non empty dir: " + f.getName());
+		}
 		
 	}
 

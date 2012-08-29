@@ -165,10 +165,34 @@ public class UpdateAndExtractDumps {
 		int vsize = versions.size();
 		
 		for (String v : versions) {
-			if (vsize > historySize) {
-				deleteDump(lang, v);
-				vsize--;
-			}
+			if (vsize > historySize) deleteDump(lang, v);
+			if (vsize > 1) deleteUncompressedDump(lang, v);
+			if (vsize > historySize) deleteDumpDir(lang, v);
+			vsize--;
+		}
+	}
+
+
+	private void deleteDumpDir(String lang, String dir) {
+		String dumpdir = outputDir + "/" + lang + "/" + dir;
+		File f = new File(dumpdir);
+		
+		if (f.listFiles().length == 0) {
+			System.err.println("Deleting dump directory: " + f.getName());
+			f.delete();
+		} else {
+			System.err.println("Could not delete non empty dir: " + f.getName());
+		}
+	}
+
+	private void deleteUncompressedDump(String lang, String dir) {
+		String filename = uncompressDumpFileName(lang, dir);
+		
+		File f = new File(filename);
+		
+		if (f.exists()) {
+			System.err.println("Deleting uncompressed dump: " + f.getName());
+			f.delete();
 		}
 	}
 
@@ -183,24 +207,6 @@ public class UpdateAndExtractDumps {
 			System.err.println("Deleting compressed dump: " + f.getName());
 			f.delete();
 		}
-		
-		filename = uncompressDumpFileName(lang, dir);
-		
-		f = new File(filename);
-		
-		if (f.exists()) {
-			System.err.println("Deleting uncompressed dump: " + f.getName());
-			f.delete();
-		}
-		
-		f = new File(dumpdir);
-		
-		if (f.listFiles().length == 0) {
-			f.delete();
-		} else {
-			System.err.println("Could not delete non empty dir: " + f.getName());
-		}
-		
 	}
 
 
@@ -255,7 +261,7 @@ public class UpdateAndExtractDumps {
 				System.err.println("Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
 
 
-			} catch(IOException e){
+			} catch(IOException e) {
 				System.out.println(e);
 			}
 			client.logout();

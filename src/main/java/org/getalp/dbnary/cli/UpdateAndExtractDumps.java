@@ -37,20 +37,16 @@ public class UpdateAndExtractDumps {
 	private static final String FORCE_OPTION = "f";
 	private static final boolean DEFAULT_FORCE = false;
 
-	private static final String OUTPUT_DIR_OPTION = "o";
-	private static final String DEFAULT_OUTPUT_DIR = "dumps";
-	
+	private static final String PREFIX_DIR_OPTION = "d";
+	private static final String DEFAULT_PREFIX_DIR = ".";
+
 	private static final String HISTORY_SIZE_OPTION = "k";
 	private static final String DEFAULT_HISTORY_SIZE = "5";
 
-	private static final String EXTRACT_DIR_OPTION = "e";
-	private static final String DEFAULT_EXTRACT_DIR = "extracts";
-
-
 	private CommandLine cmd = null; // Command Line arguments
 
-	private String outputDir = DEFAULT_OUTPUT_DIR;
-	private String extractDir = DEFAULT_EXTRACT_DIR;
+	private String outputDir;
+	private String extractDir;
 	private int historySize;
 	private boolean force = DEFAULT_FORCE;
 	private String server = DEFAULT_SERVER_URL;
@@ -64,8 +60,7 @@ public class UpdateAndExtractDumps {
 		options.addOption(FORCE_OPTION, false, 
 				"force the updating even if a file with the same name already exists in the output directory. " + DEFAULT_FORCE + " by default.");
 		options.addOption(HISTORY_SIZE_OPTION, true, "number of dumps to be kept in output directory. " + DEFAULT_HISTORY_SIZE + " by default ");	
-		options.addOption(OUTPUT_DIR_OPTION, true, "directory containing the wiktionary dumps. " + DEFAULT_OUTPUT_DIR + " by default ");	
-		options.addOption(EXTRACT_DIR_OPTION, true, "directory containing the extraction result. " + DEFAULT_EXTRACT_DIR + " by default ");	
+		options.addOption(PREFIX_DIR_OPTION, true, "directory containing the wiktionary dumps and extracts. " + DEFAULT_PREFIX_DIR + " by default ");	
 	}
 
 	/**
@@ -121,11 +116,13 @@ public class UpdateAndExtractDumps {
 		}
 
 		force = cmd.hasOption(FORCE_OPTION);
-
-		if (cmd.hasOption(OUTPUT_DIR_OPTION)) {
-			outputDir = cmd.getOptionValue(OUTPUT_DIR_OPTION);
+		String prefixDir = DEFAULT_PREFIX_DIR;
+		if (cmd.hasOption(PREFIX_DIR_OPTION)) {
+			prefixDir = cmd.getOptionValue(PREFIX_DIR_OPTION);
 		}
-
+		outputDir = prefixDir + "/dumps";
+		extractDir = prefixDir + "/extracts";
+		
 		remainingArgs = cmd.getArgs();
 		if (remainingArgs.length == 0) {
 			printUsage();
@@ -229,14 +226,14 @@ public class UpdateAndExtractDumps {
 		}
 	}
 
-	private void uncompressDumpFile(String prefix, String dir) {
+	private void uncompressDumpFile(String lang, String dir) {
 		if (null == dir || dir.equals("")) return;
 		
 		Reader r = null;
 		Writer w = null;
 		try {
-			String compressedDumpFile = outputDir + "/" + dir + "/" + dumpFileName(prefix, dir);
-			String uncompressedDumpFile = uncompressDumpFileName(prefix, dir);
+			String compressedDumpFile = outputDir + "/" + lang + "/" + dir + "/" + dumpFileName(lang, dir);
+			String uncompressedDumpFile = uncompressDumpFileName(lang, dir);
 			System.err.println("Uncompressing " + compressedDumpFile);
 
 			File file = new File(uncompressedDumpFile);
@@ -279,8 +276,8 @@ public class UpdateAndExtractDumps {
 		}
 	}
 
-	private String uncompressDumpFileName(String prefix, String dir) {
-		return outputDir + "/" + dir + "/" + prefix + "wkt-" + dir + ".xml";
+	private String uncompressDumpFileName(String lang, String dir) {
+		return outputDir + "/" + lang + "/" + dir + "/" + lang + "wkt-" + dir + ".xml";
 	}
 
 

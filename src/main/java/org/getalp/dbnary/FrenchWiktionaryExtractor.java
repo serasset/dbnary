@@ -19,9 +19,11 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 	// NOTE: to subclass the extractor, you need to define how a language section is recognized.
 	// then, how are sections recognized and what is their semantics.
 	// then, how to extract specific elements from the particular sections
-	
-    protected final static String languageSectionPatternString = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
-    
+    protected final static String languageSectionPatternString;
+
+    protected final static String languageSectionPatternString1 = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
+    protected final static String languageSectionPatternString2 = "==\\s*\\{\\{langue\\|([^\\}]*)\\}\\}\\s*==";
+
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
     protected final int DEFBLOCK = 2;
@@ -41,7 +43,13 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     // private static Set<String> affixesToDiscardFromLinks = null;
     
     static {
-    	
+    	languageSectionPatternString = new StringBuilder()
+        .append("(?:")
+        .append(languageSectionPatternString1)
+        .append(")|(?:")
+        .append(languageSectionPatternString2)
+        .append(")").toString();
+        
         posMarkers = new HashSet<String>(130);
         ignorablePosMarkers = new HashSet<String>(130);
 
@@ -233,7 +241,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     public void extractData() {
         // System.out.println(pageContent);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-        while (languageFilter.find() && ! languageFilter.group(1).equals("fr")) {
+        while (languageFilter.find() && ! isFrenchLanguageHeader(languageFilter)) {
             ;
         }
         // Either the filter is at end of sequence or on French language header.
@@ -250,7 +258,12 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
      }
 
     
-    void gotoNoData(Matcher m) {
+    private boolean isFrenchLanguageHeader(Matcher m) {
+		return (null != m.group(1) && m.group(1).equals("fr")) || (null != m.group(2) && m.group(2).equals("fr"));
+	}
+
+
+	void gotoNoData(Matcher m) {
         state = NODATA;
     }
 

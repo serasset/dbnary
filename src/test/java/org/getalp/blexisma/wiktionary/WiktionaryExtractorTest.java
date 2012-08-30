@@ -110,6 +110,14 @@ public class WiktionaryExtractorTest {
         assertEquals("cleanUp failed", "XY Z", result);
     }
 
+    @Test
+    public void testXmlCommentsOnRamangerie() {
+    	String test="== {{=fr=}} ==\n{{ébauche|fr}}\n\n{{-étym-}}\n: {{ébauche-étym|fr}}\n\n{{-nom-|fr}}\n'''ramangerie''' {{pron||fr}} {{f}} \n# {{cuisine|fr}} Préparation à base de [[cidre]].\n#* '' le mescapié ou '''ramangerie''' de pommes (réduction d’un moût de [[cidre]] bouilli plus de 48 heures)... '' — (Delahaye Thierry, Vin Pascal, ''Le pommier'', 95 p., page 64, 1997, Actes Sud, Le nom de l'arbre) \n \n{{-trad-}}\n{{(}}\n{{)}}";
+        String result = WiktionaryExtractor.removeXMLComments(test);
+        assertEquals("XML Comment removal failed", test, result);
+    }
+
+
     @Test  
     public void testDefinitionToHumanReadable() {
     	String data = "{{a Macro}} will be [[discard]]ed and [[feed|fed]] to the [[void]].";

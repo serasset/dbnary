@@ -134,8 +134,7 @@ public class UpdateAndExtractDumps {
 	}
 
 	private void cleanUpExtractFiles(String[] remainingArgs2) {
-		// TODO Auto-generated method stub
-		
+		// Keep all for now...
 	}
 
 

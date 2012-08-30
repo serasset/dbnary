@@ -97,48 +97,47 @@ public abstract class WiktionaryExtractor {
 		.append(")")
 		.toString();
 	}
-	protected final static Pattern debutOrfinDecomPattern;
+	protected final static Pattern xmlCommentPattern;
 
 	static {
-		debutOrfinDecomPattern=Pattern.compile(debutOrfinDecomPatternString, Pattern.DOTALL);
+		xmlCommentPattern=Pattern.compile(debutOrfinDecomPatternString, Pattern.DOTALL);
 	}
 	
-	private final int A= 0; 
-	private final int B = 1;
+	private static final int A= 0; 
+	private static final int B = 1;
 
-	int ET = A;
-	public String effacerComm(String s){
-		// le matcher 
-		Matcher debutOrfinDecomMatcher = debutOrfinDecomPattern.matcher(s);
+	public static String removeXMLComments(String s){
+		int ET = A;
+		Matcher xmlCommentMatcher = xmlCommentPattern.matcher(s);
 
 
 		int indexEnd=0;   // index du debut de la partie qui nous interesse 
 		int indexBegin=0; // index de la fin de la partie qui nous interesse 
 
-		String resultat=""; // la nouvelles chaine de caracteres
+		StringBuffer result = new StringBuffer(); // la nouvelles chaine de caracteres
 
-		while(debutOrfinDecomMatcher.find()) {
-			String g1 = debutOrfinDecomMatcher.group(1); // g1 =<!-- ou null
-			String g2 = debutOrfinDecomMatcher.group(2); // g2=-> ou null 
+		while(xmlCommentMatcher.find()) {
+			String g1 = xmlCommentMatcher.group(1); // g1 =<!-- ou null
+			String g2 = xmlCommentMatcher.group(2); // g2=-> ou null 
 
-			switch (ET){
+			switch (ET) {
 			case A:
-				if(g1!=null){
+				if (g1!=null) {
 					// On a trouvé un debut de commentaire 
 
 					//On place la fin de la partie qui nous interesse
-					indexEnd= debutOrfinDecomMatcher.start(1);
+					indexEnd = xmlCommentMatcher.start(1);
 					//on change d'etat
 					ET=B;
-					resultat = resultat +s.substring(indexBegin, indexEnd);
+					result.append(s.substring(indexBegin, indexEnd));
 				}
 				break;
 			case B:
 				if(g2!=null){
 					// On a trouvé la fin du commentaire 
 
-					// on place le debut se le partie qui nous interesse 
-					indexBegin= debutOrfinDecomMatcher.end(2);
+					// on place le debut de le partie qui nous interesse 
+					indexBegin= xmlCommentMatcher.end(2);
 					// on change d'etat 
 					ET=A;
 				}
@@ -150,10 +149,10 @@ public abstract class WiktionaryExtractor {
 			}
 
 		}
-		if (debutOrfinDecomMatcher.hitEnd()) {
-			switch (ET){
+		if (xmlCommentMatcher.hitEnd()) {
+			switch (ET) {
 			case A:
-				resultat = resultat +s.substring(indexBegin);
+				result.append(s.substring(indexBegin));
 				break;
 			case B:
 				break;
@@ -163,7 +162,7 @@ public abstract class WiktionaryExtractor {
 				break;	
 			}
 		}
-	   return resultat;
+	   return result.toString();
 
 	}
     
@@ -179,7 +178,7 @@ public abstract class WiktionaryExtractor {
     // DONE: filter out pages that are in specific Namespaces (Wiktionary:, Categories:, ...)
     // TODO: take Redirect page into account as alternate spelling.
     // TODO: take homography into account (ex: mousse) and separate different definitions for the same pos.
-    // TODO: some xml comments may be in the string values. Remove them.
+    // DONE: some xml comments may be in the string values. Remove them.
     public void extractData(String wiktionaryPageName, String pageContent) {
     	// Entries containing the special char ":" are pages belonging to specific namespaces.(Wiktionary:, Categories:, ...).
     	// Such pages are simply ingnored.
@@ -188,7 +187,7 @@ public abstract class WiktionaryExtractor {
     	}
         this.wiktionaryPageName = wiktionaryPageName;
         
-        this.pageContent = effacerComm(pageContent);
+        this.pageContent = removeXMLComments(pageContent);
         
         if (pageContent == null) return;
         try {

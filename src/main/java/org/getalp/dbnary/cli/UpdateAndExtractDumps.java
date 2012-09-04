@@ -40,6 +40,9 @@ public class UpdateAndExtractDumps {
 	private static final String PREFIX_DIR_OPTION = "d";
 	private static final String DEFAULT_PREFIX_DIR = ".";
 
+	private static final String MODEL_OPTION = "m";
+	private static final String DEFAULT_MODEL = "LMF";
+
 	private static final String HISTORY_SIZE_OPTION = "k";
 	private static final String DEFAULT_HISTORY_SIZE = "5";
 
@@ -50,8 +53,10 @@ public class UpdateAndExtractDumps {
 	private int historySize;
 	private boolean force = DEFAULT_FORCE;
 	private String server = DEFAULT_SERVER_URL;
+	private String model = DEFAULT_MODEL;
 
 	String[] remainingArgs;
+
 
 	static{
 		options = new Options();
@@ -61,6 +66,7 @@ public class UpdateAndExtractDumps {
 				"force the updating even if a file with the same name already exists in the output directory. " + DEFAULT_FORCE + " by default.");
 		options.addOption(HISTORY_SIZE_OPTION, true, "number of dumps to be kept in output directory. " + DEFAULT_HISTORY_SIZE + " by default ");	
 		options.addOption(PREFIX_DIR_OPTION, true, "directory containing the wiktionary dumps and extracts. " + DEFAULT_PREFIX_DIR + " by default ");	
+		options.addOption(MODEL_OPTION, true, "model of the extracts (LMF or LEMON) extracts. " + DEFAULT_MODEL + " by default ");	
 	}
 
 	/**
@@ -109,6 +115,10 @@ public class UpdateAndExtractDumps {
 		}
 
 		force = cmd.hasOption(FORCE_OPTION);
+
+		if (cmd.hasOption(MODEL_OPTION)) {
+			model = cmd.getOptionValue(MODEL_OPTION);
+		}
 		
 		String prefixDir = DEFAULT_PREFIX_DIR;
 		if (cmd.hasOption(PREFIX_DIR_OPTION)) {
@@ -372,6 +382,7 @@ public class UpdateAndExtractDumps {
 		String[] args = new String[] {"-f", "turtle", 
 				"-l", lang, 
 				"-o", extractFile,
+				"-m", model,
 				uncompressDumpFileName(lang, dir)
 				};
 		

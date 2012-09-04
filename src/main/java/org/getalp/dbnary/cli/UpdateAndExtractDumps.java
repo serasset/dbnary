@@ -368,11 +368,11 @@ public class UpdateAndExtractDumps {
 	private void extractDumpFile(String lang, String dir) {
 		if (null == dir || dir.equals("")) return;
 		
-		String odir = extractDir + "/" + lang;
+		String odir = extractDir + "/" + model.toLowerCase() + "/" + lang;
 		File d = new File(odir);
 		d.mkdirs();
 	
-		String extractFile = odir + "/" + lang +"-extract-" + dir + ".tut";
+		String extractFile = odir + "/" + lang +"_dbnary_" + model.toLowerCase() + "_" + dir + ".tut";
 		File file = new File(extractFile);
 		if (file.exists() && !force) {
 			System.err.println("Extracted wiktionary file " + extractFile + " already exists.");

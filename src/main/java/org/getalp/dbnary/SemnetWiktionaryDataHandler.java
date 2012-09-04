@@ -1,5 +1,7 @@
 package org.getalp.dbnary;
 
+import java.io.OutputStream;
+
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.SemanticNetwork;
 import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
@@ -110,6 +112,18 @@ public class SemnetWiktionaryDataHandler implements WiktionaryDataHandler {
 	@Override
 	public int nbEntries() {
 		return nbEntries;
+	}
+
+	@Override
+	public void dump(OutputStream out) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dump(OutputStream out, String format) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

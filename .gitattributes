@@ -32,6 +32,7 @@ src/main/java/org/getalp/dbnary/ItalianoWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/JapaneseLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/KoreanLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/LemonBasedRDFDataHandler.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/OffsetValue.java -text
@@ -61,6 +62,8 @@ src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unse
 src/main/java/org/getalp/dbnary/tools/DiffFichier.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
+src/main/resources/org/getalp/dbnary/lemon.ttl -text
+src/main/resources/org/getalp/dbnary/lexinfo.owl -text
 src/main/scripts/README.txt -text
 src/main/scripts/compare_extracts.sh -text
 src/main/scripts/extract_as_graphml.sh -text

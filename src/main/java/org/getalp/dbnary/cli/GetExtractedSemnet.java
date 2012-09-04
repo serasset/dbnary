@@ -15,6 +15,7 @@ import org.getalp.dbnary.FrenchWiktionaryExtractor;
 import org.getalp.dbnary.GermanWiktionaryExtractor;
 import org.getalp.dbnary.ItalianoWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
+import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.PortugueseWiktionaryExtractor;
 import org.getalp.dbnary.SemnetWiktionaryDataHandler;
 import org.getalp.dbnary.SuomiWiktionaryExtractor;
@@ -32,53 +33,30 @@ public class GetExtractedSemnet {
 
 	private static final String OUTPUT_FORMAT_OPTION = "f";
 	private static final String DEFAULT_OUTPUT_FORMAT = "raw";	
+	
+	private static final String MODEL_OPTION = "m";
+	private static final String DEFAULT_MODEL = "lmf";
 
-	/**
-	 * @uml.property  name="cmd"
-	 * @uml.associationEnd  
-	 */
 	private CommandLine cmd = null; // Command Line arguments
 
-	/**
-	 * @uml.property  name="outputFormat"
-	 */
 	private String outputFormat = DEFAULT_OUTPUT_FORMAT;
-	/**
-	 * @uml.property  name="language"
-	 */
 	private String language = DEFAULT_LANGUAGE;
-	static{
+	private String model = DEFAULT_MODEL;
+	static {
 		options = new Options();
 		options.addOption("h", false, "Prints usage and exits. ");	
 		options.addOption(LANGUAGE_OPTION, true, 
 				"Language (fr, en,it,pt de or fi). " + DEFAULT_LANGUAGE + " by default.");
 		options.addOption(OUTPUT_FORMAT_OPTION, true, 
 				"Output format (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_OUTPUT_FORMAT + " by default.");
-	}	
+		options.addOption(MODEL_OPTION, true, 
+				"Ontology Model used  (lmf or lemon). Only useful with rdf base formats." + DEFAULT_MODEL + " by default.");
+	}
 	
-	/**
-	 * @uml.property  name="wi"
-	 * @uml.associationEnd  
-	 */
 	WiktionaryIndex wi;
-	/**
-	 * @uml.property  name="remainingArgs" multiplicity="(0 -1)" dimension="1"
-	 */
 	String[] remainingArgs;
-	/**
-	 * @uml.property  name="we"
-	 * @uml.associationEnd  
-	 */
 	WiktionaryExtractor we;
-	/**
-	 * @uml.property  name="wdh"
-	 * @uml.associationEnd  
-	 */
 	WiktionaryDataHandler wdh;
-	/**
-	 * @uml.property  name="s"
-	 * @uml.associationEnd  
-	 */
 	SimpleSemanticNetwork<String, String> s;
 	
 	/**
@@ -108,6 +86,11 @@ public class GetExtractedSemnet {
 		}
 		outputFormat = outputFormat.toUpperCase();
 
+		if (cmd.hasOption(MODEL_OPTION)){
+			model = cmd.getOptionValue(MODEL_OPTION);
+		}
+		model = model.toUpperCase();
+
 		if (cmd.hasOption(LANGUAGE_OPTION)){
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
 			language = ISO639_3.sharedInstance.getIdCode(language);
@@ -131,7 +114,11 @@ public class GetExtractedSemnet {
 				outputFormat.equals("N3") ||
 				outputFormat.equals("TTL") ||
 				outputFormat.equals("RDFABBREV") ) {
-			wdh = new LMFBasedRDFDataHandler(language);
+			if (model.equals("LEMON")) {
+				wdh = new LemonBasedRDFDataHandler(language);
+			} else {
+				wdh = new LMFBasedRDFDataHandler(language);
+			}
 		} else if (outputFormat.equals("RAW") || outputFormat.equals("GRAPHML")) {
 			s = new SimpleSemanticNetwork<String, String>();
 			wdh = new SemnetWiktionaryDataHandler(s, language);
@@ -180,18 +167,18 @@ public class GetExtractedSemnet {
         } else if (outputFormat.equals("RAW")) {  
         	s.dumpToWriter(System.out);
         } else if (outputFormat.equals("RDF")) {
-        	((LMFBasedRDFDataHandler) wdh).dump(System.out);
+        	wdh.dump(System.out);
         } else if (outputFormat.equals("TURTLE")) {
-        	((LMFBasedRDFDataHandler) wdh).dump(System.out, "TURTLE");
+        	wdh.dump(System.out, "TURTLE");
         } else if (outputFormat.equals("NTRIPLE")) {
-        	((LMFBasedRDFDataHandler) wdh).dump(System.out, "N-TRIPLE");
+        	wdh.dump(System.out, "N-TRIPLE");
         } else if (outputFormat.equals("N3")) {
-        	((LMFBasedRDFDataHandler) wdh).dump(System.out, "N3");
+        	wdh.dump(System.out, "N3");
         } else if (outputFormat.equals("TTL")) {
-        	((LMFBasedRDFDataHandler) wdh).dump(System.out, "TTL");
+        	wdh.dump(System.out, "TTL");
         } else if (outputFormat.equals("RDFABBREV")) {
-        	((LMFBasedRDFDataHandler) wdh).dump(System.out, "RDF/XML-ABBREV");
-        } 
+        	wdh.dump(System.out, "RDF/XML-ABBREV");
+        }
 	}
 
 	public static void printUsage() {

@@ -31,6 +31,7 @@ import org.getalp.dbnary.FrenchWiktionaryExtractor;
 import org.getalp.dbnary.GermanWiktionaryExtractor;
 import org.getalp.dbnary.ItalianoWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
+import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.OffsetValue;
 import org.getalp.dbnary.PortugueseWiktionaryExtractor;
 import org.getalp.dbnary.SemnetWiktionaryDataHandler;
@@ -50,7 +51,10 @@ public class ExtractWiktionary {
 
 	private static final String OUTPUT_FORMAT_OPTION = "f";
 	private static final String DEFAULT_OUTPUT_FORMAT = "raw";
-	
+
+	private static final String MODEL_OPTION = "m";
+	private static final String DEFAULT_MODEL = "lmf";
+
 	private static final String OUTPUT_FILE_OPTION = "o";
 	private static final String DEFAULT_OUTPUT_FILE = "fr_extract";
 	
@@ -63,6 +67,7 @@ public class ExtractWiktionary {
 	
 	private String outputFile = DEFAULT_OUTPUT_FILE;
 	private String outputFormat = DEFAULT_OUTPUT_FORMAT;
+	private String model = DEFAULT_MODEL;
 	private String language = DEFAULT_LANGUAGE;
 	private File dumpFile;
 	private String outputFileSuffix = "";
@@ -75,6 +80,7 @@ public class ExtractWiktionary {
 
 	private WiktionaryDataHandler wdh;
 
+
 	static {
 		options = new Options();
 		options.addOption("h", false, "Prints usage and exits. ");	
@@ -83,6 +89,8 @@ public class ExtractWiktionary {
 				"Language (fra, eng, deu or por). " + DEFAULT_LANGUAGE + " by default.");
 		options.addOption(OUTPUT_FORMAT_OPTION, true, 
 				"Output format  (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_OUTPUT_FORMAT + " by default.");
+		options.addOption(MODEL_OPTION, true, 
+				"Ontology Model used  (lmf or lemon). Only useful with rdf base formats." + DEFAULT_MODEL + " by default.");
 		options.addOption(OUTPUT_FILE_OPTION, true, "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");	
 	}
 	
@@ -139,7 +147,12 @@ public class ExtractWiktionary {
 			outputFormat = cmd.getOptionValue(OUTPUT_FORMAT_OPTION);
 		}
 		outputFormat = outputFormat.toUpperCase();
-				
+
+		if (cmd.hasOption(MODEL_OPTION)){
+			model = cmd.getOptionValue(MODEL_OPTION);
+		}
+		model = model.toUpperCase();
+
 		if (cmd.hasOption(OUTPUT_FILE_OPTION)){
 			outputFile = cmd.getOptionValue(OUTPUT_FILE_OPTION);
 		}
@@ -172,7 +185,11 @@ public class ExtractWiktionary {
 				outputFormat.equals("N3") ||
 				outputFormat.equals("TTL") ||
 				outputFormat.equals("RDFABBREV") ) {
-			wdh = new LMFBasedRDFDataHandler(language);
+			if (model.equals("LEMON")) {
+				wdh = new LemonBasedRDFDataHandler(language);
+			} else {
+				wdh = new LMFBasedRDFDataHandler(language);
+			}
 		} else if (outputFormat.equals("RAW") || outputFormat.equals("GRAPHML")) {
 			s = new SimpleSemanticNetwork<String, String>();
 			wdh = new SemnetWiktionaryDataHandler(s, language);
@@ -274,17 +291,17 @@ public class ExtractWiktionary {
         } else if (outputFormat.equals("RAW")) {  
         	s.dumpToWriter(new PrintStream(outputFile));
         } else if (outputFormat.equals("RDF")) {
-        	((LMFBasedRDFDataHandler) wdh).dump(new PrintStream(outputFile));
+        	wdh.dump(new PrintStream(outputFile));
         } else if (outputFormat.equals("TURTLE")) {
-        	((LMFBasedRDFDataHandler) wdh).dump(new PrintStream(outputFile), "TURTLE");
+        	wdh.dump(new PrintStream(outputFile), "TURTLE");
         } else if (outputFormat.equals("NTRIPLE")) {
-        	((LMFBasedRDFDataHandler) wdh).dump(new PrintStream(outputFile), "N-TRIPLE");
+        	(wdh).dump(new PrintStream(outputFile), "N-TRIPLE");
         } else if (outputFormat.equals("N3")) {
-        	((LMFBasedRDFDataHandler) wdh).dump(new PrintStream(outputFile), "N3");
+        	(wdh).dump(new PrintStream(outputFile), "N3");
         } else if (outputFormat.equals("TTL")) {
-        	((LMFBasedRDFDataHandler) wdh).dump(new PrintStream(outputFile), "TTL");
+        	(wdh).dump(new PrintStream(outputFile), "TTL");
         } else if (outputFormat.equals("RDFABBREV")) {
-        	((LMFBasedRDFDataHandler) wdh).dump(new PrintStream(outputFile), "RDF/XML-ABBREV");
+        	(wdh).dump(new PrintStream(outputFile), "RDF/XML-ABBREV");
         } 
   
         System.err.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));

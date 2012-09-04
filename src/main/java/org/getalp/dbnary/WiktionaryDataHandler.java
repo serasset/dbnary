@@ -1,5 +1,7 @@
 package org.getalp.dbnary;
 
+import java.io.OutputStream;
+
 public interface WiktionaryDataHandler {
 
     public void initializeEntryExtraction(String wiktionaryPageName);
@@ -22,4 +24,15 @@ public interface WiktionaryDataHandler {
 	public void finalizeEntryExtraction();
 
 	public int nbEntries();
-}
+	
+	public void dump(OutputStream out);
+    
+	/**
+	 * Write a serialized represention of this model in a specified language.
+	 * The language in which to write the model is specified by the lang argument. 
+	 * Predefined values are "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3". 
+	 * The default value, represented by null, is "RDF/XML".
+	 * @param out
+	 * @param format
+	 */
+	public void dump(OutputStream out, String format);}

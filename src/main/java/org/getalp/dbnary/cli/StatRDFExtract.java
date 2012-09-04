@@ -95,115 +95,33 @@ public class StatRDFExtract {
 				"Languages to count (as a comma separated list). " + DEFAULT_COUNT_LANGUAGE + " by default.");
 	}	
 
-	/**
-	 * @uml.property  name="remainingArgs" multiplicity="(0 -1)" dimension="1"
-	 */
 	String[] remainingArgs;
 
-	/**
-	 * @uml.property  name="m1"
-	 * @uml.associationEnd  
-	 */
 	Model m1;
 	
 	protected static final String NSprefix = "http://getalp.org/dbnary/";
 	protected static final String LMF = "http://www.lexicalmarkupframework.org/lmf/r14#";
 	
-	/**
-	 * @uml.property  name="lexEntryType"
-	 * @uml.associationEnd  
-	 */
 	protected Resource lexEntryType;
-	/**
-	 * @uml.property  name="lemmaType"
-	 * @uml.associationEnd  
-	 */
 	protected Resource lemmaType;
-	/**
-	 * @uml.property  name="translationType"
-	 * @uml.associationEnd  
-	 */
 	protected Resource translationType;
-	/**
-	 * @uml.property  name="senseType"
-	 * @uml.associationEnd  
-	 */
 	protected Resource senseType;
-	/**
-	 * @uml.property  name="definitionType"
-	 * @uml.associationEnd  
-	 */
 	protected Resource definitionType;
-	/**
-	 * @uml.property  name="lexicalEntryRelationType"
-	 * @uml.associationEnd  
-	 */
 	protected Resource lexicalEntryRelationType;
 
-	/**
-	 * @uml.property  name="posProperty"
-	 * @uml.associationEnd  
-	 */
 	protected Property posProperty;
-	/**
-	 * @uml.property  name="formProperty"
-	 * @uml.associationEnd  
-	 */
 	protected Property formProperty;
-	/**
-	 * @uml.property  name="isPartOf"
-	 * @uml.associationEnd  
-	 */
 	protected Property isPartOf;
-	/**
-	 * @uml.property  name="langProperty"
-	 * @uml.associationEnd  
-	 */
 	protected Property langProperty;
-	/**
-	 * @uml.property  name="equivalentTargetProperty"
-	 * @uml.associationEnd  
-	 */
 	protected Property equivalentTargetProperty;
-	/**
-	 * @uml.property  name="gloseProperty"
-	 * @uml.associationEnd  
-	 */
 	protected Property gloseProperty;
-	/**
-	 * @uml.property  name="usageProperty"
-	 * @uml.associationEnd  
-	 */
 	protected Property usageProperty;
-	/**
-	 * @uml.property  name="textProperty"
-	 * @uml.associationEnd  
-	 */
 	protected Property textProperty;
-	/**
-	 * @uml.property  name="senseNumberProperty"
-	 * @uml.associationEnd  
-	 */
 	protected Property senseNumberProperty;
-	/**
-	 * @uml.property  name="entryRelationTargetProperty"
-	 * @uml.associationEnd  
-	 */
 	protected Property entryRelationTargetProperty;
-	/**
-	 * @uml.property  name="entryRelationLabelProperty"
-	 * @uml.associationEnd  
-	 */
 	protected Property entryRelationLabelProperty;
 
-	/**
-	 * @uml.property  name="tBox"
-	 * @uml.associationEnd  
-	 */
 	Model tBox;
-	/**
-	 * @uml.property  name="nS"
-	 */
 	String NS;
 	
 	private void initializeTBox(String lang) {

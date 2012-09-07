@@ -168,7 +168,8 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 
 		Resource word = tBox.getResource(LEMON + "Word");
 		Resource phrase = tBox.getResource(LEMON + "Phrase");
-		
+
+		// French
 		posAndTypeValueMap.put("-nom-", new PosAndType(nounPOS, word));
 		posAndTypeValueMap.put("-nom-pr-", new PosAndType(properNounPOS, word));
 		posAndTypeValueMap.put("-adj-", new PosAndType(adjPOS, word));
@@ -178,7 +179,12 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		posAndTypeValueMap.put("-loc-adj-", new PosAndType(adjPOS, phrase));
 		posAndTypeValueMap.put("-loc-nom-", new PosAndType(nounPOS, phrase));
 		posAndTypeValueMap.put("-loc-verb-", new PosAndType(verbPOS, phrase));
-
+		// Portuguese
+		posAndTypeValueMap.put("Substantivo", new PosAndType(nounPOS, lexEntryType));
+		posAndTypeValueMap.put("Adjetivo", new PosAndType(adjPOS, lexEntryType));
+		posAndTypeValueMap.put("Verbo", new PosAndType(verbPOS, lexEntryType));
+		posAndTypeValueMap.put("Advérbio", new PosAndType(adverbPOS, lexEntryType));
+		// English
 		
 		posAndTypeValueMap.put("", new PosAndType(otherPOS, lexEntryType));
 
@@ -235,10 +241,9 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 	@Override
 	public void addPartOfSpeech(String pos) {
     	// TODO: create a LexicalEntry for this part of speech only and attach info to it.
-    	Resource lemonPOS = posAndTypeValueMap.get(pos).pos;
-    	Resource entryType = posAndTypeValueMap.get(pos).type;
-    	currentPos = (null == lemonPOS) ? posAndTypeValueMap.get("").pos : lemonPOS;
-    	entryType = (null == entryType) ? posAndTypeValueMap.get("").type : entryType;
+		PosAndType pat = posAndTypeValueMap.get(pos);
+    	currentPos = (null == pat) ? posAndTypeValueMap.get("").pos : pat.pos;
+    	Resource entryType = (null == pat) ? posAndTypeValueMap.get("").type : pat.type;
     	nbEntries++;
     	
         currentEncodedPageName = uriEncode(currentWiktionaryPageName, pos) + "__" + getCurrentLexieCount(pos);

@@ -185,6 +185,11 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		posAndTypeValueMap.put("Verbo", new PosAndType(verbPOS, lexEntryType));
 		posAndTypeValueMap.put("Advérbio", new PosAndType(adverbPOS, lexEntryType));
 		// English
+		posAndTypeValueMap.put("Noun", new PosAndType(nounPOS, lexEntryType));
+		posAndTypeValueMap.put("Proper noun", new PosAndType(properNounPOS, lexEntryType));
+		posAndTypeValueMap.put("Adjective", new PosAndType(adjPOS, lexEntryType));
+		posAndTypeValueMap.put("Verb", new PosAndType(verbPOS, lexEntryType));
+		posAndTypeValueMap.put("Adverb", new PosAndType(adverbPOS, lexEntryType));
 		
 		posAndTypeValueMap.put("", new PosAndType(otherPOS, lexEntryType));
 
@@ -202,7 +207,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		// Create aBox
 		aBox = ModelFactory.createDefaultModel();
 			
-		aBox.setNsPrefix("fra", NS);
+		aBox.setNsPrefix(lang, NS);
 		aBox.setNsPrefix("dbnary", DBNARY);
 		// aBox.setNsPrefix("lmf", LMF);
 		aBox.setNsPrefix("lemon", LEMON);

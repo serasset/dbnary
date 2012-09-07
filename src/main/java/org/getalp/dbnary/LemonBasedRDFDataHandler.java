@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.getalp.blexisma.api.ISO639_3;
@@ -16,10 +17,17 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 
+	protected static class PosAndType {
+		protected Resource pos;
+		protected Resource type;
+		protected PosAndType(Resource p, Resource t) {this.pos = p; this.type = t;}
+	}
+	
 	protected static final String NSprefix = "http://kaiko.getalp.org/dbnary";
 	protected static final String DBNARY = NSprefix + "#";
 	// protected static final String LMF = "http://www.lexicalmarkupframework.org/lmf/r14#";
@@ -75,7 +83,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 	private int currentTranslationNumber;
 	protected String extractedLang;
 
-	private Set<Statement> currentStatements = new HashSet<Statement>();
+	private Set<Statement> heldBackStatements = new HashSet<Statement>();
 
 	protected int nbEntries = 0;
 	protected String NS;
@@ -85,7 +93,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 	private Resource currentMainLexEntry;
 	
 	private static HashMap<String,Property> nymPropertyMap = new HashMap<String,Property>();
-	private static HashMap<String,Resource> posValueMap = new HashMap<String,Resource>();
+	private static HashMap<String,PosAndType> posAndTypeValueMap = new HashMap<String,PosAndType>();
 
 	static {
 		// Create T-Box and read rdf schema associated to it.
@@ -127,11 +135,17 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		posProperty = tBox.getProperty(LEXINFO + "partOfSpeech");
 		dbnaryPosProperty = tBox.getProperty(DBNARY + "partOfSpeech");
 		
-		Property synonymProperty = tBox.getProperty(LEXINFO + "synonym");
-		Property antonymProperty = tBox.getProperty(LEXINFO + "antonym");
-		Property hypernymProperty = tBox.getProperty(LEXINFO + "hypernym");
-		Property hyponymProperty = tBox.getProperty(LEXINFO + "hyponym");
-		Property nearSynonymProperty = tBox.getProperty(LEXINFO + "approximateSynonym");
+		Property synonymProperty = tBox.getProperty(DBNARY + "synonym");
+		Property antonymProperty = tBox.getProperty(DBNARY + "antonym");
+		Property hypernymProperty = tBox.getProperty(DBNARY + "hypernym");
+		Property hyponymProperty = tBox.getProperty(DBNARY + "hyponym");
+		Property nearSynonymProperty = tBox.getProperty(DBNARY + "approximateSynonym");
+
+		Property lxfSynonymProperty = tBox.getProperty(LEXINFO + "synonym");
+		Property lxfAntonymProperty = tBox.getProperty(LEXINFO + "antonym");
+		Property lxfHypernymProperty = tBox.getProperty(LEXINFO + "hypernym");
+		Property lxfHyponymProperty = tBox.getProperty(LEXINFO + "hyponym");
+		Property lxfNearSynonymProperty = tBox.getProperty(LEXINFO + "approximateSynonym");
 
 		// non standard nym (not in lexinfo);
 		Property meronymProperty = tBox.getProperty(DBNARY + "meronym");
@@ -152,12 +166,21 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		Resource adverbPOS = tBox.getResource(LEXINFO + "adverb");
 		Resource otherPOS = tBox.getResource(LEXINFO + "otherPartOfSpeech");
 
-		posValueMap.put("-nom-", nounPOS);
-		posValueMap.put("-nom-pr-", properNounPOS);
-		posValueMap.put("-adj-", adjPOS);
-		posValueMap.put("-verb-", verbPOS);
-		posValueMap.put("-adv-", adverbPOS);
-		posValueMap.put("", otherPOS);
+		Resource word = tBox.getResource(LEMON + "Word");
+		Resource phrase = tBox.getResource(LEMON + "Phrase");
+		
+		posAndTypeValueMap.put("-nom-", new PosAndType(nounPOS, word));
+		posAndTypeValueMap.put("-nom-pr-", new PosAndType(properNounPOS, word));
+		posAndTypeValueMap.put("-adj-", new PosAndType(adjPOS, word));
+		posAndTypeValueMap.put("-verb-", new PosAndType(verbPOS, word));
+		posAndTypeValueMap.put("-adv-", new PosAndType(adverbPOS, word));
+		posAndTypeValueMap.put("-loc-adv-", new PosAndType(adverbPOS, phrase));
+		posAndTypeValueMap.put("-loc-adj-", new PosAndType(adjPOS, phrase));
+		posAndTypeValueMap.put("-loc-nom-", new PosAndType(nounPOS, phrase));
+		posAndTypeValueMap.put("-loc-verb-", new PosAndType(verbPOS, phrase));
+
+		
+		posAndTypeValueMap.put("", new PosAndType(otherPOS, lexEntryType));
 
 	}
 	
@@ -196,41 +219,44 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
         
         // Create the resource without typing so that the type statement is added only if the currentStatement are added to the model.
         // Resource lemma = aBox.createResource(encodedPageName);
-
+        
         // Retain these statements to be inserted in the model when we will know that the entry corresponds to a proper part of speech
-        currentStatements.add(aBox.createStatement(currentMainLexEntry, RDF.type, vocableEntryType));
+        heldBackStatements.add(aBox.createStatement(currentMainLexEntry, RDF.type, vocableEntryType));
     }
     
 	
 	@Override
 	public void finalizeEntryExtraction() {
 		// Clear currentStatements. If statemenents do exist-s in it, it is because, there is no extractable part of speech in the entry.
-		currentStatements.clear();
+		heldBackStatements.clear();
+		promoteNymProperties();
 	}
 
-    @Override
+	@Override
 	public void addPartOfSpeech(String pos) {
     	// TODO: create a LexicalEntry for this part of speech only and attach info to it.
-    	Resource lexInfoPOS = posValueMap.get(pos);
-    	currentPos = (null == lexInfoPOS) ? posValueMap.get("") : lexInfoPOS;
+    	Resource lemonPOS = posAndTypeValueMap.get(pos).pos;
+    	Resource entryType = posAndTypeValueMap.get(pos).type;
+    	currentPos = (null == lemonPOS) ? posAndTypeValueMap.get("").pos : lemonPOS;
+    	entryType = (null == entryType) ? posAndTypeValueMap.get("").type : entryType;
     	nbEntries++;
     	
         currentEncodedPageName = uriEncode(currentWiktionaryPageName, pos) + "__" + getCurrentLexieCount(pos);
-        currentLexEntry = aBox.createResource(NS + currentEncodedPageName, lexEntryType);
+        currentLexEntry = aBox.createResource(NS + currentEncodedPageName, entryType);
 
         Resource lemma = aBox.createResource(); 
 
-    	currentStatements.add(aBox.createStatement(currentLexEntry, canonicalFormProperty, lemma));
-    	currentStatements.add(aBox.createStatement(lemma, writtenRepresentationProperty, currentWiktionaryPageName, extractedLang));
+    	heldBackStatements.add(aBox.createStatement(currentLexEntry, canonicalFormProperty, lemma));
+    	heldBackStatements.add(aBox.createStatement(lemma, writtenRepresentationProperty, currentWiktionaryPageName, extractedLang));
     	aBox.add(aBox.createStatement(currentLexEntry, dbnaryPosProperty, pos));
     	aBox.add(aBox.createStatement(currentLexEntry, posProperty, currentPos));
     	aBox.add(aBox.createStatement(currentLexEntry, languageProperty, extractedLang));
 
     	// Register the pending statements.
-        for (Statement s: currentStatements) {
+        for (Statement s: heldBackStatements) {
         	aBox.add(s);
         }
-        currentStatements.clear();
+        heldBackStatements.clear();
         aBox.add(aBox.createStatement(currentMainLexEntry, refersTo, currentLexEntry));
     }
 
@@ -258,9 +284,10 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
     	currentSense = aBox.createResource(computeSenseId(), lexicalSenseType);
     	aBox.add(aBox.createStatement(currentLexEntry, lemonSenseProperty, currentSense));
     	aBox.add(aBox.createLiteralStatement(currentSense, senseNumberProperty, aBox.createTypedLiteral(currentSenseNumber)));
-    	if (currentPos != null && ! currentPos.equals("")) {
-        	aBox.add(aBox.createStatement(currentSense, posProperty, currentPos));
-        }
+    	// pos is not usefull anymore for word sense as they should be correctly linked to an entry with only one pos.
+    	// if (currentPos != null && ! currentPos.equals("")) {
+        //	aBox.add(aBox.createStatement(currentSense, posProperty, currentPos));
+        //}
     	
     	Resource defNode = aBox.createResource();
     	aBox.add(aBox.createStatement(currentSense, lemonDefinitionProperty, defNode));
@@ -376,6 +403,33 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		return res.toString();
 	}
 
+    private void promoteNymProperties() {
+		StmtIterator entries = currentMainLexEntry.listProperties(refersTo);
+		HashSet<Statement> toBeRemoved = new HashSet<Statement>();
+		while (entries.hasNext()) {
+			Resource lu = entries.next().getResource();
+			List<Statement> senses = lu.listProperties(lemonSenseProperty).toList();
+			if (senses.size() == 1) {
+				Resource s = senses.get(0).getResource();
+				HashSet<Property> alreadyProcessedNyms = new HashSet<Property>();
+				for (Property nymProp: nymPropertyMap.values()) {
+					if (alreadyProcessedNyms.contains(nymProp)) continue;
+					alreadyProcessedNyms.add(nymProp);
+					StmtIterator nyms = lu.listProperties(nymProp);
+					while (nyms.hasNext()) {
+						Statement nymRel = nyms.next();
+						aBox.add(aBox.createStatement(s, nymProp, nymRel.getObject()));
+						toBeRemoved.add(nymRel);
+					}
+				}
+			}
+		}
+		for (Statement s: toBeRemoved) {
+			s.remove();
+		}
+	}
+
+	
 	
 	public void dump(OutputStream out) {
 		dump(out, null);

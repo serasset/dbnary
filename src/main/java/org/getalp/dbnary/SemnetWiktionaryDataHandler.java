@@ -100,6 +100,12 @@ public class SemnetWiktionaryDataHandler implements WiktionaryDataHandler {
         semnet.addRelation(wiktionaryPageNameWithLangPrefix, new String("#" + lang + "|" + word), 1, rel );
 	}
 
+	@Override
+	public void registerPronunciation(String pron, String lang) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	public void finalizeEntryExtraction() {
 		// nop
 	}

@@ -23,7 +23,9 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
     protected final static String languageSectionPatternString1 = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
     protected final static String languageSectionPatternString2 = "==\\s*\\{\\{langue\\|([^\\}]*)\\}\\}\\s*==";
-
+    // TODO: handle morphological informations e.g. fr-rég template ?
+    protected final static String pronounciationPatternString = "\\{\\{pron\\|([^\\|\\}]*)(.*)\\}\\}";
+    
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
     protected final int DEFBLOCK = 2;
@@ -39,6 +41,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     private final static HashMap<String, String> nymMarkerToNymName;
     
     private static HashSet<String> unsupportedMarkers = new HashSet<String>();
+
     
     // private static Set<String> affixesToDiscardFromLinks = null;
     
@@ -221,9 +224,11 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     }
 
     protected final static Pattern languageSectionPattern;
+	private final static Pattern pronunciationPattern;
 
     static {
         languageSectionPattern = Pattern.compile(languageSectionPatternString);
+        pronunciationPattern = Pattern.compile(pronounciationPatternString);
     }
 
     int state = NODATA;
@@ -297,11 +302,13 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
 
     
     void leaveDefBlock(Matcher m) {
-        extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
+    	int end = computeRegionEnd(definitionBlockStart, m);
+        extractDefinitions(definitionBlockStart, end);
+        extractPronounciation(definitionBlockStart, end);
         definitionBlockStart = -1;
     }
-    
-    void gotoSynBlock(Matcher m) {
+
+	void gotoSynBlock(Matcher m) {
         state = NYMBLOCK;
         currentNym = nymMarkerToNymName.get(m.group(1));
         nymBlockStart = m.end();      
@@ -521,5 +528,26 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
     		}
     	}
     }
+    
+    private void extractPronounciation(int startOffset, int endOffset) {
+		Matcher pronMatcher = pronunciationPattern.matcher(pageContent);
+		pronMatcher.region(startOffset, endOffset);
+
+		while (pronMatcher.find()) {
+    		String pron = pronMatcher.group(1);
+    		String lang = pronMatcher.group(2);
+    		
+    		if (null == pron || pron.equals("")) return;
+    		if (lang == null || lang.equals("")) return;
+    		
+    		if (pron.startsWith("1=")) pron = pron.substring(2);
+    		if (lang.startsWith("2=")) lang = lang.substring(2);
+    		if (lang.startsWith("lang=")) lang = lang.substring(5);
+
+    		if (! pron.equals("")) wdh.registerPronunciation(pron, "fr-fonipa");
+    		
+		}
+    }
+
 
 }

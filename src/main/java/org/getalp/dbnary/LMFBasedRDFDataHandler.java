@@ -245,7 +245,13 @@ public class LMFBasedRDFDataHandler implements WiktionaryDataHandler {
     	aBox.add(aBox.createStatement(nym, entryRelationLabelProperty, synRelation));
     	aBox.add(aBox.createStatement(nym, entryRelationTargetProperty, targetResource));
     }
-   
+ 
+	@Override
+	public void registerPronunciation(String pron, String lang) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	private String createRelationId(String rel) {
 		return NS + "__" + rel + "_" + (currentRelationNumber++) + "_" + encodedPageName;
 	}
@@ -270,6 +276,8 @@ public class LMFBasedRDFDataHandler implements WiktionaryDataHandler {
 	public int nbEntries() {
 		return nbEntries;
 	}
+
+
 
 	
 }

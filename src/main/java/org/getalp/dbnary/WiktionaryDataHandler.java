@@ -21,6 +21,8 @@ public interface WiktionaryDataHandler {
 
     public void registerTranslation(String lang, String currentGlose, String usage, String word);
 
+    public void registerPronunciation(String pron, String lang);
+
 	public void finalizeEntryExtraction();
 
 	public int nbEntries();
@@ -35,4 +37,7 @@ public interface WiktionaryDataHandler {
 	 * @param out
 	 * @param format
 	 */
-	public void dump(OutputStream out, String format);}
+	public void dump(OutputStream out, String format);
+
+	
+}

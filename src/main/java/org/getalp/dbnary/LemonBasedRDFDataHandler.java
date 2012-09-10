@@ -57,7 +57,8 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 	protected static final Property lemonDefinitionProperty;
 	protected static final Property lemonValueProperty;
 	protected static final Property languageProperty;
-	
+	protected static final Property pronProperty;
+
 	//LMF properties
 	// protected Property formProperty;
 	protected static final Property isTranslationOf;
@@ -77,7 +78,9 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 
 	// States used for processing
 	protected Resource currentLexEntry;
-	private Resource currentPos;
+	private Resource currentLexinfoPos;
+	private String currentWiktionaryPos;
+	
 	private Resource currentSense;
 	private int currentSenseNumber;
 	private int currentTranslationNumber;
@@ -135,6 +138,8 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		posProperty = tBox.getProperty(LEXINFO + "partOfSpeech");
 		dbnaryPosProperty = tBox.getProperty(DBNARY + "partOfSpeech");
 		
+		pronProperty = tBox.getProperty(LEXINFO + "pronunciation");
+		
 		Property synonymProperty = tBox.getProperty(DBNARY + "synonym");
 		Property antonymProperty = tBox.getProperty(DBNARY + "antonym");
 		Property hypernymProperty = tBox.getProperty(DBNARY + "hypernym");
@@ -172,6 +177,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		// French
 		posAndTypeValueMap.put("-nom-", new PosAndType(nounPOS, word));
 		posAndTypeValueMap.put("-nom-pr-", new PosAndType(properNounPOS, word));
+		posAndTypeValueMap.put("-prénom-", new PosAndType(properNounPOS, word));
 		posAndTypeValueMap.put("-adj-", new PosAndType(adjPOS, word));
 		posAndTypeValueMap.put("-verb-", new PosAndType(verbPOS, word));
 		posAndTypeValueMap.put("-adv-", new PosAndType(adverbPOS, word));
@@ -190,6 +196,18 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		posAndTypeValueMap.put("Adjective", new PosAndType(adjPOS, lexEntryType));
 		posAndTypeValueMap.put("Verb", new PosAndType(verbPOS, lexEntryType));
 		posAndTypeValueMap.put("Adverb", new PosAndType(adverbPOS, lexEntryType));
+		// German
+		posAndTypeValueMap.put("Substantiv", new PosAndType(nounPOS, lexEntryType));
+		posAndTypeValueMap.put("Nachname", new PosAndType(properNounPOS, lexEntryType));
+		posAndTypeValueMap.put("Vorname", new PosAndType(properNounPOS, lexEntryType));
+		posAndTypeValueMap.put("Adjektiv", new PosAndType(adjPOS, lexEntryType));
+		posAndTypeValueMap.put("Verb", new PosAndType(verbPOS, lexEntryType));
+		posAndTypeValueMap.put("Adverb", new PosAndType(adverbPOS, lexEntryType));
+		// Italian
+		posAndTypeValueMap.put("noun", new PosAndType(nounPOS, lexEntryType));
+		posAndTypeValueMap.put("adjc", new PosAndType(adjPOS, lexEntryType));
+		posAndTypeValueMap.put("verb", new PosAndType(verbPOS, lexEntryType));
+		posAndTypeValueMap.put("adv", new PosAndType(adverbPOS, lexEntryType));
 		
 		posAndTypeValueMap.put("", new PosAndType(otherPOS, lexEntryType));
 
@@ -222,6 +240,8 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
         currentSenseNumber = 1;
         currentTranslationNumber = 1;
         currentWiktionaryPageName = wiktionaryPageName;
+        currentLexinfoPos = null;
+        currentWiktionaryPos = null;
         currentLexieCount.clear();
         
         // Create a dummy lexical entry that points to the one that corresponds to a part of speech
@@ -245,21 +265,23 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 
 	@Override
 	public void addPartOfSpeech(String pos) {
-    	// TODO: create a LexicalEntry for this part of speech only and attach info to it.
+    	// DONE: create a LexicalEntry for this part of speech only and attach info to it.
+		currentWiktionaryPos = pos;
 		PosAndType pat = posAndTypeValueMap.get(pos);
-    	currentPos = (null == pat) ? posAndTypeValueMap.get("").pos : pat.pos;
-    	Resource entryType = (null == pat) ? posAndTypeValueMap.get("").type : pat.type;
+    	currentLexinfoPos = (null == pat) ? null : pat.pos;
+    	Resource entryType = (null == pat) ? lexEntryType : pat.type;
     	nbEntries++;
     	
-        currentEncodedPageName = uriEncode(currentWiktionaryPageName, pos) + "__" + getCurrentLexieCount(pos);
+        currentEncodedPageName = uriEncode(currentWiktionaryPageName, currentWiktionaryPos) + "__" + getCurrentLexieCount(currentWiktionaryPos);
         currentLexEntry = aBox.createResource(NS + currentEncodedPageName, entryType);
 
         Resource lemma = aBox.createResource(); 
 
     	heldBackStatements.add(aBox.createStatement(currentLexEntry, canonicalFormProperty, lemma));
     	heldBackStatements.add(aBox.createStatement(lemma, writtenRepresentationProperty, currentWiktionaryPageName, extractedLang));
-    	aBox.add(aBox.createStatement(currentLexEntry, dbnaryPosProperty, pos));
-    	aBox.add(aBox.createStatement(currentLexEntry, posProperty, currentPos));
+    	aBox.add(aBox.createStatement(currentLexEntry, dbnaryPosProperty, currentWiktionaryPos));
+    	if (null != currentLexinfoPos)
+    		aBox.add(aBox.createStatement(currentLexEntry, posProperty, currentLexinfoPos));
     	aBox.add(aBox.createStatement(currentLexEntry, languageProperty, extractedLang));
 
     	// Register the pending statements.
@@ -353,7 +375,14 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		
     	aBox.add(aBox.createStatement(currentLexEntry, nymProperty, targetResource));
     }
-   
+
+	@Override
+	public void registerPronunciation(String pron, String lang) {
+		if (null != lang && lang.length() > 0)
+			aBox.add(aBox.createStatement(currentLexEntry, pronProperty, pron, lang));
+		else
+			aBox.add(aBox.createStatement(currentLexEntry, pronProperty, pron));
+	}
 	
 	protected String uriEncode(String s) {
 		StringBuffer res = new StringBuffer();
@@ -461,6 +490,8 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 	public int nbEntries() {
 		return nbEntries;
 	}
+
+
 
 	
 }

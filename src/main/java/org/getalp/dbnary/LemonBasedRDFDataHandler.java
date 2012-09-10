@@ -95,6 +95,8 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 	private HashMap<String,Integer> currentLexieCount = new HashMap<String,Integer>();
 	private Resource currentMainLexEntry;
 	private Resource currentPreferredWrittenRepresentation;
+	private String currentSharedPronunciation;
+	private String currentSharedPronunciationLang;
 	
 	private static HashMap<String,Property> nymPropertyMap = new HashMap<String,Property>();
 	private static HashMap<String,PosAndType> posAndTypeValueMap = new HashMap<String,PosAndType>();
@@ -245,6 +247,8 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
         currentWiktionaryPos = null;
         currentLexieCount.clear();
         currentPreferredWrittenRepresentation = null;
+        currentSharedPronunciation = null;
+        currentSharedPronunciationLang = null;
         
         // Create a dummy lexical entry that points to the one that corresponds to a part of speech
         String encodedPageName = uriEncode(wiktionaryPageName);
@@ -278,6 +282,15 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
         currentLexEntry = aBox.createResource(NS + currentEncodedPageName, entryType);
 
         currentPreferredWrittenRepresentation = aBox.createResource(); 
+        
+        // If a pronunciation was given before the first part of speech, it means that it is shared amoung pos/etymologies
+        if (null != currentSharedPronunciation && currentSharedPronunciation.length() > 0) {
+        	if (null != currentSharedPronunciationLang && currentSharedPronunciationLang.length() > 0) 
+        		aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, currentSharedPronunciation, currentSharedPronunciationLang));
+    		else
+    			aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, currentSharedPronunciation));
+        }
+			
 
     	heldBackStatements.add(aBox.createStatement(currentLexEntry, canonicalFormProperty, currentPreferredWrittenRepresentation));
     	heldBackStatements.add(aBox.createStatement(currentPreferredWrittenRepresentation, writtenRepresentationProperty, currentWiktionaryPageName, extractedLang));
@@ -380,10 +393,16 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 
 	@Override
 	public void registerPronunciation(String pron, String lang) {
-		if (null != lang && lang.length() > 0)
-			aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, pron, lang));
-		else
-			aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, pron));
+		
+		if (null == currentPreferredWrittenRepresentation) {
+			currentSharedPronunciation = pron;
+			currentSharedPronunciationLang = lang;
+		} else {
+			if (null != lang && lang.length() > 0)
+				aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, pron, lang));
+			else
+				aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, pron));
+		}
 	}
 	
 	protected String uriEncode(String s) {

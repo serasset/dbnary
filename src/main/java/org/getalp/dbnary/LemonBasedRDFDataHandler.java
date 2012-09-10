@@ -94,6 +94,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 	private String currentWiktionaryPageName;
 	private HashMap<String,Integer> currentLexieCount = new HashMap<String,Integer>();
 	private Resource currentMainLexEntry;
+	private Resource currentPreferredWrittenRepresentation;
 	
 	private static HashMap<String,Property> nymPropertyMap = new HashMap<String,Property>();
 	private static HashMap<String,PosAndType> posAndTypeValueMap = new HashMap<String,PosAndType>();
@@ -243,6 +244,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
         currentLexinfoPos = null;
         currentWiktionaryPos = null;
         currentLexieCount.clear();
+        currentPreferredWrittenRepresentation = null;
         
         // Create a dummy lexical entry that points to the one that corresponds to a part of speech
         String encodedPageName = uriEncode(wiktionaryPageName);
@@ -275,10 +277,10 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
         currentEncodedPageName = uriEncode(currentWiktionaryPageName, currentWiktionaryPos) + "__" + getCurrentLexieCount(currentWiktionaryPos);
         currentLexEntry = aBox.createResource(NS + currentEncodedPageName, entryType);
 
-        Resource lemma = aBox.createResource(); 
+        currentPreferredWrittenRepresentation = aBox.createResource(); 
 
-    	heldBackStatements.add(aBox.createStatement(currentLexEntry, canonicalFormProperty, lemma));
-    	heldBackStatements.add(aBox.createStatement(lemma, writtenRepresentationProperty, currentWiktionaryPageName, extractedLang));
+    	heldBackStatements.add(aBox.createStatement(currentLexEntry, canonicalFormProperty, currentPreferredWrittenRepresentation));
+    	heldBackStatements.add(aBox.createStatement(currentPreferredWrittenRepresentation, writtenRepresentationProperty, currentWiktionaryPageName, extractedLang));
     	aBox.add(aBox.createStatement(currentLexEntry, dbnaryPosProperty, currentWiktionaryPos));
     	if (null != currentLexinfoPos)
     		aBox.add(aBox.createStatement(currentLexEntry, posProperty, currentLexinfoPos));
@@ -379,9 +381,9 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 	@Override
 	public void registerPronunciation(String pron, String lang) {
 		if (null != lang && lang.length() > 0)
-			aBox.add(aBox.createStatement(currentLexEntry, pronProperty, pron, lang));
+			aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, pron, lang));
 		else
-			aBox.add(aBox.createStatement(currentLexEntry, pronProperty, pron));
+			aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, pron));
 	}
 	
 	protected String uriEncode(String s) {

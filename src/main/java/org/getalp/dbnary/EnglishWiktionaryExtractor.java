@@ -302,7 +302,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 	leavePronBlock(m);
                     gotoPronBlock(m);
                 } else {
-                    leaveNymBlock(m);
+                	leavePronBlock(m);
                     gotoNoData(m);
                 }
             default:
@@ -324,6 +324,9 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
             break;
         case NYMBLOCK:
             leaveNymBlock(m);
+            break;
+        case PRONBLOCK:
+        	leavePronBlock(m);
             break;
         default:
             assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;

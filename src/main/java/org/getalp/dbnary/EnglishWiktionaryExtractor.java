@@ -17,12 +17,17 @@ import org.getalp.blexisma.api.ISO639_3;
 public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
 
     //TODO: Handle Wikisaurus entries.
+	// TODO: extract pronunciation
+	
     protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
+    protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
+    
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
     private final int DEFBLOCK = 2;
     private final int ORTHOALTBLOCK = 3;
     private final int NYMBLOCK = 4;
+    private final int PRONBLOCK = 5;
         
     public EnglishWiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
@@ -33,11 +38,13 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     protected final static HashSet<String> posMarkers;
     protected final static HashSet<String> nymMarkers;
     protected final static HashMap<String, String> nymMarkerToNymName;
+	protected final static Pattern pronPattern;
 
     static {
         // languageSectionPattern = Pattern.compile(languageSectionPatternString);
        
         sectionPattern = Pattern.compile(sectionPatternString);
+        pronPattern = Pattern.compile(pronPatternString);
         
         posMarkers = new HashSet<String>(20);
         posMarkers.add("Noun");
@@ -68,6 +75,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     int orthBlockStart = -1;
     int translationBlockStart = -1;
     private int nymBlockStart = -1;
+    private int pronBlockStart = -1;
     private String currentNym = null;
     
     /* (non-Javadoc)
@@ -156,8 +164,17 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         nymBlockStart = -1;         
      }
 
+    private void gotoPronBlock(Matcher m) {
+        state = PRONBLOCK; 
+        pronBlockStart = m.end();      
+     }
 
-    private void extractEnglishData(int startOffset, int endOffset) {        
+    private void leavePronBlock(Matcher m) {
+        extractPron(pronBlockStart, computeRegionEnd(pronBlockStart, m));
+        pronBlockStart = -1;         
+     }
+
+	private void extractEnglishData(int startOffset, int endOffset) {        
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         wdh.initializeEntryExtraction(wiktionaryPageName);
@@ -179,7 +196,9 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                     gotoOrthoAltBlock(m);
                 } else if (nymMarkers.contains(m.group(1))) {
                     gotoNymBlock(m);
-                } 
+                } else if (m.group(1).equals("Pronunciation")) {
+                	gotoPronBlock(m);
+                }
                 
                 break;
             case DEFBLOCK:
@@ -196,10 +215,13 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (nymMarkers.contains(m.group(1))) {
                     leaveDefBlock(m);
                     gotoNymBlock(m);
+                } else if (m.group(1).equals("Pronunciation")) {
+                    leaveDefBlock(m);
+                    gotoPronBlock(m);
                 } else {
                     leaveDefBlock(m);
                     gotoNoData(m);
-                }
+                } 
                 break;
             case TRADBLOCK:
                 if (m.group(1).equals("Translations")) {
@@ -214,10 +236,13 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (nymMarkers.contains(m.group(1))) {
                     leaveTradBlock(m);
                     gotoNymBlock(m);
+                } else if (m.group(1).equals("Pronunciation")) {
+                    leaveTradBlock(m);
+                    gotoPronBlock(m);
                 } else {
                     leaveTradBlock(m);
                     gotoNoData(m);
-                }
+                } 
                 break;
             case ORTHOALTBLOCK:
                 if (m.group(1).equals("Translations")) {
@@ -232,6 +257,9 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (nymMarkers.contains(m.group(1))) {
                     leaveOrthoAltBlock(m);
                     gotoNymBlock(m);
+                } else if (m.group(1).equals("Pronunciation")) {
+                	leaveOrthoAltBlock(m);
+                    gotoPronBlock(m);
                 } else {
                     leaveOrthoAltBlock(m);
                     gotoNoData(m);
@@ -250,6 +278,29 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (nymMarkers.contains(m.group(1))) {
                     leaveNymBlock(m);
                     gotoNymBlock(m);
+                } else if (m.group(1).equals("Pronunciation")) {
+                	leaveNymBlock(m);
+                    gotoPronBlock(m);
+                } else {
+                    leaveNymBlock(m);
+                    gotoNoData(m);
+                }
+            case PRONBLOCK:
+            	if (m.group(1).equals("Translations")) {
+                    leavePronBlock(m);
+                    gotoTradBlock(m);
+                } else if (posMarkers.contains(m.group(1))) {
+                	leavePronBlock(m);
+                    gotoDefBlock(m);
+                } else if (m.group(1).equals("Alternative spellings")) {
+                	leavePronBlock(m);
+                    gotoOrthoAltBlock(m);
+                } else if (nymMarkers.contains(m.group(1))) {
+                	leavePronBlock(m);
+                    gotoNymBlock(m);
+                } else if (m.group(1).equals("Pronunciation")) {
+                	leavePronBlock(m);
+                    gotoPronBlock(m);
                 } else {
                     leaveNymBlock(m);
                     gotoNoData(m);
@@ -332,5 +383,17 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
            }
        }
    }
+    
+    private void extractPron(int startOffset, int endOffset) {
+    	
+    	Matcher pronMatcher = pronPattern.matcher(pageContent);
+    	while (pronMatcher.find()) {
+    		String pron = pronMatcher.group(1);
+    		
+    		if (null == pron || pron.equals("")) return;
+    		
+    		if (! pron.equals("")) wdh.registerPronunciation(pron, "en-fonipa");
+    	}
+	}
     
 }

@@ -14,12 +14,13 @@ import org.getalp.blexisma.api.ISO639_3;
  * @author serasset
  *
  */
-public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
+public class RussianWiktionaryExtractor extends WiktionaryExtractor {
 
     //TODO: Handle Wikisaurus entries.
 	//DONE: extract pronunciation
 	//TODO: attach multiple pronounciation correctly
-	
+    protected final static String languageSectionPatternString = "=\\s*(\\{\\{-[^=]*\\}\\})\\s*=";
+
     protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
     protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
     
@@ -30,20 +31,22 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     private final int NYMBLOCK = 4;
     private final int PRONBLOCK = 5;
         
-    public EnglishWiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public RussianWiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
     }
 
     // protected final static Pattern languageSectionPattern;
+    protected final static Pattern languageSectionPattern;
     protected final static Pattern sectionPattern;
     protected final static HashSet<String> posMarkers;
-    protected final static HashSet<String> nymMarkers;
+    //protected final static HashSet<String> nymMarkers;
     protected final static HashMap<String, String> nymMarkerToNymName;
 	protected final static Pattern pronPattern;
 
     static {
         // languageSectionPattern = Pattern.compile(languageSectionPatternString);
        
+        languageSectionPattern = Pattern.compile(languageSectionPatternString);
         sectionPattern = Pattern.compile(sectionPatternString);
         pronPattern = Pattern.compile(pronPatternString);
         
@@ -54,20 +57,20 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         posMarkers.add("Verb");
         posMarkers.add("Proper noun");
         
-        nymMarkers = new HashSet<String>(20);
-        nymMarkers.add("Synonyms");
-        nymMarkers.add("Antonyms");
-        nymMarkers.add("Hyponyms");
-        nymMarkers.add("Hypernyms");
-        nymMarkers.add("Meronyms");
+       // nymMarkers = new HashSet<String>(20);
+       // nymMarkers.add("Synonyms");
+       // nymMarkers.add("Antonyms");
+       // nymMarkers.add("Hyponyms");
+       // nymMarkers.add("Hypernyms");
+       // nymMarkers.add("Meronyms");
         
         nymMarkerToNymName = new HashMap<String,String>(20);
-        nymMarkerToNymName.put("Synonyms", "syn");
-        nymMarkerToNymName.put("Antonyms", "ant");
-        nymMarkerToNymName.put("Hyponyms", "hypo");
-        nymMarkerToNymName.put("Hypernyms", "hyper");
+        nymMarkerToNymName.put("Синонимы", "syn");
+        nymMarkerToNymName.put("Антонимы", "ant");
+        nymMarkerToNymName.put("Гипонимы", "hypo");
+        nymMarkerToNymName.put("Гиперонимы", "hyper");
         nymMarkerToNymName.put("Meronyms", "mero");
-        // TODO: metonymie ?
+        nymMarkerToNymName.put("Holonyms", "holo");
 
     }
 
@@ -86,8 +89,8 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     public void extractData() {
         
         // System.out.println(pageContent);
-        Matcher languageFilter = sectionPattern.matcher(pageContent);
-        while (languageFilter.find() && ! languageFilter.group(1).equals("English")) {
+        Matcher languageFilter = languageSectionPattern.matcher(pageContent);
+        while (languageFilter.find() && ! languageFilter.group(1).startsWith("{{-ru-")) {
             ;
         }
         // Either the filter is at end of sequence or on English language header.
@@ -95,15 +98,17 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
             // There is no english data in this page.
             return ;
         }
-        int englishSectionStartOffset = languageFilter.end();
+        int russianSectionStartOffset = languageFilter.end();
         // Advance till end of sequence or new language section
-        while (languageFilter.find() && languageFilter.group().charAt(2) == '=') {
+        while (languageFilter.find() && languageFilter.group().charAt(1) == '=') {
             ;
         }
         // languageFilter.find();
-        int englishSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+        int russianSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
         
-        extractEnglishData(englishSectionStartOffset, englishSectionEndOffset);
+        System.err.println(pageContent.substring(russianSectionStartOffset, russianSectionEndOffset));
+        
+        extractRussianData(russianSectionStartOffset, russianSectionEndOffset);
      }
     
     
@@ -138,7 +143,9 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
     }
     
     void leaveDefBlock(Matcher m) {
-        extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
+    	int end = computeRegionEnd(definitionBlockStart, m);
+    	System.err.println(pageContent.substring(definitionBlockStart, end));
+        extractDefinitions(definitionBlockStart, end);
         definitionBlockStart = -1;
     }
     
@@ -175,27 +182,21 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
         pronBlockStart = -1;         
      }
 
-	private void extractEnglishData(int startOffset, int endOffset) {        
+	private void extractRussianData(int startOffset, int endOffset) {        
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         wdh.initializeEntryExtraction(wiktionaryPageName);
         gotoNoData(m);
-        // WONTDO: should I use a macroOrLink pattern to detect translations that are not macro based ?
-        // DONE: (priority: top) link the definition node with the current Part of Speech
-        // DONE: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
-        // DONE: handle alternative spelling
-        // DONE: extract synonyms
-        // DONE: extract antonyms
         while (m.find()) {
             switch (state) {
             case NODATA:
-                if (m.group(1).equals("Translations")) {
+                if (m.group(1).equals("Перевод")) {
                     gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
+                } else if (m.group(1).equals("Значение")) {
                     gotoDefBlock(m);
                 } else if (m.group(1).equals("Alternative spellings")) {
                     gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
+                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                     gotoNymBlock(m);
                 } else if (m.group(1).equals("Pronunciation")) {
                 	gotoPronBlock(m);
@@ -204,16 +205,16 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 break;
             case DEFBLOCK:
                 // Iterate until we find a new section
-                if (m.group(1).equals("Translations")) {
+                if (m.group(1).equals("Перевод")) {
                     leaveDefBlock(m);
                     gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
+                } else if (m.group(1).equals("Значение")) {
                     leaveDefBlock(m);
                     gotoDefBlock(m);
                 } else if (m.group(1).equals("Alternative spellings")) {
                     leaveDefBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
+                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                     leaveDefBlock(m);
                     gotoNymBlock(m);
                 } else if (m.group(1).equals("Pronunciation")) {
@@ -225,16 +226,16 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 } 
                 break;
             case TRADBLOCK:
-                if (m.group(1).equals("Translations")) {
+                if (m.group(1).equals("Перевод")) {
                     leaveTradBlock(m);
                     gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
+                } else if (m.group(1).equals("Значение")) {
                     leaveTradBlock(m);
                     gotoDefBlock(m);
                 } else if (m.group(1).equals("Alternative spellings")) {
                     leaveTradBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
+                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                     leaveTradBlock(m);
                     gotoNymBlock(m);
                 } else if (m.group(1).equals("Pronunciation")) {
@@ -246,16 +247,16 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 } 
                 break;
             case ORTHOALTBLOCK:
-                if (m.group(1).equals("Translations")) {
+                if (m.group(1).equals("Перевод")) {
                     leaveOrthoAltBlock(m);
                     gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
+                } else if (m.group(1).equals("Значение")) {
                     leaveOrthoAltBlock(m);
                     gotoDefBlock(m);
                 } else if (m.group(1).equals("Alternative spellings")) {
                     leaveOrthoAltBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
+                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                     leaveOrthoAltBlock(m);
                     gotoNymBlock(m);
                 } else if (m.group(1).equals("Pronunciation")) {
@@ -267,16 +268,16 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 }
                 break;
             case NYMBLOCK:
-                if (m.group(1).equals("Translations")) {
+                if (m.group(1).equals("Перевод")) {
                     leaveNymBlock(m);
                     gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
+                } else if (m.group(1).equals("Значение")) {
                     leaveNymBlock(m);
                     gotoDefBlock(m);
                 } else if (m.group(1).equals("Alternative spellings")) {
                     leaveNymBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
+                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                     leaveNymBlock(m);
                     gotoNymBlock(m);
                 } else if (m.group(1).equals("Pronunciation")) {
@@ -287,16 +288,16 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                     gotoNoData(m);
                 }
             case PRONBLOCK:
-            	if (m.group(1).equals("Translations")) {
+            	if (m.group(1).equals("Перевод")) {
                     leavePronBlock(m);
                     gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
+                } else if (m.group(1).equals("Значение")) {
                 	leavePronBlock(m);
                     gotoDefBlock(m);
                 } else if (m.group(1).equals("Alternative spellings")) {
                 	leavePronBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
+                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                 	leavePronBlock(m);
                     gotoNymBlock(m);
                 } else if (m.group(1).equals("Pronunciation")) {

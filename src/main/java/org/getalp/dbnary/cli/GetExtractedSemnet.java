@@ -17,6 +17,7 @@ import org.getalp.dbnary.ItalianoWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.PortugueseWiktionaryExtractor;
+import org.getalp.dbnary.RussianWiktionaryExtractor;
 import org.getalp.dbnary.SemnetWiktionaryDataHandler;
 import org.getalp.dbnary.SuomiWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
@@ -46,7 +47,7 @@ public class GetExtractedSemnet {
 		options = new Options();
 		options.addOption("h", false, "Prints usage and exits. ");	
 		options.addOption(LANGUAGE_OPTION, true, 
-				"Language (fr, en,it,pt de or fi). " + DEFAULT_LANGUAGE + " by default.");
+				"Language (fr, en,it,pt de, fi or ru). " + DEFAULT_LANGUAGE + " by default.");
 		options.addOption(OUTPUT_FORMAT_OPTION, true, 
 				"Output format (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_OUTPUT_FORMAT + " by default.");
 		options.addOption(MODEL_OPTION, true, 
@@ -94,7 +95,7 @@ public class GetExtractedSemnet {
 		if (cmd.hasOption(LANGUAGE_OPTION)){
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
 			language = ISO639_3.sharedInstance.getIdCode(language);
-			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por")|| language.equals("ita")|| language.equals("fin"))) {
+			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por")|| language.equals("ita")|| language.equals("fin") || language.equals("rus"))) {
 				System.err.println("Unknown Language.");
 				printUsage();
 				System.exit(1);
@@ -139,6 +140,8 @@ public class GetExtractedSemnet {
 			we = new ItalianoWiktionaryExtractor(wdh);
 		} else if (language.equals("fin")) {
 			we = new SuomiWiktionaryExtractor(wdh);
+		} else if (language.equals("rus")) {
+			we = new RussianWiktionaryExtractor(wdh);
 		} else {
 			System.err.println("Wiktionary Extraction not yet available for " + ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
 			System.exit(1);

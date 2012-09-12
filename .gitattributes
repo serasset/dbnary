@@ -58,6 +58,7 @@ src/main/java/org/getalp/dbnary/cli/GetRawEntry.java -text svneol=unset#text/pla
 src/main/java/org/getalp/dbnary/cli/GrepInWiktionary.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/IConv.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/RDFDiff.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/cli/StatLEMONExtract.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/StatRDFExtract.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/DiffFichier.java -text svneol=unset#text/plain

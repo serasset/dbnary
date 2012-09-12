@@ -290,6 +290,7 @@ public class StatLEMONExtract {
 		
 		System.out.println(" lexical entries: " + nble + " (+" + nblw + " words/+ " + nblp + " phrases). Total: " + (nble + nblw + nblp));
 		System.out.println(nblv + " vocables.");
+		System.out.println(nbsense + " senses.");
 		System.out.println(nbEquiv + " equivalents.");
 		
 //		printRelationsStats();

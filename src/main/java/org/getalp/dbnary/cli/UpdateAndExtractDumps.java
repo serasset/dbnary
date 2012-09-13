@@ -141,7 +141,47 @@ public class UpdateAndExtractDumps {
 		extractDumpFiles(remainingArgs, dirs);
 		cleanUpDumpFiles(remainingArgs);
 		cleanUpExtractFiles(remainingArgs);
+		linkToLatestExtractFiles(remainingArgs, dirs);
 	}
+
+	private void linkToLatestExtractFiles(String[] langs, String[] dirs) {
+		// link to the extracted file
+		for (int i = 0; i < langs.length; i++) {
+			linkToLatestExtractFile(langs[i], dirs[i]);
+		}
+	}
+
+
+	private void linkToLatestExtractFile(String lang, String dir) {
+		if (null == dir || dir.equals("")) return;
+		
+		String latestdir = extractDir + "/" + model.toLowerCase() + "/latest";
+		String odir = extractDir + "/" + model.toLowerCase() + "/" + lang;
+		File d = new File(latestdir);
+		d.mkdirs();
+
+		String extractFile = odir + "/" + lang +"_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
+		File file = new File(extractFile);
+		if (! file.exists()) {
+			System.err.println("Extracted wiktionary file " + extractFile + " does not exists. I will not link to this version.");
+			return;
+		}
+		
+		String latestFile = latestdir + "/" + lang +"_dbnary_" + model.toLowerCase() + ".ttl";
+		File lf = new File(latestFile);
+		if (lf.exists()) {
+			System.err.println("Deleting old link: " + latestFile );
+			lf.delete();
+		}
+		try {
+			String[] args = {"ln", "-s", "../" + lang + "/" + lang +"_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl", lang + "_dbnary_" + model.toLowerCase() + ".ttl"};
+			Runtime.getRuntime().exec(args, null, d);
+		} catch (IOException e) {
+			System.err.println("Eror while trying to link to latest extract: " + latestFile + "->" + extractFile);
+			e.printStackTrace(System.err);
+		}
+	}
+
 
 	private void cleanUpExtractFiles(String[] remainingArgs2) {
 		// Keep all for now...
@@ -372,7 +412,7 @@ public class UpdateAndExtractDumps {
 		File d = new File(odir);
 		d.mkdirs();
 	
-		String extractFile = odir + "/" + lang +"_dbnary_" + model.toLowerCase() + "_" + dir + ".tut";
+		String extractFile = odir + "/" + lang +"_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
 		File file = new File(extractFile);
 		if (file.exists() && !force) {
 			System.err.println("Extracted wiktionary file " + extractFile + " already exists.");

@@ -66,8 +66,6 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 		.append(sectionPatternString1)
 		.append(")|(?:")
 		.append(sectionPatternString2)
-		.append(")|(?:")
-		.append("<!--.*-->")
 		.append(")").toString();
 
 	}
@@ -188,6 +186,7 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 		extractSuomihData(suomiSectionStartOffset, suomiSectionEndOffset);
 
 	}
+	
 	//    private HashSet<String> unsupportedSections = new HashSet<String>(100);
 	void gotoNoData(Matcher m) {
 		state = NODATA;

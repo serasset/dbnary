@@ -211,6 +211,16 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		posAndTypeValueMap.put("adjc", new PosAndType(adjPOS, lexEntryType));
 		posAndTypeValueMap.put("verb", new PosAndType(verbPOS, lexEntryType));
 		posAndTypeValueMap.put("adv", new PosAndType(adverbPOS, lexEntryType));
+		// Finnish
+		posAndTypeValueMap.put("Substantiivi", new PosAndType(nounPOS, lexEntryType));
+		posAndTypeValueMap.put("Adjektiivi", new PosAndType(adjPOS, lexEntryType));
+		posAndTypeValueMap.put("Verbi", new PosAndType(verbPOS, lexEntryType));
+		posAndTypeValueMap.put("Adverbi", new PosAndType(adverbPOS, lexEntryType));
+		posAndTypeValueMap.put("Erisnimi", new PosAndType(properNounPOS, lexEntryType));
+		posAndTypeValueMap.put("subs", new PosAndType(nounPOS, lexEntryType));
+		posAndTypeValueMap.put("adj", new PosAndType(adjPOS, lexEntryType));
+		posAndTypeValueMap.put("verbi", new PosAndType(verbPOS, lexEntryType));
+		posAndTypeValueMap.put("adv", new PosAndType(adverbPOS, lexEntryType));
 		
 		posAndTypeValueMap.put("", new PosAndType(otherPOS, lexEntryType));
 

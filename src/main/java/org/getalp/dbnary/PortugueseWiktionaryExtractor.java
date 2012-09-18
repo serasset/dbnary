@@ -20,7 +20,7 @@ public class PortugueseWiktionaryExtractor extends WiktionaryExtractor {
 
     //TODO: Handle Wikisaurus entries.
 	protected final static String languageSectionPatternString = 
-		"(?:=\\s*\\{\\{\\-([^=]*)\\-\\}\\}\\s*=)|(?:\n=\\s*([^=\\]\\|\n\r]*)\\s*=\n)";
+		"(?:=\\s*\\{\\{\\-([^=]*)\\-\\}\\}\\s*=)|(?:={1,5}\\s*([^=\\{\\]\\|\n\r]+)\\s*={1,5})";
 	protected final static String sectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
@@ -81,16 +81,29 @@ public class PortugueseWiktionaryExtractor extends WiktionaryExtractor {
     private String currentNym = null;
     
     //searches for the Portuguese language header
-    private boolean keepSearching(Matcher filter) {
-    	if (! filter.find()) return false;
+    private boolean isPortugueseSection(Matcher filter) {
+    	if (! filter.find()) return true;
     	if (filter.group(1) != null)
     		if (filter.group(1).equals("pt"))
-    			return false;
+    			return true;
     	if (filter.group(2) != null)
-    		if (filter.group(2).equals("Português"))
-    			return false;
+    		if (filter.group().charAt(1) != '=' && filter.group(2).equals("Português"))
+    			return true;
     	
-    	return true;
+    	return false;
+    }
+    
+    //searches for the Portuguese language header
+    private boolean isAnotherLanguageSection(Matcher filter) {
+    	if (! filter.find()) return true;
+    	if (filter.group(1) != null)
+    		if (! filter.group(1).equals("pt"))
+    			return true;
+    	if (filter.group(2) != null)
+    		if (filter.group().charAt(1) != '=' && ! filter.group(2).equals("Português"))
+    			return true;
+    	
+    	return false;
     }
     
  
@@ -101,7 +114,7 @@ public class PortugueseWiktionaryExtractor extends WiktionaryExtractor {
     public void extractData() {
         // System.out.println(pageContent);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-        while (keepSearching(languageFilter)) {
+        while (! isPortugueseSection(languageFilter)) {
             ;
         }
         // Either the filter is at end of sequence or on French language header.
@@ -111,7 +124,9 @@ public class PortugueseWiktionaryExtractor extends WiktionaryExtractor {
         }
         int portugueseSectionStartOffset = languageFilter.end();
         // Advance till end of sequence or new language section
-        languageFilter.find();
+        while (! isAnotherLanguageSection(languageFilter)) {
+        	;
+        }
         int portugueseSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
         
         extractPortugueseData(portugueseSectionStartOffset, portugueseSectionEndOffset);
@@ -166,130 +181,6 @@ public class PortugueseWiktionaryExtractor extends WiktionaryExtractor {
         nymBlockStart = -1;         
      }
 
-    private void extractEnglishData(int startOffset, int endOffset) {        
-        Matcher m = sectionPattern.matcher(pageContent);
-        m.region(startOffset, endOffset);
-        wdh.initializeEntryExtraction(wiktionaryPageName);
-        gotoNoData(m);
-        // WONTDO: should I use a macroOrLink pattern to detect translations that are not macro based ?
-        // DONE: (priority: top) link the definition node with the current Part of Speech
-        // DONE: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
-        // DONE: handle alternative spelling
-        // DONE: extract synonyms
-        // DONE: extract antonyms
-        while (m.find()) {
-            switch (state) {
-            case NODATA:
-                if (m.group(1).equals("Translations")) {
-                    gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
-                    gotoDefBlock(m);
-                } else if (m.group(1).equals("Alternative spellings")) {
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
-                    gotoNymBlock(m);
-                } 
-                
-                break;
-            case DEFBLOCK:
-                // Iterate until we find a new section
-                if (m.group(1).equals("Translations")) {
-                    leaveDefBlock(m);
-                    gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
-                    leaveDefBlock(m);
-                    gotoDefBlock(m);
-                } else if (m.group(1).equals("Alternative spellings")) {
-                    leaveDefBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
-                    leaveDefBlock(m);
-                    gotoNymBlock(m);
-                } else {
-                    leaveDefBlock(m);
-                    gotoNoData(m);
-                }
-                break;
-            case TRADBLOCK:
-                if (m.group(1).equals("Translations")) {
-                    leaveTradBlock(m);
-                    gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
-                    leaveTradBlock(m);
-                    gotoDefBlock(m);
-                } else if (m.group(1).equals("Alternative spellings")) {
-                    leaveTradBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
-                    leaveTradBlock(m);
-                    gotoNymBlock(m);
-                } else {
-                    leaveTradBlock(m);
-                    gotoNoData(m);
-                }
-                break;
-            case ORTHOALTBLOCK:
-                if (m.group(1).equals("Translations")) {
-                    leaveOrthoAltBlock(m);
-                    gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
-                    leaveOrthoAltBlock(m);
-                    gotoDefBlock(m);
-                } else if (m.group(1).equals("Alternative spellings")) {
-                    leaveOrthoAltBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
-                    leaveOrthoAltBlock(m);
-                    gotoNymBlock(m);
-                } else {
-                    leaveOrthoAltBlock(m);
-                    gotoNoData(m);
-                }
-                break;
-            case NYMBLOCK:
-                if (m.group(1).equals("Translations")) {
-                    leaveNymBlock(m);
-                    gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
-                    leaveNymBlock(m);
-                    gotoDefBlock(m);
-                } else if (m.group(1).equals("Alternative spellings")) {
-                    leaveNymBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
-                    leaveNymBlock(m);
-                    gotoNymBlock(m);
-                } else {
-                    leaveNymBlock(m);
-                    gotoNoData(m);
-                }
-            default:
-                assert false : "Unexpected state while extracting translations from dictionary.";
-            } 
-        }
-        // Finalize the entry parsing
-        switch (state) {
-        case NODATA:
-            break;
-        case DEFBLOCK:
-            leaveDefBlock(m);
-            break;
-        case TRADBLOCK:
-            leaveTradBlock(m);
-            break;
-        case ORTHOALTBLOCK:
-            leaveOrthoAltBlock(m);
-            break;
-        case NYMBLOCK:
-            leaveNymBlock(m);
-            break;
-        default:
-            assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
-        } 
-        wdh.finalizeEntryExtraction();
-    }
-
-    
     private void extractPortugueseData(int startOffset, int endOffset) {        
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);

@@ -146,6 +146,7 @@ public class UpdateAndExtractDumps {
 
 	private void linkToLatestExtractFiles(String[] langs, String[] dirs) {
 		// link to the extracted file
+		System.err.println("==> Linking to latest versions.");
 		for (int i = 0; i < langs.length; i++) {
 			linkToLatestExtractFile(langs[i], dirs[i]);
 		}
@@ -170,7 +171,7 @@ public class UpdateAndExtractDumps {
 		String latestFile = latestdir + "/" + lang +"_dbnary_" + model.toLowerCase() + ".ttl";
 		File lf = new File(latestFile);
 		if (lf.exists()) {
-			System.err.println("Deleting old link: " + latestFile );
+			// System.err.println("Deleting old link: " + latestFile );
 			lf.delete();
 		}
 		try {
@@ -243,6 +244,13 @@ public class UpdateAndExtractDumps {
 			System.err.println("Deleting uncompressed dump: " + f.getName());
 			f.delete();
 		}
+		
+		File fidx = new File(filename+".idx");
+		if (fidx.exists()) {
+			System.err.println("Deleting index file: " + fidx.getName());
+			fidx.delete();
+		}
+		
 	}
 
 
@@ -272,23 +280,23 @@ public class UpdateAndExtractDumps {
 				client.connect(url.getHost());
 			}
 			client.login( "anonymous", "" );
-			System.err.println("Logged in...");
+			// System.err.println("Logged in...");
 			client.enterLocalPassiveMode();
 			client.changeWorkingDirectory(url.getPath());
 
 			client.changeWorkingDirectory(lang+"wiktionary");
 
 			SortedSet<String> dirs = new TreeSet<String>();
-			System.err.println("Retrieving directory list.");
+			// System.err.println("Retrieving directory list.");
 			FTPFile[] ftpFiles = client.listFiles();
-			System.err.println("Retrieved: " + ftpFiles);
+			// System.err.println("Retrieved: " + ftpFiles);
 			for (FTPFile ftpFile : ftpFiles) {
 				if (ftpFile.getType() == FTPFile.DIRECTORY_TYPE && ! ftpFile.getName().startsWith(".")) {
 					dirs.add(ftpFile.getName());
 				}
 			}
 			String lastDir = dirs.last();
-			System.err.println("Last version of dump is " + lastDir);
+			// System.err.println("Last version of dump is " + lastDir);
 
 			client.changeWorkingDirectory(lastDir);
 
@@ -297,14 +305,14 @@ public class UpdateAndExtractDumps {
 				String filename = dumpdir + "/" + dumpFileName(lang,lastDir);
 				File file = new File(filename);
 				if (file.exists() && !force) {
-					System.err.println("Dump file " + filename + " already retrieved.");
+					// System.err.println("Dump file " + filename + " already retrieved.");
 					return lastDir;
 				}
 				File dumpFile = new File(dumpdir);
 				dumpFile.mkdirs();
 				client.setFileType(FTP.BINARY_FILE_TYPE);
 				FileOutputStream dfile = new FileOutputStream(file);
-				System.err.println("Retreiving " + filename);
+				System.err.println("====>  Retreiving new dump for " + lang);
 				long s = System.currentTimeMillis();
 				client.retrieveFile(dumpFileName(lang,lastDir),dfile);
 				System.err.println("Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
@@ -342,11 +350,11 @@ public class UpdateAndExtractDumps {
 		try {
 			String compressedDumpFile = outputDir + "/" + lang + "/" + dir + "/" + dumpFileName(lang, dir);
 			String uncompressedDumpFile = uncompressDumpFileName(lang, dir);
-			System.err.println("Uncompressing " + compressedDumpFile);
+			// System.err.println("Uncompressing " + compressedDumpFile);
 
 			File file = new File(uncompressedDumpFile);
 			if (file.exists() && !force) {
-				System.err.println("Uncompressed dump file " + uncompressedDumpFile + " already exists.");
+				// System.err.println("Uncompressed dump file " + uncompressedDumpFile + " already exists.");
 				return;
 			}
 			
@@ -415,9 +423,10 @@ public class UpdateAndExtractDumps {
 		String extractFile = odir + "/" + lang +"_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
 		File file = new File(extractFile);
 		if (file.exists() && !force) {
-			System.err.println("Extracted wiktionary file " + extractFile + " already exists.");
+			// System.err.println("Extracted wiktionary file " + extractFile + " already exists.");
 			return;
 		}
+		System.err.println("========= EXTRACTING file " + extractFile + " ===========");
 		
 		String[] args = new String[] {"-f", "turtle", 
 				"-l", lang, 

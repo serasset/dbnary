@@ -318,7 +318,7 @@ public class UpdateAndExtractDumps {
 				dumpFile.mkdirs();
 				client.setFileType(FTP.BINARY_FILE_TYPE);
 				FileOutputStream dfile = new FileOutputStream(file);
-				System.err.println("====>  Retrieving new dump for " + lang);
+				System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
 				long s = System.currentTimeMillis();
 				client.retrieveFile(dumpFileName(lang,lastDir),dfile);
 				System.err.println("Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");

@@ -13,6 +13,8 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -61,7 +63,7 @@ public class UpdateAndExtractDumps {
 	static{
 		options = new Options();
 		options.addOption("h", false, "Prints usage and exits. ");	
-		options.addOption(SERVER_URL_OPTION, true, "give the URL pointing to a wikimedia mirror. ");	
+		options.addOption(SERVER_URL_OPTION, true, "give the URL pointing to a wikimedia mirror. " + DEFAULT_SERVER_URL + " by default.");	
 		options.addOption(FORCE_OPTION, false, 
 				"force the updating even if a file with the same name already exists in the output directory. " + DEFAULT_FORCE + " by default.");
 		options.addOption(HISTORY_SIZE_OPTION, true, "number of dumps to be kept in output directory. " + DEFAULT_HISTORY_SIZE + " by default ");	
@@ -139,8 +141,8 @@ public class UpdateAndExtractDumps {
 		String [] dirs = updateDumpFiles(remainingArgs);
 		uncompressDumpFiles(remainingArgs, dirs);
 		extractDumpFiles(remainingArgs, dirs);
-		cleanUpDumpFiles(remainingArgs);
-		cleanUpExtractFiles(remainingArgs);
+		cleanUpDumpFiles(remainingArgs, dirs);
+		cleanUpExtractFiles(remainingArgs, dirs);
 		linkToLatestExtractFiles(remainingArgs, dirs);
 	}
 
@@ -184,20 +186,24 @@ public class UpdateAndExtractDumps {
 	}
 
 
-	private void cleanUpExtractFiles(String[] remainingArgs2) {
+	private void cleanUpExtractFiles(String[] langs, String[] dirs) {
 		// Keep all for now...
 	}
 
 
-	private void cleanUpDumpFiles(String[] langs) {
+	private void cleanUpDumpFiles(String[] langs, String[] dirs) {
 		// keep at most "historySize" number of compressed dumps and only 1 uncompressed dump
 		for (int i = 0; i < langs.length; i++) {
-			cleanUpDumps(langs[i]);
+			cleanUpDumps(langs[i], dirs[i]);
 		}
 	}
 
 
-	private void cleanUpDumps(String lang) {
+	private void cleanUpDumps(String lang, String lastDir) {
+		
+		// Do not cleanup if there has been any problems before...
+		if (lastDir == null || lastDir.equals("")) return;
+		
 		String langDir = outputDir + "/" + lang;
 		File[] dirs = new File(langDir).listFiles();
 		
@@ -295,7 +301,7 @@ public class UpdateAndExtractDumps {
 					dirs.add(ftpFile.getName());
 				}
 			}
-			String lastDir = dirs.last();
+			String lastDir = getLastVersionDir(dirs);
 			// System.err.println("Last version of dump is " + lastDir);
 
 			client.changeWorkingDirectory(lastDir);
@@ -312,7 +318,7 @@ public class UpdateAndExtractDumps {
 				dumpFile.mkdirs();
 				client.setFileType(FTP.BINARY_FILE_TYPE);
 				FileOutputStream dfile = new FileOutputStream(file);
-				System.err.println("====>  Retreiving new dump for " + lang);
+				System.err.println("====>  Retrieving new dump for " + lang);
 				long s = System.currentTimeMillis();
 				client.retrieveFile(dumpFileName(lang,lastDir),dfile);
 				System.err.println("Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
@@ -335,15 +341,33 @@ public class UpdateAndExtractDumps {
 		}
 	}
 
+	private static String versionPattern = "\\d{8}";
+	private static Pattern vpat = Pattern.compile(versionPattern);
+	
+	private String getLastVersionDir(SortedSet<String> dirs) {
+		String res = null;
+		Matcher m = vpat.matcher("");
+		for (String d: dirs) {
+			m.reset(d);
+			if (m.matches()) {
+				res = d;
+			}
+		}
+		return res;
+	}
+
 
 	private void uncompressDumpFiles(String[] langs, String[] dirs) {
+		boolean status;
 		for (int i = 0; i < langs.length; i++) {
-			uncompressDumpFile(langs[i], dirs[i]);
+			status = uncompressDumpFile(langs[i], dirs[i]);
+			if (!status) dirs[i] = null;
 		}
 	}
 
-	private void uncompressDumpFile(String lang, String dir) {
-		if (null == dir || dir.equals("")) return;
+	private boolean uncompressDumpFile(String lang, String dir) {
+		boolean status = true;
+		if (null == dir || dir.equals("")) return false;
 		
 		Reader r = null;
 		Writer w = null;
@@ -355,7 +379,7 @@ public class UpdateAndExtractDumps {
 			File file = new File(uncompressedDumpFile);
 			if (file.exists() && !force) {
 				// System.err.println("Uncompressed dump file " + uncompressedDumpFile + " already exists.");
-				return;
+				return true;
 			}
 			
 			System.err.println("uncompressing file : " + compressedDumpFile + " to " + uncompressedDumpFile);
@@ -373,7 +397,10 @@ public class UpdateAndExtractDumps {
 			r.close(); 
 			w.close(); 
 		} catch (IOException e) {
+			System.err.println("Caught an IOException while uncompressing dump: " + dumpFileName(lang, dir));
+			System.err.println(e.getLocalizedMessage());
 			e.printStackTrace();
+			status = false;
 		} finally {
 			if (null != r) {
 				try {
@@ -390,6 +417,7 @@ public class UpdateAndExtractDumps {
 				}
 			}
 		}
+		return status;
 	}
 
 	private String uncompressDumpFileName(String lang, String dir) {
@@ -413,8 +441,9 @@ public class UpdateAndExtractDumps {
 		}
 	}
 
-	private void extractDumpFile(String lang, String dir) {
-		if (null == dir || dir.equals("")) return;
+	private boolean extractDumpFile(String lang, String dir) {
+		boolean status = true;
+		if (null == dir || dir.equals("")) return false;
 		
 		String odir = extractDir + "/" + model.toLowerCase() + "/" + lang;
 		File d = new File(odir);
@@ -424,7 +453,7 @@ public class UpdateAndExtractDumps {
 		File file = new File(extractFile);
 		if (file.exists() && !force) {
 			// System.err.println("Extracted wiktionary file " + extractFile + " already exists.");
-			return;
+			return true;
 		}
 		System.err.println("========= EXTRACTING file " + extractFile + " ===========");
 		
@@ -438,12 +467,17 @@ public class UpdateAndExtractDumps {
 		try {
 			ExtractWiktionary.main(args);
 		} catch (WiktionaryIndexerException e) {
-			// TODO Auto-generated catch block
+			System.err.println("Caught IndexerException while extracting dump file: " + uncompressDumpFileName(lang, dir));
+			System.err.println(e.getLocalizedMessage());
 			e.printStackTrace();
+			status = false;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.err.println("Caught IOExcetion while extracting dump file: " + uncompressDumpFileName(lang, dir));
+			System.err.println(e.getLocalizedMessage());
 			e.printStackTrace();
+			status = false;
 		}
+		return status;
 	}
 
 

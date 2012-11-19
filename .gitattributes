@@ -24,6 +24,10 @@ doc/articles/monnet-challenge2012/lrec2006.bst -text
 doc/articles/monnet-challenge2012/lrec2006.sty -text
 doc/articles/monnet-challenge2012/monnet_dbnary.pdf -text
 doc/articles/monnet-challenge2012/monnet_dbnary.tex -text
+doc/articles/swj-mlod-2012/biblio.bib -text
+doc/articles/swj-mlod-2012/lrec2006.bst -text
+doc/articles/swj-mlod-2012/lrec2006.sty -text
+doc/articles/swj-mlod-2012/swj-dbnary.tex -text
 /pom.xml -text
 src/main/java/org/getalp/dbnary/EnglishLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/EnglishWiktionaryExtractor.java -text

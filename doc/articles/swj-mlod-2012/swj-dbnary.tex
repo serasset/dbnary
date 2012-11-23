@@ -1,61 +1,92 @@
-\documentclass[10pt, a4paper]{article}
-%\usepackage{lrec2006}
-\usepackage{graphicx}
+% PLEASE USE THIS FILE AS A TEMPLATE
+% Check file iosart2c.tex for more examples
+%
+% Journal:
+%   Journal of Ambient Intelligence and Smart Environments (jaise)
+%   Web Intelligence and Agent Systems: An International Journal (wias)
+%   Semantic Web: Interoperability, Usability, Applicability (SW)
+% IOS Press
+% Latex 2e
 
+% options: jaise|wias|sw
+% add. options: [seceqn,secfloat,secthm,crcready,onecolumn]
+
+
+%\documentclass{iosart2c}
+
+\documentclass[sw]{iosart2c}
+%\documentclass[wias]{iosart2c}
+%\documentclass[jaise]{iosart2c}
+
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
-\usepackage{alltt}  
-\usepackage{tabularx}  
-\usepackage{tipa}  
-\usepackage{natbib}
+\usepackage{times}%
+\usepackage{natbib}% for bibliography sorting/compressing
+%\usepackage{amsmath}
+%\usepackage{endnotes}
+%\usepackage{graphics}
 
-\usepackage{color}
-\usepackage{relsize}
+%%%%%%%%%%% Put your definitions here
 \usepackage{url}
 
-\newcommand{\mytexttt}[1]{\texttt{\textscale{0.9}{#1}}}
+%%%%%%%%%%% End of definitions
 
-\definecolor{MyGray}{rgb}{0.90,0.90,0.90}
-\makeatletter\newenvironment{graybox}{%
-   \begin{lrbox}{\@tempboxa}\begin{minipage}{.98\textwidth}}{\end{minipage}\end{lrbox}%
-   \colorbox{MyGray}{\usebox{\@tempboxa}}
-}\makeatother
-
-
-\title{Dbnary: Wiktionary as a Lemon Based RDF Multilingual Lexical Ressource}
-
-\author{Gilles Sérasset\\
-UJF-Grenoble 1, Laboratoire d'Informatique de Grenoble\\ 
-GETALP Team, BP 53, 38051 Grenoble cedex 9, France \\ 
-\texttt{gilles.serasset@imag.fr}
-\\}
-
-\date{}
+\pubyear{0000}
+\volume{0}
+\firstpage{1}
+\lastpage{1}
 
 \begin{document}
 
-\maketitle
+\begin{frontmatter}
+
+%\pretitle{}
+\title{Dbnary: Wiktionary as a Lemon Based RDF Multilingual Lexical Ressource}
+\runningtitle{}
+%\subtitle{}
+
+%\review{}{}{}
+
+
+% For one author:
+\author{\fnms{Gilles} \snm{Sérasset}\thanks{E-mail: Gilles.Serasset@imag.fr.}}
+\address{GETALP-LIG, UJF-Grenoble 1 \\BP 53, 38051 Grenoble cedex 9, France\\ \texttt{gilles.serasset@imag.fr}}
+\runningauthor{}
+
+% Two or more authors:
+%\author[A]{\fnms{} \snm{}\thanks{}},
+%\author[B]{\fnms{} \snm{}}
+%\runningauthor{}
+%\address[A]{}
+%\address[B]{}
 
 \begin{abstract}
-This short paper presents our effort to extract an RDF Multilingual Lexical Resource from the wiktionary data. This lexical resource is structured using the LEMON Model.\\
-The extracted data is registered at \url{http://thedatahub.org/dataset/dbnary}.
-\textbf{Keywords:} Wiktionary, Multilingual Lexical Resource, Lexical Networks, LEMON, RDF.
+Contributive resources, such as wikipedia, have proved to be valuable in Natural Language Processing or Multilingual Information Retrieval applications. This work focusses on Wiktionary, the dictionary part of the collaborative resources sponsored by the \emph{Wikimedia} foundation. In this article, we present our effort to extract Multilingual Lexical Data from wiktionary data and to provide it to the community as a Multilingual Lexical Linked Open Data (MLLOD). This lexical resource is structured using the LEMON Model.\\
+This data, called \textit{dbnary}, is registered at \url{http://thedatahub.org/dataset/dbnary}.
 \end{abstract}
 
+\begin{keyword}
+Wiktionary \sep Multilingual \sep Lexical Resource \sep LEMON \sep Multilingual Linguistic LOD
+\end{keyword}
+
+\end{frontmatter}
 
 \section{Introduction}
 
-The GETALP (Study group for speech and language translation/processing) team of the LIG (Laboratoire d'Informatique de Grenoble) is in need for multilingual lexical resources that should include language correspondences (translations) and word sense definitions. In this regard, the set data included in the different wiktionary language edition is a precious mine.
+The GETALP (Study group for speech and language translation/processing) team of the LIG (Laboratoire d'Informatique de Grenoble) is in need for multilingual lexical resources that should include language correspondences (translations) and word sense definitions. In this regard, the data included in the different wiktionary\footnote{\url{http://www.wiktionary.org}} language edition is a precious mine.
 
-Alas, many inconsistencies, errors, difference in usage do exist in the different wiktionary language edition. Hence, we decided to provide an effort to extract precious data from this source and provide it to the community a Linked Data. After a first version that used an RDF version of the LMF model and described in \cite{serasset:lrec2012}, we decided to adapt our extractors to LEMON model.
+Alas, many inconsistencies, errors, difference in usage do exist in the different wiktionary language edition. Hence, we decided to provide an effort to extract precious data from this source and provide it to the community as Linked Data. After a first version that used an RDF version of the LMF model \cite{FRANCOPOULO:2006:INRIA-00121468:1,francopoulo-EtAl:2006:MLRI} and described in \cite{serasset:lrec2012}, we decided to adapt our extractors to LEMON model \cite{McRae-lemon:2012}. This linked dataset has won the ``Monnet-Challenge'' in 2012.
 
 \section{Extracting data from wiktionary}
 
 Errors and incoherence are inherent to a contributive resource like wiktionary. Some language editions (like French and English) have many moderators that do limit the number of incoherence among entries of the same language. Moreover, such languages, which contain the most data, use many \textit{templates} that simplify the extraction process. For instance, the translation section of the French dictionary usually uses a template to identify each individual translation.
 
-This is not true anymore with less developed wiktionary language editions. For instance, in the Finnish edition, some translations are introduced by a template giving the language (e.g. \{fr\} precedes French translation) and others are introduced by the string "ranska" which is the Finnish translation for "French". In this case the translator needs to know the Finnish translation of all language names to cope with the second case and avoid losing almost half of the available translation data.
+This is not true anymore with less developed wiktionary language editions. For instance, in the Finnish edition, some translations are introduced by a template giving the language (e.g. \{fr\} precedes French translations) and others are introduced by the string "ranska" which is the Finnish translation for "French". In this case the extractor needs to know the Finnish translation of all language names to cope with the second case and avoid losing almost half of the available translation data.
 
-Our extractor is written in java and is open-source (LGPL licensed, available at \url{http://dbnary.forge.imag.fr}).
+Many such inconsistencies and some errors in the data renders the development of an extractor quite tedious, and many people in NLP is trying to use this data for different applications. 
+
+The dbnary extractor is written in java and is open-source (LGPL licensed, available at \url{http://dbnary.forge.imag.fr}).
 \section{Extracted Data as a LEMON Lexical Resource}
 
 \subsection{Extracted Entries}
@@ -240,9 +271,43 @@ Our next objectives are to better generalize the treatments of the current extra
 
 The work presented in this paper was conducted in the Videosense project, funded by the French National Research Agency (ANR) under its CONTINT 2009 programme (grant ANR-09-CORD-026).
 
-\bibliographystyle{plainnat}      % basic style, author-year citations
-\bibliography{biblio}   % name your BibTeX data base
 
-%\nocite{*}
+%%%%%%%%%%% The article body starts:
+
+%\section{}\label{s1}
+
+%\subsection{}\label{s1.1}
+
+
+
+
+
+
+%\begin{figure}[t]
+%\includegraphics{}
+%\caption{Figure caption.}\label{f1}
+%\end{figure}
+
+%\begin{table*}
+%\caption{} \label{t1}
+%\begin{tabular}{lll}
+%\hline
+%&&\\
+%&&\\
+%\hline
+%\end{tabular}
+%\end{table*}
+
+
+%%%%%%%%%%% The bibliography starts:
+\bibliographystyle{abbrvnat}      % basic style, author-year citations
+\bibliography{biblio}   
+%\begin{thebibliography}{9}
+
+%\bibitem{r1}
+
+%\bibitem{r2}
+
+%\end{thebibliography}
+
 \end{document}
-

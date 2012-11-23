@@ -11,7 +11,7 @@ What is Dbnary Extractor
 
   Dbnary Extractor allows you to extract a lexical network from a wiktionary dump file. It currently supports extraction of French, 
   English, German and Portuguese language editions of wiktionary. The extracted data is structured as a lexical network in RDF (most formats are supported).
-  The organization of the network is based on the Lexical Markup Framework (LMF) ISO standard. 
+  The organization of the network is based on the LEMON model. 
 
 Using Dbnary Extractor
 

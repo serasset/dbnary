@@ -306,10 +306,10 @@ public class StatLEMONExtract {
 		
 		System.out.println("");
 		
-		System.out.println("Language Edition & syn & qSyn & ant & hyper & hypo & mero & holo \\\\");
+		System.out.println("Language Edition & syn & ant & hyper & hypo & mero & holo \\\\");
 		System.out.print("\\textbf{" + language  + "} & ");
 		System.out.print(countRelations(synonymProperty) + "& ");
-		System.out.print(countRelations(nearSynonymProperty) + "& ");
+		// System.out.print(countRelations(nearSynonymProperty) + "& ");
 		System.out.print(countRelations(antonymProperty) + "& ");
 		System.out.print(countRelations(hypernymProperty) + "& ");
 		System.out.print(countRelations(hyponymProperty) + "& ");

@@ -248,7 +248,7 @@ public class StatLEMONExtract {
 		String clangs[] = countLanguages.split(",");
 		int i = 0;
 		while(i != clangs.length) {
-			counts.put(clangs[i], new IncrementableInt());
+			counts.put(ISO639_3.sharedInstance.getIdCode(clangs[i]), new IncrementableInt());
 			i = i + 1;
 		}
 

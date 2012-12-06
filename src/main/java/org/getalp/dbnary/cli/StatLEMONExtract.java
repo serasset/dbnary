@@ -369,6 +369,7 @@ public class StatLEMONExtract {
 			total = total + i.getValue().val;
 			System.out.print(" & " + i.getKey());
 		}
+		total = total + others;
 		System.out.println("& others & Total \\\\");
 		System.out.print(language);
 		for (Entry<String, IncrementableInt> i : counts.entrySet()) {

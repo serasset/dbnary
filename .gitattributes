@@ -25,8 +25,15 @@ doc/articles/monnet-challenge2012/lrec2006.sty -text
 doc/articles/monnet-challenge2012/monnet_dbnary.pdf -text
 doc/articles/monnet-challenge2012/monnet_dbnary.tex -text
 doc/articles/swj-mlod-2012/biblio.bib -text
+doc/articles/swj-mlod-2012/cat_struct.pdf -text
+doc/articles/swj-mlod-2012/cat_syn.graffle -text
+doc/articles/swj-mlod-2012/cat_syn.pdf -text
+doc/articles/swj-mlod-2012/cat_translations.graffle -text
+doc/articles/swj-mlod-2012/cat_translations.pdf -text
+doc/articles/swj-mlod-2012/iosart2c.cls -text
 doc/articles/swj-mlod-2012/lrec2006.bst -text
 doc/articles/swj-mlod-2012/lrec2006.sty -text
+doc/articles/swj-mlod-2012/sample.graffle -text
 doc/articles/swj-mlod-2012/swj-dbnary.tex -text
 /pom.xml -text
 src/main/java/org/getalp/dbnary/EnglishLangToCode.java -text svneol=unset#text/plain

@@ -50,7 +50,7 @@ iconv -f UTF-8 -t UTF-16 < ...-articles.xml > xxwiktionary.utf16.xml (replace xx
 
 * Availability of the extracted data
 
-  All extracted versions are available at {{{http://kaiko.getalp.org/dbnary/}}}
+  All extracted versions are available at {{http://kaiko.getalp.org/dbnary/}}
 
 Developper's notes
   

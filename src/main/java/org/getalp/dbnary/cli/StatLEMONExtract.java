@@ -125,6 +125,15 @@ public class StatLEMONExtract {
 	protected static final Property usageProperty;
 	// protected static final Property textProperty;
 
+	protected static final Property synonymProperty ;
+	protected static final Property antonymProperty ;
+	protected static final Property hypernymProperty ;
+	protected static final Property hyponymProperty ;
+	protected static final Property nearSynonymProperty ;
+	protected static final Property meronymProperty ;
+	protected static final Property holonymProperty ;
+
+	
 	static Model tBox;
 
 	static {
@@ -167,12 +176,14 @@ public class StatLEMONExtract {
 		dbnaryPosProperty = tBox.getProperty(DBNARY + "partOfSpeech");
 		
 		pronProperty = tBox.getProperty(LEXINFO + "pronunciation");
-		
-		Property synonymProperty = tBox.getProperty(DBNARY + "synonym");
-		Property antonymProperty = tBox.getProperty(DBNARY + "antonym");
-		Property hypernymProperty = tBox.getProperty(DBNARY + "hypernym");
-		Property hyponymProperty = tBox.getProperty(DBNARY + "hyponym");
-		Property nearSynonymProperty = tBox.getProperty(DBNARY + "approximateSynonym");
+
+		synonymProperty = tBox.getProperty(DBNARY + "synonym");
+		antonymProperty = tBox.getProperty(DBNARY + "antonym");
+		hypernymProperty = tBox.getProperty(DBNARY + "hypernym");
+		hyponymProperty = tBox.getProperty(DBNARY + "hyponym");
+		nearSynonymProperty = tBox.getProperty(DBNARY + "approximateSynonym");
+		meronymProperty = tBox.getProperty(DBNARY + "meronym");
+		holonymProperty = tBox.getProperty(DBNARY + "holonym");
 
 		Property lxfSynonymProperty = tBox.getProperty(LEXINFO + "synonym");
 		Property lxfAntonymProperty = tBox.getProperty(LEXINFO + "antonym");
@@ -181,8 +192,6 @@ public class StatLEMONExtract {
 		Property lxfNearSynonymProperty = tBox.getProperty(LEXINFO + "approximateSynonym");
 
 		// non standard nym (not in lexinfo);
-		Property meronymProperty = tBox.getProperty(DBNARY + "meronym");
-		Property holonymProperty = tBox.getProperty(DBNARY + "holonym");
 		
 		Resource nounPOS = tBox.getResource(LEXINFO + "noun");
 		Resource adjPOS = tBox.getResource(LEXINFO + "adj");
@@ -288,13 +297,26 @@ public class StatLEMONExtract {
 		int nbEquiv = countResourcesOfType(translationType);
 		int nbsense = countResourcesOfType(lexicalSenseType);
 		
-		System.out.println(" lexical entries: " + nble + " (+" + nblw + " words/+ " + nblp + " phrases). Total: " + (nble + nblw + nblp));
-		System.out.println(nblv + " vocables.");
-		System.out.println(nbsense + " senses.");
-		System.out.println(nbEquiv + " equivalents.");
+		System.out.println("Language Edition & Entries & Vocables & Senses & Equivalents\\\\");
+		System.out.print("\\textbf{" + language  + "} & ");
+		System.out.print("" + nble + " (+" + nblw + " words/+ " + nblp + " phrases) & ");
+		System.out.print(nblv + " & ");
+		System.out.print(nbsense + " & ");
+		System.out.println(nbEquiv + " \\\\");
 		
-//		printRelationsStats();
-//		printEquivalentsStats();
+		System.out.println("");
+		
+		System.out.println("Language Edition & syn & qSyn & ant & hyper & hypo & mero & holo \\\\");
+		System.out.print("\\textbf{" + language  + "} & ");
+		printRelationsStats(synonymProperty);
+		printRelationsStats(nearSynonymProperty);
+		printRelationsStats(antonymProperty);
+		printRelationsStats(hypernymProperty);
+		printRelationsStats(hyponymProperty);
+		printRelationsStats(meronymProperty);
+		printRelationsStats(holonymProperty);
+
+		printEquivalentsStats();
 	}
 	
 	private int countResourcesOfType(Resource type) {
@@ -308,59 +330,59 @@ public class StatLEMONExtract {
 		return nb;
 	}
 
-	private void printRelationsStats() {
-		// Number of relations
-//		SortedMap<String, IncrementableInt> rels = new TreeMap<String, IncrementableInt>();
-//		ResIterator relations = m1.listResourcesWithProperty(RDF.type, lexicalEntryRelationType);
-//		while(relations.hasNext()) {
-//			Resource r = relations.next();
-//			String label = r.getProperty(entryRelationLabelProperty).getString();
-//			if (rels.containsKey(label))
-//				rels.get(label).incr();
-//			else 
-//				rels.put(label, new IncrementableInt());
-//		}
-//		relations.close();
-//		for (Entry<String, IncrementableInt> i : rels.entrySet()) {
-//			System.out.println(i.getKey() + ": " + i.getValue());
-//		}
+	private void printRelationsStats(Property prop) {
+		ResIterator resit = m1.listResourcesWithProperty(prop);
+		int nb = 0;
+		int nble = 0;
+		int nblv = 0;
+
+		while(resit.hasNext()) {
+			Resource rel = resit.next();
+			if (rel.hasProperty(RDF.type, lexEntryType)) nble++;
+			if (rel.hasProperty(RDF.type, vocableEntryType)) nblv++;
+			nb++;
+		}
+		resit.close();
+
+		System.out.print("" + (nble+nblv) + "("+ nblv + " on vocable," + nble + "on entries)");
 		
 	}
 
 	private void printEquivalentsStats() {
 		// Number of relations
-//		ResIterator relations = m1.listResourcesWithProperty(RDF.type, translationType);
-//		HashSet<String> langs = new HashSet<String>();
-//		int others = 0;
-//		while(relations.hasNext()) {
-//			Resource r = relations.next();
-//			String lang = r.getProperty(langProperty).getString();
-//			langs.add(lang);
-//			if (counts.containsKey(lang)) {
-//				counts.get(lang).incr();
-//			} else {
-//				others = others + 1;
-//			}
-//		}
-//		relations.close();
-//		
-//		int total = 0;
-//		for (Entry<String, IncrementableInt> i : counts.entrySet()) {
-//			total = total + i.getValue().val;
-//			System.out.print(" & " + i.getKey());
-//		}
-//		System.out.println("& others & Total \\\\");
-//		System.out.print(language);
-//		for (Entry<String, IncrementableInt> i : counts.entrySet()) {
-//			System.out.print(" & " + i.getValue().val);
-//		}
-//		System.out.println(" & " + others + " & " + total + "\\\\");
-//		
-//		System.out.println("-------------------------");
-//		System.out.println(langs.size() + " different target languages.");
-//		for (String l : langs) {
-//			System.out.print(l + " ");
-//		}
+		ResIterator relations = m1.listResourcesWithProperty(RDF.type, translationType);
+		HashSet<String> langs = new HashSet<String>();
+		int others = 0;
+		while(relations.hasNext()) {
+			Resource r = relations.next();
+			String lang = r.getProperty(targetLanguageProperty).getString();
+			langs.add(lang);
+			if (counts.containsKey(lang)) {
+				counts.get(lang).incr();
+			} else {
+				others = others + 1;
+			}
+		}
+		relations.close();
+		
+		int total = 0;
+			
+		for (Entry<String, IncrementableInt> i : counts.entrySet()) {
+			total = total + i.getValue().val;
+			System.out.print(" & " + i.getKey());
+		}
+		System.out.println("& others & Total \\\\");
+		System.out.print(language);
+		for (Entry<String, IncrementableInt> i : counts.entrySet()) {
+			System.out.print(" & " + i.getValue().val);
+		}
+		System.out.println(" & " + others + " & " + total + "\\\\");
+		
+		System.out.println("-------------------------");
+		System.out.println(langs.size() + " different target languages.");
+		for (String l : langs) {
+			System.out.print(l + " ");
+		}
 		
 		
 	}

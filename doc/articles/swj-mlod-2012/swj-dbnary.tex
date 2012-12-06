@@ -29,7 +29,12 @@
 
 %%%%%%%%%%% Put your definitions here
 \usepackage{url}
+\usepackage{graphicx}
 
+\usepackage{ccicons}
+\usepackage{relsize}
+\newcommand{\uri}[1]{\textsf{\textscale{0.9}{#1}}}
+%\newcommand{\uri}[1]{\textsf{\small{#1}}}
 %%%%%%%%%%% End of definitions
 
 \pubyear{0000}
@@ -43,7 +48,7 @@
 
 %\pretitle{}
 \title{Dbnary: Wiktionary as a Lemon Based RDF Multilingual Lexical Ressource}
-\runningtitle{}
+\runningtitle{Dbnary}
 %\subtitle{}
 
 %\review{}{}{}
@@ -52,7 +57,7 @@
 % For one author:
 \author{\fnms{Gilles} \snm{Sérasset}\thanks{E-mail: Gilles.Serasset@imag.fr.}}
 \address{GETALP-LIG, UJF-Grenoble 1 \\BP 53, 38051 Grenoble cedex 9, France\\ \texttt{gilles.serasset@imag.fr}}
-\runningauthor{}
+\runningauthor{Gilles Sérasset}
 
 % Two or more authors:
 %\author[A]{\fnms{} \snm{}\thanks{}},
@@ -80,64 +85,104 @@ Alas, many inconsistencies, errors, difference in usage do exist in the differen
 
 \section{Extracting data from wiktionary}
 
+\subsection{Motivation}
+
 Errors and incoherence are inherent to a contributive resource like wiktionary. Some language editions (like French and English) have many moderators that do limit the number of incoherence among entries of the same language. Moreover, such languages, which contain the most data, use many \textit{templates} that simplify the extraction process. For instance, the translation section of the French dictionary usually uses a template to identify each individual translation.
 
 This is not true anymore with less developed wiktionary language editions. For instance, in the Finnish edition, some translations are introduced by a template giving the language (e.g. \{fr\} precedes French translations) and others are introduced by the string "ranska" which is the Finnish translation for "French". In this case the extractor needs to know the Finnish translation of all language names to cope with the second case and avoid losing almost half of the available translation data.
 
-Many such inconsistencies and some errors in the data renders the development of an extractor quite tedious, and many people in NLP is trying to use this data for different applications. 
+Many such inconsistencies and some errors in the data renders the development of an extractor quite tedious. as many people in NLP is trying to use this data for different applications, we decided that we would extract as much data as we can from wiktionary and provide it to the community while ensuring interoperability with other lexical data.
 
-The dbnary extractor is written in java and is open-source (LGPL licensed, available at \url{http://dbnary.forge.imag.fr}).
-\section{Extracted Data as a LEMON Lexical Resource}
+The dbnary extractor is written in java and is open-source (LGPL licensed, available at \url{http://dbnary.forge.imag.fr}). Anyone way contribute to this extraction effort by taking contact with the author.
 
-\subsection{Extracted Entries}
+\subsection{Scope of the extracted data}
 
 The main goal of our efforts is not to extensively reflect wiktionary data, but to create a lexical resource that is structured as a set of monolingual dictionaries + bilingual translation information. Such data is already useful for several application, but it is merely a starting point for a future multilingual lexical database.
 
-The monolingual data is always extracted from its own wiktionary lexical edition. For instance, the French lexical data is extracted from French language edition (the data available on http://fr.wiktionary.org). Hence, we completely disregard the French data that may be found in other language editions.
+The monolingual data is always extracted from its own wiktionary language edition. For instance, the French lexical data is extracted from French language edition\footnote{We use the term ``French language edition'' to refer to the data available on \url{http://fr.wiktionary.org}}. Hence, we completely disregard the French data that may be found in other language editions.
 
-We also filtered out some part of speeches in order to produce a result that is closer to existing monolingual dictionaries. For instance, in French, we disregard abstract entries that are prefixes, suffixes or flexions (e.g.: we do not extract data concerning \textit{in-} or \textit{-al} that are prefixes/suffixes and have a dedicated page in French language Edition). 
+We also filtered out some part of speeches in order to produce a result that is closer to existing monolingual dictionaries. For instance, in French, we disregard abstract entries that are prefixes, suffixes or flexions (e.g.: we do not extract data concerning \textit{in-} or \textit{-al} that are prefixes/suffixes and have a dedicated page in French language edition). 
 
-Our work did focus only on the lexical data. Hence, we do not provide any reference to any ontology.  
+Our work did focus only on the lexical data. Hence, we do not provide any reference to any ontology.
 
-\subsection{LEMON and non-LEMON modeled Extracted Data}
+\subsection{Availability of the extracted data}
 
-All the extracted data could not be structured using LEMON only model. For instance, LEMON does not contain anything to represent translations between languages as it assumes that such a translation will be handled by the ontology description. Moreover, LEMON assumes that all data is well-formed and fully specified. As an example, synonymy relation is a property linking a \textit{Lexical Sense} to another \textit{Lexical Sense}. While this is correct to assume as a \textit{principle}, this does not account for the huge amount of legacy data that is available in dictionaries and lexical databases.
+Dbnary data is provided using Creative Commons Attribution-ShareAlike 3.0 license (\ccbysa). It may be downloaded from the dbnary website\footnote{\url{http://kaiko.getalp.org/about-dbnary}} as a set of turtle files (one per language).
 
-In order to cope with this legacy data, we introduced several classes and properties that are not LEMON entities. However, when a piece of data is representable as a LEMON entity, then it is done so. 
+As the wiktionary language editions constantly evolve with entries modifications and additions, the dbnary also evolves. Each time the wikimedia foundation provides a new dump\footnote{dumps are available at \url{http://dumps.wikimedia.org/}.} of a wiktionary language edition, dbnary data is extracted with the new dump and made available online. At the time of writing, the dumps are updated about once every ten days for each language.
 
-\subsection{Example of an extracted lexical entry}
+Dbnary data is also available as Linguistic Linked Open Data (LLOD). Hence, all dbnary URIs are dereferencable and a SPARQL endpoint is available at \url{http://kaiko.getalp.org/sparql}. However, as the dbnary data changes almost everyday, the data that is available this way is not necessarily up to date.
 
-The dbnary extracted data contains the following information:
+\section{Extracted Data as a LEMON Lexical Resource}
+
+\begin{figure*}[tbp]
+\resizebox{\linewidth}{!}{%
+\includegraphics{cat_struct.pdf}
+}
+\caption{An extract of the dbnary entry "cat" in English, showing the respective roles of \uri{Vocable}, \uri{LexicalEntry} and \uri{LexicalSense} in the dbnary dataset.}\label{dbnary:cat}
+\end{figure*}
+
+\begin{figure*}[tbp]
+\resizebox{\linewidth}{!}{%
+\includegraphics{cat_translations.pdf}
+}
+\caption{A subset of the translations related to the lexical entry \uri{eng:cat\_Noun\_1}.}\label{dbnary:catequiv}
+\end{figure*}
+
+\subsection{Using LEMON for legacy lexical data}
+
+LEMON model itself is not sufficient to represent lexical data that is currently available in classical monolingual and bilingual dictionaries. For instance, LEMON does not contain anything to represent translations between languages as it assumes that such a translation will be handled by the ontology description. Moreover, LEMON assumes that all data is well-formed and fully specified. As an example, synonymy relation is a property linking a \uri{LexicalSense} to another \uri{LexicalSense}. While this is correct to assume as a \textit{principle}, this does not account for the huge amount of legacy data that is available in dictionaries and lexical databases.
+
+In order to cope with this legacy data, we extended the LEMON model by adding new classes and properties. However, when a piece of data is representable as a LEMON entity, then it is done so. Moreover, when possible, we did use the ISOcat registry \cite{windhouwer2012linking} to identify standard elements in the lexical data.
+
+\subsection{Dbnary extension to LEMON}
+
+The LEMON model has been extended to cope with legacy lexical data. Added classes and properties are:
 
 \begin{description}
-\item[Lexical Entries:] an instance of \texttt{lemon:LexicalEntry} corresponds more or less to a "part of speech" section in a wiktionary page. This means that it is defined by an unique canonical written form, a part of speech and a number (in case of homonymy). When wiktionary data allows for it, we try to distinguish between \texttt{lemon:Word} and \texttt{lemon:Phrase} that are defined as specific lexical entries.
-\item[Lexical Forms:] lexical entries are connected, through the \texttt{lemon:canonicalForm} property to a lexical form that gathers a written form and a pronunciation (when available). They may also be connected to alternative spelling through \texttt{lemon:lexicalVariant} property. 
-\item[Lexical Senses:] an instance of \texttt{lemon:LexicalSense} correspond to one definition in the wiktionary page. It is the target of the \texttt{lemon:sense} property of its containing Lexical Entry. Each lexical sense is associated with a \texttt{dbpedia:senseNumber} property (that contains the rank at which the definition appeared in the wiktionary page) and a \texttt{lemon:definition} property.
-\item[Part Of Speech] part of speech properties are available in the wiktionary data in 2 distinct properties that are attached to lexical entries:
-\begin{itemize}
-\item \texttt{dbnary:partOfSpeech} is a data property whose value is a string that contains the part of speech \textit{as it was defined in wiktionary} 
-\item \texttt{lexinfo:partOfSpeech} is a standard property that is bound to isocat data categories and which value is a correct isocat data category. This property is only available when the mapping between wiktionary part of speech and isocat part of speech is known.
-\end{itemize}
-\item[Vocable:] the main unit of data in wiktionary is a \textit{wiktionary page} that may contain several lexical entries. Many lexical data is represented as links to a \textit{page}. Most of the time, there is not enough data to know to which lexical entry (or lexical sense) these links point to. Hence if we want to keep these \textit{underspecified} relations, we need to define units that represent wiktionary pages. This is the role of the \texttt{dbnary:Vocable} class. Instances of this class are related to their lexical entries through the \texttt{dbnary:refersTo} property. 
-\item[Nyms:] most wiktionary language edition do provide "nym" relations (mainly synonym, antonym, hypernym, hyponym, meronym and holonym). As we already mentioned this legacy data is not representable using LEMON model, unless we know for sure the source and target lexical sense of the relation. In order to cope with this legacy data, 6 new "nym" properties (in \texttt{dbnary} name space). Additionaly, we defined a class called \texttt{dbnary:LexicalEntity} that is defined as the union of LEMON lexical entries and lexical senses. The "nym" properties domain and range are lexical entities. 
+\item[Vocable:] Several lexical entries may be contained in a single wiktionary page. And most lexical relations are simply targeted to wiktionary pages. Hence, we added the \uri{dbnary:Vocable} class to represent a wiktionary page. This class is a subclass of \uri{lemon:LexicalEntry}. Instances of this class are related to their lexical entries through the \uri{dbnary:refersTo} property. 
 
-Most of these properties do link a \textit{lexical entry} to a \textit{vocable}, as there is not enough information in wiktionary to promote this relation to a full class \textit{sense to sense} relation. Some of these properties are however promoted to a \textit{Lexical Sense to Vocable} relation when the lexical entry is unambiguous (contains only one sense).
-\item[Translations:] As there is no way to represent bilingual translation relation in LEMON, we introduced the \texttt{dbnary:Equivalent} class that collects translation information contained in wiktionary. This class admits several properties:
+\item[LexicalEntity:] Lexical relations should usually link two \textit{Lexical Senses}. However, most relations found in legacy lexical data is underspecified. Some relations link a \textit{Lexical Sense} to a \textit{Vocable} or to a \textit{Lexical Entry}. Others even link two \textit{Lexical Entries}. In order to cope in a standard way with such underspecified relations, we introduced the \uri{dbnary:LexicalEntity} class which is the union of  \textit{Lexical Entry} and \textit{Lexical Sense}.
+
+\item[Nyms:] Most wiktionary language edition do provide ``nym'' relations (mainly synonym, antonym, hypernym, hyponym, meronym and holonym), which are almost always underspecified. Hence, DBnary introduces 6 new ``nym'' properties (in \uri{dbnary} name space). These relations domains and ranges are \textit{Lexical Entities}.
+
+\item[Translations:] As there is no way to represent bilingual translation relation in LEMON, we introduced the \uri{dbnary:Equivalent} class that collects translation information contained in wiktionary. This class admits several properties:
 \begin{itemize}
-\item \texttt{dbnary:isTranslationOf} relates the equivalent to its source \textit{lexical entry}. In this extraction process, we decided not to relate the equivalent object to its source \textit{lexical sense}. The reason is that, when some information is available to distinguish between lexical senses, it is mainly targeted to a human audience and there is no simple and reliable process to  link to the correct sense. Instead, we rather keep all the available disambiguation information for a later specialized processing.
-\item \texttt{dbnary:targetLanguage} is a data property whose type is a string containing the target language code as defined in ISO639-3 standard.
-\item \texttt{dbnary:writtenForm} gives the written form of the translation in the target language. Here, we decided not to relate to a vocable as some translations are not to be defined as lexical entries in the target language.
-\item \texttt{dbnary:glose} is a string property that contains any available information used to dentate the lexical sense of the source of the equivalent.
-\item \texttt{dbnary:usage} is a string property that contains any available information concerning this equivalent object. It usually gives additional information on the target entry.
+\item \uri{dbnary:isTranslationOf} relates the equivalent to its source \textit{lexical Entity}. 
+\item \uri{dbnary:targetLanguage} is a data property whose type is a string containing the target language code as defined in ISO639-3 standard.
+\item \uri{dbnary:writtenForm} gives the written form of the translation in the target language. Here, we decided not to relate to a vocable as some translations are not to be defined as lexical entries in the target language.
+\item \uri{dbnary:glose} is a string property that contains any available information used to dentate the lexical sense of the source of the equivalent.
+\item \uri{dbnary:usage} is a string property that contains any available information concerning this equivalent object. It usually gives additional information on the target entry.
 \end{itemize}
 
 \end{description}
 
-\subsection{Size of the involved data}
+\subsection{Structure of the extracted lexical data}
+
+
+
+Figure \ref{dbnary:cat} illustrates the main elements characterizing a lexicon entry in the dbnary data. Each wiktionary page is represented by a \uri{dbnary:Vocable} element that refers to its corresponding \uri{lemon:Lexical\-Entry}. Each lexical entry corresponds to one lemma, one etymology and one part of speech. Each lexical entry is related to its \uri{lemon:Lexical\-Sense} by the \uri{lemon:sense} property. A lexical sense corresponds to one definition. 
+
+Each lexical entry is related to its canonical form and eventually to alternate forms (that are represented using \uri{lemon:LexicalForm}s). The part of speech is available through \uri{dbnary:partOfSpeech} property that gives the part of speech as defined by the wiktionary language edition, and through the \uri{isocat:partOfSpeech} property that points to a standard ISOcat part of speech value.
+
+\begin{figure*}[tbp]
+\resizebox{\linewidth}{!}{%
+\includegraphics{cat_syn.pdf}
+}
+\caption{An example of a synonymy relation for the lexical entry \uri{eng:cat\_Noun\_1}.}\label{dbnary:catsyn}
+\end{figure*}
+
+
+Figure \ref{dbnary:catequiv} illustrates the \textit{dbnary} extension to LEMON that is used to represent the many translations that are available in wiktionary. Each translation is represented as a \uri{dbnary:Equivalent} instance that is associated to a \textit{lexical entry} by the \uri{is\-Translation\-Of} property. The translation is given as a string through the \uri{writtenForm} property, as some translations may not necessarily correspond to vocables in the target language (e.g. explanatory translations). The target language of the translation is given using ISO  639-3 3 letter language code \cite{ISO639-3:2007}. When available, the \uri{glose} property value gives an indication concerning the lexical sense that is translated. In the current dataset, the translation is linked to an usually ambiguous lexical entry and the \textit{glose} is kept for further attachment to the correct word sense.
+
+Wiktionary contains many lexical relations (like synonymy, antonymy, etc.) that are represented using the above mentioned ``nym'' properties which relate a \textit{lexical entity} with another \textit{lexical entity}. In the current dataset, most of the property subjects are \textit{lexical entries}. However, in case of monosemous lexical entries, the synonymy relation is attached to the unique \uri{lemon:LexicalSense}. Figure \ref{dbnary:catsyn} illustrates how dbnary encodes ``nym'' relations with examples of the \uri{dbnary:synonym} property. In the upper part of the figure is an example of a \uri{dbnary:synonym} property that is related to the ambiguous lexical entry \uri{eng:cat\_\_Noun\_\_1}. The lower part shows that, in the monosemous lexical entry \uri{eng:voyager\_\_Noun\_\_1}, the \uri{dbnary:synonym} property is related to the unique lexical sense of the entry. The object of such properties are always \uri{dbnary:Vocable}.
+
+
+\section{Size of the involved data}
 
 At the time of writing, the extracted data from the most up to date dump files are the following:
 
-\begin{table}[htb]
+\begin{table*}[htb]
 \begin{minipage}{\linewidth}
 \begin{tabular}{lrrrrrr}
 \multicolumn{4}{l}{\textbf{Nodes in graphs}}\\
@@ -164,7 +209,7 @@ Equivalents
 \end{minipage}
 \caption{Size of the extracted lexical networks.}
 \label{table:size}
-\end{table}
+\end{table*}
 
 As the extraction is performed each time a wiktionary dump is available, this numbers are constantly evolving, as the wiktionary data is evolving and as the extractor itself maybe improved.
 

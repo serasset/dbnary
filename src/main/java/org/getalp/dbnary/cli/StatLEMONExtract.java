@@ -308,13 +308,15 @@ public class StatLEMONExtract {
 		
 		System.out.println("Language Edition & syn & qSyn & ant & hyper & hypo & mero & holo \\\\");
 		System.out.print("\\textbf{" + language  + "} & ");
-		printRelationsStats(synonymProperty);
-		printRelationsStats(nearSynonymProperty);
-		printRelationsStats(antonymProperty);
-		printRelationsStats(hypernymProperty);
-		printRelationsStats(hyponymProperty);
-		printRelationsStats(meronymProperty);
-		printRelationsStats(holonymProperty);
+		System.out.print(countRelations(synonymProperty) + "& ");
+		System.out.print(countRelations(nearSynonymProperty) + "& ");
+		System.out.print(countRelations(antonymProperty) + "& ");
+		System.out.print(countRelations(hypernymProperty) + "& ");
+		System.out.print(countRelations(hyponymProperty) + "& ");
+		System.out.print(countRelations(meronymProperty) + "& ");
+		System.out.println(countRelations(holonymProperty) + " \\\\ ");
+		System.out.println("");
+		System.out.println("");
 
 		printEquivalentsStats();
 	}
@@ -330,22 +332,18 @@ public class StatLEMONExtract {
 		return nb;
 	}
 
-	private void printRelationsStats(Property prop) {
+	private int countRelations(Property prop) {
 		ResIterator resit = m1.listResourcesWithProperty(prop);
 		int nb = 0;
-		int nble = 0;
-		int nblv = 0;
 
 		while(resit.hasNext()) {
 			Resource rel = resit.next();
-			if (rel.hasProperty(RDF.type, lexEntryType)) nble++;
-			if (rel.hasProperty(RDF.type, vocableEntryType)) nblv++;
+
 			nb++;
 		}
 		resit.close();
 
-		System.out.print("" + (nble+nblv) + "("+ nblv + " on vocable," + nble + "on entries)");
-		
+		return nb;
 	}
 
 	private void printEquivalentsStats() {

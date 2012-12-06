@@ -180,131 +180,39 @@ Wiktionary contains many lexical relations (like synonymy, antonymy, etc.) that 
 
 \section{Size of the involved data}
 
-At the time of writing, the extracted data from the most up to date dump files are the following:
+All sizes indicated in this sections reflect the state of the dbnary data at the time of writing (December 2012). Table \ref{globalsize} give the number of resources available in dbnary.
 
-\begin{table*}[htb]
-\begin{minipage}{\linewidth}
-\begin{tabular}{lrrrrrr}
-\multicolumn{4}{l}{\textbf{Nodes in graphs}}\\
-\hline
-				 & English &  French  & German & Finnish & Italian & Portuguese \\
-Lexical entries &  478764 &  260647\footnote{among which $231522$ words and $24434$ phrases.}  
-				 					   & 101867  &  30478 & 24030   & 31105         \\
-Vocables 	     & 458317  & 270048  & 166567   & 30946 & 29591  &  32784    \\
-Lexical Senses
-			     & 386030  & 341720  & 88780   & 38713   &  33731  & 55331      \\
-Equivalents
-			     & 942425  & 406947 & 438379  & 101733 & 56883   & 49029       \\
-%\multicolumn{4}{l}{\textbf{Relations in graphs}}\\
-%\hline
-%syn	& 65103& 55434& 76606\\
-%qsyn\footnote{This relation is only available in French language edition. Other language editions do not distinguish between synonyms and quasi synonyms.}
-%	& -& 2666 & -\\
-%ant	& 9964& 8760& 34691\\
-%holo	& 0  & 5415& 0 \\
-%mero	& 224& 4996&0 \\
-%hyper	& 1047& 11272& 49051\\
-%hypo	& 3144& 17601& 54733\\
+\begin{table}[htb]
+\begin{tabular}{lrrrr}
+ & \textbf{Entries} & \textbf{Vocables} & \textbf{Senses} & \textbf{Equivalents}\\
+ \hline
+\textbf{eng} & 502493 & 481311 & 402815 & 1021430 \\
+\textbf{fra} & 264803 & 274854 & 347076 & 419168 \\
+\textbf{deu} & 106337 & 171517 & 90474 & 446563 \\
+\textbf{fin} & 42813  & 43158 & 51297 & 114279 \\
+\textbf{por} & 42042  & 43028 & 76124 & 197931 \\
+\textbf{ita} & 24473  & 30568 & 34133 & 58383 \\
 \end{tabular}
-\end{minipage}
-\caption{Size of the extracted lexical networks.}
-\label{table:size}
-\end{table*}
+\caption{Number of resources by type and language, sorted by number of lexical entries.}\label{globalsize}
+\end{table}
 
-As the extraction is performed each time a wiktionary dump is available, this numbers are constantly evolving, as the wiktionary data is evolving and as the extractor itself maybe improved.
+As the extraction is performed each time a wiktionary dump is available, this numbers are constantly evolving, as the wiktionary data is evolving and as the extractor itself may be improved.
 
-%Stats on RDF file: file:///home/serasset/dev/wiktionary/extracts/lemon/fr/fr_dbnary_lemon_20120906.tut
-% lexical entries: 4691 (+231522 words/+ 24434 phrases). Total: 260647
-%270048 vocables.
-%341720 senses.
-%406947 equivalents.
-%Stats on RDF file: file:///home/serasset/dev/wiktionary/extracts/lemon/en/en_dbnary_lemon_20120831.tut
-% lexical entries: 478764 (+0 words/+ 0 phrases). Total: 478764
-%458317 vocables.
-%386030 senses.
-%942425 equivalents.
-%Stats on RDF file: file:///home/serasset/dev/wiktionary/extracts/lemon/de/de_dbnary_lemon_20120909.tut
-% lexical entries: 101867 (+0 words/+ 0 phrases). Total: 101867
-%166567 vocables.
-%88780 senses.
-%438379 equivalents.
-%Stats on RDF file: file:///home/serasset/dev/wiktionary/extracts/lemon/it/it_dbnary_lemon_20120906.tut
-% lexical entries: 24030 (+0 words/+ 0 phrases). Total: 24030
-%29591 vocables.
-%33731 senses.
-%56883 equivalents.
-%Stats on RDF file: file:///home/serasset/dev/wiktionary/extracts/lemon/pt/pt_dbnary_lemon_20120905.tut
-% lexical entries: 31105 (+0 words/+ 0 phrases). Total: 31105
-%32784 vocables.
-%55331 senses.
-%49029 equivalents.
-%Stats on RDF file: file:///home/serasset/dev/wiktionary/extracts/lemon/fi/fi_dbnary_lemon_20120903.tut
-% lexical entries: 30478 (+0 words/+ 0 phrases). Total: 30478
-%30946 vocables.
-%38713 senses.
-%101733 equivalents.
 
-% and Portuguese ($397$ Mb)
+Table \ref{nymsize} gives an overview of the number of lexico-semantic relations available in each language edition.
 
-%-rw-r--r--. 1 serasset geta 608M Oct 13 22:03 dewkt.xml
-%-rw-r--r--. 1 serasset geta 3.9G Oct 13 22:02 enwkt.xml
-%-rw-r--r--. 1 serasset geta 3.0G Oct 13 21:59 frwkt.xml
-%-rw-r--r--. 1 serasset geta 390M Oct 13 22:03 ptwkt.xml
-
-%Stats on RDF file: file:///Users/serasset/dev/wiktionary/extracts/RDF20120305/fr_extract_20120305.tut
-%260467 lexical entries.
-%246168 lemmas.
-%395227 equivalents.
-%106151 relations.
-%330681 definitions.
-%330681 senses.
-%1669375 total nodes.
-%ant: 8760
-%holo: 5415
-%hyper: 11272
-%hypo: 17601
-%mero: 4996
-%qsyn: 2666
-%syn: 55434
-%fra translation in frawiktionary for entry[http://getalp.org/dbnary/fra#__tr_fra_4_crocodile_nain, http://www.lexicalmarkupframework.org/lmf/r14#isPartOf, http://getalp.org/dbnary/fra#crocodile_nain]
-%source & eng & fra & deu  & others //
-%fra & 73168 & 24 & 31589 & 290190//%394971
-%
-%
-%Stats on RDF file: file:///Users/serasset/dev/wiktionary/extracts/RDF20120305/de_extract_20120305.tut
-%155258 lexical entries.
-%90207 lemmas.
-%417687 equivalents.
-%215085 relations.
-%80934 definitions.
-%80934 senses.
-%1040105 total nodes.
-%ant: 34691
-%hyper: 49051
-%hypo: 54733
-%syn: 76606
-%deu translation in deuwiktionary for entry[http://getalp.org/dbnary/deu#__tr_deu_5_Pantherpilz, http://www.lexicalmarkupframework.org/lmf/r14#isPartOf, http://getalp.org/dbnary/deu#Pantherpilz]
-%source & eng & fra & deu  & others //
-%deu & 68305 & 57400 & 4 & 291605//%417314
-%
-%
-%Stats on RDF file: file:///Users/serasset/dev/wiktionary/extracts/RDF20120305/en_extract_20120305.tut
-%414929 lexical entries.
-%402442 lemmas.
-%497204 equivalents.
-%79487 relations.
-%354359 definitions.
-%354359 senses.
-%2102780 total nodes.
-%ant: 9964
-%hyper: 1047
-%hypo: 3144
-%mero: 224
-%syn: 65103
-%eng translation in engwiktionary for entry[http://getalp.org/dbnary/eng#__tr_eng_1_obsolescence, http://www.lexicalmarkupframework.org/lmf/r14#isPartOf, http://getalp.org/dbnary/eng#obsolescence]
-%source & eng & fra & deu  & others //
-%eng & 0 & 33290 & 32083 & 430898//%496271
-
+\begin{table}[htb]
+\begin{tabular}{lrrrrrr}
+ & syn  & ant & hyper & hypo & mero & holo \\
+\textbf{fra} & 29986& 6471& 7356& 3428& 900& 1797 \\ 
+\textbf{eng} & 10203  & 2841 & 227 & 337 & 35 & 0 \\
+\textbf{deu} & 25889& 13756& 27771& 9011& 0& 0 \\ 
+\textbf{ita} & 6430&  2027& 0& 0& 0& 0 \\ 
+\textbf{por} & 3493&  571& 6& 2& 0& 0 \\ 
+\textbf{fin} & 1665&  0& 0& 3& 0& 0 \\ 
+\end{tabular}
+\caption{Number of lexicon-semantic relations.}\label{nymsize}
+\end{table}
 
 \section{Conclusion and Perspectives}
 
@@ -316,6 +224,35 @@ Our next objectives are to better generalize the treatments of the current extra
 
 The work presented in this paper was conducted in the Videosense project, funded by the French National Research Agency (ANR) under its CONTINT 2009 programme (grant ANR-09-CORD-026).
 
+
+%\begin{table*}[htb]
+%\begin{minipage}{\linewidth}
+%\begin{tabular}{lrrrrrr}
+%\multicolumn{6}{l}{\textbf{Nodes in graphs}}\\
+%\hline
+%				 & English &  French  & German & Finnish & Italian & Portuguese \\
+%Lexical entries &  478764 &  260647\footnote{among which $231522$ words and $24434$ phrases.}  
+%				 					   & 101867  &  30478 & 24030   & 31105         \\
+%Vocables 	     & 458317  & 270048  & 166567   & 30946 & 29591  &  32784    \\
+%Lexical Senses
+%			     & 386030  & 341720  & 88780   & 38713   &  33731  & 55331      \\
+%Equivalents
+%			     & 942425  & 406947 & 438379  & 101733 & 56883   & 49029       \\
+%%\multicolumn{4}{l}{\textbf{Relations in graphs}}\\
+%%\hline
+%%syn	& 65103& 55434& 76606\\
+%%qsyn\footnote{This relation is only available in French language edition. Other language editions do not distinguish between synonyms and quasi synonyms.}
+%%	& -& 2666 & -\\
+%%ant	& 9964& 8760& 34691\\
+%%holo	& 0  & 5415& 0 \\
+%%mero	& 224& 4996&0 \\
+%%hyper	& 1047& 11272& 49051\\
+%%hypo	& 3144& 17601& 54733\\
+%\end{tabular}
+%\end{minipage}
+%\caption{Size of the extracted lexical networks.}
+%\label{table:size}
+%\end{table*}
 
 %%%%%%%%%%% The article body starts:
 

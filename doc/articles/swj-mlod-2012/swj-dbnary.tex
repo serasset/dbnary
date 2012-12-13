@@ -215,21 +215,62 @@ Table \ref{nymsize} gives an overview of the number of lexico-semantic relations
 \caption{Number of lexicon-semantic relations, sorted by number of synonymy relations.}\label{nymsize}
 \end{table}
 
-Table \ref{tradsize} shows the number of translation equivalents available in each language edition, for the major target languages. It also gives the total number of translations and the number of different target language with translations.
+Table \ref{tradsize} shows the number of translation equivalents available in each language edition, for the major target languages\footnote{The target languages are the 21 having the largest page count in their wiktionaries, i.e. (by increasing order of the ISO 639-3 language codes):
+German (deu),
+Greek (ell),
+English (eng),
+Finnish (fin),
+French (fra),
+Hungarian (hun),
+Ido (ido),
+Kannada (kan),
+Korean (kor),
+Kurdish (kur),
+Lithuanian (lit),
+Malagasy (mlg),
+Dutch (nld),
+Polish (pol),
+Portuguese (por),
+Russian (rus),
+Swedish (swe),
+Tamil (tam),
+Turkish (tur),
+Vietnamese (vie),
+Chinese (zho)
+}. It also gives the total number of translations and the number of different target language with translations. Not surprisingly, English language edition shows the most translation equivalent to more than 1000 different languages. Surprisingly, the French language edition shows a relatively small number of target languages, while the number of equivalents stays relatively high. 
 
 \begin{table*}[htb]
-\begin{tabular}{lrrrrrrrr}
-\textbf{Source/Target} & \textbf{deu} & \textbf{eng} & \textbf{fin} & \textbf{fra} & \textbf{ita} & \textbf{por}& \textbf{others} & \textbf{Total} \\
-\textbf{eng} & 56880 & 1 & 70803 & 53702 & 36009 & 28049 & 775986 & 1021430\\
+\begin{tabular}{lrrrrrrrrrrrrr}
+\textbf{Source/Target} & \textbf{deu} & \textbf{ell} & \textbf{eng} & \textbf{fin} & \textbf{fra} & \textbf{hun} & \textbf{ido} & \textbf{kan} & \textbf{kor} & \textbf{kur} & \textbf{lit} & \textbf{mlg} & \textbf{nld}  \\
+\textbf{deu} & 0 & 2596 & 76248 & 4695 & 63909 & 7066 & 345 & 78 & 1361 & 1262 & 1761 & 60 & 11055  \\
+\textbf{eng} & 56880 & 22047 & 1 & 70803 & 53702 & 21367 & 2454 & 629 & 13294 & 1639 & 5027 & 211 & 38066 \\
+\textbf{fin} & 7626 & 892 & 27827 & 0 & 6560 & 2164 & 905 & 9 & 242 & 159 & 597 & 17 & 2011 \\
+\textbf{fra} & 32897 & 6799 & 71560 & 7360 & 7 & 5096 & 11442 & 144 & 3966 & 1772 & 1826 & 90 & 29454 \\
+\textbf{ita} & 4600 & 529 & 16614 & 964 & 4403 & 831 & 175 & 19 & 284 & 112 & 331 & 8 & 2016 \\
+\textbf{por} & 6186 & 2492 & 9795 & 4046 & 7635 & 3192 & 1831 & 161 & 2026 & 841 & 2264 & 293 & 4687 \\
 \end{tabular}
-\caption{Number of translation equivalents in each language edition, detailed by target language.}\label{tradsize}
+\begin{tabular}{lrrrrrrrrrrrrr}
+\textbf{Source/Target} & \textbf{pol} & \textbf{por} & \textbf{rus} & \textbf{swe} & \textbf{tam} & \textbf{tur} & \textbf{vie} & \textbf{zho}& \textbf{others} & \textbf{Total} & \textbf{\textit{target languages}}\\
+\textbf{deu}  & 15551 & 8677 & 15451 & 46765 & 222 & 4726 & 436 & 5528 & 178771 & 446563 & \textit{358}\\
+\textbf{eng}  & 21989 & 28049 & 66023 & 30198 & 1329 & 17271 & 7589 & 2 & 562860 & 1021430 & \textit{1081}\\
+\textbf{fin} & 2447 & 2177 & 7945 & 9029 & 27 & 1590 & 94 & 248 & 41713 & 114279 & \textit{304}\\
+\textbf{fra} & 7507 & 17206 & 7483 & 12152 & 639 & 3926 & 1602 & 4483 & 191757 & 419168 & \textit{179}\\
+\textbf{ita} & 908 & 1254 & 973 & 908 & 73 & 531 & 198 & 583 & 22069 & 58383 & \textit{319}\\
+\textbf{por} & 4346 & 3 & 3867 & 4394 & 540 & 2845 & 1000 & 2933 & 132554 & 197931 & \textit{678}\\
+
+\end{tabular}
+\caption{Number of translation equivalents in each language edition, detailed by target language, for the 21 biggest wiktionary languages, sorted by alphabetic order on ISO language code. The number of different target language is also given.}\label{tradsize}
 \end{table*}
 
 \section{Conclusion and Perspectives}
 
-The current paper presents the dbnary  on an open source tool to extract a LEMON based lexical network from different wiktionary language editions. Such a work is interesting for many users that will be able to use the extracted data in their own NLP system. Moreover, as the extracted resource uses the Resource Description Framework (RDF) standard and the LEMON model, the extracted data is also directly usable for researchers on the Semantic Web, where it could be used to ease the ontology alignment systems when terms in different languages are used to describe ontologies of a domain.
+The current paper presents the dbnary dataset that is a LEMON based lexical network from different wiktionary language editions. Such a work is interesting for many users that will be able to use the extracted data in their own NLP system. Moreover, as the extracted resource uses the Resource Description Framework (RDF) standard and the LEMON model, the extracted data is also directly usable for researchers on the Semantic Web, where it could be used to ease the ontology alignment systems when terms in different languages are used to describe ontologies of a domain.
 
-Our next objectives are to better generalize the treatments of the current extractors, so that it will be easier to create extractors for other languages. We are currently working on the Russian and we welcome all initiative aiming at the addition of new language to this open-source tool.
+This resources describes a significative number of entries for at least English and French languages that makes it comparable to Wordnet \cite{wordnet-fellbaum}. Moreover, it contains many translation equivalents with certain language pairs that makes it also comparable to many existing multilingual Wordnets
+
+Our next objectives are to better generalize the treatments of the current extractors, so that it will be easier to create and maintain extractors for other languages. We are currently working on the Russian and we welcome all initiative aiming at the addition of new language to this open-source tool.
+
+We will also enhance the \textit{dbnary} data by providing more lexico-semantic relations and translations aligned on Lexical Senses.
 
 \section{Acknowledgements}
 

@@ -34,6 +34,16 @@ doc/articles/swj-mlod-2012/iosart2c.cls -text
 doc/articles/swj-mlod-2012/lrec2006.bst -text
 doc/articles/swj-mlod-2012/lrec2006.sty -text
 doc/articles/swj-mlod-2012/sample.graffle -text
+doc/articles/swj-mlod-2012/sw_iosart2c.zip -text
+doc/articles/swj-mlod-2012/sw_iosart2c/flushend.sty -text
+doc/articles/swj-mlod-2012/sw_iosart2c/iosart2c.aux -text
+doc/articles/swj-mlod-2012/sw_iosart2c/iosart2c.bbl -text
+doc/articles/swj-mlod-2012/sw_iosart2c/iosart2c.blg -text
+doc/articles/swj-mlod-2012/sw_iosart2c/iosart2c.cls -text
+doc/articles/swj-mlod-2012/sw_iosart2c/iosart2c.pdf -text
+doc/articles/swj-mlod-2012/sw_iosart2c/iosart2c.tex -text
+doc/articles/swj-mlod-2012/sw_iosart2c/iosart2c_template.tex -text
+doc/articles/swj-mlod-2012/swj-dbnary.pdf -text
 doc/articles/swj-mlod-2012/swj-dbnary.tex -text
 /pom.xml -text
 src/main/java/org/getalp/dbnary/EnglishLangToCode.java -text svneol=unset#text/plain

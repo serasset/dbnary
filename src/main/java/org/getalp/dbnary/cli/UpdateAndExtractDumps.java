@@ -462,7 +462,10 @@ public class UpdateAndExtractDumps {
 		File d = new File(odir);
 		d.mkdirs();
 	
+		// TODO: correctly test for compressed file if compress is enabled
 		String extractFile = odir + "/" + lang +"_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
+		if (compress) extractFile = extractFile + ".bz2";
+		
 		File file = new File(extractFile);
 		if (file.exists() && !force) {
 			// System.err.println("Extracted wiktionary file " + extractFile + " already exists.");

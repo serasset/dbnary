@@ -171,6 +171,7 @@ public class UpdateAndExtractDumps {
 		d.mkdirs();
 
 		String extractFile = odir + "/" + lang +"_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
+		if (compress) extractFile = extractFile + ".bz2";
 		File file = new File(extractFile);
 		if (! file.exists()) {
 			System.err.println("Extracted wiktionary file " + extractFile + " does not exists. I will not link to this version.");
@@ -178,13 +179,18 @@ public class UpdateAndExtractDumps {
 		}
 		
 		String latestFile = latestdir + "/" + lang +"_dbnary_" + model.toLowerCase() + ".ttl";
+		if (compress) latestFile = latestFile + ".bz2";
 		File lf = new File(latestFile);
 		if (lf.exists()) {
 			// System.err.println("Deleting old link: " + latestFile );
 			lf.delete();
 		}
 		try {
-			String[] args = {"ln", "-s", "../" + lang + "/" + lang +"_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl", lang + "_dbnary_" + model.toLowerCase() + ".ttl"};
+			String linkTo = "../" + lang + "/" + file.getName();
+			String linkName = lang + "_dbnary_" + model.toLowerCase() + ".ttl";
+			if (compress) linkName = linkName + ".bz2";
+
+			String[] args = {"ln", "-s", linkTo, linkName};
 			Runtime.getRuntime().exec(args, null, d);
 		} catch (IOException e) {
 			System.err.println("Eror while trying to link to latest extract: " + latestFile + "->" + extractFile);

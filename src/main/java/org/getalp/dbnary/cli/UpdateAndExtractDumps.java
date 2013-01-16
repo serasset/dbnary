@@ -48,12 +48,16 @@ public class UpdateAndExtractDumps {
 	private static final String HISTORY_SIZE_OPTION = "k";
 	private static final String DEFAULT_HISTORY_SIZE = "5";
 
+	private static final String COMPRESS_OPTION = "z";
+	private static final boolean DEFAULT_COMPRESS = true;
+
 	private CommandLine cmd = null; // Command Line arguments
 
 	private String outputDir;
 	private String extractDir;
 	private int historySize;
 	private boolean force = DEFAULT_FORCE;
+	private boolean compress = DEFAULT_COMPRESS;
 	private String server = DEFAULT_SERVER_URL;
 	private String model = DEFAULT_MODEL;
 
@@ -69,6 +73,7 @@ public class UpdateAndExtractDumps {
 		options.addOption(HISTORY_SIZE_OPTION, true, "number of dumps to be kept in output directory. " + DEFAULT_HISTORY_SIZE + " by default ");	
 		options.addOption(PREFIX_DIR_OPTION, true, "directory containing the wiktionary dumps and extracts. " + DEFAULT_PREFIX_DIR + " by default ");	
 		options.addOption(MODEL_OPTION, true, "model of the extracts (LMF or LEMON) extracts. " + DEFAULT_MODEL + " by default ");	
+		options.addOption(COMPRESS_OPTION, false, "compress the output file using bzip2." + DEFAULT_COMPRESS + " by default ");	
 	}
 
 	/**
@@ -117,6 +122,8 @@ public class UpdateAndExtractDumps {
 		}
 
 		force = cmd.hasOption(FORCE_OPTION);
+		
+		compress = cmd.hasOption(COMPRESS_OPTION);
 
 		if (cmd.hasOption(MODEL_OPTION)) {
 			model = cmd.getOptionValue(MODEL_OPTION);
@@ -461,6 +468,7 @@ public class UpdateAndExtractDumps {
 				"-l", lang, 
 				"-o", extractFile,
 				"-m", model,
+				"-z", compress ? "yes" : "no",
 				uncompressDumpFileName(lang, dir)
 				};
 		

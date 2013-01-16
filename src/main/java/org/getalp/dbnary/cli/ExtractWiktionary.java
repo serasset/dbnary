@@ -3,6 +3,7 @@ package org.getalp.dbnary.cli;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.StringReader;
@@ -21,6 +22,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.blexisma.api.ISO639_3;
@@ -60,6 +62,9 @@ public class ExtractWiktionary {
 	
 	private static final String SUFFIX_OUTPUT_FILE_OPTION = "s";
 
+	private static final String COMPRESS_OPTION = "z";
+	private static final String DEFAULT_COMPRESS = "no";
+	
     public static final XMLInputFactory2 xmlif;
 
 
@@ -68,6 +73,7 @@ public class ExtractWiktionary {
 	private String outputFile = DEFAULT_OUTPUT_FILE;
 	private String outputFormat = DEFAULT_OUTPUT_FORMAT;
 	private String model = DEFAULT_MODEL;
+	private boolean compress;
 	private String language = DEFAULT_LANGUAGE;
 	private File dumpFile;
 	private String outputFileSuffix = "";
@@ -89,6 +95,8 @@ public class ExtractWiktionary {
 				"Language (fra, eng, deu or por). " + DEFAULT_LANGUAGE + " by default.");
 		options.addOption(OUTPUT_FORMAT_OPTION, true, 
 				"Output format  (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_OUTPUT_FORMAT + " by default.");
+		options.addOption(COMPRESS_OPTION, true, 
+				"Compress the output using bzip2 (value: yes/no or true/false). " + DEFAULT_COMPRESS + " by default.");
 		options.addOption(MODEL_OPTION, true, 
 				"Ontology Model used  (lmf or lemon). Only useful with rdf base formats." + DEFAULT_MODEL + " by default.");
 		options.addOption(OUTPUT_FILE_OPTION, true, "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");	
@@ -152,6 +160,9 @@ public class ExtractWiktionary {
 			model = cmd.getOptionValue(MODEL_OPTION);
 		}
 		model = model.toUpperCase();
+
+		String compress_value = cmd.getOptionValue(COMPRESS_OPTION, DEFAULT_COMPRESS);
+		compress = "true".startsWith(compress_value) || "yes".startsWith(compress_value);
 
 		if (cmd.hasOption(OUTPUT_FILE_OPTION)){
 			outputFile = cmd.getOptionValue(OUTPUT_FILE_OPTION);
@@ -283,27 +294,44 @@ public class ExtractWiktionary {
                 ex.printStackTrace();
             }
         }
-           
-        System.err.println("Dumping " + outputFormat + " representation of the extracted data.");
-        if (outputFormat.equals("GRAPHML")) {
-        	StringSemNetGraphMLizer gout = new StringSemNetGraphMLizer(new OutputStreamWriter(new FileOutputStream(outputFile)), StringSemNetGraphMLizer.MULLING_OUTPUT);
-        	gout.dump(s);
-        } else if (outputFormat.equals("RAW")) {  
-        	s.dumpToWriter(new PrintStream(outputFile));
-        } else if (outputFormat.equals("RDF")) {
-        	wdh.dump(new PrintStream(outputFile));
-        } else if (outputFormat.equals("TURTLE")) {
-        	wdh.dump(new PrintStream(outputFile), "TURTLE");
-        } else if (outputFormat.equals("NTRIPLE")) {
-        	(wdh).dump(new PrintStream(outputFile), "N-TRIPLE");
-        } else if (outputFormat.equals("N3")) {
-        	(wdh).dump(new PrintStream(outputFile), "N3");
-        } else if (outputFormat.equals("TTL")) {
-        	(wdh).dump(new PrintStream(outputFile), "TTL");
-        } else if (outputFormat.equals("RDFABBREV")) {
-        	(wdh).dump(new PrintStream(outputFile), "RDF/XML-ABBREV");
-        } 
-  
+         
+        OutputStream ostream;
+        if (compress) {
+        	outputFile = outputFile + ".bz2";
+        	ostream = new BZip2CompressorOutputStream(new FileOutputStream(outputFile));
+        } else {
+        	ostream = new FileOutputStream(outputFile);
+        }
+        try {
+        	System.err.println("Dumping " + outputFormat + " representation of the extracted data.");
+        	if (outputFormat.equals("GRAPHML")) {
+        		StringSemNetGraphMLizer gout = new StringSemNetGraphMLizer(new OutputStreamWriter(ostream), StringSemNetGraphMLizer.MULLING_OUTPUT);
+        		gout.dump(s);
+        	} else if (outputFormat.equals("RAW")) {  
+        		s.dumpToWriter(new PrintStream(ostream, false, "UTF-8"));
+        	} else if (outputFormat.equals("RDF")) {
+        		wdh.dump(new PrintStream(ostream, false, "UTF-8"));
+        	} else if (outputFormat.equals("TURTLE")) {
+        		wdh.dump(new PrintStream(ostream, false, "UTF-8"), "TURTLE");
+        	} else if (outputFormat.equals("NTRIPLE")) {
+        		(wdh).dump(new PrintStream(ostream, false, "UTF-8"), "N-TRIPLE");
+        	} else if (outputFormat.equals("N3")) {
+        		(wdh).dump(new PrintStream(ostream, false, "UTF-8"), "N3");
+        	} else if (outputFormat.equals("TTL")) {
+        		(wdh).dump(new PrintStream(ostream, false, "UTF-8"), "TTL");
+        	} else if (outputFormat.equals("RDFABBREV")) {
+        		(wdh).dump(new PrintStream(ostream, false, "UTF-8"), "RDF/XML-ABBREV");
+        	} 
+        } catch (IOException e) {
+            System.err.println("Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
+            e.printStackTrace(System.err);
+            throw e;
+        } finally {
+        	if (null != ostream) {
+        		ostream.flush();
+        		ostream.close();
+        	}
+        }
         System.err.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
         System.err.println("Semnet contains: " + wdh.nbEntries() + " nodes.");
     }

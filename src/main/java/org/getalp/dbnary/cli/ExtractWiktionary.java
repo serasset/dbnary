@@ -297,7 +297,7 @@ public class ExtractWiktionary {
          
         OutputStream ostream;
         if (compress) {
-        	outputFile = outputFile + ".bz2";
+        	// outputFile = outputFile + ".bz2";
         	ostream = new BZip2CompressorOutputStream(new FileOutputStream(outputFile));
         } else {
         	ostream = new FileOutputStream(outputFile);

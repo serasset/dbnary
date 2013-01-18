@@ -172,8 +172,8 @@ public class UpdateAndExtractDumps {
 
 		String extractFile = odir + "/" + lang +"_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
 		if (compress) extractFile = extractFile + ".bz2";
-		File file = new File(extractFile);
-		if (! file.exists()) {
+		File extractedFile = new File(extractFile);
+		if (! extractedFile.exists()) {
 			System.err.println("Extracted wiktionary file " + extractFile + " does not exists. I will not link to this version.");
 			return;
 		}
@@ -186,7 +186,7 @@ public class UpdateAndExtractDumps {
 			lf.delete();
 		}
 		try {
-			String linkTo = "../" + lang + "/" + file.getName();
+			String linkTo = "../" + lang + "/" + extractedFile.getName();
 			String linkName = lang + "_dbnary_" + model.toLowerCase() + ".ttl";
 			if (compress) linkName = linkName + ".bz2";
 

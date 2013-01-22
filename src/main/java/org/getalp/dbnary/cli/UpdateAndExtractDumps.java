@@ -384,7 +384,7 @@ public class UpdateAndExtractDumps {
 		
 		Reader r = null;
 		Writer w = null;
-		try {
+
 			String compressedDumpFile = outputDir + "/" + lang + "/" + dir + "/" + dumpFileName(lang, dir);
 			String uncompressedDumpFile = uncompressDumpFileName(lang, dir);
 			// System.err.println("Uncompressing " + compressedDumpFile);
@@ -396,7 +396,8 @@ public class UpdateAndExtractDumps {
 			}
 			
 			System.err.println("uncompressing file : " + compressedDumpFile + " to " + uncompressedDumpFile);
-
+			
+		try {
 			BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(new FileInputStream(compressedDumpFile));
 			r = new BufferedReader(new InputStreamReader(bzIn, "UTF-8"));
 
@@ -413,6 +414,11 @@ public class UpdateAndExtractDumps {
 			System.err.println("Caught an IOException while uncompressing dump: " + dumpFileName(lang, dir));
 			System.err.println(e.getLocalizedMessage());
 			e.printStackTrace();
+			System.err.println("Removing faulty compressed file: " + compressedDumpFile);
+			File f = new File(compressedDumpFile);
+			if (f.exists() && f.length() == 0L) {
+				f.delete();
+			}
 			status = false;
 		} finally {
 			if (null != r) {

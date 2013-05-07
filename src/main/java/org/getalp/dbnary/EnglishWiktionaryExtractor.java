@@ -286,6 +286,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                     leaveNymBlock(m);
                     gotoNoData(m);
                 }
+                break;
             case PRONBLOCK:
             	if (m.group(1).equals("Translations")) {
                     leavePronBlock(m);
@@ -306,6 +307,7 @@ public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
                 	leavePronBlock(m);
                     gotoNoData(m);
                 }
+            	break;
             default:
                 assert false : "Unexpected state while extracting translations from dictionary.";
             } 

@@ -359,6 +359,7 @@ public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
 					leaveNymBlock(m);
 					gotoNoData(m);
 				}
+				break;
 			default:
 				assert false : "Unexpected state while extracting translations from dictionary.";
 			} 

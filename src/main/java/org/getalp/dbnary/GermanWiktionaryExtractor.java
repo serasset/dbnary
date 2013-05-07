@@ -437,7 +437,7 @@ public class GermanWiktionaryExtractor extends WiktionaryExtractor {
                 	// Multiline macro
                 	// System.out.println(m.group());
                 }
-
+                break;
             default:
                 assert false : "Unexpected state while extracting translations from dictionary.";
             }

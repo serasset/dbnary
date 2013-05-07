@@ -450,6 +450,7 @@ public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (sectionMarkers.contains(m.group(1))) {
                 	//nop
                 }
+            	break;
             default:
                 assert false : "Unexpected state while extracting translations from dictionary.";
             } 

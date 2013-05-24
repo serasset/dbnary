@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
 
-public abstract class WiktionaryExtractor {
+public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtractor {
     
 	// TODO: Alter the extraction process by allowing multiple lines in a macro and evaluate the final result
 	// TODO: Determine how many nested macro are used in the different wiktionary languages.
@@ -63,30 +63,28 @@ public abstract class WiktionaryExtractor {
         bulletListPattern = Pattern.compile(bulletListPatternString);
     }
     
-    /**
-	 * @uml.property  name="pageContent"
-	 */
     protected String pageContent;
-    /**
-	 * @uml.property  name="wdh"
-	 * @uml.associationEnd  multiplicity="(1 1)"
-	 */
     protected WiktionaryDataHandler wdh;
-	/**
-	 * @uml.property  name="wiktionaryPageName"
-	 */
 	protected String wiktionaryPageName;
     
-    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
+	protected WiktionaryIndex wi = null;
+	
+    public AbstractWiktionaryExtractor(WiktionaryDataHandler wdh) {
         super();
         this.wdh = wdh;
-    //    this.wiktionaryIndex = wi;
     }
 
+    @Override
+	public void setWiktionaryIndex(WiktionaryIndex wi) {
+		this.wi = wi;
+	}
+
+
+
     
-  // Suppression des commentaires  d'un text 
+  // Suppression des commentaires XML d'un texte 
     
-    protected final static String debutOrfinDecomPatternString;
+	protected final static String debutOrfinDecomPatternString;
 
 	static {
 		debutOrfinDecomPatternString=new StringBuilder()
@@ -204,13 +202,18 @@ public abstract class WiktionaryExtractor {
         Matcher definitionMatcher = definitionPattern.matcher(this.pageContent);
         definitionMatcher.region(startOffset, endOffset);
         while (definitionMatcher.find()) {
-            String def = cleanUpMarkup(definitionMatcher.group(1));
-            if (def != null && ! def.equals("")) {
-            	wdh.registerNewDefinition(definitionMatcher.group(1));
-            }
-        }      
+        	extractDefinition(definitionMatcher.group(1));
+        }
     }
     
+	public void extractDefinition(String definition) {
+		// TODO: properly handle macros in definitions. 
+		String def = cleanUpMarkup(definition);
+        if (def != null && ! def.equals("")) {
+        	wdh.registerNewDefinition(definition);
+        }
+	}
+	
 	public static String cleanUpMarkup(String group) {
         return cleanUpMarkup(group, false);
     }
@@ -323,7 +326,7 @@ public abstract class WiktionaryExtractor {
     // TODO: dissociates entry parsing and structure building in 2 classes.
     // So that we will factorize the matching code.
    protected void extractOrthoAlt(int startOffset, int endOffset) {
-        Matcher bulletListMatcher = WiktionaryExtractor.bulletListPattern.matcher(this.pageContent);
+        Matcher bulletListMatcher = AbstractWiktionaryExtractor.bulletListPattern.matcher(this.pageContent);
         bulletListMatcher.region(startOffset, endOffset);
         while (bulletListMatcher.find()) {
             String alt = cleanUpMarkup(bulletListMatcher.group(1), true);
@@ -367,7 +370,7 @@ public abstract class WiktionaryExtractor {
     protected void extractNyms(String synRelation, int startOffset, int endOffset) {
         // System.out.println(wiktionaryPageName + " contains: " + pageContent.substring(startOffset, endOffset));
         // Extract all links
-        Matcher linkMatcher = WiktionaryExtractor.linkPattern.matcher(this.pageContent);
+        Matcher linkMatcher = AbstractWiktionaryExtractor.linkPattern.matcher(this.pageContent);
         linkMatcher.region(startOffset, endOffset);
 //        int lastNymEndOffset = startOffset;
 //        int lastNymStartOffset = startOffset;

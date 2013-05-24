@@ -14,7 +14,7 @@ import org.getalp.blexisma.api.ISO639_3;
  * @author serasset
  *
  */
-public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
+public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     //TODO: Handle Wikisaurus entries.
 	protected final static String languageSectionPatternString = "==\\s*\\{\\{-([^-]*)-\\}\\}\\s*==";
@@ -442,10 +442,10 @@ public class ItalianoWiktionaryExtractor extends WiktionaryExtractor {
 						//}
 						langname = ""; word = ""; usage = ""; lang=null;
 						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("-tans2-")) {
+					} else if (g1.equalsIgnoreCase("-trans2-")) {
 						if (word != null && word.length() != 0) {
-							if(lang!=null){
-							wdh.registerTranslation(lang, currentGlose, usage, word);
+							if(lang!=null) {
+								wdh.registerTranslation(lang, currentGlose, usage, word);
 							}
 						}
 						currentGlose = null;

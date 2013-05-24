@@ -190,7 +190,7 @@ public class LMFBasedRDFDataHandler implements WiktionaryDataHandler {
     	Resource defNode = aBox.createResource(computeDefId(), definitionType);
     	aBox.add(aBox.createStatement(defNode, isPartOf, currentSense));
     	// Keep a human readable version of the definition, removing all links annotations.
-    	aBox.add(aBox.createStatement(defNode, textProperty, WiktionaryExtractor.cleanUpMarkup(def, true))); 
+    	aBox.add(aBox.createStatement(defNode, textProperty, AbstractWiktionaryExtractor.cleanUpMarkup(def, true))); 
 
     	currentSenseNumber++;
     	// TODO: Extract domain/usage field from the original definition.

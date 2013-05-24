@@ -349,7 +349,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
     	Resource defNode = aBox.createResource();
     	aBox.add(aBox.createStatement(currentSense, lemonDefinitionProperty, defNode));
     	// Keep a human readable version of the definition, removing all links annotations.
-    	aBox.add(aBox.createStatement(defNode, lemonValueProperty, WiktionaryExtractor.cleanUpMarkup(def, true), extractedLang)); 
+    	aBox.add(aBox.createStatement(defNode, lemonValueProperty, AbstractWiktionaryExtractor.cleanUpMarkup(def, true), extractedLang)); 
 
     	currentSenseNumber++;
     	// TODO: Extract domain/usage field from the original definition.

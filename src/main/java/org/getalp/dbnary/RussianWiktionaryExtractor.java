@@ -5,64 +5,49 @@ package org.getalp.dbnary;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.getalp.blexisma.api.ISO639_3;
 
 /**
  * @author serasset
  *
  */
-public class RussianWiktionaryExtractor extends WiktionaryExtractor {
+public class RussianWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-    //TODO: Handle Wikisaurus entries.
-	//DONE: extract pronunciation
-	//TODO: attach multiple pronounciation correctly
-    protected final static String languageSectionPatternString = "=\\s*(\\{\\{-[^=]*\\}\\})\\s*=";
 
-    protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
-    protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
-    
-    private final int NODATA = 0;
-    private final int TRADBLOCK = 1;
-    private final int DEFBLOCK = 2;
-    private final int ORTHOALTBLOCK = 3;
-    private final int NYMBLOCK = 4;
-    private final int PRONBLOCK = 5;
-        
+	    protected final static String languageSectionPatternString = "(?m)^\\s*=\\s*([^=]*)\\}\\}\\s*=\\s*$";
+	    protected final static String sectionPatternString = "(?m)^={2,5}\\s*(.*?)\\s*={2,5}$";
+
+	    // TODO: handle pronounciation
+	    protected final static String pronounciationPatternString = "\\{\\{pron\\|([^\\|\\}]*)(.*)\\}\\}";
+	    
+	    private final int NODATA = 0;
+	    private final int TRADBLOCK = 1;
+	    protected final int DEFBLOCK = 2;
+	    private final int ORTHOALTBLOCK = 3;
+	    private final int NYMBLOCK = 4;
+		private final int IGNOREPOS = 7;
+	    private final int PRONBLOCK = 5;
+	    private final int MORPHOBLOCK = 6;
+
     public RussianWiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
     }
 
     // protected final static Pattern languageSectionPattern;
-    protected final static Pattern languageSectionPattern;
-    protected final static Pattern sectionPattern;
     protected final static HashSet<String> posMarkers;
     //protected final static HashSet<String> nymMarkers;
     protected final static HashMap<String, String> nymMarkerToNymName;
-	protected final static Pattern pronPattern;
-
+    		
     static {
-        // languageSectionPattern = Pattern.compile(languageSectionPatternString);
-       
-        languageSectionPattern = Pattern.compile(languageSectionPatternString);
-        sectionPattern = Pattern.compile(sectionPatternString);
-        pronPattern = Pattern.compile(pronPatternString);
-        
+               
         posMarkers = new HashSet<String>(20);
         posMarkers.add("Noun");
         posMarkers.add("Adjective");
         posMarkers.add("Adverb");
         posMarkers.add("Verb");
         posMarkers.add("Proper noun");
-        
-       // nymMarkers = new HashSet<String>(20);
-       // nymMarkers.add("Synonyms");
-       // nymMarkers.add("Antonyms");
-       // nymMarkers.add("Hyponyms");
-       // nymMarkers.add("Hypernyms");
-       // nymMarkers.add("Meronyms");
         
         nymMarkerToNymName = new HashMap<String,String>(20);
         nymMarkerToNymName.put("Синонимы", "syn");
@@ -74,42 +59,70 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
 
     }
 
+    protected final static Pattern languageSectionPattern;
+    protected final static Pattern sectionPattern;
+	private final static Pattern pronunciationPattern;
+
+    static {
+        sectionPattern = Pattern.compile(sectionPatternString);
+        languageSectionPattern = Pattern.compile(languageSectionPatternString);
+        pronunciationPattern = Pattern.compile(pronounciationPatternString);
+    }
+
     int state = NODATA;
     int definitionBlockStart = -1;
-    int orthBlockStart = -1;
     int translationBlockStart = -1;
+    int orthBlockStart = -1;
     private int nymBlockStart = -1;
     private int pronBlockStart = -1;
+    private int morphoBlockStart = -1;
+
     private String currentNym = null;
+
+    protected boolean isCurrentlyExtracting = false;
+	private boolean isCorrectPOS;
+   
     
-    /* (non-Javadoc)
+    public boolean isCurrentlyExtracting() {
+		return isCurrentlyExtracting;
+	}
+
+	/* (non-Javadoc)
      * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
      */
     @Override
-    public void extractData() {
-        
-        // System.out.println(pageContent);
+    public void extractData() {	
+    	
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-        while (languageFilter.find() && ! languageFilter.group(1).startsWith("{{-ru-")) {
+        while (languageFilter.find() && ! isRussianLanguageHeader(languageFilter)) {
             ;
         }
-        // Either the filter is at end of sequence or on English language header.
+        // Either the filter is at end of sequence or on French language header.
         if (languageFilter.hitEnd()) {
-            // There is no english data in this page.
+            // There is no Russian data in this page.
             return ;
         }
         int russianSectionStartOffset = languageFilter.end();
         // Advance till end of sequence or new language section
-        while (languageFilter.find() && languageFilter.group().charAt(1) == '=') {
-            ;
-        }
-        // languageFilter.find();
+        languageFilter.find();
         int russianSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
         
-        System.err.println(pageContent.substring(russianSectionStartOffset, russianSectionEndOffset));
-        
         extractRussianData(russianSectionStartOffset, russianSectionEndOffset);
-     }
+    }
+    
+    private boolean isRussianLanguageHeader(Matcher m) {
+		return (null != m.group(1) && m.group(1).startsWith("{{-ru-"));
+	}
+
+    public void startExtraction() {
+    	isCurrentlyExtracting = true;
+    	wdh.initializeEntryExtraction(wiktionaryPageName);
+    }
+    
+    public void stopExtraction() {
+    	isCurrentlyExtracting = false;
+    }
+    
     
     
 //    private HashSet<String> unsupportedSections = new HashSet<String>(100);
@@ -134,7 +147,6 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
     void gotoDefBlock(Matcher m){
         state = DEFBLOCK;
         definitionBlockStart = m.end();
-        wdh.addPartOfSpeech(m.group(1));
     }
     
     void gotoOrthoAltBlock(Matcher m) {
@@ -144,7 +156,7 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
     
     void leaveDefBlock(Matcher m) {
     	int end = computeRegionEnd(definitionBlockStart, m);
-    	System.err.println(pageContent.substring(definitionBlockStart, end));
+    	// System.err.println(pageContent.substring(definitionBlockStart, end));
         extractDefinitions(definitionBlockStart, end);
         definitionBlockStart = -1;
     }
@@ -182,15 +194,32 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
         pronBlockStart = -1;         
      }
 
+    private void gotoMorphoBlock(Matcher m) {
+    	state = MORPHOBLOCK; 
+        morphoBlockStart = m.end();
+        isCorrectPOS = false;
+	}
+
+    private void leaveMorphoBlock(Matcher m) {
+    	isCorrectPOS = extractMorpho(morphoBlockStart, computeRegionEnd(morphoBlockStart, m)) ;
+    	morphoBlockStart = -1;        
+	}
+
+	private void gotoIgnorePos() {
+		state = IGNOREPOS;
+	}
+
 	private void extractRussianData(int startOffset, int endOffset) {        
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         wdh.initializeEntryExtraction(wiktionaryPageName);
-        gotoNoData(m);
+        gotoIgnorePos();
         while (m.find()) {
             switch (state) {
             case NODATA:
-                if (m.group(1).equals("Перевод")) {
+            	if (m.group(1).startsWith("Морфологические")) {
+            		gotoMorphoBlock(m);
+            	} else if (m.group(1).startsWith("Перевод")) {
                     gotoTradBlock(m);
                 } else if (m.group(1).equals("Значение")) {
                     gotoDefBlock(m);
@@ -198,14 +227,17 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
                     gotoOrthoAltBlock(m);
                 } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                     gotoNymBlock(m);
-                } else if (m.group(1).equals("Pronunciation")) {
+                } else if (m.group(1).equals("Произношение")) {
                 	gotoPronBlock(m);
                 }
                 
                 break;
             case DEFBLOCK:
                 // Iterate until we find a new section
-                if (m.group(1).equals("Перевод")) {
+            	if (m.group(1).startsWith("Морфологические")) {
+                    leaveDefBlock(m);
+            		gotoMorphoBlock(m);
+            	} else if (m.group(1).equals("Перевод")) {
                     leaveDefBlock(m);
                     gotoTradBlock(m);
                 } else if (m.group(1).equals("Значение")) {
@@ -217,7 +249,7 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                     leaveDefBlock(m);
                     gotoNymBlock(m);
-                } else if (m.group(1).equals("Pronunciation")) {
+                } else if (m.group(1).equals("Произношение")) {
                     leaveDefBlock(m);
                     gotoPronBlock(m);
                 } else {
@@ -226,7 +258,10 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
                 } 
                 break;
             case TRADBLOCK:
-                if (m.group(1).equals("Перевод")) {
+            	if (m.group(1).startsWith("Морфологические")) {
+                    leaveTradBlock(m);
+            		gotoMorphoBlock(m);
+            	} else if (m.group(1).equals("Перевод")) {
                     leaveTradBlock(m);
                     gotoTradBlock(m);
                 } else if (m.group(1).equals("Значение")) {
@@ -238,7 +273,7 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                     leaveTradBlock(m);
                     gotoNymBlock(m);
-                } else if (m.group(1).equals("Pronunciation")) {
+                } else if (m.group(1).equals("Произношение")) {
                     leaveTradBlock(m);
                     gotoPronBlock(m);
                 } else {
@@ -247,7 +282,10 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
                 } 
                 break;
             case ORTHOALTBLOCK:
-                if (m.group(1).equals("Перевод")) {
+            	if (m.group(1).startsWith("Морфологические")) {
+                    leaveOrthoAltBlock(m);
+            		gotoMorphoBlock(m);
+            	} else if (m.group(1).equals("Перевод")) {
                     leaveOrthoAltBlock(m);
                     gotoTradBlock(m);
                 } else if (m.group(1).equals("Значение")) {
@@ -259,7 +297,7 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                     leaveOrthoAltBlock(m);
                     gotoNymBlock(m);
-                } else if (m.group(1).equals("Pronunciation")) {
+                } else if (m.group(1).equals("Произношение")) {
                 	leaveOrthoAltBlock(m);
                     gotoPronBlock(m);
                 } else {
@@ -268,7 +306,10 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
                 }
                 break;
             case NYMBLOCK:
-                if (m.group(1).equals("Перевод")) {
+            	if (m.group(1).startsWith("Морфологические")) {
+                    leaveNymBlock(m);
+            		gotoMorphoBlock(m);
+            	} else if (m.group(1).equals("Перевод")) {
                     leaveNymBlock(m);
                     gotoTradBlock(m);
                 } else if (m.group(1).equals("Значение")) {
@@ -280,7 +321,7 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                     leaveNymBlock(m);
                     gotoNymBlock(m);
-                } else if (m.group(1).equals("Pronunciation")) {
+                } else if (m.group(1).equals("Произношение")) {
                 	leaveNymBlock(m);
                     gotoPronBlock(m);
                 } else {
@@ -288,7 +329,10 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
                     gotoNoData(m);
                 }
             case PRONBLOCK:
-            	if (m.group(1).equals("Перевод")) {
+            	if (m.group(1).startsWith("Морфологические")) {
+                    leavePronBlock(m);
+            		gotoMorphoBlock(m);
+            	} else if (m.group(1).equals("Перевод")) {
                     leavePronBlock(m);
                     gotoTradBlock(m);
                 } else if (m.group(1).equals("Значение")) {
@@ -300,13 +344,49 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
                 } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                 	leavePronBlock(m);
                     gotoNymBlock(m);
-                } else if (m.group(1).equals("Pronunciation")) {
+                } else if (m.group(1).equals("Произношение")) {
                 	leavePronBlock(m);
                     gotoPronBlock(m);
                 } else {
                 	leavePronBlock(m);
                     gotoNoData(m);
                 }
+            	break;
+            case MORPHOBLOCK:
+            	if (m.group(1).startsWith("Морфологические")) {
+                    leaveMorphoBlock(m);
+            		gotoMorphoBlock(m);
+            	} else if (m.group(1).equals("Перевод")) {
+                    leaveMorphoBlock(m);
+                    if (isCorrectPOS) gotoTradBlock(m); else gotoIgnorePos();
+                } else if (m.group(1).equals("Значение")) {
+                    leaveMorphoBlock(m);
+                    if (isCorrectPOS) gotoDefBlock(m); else gotoIgnorePos();
+                } else if (m.group(1).equals("Alternative spellings")) {
+                    leaveMorphoBlock(m);
+                    if (isCorrectPOS) gotoOrthoAltBlock(m); else gotoIgnorePos();
+                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
+                    leaveMorphoBlock(m);
+                    if (isCorrectPOS) gotoNymBlock(m); else gotoIgnorePos();
+                } else if (m.group(1).equals("Произношение")) {
+                    leaveMorphoBlock(m);
+                    if (isCorrectPOS) gotoPronBlock(m); else gotoIgnorePos();
+                } else {
+                    leaveMorphoBlock(m);
+                    if (isCorrectPOS) gotoNoData(m); else gotoIgnorePos();
+                }
+            	break;
+            case IGNOREPOS:
+            	if (m.group(1).startsWith("Морфологические")) {
+            		gotoMorphoBlock(m);
+            	} else if (m.group(1).equals("Перевод")) {
+                } else if (m.group(1).equals("Значение")) {
+                } else if (m.group(1).equals("Alternative spellings")) {
+                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
+                } else if (m.group(1).equals("Произношение")) {
+                } else {
+                }
+            	break;
             default:
                 assert false : "Unexpected state while extracting translations from dictionary.";
             } 
@@ -330,75 +410,37 @@ public class RussianWiktionaryExtractor extends WiktionaryExtractor {
         case PRONBLOCK:
         	leavePronBlock(m);
             break;
-        default:
+        case MORPHOBLOCK:
+            leaveMorphoBlock(m);
+            break;
+        case IGNOREPOS:
+            break;
+       default:
             assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
         } 
         wdh.finalizeEntryExtraction();
     }
     
-
-    private void extractTranslations(int startOffset, int endOffset) {
-       Matcher macroMatcher = macroPattern.matcher(pageContent);
-       macroMatcher.region(startOffset, endOffset);
-       String currentGlose = null;
-
-       while (macroMatcher.find()) {
-           String g1 = macroMatcher.group(1);
-
-           if (g1.equals("t+") || g1.equals("t-") || g1.equals("tø")) {
-               // DONE: Sometimes translation links have a remaining info after the word, keep it.
-               String g2 = macroMatcher.group(2);
-               int i1, i2;
-               String lang, word;
-               if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
-                   lang = g2.substring(0, i1);
-                   // normalize language code
-                   String normLangCode;
-                   if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-                       lang = normLangCode;
-                   } 
-                   String usage = null;
-                   if ((i2 = g2.indexOf('|', i1+1)) == -1) {
-                       word = g2.substring(i1+1);
-                   } else {
-                       word = g2.substring(i1+1, i2);
-                       usage = g2.substring(i2+1);
-                   }
-                   lang=EnglishLangToCode.triletterCode(lang);
-                   if(lang!=null){
-                	   wdh.registerTranslation(lang, currentGlose, usage, word);
-                   }
-                  
-               }
-           } else if (g1.equals("trans-top")) {
-               // Get the glose that should help disambiguate the source acception
-               String g2 = macroMatcher.group(2);
-               // Ignore glose if it is a macro
-               if (g2 != null && ! g2.startsWith("{{")) {
-                   currentGlose = g2;
-               }
-           } else if (g1.equals("checktrans-top")) {
-        	   // forget glose.
-        	   currentGlose = null;
-           } else if (g1.equals("trans-mid")) {
-               // just ignore it
-           } else if (g1.equals("trans-bottom")) {
-               // Forget the current glose
-               currentGlose = null;
-           }
-       }
+	private void extractTranslations(int startOffset, int endOffset) {
+       String transCode = pageContent.substring(startOffset, endOffset);
+       RussianTranslationExtractorWikiModel dbnmodel = new RussianTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), "/${image}", "/${title}");
+       dbnmodel.parseTranslationBlock(transCode);
    }
     
     private void extractPron(int startOffset, int endOffset) {
     	
-    	Matcher pronMatcher = pronPattern.matcher(pageContent);
-    	while (pronMatcher.find()) {
-    		String pron = pronMatcher.group(1);
-    		
-    		if (null == pron || pron.equals("")) return;
-    		
-    		if (! pron.equals("")) wdh.registerPronunciation(pron, "en-fonipa");
-    	}
 	}
     
+    @Override
+	public void extractDefinition(String definition) {
+		// TODO: properly handle macros in definitions.
+        RussianDefinitionExtractorWikiModel dbnmodel = new RussianDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), "/${image}", "/${title}");
+        dbnmodel.parseDefinition(definition);
+	}
+    
+	private boolean extractMorpho(int startOffset, int endOffset) {
+		RussianMorphoExtractorWikiModel dbnmodel = new RussianMorphoExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), "/${image}", "/${title}");
+        return dbnmodel.parseMorphoBlock(pageContent.substring(startOffset, endOffset));
+	}
+
 }

@@ -1,6 +1,7 @@
 package org.getalp.dbnary.cli;
 
 import java.io.IOException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -8,20 +9,17 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
-import org.getalp.blexisma.semnet.StringSemNetGraphMLizer;
 import org.getalp.dbnary.EnglishWiktionaryExtractor;
 import org.getalp.dbnary.FrenchWiktionaryExtractor;
 import org.getalp.dbnary.GermanWiktionaryExtractor;
+import org.getalp.dbnary.IWiktionaryExtractor;
 import org.getalp.dbnary.ItalianoWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.PortugueseWiktionaryExtractor;
 import org.getalp.dbnary.RussianWiktionaryExtractor;
-import org.getalp.dbnary.SemnetWiktionaryDataHandler;
 import org.getalp.dbnary.SuomiWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
-import org.getalp.dbnary.WiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexerException;
 
@@ -33,10 +31,10 @@ public class GetExtractedSemnet {
 	private static final String DEFAULT_LANGUAGE = "fra";
 
 	private static final String OUTPUT_FORMAT_OPTION = "f";
-	private static final String DEFAULT_OUTPUT_FORMAT = "raw";	
+	private static final String DEFAULT_OUTPUT_FORMAT = "ttl";	
 	
 	private static final String MODEL_OPTION = "m";
-	private static final String DEFAULT_MODEL = "lmf";
+	private static final String DEFAULT_MODEL = "lemon";
 
 	private CommandLine cmd = null; // Command Line arguments
 
@@ -56,9 +54,8 @@ public class GetExtractedSemnet {
 	
 	WiktionaryIndex wi;
 	String[] remainingArgs;
-	WiktionaryExtractor we;
+	IWiktionaryExtractor we;
 	WiktionaryDataHandler wdh;
-	SimpleSemanticNetwork<String, String> s;
 	
 	/**
 	 * Validate and set command line arguments.
@@ -120,9 +117,6 @@ public class GetExtractedSemnet {
 			} else {
 				wdh = new LMFBasedRDFDataHandler(language);
 			}
-		} else if (outputFormat.equals("RAW") || outputFormat.equals("GRAPHML")) {
-			s = new SimpleSemanticNetwork<String, String>();
-			wdh = new SemnetWiktionaryDataHandler(s, language);
 		} else {
 			System.err.println("unsupported format :" + outputFormat);
 			System.exit(1);
@@ -148,6 +142,7 @@ public class GetExtractedSemnet {
 		}
 
 		wi = new WiktionaryIndex(remainingArgs[0]);
+		we.setWiktionaryIndex(wi);
 	}
 
 	public static void main(String[] args) throws WiktionaryIndexerException, IOException {
@@ -164,12 +159,7 @@ public class GetExtractedSemnet {
 			we.extractData(remainingArgs[i], pageContent);
 		}
 		
-		if (outputFormat.equals("GRAPHML")) {
-        	StringSemNetGraphMLizer gout = new StringSemNetGraphMLizer(StringSemNetGraphMLizer.MULLING_OUTPUT);
-        	gout.dump(s);
-        } else if (outputFormat.equals("RAW")) {  
-        	s.dumpToWriter(System.out);
-        } else if (outputFormat.equals("RDF")) {
+		if (outputFormat.equals("RDF")) {
         	wdh.dump(System.out);
         } else if (outputFormat.equals("TURTLE")) {
         	wdh.dump(System.out, "TURTLE");

@@ -16,7 +16,7 @@ import org.getalp.blexisma.api.ISO639_3;
  * @author serasset
  *
  */
-public class PortugueseWiktionaryExtractor extends WiktionaryExtractor {
+public class PortugueseWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     //TODO: Handle Wikisaurus entries.
 	protected final static String languageSectionPatternString = 

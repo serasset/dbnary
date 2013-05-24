@@ -16,7 +16,7 @@ import org.getalp.blexisma.api.ISO639_3.Lang;
  * @author serasset
  *
  */
-public class SuomiWiktionaryExtractor extends WiktionaryExtractor {
+public class SuomiWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	//TODO: Handle Wikisaurus entries.
 	protected final static String sectionPatternString1 =  "={2,5}\\s*([^=]*)\\s*={2,5}";

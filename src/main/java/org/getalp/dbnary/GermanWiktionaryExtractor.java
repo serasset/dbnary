@@ -8,9 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
 
-public class GermanWiktionaryExtractor extends WiktionaryExtractor {
+public class GermanWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     protected final static String languageSectionPatternString = "={2}\\s*([^\\(]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
     protected final static String partOfSpeechPatternString = "={3}[^\\{]*\\{\\{Wortart\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";

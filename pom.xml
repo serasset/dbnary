@@ -14,9 +14,7 @@
 	</properties>
 
 	<name>Wiktionary Multilingual Data Extraction</name>
-	<description>
-    The dbnary project provides tools to extract lexical networks from wiktionary dumps in English, French and German. More languages to be added later.
-  </description>
+	<description>The dbnary project provides tools to extract lexical networks from wiktionary dumps in English, French, German, Italia, Portuguese, Suomi and Russian. More languages to be added later.</description>
 	<inceptionYear>2010</inceptionYear>
 	<url>http://getalp.imag.fr/dbnary</url>
 	<licenses>
@@ -82,12 +80,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.getalp.blexisma</groupId>
-			<artifactId>blexisma-core</artifactId>
-			<version>1.1-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.hp.hpl.jena</groupId>
 			<artifactId>jena</artifactId>
 			<version>2.6.4</version>
@@ -109,6 +101,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
 			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>info.bliki.wiki</groupId>
+			<artifactId>bliki-core</artifactId>
+			<version>3.0.19</version>
 		</dependency>
 	</dependencies>
 
@@ -190,16 +187,17 @@
 		<repository>
 			<!-- Getalp third party stuff -->
 			<id>getalp.repository</id>
-			<url>
-        http://getalp.imag.fr/m2/
-      </url>
+			<url>http://getalp.imag.fr/m2/</url>
 		</repository>
 		<repository>
-			<!-- This repository contains the 4.0.1 jade artefact -->
-			<id>fortytwo.repository</id>
-			<url>
-        http://fortytwo.net/maven2/
-      </url>
+			<id>info-bliki-repository</id>
+			<url>http://gwtwiki.googlecode.com/svn/maven-repository/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 </project>

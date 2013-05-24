@@ -46,6 +46,8 @@ doc/articles/swj-mlod-2012/sw_iosart2c/iosart2c_template.tex -text
 doc/articles/swj-mlod-2012/swj-dbnary.pdf -text
 doc/articles/swj-mlod-2012/swj-dbnary.tex -text
 /pom.xml -text
+src/main/java/org/getalp/dbnary/AbstractWiktionaryExtractor.java -text
+src/main/java/org/getalp/dbnary/DbnaryWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/EnglishLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/EnglishWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/FrenchLangtoCode.java -text svneol=unset#text/plain
@@ -53,6 +55,7 @@ src/main/java/org/getalp/dbnary/FrenchWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/GermanLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/GermanWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/GreekLangtoCode.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/IWiktionaryExtractor.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ItalianLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ItalianoWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/JapaneseLangtoCode.java -text svneol=unset#text/plain
@@ -64,21 +67,20 @@ src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/
 src/main/java/org/getalp/dbnary/OffsetValue.java -text
 src/main/java/org/getalp/dbnary/PortugueseLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/PortugueseWiktionaryExtractor.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/RussianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/RussianLangtoCode.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/RussianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/RussianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/RussianWiktionaryExtractor.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/SemnetWiktionaryDataHandler.java -text
 src/main/java/org/getalp/dbnary/SuomiLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/SuomiWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/TurkishLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/WiktionaryDataHandler.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/WiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/WiktionaryGrep.java -text
 src/main/java/org/getalp/dbnary/WiktionaryIndex.java -text
 src/main/java/org/getalp/dbnary/WiktionaryIndexer.java -text
 src/main/java/org/getalp/dbnary/WiktionaryIndexerException.java -text
-src/main/java/org/getalp/dbnary/cli/ConvertSemnet.java -text
 src/main/java/org/getalp/dbnary/cli/ExtractWiktionary.java -text
-src/main/java/org/getalp/dbnary/cli/GenerateRandomVectorialBaseForNetwork.java -text
 src/main/java/org/getalp/dbnary/cli/GetExtractedSemnet.java -text
 src/main/java/org/getalp/dbnary/cli/GetRawEntry.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/GrepInWiktionary.java -text svneol=unset#text/plain
@@ -89,6 +91,7 @@ src/main/java/org/getalp/dbnary/cli/StatRDFExtract.java -text svneol=unset#text/
 src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/DiffFichier.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain
+src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/lemon.ttl -text
 src/main/resources/org/getalp/dbnary/lexinfo.owl -text
@@ -113,5 +116,6 @@ src/site/resources/images/dbnary-right-10.png -text
 src/site/resources/images/dbnary-right-12.png -text
 src/site/resources/robots.txt -text svneol=unset#text/plain
 src/site/site.xml -text
+src/test/java/org/getalp/blexisma/wiktionary/TestDbnaryWikiModel.java -text svneol=unset#text/plain
 src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
 src/test/resources/org/getalp/blexisma/wiktionary/sample-semnet.snet -text

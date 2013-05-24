@@ -4,17 +4,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.StringReader;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -26,20 +21,17 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.semnet.SimpleSemanticNetwork;
-import org.getalp.blexisma.semnet.StringSemNetGraphMLizer;
 import org.getalp.dbnary.EnglishWiktionaryExtractor;
 import org.getalp.dbnary.FrenchWiktionaryExtractor;
 import org.getalp.dbnary.GermanWiktionaryExtractor;
+import org.getalp.dbnary.IWiktionaryExtractor;
 import org.getalp.dbnary.ItalianoWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.OffsetValue;
 import org.getalp.dbnary.PortugueseWiktionaryExtractor;
-import org.getalp.dbnary.SemnetWiktionaryDataHandler;
+import org.getalp.dbnary.RussianWiktionaryExtractor;
 import org.getalp.dbnary.SuomiWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
-import org.getalp.dbnary.WiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexer;
 import org.getalp.dbnary.WiktionaryIndexerException;
@@ -52,10 +44,10 @@ public class ExtractWiktionary {
 	private static final String DEFAULT_LANGUAGE = "fra";
 
 	private static final String OUTPUT_FORMAT_OPTION = "f";
-	private static final String DEFAULT_OUTPUT_FORMAT = "raw";
+	private static final String DEFAULT_OUTPUT_FORMAT = "ttl";
 
 	private static final String MODEL_OPTION = "m";
-	private static final String DEFAULT_MODEL = "lmf";
+	private static final String DEFAULT_MODEL = "lemon";
 
 	private static final String OUTPUT_FILE_OPTION = "o";
 	private static final String DEFAULT_OUTPUT_FILE = "fr_extract";
@@ -80,9 +72,7 @@ public class ExtractWiktionary {
 
 	WiktionaryIndex wi;
 	String[] remainingArgs;
-	WiktionaryExtractor we;
-
-	private SimpleSemanticNetwork<String, String> s = null;
+	IWiktionaryExtractor we;
 
 	private WiktionaryDataHandler wdh;
 
@@ -129,8 +119,9 @@ public class ExtractWiktionary {
 	 * Validate and set command line arguments.
 	 * Exit after printing usage if anything is astray
 	 * @param args String[] args as featured in public static void main()
+	 * @throws WiktionaryIndexerException 
 	 */
-	private void loadArgs(String[] args){
+	private void loadArgs(String[] args) throws WiktionaryIndexerException{
 		CommandLineParser parser = new PosixParser();
 		try {
 			cmd = parser.parse(options, args);
@@ -174,9 +165,10 @@ public class ExtractWiktionary {
 			if (! ( language.equals("fra") || 
 					language.equals("eng") || 
 					language.equals("deu") || 
-					language.equals("por")|| 
-					language.equals("ita")|| 
-					language.equals("fin"))) {
+					language.equals("por") || 
+					language.equals("ita") || 
+					language.equals("fin") ||
+					language.equals("rus"))) {
 				System.err.println("Unknown language: " + language);
 				printUsage();
 				System.exit(1);
@@ -201,9 +193,6 @@ public class ExtractWiktionary {
 			} else {
 				wdh = new LMFBasedRDFDataHandler(language);
 			}
-		} else if (outputFormat.equals("RAW") || outputFormat.equals("GRAPHML")) {
-			s = new SimpleSemanticNetwork<String, String>();
-			wdh = new SemnetWiktionaryDataHandler(s, language);
 		} else {
 			System.err.println("unsupported format :" + outputFormat);
 			System.exit(1);
@@ -221,10 +210,15 @@ public class ExtractWiktionary {
 			we = new ItalianoWiktionaryExtractor(wdh);
 		} else if (language.equals("fin")) {
 			we = new SuomiWiktionaryExtractor(wdh);
+		} else if (language.equals("rus")) {
+			we = new RussianWiktionaryExtractor(wdh);
 		} else {
 			System.err.println("Wiktionary Extraction not yet available for " + ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
 			System.exit(1);
 		}
+		
+		wi = new WiktionaryIndex(remainingArgs[0]);
+		we.setWiktionaryIndex(wi);
 		
 		outputFile = outputFile + outputFileSuffix;
 		 
@@ -304,12 +298,7 @@ public class ExtractWiktionary {
         }
         try {
         	System.err.println("Dumping " + outputFormat + " representation of the extracted data.");
-        	if (outputFormat.equals("GRAPHML")) {
-        		StringSemNetGraphMLizer gout = new StringSemNetGraphMLizer(new OutputStreamWriter(ostream), StringSemNetGraphMLizer.MULLING_OUTPUT);
-        		gout.dump(s);
-        	} else if (outputFormat.equals("RAW")) {  
-        		s.dumpToWriter(new PrintStream(ostream, false, "UTF-8"));
-        	} else if (outputFormat.equals("RDF")) {
+        	if (outputFormat.equals("RDF")) {
         		wdh.dump(new PrintStream(ostream, false, "UTF-8"));
         	} else if (outputFormat.equals("TURTLE")) {
         		wdh.dump(new PrintStream(ostream, false, "UTF-8"), "TURTLE");

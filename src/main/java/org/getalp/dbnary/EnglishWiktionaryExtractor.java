@@ -14,7 +14,7 @@ import org.getalp.blexisma.api.ISO639_3;
  * @author serasset
  *
  */
-public class EnglishWiktionaryExtractor extends WiktionaryExtractor {
+public class EnglishWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     //TODO: Handle Wikisaurus entries.
 	//DONE: extract pronunciation

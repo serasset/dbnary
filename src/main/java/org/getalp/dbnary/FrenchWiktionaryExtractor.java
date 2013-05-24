@@ -14,7 +14,7 @@ import org.getalp.blexisma.api.ISO639_3;
  * @author serasset
  *
  */
-public class FrenchWiktionaryExtractor extends WiktionaryExtractor {
+public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	// NOTE: to subclass the extractor, you need to define how a language section is recognized.
 	// then, how are sections recognized and what is their semantics.

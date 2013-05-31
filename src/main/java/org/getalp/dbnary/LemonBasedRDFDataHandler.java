@@ -120,7 +120,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		lemonValueProperty = tBox.getProperty(LEMON + "value");
 		languageProperty = tBox.getProperty(LEMON + "language");
 		
-		vocableEntryType = tBox.getResource(DBNARY + "vocable");
+		vocableEntryType = tBox.getResource(DBNARY + "Vocable");
 
 		translationType = tBox.getResource(DBNARY + "Equivalent");
 		// definitionType = tBox.getResource(LMF + "Definition");

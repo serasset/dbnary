@@ -453,7 +453,7 @@ lemon:definition=[\
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{182.64164872334322, 208.81661128214546}, {77, 24}}</string>
+			<string>{{182.64165194133309, 205.54339159523465}, {77, 24}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -525,7 +525,7 @@ lemon:definition=[\
 			<integer>53</integer>
 			<key>Points</key>
 			<array>
-				<string>{172.06967163085938, 232.36248779296875}</string>
+				<string>{172.06967163085938, 226.36248779296875}</string>
 				<string>{280.04749393463135, 206.95697784423828}</string>
 			</array>
 			<key>Style</key>
@@ -550,7 +550,7 @@ lemon:definition=[\
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{226.77760017644869, 235.54403877284358}, {77, 24}}</string>
+			<string>{{226.77760017644869, 233.1402949097378}, {77, 24}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -622,7 +622,7 @@ lemon:definition=[\
 			<integer>51</integer>
 			<key>Points</key>
 			<array>
-				<string>{172.06967163085938, 232.36248779296875}</string>
+				<string>{172.06967163085938, 226.36248779296875}</string>
 				<string>{327.57794189453125, 257.69141387939453}</string>
 			</array>
 			<key>Style</key>
@@ -647,7 +647,7 @@ lemon:definition=[\
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{154.47828015210416, 166.48974818683519}, {77, 24}}</string>
+			<string>{{154.47828015210416, 163.21652925706758}, {77, 24}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -719,7 +719,7 @@ lemon:definition=[\
 			<integer>48</integer>
 			<key>Points</key>
 			<array>
-				<string>{172.06967163085938, 232.36248779296875}</string>
+				<string>{172.06967163085938, 226.36248779296875}</string>
 				<string>{218.076904296875, 113.82109069824219}</string>
 			</array>
 			<key>Style</key>
@@ -1038,7 +1038,7 @@ lemon:definition=[\
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
 
-\f0\b\fs24 \cf0 eng:cat__Noun__1 a :LexicalEnty}</string>
+\f0\b\fs24 \cf0 eng:cat__Noun__1 a :LexicalEntry}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -1161,7 +1161,7 @@ lexinfo:partOfSpeech=lexinfo:noun\
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2012-12-04 15:19:06 +0000</string>
+	<string>2013-06-03 07:48:11 +0000</string>
 	<key>Modifier</key>
 	<string>Gilles Serasset</string>
 	<key>NotesVisible</key>

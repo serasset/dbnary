@@ -226,6 +226,9 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 
 	}
 	
+	// Map of the String to lexvo language entity
+	private HashMap<String,Resource> languages = new HashMap<String, Resource>();
+	
 	public LemonBasedRDFDataHandler(String lang) {
 		super();
 		

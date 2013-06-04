@@ -511,7 +511,7 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
                   	   wdh.registerTranslation(lang, currentGlose, usage, word);
                      }
     			}
-    		} else if (g1.equals("boîte début") || g1.equals("(")) {
+    		} else if (g1.equals("boîte début") || g1.equals("trad-début") || g1.equals("(")) {
     			// Get the glose that should help disambiguate the source acception
     			String g2 = macroMatcher.group(2);
     			// Ignore glose if it is a macro
@@ -520,7 +520,7 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
     			}
     		} else if (g1.equals("-")) {
     			// just ignore it
-    		} else if (g1.equals(")")) {
+    		} else if (g1.equals("trad-fin") || g1.equals(")")) {
     			// Forget the current glose
     			currentGlose = null;
     		} else if (g1.equals("T")) {

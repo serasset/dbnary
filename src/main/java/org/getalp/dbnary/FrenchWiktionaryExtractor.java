@@ -487,7 +487,7 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
     	while (macroMatcher.find()) {
     		String g1 = macroMatcher.group(1);
 
-    		if (g1.equals("trad+") || g1.equals("trad-") || g1.equals("trad") || g1.equals("t+") || g1.equals("t-")) {
+    		if (g1.equals("trad+") || g1.equals("trad-") || g1.equals("trad") || g1.equals("t+") || g1.equals("t-") || g1.equals("trad--")) {
     			// DONE: Sometimes translation links have a remaining info after the word, keep it.
     			String g2 = macroMatcher.group(2);
     			int i1, i2;

@@ -36,6 +36,8 @@ public class UpdateAndExtractDumps {
 	private static final String SERVER_URL_OPTION = "s";
 	private static final String DEFAULT_SERVER_URL = "ftp://ftp.fi.muni.cz/pub/wikimedia/";
 
+	private static final String NETWORK_OFF_OPTION = "n";
+
 	private static final String FORCE_OPTION = "f";
 	private static final boolean DEFAULT_FORCE = false;
 
@@ -63,6 +65,8 @@ public class UpdateAndExtractDumps {
 
 	String[] remainingArgs;
 
+	private boolean networkIsOff = false;
+
 
 	static{
 		options = new Options();
@@ -74,6 +78,8 @@ public class UpdateAndExtractDumps {
 		options.addOption(PREFIX_DIR_OPTION, true, "directory containing the wiktionary dumps and extracts. " + DEFAULT_PREFIX_DIR + " by default ");	
 		options.addOption(MODEL_OPTION, true, "model of the extracts (LMF or LEMON) extracts. " + DEFAULT_MODEL + " by default ");	
 		options.addOption(COMPRESS_OPTION, false, "compress the output file using bzip2." + DEFAULT_COMPRESS + " by default ");	
+		options.addOption(NETWORK_OFF_OPTION, false, "Do not use the ftp network, but decompress and extract.");	
+
 	}
 
 	/**
@@ -124,7 +130,9 @@ public class UpdateAndExtractDumps {
 		force = cmd.hasOption(FORCE_OPTION);
 		
 		compress = cmd.hasOption(COMPRESS_OPTION);
-
+		
+		networkIsOff = cmd.hasOption(NETWORK_OFF_OPTION);
+		
 		if (cmd.hasOption(MODEL_OPTION)) {
 			model = cmd.getOptionValue(MODEL_OPTION);
 		}
@@ -287,6 +295,7 @@ public class UpdateAndExtractDumps {
 
 
 	private String updateDumpFile(String lang) {
+		if (networkIsOff) return getLastLocalDumpDir(lang);
 		FTPClient client = new FTPClient();
 
 		try {
@@ -352,6 +361,25 @@ public class UpdateAndExtractDumps {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private String getLastLocalDumpDir(String lang) {
+		String langDir = outputDir + "/" + lang;
+		File[] dirs = new File(langDir).listFiles();
+		
+		if (null == dirs || dirs.length == 0) return null;
+		
+		SortedSet<String> versions = new TreeSet<String>();
+		for (File dir : dirs) {
+	        if (dir.isDirectory()) {
+	            versions.add(dir.getName());
+	        } else {
+	            System.err.println("Ignoring unexpected file: " + dir.getName());
+	        }
+	    }
+		
+		return versions.first();
+		
 	}
 
 	private static String versionPattern = "\\d{8}";

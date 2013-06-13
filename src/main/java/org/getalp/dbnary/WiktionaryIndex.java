@@ -315,25 +315,4 @@ public class WiktionaryIndex implements Map<String, String> {
         return WiktionaryIndexer.getTextElementContent(this.get(key));
     }
     
-    public static void main(String[] args) throws WiktionaryIndexerException {
-        long starttime = System.currentTimeMillis();
-        WiktionaryIndex wi = new WiktionaryIndex(args[0]);
-        long endtime = System.currentTimeMillis();
-        System.out.println(" Indexing Time = " + (endtime - starttime) + "; " + wi.map.size() + " pages indexed.");
-        
-        System.out.println("enfoncer : " +wi.get("enfoncer"));
-        System.out.println("dictionnaire : " +wi.get("dictionnaire"));
-        System.out.println("acide désoxyribonucléique : " +wi.get("acide désoxyribonucléique"));
-        
-        // long startloadtime = System.currentTimeMillis();
-        System.out.println("Loading map");
-//        wi.loadIndex();
-//        long endloadtime = System.currentTimeMillis();
-//        System.out.println(" Loading Time = " + (endloadtime - startloadtime) + "; ");
-//        
-//        System.out.println("accueil : " +wi.get("accueil"));
-//        System.out.println("dictionnaire : " +wi.get("dictionnaire"));
-//        System.out.println("amour : " +wi.get("amour"));
-  
-     }
 }

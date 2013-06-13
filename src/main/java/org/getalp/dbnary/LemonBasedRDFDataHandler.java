@@ -18,6 +18,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
@@ -34,7 +35,8 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 	protected static final String LEMON = "http://www.monnetproject.eu/lemon#";
 	protected static final String LEXINFO = "http://www.lexinfo.net/ontology/2.0/lexinfo#";
 	protected static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
-	
+	private static final String LEXVO = "http://lexvo.org/id/iso639-3/";
+
 	protected static final Resource lexEntryType;
 	protected static final Resource lexicalFormType;
 	protected static final Resource translationType;
@@ -64,7 +66,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 	protected static final Property isTranslationOf;
 	protected static final Property targetLanguageProperty;
 	protected static final Property equivalentTargetProperty;
-	protected static final Property gloseProperty;
+	protected static final Property glossProperty;
 	protected static final Property usageProperty;
 	// protected static final Property textProperty;
 	protected static final Property senseNumberProperty;
@@ -85,6 +87,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 	private int currentSenseNumber;
 	private int currentTranslationNumber;
 	protected String extractedLang;
+	protected Resource lexvoExtractedLanguage;
 
 	private Set<Statement> heldBackStatements = new HashSet<Statement>();
 
@@ -122,14 +125,14 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		
 		vocableEntryType = tBox.getResource(DBNARY + "Vocable");
 
-		translationType = tBox.getResource(DBNARY + "Equivalent");
+		translationType = tBox.getResource(DBNARY + "Translation");
 		// definitionType = tBox.getResource(LMF + "Definition");
 		// lexicalEntryRelationType = tBox.getResource(NS + "LexicalEntryRelation");
 
 		// formProperty = tBox.getProperty(NS + "writtenForm");
 		targetLanguageProperty = tBox.getProperty(DBNARY + "targetLanguage");
 		equivalentTargetProperty = tBox.getProperty(DBNARY + "writtenForm");
-		gloseProperty = tBox.getProperty(DBNARY + "glose");
+		glossProperty = tBox.getProperty(DBNARY + "gloss");
 		usageProperty = tBox.getProperty(DBNARY + "usage");
 		// textProperty = tBox.getProperty(DBNARY + "text");
 		senseNumberProperty = tBox.getProperty(DBNARY + "senseNumber");
@@ -235,9 +238,9 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		NS = NSprefix + "/" + lang + "/";
 		
 		Lang l = ISO639_3.sharedInstance.getLang(lang);
-		extractedLang = (null != l.getPart1()) ? l.getPart1() : l.getId();
-				
-
+		extractedLang = (null != l.getPart1()) ? l.getPart1() : l.getId();	
+		lexvoExtractedLanguage = tBox.getResource(LEXVO + lang); 
+		
 		// Create aBox
 		aBox = ModelFactory.createDefaultModel();
 			
@@ -247,6 +250,8 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		aBox.setNsPrefix("lemon", LEMON);
 		aBox.setNsPrefix("lexinfo", LEXINFO);
 		aBox.setNsPrefix("rdfs", RDFS);
+		aBox.setNsPrefix("dcterms", DCTerms.NS);
+		aBox.setNsPrefix("lexvo", LEXVO);
 
 	}
 	
@@ -311,6 +316,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
     	if (null != currentLexinfoPos)
     		aBox.add(aBox.createStatement(currentLexEntry, posProperty, currentLexinfoPos));
     	aBox.add(aBox.createStatement(currentLexEntry, languageProperty, extractedLang));
+    	aBox.add(aBox.createStatement(currentLexEntry, DCTerms.language, lexvoExtractedLanguage));
 
     	// Register the pending statements.
         for (Statement s: heldBackStatements) {
@@ -368,10 +374,10 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		word = word.trim();
     	Resource trans = aBox.createResource(computeTransId(lang), translationType);
     	aBox.add(aBox.createStatement(trans, isTranslationOf, currentLexEntry));
-    	aBox.add(aBox.createStatement(trans, targetLanguageProperty, lang));
+    	aBox.add(aBox.createStatement(trans, targetLanguageProperty, getLexvoLanguageResource(lang)));
     	aBox.add(aBox.createStatement(trans, equivalentTargetProperty, word));
     	if (currentGlose != null && ! currentGlose.equals("")) {
-        	aBox.add(aBox.createStatement(trans, gloseProperty, currentGlose));
+        	aBox.add(aBox.createStatement(trans, glossProperty, currentGlose));
     	}
     	if (usage != null && ! usage.equals("")) {
         	aBox.add(aBox.createStatement(trans, usageProperty, usage));
@@ -382,6 +388,15 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		return NS + "__tr_" + uriEncode(lang) + "_" + (currentTranslationNumber++) + "_" + currentEncodedPageName;
 	}
 
+    private Resource getLexvoLanguageResource(String lang) {
+    	Resource res = languages.get(lang);
+    	if (res == null) {
+    		res = tBox.createResource(LEXVO + lang);
+    		languages.put(lang, res);
+    	}
+    	return res;
+    }
+    
 	@Override
 	public void registerNymRelation(String target, String synRelation) {
 		// Some links point to Annex pages or Images, just ignore these.

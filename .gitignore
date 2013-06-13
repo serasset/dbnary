@@ -1,6 +1,10 @@
 /.classpath
 /.project
 /.settings
+doc/articles/swj-mlod-2012/*.aux
+doc/articles/swj-mlod-2012/*.bbl
+doc/articles/swj-mlod-2012/*.blg
+doc/articles/swj-mlod-2012/*.synctex.gz
 src/.classpath
 src/.project
 src/.settings

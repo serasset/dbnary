@@ -42,6 +42,13 @@
 \firstpage{1}
 \lastpage{1}
 
+\newcommand{\ffbox}[1]{%
+  {% open a group for a local setting
+   \setlength{\fboxsep}{-2\fboxrule}% the rule will be inside the box boundary
+   \fbox{\hspace{1.2pt}\strut#1\hspace{1.2pt}}% print the box, with some padding at the left and right
+  }% close the group
+}
+
 \begin{document}
 
 \begin{frontmatter}
@@ -67,7 +74,7 @@
 %\address[B]{}
 
 \begin{abstract}
-Contributive resources, such as wikipedia, have proved to be valuable in Natural Language Processing or Multilingual Information Retrieval applications. This work focusses on Wiktionary, the dictionary part of the collaborative resources sponsored by the \emph{Wikimedia} foundation. In this article, we present our effort to extract Multilingual Lexical Data from wiktionary data and to provide it to the community as a Multilingual Lexical Linked Open Data (MLLOD). This lexical resource is structured using the LEMON Model.\\
+Contributive resources, such as Wikipedia, have proved to be valuable in Natural Language Processing or multilingual Information Retrieval applications. This work focusses on Wiktionary, the dictionary part of the resources sponsored by the Wikimedia foundation. In this article, we present our effort to extract multilingual lexical data from Wiktionary data and to provide it to the community as a Multilingual Lexical Linked Open Data (MLLOD). This lexical resource is structured using the LEMON Model.\\
 This data, called \textit{dbnary}, is registered at \url{http://thedatahub.org/dataset/dbnary}.
 \end{abstract}
 
@@ -79,39 +86,39 @@ Wiktionary \sep Multilingual \sep Lexical Resource \sep LEMON \sep Multilingual 
 
 \section{Introduction}
 
-The GETALP (Study group for speech and language translation/processing) team of the LIG (Laboratoire d'Informatique de Grenoble) is in need for multilingual lexical resources that should include language correspondences (translations) and word sense definitions. In this regard, the data included in the different wiktionary\footnote{\url{http://www.wiktionary.org}} language edition is a precious mine.
+The GETALP (study group for speech and language translation/processing) team of the LIG (Laboratoire d'Informatique de Grenoble) is in need for multilingual lexical resources that should include language correspondences (translations) and word sense definitions. In this regard, the data included in the different Wiktionary\footnote{\url{http://www.wiktionary.org}} language edition is a precious mine.
 
-Alas, many inconsistencies, errors, difference in usage do exist in the different wiktionary language edition. Hence, we decided to provide an effort to extract precious data from this source and provide it to the community as Linked Data. After a first version that used an RDF version of the LMF model \cite{FRANCOPOULO:2006:INRIA-00121468:1,francopoulo-EtAl:2006:MLRI} and described in \cite{serasset:lrec2012}, we decided to adapt our extractors to LEMON model \cite{McRae-lemon:2012}. This linked dataset has won the ``Monnet-Challenge'' in 2012.
+Alas, many inconsistencies, errors, difference in usage do exist in the different Wiktionary language edition. Hence, we decided to provide an effort to extract precious data from this source and provide it to the community as Linked Data. After a first version that used an RDF version of the LMF model \cite{FRANCOPOULO:2006:INRIA-00121468:1,francopoulo-EtAl:2006:MLRI} and described in \cite{serasset:lrec2012}, we decided to adapt our extractors to LEMON model \cite{McRae-lemon:2012}. This linked dataset has won the ``Monnet-Challenge'' in 2012.
 
-\section{Extracting data from wiktionary}
+\section{Extracting data from Wiktionary}
 
 \subsection{Motivation}
 
-Errors and incoherence are inherent to a contributive resource like wiktionary. Some language editions (like French and English) have many moderators that do limit the number of incoherence among entries of the same language. Moreover, such languages, which contain the most data, use many \textit{templates} that simplify the extraction process. For instance, the translation section of the French dictionary usually uses a template to identify each individual translation.
+Errors and incoherence are inherent to a contributive resource like Wiktionary. Some language editions (like French and English) have many moderators that do limit the number of incoherence among entries of the same language. Such languages, which contain the most data, use many \textit{templates} that simplify the extraction process. For instance, the translation section of the French Wiktionary always uses a template to identify each individual translation (e.g. \ffbox{\texttt{\small \{\{trad+|de|Katze\}\} ''f''}} is the wiki code used for one of the German translation of the French word \emph{chat}).
 
-This is not true anymore with less developed wiktionary language editions. For instance, in the Finnish edition, some translations are introduced by a template giving the language (e.g. \{fr\} precedes French translations) and others are introduced by the string "ranska" which is the Finnish translation for "French". In this case the extractor needs to know the Finnish translation of all language names to cope with the second case and avoid losing almost half of the available translation data.
+This is not true anymore with less developed Wiktionary language editions. For instance, in the Finnish edition, some translations into French are introduced by the appropriate template (i.e. \ffbox{\texttt{\small\{\{fr\}\}}}) while others are introduced by the string \ffbox{\texttt{\small ranska}} which is the Finnish translation for "French". In this case the extractor needs to know the Finnish translation of all language names to cope with the second case and avoid losing almost half of the available translation data.
 
-Many such inconsistencies and some errors in the data renders the development of an extractor quite tedious. as many people in NLP is trying to use this data for different applications, we decided that we would extract as much data as we can from wiktionary and provide it to the community while ensuring interoperability with other lexical data.
+Many such inconsistencies and some errors in the data renders the development of an extractor quite tedious. as many people in NLP is trying to use this data for different applications, we decided that we would extract lexical data from as much Wiktionary language editions as we can and provide it to the community while ensuring interoperability with other lexical data.
 
-The dbnary extractor is written in java and is open-source (LGPL licensed, available at \url{http://dbnary.forge.imag.fr}). Anyone way contribute to this extraction effort by taking contact with the author.
+The dbnary extractor is written in java and is open-source (LGPL licensed, available at \url{http://dbnary.forge.imag.fr}). Anyone may contribute to this extraction effort by taking contact with the author.
 
 \subsection{Scope of the extracted data}
 
-The main goal of our efforts is not to extensively reflect wiktionary data, but to create a lexical resource that is structured as a set of monolingual dictionaries + bilingual translation information. Such data is already useful for several application, but it is merely a starting point for a future multilingual lexical database.
+The main goal of our efforts is not to extensively reflect Wiktionary content, but to create a lexical resource that is structured as a set of monolingual dictionaries + bilingual translation information. This way, the structure of extracted data follows the usual structure of Machine Readable Dictionaries (MRD). We originally extracted this data as we needed translations in many languages along with textual definitions of senses that we used to compute semantic similarity between senses (using an adapted Lesk measure) for the blexisma multilingual lexical disambiguation system \cite{schwab2012coling}. Such data is already useful for several application, but it is merely a starting point for a future multilingual lexical database.
 
-The monolingual data is always extracted from its own wiktionary language edition. For instance, the French lexical data is extracted from French language edition\footnote{We use the term ``French language edition'' to refer to the data available on \url{http://fr.wiktionary.org}}. Hence, we completely disregard the French data that may be found in other language editions.
+The monolingual data is always extracted from its own Wiktionary language edition. For instance, the French lexical data is extracted from French language edition.\footnote{We use the term ``French language edition'' to refer to the data available on \url{http://fr.wiktionary.org}} Hence, we completely disregard the French data that may be found in other language editions.
 
 We also filtered out some part of speeches in order to produce a result that is closer to existing monolingual dictionaries. For instance, in French, we disregard abstract entries that are prefixes, suffixes or flexions (e.g.: we do not extract data concerning \textit{in-} or \textit{-al} that are prefixes/suffixes and have a dedicated page in French language edition). 
 
-Our work did focus only on the lexical data. Hence, we do not provide any reference to any ontology.
+Our work did focus only on the lexical data. Hence, we do not provide any reference to any ontology. Moreover, we only try to \emph{extract} lexical data from Wiktionary, but we do not try to \emph{enrich} it (yet). Hence, this dataset is not (at the time of printing) linked to other lexical linked data.
 
 \subsection{Availability of the extracted data}
 
 Dbnary data is provided using Creative Commons Attribution-ShareAlike 3.0 license (\ccbysa). It may be downloaded from the dbnary website\footnote{\url{http://kaiko.getalp.org/about-dbnary}} as a set of turtle files (one per language).
 
-As the wiktionary language editions constantly evolve with entries modifications and additions, the dbnary also evolves. Each time the wikimedia foundation provides a new dump\footnote{dumps are available at \url{http://dumps.wikimedia.org/}.} of a wiktionary language edition, dbnary data is extracted with the new dump and made available online. At the time of writing, the dumps are updated about once every ten days for each language.
+As the Wiktionary language editions constantly evolve with entries modifications and additions, the dbnary also evolves. Each time the wikimedia foundation provides a new dump\footnote{dumps are available at \url{http://dumps.wikimedia.org/}.} of a Wiktionary language edition, dbnary data is extracted with the new dump and made available online. At the time of writing, the dumps are updated about once every ten days for each language.
 
-Dbnary data is also available as Linguistic Linked Open Data (LLOD). Hence, all dbnary URIs are dereferencable and a SPARQL endpoint is available at \url{http://kaiko.getalp.org/sparql}. However, as the dbnary data changes almost everyday, the data that is available this way is not necessarily up to date.
+Dbnary data is also available as Linguistic Linked Open Data (LLOD). Hence, all dbnary IRIs are dereferencable and a SPARQL endpoint is available at \url{http://kaiko.getalp.org/sparql}. However, as the dbnary data changes almost everyday, the data that is available this way is not necessarily up to date.
 
 \section{Extracted Data as a LEMON Lexical Resource}
 
@@ -140,19 +147,19 @@ In order to cope with this legacy data, we extended the LEMON model by adding ne
 The LEMON model has been extended to cope with legacy lexical data. Added classes and properties are:
 
 \begin{description}
-\item[Vocable:] Several lexical entries may be contained in a single wiktionary page. And most lexical relations are simply targeted to wiktionary pages. Hence, we added the \uri{dbnary:Vocable} class to represent a wiktionary page. This class is a subclass of \uri{lemon:LexicalEntry}. Instances of this class are related to their lexical entries through the \uri{dbnary:refersTo} property. 
+\item[Vocable:] Several lexical entries may be contained in a single Wiktionary page. And most lexical relations are simply targeted to Wiktionary pages. Hence, we introduced the \uri{dbnary:Vocable}\footnote{The \uri{dbnary} namespace used in this article resolves to \url{http://kaiko.getalp.org/dbnary#}} class to represent a Wiktionary page, as a reification of the set of Lexical entries it contains. This class is a subclass of \uri{lemon:LexicalEntry}. Instances of this class are related to their lexical entries through the \uri{dbnary:refersTo} property. 
 
 \item[LexicalEntity:] Lexical relations should usually link two \textit{Lexical Senses}. However, most relations found in legacy lexical data is underspecified. Some relations link a \textit{Lexical Sense} to a \textit{Vocable} or to a \textit{Lexical Entry}. Others even link two \textit{Lexical Entries}. In order to cope in a standard way with such underspecified relations, we introduced the \uri{dbnary:LexicalEntity} class which is the union of  \textit{Lexical Entry} and \textit{Lexical Sense}.
 
-\item[Nyms:] Most wiktionary language edition do provide ``nym'' relations (mainly synonym, antonym, hypernym, hyponym, meronym and holonym), which are almost always underspecified. Hence, DBnary introduces 6 new ``nym'' properties (in \uri{dbnary} name space). These relations domains and ranges are \textit{Lexical Entities}.
+\item[Nyms:] Most Wiktionary language edition do provide ``nym'' relations (mainly synonym, antonym, hypernym, hyponym, meronym and holonym), which are almost always underspecified. Hence, DBnary introduces 6 new ``nym'' properties (in \uri{dbnary} name space). These relations domains and ranges are \textit{Lexical Entities}.
 
-\item[Translations:] As there is no way to represent bilingual translation relation in LEMON, we introduced the \uri{dbnary:Equivalent} class that collects translation information contained in wiktionary. This class admits several properties:
+\item[Translations:] As there is no way to represent bilingual translation relation in LEMON, we introduced the \uri{dbnary:Translation} class that collects translation information contained in Wiktionary. This class admits several properties:
 \begin{itemize}
-\item \uri{dbnary:isTranslationOf} relates the equivalent to its source \textit{lexical Entity}. 
+\item \uri{dbnary:isTranslationOf} relates the translation to its source \textit{lexical Entity}. 
 \item \uri{dbnary:targetLanguage} is a data property whose type is a string containing the target language code as defined in ISO639-3 standard.
 \item \uri{dbnary:writtenForm} gives the written form of the translation in the target language. Here, we decided not to relate to a vocable as some translations are not to be defined as lexical entries in the target language.
-\item \uri{dbnary:glose} is a string property that contains any available information used to denote the lexical sense of the source of the equivalent.
-\item \uri{dbnary:usage} is a string property that contains any available information concerning this equivalent object. It usually gives additional information on the target entry.
+\item \uri{dbnary:gloss} is a string property that contains any available information used to denote the lexical sense of the source of the translation (e.g. in the English entry "cat", the German translation "Katze" appears in a box labelled with the \textit{gloss} "domestic species", used to denote the fact that "Katze" is a translation of the \textit{Lexical Sense} defined by "A domesticated subspecies, Felis silvestris catus, of feline animal...".\footnote{This means that, in an ideal situation, the translation should be linked to this \textit{Lexical Sense}, instead of the \textit{Lexical Entry}, however, such a linking may be error prone, hence, we decided to make such refinements afterwards.}
+\item \uri{dbnary:usage} is a string property that contains any available information concerning this translation object. It usually gives additional information on the target entry.
 \end{itemize}
 
 \end{description}
@@ -161,9 +168,9 @@ The LEMON model has been extended to cope with legacy lexical data. Added classe
 
 
 
-Figure \ref{dbnary:cat} illustrates the main elements characterizing a lexicon entry in the dbnary data. Each wiktionary page is represented by a \uri{dbnary:Vocable} element that refers to its corresponding \uri{lemon:Lexical\-Entry}. Each lexical entry corresponds to one lemma, one etymology and one part of speech. Each lexical entry is related to its \uri{lemon:Lexical\-Sense} by the \uri{lemon:sense} property. A lexical sense corresponds to one definition. 
+Figure \ref{dbnary:cat} illustrates the main elements characterizing a lexicon entry in the dbnary data. Each Wiktionary page is represented by a \uri{dbnary:Vocable} element that refers to its corresponding \uri{lemon:Lexical\-Entry}. Each lexical entry corresponds to one lemma, one etymology and one part of speech. Each lexical entry is related to its \uri{lemon:Lexical\-Sense} by the \uri{lemon:sense} property. A lexical sense corresponds to one definition. 
 
-Each lexical entry is related to its canonical form and eventually to alternate forms (that are represented using \uri{lemon:LexicalForm}s). The part of speech is available through \uri{dbnary:partOfSpeech} property that gives the part of speech as defined by the wiktionary language edition, and through the \uri{isocat:partOfSpeech} property that points to a standard ISOcat part of speech value.
+Each lexical entry is related to its canonical form and eventually to alternate forms (that are represented using \uri{lemon:LexicalForm}s). The part of speech is available through \uri{dbnary:partOfSpeech} property that gives the part of speech as defined by the Wiktionary language edition, and through the \uri{isocat:partOfSpeech} property that points to a standard ISOcat part of speech value.
 
 \begin{figure*}[tbp]
 \resizebox{\linewidth}{!}{%
@@ -173,18 +180,18 @@ Each lexical entry is related to its canonical form and eventually to alternate 
 \end{figure*}
 
 
-Figure \ref{dbnary:catequiv} illustrates the \textit{dbnary} extension to LEMON that is used to represent the many translations that are available in wiktionary. Each translation is represented as a \uri{dbnary:Equivalent} instance that is associated to a \textit{lexical entry} by the \uri{is\-Translation\-Of} property. The translation is given as a string through the \uri{writtenForm} property, as some translations may not necessarily correspond to vocables in the target language (e.g. explanatory translations). The target language of the translation is given using ISO  639-3 3 letter language code \cite{ISO639-3:2007}. When available, the \uri{glose} property value gives an indication concerning the lexical sense that is translated. In the current dataset, the translation is linked to an usually ambiguous lexical entry and the \textit{glose} is kept for further attachment to the correct word sense.
+Figure \ref{dbnary:catequiv} illustrates the \textit{dbnary} extension to LEMON that is used to represent the many translations that are available in Wiktionary. Each translation is represented as a \uri{dbnary:Translation} instance that is associated to a \textit{lexical entry} by the \uri{is\-Translation\-Of} property. The translation is given as a string through the \uri{writtenForm} property, as some translations may not necessarily correspond to vocables in the target language (e.g. explanatory translations). The target language of the translation is given using ISO  639-3 3 letter language code \cite{ISO639-3:2007}. When available, the \uri{gloss} property value gives an indication concerning the lexical sense that is translated. In the current dataset, the translation is linked to an usually ambiguous lexical entry and the \textit{gloss} is kept for further attachment to the correct word sense.
 
 Wiktionary contains many lexical relations (like synonymy, antonymy, etc.) that are represented using the above mentioned ``nym'' properties which relate a \textit{lexical entity} with another \textit{lexical entity}. In the current dataset, most of the property subjects are \textit{lexical entries}. However, in case of monosemous lexical entries, the synonymy relation is attached to the unique \uri{lemon:LexicalSense}. Figure \ref{dbnary:catsyn} illustrates how dbnary encodes ``nym'' relations with examples of the \uri{dbnary:synonym} property. In the upper part of the figure is an example of a \uri{dbnary:synonym} property that is related to the ambiguous lexical entry \uri{eng:cat\_\_Noun\_\_1}. The lower part shows that, in the monosemous lexical entry \uri{eng:voyager\_\_Noun\_\_1}, the \uri{dbnary:synonym} property is related to the unique lexical sense of the entry. The object of such properties are always \uri{dbnary:Vocable}.
 
 
 \section{Size of the involved data}
 
-All sizes indicated in this sections reflect the state of the dbnary data at the time of writing (December 2012). Table \ref{globalsize} give the number of resources available in dbnary.
+All sizes indicated in this sections reflect the state of the dbnary data at the time of writing (December 2012). Table \ref{globalsize} gives the number of resources available in dbnary.
 
 \begin{table}[htb]
 \begin{tabular}{lrrrr}
- & \textbf{Entries} & \textbf{Vocables} & \textbf{Senses} & \textbf{Equivalents}\\
+ & \textbf{Entries} & \textbf{Vocables} & \textbf{Senses} & \textbf{Translations}\\
  \hline
 \textbf{eng} & 502493 & 481311 & 402815 & 1021430 \\
 \textbf{fra} & 264803 & 274854 & 347076 & 419168 \\
@@ -196,7 +203,7 @@ All sizes indicated in this sections reflect the state of the dbnary data at the
 \caption{Number of resources by type and language, sorted by number of lexical entries.}\label{globalsize}
 \end{table}
 
-As the extraction is performed each time a wiktionary dump is available, this numbers are constantly evolving, as the wiktionary data is evolving and as the extractor itself may be improved.
+As the extraction is performed each time a Wiktionary dump is available, this numbers are constantly evolving, as the Wiktionary data is evolving and as the extractor itself may be improved.
 
 
 Table \ref{nymsize} gives an overview of the number of lexico-semantic relations available in each language edition.
@@ -215,7 +222,7 @@ Table \ref{nymsize} gives an overview of the number of lexico-semantic relations
 \caption{Number of lexicon-semantic relations, sorted by number of synonymy relations.}\label{nymsize}
 \end{table}
 
-Table \ref{tradsize} shows the number of translation equivalents available in each language edition, for the major target languages\footnote{The target languages are the 21 having the largest page count in their wiktionaries, i.e. (by increasing order of the ISO 639-3 language codes):
+Table \ref{tradsize} shows the number of translations available in each language edition, for the major target languages.\footnote{The target languages are the 21 having the largest page count in their wiktionaries, i.e. (by increasing order of the ISO 639-3 language codes):
 German (deu),
 Greek (ell),
 English (eng),
@@ -237,7 +244,7 @@ Tamil (tam),
 Turkish (tur),
 Vietnamese (vie),
 Chinese (zho)
-}. It also gives the total number of translations and the number of different target language with translations. Not surprisingly, English language edition shows the most translation equivalent to more than 1000 different languages. Surprisingly, the French language edition shows a relatively small number of target languages, while the number of equivalents stays relatively high. 
+} It also gives the total number of translations and the number of different target language with translations. Not surprisingly, English language edition shows the most translations to more than 1000 different languages. Surprisingly, the French language edition shows a relatively small number of target languages, while the number of translations stays relatively high. 
 
 \begin{table*}[htb]
 \begin{tabular}{lrrrrrrrrrrrrr}
@@ -259,18 +266,18 @@ Chinese (zho)
 \textbf{por} & 4346 & 3 & 3867 & 4394 & 540 & 2845 & 1000 & 2933 & 132554 & 197931 & \textit{678}\\
 
 \end{tabular}
-\caption{Number of translation equivalents in each language edition, detailed by target language, for the 21 biggest wiktionary languages, sorted by alphabetic order on ISO language code. The number of different target language is also given.}\label{tradsize}
+\caption{Number of translations in each language edition, detailed by target language, for the 21 biggest Wiktionary languages, sorted by alphabetic order on ISO language code. The number of different target language is also given.}\label{tradsize}
 \end{table*}
 
 \section{Conclusion and Perspectives}
 
-The current paper presents the dbnary dataset that is a LEMON based lexical network from different wiktionary language editions. Such a work is interesting for many users that will be able to use the extracted data in their own NLP system. Moreover, as the extracted resource uses the Resource Description Framework (RDF) standard and the LEMON model, the extracted data is also directly usable for researchers on the Semantic Web, where it could be used to ease the ontology alignment systems when terms in different languages are used to describe ontologies of a domain.
+The current paper presents the dbnary dataset that is a LEMON based lexical network from different Wiktionary language editions. Such a work is interesting for many users that will be able to use the extracted data in their own NLP system. Moreover, as the extracted resource uses the Resource Description Framework (RDF) standard and the LEMON model, the extracted data is also directly usable for researchers on the Semantic Web, where it could be used to ease the ontology alignment systems when terms in different languages are used to describe ontologies of a domain.
 
-This resources describes a significative number of entries for at least English and French languages that makes it comparable to Wordnet \cite{wordnet-fellbaum}. Moreover, it contains many translation equivalents with certain language pairs that makes it also comparable to many existing multilingual Wordnets
+This resource describes a significative number of entries for at least English and French languages that makes it comparable to Wordnet \cite{wordnet-fellbaum}. Moreover, it contains many translations with certain language pairs that makes it also comparable to many existing multilingual Wordnets.
 
-Our next objectives are to better generalize the treatments of the current extractors, so that it will be easier to create and maintain extractors for other languages. We are currently working on the Russian and we welcome all initiative aiming at the addition of new language to this open-source tool.
+Our next objective is to better generalize the treatments of the current extractors, so that it will be easier to create and maintain extractors for other languages. We have recently introduced the extractor of Russian language and are working on others. We welcome all initiative aiming at the addition of new languages to this open-source tool. 
 
-We will also enhance the \textit{dbnary} data by providing more lexico-semantic relations and translations aligned on Lexical Senses.
+We will also enhance the \textit{dbnary} data by providing more lexico-semantic relations and translations aligned on lexical senses.
 
 \section{Acknowledgements}
 

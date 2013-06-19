@@ -65,6 +65,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 	// protected Property formProperty;
 	protected static final Property isTranslationOf;
 	protected static final Property targetLanguageProperty;
+	protected static final Property targetLanguageCodeProperty;
 	protected static final Property equivalentTargetProperty;
 	protected static final Property glossProperty;
 	protected static final Property usageProperty;
@@ -131,6 +132,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 
 		// formProperty = tBox.getProperty(NS + "writtenForm");
 		targetLanguageProperty = tBox.getProperty(DBNARY + "targetLanguage");
+		targetLanguageCodeProperty = tBox.getProperty(DBNARY + "targetLanguageCode");
 		equivalentTargetProperty = tBox.getProperty(DBNARY + "writtenForm");
 		glossProperty = tBox.getProperty(DBNARY + "gloss");
 		usageProperty = tBox.getProperty(DBNARY + "usage");
@@ -374,7 +376,7 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
 		word = word.trim();
     	Resource trans = aBox.createResource(computeTransId(lang), translationType);
     	aBox.add(aBox.createStatement(trans, isTranslationOf, currentLexEntry));
-    	aBox.add(aBox.createStatement(trans, targetLanguageProperty, getLexvoLanguageResource(lang)));
+    	aBox.add(createTargetLanguageProperty(trans, lang));
     	aBox.add(aBox.createStatement(trans, equivalentTargetProperty, word));
     	if (currentGlose != null && ! currentGlose.equals("")) {
         	aBox.add(aBox.createStatement(trans, glossProperty, currentGlose));
@@ -384,7 +386,20 @@ public class LemonBasedRDFDataHandler implements WiktionaryDataHandler {
     	}	
 	}
 
-    private String computeTransId(String lang) {
+    private Statement createTargetLanguageProperty(Resource trans, String lang) {
+    	if (isAnISO639_3Code(lang)) {
+    		return aBox.createStatement(trans, targetLanguageProperty, getLexvoLanguageResource(lang));
+    	} else {
+    		return aBox.createStatement(trans, targetLanguageCodeProperty, lang);
+    	}
+	}
+
+	private boolean isAnISO639_3Code(String lang) {
+		// TODO For the moment, only check if the code is a 3 letter code...
+		return lang.length() == 3;
+	}
+
+	private String computeTransId(String lang) {
 		return NS + "__tr_" + uriEncode(lang) + "_" + (currentTranslationNumber++) + "_" + currentEncodedPageName;
 	}
 

@@ -23,7 +23,7 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 
-public class StatLEMONExtract {
+public class StatLemonExtract {
 
 	protected class IncrementableInt {
 		int val;
@@ -89,7 +89,8 @@ public class StatLEMONExtract {
 	protected static final String LEMON = "http://www.monnetproject.eu/lemon#";
 	protected static final String LEXINFO = "http://www.lexinfo.net/ontology/2.0/lexinfo#";
 	protected static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
-	
+	protected static final String LEXVO = "http://lexvo.org/id/iso639-3/";
+
 	protected static final Resource lexEntryType;
 	protected static final Resource wordEntryType;
 	protected static final Resource phraseEntryType;
@@ -155,7 +156,7 @@ public class StatLEMONExtract {
 		lemonValueProperty = tBox.getProperty(LEMON + "value");
 		languageProperty = tBox.getProperty(LEMON + "language");
 		
-		vocableEntryType = tBox.getResource(DBNARY + "vocable");
+		vocableEntryType = tBox.getResource(DBNARY + "Vocable");
 
 		translationType = tBox.getResource(DBNARY + "Equivalent");
 		// definitionType = tBox.getResource(LMF + "Definition");
@@ -276,7 +277,7 @@ public class StatLEMONExtract {
 
 
 	public static void main(String args[]) {
-		StatLEMONExtract cliProg = new StatLEMONExtract();
+		StatLemonExtract cliProg = new StatLemonExtract();
 		cliProg.loadArgs(args);
 		cliProg.stats();
 		

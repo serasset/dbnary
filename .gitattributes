@@ -55,6 +55,7 @@ doc/articles/swj-mlod-2012/swj-dbnary.pdf -text
 doc/articles/swj-mlod-2012/swj-dbnary.tex -text
 /pom.xml -text
 src/main/java/org/getalp/dbnary/AbstractWiktionaryExtractor.java -text
+src/main/java/org/getalp/dbnary/DbnaryModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/DbnaryWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/EnglishLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/EnglishWiktionaryExtractor.java -text
@@ -94,12 +95,13 @@ src/main/java/org/getalp/dbnary/cli/GetRawEntry.java -text svneol=unset#text/pla
 src/main/java/org/getalp/dbnary/cli/GrepInWiktionary.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/IConv.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/RDFDiff.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/cli/StatLEMONExtract.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/cli/StatLemonExtract.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/StatRDFExtract.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/DiffFichier.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain
 src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
+src/main/resources/dbnary.owl -text
 src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/lemon.ttl -text
 src/main/resources/org/getalp/dbnary/lexinfo.owl -text

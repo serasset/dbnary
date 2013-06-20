@@ -24,8 +24,9 @@ import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.EnglishWiktionaryExtractor;
 import org.getalp.dbnary.FrenchWiktionaryExtractor;
 import org.getalp.dbnary.GermanWiktionaryExtractor;
+import org.getalp.dbnary.GreekWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryExtractor;
-import org.getalp.dbnary.ItalianoWiktionaryExtractor;
+import org.getalp.dbnary.ItalianWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.PortugueseWiktionaryExtractor;
@@ -168,6 +169,7 @@ public class ExtractWiktionary {
 					language.equals("por") || 
 					language.equals("ita") || 
 					language.equals("fin") ||
+					language.equals("ell") ||
 					language.equals("rus"))) {
 				System.err.println("Unknown language: " + language);
 				printUsage();
@@ -207,9 +209,11 @@ public class ExtractWiktionary {
 		} else if (language.equals("por")) {
 			we = new PortugueseWiktionaryExtractor(wdh);
 		} else if (language.equals("ita")) {
-			we = new ItalianoWiktionaryExtractor(wdh);
+			we = new ItalianWiktionaryExtractor(wdh);
 		} else if (language.equals("fin")) {
 			we = new SuomiWiktionaryExtractor(wdh);
+		} else if (language.equals("ell")) {
+			we = new GreekWiktionaryExtractor(wdh);
 		} else if (language.equals("rus")) {
 			we = new RussianWiktionaryExtractor(wdh);
 		} else {

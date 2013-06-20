@@ -14,7 +14,7 @@ import org.getalp.blexisma.api.ISO639_3;
  * @author serasset
  *
  */
-public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
+public class ItalianWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     //TODO: Handle Wikisaurus entries.
 	protected final static String languageSectionPatternString = "==\\s*\\{\\{-([^-]*)-\\}\\}\\s*==";
@@ -43,7 +43,7 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
     private final int NYMBLOCK = 4;
     private final int PRONBLOCK = 5;
     
-    public ItalianoWiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public ItalianWiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
     }
 

@@ -20,6 +20,11 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected final static String languageSectionPatternString = "==\\s*\\{\\{-([^-]*)-\\}\\}\\s*==";
    
 	protected final static String sectionPatternString ;
+	
+	 protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
+	
+	 protected final static Pattern pronPattern;
+	 
 	static {
 		 
 		sectionPatternString = 
@@ -36,7 +41,7 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
     private final int DEFBLOCK = 2;
     private final int ORTHOALTBLOCK = 3;
     private final int NYMBLOCK = 4;
-    
+    private final int PRONBLOCK = 5;
     
     public ItalianoWiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
@@ -60,6 +65,8 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
        
         sectionPattern = Pattern.compile(sectionPatternString);
         
+        pronPattern = Pattern.compile(pronPatternString);
+                
         posMarkers = new HashSet<String>(20);
         posMarkers.add("noun");
         posMarkers.add("verb");
@@ -86,6 +93,7 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
     int orthBlockStart = -1;
     int translationBlockStart = -1;
     private int nymBlockStart = -1;
+    private int pronBlockStart = -1;
     private String currentNym = null;
     
     //searches for the italian language header
@@ -170,6 +178,17 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentNym = null;
         nymBlockStart = -1;         
      }
+    
+    
+    private void gotoPronBlock(Matcher m) {
+        state = PRONBLOCK; 
+        pronBlockStart = m.end();      
+     }
+    
+    private void leavePronBlock(Matcher m) {
+        extractPron(pronBlockStart, computeRegionEnd(pronBlockStart, m));
+        pronBlockStart = -1;         
+     }
 
     private void extractItalianData(int startOffset, int endOffset) {        
         Matcher m = sectionPattern.matcher(pageContent);
@@ -188,6 +207,8 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
             case NODATA:
                 if (m.group(1).equals("trans1")) {
                     gotoTradBlock(m);
+                } else if (m.group(1).equals("pron")) {
+                    gotoPronBlock(m);
                 } else if (posMarkers.contains(m.group(1))) {
                     gotoDefBlock(m);
                 } else if (m.group(1).equals("var")) {
@@ -202,6 +223,9 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
                 if (m.group(1).equals("trans1")) {
                     leaveDefBlock(m);
                     gotoTradBlock(m);
+                } else if (m.group(1).equals("pron")) {
+                    leaveDefBlock(m);
+                    gotoPronBlock(m);
                 } else if (posMarkers.contains(m.group(1))) {
                     leaveDefBlock(m);
                     gotoDefBlock(m);
@@ -220,6 +244,9 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
                 if (m.group(1).equals("trans1")) {
                     leaveTradBlock(m);
                     gotoTradBlock(m);
+                } else if (m.group(1).equals("pron")) {
+                    leaveTradBlock(m);
+                    gotoPronBlock(m);
                 } else if (posMarkers.contains(m.group(1))) {
                     leaveTradBlock(m);
                     gotoDefBlock(m);
@@ -238,6 +265,9 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
                 if (m.group(1).equals("trans1")) {
                     leaveOrthoAltBlock(m);
                     gotoTradBlock(m);
+                } else if (m.group(1).equals("pron")) {
+                    leaveOrthoAltBlock(m);
+                    gotoPronBlock(m);
                 } else if (posMarkers.contains(m.group(1))) {
                     leaveOrthoAltBlock(m);
                     gotoDefBlock(m);
@@ -256,6 +286,9 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
                 if (m.group(1).equals("trans1")) {
                     leaveNymBlock(m);
                     gotoTradBlock(m);
+                } else if (m.group(1).equals("pron")) {
+                    leaveNymBlock(m);
+                    gotoPronBlock(m);
                 } else if (posMarkers.contains(m.group(1))) {
                     leaveNymBlock(m);
                     gotoDefBlock(m);
@@ -267,6 +300,27 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
                     gotoNymBlock(m);
                 } else {
                     leaveNymBlock(m);
+                    gotoNoData(m);
+                }
+                break;
+            case PRONBLOCK:
+                if (m.group(1).equals("trans1")) {
+                    leavePronBlock(m);
+                    gotoTradBlock(m);
+                } else if (m.group(1).equals("pron")) {
+                    leavePronBlock(m);
+                    gotoPronBlock(m);
+                } else if (posMarkers.contains(m.group(1))) {
+                    leavePronBlock(m);
+                    gotoDefBlock(m);
+                } else if (m.group(1).equals("var")) {
+                    leavePronBlock(m);
+                    gotoOrthoAltBlock(m);
+                } else if (nymMarkers.contains(m.group(1))) {
+                    leavePronBlock(m);
+                    gotoNymBlock(m);
+                } else {
+                    leavePronBlock(m);
                     gotoNoData(m);
                 }
                 break;
@@ -286,6 +340,9 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
             break;
         case ORTHOALTBLOCK:
             leaveOrthoAltBlock(m);
+            break;
+        case PRONBLOCK:
+            leavePronBlock(m);
             break;
         case NYMBLOCK:
             leaveNymBlock(m);
@@ -502,5 +559,17 @@ public class ItalianoWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         }
     }
+    
+    private void extractPron(int startOffset, int endOffset) {
+    	
+    	Matcher pronMatcher = pronPattern.matcher(pageContent);
+    	while (pronMatcher.find()) {
+    		String pron = pronMatcher.group(1);
+    		
+    		if (null == pron || pron.equals("")) return;
+    		
+    		if (! pron.equals("")) wdh.registerPronunciation(pron, "it-fonipa");
+    	}
+	}
     
 }

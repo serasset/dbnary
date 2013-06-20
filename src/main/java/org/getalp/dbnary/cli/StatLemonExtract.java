@@ -14,16 +14,19 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
 
-public class StatLemonExtract {
+public class StatLemonExtract extends DbnaryModel {
 
 	protected class IncrementableInt {
 		int val;
@@ -66,6 +69,7 @@ public class StatLemonExtract {
 	private String language = DEFAULT_LANGUAGE;
 	private String countLanguages = DEFAULT_COUNT_LANGUAGE;
 
+	// TODO: extract iso code from lexvo entity.
 	private SortedMap<String, IncrementableInt> counts = new TreeMap<String,IncrementableInt>();
 	
 	static{
@@ -82,129 +86,6 @@ public class StatLemonExtract {
 	String[] remainingArgs;
 
 	Model m1;
-	
-	protected static final String NSprefix = "http://kaiko.getalp.org/dbnary";
-	protected static final String DBNARY = NSprefix + "#";
-	// protected static final String LMF = "http://www.lexicalmarkupframework.org/lmf/r14#";
-	protected static final String LEMON = "http://www.monnetproject.eu/lemon#";
-	protected static final String LEXINFO = "http://www.lexinfo.net/ontology/2.0/lexinfo#";
-	protected static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
-	protected static final String LEXVO = "http://lexvo.org/id/iso639-3/";
-
-	protected static final Resource lexEntryType;
-	protected static final Resource wordEntryType;
-	protected static final Resource phraseEntryType;
-	protected static final Resource lexicalFormType;
-	protected static final Resource translationType;
-	protected static final Resource lexicalSenseType;
-	// protected Resource definitionType;
-	// protected Resource lexicalEntryRelationType;
-
-	protected static final Property canonicalFormProperty;
-	protected static final Property lexicalVariantProperty;
-	protected static final Property writtenRepresentationProperty;
-	
-	// DBNARY properties
-	protected static final Property dbnaryPosProperty;
-	protected static final Resource vocableEntryType;
-	protected static final Property refersTo;
-
-	// LEMON properties
-	protected static final Property posProperty;
-	protected static final Property lemonSenseProperty;
-	protected static final Property lemonDefinitionProperty;
-	protected static final Property lemonValueProperty;
-	protected static final Property languageProperty;
-	protected static final Property pronProperty;
-
-	//LMF properties
-	// protected Property formProperty;
-	protected static final Property isTranslationOf;
-	protected static final Property targetLanguageProperty;
-	protected static final Property equivalentTargetProperty;
-	protected static final Property gloseProperty;
-	protected static final Property usageProperty;
-	// protected static final Property textProperty;
-
-	protected static final Property synonymProperty ;
-	protected static final Property antonymProperty ;
-	protected static final Property hypernymProperty ;
-	protected static final Property hyponymProperty ;
-	protected static final Property nearSynonymProperty ;
-	protected static final Property meronymProperty ;
-	protected static final Property holonymProperty ;
-
-	
-	static Model tBox;
-
-	static {
-		// Create T-Box and read rdf schema associated to it.
-		tBox = ModelFactory.createDefaultModel();
-		// InputStream fis = LemonBasedRDFDataHandler.class.getResourceAsStream("LMF-rdf-rev14.xml");
-		// tBox.read( fis, LMF );
-		InputStream lis = LemonBasedRDFDataHandler.class.getResourceAsStream("lemon.ttl");
-		tBox.read( lis, LEMON, "TURTLE");
-
-		lexEntryType = tBox.getResource(LEMON + "LexicalEntry");
-		lexicalFormType = tBox.getResource(LEMON + "LexicalForm");
-		lexicalSenseType = tBox.getResource(LEMON + "LexicalSense");
-		canonicalFormProperty = tBox.getProperty(LEMON + "canonicalForm");
-		lemonSenseProperty = tBox.getProperty(LEMON + "sense");
-		lexicalVariantProperty = tBox.getProperty(LEMON + "lexicalVariant");
-		writtenRepresentationProperty =  tBox.getProperty(LEMON + "writtenRep");
-		lemonDefinitionProperty = tBox.getProperty(LEMON + "definition");
-		lemonValueProperty = tBox.getProperty(LEMON + "value");
-		languageProperty = tBox.getProperty(LEMON + "language");
-		
-		vocableEntryType = tBox.getResource(DBNARY + "Vocable");
-
-		translationType = tBox.getResource(DBNARY + "Equivalent");
-		// definitionType = tBox.getResource(LMF + "Definition");
-		// lexicalEntryRelationType = tBox.getResource(NS + "LexicalEntryRelation");
-
-		// formProperty = tBox.getProperty(NS + "writtenForm");
-		targetLanguageProperty = tBox.getProperty(DBNARY + "targetLanguage");
-		equivalentTargetProperty = tBox.getProperty(DBNARY + "writtenForm");
-		gloseProperty = tBox.getProperty(DBNARY + "glose");
-		usageProperty = tBox.getProperty(DBNARY + "usage");
-		// textProperty = tBox.getProperty(DBNARY + "text");
-		// entryRelationLabelProperty = tBox.getProperty(DBNARY + "label");
-		// entryRelationTargetProperty = tBox.getProperty(DBNARY + "target");
-		refersTo = tBox.getProperty(DBNARY + "refersTo");
-		isTranslationOf = tBox.getProperty(DBNARY + "isTranslationOf");
-				
-		posProperty = tBox.getProperty(LEXINFO + "partOfSpeech");
-		dbnaryPosProperty = tBox.getProperty(DBNARY + "partOfSpeech");
-		
-		pronProperty = tBox.getProperty(LEXINFO + "pronunciation");
-
-		synonymProperty = tBox.getProperty(DBNARY + "synonym");
-		antonymProperty = tBox.getProperty(DBNARY + "antonym");
-		hypernymProperty = tBox.getProperty(DBNARY + "hypernym");
-		hyponymProperty = tBox.getProperty(DBNARY + "hyponym");
-		nearSynonymProperty = tBox.getProperty(DBNARY + "approximateSynonym");
-		meronymProperty = tBox.getProperty(DBNARY + "meronym");
-		holonymProperty = tBox.getProperty(DBNARY + "holonym");
-
-		Property lxfSynonymProperty = tBox.getProperty(LEXINFO + "synonym");
-		Property lxfAntonymProperty = tBox.getProperty(LEXINFO + "antonym");
-		Property lxfHypernymProperty = tBox.getProperty(LEXINFO + "hypernym");
-		Property lxfHyponymProperty = tBox.getProperty(LEXINFO + "hyponym");
-		Property lxfNearSynonymProperty = tBox.getProperty(LEXINFO + "approximateSynonym");
-
-		// non standard nym (not in lexinfo);
-		
-		Resource nounPOS = tBox.getResource(LEXINFO + "noun");
-		Resource adjPOS = tBox.getResource(LEXINFO + "adj");
-		Resource properNounPOS = tBox.getResource(LEXINFO + "properNoun");
-		Resource verbPOS = tBox.getResource(LEXINFO + "verb");
-		Resource adverbPOS = tBox.getResource(LEXINFO + "adverb");
-		Resource otherPOS = tBox.getResource(LEXINFO + "otherPartOfSpeech");
-
-		wordEntryType = tBox.getResource(LEMON + "Word");
-		phraseEntryType = tBox.getResource(LEMON + "Phrase");
-
-	}
 	
 	String NS;
 	
@@ -236,11 +117,11 @@ public class StatLemonExtract {
 		if (cmd.hasOption(LANGUAGE_OPTION)) {
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
 			language = ISO639_3.sharedInstance.getIdCode(language);
-			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por") || language.equals("ita") || language.equals("fin") )) {
-				System.err.println("Unknown language: " + language);
-				printUsage();
-				System.exit(1);
-			}
+			//if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por") || language.equals("ita") || language.equals("fin") )) {
+			//	System.err.println("Unknown language: " + language);
+			//	printUsage();
+			//	System.exit(1);
+			//}
 		}
 
 		if (cmd.hasOption(COUNT_LANGUAGE_OPTION)){
@@ -268,13 +149,24 @@ public class StatLemonExtract {
 				outputFormat.equals("N3") ||
 				outputFormat.equals("TTL") ||
 				outputFormat.equals("RDFABBREV") ) {
-			m1.read(remainingArgs[0], outputFormat);
+			if ("-".equals(remainingArgs[0])) {
+				System.err.println("Reading extract from stdin.");
+				m1.read(System.in, outputFormat, "file:///dev/stdin");
+			} else {
+				System.err.println("Reading extract from " + remainingArgs[0]);
+				m1.read(remainingArgs[0], outputFormat);
+			}
 		} else {
 			System.err.println("unsupported format :" + outputFormat);
 			System.exit(1);
 		}
 	}
 
+
+	private String getCode(Resource resource) {
+		// TODO Auto-generated method stub
+		return resource.getLocalName();
+	}
 
 	public static void main(String args[]) {
 		StatLemonExtract cliProg = new StatLemonExtract();
@@ -307,10 +199,10 @@ public class StatLemonExtract {
 		
 		System.out.println("");
 		
-		System.out.println("Language Edition & syn & ant & hyper & hypo & mero & holo \\\\");
+		System.out.println("Language Edition & syn & qsyn & ant & hyper & hypo & mero & holo \\\\");
 		System.out.print("\\textbf{" + language  + "} & ");
 		System.out.print(countRelations(synonymProperty) + "& ");
-		// System.out.print(countRelations(nearSynonymProperty) + "& ");
+		System.out.print(countRelations(nearSynonymProperty) + "& ");
 		System.out.print(countRelations(antonymProperty) + "& ");
 		System.out.print(countRelations(hypernymProperty) + "& ");
 		System.out.print(countRelations(hyponymProperty) + "& ");
@@ -354,12 +246,15 @@ public class StatLemonExtract {
 		int others = 0;
 		while(relations.hasNext()) {
 			Resource r = relations.next();
-			String lang = r.getProperty(targetLanguageProperty).getString();
-			langs.add(lang);
-			if (counts.containsKey(lang)) {
-				counts.get(lang).incr();
-			} else {
-				others = others + 1;
+			Statement t = r.getProperty(targetLanguageProperty);
+			if (null != t) {
+				RDFNode lang = t.getObject();
+				langs.add(getCode(lang.asResource()));
+				if (counts.containsKey(getCode(lang.asResource()))) {
+					counts.get(getCode(lang.asResource())).incr();
+				} else {
+					others = others + 1;
+				}
 			}
 		}
 		relations.close();

@@ -58,23 +58,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	private static HashMap<String,PosAndType> posAndTypeValueMap = new HashMap<String,PosAndType>();
 
 	static {
-		
-		Property synonymProperty = tBox.getProperty(DBNARY + "synonym");
-		Property antonymProperty = tBox.getProperty(DBNARY + "antonym");
-		Property hypernymProperty = tBox.getProperty(DBNARY + "hypernym");
-		Property hyponymProperty = tBox.getProperty(DBNARY + "hyponym");
-		Property nearSynonymProperty = tBox.getProperty(DBNARY + "approximateSynonym");
-
-		Property lxfSynonymProperty = tBox.getProperty(LEXINFO + "synonym");
-		Property lxfAntonymProperty = tBox.getProperty(LEXINFO + "antonym");
-		Property lxfHypernymProperty = tBox.getProperty(LEXINFO + "hypernym");
-		Property lxfHyponymProperty = tBox.getProperty(LEXINFO + "hyponym");
-		Property lxfNearSynonymProperty = tBox.getProperty(LEXINFO + "approximateSynonym");
-
-		// non standard nym (not in lexinfo);
-		Property meronymProperty = tBox.getProperty(DBNARY + "meronym");
-		Property holonymProperty = tBox.getProperty(DBNARY + "holonym");
-		
+				
 		nymPropertyMap.put("syn", synonymProperty);
 		nymPropertyMap.put("ant", antonymProperty);
 		nymPropertyMap.put("hypo", hyponymProperty);
@@ -83,27 +67,18 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		nymPropertyMap.put("holo", holonymProperty);
 		nymPropertyMap.put("qsyn", nearSynonymProperty);
 
-		Resource nounPOS = tBox.getResource(LEXINFO + "noun");
-		Resource adjPOS = tBox.getResource(LEXINFO + "adj");
-		Resource properNounPOS = tBox.getResource(LEXINFO + "properNoun");
-		Resource verbPOS = tBox.getResource(LEXINFO + "verb");
-		Resource adverbPOS = tBox.getResource(LEXINFO + "adverb");
-		Resource otherPOS = tBox.getResource(LEXINFO + "otherPartOfSpeech");
-
-		Resource word = tBox.getResource(LEMON + "Word");
-		Resource phrase = tBox.getResource(LEMON + "Phrase");
 
 		// French
-		posAndTypeValueMap.put("-nom-", new PosAndType(nounPOS, word));
-		posAndTypeValueMap.put("-nom-pr-", new PosAndType(properNounPOS, word));
-		posAndTypeValueMap.put("-prénom-", new PosAndType(properNounPOS, word));
-		posAndTypeValueMap.put("-adj-", new PosAndType(adjPOS, word));
-		posAndTypeValueMap.put("-verb-", new PosAndType(verbPOS, word));
-		posAndTypeValueMap.put("-adv-", new PosAndType(adverbPOS, word));
-		posAndTypeValueMap.put("-loc-adv-", new PosAndType(adverbPOS, phrase));
-		posAndTypeValueMap.put("-loc-adj-", new PosAndType(adjPOS, phrase));
-		posAndTypeValueMap.put("-loc-nom-", new PosAndType(nounPOS, phrase));
-		posAndTypeValueMap.put("-loc-verb-", new PosAndType(verbPOS, phrase));
+		posAndTypeValueMap.put("-nom-", new PosAndType(nounPOS, wordEntryType));
+		posAndTypeValueMap.put("-nom-pr-", new PosAndType(properNounPOS, wordEntryType));
+		posAndTypeValueMap.put("-prénom-", new PosAndType(properNounPOS, wordEntryType));
+		posAndTypeValueMap.put("-adj-", new PosAndType(adjPOS, wordEntryType));
+		posAndTypeValueMap.put("-verb-", new PosAndType(verbPOS, wordEntryType));
+		posAndTypeValueMap.put("-adv-", new PosAndType(adverbPOS, wordEntryType));
+		posAndTypeValueMap.put("-loc-adv-", new PosAndType(adverbPOS, phraseEntryType));
+		posAndTypeValueMap.put("-loc-adj-", new PosAndType(adjPOS, phraseEntryType));
+		posAndTypeValueMap.put("-loc-nom-", new PosAndType(nounPOS, phraseEntryType));
+		posAndTypeValueMap.put("-loc-verb-", new PosAndType(verbPOS, phraseEntryType));
 		// Portuguese
 		posAndTypeValueMap.put("Substantivo", new PosAndType(nounPOS, lexEntryType));
 		posAndTypeValueMap.put("Adjetivo", new PosAndType(adjPOS, lexEntryType));

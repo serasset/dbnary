@@ -33,6 +33,9 @@ public class DbnaryModel {
 	protected static final String LEXVO = "http://lexvo.org/id/iso639-3/";
 
 	protected static final Resource lexEntryType;
+	protected static final Resource wordEntryType;
+	protected static final Resource phraseEntryType;
+
 	protected static final Resource lexicalFormType;
 	protected static final Resource translationType;
 	protected static final Resource lexicalSenseType;
@@ -70,8 +73,24 @@ public class DbnaryModel {
 
 	// protected static final Property entryRelationLabelProperty;
 
-	static Model tBox;
+	protected static Model tBox;
 	
+	protected static Property synonymProperty ;
+	protected static Property antonymProperty ;
+	protected static Property hypernymProperty ;
+	protected static Property hyponymProperty ;
+	protected static Property nearSynonymProperty ;
+
+	// non standard nym (not in lexinfo);
+	protected static Property meronymProperty ;
+	protected static Property holonymProperty ;
+
+	protected static Resource nounPOS;
+	protected static Resource adjPOS;
+	protected static Resource properNounPOS ;
+	protected static Resource verbPOS ;
+	protected static Resource adverbPOS ;
+	protected static Resource otherPOS ;
 
 	static {
 		// Create T-Box and read rdf schema associated to it.
@@ -82,6 +101,9 @@ public class DbnaryModel {
 		tBox.read( lis, LEMON, "TURTLE");
 
 		lexEntryType = tBox.getResource(LEMON + "LexicalEntry");
+		wordEntryType = tBox.getResource(LEMON + "Word");
+		phraseEntryType = tBox.getResource(LEMON + "Phrase");
+
 		lexicalFormType = tBox.getResource(LEMON + "LexicalForm");
 		lexicalSenseType = tBox.getResource(LEMON + "LexicalSense");
 		canonicalFormProperty = tBox.getProperty(LEMON + "canonicalForm");
@@ -115,7 +137,23 @@ public class DbnaryModel {
 		dbnaryPosProperty = tBox.getProperty(DBNARY + "partOfSpeech");
 		
 		pronProperty = tBox.getProperty(LEXINFO + "pronunciation");
-		
+
+		synonymProperty = tBox.getProperty(DBNARY + "synonym");
+		antonymProperty = tBox.getProperty(DBNARY + "antonym");
+		hypernymProperty = tBox.getProperty(DBNARY + "hypernym");
+		hyponymProperty = tBox.getProperty(DBNARY + "hyponym");
+		nearSynonymProperty = tBox.getProperty(DBNARY + "approximateSynonym");
+
+		meronymProperty = tBox.getProperty(DBNARY + "meronym");
+		holonymProperty = tBox.getProperty(DBNARY + "holonym");
+
+		nounPOS = tBox.getResource(LEXINFO + "noun");
+		adjPOS = tBox.getResource(LEXINFO + "adj");
+		properNounPOS = tBox.getResource(LEXINFO + "properNoun");
+		verbPOS = tBox.getResource(LEXINFO + "verb");
+		adverbPOS = tBox.getResource(LEXINFO + "adverb");
+		otherPOS = tBox.getResource(LEXINFO + "otherPartOfSpeech");
+
 	}
 	
 	

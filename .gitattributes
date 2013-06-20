@@ -90,6 +90,7 @@ src/main/java/org/getalp/dbnary/WiktionaryGrep.java -text
 src/main/java/org/getalp/dbnary/WiktionaryIndex.java -text
 src/main/java/org/getalp/dbnary/WiktionaryIndexer.java -text
 src/main/java/org/getalp/dbnary/WiktionaryIndexerException.java -text
+src/main/java/org/getalp/dbnary/cli/CompareTradsAndIWLinks.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/ExtractWiktionary.java -text
 src/main/java/org/getalp/dbnary/cli/GetExtractedSemnet.java -text
 src/main/java/org/getalp/dbnary/cli/GetRawEntry.java -text svneol=unset#text/plain
@@ -98,6 +99,7 @@ src/main/java/org/getalp/dbnary/cli/IConv.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/RDFDiff.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/StatLemonExtract.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/StatRDFExtract.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/cli/TestInterwikiLinks.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/DiffFichier.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain

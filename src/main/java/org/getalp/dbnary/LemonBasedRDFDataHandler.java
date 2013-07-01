@@ -113,6 +113,14 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		posAndTypeValueMap.put("verbi", new PosAndType(verbPOS, lexEntryType));
 		posAndTypeValueMap.put("adv", new PosAndType(adverbPOS, lexEntryType));
 		
+		// Greek
+		
+		posAndTypeValueMap.put("επίθετο", new PosAndType(adjPOS, lexEntryType));
+		posAndTypeValueMap.put("επίρρημα", new PosAndType(adverbPOS, lexEntryType));
+		posAndTypeValueMap.put("ουσιαστικό", new PosAndType(nounPOS, lexEntryType));
+		posAndTypeValueMap.put("ρήμα", new PosAndType(verbPOS, lexEntryType));
+		posAndTypeValueMap.put("κύριο όνομα", new PosAndType(properNounPOS, lexEntryType));
+
 		posAndTypeValueMap.put("", new PosAndType(otherPOS, lexEntryType));
 
 	}

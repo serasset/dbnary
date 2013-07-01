@@ -151,7 +151,7 @@ public class StatLemonExtract extends DbnaryModel {
 				outputFormat.equals("RDFABBREV") ) {
 			if ("-".equals(remainingArgs[0])) {
 				System.err.println("Reading extract from stdin.");
-				m1.read(System.in, outputFormat, "file:///dev/stdin");
+				m1.read(System.in, "file:///dev/stdin", outputFormat);
 			} else {
 				System.err.println("Reading extract from " + remainingArgs[0]);
 				m1.read(remainingArgs[0], outputFormat);

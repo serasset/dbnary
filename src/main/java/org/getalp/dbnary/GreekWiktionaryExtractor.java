@@ -54,9 +54,9 @@ public class GreekWiktionaryExtractor extends AbstractWiktionaryExtractor {
     	defMarkers = new HashSet<String>(20);
         defMarkers.add("ουσιαστικό"); 	// Noun 
         defMarkers.add("επίθετο");   		// Adjective
-        defMarkers.add("μορφή επιθέτου");   // Adjective
+        // defMarkers.add("μορφή επιθέτου");   // Adjective
         defMarkers.add("επίρρημα"); 		//Adverb
-        defMarkers.add("μορφή ρήματος");	// Verb form
+        // defMarkers.add("μορφή ρήματος");	// Verb form
         defMarkers.add("ρήμα"); //  Verb
         defMarkers.add("κύριο όνομα");  	//Proper noun 
         

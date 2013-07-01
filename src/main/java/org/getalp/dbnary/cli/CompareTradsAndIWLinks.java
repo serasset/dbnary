@@ -1,9 +1,17 @@
 package org.getalp.dbnary.cli;
 
+import info.bliki.api.Connector;
+import info.bliki.api.User;
+
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -13,7 +21,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 
@@ -25,6 +37,8 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 public class CompareTradsAndIWLinks extends DbnaryModel {
@@ -56,7 +70,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 	private static Options options = null; // Command line options
 
 	private static final String LANGUAGE_OPTION = "l";
-	private static final String DEFAULT_LANGUAGE = "fra";
+	private static final String DEFAULT_LANGUAGE = "fr";
 
 	private static final String OUTPUT_FORMAT_OPTION = "f";
 	private static final String DEFAULT_OUTPUT_FORMAT = "turtle";	
@@ -66,10 +80,26 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 
 	private CommandLine cmd = null; // Command Line arguments
 
+	private static Set<String> ignorableInterwikiLinks= new HashSet<String>();
+	
+	static{
+		ignorableInterwikiLinks.add("w");
+		ignorableInterwikiLinks.add("s");
+		ignorableInterwikiLinks.add("silcode");
+		ignorableInterwikiLinks.add("wikipedia");
+		ignorableInterwikiLinks.add("q");
+		ignorableInterwikiLinks.add("wikiquote");
+		ignorableInterwikiLinks.add("wikispecies");
+
+
+	}
 	private String outputFormat = DEFAULT_OUTPUT_FORMAT;
 	private String language = DEFAULT_LANGUAGE;
+	private String wktLangCode = DEFAULT_LANGUAGE;
 	private String countLanguages = DEFAULT_COUNT_LANGUAGE;
 
+	ObjectMapper mapper = new ObjectMapper();
+	
 	// TODO: extract iso code from lexvo entity.
 	private SortedMap<String, IncrementableInt> counts = new TreeMap<String,IncrementableInt>();
 	
@@ -115,15 +145,11 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 		}
 		outputFormat = outputFormat.toUpperCase();
 
-		if (cmd.hasOption(LANGUAGE_OPTION)) {
-			language = cmd.getOptionValue(LANGUAGE_OPTION);
-			language = ISO639_3.sharedInstance.getIdCode(language);
-			//if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por") || language.equals("ita") || language.equals("fin") )) {
-			//	System.err.println("Unknown language: " + language);
-			//	printUsage();
-			//	System.exit(1);
-			//}
-		}
+		language = cmd.getOptionValue(LANGUAGE_OPTION, DEFAULT_LANGUAGE);
+		Lang lg = ISO639_3.sharedInstance.getLang(language);
+		language = lg.getId();
+		wktLangCode = lg.getPart1();
+		
 
 		if (cmd.hasOption(COUNT_LANGUAGE_OPTION)){
 			countLanguages = cmd.getOptionValue(COUNT_LANGUAGE_OPTION);
@@ -172,23 +198,153 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 	public static void main(String args[]) {
 		CompareTradsAndIWLinks cliProg = new CompareTradsAndIWLinks();
 		cliProg.loadArgs(args);
-		cliProg.stats();
+		int sample = 3000;
 		
+		Set<String> randomEntries = cliProg.getRandomEntries(sample);
+		
+		// System.err.println(randomEntries);
+		int nbTrans = 0;
+		int nbIwlinks = 0;
+		
+		int nbNullTrans = 0;
+		int nbe = 0;
+		
+		for (String t : randomEntries) {
+			IntPair ip = cliProg.stats(t);
+			nbTrans += ip.dbtrans;
+			nbIwlinks += ip.iwls;
+			
+			if (0 == ip.dbtrans) nbNullTrans++;
+			nbe++;
+		}
+		
+		System.out.println("language & \\% extr & nbnotrans");
+		System.out.println( cliProg.language + " & " + nbTrans + " (" + (nbTrans / (float) nbIwlinks)*100 + " \\%) & " + nbNullTrans + " (" + (nbNullTrans / (float)randomEntries.size())*100 + " \\%)");
+	}
+	
+	protected class IntPair {
+		
+		int dbtrans;
+		int iwls;
+		
+		public IntPair(int ts, int ls) {
+			dbtrans = ts;
+			iwls = ls;
+		}
 	}
 
-	private void stats() {
-		getTranslationsFor("vol");		
+	private IntPair stats(String name) {
+		// System.out.print(name + ": ");
+		Set<Resource> translations = getTranslationsFor(name);
+		// System.out.print(translations.size() +"/");
+		Set<String> iwlinks = getInterWikiLinks(name);
+		// System.out.println(iwlinks.size());
+		if (iwlinks.size() > translations.size()) System.out.println(name + ": " + translations.size() +"/" + iwlinks.size());
+		return new IntPair(translations.size(), iwlinks.size());
+		
 	}
 	
 	private HashSet<Resource> getTranslationsFor(String name) {
+		HashSet<Resource> res = new HashSet<Resource>();
 		Resource voc = m1.getResource(NS+name);
 		StmtIterator entries = m1.listStatements(voc, DbnaryModel.refersTo, (RDFNode) null);
 		
 		while (entries.hasNext()) {
-			System.err.println("Entries: " + entries.next());			
+			Resource e = entries.next().getResource();
+			
+			StmtIterator translations = m1.listStatements(null, DbnaryModel.isTranslationOf, e);
+			while (translations.hasNext()) {
+				Resource t = translations.next().getSubject();
+				
+				res.add(t);
+			}
+			
+			StmtIterator senses = m1.listStatements(e, DbnaryModel.lemonSenseProperty, (RDFNode) null);
+			while (senses.hasNext()) {
+				Resource s = senses.next().getObject().asResource();
+				StmtIterator senseTranslations = m1.listStatements(null, DbnaryModel.isTranslationOf, s);
+				while (senseTranslations.hasNext()) {
+					Resource t = translations.next().getSubject();
+					
+					res.add(t);
+				}
+			}
 		}
 		
-		return null;
+
+		// System.out.println(res);
+		return res;
+	}
+	
+	private HashSet<String> getInterWikiLinks(String name) {
+		HashSet<String> res = new HashSet<String>();
+		User user = new User("", "", "http://" + wktLangCode + ".wiktionary.org/w/api.php");
+		user.login();
+		String[] valuePairs = { "action", "parse", "prop", "iwlinks", "page", name , "format", "json"};
+		Connector connector = new Connector();
+		String rawJsonResponse = connector.queryXML(user, valuePairs);
+		if (rawJsonResponse == null) {
+			System.err.println("Got no result for the query: " + name);
+		}
+		try {
+			Map<String,Object> userData = mapper.readValue(rawJsonResponse, Map.class);
+			Map parseRes = (Map) userData.get("parse");
+			if (null == parseRes) {
+				System.err.println(rawJsonResponse);
+				return res;
+			}
+			ArrayList links = (ArrayList) parseRes.get("iwlinks");
+			if (null == links) return res;
+			for (Object link : links) {
+				if (! ignorableInterwikiLinks.contains(((Map) link).get("prefix"))) {
+					res.add((String) ((Map) link).get("*"));
+				}
+			}
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// System.out.println(res);
+
+
+		return res;
+	}
+	
+	
+	private HashSet<String> getRandomEntries(int n) {
+		HashSet<String> res = new HashSet<String>();
+		int total = countResourcesOfType(DbnaryModel.lexEntryType);
+		int stepWidth = total / n;
+				
+		ResIterator vocables = m1.listResourcesWithProperty(RDF.type, DbnaryModel.vocableEntryType);		
+		
+		// Only keep vocable that are valid pages.
+		ExtendedIterator<Resource> vocs = vocables.filterKeep(new Filter<Resource>(){
+
+			@Override
+			public boolean accept(Resource o) {
+				return o.hasProperty(DbnaryModel.refersTo);
+			}});
+		int i = 0;
+		while (vocs.hasNext() && i != n) {
+			int step = (int) (Math.random() * stepWidth);
+			int s = 1;
+			Resource term = vocs.next() ;
+			while (vocs.hasNext() & s < step) {
+				term = vocs.next();
+				s++;
+			}
+			res.add(term.getLocalName());
+			i++;
+		}
+		
+		return res;
 	}
 	
 	private int countResourcesOfType(Resource type) {

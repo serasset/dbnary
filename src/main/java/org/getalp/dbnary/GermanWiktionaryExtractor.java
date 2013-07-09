@@ -63,6 +63,8 @@ public class GermanWiktionaryExtractor extends AbstractWiktionaryExtractor {
             .append("\\}\\}")
             .toString();
         
+      
+                
         macroOrPOSPatternString = new StringBuilder()
         	.append("(?:").append(macroPatternString)
         	.append(")|(?:").append(partOfSpeechPatternString)
@@ -463,42 +465,91 @@ public class GermanWiktionaryExtractor extends AbstractWiktionaryExtractor {
         wdh.finalizeEntryExtraction();
     }
 
+    static final String glossOrMacroPatternString;
+    static final Pattern glossOrMacroPattern;
+
+    static{
+    
+    	
+   // glossOrMacroPatternString = "(?:\\[([^\\]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\|?([^\\}]*)\\}\\})";
+   glossOrMacroPatternString = "(?:\\[([^\\]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\|?([^\\}]*)\\}\\})";
+
+    	
+    	glossOrMacroPattern = Pattern.compile(glossOrMacroPatternString);
+    }
+    
     private void extractTranslations(int startOffset, int endOffset) {
-        Matcher macroMatcher = macroPattern.matcher(pageContent);
+        Matcher macroMatcher = glossOrMacroPattern.matcher(pageContent);
         macroMatcher.region(startOffset, endOffset);
         String currentGlose = null;
-
+        	
         while (macroMatcher.find()) {
-            String g1 = macroMatcher.group(1);
+        	String glose = macroMatcher.group(1);
+        	
+        	if(glose != null){
 
-            if (g1.equals("Ü") || g1.equals("Üxx")) {
-                // DONE: Sometimes translation links have a remaining info after
-                // the word, keep it.
-                // TODO: German wiktionary provides a word sense number for
-                // translation. Keep it.
-                String g2 = macroMatcher.group(2);
-                int i1, i2;
-                String lang, word;
-                if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
-                    lang = g2.substring(0, i1);
-                    // normalize language code
-                    String normLangCode;
-                    if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-                        lang = normLangCode;
-                    }
-                    String transcription = null;
-                    if ((i2 = g2.indexOf('|', i1 + 1)) == -1) {
-                        word = g2.substring(i1 + 1);
-                    } else {
-                        transcription = g2.substring(i1 + 1, i2);
-                        word = g2.substring(i2 + 1);
-                    }
-                    // TODO: Should I keep the transcription ?
-                    lang=GermanLangToCode.triletterCode(lang);
-                    if(lang!=null){
-                 	   wdh.registerTranslation(lang, currentGlose, transcription, word);
-                    }
+        		currentGlose = glose ;
+        		
+        	} else {
+          
+        		String g1 = macroMatcher.group(2);
+        		String g2 = macroMatcher.group(3);
+        		String g3 = macroMatcher.group(4);
+        		String g4 = macroMatcher.group(5);
+
+    
+           if (g1.equals("Ü") || g1.equals("Üxx")) {
+            	String lang;
+            	String word = null;
+                String trans1 = null;
+                String trans2 = null;
+            	String transcription = null;
+
+            	lang = g2;
+        		// normalize language code
+                String normLangCode;
+                if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
+                    lang = normLangCode;
                 }
+                
+                // Extract word and transcription
+                // there are three case with 5 "|" : 1-"{{ .. }}'' or 2-"" [[ .. ]]"" or 3-just "|"
+                
+                
+                int i1,i2, i3;
+                int i4 = 0; 
+                int i5 = 0;
+       			if (g4 != null && (i1 = g4.indexOf('|')) != -1 && (i3 = g4.indexOf('|', i1+1)) == -1 ) { // only 5 "|" 
+       				
+           				if ((i4 = g4.indexOf(']')) != -1 && (i5 = g3.indexOf('[')) != -1 ) {
+           					i1 = g4.indexOf('|', i4); // the {{..}} can contain more than 1 "|", since the word is after the {{..}}, we ignore the others "|" and match the last one
+           					trans1 = g3.substring(i5+1);
+           					trans2 = g4.substring(0, i4+1);
+           					transcription = trans1 + "|" + trans2;
+           					word = g4.substring(i1+1);
+           					
+           				} else if (g4 != null && g4.equals("")) {
+           						word = g3;
+                   
+           				} else {
+           					transcription =g3;
+           					word = g4;
+           					}
+       			}
+               
+           		if (g4 != null && g4.equals("")) {
+   						word = g3;
+           
+   				} else {
+   					transcription =g3;
+   					word = g4;
+   					}
+        
+            	lang=GermanLangToCode.triletterCode(lang);
+                if(lang!=null){
+             	   wdh.registerTranslation(lang, currentGlose, transcription, word);
+                }
+           
             } else if (g1.equals("Ü-links")) {
                 // German wiktionary does not provide a glose to disambiguate.
                 // Just ignore this marker.
@@ -508,8 +559,12 @@ public class GermanWiktionaryExtractor extends AbstractWiktionaryExtractor {
                 // Forget the current glose
                 currentGlose = null;
             }
+        
         }
     }
+ }
+        
+    
 
     @Override
     protected void extractDefinitions(int startOffset, int endOffset) {

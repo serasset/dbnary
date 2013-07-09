@@ -53,6 +53,192 @@ doc/articles/swj-mlod-2012/sw_iosart2c/iosart2c.tex -text
 doc/articles/swj-mlod-2012/sw_iosart2c/iosart2c_template.tex -text
 doc/articles/swj-mlod-2012/swj-dbnary.pdf -text
 doc/articles/swj-mlod-2012/swj-dbnary.tex -text
+doc/presentations/lig-lidilem/dbnary-lig-lidilem.tex -text
+doc/presentations/lig-lidilem/figs/AC.jpg -text
+doc/presentations/lig-lidilem/figs/ALPIN_EU_hor_4c.jpg -text
+doc/presentations/lig-lidilem/figs/ALPIN_EU_hor_4c_mask.jpg -text
+doc/presentations/lig-lidilem/figs/AT.jpg -text
+doc/presentations/lig-lidilem/figs/Architecture-serveur_en.pdf -text
+doc/presentations/lig-lidilem/figs/Architecture_RIMult.pdf -text
+doc/presentations/lig-lidilem/figs/CH.jpg -text
+doc/presentations/lig-lidilem/figs/DE.jpg -text
+doc/presentations/lig-lidilem/figs/DML-et-papillon.pdf -text
+doc/presentations/lig-lidilem/figs/DML.pdf -text
+doc/presentations/lig-lidilem/figs/EU.jpg -text
+doc/presentations/lig-lidilem/figs/FL.jpg -text
+doc/presentations/lig-lidilem/figs/FR.jpg -text
+doc/presentations/lig-lidilem/figs/INT.jpg -text
+doc/presentations/lig-lidilem/figs/IT.jpg -text
+doc/presentations/lig-lidilem/figs/Interface-requete.pdf -text
+doc/presentations/lig-lidilem/figs/KWIC_search.jpg -text
+doc/presentations/lig-lidilem/figs/MC.jpg -text
+doc/presentations/lig-lidilem/figs/Papillon-fr-sch1.pdf -text
+doc/presentations/lig-lidilem/figs/Papillon-fr-sch2.pdf -text
+doc/presentations/lig-lidilem/figs/Papillon-fr-sch3.pdf -text
+doc/presentations/lig-lidilem/figs/Papillon-fr-sch4.pdf -text
+doc/presentations/lig-lidilem/figs/Papillon-fr-sch5.pdf -text
+doc/presentations/lig-lidilem/figs/Papillon-fr-sch6.pdf -text
+doc/presentations/lig-lidilem/figs/SL.jpg -text
+doc/presentations/lig-lidilem/figs/STAA.jpg -text
+doc/presentations/lig-lidilem/figs/UNKNOWN.gif -text
+doc/presentations/lig-lidilem/figs/advance_search.png -text
+doc/presentations/lig-lidilem/figs/architecture-serveur.pdf -text
+doc/presentations/lig-lidilem/figs/axies.pdf -text
+doc/presentations/lig-lidilem/figs/bib_details.jpg -text
+doc/presentations/lig-lidilem/figs/bib_details_crop.jpg -text
+doc/presentations/lig-lidilem/figs/bien.pdf -text
+doc/presentations/lig-lidilem/figs/cat1.png -text
+doc/presentations/lig-lidilem/figs/cat2.png -text
+doc/presentations/lig-lidilem/figs/cat3.png -text
+doc/presentations/lig-lidilem/figs/cat4.png -text
+doc/presentations/lig-lidilem/figs/cat5.png -text
+doc/presentations/lig-lidilem/figs/cat6.png -text
+doc/presentations/lig-lidilem/figs/cat_struct.graffle -text
+doc/presentations/lig-lidilem/figs/cat_struct.pdf -text
+doc/presentations/lig-lidilem/figs/cat_syn.graffle -text
+doc/presentations/lig-lidilem/figs/cat_syn.pdf -text
+doc/presentations/lig-lidilem/figs/cat_translations.graffle -text
+doc/presentations/lig-lidilem/figs/cat_translations.pdf -text
+doc/presentations/lig-lidilem/figs/composer-bilingue.pdf -text
+doc/presentations/lig-lidilem/figs/composer-monolingue.pdf -text
+doc/presentations/lig-lidilem/figs/context-sch.pdf -text
+doc/presentations/lig-lidilem/figs/context-schema.pdf -text
+doc/presentations/lig-lidilem/figs/coresp.pdf -text
+doc/presentations/lig-lidilem/figs/corpus_fuzzy_search.jpg -text
+doc/presentations/lig-lidilem/figs/corpus_fuzzy_search_crop.jpg -text
+doc/presentations/lig-lidilem/figs/corpus_simple_search.jpg -text
+doc/presentations/lig-lidilem/figs/corronto.pdf -text
+doc/presentations/lig-lidilem/figs/corronto2.pdf -text
+doc/presentations/lig-lidilem/figs/database_table_linking.jpg -text
+doc/presentations/lig-lidilem/figs/dbnary-lemon-xtension.graffle/data.plist -text
+doc/presentations/lig-lidilem/figs/dbnary-lemon-xtension.graffle/image1.png -text
+doc/presentations/lig-lidilem/figs/dbnary-lemon-xtension.pdf -text
+doc/presentations/lig-lidilem/figs/dicos.graffle -text
+doc/presentations/lig-lidilem/figs/dicos.pdf -text
+doc/presentations/lig-lidilem/figs/echange.pdf -text
+doc/presentations/lig-lidilem/figs/edition1.jpg -text
+doc/presentations/lig-lidilem/figs/edition2.jpg -text
+doc/presentations/lig-lidilem/figs/edition_flow_chart.pdf -text
+doc/presentations/lig-lidilem/figs/edition_interface.png -text
+doc/presentations/lig-lidilem/figs/finance.pdf -text
+doc/presentations/lig-lidilem/figs/flow-chart.pdf -text
+doc/presentations/lig-lidilem/figs/flow-chart_en.pdf -text
+doc/presentations/lig-lidilem/figs/lemon-core.png -text
+doc/presentations/lig-lidilem/figs/lemon-descr.png -text
+doc/presentations/lig-lidilem/figs/logo-lexalp.jpg -text
+doc/presentations/lig-lidilem/figs/logo-lexalp_mask.jpg -text
+doc/presentations/lig-lidilem/figs/logo.jpg -text
+doc/presentations/lig-lidilem/figs/logo1.jpg -text
+doc/presentations/lig-lidilem/figs/logo2.jpg -text
+doc/presentations/lig-lidilem/figs/logo3.jpg -text
+doc/presentations/lig-lidilem/figs/lookup.pdf -text
+doc/presentations/lig-lidilem/figs/lookup_and_results.pdf -text
+doc/presentations/lig-lidilem/figs/macro-structures.pdf -text
+doc/presentations/lig-lidilem/figs/marche.pdf -text
+doc/presentations/lig-lidilem/figs/montre-Pap1.pdf -text
+doc/presentations/lig-lidilem/figs/montre-Pap2.pdf -text
+doc/presentations/lig-lidilem/figs/montre-Papillon.pdf -text
+doc/presentations/lig-lidilem/figs/montre-edit.pdf -text
+doc/presentations/lig-lidilem/figs/montre-fem.pdf -text
+doc/presentations/lig-lidilem/figs/montre-vietdict.pdf -text
+doc/presentations/lig-lidilem/figs/output_bib_search.jpg -text
+doc/presentations/lig-lidilem/figs/output_fuzzy_search.jpg -text
+doc/presentations/lig-lidilem/figs/output_simple_search.jpg -text
+doc/presentations/lig-lidilem/figs/principe-precaution-advanced-search-fr.png -text
+doc/presentations/lig-lidilem/figs/principe-precaution-advanced-search-notarget.png -text
+doc/presentations/lig-lidilem/figs/principe-precaution-advanced-search.png -text
+doc/presentations/lig-lidilem/figs/principe-precaution-edit.png -text
+doc/presentations/lig-lidilem/figs/principe-precaution-edit1.png -text
+doc/presentations/lig-lidilem/figs/principe-precaution-edit2.png -text
+doc/presentations/lig-lidilem/figs/principe-precaution-result-frde.png -text
+doc/presentations/lig-lidilem/figs/principe-precaution-result.png -text
+doc/presentations/lig-lidilem/figs/principe-precaution-search-frde.png -text
+doc/presentations/lig-lidilem/figs/principe-precaution-search-frfr.png -text
+doc/presentations/lig-lidilem/figs/principe-precaution-search.png -text
+doc/presentations/lig-lidilem/figs/principe_precaution.pdf -text
+doc/presentations/lig-lidilem/figs/principe_precaution_xml.pdf -text
+doc/presentations/lig-lidilem/figs/principe_precaution_xml_cdm.pdf -text
+doc/presentations/lig-lidilem/figs/principe_précaution.pdf -text
+doc/presentations/lig-lidilem/figs/rdf-sample-generic.pdf -text
+doc/presentations/lig-lidilem/figs/rdf-sample-uri.pdf -text
+doc/presentations/lig-lidilem/figs/rdf-sample.graffle -text
+doc/presentations/lig-lidilem/figs/regretter-FeM.pdf -text
+doc/presentations/lig-lidilem/figs/regretter-Pap1.pdf -text
+doc/presentations/lig-lidilem/figs/regretter-Pap2.pdf -text
+doc/presentations/lig-lidilem/figs/regretter-expanded.pdf -text
+doc/presentations/lig-lidilem/figs/regretter-viet.pdf -text
+doc/presentations/lig-lidilem/figs/requete-regretter.pdf -text
+doc/presentations/lig-lidilem/figs/result-frsl.png -text
+doc/presentations/lig-lidilem/figs/result-slsl.png -text
+doc/presentations/lig-lidilem/figs/result.png -text
+doc/presentations/lig-lidilem/figs/resultat-trafic-partiel.png -text
+doc/presentations/lig-lidilem/figs/search-frsl.png -text
+doc/presentations/lig-lidilem/figs/search-slsl.png -text
+doc/presentations/lig-lidilem/figs/search_bib.jpg -text
+doc/presentations/lig-lidilem/figs/simple_search.png -text
+doc/presentations/lig-lidilem/figs/subfield_structure_en.jpg -text
+doc/presentations/lig-lidilem/figs/terminologie-multilingue.pdf -text
+doc/presentations/lig-lidilem/figs/trafic_intra-alpin-lexies.pdf -text
+doc/presentations/lig-lidilem/figs/trafic_intra-alpin.pdf -text
+doc/presentations/lig-lidilem/figs/trafic_intra-alpin_harmonized.pdf -text
+doc/presentations/lig-lidilem/figs/vectEval.pdf -text
+doc/presentations/lig-lidilem/img/EDR.graffle -text
+doc/presentations/lig-lidilem/img/EDR.pdf -text
+doc/presentations/lig-lidilem/img/Ploguere_LS_rancune.png -text
+doc/presentations/lig-lidilem/img/Polguere_LS_chat.png -text
+doc/presentations/lig-lidilem/img/WRLD_ETH.jpg -text
+doc/presentations/lig-lidilem/img/WRLD_ETH_CROPPED.jpg -text
+doc/presentations/lig-lidilem/img/WritingSystemsOfTheWorld.jpg -text
+doc/presentations/lig-lidilem/img/WritingSystemsOfTheWorld.png -text
+doc/presentations/lig-lidilem/img/WritingSystemsOfTheWorld.svg -text
+doc/presentations/lig-lidilem/img/angstroem.jpg -text
+doc/presentations/lig-lidilem/img/angstroem.png -text
+doc/presentations/lig-lidilem/img/arabic-forms.png -text
+doc/presentations/lig-lidilem/img/asciiansi.gif -text
+doc/presentations/lig-lidilem/img/asciiansi.jpg -text
+doc/presentations/lig-lidilem/img/asciioem.gif -text
+doc/presentations/lig-lidilem/img/asciioem.jpg -text
+doc/presentations/lig-lidilem/img/char-glyphe.jpg -text
+doc/presentations/lig-lidilem/img/composedict.png -text
+doc/presentations/lig-lidilem/img/composedict2.png -text
+doc/presentations/lig-lidilem/img/composeenfr.png -text
+doc/presentations/lig-lidilem/img/composeenfr2.png -text
+doc/presentations/lig-lidilem/img/composethes.png -text
+doc/presentations/lig-lidilem/img/decomp-canon.jpg -text
+doc/presentations/lig-lidilem/img/decomp-compatib.jpg -text
+doc/presentations/lig-lidilem/img/dicofr.jpg -text
+doc/presentations/lig-lidilem/img/dicofr.png -text
+doc/presentations/lig-lidilem/img/dicofrillustrated.graffle/Icon%000d -text
+doc/presentations/lig-lidilem/img/dicofrillustrated.graffle/data.plist -text
+doc/presentations/lig-lidilem/img/dicofrillustrated.graffle/image1.jpg -text
+doc/presentations/lig-lidilem/img/dicofrillustrated1.jpg -text
+doc/presentations/lig-lidilem/img/dicofrillustrated2.jpg -text
+doc/presentations/lig-lidilem/img/edrheadwordconcept.png -text
+doc/presentations/lig-lidilem/img/eurowordnetriver.graffle -text
+doc/presentations/lig-lidilem/img/eurowordnetriver.pdf -text
+doc/presentations/lig-lidilem/img/ewndoigt.graffle -text
+doc/presentations/lig-lidilem/img/ewndoigt.pdf -text
+doc/presentations/lig-lidilem/img/fem.png -text
+doc/presentations/lig-lidilem/img/getalp-old.jpg -text
+doc/presentations/lig-lidilem/img/getalp.jpg -text
+doc/presentations/lig-lidilem/img/niveaux1.jpg -text
+doc/presentations/lig-lidilem/img/niveaux2.jpg -text
+doc/presentations/lig-lidilem/img/seq-equiv.jpg -text
+doc/presentations/lig-lidilem/img/unterm.png -text
+doc/presentations/lig-lidilem/img/weinreich.jpg -text
+doc/presentations/lig-lidilem/img/what-is-a-char-0.jpg -text
+doc/presentations/lig-lidilem/img/what-is-a-char-1.jpg -text
+doc/presentations/lig-lidilem/img/what-is-a-char-2.jpg -text
+doc/presentations/lig-lidilem/img/what-is-a-char-3.jpg -text
+doc/presentations/lig-lidilem/img/what-is-a-char-4.jpg -text
+doc/presentations/lig-lidilem/img/what-is-a-char.graffle/Icon%000d -text
+doc/presentations/lig-lidilem/img/what-is-a-char.graffle/data.plist -text
+doc/presentations/lig-lidilem/img/what-is-a-char.graffle/image1.png -text
+doc/presentations/lig-lidilem/img/wkt-chat.pdf -text
+doc/presentations/lig-lidilem/img/wkt-chat1.png -text
+doc/presentations/lig-lidilem/img/wncompose.png -text
+doc/presentations/lig-lidilem/img/wnnetwork.pdf -text
+doc/presentations/lig-lidilem/thoughts.oo3/contents.xml -text
 /pom.xml -text
 src/main/java/org/getalp/dbnary/AbstractWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/DbnaryModel.java -text svneol=unset#text/plain
@@ -76,12 +262,6 @@ src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#tex
 src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/OffsetValue.java -text
 src/main/java/org/getalp/dbnary/PortugueseLangToCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/PortugueseWiktionaryExtractor.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/RussianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/RussianLangtoCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/RussianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/RussianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/RussianWiktionaryExtractor.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/SuomiLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/SuomiWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/TurkishLangtoCode.java -text svneol=unset#text/plain
@@ -101,6 +281,15 @@ src/main/java/org/getalp/dbnary/cli/StatLemonExtract.java -text svneol=unset#tex
 src/main/java/org/getalp/dbnary/cli/StatRDFExtract.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/TestInterwikiLinks.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/por/PortugueseDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/por/PortugueseMorphoExtractorWikiModel.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/por/PortugueseTranslationExtractorWikiModel.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/por/PortugueseWiktionaryExtractor.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/rus/RussianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/rus/RussianLangtoCode.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/rus/RussianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/rus/RussianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/rus/RussianWiktionaryExtractor.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/DiffFichier.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain
 src/main/resources/Messages_ru.properties -text svneol=unset#text/plain

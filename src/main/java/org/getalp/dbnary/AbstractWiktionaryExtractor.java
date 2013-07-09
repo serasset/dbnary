@@ -340,7 +340,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     // links.group(1).equalsIgnoreCase("Image") || 
     // links.group(1).equalsIgnoreCase("File") ||
     // links.group(1).equalsIgnoreCase("Fichier")
-    int computeRegionEnd(int blockStart, Matcher m) {
+    protected int computeRegionEnd(int blockStart, Matcher m) {
         if (m.hitEnd()) {
             // Take out categories, files and interwiki links.
             Matcher links = categoryOrInterwikiLinkPattern.matcher(pageContent);

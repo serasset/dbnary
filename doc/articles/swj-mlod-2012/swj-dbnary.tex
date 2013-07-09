@@ -146,6 +146,8 @@ As the dbnary data is now extracted regularly for almost one year, with about 25
 
 LEMON model itself is not sufficient to represent lexical data that is currently available in classical monolingual and bilingual dictionaries. For instance, LEMON does not contain anything to represent translations between languages as it assumes that such a translation will be handled by the ontology description. Moreover, LEMON assumes that all data is well-formed and fully specified. As an example, synonymy relation is a property linking a \uri{LexicalSense} to another \uri{LexicalSense}. While this is correct to assume as a \textit{principle}, this does not account for the huge amount of legacy data that is available in dictionaries and lexical databases.
 
+As an example, in the English language edition, one may find a synonymy relation between \textit{cat\_n} and \textit{bitch}. This relation links a \textit{Lexical Entry} with a \textit{Vocable}. Creating a corresponding lexico-semantic relation from \textit{Lexical Sense} to \textit{Lexical Sense} would imply: 1. detecting the correct sense of \textit{cat\_n} (here sense \#4/15); 2. deciding which is the target lexical entry (here, \textit{bitch} has 2 lexical entries, but only one is nominal); 3. deciding which lexical sense it is (\#2/9). Such a process is error prone, hence, we decided to provide the data as it appears in Wiktionary and leave these decisions to further processing.
+
 In order to cope with this legacy data, we extended the LEMON model by adding new classes and properties. However, when a piece of data is representable as a LEMON entity, then it is done so. Moreover, when possible, we did use the ISOcat registry \cite{windhouwer2012linking} to identify standard elements in the lexical data.
 
 \subsection{Dbnary extension to LEMON}
@@ -191,9 +193,18 @@ Figure \ref{dbnary:catequiv} illustrates the \textit{dbnary} extension to LEMON 
 Wiktionary contains many lexical relations (like synonymy, antonymy, etc.) that are represented using the above mentioned ``nym'' properties which relate a \textit{lexical entity} with another \textit{lexical entity}. In the current dataset, most of the property subjects are \textit{lexical entries}. However, in case of monosemous lexical entries, the synonymy relation is attached to the unique \uri{lemon:LexicalSense}. Figure \ref{dbnary:catsyn} illustrates how dbnary encodes ``nym'' relations with examples of the \uri{dbnary:synonym} property. In the upper part of the figure is an example of a \uri{dbnary:synonym} property that is related to the ambiguous lexical entry \uri{eng:cat\_\_Noun\_\_1}. The lower part shows that, in the monosemous lexical entry \uri{eng:voyager\_\_Noun\_\_1}, the \uri{dbnary:synonym} property is related to the unique lexical sense of the entry. The object of such properties are always \uri{dbnary:Vocable}.
 
 
-\section{Size of the involved data}
+\section{Size and quality of the involved data}
 
-All sizes indicated in this section reflect the state of the dbnary data at the time of writing (June 2013). Table \ref{globalsize} gives the number of resources available in dbnary for the 8 languages currently extracted.
+All sizes indicated in this section reflect the state of the dbnary data at the time of writing (June 2013). These numbers are constantly evolving, as the original Wiktionary data is edited and as the extractor itself is improved.\footnote{Statistics concerning the latest extracts will be made available on the dbnary website.}
+ Table \ref{globalsize} gives the number of resources available in dbnary for the 8 languages currently extracted.\footnote{The currently extracted languages are (by increasing order of the ISO 639-3 language codes):
+German (deu),
+Greek (ell),
+English (eng),
+Finnish (fin),
+French (fra),
+Portuguese (por),
+Russian (rus),
+}
 
 \begin{table}[htb]
 \begin{tabular}{lrrrr}
@@ -211,7 +222,6 @@ All sizes indicated in this section reflect the state of the dbnary data at the 
 \caption{Number of resources by type and language, sorted by number of lexical entries.}\label{globalsize}
 \end{table}
 
-These numbers are constantly evolving, as the original Wiktionary data is edited and as the extractor itself is improved.\footnote{Statistics concerning the latest extracts will be made available on the dbnary website.}
 
 
 Table \ref{nymsize} gives an overview of the number of lexico-semantic relations available in each language edition.
@@ -224,60 +234,52 @@ Table \ref{nymsize} gives an overview of the number of lexico-semantic relations
 \textbf{fra} & 30088& 6735& 8215& 3557& 943& 1847 \\ 
 \textbf{deu} & 27516& 14315& 30202& 9509& 0& 0 \\ 
 \textbf{rus} & 22631& 9204& 21028& 4756& 0& 0 \\ 
-\textbf{ita} & 7091& 2337& 0& 0& 0& 0 \\ 
 \textbf{ell} & 3975& 1116& 0& 0& 0& 0 \\ 
-\textbf{por} & 3527& 575& 6& 3& 0& 0 \\ 
 \textbf{fin} & 2255& 0& 0& 0& 0& 0 \\ 
+\textbf{por} & 3527& 575& 6& 3& 0& 0 \\ 
+\textbf{ita} & 7091& 2337& 0& 0& 0& 0 \\ 
 \end{tabular}
-\caption{Number of lexicon-semantic relations, sorted by number of synonymy relations.}\label{nymsize}
+\caption{Number of lexicon-semantic relations. Languages are sorted according to their number of lexical entries.}\label{nymsize}
 \end{table}
 
-Table \ref{tradsize} shows the number of translations available in each language edition, for the major target languages.\footnote{The target languages are the 21 having the largest page count in their wiktionaries, i.e. (by increasing order of the ISO 639-3 language codes):
-German (deu),
-Greek (ell),
-English (eng),
-Finnish (fin),
-French (fra),
-Hungarian (hun),
-Ido (ido),
-Kannada (kan),
-Korean (kor),
-Kurdish (kur),
-Lithuanian (lit),
-Malagasy (mlg),
-Dutch (nld),
-Polish (pol),
-Portuguese (por),
-Russian (rus),
-Swedish (swe),
-Tamil (tam),
-Turkish (tur),
-Vietnamese (vie),
-Chinese (zho)
-} It also gives the total number of translations and the number of the different target languages with translations. Not surprisingly, English language edition shows the most translations to more than 1000 different languages. Surprisingly, the French language edition shows a relatively small number of target languages, while the number of translations stays relatively high. 
+\begin{table}[htb]
+\begin{tabular}{lrr}
+\textbf{language} & \textbf{\# of transl.}\\
+ \hline
+\textbf{eng} & 5110 (.991) \\
+\textbf{fra} & 5799 (1.070) \\
+\textbf{deu} & 10287 (.992)\\
+\textbf{rus} & 8436 (248.117) \\
+\textbf{ell} & 2598 (.643) \\
+\textbf{fin} & 7245 (289.80) \\
+\textbf{por} & 17720 (.932) \\
+\textbf{ita} & 7855 (31.673) 
+\end{tabular}
+\caption{Extracted translations vs interwiki links ratio, on a random sample of 1000 entries.}\label{iwlinks}
+\end{table}
+
+Table \ref{tradsize} shows the number of translations available in each language edition, for the 8 currently extracted languages. It also gives the total number of translations and the number of the different target languages with translations. Not surprisingly, English language edition shows the most translations to more than 1000 different languages. 
 
 \begin{table*}[htb]
 \begin{tabular}{lrrrrrrrrrrrrr}
-\textbf{Source/Target} & \textbf{deu} & \textbf{ell} & \textbf{eng} & \textbf{fin} & \textbf{fra} & \textbf{hun} & \textbf{ido} & \textbf{kan} & \textbf{kor} & \textbf{kur} & \textbf{lit} & \textbf{mlg} & \textbf{nld}  \\
-\textbf{deu} & 0 & 2596 & 76248 & 4695 & 63909 & 7066 & 345 & 78 & 1361 & 1262 & 1761 & 60 & 11055  \\
-\textbf{eng} & 56880 & 22047 & 1 & 70803 & 53702 & 21367 & 2454 & 629 & 13294 & 1639 & 5027 & 211 & 38066 \\
-\textbf{fin} & 7626 & 892 & 27827 & 0 & 6560 & 2164 & 905 & 9 & 242 & 159 & 597 & 17 & 2011 \\
-\textbf{fra} & 32897 & 6799 & 71560 & 7360 & 7 & 5096 & 11442 & 144 & 3966 & 1772 & 1826 & 90 & 29454 \\
-\textbf{ita} & 4600 & 529 & 16614 & 964 & 4403 & 831 & 175 & 19 & 284 & 112 & 331 & 8 & 2016 \\
-\textbf{por} & 6186 & 2492 & 9795 & 4046 & 7635 & 3192 & 1831 & 161 & 2026 & 841 & 2264 & 293 & 4687 \\
+\textbf{Source/Target}  & \textbf{deu} & \textbf{ell} & \textbf{eng} & \textbf{fin} & \textbf{fra} & \textbf{ita} & \textbf{por} & \textbf{rus}& \textbf{others} & \textbf{Total} & \textbf{\# of target languages}\\
+\textbf{eng} & 62501 & 23794 & 1 & 74938 & 57959 & 37467 & 30256 & 74837 & 764710 & 1126463 & 1143\\
+\textbf{fra} & 34608 & 7063 & 74687 & 7589 & 12 & 18806 & 17784 & 7783 & 296624 & 464956 & 952\\
+\textbf{deu} & 0 & 2675 & 81015 & 4947 & 67143 & 41485 & 8872 & 17354 & 248401 & 471892 & 355\\
+\textbf{rus} & 23056 & 3295 & 48559 & 3966 & 14776 & 12643 & 5567 & 0 & 206709 & 318571 & 490\\
+\textbf{ell} & 2242 & 2 & 10090 & 1056 & 8436 & 1470 & 1149 & 1315 & 29892 & 55652 & 246\\
+\textbf{fin} & 8046 & 918 & 30103 & 0 & 6700 & 3856 & 2196 & 7997 & 58912 & 118728 & 329\\
+\textbf{por} & 7000 & 2816 & 11284 & 4607 & 8720 & 7096 & 4 & 4396 & 179142 & 225065 & 695\\
+\textbf{ita} & 4619 & 506 & 17539 & 925 & 4461 & 75 & 1219 & 938 & 27514 & 57796 & 315\\
 \end{tabular}
-\begin{tabular}{lrrrrrrrrrrrrr}
-\textbf{Source/Target} & \textbf{pol} & \textbf{por} & \textbf{rus} & \textbf{swe} & \textbf{tam} & \textbf{tur} & \textbf{vie} & \textbf{zho}& \textbf{others} & \textbf{Total} & \textbf{\textit{target languages}}\\
-\textbf{deu}  & 15551 & 8677 & 15451 & 46765 & 222 & 4726 & 436 & 5528 & 178771 & 446563 & \textit{358}\\
-\textbf{eng}  & 21989 & 28049 & 66023 & 30198 & 1329 & 17271 & 7589 & 2 & 562860 & 1021430 & \textit{1081}\\
-\textbf{fin} & 2447 & 2177 & 7945 & 9029 & 27 & 1590 & 94 & 248 & 41713 & 114279 & \textit{304}\\
-\textbf{fra} & 7507 & 17206 & 7483 & 12152 & 639 & 3926 & 1602 & 4483 & 191757 & 419168 & \textit{179}\\
-\textbf{ita} & 908 & 1254 & 973 & 908 & 73 & 531 & 198 & 583 & 22069 & 58383 & \textit{319}\\
-\textbf{por} & 4346 & 3 & 3867 & 4394 & 540 & 2845 & 1000 & 2933 & 132554 & 197931 & \textit{678}\\
-
-\end{tabular}
-\caption{Number of translations in each language edition, detailed by target language, for the 21 biggest Wiktionary languages, sorted by alphabetic order on ISO language code. The number of different target language is also given.}\label{tradsize}
+\caption{Number of translations from/to the 8 currently extracted languages. Source languages are sorted according to their number of lexical entries. Target languages are sorted by their ISO 639-3 language code. The number of different target languages is also given.}\label{tradsize}
 \end{table*}
+
+Asserting the quality of the extracts is difficult. We may compare the data with other Wiktionary extraction initiatives like UBY \cite{Zesch08Wikipedia} or Wiktionary2RDF \cite{DBLP:conf/aswc/HellmannBA12}. But this will only give informations regarding the common extracted languages. 
+
+In order to guide the extractors definition and maintenance, we compare the extracted data with the count of interwiki links\footnote{Interwiki links are links going from one Wiktionary language edition to another. This count is a rough estimate of the translations available in an entry.} (available through a Wiktionary API). Table \ref{iwlinks} gives an overview of such a comparison. Column \textit{\# to transl.} shows the number of extracted translations and the ratio of extracted translation vs interwiki links. As may be seen, the Greek extractor only gets a 0.64 ratio of extracted translations vs interwiki links. This is an indication of the fact that this extractor is in a very rough state. On the contrary, French extractor gets more translations than interwiki links, as the French edition does not generate links when the target language edition does not exist. Such a heuristic is not applicable for Finnish and Russian editions as they do not use interwiki links for their translations.
+
+Finally, by comparing the evolution of extracted data over time, we are able to detect when an editorial decision is made in a language edition that leads to the loss of extracted data. This was the case when the French language edition decided to change the names of the macros used to represent a translation. 
 
 \section{Conclusion and Perspectives}
 
@@ -285,7 +287,7 @@ The current paper presents the dbnary dataset that is a LEMON based lexical netw
 
 This resource describes a significative number of entries for at least English and French languages which makes it comparable to Wordnet \cite{wordnet-fellbaum}. Moreover, it contains many translations with certain language pairs that makes it also comparable to many existing multilingual Wordnets.
 
-Our next objective is to better generalize the treatments of the current extractors, so that it will be easier to create and maintain extractors for other languages. We have recently introduced the extractor of Russian language and are working on others. We welcome all initiatives aiming at the addition of new languages to this open-source tool. 
+Our next objective is to better generalize the treatments of the current extractors, so that it will be easier to create and maintain extractors for other languages. We have recently introduced the extractor of Russian and Greek languages and are working on others. We welcome all initiatives aiming at the addition of new languages to this open-source tool. 
 
 We will also enhance the \textit{dbnary} data by providing more lexico-semantic relations and translations linked on the lexical sense level.
 

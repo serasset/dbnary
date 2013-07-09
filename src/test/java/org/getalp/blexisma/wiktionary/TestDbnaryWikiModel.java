@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.Locale;
 
-import org.getalp.dbnary.RussianTranslationExtractorWikiModel;
+import org.getalp.dbnary.rus.RussianTranslationExtractorWikiModel;
 import org.junit.Before;
 import org.junit.Test;
 

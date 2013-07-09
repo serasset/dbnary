@@ -5,6 +5,13 @@ doc/articles/swj-mlod-2012/*.aux
 doc/articles/swj-mlod-2012/*.bbl
 doc/articles/swj-mlod-2012/*.blg
 doc/articles/swj-mlod-2012/*.synctex.gz
+doc/presentations/lig-lidilem/*.aux
+doc/presentations/lig-lidilem/*.nav
+doc/presentations/lig-lidilem/*.out
+doc/presentations/lig-lidilem/*.snm
+doc/presentations/lig-lidilem/*.synctex.gz
+doc/presentations/lig-lidilem/*.toc
+doc/presentations/lig-lidilem/*.vrb
 src/.classpath
 src/.project
 src/.settings

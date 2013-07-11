@@ -292,7 +292,6 @@ src/main/java/org/getalp/dbnary/rus/RussianLangtoCode.java -text svneol=unset#te
 src/main/java/org/getalp/dbnary/rus/RussianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/rus/RussianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/rus/RussianWiktionaryExtractor.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/tools/DiffFichier.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain
 src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain

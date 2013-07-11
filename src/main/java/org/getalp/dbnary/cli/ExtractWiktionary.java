@@ -29,6 +29,7 @@ import org.getalp.dbnary.IWiktionaryExtractor;
 import org.getalp.dbnary.ItalianWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
+import org.getalp.dbnary.TurkishWiktionaryExtractor;
 import org.getalp.dbnary.por.PortugueseWiktionaryExtractor;
 import org.getalp.dbnary.SuomiWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
@@ -170,6 +171,7 @@ public class ExtractWiktionary {
 					language.equals("ita") || 
 					language.equals("fin") ||
 					language.equals("ell") ||
+					language.equals("tur") ||
 					language.equals("rus"))) {
 				System.err.println("Unknown language: " + language);
 				printUsage();
@@ -214,6 +216,8 @@ public class ExtractWiktionary {
 			we = new SuomiWiktionaryExtractor(wdh);
 		} else if (language.equals("ell")) {
 			we = new GreekWiktionaryExtractor(wdh);
+		} else if (language.equals("tur")) {
+			we = new TurkishWiktionaryExtractor(wdh);
 		} else if (language.equals("rus")) {
 			we = new RussianWiktionaryExtractor(wdh);
 		} else {

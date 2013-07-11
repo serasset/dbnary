@@ -266,6 +266,7 @@ src/main/java/org/getalp/dbnary/PortugueseLangToCode.java -text svneol=unset#tex
 src/main/java/org/getalp/dbnary/SuomiLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/SuomiWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/TurkishLangtoCode.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/TurkishWiktionaryExtractor.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/WiktionaryDataHandler.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/WiktionaryGrep.java -text
 src/main/java/org/getalp/dbnary/WiktionaryIndex.java -text

@@ -17,6 +17,7 @@ import org.getalp.dbnary.IWiktionaryExtractor;
 import org.getalp.dbnary.ItalianWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
+import org.getalp.dbnary.TurkishWiktionaryExtractor;
 import org.getalp.dbnary.por.PortugueseWiktionaryExtractor;
 import org.getalp.dbnary.SuomiWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
@@ -93,7 +94,15 @@ public class GetExtractedSemnet {
 		if (cmd.hasOption(LANGUAGE_OPTION)){
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
 			language = ISO639_3.sharedInstance.getIdCode(language);
-			if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por")|| language.equals("ita")|| language.equals("fin") || language.equals("rus"))) {
+			if (! (language.equals("fra") || 
+					language.equals("eng") || 
+					language.equals("deu") || 
+					language.equals("por")|| 
+					language.equals("ita")|| 
+					language.equals("fin") || 
+					language.equals("tur") ||
+					language.equals("ell") ||
+					language.equals("rus"))) {
 				System.err.println("Unknown Language.");
 				printUsage();
 				System.exit(1);
@@ -137,6 +146,8 @@ public class GetExtractedSemnet {
 			we = new SuomiWiktionaryExtractor(wdh);
 		} else if (language.equals("ell")) {
 			we = new GreekWiktionaryExtractor(wdh);
+		} else if (language.equals("tur")) {
+			we = new TurkishWiktionaryExtractor(wdh);
 		} else if (language.equals("rus")) {
 			we = new RussianWiktionaryExtractor(wdh);
 		} else {

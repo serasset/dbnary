@@ -401,7 +401,7 @@ public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
                     usage = g3.substring(i1+1);
                 }
             	lang=TurkishLangtoCode.triletterCode(lang);
-                if(lang!=null && word == null){
+                if(lang!=null && word != null){
              	   wdh.registerTranslation(lang, currentGlose, usage, word);
                 }
            

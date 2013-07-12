@@ -93,9 +93,12 @@ public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
         nymMarkerToNymName.put("sinonim", "syn");
         nymMarkerToNymName.put("Eş Anlamlılar", "syn");
         nymMarkerToNymName.put("Eş anlamlılar", "syn");
-        nymMarkerToNymName.put("Karşıt anlamlı sözcük", "ant");
-        nymMarkerToNymName.put("Hyponyms", "hypo");
-        nymMarkerToNymName.put("Hypernymes", "hyper");
+        nymMarkerToNymName.put("Karşıt Anlamlılar", "ant");
+        nymMarkerToNymName.put("Karşıt anlamlılar", "ant");
+        nymMarkerToNymName.put("Alt Kavramlar", "hypo");
+        nymMarkerToNymName.put("Alt kavramlar", "hypo");
+        nymMarkerToNymName.put("Üst Kavramlar", "hyper");
+        nymMarkerToNymName.put("Üst kavramlar", "hyper");
         nymMarkerToNymName.put("Meronyms", "mero");
         
        
@@ -182,6 +185,8 @@ public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
         defBlockStart = -1;
     }
     
+    // TODO: section {{Kısaltmalar}} gives abbreviations
+    // TODO: section Yan Kavramlar gives related concepts (apparently not synonyms).
     private void extractTurkishData(int startOffset, int endOffset) {
         Matcher m = macroOrPOSPattern.matcher(pageContent);
         m.region(startOffset, endOffset);

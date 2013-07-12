@@ -52,7 +52,6 @@ public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     protected final static Pattern macroPattern; 
 
-    protected final static HashSet<String> nymMarkers;
     protected final static HashMap<String, String> nymMarkerToNymName;
 
     static {
@@ -90,15 +89,10 @@ public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
         partOfSpeechMarkers.add("Sıfat"); // Adjective 
         partOfSpeechMarkers.add("Zarf");//Adverb
         
-        nymMarkers = new HashSet<String>(20);
-        nymMarkers.add("sinonim");//synonym
-        nymMarkers.add("Karşıt anlamlı sözcük");//antonym
-        nymMarkers.add("Hyponyms");
-        nymMarkers.add("Hypernymes");
-        nymMarkers.add("Meronyms"); 
-
         nymMarkerToNymName = new HashMap<String, String>(20);
         nymMarkerToNymName.put("sinonim", "syn");
+        nymMarkerToNymName.put("Eş Anlamlılar", "syn");
+        nymMarkerToNymName.put("Eş anlamlılar", "syn");
         nymMarkerToNymName.put("Karşıt anlamlı sözcük", "ant");
         nymMarkerToNymName.put("Hyponyms", "hypo");
         nymMarkerToNymName.put("Hypernymes", "hyper");
@@ -204,7 +198,7 @@ public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
                         gotoDefBlock(m);
                     } else if (m.group(1).equals("Çeviriler")) { // Traduction
                         gotoTradBlock(m);
-                    } else if (nymMarkers.contains(m.group(1))) {
+                    } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                         gotoNymBlock(m);
                     }
                 } else if (m.group(3) != null) {
@@ -230,7 +224,7 @@ public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
                     } else if (m.group(1).equals("Çeviriler")) {
                         leaveTradBlock(m);
                         gotoTradBlock(m);
-                    } else if (nymMarkers.contains(m.group(1))) {
+                    } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                         leaveTradBlock(m);
                         gotoNymBlock(m);
                     }
@@ -257,7 +251,7 @@ public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
                     } else if (m.group(1).equals("Anlamlar")) {
                         leaveNymBlock(m);
                         gotoDefBlock(m);
-                    } else if (nymMarkers.contains(m.group(1))) {
+                    } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                         leaveNymBlock(m);
                         gotoNymBlock(m);
                     } 
@@ -285,7 +279,7 @@ public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
                     } else if (m.group(1).equals("Anlamlar")) {
                         leaveDefBlock(m);
                         gotoDefBlock(m);
-                    } else if (nymMarkers.contains(m.group(1))) {
+                    } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                         leaveDefBlock(m);
                         gotoNymBlock(m);
                     } 
@@ -313,7 +307,7 @@ public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
                     } else if (m.group(1).equals("Anlamlar")) {
                         leavePronBlock(m);
                         gotoDefBlock(m);
-                    }else if (nymMarkers.contains(m.group(1))) {
+                    }else if (nymMarkerToNymName.containsKey(m.group(1))) {
                         leavePronBlock(m);
                         gotoNymBlock(m);
                     }

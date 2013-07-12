@@ -297,19 +297,19 @@ src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/lemon.ttl -text
 src/main/resources/org/getalp/dbnary/lexinfo.owl -text
-src/main/scripts/README.txt -text
-src/main/scripts/compare_extracts.sh -text
-src/main/scripts/extract_as_graphml.sh -text
-src/main/scripts/intersect.sh -text
+src/main/scripts/old/README.txt -text
+src/main/scripts/old/compare_extracts.sh -text
 src/main/scripts/old/de_extract-defposNoyau -text
 src/main/scripts/old/en_extract-defposNoyau -text
 src/main/scripts/old/extract-def -text
 src/main/scripts/old/extract-nbsens -text
 src/main/scripts/old/extract-terme -text
+src/main/scripts/old/extract_as_graphml.sh -text
 src/main/scripts/old/extract_kernel_defs.pl -text
 src/main/scripts/old/fr_extract-defposNoyau -text
+src/main/scripts/old/intersect.sh -text
 src/main/scripts/old/kernel_dir_file.pl -text
-src/main/scripts/update_wiktionary_dumps.sh -text
+src/main/scripts/old/update_wiktionary_dumps.sh -text
 src/site/apt/cli.apt -text
 src/site/apt/index.apt -text
 src/site/fml/faq.fml -text

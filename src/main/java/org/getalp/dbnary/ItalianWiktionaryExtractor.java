@@ -69,9 +69,11 @@ public class ItalianWiktionaryExtractor extends AbstractWiktionaryExtractor {
                 
         posMarkers = new HashSet<String>(20);
         posMarkers.add("noun");
+        posMarkers.add("sost");
         posMarkers.add("verb");
         posMarkers.add("adv");
         posMarkers.add("adjc");
+        posMarkers.add("agg");
         
         nymMarkers = new HashSet<String>(20);
         nymMarkers.add("syn");

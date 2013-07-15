@@ -1,8 +1,6 @@
 package org.getalp.dbnary.cli;
 
-import java.io.InputStream;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -15,7 +13,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
+import org.getalp.dbnary.cli.UpdateStatistics.IncrementableInt;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -57,17 +55,24 @@ public class StatLemonExtract extends DbnaryModel {
 	private static final String LANGUAGE_OPTION = "l";
 	private static final String DEFAULT_LANGUAGE = "fra";
 
-	private static final String OUTPUT_FORMAT_OPTION = "f";
-	private static final String DEFAULT_OUTPUT_FORMAT = "turtle";	
+	private static final String RDF_FORMAT_OPTION = "f";
+	private static final String DEFAULT_RDF_FORMAT = "turtle";	
 
 	private static final String COUNT_LANGUAGE_OPTION = "c";
 	private static final String DEFAULT_COUNT_LANGUAGE = "eng,fra,deu,por";	
 
+	private static final String STATS_FORMAT_OPTION = "s";
+	private static final String DEFAULT_STATS_FORMAT = "latex";	
+	
+	private static final String VERBOSE_FORMAT_OPTION = "v";
+
 	private CommandLine cmd = null; // Command Line arguments
 
-	private String outputFormat = DEFAULT_OUTPUT_FORMAT;
+	private String outputFormat = DEFAULT_RDF_FORMAT;
+	private String statsFormat = DEFAULT_STATS_FORMAT;
 	private String language = DEFAULT_LANGUAGE;
 	private String countLanguages = DEFAULT_COUNT_LANGUAGE;
+	private boolean verbose = true;
 
 	// TODO: extract iso code from lexvo entity.
 	private SortedMap<String, IncrementableInt> counts = new TreeMap<String,IncrementableInt>();
@@ -77,10 +82,14 @@ public class StatLemonExtract extends DbnaryModel {
 		options.addOption("h", false, "Prints usage and exits. ");	
 		options.addOption(LANGUAGE_OPTION, true, 
 				"Language (fra, eng or deu). " + DEFAULT_LANGUAGE + " by default.");
-		options.addOption(OUTPUT_FORMAT_OPTION, true, 
-				"Output format (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_OUTPUT_FORMAT + " by default.");
+		options.addOption(RDF_FORMAT_OPTION, true, 
+				"RDF format of the input file (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_RDF_FORMAT + " by default.");
+		options.addOption(STATS_FORMAT_OPTION, true, 
+				"Output format of the stats (latex or csv). " + DEFAULT_STATS_FORMAT + " by default.");
 		options.addOption(COUNT_LANGUAGE_OPTION, true, 
 				"Languages to count (as a comma separated list). " + DEFAULT_COUNT_LANGUAGE + " by default.");
+		options.addOption(VERBOSE_FORMAT_OPTION, false, 
+				"print stats in verbose mode (i.e. with headers).");
 	}	
 
 	String[] remainingArgs;
@@ -88,6 +97,10 @@ public class StatLemonExtract extends DbnaryModel {
 	Model m1;
 	
 	String NS;
+
+	private String comma;
+	private String nl;
+
 	
 	private void initializeTBox(String lang) {
 		NS = NSprefix + "/" + lang + "/";
@@ -109,10 +122,15 @@ public class StatLemonExtract extends DbnaryModel {
 			System.exit(0);
 		}
 
-		if (cmd.hasOption(OUTPUT_FORMAT_OPTION)){
-			outputFormat = cmd.getOptionValue(OUTPUT_FORMAT_OPTION);
+		if (cmd.hasOption(RDF_FORMAT_OPTION)){
+			outputFormat = cmd.getOptionValue(RDF_FORMAT_OPTION);
 		}
 		outputFormat = outputFormat.toUpperCase();
+
+		if (cmd.hasOption(STATS_FORMAT_OPTION)){
+			statsFormat = cmd.getOptionValue(STATS_FORMAT_OPTION);
+		}
+		statsFormat = statsFormat.toUpperCase();
 
 		if (cmd.hasOption(LANGUAGE_OPTION)) {
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
@@ -134,6 +152,8 @@ public class StatLemonExtract extends DbnaryModel {
 			i = i + 1;
 		}
 
+		verbose = cmd.hasOption(VERBOSE_FORMAT_OPTION);
+		
 		remainingArgs = cmd.getArgs();
 		if (remainingArgs.length < 1) {
 			printUsage();
@@ -177,7 +197,7 @@ public class StatLemonExtract extends DbnaryModel {
 
 	private void stats() {
 		
-		System.out.println("Stats on RDF file: " + remainingArgs[0]);
+		if ("LATEX".equals(statsFormat)) System.out.println("Stats on RDF file: " + remainingArgs[0]);
 		
 		// Number of Lexical Entries
 
@@ -189,29 +209,57 @@ public class StatLemonExtract extends DbnaryModel {
 				
 		int nbEquiv = countResourcesOfType(translationType);
 		int nbsense = countResourcesOfType(lexicalSenseType);
+		comma = ("LATEX".equals(statsFormat)) ?  " & " : ",";
+		nl = ("LATEX".equals(statsFormat)) ?  "\\\\" : "";
 		
-		System.out.println("Language Edition & Entries & Vocables & Senses & Equivalents\\\\");
-		System.out.print("\\textbf{" + language  + "} & ");
-		System.out.print("" + nble + " (+" + nblw + " words/+ " + nblp + " phrases) & ");
-		System.out.print(nblv + " & ");
-		System.out.print(nbsense + " & ");
-		System.out.println(nbEquiv + " \\\\");
+		if (verbose) {
+			System.out.print("Language Edition" + comma + "Entries" + comma + "Vocables" + comma + "Senses" + comma + "Translations");
+			System.out.println(nl);
+		}
+
 		
+		if ("LATEX".equals(statsFormat)) 
+			System.out.print("\\textbf{" + language  + "} & ");
+		else 
+			System.out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+		System.out.print("" + (nble + nblw + nblp));
+		System.out.print(comma);
+		System.out.print(nblv);
+		System.out.print(comma);
+		System.out.print(nbsense);
+		System.out.print(comma);
+		System.out.print(nbEquiv);
+		System.out.println(nl);
+
 		System.out.println("");
 		
-		System.out.println("Language Edition & syn & qsyn & ant & hyper & hypo & mero & holo \\\\");
-		System.out.print("\\textbf{" + language  + "} & ");
-		System.out.print(countRelations(synonymProperty) + "& ");
-		System.out.print(countRelations(nearSynonymProperty) + "& ");
-		System.out.print(countRelations(antonymProperty) + "& ");
-		System.out.print(countRelations(hypernymProperty) + "& ");
-		System.out.print(countRelations(hyponymProperty) + "& ");
-		System.out.print(countRelations(meronymProperty) + "& ");
-		System.out.println(countRelations(holonymProperty) + " \\\\ ");
+		if (verbose) {
+			System.out.print("Language Edition" + comma + "syn" + comma + "qsyn" + comma + "ant" + comma + "hyper" + comma + "hypo" + comma + "mero" + comma + "holo");
+			System.out.println(nl);
+		}
+		if ("LATEX".equals(statsFormat)) 
+			System.out.print("\\textbf{" + language  + "} & ");
+		else 
+			System.out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+		
+		System.out.print(countRelations(synonymProperty));
+		System.out.print(comma);
+		System.out.print(countRelations(nearSynonymProperty));
+		System.out.print(comma);
+		System.out.print(countRelations(antonymProperty));
+		System.out.print(comma);
+		System.out.print(countRelations(hypernymProperty));
+		System.out.print(comma);
+		System.out.print(countRelations(hyponymProperty));
+		System.out.print(comma);
+		System.out.print(countRelations(meronymProperty));
+		System.out.print(comma);
+		System.out.print(countRelations(holonymProperty));
+		System.out.println(nl);
 		System.out.println("");
 		System.out.println("");
 
-		printEquivalentsStats();
+		printTranslationsStats();
 	}
 	
 	private int countResourcesOfType(Resource type) {
@@ -239,7 +287,7 @@ public class StatLemonExtract extends DbnaryModel {
 		return nb;
 	}
 
-	private void printEquivalentsStats() {
+	private void printTranslationsStats() {
 		// Number of relations
 		ResIterator relations = m1.listResourcesWithProperty(RDF.type, translationType);
 		HashSet<String> langs = new HashSet<String>();
@@ -258,21 +306,32 @@ public class StatLemonExtract extends DbnaryModel {
 			}
 		}
 		relations.close();
-		
+
 		int total = 0;
-			
-		for (Entry<String, IncrementableInt> i : counts.entrySet()) {
-			total = total + i.getValue().val;
-			System.out.print(" & " + i.getKey());
-		}
-		total = total + others;
-		System.out.println("& others & Total \\\\");
-		System.out.print(language);
-		for (Entry<String, IncrementableInt> i : counts.entrySet()) {
-			System.out.print(" & " + i.getValue().val);
-		}
-		System.out.println(" & " + others + " & " + total + "\\\\");
+
 		
+		if (verbose) {
+			for (Entry<String, IncrementableInt> i : counts.entrySet()) {
+				total = total + i.getValue().val;
+				System.out.print(comma + i.getKey());
+			}
+		}
+		
+		total = total + others;
+		
+		System.out.print(comma + "others" + comma + "Total");
+		System.out.println(nl);
+
+		if ("LATEX".equals(statsFormat)) 
+			System.out.print("\\textbf{" + language  + "} & ");
+		else 
+			System.out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+		for (Entry<String, IncrementableInt> i : counts.entrySet()) {
+			System.out.print(comma + i.getValue().val);
+		}
+		System.out.print(comma + others + comma + total);
+		System.out.println(nl);
+
 		System.out.println("-------------------------");
 		System.out.println(langs.size() + " different target languages.");
 		for (String l : langs) {

@@ -126,6 +126,9 @@ public class UpdateLatestStatistics extends DbnaryModel {
 		
 		String nstatFile = statsDir + File.separator + "latest_nym_stats.csv";
 		Map<String,String> nstats = readAndParseStats(nstatFile);
+
+		String tstatFile = statsDir + File.separator + "latest_translations_stats.csv";
+		Map<String,String> tstats = readAndParseStats(tstatFile);
 		
 		for(File e : d.listFiles(new FilenameFilter() {
 
@@ -167,12 +170,20 @@ public class UpdateLatestStatistics extends DbnaryModel {
 			stat = elang + "," + md5 + "," + stat;
 			gstats.put(elang, stat);
 
+			// Compute nym stats
 			ow = new StringWriter();
 			NymStatistics.printStats(m1, language, new PrintWriter(ow));
 			stat = ow.toString();
 			stat = elang + "," + stat;
 			nstats.put(elang, stat);
 
+			// Compute translations stats
+			ow = new StringWriter();
+			TranslationsStatistics.printStats(m1, language, countLanguages, new PrintWriter(ow));
+			stat = ow.toString();
+			stat = elang + "," + stat;
+			tstats.put(elang, stat);
+			
 			m1 = null;
 			System.gc();
 			System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
@@ -181,6 +192,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
 		
 		writeStats(gstats, "Language,MD5," + GeneralStatistics.getHeaders(), gstatFile);
 		writeStats(nstats, "Language," + NymStatistics.getHeaders(), nstatFile);
+		writeStats(tstats, "Language," + TranslationsStatistics.getHeaders(countLanguages), tstatFile);
 
 		//TranslationsStatistics.printStats(m1, language, countLanguages, System.out, verbose);
 	}

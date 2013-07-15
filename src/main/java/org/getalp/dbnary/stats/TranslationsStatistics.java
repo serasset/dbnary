@@ -1,11 +1,10 @@
 package org.getalp.dbnary.stats;
 
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.DbnaryModel;
@@ -49,14 +48,7 @@ public class TranslationsStatistics {
 
 	public static void printStats(Model m1, String language, String targets, PrintWriter out, boolean verbose) {
 		// TODO: extract iso code from lexvo entity.
-		SortedMap<String, IncrementableInt> counts = new TreeMap<String,IncrementableInt>();
-
-		String clangs[] = targets.split(",");
-		int i = 0;
-		while(i != clangs.length) {
-			counts.put(ISO639_3.sharedInstance.getIdCode(clangs[i]), new IncrementableInt());
-			i = i + 1;
-		}
+		SortedMap<String, IncrementableInt> counts = initCounts(targets);
 		
 		ResIterator relations = m1.listResourcesWithProperty(RDF.type, DbnaryModel.translationType);
 		HashSet<String> langs = new HashSet<String>();
@@ -79,23 +71,58 @@ public class TranslationsStatistics {
 		int total = 0;
 
 		if (verbose) {
-			for (Entry<String, IncrementableInt> j : counts.entrySet()) {
-				total = total + j.getValue().val;
-				out.print("," + j.getKey());
-			}
-			out.println(",others,Total,# of lang");
+			out.println(getHeaders(counts));
 		}
 		
+		for (Entry<String, IncrementableInt> j : counts.entrySet()) {
+			total = total + j.getValue().val;
+		}		
 		total = total + others;
 		
 		
-		out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+		//out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
 		for (Entry<String, IncrementableInt> j : counts.entrySet()) {
-			out.print("," + j.getValue().val);
+			out.print(j.getValue().val + ",");
 		}
-		out.print("," + others + "," + total + "," + langs.size());
+		out.print(others + "," + total + "," + langs.size());
 		
 		out.flush();
 
+	}
+
+	private static SortedMap<String, IncrementableInt> initCounts(String targets) {
+		SortedMap<String, IncrementableInt> counts = new TreeMap<String,IncrementableInt>();
+
+		String clangs[] = targets.split(",");
+		int i = 0;
+		while(i != clangs.length) {
+			counts.put(ISO639_3.sharedInstance.getIdCode(clangs[i]), new IncrementableInt());
+			i = i + 1;
+		}
+		return counts;
+	}
+
+
+	public static String getHeaders(String targets) {
+		SortedMap<String, IncrementableInt> counts = initCounts(targets);
+
+		return getHeaders(counts);		
+	}
+	
+	private static String getHeaders(SortedMap<String, IncrementableInt> counts) {
+		StringBuffer sb = new StringBuffer();
+		for (Entry<String, IncrementableInt> j : counts.entrySet()) {
+			sb.append(j.getKey() + ",");
+		}
+		sb.append("others,Total,# of lang");
+		// remove extra leading comma.
+		return sb.toString();
+	}
+
+
+	public static void printStats(Model m1, String language,
+			String targets, PrintWriter out) {
+		printStats(m1, language, targets, out, false);
+		
 	}
 }

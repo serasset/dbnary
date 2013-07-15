@@ -52,12 +52,9 @@ public class UpdateLatestStatistics extends DbnaryModel {
 	private static final String COUNT_LANGUAGE_OPTION = "c";
 	private static final String DEFAULT_COUNT_LANGUAGE = "eng,fra,deu,por";	
 	
-	private static final String VERBOSE_FORMAT_OPTION = "v";
-
 	private CommandLine cmd = null; // Command Line arguments
 
 	private String countLanguages = DEFAULT_COUNT_LANGUAGE;
-	private boolean verbose = true;
 
 	private String extractsDir = null;
 	private String statsDir = null;
@@ -69,8 +66,6 @@ public class UpdateLatestStatistics extends DbnaryModel {
 				"directory containing the extracts and stats. " + DEFAULT_PREFIX_DIR + " by default ");	
 		options.addOption(COUNT_LANGUAGE_OPTION, true, 
 				"Languages to count (as a comma separated list). " + DEFAULT_COUNT_LANGUAGE + " by default.");
-		options.addOption(VERBOSE_FORMAT_OPTION, false, 
-				"print stats in verbose mode (i.e. with headers).");
 	}	
 
 	String[] remainingArgs;
@@ -97,8 +92,6 @@ public class UpdateLatestStatistics extends DbnaryModel {
 		if (cmd.hasOption(COUNT_LANGUAGE_OPTION)){
 			countLanguages = cmd.getOptionValue(COUNT_LANGUAGE_OPTION);
 		}
-
-		verbose = cmd.hasOption(VERBOSE_FORMAT_OPTION);
 		
 		String prefixDir = DEFAULT_PREFIX_DIR;
 		if (cmd.hasOption(PREFIX_DIR_OPTION)) {

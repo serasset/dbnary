@@ -284,6 +284,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	}
 
     private Statement createTargetLanguageProperty(Resource trans, String lang) {
+    	lang = lang.trim();
     	if (isAnISO639_3Code(lang)) {
     		return aBox.createStatement(trans, targetLanguageProperty, getLexvoLanguageResource(lang));
     	} else {

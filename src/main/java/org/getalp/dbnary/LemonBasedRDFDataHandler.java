@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
@@ -292,9 +293,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     	}
 	}
 
+    private final static Pattern iso3letters = Pattern.compile("\\w{3}");
 	private boolean isAnISO639_3Code(String lang) {
 		// TODO For the moment, only check if the code is a 3 letter code...
-		return lang.length() == 3;
+		return iso3letters.matcher(lang).matches();
 	}
 
 	private String computeTransId(String lang) {

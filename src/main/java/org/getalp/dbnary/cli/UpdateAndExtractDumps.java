@@ -45,7 +45,7 @@ public class UpdateAndExtractDumps {
 	private static final String DEFAULT_PREFIX_DIR = ".";
 
 	private static final String MODEL_OPTION = "m";
-	private static final String DEFAULT_MODEL = "LMF";
+	private static final String DEFAULT_MODEL = "lemon";
 
 	private static final String HISTORY_SIZE_OPTION = "k";
 	private static final String DEFAULT_HISTORY_SIZE = "5";

@@ -32,65 +32,65 @@ public class DbnaryModel {
 	protected static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
 	protected static final String LEXVO = "http://lexvo.org/id/iso639-3/";
 
-	protected static final Resource lexEntryType;
-	protected static final Resource wordEntryType;
-	protected static final Resource phraseEntryType;
+	public static final Resource lexEntryType;
+	public static final Resource wordEntryType;
+	public static final Resource phraseEntryType;
 
-	protected static final Resource lexicalFormType;
-	protected static final Resource translationType;
-	protected static final Resource lexicalSenseType;
+	public static final Resource lexicalFormType;
+	public static final Resource translationType;
+	public static final Resource lexicalSenseType;
 	// protected Resource definitionType;
 	// protected Resource lexicalEntryRelationType;
 
-	protected static final Property canonicalFormProperty;
-	protected static final Property lexicalVariantProperty;
-	protected static final Property writtenRepresentationProperty;
+	public static final Property canonicalFormProperty;
+	public static final Property lexicalVariantProperty;
+	public static final Property writtenRepresentationProperty;
 	
 	// DBNARY properties
-	protected static final Property dbnaryPosProperty;
-	protected static final Resource vocableEntryType;
-	protected static final Property refersTo;
+	public static final Property dbnaryPosProperty;
+	public static final Resource vocableEntryType;
+	public static final Property refersTo;
 
 	// LEMON properties
-	protected static final Property posProperty;
-	protected static final Property lemonSenseProperty;
-	protected static final Property lemonDefinitionProperty;
-	protected static final Property lemonValueProperty;
-	protected static final Property languageProperty;
-	protected static final Property pronProperty;
+	public static final Property posProperty;
+	public static final Property lemonSenseProperty;
+	public static final Property lemonDefinitionProperty;
+	public static final Property lemonValueProperty;
+	public static final Property languageProperty;
+	public static final Property pronProperty;
 
 	//LMF properties
 	// protected Property formProperty;
-	protected static final Property isTranslationOf;
-	protected static final Property targetLanguageProperty;
-	protected static final Property targetLanguageCodeProperty;
-	protected static final Property equivalentTargetProperty;
-	protected static final Property glossProperty;
-	protected static final Property usageProperty;
+	public static final Property isTranslationOf;
+	public static final Property targetLanguageProperty;
+	public static final Property targetLanguageCodeProperty;
+	public static final Property equivalentTargetProperty;
+	public static final Property glossProperty;
+	public static final Property usageProperty;
 	// protected static final Property textProperty;
-	protected static final Property senseNumberProperty;
+	public static final Property senseNumberProperty;
 	// protected static final Property entryRelationTargetProperty;
 
 	// protected static final Property entryRelationLabelProperty;
 
 	protected static Model tBox;
 	
-	protected static Property synonymProperty ;
-	protected static Property antonymProperty ;
-	protected static Property hypernymProperty ;
-	protected static Property hyponymProperty ;
-	protected static Property nearSynonymProperty ;
+	public static Property synonymProperty ;
+	public static Property antonymProperty ;
+	public static Property hypernymProperty ;
+	public static Property hyponymProperty ;
+	public static Property nearSynonymProperty ;
 
 	// non standard nym (not in lexinfo);
-	protected static Property meronymProperty ;
-	protected static Property holonymProperty ;
+	public static Property meronymProperty ;
+	public static Property holonymProperty ;
 
-	protected static Resource nounPOS;
-	protected static Resource adjPOS;
-	protected static Resource properNounPOS ;
-	protected static Resource verbPOS ;
-	protected static Resource adverbPOS ;
-	protected static Resource otherPOS ;
+	public static Resource nounPOS;
+	public static Resource adjPOS;
+	public static Resource properNounPOS ;
+	public static Resource verbPOS ;
+	public static Resource adverbPOS ;
+	public static Resource otherPOS ;
 
 	static {
 		// Create T-Box and read rdf schema associated to it.

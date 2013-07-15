@@ -134,11 +134,6 @@ public class StatLemonExtract extends DbnaryModel {
 		if (cmd.hasOption(LANGUAGE_OPTION)) {
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
 			language = ISO639_3.sharedInstance.getIdCode(language);
-			//if (! (language.equals("fra") || language.equals("eng") || language.equals("deu") || language.equals("por") || language.equals("ita") || language.equals("fin") )) {
-			//	System.err.println("Unknown language: " + language);
-			//	printUsage();
-			//	System.exit(1);
-			//}
 		}
 
 		if (cmd.hasOption(COUNT_LANGUAGE_OPTION)){
@@ -218,9 +213,10 @@ public class StatLemonExtract extends DbnaryModel {
 
 		
 		if ("LATEX".equals(statsFormat)) 
-			System.out.print("\\textbf{" + language  + "} & ");
+			System.out.print("\\textbf{" + language  + "}");
 		else 
 			System.out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+		System.out.print(comma);
 		System.out.print("" + (nble + nblw + nblp));
 		System.out.print(comma);
 		System.out.print(nblv);
@@ -236,11 +232,12 @@ public class StatLemonExtract extends DbnaryModel {
 			System.out.print("Language Edition" + comma + "syn" + comma + "qsyn" + comma + "ant" + comma + "hyper" + comma + "hypo" + comma + "mero" + comma + "holo");
 			System.out.println(nl);
 		}
+		
 		if ("LATEX".equals(statsFormat)) 
-			System.out.print("\\textbf{" + language  + "} & ");
+			System.out.print("\\textbf{" + language  + "}");
 		else 
 			System.out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
-		
+		System.out.print(comma);
 		System.out.print(countRelations(synonymProperty));
 		System.out.print(comma);
 		System.out.print(countRelations(nearSynonymProperty));
@@ -314,15 +311,14 @@ public class StatLemonExtract extends DbnaryModel {
 				total = total + i.getValue().val;
 				System.out.print(comma + i.getKey());
 			}
+			System.out.print(comma + "others" + comma + "Total");
+			System.out.println(nl);
 		}
 		
 		total = total + others;
 		
-		System.out.print(comma + "others" + comma + "Total");
-		System.out.println(nl);
-
 		if ("LATEX".equals(statsFormat)) 
-			System.out.print("\\textbf{" + language  + "} & ");
+			System.out.print("\\textbf{" + language  + "}");
 		else 
 			System.out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
 		for (Entry<String, IncrementableInt> i : counts.entrySet()) {

@@ -33,7 +33,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 public class UpdateDiachronicStatistics extends DbnaryModel {
 
-	
+
 	private static Options options = null; // Command line options
 
 	private static final String PREFIX_DIR_OPTION = "d";
@@ -41,14 +41,14 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
 
 	private static final String COUNT_LANGUAGE_OPTION = "c";
 	private static final String DEFAULT_COUNT_LANGUAGE = "eng,fra,deu,por";	
-	
+
 	private CommandLine cmd = null; // Command Line arguments
 
 	private String countLanguages = DEFAULT_COUNT_LANGUAGE;
 
 	private String extractsDir = null;
 	private String statsDir = null;
-	
+
 	static{
 		options = new Options();
 		options.addOption("h", false, "Prints usage and exits. ");	
@@ -63,7 +63,7 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
 	Model m1;
 
 	private String lg2;
-		
+
 	private void loadArgs(String[] args) {
 		CommandLineParser parser = new PosixParser();
 		try {
@@ -84,18 +84,18 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
 		if (cmd.hasOption(COUNT_LANGUAGE_OPTION)){
 			countLanguages = cmd.getOptionValue(COUNT_LANGUAGE_OPTION);
 		}
-		
+
 		String prefixDir = DEFAULT_PREFIX_DIR;
 		if (cmd.hasOption(PREFIX_DIR_OPTION)) {
 			prefixDir = cmd.getOptionValue(PREFIX_DIR_OPTION);
 		}
-		
+
 		remainingArgs = cmd.getArgs();
 		if (remainingArgs.length != 1) {
 			printUsage();
 			System.exit(1);
 		}
-		
+
 		String lang = remainingArgs[0];
 		lg2 = ISO639_3.sharedInstance.getTerm2Code(lang);
 		if (null == lg2) lg2=lang;
@@ -108,26 +108,26 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
 		UpdateDiachronicStatistics cliProg = new UpdateDiachronicStatistics();
 		cliProg.loadArgs(args);
 		cliProg.updateStats();
-		
+
 	}
-		
+
 	private void updateStats() throws Exception {
-		
+
 		File d = new File(extractsDir);
 		File ds = new File(statsDir);
-		
+
 		if (!d.isDirectory()) {
 			System.err.println("Extracts directory not found: " + extractsDir);
 		}
 		if (!ds.isDirectory()) {
 			ds.mkdirs();
 		}
-		
+
 		Pattern dumpFilenamePattern = Pattern.compile(lg2 + "_dbnary_lemon_(\\d{8})\\..*");
-		
+
 		String gstatFile = statsDir + File.separator + "general_stats.csv";
 		Map<String,String> gstats = readAndParseStats(gstatFile);
-		
+
 		String nstatFile = statsDir + File.separator + "nym_stats.csv";
 		Map<String,String> nstats = readAndParseStats(nstatFile);
 
@@ -136,7 +136,7 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
 
 		for(File e : d.listFiles()) {
 			Matcher m = dumpFilenamePattern.matcher(e.getName());
-			
+
 			if (m.matches()) {
 				String date = m.group(1);
 				String language = ISO639_3.sharedInstance.getIdCode(lg2);
@@ -149,50 +149,55 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
 				}
 
 				System.err.println("Computing stats for: " + e.getName());
+				try {
+					m1 = ModelFactory.createDefaultModel();
+					InputStream in = new FileInputStream(e);
+					if (e.getName().endsWith(".bz2")) {
+						in = new BZip2CompressorInputStream(in);
+					}
+					m1.read(in, DbnaryModel.NSprefix + "/" + language + "/", "TURTLE");
 
-				m1 = ModelFactory.createDefaultModel();
-				InputStream in = new FileInputStream(e);
-				if (e.getName().endsWith(".bz2")) {
-					in = new BZip2CompressorInputStream(in);
+					System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+
+					// Compute general stats
+					StringWriter ow = new StringWriter();
+
+					GeneralStatistics.printStats(m1, language, new PrintWriter(ow));
+					String stat = ow.toString();
+					stat = date + "," + md5 + "," + stat;
+					gstats.put(date, stat);
+
+					// Compute nym stats
+					ow = new StringWriter();
+					NymStatistics.printStats(m1, language, new PrintWriter(ow));
+					stat = ow.toString();
+					stat = date + "," + stat;
+					nstats.put(date, stat);
+
+					// Compute translations stats
+					ow = new StringWriter();
+					TranslationsStatistics.printStats(m1, language, countLanguages, new PrintWriter(ow));
+					stat = ow.toString();
+					stat = date + "," + stat;
+					tstats.put(date, stat);
+
+				} catch (Exception ex) {
+					System.err.println("Exception caught while computing stats for: " + e.getName());
+					System.err.println(ex.getLocalizedMessage());
+					ex.printStackTrace(System.err);
 				}
-				m1.read(in, DbnaryModel.NSprefix + "/" + language + "/", "TURTLE");
-
-				System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
-
-				// Compute general stats
-				StringWriter ow = new StringWriter();
-
-				GeneralStatistics.printStats(m1, language, new PrintWriter(ow));
-				String stat = ow.toString();
-				stat = date + "," + md5 + "," + stat;
-				gstats.put(date, stat);
-
-				// Compute nym stats
-				ow = new StringWriter();
-				NymStatistics.printStats(m1, language, new PrintWriter(ow));
-				stat = ow.toString();
-				stat = date + "," + stat;
-				nstats.put(date, stat);
-
-				// Compute translations stats
-				ow = new StringWriter();
-				TranslationsStatistics.printStats(m1, language, countLanguages, new PrintWriter(ow));
-				stat = ow.toString();
-				stat = date + "," + stat;
-				tstats.put(date, stat);
-
 				m1 = null;
 				System.gc();
 				System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 			}
 		}
-		
+
 		writeStats(gstats, "Date,MD5," + GeneralStatistics.getHeaders(), gstatFile);
 		writeStats(nstats, "Date," + NymStatistics.getHeaders(), nstatFile);
 		writeStats(tstats, "Date," + TranslationsStatistics.getHeaders(countLanguages), tstatFile);
 
 	}
-	
+
 	private void writeStats(Map<String,String> gstats, String headers, String gstatFile) throws IOException {
 		File gs = new File(gstatFile);
 
@@ -214,9 +219,9 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
 
 	private Map<String, String> readAndParseStats(String gstatFile) throws IOException {
 		TreeMap<String,String> m = new TreeMap<String,String>();
-		
+
 		File gs = new File(gstatFile);
-		
+
 		if (gs.isFile() && gs.canRead()) {
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(gs), "UTF-8"));
 			String h = br.readLine(); // reading header
@@ -234,41 +239,41 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
 	public static void printUsage() {
 		HelpFormatter formatter = new HelpFormatter();
 		String help = 
-			"Update diachronic statistics based on archived extracts." +
-			"lang is the language of the archived extracts.";
+				"Update diachronic statistics based on archived extracts." +
+						"lang is the language of the archived extracts.";
 		formatter.printHelp("java -cp /path/to/dbnary.jar " +  UpdateDiachronicStatistics.class.getCanonicalName() + "[OPTIONS] lang", 
 				"With OPTIONS in:", options, 
 				help, false);
 	}
 
 	public static byte[] createChecksum(File file) throws Exception {
-	       InputStream fis =  new FileInputStream(file);
+		InputStream fis =  new FileInputStream(file);
 
-	       byte[] buffer = new byte[4096];
-	       MessageDigest complete = MessageDigest.getInstance("MD5");
-	       int numRead;
+		byte[] buffer = new byte[4096];
+		MessageDigest complete = MessageDigest.getInstance("MD5");
+		int numRead;
 
-	       do {
-	           numRead = fis.read(buffer);
-	           if (numRead > 0) {
-	               complete.update(buffer, 0, numRead);
-	           }
-	       } while (numRead != -1);
+		do {
+			numRead = fis.read(buffer);
+			if (numRead > 0) {
+				complete.update(buffer, 0, numRead);
+			}
+		} while (numRead != -1);
 
-	       fis.close();
-	       return complete.digest();
-	   }
+		fis.close();
+		return complete.digest();
+	}
 
-	   // see this How-to for a faster way to convert
-	   // a byte array to a HEX string
-	   public static String getMD5Checksum(File file) throws Exception {
-	       byte[] b = createChecksum(file);
-	       String result = "";
+	// see this How-to for a faster way to convert
+	// a byte array to a HEX string
+	public static String getMD5Checksum(File file) throws Exception {
+		byte[] b = createChecksum(file);
+		String result = "";
 
-	       for (int i=0; i < b.length; i++) {
-	           result += Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
-	       }
-	       return result;
-	   }
+		for (int i=0; i < b.length; i++) {
+			result += Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
+		}
+		return result;
+	}
 
 }

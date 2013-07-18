@@ -148,41 +148,47 @@ public class UpdateLatestStatistics extends DbnaryModel {
 			}
 			
 			System.err.println("Computing stats for: " + e.getName());
-
-			m1 = null;
-			System.gc();
-			System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 			
-			m1 = ModelFactory.createDefaultModel();
-			InputStream in = new FileInputStream(e);
-			if (e.getName().endsWith(".bz2")) {
-				in = new BZip2CompressorInputStream(in);
+			try {
+				m1 = null;
+				System.gc();
+				System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+
+				m1 = ModelFactory.createDefaultModel();
+				InputStream in = new FileInputStream(e);
+				if (e.getName().endsWith(".bz2")) {
+					in = new BZip2CompressorInputStream(in);
+				}
+				m1.read(in, DbnaryModel.NSprefix + "/" + language + "/", "TURTLE");
+
+				System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+
+				// Compute general stats
+				StringWriter ow = new StringWriter();
+
+				GeneralStatistics.printStats(m1, language, new PrintWriter(ow));
+				String stat = ow.toString();
+				stat = elang + "," + md5 + "," + stat;
+				gstats.put(elang, stat);
+
+				// Compute nym stats
+				ow = new StringWriter();
+				NymStatistics.printStats(m1, language, new PrintWriter(ow));
+				stat = ow.toString();
+				stat = elang + "," + stat;
+				nstats.put(elang, stat);
+
+				// Compute translations stats
+				ow = new StringWriter();
+				TranslationsStatistics.printStats(m1, language, countLanguages, new PrintWriter(ow));
+				stat = ow.toString();
+				stat = elang + "," + stat;
+				tstats.put(elang, stat);
+			} catch (Exception ex) {
+				System.err.println("Exception caught while computing stats for: " + e.getName());
+				System.err.println(ex.getLocalizedMessage());
+				ex.printStackTrace(System.err);
 			}
-			m1.read(in, DbnaryModel.NSprefix + "/" + language + "/", "TURTLE");
-			
-			System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
-
-			// Compute general stats
-			StringWriter ow = new StringWriter();
-			
-			GeneralStatistics.printStats(m1, language, new PrintWriter(ow));
-			String stat = ow.toString();
-			stat = elang + "," + md5 + "," + stat;
-			gstats.put(elang, stat);
-
-			// Compute nym stats
-			ow = new StringWriter();
-			NymStatistics.printStats(m1, language, new PrintWriter(ow));
-			stat = ow.toString();
-			stat = elang + "," + stat;
-			nstats.put(elang, stat);
-
-			// Compute translations stats
-			ow = new StringWriter();
-			TranslationsStatistics.printStats(m1, language, countLanguages, new PrintWriter(ow));
-			stat = ow.toString();
-			stat = elang + "," + stat;
-			tstats.put(elang, stat);
 			
 			m1 = null;
 			System.gc();

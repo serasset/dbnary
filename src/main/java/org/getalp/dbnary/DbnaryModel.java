@@ -184,7 +184,9 @@ public class DbnaryModel {
 				}
 			else if (Character.isISOControl(c))
 				; // nop
-			else
+			else if (c == '\u200e' || c == '\u200f') {
+				; // ignore rRLM and LRM.
+			} else
 				res.append(c);
 			i++;
 		}
@@ -208,7 +210,9 @@ public class DbnaryModel {
 					(c == '-') || (c == '_') || 
 					Character.isISOControl(c))
 				; // nop
-			else
+			else if (c == '\u200e' || c == '\u200f') {
+				; // ignore rRLM and LRM.
+			} else
 				res.append(c);
 			i++;
 		}

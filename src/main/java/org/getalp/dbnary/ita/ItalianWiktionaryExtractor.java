@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.ItalianLangToCode;
 import org.getalp.dbnary.WiktionaryDataHandler;
 
 /**

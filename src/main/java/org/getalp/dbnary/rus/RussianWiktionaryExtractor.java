@@ -331,6 +331,7 @@ public class RussianWiktionaryExtractor extends AbstractWiktionaryExtractor {
                     leaveNymBlock(m);
                     gotoNoData(m);
                 }
+            	break;
             case PRONBLOCK:
             	if (m.group(1).startsWith("Морфологические")) {
                     leavePronBlock(m);

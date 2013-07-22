@@ -80,6 +80,7 @@ public class ItalianWiktionaryExtractor extends AbstractWiktionaryExtractor {
                   
          nymMarkerToNymName = new HashMap<String,String>(20);
          nymMarkerToNymName.put("syn", "syn");
+         nymMarkerToNymName.put("sin", "syn");
          nymMarkerToNymName.put("ant", "ant");
          nymMarkerToNymName.put("Hipônimos", "hypo");
          nymMarkerToNymName.put("Hiperônimos", "hyper");
@@ -211,7 +212,7 @@ public class ItalianWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private void leavePronBlock(Matcher m) {
         extractPron(pronBlockStart, computeRegionEnd(pronBlockStart, m));
-        pronBlockStart = -1;         
+        pronBlockStart = -1;
      }
 
 	private void gotoIgnorePos() {
@@ -222,7 +223,7 @@ public class ItalianWiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private void extractItalianData(int startOffset, int endOffset) {        
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
-        gotoIgnorePos();
+        gotoNoData(m);
         while (m.find()) {
             switch (state) {
             case NODATA:
@@ -338,6 +339,7 @@ public class ItalianWiktionaryExtractor extends AbstractWiktionaryExtractor {
                     leaveNymBlock(m);
                     gotoNoData(m);
                 }
+            	break;
             case PRONBLOCK:
             	if (m.group(1).equals("trad1")) {
                     leavePronBlock(m);

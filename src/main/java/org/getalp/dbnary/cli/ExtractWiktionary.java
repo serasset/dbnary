@@ -26,7 +26,7 @@ import org.getalp.dbnary.FrenchWiktionaryExtractor;
 import org.getalp.dbnary.GermanWiktionaryExtractor;
 import org.getalp.dbnary.GreekWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryExtractor;
-import org.getalp.dbnary.ItalianWiktionaryExtractor;
+import org.getalp.dbnary.ita.ItalianWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.TurkishWiktionaryExtractor;
@@ -164,19 +164,6 @@ public class ExtractWiktionary {
 		if (cmd.hasOption(LANGUAGE_OPTION)){
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
 			language = ISO639_3.sharedInstance.getIdCode(language);
-			if (! ( language.equals("fra") || 
-					language.equals("eng") || 
-					language.equals("deu") || 
-					language.equals("por") || 
-					language.equals("ita") || 
-					language.equals("fin") ||
-					language.equals("ell") ||
-					language.equals("tur") ||
-					language.equals("rus"))) {
-				System.err.println("Unknown language: " + language);
-				printUsage();
-				System.exit(1);
-			}
 		}
 		
 		String[] remainingArgs = cmd.getArgs();

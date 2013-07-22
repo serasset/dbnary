@@ -14,15 +14,15 @@ import org.getalp.dbnary.FrenchWiktionaryExtractor;
 import org.getalp.dbnary.GermanWiktionaryExtractor;
 import org.getalp.dbnary.GreekWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryExtractor;
-import org.getalp.dbnary.ItalianWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.TurkishWiktionaryExtractor;
-import org.getalp.dbnary.por.PortugueseWiktionaryExtractor;
 import org.getalp.dbnary.SuomiWiktionaryExtractor;
+import org.getalp.dbnary.TurkishWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.dbnary.ita.ItalianWiktionaryExtractor;
+import org.getalp.dbnary.por.PortugueseWiktionaryExtractor;
 import org.getalp.dbnary.rus.RussianWiktionaryExtractor;
 
 public class GetExtractedSemnet {

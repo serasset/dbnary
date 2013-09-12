@@ -17,7 +17,7 @@ import org.getalp.dbnary.WiktionaryDataHandler;
  * @author serasset
  *
  */
-public class ItalianWiktionaryExtractor extends AbstractWiktionaryExtractor {
+public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
 
@@ -48,7 +48,7 @@ public class ItalianWiktionaryExtractor extends AbstractWiktionaryExtractor {
 	    // TODO: handle pronounciation
 	    protected final static String pronounciationPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
 	    
-    public ItalianWiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
     }
 

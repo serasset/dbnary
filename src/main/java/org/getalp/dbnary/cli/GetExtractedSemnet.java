@@ -9,21 +9,13 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.dbnary.EnglishWiktionaryExtractor;
-import org.getalp.dbnary.FrenchWiktionaryExtractor;
-import org.getalp.dbnary.GermanWiktionaryExtractor;
-import org.getalp.dbnary.GreekWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.SuomiWiktionaryExtractor;
-import org.getalp.dbnary.TurkishWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryExtractorFactory;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexerException;
-import org.getalp.dbnary.ita.ItalianWiktionaryExtractor;
-import org.getalp.dbnary.por.PortugueseWiktionaryExtractor;
-import org.getalp.dbnary.rus.RussianWiktionaryExtractor;
 
 public class GetExtractedSemnet {
 
@@ -132,25 +124,9 @@ public class GetExtractedSemnet {
 			System.exit(1);
 		}
 		
-		if (language.equals("fra")) {
-			we = new FrenchWiktionaryExtractor(wdh);
-		} else if (language.equals("eng")) {
-			we = new EnglishWiktionaryExtractor(wdh);
-		} else if (language.equals("deu")) {
-			we = new GermanWiktionaryExtractor(wdh);
-		} else if (language.equals("por")) {
-			we = new PortugueseWiktionaryExtractor(wdh);
-		} else if (language.equals("ita")) {
-			we = new ItalianWiktionaryExtractor(wdh);
-		} else if (language.equals("fin")) {
-			we = new SuomiWiktionaryExtractor(wdh);
-		} else if (language.equals("ell")) {
-			we = new GreekWiktionaryExtractor(wdh);
-		} else if (language.equals("tur")) {
-			we = new TurkishWiktionaryExtractor(wdh);
-		} else if (language.equals("rus")) {
-			we = new RussianWiktionaryExtractor(wdh);
-		} else {
+		we = WiktionaryExtractorFactory.getExtractor(language, wdh);
+		
+		if (null == we) {
 			System.err.println("Wiktionary Extraction not yet available for " + ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
 			System.exit(1);
 		}

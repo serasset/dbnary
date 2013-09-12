@@ -16,7 +16,7 @@ import org.getalp.dbnary.WiktionaryDataHandler;
  * @author serasset
  *
  */
-public class RussianWiktionaryExtractor extends AbstractWiktionaryExtractor {
+public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
 	    protected final static String languageSectionPatternString = "(?m)^\\s*=\\s*([^=]*)\\}\\}\\s*=\\s*$";
@@ -34,7 +34,7 @@ public class RussianWiktionaryExtractor extends AbstractWiktionaryExtractor {
 	    private final int PRONBLOCK = 5;
 	    private final int MORPHOBLOCK = 6;
 
-    public RussianWiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
     }
 

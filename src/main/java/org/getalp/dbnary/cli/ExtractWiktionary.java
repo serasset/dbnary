@@ -21,22 +21,14 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.dbnary.EnglishWiktionaryExtractor;
-import org.getalp.dbnary.FrenchWiktionaryExtractor;
-import org.getalp.dbnary.GermanWiktionaryExtractor;
-import org.getalp.dbnary.GreekWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryExtractor;
-import org.getalp.dbnary.ita.ItalianWiktionaryExtractor;
 import org.getalp.dbnary.LMFBasedRDFDataHandler;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.TurkishWiktionaryExtractor;
-import org.getalp.dbnary.por.PortugueseWiktionaryExtractor;
-import org.getalp.dbnary.SuomiWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryExtractorFactory;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexer;
 import org.getalp.dbnary.WiktionaryIndexerException;
-import org.getalp.dbnary.rus.RussianWiktionaryExtractor;
 
 public class ExtractWiktionary {
 
@@ -189,25 +181,9 @@ public class ExtractWiktionary {
 			System.exit(1);
 		}
 		
-		if (language.equals("fra")) {
-			we = new FrenchWiktionaryExtractor(wdh);
-		} else if (language.equals("eng")) {
-			we = new EnglishWiktionaryExtractor(wdh);
-		} else if (language.equals("deu")) {
-			we = new GermanWiktionaryExtractor(wdh);
-		} else if (language.equals("por")) {
-			we = new PortugueseWiktionaryExtractor(wdh);
-		} else if (language.equals("ita")) {
-			we = new ItalianWiktionaryExtractor(wdh);
-		} else if (language.equals("fin")) {
-			we = new SuomiWiktionaryExtractor(wdh);
-		} else if (language.equals("ell")) {
-			we = new GreekWiktionaryExtractor(wdh);
-		} else if (language.equals("tur")) {
-			we = new TurkishWiktionaryExtractor(wdh);
-		} else if (language.equals("rus")) {
-			we = new RussianWiktionaryExtractor(wdh);
-		} else {
+		we = WiktionaryExtractorFactory.getExtractor(language, wdh);
+		
+		if (null == we) {
 			System.err.println("Wiktionary Extraction not yet available for " + ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
 			System.exit(1);
 		}

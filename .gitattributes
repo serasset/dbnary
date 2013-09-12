@@ -267,6 +267,7 @@ src/main/java/org/getalp/dbnary/SuomiWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/TurkishLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/TurkishWiktionaryExtractor.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/WiktionaryDataHandler.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/WiktionaryExtractorFactory.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/WiktionaryGrep.java -text
 src/main/java/org/getalp/dbnary/WiktionaryIndex.java -text
 src/main/java/org/getalp/dbnary/WiktionaryIndexer.java -text
@@ -289,16 +290,16 @@ src/main/java/org/getalp/dbnary/ita/ItalianLangToCode.java -text svneol=unset#te
 src/main/java/org/getalp/dbnary/ita/ItalianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ita/ItalianPronunciationExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ita/ItalianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/ita/ItalianWiktionaryExtractor.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/ita/WiktionaryExtractor.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/por/PortugueseDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/por/PortugueseMorphoExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/por/PortugueseTranslationExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/por/PortugueseWiktionaryExtractor.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/por/WiktionaryExtractor.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/rus/RussianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/rus/RussianLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/rus/RussianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/rus/RussianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/rus/RussianWiktionaryExtractor.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/rus/WiktionaryExtractor.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/stats/GeneralStatistics.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/stats/NymStatistics.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/stats/TranslationsStatistics.java -text svneol=unset#text/plain

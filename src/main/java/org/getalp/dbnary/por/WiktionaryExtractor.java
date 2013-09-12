@@ -16,7 +16,7 @@ import org.getalp.dbnary.WiktionaryDataHandler;
  * @author serasset
  *
  */
-public class PortugueseWiktionaryExtractor extends AbstractWiktionaryExtractor {
+public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
 	protected final static String languageSectionPatternString = 
@@ -38,7 +38,7 @@ public class PortugueseWiktionaryExtractor extends AbstractWiktionaryExtractor {
 	    private final int PRONBLOCK = 5;
 	    private final int MORPHOBLOCK = 6;
 
-    public PortugueseWiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
     }
 

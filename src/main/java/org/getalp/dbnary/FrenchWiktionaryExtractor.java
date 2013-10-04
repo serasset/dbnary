@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.wiki.WikiPatterns;
 
 /**
  * @author serasset
@@ -325,7 +326,7 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
      }
     
     protected void extractFrenchData(int startOffset, int endOffset) {        
-        Matcher m = macroPattern.matcher(pageContent);
+        Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         wdh.initializeEntryExtraction(wiktionaryPageName);
         gotoNoData(m);
@@ -480,7 +481,7 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     
     private void extractTranslations(int startOffset, int endOffset) {
-    	Matcher macroMatcher = macroPattern.matcher(pageContent);
+    	Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
     	macroMatcher.region(startOffset, endOffset);
     	String currentGlose = null;
 

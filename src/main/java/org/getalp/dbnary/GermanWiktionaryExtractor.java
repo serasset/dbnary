@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.wiki.WikiPatterns;
 
 public class GermanWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
@@ -15,25 +16,11 @@ public class GermanWiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected final static String partOfSpeechPatternString = "={3}[^\\{]*\\{\\{Wortart\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
     protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
     protected final static String germanDefinitionPatternString = "^:{1,3}\\[[^\\]]*]\\s*(.*)$";
-    /**
-	 * @uml.property  name="nODATA"
-	 */
+
     private final int NODATA = 0;
-    /**
-	 * @uml.property  name="tRADBLOCK"
-	 */
     private final int TRADBLOCK = 1;
-    /**
-	 * @uml.property  name="dEFBLOCK"
-	 */
     private final int DEFBLOCK = 2;
-    /**
-	 * @uml.property  name="oRTHOALTBLOCK"
-	 */
     private final int ORTHOALTBLOCK = 3;
-    /**
-	 * @uml.property  name="nYMBLOCK"
-	 */
     private final int NYMBLOCK = 4;
 
     public GermanWiktionaryExtractor(WiktionaryDataHandler wdh) {
@@ -66,7 +53,7 @@ public class GermanWiktionaryExtractor extends AbstractWiktionaryExtractor {
       
                 
         macroOrPOSPatternString = new StringBuilder()
-        	.append("(?:").append(macroPatternString)
+        	.append("(?:").append(WikiPatterns.macroPatternString)
         	.append(")|(?:").append(partOfSpeechPatternString)
         	.append(")|(?:").append(subSection4PatternString).append(")")
             .append("|(?:").append(multilineMacroPatternString).append(")")

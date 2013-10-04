@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.wiki.WikiPatterns;
 
 /**
  * @author Barry
@@ -309,7 +310,7 @@ public class GreekWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	            
 		private void extractTranslations(int startOffset, int endOffset) {
-	    	Matcher macroMatcher = macroPattern.matcher(pageContent);
+	    	Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
 	    	macroMatcher.region(startOffset, endOffset);
 	    	String currentGlose = null;
 

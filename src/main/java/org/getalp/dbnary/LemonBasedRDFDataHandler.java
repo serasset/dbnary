@@ -397,6 +397,12 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		return nbEntries;
 	}
 
+	@Override
+	public String currentLexEntry() {
+		// TODO Auto-generated method stub
+		return currentWiktionaryPageName;
+	}
+
 
 
 	

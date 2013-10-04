@@ -27,6 +27,8 @@ public interface WiktionaryDataHandler {
 
 	public int nbEntries();
 	
+	public String currentLexEntry();
+	
 	public void dump(OutputStream out);
     
 	/**

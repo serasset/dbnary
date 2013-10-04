@@ -253,8 +253,6 @@ src/main/java/org/getalp/dbnary/GermanWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/GreekLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/GreekWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/IWiktionaryExtractor.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/ItalianWiktionaryExtractorOLD.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/JapaneseLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/KoreanLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/LemonBasedRDFDataHandler.java -text svneol=unset#text/plain
@@ -304,6 +302,7 @@ src/main/java/org/getalp/dbnary/stats/GeneralStatistics.java -text svneol=unset#
 src/main/java/org/getalp/dbnary/stats/NymStatistics.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/stats/TranslationsStatistics.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/wiki/WikiPatterns.java -text svneol=unset#text/plain
 src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/lemon.ttl -text

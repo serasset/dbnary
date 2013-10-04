@@ -277,6 +277,11 @@ public class LMFBasedRDFDataHandler implements WiktionaryDataHandler {
 		return nbEntries;
 	}
 
+	@Override
+	public String currentLexEntry() {
+		// TODO Auto-generated method stub
+		return encodedPageName;
+	}
 
 
 	

@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.wiki.WikiPatterns;
 
 /**
  * @author serasset
@@ -426,9 +427,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		// TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
 		macroOrLinkOrcarPatternString = new StringBuilder()
 		.append("(?:")
-		.append(macroPatternString)
+		.append(WikiPatterns.macroPatternString)
 		.append(")|(?:")
-		.append(linkPatternString)
+		.append(WikiPatterns.linkPatternString)
 		.append(")|(?:")
 		.append("(:*\\*)")
 		.append(")|(?:")

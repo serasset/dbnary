@@ -4,64 +4,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.wiki.WikiPatterns;
 
 public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtractor {
     
 	// TODO: Alter the extraction process by allowing multiple lines in a macro and evaluate the final result
 	// TODO: Determine how many nested macro are used in the different wiktionary languages.
     // These should be independent of the language
-    protected final static String macroPatternString;
-    protected final static String linkPatternString;
-    protected final static String macroOrLinkPatternString;
-    protected final static String definitionPatternString = "^#{1,2}([^\\*#:].*)$";
-    protected final static String bulletListPatternString = "\\*\\s*(.*)";
 
-    protected final static String catOrInterwikiLink = "^\\s*\\[\\[([^\\:\\]]*)\\:([^\\]]*)\\]\\]\\s*$";
-    protected final static Pattern categoryOrInterwikiLinkPattern;
-
-    static {
-    	// DONE: Validate the fact that links and macro should be on one line or may be on several...
-    	// DONE: for this, evaluate the difference in extraction !
-        linkPatternString = 
-            new StringBuilder()
-            .append("\\[\\[")
-            .append("([^\\]\\|\n\r]*)(?:\\|([^\\]\n\r]*))?")
-            .append("\\]\\]")
-            .toString();
-        macroPatternString = 
-            new StringBuilder().append("\\{\\{")
-            .append("([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?")
-            .append("\\}\\}")
-            .toString();
-        // TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
-        macroOrLinkPatternString = new StringBuilder()
-        .append("(?:")
-        .append(macroPatternString)
-        .append(")|(?:")
-        .append(linkPatternString)
-        .append(")|(?:")
-        .append("'{2,3}")
-        .append(")|(?:")
-        .append("<!--.*-->")
-        .append(")").toString();
-        
-        categoryOrInterwikiLinkPattern = Pattern.compile(catOrInterwikiLink, Pattern.MULTILINE);
-
-    }
-    
-    protected final static Pattern macroPattern;
-    protected final static Pattern linkPattern;
-    protected final static Pattern macroOrLinkPattern;
-    protected final static Pattern definitionPattern;
-    protected final static Pattern bulletListPattern;
-
-    static {
-        macroPattern = Pattern.compile(macroPatternString);
-        linkPattern = Pattern.compile(linkPatternString);
-        macroOrLinkPattern = Pattern.compile(macroOrLinkPatternString);
-        definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
-        bulletListPattern = Pattern.compile(bulletListPatternString);
-    }
     
     protected String pageContent;
     protected WiktionaryDataHandler wdh;
@@ -199,7 +149,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     public abstract void extractData();
     
     protected void extractDefinitions(int startOffset, int endOffset) { 
-        Matcher definitionMatcher = definitionPattern.matcher(this.pageContent);
+        Matcher definitionMatcher = WikiPatterns.definitionPattern.matcher(this.pageContent);
         definitionMatcher.region(startOffset, endOffset);
         while (definitionMatcher.find()) {
         	extractDefinition(definitionMatcher.group(1));
@@ -242,7 +192,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
      * @return
      */
     public static String cleanUpMarkup(String str, boolean humanReadable) {
-        Matcher m = macroOrLinkPattern.matcher(str);
+        Matcher m = WikiPatterns.macroOrLinkPattern.matcher(str);
         StringBuffer sb = new StringBuffer(str.length());
         String leftGroup, rightGroup;
         while (m.find()) {
@@ -326,7 +276,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     // TODO: dissociates entry parsing and structure building in 2 classes.
     // So that we will factorize the matching code.
    protected void extractOrthoAlt(int startOffset, int endOffset) {
-        Matcher bulletListMatcher = AbstractWiktionaryExtractor.bulletListPattern.matcher(this.pageContent);
+        Matcher bulletListMatcher = WikiPatterns.bulletListPattern.matcher(this.pageContent);
         bulletListMatcher.region(startOffset, endOffset);
         while (bulletListMatcher.find()) {
             String alt = cleanUpMarkup(bulletListMatcher.group(1), true);
@@ -343,7 +293,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     protected int computeRegionEnd(int blockStart, Matcher m) {
         if (m.hitEnd()) {
             // Take out categories, files and interwiki links.
-            Matcher links = categoryOrInterwikiLinkPattern.matcher(pageContent);
+            Matcher links = WikiPatterns.categoryOrInterwikiLinkPattern.matcher(pageContent);
             links.region(blockStart, m.regionEnd());
             while (links.find()) {
                 if 	(	links.group(2).equals(this.wiktionaryPageName) ||
@@ -370,7 +320,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     protected void extractNyms(String synRelation, int startOffset, int endOffset) {
         // System.out.println(wiktionaryPageName + " contains: " + pageContent.substring(startOffset, endOffset));
         // Extract all links
-        Matcher linkMatcher = AbstractWiktionaryExtractor.linkPattern.matcher(this.pageContent);
+        Matcher linkMatcher = WikiPatterns.linkPattern.matcher(this.pageContent);
         linkMatcher.region(startOffset, endOffset);
 //        int lastNymEndOffset = startOffset;
 //        int lastNymStartOffset = startOffset;
@@ -401,7 +351,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         }      
     }
 
-	public static String supParenthese(String s){
+	public static String supParenthese(String s) {
 		final int A= 0; 
 		final int B = 1;
 

@@ -175,6 +175,9 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
         // Create the resource without typing so that the type statement is added only if the currentStatement are added to the model.
         // Resource lemma = aBox.createResource(encodedPageName);
         
+        if (wiktionaryPageName.equals("behieltest")) 
+        	System.err.println("behieltest is added in heldbackstatement");
+        
         // Retain these statements to be inserted in the model when we will know that the entry corresponds to a proper part of speech
         heldBackStatements.add(aBox.createStatement(currentMainLexEntry, RDF.type, vocableEntryType));
     }
@@ -210,8 +213,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
         }
 			
 
-    	heldBackStatements.add(aBox.createStatement(currentLexEntry, canonicalFormProperty, currentPreferredWrittenRepresentation));
-    	heldBackStatements.add(aBox.createStatement(currentPreferredWrittenRepresentation, writtenRepresentationProperty, currentWiktionaryPageName, extractedLang));
+    	aBox.add(aBox.createStatement(currentLexEntry, canonicalFormProperty, currentPreferredWrittenRepresentation));
+    	aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, writtenRepresentationProperty, currentWiktionaryPageName, extractedLang));
     	aBox.add(aBox.createStatement(currentLexEntry, dbnaryPosProperty, currentWiktionaryPos));
     	if (null != currentLexinfoPos)
     		aBox.add(aBox.createStatement(currentLexEntry, posProperty, currentLexinfoPos));
@@ -271,13 +274,20 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	@Override
     public void registerTranslation(String lang, String currentGlose,
 			String usage, String word) {
+		if (null == currentLexEntry) return; // Don't register anything if current lex entry is not known.
 		word = word.trim();
     	Resource trans = aBox.createResource(computeTransId(lang), translationType);
     	aBox.add(aBox.createStatement(trans, isTranslationOf, currentLexEntry));
     	aBox.add(createTargetLanguageProperty(trans, lang));
-    	aBox.add(aBox.createStatement(trans, equivalentTargetProperty, word));
+    	Lang t = ISO639_3.sharedInstance.getLang(lang);
+    	if (null == t) {
+        	aBox.add(aBox.createStatement(trans, equivalentTargetProperty, word));
+    	} else {
+    		String tl = (null != t.getPart1()) ? t.getPart1() : t.getId();	
+    		aBox.add(aBox.createStatement(trans, equivalentTargetProperty, word, tl));
+    	}
     	if (currentGlose != null && ! currentGlose.equals("")) {
-        	aBox.add(aBox.createStatement(trans, glossProperty, currentGlose));
+        	aBox.add(aBox.createStatement(trans, glossProperty, currentGlose, extractedLang));
     	}
     	if (usage != null && ! usage.equals("")) {
         	aBox.add(aBox.createStatement(trans, usageProperty, usage));

@@ -123,7 +123,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			//System.err.println("Parsing previous portuguese entry");
 			extractPortugueseData(porStart, pageContent.length());
 		}
-    	
+    	wdh.finalizeEntryExtraction();
     }
     
     private boolean isPortuguese(Matcher l1) {
@@ -382,7 +382,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
        default:
             assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
         } 
-        wdh.finalizeEntryExtraction();
     }
     
 	private boolean isLevel2Header(Matcher m) {

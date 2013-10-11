@@ -303,6 +303,7 @@ src/main/java/org/getalp/dbnary/stats/NymStatistics.java -text svneol=unset#text
 src/main/java/org/getalp/dbnary/stats/TranslationsStatistics.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/wiki/WikiPatterns.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/wiki/WikiTool.java -text svneol=unset#text/plain
 src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/lemon.ttl -text

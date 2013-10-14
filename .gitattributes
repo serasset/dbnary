@@ -289,6 +289,10 @@ src/main/java/org/getalp/dbnary/ita/ItalianMorphoExtractorWikiModel.java -text s
 src/main/java/org/getalp/dbnary/ita/ItalianPronunciationExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ita/ItalianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ita/WiktionaryExtractor.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/jpn/JapaneseDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/jpn/JapaneseLangtoCode.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/jpn/JapaneseTranslationsExtractorWikiModel.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/jpn/WiktionaryExtractor.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/por/PortugueseDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/por/PortugueseMorphoExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/por/PortugueseTranslationExtractorWikiModel.java -text svneol=unset#text/plain

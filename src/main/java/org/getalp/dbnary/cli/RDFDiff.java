@@ -3,6 +3,8 @@ package org.getalp.dbnary.cli;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -48,8 +50,7 @@ public class RDFDiff {
 
 	public static void buildBinding(Model m1, Model m2) {
 		// Creates a binding between equivalent blank nodes in m1 and m2;
-		HashMap<String,String> rel2anode = new HashMap<String,String>();
-		// Model resultModel = ModelFactory.createDefaultModel();
+		HashMap<String,HashSet<String>> rel2anodes = new HashMap<String,HashSet<String>>();
 		ResIterator iter = null;
 		Resource s;
 		try {
@@ -58,7 +59,7 @@ public class RDFDiff {
 				s = iter.nextResource();
 				if (s.isAnon()) {
 					StmtIterator stmts = m1.listStatements(s, null, (RDFNode)null);
-					HashSet<String> signature = new HashSet<String>();
+					SortedSet<String> signature = new TreeSet<String>();
 					while (stmts.hasNext()) {
 						Statement stmt = stmts.nextStatement();
 						signature.add(stmt.getPredicate().toString() + "+" + stmt.getObject().toString());
@@ -67,7 +68,15 @@ public class RDFDiff {
 					for (String r: signature) {
 						b.append(r).append("|");
 					}
-					rel2anode.put(b.toString(), s.getId().getLabelString());
+					String key = b.toString();
+					HashSet<String> nodes = rel2anodes.get(key);
+					if (null != nodes) {
+						nodes.add(s.getId().getLabelString());
+					} else {
+						nodes = new HashSet<String>();
+						nodes.add(s.getId().getLabelString());
+						rel2anodes.put(key, nodes);
+					}
 				}
 			}
 		} finally {
@@ -79,7 +88,7 @@ public class RDFDiff {
 				s = iter.nextResource();
 				if (s.isAnon()) {
 					StmtIterator stmts = m2.listStatements(s, null, (RDFNode)null);
-					HashSet<String> signature = new HashSet<String>();
+					SortedSet<String> signature = new TreeSet<String>();
 					while (stmts.hasNext()) {
 						Statement stmt = stmts.nextStatement();
 						signature.add(stmt.getPredicate().toString() + "+" + stmt.getObject().toString());
@@ -88,12 +97,15 @@ public class RDFDiff {
 					for (String r: signature) {
 						b.append(r).append("|");
 					}
-					String m1id = rel2anode.get(b.toString());
-					if (null != m1id) {
-						HashSet<String> equivs1 = binding.get(m1id);
-						if (null == equivs1) equivs1 = new HashSet<String>();
-						equivs1.add(s.getId().getLabelString());
-						binding.put(m1id, equivs1);
+					String key = b.toString();
+					HashSet<String> m1ids = rel2anodes.get(key);
+					if (null != m1ids) {
+						for (String m1id : m1ids) {
+							HashSet<String> equivs1 = binding.get(m1id);
+							if (null == equivs1) equivs1 = new HashSet<String>();
+							equivs1.add(s.getId().getLabelString());
+							binding.put(m1id, equivs1);
+						}
 					}
 				}
 			}

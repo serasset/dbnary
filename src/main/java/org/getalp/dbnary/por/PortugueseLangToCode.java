@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.getalp.dbnary;
+package org.getalp.dbnary.por;
 
 import java.util.HashMap;
 

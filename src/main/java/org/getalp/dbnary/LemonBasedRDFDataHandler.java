@@ -174,10 +174,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
         
         // Create the resource without typing so that the type statement is added only if the currentStatement are added to the model.
         // Resource lemma = aBox.createResource(encodedPageName);
-        
-        if (wiktionaryPageName.equals("behieltest")) 
-        	System.err.println("behieltest is added in heldbackstatement");
-        
+                
         // Retain these statements to be inserted in the model when we will know that the entry corresponds to a proper part of speech
         heldBackStatements.add(aBox.createStatement(currentMainLexEntry, RDF.type, vocableEntryType));
     }

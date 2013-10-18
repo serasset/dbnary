@@ -27,7 +27,7 @@ public class DbnaryModel {
 	protected static final String NSprefix = "http://kaiko.getalp.org/dbnary";
 	protected static final String DBNARY = NSprefix + "#";
 	// protected static final String LMF = "http://www.lexicalmarkupframework.org/lmf/r14#";
-	protected static final String LEMON = "http://www.monnetproject.eu/lemon#";
+	protected static final String LEMON = "http://www.lemon-model.net/lemon#";
 	protected static final String LEXINFO = "http://www.lexinfo.net/ontology/2.0/lexinfo#";
 	protected static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
 	protected static final String LEXVO = "http://lexvo.org/id/iso639-3/";

@@ -1,5 +1,6 @@
 package org.getalp.dbnary.jpn;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,6 +71,39 @@ public class JapaneseTranslationsExtractorWikiModel {
 		macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
 	}
 
+	static HashSet<String> commonUsageMacros = new HashSet<String>();
+	static HashSet<String> fontMacros = new HashSet<String>();
+	static {
+		commonUsageMacros.add("m");
+		commonUsageMacros.add("f");
+		commonUsageMacros.add("p");
+		commonUsageMacros.add("s");
+		commonUsageMacros.add("n");
+		commonUsageMacros.add("c");
+
+		fontMacros.add("Arab");
+		fontMacros.add("ARchar");
+		fontMacros.add("Unicode");
+		fontMacros.add("FAchar");
+		fontMacros.add("KOfont");
+		fontMacros.add("THchar");
+		fontMacros.add("URchar");
+		fontMacros.add("ur-Arab");
+		fontMacros.add("ku-Arab");
+		fontMacros.add("Thai");
+		fontMacros.add("KUchar");
+		fontMacros.add("fa-Arab");
+		fontMacros.add("IPAchar");
+		fontMacros.add("HEchar");
+		fontMacros.add("PSchar");
+		fontMacros.add("RUchar");
+		fontMacros.add("ug-Arab");
+		fontMacros.add("ZHsim");
+		fontMacros.add("sd-Arab");
+		fontMacros.add("BNchar");
+		
+	}
+
 	protected final int INIT = 1;
 	protected final int LANGUE = 2;
 	protected final int TRAD = 3;  
@@ -107,10 +141,10 @@ public class JapaneseTranslationsExtractorWikiModel {
 					} else if (macro.equalsIgnoreCase("trans-mid") || macro.equalsIgnoreCase("mid")) {
 						//ignore
 					} else {
-						System.err.println("Got " + macro + " macro while in INIT state. for page: ");// + this.delegate.currentLexEntry());
+						// System.err.println("Got " + macro + " macro while in INIT state. for page: " + this.delegate.currentLexEntry());
 					}
 				} else if(link!=null) {
-					System.err.println("Unexpected link " + link + " while in INIT state. for page: ");//+ this.delegate.currentLexEntry());
+					// System.err.println("Unexpected link " + link + " while in INIT state. for page: ");//+ this.delegate.currentLexEntry());
 				} else if (star != null) {
 					ETAT = LANGUE;
 				} else if (term != null) {
@@ -161,8 +195,9 @@ public class JapaneseTranslationsExtractorWikiModel {
 					String l = ISO639_3.sharedInstance.getIdCode(langname);
 					if (l != null) {
 						langname = l;
-					} else 
-						System.err.println("Unexpected link: " + link + " while in LANGUE state.");
+					} else { 
+						// System.err.println("Unexpected link: " + link + " while in LANGUE state.");
+					}
 				} else if (star != null) {
 					//System.err.println("Skipping '*' while in LANGUE state.");
 				} else if (term != null) {
@@ -232,28 +267,58 @@ public class JapaneseTranslationsExtractorWikiModel {
 						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
 						// Check if previous word has not been registered. TODO: Check when this arises.
 						if (word != null && word.length() != 0) {
-							System.err.println("Word is not null when handling ZHfont macro in " + this.delegate.currentLexEntry());
+							// System.err.println("Word is not null when handling ZHfont macro in " + this.delegate.currentLexEntry());
 						}
 						word = argmap.get("1");
 						// TODO: split [[ ]] / [[ ]] translations where the second seems to be a japanese usage note (equivalent in japanese chars ?)
 						argmap.remove("1"); if (! argmap.isEmpty()) usage = argmap.toString();
+					} else if (macro.equals("zh-ts")) { 
+						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
+						// Check if previous word has not been registered. TODO: Check when this arises.
+						if (word != null && word.length() != 0) {
+							// System.err.println("Word is not null when handling zh-ts macro in " + this.delegate.currentLexEntry());
+						}
+						word = argmap.get("1");
+						// TODO: Arg2 is the simplified chinese version
+						argmap.remove("1"); if (! argmap.isEmpty()) usage = argmap.toString();
 					} else if (macro.equals("trans_link")) { 
 						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
-						if (null != word && word.length() != 0) System.err.println("Word is not null when handling trans_link macro in " + this.delegate.currentLexEntry());
+						// if (null != word && word.length() != 0) System.err.println("Word is not null when handling trans_link macro in " + this.delegate.currentLexEntry());
 						word = argmap.get("2");
-					} else if (macro.equals("t+") || macro.equals("t-") || macro.equals("t") || macro.equals("tø")) { 
+					} else if (macro.equals("t+") || macro.equals("t-") || macro.equals("t") || macro.equals("tø") || macro.equals("trad")) { 
 						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
 						if (null != word && word.length() != 0) System.err.println("Word is not null when handling t+- macro in " + this.delegate.currentLexEntry());
-						String l = null;
-						if (null != argmap.get("1")
-							&& (null != lang)
-							&& ! lang.equals(ISO639_3.sharedInstance.getIdCode(argmap.get("1"))))
-							System.err.println("Language in t+ macro does not map language in list in ");// + this.delegate.currentLexEntry());
+						String l = argmap.get("1");
+						if (null != l && (null != lang) && ! lang.equals(ISO639_3.sharedInstance.getIdCode(l))) {
+							// System.err.println("Language in t+ macro does not map language in list in ");// + this.delegate.currentLexEntry());
+						}
 						word = argmap.get("2");
 						argmap.remove("1"); argmap.remove("2");
 						if (! argmap.isEmpty()) usage = argmap.toString();
+					} else if (macro.equals("lang") || macro.equals("Lang")) { 
+						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
+						if (null != word && word.length() != 0) System.err.println("Word is not null when handling lang macro in " + this.delegate.currentLexEntry());
+						String l = argmap.get("1");
+						if (null != l && (null != lang) && ! lang.equals(ISO639_3.sharedInstance.getIdCode(l))) {
+							// System.err.println("Language in lang macro does not map language in list in ");// + this.delegate.currentLexEntry());
+						}
+						word = AbstractWiktionaryExtractor.cleanUpMarkup(argmap.get("2"), true);
+						argmap.remove("1"); argmap.remove("2");
+						if (! argmap.isEmpty()) usage = argmap.toString();
+					} else if (fontMacros.contains(macro)) { 
+						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
+						// if (null != word && word.length() != 0) System.err.println("Word is not null when handling a font macro in " + this.delegate.currentLexEntry());
+						word = argmap.get("1");
+					} else if (commonUsageMacros.contains(macro)) { 
+						usage = usage + "{{" + macro + "}}";
+					} else if (macro.equals("sr-Latn") || macro.equals("sr-Cyrl") ) { 
+						if (null != lang) {
+							// System.err.println("Lang is " + lang + " while getting sr-Latn macro." + this.delegate.currentLexEntry());
+						}
+						lang = "srp";
+						usage = usage + " sc=" + macro;
 					} else {
-						System.err.println("Got " + macro + " macro in usage. for page: " );//+ this.delegate.currentLexEntry());
+						// System.err.println("Got " + macro + " macro in usage. for page: "); // + this.delegate.currentLexEntry());
 						usage = usage + "{{" + macro + "}}";
 					}
 				} else if (link!=null) {

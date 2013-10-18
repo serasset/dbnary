@@ -77,6 +77,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           posMarkers.put("助詞", ""); // particle
           posMarkers.put("conj", ""); // conj
           posMarkers.put("接続詞", ""); // conj
+          posMarkers.put("代名詞", "Pronoun"); // pronoun
 
 
          // adjectivenoun, 形容動詞
@@ -160,7 +161,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     	
     	wdh.finalizeEntryExtraction();
     	for (String h : unknownHeaders) {
-			System.err.println(h);
+			System.err.println("--> " + h);
 		}
     }
     

@@ -11,6 +11,8 @@ import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JapaneseTranslationsExtractorWikiModel {
 	
@@ -22,6 +24,7 @@ public class JapaneseTranslationsExtractorWikiModel {
 	
 	private WiktionaryDataHandler delegate;
 	
+	private Logger log = LoggerFactory.getLogger(JapaneseTranslationsExtractorWikiModel.class);
 	
 	public JapaneseTranslationsExtractorWikiModel(WiktionaryDataHandler we) {
 		this(we, (WiktionaryIndex) null);
@@ -141,10 +144,10 @@ public class JapaneseTranslationsExtractorWikiModel {
 					} else if (macro.equalsIgnoreCase("trans-mid") || macro.equalsIgnoreCase("mid")) {
 						//ignore
 					} else {
-						// System.err.println("Got " + macro + " macro while in INIT state. for page: " + this.delegate.currentLexEntry());
+						log.debug("Got {} macro while in INIT state. for page: {}", macro, this.delegate.currentLexEntry());
 					}
 				} else if(link!=null) {
-					// System.err.println("Unexpected link " + link + " while in INIT state. for page: ");//+ this.delegate.currentLexEntry());
+					log.debug("Unexpected link {} while in INIT state. for page: {}", link, this.delegate.currentLexEntry());
 				} else if (star != null) {
 					ETAT = LANGUE;
 				} else if (term != null) {
@@ -287,7 +290,7 @@ public class JapaneseTranslationsExtractorWikiModel {
 						word = argmap.get("2");
 					} else if (macro.equals("t+") || macro.equals("t-") || macro.equals("t") || macro.equals("tø") || macro.equals("trad")) { 
 						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
-						if (null != word && word.length() != 0) System.err.println("Word is not null when handling t+- macro in " + this.delegate.currentLexEntry());
+						if (null != word && word.length() != 0) log.debug("Word is not null ({}) when handling t+- macro in {}", word, this.delegate.currentLexEntry());
 						String l = argmap.get("1");
 						if (null != l && (null != lang) && ! lang.equals(ISO639_3.sharedInstance.getIdCode(l))) {
 							// System.err.println("Language in t+ macro does not map language in list in ");// + this.delegate.currentLexEntry());
@@ -297,7 +300,7 @@ public class JapaneseTranslationsExtractorWikiModel {
 						if (! argmap.isEmpty()) usage = argmap.toString();
 					} else if (macro.equals("lang") || macro.equals("Lang")) { 
 						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
-						if (null != word && word.length() != 0) System.err.println("Word is not null when handling lang macro in " + this.delegate.currentLexEntry());
+						if (null != word && word.length() != 0) log.debug("Word is not null ({}) when handling lang macro in {}", word, this.delegate.currentLexEntry());
 						String l = argmap.get("1");
 						if (null != l && (null != lang) && ! lang.equals(ISO639_3.sharedInstance.getIdCode(l))) {
 							// System.err.println("Language in lang macro does not map language in list in ");// + this.delegate.currentLexEntry());
@@ -360,7 +363,7 @@ public class JapaneseTranslationsExtractorWikiModel {
 				}
 				break;
 			default: 
-				System.err.println("Unexpected state number:" + ETAT);
+				log.error("Unexpected state number {}", ETAT);
 				break; 
 			}
         	

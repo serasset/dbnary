@@ -80,7 +80,7 @@ public class RDFDiff {
 				}
 			}
 		} finally {
-			iter.close();
+			if (null != iter) iter.close();
 		}
 		try {
 			iter = m2.listSubjects();
@@ -110,7 +110,7 @@ public class RDFDiff {
 				}
 			}
 		} finally {
-			iter.close();
+			if (null != iter) iter.close();
 		}
 	}
 	

@@ -92,6 +92,7 @@
 		<dependency>
 			<groupId>com.hp.hpl.jena</groupId>
 			<artifactId>jena</artifactId>
+			<!-- When upgrading to apache JENA, use version > 2.11.0 which has a bug that has been fixed in 2.11.1-SNAPSHOT trunk -->
 			<version>2.6.4</version>
 			<type>jar</type>
 			<scope>compile</scope>

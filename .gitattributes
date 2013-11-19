@@ -258,8 +258,6 @@ src/main/java/org/getalp/dbnary/LemonBasedRDFDataHandler.java -text svneol=unset
 src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/OffsetValue.java -text
-src/main/java/org/getalp/dbnary/SuomiLangToCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/SuomiWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/TurkishLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/TurkishWiktionaryExtractor.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/WiktionaryDataHandler.java -text svneol=unset#text/plain
@@ -281,6 +279,9 @@ src/main/java/org/getalp/dbnary/cli/TestInterwikiLinks.java -text svneol=unset#t
 src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/UpdateDiachronicStatistics.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/UpdateLatestStatistics.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/fin/FinnishTranslationExtractorWikiModel.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/fin/SuomiLangToCode.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/fin/WiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/ita/ItalianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ita/ItalianLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ita/ItalianMorphoExtractorWikiModel.java -text svneol=unset#text/plain

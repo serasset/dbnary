@@ -1,66 +1,38 @@
 /**
  * 
  */
-package org.getalp.dbnary;
+package org.getalp.dbnary.fin;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.rus.RussianTranslationExtractorWikiModel;
+import org.getalp.dbnary.wiki.WikiPatterns;
 
 /**
  * @author serasset
  *
  */
-public class SuomiWiktionaryExtractor extends AbstractWiktionaryExtractor {
+public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	//TODO: Handle Wikisaurus entries.
 	protected final static String sectionPatternString1 =  "={2,5}\\s*([^=]*)\\s*={2,5}";
 	protected final static String sectionPatternString2="\\{\\{-([^}]*)-\\}\\}" ;
 	protected final static String sectionPatternString;
-	protected final static String macroPatternString;
-	protected final static String carPatternString;
-	protected final static String linkPatternString;
-	protected final static String macroOrLinkOrcarPatternString;
 
 
 	static {
 		// DONE: Validate the fact that links and macro should be on one line or may be on several...
 		// DONE: for this, evaluate the difference in extraction !
-		linkPatternString = 
-				new StringBuilder()
-		.append("\\[\\[")
-		.append("([^\\]\\|\n\r]*)(?:\\|([^\\]\n\r]*))?")
-		.append("\\]\\]")
-		.toString();
-		macroPatternString = 
-				new StringBuilder().append("\\{\\{")
-				.append("([^\\}\\|\n\r]*)(?:\\|([^\\}]*))?")
-				.append("\\}\\}")
-				.toString();
-
-		// les caractères visible 
-		carPatternString=
-				new StringBuilder().append("(.)")
-				.toString();
-
-		// TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
-		macroOrLinkOrcarPatternString = new StringBuilder()
-		.append("(?:")
-		.append(macroPatternString)
-		.append(")|(?:")
-		.append(linkPatternString)
-		.append(")|(?:")
-		.append("(:*\\*)")
-		.append(")|(?:")
-		.append(carPatternString)
-		.append(")").toString();
-
-
+		
 		sectionPatternString = new StringBuilder()
 		.append("(?:")
 		.append(sectionPatternString1)
@@ -69,19 +41,6 @@ public class SuomiWiktionaryExtractor extends AbstractWiktionaryExtractor {
 		.append(")").toString();
 
 	}
-	protected final static Pattern macroPattern;
-	protected final static Pattern linkPattern;
-	protected final static Pattern carPattern;
-	protected final static Pattern macroOrLinkOrcarPattern;
-
-
-	static {
-		macroPattern = Pattern.compile(macroPatternString);
-		linkPattern = Pattern.compile(linkPatternString);
-		carPattern = Pattern.compile(carPatternString);
-		macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.MULTILINE|Pattern.DOTALL);
-		
-	}
 
 	private final int NODATA = 0;
 	private final int TRADBLOCK = 1;
@@ -89,7 +48,7 @@ public class SuomiWiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private final int ORTHOALTBLOCK = 3;
 	private final int NYMBLOCK = 4;
 
-	public SuomiWiktionaryExtractor(WiktionaryDataHandler wdh) {
+	public WiktionaryExtractor(WiktionaryDataHandler wdh) {
 		super(wdh);
 	}
 
@@ -388,184 +347,10 @@ public class SuomiWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	
 
-
 	private void extractTranslations(int startOffset, int endOffset) {
-		Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(pageContent);
-		macroOrLinkOrcarMatcher.region(startOffset, endOffset);
-		final int ZERO = 0;
-		final int INIT = 1;
-		final int LANGUE = 2;
-		final int TRAD = 3;
-
-	
-		
-		int ETAT = INIT;
-
-		String currentGlose = null;
-		String lang=null, word= ""; 
-		String usage = "";       
-		String langname = "";
-
-		while (macroOrLinkOrcarMatcher.find()) {
-
-			String g1 = macroOrLinkOrcarMatcher.group(1);
-			String g3 = macroOrLinkOrcarMatcher.group(3);
-			String g5 = macroOrLinkOrcarMatcher.group(5);
-			String g6 = macroOrLinkOrcarMatcher.group(6);
-
-			switch (ETAT) {
-
-			case INIT:
-				if (g1!=null) {
-					if (g1.equalsIgnoreCase("ylä"))  {
-						if (macroOrLinkOrcarMatcher.group(2) != null) {
-							currentGlose = macroOrLinkOrcarMatcher.group(2);
-						} else {
-							currentGlose = null;
-						}
-
-					} else if (g1.equalsIgnoreCase("ala")) {
-						currentGlose = null;
-					} else if (g1.equalsIgnoreCase("keski")) {
-						//ignore
-					}
-				} else if(g3!=null) {
-					//System.err.println("Unexpected link while in INIT state.");
-				} else if (g5 != null) {
-					ETAT = LANGUE;
-				} else if (g6 != null) {
-					if (g6.equals(":")) {
-						//System.err.println("Skipping ':' while in INIT state.");
-					} else if (g6.equals("\n") || g6.equals("\r")) {
-
-					} else if (g6.equals(",")) {
-						//System.err.println("Skipping ',' while in INIT state.");
-					} else {
-						//System.err.println("Skipping " + g5 + " while in INIT state.");
-					}
-				}
-
-				break;
-
-			case LANGUE:
-
-				if (g1!=null) {
-					if (g1.equalsIgnoreCase("ylä"))  {
-						if (macroOrLinkOrcarMatcher.group(2) != null) {
-							currentGlose = macroOrLinkOrcarMatcher.group(2);
-						} else {
-							currentGlose = null;
-						}
-						langname = ""; word = ""; usage = "";
-						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("ala")) {
-						currentGlose = null;
-						langname = ""; word = ""; usage = "";
-						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("keski")) {
-						langname = ""; word = ""; usage = "";
-						ETAT = INIT;
-					} else {
-						langname = g1;
-						String l = ISO639_3.sharedInstance.getIdCode(langname);
-						if (l != null) {
-							langname = l;
-						}
-					}
-				} else if(g3!=null) {
-					//System.err.println("Unexpected link while in LANGUE state.");
-				} else if (g5 != null) {
-					//System.err.println("Skipping '*' while in LANGUE state.");
-				} else if (g6 != null) {
-					if (g6.equals(":")) {
-						lang = langname.trim();
-						lang=supParenthese(lang);
-						lang =SuomiLangToCode.triletterCode(lang);
-						langname = "";
-						ETAT = TRAD;
-					} else if (g6.equals("\n") || g6.equals("\r")) {
-						//System.err.println("Skipping newline while in LANGUE state.");
-					} else if (g6.equals(",")) {
-						//System.err.println("Skipping ',' while in LANGUE state.");
-					} else {
-						langname = langname + g6;
-					}
-				} 
-
-				break ;
-			case TRAD:
-				if (g1!=null) {
-					if (g1.equalsIgnoreCase("ylä"))  {
-						if (macroOrLinkOrcarMatcher.group(2) != null) {
-							currentGlose = macroOrLinkOrcarMatcher.group(2);
-						} else {
-							currentGlose = null;
-						}
-						//if (word != null && word.length() != 0) {
-						//	if(lang!=null){
-						//		wdh.registerTranslation(lang, currentGlose, usage, word);
-						//	}
-						//}
-						langname = ""; word = ""; usage = ""; lang=null;
-						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("ala")) {
-						if (word != null && word.length() != 0) {
-							if(lang!=null){
-								wdh.registerTranslation(lang, currentGlose, usage, word);
-							}
-						}
-						currentGlose = null;
-						langname = ""; word = ""; usage = ""; lang=null;
-						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("kski")) {
-						if (word != null && word.length() != 0) {
-							if(lang!=null){
-								wdh.registerTranslation(lang, currentGlose, usage, word);
-							}
-						}
-						langname = ""; word = ""; usage = ""; lang = null;
-						ETAT = INIT;
-					} else {
-						usage = usage + "{{" + g1 + "}}";
-					}
-				} else if (g3!=null) {
-					word = word + " " + g3;
-				} else if (g5 != null) {
-					//System.err.println("Skipping '*' while in LANGUE state.");
-				} else if (g6 != null) {
-					if (g6.equals("\n") || g6.equals("\r")) {
-						usage = usage.trim();
-						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
-						if (word != null && word.length() != 0) {
-							if(lang!=null){
-								wdh.registerTranslation(lang, currentGlose, usage, word);
-							}
-						}
-						lang = null; 
-						usage = "";
-						word = "";
-						ETAT = INIT;
-					} else if (g6.equals(",")) {
-						usage = usage.trim();
-						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
-						if (word != null && word.length() != 0) {
-							if(lang!=null){
-								wdh.registerTranslation(lang, currentGlose, usage, word);
-							}
-						}
-						usage = "";
-						word = "";
-					} else {
-						usage = usage + g6;
-					}
-				}
-				break;
-			default: 
-				System.err.println("Unexpected state number:" + ETAT);
-				break; 
-			}
-
-		}
-	}  
+	       String transCode = pageContent.substring(startOffset, endOffset);
+	       FinnishTranslationExtractorWikiModel dbnmodel = new FinnishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), "/${image}", "/${title}");
+	       dbnmodel.parseTranslationBlock(transCode);
+	}
 
 }

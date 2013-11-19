@@ -1,4 +1,4 @@
-package org.getalp.dbnary;
+package org.getalp.dbnary.fin;
 
 import java.util.HashMap;
 

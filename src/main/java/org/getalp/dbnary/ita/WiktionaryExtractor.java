@@ -447,6 +447,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected final int LANGUE = 2;
 	protected final int TRAD = 3;  
 
+	// TODO: delegate translation extraction to the appropriate wiki model
     private void extractTranslations(int startOffset, int endOffset) {
 	Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(pageContent);
 		macroOrLinkOrcarMatcher.region(startOffset, endOffset);

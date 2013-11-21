@@ -15,12 +15,17 @@ import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.jpn.JapaneseTranslationsExtractorWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 	
 	private WiktionaryDataHandler delegate;
-	
+	private Logger log = LoggerFactory.getLogger(JapaneseTranslationsExtractorWikiModel.class);
+
 	public FinnishTranslationExtractorWikiModel(WiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
 		this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
 	}
@@ -56,8 +61,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 		transMacroWithNotes.add("trad-");
 
 	}
-	private String currentGloss = null;
-
+	
 	@Override
 	public void substituteTemplateCall(String templateName,
 			Map<String, String> parameterMap, Appendable writer)
@@ -66,40 +70,47 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 			// kohta macro contains a set of translations with no usage note.
 			// Either: (1) arg 1 is the sens number and arg2 is the gloss, arg3 are translations and arg 4 is final
 			// Or: arg1 is translations and arg 2 is final
-			String gloss = "";
-			String xans;
-			if (null != parameterMap.get("3")) {
-				// case (1)
-				String n = (null == parameterMap.get("1")) ? null : parameterMap.get("1").trim();
-				String g = (null == parameterMap.get("2")) ? null : parameterMap.get("2").trim();
-				if (null != n && ! n.equals("")) gloss = n + "| ";
-				if (null != g) gloss = gloss + g;
-				
-				xans = parameterMap.get("3");
-				
-				if (parameterMap.get("4") != null && ! (parameterMap.get("4").equals("loppu") || parameterMap.get("4").equals(""))) {
-					System.err.println("Unexpected arg 4 value of kohta macro: " + parameterMap.get("4"));
-				}
-			} else {
-				xans = parameterMap.get("1");
-			}
+			int translationPositionalArg = findTranslations(parameterMap); 
+			String xans = parameterMap.get(Integer.toString(translationPositionalArg));
+			String gloss = computeGlossValue(parameterMap, translationPositionalArg);
 			extractTranslations(xans, gloss);
 			
+		} else if ("käännökset/korjattava".equals(templateName) || "kään/korj".equals(templateName) || "korjattava/käännökset".equals(templateName)) { 
+			// Missing translation message, just ignore it
 		} else {
-			 System.err.println("Called template: " + templateName + " while parsing translations of: " + this.getImageBaseURL());
+			 log.debug("Called template: {} while parsing translations of: {}", templateName, delegate.currentLexEntry());
 			// Just ignore the other template calls (uncomment to expand the template calls).
 			// super.substituteTemplateCall(templateName, parameterMap, writer);
 		}
 	}
 
-	private String normalizeLang(String lang) {
-		String normLangCode;
-		if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-			lang = normLangCode;
+	StringBuffer glossbuff = new StringBuffer();
+	private String computeGlossValue(Map<String, String> parameterMap, int translationPositionalArg) {
+		glossbuff.setLength(0);
+		int i = 1;
+		while (i != translationPositionalArg) {
+			glossbuff.append(parameterMap.get(Integer.toString(i)).trim());
+			glossbuff.append("|");
+			i++;
 		}
-		return lang;
+		if (glossbuff.length() > 0) glossbuff.setLength(glossbuff.length()-1);
+		return glossbuff.toString();
 	}
-	
+
+	private int findTranslations(Map<String, String> parameterMap) {
+		// The number of args should no exceed 7 (arbitrary) 
+		// Find last non null arg
+		int p = 7;
+		while (p != 1 && parameterMap.get(Integer.toString(p)) == null) {
+			p--;
+		}
+		String v = parameterMap.get(Integer.toString(p));
+		if (1 != p && ("".equals(v) || "loppu".equals(v))) {
+			// The last parameter is the closing one... It should be mandatory
+			p--;
+		}
+		return p;
+	}	
 	
 	protected final static String carPatternString;
 	protected final static String macroOrLinkOrcarPatternString;
@@ -188,7 +199,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 				} else if(link!=null) {
 					//System.err.println("Unexpected link while in INIT state.");
 				} else if (starcont != null) {
-					System.err.println("Unexpected point continuation while in INIT state.");
+					log.debug("Unexpected point continuation while in INIT state.");
 				} else if (star != null) {
 					ETAT = LANGUE;
 				} else if (character != null) {
@@ -254,6 +265,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 				} 
 
 				break ;
+				
 			case TRAD:
 				if (macro!=null) {
 					if (macro.equalsIgnoreCase("ylä"))  {
@@ -286,13 +298,23 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 						}
 						langname = ""; word = ""; usage = ""; lang = null;
 						ETAT = INIT;
+					} else if (macro.equalsIgnoreCase("käännös") || macro.equalsIgnoreCase("l")) {
+						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
+						if (null != word && word.length() != 0) log.debug("Word is not null ({}) when handling käännös macro in {}", word, this.delegate.currentLexEntry());
+						String l = argmap.get("1");
+						if (null != l && (null != lang) && ! lang.equals(ISO639_3.sharedInstance.getIdCode(l))) {
+							log.debug("Language in käännös macro does not map language in list in {}", this.delegate.currentLexEntry());
+						}
+						word = argmap.get("2");
+						argmap.remove("1"); argmap.remove("2");
+						if (! argmap.isEmpty()) usage = argmap.toString();
 					} else {
 						usage = usage + "{{" + macro + "}}";
 					}
 				} else if (link!=null) {
 					word = word + " " + link;
 				} else if (starcont != null) {
-					System.err.println("Skipping '*:' while in LANGUE state.");
+					// System.err.println("Skipping '*:' while in LANGUE state.");
 				} else if (star != null) {
 					//System.err.println("Skipping '*' while in LANGUE state.");
 				} else if (character != null) {
@@ -303,6 +325,8 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 							if(lang!=null){
 								delegate.registerTranslation(lang, currentGlose, usage, word);
 							}
+						} else if (usage.length() != 0) {
+							log.debug("Non empty usage ({}) while word is null in: {}", usage, delegate.currentLexEntry());
 						}
 						previousLang = lang;
 						lang = null; 
@@ -325,7 +349,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 				}
 				break;
 			default: 
-				System.err.println("Unexpected state number:" + ETAT);
+				log.error("Unexpected state number: {}", ETAT);
 				break; 
 			}
 

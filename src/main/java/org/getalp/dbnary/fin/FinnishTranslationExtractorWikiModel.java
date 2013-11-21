@@ -265,7 +265,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 				} 
 
 				break ;
-				
+				// TODO: maybe extract words that are not linked (currently kept in usage, but dropped as translation word is null).
 			case TRAD:
 				if (macro!=null) {
 					if (macro.equalsIgnoreCase("ylä"))  {

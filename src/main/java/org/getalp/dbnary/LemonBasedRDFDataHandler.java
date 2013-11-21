@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.dbnary.tools.CounterSet;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -39,7 +40,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	
 	private Resource currentSense;
 	private int currentSenseNumber;
-	private int currentTranslationNumber;
+	private CounterSet translationCount = new CounterSet();
 	protected String extractedLang;
 	protected Resource lexvoExtractedLanguage;
 
@@ -49,7 +50,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	protected String NS;
 	protected String currentEncodedPageName;
 	private String currentWiktionaryPageName;
-	private HashMap<String,Integer> currentLexieCount = new HashMap<String,Integer>();
+	private CounterSet currentLexieCount = new CounterSet();
 	private Resource currentMainLexEntry;
 	private Resource currentPreferredWrittenRepresentation;
 	private String currentSharedPronunciation;
@@ -159,11 +160,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	public void initializeEntryExtraction(String wiktionaryPageName) {
         currentSense = null;
         currentSenseNumber = 1;
-        currentTranslationNumber = 1;
         currentWiktionaryPageName = wiktionaryPageName;
         currentLexinfoPos = null;
         currentWiktionaryPos = null;
-        currentLexieCount.clear();
+        currentLexieCount.resetAll();
         currentPreferredWrittenRepresentation = null;
         currentSharedPronunciation = null;
         currentSharedPronunciationLang = null;
@@ -196,8 +196,11 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     	Resource entryType = (null == pat) ? lexEntryType : pat.type;
     	nbEntries++;
     	
-        currentEncodedPageName = uriEncode(currentWiktionaryPageName, currentWiktionaryPos) + "__" + getCurrentLexieCount(currentWiktionaryPos);
+        currentEncodedPageName = uriEncode(currentWiktionaryPageName, currentWiktionaryPos) + "__" + currentLexieCount.incr(currentWiktionaryPos);
         currentLexEntry = aBox.createResource(NS + currentEncodedPageName, entryType);
+        
+        // All translation numbers are local to a lexEntry
+        translationCount.resetAll();
 
         currentPreferredWrittenRepresentation = aBox.createResource(); 
         
@@ -225,16 +228,6 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
         heldBackStatements.clear();
         aBox.add(aBox.createStatement(currentMainLexEntry, refersTo, currentLexEntry));
     }
-
-	private int getCurrentLexieCount(String pos) {
-		Integer v = currentLexieCount.get(pos);
-		if (null == v) {
-			currentLexieCount.put(pos, 1);
-		} else {
-			currentLexieCount.put(pos, ++v);
-		}
-		return currentLexieCount.get(pos);
-	}
 
 	@Override
     public void registerAlternateSpelling(String alt) {
@@ -307,7 +300,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	}
 
 	private String computeTransId(String lang) {
-		return NS + "__tr_" + uriEncode(lang) + "_" + (currentTranslationNumber++) + "_" + currentEncodedPageName;
+		return NS + "__tr_" + uriEncode(lang) + "_" + translationCount.incr(lang) + "_" + currentEncodedPageName;
 	}
 
     private Resource getLexvoLanguageResource(String lang) {
@@ -409,8 +402,5 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		// TODO Auto-generated method stub
 		return currentWiktionaryPageName;
 	}
-
-
-
 	
 }

@@ -266,10 +266,12 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 			String usage, String word) {
 		if (null == currentLexEntry) return; // Don't register anything if current lex entry is not known.
 		word = word.trim();
-    	Resource trans = aBox.createResource(computeTransId(lang), translationType);
+		// Ensure language is in its standard form.
+    	Lang t = ISO639_3.sharedInstance.getLang(lang);
+    	if (null != t) lang = t.getId();
+		Resource trans = aBox.createResource(computeTransId(lang), translationType);
     	aBox.add(aBox.createStatement(trans, isTranslationOf, currentLexEntry));
     	aBox.add(createTargetLanguageProperty(trans, lang));
-    	Lang t = ISO639_3.sharedInstance.getLang(lang);
     	if (null == t) {
         	aBox.add(aBox.createStatement(trans, equivalentTargetProperty, word));
     	} else {
@@ -300,7 +302,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	}
 
 	private String computeTransId(String lang) {
-		return NS + "__tr_" + uriEncode(lang) + "_" + translationCount.incr(lang) + "_" + currentEncodedPageName;
+		lang = uriEncode(lang);
+		return NS + "__tr_" + lang + "_" + translationCount.incr(lang) + "_" + currentEncodedPageName;
 	}
 
     private Resource getLexvoLanguageResource(String lang) {

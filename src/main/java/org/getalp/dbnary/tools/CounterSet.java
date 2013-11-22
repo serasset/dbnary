@@ -23,6 +23,10 @@ public class CounterSet {
 		void reset() {
 			_val = 0;
 		}
+		
+		public String toString() {
+			return Integer.toString(_val);
+		}
 	}
 	private HashMap<String,MutableInteger> counters;
 

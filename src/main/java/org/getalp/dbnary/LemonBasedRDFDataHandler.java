@@ -232,6 +232,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 
 	@Override
     public void registerAlternateSpelling(String alt) {
+		if (null == currentLexEntry) return; // Don't register anything if current lex entry is not known.
+
     	Resource altlemma = aBox.createResource();
     	aBox.add(aBox.createStatement(currentLexEntry, lexicalVariantProperty, altlemma));
     	aBox.add(aBox.createStatement(altlemma, writtenRepresentationProperty, alt, extractedLang));

@@ -53,14 +53,72 @@ public class GreekWiktionaryExtractor extends AbstractWiktionaryExtractor {
 		            .toString();
     	
     	defMarkers = new HashSet<String>(20);
-        defMarkers.add("ουσιαστικό"); 	// Noun 
-        defMarkers.add("επίθετο");   		// Adjective
-        // defMarkers.add("μορφή επιθέτου");   // Adjective
-        defMarkers.add("επίρρημα"); 		//Adverb
-        // defMarkers.add("μορφή ρήματος");	// Verb form
-        defMarkers.add("ρήμα"); //  Verb
-        defMarkers.add("κύριο όνομα");  	//Proper noun 
-        
+//        defMarkers.add("ουσιαστικό"); 	// Noun 
+//        defMarkers.add("επίθετο");   		// Adjective
+//        // defMarkers.add("μορφή επιθέτου");   // Adjective
+//        defMarkers.add("επίρρημα"); 		//Adverb
+//        // defMarkers.add("μορφή ρήματος");	// Verb form
+//        defMarkers.add("ρήμα"); //  Verb
+//        defMarkers.add("κύριο όνομα");  	//Proper noun 
+//        defMarkers.add("παροιμία"); // Proverb
+//        defMarkers.add("πολυλεκτικός όρος");// Multi word term
+//        defMarkers.add("ρηματική έκφραση"); // Verbal Expressions
+//        defMarkers.add("επιφώνημα");  // interjection
+//        defMarkers.add("επιρρηματική έκφραση");  // adverbial expression
+//        defMarkers.add("μετοχή"); // both adjective and verbs
+      
+        defMarkers.add("αντωνυμία");
+        defMarkers.add("απαρέμφατο");
+        defMarkers.add("άρθρο");
+        defMarkers.add("αριθμητικό");
+        defMarkers.add("γερουνδιακό");
+        defMarkers.add("γερούνδιο");
+        defMarkers.add("έκφραση");
+        defMarkers.add("επιθετική έκφραση");
+        defMarkers.add("επίθετο");
+        defMarkers.add("επίθημα");
+        defMarkers.add("επίρρημα");
+        defMarkers.add("επιρρηματική έκφραση");
+        defMarkers.add("επιφώνημα");
+        defMarkers.add("κατάληξη");
+        defMarkers.add("κατάληξη αρσενικών επιθέτων");
+        defMarkers.add("κατάληξη αρσενικών και θηλυκών ουσιαστικών");
+        defMarkers.add("κατάληξη αρσενικών ουσιαστικών");
+        defMarkers.add("κατάληξη επιρρημάτων");
+        defMarkers.add("κατάληξη θηλυκών ουσιαστικών");
+        defMarkers.add("κατάληξη ουδέτερων ουσιαστικών");
+        defMarkers.add("κατάληξη ρημάτων");
+        defMarkers.add("κύριο όνομα");
+        defMarkers.add("μετοχή");
+        defMarkers.add("μόριο");
+        defMarkers.add("μορφή αντωνυμίας");
+        defMarkers.add("μορφή αριθμητικού");
+        defMarkers.add("μορφή γερουνδιακού");
+        defMarkers.add("μορφή επιθέτου");
+        defMarkers.add("μορφή επιρρήματος");
+        defMarkers.add("μορφή κυρίου ονόματος");
+        defMarkers.add("μορφή μετοχής");
+        defMarkers.add("μορφή ουσιαστικού");
+        defMarkers.add("μορφή πολυλεκτικού όρου");
+        defMarkers.add("μορφή ρήματος");
+        defMarkers.add("ουσιαστικό");
+        defMarkers.add("παροιμία");
+        defMarkers.add("πολυλεκτικός όρος");
+        defMarkers.add("πρόθεση");
+        defMarkers.add("προθετική έκφραση");
+        defMarkers.add("πρόθημα");
+        defMarkers.add("πρόσφυμα");
+        defMarkers.add("ρήμα");
+        defMarkers.add("ρηματική έκφραση");
+        defMarkers.add("ρίζα");
+        defMarkers.add("σουπίνο");
+        defMarkers.add("συγχώνευση");
+        defMarkers.add("σύμβολο");
+        defMarkers.add("συνδεσμική έκφραση");
+        defMarkers.add("σύνδεσμος");
+        defMarkers.add("συντομομορφή");
+        defMarkers.add("φράση");
+        defMarkers.add("χαρακτήρας");
         
         nymMarkers = new HashSet<String>(20);
         nymMarkers.add("συνώνυμα");// Synonyms 

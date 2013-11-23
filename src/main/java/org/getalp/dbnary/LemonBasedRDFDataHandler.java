@@ -1,9 +1,6 @@
 package org.getalp.dbnary;
 
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -164,6 +161,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
         currentLexinfoPos = null;
         currentWiktionaryPos = null;
         currentLexieCount.resetAll();
+        translationCount.resetAll();
         currentPreferredWrittenRepresentation = null;
         currentSharedPronunciation = null;
         currentSharedPronunciationLang = null;
@@ -177,6 +175,9 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
                 
         // Retain these statements to be inserted in the model when we will know that the entry corresponds to a proper part of speech
         heldBackStatements.add(aBox.createStatement(currentMainLexEntry, RDF.type, vocableEntryType));
+        
+        currentEncodedPageName = null;
+        currentLexEntry = null;
     }
     
 	
@@ -238,7 +239,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     
     @Override
 	public void registerNewDefinition(String def) {
-    	
+		if (null == currentLexEntry) return; // Don't register anything if current lex entry is not known.
+   	
     	// Create new word sense + a definition element 
     	currentSense = aBox.createResource(computeSenseId(), lexicalSenseType);
     	aBox.add(aBox.createStatement(currentLexEntry, lemonSenseProperty, currentSense));
@@ -265,6 +267,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     public void registerTranslation(String lang, String currentGlose,
 			String usage, String word) {
 		if (null == currentLexEntry) return; // Don't register anything if current lex entry is not known.
+		
 		word = word.trim();
 		// Ensure language is in its standard form.
     	Lang t = ISO639_3.sharedInstance.getLang(lang);
@@ -317,6 +320,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     
 	@Override
 	public void registerNymRelation(String target, String synRelation) {
+		if (null == currentLexEntry) return; // Don't register anything if current lex entry is not known.
+
 		// Some links point to Annex pages or Images, just ignore these.
 		int colon = target.indexOf(':');
 		if (colon != -1) {

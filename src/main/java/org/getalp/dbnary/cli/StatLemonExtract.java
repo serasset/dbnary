@@ -102,7 +102,7 @@ public class StatLemonExtract extends DbnaryModel {
 
 	
 	private void initializeTBox(String lang) {
-		NS = NSprefix + "/" + lang + "/";
+		NS = DBNARY_NS_PREFIX + "/" + lang + "/";
 	}
 	
 	private void loadArgs(String[] args) {

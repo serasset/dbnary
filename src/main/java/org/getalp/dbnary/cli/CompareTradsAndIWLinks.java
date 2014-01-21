@@ -121,7 +121,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 	String NS;
 	
 	private void initializeTBox(String lang) {
-		NS = NSprefix + "/" + lang + "/";
+		NS = DBNARY_NS_PREFIX + "/" + lang + "/";
 	}
 	
 	private void loadArgs(String[] args) {

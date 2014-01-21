@@ -159,7 +159,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
 				if (e.getName().endsWith(".bz2")) {
 					in = new BZip2CompressorInputStream(in);
 				}
-				m1.read(in, DbnaryModel.NSprefix + "/" + language + "/", "TURTLE");
+				m1.read(in, DbnaryModel.DBNARY_NS_PREFIX + "/" + language + "/", "TURTLE");
 
 				System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 

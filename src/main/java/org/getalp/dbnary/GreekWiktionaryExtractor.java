@@ -34,7 +34,7 @@ public class GreekWiktionaryExtractor extends AbstractWiktionaryExtractor {
     
     // protected final static Pattern languageSectionPattern;
    
-    private static HashSet<String> defMarkers;
+    private static HashSet<String> posMacros;
     private static HashSet<String> nymMarkers;
     protected final static Pattern languageSectionPattern;
     private final static HashMap<String, String> nymMarkerToNymName;
@@ -52,7 +52,7 @@ public class GreekWiktionaryExtractor extends AbstractWiktionaryExtractor {
 		            .append("={2,5}")
 		            .toString();
     	
-    	defMarkers = new HashSet<String>(20);
+    	posMacros = new HashSet<String>(20);
 //        defMarkers.add("ουσιαστικό"); 	// Noun 
 //        defMarkers.add("επίθετο");   		// Adjective
 //        // defMarkers.add("μορφή επιθέτου");   // Adjective
@@ -67,58 +67,58 @@ public class GreekWiktionaryExtractor extends AbstractWiktionaryExtractor {
 //        defMarkers.add("επιρρηματική έκφραση");  // adverbial expression
 //        defMarkers.add("μετοχή"); // both adjective and verbs
       
-        defMarkers.add("αντωνυμία");
-        defMarkers.add("απαρέμφατο");
-        defMarkers.add("άρθρο");
-        defMarkers.add("αριθμητικό");
-        defMarkers.add("γερουνδιακό");
-        defMarkers.add("γερούνδιο");
-        defMarkers.add("έκφραση");
-        defMarkers.add("επιθετική έκφραση");
-        defMarkers.add("επίθετο");
-        defMarkers.add("επίθημα");
-        defMarkers.add("επίρρημα");
-        defMarkers.add("επιρρηματική έκφραση");
-        defMarkers.add("επιφώνημα");
-        defMarkers.add("κατάληξη");
-        defMarkers.add("κατάληξη αρσενικών επιθέτων");
-        defMarkers.add("κατάληξη αρσενικών και θηλυκών ουσιαστικών");
-        defMarkers.add("κατάληξη αρσενικών ουσιαστικών");
-        defMarkers.add("κατάληξη επιρρημάτων");
-        defMarkers.add("κατάληξη θηλυκών ουσιαστικών");
-        defMarkers.add("κατάληξη ουδέτερων ουσιαστικών");
-        defMarkers.add("κατάληξη ρημάτων");
-        defMarkers.add("κύριο όνομα");
-        defMarkers.add("μετοχή");
-        defMarkers.add("μόριο");
-        defMarkers.add("μορφή αντωνυμίας");
-        defMarkers.add("μορφή αριθμητικού");
-        defMarkers.add("μορφή γερουνδιακού");
-        defMarkers.add("μορφή επιθέτου");
-        defMarkers.add("μορφή επιρρήματος");
-        defMarkers.add("μορφή κυρίου ονόματος");
-        defMarkers.add("μορφή μετοχής");
-        defMarkers.add("μορφή ουσιαστικού");
-        defMarkers.add("μορφή πολυλεκτικού όρου");
-        defMarkers.add("μορφή ρήματος");
-        defMarkers.add("ουσιαστικό");
-        defMarkers.add("παροιμία");
-        defMarkers.add("πολυλεκτικός όρος");
-        defMarkers.add("πρόθεση");
-        defMarkers.add("προθετική έκφραση");
-        defMarkers.add("πρόθημα");
-        defMarkers.add("πρόσφυμα");
-        defMarkers.add("ρήμα");
-        defMarkers.add("ρηματική έκφραση");
-        defMarkers.add("ρίζα");
-        defMarkers.add("σουπίνο");
-        defMarkers.add("συγχώνευση");
-        defMarkers.add("σύμβολο");
-        defMarkers.add("συνδεσμική έκφραση");
-        defMarkers.add("σύνδεσμος");
-        defMarkers.add("συντομομορφή");
-        defMarkers.add("φράση");
-        defMarkers.add("χαρακτήρας");
+        posMacros.add("αντωνυμία");
+        posMacros.add("απαρέμφατο");
+        posMacros.add("άρθρο");
+        posMacros.add("αριθμητικό");
+        posMacros.add("γερουνδιακό");
+        posMacros.add("γερούνδιο");
+        posMacros.add("έκφραση");
+        posMacros.add("επιθετική έκφραση");
+        posMacros.add("επίθετο");
+        posMacros.add("επίθημα");
+        posMacros.add("επίρρημα");
+        posMacros.add("επιρρηματική έκφραση");
+        posMacros.add("επιφώνημα");
+        posMacros.add("κατάληξη");
+        posMacros.add("κατάληξη αρσενικών επιθέτων");
+        posMacros.add("κατάληξη αρσενικών και θηλυκών ουσιαστικών");
+        posMacros.add("κατάληξη αρσενικών ουσιαστικών");
+        posMacros.add("κατάληξη επιρρημάτων");
+        posMacros.add("κατάληξη θηλυκών ουσιαστικών");
+        posMacros.add("κατάληξη ουδέτερων ουσιαστικών");
+        posMacros.add("κατάληξη ρημάτων");
+        posMacros.add("κύριο όνομα");
+        posMacros.add("μετοχή");
+        posMacros.add("μόριο");
+        posMacros.add("μορφή αντωνυμίας");
+        posMacros.add("μορφή αριθμητικού");
+        posMacros.add("μορφή γερουνδιακού");
+        posMacros.add("μορφή επιθέτου");
+        posMacros.add("μορφή επιρρήματος");
+        posMacros.add("μορφή κυρίου ονόματος");
+        posMacros.add("μορφή μετοχής");
+        posMacros.add("μορφή ουσιαστικού");
+        posMacros.add("μορφή πολυλεκτικού όρου");
+        posMacros.add("μορφή ρήματος");
+        posMacros.add("ουσιαστικό");
+        posMacros.add("παροιμία");
+        posMacros.add("πολυλεκτικός όρος");
+        posMacros.add("πρόθεση");
+        posMacros.add("προθετική έκφραση");
+        posMacros.add("πρόθημα");
+        posMacros.add("πρόσφυμα");
+        posMacros.add("ρήμα");
+        posMacros.add("ρηματική έκφραση");
+        posMacros.add("ρίζα");
+        posMacros.add("σουπίνο");
+        posMacros.add("συγχώνευση");
+        posMacros.add("σύμβολο");
+        posMacros.add("συνδεσμική έκφραση");
+        posMacros.add("σύνδεσμος");
+        posMacros.add("συντομομορφή");
+        posMacros.add("φράση");
+        posMacros.add("χαρακτήρας");
         
         nymMarkers = new HashSet<String>(20);
         nymMarkers.add("συνώνυμα");// Synonyms 
@@ -252,7 +252,7 @@ public class GreekWiktionaryExtractor extends AbstractWiktionaryExtractor {
 	            case NODATA:
 	                if (m.group(1).equals("μεταφράσεις")) {
 	                    gotoTradBlock(m);
-	                } else if (defMarkers.contains(m.group(1))) {
+	                } else if (posMacros.contains(m.group(1))) {
 	                    gotoDefBlock(m);
 	                } else if (nymMarkers.contains(m.group(1))) {
 	                    gotoNymBlock(m);
@@ -267,7 +267,7 @@ public class GreekWiktionaryExtractor extends AbstractWiktionaryExtractor {
 	                if (m.group(1).equals("εταφράσεις")) {
 	                    leaveDefBlock(m);
 	                    gotoTradBlock(m);
-	                } else if (defMarkers.contains(m.group(1))) {
+	                } else if (posMacros.contains(m.group(1))) {
 	                    leaveDefBlock(m);
 	                    gotoDefBlock(m);
 	                } else if (nymMarkers.contains(m.group(1))) {
@@ -286,7 +286,7 @@ public class GreekWiktionaryExtractor extends AbstractWiktionaryExtractor {
 	                if (m.group(1).equals("εταφράσεις")) {
 	                    leaveTradBlock(m);
 	                    gotoTradBlock(m);
-	                } else if (defMarkers.contains(m.group(1))) {
+	                } else if (posMacros.contains(m.group(1))) {
 	                    leaveTradBlock(m);
 	                    gotoDefBlock(m);
 	                } else if (nymMarkers.contains(m.group(1))) {
@@ -305,7 +305,7 @@ public class GreekWiktionaryExtractor extends AbstractWiktionaryExtractor {
 	                if (m.group(1).equals("εταφράσεις")) {
 	                    leaveNymBlock(m);
 	                    gotoTradBlock(m);
-	                } else if (defMarkers.contains(m.group(1))) {
+	                } else if (posMacros.contains(m.group(1))) {
 	                    leaveNymBlock(m);
 	                    gotoDefBlock(m);
 	                } else if (nymMarkers.contains(m.group(1))) {
@@ -324,7 +324,7 @@ public class GreekWiktionaryExtractor extends AbstractWiktionaryExtractor {
 	            	if (m.group(1).equals("εταφράσεις")) {
 	                    leavePronBlock(m);
 	                    gotoTradBlock(m);
-	                } else if (defMarkers.contains(m.group(1))) {
+	                } else if (posMacros.contains(m.group(1))) {
 	                	leavePronBlock(m);
 	                    gotoDefBlock(m);
 	                } else if (nymMarkers.contains(m.group(1))) {

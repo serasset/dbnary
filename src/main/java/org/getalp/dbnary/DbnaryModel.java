@@ -24,8 +24,8 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public class DbnaryModel {
 
 	
-	protected static final String NSprefix = "http://kaiko.getalp.org/dbnary";
-	protected static final String DBNARY = NSprefix + "#";
+	protected static final String DBNARY_NS_PREFIX = "http://kaiko.getalp.org/dbnary";
+	protected static final String DBNARY = DBNARY_NS_PREFIX + "#";
 	// protected static final String LMF = "http://www.lexicalmarkupframework.org/lmf/r14#";
 	protected static final String LEMON = "http://www.lemon-model.net/lemon#";
 	protected static final String LEXINFO = "http://www.lexinfo.net/ontology/2.0/lexinfo#";

@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.tools.CounterSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -27,6 +29,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		protected Resource type;
 		protected PosAndType(Resource p, Resource t) {this.pos = p; this.type = t;}
 	}
+	
+	private Logger log = LoggerFactory.getLogger(LemonBasedRDFDataHandler.class);
 	
 	Model aBox;
 
@@ -133,7 +137,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	public LemonBasedRDFDataHandler(String lang) {
 		super();
 		
-		NS = NSprefix + "/" + lang + "/";
+		NS = DBNARY_NS_PREFIX + "/" + lang + "/";
 		
 		Lang l = ISO639_3.sharedInstance.getLang(lang);
 		extractedLang = (null != l.getPart1()) ? l.getPart1() : l.getId();	
@@ -144,7 +148,6 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 			
 		aBox.setNsPrefix(lang, NS);
 		aBox.setNsPrefix("dbnary", DBNARY);
-		// aBox.setNsPrefix("lmf", LMF);
 		aBox.setNsPrefix("lemon", LEMON);
 		aBox.setNsPrefix("lexinfo", LEXINFO);
 		aBox.setNsPrefix("rdfs", RDFS);
@@ -232,7 +235,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 
 	@Override
     public void registerAlternateSpelling(String alt) {
-		if (null == currentLexEntry) return; // Don't register anything if current lex entry is not known.
+		if (null == currentLexEntry) {
+			log.debug("Registering Alternate Spelling when lex entry is null in \"{}\".", this.currentMainLexEntry);
+			return; // Don't register anything if current lex entry is not known.
+		}
 
     	Resource altlemma = aBox.createResource();
     	aBox.add(aBox.createStatement(currentLexEntry, lexicalVariantProperty, altlemma));
@@ -241,8 +247,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     
     @Override
 	public void registerNewDefinition(String def) {
-		if (null == currentLexEntry) return; // Don't register anything if current lex entry is not known.
-   	
+		if (null == currentLexEntry) {
+			log.debug("Registering Word Sense when lex entry is null in \"{}\".", this.currentMainLexEntry);
+			return; // Don't register anything if current lex entry is not known.
+		}   	
     	// Create new word sense + a definition element 
     	currentSense = aBox.createResource(computeSenseId(), lexicalSenseType);
     	aBox.add(aBox.createStatement(currentLexEntry, lemonSenseProperty, currentSense));
@@ -268,8 +276,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	@Override
     public void registerTranslation(String lang, String currentGlose,
 			String usage, String word) {
-		if (null == currentLexEntry) return; // Don't register anything if current lex entry is not known.
-		
+		if (null == currentLexEntry) {
+			log.debug("Registering Translation when lex entry is null in \"{}\".", this.currentMainLexEntry);
+			return; // Don't register anything if current lex entry is not known.
+		}
 		word = word.trim();
 		// Ensure language is in its standard form.
     	Lang t = ISO639_3.sharedInstance.getLang(lang);
@@ -322,8 +332,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     
 	@Override
 	public void registerNymRelation(String target, String synRelation) {
-		if (null == currentLexEntry) return; // Don't register anything if current lex entry is not known.
-
+		if (null == currentLexEntry) {
+			log.debug("Registering Lexical Relation when lex entry is null in \"{}\".", this.currentMainLexEntry);
+			return; // Don't register anything if current lex entry is not known.
+		}
 		// Some links point to Annex pages or Images, just ignore these.
 		int colon = target.indexOf(':');
 		if (colon != -1) {

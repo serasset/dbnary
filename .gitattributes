@@ -239,105 +239,105 @@ doc/presentations/lig-lidilem/img/wkt-chat1.png -text
 doc/presentations/lig-lidilem/img/wncompose.png -text
 doc/presentations/lig-lidilem/img/wnnetwork.pdf -text
 doc/presentations/lig-lidilem/thoughts.oo3/contents.xml -text
-/pom.xml -text
-src/main/java/org/getalp/dbnary/AbstractWiktionaryExtractor.java -text
-src/main/java/org/getalp/dbnary/DbnaryModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/DbnaryWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/EnglishLangToCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/EnglishWiktionaryExtractor.java -text
-src/main/java/org/getalp/dbnary/FrenchLangtoCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/FrenchWiktionaryExtractor.java -text
-src/main/java/org/getalp/dbnary/GermanLangToCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/GermanWiktionaryExtractor.java -text
-src/main/java/org/getalp/dbnary/GreekLangtoCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/GreekWiktionaryExtractor.java -text
-src/main/java/org/getalp/dbnary/IWiktionaryExtractor.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/KoreanLangtoCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/LemonBasedRDFDataHandler.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/OffsetValue.java -text
-src/main/java/org/getalp/dbnary/TurkishLangtoCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/TurkishWiktionaryExtractor.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/WiktionaryDataHandler.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/WiktionaryExtractorFactory.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/WiktionaryGrep.java -text
-src/main/java/org/getalp/dbnary/WiktionaryIndex.java -text
-src/main/java/org/getalp/dbnary/WiktionaryIndexer.java -text
-src/main/java/org/getalp/dbnary/WiktionaryIndexerException.java -text
-src/main/java/org/getalp/dbnary/cli/CompareTradsAndIWLinks.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/cli/ExtractWiktionary.java -text
-src/main/java/org/getalp/dbnary/cli/GetExtractedSemnet.java -text
-src/main/java/org/getalp/dbnary/cli/GetRawEntry.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/cli/GrepInWiktionary.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/cli/IConv.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/cli/RDFDiff.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/cli/StatLemonExtract.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/cli/StatRDFExtract.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/cli/TestInterwikiLinks.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/cli/UpdateDiachronicStatistics.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/cli/UpdateLatestStatistics.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/fin/FinnishTranslationExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/fin/SuomiLangToCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/fin/WiktionaryExtractor.java -text
-src/main/java/org/getalp/dbnary/ita/ItalianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/ita/ItalianLangToCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/ita/ItalianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/ita/ItalianPronunciationExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/ita/ItalianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/ita/WiktionaryExtractor.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/jpn/JapaneseDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/jpn/JapaneseLangtoCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/jpn/JapaneseRelatedWordsExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/jpn/JapaneseTranslationsExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/jpn/WiktionaryExtractor.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/por/PortugueseDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/por/PortugueseLangToCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/por/PortugueseMorphoExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/por/PortugueseTranslationExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/por/WiktionaryExtractor.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/rus/RussianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/rus/RussianLangtoCode.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/rus/RussianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/rus/RussianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/rus/WiktionaryExtractor.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/stats/GeneralStatistics.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/stats/NymStatistics.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/stats/TranslationsStatistics.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/tools/CounterSet.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/wiki/WikiPatterns.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dbnary/wiki/WikiTool.java -text svneol=unset#text/plain
-src/main/java/org/getalp/dilaf/DilafExtractorException.java -text
-src/main/java/org/getalp/dilaf/DilafLemonDataHandler.java -text
-src/main/java/org/getalp/dilaf/DilafZarmaExtractor.java -text
-src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
-src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
-src/main/resources/org/getalp/dbnary/lemon.ttl -text
-src/main/resources/org/getalp/dbnary/lexinfo.owl -text
-src/main/scripts/old/README.txt -text
-src/main/scripts/old/compare_extracts.sh -text
-src/main/scripts/old/de_extract-defposNoyau -text
-src/main/scripts/old/en_extract-defposNoyau -text
-src/main/scripts/old/extract-def -text
-src/main/scripts/old/extract-nbsens -text
-src/main/scripts/old/extract-terme -text
-src/main/scripts/old/extract_as_graphml.sh -text
-src/main/scripts/old/extract_kernel_defs.pl -text
-src/main/scripts/old/fr_extract-defposNoyau -text
-src/main/scripts/old/intersect.sh -text
-src/main/scripts/old/kernel_dir_file.pl -text
-src/main/scripts/old/update_wiktionary_dumps.sh -text
-src/site/apt/cli.apt -text
-src/site/apt/index.apt -text
-src/site/fml/faq.fml -text
-src/site/resources/images/dbnary-12.png -text
-src/site/resources/images/dbnary-right-10.png -text
-src/site/resources/images/dbnary-right-12.png -text
-src/site/resources/robots.txt -text svneol=unset#text/plain
-src/site/site.xml -text
-src/test/java/org/getalp/blexisma/wiktionary/TestDbnaryWikiModel.java -text svneol=unset#text/plain
-src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
-src/test/resources/org/getalp/blexisma/wiktionary/sample-semnet.snet -text
+extractor/pom.xml -text
+extractor/src/main/java/org/getalp/dbnary/AbstractWiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/DbnaryModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/DbnaryWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/EnglishLangToCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/EnglishWiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/FrenchLangtoCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/FrenchWiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/GermanLangToCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/GermanWiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/GreekLangtoCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/GreekWiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/IWiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/KoreanLangtoCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/LemonBasedRDFDataHandler.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/OffsetValue.java -text
+extractor/src/main/java/org/getalp/dbnary/TurkishLangtoCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/TurkishWiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/WiktionaryDataHandler.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/WiktionaryExtractorFactory.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/WiktionaryGrep.java -text
+extractor/src/main/java/org/getalp/dbnary/WiktionaryIndex.java -text
+extractor/src/main/java/org/getalp/dbnary/WiktionaryIndexer.java -text
+extractor/src/main/java/org/getalp/dbnary/WiktionaryIndexerException.java -text
+extractor/src/main/java/org/getalp/dbnary/cli/CompareTradsAndIWLinks.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/cli/ExtractWiktionary.java -text
+extractor/src/main/java/org/getalp/dbnary/cli/GetExtractedSemnet.java -text
+extractor/src/main/java/org/getalp/dbnary/cli/GetRawEntry.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/cli/GrepInWiktionary.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/cli/IConv.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/cli/RDFDiff.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/cli/StatLemonExtract.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/cli/StatRDFExtract.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/cli/TestInterwikiLinks.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/cli/UpdateDiachronicStatistics.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/cli/UpdateLatestStatistics.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/fin/FinnishTranslationExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/fin/SuomiLangToCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/fin/WiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/ita/ItalianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/ita/ItalianLangToCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/ita/ItalianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/ita/ItalianPronunciationExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/ita/ItalianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/ita/WiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseLangtoCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseRelatedWordsExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseTranslationsExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/jpn/WiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/por/PortugueseDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/por/PortugueseLangToCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/por/PortugueseMorphoExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/por/PortugueseTranslationExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/por/WiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/rus/RussianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/rus/RussianLangtoCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/rus/RussianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/rus/RussianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/rus/WiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/stats/GeneralStatistics.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/stats/NymStatistics.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/stats/TranslationsStatistics.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/tools/CounterSet.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/wiki/WikiPatterns.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/wiki/WikiTool.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dilaf/DilafExtractorException.java -text
+extractor/src/main/java/org/getalp/dilaf/DilafLemonDataHandler.java -text
+extractor/src/main/java/org/getalp/dilaf/DilafZarmaExtractor.java -text
+extractor/src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
+extractor/src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
+extractor/src/main/resources/org/getalp/dbnary/lemon.ttl -text
+extractor/src/main/resources/org/getalp/dbnary/lexinfo.owl -text
+extractor/src/main/scripts/old/README.txt -text
+extractor/src/main/scripts/old/compare_extracts.sh -text
+extractor/src/main/scripts/old/de_extract-defposNoyau -text
+extractor/src/main/scripts/old/en_extract-defposNoyau -text
+extractor/src/main/scripts/old/extract-def -text
+extractor/src/main/scripts/old/extract-nbsens -text
+extractor/src/main/scripts/old/extract-terme -text
+extractor/src/main/scripts/old/extract_as_graphml.sh -text
+extractor/src/main/scripts/old/extract_kernel_defs.pl -text
+extractor/src/main/scripts/old/fr_extract-defposNoyau -text
+extractor/src/main/scripts/old/intersect.sh -text
+extractor/src/main/scripts/old/kernel_dir_file.pl -text
+extractor/src/main/scripts/old/update_wiktionary_dumps.sh -text
+extractor/src/site/apt/cli.apt -text
+extractor/src/site/apt/index.apt -text
+extractor/src/site/fml/faq.fml -text
+extractor/src/site/resources/images/dbnary-12.png -text
+extractor/src/site/resources/images/dbnary-right-10.png -text
+extractor/src/site/resources/images/dbnary-right-12.png -text
+extractor/src/site/resources/robots.txt -text svneol=unset#text/plain
+extractor/src/site/site.xml -text
+extractor/src/test/java/org/getalp/blexisma/wiktionary/TestDbnaryWikiModel.java -text svneol=unset#text/plain
+extractor/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
+extractor/src/test/resources/org/getalp/blexisma/wiktionary/sample-semnet.snet -text

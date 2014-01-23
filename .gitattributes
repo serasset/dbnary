@@ -310,6 +310,9 @@ src/main/java/org/getalp/dbnary/tools/CounterSet.java -text svneol=unset#text/pl
 src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/wiki/WikiPatterns.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/wiki/WikiTool.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dilaf/DilafExtractorException.java -text
+src/main/java/org/getalp/dilaf/DilafLemonDataHandler.java -text
+src/main/java/org/getalp/dilaf/DilafZarmaExtractor.java -text
 src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/lemon.ttl -text

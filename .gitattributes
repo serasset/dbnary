@@ -239,6 +239,18 @@ doc/presentations/lig-lidilem/img/wkt-chat1.png -text
 doc/presentations/lig-lidilem/img/wncompose.png -text
 doc/presentations/lig-lidilem/img/wnnetwork.pdf -text
 doc/presentations/lig-lidilem/thoughts.oo3/contents.xml -text
+experiments/ldd2014/lib/secondstring-20120620.jar -text
+experiments/ldd2014/pom.xml -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/LLD2014Main.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/encoding/CodePointIterator.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/encoding/CodePointWrapper.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/fuzzystring/JaroUnicode.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/fuzzystring/JaroWinklerUnicode.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/Segmenter.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/SpaceSegmenter.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/SimilarityMeasure.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/TsverskiIndex.java -text
+experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/AppTest.java -text
 extractor/pom.xml -text
 extractor/src/main/java/org/getalp/dbnary/AbstractWiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/DbnaryModel.java -text svneol=unset#text/plain

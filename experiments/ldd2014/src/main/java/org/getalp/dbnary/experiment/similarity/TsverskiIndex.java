@@ -82,8 +82,10 @@ public class TsverskiIndex implements SimilarityMeasure {
             for (String b : lb) {
                 double score = jw.score(jw.prepare(a), jw.prepare(b));
                 double lcss = longestSubString(a, b);
-                if (score > 0.999 || (score < 1.0 && lcss > 3)) {
-                    overlap += score;
+                if (score > 0.999 || score < 1.0 && lcss >= 3) {
+                    double md = Math.max(Math.abs(lcss / a.length()), Math.abs(lcss / b.length()));
+                    overlap += score + (1 - score) * (md - 0.5);
+                    //overlap += score;
                 }
             }
         }
@@ -91,8 +93,6 @@ public class TsverskiIndex implements SimilarityMeasure {
         return overlap;
     }
 
-
-    @SuppressWarnings("unused")
     public static int longestSubString(String first, String second) {
         if (first == null || second == null || first.length() == 0 || second.length() == 0) {
             return 0;
@@ -102,7 +102,6 @@ public class TsverskiIndex implements SimilarityMeasure {
         int fl = first.length();
         int sl = second.length();
         int[][] table = new int[fl][sl];
-
         CodePointWrapper cpFirst = new CodePointWrapper(first);
         int i = 0;
         for (int cpi : cpFirst) {

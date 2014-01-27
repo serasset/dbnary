@@ -27,8 +27,13 @@
 			<artifactId>secondstring</artifactId>
 			<version>20120620</version>
 		</dependency>
-	</dependencies>
-	<build>
+        <dependency>
+            <groupId>org.getalp</groupId>
+            <artifactId>lexsema</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    <build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -43,4 +48,11 @@
 			</plugin>
 		</plugins>
 	</build>
+    <repositories>
+        <repository>
+            <!-- Getalp third party stuff -->
+            <id>getalp.repository</id>
+            <url>http://getalp.imag.fr/m2/</url>
+        </repository>
+    </repositories>
 </project>

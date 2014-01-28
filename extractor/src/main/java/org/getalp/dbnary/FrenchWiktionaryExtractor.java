@@ -5,11 +5,14 @@ package org.getalp.dbnary;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiTool;
 
 /**
  * @author serasset
@@ -32,12 +35,12 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected final int DEFBLOCK = 2;
     private final int ORTHOALTBLOCK = 3;
     private final int NYMBLOCK = 4;
-	private final int IGNOREPOS = 5;
+    private final int PRONBLOCK = 5;
+	private final int IGNOREPOS = 6;
 
     private static HashSet<String> posMarkers;
     private static HashSet<String> ignorablePosMarkers;
     private static HashSet<String> sectionMarkers;
-    private static HashSet<String> nymMarkers;
     
     private final static HashMap<String, String> nymMarkerToNymName;
     
@@ -172,16 +175,198 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
         posMarkers.add("-verb-");
         posMarkers.add("-verb-pr-");
         
-        nymMarkers = new HashSet<String>(20);
-        nymMarkers.add("-méro-"); // ??
-        nymMarkers.add("-hyper-");
-        nymMarkers.add("-hypo-");
-        nymMarkers.add("-holo-");
-        nymMarkers.add("-méton-");
-        nymMarkers.add("-syn-");
-        nymMarkers.add("-q-syn-");
-        nymMarkers.add("-ant-");
-        
+        // titres de section S
+        // TODO: get alternate from https://fr.wiktionary.org/wiki/Module:types_de_mots/data and normalise the part of speech
+        // ADJECTIFS
+        posMarkers.add("adjectif");
+        posMarkers.add("adj");
+        posMarkers.add("adjectif qualificatif");
+ 
+    // ADVERBES
+        posMarkers.add("adverbe");
+        posMarkers.add("adv");
+        posMarkers.add("adverbe interrogatif");
+        posMarkers.add("adv-int");
+        posMarkers.add("adverbe int");
+        posMarkers.add("adverbe pronominal");
+        posMarkers.add("adv-pr");
+        posMarkers.add("adverbe pro");
+        posMarkers.add("adverbe relatif");
+        posMarkers.add("adv-rel");
+        posMarkers.add("adverbe rel");
+ 
+    // CONJONCTIONS
+        posMarkers.add("conjonction");
+        posMarkers.add("conj");
+        posMarkers.add("conjonction de coordination");
+        posMarkers.add("conj-coord");
+        posMarkers.add("conjonction coo");
+ 
+        posMarkers.add("copule");
+ 
+    // DÉTERMINANTS
+        posMarkers.add("adjectif démonstratif");
+        posMarkers.add("adj-dém");
+        posMarkers.add("adjectif dém");
+        posMarkers.add("déterminant");
+        posMarkers.add("dét");
+        posMarkers.add("adjectif exclamatif");
+        posMarkers.add("adj-excl");
+        posMarkers.add("adjectif exc");
+        posMarkers.add("adjectif indéfini");
+        posMarkers.add("adj-indéf");
+        posMarkers.add("adjectif ind");
+        posMarkers.add("adjectif interrogatif");
+        posMarkers.add("adj-int");
+        posMarkers.add("adjectif int");
+        posMarkers.add("adjectif numéral");
+        posMarkers.add("adj-num");
+        posMarkers.add("adjectif num");
+        posMarkers.add("adjectif possessif");
+        posMarkers.add("adj-pos");
+        posMarkers.add("adjectif pos");
+ 
+        posMarkers.add("article");
+        posMarkers.add("art");
+        posMarkers.add("article défini");
+        posMarkers.add("art-déf");
+        posMarkers.add("article déf");
+        posMarkers.add("article indéfini");
+        posMarkers.add("art-indéf");
+        posMarkers.add("article ind");
+        posMarkers.add("article partitif");
+        posMarkers.add("art-part");
+        posMarkers.add("article par");
+ 
+    // NOMS
+        posMarkers.add("nom");
+        posMarkers.add("substantif");
+        posMarkers.add("nom commun");
+        posMarkers.add("nom de famille");
+        posMarkers.add("nom-fam");
+        posMarkers.add("patronyme");
+        posMarkers.add("nom propre");
+        posMarkers.add("nom-pr");
+        posMarkers.add("nom scientifique");
+        posMarkers.add("nom-sciences");
+        posMarkers.add("nom science");
+        posMarkers.add("nom scient");
+        posMarkers.add("prénom");
+
+    // PRÉPOSITION
+        posMarkers.add("préposition");
+        posMarkers.add("prép");
+ 
+    // PRONOMS
+        posMarkers.add("pronom");
+        posMarkers.add("pronom-adjectif");
+        posMarkers.add("pronom démonstratif");
+        posMarkers.add("pronom-dém");
+        posMarkers.add("pronom dém");
+        posMarkers.add("pronom indéfini");
+        posMarkers.add("pronom-indéf");
+        posMarkers.add("pronom ind");
+        posMarkers.add("pronom interrogatif");
+        posMarkers.add("pronom-int");
+        posMarkers.add("pronom int");
+        posMarkers.add("pronom personnel");
+        posMarkers.add("pronom-pers");
+        posMarkers.add("pronom-per");
+        posMarkers.add("pronom réf");
+        posMarkers.add("pronom-réfl");
+        posMarkers.add("pronom réfléchi");
+        posMarkers.add("pronom possessif");
+        posMarkers.add("pronom-pos");
+        posMarkers.add("pronom pos");
+        posMarkers.add("pronom relatif");
+        posMarkers.add("pronom-rel");
+        posMarkers.add("pronom rel");
+ 
+    // VERBES
+        posMarkers.add("verbe");
+        posMarkers.add("verb");
+        posMarkers.add("verbe pronominal");
+        posMarkers.add("verb-pr");
+        posMarkers.add("verbe pr");
+ 
+    // EXCLAMATIONS
+        posMarkers.add("interjection");
+        posMarkers.add("interj");
+        posMarkers.add("onomatopée");
+        posMarkers.add("onoma");
+        posMarkers.add("onom");
+ 
+    // PARTIES
+//        posMarkers.add("affixe");
+//        posMarkers.add("aff");
+//        posMarkers.add("circonfixe");
+//        posMarkers.add("circonf");
+//        posMarkers.add("circon");
+//        posMarkers.add("infixe");
+//        posMarkers.add("inf");
+//        posMarkers.add("interfixe");
+//        posMarkers.add("interf");
+//        posMarkers.add("particule");
+//        posMarkers.add("part");
+//        posMarkers.add("particule numérale");
+//        posMarkers.add("part-num");
+//        posMarkers.add("particule num");
+//        posMarkers.add("postposition");
+//        posMarkers.add("post");
+//        posMarkers.add("postpos");
+//        posMarkers.add("préfixe");
+//        posMarkers.add("préf");
+//        posMarkers.add("radical");
+//        posMarkers.add("rad");
+//        posMarkers.add("suffixe");
+//        posMarkers.add("suff");
+//        posMarkers.add("suf");
+// 
+//        posMarkers.add("pré-verbe");
+//        posMarkers.add("pré-nom");
+// 
+    // PHRASES
+        posMarkers.add("locution");
+        posMarkers.add("loc");
+        posMarkers.add("locution-phrase");
+        posMarkers.add("loc-phr");
+        posMarkers.add("locution-phrase");
+        posMarkers.add("locution phrase");
+        posMarkers.add("proverbe");
+        posMarkers.add("prov");
+ 
+    // DIVERS
+        posMarkers.add("quantificateur");
+        posMarkers.add("quantif");
+        posMarkers.add("variante typographique");
+        posMarkers.add("var-typo");
+        posMarkers.add("variante typo");
+        posMarkers.add("variante par contrainte typographique");
+ 
+    // CARACTÈRES
+        ignorablePosMarkers.add("lettre");
+ 
+        ignorablePosMarkers.add("symbole");
+        ignorablePosMarkers.add("symb");
+        posMarkers.add("classificateur");
+        posMarkers.add("class");
+        posMarkers.add("classif");
+        posMarkers.add("numéral");
+        posMarkers.add("numér");
+        posMarkers.add("num");
+        posMarkers.add("sinogramme");
+        posMarkers.add("sinog");
+        posMarkers.add("sino");
+ 
+        posMarkers.add("erreur");
+        posMarkers.add("faute");
+        posMarkers.add("faute d'orthographe"); 
+        posMarkers.add("faute d’orthographe");
+ 
+        // Spéciaux
+        posMarkers.add("gismu");
+        posMarkers.add("rafsi");
+                
         nymMarkerToNymName = new HashMap<String, String>(20);
         nymMarkerToNymName.put("-méro-", "mero");
         nymMarkerToNymName.put("-hyper-", "hyper");
@@ -192,9 +377,30 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
         nymMarkerToNymName.put("-q-syn-", "qsyn");
         nymMarkerToNymName.put("-ant-", "ant");
         
+
+        nymMarkerToNymName.put("méronymes", "mero");
+        nymMarkerToNymName.put("méro", "mero");
+        nymMarkerToNymName.put("hyperonymes", "hyper");
+        nymMarkerToNymName.put("hyper", "hyper");
+        nymMarkerToNymName.put("hyponymes", "hypo");
+        nymMarkerToNymName.put("hypo", "hypo");
+        nymMarkerToNymName.put("holonymes", "holo");
+        nymMarkerToNymName.put("holo", "holo");
+        nymMarkerToNymName.put("-méton-", "meto");
+        nymMarkerToNymName.put("synonymes", "syn");
+        nymMarkerToNymName.put("syn", "syn");
+        nymMarkerToNymName.put("quasi-synonymes", "qsyn");
+        nymMarkerToNymName.put("q-syn", "qsyn");
+        nymMarkerToNymName.put("quasi-syn", "qsyn");
+        nymMarkerToNymName.put("antonymes", "ant");
+        nymMarkerToNymName.put("ant", "ant");
+        nymMarkerToNymName.put("anto", "ant");
+         
+        // paronymes, troponymes, gentillés ?
+        
         sectionMarkers = new HashSet<String>(200);
         sectionMarkers.addAll(posMarkers);
-        sectionMarkers.addAll(nymMarkers);
+        sectionMarkers.addAll(nymMarkerToNymName.keySet());
         sectionMarkers.add("-étym-");
         sectionMarkers.add("-voc-");
         sectionMarkers.add("-trad-");
@@ -280,10 +486,10 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     // TODO: put up in root class extractor.
-    void gotoDefBlock(Matcher m) {
+    void gotoDefBlock(Matcher m, String pos) {
         state = DEFBLOCK;
         definitionBlockStart = m.end();
-        wdh.addPartOfSpeech(m.group(1));
+        wdh.addPartOfSpeech(pos);
     }
     
     void gotoOrthoAltBlock(Matcher m) {
@@ -309,17 +515,17 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
         definitionBlockStart = -1;
     }
 
-	void gotoSynBlock(Matcher m) {
+	void gotoNymBlock(Matcher m, String nym) {
         state = NYMBLOCK;
-        currentNym = nymMarkerToNymName.get(m.group(1));
+        currentNym = nym;
         nymBlockStart = m.end();      
      }
 
-    void gotoIgnorePos(Matcher m) {
+    void gotoIgnorePos() {
         state = IGNOREPOS;
      }
 
-    void leaveSynBlock(Matcher m) {
+    void leaveNymBlock(Matcher m) {
         extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
         currentNym = null;
         nymBlockStart = -1;         
@@ -329,7 +535,7 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         wdh.initializeEntryExtraction(wiktionaryPageName);
-        gotoNoData(m);
+
         // WONTDO: (priority: low) should I use a macroOrLink pattern to detect translations that are not macro based ?
         // DONE: (priority: top) link the definition node with the current Part of Speech
         // DONE: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
@@ -337,150 +543,321 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
         // DONE: extract synonyms
         // DONE: extract antonyms
         // DONE: add an IGNOREPOS state to ignore the entire part of speech
-        String currentGlose = null;
-        while (m.find()) {
-            if (! sectionMarkers.contains(m.group(1))) unsupportedMarkers.add(m.group(1));
-            switch (state) {
-            case NODATA:
-                
-                // Iterate until we find a new section
-                if (m.group(1).equals("-trad-")) {
-                    gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
-                    gotoDefBlock(m);
-                } else if (ignorablePosMarkers.contains(m.group(1))) {
-                    gotoIgnorePos(m);
-                } else if (m.group(1).equals("-ortho-alt-") || m.group(1).equals("-var-ortho-")) {
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
-                    gotoSynBlock(m);
-                } else if (sectionMarkers.contains(m.group(1))) {
-                    // nop
-                }
-
-                break;
-            case DEFBLOCK:
-                // Iterate until we find a new section
-                if (m.group(1).equals("-trad-")) {
-                    leaveDefBlock(m);
-                    gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
-                    leaveDefBlock(m);
-                    gotoDefBlock(m);
-                } else if (ignorablePosMarkers.contains(m.group(1))) {
-                    leaveDefBlock(m);
-                    gotoIgnorePos(m);
-                } else if (m.group(1).equals("-ortho-alt-") || m.group(1).equals("-var-ortho-")) {
-                    leaveDefBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
-                    leaveDefBlock(m);
-                    gotoSynBlock(m);
-                } else if (sectionMarkers.contains(m.group(1))) {
-                    leaveDefBlock(m);
-                    gotoNoData(m);
-                }
-                break;
-            case TRADBLOCK:
-            	 if (m.group(1).equals("-trad-")) {
-                     leaveTradBlock(m);
-                     gotoTradBlock(m);
-                 } else if (posMarkers.contains(m.group(1))) {
-                	 leaveTradBlock(m);
-                     gotoDefBlock(m);
-                 } else if (ignorablePosMarkers.contains(m.group(1))) {
-                	 leaveTradBlock(m);
-                     gotoIgnorePos(m);
-                 } else if (m.group(1).equals("-ortho-alt-") || m.group(1).equals("-var-ortho-")) {
-                	 leaveTradBlock(m);
-                     gotoOrthoAltBlock(m);
-                 } else if (nymMarkers.contains(m.group(1))) {
-                	 leaveTradBlock(m);
-                     gotoSynBlock(m);
-                 } else if (sectionMarkers.contains(m.group(1))) {
-                	 leaveTradBlock(m);
-                     gotoNoData(m);
-                 }
-                 break;
-            	// DONE: standardize translation extraction through an extractTranslation method
-            case ORTHOALTBLOCK:
-                if (m.group(1).equals("-trad-")) {
-                    leaveOrthoAltBlock(m);
-                    gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
-                    leaveOrthoAltBlock(m);
-                    gotoDefBlock(m);
-                } else if (ignorablePosMarkers.contains(m.group(1))) {
-                    leaveOrthoAltBlock(m);
-                    gotoIgnorePos(m);
-                } else if (nymMarkers.contains(m.group(1))) {
-                    leaveOrthoAltBlock(m);
-                    gotoSynBlock(m);
-                } else if (sectionMarkers.contains(m.group(1))) {
-                    leaveOrthoAltBlock(m);
-                    gotoNoData(m);
-                }
-                break;
-            case NYMBLOCK:
-                if (m.group(1).equals("-trad-")) {
-                    leaveSynBlock(m);
-                    gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
-                    leaveSynBlock(m);
-                    gotoDefBlock(m);
-                } else if (ignorablePosMarkers.contains(m.group(1))) {
-                    leaveSynBlock(m);
-                    gotoIgnorePos(m);
-                } else if (nymMarkers.contains(m.group(1))) {
-                    leaveSynBlock(m);
-                    gotoSynBlock(m);
-                } else if (sectionMarkers.contains(m.group(1))) {
-                    leaveSynBlock(m);
-                    gotoNoData(m);
-                }
-                break;
-            case IGNOREPOS:
-            	if (m.group(1).equals("-trad-")) {
-                    // nop
-                } else if (posMarkers.contains(m.group(1))) {
-                	gotoDefBlock(m);
-                } else if (ignorablePosMarkers.contains(m.group(1))) {
-                    // nop
-                } else if (nymMarkers.contains(m.group(1))) {
-                    //nop
-                } else if (sectionMarkers.contains(m.group(1))) {
-                	//nop
-                }
-            	break;
-            default:
-                assert false : "Unexpected state while extracting translations from dictionary.";
-            } 
-        }
-        // Finalize the entry parsing
-        switch (state) {
-        case NODATA:
-            break;
-        case DEFBLOCK:
-            leaveDefBlock(m);
-            break;
-        case TRADBLOCK:
-            break;
-        case ORTHOALTBLOCK:
-            leaveOrthoAltBlock(m);
-            break;
-        case NYMBLOCK:
-            leaveSynBlock(m);
-           break;
-        case IGNOREPOS:
-        	break;
-        default:
-            assert false : "Unexpected state while extracting translations from dictionary.";
-        } 
         
+		gotoNoData(m);
+		String pos = null;
+		String nym = null;
+		while (m.find()) {
+			switch (state) {
+			case NODATA:
+				if (isTranslation(m)) {
+					gotoTradBlock(m);
+				} else if (null != (pos = getValidPOS(m))) {
+					if (pos.length()==0) 
+						gotoIgnorePos();
+					else
+						gotoDefBlock(m, pos);
+				} else if (isAlternate(m)) {
+					gotoOrthoAltBlock(m);
+				} else if (null != (nym = isNymHeader(m))) {
+					gotoNymBlock(m, nym);
+				} else if (isPronounciation(m)) {
+					gotoPronBlock(m);
+				} else if (isValidSection(m)) {
+					gotoNoData(m);
+				} else {
+					// unknownHeaders.add(m.group(0));
+				}
+				break;
+			case DEFBLOCK:
+				// Iterate until we find a new section
+				if (isTranslation(m)) {
+					leaveDefBlock(m);
+					gotoTradBlock(m);
+				} else if (null != (pos = getValidPOS(m))) {
+					leaveDefBlock(m);
+					if (pos.length()==0) 
+						gotoIgnorePos();
+					else
+						gotoDefBlock(m,pos);
+				} else if (isAlternate(m)) {
+					leaveDefBlock(m);
+					gotoOrthoAltBlock(m);
+				} else if (null != (nym = isNymHeader(m))) {
+					leaveDefBlock(m);
+					gotoNymBlock(m, nym);
+				} else if (isPronounciation(m)) {
+					leaveDefBlock(m);
+					gotoPronBlock(m);
+				} else if (isValidSection(m)) {
+					leaveDefBlock(m);
+					gotoNoData(m);
+				} else {
+					// leaveDefBlock(m);
+					// unknownHeaders.add(m.group(0));
+					// gotoNoData(m);
+				} 
+				break;
+			case TRADBLOCK:
+				if (isTranslation(m)) {
+					leaveTradBlock(m);
+					gotoTradBlock(m);
+				} else if (null != (pos = getValidPOS(m))) {
+					leaveTradBlock(m);
+					if (pos.length()==0) 
+						gotoIgnorePos();
+					else
+						gotoDefBlock(m, pos);
+				} else if (isAlternate(m)) {
+					leaveTradBlock(m);
+					gotoOrthoAltBlock(m);
+				} else if (null != (nym = isNymHeader(m))) {
+					leaveTradBlock(m);
+					gotoNymBlock(m, nym);
+				} else if (isPronounciation(m)) {
+					leaveTradBlock(m);
+					gotoPronBlock(m);
+				} else if (isValidSection(m)) {
+					leaveTradBlock(m);
+					gotoNoData(m);
+				} else {
+					//leaveTradBlock(m);
+					// unknownHeaders.add(m.group(0));
+					// gotoNoData(m);
+				} 
+				break;
+			case ORTHOALTBLOCK:
+				if (isTranslation(m)) {
+					leaveOrthoAltBlock(m);
+					gotoTradBlock(m);
+				} else if (null != (pos = getValidPOS(m))) {
+					leaveOrthoAltBlock(m);
+					if (pos.length()==0) 
+						gotoIgnorePos();
+					else
+						gotoDefBlock(m, pos);
+				} else if (isAlternate(m)) {
+					leaveOrthoAltBlock(m);
+					gotoOrthoAltBlock(m);
+				} else if (null != (nym = isNymHeader(m))) {
+					leaveOrthoAltBlock(m);
+					gotoNymBlock(m, nym);
+				} else if (isPronounciation(m)) {
+					leaveOrthoAltBlock(m);
+					gotoPronBlock(m);
+				} else if (isValidSection(m)) {
+					leaveOrthoAltBlock(m);
+					gotoNoData(m);
+				} else {
+					// leaveOrthoAltBlock(m);
+					// unknownHeaders.add(m.group(0));
+					// gotoNoData(m);
+				}
+				break;
+			case NYMBLOCK:
+				if (isTranslation(m)) {
+					leaveNymBlock(m);
+					gotoTradBlock(m);
+				} else if (null != (pos = getValidPOS(m))) {
+					leaveNymBlock(m);
+					if (pos.length()==0) 
+						gotoIgnorePos();
+					else 
+						gotoDefBlock(m, pos);
+				} else if (isAlternate(m)) {
+					leaveNymBlock(m);
+					gotoOrthoAltBlock(m);
+				} else if (null != (nym = isNymHeader(m))) {
+					leaveNymBlock(m);
+					gotoNymBlock(m, nym);
+				} else if (isPronounciation(m)) {
+					leaveNymBlock(m);
+					gotoPronBlock(m);
+				} else if (isValidSection(m)) {
+					leaveNymBlock(m);
+					gotoNoData(m);
+				} else {
+					// leaveNymBlock(m);
+					// unknownHeaders.add(m.group(0));
+					// gotoNoData(m);
+				}
+				break;
+			case PRONBLOCK:
+				if (isTranslation(m)) {
+					leavePronBlock(m);
+					gotoTradBlock(m);
+				} else if (null != (pos = getValidPOS(m))) {
+					leavePronBlock(m);
+					if (pos.length()==0) 
+						gotoIgnorePos();
+					else
+						gotoDefBlock(m, pos);
+				} else if (isAlternate(m)) {
+					leavePronBlock(m);
+					gotoOrthoAltBlock(m);
+				} else if (null != (nym = isNymHeader(m))) {
+					leavePronBlock(m);
+					gotoNymBlock(m, nym);
+				} else if (isPronounciation(m)) {
+					leavePronBlock(m);
+					gotoPronBlock(m);
+				} else if (isValidSection(m)) {
+					leavePronBlock(m);
+					gotoNoData(m);
+				} else {
+					// leavePronBlock(m);
+					// unknownHeaders.add(m.group(0));
+					// gotoNoData(m);
+				}
+				break;
+			case IGNOREPOS:
+				if (isTranslation(m)) {
+				} else if (null != (pos = getValidPOS(m))) {
+					if (pos.length()==0) 
+						gotoIgnorePos();
+					else
+						gotoDefBlock(m, pos);
+				} else if (isAlternate(m)) {
+				} else if (null != (nym = isNymHeader(m))) {
+				} else if (isPronounciation(m)) {
+					// gotoPronBlock(m);
+				} else if (isValidSection(m)) {
+					// gotoIgnorePos();
+				} else {
+					// unknownHeaders.add(m.group(0));
+				}
+				break;
+			default:
+				assert false : "Unexpected state while extracting translations from dictionary.";
+			} 
+		}
+		// Finalize the entry parsing
+		switch (state) {
+		case NODATA:
+			break;
+		case DEFBLOCK:
+			leaveDefBlock(m);
+			break;
+		case TRADBLOCK:
+			leaveTradBlock(m);
+			break;
+		case ORTHOALTBLOCK:
+			leaveOrthoAltBlock(m);
+			break;
+		case NYMBLOCK:
+			leaveNymBlock(m);
+			break;
+		case PRONBLOCK:
+			leavePronBlock(m);
+			break;
+		case IGNOREPOS:
+			break;
+		default:
+			assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
+		} 
+       
         wdh.finalizeEntryExtraction();
     }
     
-    private void extractTranslations(int startOffset, int endOffset) {
+
+
+
+
+	private boolean isValidSection(Matcher m) {
+		if (sectionMarkers.contains(m.group(1))) return true;
+		if ("S".equals(m.group(1))) return true;
+		return false;
+	}
+
+
+	private void leavePronBlock(Matcher m) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private void gotoPronBlock(Matcher m) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private boolean isPronounciation(Matcher m) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	private String getValidPOS(Matcher m) {
+		if (posMarkers.contains(m.group(1))) return m.group(1);
+		if ("S".equals(m.group(1))) {
+			Map<String,String> args = WikiTool.parseArgs(m.group(2));
+			String titre = args.get("1");
+			String flexion = args.get("3");
+
+			if (null != flexion && "flexion".equals(flexion)) return "";
+			if (null != titre && posMarkers.contains(titre)) return titre;
+			if (null != titre && ignorablePosMarkers.contains(titre)) return titre;
+			
+		}
+		return null;
+	}
+
+
+	private boolean isTranslation(Matcher m) {
+		if (m.group(1).equals("-trad-")) return true;
+		if (m.group(1).equals("S")) {
+			Map<String,String> args = WikiTool.parseArgs(m.group(2));
+			String titre = args.get("1");
+			if (null != titre && titre.startsWith("trad")) return true;
+		}
+		return false;
+	}
+
+	private static Set<String> variantSections = new HashSet<String>();
+	static {
+		variantSections.add("variantes");
+		variantSections.add("var");
+		variantSections.add("variantes ortho");
+		variantSections.add("var-ortho");
+		variantSections.add("variantes orthographiques");
+		variantSections.add("variantes dialectales");
+		variantSections.add("dial");
+		variantSections.add("var-dial");
+		variantSections.add("variantes dial");
+		variantSections.add("variantes dialectes");
+		variantSections.add("dialectes");
+		variantSections.add("anciennes orthographes");
+		variantSections.add("ortho-arch");
+		variantSections.add("anciennes ortho");	
+	}
+	
+	private boolean isAlternate(Matcher m) {
+		if (m.group(1).equals("-ortho-alt-") || m.group(1).equals("-var-ortho-")) return true;
+		if (m.group(1).equals("S")) {
+			Map<String,String> args = WikiTool.parseArgs(m.group(2));
+			String titre = args.get("1");
+			if (null != titre && 
+					variantSections.contains(titre)) return true;
+		}
+		return false;
+	}
+	
+
+
+    private String isNymHeader(Matcher m) {
+		if (nymMarkerToNymName.containsKey(m.group(1))) return nymMarkerToNymName.get(m.group(1));
+		if (m.group(1).equals("S")) {
+			Map<String,String> args = WikiTool.parseArgs(m.group(2));
+			String titre = args.get("1");
+			if (null != titre && 
+					nymMarkerToNymName.containsKey(titre)) return nymMarkerToNymName.get(m.group(1));
+		}
+		return null;
+	}
+
+
+	private void extractTranslations(int startOffset, int endOffset) {
     	Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
     	macroMatcher.region(startOffset, endOffset);
     	String currentGlose = null;

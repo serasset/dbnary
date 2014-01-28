@@ -74,7 +74,7 @@ public class DilafZarmaExtractor {
 	    }
 
 	private void importArticle(XMLStreamReader2 xmlr, DilafLemonDataHandler wdh) throws XMLStreamException {
-		String lemma = null, senseNumber = null, pronountiation = null, partOfSpeech = null;
+		String lemma = null, senseNumber = null, pronounciation = null, partOfSpeech = null;
 		Resource lexicalSense = null;
 		while (xmlr.hasNext()) {
             xmlr.next();
@@ -83,10 +83,10 @@ public class DilafZarmaExtractor {
             	senseNumber = (sni == -1) ? "1" : xmlr.getAttributeValue(sni);
             	lemma = xmlr.getElementText();
             } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("ciiyaŋ")) { // transcription phonétique
-            	pronountiation = xmlr.getElementText();
+            	pronounciation = xmlr.getElementText();
             } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("kanandi")) { // part of speech
             	partOfSpeech = xmlr.getElementText();
-            	lexicalSense = wdh.registerNewLexicalSense(lemma, partOfSpeech, pronountiation, senseNumber);
+            	lexicalSense = wdh.registerNewLexicalSense(lemma, partOfSpeech, pronounciation, senseNumber);
             } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("bareyaŋ")) { // French translation
             	String translations = xmlr.getElementText();
             	wdh.registerTranslations(lexicalSense, translations);

@@ -38,7 +38,7 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
     private final int PRONBLOCK = 5;
 	private final int IGNOREPOS = 6;
 
-    private static HashSet<String> posMarkers;
+    private static HashMap<String,String> posMarkers;
     private static HashSet<String> ignorablePosMarkers;
     private static HashSet<String> sectionMarkers;
     
@@ -48,6 +48,8 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     
     // private static Set<String> affixesToDiscardFromLinks = null;
+    private static void addPos(String pos) {posMarkers.put(pos, pos);}
+    private static void addPos(String p, String n) {posMarkers.put(p, n);}
     
     static {
     	languageSectionPatternString = new StringBuilder()
@@ -57,45 +59,45 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
         .append(languageSectionPatternString2)
         .append(")").toString();
         
-        posMarkers = new HashSet<String>(130);
+        posMarkers = new HashMap<String,String>(130);
         ignorablePosMarkers = new HashSet<String>(130);
 
-        posMarkers.add("-déf-");
-        posMarkers.add("-déf-/2");
-        posMarkers.add("-déf2-");
-        posMarkers.add("--");
-        posMarkers.add("-adj-");
-        posMarkers.add("-adj-/2");
+        addPos("-déf-");
+        addPos("-déf-/2");
+        addPos("-déf2-");
+        addPos("--");
+        addPos("-adj-");
+        addPos("-adj-/2");
         ignorablePosMarkers.add("-flex-adj-indéf-");
-        posMarkers.add("-adj-dém-");
-        posMarkers.add("-adj-excl-");
-        posMarkers.add("-adj-indéf-");
-        posMarkers.add("-adj-int-");
-        posMarkers.add("-adj-num-");
-        posMarkers.add("-adj-pos-");
-        posMarkers.add("-adv-");
-        posMarkers.add("-adv-int-");
-        posMarkers.add("-adv-pron-");
-        posMarkers.add("-adv-rel-");
-        posMarkers.add("-aff-");
-        posMarkers.add("-art-");
+        addPos("-adj-dém-");
+        addPos("-adj-excl-");
+        addPos("-adj-indéf-");
+        addPos("-adj-int-");
+        addPos("-adj-num-");
+        addPos("-adj-pos-");
+        addPos("-adv-");
+        addPos("-adv-int-");
+        addPos("-adv-pron-");
+        addPos("-adv-rel-");
+        addPos("-aff-");
+        addPos("-art-");
         ignorablePosMarkers.add("-flex-art-déf-");
         ignorablePosMarkers.add("-flex-art-indéf-");
         ignorablePosMarkers.add("-flex-art-part-");
-        posMarkers.add("-art-déf-");
-        posMarkers.add("-art-indéf-");
-        posMarkers.add("-art-part-");
-        posMarkers.add("-aux-");
-        posMarkers.add("-circonf-");
-        posMarkers.add("-class-");
-        posMarkers.add("-cpt-");
-        posMarkers.add("-conj-");
-        posMarkers.add("-conj-coord-");
-        posMarkers.add("-cont-");
-        posMarkers.add("-copule-");
-        posMarkers.add("-corrélatif-");
-        posMarkers.add("-erreur-");
-        posMarkers.add("-faux-prov-");
+        addPos("-art-déf-");
+        addPos("-art-indéf-");
+        addPos("-art-part-");
+        addPos("-aux-");
+        addPos("-circonf-");
+        addPos("-class-");
+        addPos("-cpt-");
+        addPos("-conj-");
+        addPos("-conj-coord-");
+        addPos("-cont-");
+        addPos("-copule-");
+        addPos("-corrélatif-");
+        addPos("-erreur-");
+        addPos("-faux-prov-");
         ignorablePosMarkers.add("-flex-adj-");
         ignorablePosMarkers.add("-flex-adj-num-");
         ignorablePosMarkers.add("-flex-adj-pos-");
@@ -122,179 +124,179 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
         ignorablePosMarkers.add("-flex-pronom-rel-");
         ignorablePosMarkers.add("-flex-verb-");
         ignorablePosMarkers.add("-inf-");
-        posMarkers.add("-interf-");
-        posMarkers.add("-interj-");
-        posMarkers.add("-lettre-");
-        posMarkers.add("-loc-");
-        posMarkers.add("-loc-adj-");
-        posMarkers.add("-loc-adv-");
-        posMarkers.add("-loc-conj-");
-        posMarkers.add("-loc-dét-");
-        posMarkers.add("-loc-interj-");
-        posMarkers.add("-loc-nom-");
-        posMarkers.add("-loc-phr-");
-        posMarkers.add("-loc-post-");
-        posMarkers.add("-loc-prép-");
-        posMarkers.add("-loc-pronom-");
-        posMarkers.add("-loc-verb-");
-        posMarkers.add("-nom-");
-        posMarkers.add("-nom-fam-");
-        posMarkers.add("-nom-ni-");
-        posMarkers.add("-nom-nu-");
-        posMarkers.add("-nom-nn-");
-        posMarkers.add("-nom-npl-");
-        posMarkers.add("-nom-pr-");
-        posMarkers.add("-nom-sciences-");
-        posMarkers.add("-numér-");
-        posMarkers.add("-onoma-");
-        posMarkers.add("-part-");
-        posMarkers.add("-post-");
-        posMarkers.add("-préf-");
-        posMarkers.add("-prénom-");
-        posMarkers.add("-prép-");
-        posMarkers.add("-pronom-");
-        posMarkers.add("-pronom-adj-");
-        posMarkers.add("-pronom-dém-");
-        posMarkers.add("-pronom-indéf-");
-        posMarkers.add("-pronom-int-");
-        posMarkers.add("-pronom-pers-");
-        posMarkers.add("-pronom-pos-");
-        posMarkers.add("-pronom-rel-");
-        posMarkers.add("-prov-");
-        posMarkers.add("-racine-");
-        posMarkers.add("-radical-");
-        posMarkers.add("-rimes-");
-        posMarkers.add("-signe-");
-        posMarkers.add("-sin-");
-        posMarkers.add("-subst-pron-pers-");
+        addPos("-interf-");
+        addPos("-interj-");
+        addPos("-lettre-");
+        addPos("-loc-");
+        addPos("-loc-adj-");
+        addPos("-loc-adv-");
+        addPos("-loc-conj-");
+        addPos("-loc-dét-");
+        addPos("-loc-interj-");
+        addPos("-loc-nom-");
+        addPos("-loc-phr-");
+        addPos("-loc-post-");
+        addPos("-loc-prép-");
+        addPos("-loc-pronom-");
+        addPos("-loc-verb-");
+        addPos("-nom-");
+        addPos("-nom-fam-");
+        addPos("-nom-ni-");
+        addPos("-nom-nu-");
+        addPos("-nom-nn-");
+        addPos("-nom-npl-");
+        addPos("-nom-pr-");
+        addPos("-nom-sciences-");
+        addPos("-numér-");
+        addPos("-onoma-");
+        addPos("-part-");
+        addPos("-post-");
+        addPos("-préf-");
+        addPos("-prénom-");
+        addPos("-prép-");
+        addPos("-pronom-");
+        addPos("-pronom-adj-");
+        addPos("-pronom-dém-");
+        addPos("-pronom-indéf-");
+        addPos("-pronom-int-");
+        addPos("-pronom-pers-");
+        addPos("-pronom-pos-");
+        addPos("-pronom-rel-");
+        addPos("-prov-");
+        addPos("-racine-");
+        addPos("-radical-");
+        addPos("-rimes-");
+        addPos("-signe-");
+        addPos("-sin-");
+        addPos("-subst-pron-pers-");
         ignorablePosMarkers.add("-suf-");
         ignorablePosMarkers.add("-flex-suf-");
         ignorablePosMarkers.add("-symb-");
-        posMarkers.add("type");
-        posMarkers.add("-var-typo-");
-        posMarkers.add("-verb-");
-        posMarkers.add("-verb-pr-");
+        addPos("type");
+        addPos("-var-typo-");
+        addPos("-verb-");
+        addPos("-verb-pr-");
         
         // titres de section S
         // TODO: get alternate from https://fr.wiktionary.org/wiki/Module:types_de_mots/data and normalise the part of speech
         // ADJECTIFS
-        posMarkers.add("adjectif");
-        posMarkers.add("adj");
-        posMarkers.add("adjectif qualificatif");
+        addPos("adjectif", "-adj-");
+        addPos("adj", "-adj-");
+        addPos("adjectif qualificatif", "-adj-");
  
     // ADVERBES
-        posMarkers.add("adverbe");
-        posMarkers.add("adv");
-        posMarkers.add("adverbe interrogatif");
-        posMarkers.add("adv-int");
-        posMarkers.add("adverbe int");
-        posMarkers.add("adverbe pronominal");
-        posMarkers.add("adv-pr");
-        posMarkers.add("adverbe pro");
-        posMarkers.add("adverbe relatif");
-        posMarkers.add("adv-rel");
-        posMarkers.add("adverbe rel");
+        addPos("adverbe", "-adv-");
+        addPos("adv", "-adv-");
+        addPos("adverbe interrogatif");
+        addPos("adv-int");
+        addPos("adverbe int");
+        addPos("adverbe pronominal");
+        addPos("adv-pr");
+        addPos("adverbe pro");
+        addPos("adverbe relatif");
+        addPos("adv-rel");
+        addPos("adverbe rel");
  
     // CONJONCTIONS
-        posMarkers.add("conjonction");
-        posMarkers.add("conj");
-        posMarkers.add("conjonction de coordination");
-        posMarkers.add("conj-coord");
-        posMarkers.add("conjonction coo");
+        addPos("conjonction");
+        addPos("conj");
+        addPos("conjonction de coordination");
+        addPos("conj-coord");
+        addPos("conjonction coo");
  
-        posMarkers.add("copule");
+        addPos("copule");
  
     // DÉTERMINANTS
-        posMarkers.add("adjectif démonstratif");
-        posMarkers.add("adj-dém");
-        posMarkers.add("adjectif dém");
-        posMarkers.add("déterminant");
-        posMarkers.add("dét");
-        posMarkers.add("adjectif exclamatif");
-        posMarkers.add("adj-excl");
-        posMarkers.add("adjectif exc");
-        posMarkers.add("adjectif indéfini");
-        posMarkers.add("adj-indéf");
-        posMarkers.add("adjectif ind");
-        posMarkers.add("adjectif interrogatif");
-        posMarkers.add("adj-int");
-        posMarkers.add("adjectif int");
-        posMarkers.add("adjectif numéral");
-        posMarkers.add("adj-num");
-        posMarkers.add("adjectif num");
-        posMarkers.add("adjectif possessif");
-        posMarkers.add("adj-pos");
-        posMarkers.add("adjectif pos");
+        addPos("adjectif démonstratif");
+        addPos("adj-dém");
+        addPos("adjectif dém");
+        addPos("déterminant");
+        addPos("dét");
+        addPos("adjectif exclamatif");
+        addPos("adj-excl");
+        addPos("adjectif exc");
+        addPos("adjectif indéfini");
+        addPos("adj-indéf");
+        addPos("adjectif ind");
+        addPos("adjectif interrogatif");
+        addPos("adj-int");
+        addPos("adjectif int");
+        addPos("adjectif numéral");
+        addPos("adj-num");
+        addPos("adjectif num");
+        addPos("adjectif possessif");
+        addPos("adj-pos");
+        addPos("adjectif pos");
  
-        posMarkers.add("article");
-        posMarkers.add("art");
-        posMarkers.add("article défini");
-        posMarkers.add("art-déf");
-        posMarkers.add("article déf");
-        posMarkers.add("article indéfini");
-        posMarkers.add("art-indéf");
-        posMarkers.add("article ind");
-        posMarkers.add("article partitif");
-        posMarkers.add("art-part");
-        posMarkers.add("article par");
+        addPos("article");
+        addPos("art");
+        addPos("article défini");
+        addPos("art-déf");
+        addPos("article déf");
+        addPos("article indéfini");
+        addPos("art-indéf");
+        addPos("article ind");
+        addPos("article partitif");
+        addPos("art-part");
+        addPos("article par");
  
     // NOMS
-        posMarkers.add("nom");
-        posMarkers.add("substantif");
-        posMarkers.add("nom commun");
-        posMarkers.add("nom de famille");
-        posMarkers.add("nom-fam");
-        posMarkers.add("patronyme");
-        posMarkers.add("nom propre");
-        posMarkers.add("nom-pr");
-        posMarkers.add("nom scientifique");
-        posMarkers.add("nom-sciences");
-        posMarkers.add("nom science");
-        posMarkers.add("nom scient");
-        posMarkers.add("prénom");
+        addPos("nom", "-nom-");
+        addPos("substantif", "-nom-");
+        addPos("nom commun", "-nom-");
+        addPos("nom de famille");
+        addPos("nom-fam");
+        addPos("patronyme");
+        addPos("nom propre", "-nom-pr-");
+        addPos("nom-pr", "-nom-pr-");
+        addPos("nom scientifique");
+        addPos("nom-sciences");
+        addPos("nom science");
+        addPos("nom scient");
+        addPos("prénom");
 
     // PRÉPOSITION
-        posMarkers.add("préposition");
-        posMarkers.add("prép");
+        addPos("préposition");
+        addPos("prép");
  
     // PRONOMS
-        posMarkers.add("pronom");
-        posMarkers.add("pronom-adjectif");
-        posMarkers.add("pronom démonstratif");
-        posMarkers.add("pronom-dém");
-        posMarkers.add("pronom dém");
-        posMarkers.add("pronom indéfini");
-        posMarkers.add("pronom-indéf");
-        posMarkers.add("pronom ind");
-        posMarkers.add("pronom interrogatif");
-        posMarkers.add("pronom-int");
-        posMarkers.add("pronom int");
-        posMarkers.add("pronom personnel");
-        posMarkers.add("pronom-pers");
-        posMarkers.add("pronom-per");
-        posMarkers.add("pronom réf");
-        posMarkers.add("pronom-réfl");
-        posMarkers.add("pronom réfléchi");
-        posMarkers.add("pronom possessif");
-        posMarkers.add("pronom-pos");
-        posMarkers.add("pronom pos");
-        posMarkers.add("pronom relatif");
-        posMarkers.add("pronom-rel");
-        posMarkers.add("pronom rel");
+        addPos("pronom");
+        addPos("pronom-adjectif");
+        addPos("pronom démonstratif");
+        addPos("pronom-dém");
+        addPos("pronom dém");
+        addPos("pronom indéfini");
+        addPos("pronom-indéf");
+        addPos("pronom ind");
+        addPos("pronom interrogatif");
+        addPos("pronom-int");
+        addPos("pronom int");
+        addPos("pronom personnel");
+        addPos("pronom-pers");
+        addPos("pronom-per");
+        addPos("pronom réf");
+        addPos("pronom-réfl");
+        addPos("pronom réfléchi");
+        addPos("pronom possessif");
+        addPos("pronom-pos");
+        addPos("pronom pos");
+        addPos("pronom relatif");
+        addPos("pronom-rel");
+        addPos("pronom rel");
  
     // VERBES
-        posMarkers.add("verbe");
-        posMarkers.add("verb");
-        posMarkers.add("verbe pronominal");
-        posMarkers.add("verb-pr");
-        posMarkers.add("verbe pr");
+        addPos("verbe", "-verb-");
+        addPos("verb", "-verb-");
+        addPos("verbe pronominal");
+        addPos("verb-pr");
+        addPos("verbe pr");
  
     // EXCLAMATIONS
-        posMarkers.add("interjection");
-        posMarkers.add("interj");
-        posMarkers.add("onomatopée");
-        posMarkers.add("onoma");
-        posMarkers.add("onom");
+        addPos("interjection");
+        addPos("interj");
+        addPos("onomatopée");
+        addPos("onoma");
+        addPos("onom");
  
     // PARTIES
 //        posMarkers.add("affixe");
@@ -326,46 +328,46 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
 //        posMarkers.add("pré-nom");
 // 
     // PHRASES
-        posMarkers.add("locution");
-        posMarkers.add("loc");
-        posMarkers.add("locution-phrase");
-        posMarkers.add("loc-phr");
-        posMarkers.add("locution-phrase");
-        posMarkers.add("locution phrase");
-        posMarkers.add("proverbe");
-        posMarkers.add("prov");
+        addPos("locution");
+        addPos("loc");
+        addPos("locution-phrase");
+        addPos("loc-phr");
+        addPos("locution-phrase");
+        addPos("locution phrase");
+        addPos("proverbe");
+        addPos("prov");
  
     // DIVERS
-        posMarkers.add("quantificateur");
-        posMarkers.add("quantif");
-        posMarkers.add("variante typographique");
-        posMarkers.add("var-typo");
-        posMarkers.add("variante typo");
-        posMarkers.add("variante par contrainte typographique");
+        addPos("quantificateur");
+        addPos("quantif");
+        addPos("variante typographique");
+        addPos("var-typo");
+        addPos("variante typo");
+        addPos("variante par contrainte typographique");
  
     // CARACTÈRES
         ignorablePosMarkers.add("lettre");
  
         ignorablePosMarkers.add("symbole");
         ignorablePosMarkers.add("symb");
-        posMarkers.add("classificateur");
-        posMarkers.add("class");
-        posMarkers.add("classif");
-        posMarkers.add("numéral");
-        posMarkers.add("numér");
-        posMarkers.add("num");
-        posMarkers.add("sinogramme");
-        posMarkers.add("sinog");
-        posMarkers.add("sino");
+        addPos("classificateur");
+        addPos("class");
+        addPos("classif");
+        addPos("numéral");
+        addPos("numér");
+        addPos("num");
+        addPos("sinogramme");
+        addPos("sinog");
+        addPos("sino");
  
-        posMarkers.add("erreur");
-        posMarkers.add("faute");
-        posMarkers.add("faute d'orthographe"); 
-        posMarkers.add("faute d’orthographe");
+        addPos("erreur");
+        addPos("faute");
+        addPos("faute d'orthographe"); 
+        addPos("faute d’orthographe");
  
         // Spéciaux
-        posMarkers.add("gismu");
-        posMarkers.add("rafsi");
+        addPos("gismu");
+        addPos("rafsi");
                 
         nymMarkerToNymName = new HashMap<String, String>(20);
         nymMarkerToNymName.put("-méro-", "mero");
@@ -399,7 +401,7 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
         // paronymes, troponymes, gentillés ?
         
         sectionMarkers = new HashSet<String>(200);
-        sectionMarkers.addAll(posMarkers);
+        sectionMarkers.addAll(posMarkers.keySet());
         sectionMarkers.addAll(nymMarkerToNymName.keySet());
         sectionMarkers.add("-étym-");
         sectionMarkers.add("-voc-");
@@ -430,7 +432,8 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
         super(wdh);
     }
 
-    protected final static Pattern languageSectionPattern;
+
+	protected final static Pattern languageSectionPattern;
 	private final static Pattern pronunciationPattern;
 
     static {
@@ -789,15 +792,16 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
 	private String getValidPOS(Matcher m) {
-		if (posMarkers.contains(m.group(1))) return m.group(1);
+		String pos;
+		if (null != (pos = posMarkers.get(m.group(1)))) return pos;
 		if ("S".equals(m.group(1))) {
 			Map<String,String> args = WikiTool.parseArgs(m.group(2));
 			String titre = args.get("1");
 			String flexion = args.get("3");
 
 			if (null != flexion && "flexion".equals(flexion)) return "";
-			if (null != titre && posMarkers.contains(titre)) return titre;
-			if (null != titre && ignorablePosMarkers.contains(titre)) return titre;
+			if (null != titre && null != (pos = posMarkers.get(titre))) return pos;
+			if (null != titre && ignorablePosMarkers.contains(titre)) return "";
 			
 		}
 		return null;
@@ -851,7 +855,7 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
 			Map<String,String> args = WikiTool.parseArgs(m.group(2));
 			String titre = args.get("1");
 			if (null != titre && 
-					nymMarkerToNymName.containsKey(titre)) return nymMarkerToNymName.get(m.group(1));
+					nymMarkerToNymName.containsKey(titre)) return nymMarkerToNymName.get(titre);
 		}
 		return null;
 	}

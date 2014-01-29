@@ -259,6 +259,12 @@ doc/presentations/lig-lidilem/thoughts.oo3/contents.xml -text
 experiments/ldd2014/lib/secondstring-20120620.jar -text
 experiments/ldd2014/pom.xml -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/LLD2014Main.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Ambiguity.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Disambiguable.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Disambiguator.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/DisambiguableSense.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/TranslationAmbiguity.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/TranslationDisambiguator.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/encoding/CodePointIterator.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/encoding/CodePointWrapper.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/fuzzystring/JaroUnicode.java -text

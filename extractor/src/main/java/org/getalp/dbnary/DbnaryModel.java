@@ -73,7 +73,7 @@ public class DbnaryModel {
 
 	// protected static final Property entryRelationLabelProperty;
 
-	protected static Model tBox;
+	public static Model tBox;
 	
 	public static Property synonymProperty ;
 	public static Property antonymProperty ;

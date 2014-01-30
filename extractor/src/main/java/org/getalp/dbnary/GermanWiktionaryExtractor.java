@@ -246,6 +246,7 @@ public class GermanWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     // TODO: Prise en compte des diminutifs (Verkleinerungsformen)
     // TODO: Prise en compte des "concepts dérivés" ? (Abgeleitete Begriffe)
+    // TODO: supprimer les "Deklinierte Form" des catégories extraites.
     private void extractGermanData(int startOffset, int endOffset) {
         Matcher m = macroOrPOSPattern.matcher(pageContent);
         m.region(startOffset, endOffset);

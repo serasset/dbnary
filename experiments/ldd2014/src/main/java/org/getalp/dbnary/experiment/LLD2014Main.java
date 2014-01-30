@@ -6,16 +6,27 @@ import org.getalp.dbnary.experiment.disambiguation.Disambiguator;
 import org.getalp.dbnary.experiment.disambiguation.translations.DisambiguableSense;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationAmbiguity;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationDisambiguator;
-import org.getalp.dbnary.experiment.similarity.SimilarityMeasure;
-import org.getalp.dbnary.experiment.similarity.TsverskiIndex;
+import org.getalp.lexsema.lexicalresource.lemon.LexicalEntry;
+import org.getalp.lexsema.lexicalresource.lemon.LexicalSense;
+import org.getalp.lexsema.lexicalresource.lemon.dbnary.DBNary;
+import org.getalp.lexsema.lexicalresource.lemon.dbnary.Translation;
+import org.getalp.lexsema.lexicalresource.lemon.dbnary.Vocable;
+import org.getalp.lexsema.lexicalresource.lemon.dbnary.relations.DBNaryRelationType;
+import org.getalp.lexsema.ontology.OWLTBoxModel;
 import org.getalp.lexsema.ontology.OntologyModel;
+import org.getalp.lexsema.ontology.graph.Relation;
+import org.getalp.lexsema.ontology.graph.RelationIface;
 import org.getalp.lexsema.ontology.storage.Store;
 import org.getalp.lexsema.ontology.storage.StoreHandler;
 import org.getalp.lexsema.ontology.storage.VirtuosoTripleStore;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public final class LLD2014Main {
 
@@ -24,64 +35,63 @@ public final class LLD2014Main {
 
     public static void main(String[] args) throws IOException {
 
-        SimilarityMeasure s = new TsverskiIndex(0.5, 0.5, true);
-        String a = "eternal sun's shine gives you a wonderful smile";
-        String b = "eternally shining sunny giving wonder smiling";
-        System.err.println(s.compute(a, b));
-
-
-        //Store vts = new VirtuosoTripleStore("jdbc:virtuoso://kopi:1111", "dba", "dba");
-        Store vts = new VirtuosoTripleStore("jdbc:virtuoso://kopi:1982", "dba", "dba");
+        Store vts = new VirtuosoTripleStore("jdbc:virtuoso://kopi.imag.fr:1982", "dba", "dba");
         StoreHandler.registerStoreInstance(vts);
 
-        OntologyModel otm = vts.getModel();
+        OntologyModel tBox = new OWLTBoxModel();
 
-        // Creating DBnary wrapper
-        /*DBNary lr = new DBNary(otm, Locale.ENGLISH);
+        DBNary lr = new DBNary(tBox, Locale.FRENCH);
+        Disambiguator disamb = new TranslationDisambiguator();
+        List<Ambiguity> results = new ArrayList<>();
 
         List<Vocable> vocables = lr.getVocables();
-
+        int currentVocable = 0;
+        int progress = 0;
+        int previousProgress = -1;
+        int disambiguated = 0;
         for (Vocable v : vocables) {
             List<LexicalEntry> entries = v.getLexicalEntries();
-            System.err.println(v);
             for (LexicalEntry le : entries) {
-                String lemma = le.getLemma();
-                String PoS = le.getPartOfSpeech();
-                int number = le.getNumber();
+                List<Disambiguable> choices = new ArrayList<>();
                 List<LexicalSense> senses = le.getSenses();
-                for(LexicalSense ls: senses){
-                    System.out.println(ls);
+                for (LexicalSense ls : senses) {
+                    choices.add(new DisambiguableSense(ls));
+                }
+                List<RelationIface> rels = Relation.findRelationsForTarget(le, DBNaryRelationType.isTranslationOf);
+                for (RelationIface rel : rels) {
+                    Translation t = new Translation(lr, rel.getStart(), le);
+                    String gloss = t.getGloss();
+                    Integer tnum = t.getTranslationNumber();
+                    if (gloss != null) {
+                        Ambiguity ambiguity = new TranslationAmbiguity(gloss, String.valueOf(tnum));
+                        disamb.disambiguate(ambiguity, choices);
+                        results.add(ambiguity);
+                        disambiguated++;
+                    }
                 }
             }
-        }*/
+            progress = (int) (((double) currentVocable / (double) vocables.size()) * 100.0);
+            System.err.println("\r Processing Vocables" + "[" + ((double) currentVocable / (double) vocables.size()) * 100 + "%] -- D: " + disambiguated);
+            if (progress > previousProgress) {
+                System.err.println(" \r Processing Vocables" + "[" + progress + "%] -- D: " + disambiguated);
+                previousProgress = progress;
+            }
+            currentVocable++;
+        }
 
-        //Query q =
-        //vts.runQuery();
-
-            /*System.out.println(v);
-            List<LexicalEntry> les = v.getLexicalEntries();
-            for (LexicalEntry le : les) {
-                List<LexicalSense> senses;
-                System.err.println(le);
-            }*/
-
-        /*
-            select distinct count(?a),?a,?s where {?a ?r ?s. FILTER (regex(?r, "^.*nym$"))}
-         */
-
-        Ambiguity ambi = new TranslationAmbiguity("insect", "__tr_alt_1_butterfly__Noun__1");
-
-        List<Disambiguable> choices = new ArrayList<>();
-        choices.add(new DisambiguableSense("A flying insect of the order Lepidoptera, distinguished from moths by their diurnal activity and generally brighter colouring.", "dbnary-eng:__ws_1_butterfly__Noun__1"));
-        choices.add(new DisambiguableSense("Someone seen as being unserious and (originally) dressed gaudily; someone flighty and unreliable.", "dbnary-eng:__ws_2_butterfly__Noun__1"));
-        choices.add(new DisambiguableSense("The butterfly stroke.", "dbnary-eng:__ws_3_butterfly__Noun__1"));
-        choices.add(new DisambiguableSense("A use of surgical tape, cut into thin strips and placed across an open wound to hold it closed.", "dbnary-eng:__ws_4_butterfly__Noun__1"));
-
-        Disambiguator disamb = new TranslationDisambiguator();
-        disamb.disambiguate(ambi, choices);
-
-        System.err.println(ambi);
-
-
+        Collections.sort(results);
+        FileOutputStream fos = new FileOutputStream("french_results.res");
+        PrintStream ps = new PrintStream(fos, true);
+        int current = 0;
+        for (Ambiguity a : results) {
+            System.err.println("Writing " + ((double) current / (double) results.size()) * 100.0 + "%");
+            ps.println(a);
+            current++;
+        }
+        ps.println();
+        ps.flush();
+        ps.close();
     }
 }
+    /* select distinct count(?a),?a,?s where {?a ?r ?s. FILTER (regex(?r, "^.*nym$"))}
+         */

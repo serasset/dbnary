@@ -3,7 +3,7 @@ package org.getalp.dbnary.experiment.disambiguation;
 
 import java.util.List;
 
-public interface Ambiguity {
+public interface Ambiguity extends Comparable<Ambiguity> {
     public String getGloss();
 
     public String getId();

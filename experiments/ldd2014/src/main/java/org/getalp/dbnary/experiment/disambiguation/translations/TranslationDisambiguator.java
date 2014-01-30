@@ -15,8 +15,9 @@ public class TranslationDisambiguator implements Disambiguator {
         SimilarityMeasure s = new TsverskiIndex(0.5, 0.5, true);
         for (Disambiguable d : choices) {
             double sim = s.compute(d.getGloss(), a.getGloss());
-            d.setScore(sim);
-            a.addDisambiguation(d);
+            Disambiguable newD = new DisambiguableSense(d.getGloss(), d.getId());
+            newD.setScore(sim);
+            a.addDisambiguation(newD);
         }
     }
 }

@@ -55,10 +55,19 @@ public class TranslationAmbiguity implements Ambiguity {
 
     @Override
     public String toString() {
-        String ret = getId() + '\t';
+        String ret = getId() + ' ' + "00 ";
         if (getBestDisambiguation() != null) {
-            ret += getBestDisambiguation();
+            ret += getBestDisambiguation().getId();
+        }
+        ret += "1 ";
+        if (getBestDisambiguation() != null) {
+            ret += getBestDisambiguation().getScore();
         }
         return ret;
+    }
+
+    @Override
+    public int compareTo(Ambiguity o) {
+        return o.getId().compareTo(getId());
     }
 }

@@ -25,15 +25,16 @@ public class FrenchGlossFilter extends GlossFilter {
 	private static Pattern aTrierPattern = Pattern.compile(aTrierRegExp);
 	private static Matcher aTrierMatcher = aTrierPattern.matcher("");
 	
-	private static String simpleSenseNumberingRegExp = "^([^\\|]*)\\|(.*)$";
+	private static String sensenum = "(?:(?:\\d+\\.?[abcdefg])|\\d|et|\\s|,|(?:S|s)ens général)+";
+	private static String simpleSenseNumberingRegExp = "^([^\\|]*)\\|(" + sensenum + ")$";
 	private static Pattern simpleSenseNumberingPattern = Pattern.compile(simpleSenseNumberingRegExp);
 	private static Matcher simpleSenseNumberingMatcher = simpleSenseNumberingPattern.matcher("");
 
-	private static String numGlossSenseNumberingRegExp = "^\\s*\\(([^\\)]*)\\)(.*)$";
-	private static Pattern numGlossSenseNumberingPattern = Pattern.compile(numGlossSenseNumberingRegExp);
-	private static Matcher numGlossSenseNumberingMatcher = numGlossSenseNumberingPattern.matcher("");
+	private static String numSenseGlossRegExp = "^\\s*\\((" + sensenum + ")\\)(.*)$";
+	private static Pattern numSenseGlossPattern = Pattern.compile(numSenseGlossRegExp);
+	private static Matcher numSenseGlossMatcher = numSenseGlossPattern.matcher("");
 	
-	private static String glossNumSenseNumberingRegExp = "^(.*)\\s*\\(([^\\)]*)\\)(?:[\\p{Punct}\\s])*$";
+	private static String glossNumSenseNumberingRegExp = "^(.*)\\s*\\(("+ sensenum + ")\\)(?:[\\p{Punct}\\s])*$";
 	private static Pattern glossNumSenseNumberingPattern = Pattern.compile(glossNumSenseNumberingRegExp);
 	private static Matcher glossNumSenseNumberingMatcher = glossNumSenseNumberingPattern.matcher("");
 
@@ -41,7 +42,7 @@ public class FrenchGlossFilter extends GlossFilter {
 	private static Pattern senseNPattern = Pattern.compile(senseNRegExp);
 	private static Matcher senseNMatcher = senseNPattern.matcher("");
 
-	private static String senseDashGlossRegExp = "^\\s*((?:\\d|et|\\s|,)+)\\s*(?:[-:\\)\\.])\\s*(.*)\\s*$";
+	private static String senseDashGlossRegExp = "^\\s*(" + sensenum + ")\\s*(?:[-:\\)\\.])\\s*(.*)\\s*$";
 	private static Pattern senseDashGlossPattern = Pattern.compile(senseDashGlossRegExp);
 	private static Matcher senseDashGlossMatcher = senseDashGlossPattern.matcher("");
 	
@@ -54,9 +55,9 @@ public class FrenchGlossFilter extends GlossFilter {
 		if (simpleSenseNumberingMatcher.matches()) {
 			return new StructuredGloss(simpleSenseNumberingMatcher.group(2), simpleSenseNumberingMatcher.group(1));
 		}
-		numGlossSenseNumberingMatcher.reset(rawGloss);
-		if (numGlossSenseNumberingMatcher.matches()) {
-			return new StructuredGloss(numGlossSenseNumberingMatcher.group(1), numGlossSenseNumberingMatcher.group(2));
+		numSenseGlossMatcher.reset(rawGloss);
+		if (numSenseGlossMatcher.matches()) {
+			return new StructuredGloss(numSenseGlossMatcher.group(1), numSenseGlossMatcher.group(2));
 		}
 		glossNumSenseNumberingMatcher.reset(rawGloss);
 		if (glossNumSenseNumberingMatcher.matches()) {

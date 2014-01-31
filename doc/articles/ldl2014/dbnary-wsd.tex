@@ -2,13 +2,15 @@
 \usepackage{lrec2006}
 \usepackage{graphicx}
 
-\title{Attacjing translationsand relations to proper lexical senses in DBnary}
+\usepackage[utf8]{inputenc}
+
+\title{Attaching translations and relations to proper lexical senses in DBnary}
 
 \name{Andon Tchechmedjiev, Gilles Sérasset}
 
 \address{ LIG-GETALP, UJF-Grenoble\\
                BP 53 – 38051 Grenoble cedex 9 \\
-               firstname.lstname@imag.fr\\}
+               firstname.lastname@imag.fr\\}
 
 
 \abstract{Each article must include an abstract of 150 to 200 words in Times 9 pt with interlinear spacing of 10 pt.
@@ -26,18 +28,44 @@ Blah blah
 
 \section{Structure of the DBnary Dataset}
 
+Preprocessing:
+
+\begin{itemize}
+   \item suppress glosses containing irrelevant glosses
+   \begin{itemize}
+      \item French "*à trier*" ou "*À trier*" ou "à classer" ou "Traductions"
+   \end{itemize}
+   \item extract sense numbers from the glosses when available
+   \begin{itemize}
+      \item French: xxx\texttt{|}num+, (num+) xxx, xxx (num+), num+, Sens num+
+      \item 
+   \end{itemize}
+\end{itemize}
 Lemon, DBnary, translations, glosses
 
-\begin{tabular}{lcc}
-\textbf{Language} & \textbf{nb of Translations} & \textbf{# of gloss}\\
+\begin{table}[h]
+\begin{center}\begin{footnotesize}
+\begin{tabular}{lrrrrr}
+\textbf{Lang.} & \textbf{trans.} & \textbf{gloss} & \textbf{+t} &  \textbf{+n} & \textbf{+t+n}\\
 \hline
 English & $1317545$ & $1289041$ \\
-French & $485265$ & $147222$ \\
+Finnish & $46966^*$ & $87^*$ \\
+French & $504091$ & $136337$ & $135943$ & $30448$ & $30054$ \\
 German & $496381$ & $490899$ \\
+Greek & $59054^*$ & $8547^*$ \\
+Italian & & \\
+Japanese & & \\
+Portuguese & & \\
 Russian & $360016$ & $151100$ \\
-
+Turkish & $225344^*$ & $207830^*$\\
 \hline
 \end{tabular}
+\caption{The caption of the table}
+\end{footnotesize}\end{center}
+\end{table}
+
+
+
 \section{Page numbering}
 
 \textbf{Please do not include page numbers in your article.} The definitive page numbering of articles published in the proceedings will be decided by the organizing committee of the LREC.

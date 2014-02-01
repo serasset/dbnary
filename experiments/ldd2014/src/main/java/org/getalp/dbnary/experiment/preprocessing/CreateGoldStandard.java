@@ -7,8 +7,6 @@ import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.DbnaryModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -153,23 +151,13 @@ public class CreateGoldStandard {
                 int rank = 1;
                 for (int num : nums) {
                     if (num < senseIds.size()) {
-                        gsEntries.add(n.getObject().toString().split("\\^\\^")[0] + " 0 " + senseIds.get(num) + " " + rank);
+                        System.out.println(n.getObject().toString().split("\\^\\^")[0] + " 0 " + senseIds.get(num) + " " + rank);
                         rank++;
                     }
                 }
 
             }
 		}
-        Collections.sort(gsEntries, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.split(" ")[0].compareTo(o2.split(" ")[0]);
-            }
-        });
-
-        for (String line : gsEntries) {
-            System.out.println(line);
-        }
     }
 
 

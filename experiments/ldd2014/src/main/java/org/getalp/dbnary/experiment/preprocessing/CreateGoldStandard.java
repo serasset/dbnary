@@ -1,31 +1,17 @@
 package org.getalp.dbnary.experiment.preprocessing;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import com.hp.hpl.jena.rdf.model.*;
+import org.apache.commons.cli.*;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.IWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryDataHandler;
-import org.getalp.dbnary.WiktionaryExtractorFactory;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CreateGoldStandard {
 	
@@ -137,38 +123,80 @@ public class CreateGoldStandard {
 
 	private void processTranslations() {
 		// Iterate over all translations
-		
-		StmtIterator translations = m1.listStatements((Resource) null, DbnaryModel.isTranslationOf, (RDFNode) null);
+
+        List<String> gsEntries = new ArrayList<>();
+
+        StmtIterator translations = m1.listStatements((Resource) null, DbnaryModel.isTranslationOf, (RDFNode) null);
 		
 		while (translations.hasNext()) {
-			Resource e = translations.next().getSubject();
-			
-			Statement n = e.getProperty(transNumProperty);
-			Statement s = e.getProperty(senseNumProperty);
-			
-			if (null != s) {
-				String sn = s.getString();
-				
-				List<Integer> nums = parseSenseNumbers(sn);
-			}
-			
-		}
-	}
-	
+            Statement next = translations.next();
 
-	Pattern onlyDigitsAndComma = Pattern.compile("[\\d,]*");
+            Resource e = next.getSubject();
+
+            Statement n = e.getProperty(transNumProperty);
+			Statement s = e.getProperty(senseNumProperty);
+
+
+            if (null != s) {
+
+                Resource lexicalEntry = next.getObject().asResource();
+                List<String> senseIds = new ArrayList<>();
+                StmtIterator senses = m1.listStatements(lexicalEntry, DbnaryModel.lemonSenseProperty, (RDFNode) null);
+                while (senses.hasNext()) {
+                    Statement nextSense = senses.next();
+                    String sstr = nextSense.getObject().toString();
+                    senseIds.add(sstr);
+                }
+
+                String sn = s.getString();
+				List<Integer> nums = parseSenseNumbers(sn);
+                int rank = 1;
+                for (int num : nums) {
+                    if (num < senseIds.size()) {
+                        gsEntries.add(n.getObject().toString().split("\\^\\^")[0] + " 0 " + senseIds.get(num) + " " + rank);
+                        rank++;
+                    }
+                }
+
+            }
+		}
+        Collections.sort(gsEntries, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.split(" ")[0].compareTo(o2.split(" ")[0]);
+            }
+        });
+
+        for (String line : gsEntries) {
+            System.out.println(line);
+        }
+    }
+
+
+    Pattern onlyDigitsAndComma = Pattern.compile("[\\d,]*");
 	Matcher matchDigitAndComma = onlyDigitsAndComma.matcher("");
-	private List<Integer> parseSenseNumbers(String sn) {
+
+    private List<Integer> parseSenseNumbers(String sn) {
 		ArrayList<Integer> res = new ArrayList<Integer>();
 		sn = sn.trim();
 		if (sn.length() == 0) return res;
 		String senses = sn.replaceAll(" ","");
-		matchDigitAndComma.reset(senses);
+        senses = senses.replaceAll("(\\d)\\|.*", "$1");
+        senses = senses.replaceAll("/", ",");
+        senses = senses.replaceAll("(\\(|\\))", "");
+        senses = senses.replaceAll("et", ",");
+        senses = senses.replaceAll("(\\d)([a-c])", "$1");
+        senses = senses.replaceAll("(sens)(\\d)", "$2");
+
+
+        matchDigitAndComma.reset(senses);
 		if (matchDigitAndComma.matches()) {
-			String[] senseNums = senses.split(",");
-			for (int i = 0; i < senseNums.length; i++) {
-				res.add(Integer.valueOf(senseNums[i]));
-			}
+            String[] senseNumbers = senses.split(",");
+            for (int i = 0; i < senseNumbers.length; i++) {
+                if (senseNumbers[i].length() > 0) {
+                    res.add(Integer.valueOf(senseNumbers[i]));
+                }
+            }
 		} else {
 			System.err.println("Unsupported format: " + sn);
 		}

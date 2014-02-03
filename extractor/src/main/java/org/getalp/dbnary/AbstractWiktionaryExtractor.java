@@ -152,18 +152,29 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         Matcher definitionMatcher = WikiPatterns.definitionPattern.matcher(this.pageContent);
         definitionMatcher.region(startOffset, endOffset);
         while (definitionMatcher.find()) {
-        	extractDefinition(definitionMatcher.group(1));
+        	extractDefinition(definitionMatcher);
         }
     }
     
-	public void extractDefinition(String definition) {
+	public void extractDefinition(Matcher definitionMatcher) {
 		// TODO: properly handle macros in definitions. 
-		String def = cleanUpMarkup(definition);
-        if (def != null && ! def.equals("")) {
-        	wdh.registerNewDefinition(definition);
-        }
+		String definition = definitionMatcher.group(1);
+		int defLevel = 1;
+		if (definitionMatcher.group().charAt(1) == '#') defLevel = 2;
+		extractDefinition(definition, defLevel);
 	}
 	
+	private void extractDefinition(String definition, int defLevel) {
+		String def = cleanUpMarkup(definition);
+        if (def != null && ! def.equals("")) {
+        	wdh.registerNewDefinition(definition, defLevel);
+        }
+	}
+
+	public void extractDefinition(String definition) {
+		extractDefinition(definition, 1);
+	}
+
 	public static String cleanUpMarkup(String group) {
         return cleanUpMarkup(group, false);
     }

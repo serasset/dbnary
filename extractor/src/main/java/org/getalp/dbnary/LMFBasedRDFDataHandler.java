@@ -174,9 +174,14 @@ public class LMFBasedRDFDataHandler implements WiktionaryDataHandler {
     	aBox.add(aBox.createStatement(altlemma, isPartOf, currentLexEntry));
     	aBox.add(aBox.createStatement(altlemma, formProperty, alt));
     }
-    
+   
     @Override
 	public void registerNewDefinition(String def) {
+    	this.registerNewDefinition(def, 1);
+    }
+    
+    @Override
+	public void registerNewDefinition(String def, int lvl) {
     	
     	// Create new word sense + a definition element 
     	// DONE: give an ID to all resources to avoid blank node interpretation

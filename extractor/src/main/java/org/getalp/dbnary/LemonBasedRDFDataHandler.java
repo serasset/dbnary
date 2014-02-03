@@ -41,6 +41,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	
 	private Resource currentSense;
 	private int currentSenseNumber;
+	private int currentSubSenseNumber;
 	private CounterSet translationCount = new CounterSet();
 	protected String extractedLang;
 	protected Resource lexvoExtractedLanguage;
@@ -159,7 +160,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	@Override
 	public void initializeEntryExtraction(String wiktionaryPageName) {
         currentSense = null;
-        currentSenseNumber = 1;
+        currentSenseNumber = 0;
+        currentSubSenseNumber = 0;
         currentWiktionaryPageName = wiktionaryPageName;
         currentLexinfoPos = null;
         currentWiktionaryPos = null;
@@ -245,16 +247,26 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     	aBox.add(aBox.createStatement(altlemma, writtenRepresentationProperty, alt, extractedLang));
     }
     
-    @Override
+	@Override
 	public void registerNewDefinition(String def) {
+		this.registerNewDefinition(def, 1);
+	}
+    @Override
+	public void registerNewDefinition(String def, int lvl) {
 		if (null == currentLexEntry) {
 			log.debug("Registering Word Sense when lex entry is null in \"{}\".", this.currentMainLexEntry);
 			return; // Don't register anything if current lex entry is not known.
-		}   	
+		}
+		if (lvl > 1) {
+			currentSubSenseNumber++;
+		} else {
+	    	currentSenseNumber++;
+	    	currentSubSenseNumber = 0;
+		}
     	// Create new word sense + a definition element 
     	currentSense = aBox.createResource(computeSenseId(), lexicalSenseType);
     	aBox.add(aBox.createStatement(currentLexEntry, lemonSenseProperty, currentSense));
-    	aBox.add(aBox.createLiteralStatement(currentSense, senseNumberProperty, aBox.createTypedLiteral(currentSenseNumber)));
+    	aBox.add(aBox.createLiteralStatement(currentSense, senseNumberProperty, aBox.createTypedLiteral(computeSenseNum())));
     	// pos is not usefull anymore for word sense as they should be correctly linked to an entry with only one pos.
     	// if (currentPos != null && ! currentPos.equals("")) {
         //	aBox.add(aBox.createStatement(currentSense, posProperty, currentPos));
@@ -265,12 +277,15 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     	// Keep a human readable version of the definition, removing all links annotations.
     	aBox.add(aBox.createStatement(defNode, lemonValueProperty, AbstractWiktionaryExtractor.cleanUpMarkup(def, true), extractedLang)); 
 
-    	currentSenseNumber++;
     	// TODO: Extract domain/usage field from the original definition.
     }
 
 	private String computeSenseId() {
-		return NS + "__ws_" + currentSenseNumber + "_" + currentEncodedPageName;
+		return NS + "__ws_" + computeSenseNum() + "_" + currentEncodedPageName;
+	}
+	
+	private String computeSenseNum() {
+		return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? "" : ('a' + currentSubSenseNumber - 1));
 	}
 
 	@Override

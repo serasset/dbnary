@@ -13,7 +13,8 @@ public interface WiktionaryDataHandler {
      * @param def the not cleaned up version of the definition. This version contains macros (that may represent subject fields) and links.
      */
     // TODO: maybe pass the cleaned up and the original def, so that the extractor takes what fits its requirements.
-    public void registerNewDefinition(String def);
+	public void registerNewDefinition(String def);
+    public void registerNewDefinition(String def, int lvl);
 
     public void registerAlternateSpelling(String alt);
     
@@ -40,6 +41,7 @@ public interface WiktionaryDataHandler {
 	 * @param format
 	 */
 	public void dump(OutputStream out, String format);
+
 
 	
 }

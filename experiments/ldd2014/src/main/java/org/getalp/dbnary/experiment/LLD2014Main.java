@@ -218,9 +218,6 @@ public final class LLD2014Main {
 
             //System.out.println(n.getObject().toString().split("\\^\\^")[0] + " 0 " + senseIds.get(num) + " " + rank);
         }
-        ps.println();
-        ps.flush();
-        ps.close();
     }
 }
 

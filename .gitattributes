@@ -278,6 +278,7 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/Sta
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/StructuredGloss.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/Segmenter.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/SpaceSegmenter.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/MongeElkan.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/SimilarityMeasure.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/TsverskiIndex.java -text
 experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFrenchPreprocessing.java -text svneol=unset#text/plain

@@ -58,11 +58,16 @@ public class TranslationAmbiguity implements Ambiguity {
         String ret = getId() + ' ' + "00 ";
         if (getBestDisambiguation() != null) {
             ret += getBestDisambiguation().getId();
+        } else {
+            return "\r";
         }
-        ret += "1 ";
+        ret += " 1 ";
         if (getBestDisambiguation() != null) {
             ret += getBestDisambiguation().getScore();
+        } else {
+            ret += " 1";
         }
+        ret += " run_1";
         return ret;
     }
 

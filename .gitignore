@@ -12,6 +12,9 @@ doc/presentations/lig-lidilem/*.snm
 doc/presentations/lig-lidilem/*.synctex.gz
 doc/presentations/lig-lidilem/*.toc
 doc/presentations/lig-lidilem/*.vrb
+extractor/*.iml
+extractor/.classpath
+extractor/.project
 extractor/src/.classpath
 extractor/src/.project
 extractor/src/.settings

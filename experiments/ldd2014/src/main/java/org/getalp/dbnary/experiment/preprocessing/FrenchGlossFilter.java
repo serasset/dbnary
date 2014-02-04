@@ -57,11 +57,19 @@ public class FrenchGlossFilter extends GlossFilter {
 		}
 		numSenseGlossMatcher.reset(rawGloss);
 		if (numSenseGlossMatcher.matches()) {
-			return new StructuredGloss(numSenseGlossMatcher.group(1), numSenseGlossMatcher.group(2));
+			String g = numSenseGlossMatcher.group(2);
+			if (null != g && g.trim().length() == 0) {
+				g = null;
+			}
+			return new StructuredGloss(numSenseGlossMatcher.group(1), g);
 		}
 		glossNumSenseNumberingMatcher.reset(rawGloss);
 		if (glossNumSenseNumberingMatcher.matches()) {
-			return new StructuredGloss(glossNumSenseNumberingMatcher.group(2), glossNumSenseNumberingMatcher.group(1));
+			String g = glossNumSenseNumberingMatcher.group(1);
+			if (null != g && g.trim().length() == 0) {
+				g = null;
+			}
+			return new StructuredGloss(glossNumSenseNumberingMatcher.group(2), g);
 		}
 		senseNMatcher.reset(rawGloss);
 		if (senseNMatcher.matches()) {

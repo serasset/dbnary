@@ -143,8 +143,9 @@ public class CreateGoldStandard {
 			
 			Statement n = e.getProperty(transNumProperty);
 			Statement s = e.getProperty(senseNumProperty);
+			Statement g = e.getProperty(DbnaryModel.glossProperty);
 			
-			if (null != s) {
+			if (null != s && null != g) {
 				String sn = s.getString();
 				
 				List<String> nums = parseSenseNumbers(sn);

@@ -1,7 +1,6 @@
 package org.getalp.dbnary.experiment.disambiguation.translations;
 
 import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
-import org.getalp.lexsema.lexicalresource.lemon.LexicalSense;
 
 public class DisambiguableSense implements Disambiguable {
 
@@ -23,10 +22,10 @@ public class DisambiguableSense implements Disambiguable {
         this.id = id;
     }
 
-    public DisambiguableSense(final LexicalSense ls) {
+    /*public DisambiguableSense(final LexicalSense ls) {
         this.gloss = ls.getDefinition();
         this.id = ls.getURI();
-    }
+    }*/
 
     @Override
     public String getGloss() {

@@ -4,9 +4,7 @@ import com.wcohen.ss.Level2JaroWinkler;
 
 import java.util.List;
 
-/**
- * Created by tchechem on 03/02/14.
- */
+
 public class MongeElkan implements SimilarityMeasure {
 
     @Override

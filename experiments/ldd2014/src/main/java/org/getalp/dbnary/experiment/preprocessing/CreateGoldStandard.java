@@ -131,90 +131,50 @@ public class CreateGoldStandard {
 
 	}
 
+
+	
 	private void processTranslations() {
 		// Iterate over all translations
 
-        List<String> gsEntries = new ArrayList<>();
+		StmtIterator translations = m1.listStatements((Resource) null, DbnaryModel.isTranslationOf, (RDFNode) null);
 
-        StmtIterator translations = m1.listStatements((Resource) null, DbnaryModel.isTranslationOf, (RDFNode) null);
-		
 		while (translations.hasNext()) {
-            Statement next = translations.next();
+			Statement isTransOf = translations.next();
+			Resource e = isTransOf.getSubject();
 
-            Resource e = next.getSubject();
-
-            Statement n = e.getProperty(transNumProperty);
+			Statement n = e.getProperty(transNumProperty);
 			Statement s = e.getProperty(senseNumProperty);
 
+			if (null != s) {
+				String sn = s.getString();
 
-            if (null != s) {
+				List<String> nums = parseSenseNumbers(sn);
 
-                Resource lexicalEntry = next.getObject().asResource();
-                List<String> senseIds = new ArrayList<>();
-                StmtIterator senses = m1.listStatements(lexicalEntry, DbnaryModel.lemonSenseProperty, (RDFNode) null);
-                while (senses.hasNext()) {
-                    Statement nextSense = senses.next();
-                    String sstr = nextSense.getObject().toString();
-                    senseIds.add(sstr);
-                }
+				if (! nums.isEmpty()) {
+					// Fetch all entries senses and select the correct ones.
+					Resource entry = isTransOf.getResource();
+					StmtIterator senses = entry.listProperties(DbnaryModel.lemonSenseProperty);
 
-                String sn = s.getString();
-				List<Integer> nums = parseSenseNumbers(sn);
-                int rank = 1;
-                for (int num : nums) {
-                    if (num < senseIds.size()) {
-                        System.out.println(n.getObject().toString().split("\\^\\^")[0] + " 0 " + senseIds.get(num) + " " + rank);
-                        rank++;
-                    }
-                }
-
-            }
+					while (senses.hasNext()) {
+						Resource sens = senses.next().getResource();
+						String sensenum = sens.getProperty(DbnaryModel.senseNumberProperty).getString();
+						if (nums.contains(sensenum)) {
+							String localName = sens.getURI();
+							int k = localName.indexOf("__ws_");
+							localName = localName.substring(k);
+							System.out.format("%d 0 %s 1\n", n.getInt(), localName);
+						}
+					}
+				}
+			}
 		}
-    }
-
-	
-//	private void processTranslations2() {
-//		// Iterate over all translations
-//		
-//		StmtIterator translations = m1.listStatements((Resource) null, DbnaryModel.isTranslationOf, (RDFNode) null);
-//		
-//		while (translations.hasNext()) {
-//			Statement isTransOf = translations.next();
-//			Resource e = isTransOf.getSubject();
-//			
-//			Statement n = e.getProperty(transNumProperty);
-//			Statement s = e.getProperty(senseNumProperty);
-//			
-//			if (null != s) {
-//				String sn = s.getString();
-//				
-//				List<Integer> nums = parseSenseNumbers(sn);
-//				
-//				if (! nums.isEmpty()) {
-//					// Fetch all entries senses and select the correct ones.
-//					Resource entry = isTransOf.getResource();
-//					StmtIterator senses = entry.listProperties(DbnaryModel.lemonSenseProperty);
-//					
-//					while (senses.hasNext()) {
-//						Resource sens = senses.next().getResource();
-//						Integer sensenum = Integer.valueOf(sens.getProperty(DbnaryModel.senseNumberProperty).getString());
-//						if (nums.contains(sensenum)) {
-//							String localName = sens.getURI();
-//							int k = localName.indexOf("__ws_");
-//							localName = localName.substring(k);
-//							System.out.format("%d 0 %s 0\n", n.getInt(), localName);
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
+	}
 	
 
 	Pattern onlyDigitsAndComma = Pattern.compile("[\\d,]*");
 	Matcher matchDigitAndComma = onlyDigitsAndComma.matcher("");
-	private List<Integer> parseSenseNumbers(String sn) {
-		ArrayList<Integer> res = new ArrayList<Integer>();
+	private List<String> parseSenseNumbers(String sn) {
+		ArrayList<String> res = new ArrayList<>();
 		sn = sn.trim();
 		if (sn.length() == 0) return res;
 		String senses = sn.replaceAll(" ","");
@@ -222,7 +182,7 @@ public class CreateGoldStandard {
 		if (matchDigitAndComma.matches()) {
 			String[] senseNums = senses.split(",");
 			for (int i = 0; i < senseNums.length; i++) {
-				res.add(Integer.valueOf(senseNums[i]));
+				res.add(senseNums[i]);
 			}
 		} else {
 			System.err.println("Unsupported format: " + sn);

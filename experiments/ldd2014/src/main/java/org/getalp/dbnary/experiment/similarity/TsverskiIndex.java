@@ -83,8 +83,8 @@ public class TsverskiIndex implements SimilarityMeasure {
                 double lcss = longestSubString(a, b);
                 if (score > 0.999 || score < 1.0 && lcss >= 3) {
                     double md = Math.max(Math.abs(lcss / a.length()), Math.abs(lcss / b.length()));
-                    //overlap += score + (1 - score) * (md - 0.5);
-                    overlap += score;
+                    overlap += score + (1 - score) * (md - 0.5);
+                    //overlap += score;
                 }
             }
         }

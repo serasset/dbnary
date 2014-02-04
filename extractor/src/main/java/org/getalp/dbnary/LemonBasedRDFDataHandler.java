@@ -285,7 +285,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	}
 	
 	private String computeSenseNum() {
-		return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? "" : ('a' + currentSubSenseNumber - 1));
+		return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? "" : (char) ('a' + currentSubSenseNumber - 1));
 	}
 
 	@Override

@@ -131,30 +131,29 @@ public class CreateGoldStandard {
 
 	}
 
-
 	
 	private void processTranslations() {
 		// Iterate over all translations
-
+		
 		StmtIterator translations = m1.listStatements((Resource) null, DbnaryModel.isTranslationOf, (RDFNode) null);
-
+		
 		while (translations.hasNext()) {
 			Statement isTransOf = translations.next();
 			Resource e = isTransOf.getSubject();
-
+			
 			Statement n = e.getProperty(transNumProperty);
 			Statement s = e.getProperty(senseNumProperty);
-
+			
 			if (null != s) {
 				String sn = s.getString();
-
+				
 				List<String> nums = parseSenseNumbers(sn);
-
+				
 				if (! nums.isEmpty()) {
 					// Fetch all entries senses and select the correct ones.
 					Resource entry = isTransOf.getResource();
 					StmtIterator senses = entry.listProperties(DbnaryModel.lemonSenseProperty);
-
+					
 					while (senses.hasNext()) {
 						Resource sens = senses.next().getResource();
 						String sensenum = sens.getProperty(DbnaryModel.senseNumberProperty).getString();

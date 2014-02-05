@@ -114,7 +114,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>4.9</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -146,6 +146,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.omegawikiapi</groupId>
+			<artifactId>de.tudarmstadt.ukp.omegawikiapi-asl</artifactId>
+			<version>0.2.0</version>
 		</dependency>
 	</dependencies>
 
@@ -256,5 +261,27 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+          <id>ukp-oss-releases</id>
+          <url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-releases</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>ukp-oss-snapshots</id>
+          <url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-snapshots</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
 	</repositories>
 </project>

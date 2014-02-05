@@ -11,12 +11,16 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class TranslationDisambiguator implements Disambiguator {
+public class MFSTranslationDisambiguator implements Disambiguator {
+
+    private double randomBaseline;
+    private int numberWords;
 
     private Map<String, SimilarityMeasure> measures;
 
     {
         measures = new HashMap<>();
+        numberWords = 0;
     }
 
     @Override
@@ -31,13 +35,18 @@ public class TranslationDisambiguator implements Disambiguator {
 
     @Override
     public void disambiguate(Ambiguity a, final List<Disambiguable> choices) {
-        for (String m : measures.keySet()) {
-            for (Disambiguable d : choices) {
-                double sim = measures.get(m).compute(d.getGloss(), a.getGloss());
-                Disambiguable newD = new DisambiguableSense(d.getGloss(), d.getId());
-                newD.setScore(sim);
-                a.addDisambiguation(m, newD);
-            }
+        if (!choices.isEmpty()) {
+            randomBaseline += 1.0 / ((double) choices.size());
+            numberWords++;
+            Disambiguable d = choices.get(0);
+            Disambiguable newD = new DisambiguableSense(d.getGloss(), d.getId());
+            newD.setScore(1.0);
+            a.addDisambiguation("MFS", newD);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "RandomBaseline: " + randomBaseline / (double) numberWords + "\n";
     }
 }

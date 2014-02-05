@@ -263,8 +263,10 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Am
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Disambiguable.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Disambiguator.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/DisambiguableSense.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/MFSTranslationDisambiguator.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/TranslationAmbiguity.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/TranslationDisambiguator.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/VoteType.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/encoding/CodePointIterator.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/encoding/CodePointWrapper.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/fuzzystring/JaroUnicode.java -text

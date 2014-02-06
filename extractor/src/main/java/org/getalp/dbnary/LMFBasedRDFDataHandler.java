@@ -183,11 +183,19 @@ public class LMFBasedRDFDataHandler implements WiktionaryDataHandler {
     @Override
 	public void registerNewDefinition(String def, int lvl) {
     	
+    	this.registerNewDefinition(def, Integer.toString(currentSenseNumber));
+    	currentSenseNumber++;
+    	// TODO: Extract domain/usage field from the original definition.
+    }
+
+    @Override
+	public void registerNewDefinition(String def, String senseNumber) {
+    	
     	// Create new word sense + a definition element 
     	// DONE: give an ID to all resources to avoid blank node interpretation
     	currentSense = aBox.createResource(computeSenseId(), senseType);
     	aBox.add(aBox.createStatement(currentSense, isPartOf, currentLexEntry));
-    	aBox.add(aBox.createLiteralStatement(currentSense, senseNumberProperty, currentSenseNumber));
+    	aBox.add(aBox.createLiteralStatement(currentSense, senseNumberProperty, senseNumber));
     	if (currentPos != null && ! currentPos.equals("")) {
         	aBox.add(aBox.createLiteralStatement(currentSense, posProperty, currentPos));
         }
@@ -197,10 +205,9 @@ public class LMFBasedRDFDataHandler implements WiktionaryDataHandler {
     	// Keep a human readable version of the definition, removing all links annotations.
     	aBox.add(aBox.createStatement(defNode, textProperty, AbstractWiktionaryExtractor.cleanUpMarkup(def, true))); 
 
-    	currentSenseNumber++;
     	// TODO: Extract domain/usage field from the original definition.
     }
-
+    
     private String computeDefId() {
 		return NS + "__def_" + currentSenseNumber + "_" + encodedPageName;
 	}

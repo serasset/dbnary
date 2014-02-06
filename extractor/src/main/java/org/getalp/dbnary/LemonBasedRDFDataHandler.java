@@ -251,6 +251,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	public void registerNewDefinition(String def) {
 		this.registerNewDefinition(def, 1);
 	}
+	
     @Override
 	public void registerNewDefinition(String def, int lvl) {
 		if (null == currentLexEntry) {
@@ -263,10 +264,20 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	    	currentSenseNumber++;
 	    	currentSubSenseNumber = 0;
 		}
-    	// Create new word sense + a definition element 
-    	currentSense = aBox.createResource(computeSenseId(), lexicalSenseType);
+    	registerNewDefinition(def, computeSenseNum()); 
+
+    }
+
+	public void registerNewDefinition(String def, String senseNumber) {
+		if (null == currentLexEntry) {
+			log.debug("Registering Word Sense when lex entry is null in \"{}\".", this.currentMainLexEntry);
+			return; // Don't register anything if current lex entry is not known.
+		}
+		
+		// Create new word sense + a definition element 
+    	currentSense = aBox.createResource(computeSenseId(senseNumber), lexicalSenseType);
     	aBox.add(aBox.createStatement(currentLexEntry, lemonSenseProperty, currentSense));
-    	aBox.add(aBox.createLiteralStatement(currentSense, senseNumberProperty, aBox.createTypedLiteral(computeSenseNum())));
+    	aBox.add(aBox.createLiteralStatement(currentSense, senseNumberProperty, aBox.createTypedLiteral(senseNumber)));
     	// pos is not usefull anymore for word sense as they should be correctly linked to an entry with only one pos.
     	// if (currentPos != null && ! currentPos.equals("")) {
         //	aBox.add(aBox.createStatement(currentSense, posProperty, currentPos));
@@ -278,10 +289,11 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     	aBox.add(aBox.createStatement(defNode, lemonValueProperty, AbstractWiktionaryExtractor.cleanUpMarkup(def, true), extractedLang)); 
 
     	// TODO: Extract domain/usage field from the original definition.
-    }
 
-	private String computeSenseId() {
-		return NS + "__ws_" + computeSenseNum() + "_" + currentEncodedPageName;
+	}
+
+	private String computeSenseId(String senseNumber) {
+		return NS + "__ws_" + senseNumber + "_" + currentEncodedPageName;
 	}
 	
 	private String computeSenseNum() {

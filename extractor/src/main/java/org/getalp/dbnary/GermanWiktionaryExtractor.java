@@ -571,6 +571,7 @@ public class GermanWiktionaryExtractor extends AbstractWiktionaryExtractor {
 				log.debug("Null sense number in definition\"{}\" for entry {}", def, this.wiktionaryPageName);
 			} else {
 				senseNum = senseNum.trim();
+				senseNum = senseNum.replaceAll("<[^>]*>", "");
 				if (definitionMatcher.group().length() >= 2 && definitionMatcher.group().charAt(1) == ':') {
 					// Level 2
 					if (! senseNum.startsWith(currentLevel1SensNumber)) {

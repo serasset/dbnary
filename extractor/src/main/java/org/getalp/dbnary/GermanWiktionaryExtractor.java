@@ -12,12 +12,14 @@ import org.slf4j.LoggerFactory;
 
 public class GermanWiktionaryExtractor extends AbstractWiktionaryExtractor {
 
+
 	private Logger log = LoggerFactory.getLogger(GermanWiktionaryExtractor.class);
 
+	protected final static String senseNumberRegExp = "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d)*\\.?[abcdefghij]?)";
 	protected final static String languageSectionPatternString = "={2}\\s*([^\\(]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
 	protected final static String partOfSpeechPatternString = "={3}[^\\{]*\\{\\{Wortart\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
 	protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
-	protected final static String germanDefinitionPatternString = "^:{1,3}\\s*(?:\\[([^\\]]*)\\])?([^\n\r]*)$";
+	protected final static String germanDefinitionPatternString = "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
 
 	private final int NODATA = 0;
 	private final int TRADBLOCK = 1;

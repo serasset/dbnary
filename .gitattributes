@@ -274,6 +274,7 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/fuzzystring/JaroW
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/CreateGoldStandard.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/EnglishGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/FrenchGlossFilter.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/GermanGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/GlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/PreprocessTranslations.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/StatsModule.java -text svneol=unset#text/plain

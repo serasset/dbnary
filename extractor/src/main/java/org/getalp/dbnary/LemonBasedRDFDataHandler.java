@@ -308,6 +308,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 			return; // Don't register anything if current lex entry is not known.
 		}
 		word = word.trim();
+		// Do not register empty translations
+		if (word.length() == 0) {
+			return;
+		}
 		// Ensure language is in its standard form.
     	Lang t = ISO639_3.sharedInstance.getLang(lang);
     	if (null != t) lang = t.getId();

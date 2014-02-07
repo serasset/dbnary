@@ -7,11 +7,11 @@ import java.util.regex.Pattern;
 
 import org.getalp.dbnary.EnglishWiktionaryExtractor;
 import org.getalp.dbnary.FrenchWiktionaryExtractor;
-import org.getalp.dbnary.GermanWiktionaryExtractor;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryGrep;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.dbnary.deu.WiktionaryExtractor;
 
 public class GrepInWiktionary {
 

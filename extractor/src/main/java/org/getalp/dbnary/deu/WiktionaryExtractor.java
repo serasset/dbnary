@@ -1,4 +1,4 @@
-package org.getalp.dbnary;
+package org.getalp.dbnary.deu;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -6,14 +6,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GermanWiktionaryExtractor extends AbstractWiktionaryExtractor {
+public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
-	private Logger log = LoggerFactory.getLogger(GermanWiktionaryExtractor.class);
+	private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
 	protected final static String senseNumberRegExp = "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d)*\\.?[abcdefghij]?)";
 	protected final static String languageSectionPatternString = "={2}\\s*([^\\(]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
@@ -27,7 +29,7 @@ public class GermanWiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private final int ORTHOALTBLOCK = 3;
 	private final int NYMBLOCK = 4;
 
-	public GermanWiktionaryExtractor(WiktionaryDataHandler wdh) {
+	public WiktionaryExtractor(WiktionaryDataHandler wdh) {
 		super(wdh);
 	}
 

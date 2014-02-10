@@ -567,7 +567,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		Matcher definitionMatcher = germanDefinitionPattern.matcher(this.pageContent);
 		definitionMatcher.region(startOffset, endOffset);
 		
-		String currentLevel1SensNumber = "";
+		String currentLevel1SenseNumber = "";
+		String currentLevel2SenseNumber = "";
 		while (definitionMatcher.find()) {
 			String def = cleanUpMarkup(definitionMatcher.group(2));
 			String senseNum = definitionMatcher.group(1);
@@ -577,14 +578,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				senseNum = senseNum.trim();
 				senseNum = senseNum.replaceAll("<[^>]*>", "");
 				if (definitionMatcher.group().length() >= 2 && definitionMatcher.group().charAt(1) == ':') {
-					// Level 2
-					if (! senseNum.startsWith(currentLevel1SensNumber)) {
-						senseNum = currentLevel1SensNumber + senseNum;
+					if (definitionMatcher.group().length() >= 3 && definitionMatcher.group().charAt(2) == ':') {
+						// Level 3
+						log.debug("Level 3 definition: \"{}\" in entry {}", definitionMatcher.group(), this.wiktionaryPageName);
+						if (! senseNum.startsWith(currentLevel2SenseNumber)) {
+							senseNum = currentLevel2SenseNumber + senseNum;
+						}
+						log.debug("Sense number is: {}", senseNum);
+					} else {
+						// Level 2
+						// log.debug("Level 2 definition: \"{}\" in entry {}", definitionMatcher.group(), this.wiktionaryPageName);
+						if (! senseNum.startsWith(currentLevel1SenseNumber)) {
+							senseNum = currentLevel1SenseNumber + senseNum;
+						}
+						currentLevel2SenseNumber = senseNum;
 					}
-					// log.debug("Level 2 definition: \"{}\" in entry {}", definitionMatcher.group(), this.wiktionaryPageName);
 				} else {
 					// Level 1 definition
-					currentLevel1SensNumber = senseNum;
+					currentLevel1SenseNumber = senseNum;
+					currentLevel2SenseNumber = senseNum;
 				}
 				
 				if (def != null && !def.equals("")) {

@@ -5,12 +5,7 @@ import java.util.regex.Pattern;
 
 public class PortugueseGlossFilter extends GlossFilter {
 
-	
-	// (De 1 e 2)
-	
-	// idioma ?
-	// Língua falada por esse povo
-
+		
 	private static String aTrierRegExp;
 	static {
 		aTrierRegExp = (new StringBuffer())

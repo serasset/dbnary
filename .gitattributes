@@ -278,6 +278,7 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/Eng
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/FrenchGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/GermanGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/GlossFilter.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/JapaneseGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/PortugueseGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/PreprocessTranslations.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/StatsModule.java -text svneol=unset#text/plain
@@ -288,6 +289,7 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/MongeE
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/SimilarityMeasure.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/TsverskiIndex.java -text
 experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFrenchPreprocessing.java -text svneol=unset#text/plain
+experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestJapaneseGlossFilter.java -text svneol=unset#text/plain
 extractor/pom.xml -text
 extractor/src/main/java/org/getalp/dbnary/AbstractWiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/DbnaryModel.java -text svneol=unset#text/plain

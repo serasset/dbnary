@@ -30,8 +30,6 @@ public final class LLD2014Main {
 
     private LLD2014Main() {
         disamb = new TranslationDisambiguator();
-
-        deltaThreshold = 0.10;
         for (int i = 1; i < 2; i++) {
             double w1, w2;
             w1 = (double) i / 10.0;
@@ -61,7 +59,20 @@ public final class LLD2014Main {
         //StoreHandler.registerStoreInstance(vts);
         LLD2014Main lld = new LLD2014Main();
 
-        System.err.println("Processing translation...");
+        System.err.println("Processing translation delta" + 0.05);
+        lld.setDeltaThreshold(0.05);
+        lld.processTranslations(model);
+
+        System.err.println("Processing translation delta" + 0.10);
+        lld.setDeltaThreshold(0.10);
+        lld.processTranslations(model);
+
+        System.err.println("Processing translation delta" + 0.15);
+        lld.setDeltaThreshold(0.15);
+        lld.processTranslations(model);
+
+        System.err.println("Processing translation delta" + 0.20);
+        lld.setDeltaThreshold(0.20);
         lld.processTranslations(model);
     }
 
@@ -79,13 +90,13 @@ public final class LLD2014Main {
         FileOutputStream mfsfos = new FileOutputStream("french_results_MFS.res");
         PrintStream psmfs = new PrintStream(mfsfos, true);
 
-        FileOutputStream votefos = new FileOutputStream("french_results_Vote.res");
+        FileOutputStream votefos = new FileOutputStream("french_results_Vote_Dl_" + deltaThreshold + ".res");
         PrintStream psvote = new PrintStream(votefos, true);
 
 
         Map<String, PrintStream> streams = new HashMap<>();
         for (String m : disamb.getMethods()) {
-            FileOutputStream fos = new FileOutputStream(String.format("french_results_%s.res", m));
+            FileOutputStream fos = new FileOutputStream(String.format("french_results_%s_Dl_" + deltaThreshold + ".res", m));
             streams.put(m, new PrintStream(fos, true));
         }
 
@@ -135,6 +146,14 @@ public final class LLD2014Main {
         for (String m : disamb.getMethods()) {
             streams.get(m).close();
         }
+    }
+
+    public double getDeltaThreshold() {
+        return deltaThreshold;
+    }
+
+    public void setDeltaThreshold(double deltaThreshold) {
+        this.deltaThreshold = deltaThreshold;
     }
 }
 

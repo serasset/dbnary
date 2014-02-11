@@ -258,6 +258,8 @@ doc/presentations/lig-lidilem/img/wnnetwork.pdf -text
 doc/presentations/lig-lidilem/thoughts.oo3/contents.xml -text
 experiments/ldd2014/lib/secondstring-20120620.jar -text
 experiments/ldd2014/pom.xml -text
+experiments/ldd2014/results/french_ref_gold.out -text
+experiments/ldd2014/results/gen_all_res.sh -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/LLD2014Main.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Ambiguity.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Disambiguable.java -text

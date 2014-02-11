@@ -120,7 +120,6 @@ public class TsverskiIndex implements SimilarityMeasure {
         double overlap = 0;
         for (String a : la) {
             for (String b : lb) {
-
                 double score = 0;
                 double lcss = longestSubString(a, b);
                 double md = Math.max(Math.abs(lcss / a.length()), Math.abs(lcss / b.length()));

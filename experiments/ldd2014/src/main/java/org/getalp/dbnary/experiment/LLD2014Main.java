@@ -1,8 +1,6 @@
 package org.getalp.dbnary.experiment;
 
 import com.hp.hpl.jena.rdf.model.*;
-import com.wcohen.ss.Level2JaroWinkler;
-import com.wcohen.ss.MongeElkan;
 import com.wcohen.ss.ScaledLevenstein;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
@@ -12,7 +10,6 @@ import org.getalp.dbnary.experiment.disambiguation.translations.DisambiguableSen
 import org.getalp.dbnary.experiment.disambiguation.translations.MFSTranslationDisambiguator;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationAmbiguity;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationDisambiguator;
-import org.getalp.dbnary.experiment.fuzzystring.JaroWinklerUnicode;
 import org.getalp.dbnary.experiment.similarity.TsverskiIndex;
 
 import java.io.FileNotFoundException;
@@ -28,8 +25,29 @@ public final class LLD2014Main {
 
     private Property senseNumProperty;
     private Property transNumProperty;
+    private Disambiguator disamb;
+    private double deltaThreshold;
 
     private LLD2014Main() {
+        disamb = new TranslationDisambiguator();
+
+        deltaThreshold = 0.10;
+        for (int i = 1; i < 2; i++) {
+            double w1, w2;
+            w1 = (double) i / 10.0;
+            w2 = 1 - w1;
+            String mstr = String.format("_%f_%f", w1, w2);
+
+            //disamb.registerSimilarity("FTiJW" + mstr, new TsverskiIndex(w2, w1, true, new JaroWinklerUnicode()));
+            disamb.registerSimilarity("FTiLs" + mstr, new TsverskiIndex(w1, w2, true, new ScaledLevenstein()));
+            //disamb.registerSimilarity("FTiJMjs"+mstr, new TsverskiIndex(w2, w1, true, new JelinekMercerJS()));
+            //disamb.registerSimilarity("FTiDjs"+mstr, new TsverskiIndex(w2, w1, true, new DirichletJS()));
+            //disamb.registerSimilarity("FTiME" + mstr, new TsverskiIndex(w2, w1, true, new MongeElkan()));
+            //disamb.registerSimilarity("FTiJW2" + mstr, new TsverskiIndex(w2, w1, true, new Level2JaroWinkler()));
+            //disamb.registerSimilarity("FTiLcss" + mstr, new TsverskiIndex(w2, w1, true));
+        }
+
+
     }
 
     public static void main(String[] args) throws IOException {
@@ -43,6 +61,7 @@ public final class LLD2014Main {
         //StoreHandler.registerStoreInstance(vts);
         LLD2014Main lld = new LLD2014Main();
 
+        System.err.println("Processing translation...");
         lld.processTranslations(model);
     }
 
@@ -56,26 +75,12 @@ public final class LLD2014Main {
         initializeTBox("fra");
 
         MFSTranslationDisambiguator mfs = new MFSTranslationDisambiguator();
-        Disambiguator disamb = new TranslationDisambiguator();
+
         FileOutputStream mfsfos = new FileOutputStream("french_results_MFS.res");
         PrintStream psmfs = new PrintStream(mfsfos, true);
 
         FileOutputStream votefos = new FileOutputStream("french_results_Vote.res");
         PrintStream psvote = new PrintStream(votefos, true);
-        for (int i = 0; i < 11; i++) {
-            double w1, w2;
-            w1 = (double) i / 10.0;
-            w2 = 1 - w1;
-            String mstr = String.format("_%f_%f", w1, w2);
-
-            disamb.registerSimilarity("FTiJW" + mstr, new TsverskiIndex(w2, w1, true, new JaroWinklerUnicode()));
-            disamb.registerSimilarity("FTiLs" + mstr, new TsverskiIndex(w2, w1, true, new ScaledLevenstein()));
-            //disamb.registerSimilarity("FTiJMjs"+mstr, new TsverskiIndex(w2, w1, true, new JelinekMercerJS()));
-            //disamb.registerSimilarity("FTiDjs"+mstr, new TsverskiIndex(w2, w1, true, new DirichletJS()));
-            disamb.registerSimilarity("FTiME" + mstr, new TsverskiIndex(w2, w1, true, new MongeElkan()));
-            disamb.registerSimilarity("FTiJW2" + mstr, new TsverskiIndex(w2, w1, true, new Level2JaroWinkler()));
-            disamb.registerSimilarity("FTiLcss" + mstr, new TsverskiIndex(w2, w1, true));
-        }
 
 
         Map<String, PrintStream> streams = new HashMap<>();
@@ -99,8 +104,8 @@ public final class LLD2014Main {
 
             if (null != s && null != n && null != g) {
                 String url = g.getObject().toString();
-                Ambiguity ambiguity = new TranslationAmbiguity(url, n.getObject().toString().split("\\^\\^")[0]);
-                Ambiguity ambiguity2 = new TranslationAmbiguity(url, n.getObject().toString().split("\\^\\^")[0]);
+                Ambiguity ambiguity = new TranslationAmbiguity(url, n.getObject().toString().split("\\^\\^")[0], deltaThreshold);
+                Ambiguity mfcAmbiguity = new TranslationAmbiguity(url, n.getObject().toString().split("\\^\\^")[0]);
                 Resource lexicalEntry = next.getObject().asResource();
                 StmtIterator senses = m1.listStatements(lexicalEntry, DbnaryModel.lemonSenseProperty, (RDFNode) null);
                 List<Disambiguable> choices = new ArrayList<>();
@@ -114,11 +119,11 @@ public final class LLD2014Main {
                     choices.add(new DisambiguableSense(deftext, sstr));
                 }
                 disamb.disambiguate(ambiguity, choices);
-                mfs.disambiguate(ambiguity2, choices);
+                mfs.disambiguate(mfcAmbiguity, choices);
                 for (String m : ambiguity.getMethods()) {
                     streams.get(m).println(ambiguity.toString(m));
                 }
-                psmfs.println(ambiguity2.toString("MFS"));
+                psmfs.println(mfcAmbiguity.toString("MFS"));
                 psvote.println(ambiguity.toStringVote());
             }
 

@@ -9,9 +9,7 @@ public class FinnishGlossFilter extends GlossFilter {
 	private static String simpleSenseNumberingRegExp = "^((?:" + sensenum + "\\|?)+)(.*)$";
 	private static Pattern simpleSenseNumberingPattern = Pattern.compile(simpleSenseNumberingRegExp);
 	private static Matcher simpleSenseNumberingMatcher = simpleSenseNumberingPattern.matcher("");
-	
-	// 3|4|soiti n --> 3,4...
-	
+		
 	public StructuredGloss extractGlossStructure(String rawGloss) {
 
 		rawGloss = normalize(rawGloss);

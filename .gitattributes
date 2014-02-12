@@ -275,6 +275,7 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/fuzzystring/JaroU
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/fuzzystring/JaroWinklerUnicode.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/CreateGoldStandard.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/EnglishGlossFilter.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/FinnishGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/FrenchGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/GermanGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/GlossFilter.java -text svneol=unset#text/plain
@@ -288,6 +289,7 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/Spac
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/MongeElkan.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/SimilarityMeasure.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/TsverskiIndex.java -text
+experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFinnishGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFrenchPreprocessing.java -text svneol=unset#text/plain
 experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestJapaneseGlossFilter.java -text svneol=unset#text/plain
 extractor/pom.xml -text

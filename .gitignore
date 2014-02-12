@@ -15,6 +15,7 @@ doc/presentations/lig-lidilem/*.vrb
 extractor/*.iml
 extractor/.classpath
 extractor/.project
+extractor/.settings
 extractor/src/.classpath
 extractor/src/.project
 extractor/src/.settings

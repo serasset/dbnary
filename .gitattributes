@@ -300,8 +300,6 @@ extractor/src/main/java/org/getalp/dbnary/EnglishLangToCode.java -text svneol=un
 extractor/src/main/java/org/getalp/dbnary/EnglishWiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/FrenchLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/FrenchWiktionaryExtractor.java -text
-extractor/src/main/java/org/getalp/dbnary/GreekLangtoCode.java -text svneol=unset#text/plain
-extractor/src/main/java/org/getalp/dbnary/GreekWiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/IWiktionaryExtractor.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/KoreanLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
@@ -332,6 +330,8 @@ extractor/src/main/java/org/getalp/dbnary/cli/UpdateDiachronicStatistics.java -t
 extractor/src/main/java/org/getalp/dbnary/cli/UpdateLatestStatistics.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/deu/GermanLangToCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/deu/WiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/ell/GreekLangtoCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/ell/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/fin/FinnishTranslationExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/fin/SuomiLangToCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/fin/WiktionaryExtractor.java -text

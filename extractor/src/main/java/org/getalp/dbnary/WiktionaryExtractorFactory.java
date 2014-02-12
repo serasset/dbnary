@@ -2,6 +2,7 @@ package org.getalp.dbnary;
 
 import java.lang.reflect.InvocationTargetException;
 
+
 public class WiktionaryExtractorFactory {
 
 	public static IWiktionaryExtractor getExtractor(String language, WiktionaryDataHandler wdh) {
@@ -11,8 +12,6 @@ public class WiktionaryExtractorFactory {
 			we = new FrenchWiktionaryExtractor(wdh);
 		} else if (language.equals("eng")) {
 			we = new EnglishWiktionaryExtractor(wdh);
-		} else if (language.equals("ell")) {
-			we = new GreekWiktionaryExtractor(wdh);
 		} else if (language.equals("tur")) {
 			we = new TurkishWiktionaryExtractor(wdh);
 		} else {

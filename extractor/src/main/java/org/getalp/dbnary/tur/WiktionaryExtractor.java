@@ -598,7 +598,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						word = "";
 						currentInlineGloss = "";
 						ETAT = INIT;
-					} else if (character.equals(",")) {
+					} else if (character.equals(",") || character.equals(";")) {
 						usage = usage.trim();
 						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
 						if (word != null && word.length() != 0) {

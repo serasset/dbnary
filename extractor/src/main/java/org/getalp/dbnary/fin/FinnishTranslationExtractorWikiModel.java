@@ -290,7 +290,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 						currentGlose = null;
 						langname = ""; word = ""; usage = ""; lang=null;
 						ETAT = INIT;
-					} else if (macro.equalsIgnoreCase("kski")) {
+					} else if (macro.equalsIgnoreCase("keski")) {
 						if (word != null && word.length() != 0) {
 							if(lang!=null){
 								delegate.registerTranslation(lang, currentGlose, usage, word);

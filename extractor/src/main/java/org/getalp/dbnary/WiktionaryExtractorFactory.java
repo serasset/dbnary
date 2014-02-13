@@ -12,8 +12,6 @@ public class WiktionaryExtractorFactory {
 			we = new FrenchWiktionaryExtractor(wdh);
 		} else if (language.equals("eng")) {
 			we = new EnglishWiktionaryExtractor(wdh);
-		} else if (language.equals("tur")) {
-			we = new TurkishWiktionaryExtractor(wdh);
 		} else {
 			String cname = WiktionaryExtractorFactory.class.getCanonicalName();
 			int dpos = cname.lastIndexOf('.');

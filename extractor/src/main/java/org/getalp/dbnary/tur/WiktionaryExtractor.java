@@ -1,22 +1,31 @@
 /**
  * 
  */
-package org.getalp.dbnary;
+package org.getalp.dbnary.tur;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.fin.SuomiLangToCode;
+import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Barry
  *
  */
-public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
+public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	
+	private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
     protected final static String languageSectionPatternString = "={2}\\s*\\{\\{Dil\\|([^\\}]*)\\}\\}\\s*={2}";
     protected final static String partOfSpeechPatternString = "={3}([^\\{]*)\\{\\{Söztürü\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
@@ -38,7 +47,7 @@ public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
     
 
 
-    public TurkishWiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
     }
     protected final static Pattern languageSectionPattern;
@@ -353,70 +362,320 @@ public class TurkishWiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
         wdh.finalizeEntryExtraction();
     }
-    static final String glossOrMacroPatternString;
-    static final Pattern glossOrMacroPattern;
 
-    
-    static{   	
-    	
- 	   glossOrMacroPatternString = "(?:\\[([^\\][a-z]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\}\\})";
-       glossOrMacroPattern = Pattern.compile(glossOrMacroPatternString);
-    	    }
-    
-    private void extractTranslations(int startOffset, int endOffset) {
-        Matcher macroMatcher = glossOrMacroPattern.matcher(pageContent);
-        macroMatcher.region(startOffset, endOffset);
-        String currentGlose = null;
-        	
-        while (macroMatcher.find()) {
-        	String glose = macroMatcher.group(1);
-        	
-        	if(glose != null){
+//    static final String glossOrMacroPatternString;
+//    static final Pattern glossOrMacroPattern;
 
-        		currentGlose = glose ;
-        		
-        	} else {
-          
-        		String g1 = macroMatcher.group(2);
-        		String g2 = macroMatcher.group(3);
-        		String g3 = macroMatcher.group(4);
-    
-           if (g1.equals("çeviri")) {
-            	String lang;
-            	String word = null;
-            	String usage = null;
+	protected final static String carPatternString;
+	protected final static String macroOrLinkOrCarPatternString;
 
-            	lang = g2;
-        		// normalize language code
-                String normLangCode;
-                if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-                    lang = normLangCode;
-                }
-                  int i1;    
-                if ((i1 = g3.indexOf('|')) == -1) {
-                    word = g3;
-                } else {
-                    word = g3.substring(0, i1);
-                    usage = g3.substring(i1+1);
-                }
-            	lang=TurkishLangtoCode.triletterCode(lang);
-                if(lang!=null && word != null){
-             	   wdh.registerTranslation(lang, currentGlose, usage, word);
-                }
-           
-            } else if (g1.equals("Üst")) {
-                // German wiktionary does not provide a glose to disambiguate.
-                // Just ignore this marker.
-            } else if (g1.equals("Orta")) {
-                // just ignore it
-            } else if (g1.equals("Alt")) {
-                // Forget the current glose
-                currentGlose = null;
-            }
-        
-        }
-    }
- }
+ 
+	static {   	
+
+		// les caractères visible 
+		carPatternString=
+				new StringBuilder().append("(.)")
+				.toString();
+
+		// TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
+		macroOrLinkOrCarPatternString = new StringBuilder()
+		.append("(?:")
+		.append(WikiPatterns.macroPatternString)
+		.append(")|(?:")
+		.append(WikiPatterns.linkPatternString)
+		.append(")|(?:")
+		.append("(:*\\*)")
+		.append(")|(?:")
+		.append("(\\*:)")
+		.append(")|(?:")
+		.append("\\[([^\\[][^\\]]*)\\]")
+		.append(")|(?:")
+		.append(carPatternString)
+		.append(")").toString();
+
+//		glossOrMacroPatternString = "(?:\\[([^\\][a-z]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\}\\})";
+//		glossOrMacroPattern = Pattern.compile(glossOrMacroPatternString);
+	}
+
+	protected final static Pattern carPattern;
+	protected final static Pattern macroOrLinkOrCarPattern;
+
+
+	static {
+		carPattern = Pattern.compile(carPatternString);
+		macroOrLinkOrCarPattern = Pattern.compile(macroOrLinkOrCarPatternString, Pattern.MULTILINE|Pattern.DOTALL);
+	}
+
+	public void extractTranslations(int startOffset, int endOffset) {
+		Matcher macroOrLinkOrCarMatcher = macroOrLinkOrCarPattern.matcher(this.pageContent);
+		macroOrLinkOrCarMatcher.region(startOffset, endOffset);
+		
+		final int INIT = 1;
+		final int LANGUE = 2;
+		final int TRAD = 3;
+
+	
+		
+		int ETAT = INIT;
+
+		String currentInlineGloss = "";
+		String globalGloss = "";
+		String lang=null, word= ""; 
+		String usage = "";       
+		String langname = "";
+		String previousLang = null;
+		
+		while (macroOrLinkOrCarMatcher.find()) {
+
+			String macro = macroOrLinkOrCarMatcher.group(1);
+			String link = macroOrLinkOrCarMatcher.group(3);
+			String star = macroOrLinkOrCarMatcher.group(5);
+			String starcont = macroOrLinkOrCarMatcher.group(6);
+			String inlineGloss = macroOrLinkOrCarMatcher.group(7);
+			String character = macroOrLinkOrCarMatcher.group(8);
+
+			switch (ETAT) {
+
+			case INIT:
+				if (macro!=null) {
+					if (macro.equalsIgnoreCase("Üst"))  {
+						if (macroOrLinkOrCarMatcher.group(2) != null) {
+							globalGloss = macroOrLinkOrCarMatcher.group(2);
+						} else {
+							globalGloss = "";
+						}
+
+					} else if (macro.equalsIgnoreCase("Alt")) {
+						globalGloss = "";
+					} else if (macro.equalsIgnoreCase("Orta")) {
+						//ignore
+					}
+				} else if(link!=null) {
+					//System.err.println("Unexpected link while in INIT state.");
+				} else if (starcont != null) {
+					log.debug("Unexpected point continuation while in INIT state.");
+				} else if (star != null) {
+					ETAT = LANGUE;
+				} else if (null != inlineGloss) {
+					// Ignore glosses that are outside languages... Maybe add them to global gloss ?
+				} else if (character != null) {
+					if (character.equals(":")) {
+						//System.err.println("Skipping ':' while in INIT state.");
+					} else if (character.equals("\n") || character.equals("\r")) {
+
+					} else if (character.equals(",")) {
+						//System.err.println("Skipping ',' while in INIT state.");
+					} else {
+						//System.err.println("Skipping " + g5 + " while in INIT state.");
+					}
+				}
+
+				break;
+
+			case LANGUE:
+
+				if (macro!=null) {
+					if (macro.equalsIgnoreCase("Üst"))  {
+						if (macroOrLinkOrCarMatcher.group(2) != null) {
+							globalGloss = macroOrLinkOrCarMatcher.group(2);
+						} else {
+							globalGloss = "";
+						}
+						langname = ""; word = ""; usage = "";
+						ETAT = INIT;
+					} else if (macro.equalsIgnoreCase("Alt")) {
+						globalGloss = "";
+						langname = ""; word = ""; usage = "";
+						ETAT = INIT;
+					} else if (macro.equalsIgnoreCase("Orta")) {
+						langname = ""; word = ""; usage = "";
+						ETAT = INIT;
+					} else {
+						langname = macro;
+						String l = ISO639_3.sharedInstance.getIdCode(langname);
+						if (l != null) {
+							langname = l;
+						}
+					}
+				} else if(link!=null) {
+					//System.err.println("Unexpected link while in LANGUE state.");
+				} else if (starcont != null) {
+					lang = previousLang;
+					ETAT = TRAD;
+				} else if (star != null) {
+					//System.err.println("Skipping '*' while in LANGUE state.");
+				} else if (null != inlineGloss) {
+					// Ignore glosses that are outside languages... Maybe add them to global gloss ?
+				} else if (character != null) {
+					if (character.equals(":")) {
+						lang = langname.trim();
+						lang=AbstractWiktionaryExtractor.supParenthese(lang);
+						lang = TurkishLangtoCode.triletterCode(lang);
+						langname = "";
+						ETAT = TRAD;
+					} else if (character.equals("\n") || character.equals("\r")) {
+						//System.err.println("Skipping newline while in LANGUE state.");
+					} else if (character.equals(",")) {
+						//System.err.println("Skipping ',' while in LANGUE state.");
+					} else {
+						langname = langname + character;
+					}
+				} 
+
+				break ;
+				// TODO: maybe extract words that are not linked (currently kept in usage, but dropped as translation word is null).
+			case TRAD:
+				if (macro!=null) {
+					if (macro.equalsIgnoreCase("Üst"))  {
+						if (macroOrLinkOrCarMatcher.group(2) != null) {
+							globalGloss = macroOrLinkOrCarMatcher.group(2);
+						} else {
+							globalGloss = "";
+						}
+						//if (word != null && word.length() != 0) {
+						//	if(lang!=null){
+						//		delegate.registerTranslation(lang, currentGlose, usage, word);
+						//	}
+						//}
+						langname = ""; word = ""; usage = ""; lang=null; currentInlineGloss = "";
+						ETAT = INIT;
+					} else if (macro.equalsIgnoreCase("Alt")) {
+						if (word != null && word.length() != 0) {
+							if(lang!=null){
+								String gloss = (globalGloss.length() == 0) ? currentInlineGloss : globalGloss + "|" + currentInlineGloss;
+								wdh.registerTranslation(lang, gloss, usage, word);
+							}
+						}
+						globalGloss = "";
+						langname = ""; word = ""; usage = ""; lang=null; currentInlineGloss = "";
+						ETAT = INIT;
+					} else if (macro.equalsIgnoreCase("Orta")) {
+						if (word != null && word.length() != 0) {
+							if(lang!=null){
+								String gloss = (globalGloss.length() == 0) ? currentInlineGloss : globalGloss + "|" + currentInlineGloss;
+								wdh.registerTranslation(lang, gloss, usage, word);
+							}
+						}
+						langname = ""; word = ""; usage = ""; lang = null; currentInlineGloss = "";
+						ETAT = INIT;
+					} else if (macro.equalsIgnoreCase("çeviri")) {
+						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrCarMatcher.group(2));
+						if (null != word && word.length() != 0) log.debug("Word is not null ({}) when handling çeviri macro in {}", word, wdh.currentLexEntry());
+						String l = argmap.get("1");
+						if (null != l && (null != lang) && ! lang.equals(ISO639_3.sharedInstance.getIdCode(l))) {
+							log.debug("Language in çeviri macro ({}) does not map language in list ({}) in {}", l, lang, wdh.currentLexEntry());
+						}
+						word = argmap.get("2");
+						argmap.remove("1"); argmap.remove("2");
+						if (! argmap.isEmpty()) usage = argmap.toString();
+					} else {
+						usage = usage + "{{" + macro + "}}";
+					}
+				} else if (link!=null) {
+					word = word + " " + link;
+				} else if (starcont != null) {
+					// System.err.println("Skipping '*:' while in LANGUE state.");
+				} else if (star != null) {
+					//System.err.println("Skipping '*' while in LANGUE state.");
+				} else if (null != inlineGloss) {
+					currentInlineGloss = "[" + inlineGloss + "]";  // an inlinegloss invalidates the previous gloss (see if there 
+					// are cases where several glosses are specified...
+				} else if (character != null) {
+					if (character.equals("\n") || character.equals("\r")) {
+						usage = usage.trim();
+						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+						if (word != null && word.length() != 0) {
+							if(lang!=null){
+								String gloss = (globalGloss.length() == 0) ? currentInlineGloss : globalGloss + "|" + currentInlineGloss;
+								wdh.registerTranslation(lang, gloss, usage, word);
+							}
+						} else if (usage.length() != 0) {
+							log.debug("Non empty usage ({}) while word is null in: {}", usage, wdh.currentLexEntry());
+						}
+						previousLang = lang;
+						lang = null; 
+						usage = "";
+						word = "";
+						currentInlineGloss = "";
+						ETAT = INIT;
+					} else if (character.equals(",")) {
+						usage = usage.trim();
+						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+						if (word != null && word.length() != 0) {
+							if(lang!=null){
+								wdh.registerTranslation(lang, currentInlineGloss, usage, word);
+							}
+						}
+						usage = "";
+						word = "";
+					} else {
+						usage = usage + character;
+					}
+				}
+				break;
+			default: 
+				log.error("Unexpected state number: {}", ETAT);
+				break; 
+			}
+
+		}
+	}  
+
+	
+//    private void extractTranslationsOriginal(int startOffset, int endOffset) {
+//        Matcher macroMatcher = glossOrMacroPattern.matcher(pageContent);
+//        macroMatcher.region(startOffset, endOffset);
+//        String currentGlose = null;
+//        	
+//        while (macroMatcher.find()) {
+//        	String glose = macroMatcher.group(1);
+//        	
+//        	if(glose != null){
+//
+//        		currentGlose = glose ;
+//        		
+//        	} else {
+//          
+//        		String g1 = macroMatcher.group(2);
+//        		String g2 = macroMatcher.group(3);
+//        		String g3 = macroMatcher.group(4);
+//    
+//           if (g1.equals("çeviri")) {
+//            	String lang;
+//            	String word = null;
+//            	String usage = null;
+//
+//            	lang = g2;
+//        		// normalize language code
+//                String normLangCode;
+//                if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
+//                    lang = normLangCode;
+//                }
+//                  int i1;    
+//                if ((i1 = g3.indexOf('|')) == -1) {
+//                    word = g3;
+//                } else {
+//                    word = g3.substring(0, i1);
+//                    usage = g3.substring(i1+1);
+//                }
+//            	lang=TurkishLangtoCode.triletterCode(lang);
+//                if(lang!=null && word != null){
+//             	   wdh.registerTranslation(lang, currentGlose, usage, word);
+//                }
+//           
+//            } else if (g1.equals("Üst")) {
+//                // German wiktionary does not provide a glose to disambiguate.
+//                // Just ignore this marker.
+//            } else if (g1.equals("Orta")) {
+//                // just ignore it
+//            } else if (g1.equals("Alt")) {
+//                // Forget the current glose
+//                currentGlose = null;
+//            }
+//        
+//        }
+//    }
+// }
     
 private void extractPron(int startOffset, int endOffset) {
     	

@@ -26,13 +26,13 @@
 
 \section{Introduction}
 
- Wiktionary is a lexical-semantic resource build colaboratively under the patronnage of the Wikimedia Foundation (which also hosts the well known Wikipedia initiative). It is currently the biggest collaborative resource for lexical data. Wiktionary pages usually describe lexical entries by giving their part of speech, a set of definition, examples, lexico-semantic relations and many translations in more than a thousand target languages.
+ Wiktionary is a lexical-semantic resource build collaboratively under the patronage of the Wikimedia Foundation (which also hosts the well known Wikipedia initiative). It is currently the biggest collaborative resource for lexical data. Wiktionary pages usually describe lexical entries by giving their part of speech, a set of definition, examples, lexico-semantic relations and many translations in more than a thousand target languages.
 
-The DBnary projet \cite{serasset:dbnary-swj} aims at providing high quality Lexical Linked Data extracted from different Wiktionary language editions. It currently extracts data from 10 different editions and gathers $3.16$M translation links relating lexical entries from the 10 extracted languages to entries in more than one thousand languages. These numbers are steadily growing as the DBnary data is extracted as soon as Wikimedia releases new dumps of the data (around once every 10-15 days for each language edition).
+The DBnary project \cite{serasset:dbnary-swj} aims at providing high quality Lexical Linked Data extracted from different Wiktionary language editions. It currently extracts data from 10 different editions and gathers $3.16$M translation links relating lexical entries from the 10 extracted languages to entries in more than one thousand languages. These numbers are steadily growing as the DBnary data is extracted as soon as Wikimedia releases new dumps of the data (around once every 10-15 days for each language edition).
 
 The source of these translation links are \emph{lexical entries}. The purpose of this work is to attach these translations to their correct \emph{word sense} and hence increasing the value of the DBnary data. Comparable efforts have been done (mainly on the UBY dataset), but these were limited to English and German. In this paper we worked on 9 language editions. Among these editions, we were faced with different habits from the different Wiktionary communities and with languages showing different linguistic properties. 
 
-After detailing related works, we present the structure of the DBnary dataset. Then, after showing how we built an endogeneous golden standards used to evaluate this work, we detail the methods used to achieve our purpose. Finally we evaluate our method and discuss the results.
+After detailing related works, we present the structure of the DBnary dataset. Then, after showing how we built an endogenous golden standard used to evaluate this work, we detail the methods used to achieve our purpose. Finally we evaluate our method and discuss the results.
 
 \section{Related Work}
 
@@ -40,7 +40,9 @@ UBY, dbpedia/Wiktionary,
 
 \section{The DBnary Dataset}
 
-DBnary is a Lexical Linked Open Dataset extracted form 10 Wiktionary language editions (English, Finnish, French, German, Greek, Italian, Japanese, Portuguese, Russian and Turkish). It is available online at \url{http://kaiko.getalp.org/about-dbnary}. At the time of writting, it contains 35 million triples. DBnary is structured according the LEMON ontology for lexical linked data \cite{DBLP:conf/esws/McCraeSC11}.
+DBnary is a Lexical Linked Open Dataset extracted form 10 Wiktionary language editions (English, Finnish, French, German, Greek, Italian, Japanese, Portuguese, Russian and Turkish). It is available on-line at \url{http://kaiko.getalp.org/about-dbnary}. At the time of writing, it contains more than 35 million triples. This number is steadily growing as the dataset evolves in parallel with the Wiktionary original data. Indeed, the dataset is automatically updated as soon as Wikimedia releases new Wiktionary dumps, i.e. every 10-15 days per language edition. 
+
+DBnary is structured according the LEMON ontology for lexical linked data \cite{DBLP:conf/esws/McCraeSC11}. Figure \ref{lemon-elts} shows the number of Lexical Elements, as defined in the LEMON ontologies, for the different extracted languages. 
 
 
 
@@ -61,46 +63,48 @@ Lemon, DBnary, translations, glosses
 
 \begin{table*}[h]
 \begin{center}\begin{footnotesize}
-\begin{tabular}{lrrrrr}
-\textbf{Lang.} & \textbf{trans.} & \textbf{gloss} & \textbf{+t} &  \textbf{+n} & \textbf{+t+n}\\
+\begin{tabular}{lrrrrrrr}
+\textbf{Language} & \textbf{Entries} & \textbf{LexicalSense} & \textbf{Translations} & \textbf{Glosses} & \textbf{Text} &  \textbf{Sense Num} & \textbf{Texte+Sense Num}\\
 \hline
-English & $1317545$ & $1288667$ & $1288667$ & $515$ & $515$ \\
-Finnish & $121278$ & $120728$ & $120329$ & $115949$ & $115550$ \\
-French & $504061$ & $136319$ & $135612$ & $28821$ & $28114$ \\
-German & $388630$ & $388553$ & $3101$ & $385452$ & $0$ \\
-Modern Greek & $56638$ & $8368$ & $8368$ & $12$ & $12$ \\
-Japanese & $85606$ & $22322$ & $20686$ & $4148$ & $2512$ \\
-Portuguese & $267048$ & $74901$ & $72339$ & $71734$ & $69172$ \\
-Russian & $360016$ & $151100$ & $150985$ & $115$ & $0$ \\
-Turkish & $66290$ & $53348$ & $585$ & $52901$ & $138$ \\
+English & $544338$ & $438669$ & $1317545$ & $1288667$ & $1288667$ & $515$ & $515$ \\
+Finnish & $49620$ & $58172$ & $121278$ & $120728$ & $120329$ & $115949$ & $115550$ \\
+French & $291365$ & $379224$ & $504061$ & $136319$ & $135612$ & $28821$ & $28114$ \\
+German & $205977$ & $100433$ & $388630$ & $388553$ & $3101$ & $385452$ & $0$ \\
+Modern Greek & $242349$ & $108283$ & $56638$ & $8368$ & $8368$ & $12$ & $12$ \\
+Italian & $33705$ & $47102$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+Japanese & $24804$ & $28763$ & $85606$ & $22322$ & $20686$ & $4148$ & $2512$ \\
+Portuguese & $45109$ & $81023$ & $267048$ & $74901$ & $72339$ & $71734$ & $69172$ \\
+Russian & $129555$ & $106374$ & $360016$ & $151100$ & $150985$ & $115$ & $0$ \\
+Turkish & $64678$ & $91071$ & $66290$ & $53348$ & $585$ & $52901$ & $138$ \\
 \hline
 \end{tabular}
-\caption{The caption of the table}
+\caption{Number of elements in the current DBnary dataset, detailing the number of entries and word senses, along with the number of translations. The table also details the number of Glosses attach to translations, among which the amount of textual glosses, of glosses giving the sense identifier and, finally, the number of glosses that contain both a textual description and the a word sense identifier.}
 \end{footnotesize}\end{center}
+\label{lemon-elts}
 \end{table*}
 
 
 \section{Attaching Translations to Word Senses}
 \subsection{Similarity Measure}
-In order to disambiguate the translation, we need to be able to compute some form of semantic similarity measure. Given that the only information available in the translations is the gloss that summarises the definition of the corresponding sense, we need a measure to capture the similarity by comparing the translation glosses and the sense definitions. The Lesk (Lesk, 1985) measure is a standard semantic similarity measure, specifically suited for such tasks as it computes a similarity based on the number of exact overlapping words between definitions. The Lesk similarity's however has several important issues that need to be addressed when its use is mandated: 
+In order to disambiguate the translation, we need to be able to compute some form of semantic similarity measure. Given that the only information available in the translations is the gloss that summarises the definition of the corresponding sense, we need a measure to capture the similarity by comparing the translation glosses and the sense definitions. The Lesk \cite{citeulike:625530} measure is a standard semantic similarity measure, specifically suited for such tasks as it computes a similarity based on the number of exact overlapping words between definitions. The Lesk similarity's however has several important issues that need to be addressed when its use is mandated: 
 \begin{itemize}
-	\item If the sizes of the glosses or definitions is not the same, the Lesk measure will always favour longer definitions.
+	\item If the sizes of the glosses or definitions is not the same, the Lesk measure will always favor longer definitions.
 	\item The size and the appropriateness of the words contained in the definitions is important, as one key word to the meaning of the definition is missing (or the presence of a synonym for that matter) can lead to an incorrectly low similarity.
 	\item The Lesk overlap is not in itself normalized, and the normalization process requires some though depending of the distinct problems at hand.
 \end{itemize}
  
- The issues of normalization and of the unequal length of definitions are actually related, as one of the practical ways of doing so is to, for example, divide by the length of the shortest definition as a normalization. Moreover, one can only notice the similarity between the Lesk measure and other overlap coefficients such as the dice coefficient, the Jaccard or Tatimono indices. In fact, all of these measures are special forms of the Tsversky index, which stems from the works on similarity of cognitive psychologist A. Tsverski (Tsversky, 1973).
+ The issues of normalization and of the unequal length of definitions are actually related, as one of the practical ways of doing so is to, for example, divide by the length of the shortest definition as a normalization. Moreover, one can only notice the similarity between the Lesk measure and other overlap coefficients such as the dice coefficient, the Jaccard or Tatimono indices. In fact, all of these measures are special forms of the Tversky index, which stems from the works on similarity of cognitive psychologist A. Tversky \cite{tversky77similarity}.
 
-The Tsversky index can be defined as follows. Let \(s_1 \in S(W_1)\)  and \(s_2 \in S(W_1)\) be the senses of two words \(W_1\) and \(W_2\). Let the function \(d\) map a sense \(s_i\) to its definition \(d(s_i)\). The similarity between the senses \(S(s_1, s_2)\) can be expressed as 
+The Tversky index can be defined as follows. Let \(s_1 \in S(W_1)\)  and \(s_2 \in S(W_1)\) be the senses of two words \(W_1\) and \(W_2\). Let \(d_i\) be the definition of \(s_i\), represented as a set of words. The similarity between the senses \(S(s_1, s_2)\) can be expressed as 
 \[
 S(s_1,s_2) = 
-\frac{|d(s_1)\cap d(s_2)|}{|d(s_1)\cap d(s_2)| + \alpha |d(s_1)-d(s_2)| + \beta |d(s_2)-d(s_1)|}
+\frac{|d_1\cap d_2|}{|d_1\cap d_2| + \alpha |d_1-d_2| + \beta |d_2-d_1|}
 \]
 
-The measure can further be generalized following (Pirró and Euzenat,2010) by replacing the cardinality function by any function \(F\).
+The measure can further be generalized following \cite{DBLP:conf/otm/PirroE10} by replacing the cardinality function by any function \(F\).
 
 
- When working on a single language such as English and French, we have at our disposal tools such as a lemmatizer or a stemmer that may help to retrieve a canonical representation of the terms. Thus, we can hope to maximise the overlap and reduce the usual sparsity of glosses or sense definitions. For agglutinative languages like German, highly inflective language (for example in the Bangla language, common stems are often composed of a single character, which makes stemming difficult to exploit) or languages with no clear segmentation, the preprocessing steps are paramount in order to make overlap based measures viable. If one is working on a single language, even if stemmers and lemmatizers do not exist it is not impossible to build such a tool.
+ When working on a single language such as English and French, we have at our disposal tools such as a lemmatizer or a stemmer that may help to retrieve a canonical representation of the terms. Thus, we can hope to maximize the overlap and reduce the usual sparsity of glosses or sense definitions. For agglutinative languages like German, highly inflective language (for example in the Bangla language, common stems are often composed of a single character, which makes stemming difficult to exploit) or languages with no clear segmentation, the preprocessing steps are paramount in order to make overlap based measures viable. If one is working on a single language, even if stemmers and lemmatizers do not exist it is not impossible to build such a tool.
 
 However, in the context of this work we are currently dealing with 10 languages (and potentially in the future with all the languages present in Wiktionary) and thus, in order to propose a truly general method, we cannot expect the prerequisite presence of such tools. 
 

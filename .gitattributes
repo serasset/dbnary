@@ -1,4 +1,5 @@
 * text=auto !eol
+doc/articles/ldl2014/dbnary-wsd.bib -text
 doc/articles/ldl2014/dbnary-wsd.tex -text
 doc/articles/ldl2014/image1-eps-converted-to.pdf -text
 doc/articles/ldl2014/image1.eps -text

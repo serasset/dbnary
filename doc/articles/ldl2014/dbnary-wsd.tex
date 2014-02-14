@@ -4,6 +4,8 @@
 
 \usepackage[utf8]{inputenc}
 
+\usepackage{hyperref}
+
 \title{Attaching translations and relations to proper lexical senses in DBnary}
 
 \name{Andon Tchechmedjiev, Gilles Sérasset}
@@ -23,9 +25,24 @@
 \maketitleabstract
 
 \section{Introduction}
-Blah blah
 
-\section{Structure of the DBnary Dataset}
+ Wiktionary is a lexical-semantic resource build colaboratively under the patronnage of the Wikimedia Foundation (which also hosts the well known Wikipedia initiative). It is currently the biggest collaborative resource for lexical data. Wiktionary pages usually describe lexical entries by giving their part of speech, a set of definition, examples, lexico-semantic relations and many translations in more than a thousand target languages.
+
+The DBnary projet \cite{serasset:dbnary-swj} aims at providing high quality Lexical Linked Data extracted from different Wiktionary language editions. It currently extracts data from 10 different editions and gathers $3.16$M translation links relating lexical entries from the 10 extracted languages to entries in more than one thousand languages. These numbers are steadily growing as the DBnary data is extracted as soon as Wikimedia releases new dumps of the data (around once every 10-15 days for each language edition).
+
+The source of these translation links are \emph{lexical entries}. The purpose of this work is to attach these translations to their correct \emph{word sense} and hence increasing the value of the DBnary data. Comparable efforts have been done (mainly on the UBY dataset), but these were limited to English and German. In this paper we worked on 9 language editions. Among these editions, we were faced with different habits from the different Wiktionary communities and with languages showing different linguistic properties. 
+
+After detailing related works, we present the structure of the DBnary dataset. Then, after showing how we built an endogeneous golden standards used to evaluate this work, we detail the methods used to achieve our purpose. Finally we evaluate our method and discuss the results.
+
+\section{Related Work}
+
+UBY, dbpedia/Wiktionary, 
+
+\section{The DBnary Dataset}
+
+DBnary is a Lexical Linked Open Dataset extracted form 10 Wiktionary language editions (English, Finnish, French, German, Greek, Italian, Japanese, Portuguese, Russian and Turkish). It is available online at \url{http://kaiko.getalp.org/about-dbnary}. At the time of writting, it contains 35 million triples. DBnary is structured according the LEMON ontology for lexical linked data \cite{DBLP:conf/esws/McCraeSC11}.
+
+
 
 Preprocessing:
 
@@ -63,14 +80,7 @@ Turkish & $66290$ & $53348$ & $585$ & $52901$ & $138$ \\
 \end{table*}
 
 
-
-\section{Translation and Relation Disambiguation}
-
-
-\section{Related Work}
-
-
-\section{Methods}
+\section{Attaching Translations to Word Senses}
 \subsection{Similarity Measure}
 In order to disambiguate the translation, we need to be able to compute some form of semantic similarity measure. Given that the only information available in the translations is the gloss that summarises the definition of the corresponding sense, we need a measure to capture the similarity by comparing the translation glosses and the sense definitions. The Lesk (Lesk, 1985) measure is a standard semantic similarity measure, specifically suited for such tasks as it computes a similarity based on the number of exact overlapping words between definitions. The Lesk similarity's however has several important issues that need to be addressed when its use is mandated: 
 \begin{itemize}
@@ -101,28 +111,9 @@ The simplest approach to the problem is to use some form of partial string match
 
 
 
-\begin{figure}[h]
-\begin{center}
-%\fbox{\parbox{6cm}{
-%This is a figure with a caption.}}
-\includegraphics[scale=0.5]{image1.eps} 
-\caption{The caption of the figure.}
-\label{fig.1}
-\end{center}
-\end{figure}
-
 \section{Experiments}
 
 
-\section{Footnotes}
-
-Footnotes are indicated within the text by a number in superscript\footnote{They should be in Times 9, and appear at the bottom of the same page as their corresponding number. Footnotes should also be separated from the rest of the text by a horizontal line 5 cm long.}.
-
-\section{Copyrights}
-
-The Lan\-gua\-ge Re\-sour\-ce and Evalua\-tion Con\-fe\-rence (LREC) proceedings are published by the European Language Resources Association (ELRA). They include different media that may be used (i.e. hardcopy, CD-ROM, Internet-based/Web, etc.).
-
-ELRA's policy is to acquire copyright for all LREC contributions. In assigning your copyright, you are not forfeiting your right to use your contribution elsewhere. This you may do without seeking permission and is subject only to normal acknowledgement to the LREC proceedings.
 
 \section{Conclusion}
 
@@ -133,12 +124,29 @@ proceedings.
 
 Place all acknowledgements (including those concerning research grants and funding) in a separate section at the end of the article.
 
-\section{References}
-
 %\nocite{*}
 
 \bibliographystyle{lrec2006}
-\bibliography{example}
+\bibliography{dbnary-wsd}
 
 \end{document}
 
+\begin{figure}[h]
+\begin{center}
+%\fbox{\parbox{6cm}{
+%This is a figure with a caption.}}
+\includegraphics[scale=0.5]{image1.eps} 
+\caption{The caption of the figure.}
+\label{fig.1}
+\end{center}
+\end{figure}
+
+\section{Footnotes}
+
+Footnotes are indicated within the text by a number in superscript\footnote{They should be in Times 9, and appear at the bottom of the same page as their corresponding number. Footnotes should also be separated from the rest of the text by a horizontal line 5 cm long.}.
+
+\section{Copyrights}
+
+The Lan\-gua\-ge Re\-sour\-ce and Evalua\-tion Con\-fe\-rence (LREC) proceedings are published by the European Language Resources Association (ELRA). They include different media that may be used (i.e. hardcopy, CD-ROM, Internet-based/Web, etc.).
+
+ELRA's policy is to acquire copyright for all LREC contributions. In assigning your copyright, you are not forfeiting your right to use your contribution elsewhere. This you may do without seeking permission and is subject only to normal acknowledgement to the LREC proceedings.

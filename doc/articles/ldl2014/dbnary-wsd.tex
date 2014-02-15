@@ -15,8 +15,10 @@
                firstname.lastname@imag.fr\\}
 
 
-\abstract{ In this paper we 
- \\ \newline \Keywords{Wiktionary, Linked Open Data, Multilingual Resources}}
+\abstract{ 
+The DBnary project aims at providing high quality Lexical Linked Data extracted from different Wiktionary language editions. Data from 10 different languages is  currently extracted for a total of over $3.16$M translation links that connect lexical entries from the 10 extracted languages, to entries in more than one thousand languages. 
+In Wiktionary, glosses are often associated with translations to help users understand to what sense they refer to, wither though a textual definition or a target sense number. In this article we aim at the extraction of as much of this information as possible and then the disambiguation of the corresponding translations for all languages available. We use an adaptation of various textual and semantic similarity techniques based on partial or fuzzy gloss overlaps to disambiguate the translation relations (To account for the lack of normalization, e.g. lemmatization and PoS tagging) and then extract some of the sense number information present to build a gold standard so as to evaluate our disambiguation as well as tune and optimize the parameters of the similarity measures.
+We obtain F-measures of the order of 80\% (on par with similar work on English only), across the three languages where we could generate a gold standard (French, Portuguese, Finnish) and show that most of the disambiguation errors are due to inconsistencies in Wiktionary itself that cannot be detected at the generation of DBNary (shifted sense numbers, inconsistent glosses, etc.). \\ \newline \Keywords{Wiktionary, Linked Open Data, Multilingual Resources}}
 
 
 
@@ -42,29 +44,48 @@ UBY, dbpedia/Wiktionary,
 
 DBnary is a Lexical Linked Open Dataset extracted form 10 Wiktionary language editions (English, Finnish, French, German, Greek, Italian, Japanese, Portuguese, Russian and Turkish). It is available on-line at \url{http://kaiko.getalp.org/about-dbnary}. At the time of writing, it contains more than 35 million triples. This number is steadily growing as the dataset evolves in parallel with the Wiktionary original data. Indeed, the dataset is automatically updated as soon as Wikimedia releases new Wiktionary dumps, i.e. every 10-15 days per language edition. 
 
-DBnary is structured according the LEMON ontology for lexical linked data \cite{DBLP:conf/esws/McCraeSC11}. Figure \ref{lemon-elts} shows the number of Lexical Elements, as defined in the LEMON ontologies, for the different extracted languages. 
+DBnary is structured according the LEMON ontology for lexical linked data \cite{DBLP:conf/esws/McCraeSC11}. Table \ref{lemon-elts} shows the number of Lexical Elements, as defined in the LEMON ontologies, for the different extracted languages. 
+
+The elements in DBnary that could not be represented with Lemon, were defined as a custom ontology built on top of existing Lemon classes and relations, most notably lexico-semantic relation and what we call \verb|Vocables|, the top level entries in Wiktionary, that correspond to Wiktionary pages for specific words, and that can contain several \verb|lemon:LexicalEntries|s (lexemes) categorised in two levels:
+\begin{enumerate}
+	\item Homonymous distinction of words of different etymological origins (e.g. \verb|river [water stream]| v.s. \verb|river [one who rives or split])|
+	\item For each etymological origin, the different lexico-grammatical categories (PoS) (e.g. \verb|cut#V| \verb|[I cut myself]| v.s. \verb|cut#Noun| \verb|[I want my cut of the winning])|
+\end{enumerate}
+
+\subsection{Translation relations}
+Wiktionary also contains, independently, in each language edition and for each LexicalEntry, translation links to foreign language \verb|Vocable|s. Each translation can (optionally) be accompanied by a gloss that contains disambiguation information about the translation. Some of these glosses are textual and summarize or reprise the definition or part of the definition of one or more specific sense to which the translation specifically applies to. Additionally among the glosses, some may contain sense numbers, indicated by users in an ad-hoc way (may or may not be present, if the latter, no standard format is systematically followed or enforced). However, the presence of disambiguation information is very irregular and varies greatly between languages, both in terms of wiki structure and representation.
 
 
+In the current state of the Wiktionary extraction process, we extract translation and when possible the associated glosses. However up to now, we did not exploit the information contained in the glosses to enrich and disambiguate the foreign language targets of translation relations.
 
-Preprocessing:
 
+As mentioned above, the information contained in translation glosses and their format are very variable between languages, both quantitatively and qualitatively. Indeed, as shown in Table \ref{lemon-elts} some language like Italian, contain no translations altogether, others, like English have many translation and almost systematically have textual glosses attached to them, but with no sense numbers. Others still, like German hardly contain textual glosses but where most glosses contain sense numbers. In very rare cases such as for Portugese, almost all the translations that have an attached (textual) gloss with associated sense numbers. 
+The first step we have to take before continuing further is to actually extract the gloss an sense number information, which is no easy task as it requires language specific extraction programs.
+\subsubsection{Preprocessing}
+It is often the case that among translation glosses that are available and that do contain textual information or sense numbers, there are many false positives and variability that result from the variety of structures employed in Wiktionary as well as artefacts resulting from the extraction process. Before we can proceed further, it is paramount to filter this information so as to keep only its relevant parts. 
+
+More concretely tow steps must be followed of we are to successfully extract the information we need :
 \begin{itemize}
-   \item suppress glosses containing irrelevant glosses
+   \item Remove empty glosses, or glosses containing irrelevant textual content that often correspond to TO DO notes in various forms:
    \begin{itemize}
-      \item French "*à trier*" ou "*À trier*" ou "à classer" ou "Traductions"
+      \item French --- "*à trier*"or "*À trier*" or "à classer" or "Traductions"
+      \item Portuguese --- "*A/a ser (em) classificado ", "Traduções"
+      \item English --- "To be checked"
+      \item etc.
    \end{itemize}
-   \item extract sense numbers from the glosses when available
+   \item Extract sense numbers from the glosses when available, where "num+" represents one or more sense numbers separated by one or more separators and where "xxx" is a placeholder for the remainder of the gloss: 
    \begin{itemize}
-      \item French: xxx\texttt{|}num+, (num+) xxx, xxx (num+), num+, Sens num+
-      \item 
+      \item French --- xxx\texttt{|}num+, (num+) xxx, xxx (num+), num+, Sens num+
+      \item Finnish --- (num+) xxx, num+| xxx
+      \item Portuguese --- (De/de (num+)) xxx
+      \item etc.
    \end{itemize}
 \end{itemize}
-Lemon, DBnary, translations, glosses
 
 \begin{table*}[h]
 \begin{center}\begin{footnotesize}
 \begin{tabular}{lrrrrrrr}
-\textbf{Language} & \textbf{Entries} & \textbf{LexicalSense} & \textbf{Translations} & \textbf{Glosses} & \textbf{Text} &  \textbf{Sense Num} & \textbf{Texte+Sense Num}\\
+\textbf{Language} & \textbf{Entries} & \textbf{LexicalSense} & \textbf{Translations} & \textbf{Glosses} & \textbf{Text} &  \textbf{Sense Num} & \textbf{Text+Sense Num.}\\
 \hline
 English & $544338$ & $438669$ & $1317545$ & $1288667$ & $1288667$ & $515$ & $515$ \\
 Finnish & $49620$ & $58172$ & $121278$ & $120728$ & $120329$ & $115949$ & $115550$ \\
@@ -79,10 +100,12 @@ Turkish & $64678$ & $91071$ & $66290$ & $53348$ & $585$ & $52901$ & $138$ \\
 \hline
 \end{tabular}
 \caption{Number of elements in the current DBnary dataset, detailing the number of entries and word senses, along with the number of translations. The table also details the number of Glosses attach to translations, among which the amount of textual glosses, of glosses giving the sense identifier and, finally, the number of glosses that contain both a textual description and the a word sense identifier.}
-\end{footnotesize}\end{center}
 \label{lemon-elts}
+\end{footnotesize}\end{center}
+
 \end{table*}
 
+Now that we have successfully extracted as much of the information contained in translation glosses, we can move on to the disambiguation process itself. While, the steps above are indeed language specific, what follows was designed to be as generic and computationally efficient as possible, as we are required to periodically perform the disambiguation, whenever a new version of DBNNary is extracted from the latest Wiktionary dumps.
 
 \section{Attaching Translations to Word Senses}
 \subsection{Similarity Measure}
@@ -101,9 +124,19 @@ S(s_1,s_2) =
 \frac{|d_1\cap d_2|}{|d_1\cap d_2| + \alpha |d_1-d_2| + \beta |d_2-d_1|}
 \]
 
-The measure can further be generalized following \cite{DBLP:conf/otm/PirroE10} by replacing the cardinality function by any function \(F\).
+The measure can further be generalized following \cite{DBLP:conf/otm/PirroE10} by replacing the cardinality function by any function \(F\). Depending on the values of \(\alpha\) and \(\beta\), the Tversky index takes the particular form of other similar indexes. For \((\alpha=\beta=0.5)\) for example it is equivalent to the dice coefficient, and for  \((\alpha=\beta=1)\) to the Tatimono index. More generally, the values of \(\alpha\) and \(\beta\) express how much emphasis one wants to attribute to the commonality or differences of one or the other set.
 
+ The Tversky function in itself is not a metric in the mathematical sense, as it is neither symmetric nor respects the triangular inequality, however, a symmetric variant has been proposed by \cite{Jimenez2010} for such cases where the symmetry property is important or required: 
+ 
+ \[
+ S(s_1,s_2) = \frac{|d_1\cap d_2|}{|d_1\cap d_2| + \beta (\alpha a + (1-\alpha)b)}\]
+ \[
+ a=min(|d_1\cap d_2|,|d_2\cap d_1|)\\
+ \]\[
+ b=max(|d_1\cap d_2|,|d_2\cap d_1|)\\ 
+ \]
 
+\subsubsection{Multilingual Setting \& Partial overlaps}
  When working on a single language such as English and French, we have at our disposal tools such as a lemmatizer or a stemmer that may help to retrieve a canonical representation of the terms. Thus, we can hope to maximize the overlap and reduce the usual sparsity of glosses or sense definitions. For agglutinative languages like German, highly inflective language (for example in the Bangla language, common stems are often composed of a single character, which makes stemming difficult to exploit) or languages with no clear segmentation, the preprocessing steps are paramount in order to make overlap based measures viable. If one is working on a single language, even if stemmers and lemmatizers do not exist it is not impossible to build such a tool.
 
 However, in the context of this work we are currently dealing with 10 languages (and potentially in the future with all the languages present in Wiktionary) and thus, in order to propose a truly general method, we cannot expect the prerequisite presence of such tools. 
@@ -112,12 +145,14 @@ How then, can we manage to compute overlaps effectively? When computing Lesk, if
 
 The simplest approach to the problem is to use some form of partial string matching metric to compute partial overlaps, a trivial, yet useful extension. 
 
-
-
-
 \section{Experiments}
-
-
+\subsection{Evaluation}
+\subsubsection{Gold Standard}
+\subsubsection{Trec\_eval, scoring as a query answering task}
+\subsubsection{Measures}
+\subsection{Similarity Measure Tuning}
+\subsection{Disambigation Results}
+\subsection{Errors analysis}
 
 \section{Conclusion}
 

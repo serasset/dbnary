@@ -5,6 +5,7 @@
 \usepackage[utf8]{inputenc}
 
 \usepackage{hyperref}
+\usepackage{alltt}
 
 \title{Attaching translations and relations to proper lexical senses in DBnary}
 
@@ -38,72 +39,114 @@ After detailing related works, we present the structure of the DBnary dataset. T
 
 \section{Related Work}
 
-UBY, dbpedia/Wiktionary, 
+\textbf{Extracting Data from Wiktionary Language Editions.} Since its introduction in late 2002, Wiktionary has steadily raised in size (both with collaborative work and with automatic insertion of previously available free lexical data). Interest in Wiktionary as a source for lexical data for NLP applications has quickly raised and studies liked \cite{Zesch:AAAI2008} or \cite{navarro-EtAl:2009:PeoplesWeb} shown the richness and power of this resource. 
+
+Since then, efforts has been specifically placed on the systematic extraction of Wiktionary data. Many of them have been done for a specific project and only represent a snapshot of Wiktionary. As all Wiktionary language editions evolve regularly (and independently) in the way they represents data, such effort are not suitable to prvide a sustainable access to Wiktionary data. 
+
+Some efforts though are maintained and allow access over time. One of the most mature project is the \emph{JWKTL} API \cite{ZeschMuellerGurevych2008} giving access to  the English, German and Russian language editions. It is used in the UBY project \cite{gurevych2012uby} which provides an LMF based version of these editions. 
+
+We should also mention the wikokit project \cite{krizhanovsky2010transformation} that provides access to the English and Russian editions and which has been used by \emph{JWKTL}.
+
+\cite{HellmannSebastianandBrekleJonasandAuer} presents another attempt under the umbrella of the dbpedia project \cite{dbpedia-swj}, whose purpose is specifically to provide the Wiktionary data as Lexical Linked Open Data. The main interest of this approach is the collaborative approach used to create the extraction templates, which is the general approach of the dbpedia project. This project currently handles the English, French, Russian and German Wiktionary language editions.
+
+This paper is part of the DBnary project \cite{serasset:dbnary-swj}, whose purpose is similar to \cite{HellmannSebastianandBrekleJonasandAuer}. Our specific goal is to provide LEMON structure lexical database that are structured as usual lexica. Indeed, we do extract data from Wiktionary, however, we currently restrict ourselves to the ``native'' data of each language edition, e.g. the French data is extracted from the French language edition and we disregard French data that is contained in other editions. At our knowledge, it is currently the most advanced extractor, as it currently actively supports 10 languages. It is also the only initiative that gives access to the whole history of the extracted data.
+
+\textbf{Disambiguation the Source of Translations.} As far as the task of attaching translations to the proper word sense is concerned, the most similar work is described in \cite{meyer-gurevych:2012:PAPERS}. Its purpose was exactly the same, however, it only addressed German and English Language Editions. In this work, the gold standard to evaluate the method was manually created and was significantly smaller than the endogenous gold standard we extracted from the resource itself. This worked used a backoff strategy where string similarity measures were used only when other heuristics failed. These other heuristics also implied a finer analysis of definitions and glosses to distinguish between linguistic labels (stating the domain, register, tile, etc.). In the work presented here, we achieve a better scores on the languages we were able to evaluate with an endogenous gold standard, even though we only used string similarity measures and even if the evaluated languages show significantly different features (e.g. agglutinative aspect of the Finnish language).
 
 \section{The DBnary Dataset}
 
-DBnary is a Lexical Linked Open Dataset extracted form 10 Wiktionary language editions (English, Finnish, French, German, Greek, Italian, Japanese, Portuguese, Russian and Turkish). It is available on-line at \url{http://kaiko.getalp.org/about-dbnary}. At the time of writing, it contains more than 35 million triples. This number is steadily growing as the dataset evolves in parallel with the Wiktionary original data. Indeed, the dataset is automatically updated as soon as Wikimedia releases new Wiktionary dumps, i.e. every 10-15 days per language edition. 
+DBnary is a Lexical Linked Open Dataset extracted from 10 Wiktionary language editions (English, Finnish, French, German, Greek, Italian, Japanese, Portuguese, Russian and Turkish). It is available on-line at \url{http://kaiko.getalp.org/about-dbnary}. At the time of writing, it contains more than 35 million triples. This number is steadily growing as the dataset evolves in parallel with the Wiktionary original data. Indeed, the dataset is automatically updated as soon as Wikimedia releases new Wiktionary dumps, i.e. every 10-15 days per language edition. 
 
 DBnary is structured according the LEMON ontology for lexical linked data \cite{DBLP:conf/esws/McCraeSC11}. Table \ref{lemon-elts} shows the number of Lexical Elements, as defined in the LEMON ontologies, for the different extracted languages. 
 
-The elements in DBnary that could not be represented with Lemon, were defined as a custom ontology built on top of existing Lemon classes and relations, most notably lexico-semantic relation and what we call \verb|Vocables|, the top level entries in Wiktionary, that correspond to Wiktionary pages for specific words, and that can contain several \verb|lemon:LexicalEntries|s (lexemes) categorised in two levels:
+The elements in DBnary that could not be represented with Lemon, were defined as a custom ontology built on top of existing Lemon classes and relations, most notably lexico-semantic relation and what we call \verb|Vocables|, the top level entries in Wiktionary, that correspond to Wiktionary pages for specific words, and that can contain several \verb|lemon:LexicalEntries| (lexemes) categorised in two levels:
 \begin{enumerate}
 	\item Homonymous distinction of words of different etymological origins (e.g. \verb|river [water stream]| v.s. \verb|river [one who rives or split])|
-	\item For each etymological origin, the different lexico-grammatical categories (PoS) (e.g. \verb|cut#V| \verb|[I cut myself]| v.s. \verb|cut#Noun| \verb|[I want my cut of the winning])|
+	\item For each etymological origin, the different lexico-grammatical categories (PoS) (e.g. \verb|cut#V| \verb|[I cut myself]| v.s. \verb|cut#Noun| \verb|[I want my cut of the winning]|)
 \end{enumerate}
 
 \subsection{Translation relations}
-Wiktionary also contains, independently, in each language edition and for each LexicalEntry, translation links to foreign language \verb|Vocable|s. Each translation can (optionally) be accompanied by a gloss that contains disambiguation information about the translation. Some of these glosses are textual and summarize or reprise the definition or part of the definition of one or more specific sense to which the translation specifically applies to. Additionally among the glosses, some may contain sense numbers, indicated by users in an ad-hoc way (may or may not be present, if the latter, no standard format is systematically followed or enforced). However, the presence of disambiguation information is very irregular and varies greatly between languages, both in terms of wiki structure and representation.
 
+The DBnary dataset uses an ad-hoc representation of translation relations, as the LEMON model does not provide a vocabulary for such information. A \verb|Translation| is a RDF resource that gathers all extracted elements. As an example, one of the translation of the lexical entry \emph{frog} is represented as follow\footnote{In all dumps and in this paper, we use the Turtle syntax to represent RDF data.}:
+
+\begin{small}
+\begin{alltt}
+eng:__tr_fra_1_frog__Noun__1
+      a       dbnary:Translation ;
+      dbnary:gloss "amphibian"@en ;
+      dbnary:isTranslationOf
+              eng:frog__Noun__1 ;
+      dbnary:targetLanguage
+              lexvo:fra ;
+      dbnary:usage "f" ;
+      dbnary:writtenForm "grenouille"@fr .
+\end{alltt}
+\end{small}
+
+Properties of this resource point to the source \verb|LexicalEntry|, the language of the target (represented as a \verb|lexvo.org| entity \cite{deMeloWeikum2008c}), the target written form and, optionally, a gloss and usage notes.
+
+The usage note gives information about the target of the translation (usually used to give the gender or a transcription of the target).
+
+The gloss gives disambiguation information about the source of the translation. In the example given, it states that the given translation is valid for the word sense of \emph{frog} that may be described by the hint ``\emph{amphibian}''. Some of these glosses are textual and summarize or reprise the definition or part of the definition of one or more specific sense to which the translation specifically applies to.
+
+As an example, the English \verb|LexicalEntry| \emph{frog} contains 8 word senses, defined as follows:
+
+\begin{small}\begin{enumerate}
+\item A small tailless amphibian of the order Anura that typically hops
+\item The part of a violin bow (or that of other similar string instruments such as the viola, cello and contrabass) located at the end held by the player, to which the horsehair is attached
+\item (Cockney rhyming slang) Road. Shorter, more common form of frog and toad
+\item The depression in the upper face of a pressed or handmade clay brick
+\item An organ on the bottom of a horse’s hoof that assists in the circulation of blood
+\item The part of a railway switch or turnout where the running-rails cross (from the resemblance to the frog in a horse’s hoof)
+\item An oblong cloak button, covered with netted thread, and fastening into a loop instead of a button hole.
+\item The loop of the scabbard of a bayonet or sword. 
+\end{enumerate}\end{small}
+
+Translations of this entry are devided in 4 groups corresponding to the glosses ``\emph{amphibian}'', ``\emph{end of a string instrument’s bow}'', ``\emph{organ in a horse’s foot}'' and ``\emph{part of a railway}''. 
+
+Additionally among the glosses, some may contain sense numbers, indicated by users in an ad-hoc way (may or may not be present, if the latter, no standard format is systematically followed or enforced). However, the presence of disambiguation information is very irregular and varies greatly between languages, both in terms of wiki structure and representation.
 
 In the current state of the Wiktionary extraction process, we extract translation and when possible the associated glosses. However up to now, we did not exploit the information contained in the glosses to enrich and disambiguate the foreign language targets of translation relations.
 
+As mentioned above, the information contained in translation glosses and their format are very variable between languages, both quantitatively and qualitatively. 
 
-As mentioned above, the information contained in translation glosses and their format are very variable between languages, both quantitatively and qualitatively. Indeed, as shown in Table \ref{lemon-elts} some language like Italian, contain no translations altogether, others, like English have many translation and almost systematically have textual glosses attached to them, but with no sense numbers. Others still, like German hardly contain textual glosses but where most glosses contain sense numbers. In very rare cases such as for Portugese, almost all the translations that have an attached (textual) gloss with associated sense numbers. 
-The first step we have to take before continuing further is to actually extract the gloss an sense number information, which is no easy task as it requires language specific extraction programs.
-\subsubsection{Preprocessing}
+Indeed, as shown in Table \ref{lemon-elts} some language like Italian, contain no gloss altogether, others, like English attaches textual glosses to translations almost systematically, but with no sense numbers. Others still, like German hardly contain textual glosses but give sense numbers to translations. In other cases such as for Finnish, French and Portuguese, many translations have an attached (textual) gloss with associated sense numbers. 
+
+In order to evaluate our method, we decided to use these mixed glosses that contain a textual hint and a sense number to create a endogenous gold standard.
+
+\subsubsection{Creation of a gold standard}
+
 It is often the case that among translation glosses that are available and that do contain textual information or sense numbers, there are many false positives and variability that result from the variety of structures employed in Wiktionary as well as artefacts resulting from the extraction process. Before we can proceed further, it is paramount to filter this information so as to keep only its relevant parts. 
 
 More concretely tow steps must be followed of we are to successfully extract the information we need :
 \begin{itemize}
-   \item Remove empty glosses, or glosses containing irrelevant textual content that often correspond to TO DO notes in various forms:
-   \begin{itemize}
-      \item French --- "*à trier*"or "*À trier*" or "à classer" or "Traductions"
-      \item Portuguese --- "*A/a ser (em) classificado ", "Traduções"
-      \item English --- "To be checked"
-      \item etc.
-   \end{itemize}
-   \item Extract sense numbers from the glosses when available, where "num+" represents one or more sense numbers separated by one or more separators and where "xxx" is a placeholder for the remainder of the gloss: 
-   \begin{itemize}
-      \item French --- xxx\texttt{|}num+, (num+) xxx, xxx (num+), num+, Sens num+
-      \item Finnish --- (num+) xxx, num+| xxx
-      \item Portuguese --- (De/de (num+)) xxx
-      \item etc.
-   \end{itemize}
+   \item Remove empty glosses, or glosses containing irrelevant textual content that often correspond to TO DO notes in various forms (e.g. \emph{translations to be checked})
+   \item Extract sense numbers from the glosses when available, using language dependent templates (e.g. ``\emph{textual gloss (1)}'' or ``\emph{1. textual gloss}'') 
 \end{itemize}
 
-\begin{table*}[h]
+\begin{table*}[htb]
 \begin{center}\begin{footnotesize}
 \begin{tabular}{lrrrrrrr}
 \textbf{Language} & \textbf{Entries} & \textbf{LexicalSense} & \textbf{Translations} & \textbf{Glosses} & \textbf{Text} &  \textbf{Sense Num} & \textbf{Text+Sense Num.}\\
 \hline
-English & $544338$ & $438669$ & $1317545$ & $1288667$ & $1288667$ & $515$ & $515$ \\
-Finnish & $49620$ & $58172$ & $121278$ & $120728$ & $120329$ & $115949$ & $115550$ \\
-French & $291365$ & $379224$ & $504061$ & $136319$ & $135612$ & $28821$ & $28114$ \\
-German & $205977$ & $100433$ & $388630$ & $388553$ & $3101$ & $385452$ & $0$ \\
-Modern Greek & $242349$ & $108283$ & $56638$ & $8368$ & $8368$ & $12$ & $12$ \\
-Italian & $33705$ & $47102$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
-Japanese & $24804$ & $28763$ & $85606$ & $22322$ & $20686$ & $4148$ & $2512$ \\
-Portuguese & $45109$ & $81023$ & $267048$ & $74901$ & $72339$ & $71734$ & $69172$ \\
-Russian & $129555$ & $106374$ & $360016$ & $151100$ & $150985$ & $115$ & $0$ \\
-Turkish & $64678$ & $91071$ & $66290$ & $53348$ & $585$ & $52901$ & $138$ \\
+English & $544,338$ & $438,669$ & $1,317,545$ & $1,288,667$ & $1,288,667$ & $515$ & $515$ \\
+Finnish & $49,620$ & $58,172$ & $121,278$ & $120,728$ & $120,329$ & $115,949$ & $115,550$ \\
+French & $291,365$ & $379,224$ & $504,061$ & $136,319$ & $135,612$ & $28,821$ & $28,114$ \\
+German & $205,977$ & $100,433$ & $388,630$ & $388,553$ & $3,101$ & $385,452$ & $0$ \\
+Modern Greek & $242,349$ & $108,283$ & $56,638$ & $8,368$ & $8,368$ & $12$ & $12$ \\
+Italian & $33,705$ & $47,102$ & $62,546$ & $0$ & $0$ & $0$ & $0$ \\
+Japanese & $24,804$ & $28,763$ & $85,606$ & $22,322$ & $20,686$ & $4,148$ & $2,512$ \\
+Portuguese & $45,109$ & $81,023$ & $267,048$ & $74,901$ & $72,339$ & $71,734$ & $69,172$ \\
+Russian & $129,555$ & $106,374$ & $360,016$ & $151,100$ & $150,985$ & $115$ & $0$ \\
+Turkish & $64,678$ & $91,071$ & $66,290$ & $53,348$ & $585$ & $52,901$ & $138$ \\
 \hline
 \end{tabular}
-\caption{Number of elements in the current DBnary dataset, detailing the number of entries and word senses, along with the number of translations. The table also details the number of Glosses attach to translations, among which the amount of textual glosses, of glosses giving the sense identifier and, finally, the number of glosses that contain both a textual description and the a word sense identifier.}
+\caption{Number of elements in the current DBnary dataset, detailing the number of entries and word senses, along with the number of translations. The table also details the number of Glosses attach to translations, among which the amount of textual glosses, of glosses giving the sense identifier and, finally, the number of glosses that contain both a textual description and a word sense identifier.}
 \label{lemon-elts}
 \end{footnotesize}\end{center}
-
 \end{table*}
+
+When sufficient glosses contain both a textual hint and sense numbers, we removed the sense numbers\footnote{Translation are sometimes valid for several source word senses} from the gloss and used them to create a gold standard in trec\_eval format.
 
 Now that we have successfully extracted as much of the information contained in translation glosses, we can move on to the disambiguation process itself. While, the steps above are indeed language specific, what follows was designed to be as generic and computationally efficient as possible, as we are required to periodically perform the disambiguation, whenever a new version of DBNNary is extracted from the latest Wiktionary dumps.
 

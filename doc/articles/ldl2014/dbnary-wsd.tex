@@ -7,7 +7,7 @@
 \usepackage{hyperref}
 \usepackage{alltt}
 
-\title{Attaching translations and relations to proper lexical senses in DBnary}
+\title{Attaching Translations to Proper Lexical Senses in DBnary}
 
 \name{Andon Tchechmedjiev, Gilles Sérasset}
 
@@ -62,7 +62,7 @@ Our method is based on the application of gloss overlap measures and its extensi
 
 In this work we propose using a very simple hybrid similarity measure by replacing the exact word match of the overlap calculation with an approximate string distance measure and using the more general framework of the Tversky measure that can be seen as a generalization of Lesk, the Dice coefficient , the Jaccard and Tatimono indexes.
 
- The idea proposed by \cite{Jimenez2010} is very similar in the sense that it exploits the Tversky index as a base and conjugates it with a textual similarity measure. That is, instead of incrementing the overlap count by 0 or 1, it is incremented by the value returned by the text similarity measure between the current pair of words being considered in the overlap calculation.
+ The idea proposed by \cite{Jimenez2010,Jimenez2012} is very similar in the sense that it exploits the Tversky index as a base and conjugates it with a textual similarity measure. That is, instead of incrementing the overlap count by 0 or 1, it is incremented by the value returned by the text similarity measure between the current pair of words being considered in the overlap calculation.
  
   Their text similarity measure is based on an empirically generated a q-gram model (character-grams corresponding to substrings) combined with point-wise mutual information weighting. However in this work, we want to minimize the requirement of generating similarity models. Doing so for 10 languages would require some effort and with future expansions to more languages, an impractically daunting task. 
  

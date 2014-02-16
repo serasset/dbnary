@@ -39,7 +39,7 @@ After detailing related works, we present the structure of the DBnary dataset. T
 
 \section{Related Work}
 
-\textbf{Extracting Data from Wiktionary Language Editions.} Since its introduction in late 2002, Wiktionary has steadily raised in size (both with collaborative work and with automatic insertion of previously available free lexical data). Interest in Wiktionary as a source for lexical data for NLP applications has quickly raised and studies liked \cite{Zesch:AAAI2008} or \cite{navarro-EtAl:2009:PeoplesWeb} shown the richness and power of this resource. 
+\subsection{Extracting Data from Wiktionary Language Editions.} Since its introduction in late 2002, Wiktionary has steadily raised in size (both with collaborative work and with automatic insertion of previously available free lexical data). Interest in Wiktionary as a source for lexical data for NLP applications has quickly raised and studies liked \cite{Zesch:AAAI2008} or \cite{navarro-EtAl:2009:PeoplesWeb} shown the richness and power of this resource. 
 
 Since then, efforts has been specifically placed on the systematic extraction of Wiktionary data. Many of them have been done for a specific project and only represent a snapshot of Wiktionary. As all Wiktionary language editions evolve regularly (and independently) in the way they represents data, such effort are not suitable to prvide a sustainable access to Wiktionary data. 
 
@@ -51,7 +51,22 @@ We should also mention the wikokit project \cite{krizhanovsky2010transformation}
 
 This paper is part of the DBnary project \cite{serasset:dbnary-swj}, whose purpose is similar to \cite{HellmannSebastianandBrekleJonasandAuer}. Our specific goal is to provide LEMON structure lexical database that are structured as usual lexica. Indeed, we do extract data from Wiktionary, however, we currently restrict ourselves to the ``native'' data of each language edition, e.g. the French data is extracted from the French language edition and we disregard French data that is contained in other editions. At our knowledge, it is currently the most advanced extractor, as it currently actively supports 10 languages. It is also the only initiative that gives access to the whole history of the extracted data.
 
-\textbf{Disambiguation the Source of Translations.} As far as the task of attaching translations to the proper word sense is concerned, the most similar work is described in \cite{meyer-gurevych:2012:PAPERS}. Its purpose was exactly the same, however, it only addressed German and English Language Editions. In this work, the gold standard to evaluate the method was manually created and was significantly smaller than the endogenous gold standard we extracted from the resource itself. This worked used a backoff strategy where string similarity measures were used only when other heuristics failed. These other heuristics also implied a finer analysis of definitions and glosses to distinguish between linguistic labels (stating the domain, register, tile, etc.). In the work presented here, we achieve a similar scores on the languages we were able to evaluate with an endogenous gold standard, even though we only used string similarity measures and even if the evaluated languages show significantly different features (e.g. agglutinative aspect of the Finnish language).
+\subsection{Disambiguation the Source of Translations.} 
+
+As far as the task of attaching translations to the proper word sense is concerned, the most similar work is described in \cite{meyer-gurevych:2012:PAPERS}. Its purpose was exactly the same, however, it only addressed German and English Language Editions. In this work, the gold standard to evaluate the method was manually created and was significantly smaller than the endogenous gold standard we extracted from the resource itself. This worked used a backoff strategy where string similarity measures were used only when other heuristics failed. These other heuristics also implied a finer analysis of definitions and glosses to distinguish between linguistic labels (stating the domain, register, tile, etc.).
+
+In the work presented here, we achieve a similar scores on the languages we were able to evaluate with an endogenous gold standard, even though we only used string similarity measures and even if the evaluated languages show significantly different features (e.g. agglutinative aspect of the Finnish language).
+
+\subsection{Similarity measures}
+Our method is based on the application of gloss overlap measures and its extension with ideas taken from Hybrid textual similarity measures that match sentences both on the character and on the token level. In the work mentioned above \cite{meyer-gurevych:2012:PAPERS} a feature based similarity is used (gloss overlap), while in some of their prior work, \cite{MeyerGurevych:2010}  they use a textual similarity measure based on vector-spaces generated from corpora (Explicit Semantic Analysis).
+
+In this work we propose using a very simple hybrid similarity measure by replacing the exact word match of the overlap calculation with an approximate string distance measure and using the more general framework of the Tversky measure that can be seen as a generalization of Lesk, the Dice coefficient , the Jaccard and Tatimono indexes.
+
+ The idea proposed by \cite{Jimenez2010} is very similar in the sense that it exploits the Tversky index as a base and conjugates it with a textual similarity measure. That is, instead of incrementing the overlap count by 0 or 1, it is incremented by the value returned by the text similarity measure between the current pair of words being considered in the overlap calculation.
+ 
+  Their text similarity measure is based on an empirically generated a q-gram model (character-grams corresponding to substrings) combined with point-wise mutual information weighting. However in this work, we want to minimize the requirement of generating similarity models. Doing so for 10 languages would require some effort and with future expansions to more languages, an impractically daunting task. 
+ 
+ As such we chose to use a simple string distance measure for the approximate string match calculations. However, there are many such measure and it is necessary to select the right one for the task as will be detailed in Section \ref{sec:expe}. Moreover, there are existing so called ``Level 2'' or ``Hybrid'' similarity measures that already combine token overlap with token distance measures. Thus we will need to evaluate our proposed method with some of the existing methods so as to evaluate their viability. The various measures and a detailed performance comparison in a name matching task are presented by \cite{Cohen2003}.
 
 \section{The DBnary Dataset}
 
@@ -148,9 +163,10 @@ Turkish & $64,678$ & $91,071$ & $66,290$ & $53,348$ & $585$ & $52,901$ & $138$ \
 
 When sufficient glosses contain both a textual hint and sense numbers, we removed the sense numbers\footnote{Translation are sometimes valid for several source word senses} from the gloss and used them to create a gold standard in trec\_eval format.
 
-Now that we have successfully extracted as much of the information contained in translation glosses, we can move on to the disambiguation process itself. While, the steps above are indeed language specific, what follows was designed to be as generic and computationally efficient as possible, as we are required to periodically perform the disambiguation, whenever a new version of DBNNary is extracted from the latest Wiktionary dumps.
+Now that we have successfully extracted as much of the information contained in translation glosses, we can move on to the disambiguation process itself. While, the steps above are indeed language specific, what follows was designed to be as generic and computationally efficient as possible, as we are required to periodically perform the disambiguation, whenever a new version of DBNary is extracted from the latest Wiktionary dumps.
 
 \section{Attaching Translations to Word Senses}
+\subsection{Formalization of translation disambiguation}
 \subsection{Similarity Measure}
 In order to disambiguate the translation, we need to be able to compute some form of semantic similarity measure. Given that the only information available in the translations is the gloss that summarises the definition of the corresponding sense, we need a measure to capture the similarity by comparing the translation glosses and the sense definitions. The Lesk \cite{citeulike:625530} measure is a standard semantic similarity measure, specifically suited for such tasks as it computes a similarity based on the number of exact overlapping words between definitions. The Lesk similarity's however has several important issues that need to be addressed when its use is mandated: 
 \begin{itemize}
@@ -169,7 +185,7 @@ S(s_1,s_2) =
 
 The measure can further be generalized following \cite{DBLP:conf/otm/PirroE10} by replacing the cardinality function by any function \(F\). Depending on the values of \(\alpha\) and \(\beta\), the Tversky index takes the particular form of other similar indexes. For \((\alpha=\beta=0.5)\) for example it is equivalent to the dice coefficient, and for  \((\alpha=\beta=1)\) to the Tatimono index. More generally, the values of \(\alpha\) and \(\beta\) express how much emphasis one wants to attribute to the commonality or differences of one or the other set.
 
- The Tversky function in itself is not a metric in the mathematical sense, as it is neither symmetric nor respects the triangular inequality, however, a symmetric variant has been proposed by \cite{Jimenez2010} for such cases where the symmetry property is important or required: 
+ The Tversky index in itself is not a metric in the mathematical sense, as it is neither symmetric nor respects the triangular inequality, however, a symmetric variant has been proposed by \cite{Jimenez2010} for such cases where the symmetry property is important or required: 
  
  \[
  S(s_1,s_2) = \frac{|d_1\cap d_2|}{|d_1\cap d_2| + \beta (\alpha a + (1-\alpha)b)}\]
@@ -178,17 +194,24 @@ The measure can further be generalized following \cite{DBLP:conf/otm/PirroE10} b
  \]\[
  b=max(|d_1\cap d_2|,|d_2\cap d_1|)\\ 
  \]
+ 
+ When making use of the Tversky index or its adapted symmetric version, careful attention must be given to the weights that one might use depending on the application. 
+ 
+ In this paper, there is no specific indication that there is any need for a symmetric version, however, we shall evaluate if there is any real benefit for the task we have at hand in Section \ref{sec:expe}. 
 
 \subsubsection{Multilingual Setting \& Partial overlaps}
- When working on a single language such as English and French, we have at our disposal tools such as a lemmatizer or a stemmer that may help to retrieve a canonical representation of the terms. Thus, we can hope to maximize the overlap and reduce the usual sparsity of glosses or sense definitions. For agglutinative languages like German, highly inflective language (for example in the Bangla language, common stems are often composed of a single character, which makes stemming difficult to exploit) or languages with no clear segmentation, the preprocessing steps are paramount in order to make overlap based measures viable. If one is working on a single language, even if stemmers and lemmatizers do not exist it is not impossible to build such a tool.
+ When working on a single language such as English and French, we have at our disposal tools such as a lemmatizer or a stemmer that may help to retrieve a canonical representation of the terms. Thus, we can hope to maximize the overlap and reduce the usual sparsity of glosses or sense definitions. For agglutinative languages like German or Finnish, highly inflective language (for example in the Bangla language, common stems are often composed of a single character, which makes stemming difficult to exploit) or languages with no clear segmentation, the preprocessing steps are paramount in order to make overlap based measures viable. If one is working on a single language, even if stemmers and lemmatizers do not exist, it is not impossible to build such a tool.
 
 However, in the context of this work we are currently dealing with 10 languages (and potentially in the future with all the languages present in Wiktionary) and thus, in order to propose a truly general method, we cannot expect the prerequisite presence of such tools. 
 
 How then, can we manage to compute overlaps effectively? When computing Lesk, if two words overlap, the score is increased by 1 and of two words do not overlap, the overlap does not change. What if we had a way to count meaningful partial overlaps between words and instead of adding 1, we may add whatever values between 0 and 1 represents the amount of overlap.
 
-The simplest approach to the problem is to use some form of partial string matching metric to compute partial overlaps, a trivial, yet useful extension. 
+The simplest approach to the problem is to use some form of partial string matching metric to compute partial overlaps, a seemingly trivial and classical approach that can, however, greatly improve the result as we shall endeavour to elicit. 
+
+
 
 \section{Experiments}
+\label{sec:expe}
 \subsection{Evaluation}
 \subsubsection{Gold Standard}
 \subsubsection{Trec\_eval, scoring as a query answering task}

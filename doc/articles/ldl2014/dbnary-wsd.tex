@@ -6,6 +6,7 @@
 
 \usepackage{hyperref}
 \usepackage{alltt}
+\usepackage{amsmath}
 
 \title{Attaching Translations to Proper Lexical Senses in DBnary}
 
@@ -22,7 +23,8 @@ In Wiktionary, glosses are often associated with translations to help users unde
 We obtain F-measures of the order of 80\% (on par with similar work on English only), across the three languages where we could generate a gold standard (French, Portuguese, Finnish) and show that most of the disambiguation errors are due to inconsistencies in Wiktionary itself that cannot be detected at the generation of DBNary (shifted sense numbers, inconsistent glosses, etc.). \\ \newline \Keywords{Wiktionary, Linked Open Data, Multilingual Resources}}
 
 
-
+\DeclareMathOperator*{\argmax}{arg\!\max}
+%\DeclareMathOperator*{\max}{\max}
 \begin{document}
 
 \maketitleabstract
@@ -82,7 +84,7 @@ The elements in DBnary that could not be represented with Lemon, were defined as
 
 \subsection{Translation relations}
 
-The DBnary dataset uses an ad-hoc representation of translation relations, as the LEMON model does not provide a vocabulary for such information. A \verb|Translation| is a RDF resource that gathers all extracted elements. As an example, one of the translation of the lexical entry \emph{frog} is represented as follow\footnote{In all dumps and in this paper, we use the Turtle syntax to represent RDF data.}:
+The DBnary dataset uses an ad-hoc representation of translation relations, as the LEMON model does not provide a vocabulary for such information. A \verb|Translation| is a RDF resource that gathers all extracted elements. As an example, one of the translation of the lexical entry \emph{frog} is represented as follows\footnote{In all dumps and in this paper, we use the Turtle syntax to represent RDF data.}:
 
 \begin{small}
 \begin{alltt}
@@ -165,8 +167,38 @@ When sufficient glosses contain both a textual hint and sense numbers, we remove
 
 Now that we have successfully extracted as much of the information contained in translation glosses, we can move on to the disambiguation process itself. While, the steps above are indeed language specific, what follows was designed to be as generic and computationally efficient as possible, as we are required to periodically perform the disambiguation, whenever a new version of DBNary is extracted from the latest Wiktionary dumps.
 
+
+
 \section{Attaching Translations to Word Senses}
 \subsection{Formalization of translation disambiguation}
+Let \(T\) be the set of all translation relations, \(L\) the set of all \verb|LexicalEntry| in a given language edition of DBNary. Let \(T_i\in T: Gloss(T_i)\) be a function that return the gloss of any translation \(T_i\in T\) and let \(Source(T_i)=L_{T_i}\) be a function that returns a reference to the source \verb|LexicalEntry|, \(L_{T_i}\) of a translation \(T_i\). Let \(Senses(L_i)=S_{L_i}\) be the set of all the senses associated with \verb|LexicalEntry| \(L_i\). Let \(S_{L_i}^k\) be the \(k\)-th sense contained in \(S_{L_i}\) and let \(Def(S_{L_i}^k)\) be a function that returns the textual definition of a sense \(S_{L_i}^k\). Finally let \(Sim(A,B)\) be a function that returns a semantic similarity or relatedness score between \(A\) and \(B\), where \(A,B\) are a pair of textual definitions or textual glosses. 
+
+Then, we can express the disambiguation process as follows:
+\[
+\forall T_i \in T, S=Senses(Source(T_i)): 
+\]
+\[
+Source^*(T_i) \leftarrow  \argmax_{S^k\in S} \{Score(Gloss(T_i),Def(S^k))\}
+\]
+
+This corresponds exactly to a standard semantic similarity maximisation and yields one disambiguated source sense per translation, however in many case a translation corresponds to one or more senses. The solution adopted by \cite{MeyerGurevych:oup2012} is to use a threshold \(k\) for their gloss overlap, however in our case, we want to be able to plug-in several different measures so as to find the most suitable one, as such just choosing a fixed arbitrary value for \(k\) is not readily and option. Thus, we need to add one more constraint: that the values returned by our similarity function need to be normalized between \(0 \mbox{ and  } 1\).
+
+Here instead of taking a threshold \(k\), we set a window \(\delta\) around the best score in which the senses are accepted as a disambiguation of a given translation. We hypothesise that a relative threshold dependant on the maximal score, will set a precedent and be more representative of the possible range of values. Of course, setting a fixed threshold has for effect of not assigning any senses if all the scores are low, thus increasing precision at the cost of a lower recall. While in a general setting it is better to remove answers that are more likely to be mistakes as detecting errors \emph{a posteriori} is difficult. However in the context of the experiment, we prefer to keep such low or null scores as we will then be able with the help of the gold standard pin-point errors more precisely for the sake of our analysis.
+
+We can express this formally by modifying the \(argmax\) function as such:
+\[
+\forall T_i \in T, S=Senses(Source(T_i)): 
+\]
+\[
+M_S = \max_{S_k\in S}(Score((Gloss(T_i),Def(S^k))),
+\]
+\[
+\argmax_{S_i\in S}^\delta \{Score(Gloss(T_i),Def(S^k))\}=
+\]
+\[
+\{S^k\in S|  M_S > Score((Gloss(T_i),Def(S^k)) > M_S-\delta \}
+\]
+
 \subsection{Similarity Measure}
 In order to disambiguate the translation, we need to be able to compute some form of semantic similarity measure. Given that the only information available in the translations is the gloss that summarises the definition of the corresponding sense, we need a measure to capture the similarity by comparing the translation glosses and the sense definitions. The Lesk \cite{citeulike:625530} measure is a standard semantic similarity measure, specifically suited for such tasks as it computes a similarity based on the number of exact overlapping words between definitions. The Lesk similarity's however has several important issues that need to be addressed when its use is mandated: 
 \begin{itemize}
@@ -177,23 +209,24 @@ In order to disambiguate the translation, we need to be able to compute some for
  
  The issues of normalization and of the unequal length of definitions are actually related, as one of the practical ways of doing so is to, for example, divide by the length of the shortest definition as a normalization. Moreover, one can only notice the similarity between the Lesk measure and other overlap coefficients such as the dice coefficient, the Jaccard or Tatimono indices. In fact, all of these measures are special forms of the Tversky index, which stems from the works on similarity of cognitive psychologist A. Tversky \cite{tversky77similarity}.
 
-The Tversky index can be defined as follows. Let \(s_1 \in S(W_1)\)  and \(s_2 \in S(W_1)\) be the senses of two words \(W_1\) and \(W_2\). Let \(d_i\) be the definition of \(s_i\), represented as a set of words. The similarity between the senses \(S(s_1, s_2)\) can be expressed as 
+The Tversky index can be defined as follows. Let \(s_1 \in Senses(L_1)\)  and \(s_2 \in Senses(L_2)\) be the senses of two lexical entries \(L_1\) and \(L_2\). Let \(d_i=Def(s_i)\) be the definition of \(s_i\), represented as a set of words. The similarity between the senses \(Score(s_1, s_2)\) can be expressed as 
 \[
-S(s_1,s_2) = 
+Score(s_1,s_2) = 
 \frac{|d_1\cap d_2|}{|d_1\cap d_2| + \alpha |d_1-d_2| + \beta |d_2-d_1|}
 \]
 
 The measure can further be generalized following \cite{DBLP:conf/otm/PirroE10} by replacing the cardinality function by any function \(F\). Depending on the values of \(\alpha\) and \(\beta\), the Tversky index takes the particular form of other similar indexes. For \((\alpha=\beta=0.5)\) for example it is equivalent to the dice coefficient, and for  \((\alpha=\beta=1)\) to the Tatimono index. More generally, the values of \(\alpha\) and \(\beta\) express how much emphasis one wants to attribute to the commonality or differences of one or the other set.
 
- The Tversky index in itself is not a metric in the mathematical sense, as it is neither symmetric nor respects the triangular inequality, however, a symmetric variant has been proposed by \cite{Jimenez2010} for such cases where the symmetry property is important or required: 
- 
- \[
- S(s_1,s_2) = \frac{|d_1\cap d_2|}{|d_1\cap d_2| + \beta (\alpha a + (1-\alpha)b)}\]
- \[
- a=min(|d_1\cap d_2|,|d_2\cap d_1|)\\
- \]\[
- b=max(|d_1\cap d_2|,|d_2\cap d_1|)\\ 
- \]
+ The Tversky index in itself is not a metric in the mathematical sense, as it is neither symmetric nor respects the triangular inequality, however, a symmetric variant has been proposed by \cite{Jimenez2010} for such cases where the symmetry property is important or required.
+% : 
+% 
+% \[
+% S(s_1,s_2) = \frac{|d_1\cap d_2|}{|d_1\cap d_2| + \beta (\alpha a + (1-\alpha)b)}\]
+% \[
+% a=min(|d_1\cap d_2|,|d_2\cap d_1|)\\
+% \]\[
+% b=max(|d_1\cap d_2|,|d_2\cap d_1|)\\ 
+% \]
  
  When making use of the Tversky index or its adapted symmetric version, careful attention must be given to the weights that one might use depending on the application. 
  
@@ -206,28 +239,153 @@ However, in the context of this work we are currently dealing with 10 languages 
 
 How then, can we manage to compute overlaps effectively? When computing Lesk, if two words overlap, the score is increased by 1 and of two words do not overlap, the overlap does not change. What if we had a way to count meaningful partial overlaps between words and instead of adding 1, we may add whatever values between 0 and 1 represents the amount of overlap.
 
-The simplest approach to the problem is to use some form of partial string matching metric to compute partial overlaps, a seemingly trivial and classical approach that can, however, greatly improve the result as we shall endeavour to elicit. 
+The simplest approach to the problem is to use some form of partial string matching metric to compute partial overlaps, a seemingly trivial and classical approach that can, however, greatly improve the result as we shall endeavour to elicit and as has already been extensively shown by \cite{Jimenez2012}. 
 
+As mentioned in the Related Work section, there are many approximate string matching measures as reviewed by \cite{Cohen2003}. We integrate these measures in the Teversky index by setting the \(F\) function that replaces the set cardinality function appropriately (a simplified version of soft cardinality):
 
+\[
+	A \mbox{ , a set} : F(A) = (\sum_{A_i,A_j \in A}sim(A_i, A_j))^{-1}
+\]
+
+In our case, \(sim\) will be an string distance measure.
+
+\subsubsection{Longest Common Substring Constraints}
+With this similarity measure, we are mainly interested in capturing word that have common stems, without the need for a stemmer, as such we do not for example want to consider the overlap of prefixes or suffices, as they do not carry the main semantic information of the word. If two words only match by a common suffix that happens to be used very often in that particular language, we will have a non-zero overlap, but we would have captures no sematic information whatsoever. Thus, in this word we put a threshold of a longest common subsequence of three characters.
 
 \section{Experiments}
 \label{sec:expe}
+As was mentioned previously, we have been able to extract gold standards from the sense numbered textual glosses of translations in certain language editions of Wiktionary. Then we stripped all sense number information from the glosses, so we could disambiguate those same translation and then evaluate the results on the previously generated gold standard.
+
+We will first describe how we generated the Gold standard and the tools and measures used for the evaluation. We will then proceed onto the empirical selection of the best parameters for our Tversky index as well as the most appropriate string distance measure to use for the fuzzy or soft cardinality. Then, we will compare the results of the optimal Tversky index with other Level 2 similarity measures.
+ 
 \subsection{Evaluation}
-\subsubsection{Gold Standard}
+Let us first describe the Gold Standard generation process, then proceed on to describing how we represented the Gold Standard in Trec\_eval format, a scorer program from the query answering Trec\_Eval campaign. Finally we will described the evaluation measures we will use. 
+\subsection{Gold Standard}
+Only certain languages meet the requirements for the generation of a sufficiently large Gold Standard. To be more specific, we could only chose among languages that where:
+\begin{enumerate}
+	\item There are textual glosses (for the overlap measures)
+	\item There are numbers in said glosses indicating the right sense number
+	\item The above are available in a sufficient quantity (at least a few thousand)
+\end{enumerate}
+
+Four languages could potentially meet the criteria (see the last column of Table \ref{lemon-elts}): French, Portuguese, Finnish and Japanese, however we could only manage the time to extract gold standards for French, Portuguese and Finnish.
+
 \subsubsection{Trec\_eval, scoring as a query answering task}
+
+A query answering task is more generally a multiple-labelling problem, which is exactly equivalent to what we are producing when we use the threshold \(\delta\). Here, we can consider that each translation number is the query identifier and that each sense URI is a document identifier. We answer the "translation" queries by providing one or more senses and an associated weight.
+
+Thus, we can generate the gold standard and the results in the Trec\_eval format, the very complete scorer for and information retrieval evaluation campaign of the same name.
+
 \subsubsection{Measures}
+We will use the standard set matching metrics used in Information Retrival and Word Sense Disambiguation, namely Recall, Precision and F\_{1} measure. Where, \(P=\frac{|\{Relevant\}\cap\{Disambiguated\}|}{|\{Disambiguated\}|}\), \(R=\frac{|\{Relevant\}\cap\{Disambiguated\}|}{|\{Relevant\}|}\), and \(F_1 = \frac{2\cdot P \cdot R}{P + R} \), the harmonic mean of \(R\) and \(P\). However, for the first step consisting in the estimation of the optimal parameters, we will only provide the \(F_1 score\), as we are interested in maximising both recall and precision in an equal fashion.
 \subsection{Similarity Measure Tuning}
-\subsection{Disambigation Results}
-\subsection{Errors analysis}
+There are several parameters to set in our Tversky index, however the first step is to find the most suitable string distance measure.
+
+\subsubsection{Optimal String Distance Metric}
+ The \(\delta\) parameter influences performance independently of the similarity measure, so we can first operate with \(\delta=0\), which restrincts us to a single disambiguation per translation. Furthermore, the weights of the Tvsersky index are applied downstream from the string edit distance, and thus does not influence the relative performance of the different string distance metrics combined to our  Tversky index. Thus for this first experiment, we will set \(\alpha=\beta=0.5\), in other words the index becomes the dice coefficient.
+
+As for the selection of the string similarity measures to compare, we take the best performing measures from \cite{Cohen2003}, namely Jaro-Winkler, Monge-Elkan, Scaled Levenshtein Distance, to which we also add the longest common substring for reference. As a baseline measure, we will use the Tversky index with a standard overlap cardinality.
+
+We give the following short notations for the measures: Tversky Index -- Ts; Jaro-Winkler -- JW; Monge-Elkan -- ME; Scaled Levenshtein -- Ls; Longest Common Substring -- Lcss; F -- Fuzzy. For example standard Tversky index with classical cardinality shall be referred to as "Ti", while the fuzzy cardinality version with a Monge-Elkan string distance shall be referred to as "FTiME". 
+
+Table \ref{tab:expe1} presents the results for each string similarity measure and each of the three languages (French, Finnish, Portuguese).
+
+As we can see, for all language, the best string similarity measure is clearly the scaled Levenstein measure as it systematically exhibits a score higher from \(+1\%\) to \(+1.96\%\).
+
+\begin{table}
+{\centering \footnotesize
+\begin{tabular}{|c|c|c|c|}
+\hline &French&Portuguese&Finnish\\
+\hline &F1&F1&F1\\
+\hline FTiJW&0.7853&0.8079&0.9479\\
+\hline FTiLcss&0.7778&0.7697&0.9495\\
+\hline FTiLs&\textbf{0.7861}&\textbf{0.8176}&\textbf{0.9536}\\
+\hline FTiME&0.7684&0.7683&0.9495\\
+\hline Ti&0.7088&0.7171&0.8806\\
+\hline 
+\end{tabular} 
+\caption{Results comparing the performance in terms of F\_1 score for French, Finnish and Portuguese (ighest scores in bold).}
+\label{tab:expe1}
+}
+\end{table}
+
+\subsubsection{Optimal \(\alpha\), \(\beta\) selection}
+Now that we have found the optimal string distance measure, we can look for the optimal ratio of \(\alpha\) and \(\beta\). Here, we will keep both values complementary, that is \(\alpha=1-\beta\) so as to obtain more balances score that remain in the 0 to 1 range. 
+
+Given that translation glosses are very short (often a single word), it is very likely that the optimum is around \(\alpha=1-\beta=0.1\), given that what interests us is specifically that the word in the translation gloss matches with less importance for the remaining words in the sense definition that do not match.
+
+We chose, here, to evaluate the values of \(\alpha\) and \(\beta\) in steps of \(0.1\). Figure \ref{fig.1} graphically shows the \(F\_1\) score for each pair of values of \(alpha\) and \(beta\) for all three languages. We can indeed confirm our hypothesis as the optimal value in all three cases is indeed \(\alpha=1-\beta=0.1\) with a difference between \(+0.15\%\) to \(+0.43\%\) with the second best scores.
+	
+\begin{figure}\centering
+\includegraphics[width=0.66\columnwidth]{alphabetafig}
+\caption{F1 score for Finnish, French and Portuguese depending on the value of \(\alpha\) and \(\beta\).}
+\label{fig.1}
+\end{figure}
+
+\subsubsection{Optimal \(\delta\) selection}
+Now that we have fixed the best values of \(\alpha\) and \(\beta\) we can search for the best value for \(\delta\). We make delta vary in steps of \(0.05\) between \(0\) and \(0.3\). The choice of the upper bound is based on the hypothesis that the optimal value is somewhere closer to 0, as a too large threshold essentially means that most of the senses for each translation might be considered as corresponding to the translation at hand and thus it should drastically reduce performance. 
+
+The \(\delta\) heuristic affects the results of the disambiguation whether the measure is  Tversky index or another Level 2 Textual similarity. Thus, in this experiment, we will also include Level 2 version of the three string distance measures that we used in the first experiment.
+
+Figure \ref{fig.2} graphically presents the \(F_1\) scores for each value of \(delta\) and each language. The first apparent trend is that Level 2 measures are systemically performing much worse (by up to 30\%) than our own similarity measure. Depending on the language different values of \(delta\) are optimal, even though it is difficult to see a great difference. For French \(\delta=0.10\), for Finnish \(\delta=0.15\)
+ and for Portuguese \(\delta=0.10\). 
+In all three previous experiments, it became apparent, that the same string similarity measure, the same values for alpha and beta as well as the same value for delta were optimal, which leads us to believe that their optimality will be conserved across all languages. However, especially for the string similarity measure, it is reasonable to believe that for languages such a Chinese or Japanese that lack segmentation, the optimal choice for the string distance measure may be entirely different.
+\subsection{Final Disambigation Results}
+
+Now that we have found all the optimal parameters, we can actually present the final results combining all the optimal parameters. They are in fact the very results that were optimal in the previous experiment. We shall now take these results and place them in a separate table (Table \ref{tab:final}) so as to make the comparison analysis easier. We will use the chance of random selection as well as the most frequent sense selection as baseline for this comparison.
+
+The first thing one can notice is that there is a stark difference between the scores of Finnish, and the rest. Indeed, first of all the random baseline and most frequent sense baselines are an indication that the French and Portuguese DBNaries are highly polysemous, while Finnish contains a very large amount of monosemous entries, which artificially inflates the value of the score. 
+
+Another point of interest is that the random baseline is higher (up to 6.6\%) than the most frequent sense baseline, which indicates that the first sense if often not the right sense to select to match the translation. 
+
+We can see that for all three languages we achieve a good performance compared to what is presented in the literature, most notably in the fact that most of the errors, can easily be identified as such just by looking at whether or not it produced any overlap.
+
+\begin{table}
+{\centering \footnotesize
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline &P&R&F1&MFS F1&Random\\
+\hline Portuguese&0.8572&0.8814&0.8651&0.2397&0.3103\\
+\hline Finnish&0.9642&0.9777&0.9687&0.7218&0.7962\\
+\hline French&0.8267&0.8313&0.8263&0.3542&0.3767\\
+\hline 
+\end{tabular}
+\caption{Final results with optimal measure and parameter values. Precision, Recall, F1 measure for all three languages compared against the MFS and Random Baselines.}
+\label{tab:final}
+}
+\end{table} 
+
+\begin{figure}
+\centering
+\includegraphics[width=.68\columnwidth]{french}
+\includegraphics[width=.68\columnwidth]{portuguese}
+\includegraphics[width=.68\columnwidth]{finnish}
+\caption{Graphical representation of the F1 score against the  value of delta for our measure and other Level 2 Measures}
+\label{fig.2}
+\end{figure}
+
+\subsection{Error analysis}
+
+We did not here perform a full fledged and systematic error analysis, but rather an informal manual sampling so as to have an idea of what the error can be and if there are ways to correct them by adapting the measures or the methodology.
+We looked at some of the error made by the disambiguation process and manually checked them so as to categorize them. We found three main categories:
+\begin{enumerate}
+\item No overlap between the gloss and sense definitions (Random choice by our algorithm), this happens when the translation gloss is a paraphrase of the sense definition or simply a metaphor for it.
+\item The overlap is with the domain category label or the example glosses, which we do not currently extract. This is a particular case of the first type of error.
+\item New senses have been introduced in Wiktionary and shifted sense numbers, which were not subsequently updated in the resource. Such errors cannot be detected during the extraction process.
+\end{enumerate}
+
+We can in fact easily find all the errors due to the lack of overlap and correct the errors of type 2 by enriching the extraction process of DBNary. Thus we can single out errors that are due to inconsistencies in the resource and thus potentially use the disambiguation results to indicate to users where errors are located an need to be updated.
 
 \section{Conclusion}
 
-Your submission of a finalized contribution for inclusion in the LREC proceedings automatically assigns the above-mentioned copyright to ELRA.
-proceedings.
+With our method, we were able to determine and optimal similarity measure for disambiguating translation in DBNary. Similar results across the three evaluation languages suggests that it is a general optimality that can be applied to all the languages currently present in DBNary, although for Asian Languages that have no segmentation, it is likely not the case.
+
+The we compared the results and concluded that our method is viable for the task of disambiguating glossed translation relations, especially considering the low random baselines and first sense baselines compared to the top score of our disambiguation method.
+
+For translation relations without glosses, the disambiguation process is more complex and is part of the Future Work that we plan on carrying out.
 
 \section{Acknowledgements}
 
-Place all acknowledgements (including those concerning research grants and funding) in a separate section at the end of the article.
+Place holder.
 
 %\nocite{*}
 

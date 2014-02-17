@@ -1,6 +1,9 @@
 * text=auto !eol
+doc/articles/ldl2014/alphabetafig.pdf -text svneol=unset#unset
 doc/articles/ldl2014/dbnary-wsd.bib -text
 doc/articles/ldl2014/dbnary-wsd.tex -text
+doc/articles/ldl2014/finnish.pdf -text
+doc/articles/ldl2014/french.pdf -text
 doc/articles/ldl2014/image1-eps-converted-to.pdf -text
 doc/articles/ldl2014/image1.eps -text
 doc/articles/ldl2014/lrec2006.bst -text
@@ -17,6 +20,7 @@ doc/articles/ldl2014/lrec2014/xample.log -text
 doc/articles/ldl2014/lrec2014/xample.pdf -text
 doc/articles/ldl2014/lrec2014/xample.ps -text
 doc/articles/ldl2014/lrec2014/xample.tex -text
+doc/articles/ldl2014/portuguese.pdf -text
 doc/articles/lrec2012/387_Paper.pdf -text
 doc/articles/lrec2012/biblio.bib -text
 doc/articles/lrec2012/chat-en-2012.ttl.pdf -text

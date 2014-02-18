@@ -263,6 +263,7 @@ doc/presentations/lig-lidilem/img/wnnetwork.pdf -text
 doc/presentations/lig-lidilem/thoughts.oo3/contents.xml -text
 experiments/ldd2014/lib/secondstring-20120620.jar -text
 experiments/ldd2014/pom.xml -text
+experiments/ldd2014/results/finnish_ref_gold.out -text
 experiments/ldd2014/results/french_ref_gold.out -text
 experiments/ldd2014/results/gen_all_res.sh -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/LLD2014Main.java -text
@@ -291,7 +292,7 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/Sta
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/StructuredGloss.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/Segmenter.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/SpaceSegmenter.java -text
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/MongeElkan.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/Level2Sim.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/SimilarityMeasure.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/TsverskiIndex.java -text
 experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFinnishGlossFilter.java -text svneol=unset#text/plain

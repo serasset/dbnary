@@ -47,6 +47,6 @@ public class MFSTranslationDisambiguator implements Disambiguator {
 
     @Override
     public String toString() {
-        return "RandomBaseline: " + randomBaseline / (double) numberWords + "\n";
+        return "Random Baseline: " + randomBaseline / (double) numberWords + "\n";
     }
 }

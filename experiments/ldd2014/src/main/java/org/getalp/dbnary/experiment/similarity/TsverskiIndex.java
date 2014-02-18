@@ -13,8 +13,10 @@ public class TsverskiIndex implements SimilarityMeasure {
     private double alpha;
     private double beta;
     private boolean fuzzyMatching;
+    private boolean symmetric = false;
     private AbstractStringDistance distance;
     private boolean lcss;
+
 
     public TsverskiIndex(double alpha, double beta) {
         segmenter = new SpaceSegmenter();
@@ -24,21 +26,23 @@ public class TsverskiIndex implements SimilarityMeasure {
         fuzzyMatching = false;
     }
 
-    public TsverskiIndex(double alpha, double beta, boolean fuzzyMatching, AbstractStringDistance distance) {
+    public TsverskiIndex(double alpha, double beta, boolean fuzzyMatching, boolean symmetric, AbstractStringDistance distance) {
         this.distance = distance;
         lcss = false;
         segmenter = new SpaceSegmenter();
         this.alpha = alpha;
         this.beta = beta;
         this.fuzzyMatching = fuzzyMatching;
+        this.symmetric = symmetric;
     }
 
-    public TsverskiIndex(double alpha, double beta, boolean fuzzyMatching) {
+    public TsverskiIndex(double alpha, double beta, boolean fuzzyMatching,boolean symmetric ) {
         lcss = true;
         segmenter = new SpaceSegmenter();
         this.alpha = alpha;
         this.beta = beta;
         this.fuzzyMatching = fuzzyMatching;
+        this.symmetric = symmetric;
     }
 
     public TsverskiIndex(Segmenter segmenter, double alpha, double beta) {
@@ -48,7 +52,7 @@ public class TsverskiIndex implements SimilarityMeasure {
         fuzzyMatching = false;
     }
 
-    public TsverskiIndex(Segmenter segmenter, double alpha, double beta, boolean fuzzyMatching) {
+    public TsverskiIndex(Segmenter segmenter, double alpha, double beta, boolean fuzzyMatching,boolean symmetric) {
         this.segmenter = segmenter;
         this.alpha = alpha;
         this.beta = beta;
@@ -56,6 +60,7 @@ public class TsverskiIndex implements SimilarityMeasure {
         if (!fuzzyMatching) {
             lcss = false;
         }
+        this.symmetric = symmetric;
     }
 
     public static int longestSubString(String first, String second) {
@@ -104,7 +109,14 @@ public class TsverskiIndex implements SimilarityMeasure {
         }
         double diffA = a.size() - overlap;
         double diffB = b.size() - overlap;
-        return overlap / (overlap + diffA * alpha + diffB * beta);
+        if(symmetric){
+            double factA = Math.min(diffA,diffB);
+            double factB = Math.max(diffA,diffB);
+            return overlap / (beta*(alpha*factA+(1-alpha)*factB) +overlap);
+        }else {
+            return overlap / (overlap + diffA * alpha + diffB * beta);
+        }
+
     }
 
     private double computeOverlap(List<String> a, List<String> b) {

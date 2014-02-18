@@ -1,7 +1,8 @@
 package org.getalp.dbnary.experiment;
 
 import com.hp.hpl.jena.rdf.model.*;
-import com.wcohen.ss.ScaledLevenstein;
+import com.wcohen.ss.*;
+import org.apache.commons.cli.*;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
@@ -10,93 +11,145 @@ import org.getalp.dbnary.experiment.disambiguation.translations.DisambiguableSen
 import org.getalp.dbnary.experiment.disambiguation.translations.MFSTranslationDisambiguator;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationAmbiguity;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationDisambiguator;
+import org.getalp.dbnary.experiment.fuzzystring.JaroWinklerUnicode;
+import org.getalp.dbnary.experiment.similarity.Level2Sim;
 import org.getalp.dbnary.experiment.similarity.TsverskiIndex;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 
 public final class LLD2014Main {
 
+    private static final String LANGUAGE_OPTION = "l";
+    private static final String MODEL_FILE_OPTION = "m";
+    private static final String DEFAULT_LANGUAGE = "fr";
+    private static Options options = null; // Command line op
+
+    static {
+        options = new Options();
+        options.addOption("h", false, "Prints usage and exits. ");
+        options.addOption(LANGUAGE_OPTION, true,
+                "Language (fra, eng, deu, por). " + DEFAULT_LANGUAGE + " by default.");
+        options.addOption(MODEL_FILE_OPTION, true, "Input file in (xmlrdf, turtle, n3, etc.)");
+    }
+
+    private static Model model;
+    private CommandLine cmd = null; // Command Line arguments
     private Property senseNumProperty;
     private Property transNumProperty;
-    private Disambiguator disamb;
-    private double deltaThreshold;
 
-    private LLD2014Main() {
-        disamb = new TranslationDisambiguator();
-        for (int i = 1; i < 2; i++) {
-            double w1, w2;
-            w1 = (double) i / 10.0;
-            w2 = 1 - w1;
-            String mstr = String.format("_%f_%f", w1, w2);
-
-            //disamb.registerSimilarity("FTiJW" + mstr, new TsverskiIndex(w2, w1, true, new JaroWinklerUnicode()));
-            disamb.registerSimilarity("FTiLs" + mstr, new TsverskiIndex(w1, w2, true, new ScaledLevenstein()));
-            //disamb.registerSimilarity("FTiJMjs"+mstr, new TsverskiIndex(w2, w1, true, new JelinekMercerJS()));
-            //disamb.registerSimilarity("FTiDjs"+mstr, new TsverskiIndex(w2, w1, true, new DirichletJS()));
-            //disamb.registerSimilarity("FTiME" + mstr, new TsverskiIndex(w2, w1, true, new MongeElkan()));
-            //disamb.registerSimilarity("FTiJW2" + mstr, new TsverskiIndex(w2, w1, true, new Level2JaroWinkler()));
-            //disamb.registerSimilarity("FTiLcss" + mstr, new TsverskiIndex(w2, w1, true));
-        }
-
-
-    }
-
-    public static void main(String[] args) throws IOException {
-
-        //Store vts = new VirtuosoTripleStore("jdbc:virtuoso://kopi.imag.fr:1982", "dba", "dba");
-        System.err.println("Loading Jena aBox model from file " + args[0] + " ...");
-
-        Model model = ModelFactory.createOntologyModel();
-        model.read(args[0]);
-        //Store vts = new JenaMemoryStore(args[0]);
-        //StoreHandler.registerStoreInstance(vts);
-        LLD2014Main lld = new LLD2014Main();
-
-        System.err.println("Processing translation delta" + 0.05);
-        lld.setDeltaThreshold(0.05);
-        lld.processTranslations(model);
-
-        System.err.println("Processing translation delta" + 0.10);
-        lld.setDeltaThreshold(0.10);
-        lld.processTranslations(model);
-
-        System.err.println("Processing translation delta" + 0.15);
-        lld.setDeltaThreshold(0.15);
-        lld.processTranslations(model);
-
-        System.err.println("Processing translation delta" + 0.20);
-        lld.setDeltaThreshold(0.20);
-        lld.processTranslations(model);
-    }
-
-
-    private void initializeTBox(String lang) {
+    {
         senseNumProperty = DbnaryModel.tBox.getProperty(DbnaryModel.DBNARY + "translationSenseNumber");
         transNumProperty = DbnaryModel.tBox.getProperty(DbnaryModel.DBNARY + "translationNumber");
     }
 
+    private Disambiguator disambiguator;
+    private double deltaThreshold;
+    private Locale language;
+
+    private LLD2014Main() {
+
+        disambiguator = new TranslationDisambiguator();
+        //for (double w1 = 0.1; w1 < 0.9; w1 += 0.1) {
+            double w1=  0.1;
+            double w2 = 1d - w1;
+            String mstr = String.format("_%f_%f", w1, w2);
+
+              //disambiguator.registerSimilarity("FTiJW" + mstr, new TsverskiIndex(w1, w2, true,false, new JaroWinklerUnicode()));
+              //        disambiguator.registerSimilarity("FTiLs" + mstr, new TsverskiIndex(w1, w2, true, false, new ScaledLevenstein()));
+              //disambiguator.registerSimilarity("FTiME" + mstr, new TsverskiIndex(w1, w2, true,false, new MongeElkan()));
+              //disambiguator.registerSimilarity("FTiLcss" + mstr, new TsverskiIndex(w1, w2, true,false));
+              //disambiguator.registerSimilarity("FTi" + mstr, new TsverskiIndex(w1, w2, false,false));
+            disambiguator.registerSimilarity("L2Me" + mstr, new Level2Sim(new Level2MongeElkan()));
+            disambiguator.registerSimilarity("L2Ls" + mstr, new Level2Sim(new Level2Levenstein()));
+            disambiguator.registerSimilarity("L2Jw" + mstr, new Level2Sim(new Level2JaroWinkler()));
+        //}
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        LLD2014Main lld = new LLD2014Main();
+        lld.loadArgs(args);
+
+        //Store vts = new JenaMemoryStore(args[0]);
+        //StoreHandler.registerStoreInstance(vts);
+
+        for (double deltaT = 0.05; deltaT < .30d + .001d; deltaT += 0.05) {
+            String message = String.format("Processing translation (Δt=%.2f)", deltaT);
+            System.out.println(message);
+            System.err.println();
+            lld.setDeltaThreshold(deltaT);
+            lld.processTranslations(model);
+        }
+    }
+
+    public static void printUsage() {
+        HelpFormatter formatter = new HelpFormatter();
+        String help =
+                "url must point on an RDF model file extracted from wiktionary and cleaned up (with sense numbers and translation numbers." +
+                        System.getProperty("line.separator", "\n") +
+                        "Disambiguates translation relations";
+        formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.cli.StatRDFExtract [OPTIONS] url",
+                "With OPTIONS in:", options,
+                help, false);
+    }
+
+    private void loadArgs(String[] args) {
+        CommandLineParser parser = new PosixParser();
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.err.println("Error parsing arguments: " + e.getLocalizedMessage());
+            printUsage();
+            System.exit(1);
+        }
+
+        if (cmd.hasOption("h")) {
+            printUsage();
+            System.exit(0);
+        }
+        String modelFile = "";
+        if (!cmd.hasOption(MODEL_FILE_OPTION)) {
+            System.err.println("You must supply an input file (-m option)");
+            printUsage();
+            System.exit(1);
+        } else {
+            modelFile = cmd.getOptionValue(MODEL_FILE_OPTION);
+        }
+
+        if (cmd.hasOption(LANGUAGE_OPTION)) {
+            String lang = cmd.getOptionValue(LANGUAGE_OPTION, DEFAULT_LANGUAGE);
+            language = Locale.forLanguageTag(lang);
+        }
+
+
+        model = ModelFactory.createOntologyModel();
+        model.read(modelFile);
+    }
+
     private void processTranslations(Model m1) throws FileNotFoundException {
-        initializeTBox("fra");
+
 
         MFSTranslationDisambiguator mfs = new MFSTranslationDisambiguator();
 
-        FileOutputStream mfsfos = new FileOutputStream("french_results_MFS.res");
+        String mfsFileName = String.format("%s_results_MFS.res", language.getDisplayLanguage().toLowerCase());
+        String voteFileName = String.format("%s_results_Vote.res", language.getDisplayLanguage().toLowerCase());
+
+        FileOutputStream mfsfos = new FileOutputStream(mfsFileName);
         PrintStream psmfs = new PrintStream(mfsfos, true);
 
-        FileOutputStream votefos = new FileOutputStream("french_results_Vote_Dl_" + deltaThreshold + ".res");
+        FileOutputStream votefos = new FileOutputStream(voteFileName);
         PrintStream psvote = new PrintStream(votefos, true);
 
 
         Map<String, PrintStream> streams = new HashMap<>();
-        for (String m : disamb.getMethods()) {
-            FileOutputStream fos = new FileOutputStream(String.format("french_results_%s_Dl_" + deltaThreshold + ".res", m));
+        for (String m : disambiguator.getMethods()) {
+            String fileName = String.format("%s_results_%s_Dl_%.2f.res", language.getDisplayLanguage().toLowerCase(), m, deltaThreshold);
+            FileOutputStream fos = new FileOutputStream(fileName);
             streams.put(m, new PrintStream(fos, true));
         }
 
@@ -129,7 +182,7 @@ public final class LLD2014Main {
                     String deftext = dVal.getObject().toString();
                     choices.add(new DisambiguableSense(deftext, sstr));
                 }
-                disamb.disambiguate(ambiguity, choices);
+                disambiguator.disambiguate(ambiguity, choices);
                 mfs.disambiguate(mfcAmbiguity, choices);
                 for (String m : ambiguity.getMethods()) {
                     streams.get(m).println(ambiguity.toString(m));
@@ -143,14 +196,11 @@ public final class LLD2014Main {
         System.out.println(mfs);
         psmfs.close();
         psvote.close();
-        for (String m : disamb.getMethods()) {
+        for (String m : disambiguator.getMethods()) {
             streams.get(m).close();
         }
     }
 
-    public double getDeltaThreshold() {
-        return deltaThreshold;
-    }
 
     public void setDeltaThreshold(double deltaThreshold) {
         this.deltaThreshold = deltaThreshold;

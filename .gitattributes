@@ -279,6 +279,7 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/encoding/CodePoin
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/encoding/CodePointWrapper.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/fuzzystring/JaroUnicode.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/fuzzystring/JaroWinklerUnicode.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/jdm/JDMModelParser.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/CreateGoldStandard.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/EnglishGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/FinnishGlossFilter.java -text svneol=unset#text/plain

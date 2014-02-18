@@ -1,9 +1,8 @@
 package org.getalp.dbnary.cli;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -46,11 +45,11 @@ public class RDFDiff {
 		model.write(System.out, "TURTLE");
 	}
 
-	static HashMap<String, HashSet<String>> binding = new HashMap<String, HashSet<String>>();
+	static 	TreeMap<String, String> anodes2id = new TreeMap<String,String>();
+
 
 	public static void buildBinding(Model m1, Model m2) {
 		// Creates a binding between equivalent blank nodes in m1 and m2;
-		HashMap<String,HashSet<String>> rel2anodes = new HashMap<String,HashSet<String>>();
 		ResIterator iter = null;
 		Resource s;
 		try {
@@ -69,14 +68,8 @@ public class RDFDiff {
 						b.append(r).append("|");
 					}
 					String key = b.toString();
-					HashSet<String> nodes = rel2anodes.get(key);
-					if (null != nodes) {
-						nodes.add(s.getId().getLabelString());
-					} else {
-						nodes = new HashSet<String>();
-						nodes.add(s.getId().getLabelString());
-						rel2anodes.put(key, nodes);
-					}
+					assert anodes2id.get(s.getId().getLabelString()) == null;
+					anodes2id.put(s.getId().getLabelString(), key);
 				}
 			}
 		} finally {
@@ -84,9 +77,11 @@ public class RDFDiff {
 		}
 		try {
 			iter = m2.listSubjects();
+			long tt1 = 0, tt2=0, tt3 = 0, tt4 = 0, tt5 = 0;
 			while (iter.hasNext()) {
 				s = iter.nextResource();
 				if (s.isAnon()) {
+					long t = System.nanoTime();
 					StmtIterator stmts = m2.listStatements(s, null, (RDFNode)null);
 					SortedSet<String> signature = new TreeSet<String>();
 					while (stmts.hasNext()) {
@@ -98,15 +93,8 @@ public class RDFDiff {
 						b.append(r).append("|");
 					}
 					String key = b.toString();
-					HashSet<String> m1ids = rel2anodes.get(key);
-					if (null != m1ids) {
-						for (String m1id : m1ids) {
-							HashSet<String> equivs1 = binding.get(m1id);
-							if (null == equivs1) equivs1 = new HashSet<String>();
-							equivs1.add(s.getId().getLabelString());
-							binding.put(m1id, equivs1);
-						}
-					}
+					assert anodes2id.get(s.getId().getLabelString()) == null;
+					anodes2id.put(s.getId().getLabelString(), key);
 				}
 			}
 		} finally {
@@ -171,8 +159,9 @@ public class RDFDiff {
 
 	private static boolean bound(Resource n1, Resource n2) {
 		if (n2.isAnon()) {
-			HashSet<String> b = binding.get(n1.getId().getLabelString());
-			if (null != b) return b.contains(n2.getId().getLabelString());
+			String k1 = anodes2id.get(n1.getId().getLabelString());
+			String k2 = anodes2id.get(n2.getId().getLabelString());
+			return k1 == k2 || (k1 != null && k1.equals(k2));
 		}
 		return false;
 	}

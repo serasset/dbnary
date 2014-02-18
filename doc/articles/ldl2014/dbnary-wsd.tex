@@ -31,44 +31,44 @@ We obtain F-measures of the order of 80\% (on par with similar work on English o
 
 \section{Introduction}
 
- Wiktionary is a lexical-semantic resource build collaboratively under the patronage of the Wikimedia Foundation (which also hosts the well known Wikipedia initiative). It is currently the biggest collaborative resource for lexical data. Wiktionary pages usually describe lexical entries by giving their part of speech, a set of definition, examples, lexico-semantic relations and many translations in more than a thousand target languages.
+ Wiktionary is a lexical-semantic resource build collaboratively under the patronage of the Wikimedia Foundation (which also hosts the well known Wikipedia initiative). It is currently the biggest collaborative resource for lexical data. Wiktionary pages usually describe lexical entries by giving their part of speech, a set of definitions, examples, lexico-semantic relations and many translations in more than a thousand target languages.
 
-The DBnary project \cite{serasset:dbnary-swj} aims at providing high quality Lexical Linked Data extracted from different Wiktionary language editions. It currently extracts data from 10 different editions and gathers $3.16$M translation links relating lexical entries from the 10 extracted languages to entries in more than one thousand languages. These numbers are steadily growing as the DBnary data is extracted as soon as Wikimedia releases new dumps of the data (around once every 10-15 days for each language edition).
+The DBnary project \cite{serasset:dbnary-swj} aims at providing high quality Lexical Linked Data extracted from different Wiktionary language editions. It currently extracts data from 10 different editions and gathers $3.16$M translation links relating lexical entries from the 10 extracted languages to entries in more than a thousand languages. These numbers are steadily growing given that the DBnary dataset is extracted as soon as Wikimedia releases new dumps of the data (around once every 10-15 days for each language edition).
 
-The source of these translation links are \emph{lexical entries}. The purpose of this work is to attach these translations to their correct \emph{word sense} and hence increasing the value of the DBnary data. Comparable efforts have been done (mainly on the UBY dataset), but these were limited to English and German. In this paper we worked on 9 language editions. Among these editions, we were faced with different habits from the different Wiktionary communities and with languages showing different linguistic properties. 
+The source of these translation links are \emph{lexical entries}. The purpose of this work is to attach these translations to their correct \emph{word sense} and hence to increase the value and quality of the DBnary dataset. Comparable efforts have been carried out (mainly on the UBY dataset), but are limited to English and German. In this paper we worked on 9 language editions. Among these editions, we were faced with the various habits of the different Wiktionary communities and with languages showing different linguistic properties. 
 
 After detailing related works, we present the structure of the DBnary dataset. Then, after showing how we built an endogenous golden standard used to evaluate this work, we detail the methods used to achieve our purpose. Finally we evaluate our method and discuss the results.
 
 \section{Related Work}
 
-\subsection{Extracting Data from Wiktionary Language Editions.} Since its introduction in late 2002, Wiktionary has steadily raised in size (both with collaborative work and with automatic insertion of previously available free lexical data). Interest in Wiktionary as a source for lexical data for NLP applications has quickly raised and studies liked \cite{Zesch:AAAI2008} or \cite{navarro-EtAl:2009:PeoplesWeb} shown the richness and power of this resource. 
+\subsection{Extracting Data from Wiktionary Language Editions.} Since its introduction in late 2002, Wiktionary has steadily increased in size (both with collaborative work and with automatic insertion of previously available free lexical data). Interest in Wiktionary as a source for lexical data for NLP applications has quickly raised and studies liked \cite{Zesch:AAAI2008} or \cite{navarro-EtAl:2009:PeoplesWeb} shown the richness and power of this resource. 
 
-Since then, efforts has been specifically placed on the systematic extraction of Wiktionary data. Many of them have been done for a specific project and only represent a snapshot of Wiktionary. As all Wiktionary language editions evolve regularly (and independently) in the way they represents data, such effort are not suitable to prvide a sustainable access to Wiktionary data. 
+Since then, efforts has been mostly focussed on the systematic extraction of Wiktionary data. Many of them, as resources for a specific project and thus are merely snapshot of Wiktionary at a fixed point in time. As all Wiktionary language editions evolve regularly (and independently) in the way their data is represented, such effort are not suitable to provide a sustainable access to Wiktionary data. 
 
-Some efforts though are maintained and allow access over time. One of the most mature project is the \emph{JWKTL} API \cite{ZeschMuellerGurevych2008} giving access to  the English, German and Russian language editions. It is used in the UBY project \cite{gurevych2012uby} which provides an LMF based version of these editions. 
+Some efforts, however are maintained and allow access over time. One of the most mature project is the \emph{JWKTL} API \cite{ZeschMuellerGurevych2008} giving access to  the English, German and Russian language editions. It is used in the UBY project \cite{gurevych2012uby} which provides an LMF based version of these editions. 
 
-We should also mention the wikokit project \cite{krizhanovsky2010transformation} that provides access to the English and Russian editions and which has been used by \emph{JWKTL}.
+We should also mention the wikokit project \cite{krizhanovsky2010transformation} that provides access to the English and Russian editions and that was used by \emph{JWKTL}.
 
-\cite{HellmannSebastianandBrekleJonasandAuer} presents another attempt under the umbrella of the dbpedia project \cite{dbpedia-swj}, whose purpose is specifically to provide the Wiktionary data as Lexical Linked Open Data. The main interest of this approach is the collaborative approach used to create the extraction templates, which is the general approach of the dbpedia project. This project currently handles the English, French, Russian and German Wiktionary language editions.
+\cite{HellmannSebastianandBrekleJonasandAuer} presents another attempt under the umbrella of the dbpedia project \cite{dbpedia-swj}, whose purpose is specifically to provide the Wiktionary data as Lexical Linked Open Data. The main reason this approach is interesting the collaborative approach used to create the extraction templates, which is the general approach of the dbpedia project. This project currently handles the English, French, Russian and German Wiktionary language editions.
 
-This paper is part of the DBnary project \cite{serasset:dbnary-swj}, whose purpose is similar to \cite{HellmannSebastianandBrekleJonasandAuer}. Our specific goal is to provide LEMON structure lexical database that are structured as usual lexica. Indeed, we do extract data from Wiktionary, however, we currently restrict ourselves to the ``native'' data of each language edition, e.g. the French data is extracted from the French language edition and we disregard French data that is contained in other editions. At our knowledge, it is currently the most advanced extractor, as it currently actively supports 10 languages. It is also the only initiative that gives access to the whole history of the extracted data.
+This paper is part of the DBnary project \cite{serasset:dbnary-swj}, whose purpose is similar to that of \cite{HellmannSebastianandBrekleJonasandAuer}. Our specific goal is to provide LEMON structured lexical databases that are structured like traditional lexica. Indeed, we do extract data from Wiktionary, however, we currently restrict ourselves to the ``native'' data of each language edition, e.g. the French data is extracted from the French language edition and we disregard French data that is contained in other editions. At the best of our knowledge DBNary is currently the most advanced extractor for Wiktionary, with its current active support of 10 languages. It is also the only initiative that gives access to the whole history of the extracted data.
 
 \subsection{Disambiguation the Source of Translations.} 
 
-As far as the task of attaching translations to the proper word sense is concerned, the most similar work is described in \cite{meyer-gurevych:2012:PAPERS}. Its purpose was exactly the same, however, it only addressed German and English Language Editions. In this work, the gold standard to evaluate the method was manually created and was significantly smaller than the endogenous gold standard we extracted from the resource itself. This worked used a backoff strategy where string similarity measures were used only when other heuristics failed. These other heuristics also implied a finer analysis of definitions and glosses to distinguish between linguistic labels (stating the domain, register, tile, etc.).
+As far as the task of attaching translations to the proper word sense (translation disambiguation) is concerned, the most similar work to our is described in \cite{meyer-gurevych:2012:PAPERS}. Their intent matches our own, however, their efforts  only deal with the German and English Language editions. In this work, the gold standard used to evaluate the method was manually created and was significantly smaller than the endogenous gold standard we extracted from the resource itself. Their work uses a backoff strategy (to the most frequent sense) when the heuristics based similarity measures and the resource's structure failed. The other heuristics they used in conjunction with similarity measure also implied a finer analysis of definitions and glosses so as to distinguish between linguistic labels (domain, register, tile, etc.).
 
-In the work presented here, we achieve a similar scores on the languages we were able to evaluate with an endogenous gold standard, even though we only used string similarity measures and even if the evaluated languages show significantly different features (e.g. agglutinative aspect of the Finnish language).
+In the work described in the present article, we achieve similar scores on the languages we were able to evaluate with an endogenous gold standard, even though we only used string and token similarity measures, even in the context of languages with less common features (e.g. the agglutinative aspect of the Finnish language).
 
 \subsection{Similarity measures}
-Our method is based on the application of gloss overlap measures and its extension with ideas taken from Hybrid textual similarity measures that match sentences both on the character and on the token level. In the work mentioned above \cite{meyer-gurevych:2012:PAPERS} a feature based similarity is used (gloss overlap), while in some of their prior work, \cite{MeyerGurevych:2010}  they use a textual similarity measure based on vector-spaces generated from corpora (Explicit Semantic Analysis).
+Our method is based on the application of gloss overlap measures and its extension with ideas taken from Hybrid textual similarity measures that match sentences both at the character and at the token level. In the work mentioned above \cite{meyer-gurevych:2012:PAPERS}, a feature based similarity is used (gloss overlap), while in some of their prior work, \cite{MeyerGurevych:2010}  they use a textual similarity measure based on vector-spaces generated from corpora (Explicit Semantic Analysis).
 
-In this work we propose using a very simple hybrid similarity measure by replacing the exact word match of the overlap calculation with an approximate string distance measure and using the more general framework of the Tversky measure that can be seen as a generalization of Lesk, the Dice coefficient , the Jaccard and Tatimono indexes.
+In this work we propose using a very simple hybrid similarity measure by replacing the exact word match of the overlap calculation with an approximate string distance measure and by placing ourselves in the more general framework of the Tversky index (can be seen as a generalization of Lesk, the Dice coefficient , the Jaccard and Tatimono indexes, etc.)
 
- The idea proposed by \cite{Jimenez2010,Jimenez2012} is very similar in the sense that it exploits the Tversky index as a base and conjugates it with a textual similarity measure. That is, instead of incrementing the overlap count by 0 or 1, it is incremented by the value returned by the text similarity measure between the current pair of words being considered in the overlap calculation.
+ The idea of ``soft-cardinality'' proposed by \cite{Jimenez2010,Jimenez2012} is very similar in the sense that it exploits the Tversky index as a base and conjugates it with a textual similarity measure. That is, instead of incrementing the overlap count by 0 or 1, it is incremented by the value returned by the text similarity measure between the current pair of words being considered in the overlap calculation.
  
-  Their text similarity measure is based on an empirically generated a q-gram model (character-grams corresponding to substrings) combined with point-wise mutual information weighting. However in this work, we want to minimize the requirement of generating similarity models. Doing so for 10 languages would require some effort and with future expansions to more languages, an impractically daunting task. 
+  Their text similarity measure is based on an empirically generated a q-gram model (character-grams corresponding to substrings) combined with point-wise mutual information weighting. However in this work, we want to minimize the requirement of generating similarity models. Doing so for 10 languages would require some effort and with future expansions to more languages, become an impractically daunting task. 
  
- As such we chose to use a simple string distance measure for the approximate string match calculations. However, there are many such measure and it is necessary to select the right one for the task as will be detailed in Section \ref{sec:expe}. Moreover, there are existing so called ``Level 2'' or ``Hybrid'' similarity measures that already combine token overlap with token distance measures. Thus we will need to evaluate our proposed method with some of the existing methods so as to evaluate their viability. The various measures and a detailed performance comparison in a name matching task are presented by \cite{Cohen2003}.
+ As such, we chose to use a simple string distance measure for the approximate string match calculations. However, there are many such measure and it is necessary to select the right one for the task as will be detailed in Section \ref{sec:expe}. Moreover, there are existing so called ``Level 2'' or ``Hybrid'' similarity measures that already combine token overlap with token distance measures. Thus we will need to evaluate our proposed method with some of the existing methods so as to evaluate their viability. The various measures and a detailed performance comparison in a name matching task are presented by \cite{Cohen2003}.
 
 \section{The DBnary Dataset}
 
@@ -84,7 +84,7 @@ The elements in DBnary that could not be represented with Lemon, were defined as
 
 \subsection{Translation relations}
 
-The DBnary dataset uses an ad-hoc representation of translation relations, as the LEMON model does not provide a vocabulary for such information. A \verb|Translation| is a RDF resource that gathers all extracted elements. As an example, one of the translation of the lexical entry \emph{frog} is represented as follows\footnote{In all dumps and in this paper, we use the Turtle syntax to represent RDF data.}:
+The DBnary dataset uses an ad-hoc representation of translation relations, as the LEMON model does not provide a vocabulary for such information. A \verb|Translation| is a RDF resource that gathers all extracted information pertaining to a translation relation. As an example, one of the translations of the lexical entry \emph{frog} is represented as follows\footnote{In all dumps and in this paper, we use the Turtle syntax to represent RDF data.}:
 
 \begin{small}
 \begin{alltt}
@@ -100,11 +100,11 @@ eng:__tr_fra_1_frog__Noun__1
 \end{alltt}
 \end{small}
 
-Properties of this resource point to the source \verb|LexicalEntry|, the language of the target (represented as a \verb|lexvo.org| entity \cite{deMeloWeikum2008c}), the target written form and, optionally, a gloss and usage notes.
+The properties of this resource point to the source \verb|LexicalEntry|, the language of the target (represented as a \verb|lexvo.org| entity \cite{deMeloWeikum2008c}), the target written form and, optionally, a gloss and usage notes.
 
-The usage note gives information about the target of the translation (usually used to give the gender or a transcription of the target).
+Usage note give information about the target of the translation (usually used to give the gender or a transcription of the target).
 
-The gloss gives disambiguation information about the source of the translation. In the example given, it states that the given translation is valid for the word sense of \emph{frog} that may be described by the hint ``\emph{amphibian}''. Some of these glosses are textual and summarize or reprise the definition or part of the definition of one or more specific sense to which the translation specifically applies to.
+The gloss gives disambiguation information about the source of the translation. In the example given, it states that the given translation is valid for the word sense of \emph{frog} that may be described by the hint ``\emph{amphibian}''. Some of these glosses are textual and summarize or reprise the definition or part thereof of one or more specific sense to which the translation specifically applies to.
 
 As an example, the English \verb|LexicalEntry| \emph{frog} contains 8 word senses, defined as follows:
 
@@ -121,21 +121,21 @@ As an example, the English \verb|LexicalEntry| \emph{frog} contains 8 word sense
 
 Translations of this entry are devided in 4 groups corresponding to the glosses ``\emph{amphibian}'', ``\emph{end of a string instrument’s bow}'', ``\emph{organ in a horse’s foot}'' and ``\emph{part of a railway}''. 
 
-Additionally among the glosses, some may contain sense numbers, indicated by users in an ad-hoc way (may or may not be present, if the latter, no standard format is systematically followed or enforced). However, the presence of disambiguation information is very irregular and varies greatly between languages, both in terms of wiki structure and representation.
+Additionally among the glosses, some may contain sense numbers, indicated by users in an ad-hoc way (may or may not be present, if the latter is true, no standard format is systematically followed or enforced). However, the presence of disambiguation information is very irregular and varies greatly between languages, both in terms of wiki structure and representation.
 
-In the current state of the Wiktionary extraction process, we extract translation and when possible the associated glosses. However up to now, we did not exploit the information contained in the glosses to enrich and disambiguate the foreign language targets of translation relations.
+In the current state of the Wiktionary extraction process, we extract translation and when possible the associated glosses. However up to now, we did not exploit the information contained in the glosses to enrich and disambiguate the source senses of translation relations.
 
-As mentioned above, the information contained in translation glosses and their format are very variable between languages, both quantitatively and qualitatively. 
+As mentioned above, the information contained in translation glosses and their format is very variable between languages, both quantitatively and qualitatively. 
 
 Indeed, as shown in Table \ref{lemon-elts} some language like Italian, contain no gloss altogether, others, like English attaches textual glosses to translations almost systematically, but with no sense numbers. Others still, like German hardly contain textual glosses but give sense numbers to translations. In other cases such as for Finnish, French and Portuguese, many translations have an attached (textual) gloss with associated sense numbers. 
 
-In order to evaluate our method, we decided to use these mixed glosses that contain a textual hint and a sense number to create a endogenous gold standard.
+In order to evaluate our method, we decided to use these mixed glosses that both contain a textual hint and a sense number to create a endogenous gold standard.
 
 \subsubsection{Creation of a gold standard}
 
-It is often the case that among translation glosses that are available and that do contain textual information or sense numbers, there are many false positives and variability that result from the variety of structures employed in Wiktionary as well as artefacts resulting from the extraction process. Before we can proceed further, it is paramount to filter this information so as to keep only its relevant parts. 
+It is often the case that among translation glosses that are available and that do contain textual information or sense numbers, there are many false positives and variability that result from the variety of structures employed in Wiktionary as well as artefacts resulting from the extraction process. Before we can proceed further, it is paramount to filter this information so as to keep only the relevant parts. 
 
-More concretely tow steps must be followed of we are to successfully extract the information we need :
+More concretely two steps must be followed if we are to successfully extract the information we need :
 \begin{itemize}
    \item Remove empty glosses, or glosses containing irrelevant textual content that often correspond to TO DO notes in various forms (e.g. \emph{translations to be checked})
    \item Extract sense numbers from the glosses when available, using language dependent templates (e.g. ``\emph{textual gloss (1)}'' or ``\emph{1. textual gloss}'') 
@@ -317,7 +317,7 @@ Given that translation glosses are very short (often a single word), it is very 
 We chose, here, to evaluate the values of \(\alpha\) and \(\beta\) in steps of \(0.1\). Figure \ref{fig.1} graphically shows the \(F\_1\) score for each pair of values of \(alpha\) and \(beta\) for all three languages. We can indeed confirm our hypothesis as the optimal value in all three cases is indeed \(\alpha=1-\beta=0.1\) with a difference between \(+0.15\%\) to \(+0.43\%\) with the second best scores.
 	
 \begin{figure}\centering
-\includegraphics[width=0.66\columnwidth]{alphabetafig}
+\includegraphics[width=0.64\columnwidth]{alphabetafig}
 \caption{F1 score for Finnish, French and Portuguese depending on the value of \(\alpha\) and \(\beta\).}
 \label{fig.1}
 \end{figure}
@@ -356,9 +356,9 @@ We can see that for all three languages we achieve a good performance compared t
 
 \begin{figure}
 \centering
-\includegraphics[width=.68\columnwidth]{french}
-\includegraphics[width=.68\columnwidth]{portuguese}
-\includegraphics[width=.68\columnwidth]{finnish}
+\includegraphics[width=.65\columnwidth]{french}
+\includegraphics[width=.65\columnwidth]{portuguese}
+\includegraphics[width=.65\columnwidth]{finnish}
 \caption{Graphical representation of the F1 score against the  value of delta for our measure and other Level 2 Measures}
 \label{fig.2}
 \end{figure}

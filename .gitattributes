@@ -1,4 +1,6 @@
 * text=auto !eol
+doc/articles/ldl2014-data-challenge/biblio.bib -text
+doc/articles/ldl2014-data-challenge/dbnary-jdm.tex -text
 doc/articles/ldl2014/alphabetafig.pdf -text svneol=unset#unset
 doc/articles/ldl2014/dbnary-wsd.bib -text
 doc/articles/ldl2014/dbnary-wsd.tex -text

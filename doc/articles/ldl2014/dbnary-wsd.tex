@@ -20,7 +20,7 @@
 \abstract{ 
 The DBnary project aims at providing high quality Lexical Linked Data extracted from different Wiktionary language editions. Data from 10 different languages is  currently extracted for a total of over $3.16$M translation links that connect lexical entries from the 10 extracted languages, to entries in more than one thousand languages. 
 In Wiktionary, glosses are often associated with translations to help users understand to what sense they refer to, wither though a textual definition or a target sense number. In this article we aim at the extraction of as much of this information as possible and then the disambiguation of the corresponding translations for all languages available. We use an adaptation of various textual and semantic similarity techniques based on partial or fuzzy gloss overlaps to disambiguate the translation relations (To account for the lack of normalization, e.g. lemmatization and PoS tagging) and then extract some of the sense number information present to build a gold standard so as to evaluate our disambiguation as well as tune and optimize the parameters of the similarity measures.
-We obtain F-measures of the order of 80\% (on par with similar work on English only), across the three languages where we could generate a gold standard (French, Portuguese, Finnish) and show that most of the disambiguation errors are due to inconsistencies in Wiktionary itself that cannot be detected at the generation of DBNary (shifted sense numbers, inconsistent glosses, etc.). \\ \newline \Keywords{Wiktionary, Linked Open Data, Multilingual Resources}}
+We obtain F-measures of the order of 80\% (on par with similar work on English only), across the three languages where we could generate a gold standard (French, Portuguese, Finnish) and show that most of the disambiguation errors are due to inconsistencies in Wiktionary itself that cannot be detected at the generation of DBnary (shifted sense numbers, inconsistent glosses, etc.). \\ \newline \Keywords{Wiktionary, Linked Open Data, Multilingual Resources}}
 
 
 \DeclareMathOperator*{\argmax}{arg\!\max}
@@ -72,7 +72,7 @@ In this work we propose using a very simple hybrid similarity measure by replaci
 
 \section{The DBnary Dataset}
 
-DBnary is a Lexical Linked Open Dataset extracted from 10 Wiktionary language editions (English, Finnish, French, German, Greek, Italian, Japanese, Portuguese, Russian and Turkish). It is available on-line at \url{http://kaiko.getalp.org/about-dbnary}. At the time of writing, it contains more than 35 million triples. This number is steadily growing as the dataset evolves in parallel with the Wiktionary original data. Indeed, the dataset is automatically updated as soon as Wikimedia releases new Wiktionary dumps, i.e. every 10-15 days per language edition. 
+DBnary is a Lexical Linked Open Dataset extracted from 10 Wiktionary language editions (English, Finnish, French, German, Greek, Italian, Japanese, Portuguese, Russian and Turkish). It is available on-line at \url{http://kaiko.getalp.org/about-DBnary}. At the time of writing, it contains more than 35 million triples. This number is steadily growing as the dataset evolves in parallel with the Wiktionary original data. Indeed, the dataset is automatically updated as soon as Wikimedia releases new Wiktionary dumps, i.e. every 10-15 days per language edition. 
 
 DBnary is structured according the LEMON ontology for lexical linked data \cite{DBLP:conf/esws/McCraeSC11}. Table \ref{lemon-elts} shows the number of Lexical Elements, as defined in the LEMON ontologies, for the different extracted languages. 
 
@@ -165,13 +165,13 @@ Turkish & $64,678$ & $91,071$ & $66,290$ & $53,348$ & $585$ & $52,901$ & $138$ \
 
 When sufficient glosses contain both a textual hint and sense numbers, we removed the sense numbers\footnote{Translation are sometimes valid for several source word senses} from the gloss and used them to create a gold standard in trec\_eval format.
 
-Now that we have successfully extracted as much of the information contained in translation glosses, we can move on to the disambiguation process itself. While, the steps above are indeed language specific, what follows was designed to be as generic and computationally efficient as possible, as we are required to periodically perform the disambiguation, whenever a new version of DBNary is extracted from the latest Wiktionary dumps.
+Now that we have successfully extracted as much of the information contained in translation glosses, we can move on to the disambiguation process itself. While, the steps above are indeed language specific, what follows was designed to be as generic and computationally efficient as possible, as we are required to periodically perform the disambiguation, whenever a new version of DBnary is extracted from the latest Wiktionary dumps.
 
 
 
 \section{Attaching Translations to Word Senses}
 \subsection{Formalization of translation disambiguation}
-Let \(T\) be the set of all translation relations, \(L\) the set of all \verb|LexicalEntry| in a given language edition of DBNary. Let \(T_i\in T: Gloss(T_i)\) be a function that return the gloss of any translation \(T_i\in T\) and let \(Source(T_i)=L_{T_i}\) be a function that returns a reference to the source \verb|LexicalEntry|, \(L_{T_i}\) of a translation \(T_i\). Let \(Senses(L_i)=S_{L_i}\) be the set of all the senses associated with \verb|LexicalEntry| \(L_i\). Let \(S_{L_i}^k\) be the \(k\)-th sense contained in \(S_{L_i}\) and let \(Def(S_{L_i}^k)\) be a function that returns the textual definition of a sense \(S_{L_i}^k\). Finally let \(Sim(A,B)\) be a function that returns a semantic similarity or relatedness score between \(A\) and \(B\), where \(A,B\) are a pair of textual definitions or textual glosses. 
+Let \(T\) be the set of all translation relations, \(L\) the set of all \verb|LexicalEntry| in a given language edition of DBnary. Let \(T_i\in T: Gloss(T_i)\) be a function that return the gloss of any translation \(T_i\in T\) and let \(Source(T_i)=L_{T_i}\) be a function that returns a reference to the source \verb|LexicalEntry|, \(L_{T_i}\) of a translation \(T_i\). Let \(Senses(L_i)=S_{L_i}\) be the set of all the senses associated with \verb|LexicalEntry| \(L_i\). Let \(S_{L_i}^k\) be the \(k\)-th sense contained in \(S_{L_i}\) and let \(Def(S_{L_i}^k)\) be a function that returns the textual definition of a sense \(S_{L_i}^k\). Finally let \(Sim(A,B)\) be a function that returns a semantic similarity or relatedness score between \(A\) and \(B\), where \(A,B\) are a pair of textual definitions or textual glosses. 
 
 Then, we can express the disambiguation process as follows:
 \[
@@ -304,7 +304,7 @@ As we can see, for all language, the best string similarity measure is clearly t
 \hline Ti&0.7088&0.7171&0.8806\\
 \hline 
 \end{tabular} 
-\caption{Results comparing the performance in terms of F\_1 score for French, Finnish and Portuguese (ighest scores in bold).}
+\caption{Results comparing the performance in terms of F\_1 score for French, Finnish and Portuguese (highest scores in bold).}
 \label{tab:expe1}
 }
 \end{table}
@@ -373,11 +373,11 @@ We looked at some of the error made by the disambiguation process and manually c
 \item New senses have been introduced in Wiktionary and shifted sense numbers, which were not subsequently updated in the resource. Such errors cannot be detected during the extraction process.
 \end{enumerate}
 
-We can in fact easily find all the errors due to the lack of overlap and correct the errors of type 2 by enriching the extraction process of DBNary. Thus we can single out errors that are due to inconsistencies in the resource and thus potentially use the disambiguation results to indicate to users where errors are located an need to be updated.
+We can in fact easily find all the errors due to the lack of overlap and correct the errors of type 2 by enriching the extraction process of DBnary. Thus we can single out errors that are due to inconsistencies in the resource and thus potentially use the disambiguation results to indicate to users where errors are located an need to be updated.
 
 \section{Conclusion}
 
-With our method, we were able to determine and optimal similarity measure for disambiguating translation in DBNary. Similar results across the three evaluation languages suggests that it is a general optimality that can be applied to all the languages currently present in DBNary, although for Asian Languages that have no segmentation, it is likely not the case.
+With our method, we were able to determine and optimal similarity measure for disambiguating translation in DBnary. Similar results across the three evaluation languages suggests that it is a general optimality that can be applied to all the languages currently present in DBnary, although for Asian Languages that have no segmentation, it is likely not the case.
 
 The we compared the results and concluded that our method is viable for the task of disambiguating glossed translation relations, especially considering the low random baselines and first sense baselines compared to the top score of our disambiguation method.
 

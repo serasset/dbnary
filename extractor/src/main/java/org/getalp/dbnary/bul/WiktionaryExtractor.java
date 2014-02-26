@@ -18,7 +18,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
     protected final static String languageSectionPatternString = "(\\{\\{\\-..\\-\\}\\})";
-    protected final static String sectionPatternString = "(\\{\\{[^-]*\\}\\})";
+    protected final static String sectionPatternString = "(\\{\\{[^-][^\\}]*\\s*\\}\\})";
 
     // TODO: handle pronounciation
     protected final static String pronounciationPatternString = "\\{\\{pron\\|([^\\|\\}]*)(.*)\\}\\}";
@@ -40,14 +40,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int state = NODATA;
     private final int BULGARIANBLOCK = 1;
     protected boolean isCurrentlyExtracting = false;
-    int definitionBlockStart = -1;
-    int translationBlockStart = -1;
-    int orthBlockStart = -1;
-    private int nymBlockStart = -1;
-    private int pronBlockStart = -1;
     private int bulgarianBlockStart = -1;
 
-    private String currentNym = null;
     private boolean isCorrectPOS;
 
     public WiktionaryExtractor(WiktionaryDataHandler wdh) {
@@ -118,6 +112,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void leaveBulgarianBlock(Matcher m) {
         isCorrectPOS = extractMorpho(bulgarianBlockStart, computeRegionEnd(bulgarianBlockStart, m));
         bulgarianBlockStart = -1;
+        state = NODATA;
     }
 
 

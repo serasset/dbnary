@@ -7,15 +7,26 @@ import org.getalp.dbnary.WiktionaryIndex;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BulgarianWikiModel extends DbnaryWikiModel {
 
     protected final static Set<String> bulgarianPOS = new TreeSet<String>();
     protected final static HashMap<String, String> nymMarkerToNymName;
 
-    protected final String translationPattern = "";
+    protected final static String translationExpression = "";
+    protected final static String nymExpression = "(\\[\\[[^\\]]*\\]\\])";
+
+    protected static Pattern translationPattern;
+    protected static Pattern nymPattern;
+
 
     static {
+
+        translationPattern = Pattern.compile(BulgarianWikiModel.translationExpression);
+        nymPattern = Pattern.compile(BulgarianWikiModel.nymExpression);
+
         bulgarianPOS.add("Съществително нарицателно име"); // Common Noun
         bulgarianPOS.add("Съществително собствено име"); // Proper Noun
         bulgarianPOS.add("Прилагателно име"); // Adjective
@@ -87,6 +98,25 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
                         }
                     }
                     //delegate.registerTranslation();
+                } else if (section.contains("ID")) { // ID, same as page name for Bulgarian
+                }else if (section.contains("РОД")) { //Gender
+                }else if (section.contains("ТИП")) { // Type
+                }else if (section.contains("ИЗРАЗИ")) { // Examples
+                }else if (section.contains("ЕТИМОЛОГИЯ")) { // Etymology
+                }else if (section.contains("ПРОИЗВОДНИ ДУМИ")) { // Derived Terms
+                }else if (section.contains("ДРУГИ")) { // Related Words
+                }else {
+                  for(String rt: nymMarkerToNymName.keySet()){
+                      String body = parameterMap.get(section);
+                      if(section.toLowerCase().contains(rt.toLowerCase())&&!body.isEmpty()){
+                          Matcher nymMatcher = nymPattern.matcher(body);
+                          while(nymMatcher.find()){
+                              String name = nymMatcher.group().replaceAll("\\[","").replaceAll("\\]","");
+                              System.err.println(name);
+                              delegate.registerNymRelation(name,nymMarkerToNymName.get(rt));
+                          }
+                      }
+                  }
                 }
             }
         } else {

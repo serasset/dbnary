@@ -15,17 +15,19 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
     protected final static Set<String> bulgarianPOS = new TreeSet<String>();
     protected final static HashMap<String, String> nymMarkerToNymName;
 
-    protected final static String translationExpression = "";
-    protected final static String nymExpression = "(\\[\\[[^\\]]*\\]\\])";
-
-    protected static Pattern translationPattern;
-    protected static Pattern nymPattern;
-
+    protected final static String translationExpression = "\\s?\\*?\\s?.*\\s?:\\s*.*";
+    protected final static Pattern translationPattern = Pattern.compile(BulgarianWikiModel.translationExpression);
+    protected final static String glossExpression = "\\][^\\[]*\\([^\\)\\[\\,]*\\)";
+    static final Pattern glossPattern = Pattern.compile(glossExpression);
+    protected final static String translationLangExpression = "\\s*\\*\\s*[^\\:]*";
+    protected final static Pattern translationLangPattern = Pattern.compile(BulgarianWikiModel.translationLangExpression);
+    //protected final static String translationBodyExpression = "(\\[\\[[^\\]]+\\]\\]\\s?\\(?[^\\)\\[\\,]*\\)?\\)?)";
+    //protected final static String translationBodyExpression = "(\\[\\[[^\\]]+\\]\\]\\s?\\(?[^\\)\\[]+\\)?;?)";
+    protected final static String translationBodyExpression = "([^:\\*]*(\\[|\\{)*)$";
+    protected final static Pattern translationBodyPattern = Pattern.compile(BulgarianWikiModel.translationBodyExpression);
 
     static {
 
-        translationPattern = Pattern.compile(BulgarianWikiModel.translationExpression);
-        nymPattern = Pattern.compile(BulgarianWikiModel.nymExpression);
 
         bulgarianPOS.add("Съществително нарицателно име"); // Common Noun
         bulgarianPOS.add("Съществително собствено име"); // Proper Noun
@@ -51,6 +53,11 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
         nymMarkerToNymName.put("Холоним", "holo");
     }
 
+    protected final static String nymExpression = "(\\[\\[[^\\]]*\\]\\])";
+    protected final static Pattern nymPattern = Pattern.compile(BulgarianWikiModel.nymExpression);
+    static final Pattern linkPattern = Pattern.compile("\\[\\[([^\\]]*)\\]\\]");
+    static final Pattern macroPattern = Pattern.compile("\\{\\{([^\\}]*)\\}\\}");
+    static final Pattern parens = Pattern.compile("\\(([^\\)]*)\\)");
     private WiktionaryDataHandler delegate;
     private boolean hasAPOS = false;
 
@@ -90,33 +97,49 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
                     def = def.replace("[0-9]+\\.", "").trim();
                     delegate.registerNewDefinition(def);
                 } else if (section.contains("ПРЕВОД")) {
-                    String[] translations = parameterMap.get(section).split("\\*");
-                    for (String trans : translations) {
+                    Matcher langTranslations = translationPattern.matcher(parameterMap.get(section));
+                    while (langTranslations.find()) {
+                        String trans = langTranslations.group();
+                        String lang = "";
+                        String body = "";
+                        String gloss = "";
                         if (!trans.isEmpty()) {
-                            String lang = BulgarianLangtoCode.triletterCode(trans.split(":")[0].trim().toLowerCase());
-                            String translationBody = trans.split(":")[1];
+                            Matcher translationLangMatcher = translationLangPattern.matcher(trans);
+                            if (translationLangMatcher.find()) {
+                                lang = BulgarianLangtoCode.triletterCode(translationLangMatcher.group().replace("*", "").replace("{", "").replace("}", ""));
+
+                                Matcher translationBodyMatcher = translationBodyPattern.matcher(trans);
+                                if (translationBodyMatcher.find()) {
+                                    body = translationBodyMatcher.group();
+                                    Matcher glossMatcher = glossPattern.matcher(body);
+                                    if (glossMatcher.find()) {
+                                        gloss = glossMatcher.group();
+                                    }
+                                }
+                                extractTranslations(gloss, lang, body);
+                            }
                         }
                     }
                     //delegate.registerTranslation();
                 } else if (section.contains("ID")) { // ID, same as page name for Bulgarian
-                }else if (section.contains("РОД")) { //Gender
-                }else if (section.contains("ТИП")) { // Type
-                }else if (section.contains("ИЗРАЗИ")) { // Examples
-                }else if (section.contains("ЕТИМОЛОГИЯ")) { // Etymology
-                }else if (section.contains("ПРОИЗВОДНИ ДУМИ")) { // Derived Terms
-                }else if (section.contains("ДРУГИ")) { // Related Words
-                }else {
-                  for(String rt: nymMarkerToNymName.keySet()){
-                      String body = parameterMap.get(section);
-                      if(section.toLowerCase().contains(rt.toLowerCase())&&!body.isEmpty()){
-                          Matcher nymMatcher = nymPattern.matcher(body);
-                          while(nymMatcher.find()){
-                              String name = nymMatcher.group().replaceAll("\\[","").replaceAll("\\]","");
-                              System.err.println(name);
-                              delegate.registerNymRelation(name,nymMarkerToNymName.get(rt));
-                          }
-                      }
-                  }
+                } else if (section.contains("РОД")) { //Gender
+                } else if (section.contains("ТИП")) { // Type
+                } else if (section.contains("ИЗРАЗИ")) { // Examples
+                } else if (section.contains("ЕТИМОЛОГИЯ")) { // Etymology
+                } else if (section.contains("ПРОИЗВОДНИ ДУМИ")) { // Derived Terms
+                } else if (section.contains("ДРУГИ")) { // Related Words
+                } else {
+                    for (String rt : nymMarkerToNymName.keySet()) {
+                        String body = parameterMap.get(section);
+                        if (section.toLowerCase().contains(rt.toLowerCase()) && !body.isEmpty()) {
+                            Matcher nymMatcher = nymPattern.matcher(body);
+                            while (nymMatcher.find()) {
+                                String name = nymMatcher.group().replaceAll("\\[", "").replaceAll("\\]", "");
+                                System.err.println(name);
+                                delegate.registerNymRelation(name, nymMarkerToNymName.get(rt));
+                            }
+                        }
+                    }
                 }
             }
         } else {
@@ -131,4 +154,56 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
         }
         return null;
     }
+
+    private void extractTranslations(String gloss, String lang, String value) {
+        // First black out commas that appear inside a pair of parenthesis
+        value = blackoutCommas(value);
+        String translations[] = value.split("[,;]");
+        for (int i = 0; i < translations.length; i++) {
+            extractTranslation(gloss, lang, translations[i]);
+        }
+    }
+
+    private String blackoutCommas(String value) {
+        Matcher m = parens.matcher(value);
+        StringBuffer sb = new StringBuffer((int) (value.length() * 1.4));
+        String inParens;
+        while (m.find()) {
+            inParens = m.group(1);
+            inParens = inParens.replaceAll(";", "@@SEMICOLON@@");
+            inParens = inParens.replaceAll(",", "@@COMMA@@");
+            m.appendReplacement(sb, "(" + inParens + ")");
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
+    private String restoreCommas(String value) {
+        value = value.replaceAll("@@SEMICOLON@@", ";");
+        value = value.replaceAll("@@COMMA@@", ",");
+        return value;
+    }
+
+    private void extractTranslation(String gloss, String lang, String trans) {
+        trans = restoreCommas(trans);
+        Matcher macros = macroPattern.matcher(trans);
+        String word = macros.replaceAll("");
+        Matcher links = linkPattern.matcher(word);
+        word = links.replaceAll("$1").trim();
+        StringBuffer usage = new StringBuffer();
+        StringBuffer w = new StringBuffer();
+        Matcher m = parens.matcher(word);
+        while (m.find()) {
+            usage.append(m.group(0));
+            usage.append(" ");
+            m.appendReplacement(w, " ");
+        }
+        m.appendTail(w);
+        word = w.toString().trim();
+        if (usage.length() > 0) usage.deleteCharAt(usage.length() - 1);
+        if (word != null && !word.equals("") && lang != null && !lang.isEmpty()) {
+            delegate.registerTranslation(lang, gloss, usage.toString(), word);
+        }
+    }
+
 }

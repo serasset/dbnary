@@ -6,7 +6,6 @@ package org.getalp.dbnary.bul;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,7 +22,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // TODO: handle pronounciation
     protected final static String pronounciationPatternString = "\\{\\{pron\\|([^\\|\\}]*)(.*)\\}\\}";
     //protected final static HashSet<String> nymMarkers;
-
 
 
     protected final static Pattern languageSectionPattern;
@@ -116,7 +114,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
 
-
     private void extractBulgarianData(int startOffset, int endOffset) {
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
@@ -124,12 +121,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         while (m.find()) {
             switch (state) {
                 case NODATA:
-                    if (m.group(1).startsWith("{{")&&!m.group(1).contains("{{Словоформи")&&!m.group(1).contains("{{Уикипедия}}")) {
+                    if (m.group(1).startsWith("{{") && !m.group(1).contains("{{Словоформи") && !m.group(1).contains("{{Уикипедия}}")) {
                         gotoBulgarianBlock(m);
                     }
                     break;
                 case BULGARIANBLOCK:
-                    if (m.group(1).startsWith("{{")&& !m.group(1).contains("{{Словоформи")) {
+                    if (m.group(1).startsWith("{{") && !m.group(1).contains("{{Словоформи")) {
                         leaveBulgarianBlock(m);
                         gotoBulgarianBlock(m);
                     } else {

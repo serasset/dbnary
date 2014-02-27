@@ -295,6 +295,13 @@ public class LMFBasedRDFDataHandler implements WiktionaryDataHandler {
 		return encodedPageName;
 	}
 
+	@Override
+	public void registerNymRelationOnCurrentSense(String target,
+			String synRelation) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	
 }

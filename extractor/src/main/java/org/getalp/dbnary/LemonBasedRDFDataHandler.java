@@ -55,8 +55,17 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	private CounterSet currentLexieCount = new CounterSet();
 	private Resource currentMainLexEntry;
 	private Resource currentPreferredWrittenRepresentation;
-	private String currentSharedPronunciation;
-	private String currentSharedPronunciationLang;
+	
+	private static class PrononciationPair {
+		String pron, lang;
+		public PrononciationPair(String pron, String lang) {
+			this.pron = pron; this.lang = lang;
+		}
+	}
+
+	private Set<PrononciationPair> currentSharedPronunciations;
+//	private String currentSharedPronunciation;
+//	private String currentSharedPronunciationLang;
 	
 	private static HashMap<String,Property> nymPropertyMap = new HashMap<String,Property>();
 	private static HashMap<String,PosAndType> posAndTypeValueMap = new HashMap<String,PosAndType>();
@@ -168,8 +177,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
         currentLexieCount.resetAll();
         translationCount.resetAll();
         currentPreferredWrittenRepresentation = null;
-        currentSharedPronunciation = null;
-        currentSharedPronunciationLang = null;
+        currentSharedPronunciations = new HashSet<PrononciationPair>();
         
         // Create a dummy lexical entry that points to the one that corresponds to a part of speech
         String encodedPageName = uriEncode(wiktionaryPageName);
@@ -211,13 +219,13 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
         currentPreferredWrittenRepresentation = aBox.createResource(); 
         
         // If a pronunciation was given before the first part of speech, it means that it is shared amoung pos/etymologies
-        if (null != currentSharedPronunciation && currentSharedPronunciation.length() > 0) {
-        	if (null != currentSharedPronunciationLang && currentSharedPronunciationLang.length() > 0) 
-        		aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, currentSharedPronunciation, currentSharedPronunciationLang));
-    		else
-    			aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, currentSharedPronunciation));
+        for (PrononciationPair p : currentSharedPronunciations) {
+        	if (null != p.lang && p.lang.length() > 0) 
+        		aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, p.pron, p.lang));
+        	else
+        		aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, p.pron));
         }
-			
+        	
 
     	aBox.add(aBox.createStatement(currentLexEntry, canonicalFormProperty, currentPreferredWrittenRepresentation));
     	aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, writtenRepresentationProperty, currentWiktionaryPageName, extractedLang));
@@ -388,11 +396,37 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     }
 
 	@Override
+	public void registerNymRelationOnCurrentSense(String target, String synRelation) {
+		if (null == currentSense) {
+			log.debug("Registering Lexical Relation when current sense is null in \"{}\".", this.currentMainLexEntry);
+			registerNymRelation(target, synRelation);
+			return ; // Don't register anything if current lex entry is not known.
+		}
+		// Some links point to Annex pages or Images, just ignore these.
+		int colon = target.indexOf(':');
+		if (colon != -1) {
+			return;
+		}
+		int hash = target.indexOf('#');
+		if (hash != -1) {
+			// The target contains an intra page href. Remove it from the target uri and keep it in the relation.
+			target = target.substring(0,hash);
+			// TODO: keep additional intra-page href
+	    	// aBox.add(aBox.createStatement(nym, isAnnotatedBy, target.substring(hash)));
+		}
+		
+		Property nymProperty = nymPropertyMap.get(synRelation);
+		
+		Resource targetResource = aBox.createResource(NS + uriEncode(target), vocableEntryType);
+		
+    	aBox.add(aBox.createStatement(currentSense, nymProperty, targetResource));
+    }
+	
+	@Override
 	public void registerPronunciation(String pron, String lang) {
 		
 		if (null == currentPreferredWrittenRepresentation) {
-			currentSharedPronunciation = pron;
-			currentSharedPronunciationLang = lang;
+			currentSharedPronunciations.add(new PrononciationPair(pron, lang));
 		} else {
 			if (null != lang && lang.length() > 0)
 				aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, pronProperty, pron, lang));

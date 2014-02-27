@@ -50,7 +50,7 @@ public interface WiktionaryDataHandler {
 
     public void registerAlternateSpelling(String alt);
     
-    public void registerNymRelation(String leftGroup, String synRelation);
+    public void registerNymRelation(String target, String synRelation);
 
     public void registerTranslation(String lang, String currentGlose, String usage, String word);
 
@@ -73,6 +73,8 @@ public interface WiktionaryDataHandler {
 	 * @param format
 	 */
 	public void dump(OutputStream out, String format);
+
+	void registerNymRelationOnCurrentSense(String target, String synRelation);
 
 
 	

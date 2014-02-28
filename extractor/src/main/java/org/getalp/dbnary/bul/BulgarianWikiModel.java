@@ -17,7 +17,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
 
     protected final static String translationExpression = "\\s?\\*?\\s?.*\\s?:\\s*.*";
     protected final static Pattern translationPattern = Pattern.compile(BulgarianWikiModel.translationExpression);
-    protected final static String glossExpression = "\\][^\\[]*\\([^\\)\\[\\,]*\\)";
+    protected final static String glossExpression = "(\\]|\\})(\\]|\\})[^\\]\\[\\}\\{\\:\\n]*((\\[|\\{)(\\[|\\{)|$)";
     static final Pattern glossPattern = Pattern.compile(glossExpression);
     protected final static String translationLangExpression = "\\s*\\*\\s*[^\\:]*";
     protected final static Pattern translationLangPattern = Pattern.compile(BulgarianWikiModel.translationLangExpression);
@@ -97,7 +97,8 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
                     def = def.replace("[0-9]+\\.", "").trim();
                     delegate.registerNewDefinition(def);
                 } else if (section.contains("ПРЕВОД")) {
-                    Matcher langTranslations = translationPattern.matcher(parameterMap.get(section));
+                    String sectionContent = parameterMap.get(section).replaceAll("\\[\\[:[^:]+:[^\\|]*\\|\\(?[^\\)]+\\)?\\]\\]", "");
+                    Matcher langTranslations = translationPattern.matcher(sectionContent);
                     while (langTranslations.find()) {
                         String trans = langTranslations.group();
                         String lang = "";
@@ -111,12 +112,9 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
                                 Matcher translationBodyMatcher = translationBodyPattern.matcher(trans);
                                 if (translationBodyMatcher.find()) {
                                     body = translationBodyMatcher.group();
-                                    Matcher glossMatcher = glossPattern.matcher(body);
-                                    if (glossMatcher.find()) {
-                                        gloss = glossMatcher.group();
-                                    }
+                                    body = body.replaceAll("\\[\\[([^\\]\\[]*)\\s*,\\s*([^\\]\\[]*)\\]\\]","\\[\\[$1\\]\\],\\[\\[$2\\]\\]");
                                 }
-                                extractTranslations(gloss, lang, body);
+                                extractTranslations(lang, body);
                             }
                         }
                     }
@@ -155,11 +153,17 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
         return null;
     }
 
-    private void extractTranslations(String gloss, String lang, String value) {
+    private void extractTranslations(String lang, String value) {
         // First black out commas that appear inside a pair of parenthesis
         value = blackoutCommas(value);
         String translations[] = value.split("[,;]");
         for (int i = 0; i < translations.length; i++) {
+            String gloss="";
+            Matcher glossMatcher = glossPattern.matcher(translations[i]);
+            if (glossMatcher.find()) {
+                gloss = glossMatcher.group();
+                gloss = gloss.replaceAll("[\\[\\]\\{\\}]","").replaceAll("''","").replaceAll("\\.,",".");
+            }
             extractTranslation(gloss, lang, translations[i]);
         }
     }
@@ -192,14 +196,23 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
         word = links.replaceAll("$1").trim();
         StringBuffer usage = new StringBuffer();
         StringBuffer w = new StringBuffer();
-        Matcher m = parens.matcher(word);
+        Matcher m = glossPattern.matcher(word);
         while (m.find()) {
             usage.append(m.group(0));
             usage.append(" ");
             m.appendReplacement(w, " ");
         }
         m.appendTail(w);
-        word = w.toString().trim();
+        word = w.toString().trim().replaceAll("''","").replace(gloss.trim(),"").trim();
+        Matcher m2 = parens.matcher(word);
+        StringBuffer w2 = new StringBuffer();
+        while (m2.find()) {
+            usage.append(m2.group(0));
+            usage.append(" ");
+            m2.appendReplacement(w2, " ");
+        }
+        m2.appendTail(w2);
+        word = w2.toString().trim();
         if (usage.length() > 0) usage.deleteCharAt(usage.length() - 1);
         if (word != null && !word.equals("") && lang != null && !lang.isEmpty()) {
             delegate.registerTranslation(lang, gloss, usage.toString(), word);

@@ -23,9 +23,9 @@
 }\makeatother
 
 
-\title{Dbnary: Extracting Wiktionary Data for 12 Languages with Enhanced Translation Relations}
+\title{Dbnary: Wiktionary as Linked Data for 12 Language Editions with Enhanced Translation Relations}
 
-\author{Gilles Sérasset \and Andon Tchechmedjiev\\
+\author{Gilles Sérasset, Andon Tchechmedjiev\\
 UJF-Grenoble 1, Laboratoire d'Informatique de Grenoble\\ 
 GETALP Team, BP 53, 38051 Grenoble cedex 9, France \\ 
 \texttt{gilles.serasset@imag.fr}
@@ -39,7 +39,7 @@ GETALP Team, BP 53, 38051 Grenoble cedex 9, France \\
 
 \begin{abstract}
 After winning the Monnet Challenge in 2012, we continued our efforts in extracting multilingual wiktionary data. This data, made available as Linked Data structured using the LEMON Model, now contains 12 language editions. This short paper presents the current status of the dbnary dataset.\\
-The extracted data is registered at \url{http://thedatahub.org/dataset/dbnary}.
+The extracted data is registered at \url{http://thedatahub.org/dataset/dbnary}. Explanations, statistics and data may be accessed via the dataset web site: \url{http://kaiko.getalp.org/about-dbnary/}.
 \textbf{Keywords:} Wiktionary, Multilingual Lexical Resource, Lexical Networks, LEMON, RDF.
 \end{abstract}
 
@@ -113,7 +113,7 @@ The relations between translations and lexical senses is also a part of this dat
 
 \subsection{Size of the involved data}
 
-At the time of writing, the extracted data from the most up to date dump files are the following:
+Table \ref{table:size} and \ref{table:rels} present the size of the data in terms of number of lexical elements and of lexico-semantic relations.
 
 \begin{table}[htb]
 \begin{minipage}{\linewidth}
@@ -169,9 +169,12 @@ At the time of writing, the extracted data from the most up to date dump files a
 
 \section{Conclusion and Perspectives}
 
-The current paper shows preliminary results on an open source tool to extract a LEMON based lexical network from different wiktionary language editions. Such a work is interesting for many users that will be able to use the extracted data in their own NLP system. Moreover, as the extracted resource uses the Resource Description Framework (RDF) standard and the LEMON model, the extracted data is also directly usable for researchers on the Semantic Web, where it could be used to ease the ontology alignment systems when terms in different languages are used to describe ontologies of a domain.
+The current paper shows the current status of an ever growing RDF dataset based on 12 different Wiktionary language editions. The dataset is available as Linked Data, structured using the LEMON model and linked to \emph{lexinfo} and \emph{lexvo} resources. The dataset has grown since its first release in 2014 and is now available in a semi-live manner (the data is extracted each time a new Wiktionary dump is available). Older versions are also available, allowing for a diachronic study of Wiktionary data.
 
-Our next objectives are to better generalize the treatments of the current extractors, so that it will be easier to create extractors for other languages. We are currently working on the Russian and we welcome all initiative aiming at the addition of new language to this open-source tool.
+The extractors and maintenance tools are open-source and may be used and expanded as needed.  
+
+Our next objectives are to better generalize the treatments of the current extractors, by providing a dedicated wiki syntax parser that will be used to design more powerful extraction patterns. Our current effort also consists in linking DBnary to other datasets like UBY or Wordnet.
+
 
 \section{Acknowledgements}
 

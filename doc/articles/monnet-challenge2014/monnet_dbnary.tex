@@ -70,15 +70,7 @@ In this effort, we also had to develop tools to evaluate the extarctor performan
 
 When we maintain the extractor, we need to carefully check that the patches we added do not introduce regressions in the extractor. For this, we developped our own \texttt{RDFdiff} command line which computes the differences between 2 RDF dumps. Such a command is already provided in the JENA toolbox, however, the JENA implementation does not correctly deal with anonymous nodes. Indeed, anonymous nodes are always considered as different by the JENA implementation when the RDF specification states that 2 anonymous nodes that share the same properties should be considered equal. Our version of RDFDiff correctly handles such anonymous node (that are heavily used in LEMON model). With this implementation, it is now easy to compute the difference between the original extraction and the new one and to decide, based on these differences, if the new version is good enough for production.
 
-From time to time, a Wiktionary language edition drastically changes the way it encodes some data. Following the discussions to anticipate on such changes is not an option with so many languages. Hence, with each language extraction update, we compute a set of statistics that gives detailed figures on the size of the data. This stats are available live on the dbnary web site\footnote{\url{http://kaiko.getalp.org/about-dbnary}}. Among the available stats, Figure \ref{fig:figure1} shows to users the size of the latest extractions (number of elements, lexical relations, translations). 
-
-\begin{figure}[htb]
-	\begin{center}
-		\includegraphics[width=\textwidth]{latest.png}
-	\end{center}
-	\caption{Some of the available statistics about the latest extacted data.}
-	\label{fig:figure1}
-\end{figure}
+From time to time, a Wiktionary language edition drastically changes the way it encodes some data. Following the discussions to anticipate on such changes is not an option with so many languages. Hence, with each language extraction update, we compute a set of statistics that gives detailed figures on the size of the data. These statistics are available live on the dbnary web site\footnote{\url{http://kaiko.getalp.org/about-dbnary}}. But the most usefull statistics are illustrating the evolution of the extracted data over time. Figure \ref{fig:french} shows the evolution of the size of the extracted French datasince its original extraction. This graphic allowed us to detect that a major refactoring was happening on the French language edition. This allowed us to patch the extractor for this new organisation.
 
 
 \begin{figure}[htb]
@@ -86,7 +78,7 @@ From time to time, a Wiktionary language edition drastically changes the way it 
 		\includegraphics[width=\textwidth]{french.png}
 	\end{center}
 	\caption{Some of the available statistics about the French extacted data.}
-	\label{fig:figure2}
+	\label{fig:french}
 \end{figure}
 
 \section{Extracted Data as a LEMON Lexical Resource}
@@ -105,35 +97,19 @@ Our work did focus only on the lexical data. Hence, we do not provide any refere
 
 All the extracted data could not be structured using LEMON only model. For instance, LEMON does not contain anything to represent translations between languages as it assumes that such a translation will be handled by the ontology description. Moreover, LEMON assumes that all data is well-formed and fully specified. As an example, synonymy relation is a property linking a \textit{Lexical Sense} to another \textit{Lexical Sense}. While this is correct to assume as a \textit{principle}, this does not account for the huge amount of legacy data that is available in dictionaries and lexical databases.
 
-In order to cope with this legacy data, we introduced several classes and properties that are not LEMON entities. However, when a piece of data is representable as a LEMON entity, then it is done so. 
+In order to cope with this legacy data, we introduced several classes and properties that are not LEMON entities. However, when a piece of data is representable as a LEMON entity, then it is done so. All these elements have already been presented in \cite{serasset:dbnary-swj}.
 
-\subsection{Example of an extracted lexical entry}
+\subsection{Links to other datasets}
 
-The dbnary extracted data contains the following information:
+The dbnary dataset makes use of other datasets. First, while all extracted lexical entries are associated with a language specific part of speech that is given by its original Wiktionary language edition, we also add, when available a \texttt{lemon:partOfSpeech} relation to a standard value defined in the \textit{lexinfo} ontology\footnote{\url{http://www.lexinfo.net/ontology/2.0/lexinfo}} (\cite{Lexinfo}). Second, while LEMON model uses a string value to represent languages, we additionaly uses the property \texttt{dcterms:lang} to point to a language entity defined in the lexvo ontology (\cite{deMeloWeikum2008c}).
 
-\begin{description}
-\item[Lexical Entries:] an instance of \texttt{lemon:LexicalEntry} corresponds more or less to a "part of speech" section in a wiktionary page. This means that it is defined by an unique canonical written form, a part of speech and a number (in case of homonymy). When wiktionary data allows for it, we try to distinguish between \texttt{lemon:Word} and \texttt{lemon:Phrase} that are defined as specific lexical entries.
-\item[Lexical Forms:] lexical entries are connected, through the \texttt{lemon:canonicalForm} property to a lexical form that gathers a written form and a pronunciation (when available). They may also be connected to alternative spelling through \texttt{lemon:lexicalVariant} property. 
-\item[Lexical Senses:] an instance of \texttt{lemon:LexicalSense} correspond to one definition in the wiktionary page. It is the target of the \texttt{lemon:sense} property of its containing Lexical Entry. Each lexical sense is associated with a \texttt{dbpedia:senseNumber} property (that contains the rank at which the definition appeared in the wiktionary page) and a \texttt{lemon:definition} property.
-\item[Part Of Speech] part of speech properties are available in the wiktionary data in 2 distinct properties that are attached to lexical entries:
-\begin{itemize}
-\item \texttt{dbnary:partOfSpeech} is a data property whose value is a string that contains the part of speech \textit{as it was defined in wiktionary} 
-\item \texttt{lexinfo:partOfSpeech} is a standard property that is bound to isocat data categories and which value is a correct isocat data category. This property is only available when the mapping between wiktionary part of speech and isocat part of speech is known.
-\end{itemize}
-\item[Vocable:] the main unit of data in wiktionary is a \textit{wiktionary page} that may contain several lexical entries. Many lexical data is represented as links to a \textit{page}. Most of the time, there is not enough data to know to which lexical entry (or lexical sense) these links point to. Hence if we want to keep these \textit{underspecified} relations, we need to define units that represent wiktionary pages. This is the role of the \texttt{dbnary:Vocable} class. Instances of this class are related to their lexical entries through the \texttt{dbnary:refersTo} property. 
-\item[Nyms:] most wiktionary language edition do provide "nym" relations (mainly synonym, antonym, hypernym, hyponym, meronym and holonym). As we already mentioned this legacy data is not representable using LEMON model, unless we know for sure the source and target lexical sense of the relation. In order to cope with this legacy data, 6 new "nym" properties (in \texttt{dbnary} name space). Additionaly, we defined a class called \texttt{dbnary:LexicalEntity} that is defined as the union of LEMON lexical entries and lexical senses. The "nym" properties domain and range are lexical entities. 
+\subsection{Disambiguation of translation sources}
 
-Most of these properties do link a \textit{lexical entry} to a \textit{vocable}, as there is not enough information in wiktionary to promote this relation to a full class \textit{sense to sense} relation. Some of these properties are however promoted to a \textit{Lexical Sense to Vocable} relation when the lexical entry is unambiguous (contains only one sense).
-\item[Translations:] As there is no way to represent bilingual translation relation in LEMON, we introduced the \texttt{dbnary:Equivalent} class that collects translation information contained in wiktionary. This class admits several properties:
-\begin{itemize}
-\item \texttt{dbnary:isTranslationOf} relates the equivalent to its source \textit{lexical entry}. In this extraction process, we decided not to relate the equivalent object to its source \textit{lexical sense}. The reason is that, when some information is available to distinguish between lexical senses, it is mainly targeted to a human audience and there is no simple and reliable process to  link to the correct sense. Instead, we rather keep all the available disambiguation information for a later specialized processing.
-\item \texttt{dbnary:targetLanguage} is a data property whose type is a string containing the target language code as defined in ISO639-3 standard.
-\item \texttt{dbnary:writtenForm} gives the written form of the translation in the target language. Here, we decided not to relate to a vocable as some translations are not to be defined as lexical entries in the target language.
-\item \texttt{dbnary:glose} is a string property that contains any available information used to dentate the lexical sense of the source of the equivalent.
-\item \texttt{dbnary:usage} is a string property that contains any available information concerning this equivalent object. It usually gives additional information on the target entry.
-\end{itemize}
+Many of the translations present in Wiktionary are associated with a hint used by human users to identify the sense of the source of the translation. Depending on the language, this hint may take the form of a sense number (e.g. in German and Turkish), by a textual gloss (e.g. English) or by both a sense number and a textual gloss (e.g. French, Finnish).
 
-\end{description}
+By using an adaptation of various textual and semantic similarity techniques based on partial or fuzzy gloss overlaps, we were able to disambiguate the translation relations. We obtained F-measures of the order of 80\% (on par with similar work on English only, like \cite{meyer-gurevych:2012:PAPERS}), across the three languages where we could generate a gold standard (French, Portuguese, Finnish) and show that most of the disambiguation errors are due to inconsistencies in Wiktionary itself that cannot be detected at the generation of DBnary (shifted sense numbers, inconsistent glosses, etc.).  
+
+The relations between translations and lexical senses is also a part of this dataset.
 
 \subsection{Size of the involved data}
 
@@ -141,126 +117,54 @@ At the time of writing, the extracted data from the most up to date dump files a
 
 \begin{table}[htb]
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{tabular}{lrrrrrr}
-\multicolumn{4}{l}{\textbf{Nodes in graphs}}\\
 \hline
-				 & English &  French  & German & Finnish & Italian & Portuguese \\
-Lexical entries &  478764 &  260647\footnote{among which $231522$ words and $24434$ phrases.}  
-				 					   & 101867  &  30478 & 24030   & 31105         \\
-Vocables 	     & 458317  & 270048  & 166567   & 30946 & 29591  &  32784    \\
-Lexical Senses
-			     & 386030  & 341720  & 88780   & 38713   &  33731  & 55331      \\
-Equivalents
-			     & 942425  & 406947 & 438379  & 101733 & 56883   & 49029       \\
-%\multicolumn{4}{l}{\textbf{Relations in graphs}}\\
-%\hline
-%syn	& 65103& 55434& 76606\\
-%qsyn\footnote{This relation is only available in French language edition. Other language editions do not distinguish between synonyms and quasi synonyms.}
-%	& -& 2666 & -\\
-%ant	& 9964& 8760& 34691\\
-%holo	& 0  & 5415& 0 \\
-%mero	& 224& 4996&0 \\
-%hyper	& 1047& 11272& 49051\\
-%hypo	& 3144& 17601& 54733\\
+\textbf{Language} & Entries & Vocables & Senses & Translations & $\mathbf{Total}$ \\
+\textbf{Bulgarian} & $18,831$ & $27,071$ & $18,798$ & $13,888$ & $\mathbf{78,588}$ \\
+\textbf{English} & $553,499$ & $528,341$ & $447,073$ & $1,332,332$ & $\mathbf{2,861,245}$ \\
+\textbf{Finnish} & $50,813$ & $50,488$ & $59,612$ & $122,724$ & $\mathbf{283,637}$ \\
+\textbf{French} & $318,101$ & $304,465$ & $383,242$ & $507,359$ & $\mathbf{1,513,167}$ \\
+\textbf{German} & $211,564$ & $282,902$ & $102,468$ & $390,938$ & $\mathbf{987,872}$ \\
+\textbf{Italian} & $34,363$ & $101,525$ & $45,022$ & $62,305$ & $\mathbf{243,215}$ \\
+\textbf{Japanese} & $25,492$ & $25,637$ & $29,679$ & $87,906$ & $\mathbf{168,714}$ \\
+\textbf{Modern Greek (1453-)} & $246,211$ & $241,845$ & $137,072$ & $57,615$ & $\mathbf{682,743}$ \\
+\textbf{Portuguese} & $45,788$ & $45,968$ & $81,807$ & $267,801$ & $\mathbf{441,364}$ \\
+\textbf{Russian} & $130,879$ & $143,653$ & $116,925$ & $365,389$ & $\mathbf{756,846}$ \\
+\textbf{Spanish} & $58,679$ & $65,854$ & $85,852$ & $114,951$ & $\mathbf{325,336}$ \\
+\textbf{Turkish} & $64,899$ & $69,383$ & $91,418$ & $66,928$ & $\mathbf{292,628}$ \\
+\textbf{Total} & $\mathbf{1,759,119}$ & $\mathbf{1,887,132}$ & $\mathbf{1,598,968}$ & $\mathbf{3,390,136}$ & $\mathbf{8,635,355}$ \\
 \end{tabular}
+\end{small}
 \end{minipage}
-\caption{Size of the extracted lexical networks.}
+\caption{Number of lexical elements in the graphs.}
 \label{table:size}
 \end{table}
 
-As the extraction is performed each time a wiktionary dump is available, this numbers are constantly evolving, as the wiktionary data is evolving and as the extractor itself maybe improved.
+\begin{table}[htb]
+\begin{small}
+\begin{tabular}{lrrrrrrrr}
+\hline
+\textbf{Language} & $syn$ & $qsyn$ & $ant$ & $hyper$ & $hypo$ & $mero$ & $holo$ & $\mathbf{Total}$ \\
+\textbf{Bulgarian} & $17632$ & $0$ & $34$ & $0$ & $0$ & $0$ & $0$ & $\mathbf{17666}$ \\
+\textbf{English} & $31762$ & $0$ & $6980$ & $1252$ & $1212$ & $112$ & $0$ & $\mathbf{41318}$ \\
+\textbf{Finnish} & $2478$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $\mathbf{2478}$ \\
+\textbf{French} & $31655$ & $2133$ & $6879$ & $9402$ & $3739$ & $970$ & $1898$ & $\mathbf{56676}$ \\
+\textbf{German} & $29288$ & $0$ & $15079$ & $33251$ & $10413$ & $0$ & $0$ & $\mathbf{88031}$ \\
+\textbf{Italian} & $9662$ & $0$ & $3425$ & $0$ & $0$ & $0$ & $0$ & $\mathbf{13087}$ \\
+\textbf{Japanese} & $3828$ & $0$ & $1578$ & $9$ & $14$ & $0$ & $0$ & $\mathbf{5429}$ \\
+\textbf{Greek} & $4990$ & $0$ & $1428$ & $0$ & $0$ & $0$ & $0$ & $\mathbf{6418}$ \\
+\textbf{Portuguese} & $3350$ & $0$ & $556$ & $6$ & $4$ & $0$ & $0$ & $\mathbf{3916}$ \\
+\textbf{Russian} & $24941$ & $0$ & $9888$ & $22832$ & $5140$ & $0$ & $0$ & $\mathbf{62801}$ \\
+\textbf{Spanish} & $15087$ & $0$ & $1525$ & $741$ & $560$ & $0$ & $0$ & $\mathbf{17913}$ \\
+\textbf{Turkish} & $3260$ & $0$ & $220$ & $483$ & $164$ & $0$ & $0$ & $\mathbf{4127}$ \\
+\textbf{Total} & $\mathbf{177933}$ & $\mathbf{2133}$ & $\mathbf{47592}$ & $\mathbf{67976}$ & $\mathbf{21246}$ & $\mathbf{1082}$ & $\mathbf{1898}$ & $\mathbf{319860}$ \\
+\end{tabular}
+\end{small}
+\caption{Number of lexico-semantic relations in the graphs.}
+\label{table:rels}
+\end{table}
 
-%Stats on RDF file: file:///home/serasset/dev/wiktionary/extracts/lemon/fr/fr_dbnary_lemon_20120906.tut
-% lexical entries: 4691 (+231522 words/+ 24434 phrases). Total: 260647
-%270048 vocables.
-%341720 senses.
-%406947 equivalents.
-%Stats on RDF file: file:///home/serasset/dev/wiktionary/extracts/lemon/en/en_dbnary_lemon_20120831.tut
-% lexical entries: 478764 (+0 words/+ 0 phrases). Total: 478764
-%458317 vocables.
-%386030 senses.
-%942425 equivalents.
-%Stats on RDF file: file:///home/serasset/dev/wiktionary/extracts/lemon/de/de_dbnary_lemon_20120909.tut
-% lexical entries: 101867 (+0 words/+ 0 phrases). Total: 101867
-%166567 vocables.
-%88780 senses.
-%438379 equivalents.
-%Stats on RDF file: file:///home/serasset/dev/wiktionary/extracts/lemon/it/it_dbnary_lemon_20120906.tut
-% lexical entries: 24030 (+0 words/+ 0 phrases). Total: 24030
-%29591 vocables.
-%33731 senses.
-%56883 equivalents.
-%Stats on RDF file: file:///home/serasset/dev/wiktionary/extracts/lemon/pt/pt_dbnary_lemon_20120905.tut
-% lexical entries: 31105 (+0 words/+ 0 phrases). Total: 31105
-%32784 vocables.
-%55331 senses.
-%49029 equivalents.
-%Stats on RDF file: file:///home/serasset/dev/wiktionary/extracts/lemon/fi/fi_dbnary_lemon_20120903.tut
-% lexical entries: 30478 (+0 words/+ 0 phrases). Total: 30478
-%30946 vocables.
-%38713 senses.
-%101733 equivalents.
-
-% and Portuguese ($397$ Mb)
-
-%-rw-r--r--. 1 serasset geta 608M Oct 13 22:03 dewkt.xml
-%-rw-r--r--. 1 serasset geta 3.9G Oct 13 22:02 enwkt.xml
-%-rw-r--r--. 1 serasset geta 3.0G Oct 13 21:59 frwkt.xml
-%-rw-r--r--. 1 serasset geta 390M Oct 13 22:03 ptwkt.xml
-
-%Stats on RDF file: file:///Users/serasset/dev/wiktionary/extracts/RDF20120305/fr_extract_20120305.tut
-%260467 lexical entries.
-%246168 lemmas.
-%395227 equivalents.
-%106151 relations.
-%330681 definitions.
-%330681 senses.
-%1669375 total nodes.
-%ant: 8760
-%holo: 5415
-%hyper: 11272
-%hypo: 17601
-%mero: 4996
-%qsyn: 2666
-%syn: 55434
-%fra translation in frawiktionary for entry[http://getalp.org/dbnary/fra#__tr_fra_4_crocodile_nain, http://www.lexicalmarkupframework.org/lmf/r14#isPartOf, http://getalp.org/dbnary/fra#crocodile_nain]
-%source & eng & fra & deu  & others //
-%fra & 73168 & 24 & 31589 & 290190//%394971
-%
-%
-%Stats on RDF file: file:///Users/serasset/dev/wiktionary/extracts/RDF20120305/de_extract_20120305.tut
-%155258 lexical entries.
-%90207 lemmas.
-%417687 equivalents.
-%215085 relations.
-%80934 definitions.
-%80934 senses.
-%1040105 total nodes.
-%ant: 34691
-%hyper: 49051
-%hypo: 54733
-%syn: 76606
-%deu translation in deuwiktionary for entry[http://getalp.org/dbnary/deu#__tr_deu_5_Pantherpilz, http://www.lexicalmarkupframework.org/lmf/r14#isPartOf, http://getalp.org/dbnary/deu#Pantherpilz]
-%source & eng & fra & deu  & others //
-%deu & 68305 & 57400 & 4 & 291605//%417314
-%
-%
-%Stats on RDF file: file:///Users/serasset/dev/wiktionary/extracts/RDF20120305/en_extract_20120305.tut
-%414929 lexical entries.
-%402442 lemmas.
-%497204 equivalents.
-%79487 relations.
-%354359 definitions.
-%354359 senses.
-%2102780 total nodes.
-%ant: 9964
-%hyper: 1047
-%hypo: 3144
-%mero: 224
-%syn: 65103
-%eng translation in engwiktionary for entry[http://getalp.org/dbnary/eng#__tr_eng_1_obsolescence, http://www.lexicalmarkupframework.org/lmf/r14#isPartOf, http://getalp.org/dbnary/eng#obsolescence]
-%source & eng & fra & deu  & others //
-%eng & 0 & 33290 & 32083 & 430898//%496271
 
 
 \section{Conclusion and Perspectives}

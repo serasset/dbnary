@@ -316,6 +316,7 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/fra
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/jpn/GlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/por/GlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/rus/GlossFilter.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/spa/GlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/tur/GlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/Segmenter.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/SpaceSegmenter.java -text

@@ -199,7 +199,7 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
  
     // CONJONCTIONS
         addPos("conjonction");
-        addPos("conj");
+        // addPos("conj");
         addPos("conjonction de coordination");
         addPos("conj-coord");
         addPos("conjonction coo");

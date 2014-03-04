@@ -133,7 +133,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
                             Matcher nymMatcher = nymPattern.matcher(body);
                             while (nymMatcher.find()) {
                                 String name = nymMatcher.group().replaceAll("\\[", "").replaceAll("\\]", "");
-                                System.err.println(name);
+                                // System.err.println(name);
                                 delegate.registerNymRelation(name, nymMarkerToNymName.get(rt));
                             }
                         }

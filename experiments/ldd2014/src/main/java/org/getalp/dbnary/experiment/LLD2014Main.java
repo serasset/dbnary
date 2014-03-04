@@ -234,8 +234,24 @@ public final class LLD2014Main {
 		
 		if (lexEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType)) {
 			ArrayList<String> ns = getSenseNumbers(nums);
-			System.err.println(nums + " -> " + ns);
+			for (String n : ns) {
+				attachTranslationToNumberedSense(translation, lexEntry, n, outModel);
+			}
 		}
+	}
+
+	private void attachTranslationToNumberedSense(Resource translation, Resource lexEntry, String n,
+			Model outModel) {
+		StmtIterator senses = lexEntry.listProperties(DbnaryModel.lemonSenseProperty);
+		while (senses.hasNext()) {
+			Resource sense = senses.next().getResource();
+			Statement senseNumStatement = sense.getProperty(DbnaryModel.senseNumberProperty);
+			if (n.equalsIgnoreCase(senseNumStatement.getString())) {
+				outModel.add(outModel.createStatement(translation, DbnaryModel.isTranslationOf, sense));
+			}
+			
+		}
+		
 	}
 
 	public ArrayList<String> getSenseNumbers(String nums) {

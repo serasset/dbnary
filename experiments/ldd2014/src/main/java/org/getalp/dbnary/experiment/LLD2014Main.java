@@ -1,6 +1,7 @@
 package org.getalp.dbnary.experiment;
 
 import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.wcohen.ss.Level2Levenstein;
 
 import org.apache.commons.cli.*;
@@ -180,7 +181,9 @@ public final class LLD2014Main {
 
             if (null != s) {
             	// Process sense number
-            	System.out.println("Avoiding treating " + s.toString());
+            	// System.out.println("Avoiding treating " + s.toString());
+            	connectNumberedSenses(s, outputModel);
+            	
             } else if (/*null != s &&*/ null != n && null != g) {
                 String gloss = g.getObject().toString();
                 Ambiguity ambiguity = new TranslationAmbiguity(gloss, n.getObject().toString().split("\\^\\^")[0], deltaThreshold);
@@ -224,9 +227,60 @@ public final class LLD2014Main {
     }
 
 
-    public void setDeltaThreshold(double deltaThreshold) {
+    private void connectNumberedSenses(Statement s, Model outModel) {
+		Resource translation = s.getSubject();
+		Resource lexEntry = translation.getPropertyResourceValue(DbnaryModel.isTranslationOf);
+		String nums = s.getString();
+		
+		if (lexEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType)) {
+			ArrayList<String> ns = getSenseNumbers(nums);
+			System.err.println(nums + " -> " + ns);
+		}
+	}
+
+	public ArrayList<String> getSenseNumbers(String nums) {
+		ArrayList<String> ns = new ArrayList<String>();
+		
+		if (nums.contains(",")) {
+			String[] ni = nums.split(",");
+			for (int i = 0; i < ni.length; i++) {
+				ns.addAll(getSenseNumbers(ni[i]));
+			}
+		} else if (nums.contains("-") || nums.contains("—") || nums.contains("–")) {
+			String[] ni = nums.split("[-—–]");
+			if (ni.length != 2) {
+				System.err.append("Strange split on dash: " + nums);
+			} else {
+				try {
+					int s = Integer.parseInt(ni[0].trim());
+					int e = Integer.parseInt(ni[1].trim());
+					
+					if (e <= s) {
+						System.out.println("end of range is lower than beginning in: " + nums);
+					} else {
+						for (int i = s; i <= e ; i++) {
+							ns.add(Integer.toString(i));
+						}
+					}
+				} catch (NumberFormatException e) {
+					System.err.println(e.getLocalizedMessage());
+				}
+			}
+		} else {
+			try {
+				ns.add(nums.trim());
+			}  catch (NumberFormatException e) {
+				System.err.println(e.getLocalizedMessage() + ": " + nums);
+			}
+		}
+		return ns;
+	}
+
+	public void setDeltaThreshold(double deltaThreshold) {
         this.deltaThreshold = deltaThreshold;
     }
+    
+    
 }
 
 

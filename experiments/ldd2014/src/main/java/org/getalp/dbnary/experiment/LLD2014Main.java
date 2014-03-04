@@ -52,7 +52,8 @@ public final class LLD2014Main {
 
     private Disambiguator disambiguator;
     private double deltaThreshold;
-    private Locale language;
+    // private Locale language;
+    private String lang;
 	private String NS;
 
 
@@ -126,14 +127,16 @@ public final class LLD2014Main {
             modelFile = cmd.getOptionValue(MODEL_FILE_OPTION);
         }
 
-        String lang = cmd.getOptionValue(LANGUAGE_OPTION, DEFAULT_LANGUAGE);
-        lang = ISO639_3.sharedInstance.getIdCode(lang);
-        language = Locale.forLanguageTag(lang);
+        lang = cmd.getOptionValue(LANGUAGE_OPTION, DEFAULT_LANGUAGE);
+        Lang l = (ISO639_3.sharedInstance.getLang(lang));
+        lang = (l.getPart1() != null) ? l.getPart1() : l.getId();
+        String lang3 = ISO639_3.sharedInstance.getIdCode(lang);
+        // language = Locale.forLanguageTag(lang);
 
         model = ModelFactory.createOntologyModel();
         model.read(modelFile);
 
-		NS = DbnaryModel.DBNARY_NS_PREFIX + "/" + lang + "/";
+		NS = DbnaryModel.DBNARY_NS_PREFIX + "/" + lang3 + "/";
 		
         outputModel = ModelFactory.createOntologyModel();
         outputModel.setNsPrefixes(model.getNsPrefixMap());
@@ -145,8 +148,8 @@ public final class LLD2014Main {
 
         MFSTranslationDisambiguator mfs = new MFSTranslationDisambiguator();
 
-        String mfsFileName = String.format("%s_results_MFS.res", language.getDisplayLanguage().toLowerCase());
-        String voteFileName = String.format("%s_results_Vote.res", language.getDisplayLanguage().toLowerCase());
+        String mfsFileName = String.format("%s_results_MFS.res", lang);
+        String voteFileName = String.format("%s_results_Vote.res", lang);
 
         FileOutputStream mfsfos = new FileOutputStream(mfsFileName);
         PrintStream psmfs = new PrintStream(mfsfos, true);
@@ -157,7 +160,7 @@ public final class LLD2014Main {
 
         Map<String, PrintStream> streams = new HashMap<>();
         for (String m : disambiguator.getMethods()) {
-            String fileName = String.format("%s_results_%s_Dl_%.2f.res", language.getDisplayLanguage().toLowerCase(), m, deltaThreshold);
+            String fileName = String.format("%s_results_%s_Dl_%.2f.res", lang, m, deltaThreshold);
             FileOutputStream fos = new FileOutputStream(fileName);
             streams.put(m, new PrintStream(fos, true));
         }
@@ -214,7 +217,7 @@ public final class LLD2014Main {
             streams.get(m).close();
         }
 
-        outputModel.write(new FileOutputStream("model_dbnary_" + language.getDisplayLanguage().toLowerCase() + ".ttl"), "TTL");
+        outputModel.write(new FileOutputStream(lang + "_disambiguated_translations.ttl"), "TTL");
     }
 
 

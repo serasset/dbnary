@@ -180,7 +180,7 @@ public final class LLD2014Main {
 
             if (null != s) {
             	// Process sense number
-            
+            	System.out.println("Avoiding treating " + s.toString());
             } else if (/*null != s &&*/ null != n && null != g) {
                 String gloss = g.getObject().toString();
                 Ambiguity ambiguity = new TranslationAmbiguity(gloss, n.getObject().toString().split("\\^\\^")[0], deltaThreshold);

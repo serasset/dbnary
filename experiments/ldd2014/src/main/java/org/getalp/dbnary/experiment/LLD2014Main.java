@@ -179,12 +179,13 @@ public final class LLD2014Main {
             Statement s = e.getProperty(senseNumProperty);
             Statement g = e.getProperty(DbnaryModel.glossProperty);
 
+            boolean connected = false;
             if (null != s) {
             	// Process sense number
             	// System.out.println("Avoiding treating " + s.toString());
-            	connectNumberedSenses(s, outputModel);
-            	
-            } else if (/*null != s &&*/ null != n && null != g) {
+            	connected = connectNumberedSenses(s, outputModel);
+            }
+            if (!connected && null != n && null != g) {
                 String gloss = g.getObject().toString();
                 Ambiguity ambiguity = new TranslationAmbiguity(gloss, n.getObject().toString().split("\\^\\^")[0], deltaThreshold);
                 String uri = g.getSubject().toString();
@@ -227,7 +228,8 @@ public final class LLD2014Main {
     }
 
 
-    private void connectNumberedSenses(Statement s, Model outModel) {
+    private boolean connectNumberedSenses(Statement s, Model outModel) {
+    	boolean connected = false;
 		Resource translation = s.getSubject();
 		Resource lexEntry = translation.getPropertyResourceValue(DbnaryModel.isTranslationOf);
 		String nums = s.getString();
@@ -235,23 +237,25 @@ public final class LLD2014Main {
 		if (lexEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType)) {
 			ArrayList<String> ns = getSenseNumbers(nums);
 			for (String n : ns) {
-				attachTranslationToNumberedSense(translation, lexEntry, n, outModel);
+				connected = connected || attachTranslationToNumberedSense(translation, lexEntry, n, outModel);
 			}
 		}
+		return connected;
 	}
 
-	private void attachTranslationToNumberedSense(Resource translation, Resource lexEntry, String n,
+	private boolean attachTranslationToNumberedSense(Resource translation, Resource lexEntry, String n,
 			Model outModel) {
+		boolean connected = false;
 		StmtIterator senses = lexEntry.listProperties(DbnaryModel.lemonSenseProperty);
 		while (senses.hasNext()) {
 			Resource sense = senses.next().getResource();
 			Statement senseNumStatement = sense.getProperty(DbnaryModel.senseNumberProperty);
 			if (n.equalsIgnoreCase(senseNumStatement.getString())) {
+				connected = true;
 				outModel.add(outModel.createStatement(translation, DbnaryModel.isTranslationOf, sense));
 			}
-			
 		}
-		
+		return connected;
 	}
 
 	public ArrayList<String> getSenseNumbers(String nums) {

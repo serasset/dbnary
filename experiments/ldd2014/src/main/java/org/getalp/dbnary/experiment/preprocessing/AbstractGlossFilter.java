@@ -1,6 +1,6 @@
 package org.getalp.dbnary.experiment.preprocessing;
 
-public abstract class GlossFilter {
+public abstract class AbstractGlossFilter {
 
 	public abstract StructuredGloss extractGlossStructure(String rawGloss);
 	

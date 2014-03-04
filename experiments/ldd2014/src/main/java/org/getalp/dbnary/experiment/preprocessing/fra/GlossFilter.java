@@ -1,9 +1,12 @@
-package org.getalp.dbnary.experiment.preprocessing;
+package org.getalp.dbnary.experiment.preprocessing.fra;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FrenchGlossFilter extends GlossFilter {
+import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
+import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
+
+public class GlossFilter extends AbstractGlossFilter {
 
 	private static String aTrierRegExp;
 	static {

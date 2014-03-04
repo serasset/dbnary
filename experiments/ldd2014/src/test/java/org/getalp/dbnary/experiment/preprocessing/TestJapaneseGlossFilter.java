@@ -2,16 +2,17 @@ package org.getalp.dbnary.experiment.preprocessing;
 
 import static org.junit.Assert.*;
 
+import org.getalp.dbnary.experiment.preprocessing.jpn.GlossFilter;
 import org.junit.Before;
 import org.junit.Test;
 
 public class TestJapaneseGlossFilter {
 
-	private JapaneseGlossFilter filter;
+	private GlossFilter filter;
 
 	@Before
 	public void setUp() throws Exception {
-		filter = new JapaneseGlossFilter();
+		filter = new GlossFilter();
 	}
 
 	@Test

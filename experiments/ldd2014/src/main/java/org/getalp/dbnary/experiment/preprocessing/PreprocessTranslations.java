@@ -46,7 +46,7 @@ public class PreprocessTranslations {
 
     private StatsModule stats;
     private String langName;
-    private GlossFilter filter;
+    private AbstractGlossFilter filter;
     private Property senseNumProperty;
     private Property transNumProperty;
 
@@ -92,7 +92,7 @@ public class PreprocessTranslations {
 
         initializeTBox(language);
         stats = new StatsModule(langName);
-        filter = createGlossFilter(langName);
+        filter = createGlossFilter(language);
 
         if (null == filter) {
             System.err.println("Could not instanciate Gloss filter for language: " + langName);
@@ -122,20 +122,20 @@ public class PreprocessTranslations {
         }
     }
 
-    private GlossFilter createGlossFilter(String lang) {
-        GlossFilter f = null;
-        String cname = GlossFilter.class.getCanonicalName();
+    private AbstractGlossFilter createGlossFilter(String lang) {
+        AbstractGlossFilter f = null;
+        String cname = AbstractGlossFilter.class.getCanonicalName();
         int dpos = cname.lastIndexOf('.');
         String pack = cname.substring(0, dpos);
         Class<?> wec = null;
         try {
-            wec = Class.forName(pack + "." + lang + "GlossFilter");
-            f = (GlossFilter) wec.getConstructor().newInstance();
+            wec = Class.forName(pack + "." + lang + ".GlossFilter");
+            f = (AbstractGlossFilter) wec.getConstructor().newInstance();
         } catch (ClassNotFoundException e) {
             System.err.println("No gloss filter found for " + lang+" reverting to default "+pack + ".DefaultGlossFilter");
             try {
                 wec = Class.forName(pack + ".DefaultGlossFilter");
-                f = (GlossFilter) wec.getConstructor().newInstance();
+                f = (AbstractGlossFilter) wec.getConstructor().newInstance();
             } catch (ClassNotFoundException e1) {
                 System.err.println("Default gloss filter not found");
             } catch (InvocationTargetException e1) {

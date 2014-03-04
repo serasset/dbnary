@@ -293,18 +293,21 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/jdm/JDMDumpSectio
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/jdm/JDMModelParser.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/jdm/model/JDMModel.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/jdm/model/JDMRelationTypes.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/AbstractGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/CreateGoldStandard.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/DefaultGlossFilter.java -text
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/EnglishGlossFilter.java -text svneol=unset#text/plain
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/FinnishGlossFilter.java -text svneol=unset#text/plain
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/FrenchGlossFilter.java -text svneol=unset#text/plain
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/GermanGlossFilter.java -text svneol=unset#text/plain
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/GlossFilter.java -text svneol=unset#text/plain
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/JapaneseGlossFilter.java -text svneol=unset#text/plain
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/PortugueseGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/PreprocessTranslations.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/StatsModule.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/StructuredGloss.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/deu/GlossFilter.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/ell/GlossFilter.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/eng/GlossFilter.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/fin/GlossFilter.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/fra/GlossFilter.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/jpn/GlossFilter.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/por/GlossFilter.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/rus/GlossFilter.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/tur/GlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/Segmenter.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/SpaceSegmenter.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/Level2Sim.java -text

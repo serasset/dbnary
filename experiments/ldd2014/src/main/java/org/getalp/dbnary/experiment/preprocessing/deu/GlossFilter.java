@@ -1,9 +1,12 @@
-package org.getalp.dbnary.experiment.preprocessing;
+package org.getalp.dbnary.experiment.preprocessing.deu;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GermanGlossFilter extends GlossFilter {
+import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
+import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
+
+public class GlossFilter extends AbstractGlossFilter {
 
 	public static final String senseNumRegExp = "\\d+(?:[abcdefghijklmn][iv]*)?";
 		

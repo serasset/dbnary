@@ -13,11 +13,11 @@ public class TestFrenchPreprocessing {
 
     @Test
     public void testNormalizer() {
-        assertTrue("trim invalide.", "toto".equals(GlossFilter.normalize("   toto   ")));
-        assertTrue("normalisation invalide.", "toto titi".equals(GlossFilter.normalize("   toto   titi ")));
-        assertTrue("normalisation invalide.", "toto titi".equals(GlossFilter.normalize("toto titi")));
+        assertTrue("trim invalide.", "toto".equals(AbstractGlossFilter.normalize("   toto   ")));
+        assertTrue("normalisation invalide.", "toto titi".equals(AbstractGlossFilter.normalize("   toto   titi ")));
+        assertTrue("normalisation invalide.", "toto titi".equals(AbstractGlossFilter.normalize("toto titi")));
 
-        assertTrue("normalisation invalide", "l'oxygène est un gaz".equals(GlossFilter.normalize(" l'oxygène '''est      un ''gaz'''''")));
+        assertTrue("normalisation invalide", "l'oxygène est un gaz".equals(AbstractGlossFilter.normalize(" l'oxygène '''est      un ''gaz'''''")));
     }
 
 

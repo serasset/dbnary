@@ -1,4 +1,13 @@
 * text=auto !eol
+doc/articles/TALN2014/alphabetafig.pdf -text svneol=unset#unset
+doc/articles/TALN2014/finnish.pdf -text
+doc/articles/TALN2014/french.pdf -text
+doc/articles/TALN2014/portuguese.pdf -text
+doc/articles/TALN2014/taln-dbnary-wsd.bib -text
+doc/articles/TALN2014/taln-dbnary-wsd.pdf -text
+doc/articles/TALN2014/taln-dbnary-wsd.tex -text
+doc/articles/TALN2014/taln2002.bst -text
+doc/articles/TALN2014/taln2014.sty -text
 doc/articles/ldl2014-data-challenge/biblio.bib -text
 doc/articles/ldl2014-data-challenge/dbnary-jdm.tex -text
 doc/articles/ldl2014/alphabetafig.pdf -text svneol=unset#unset

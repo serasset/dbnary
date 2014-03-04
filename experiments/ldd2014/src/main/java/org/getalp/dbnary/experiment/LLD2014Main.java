@@ -2,7 +2,10 @@ package org.getalp.dbnary.experiment;
 
 import com.hp.hpl.jena.rdf.model.*;
 import com.wcohen.ss.Level2Levenstein;
+
 import org.apache.commons.cli.*;
+import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
@@ -18,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.Map.Entry;
 
 
 public final class LLD2014Main {
@@ -49,6 +53,7 @@ public final class LLD2014Main {
     private Disambiguator disambiguator;
     private double deltaThreshold;
     private Locale language;
+	private String NS;
 
 
     private LLD2014Main() {
@@ -121,16 +126,17 @@ public final class LLD2014Main {
             modelFile = cmd.getOptionValue(MODEL_FILE_OPTION);
         }
 
-        if (cmd.hasOption(LANGUAGE_OPTION)) {
-            String lang = cmd.getOptionValue(LANGUAGE_OPTION, DEFAULT_LANGUAGE);
-            language = Locale.forLanguageTag(lang);
-        }
-
+        String lang = cmd.getOptionValue(LANGUAGE_OPTION, DEFAULT_LANGUAGE);
+        lang = ISO639_3.sharedInstance.getIdCode(lang);
+        language = Locale.forLanguageTag(lang);
 
         model = ModelFactory.createOntologyModel();
         model.read(modelFile);
 
+		NS = DbnaryModel.DBNARY_NS_PREFIX + "/" + lang + "/";
+		
         outputModel = ModelFactory.createOntologyModel();
+        outputModel.setNsPrefixes(model.getNsPrefixMap());
 
     }
 
@@ -192,7 +198,7 @@ public final class LLD2014Main {
                     streams.get(m).println(ambiguity.toString(m));
 
                     Resource sense = outputModel.createResource(uri);
-                    outputModel.add(outputModel.createStatement(sense, model.createProperty(DbnaryModel.DBNARY_NS_PREFIX + "/" + DbnaryModel.isTranslationOf), ambiguity.getBestDisambiguation(m).getId()));
+                    outputModel.add(outputModel.createStatement(sense, DbnaryModel.isTranslationOf, NS + ambiguity.getBestDisambiguation(m).getId()));
 
                 }
                 psmfs.println(mfcAmbiguity.toString("MFS"));

@@ -1,7 +1,7 @@
 package org.getalp.dbnary.experiment;
 
 import com.hp.hpl.jena.rdf.model.*;
-import com.wcohen.ss.*;
+import com.wcohen.ss.Level2Levenstein;
 import org.apache.commons.cli.*;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
@@ -11,9 +11,7 @@ import org.getalp.dbnary.experiment.disambiguation.translations.DisambiguableSen
 import org.getalp.dbnary.experiment.disambiguation.translations.MFSTranslationDisambiguator;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationAmbiguity;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationDisambiguator;
-import org.getalp.dbnary.experiment.fuzzystring.JaroWinklerUnicode;
 import org.getalp.dbnary.experiment.similarity.Level2Sim;
-import org.getalp.dbnary.experiment.similarity.TsverskiIndex;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -38,6 +36,7 @@ public final class LLD2014Main {
     }
 
     private static Model model;
+    private static Model outputModel;
     private CommandLine cmd = null; // Command Line arguments
     private Property senseNumProperty;
     private Property transNumProperty;
@@ -51,22 +50,23 @@ public final class LLD2014Main {
     private double deltaThreshold;
     private Locale language;
 
+
     private LLD2014Main() {
 
         disambiguator = new TranslationDisambiguator();
         //for (double w1 = 0.1; w1 < 0.9; w1 += 0.1) {
-            double w1=  0.1;
-            double w2 = 1d - w1;
-            String mstr = String.format("_%f_%f", w1, w2);
+        double w1 = 0.1;
+        double w2 = 1d - w1;
+        String mstr = String.format("_%f_%f", w1, w2);
 
-              //disambiguator.registerSimilarity("FTiJW" + mstr, new TsverskiIndex(w1, w2, true,false, new JaroWinklerUnicode()));
-              //        disambiguator.registerSimilarity("FTiLs" + mstr, new TsverskiIndex(w1, w2, true, false, new ScaledLevenstein()));
-              //disambiguator.registerSimilarity("FTiME" + mstr, new TsverskiIndex(w1, w2, true,false, new MongeElkan()));
-              //disambiguator.registerSimilarity("FTiLcss" + mstr, new TsverskiIndex(w1, w2, true,false));
-              //disambiguator.registerSimilarity("FTi" + mstr, new TsverskiIndex(w1, w2, false,false));
-            disambiguator.registerSimilarity("L2Me" + mstr, new Level2Sim(new Level2MongeElkan()));
-            disambiguator.registerSimilarity("L2Ls" + mstr, new Level2Sim(new Level2Levenstein()));
-            disambiguator.registerSimilarity("L2Jw" + mstr, new Level2Sim(new Level2JaroWinkler()));
+        //disambiguator.registerSimilarity("FTiJW" + mstr, new TsverskiIndex(w1, w2, true,false, new JaroWinklerUnicode()));
+        //        disambiguator.registerSimilarity("FTiLs" + mstr, new TsverskiIndex(w1, w2, true, false, new ScaledLevenstein()));
+        //disambiguator.registerSimilarity("FTiME" + mstr, new TsverskiIndex(w1, w2, true,false, new MongeElkan()));
+        //disambiguator.registerSimilarity("FTiLcss" + mstr, new TsverskiIndex(w1, w2, true,false));
+        //disambiguator.registerSimilarity("FTi" + mstr, new TsverskiIndex(w1, w2, false,false));
+        //   disambiguator.registerSimilarity("L2Me" + mstr, new Level2Sim(new Level2MongeElkan()));
+        disambiguator.registerSimilarity("L2Ls" + mstr, new Level2Sim(new Level2Levenstein()));
+        // disambiguator.registerSimilarity("L2Jw" + mstr, new Level2Sim(new Level2JaroWinkler()));
         //}
     }
 
@@ -78,7 +78,7 @@ public final class LLD2014Main {
         //Store vts = new JenaMemoryStore(args[0]);
         //StoreHandler.registerStoreInstance(vts);
 
-        for (double deltaT = 0.05; deltaT < .30d + .001d; deltaT += 0.05) {
+        for (double deltaT = 0.05; deltaT < .065 + .001d; deltaT += 0.05) {
             String message = String.format("Processing translation (Δt=%.2f)", deltaT);
             System.out.println(message);
             System.err.println();
@@ -129,6 +129,9 @@ public final class LLD2014Main {
 
         model = ModelFactory.createOntologyModel();
         model.read(modelFile);
+
+        outputModel = ModelFactory.createOntologyModel();
+
     }
 
     private void processTranslations(Model m1) throws FileNotFoundException {
@@ -166,10 +169,11 @@ public final class LLD2014Main {
             Statement s = e.getProperty(senseNumProperty);
             Statement g = e.getProperty(DbnaryModel.glossProperty);
 
-            if (null != s && null != n && null != g) {
-                String url = g.getObject().toString();
-                Ambiguity ambiguity = new TranslationAmbiguity(url, n.getObject().toString().split("\\^\\^")[0], deltaThreshold);
-                Ambiguity mfcAmbiguity = new TranslationAmbiguity(url, n.getObject().toString().split("\\^\\^")[0]);
+            if (/*null != s &&*/ null != n && null != g) {
+                String gloss = g.getObject().toString();
+                Ambiguity ambiguity = new TranslationAmbiguity(gloss, n.getObject().toString().split("\\^\\^")[0], deltaThreshold);
+                String uri = g.getSubject().toString();
+                Ambiguity mfcAmbiguity = new TranslationAmbiguity(gloss, n.getObject().toString().split("\\^\\^")[0]);
                 Resource lexicalEntry = next.getObject().asResource();
                 StmtIterator senses = m1.listStatements(lexicalEntry, DbnaryModel.lemonSenseProperty, (RDFNode) null);
                 List<Disambiguable> choices = new ArrayList<>();
@@ -186,6 +190,10 @@ public final class LLD2014Main {
                 mfs.disambiguate(mfcAmbiguity, choices);
                 for (String m : ambiguity.getMethods()) {
                     streams.get(m).println(ambiguity.toString(m));
+
+                    Resource sense = outputModel.createResource(uri);
+                    outputModel.add(outputModel.createStatement(sense, model.createProperty(DbnaryModel.DBNARY_NS_PREFIX + "/" + DbnaryModel.isTranslationOf), ambiguity.getBestDisambiguation(m).getId()));
+
                 }
                 psmfs.println(mfcAmbiguity.toString("MFS"));
                 psvote.println(ambiguity.toStringVote());
@@ -199,6 +207,8 @@ public final class LLD2014Main {
         for (String m : disambiguator.getMethods()) {
             streams.get(m).close();
         }
+
+        outputModel.write(new FileOutputStream("model_dbnary_" + language.getDisplayLanguage().toLowerCase() + ".ttl"), "TTL");
     }
 
 

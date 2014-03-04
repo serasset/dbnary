@@ -28,7 +28,7 @@ public class TranslationAmbiguity implements Ambiguity {
         voteType = VoteType.MAJORITY;
     }
 
-    public TranslationAmbiguity(final String gloss, final String id, double threshold) {
+    public TranslationAmbiguity(final String gloss, final String id,double threshold) {
         this.gloss = gloss;
         this.id = id;
         voteType = VoteType.MAJORITY;

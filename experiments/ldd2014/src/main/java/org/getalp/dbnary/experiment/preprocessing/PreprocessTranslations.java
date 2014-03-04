@@ -127,11 +127,26 @@ public class PreprocessTranslations {
         String cname = GlossFilter.class.getCanonicalName();
         int dpos = cname.lastIndexOf('.');
         String pack = cname.substring(0, dpos);
+        Class<?> wec = null;
         try {
-            Class<?> wec = Class.forName(pack + "." + lang + "GlossFilter");
+            wec = Class.forName(pack + "." + lang + "GlossFilter");
             f = (GlossFilter) wec.getConstructor().newInstance();
         } catch (ClassNotFoundException e) {
-            System.err.println("No wiktionary extractor found for " + lang);
+            System.err.println("No gloss filter found for " + lang+" reverting to default "+pack + ".DefaultGlossFilter");
+            try {
+                wec = Class.forName(pack + ".DefaultGlossFilter");
+                f = (GlossFilter) wec.getConstructor().newInstance();
+            } catch (ClassNotFoundException e1) {
+                System.err.println("Default gloss filter not found");
+            } catch (InvocationTargetException e1) {
+                System.err.println("Default gloss filter failed to be instanciated");
+            } catch (NoSuchMethodException e1) {
+                System.err.println("Default gloss filter failed to be instanciated");
+            } catch (InstantiationException e1) {
+                System.err.println("Default gloss filter failed to be instanciated");
+            } catch (IllegalAccessException e1) {
+                System.err.println("Default gloss filter failed to be instanciated");
+            }
         } catch (InstantiationException e) {
             System.err.println("Could not instanciate wiktionary extractor for " + lang);
         } catch (IllegalAccessException e) {

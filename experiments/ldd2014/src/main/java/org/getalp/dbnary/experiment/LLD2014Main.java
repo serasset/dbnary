@@ -178,7 +178,10 @@ public final class LLD2014Main {
             Statement s = e.getProperty(senseNumProperty);
             Statement g = e.getProperty(DbnaryModel.glossProperty);
 
-            if (/*null != s &&*/ null != n && null != g) {
+            if (null != s) {
+            	// Process sense number
+            
+            } else if (/*null != s &&*/ null != n && null != g) {
                 String gloss = g.getObject().toString();
                 Ambiguity ambiguity = new TranslationAmbiguity(gloss, n.getObject().toString().split("\\^\\^")[0], deltaThreshold);
                 String uri = g.getSubject().toString();

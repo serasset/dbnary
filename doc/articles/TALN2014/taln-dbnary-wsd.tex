@@ -74,75 +74,79 @@ Des travaux similaires ont été menés (principalement dans le jeu de données 
 Après une revue des travaux similaires, nous présentons la structure de DBNary. Ensuite, après avoir montré comment nous construisons l'étalon-or endogène  que nous utilisons pour évaluer notre travail, nous détaillons les méthodes employées pour atteindre notre but. Enfin, nous évaluons notre méthode est interprétons les résultats.
 
 
-\section{Related Work}
+\section{Travaux Similaires}
 
-\subsection{Extracting Data from Wiktionary Language Editions.} Since its introduction in late 2002, Wiktionary has steadily increased in size (both with collaborative work and with automatic insertion of previously available free lexical data). Interest in Wiktionary as a source for lexical data for NLP applications has quickly raised and studies liked \cite{Zesch:AAAI2008} or \cite{navarro-EtAl:2009:PeoplesWeb} shown the richness and power of this resource. 
+\subsection{Extraction de données depuis les éditions de langue Wiktionary} Depuis sa création en 2002, Wiktionary à connu une augmentation régulière en taille (à la fois par un travail collaboratif ainsi que l'insertion automatique de données lexicales libres précédemment disponible). L'engouement pour Wiktionary en tant que source pour la production de données lexicales pour des applications du TAL c'est développé rapidement , et des études comme par exemple \cite{Zesch:AAAI2008} où \cite{navarro-EtAl:2009:PeoplesWeb} démontrent la richesse et la puissance de ces ressources.
 
-Since then, efforts has been mostly focussed on the systematic extraction of Wiktionary data. Many of them, as resources for a specific project and thus are merely snapshot of Wiktionary at a fixed point in time. As all Wiktionary language editions evolve regularly (and independently) in the way their data is represented, such efforts are not suitable to provide a sustainable access to Wiktionary data. 
+Depuis, les travaux se sont surtout concentrés sur l'extraction systématique de données provenant de Wiktionary.  Ls plus part comme ressource spécifique à un projet donné, et qui ne constituent ainsi qu'une capture de Wiktionary figée dans le temps. Sachant que toutes les éditions de Wiktionary évoluent régulièrement (et indépendamment) vis-à-vis de comment sont représentées leur données, de tels travaux ne peuvent pas fournir un accès durable aux données de Wiktionary.
 
-Some efforts, however are maintained and allow access over time. One of the most mature project is the \emph{JWKTL} API \cite{ZeschMuellerGurevych2008} giving access to  the English, German and Russian language editions. It is used in the UBY project \cite{gurevych2012uby} which provides an LMF based version of these editions. 
 
-We should also mention the wikokit project \cite{krizhanovsky2010transformation} that provides access to the English and Russian editions and that was used by \emph{JWKTL}.
+Certains des travaux cependant dont également maintenus et permettent un accès au cours du temps. L'un de plus mature de ces travaux est l'API \emph{JWKTL} \cite{ZeschMuellerGurevych2008} qui donne accès aiux éditions Anglaises, Allemandes et Russes. C'est cette dernière qui est utilisée dans le projet UBY \cite{gurevych2012uby}, qui met à disposition une version LMF de ces éditions.
 
-\cite{HellmannSebastianandBrekleJonasandAuer} presents another attempt under the umbrella of the dbpedia project \cite{dbpedia-swj}, whose purpose is specifically to provide the Wiktionary data as Lexical Linked Open Data. The main reason this approach is interesting the collaborative approach used to create the extraction templates, which is the general approach of the dbpedia project. This project currently handles the English, French, Russian and German Wiktionary language editions.
+Il faut également faire mention du projet wikokit \cite{krizhanovsky2010transformation}, qui donne accès  aux éditions Anglaises et Allemandes, et qui à été utilisée par \emph{JWKTL}.
 
-This paper is part of the DBnary project \cite{serasset:dbnary-swj}, whose purpose is similar to that of \cite{HellmannSebastianandBrekleJonasandAuer}. Our specific goal is to provide LEMON structured lexical databases that are structured like traditional lexica. Indeed, we do extract data from Wiktionary, however, we currently restrict ourselves to the ``native'' data of each language edition, e.g. the French data is extracted from the French language edition and we disregard French data that is contained in other editions. At the best of our knowledge DBNary is currently the most advanced extractor for Wiktionary, with its current active support of 10 languages. It is also the only initiative that gives access to the whole history of the extracted data.
+\cite{HellmannSebastianandBrekleJonasandAuer} présentent un autre tentative, sous l'égide du projet dbpedia  \cite{dbpedia-swj}, dont l'objectif est en particulier de fournir un accès aux données de Wiktionary en tant que données liées ouvertes. La raison principale que rend cette approche intéressante, est l'aspect collaboratif, utilisé pour créer les patrons d'extraction, ce qui correspond à l'approche générale du projet dbpedia. Ce projet donne accès aux éditions de Wiktionary Anglais, Française, Russe et Allemande.ditions.
 
-\subsection{Disambiguation of the Source of Translations.} 
+Cet article et les travaux effectués ici le sont dans le cadre du projet DBnary \cite{serasset:dbnary-swj}, dont l'objectif est similaire à celui de \cite{HellmannSebastianandBrekleJonasandAuer}. Plus précisément, notre objectif est de fournir une base de donnée lexicale au format LEMON, qui structure les données comme dans des lexiques traditionnels. En effet, nous extrayons des données issues de Wiktionary, en nous restreignant toutefois aux donnée ''natives'' de chaque édition. Par exemple, nous extrayons les données en Français de l'édition Française, mais ignorons les données en Français contenues dans d'autre éditions.
+À notre connaissance, DBNary est actuellement l'extracteur pour Wiktionary le plus avancé, avec sont support actif courant de 12 langues. C'est également le seul projet qui donne accès à tous l'historique des données extraites. 
 
-As far as the task of attaching translations to the proper word sense (translation disambiguation) is concerned, the most similar work to our is described in \cite{meyer-gurevych:2012:PAPERS}. Their intent matches our own, however, their efforts  only deal with the German and English Language editions. In this work, the gold standard used to evaluate the method was manually created and was significantly smaller than the endogenous gold standard we extracted from the resource itself. Their work uses a backoff strategy (to the most frequent sense) when the heuristics based similarity measures and the resource's structure failed. The other heuristics they used in conjunction with similarity measure also implied a finer analysis of definitions and glosses so as to distinguish between linguistic labels (domain, register, title, etc.).
+\subsection{Désambiguïsation des sources des liens de traduction} 
 
-In the work described in the present article, we achieve similar scores on the languages we were able to evaluate with an endogenous gold standard, even though we only used string and token similarity measures, even in the context of languages with less common features (e.g. the agglutinative aspect of the Finnish language).
+En ce qui concerne le rattachement des liens de traduction aux sens de mots les plus adéquats (déambiguïsation des liens de traduction), les travaux les plus similaires sont ceux de \cite{meyer-gurevych:2012:PAPERS}, dont les objectifs correspondent aux nôtres. Cependant leurs travaux ne portent que sur les éditions Anglaises et Allemandes. De plus, l'étalon-or utilisé pour évaluer leur méthode  fut créé manuellement et est d'une taille significativement plus petite que l'étalon-or endogène que nous avons ici extrait de la ressource elle-même.  Leur travail utilise également une stratégie de repli (vers le sens le plus fréquent), quand leur heuristiques à base de mesures de similarité ainsi que basées sur la structure de la ressource échouent.  Les autres heuristiques qu'ils utilisèrent, impliquent également une analyse plus fine des définissions et gloses afin de notamment faire une distinction entre les étiquettes  linguistiques (domaine, registre, titre, etc.).
 
-\subsection{Similarity measures}
-Our method is based on the application of gloss overlap measures and its extension with ideas taken from Hybrid textual similarity measures that match sentences both at the character and at the token level. In the work mentioned above \cite{meyer-gurevych:2012:PAPERS}, a feature based similarity is used (gloss overlap), while in some of their prior work, \cite{MeyerGurevych:2010}  they use a textual similarity measure based on vector-spaces generated from corpora (Explicit Semantic Analysis).
+Dans le travail ici présent, nous atteignons des résultats similaires sur les langues où nous avons la possibilité d'évaluer la désambiguïsation avec un étalon-or endogène, malgré le fait que nous n'aillons uniquement utilisés des mesures de similarité de chaines et de mots, et ce même dans les langues avec des propriétés moins communes (par exemple la nature agglutinante du Finnois.)  
 
-In this work we propose using a simple similarity measure where we replace the exact word match of the overlap calculation with an approximate string distance measure and by placing ourselves in the more general framework of the Tversky index (can be seen as a generalization of Lesk, the Dice coefficient , the Jaccard and Tatimono indexes, etc.)
+\subsection{Mesures de similarité}
+Notre méthode est basée sur l'application de mesures d'intersection de gloses et de leurs extensions avec des idées provenant des mesures de similarité textuelles hybrides, qui calculent une correspondance de sous-séquences à la fois au niveau du caractère et du mot. Dans les travaux cités ci-dessus, \cite{meyer-gurevych:2012:PAPERS}, une mesure de similarité à base de traits est utilisée (intersection de gloses), alors que dans leurs travaux antérieurs \cite{MeyerGurevych:2010}, ils ont utilisés une mesure de similarité textuelle basée sur des espaces vectoriels générés à partir de corpus (Analyse Sémantique Explicite).
 
- The idea of ``soft-cardinality'' proposed by \cite{Jimenez2010,Jimenez2012} is very similar in the sense that it exploits the Tversky index as a base and conjugates it with a textual similarity measure. That is, instead of incrementing the overlap count by 0 or 1, it is incremented by the value returned by the text similarity measure between the current pair of words being considered in the overlap calculation.
+Dans notre travail, nous proposons l'utilisation d'une mesure de similarité simple, où nous remplaçons la correspondance de mots exacte du calcul d'intersection par une mesure de distance de chaine approchée, et en nous plaçant dans le contexte plus général de la mesure de similarité qu'est l'indice de Tversky (qui peut être vu comme une généralisation de Lesk, du coefficient de Dice, des indices de Jaccard et Tatimono, etc.)
+
+ L'idée de \emph{cardinalité molle}(``soft-cardinality'') proposée par \cite{Jimenez2010,Jimenez2012} est très similaire, dans le sens où elle exploite l'index de Tversky comme base et la conjugue avec une mesure de similarité textuelle. C'est à dire, au lieu d'incrémenter la cardinalité de l'intersection de 0 où 1, elle est incrémentée par la valeur retournée par une mesure de similarité de chaine pour chaque paire de mots considérée lors du calcul de la cardinalité de l'intersection. 
  
-  Their text similarity measure is based on an empirically generated a q-gram model (character-grams corresponding to substrings) combined with point-wise mutual information weighting. However in this work, we want to minimize the requirement of generating similarity models. Doing so for 10 languages would require some effort and with future expansions to more languages, become an impractically daunting task. 
+  Leur mesure est basée sur la notion de q-grammes, générés empiriquement (caractère-grammes correspondant à des sous-chaines) avec une pondération à base de contenue d'information mutuel ponctuel (pointwise mutual information). Dans note cas, construire ce type de modèles pour 12 langues nécessiterais de nombreux efforts, et avec l'extension future à plus de langues (voire toutes), cela deviendrait une tâche pratiquement impossible. 
  
- As such, we chose to use a simple string distance measure for the approximate string match calculations. However, there are many such measure and it is necessary to select the right one for the task as will be detailed in Section \ref{sec:expe} Moreover, there are existing so called ``Level 2'' or ``Hybrid'' similarity measures that already combine token overlap with token distance measures. Thus we will need to evaluate our proposed method with some of the existing methods so as to evaluate their viability. The various measures and a detailed performance comparison in a name matching task are presented by \cite{Cohen2003}.
+ De ce fait, nous avons choisis une mesure de distance de chaine simple pour le calcul de la correspondance partielle de chaines. Cependant, il y a de nombreuses mesures disponibles et il advient de choisir celle qui est la plus appropriée pour notre tâche (voir Section \ref{sec:expe}). Qui plus est, il existe également des mesures dites de ``Niveau 2'' qui combinent déjà de différentes manières des mesures de similarité de chaines avec des mesure d'intersection de termes. Ainsi il faudra évaluer la méthode que nous proposons, avec certaines de ces mesures de ``Niveau 2'' existantes afin d'estimer le viabilité. Toutes ces mesures ont fait l' objet d'une évaluation et d'une comparaison extensive entre elles dans le contexte d'une tâche de correspondance de noms \cite{Cohen2003}.
 
-\section{The DBnary Dataset}
+\section{Le jeu de données DBNary}
 
-DBnary is a Lexical Linked Open Dataset extracted from 10 Wiktionary language editions (English, Finnish, French, German, Greek, Italian, Japanese, Portuguese, Russian and Turkish). It is available on-line at \url{http://kaiko.getalp.org/about-DBnary}. At the time of writing, it contains more than 35 million triples. This number is steadily growing as the dataset evolves in parallel with the Wiktionary original data. Indeed, the dataset is automatically updated as soon as Wikimedia releases new Wiktionary dumps, i.e. every 10-15 days per language edition. 
+DBnary est un jeu de données liées ouvertes extraites depuis 12 éditions de langues Wiktionary (Anglais, Finnois, Français, Allemand, Grec, Italien, Japonais, Portugais, Russe, Turque, Espagnol, Bulgare). La ressource est disponible en ligne à l'adresse \url{http://kaiko.getalp.org/about-DBnary}. Au moment de l'écriture, DBnary contiens  plus de  35 millions de triples. Ce nombre à constamment augmenté au long de l'évolution du jeu de données au rythme des évolutions des données originales de Wiktionary. En effet, DBnary est automatiquement mis-à-jour dès que Wikimedia met à disposition une nouvelle version des ``vidanges'' Wiktionary, c'est-à-dire à peu près tous les 10 à 15 jours.
 
-DBnary is structured according the LEMON ontology for lexical linked data \cite{DBLP:conf/esws/McCraeSC11}. Table \ref{lemon-elts} shows the number of Lexical Elements, as defined in the LEMON ontologies, for the different extracted languages. 
+DBNary est structuré en suivant le modèle de l'Ontologie LEMON pour la représentation de données lexicales liées \cite{DBLP:conf/esws/McCraeSC11}. Le tableau \ref{lemon-elts} donne une idée du nombre d'éléments lexicaux telles que définies dans l'ontologie LEMON dans les différents éditions de langues.
 
-The elements in DBnary that couldn't be represented with Lemon, were defined as a custom ontology built on top of existing Lemon classes and relations, most notably lexico-semantic relation and what we call \verb|Vocables|, the top level entries in Wiktionary that correspond to Wiktionary pages for specific words, and that can contain several \verb|lemon:LexicalEntries| categorised in two levels:
+Les éléments dans DBnary qui n'ont pu être représentés en LEMON, on été définis dans une ontologie sur mesure construite sur la base des classes et relations LEMON, notablement les relations lexico-semantiques ainsi que ce que nous appelons des \verb|Vocables|, les entrées de haut-niveau dans Wiktionary qui correspondent aux pages Wiktionary pour des mots spécifiques et qui contiennent plusieurs entrées lexicales (\verb|LexicalEntry|) catégorisées en deux niveaux:
 \begin{enumerate}
-	\item Homonymous distinction of words of different etymological origins (e.g. \verb|river [water stream]| v.s. \verb|river [one who rives or split])|
-	\item For each etymological origin, the different lexico-grammatical categories (PoS) (e.g. \verb|cut#V| \verb|[I cut myself]| v.s. \verb|cut#Noun| \verb|[I want my cut of the winning]|)
+	\item Distinction de mots homonymes selon l'origine étymologique (par exemple: \verb|mode [la mode actuelle]|) contre \verb|mode [le mode de fonctionnement]|.
+	\item Pour chaque origine étymologique différente, distinction selon la catégorie grammaticale (par exemple \\ \verb|rouge#Adj [la voiture rouge]| contre \verb|rouge#Nom [le rouge au front]|)
 \end{enumerate}
-
 
 \begin{table*}[htb!]
 \begin{center}\begin{footnotesize}
 \begin{tabular}{lrrrrrrr}
-\textbf{Language} & \textbf{Entries} & \textbf{LexicalSense} & \textbf{Translations} & \textbf{Glosses} & \textbf{Text} &  \textbf{Sense Num} & \textbf{Text+Sense Num.}\\
+\textbf{Langue} & \textbf{Entrées} & \textbf{LexicalSense} & \textbf{Traductions} & \textbf{Gloses} & \textbf{Texte} &  \textbf{Nbr. de sens} & \textbf{Texte + Nbr. de sens }\\
 \hline
-English & $544,338$ & $438,669$ & $1,317,545$ & $1,288,667$ & $1,288,667$ & $515$ & $515$ \\
-Finnish & $49,620$ & $58,172$ & $121,278$ & $120,728$ & $120,329$ & $115,949$ & $115,550$ \\
-French & $291,365$ & $379,224$ & $504,061$ & $136,319$ & $135,612$ & $28,821$ & $28,114$ \\
-German & $205,977$ & $100,433$ & $388,630$ & $388,553$ & $3,101$ & $385,452$ & $0$ \\
-Modern Greek & $242,349$ & $108,283$ & $56,638$ & $8,368$ & $8,368$ & $12$ & $12$ \\
-Italian & $33,705$ & $47,102$ & $62,546$ & $0$ & $0$ & $0$ & $0$ \\
-Japanese & $24,804$ & $28,763$ & $85,606$ & $22,322$ & $20,686$ & $4,148$ & $2,512$ \\
-Portuguese & $45,109$ & $81,023$ & $267,048$ & $74,901$ & $72,339$ & $71,734$ & $69,172$ \\
-Russian & $129,555$ & $106,374$ & $360,016$ & $151,100$ & $150,985$ & $115$ & $0$ \\
-Turkish & $64,678$ & $91,071$ & $66,290$ & $53,348$ & $585$ & $52,901$ & $138$ \\
+Anglais & $544,338$ & $438,669$ & $1,317,545$ & $1,288,667$ & $1,288,667$ & $515$ & $515$ \\
+Bulgare & $13888$ & $10104$ & $10104$ & $0$ & $0$ \\
+Espagnol & $114951$ & $66931$ & $2786$ & $64145$ & $0$ \\
+Finnois & $49,620$ & $58,172$ & $121,278$ & $120,728$ & $120,329$ & $115,949$ & $115,550$ \\
+Français & $291,365$ & $379,224$ & $504,061$ & $136,319$ & $135,612$ & $28,821$ & $28,114$ \\
+Allemand & $205,977$ & $100,433$ & $388,630$ & $388,553$ & $3,101$ & $385,452$ & $0$ \\
+Grec Moderne & $242,349$ & $108,283$ & $56,638$ & $8,368$ & $8,368$ & $12$ & $12$ \\
+Italien & $33,705$ & $47,102$ & $62,546$ & $0$ & $0$ & $0$ & $0$ \\
+Japonais & $24,804$ & $28,763$ & $85,606$ & $22,322$ & $20,686$ & $4,148$ & $2,512$ \\
+Portugais & $45,109$ & $81,023$ & $267,048$ & $74,901$ & $72,339$ & $71,734$ & $69,172$ \\
+Russe & $129,555$ & $106,374$ & $360,016$ & $151,100$ & $150,985$ & $115$ & $0$ \\
+Turque & $64,678$ & $91,071$ & $66,290$ & $53,348$ & $585$ & $52,901$ & $138$ \\
+
 \hline
 \end{tabular}
-\caption{Number of elements in the current DBnary dataset, detailing the number of entries and word senses, along with the number of translations. The table also details the number of Glosses attach to translations, among which the amount of textual glosses, of glosses giving the sense identifier and, finally, the number of glosses that contain both a textual description and a word sense identifier.}
+\caption{Nombre d'éléments dans le jeu de données DBnary actuel avec des détails sur le nombre d'entrées et de sens de mot ainsi que le nombre de traduction. Le tableau détaille également le nombre de gloses rattachées à des traduction, et de manière plus précise le nombre de gloses textuelles, le nombre de gloses qui contiennent un numéro de sens et enfin le nombre de gloses qui contiennent à la fois une description textuelle et un numéro de sens.}
 \label{lemon-elts}
 \end{footnotesize}\end{center}
 \end{table*}
 
-\subsection{Translation relations}
+\subsection{Relations de traduction}
 
-The DBnary dataset uses an ad-hoc representation of translation relations, as the LEMON model does not provide a vocabulary for such information. A \verb|Translation| is a RDF resource that gathers all extracted information pertaining to a translation relation. As an example, one of the translations of the lexical entry \emph{frog} is represented as follows\footnote{In all dumps and in this paper, we use the Turtle syntax to represent RDF data.}:
+DBnary utilise une représentation ad-hoc pour les relations de traduction, sachant que le modèle LEMON ne propose pas de vocabulaire pour représenter une telle information.  \verb|Translation| est une ressource RDF qui rassemble toute l'information se rapportant aux relations de traduction. Par exemple, l'une des traductions de l'entrée lexicale de \emph{frog} est représentée comme suit : \footnote{Dans cet article ainsi que pour les jeux de données DBNary nous utilisons la syntaxe RDF Turtle.}:
 
 \begin{small}
 \begin{alltt}
@@ -158,9 +162,9 @@ eng:__tr_fra_1_frog__Noun__1
 \end{alltt}
 \end{small}
 
-The properties of this resource point to the source \verb|LexicalEntry|, the language of the target (represented as a \verb|lexvo.org| entity \cite{deMeloWeikum2008c}), the target written form and, optionally, a gloss and usage notes.
+Les propriétés de cette ressource pointent vers une source de type \verb|LexicalEntry|, la langue de la cible (représentée comme une entrée \verb|lexvo.org| \cite{deMeloWeikum2008c}), la forme de surface de la cible, et 'éventuellement une glose et des notes d'usage. 
+Les notes d'usage donnent des informations sur la cible de la traduction (habituellement le genre où la transcription de la cible).
 
-Usage note give information about the target of the translation (usually used to give the gender or a transcription of the target).
 
 The gloss gives disambiguation information about the source of the translation. In the example given, it states that the given translation is valid for the word sense of \emph{frog} that may be described by the hint ``\emph{amphibian}''. Some of these glosses are textual and summarize or reprise the definition or part thereof of one or more specific sense to which the translation specifically applies to.
 

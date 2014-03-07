@@ -113,7 +113,7 @@ DBnary est un jeu de données liées ouvertes extraites depuis 12 éditions de l
 
 DBNary est structuré en suivant le modèle de l'Ontologie LEMON pour la représentation de données lexicales liées \cite{DBLP:conf/esws/McCraeSC11}. Le tableau \ref{lemon-elts} donne une idée du nombre d'éléments lexicaux telles que définies dans l'ontologie LEMON dans les différents éditions de langues.
 
-Les éléments dans DBnary qui n'ont pu être représentés en LEMON, on été définis dans une ontologie sur mesure construite sur la base des classes et relations LEMON, notablement les relations lexico-semantiques ainsi que ce que nous appelons des \verb|Vocables|, les entrées de haut-niveau dans Wiktionary qui correspondent aux pages Wiktionary pour des mots spécifiques et qui contiennent plusieurs entrées lexicales (\verb|LexicalEntry|) catégorisées en deux niveaux:
+Les éléments dans DBnary qui n'ont pu être représentés en LEMON, on été définis dans une ontologie sur mesure construite sur la base des classes et relations LEMON, notablement les relations lexico-sémantiques ainsi que ce que nous appelons des \verb|Vocables|, les entrées de haut-niveau dans Wiktionary qui correspondent aux pages Wiktionary pour des mots spécifiques et qui contiennent plusieurs entrées lexicales (\verb|LexicalEntry|) catégorisées en deux niveaux:
 \begin{enumerate}
 	\item Distinction de mots homonymes selon l'origine étymologique (par exemple: \verb|mode [la mode actuelle]|) contre \verb|mode [le mode de fonctionnement]|.
 	\item Pour chaque origine étymologique différente, distinction selon la catégorie grammaticale (par exemple \\ \verb|rouge#Adj [la voiture rouge]| contre \verb|rouge#Nom [le rouge au front]|)
@@ -165,10 +165,9 @@ eng:__tr_fra_1_frog__Noun__1
 Les propriétés de cette ressource pointent vers une source de type \verb|LexicalEntry|, la langue de la cible (représentée comme une entrée \verb|lexvo.org| \cite{deMeloWeikum2008c}), la forme de surface de la cible, et 'éventuellement une glose et des notes d'usage. 
 Les notes d'usage donnent des informations sur la cible de la traduction (habituellement le genre où la transcription de la cible).
 
+La glose donne une information de désambiguïsation sur la source de la traduction. Dans l'exemple donné, il est dit que la traduction ne correspond qu'au sens de \emph{frog} qui peut être décrit par l'indice ``\emph{amphibian}''. Certaines de ces gloses sont textuelles et résument ou reprennent la définition ou une partie de celle-ci d'une ou plusieurs sens de la source auxquels s'applique la traduction.
 
-The gloss gives disambiguation information about the source of the translation. In the example given, it states that the given translation is valid for the word sense of \emph{frog} that may be described by the hint ``\emph{amphibian}''. Some of these glosses are textual and summarize or reprise the definition or part thereof of one or more specific sense to which the translation specifically applies to.
-
-As an example, the English \verb|LexicalEntry| \emph{frog} contains 8 word senses, defined as follows:
+Par exemple , la \verb|LexicalEntry| Anglaise \emph{frog} contient huit sens de mots définis comme suit : 
 
 \begin{small}\begin{enumerate}
 \item A small tailless amphibian of the order Anura that typically hops
@@ -181,39 +180,43 @@ As an example, the English \verb|LexicalEntry| \emph{frog} contains 8 word sense
 \item The loop of the scabbard of a bayonet or sword. 
 \end{enumerate}\end{small}
 
-Translations of this entry are devided in 4 groups corresponding to the glosses ``\emph{amphibian}'', ``\emph{end of a string instrument’s bow}'', ``\emph{organ in a horse’s foot}'' and ``\emph{part of a railway}''. 
+Les traductions de cette entrée sont divisés en quatre groupes correspondant aux gloses ``\emph{amphibian}'', ``\emph{end of a string instrument’s bow}'', ``\emph{organ in a horse’s foot}'' et ``\emph{part of a railway}''.
 
-Additionally among the glosses, some may contain sense numbers, indicated by users in an ad-hoc way (may or may not be present, if the latter is true, no standard format is systematically followed or enforced). However, the presence of disambiguation information is very irregular and varies greatly between languages, both in terms of wiki structure and representation.
+De plus parmi les gloses, certaines peuvent contenir des numéros de sens, ajoutés par des utilisateurs de manière ad-hoc (peuvent ou non être présentes, et même si elles le sont, aucun format systématique n'est suivi ou imposé.) Il en suit que la présence d'information de désambiguïsation est très irrégulière et très variable entre les différentes éditions de langues, à la fois en termes de la structure du wiki et de la représentation. 
 
-In the current state of the Wiktionary extraction process, we extract translation and when possible the associated glosses. However up to now, we did not exploit the information contained in the glosses to enrich and disambiguate the source senses of translation relations.
 
-As mentioned above, the information contained in translation glosses and their format is very variable between languages, both quantitatively and qualitatively. 
+Dans l'état courant de l'extracteur Wiktionary, nous extrayons toutes les traductions, et quand c'est possible les gloses associées.  Néanmoins, jusqu'à présent nous n'avions pas exploités l'information contenue dans les gloses pour enrichir et désambiguïser les sens source des relations de traduction.
 
-Indeed, as shown in Table \ref{lemon-elts} some language like Italian, contain no gloss altogether, others, like English attaches textual glosses to translations almost systematically, but with no sense numbers. Others still, like German hardly contain textual glosses but give sense numbers to translations. In other cases such as for Finnish, French and Portuguese, many translations have an attached (textual) gloss with associated sense numbers. 
 
-In order to evaluate our method, we decided to use these mixed glosses that both contain a textual hint and a sense number to create a endogenous gold standard.
+Comme nous l'avons déjà mentionnés, le contenu et le format des gloses est très variable selong les langues, tant qualitativement qie quantitativement.
 
-\subsubsection{Creation of a gold standard}
+En effet, comme le montre le tableau \ref{lemon-elts}, certaines langues telles que l'italien ne contiennent aucunement de gloses, pour d'autres, comme l'anglais, il y a des gloses textuelles mais pas de numéros de sens. Pour d'autres encore, telles que l'allemand ne contiennent presque pas de gloses textuelles, mais donnent systématiquement le numéro de sens. Dans les cas spécifique du français, du finnois et du portugais, beaucoup de liens de traductions ont à la fois une glose textuelle rattachée et une numéro de sens.
 
-It is often the case that among translation glosses that are available and that do contain textual information or sense numbers, there are many false positives and variability that result from the variety of structures employed in Wiktionary as well as artefacts resulting from the extraction process. Before we can proceed further, it is paramount to filter this information so as to keep only the relevant parts. 
+Dans le but d'évaluer notre méthode, nous avons décidé d'exploiter ces gloses qui contiennent à l fois une description textuelle et un numéro de sens.
 
-More concretely two steps must be followed if we are to successfully extract the information we need :
+
+\subsubsection{Création d'un étalon-or}
+Il arrive souvent que parmi les gloses de traduction disponibles qui contiennent une information textuelle ou un numéro de sens qu'il y ait des faux positifs à la fois du à une extraction approximative à cause de la variabilité des la structure des gloses. Avant d'aller plus loin il est essentiel de filtrer l'information présente afin de ne conserver que les parties pertinentes.
+
+Plus concrètement, deux étapes sont nécessaire pour mener à bien l'extraction des informations nécessaires:
 \begin{itemize}
-   \item Remove empty glosses, or glosses containing irrelevant textual content that often correspond to TO DO notes in various forms (e.g. \emph{translations to be checked})
-   \item Extract sense numbers from the glosses when available, using language dependent templates (e.g. ``\emph{textual gloss (1)}'' or ``\emph{1. textual gloss}'') 
+	\item Supprimer les gloses vides ou contenant des informations textuelles non pertinentes qui correspondent souvent à des notes de type \emph{à faire} (par ex. ``\emph{traduction à vérifier}'').
+	\item Extraire les numéros de sens des gloses qui en possèdent un, en utilisant des patrons spécifiques à chaque langue (par ex. ``\emph{glose textuelle (1)}'' ou ``\emph{1. glose textuelle}'')
 \end{itemize}
 
-When sufficient glosses contained both a textual hint and sense numbers, we removed the sense numbers\footnote{Translation are sometimes valid for several source word senses} from the gloss and used them to create a gold standard in trec\_eval format.
 
-Now that we have successfully extracted as much of the information contained in translation glosses, we can move on to the disambiguation process itself. While, the steps above are indeed language specific, what follows was designed to be as generic and computationally efficient as possible, as we are required to periodically perform the disambiguation, whenever a new version of DBnary is extracted from the latest Wiktionary dumps.
+Une fois il y avait quantité suffisante de ces gloses (dans telle ou telle édition de langue) nous avons supprimés les numéro s de sens\footnote{Les traductions correspondent parfois à plusieurs sens} des gloses, et les avons utilisées pour produire un étalon-or suivant le format du programme d'évaluation de trec\_eval.
+
+Après cet étape d'extraction, ont peut désormais passer à la description du processus de désambiguïsation à proprement parler. Même si l'extraction était spécifique à chaque langue, la méthode de désambiguïsation a été conçue pour être aussi générique et calculatoirememnt efficiente que possible, sachant que l'on est amenés à effectuer la désambiguïsation périodiquement dès qu'une nouvelle version de DBnary est extraite de Wiktionary.
+
 
 
 
 \section{Attaching Translations to Word Senses}
 \subsection{Formalization of translation disambiguation}
-Let \(T\) be the set of all translation relations, \(L\) the set of all \verb|LexicalEntry| in a given language edition of DBnary. Let \(T_i\in T: Gloss(T_i)\) be a function that return the gloss of any translation \(T_i\in T\) and let \(Source(T_i)=L_{T_i}\) be a function that returns a reference to the source \verb|LexicalEntry|, \(L_{T_i}\) of a translation \(T_i\). Let \(Senses(L_i)=S_{L_i}\) be the set of all the senses associated with \verb|LexicalEntry| \(L_i\). Let \(S_{L_i}^k\) be the \(k\)-th sense contained in \(S_{L_i}\) and let \(Def(S_{L_i}^k)\) be a function that returns the textual definition of a sense \(S_{L_i}^k\). Finally let \(Sim(A,B)\) be a function that returns a semantic similarity or relatedness score between \(A\) and \(B\), where \(A,B\) are a pair of textual definitions or textual glosses. 
+Soit \(T\) l'ensemble des relations de traduction, \(L\) l'ensemble des \verb|LexicalEntry| dans une édition de langue donnée de DBnary. Soit \(T_i\in T: Gloss(T_i)\) une fonction qui renvoie la glose d'une relation de traduction quelconque \(T_i\in T\) et soit \(Source(T_i)=L_{T_i}\) une fonction qui renvoie une référence vers la \verb|LexicalEntry| source \(L_{T_i}\) d'une relation de traduction quelconque \(T_i\). soit \(Senses(L_i)=S_{L_i}\) l'ensemble des sens associées à une  \verb|LexicalEntry| \(L_i\). Soit \(S_{L_i}^k\) le \(k\)-ème sens contenus dans \(S_{L_i}\) et soit \(Def(S_{L_i}^k)\) une fonction qui renvoie la définitions textuelle d'un sens  \(S_{L_i}^k\). Enfin, soit \(Sim(A,B)\) une fonction qui renvoie  une mesure de similarité ou un score de relation sémantique  entre \(A\) et \(B\), où \(A,B\) est une paire de définitions textuelles ou de gloses textuelles. 
 
-Then, we can express the disambiguation process as:
+Ainsi, nous pouvons exprimer le processus de désambiguïsation comme:
 \[
 \forall T_i \in T, S=Senses(Source(T_i)): 
 \]
@@ -221,11 +224,13 @@ Then, we can express the disambiguation process as:
 Source^*(T_i) \leftarrow  \argmax_{S^k\in S} \{Score(Gloss(T_i),Def(S^k))\}
 \]
 
-This corresponds exactly to a standard semantic similarity maximisation and yields one disambiguated source sense per translation, however in many case a translation corresponds to one or more senses. The solution adopted by \cite{MeyerGurevych:oup2012} is to use a threshold \(k\) for their gloss overlap, however in our case, we want to be able to plug-in several different measures so as to find the most suitable one, as such just choosing a fixed arbitrary value for \(k\) is not readily and option. Thus, we need to add one more constraint: that the values returned by our similarity function need to be normalized between \(0 \mbox{ and  } 1\).
+Ceci correspond exactement à une maximisation de la mesure de similarité à postériori et résulte sur un sens désambiguïsé par lien de traduction. Cependant, il arrive dans de nombreux cas qu'un lien de traduction ne correspond à deux sens ou plus à la fois. La solution adoptée par \cite{MeyerGurevych:oup2012} est d'utiliser une valeur seuil \(k\) pour le calcul de la maximisation de la cardinalité de l'intersection des gloses. Dans notre cas, comme nous voulons évaluer et tester pluseurs mesures, sans que l'on puisse nécessairement garantir la normalisation des valeurs de sortie, une \(k\) correspondant à une valeur fixe n'est pas garanti d'être approprié, même si dans la majorité des cas il faut se tenir à la contrainte que les valeurs des mesures de similarités soient normalisées entre  \(0 \mbox{ et  } 1\).
 
-Here instead of taking a threshold \(k\), we set a window \(\delta\) around the best score in which the senses are accepted as a disambiguation of a given translation. We hypothesise that a relative threshold dependant on the maximal score, will set a precedent and be more representative of the possible range of values. Of course, setting a fixed threshold has for effect of not assigning any senses if all the scores are low, thus increasing precision at the cost of a lower recall. While in a general setting it is better to remove answers that are more likely to be mistakes as detecting errors \emph{a posteriori} is difficult. However in the context of the experiment, we prefer to keep such low or null scores as we will then be able with the help of the gold standard pin-point errors more precisely for the sake of our analysis.
+Au lieu de prendre un \(k\) fixe nous avons choisi d'utiliser une fenêtre \(\delta\) autour de sens sélectionne avec le score maximum, ce qui est plus robuste, notamment dans les cas où les valeurs de similarités ne sont pas sur la même échelle. Tout autre sens tombant dans la fenêtre est aussi accepté comme désambiguïsation.  
 
-We can express this formally by modifying the \(argmax\) function as such:
+En comparaison, l'effet d'utiliser une valeur seuil fixe est que si tous les scores sont bas, aucun sens ne sera assigné, on gagne ainsi en précision au prix d'un rappel inférieur. C'est un comportement qui est en temps normal désirable, car détecter les erreur a postériori est difficile, cependant dans le cadre de cette expérience, garder les choix erronés en cas de scores bas nous permet ensuite à l'aide de l'étalon-or de repérer précisément les erreurs potentielles et de mieux les analyser et identifier leur origine exacte. 
+
+Pour intégrer le seuil, nous pouvons modifier la fonction \(argmax\) comme suit:
 \[
 \forall T_i \in T, S=Senses(Source(T_i)): 
 \]
@@ -239,25 +244,30 @@ M_S = \max_{S_k\in S}(Score((Gloss(T_i),Def(S^k))),
 \{S^k\in S|  M_S > Score((Gloss(T_i),Def(S^k)) > M_S-\delta \}
 \]
 
-\subsection{Similarity Measure}
-In order to disambiguate the translation, we need to be able to compute some form of semantic similarity measure. Given that the only information available in the translations is the gloss that summarises the definition of the corresponding sense, we need a measure to capture the similarity by comparing the translation glosses and the sense definitions. The Lesk \cite{citeulike:625530} measure is a standard semantic similarity measure, specifically suited for such tasks as it computes a similarity based on the number of exact overlapping words between definitions. The Lesk similarity however, has several important issues that need to be addressed when its use is mandated: 
+\subsection{Mesure de similarité}
+Afin de désambiguïser les relations de traduction, nous avons besoin de d'utiliser une mesure de similarité sémantique. Sachant que d'une part les seules informations disponibles sont les gloses qui représentent ou résument la définition du sens correspondant et sachant que d'autre part nous avons des définitions textuelles au niveau des sens, il nous faut une mesure de similarité qui ne se basent que sur les chaines de caractères et les mots. 
+La mesure de Lesk \cite{citeulike:625530} est un mesure de similarité très simple et standard, qui s'adapte tout particulièrement aux contraintes auxquelles nous sommes confrontés. Cette mesure calcule dans sa formulation classique la cardinalité de l'intersection de deux ensemble de mots (typiquement des définitions de sens de mot).
+ Cependant, vienne s'ajouter à cela un certain nombres de limitations importantes :
 \begin{itemize}
-	\item If the sizes of the glosses or definitions is not the same, the Lesk measure will always favor longer definitions.
-	\item The size and the appropriateness of the words contained in the definitions is important, as one key word to the meaning of the definition is missing (or the presence of a synonym for that matter) can lead to an incorrectly low similarity.
-	\item The Lesk overlap is not in itself normalized, and the normalization process requires some though depending of the distinct problems at hand.
+	\item Si les tailles de gloses ou définitions n'est pas la même, cette mesure favorisera toujours les définitions plus longues. 
+	\item La taille et l'adéquation des mots contenus dans les définitions est important, en effet, si il manque un mot clef dans la définition on peut facilement obtenir une similarité erronée (par exemple un score de zéro alors que l'idée est quand même la même, quand par exemple l'une des définition est formulée avec des synonymes du contenu de l'autre).  
+	\item La mesure de Lesk classique c'est pas normalisée, c'est à dire que les valeurs peuvent être arbitrairement grandes. L'ajout d'une normalisation n'est pas toujours trivial, et dépend de nombreux facteurs, y compris le domaine d'application.
 \end{itemize}
  
- The issues of normalization and of the unequal length of definitions are actually related, as one of the practical ways of doing so is to, for example, divide by the length of the shortest definition as a normalization. Moreover, one can only notice the similarity between the Lesk measure and other overlap coefficients such as the dice coefficient, the Jaccard or Tatimono indices. In fact, all of these measures are special forms of the Tversky index, which stems from the works on similarity of cognitive psychologist A. Tversky \cite{tversky77similarity}.
+ 
+ Les problèmes de longueurs différentes de définitions et de la normalisation sont en réalité liés. Par exemple un moyen courant de normaliser la mesure est de diviser le score par la longueur de la définition la plus courte ou la plus longue.
+ Un autre point intéressant est de remarquer la similarité entre la mesure de Lesk et les coefficients de Dice ou les indices de Jaccard/Tanimoto. En réalité toutes ces mesures sont des cas particulier du modèle plus général de l'indice de Tversky, qui provient des recherches sur la similarité en psychologie cognitive par A. Tversky \cite{tversky77similarity}.
 
-The Tversky index can be defined as follows. Let \(s_1 \in Senses(L_1)\)  and \(s_2 \in Senses(L_2)\) be the senses of two lexical entries \(L_1\) and \(L_2\). Let \(d_i=Def(s_i)\) be the definition of \(s_i\), represented as a set of words. The similarity between the senses \(Score(s_1, s_2)\) can be expressed as 
+L'indice de Tversky peut être défini de la manière suivante. Soit \(s_1 \in Senses(L_1)\)  et \(s_2 \in Senses(L_2)\), les sens de deux entrées lexicales \(L_1\) et \(L_2\). Soit \(d_i=Def(s_i)\) la définition de \(s_i\), représentée par un ensemble de mots. Alors, la similarité \(Score(s_1, s_2)\) entre les sens s'exprime comme :
 \[
 Score(s_1,s_2) = 
 \frac{|d_1\cap d_2|}{|d_1\cap d_2| + \alpha |d_1-d_2| + \beta |d_2-d_1|}
 \]
 
-The measure can further be generalized following \cite{DBLP:conf/otm/PirroE10} by replacing the cardinality function by any function \(F\). Depending on the values of \(\alpha\) and \(\beta\), the Tversky index takes the particular form of other similar indexes. For \((\alpha=\beta=0.5)\) for example it is equivalent to the dice coefficient, and for  \((\alpha=\beta=1)\) to the Tatimono index. More generally, the values of \(\alpha\) and \(\beta\) express how much emphasis one wants to attribute to the commonality or differences of one or the other set.
+La mesure peut être généralisée d'avantage en suivant la proposition de \cite{DBLP:conf/otm/PirroE10} en remplaçant la fonction de cardinalité par une fonction quelconque \(F\). Selon les valeurs d'\(\alpha\) et de \(\beta\), l'indice de Tversky prends, comme nous l'avons mentionnés la forme d'autres indices ou coefficients. Pour \((\alpha=\beta=0.5)\) il est équivalent au coefficient de  Dice, et pour \((\alpha=\beta=1)\) à l'indice de Tanimoto. Plus généralement les valeurs de   \(\alpha\) et \(\beta\) expriment combien d'emphase ont attribue aux points communs ou aux différences d'un sens ou de l'autre.
 
- The Tversky index in itself is not a metric in the mathematical sense, as it is neither symmetric nor respects the triangular inequality, however, a symmetric variant has been proposed by \cite{Jimenez2010} for such cases where the symmetry property is important or required.
+L'indice de Tversky en lui même n'est pas une mesure où une similarité dans le sens mathématique du terme, car en effet il n'est n'y symétrique, ni ne respecte l'inégalité triangulaire, cependant une formulation symétrique à été proposée par 
+\cite{Jimenez2010}  pour les cas où c'est une propriété qui est requise. 
 % : 
 % 
 % \[
@@ -268,12 +278,16 @@ The measure can further be generalized following \cite{DBLP:conf/otm/PirroE10} b
 % b=max(|d_1\cap d_2|,|d_2\cap d_1|)\\ 
 % \]
  
- When using the Tversky index or its symmetric version, careful attention must be given to the weights that one might use depending on the application. 
- 
- In this paper, there is no indication that there is any need for a symmetric version and preliminary experiments have shown better performance with the non-symmetric version.
+ Lors de l'utilisation de l'index de Tversky où des ces variantes, une attention toute particulière doit être portée au choix des poids, car selon les applications différents poids vont avoir une très grande influence sur les résultats. 
 
-\subsubsection{Multilingual Setting \& Partial overlaps}
- When working on a single language such as English and French, we have at our disposal tools such as a lemmatizer or a stemmer that may help to retrieve a canonical representation of the terms. Thus, we can hope to maximize the overlap and reduce the usual sparsity of glosses or sense definitions. For agglutinative languages like German or Finnish, highly inflective language (for example in the Bangla language, common stems are often composed of a single character, which makes stemming difficult to exploit) or languages with no clear segmentation, the preprocessing steps are paramount in order to make overlap based measures viable. If one is working on a single language, even if stemmers and lemmatizers do not exist, it is not impossible to build such a tool.
+Dans notre contexte, nous n'avons pas de besoin particulier que la mesure soit symétrique, nous nous cantonnons donc à la forme de base de l'indice. 
+ 
+\subsubsection{Contexte Multilingue et cardinalité partielle}
+Quand on travaille sur une seule langue tel que l'Anglais ou le Français, nous avons à notre disposition des outils tels que des lematiseurs, ou encore des racinisateurs, qui peuvent aider à normaliser les formes de mots présentes à une représentation canonique. Ainsi nous pouvons espérer maximiser les cardinalité d'intersection en réduisant la parcimonie habituelles des définitions de sens ou encore plus des gloses. 
+
+De plus pour dans langues agglutinantes telles que le finnois ou l'allemand où encore pour des langues fléchies (par exemple dans la langue Bangalie, les racones communes ne font souvent qu'un caractère, ce qui rends la racination difficile à exploiter).
+
+ For agglutinative languages like German or Finnish, highly inflective language (for example in the Bangla language, common stems are often composed of a single character, which makes stemming difficult to exploit) or languages with no clear segmentation, the preprocessing steps are paramount in order to make overlap based measures viable. If one is working on a single language, even if stemmers and lemmatizers do not exist, it is not impossible to build such a tool.
 
 However, in the context of this work we are currently dealing with 10 languages (and potentially in the future with all the languages present in Wiktionary) and thus, in order to propose a truly general method, we cannot expect the prerequisite presence of such tools. 
 
@@ -357,7 +371,7 @@ Given that translation glosses are short (often a single word), it is likely tha
 We chose, here, to evaluate the values of \(\alpha\) and \(\beta\) in steps of \(0.1\). Figure \ref{fig.1} graphically shows the \(F\_1\) score for each pair of values of \(alpha\) and \(beta\) for all three languages. We can indeed confirm our hypothesis as the optimal value in all three cases is indeed \(\alpha=1-\beta=0.1\) with a difference between \(+0.15\%\) to \(+0.43\%\) with the second best scores.
 	
 \begin{figure}\centering
-\includegraphics[width=0.64\columnwidth]{alphabetafig}
+\includegraphics[width=0.45\columnwidth]{alphabetafig}
 \caption{F1 score for Finnish, French and Portuguese depending on the value of \(\alpha\) and \(\beta\).}
 \label{fig.1}
 \end{figure}
@@ -396,9 +410,9 @@ We can see that for all three languages we achieve a good performance compared t
 
 \begin{figure}
 \centering
-\includegraphics[width=.65\columnwidth]{french}
-\includegraphics[width=.65\columnwidth]{portuguese}
-\includegraphics[width=.65\columnwidth]{finnish}
+\includegraphics[width=.35\columnwidth]{french}
+\includegraphics[width=.35\columnwidth]{portuguese}
+\includegraphics[width=.35\columnwidth]{finnish}
 \caption{Graphical representation of the F1 score against delta for our measure and other Level 2 Measures.}
 \label{fig.2}
 \end{figure}

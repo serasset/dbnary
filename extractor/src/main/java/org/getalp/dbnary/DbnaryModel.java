@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -165,6 +166,7 @@ public class DbnaryModel {
 	
 	protected static void uriEncode(String s, StringBuffer res) {
 		int i = 0;
+		s = Normalizer.normalize(s, Normalizer.Form.NFKC);
 		while (i != s.length()) {
 			char c = s.charAt(i);
 			if (Character.isSpaceChar(c))
@@ -196,6 +198,7 @@ public class DbnaryModel {
 		StringBuffer res = new StringBuffer();
 		uriEncode(s, res);
 		res.append("__");
+		pos = Normalizer.normalize(pos, Normalizer.Form.NFKC);
 		int i = 0;
 		while (i != pos.length()) {
 			char c = pos.charAt(i);

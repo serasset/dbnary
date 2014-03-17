@@ -285,6 +285,7 @@ experiments/ldd2014/pom.xml -text
 experiments/ldd2014/results/finnish_ref_gold.out -text
 experiments/ldd2014/results/french_ref_gold.out -text
 experiments/ldd2014/results/gen_all_res.sh -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/DisambiguateTranslationSources.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/LLD2014Main.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Ambiguity.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Disambiguable.java -text
@@ -296,8 +297,6 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/tr
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/VoteType.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/encoding/CodePointIterator.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/encoding/CodePointWrapper.java -text
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/fuzzystring/JaroUnicode.java -text
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/fuzzystring/JaroWinklerUnicode.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/jdm/JDMDumpSectionType.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/jdm/JDMModelParser.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/jdm/model/JDMModel.java -text

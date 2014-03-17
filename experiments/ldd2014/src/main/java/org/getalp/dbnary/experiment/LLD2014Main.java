@@ -208,7 +208,7 @@ public final class LLD2014Main {
                     streams.get(m).println(ambiguity.toString(m));
 
                     Resource sense = outputModel.createResource(uri);
-                    outputModel.add(outputModel.createStatement(sense, DbnaryModel.isTranslationOf, outputModel.createResource(NS + ambiguity.getBestDisambiguation(m).getId())));
+                    outputModel.add(outputModel.createStatement(sense, DbnaryModel.isTranslationOf, outputModel.createResource(NS + ambiguity.getBestSolution(m).getId())));
 
                 }
                 psmfs.println(mfcAmbiguity.toString("MFS"));

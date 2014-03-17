@@ -13,11 +13,13 @@ public interface Ambiguity extends Comparable<Ambiguity> {
 
     public List<Disambiguable> getDisambiguations(String method);
 
-    public Disambiguable getBestDisambiguation(String method);
+    public Disambiguable getBestSolution(String method);
+	List<Disambiguable> getBestSolutions(String method);    
 
     public Set<String> getMethods();
 
     public String toString(String method);
 
     public String toStringVote();
+
 }

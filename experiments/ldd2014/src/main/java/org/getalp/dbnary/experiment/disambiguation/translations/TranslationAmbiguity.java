@@ -58,13 +58,16 @@ public class TranslationAmbiguity implements Ambiguity {
         return disambiguations.get(method);
     }
 
-    public Disambiguable getBestDisambiguation(String method) {
+    @Override
+    public Disambiguable getBestSolution(String method) {
         return best.get(method);
     }
 
-    public List<Disambiguable> getNextBest(String method) {
+    @Override
+    public List<Disambiguable> getBestSolutions(String method) {
         List<Disambiguable> next = new ArrayList<>();
-        Disambiguable best = getBestDisambiguation(method);
+        Disambiguable best = getBestSolution(method);
+        next.add(best);
         double bestScore = best.getScore();
         for (Disambiguable d : disambiguations.get(method)) {
             if (!d.equals(best) && Math.abs(d.getScore() - bestScore) < threshold) {
@@ -79,10 +82,10 @@ public class TranslationAmbiguity implements Ambiguity {
             Map<String, Double> count = new HashMap<>();
             for (String m : getMethods()) {
                 List<Disambiguable> ld = disambiguations.get(m);
-                if (!count.containsKey(getBestDisambiguation(m).getId())) {
-                    count.put(getBestDisambiguation(m).getId(), getBestDisambiguation(m).getScore());
+                if (!count.containsKey(getBestSolution(m).getId())) {
+                    count.put(getBestSolution(m).getId(), getBestSolution(m).getScore());
                 } else {
-                    count.put(getBestDisambiguation(m).getId(), count.get(getBestDisambiguation(m).getId()) + getBestDisambiguation(m).getScore());
+                    count.put(getBestSolution(m).getId(), count.get(getBestSolution(m).getId()) + getBestSolution(m).getScore());
                 }
             }
             double bestCount = 0;
@@ -109,28 +112,20 @@ public class TranslationAmbiguity implements Ambiguity {
     }
 
     public String toString(String method) {
-        String ret = getId() + ' ' + "00 ";
-        if (getBestDisambiguation(method) != null) {
-            ret += getBestDisambiguation(method).getId();
-        } else {
-            return "\r";
-        }
-        ret += " 1 ";
-        if (getBestDisambiguation(method) != null) {
-            ret += getBestDisambiguation(method).getScore();
-        } else {
-            ret += " 1";
-        }
-        ret += " run_1";
-        int i = 2;
-        for (Disambiguable n : getNextBest(method)) {
-            ret += "\n" + getId() + ' ' + "00 ";
-            ret += n.getId() + " " + i + " "; // Rank
-            ret += n.getScore();
-            ret += " run_1";
+    	StringBuffer out = new StringBuffer();
+    	this.toString(out, method);
+    	return out.toString();
+    }
+    
+    public void toString(StringBuffer out, String method) {
+    	int i = 1;
+        for (Disambiguable d : getBestSolutions(method)) {
+            out.append(getId() + ' ' + "00 ");
+            out.append(d.getId()).append(" ").append(i).append(" "); // Rank
+            out.append(d.getScore());
+            out.append(" run_1");
             i++;
-        }
-        return ret;
+		} 
     }
 
     public String toStringVote() {
@@ -147,23 +142,11 @@ public class TranslationAmbiguity implements Ambiguity {
 
     @Override
     public String toString() {
-        String ret = "";
+        StringBuffer out = new StringBuffer();
         for (String m : getMethods()) {
-            ret = getId() + ' ' + "00 ";
-            if (getBestDisambiguation(m) != null) {
-                ret += getBestDisambiguation(m).getId();
-            } else {
-                return "\r";
-            }
-            ret += " 1 ";
-            if (getBestDisambiguation(m) != null) {
-                ret += getBestDisambiguation(m).getScore();
-            } else {
-                ret += " 1";
-            }
-            ret += " run_1\n";
+            this.toString(out,m);
         }
-        return ret;
+        return out.toString();
     }
 
     @Override

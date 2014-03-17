@@ -321,7 +321,7 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/Segm
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/SpaceSegmenter.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/Level2Sim.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/SimilarityMeasure.java -text
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/TsverskiIndex.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/TverskiIndex.java -text
 experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFinnishGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFrenchPreprocessing.java -text svneol=unset#text/plain
 experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestJapaneseGlossFilter.java -text svneol=unset#text/plain

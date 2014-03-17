@@ -7,7 +7,7 @@ import org.getalp.dbnary.experiment.segmentation.SpaceSegmenter;
 
 import java.util.List;
 
-public class TsverskiIndex implements SimilarityMeasure {
+public class TverskiIndex implements SimilarityMeasure {
     private Segmenter segmenter;
 
     private double alpha;
@@ -16,9 +16,10 @@ public class TsverskiIndex implements SimilarityMeasure {
     private boolean symmetric = false;
     private AbstractStringDistance distance;
     private boolean lcss;
+    private boolean lcssConstraint = true;
 
 
-    public TsverskiIndex(double alpha, double beta) {
+    public TverskiIndex(double alpha, double beta) {
         segmenter = new SpaceSegmenter();
         lcss = false;
         this.alpha = alpha;
@@ -26,7 +27,7 @@ public class TsverskiIndex implements SimilarityMeasure {
         fuzzyMatching = false;
     }
 
-    public TsverskiIndex(double alpha, double beta, boolean fuzzyMatching, boolean symmetric, AbstractStringDistance distance) {
+    public TverskiIndex(double alpha, double beta, boolean fuzzyMatching, boolean symmetric, AbstractStringDistance distance) {
         this.distance = distance;
         lcss = false;
         segmenter = new SpaceSegmenter();
@@ -36,7 +37,7 @@ public class TsverskiIndex implements SimilarityMeasure {
         this.symmetric = symmetric;
     }
 
-    public TsverskiIndex(double alpha, double beta, boolean fuzzyMatching,boolean symmetric ) {
+    public TverskiIndex(double alpha, double beta, boolean fuzzyMatching, boolean symmetric) {
         lcss = true;
         segmenter = new SpaceSegmenter();
         this.alpha = alpha;
@@ -45,14 +46,14 @@ public class TsverskiIndex implements SimilarityMeasure {
         this.symmetric = symmetric;
     }
 
-    public TsverskiIndex(Segmenter segmenter, double alpha, double beta) {
+    public TverskiIndex(Segmenter segmenter, double alpha, double beta) {
         this.segmenter = segmenter;
         this.alpha = alpha;
         this.beta = beta;
         fuzzyMatching = false;
     }
 
-    public TsverskiIndex(Segmenter segmenter, double alpha, double beta, boolean fuzzyMatching,boolean symmetric) {
+    public TverskiIndex(Segmenter segmenter, double alpha, double beta, boolean fuzzyMatching, boolean symmetric) {
         this.segmenter = segmenter;
         this.alpha = alpha;
         this.beta = beta;
@@ -109,11 +110,11 @@ public class TsverskiIndex implements SimilarityMeasure {
         }
         double diffA = a.size() - overlap;
         double diffB = b.size() - overlap;
-        if(symmetric){
-            double factA = Math.min(diffA,diffB);
-            double factB = Math.max(diffA,diffB);
-            return overlap / (beta*(alpha*factA+(1-alpha)*factB) +overlap);
-        }else {
+        if (symmetric) {
+            double factA = Math.min(diffA, diffB);
+            double factB = Math.max(diffA, diffB);
+            return overlap / (beta * (alpha * factA + (1 - alpha) * factB) + overlap);
+        } else {
             return overlap / (overlap + diffA * alpha + diffB * beta);
         }
 
@@ -140,10 +141,14 @@ public class TsverskiIndex implements SimilarityMeasure {
                 } else {
                     score = md;
                 }
-                if (score > 0.999 || score < 1.0 && lcss >= 3) {
+                if (score > 0.999 || score < 1.0 && ((lcssConstraint && lcss >= 3) || !lcssConstraint)) {
 
                     if (!this.lcss) {
-                        overlap += score + (1 - score) * (md - 0.5);
+                        if (lcssConstraint) {
+                            overlap += score + (1 - score) * (md - 0.5);
+                        } else {
+                            overlap += score;
+                        }
                     } else {
                         overlap += md;
                     }
@@ -152,5 +157,13 @@ public class TsverskiIndex implements SimilarityMeasure {
         }
 
         return overlap;
+    }
+
+    public boolean isLcssConstraint() {
+        return lcssConstraint;
+    }
+
+    public void setLcssConstraint(boolean lcssConstraint) {
+        this.lcssConstraint = lcssConstraint;
     }
 }

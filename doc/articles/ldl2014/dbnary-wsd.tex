@@ -19,7 +19,7 @@
 
 \abstract{ 
 The DBnary project aims at providing high quality Lexical Linked Data extracted from different Wiktionary language editions. Data from 10 different languages is  currently extracted for a total of over $3.16$M translation links that connect lexical entries from the 10 extracted languages, to entries in more than one thousand languages. 
-In Wiktionary, glosses are often associated with translations to help users understand to what sense they refer to, wether through a textual definition or a target sense number. In this article we aim at the extraction of as much of this information as possible and then the disambiguation of the corresponding translations for all languages available. We use an adaptation of various textual and semantic similarity techniques based on partial or fuzzy gloss overlaps to disambiguate the translation relations (To account for the lack of normalization, e.g. lemmatization and PoS tagging) and then extract some of the sense number information present to build a gold standard so as to evaluate our disambiguation as well as tune and optimize the parameters of the similarity measures.
+In Wiktionary, glosses are often associated with translations to help users understand to what sense they refer to, whether through a textual definition or a target sense number. In this article we aim at the extraction of as much of this information as possible and then the disambiguation of the corresponding translations for all languages available. We use an adaptation of various textual and semantic similarity techniques based on partial or fuzzy gloss overlaps to disambiguate the translation relations (To account for the lack of normalization, e.g. lemmatization and PoS tagging) and then extract some of the sense number information present to build a gold standard so as to evaluate our disambiguation as well as tune and optimize the parameters of the similarity measures.
 We obtain F-measures of the order of 80\% (on par with similar work on English only), across the three languages where we could generate a gold standard (French, Portuguese, Finnish) and show that most of the disambiguation errors are due to inconsistencies in Wiktionary itself that cannot be detected at the generation of DBnary (shifted sense numbers, inconsistent glosses, etc.). \\ \newline \Keywords{Wiktionary, Linked Open Data, Multilingual Resources}}
 
 
@@ -100,7 +100,7 @@ Russian & $129,555$ & $106,374$ & $360,016$ & $151,100$ & $150,985$ & $115$ & $0
 Turkish & $64,678$ & $91,071$ & $66,290$ & $53,348$ & $585$ & $52,901$ & $138$ \\
 \hline
 \end{tabular}
-\caption{Number of elements in the current DBnary dataset, detailing the number of entries and word senses, along with the number of translations. The table also details the number of Glosses attach to translations, among which the amount of textual glosses, of glosses giving the sense identifier and, finally, the number of glosses that contain both a textual description and a word sense identifier.}
+\caption{Number of elements in the current DBnary dataset, detailing the number of entries and word senses, along with the number of translations. The table also details the number of Glosses attached to translations, among which the amount of textual glosses, of glosses giving the sense identifier and, finally, the number of glosses that contain both a textual description and a word sense identifier.}
 \label{lemon-elts}
 \end{footnotesize}\end{center}
 \end{table*}

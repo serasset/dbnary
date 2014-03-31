@@ -1,26 +1,14 @@
 package org.getalp.dbnary;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.Normalizer;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.api.ISO639_3.Lang;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.DCTerms;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class DbnaryModel {
 
@@ -158,7 +146,7 @@ public class DbnaryModel {
 	}
 	
 	
-	protected static String uriEncode(String s) {
+	public static String uriEncode(String s) {
 		StringBuffer res = new StringBuffer();
 		uriEncode(s, res);
 		return res.toString();

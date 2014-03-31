@@ -3,7 +3,6 @@ package org.getalp.dbnary.experiment;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.wcohen.ss.Level2Levenstein;
-
 import org.apache.commons.cli.*;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
@@ -15,14 +14,16 @@ import org.getalp.dbnary.experiment.disambiguation.translations.DisambiguableSen
 import org.getalp.dbnary.experiment.disambiguation.translations.MFSTranslationDisambiguator;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationAmbiguity;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationDisambiguator;
-import org.getalp.dbnary.experiment.similarity.Level2Sim;
+import org.getalp.dbnary.experiment.similarity.string.Level2Sim;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public final class LLD2014Main {
@@ -66,11 +67,11 @@ public final class LLD2014Main {
         double w2 = 1d - w1;
         String mstr = String.format("_%f_%f", w1, w2);
 
-        //disambiguator.registerSimilarity("FTiJW" + mstr, new TsverskiIndex(w1, w2, true,false, new JaroWinklerUnicode()));
-        //        disambiguator.registerSimilarity("FTiLs" + mstr, new TsverskiIndex(w1, w2, true, false, new ScaledLevenstein()));
-        //disambiguator.registerSimilarity("FTiME" + mstr, new TsverskiIndex(w1, w2, true,false, new MongeElkan()));
-        //disambiguator.registerSimilarity("FTiLcss" + mstr, new TsverskiIndex(w1, w2, true,false));
-        //disambiguator.registerSimilarity("FTi" + mstr, new TsverskiIndex(w1, w2, false,false));
+        //disambiguator.registerSimilarity("FTiJW" + mstr, new TverskiIndex(w1, w2, true,false, new JaroWinklerUnicode()));
+        //        disambiguator.registerSimilarity("FTiLs" + mstr, new TverskiIndex(w1, w2, true, false, new ScaledLevenstein()));
+        //disambiguator.registerSimilarity("FTiME" + mstr, new TverskiIndex(w1, w2, true,false, new MongeElkan()));
+        //disambiguator.registerSimilarity("FTiLcss" + mstr, new TverskiIndex(w1, w2, true,false));
+        //disambiguator.registerSimilarity("FTi" + mstr, new TverskiIndex(w1, w2, false,false));
         //   disambiguator.registerSimilarity("L2Me" + mstr, new Level2Sim(new Level2MongeElkan()));
         disambiguator.registerSimilarity("L2Ls" + mstr, new Level2Sim(new Level2Levenstein()));
         // disambiguator.registerSimilarity("L2Jw" + mstr, new Level2Sim(new Level2JaroWinkler()));

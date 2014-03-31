@@ -1,25 +1,9 @@
 package org.getalp.dbnary.experiment;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.wcohen.ss.ScaledLevenstein;
+import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
@@ -33,20 +17,13 @@ import org.getalp.dbnary.experiment.disambiguation.translations.TranslationDisam
 import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
 import org.getalp.dbnary.experiment.preprocessing.StatsModule;
 import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
-import org.getalp.dbnary.experiment.similarity.Level2Sim;
 import org.getalp.dbnary.experiment.similarity.SimilarityMeasure;
-import org.getalp.dbnary.experiment.similarity.TsverskiIndex;
+import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.wcohen.ss.Level2Levenstein;
-import com.wcohen.ss.ScaledLevenstein;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public final class DisambiguateTranslationSources {
@@ -99,8 +76,8 @@ public final class DisambiguateTranslationSources {
 		double w2 = 1d - w1;
 		String mstr = String.format("_%f_%f", w1, w2);
 
-		similarityMeasure = new TsverskiIndex(w1, w2, true, false, new ScaledLevenstein());
-		disambiguator.registerSimilarity("FTiLs" + mstr, similarityMeasure);
+        similarityMeasure = new TverskiIndex(w1, w2, true, false, new ScaledLevenstein());
+        disambiguator.registerSimilarity("FTiLs" + mstr, similarityMeasure);
 	}
 
 	public static void main(String[] args) throws IOException {

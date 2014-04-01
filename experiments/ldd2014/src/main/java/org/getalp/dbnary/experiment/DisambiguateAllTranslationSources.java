@@ -7,6 +7,7 @@ import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguator;
@@ -378,13 +379,15 @@ public final class DisambiguateAllTranslationSources {
         List<String> output = new ArrayList<>();
         if(degree!=0 && models.containsKey(currentLang)){
             String writtenForm = translation.getProperty(DbnaryModel.equivalentTargetProperty).getObject().toString();
+            String uri = DbnaryModel.uriEncode(writtenForm);
+            Resource r = models.get(currentLang).getResource(uri);
             //Find translations pointing back to top level lang
-            //StmtIterator trans = models.get(currentLang).listStatements(lexEntry, DbnaryModel.isTranslationOf, (RDFNode)null);
-            //while(trans.hasNext()){
-              //  Statement ctransstmt = trans.next();
-                //Resource ctrans =  ctransstmt.getSubject();
-                //Statement l = ctrans.getProperty(DbnaryModel.targetLanguageCodeProperty);
-            //}
+            StmtIterator trans = models.get(currentLang).listStatements(r, DbnaryModel.isTranslationOf, (RDFNode) null);
+            while (trans.hasNext()) {
+                Statement ctransstmt = trans.next();
+                Resource ctrans = ctransstmt.getSubject();
+                Statement l = ctrans.getProperty(DbnaryModel.targetLanguageCodeProperty);
+            }
 
         }
         return output;

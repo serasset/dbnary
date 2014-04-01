@@ -14,11 +14,11 @@ public class EvaluationStats {
     }
 
     public double getPrecision() {
-        return (correct) / (provided);
+        return (correct)/(provided);
     }
 
     public double getRecall() {
-        return (correct) / (expected);
+        return (correct)/(expected);
     }
 
     public double getF1Score() {
@@ -32,8 +32,8 @@ public class EvaluationStats {
         if (prov != null) {
             provided++;
         }
-        if (exp != null && prov != null) {
-            if (exp.equals(prov)) {
+        if(exp != null && prov != null){
+            if(exp.equals(prov)){
                 correct++;
             } else {
                 incorrect++;

@@ -67,11 +67,13 @@ public class TranslationAmbiguity implements Ambiguity {
     public List<Disambiguable> getBestSolutions(String method) {
         List<Disambiguable> next = new ArrayList<>();
         Disambiguable best = getBestSolution(method);
-        next.add(best);
-        double bestScore = best.getScore();
-        for (Disambiguable d : disambiguations.get(method)) {
-            if (!d.equals(best) && Math.abs(d.getScore() - bestScore) < threshold) {
-                next.add(d);
+        if(best!=null) {
+            next.add(best);
+            double bestScore = best.getScore();
+            for (Disambiguable d : disambiguations.get(method)) {
+                if (!d.equals(best) && Math.abs(d.getScore() - bestScore) < threshold) {
+                    next.add(d);
+                }
             }
         }
         return next;

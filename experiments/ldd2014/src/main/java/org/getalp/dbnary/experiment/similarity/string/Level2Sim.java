@@ -1,6 +1,7 @@
 package org.getalp.dbnary.experiment.similarity.string;
 
 import com.wcohen.ss.AbstractTokenizedStringDistance;
+import com.wcohen.ss.Level2JaroWinkler;
 import org.getalp.dbnary.experiment.similarity.SimilarityMeasure;
 
 import java.util.List;
@@ -23,17 +24,17 @@ public class Level2Sim implements SimilarityMeasure {
     }
 
     public double compute(List<String> a, List<String> b) {
-        String sa = "";
-        String sb = "";
-        for (String s : a) {
-            sa += a + " ";
+        String sa="";
+        String sb="";
+        for(String s:a){
+            sa+=a+" ";
         }
         sa = sa.trim();
-        for (String s : b) {
-            sb += b + " ";
+        for(String s:b){
+            sb+=b+" ";
         }
         sb = sb.trim();
 
-        return compute(sa, sb);
+        return compute(sa,sb);
     }
 }

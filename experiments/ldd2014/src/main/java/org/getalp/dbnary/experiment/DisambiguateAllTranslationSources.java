@@ -7,7 +7,6 @@ import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
-import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguator;
@@ -67,7 +66,7 @@ public final class DisambiguateAllTranslationSources {
     // private Locale language;
     private String lang;
 
-    private Map<String, AbstractGlossFilter> filter = new HashMap<>();
+    private Map<String,AbstractGlossFilter> filter = new HashMap<>();
     private PrintStream statsOutput = null;
     private Map<String, StatsModule> stats = null;
     private EvaluationStats evalStats = new EvaluationStats();
@@ -107,7 +106,7 @@ public final class DisambiguateAllTranslationSources {
     private void preprocessAndDisambiguateGlossedTraslationSources() throws FileNotFoundException {
         for (String clang : models.keySet()) {
             System.err.println("Pre-processing translations.");
-            this.preprocessTranslations(models.get(clang), clang);
+            this.preprocessTranslations(models.get(clang),clang);
 
             if (statsOutput != null) {
                 stats.get(clang).displayStats(statsOutput);
@@ -207,7 +206,7 @@ public final class DisambiguateAllTranslationSources {
                     String lang3 = lf.getId();
                     initializeTBox(lang);
 
-                    stats.put(lang3, new StatsModule(lf.getEn()));
+                    stats.put(lang3,new StatsModule(lf.getEn()));
                     filter.put(lang3, createGlossFilter(lang3));
                     models.put(lang3, m);
                 }
@@ -355,41 +354,40 @@ public final class DisambiguateAllTranslationSources {
                 }
             } else {
                 //TODO: Call new code in prod
-                List<String> transClo = computeTranslationClosure(e.getURI(), 3);
+                List<String> transClo = computeTranslationClosure(e,3);
             }
         }
     }
 
-    private String getTranslationLanguage(String uri) {
+    private String getTranslationLanguage(String uri){
         String lang = "";
         Pattern lp = Pattern.compile(".*__tr_(...)_[0-9].*");
         Matcher lm = lp.matcher(uri);
-        if (lm.find()) {
+        if(lm.find()){
             lang = lm.group(1);
         }
         return lang;
     }
 
-    private List<String> computeTranslationClosure(String uri, int degree) {
-        return computeTranslationClosure(uri, degree, this.lang);
+    private List<String> computeTranslationClosure(Resource translation, int degree){
+        return computeTranslationClosure(translation,degree,this.lang);
     }
 
-    private List<String> computeTranslationClosure(String uri, int degree, String topLevelLang) {
-        String currentLang = getTranslationLanguage(uri);
+    private List<String> computeTranslationClosure(Resource translation, int degree, String topLevelLang){
+        String currentLang = getTranslationLanguage(translation.getURI());
         List<String> output = new ArrayList<>();
-        if (degree != 0) {
-            Resource lexEntry = models.get(currentLang).createResource(uri);
+        if(degree!=0 && models.containsKey(currentLang)){
+            String writtenForm = translation.getProperty(DbnaryModel.equivalentTargetProperty).getObject().toString();
             //Find translations pointing back to top level lang
-            StmtIterator trans = models.get(currentLang).listStatements(null, DbnaryModel.isTranslationOf, lexEntry);
-            while (trans.hasNext()) {
-
-                Statement ctransstmt = trans.next();
-                Resource ctrans = ctransstmt.getSubject();
-                Statement l = ctrans.getProperty(DbnaryModel.targetLanguageCodeProperty);
-            }
+            //StmtIterator trans = models.get(currentLang).listStatements(lexEntry, DbnaryModel.isTranslationOf, (RDFNode)null);
+            //while(trans.hasNext()){
+              //  Statement ctransstmt = trans.next();
+                //Resource ctrans =  ctransstmt.getSubject();
+                //Statement l = ctrans.getProperty(DbnaryModel.targetLanguageCodeProperty);
+            //}
 
         }
-        return null;
+        return output;
     }
 
     private boolean connectNumberedSenses(Statement s, Model outModel) {

@@ -3,17 +3,24 @@ package org.getalp.dbnary.experiment;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.wcohen.ss.ScaledLevenstein;
+
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguator;
+import org.getalp.dbnary.experiment.disambiguation.InvalidContextException;
+import org.getalp.dbnary.experiment.disambiguation.InvalidEntryException;
+import org.getalp.dbnary.experiment.disambiguation.SenseNumberBasedTranslationDisambiguationMethod;
+import org.getalp.dbnary.experiment.disambiguation.TverskyBasedTranslationDisambiguationMethod;
 import org.getalp.dbnary.experiment.disambiguation.translations.DisambiguableSense;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationAmbiguity;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationDisambiguator;
+import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
 import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
 import org.getalp.dbnary.experiment.preprocessing.StatsModule;
 import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
@@ -22,51 +29,58 @@ import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 
 public final class DisambiguateTranslationSources {
 
-	private static final String LANGUAGE_OPTION = "l";
-	private static final String DEFAULT_LANGUAGE = "fr";
+	private static final String LANGUAGES_OPTION = "l";
+	private static final String DEFAULT_LANGUAGES = "fra,eng,deu,rus";
 	private static final String RDF_FORMAT_OPTION = "f";
 	private static final String DEFAULT_RDF_FORMAT = "turtle";
 	private static final String STATS_FILE_OPTION = "s";
-	private static final String OUTPUT_FILE_OPTION = "o";
+	private static final String OUTPUT_FILE_SUFFIX_OPTION = "o";
+	private static final String DEFAULT_OUTPUT_FILE_SUFFIX = "_disambiguated_translations.ttl";
+	private static final String CONFIDENCE_FILE_OPTION = "c";
+	private static final String COMPRESS_OPTION = "z";
 
 	private static Options options = null; // Command line op
 
 	static {
 		options = new Options();
 		options.addOption("h", false, "Prints usage and exits. ");
-		options.addOption(LANGUAGE_OPTION, true,
-				"Language (fra, eng, deu, por). " + DEFAULT_LANGUAGE + " by default.");
+		options.addOption(LANGUAGES_OPTION, true,
+				"Language (fra, eng, deu, por). " + DEFAULT_LANGUAGES + " by default.");
 		options.addOption(RDF_FORMAT_OPTION, true, "RDF file format (xmlrdf, turtle, n3, etc.). " + DEFAULT_RDF_FORMAT + " by default.");
 		options.addOption(STATS_FILE_OPTION, true, "if present generate a csv file of the specified name containing statistics about available glosses in translations.");
-		options.addOption(OUTPUT_FILE_OPTION, true, "if present, use the specified value as the filename for the output RDF model containing the computed disambiguated relations.");
+		options.addOption(CONFIDENCE_FILE_OPTION, true, "if present generate a csv file of the specified name containing confidence score of the similarity disambiguation.");
+		options.addOption(OUTPUT_FILE_SUFFIX_OPTION, true, "if present, use the specified value as the filename suffix for the output "
+				+ "RDF model containing the computed disambiguated relations for each language." + DEFAULT_OUTPUT_FILE_SUFFIX + " by default.");
+		options.addOption(COMPRESS_OPTION, false, "if present, compress the ouput with BZip2.");
 	}
 
-	private static Model model;
-	private static Model outputModel;
+//	private static Model model;
+//	private static Model outputModel;
 	private CommandLine cmd = null; // Command Line arguments
-	private Property senseNumProperty;
-
-	{
-		senseNumProperty = DbnaryModel.tBox.getProperty(DbnaryModel.DBNARY + "translationSenseNumber");
-	}
 
 	private Disambiguator disambiguator;
-	private double deltaThreshold;
 	// private Locale language;
-	private String lang;
-	private String NS;
-	private AbstractGlossFilter filter;
+	private String[] languages;
+	// private String NS;
 	private PrintStream statsOutput = null;
 	private StatsModule stats = null;
-	private OutputStream outputModelStream;
 	private String rdfFormat;
 	private SimilarityMeasure similarityMeasure;
+	private PrintStream confidenceOutput;
+	private EvaluationStats evaluator = null;
+	private String outputFileSuffix;
+	private boolean doCompress;
+	private HashMap<String,Model> modelMap;
 
 
 	private DisambiguateTranslationSources() {
@@ -86,21 +100,57 @@ public final class DisambiguateTranslationSources {
 		lld.loadArgs(args);
 
 		lld.doit();
+		
+	}
+
+	private void output(String lang, Model m) {
+		String outputModelFileName = lang + outputFileSuffix;
+		OutputStream outputModelStream;
+
+		try {
+			if (doCompress) {
+				outputModelFileName = outputModelFileName + ".bz2";
+				outputModelStream = new BZip2CompressorOutputStream(new FileOutputStream(outputModelFileName));
+			} else {
+				outputModelStream = new FileOutputStream(outputModelFileName);
+			}
+
+			m.write(outputModelStream, this.rdfFormat);
+			
+		} catch (FileNotFoundException e) {
+			System.err.println("Could not create output stream: " + e.getLocalizedMessage());
+			e.printStackTrace(System.err);
+			return;
+		} catch (IOException e) {
+			System.err.println("IOException while creating output stream: " + e.getLocalizedMessage());
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	private void doit() throws FileNotFoundException {
 		System.err.println("Pre-processing translations.");
-		this.preprocessTranslations(model);
+		
+		for(String lang: languages) {
+			AbstractGlossFilter filter = createGlossFilter(lang);
+			this.preprocessTranslations(filter, lang);
+		}
 
 		if (statsOutput != null) {
+			System.err.println("Writing Stats");
 			stats.displayStats(statsOutput);
 			statsOutput.close();
 		}
-		double deltaT = 0.05;
-		this.setDeltaThreshold(deltaT);
-		System.err.println("Processing translations.");
-		this.processTranslations(model);
-		outputModel.write(outputModelStream, rdfFormat);
+		
+		for(String lang: languages) {
+			System.err.println("Disambiguating " + lang);
+			Model m = ModelFactory.createDefaultModel();
+			m.setNsPrefixes(modelMap.get(lang).getNsPrefixMap());
+
+			this.processTranslations(m, lang);
+			System.err.println("Outputting disambiguation links for " + lang);
+			this.output(lang, m);
+		}
 
 	}
 
@@ -108,7 +158,7 @@ public final class DisambiguateTranslationSources {
 		HelpFormatter formatter = new HelpFormatter();
 		String help =
 				"urlOrFile must point on an RDF model file extracted from wiktionary by DBnary.";
-		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.experiment.DisambiguateTranslationSources [OPTIONS] urlOrFile",
+		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.experiment.DisambiguateTranslationSources [OPTIONS] urlOrFile ...",
 				"With OPTIONS in:", options,
 				help, false);
 	}
@@ -125,25 +175,27 @@ public final class DisambiguateTranslationSources {
 		String[] remainingArgs = cmd.getArgs();
 
 		if (remainingArgs.length == 0) {
-			System.err.println("Missing model file or URL.");
+			System.err.println("Missing model files or URL.");
 			printUsage();
 			System.exit(1);
 		}
+		
 		if (cmd.hasOption("h")) {
 			printUsage();
 			System.exit(0);
 		}
 
+		doCompress = cmd.hasOption(COMPRESS_OPTION);
+		
 		rdfFormat = cmd.getOptionValue(RDF_FORMAT_OPTION, DEFAULT_RDF_FORMAT);
 		rdfFormat = rdfFormat.toUpperCase();
 
-		lang = cmd.getOptionValue(LANGUAGE_OPTION, DEFAULT_LANGUAGE);
-		Lang l = ISO639_3.sharedInstance.getLang(lang);
-		lang = (l.getPart1() != null) ? l.getPart1() : l.getId();
-		String lang3 = l.getId();
-
-		filter = createGlossFilter(lang3);
-
+		languages = cmd.getOptionValue(LANGUAGES_OPTION, DEFAULT_LANGUAGES).split(",");
+		for (int i = 0; i < languages.length; i++) {
+			Lang l = ISO639_3.sharedInstance.getLang(languages[i]);
+			languages[i] = l.getId();
+		}
+		
 		if (cmd.hasOption(STATS_FILE_OPTION)) {
 			String statsFile = cmd.getOptionValue(STATS_FILE_OPTION);
 			try {
@@ -156,61 +208,79 @@ public final class DisambiguateTranslationSources {
 				e.printStackTrace();
 				System.exit(1);
 			}
-		}
-		stats = new StatsModule(l.getEn());
-		
-		try {
-			if (cmd.hasOption(OUTPUT_FILE_OPTION)) {
-				String outputModelFileName = cmd.getOptionValue(OUTPUT_FILE_OPTION);
-				if ("-".equals(outputModelFileName)) {
-					outputModelStream = System.out;
-				} else {
-					outputModelStream = new FileOutputStream(outputModelFileName);
-				}
-			} else {
-				outputModelStream = new FileOutputStream(lang + "_disambiguated_translations.ttl");
-			}
-		} catch (FileNotFoundException e) {
-			System.err.println("Could not create output stream: " + e.getLocalizedMessage());
-			e.printStackTrace(System.err);
-			System.exit(1);
+			stats = new StatsModule();
 		}
 		
-		model = ModelFactory.createDefaultModel();
-		try {
-			if (remainingArgs[0].matches("[^:]{2,6}:.*")) {
-				// It's an URL
-				model.read(remainingArgs[0]);
-
-			} else {
-				// It's a file
-				if (remainingArgs[0].endsWith(".bz2")) {
-					InputStreamReader modelReader = new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(remainingArgs[0])));
-					model.read(modelReader, null, rdfFormat);
+		if (cmd.hasOption(CONFIDENCE_FILE_OPTION)) {
+			String confidenceFile = cmd.getOptionValue(CONFIDENCE_FILE_OPTION);
+			try {
+				confidenceOutput = new PrintStream(confidenceFile, "UTF-8");
+			} catch (FileNotFoundException e) {
+				System.err.println("Cannot output statistics to file " + confidenceFile);
+				System.exit(1);
+			} catch (UnsupportedEncodingException e) {
+				// Should never happen
+				e.printStackTrace();
+				System.exit(1);
+			}
+			evaluator = new EvaluationStats();
+		}
+		
+		outputFileSuffix = cmd.getOptionValue(OUTPUT_FILE_SUFFIX_OPTION, DEFAULT_OUTPUT_FILE_SUFFIX);
+		
+		modelMap = new HashMap<String,Model>();
+		
+		for (String arg: remainingArgs) {
+			Model m = ModelFactory.createDefaultModel();
+			String lang = guessLanguage(arg);
+			modelMap.put(lang, m);
+			try {
+				if (arg.matches("[^:]{2,6}:.*")) {
+					// It's an URL
+					m.read(arg);
 				} else {
-					InputStreamReader modelReader = new InputStreamReader(new FileInputStream(remainingArgs[0]));
-					model.read(modelReader, null, rdfFormat);
+					// It's a file
+					if (arg.endsWith(".bz2")) {
+						InputStreamReader modelReader = new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(arg)));
+						m.read(modelReader, null, rdfFormat);
+					} else {
+						InputStreamReader modelReader = new InputStreamReader(new FileInputStream(arg));
+						m.read(modelReader, null, rdfFormat);
+					}
 				}
+
+			} catch (FileNotFoundException e) {
+				System.err.println("Could not read " + remainingArgs[0]);
+				System.exit(1);
+			} catch (IOException e) {
+				e.printStackTrace(System.err);
 			}
 
-		} catch (FileNotFoundException e) {
-			System.err.println("Could not read " + remainingArgs[0]);
-			System.exit(1);
-		} catch (IOException e) {
-			e.printStackTrace(System.err);
 		}
-
-		initializeTBox(lang3);
-
-		outputModel = ModelFactory.createDefaultModel();
-		outputModel.setNsPrefixes(model.getNsPrefixMap());
-
+		
 	}
 
-	private void initializeTBox(String lang) {
-		NS = DbnaryModel.DBNARY_NS_PREFIX + "/" + lang + "/";
-		senseNumProperty = DbnaryModel.tBox.getProperty(DbnaryModel.DBNARY + "translationSenseNumber");
+	// TODO: adapt for several comma separated languages
+	
+	private String guessLanguage(String arg) {
+		if (arg.matches("[^:]{2,6}:.*")) {
+			// It's an URL
+            try {
+				String fname = new File (new URL(arg).getPath()).getName();
+	            return ISO639_3.sharedInstance.getIdCode(fname.split("_")[0]);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// It's a file
+            String fname = new File(arg).getName();
+            return ISO639_3.sharedInstance.getIdCode(fname.split("_")[0]);
+		}
+		return null;
 	}
+
 
 	private AbstractGlossFilter createGlossFilter(String lang) {
 		AbstractGlossFilter f = null;
@@ -256,9 +326,12 @@ public final class DisambiguateTranslationSources {
 		return f;
 	}
 
-	private void preprocessTranslations(Model m) {
+	private void preprocessTranslations(AbstractGlossFilter filter, String lang) {
 		// Iterate over all translations
-
+		// TODO: adapt stats module for current language
+		if (null != stats) stats.reset(lang);
+		Model m = modelMap.get(lang);
+		
 		StmtIterator translations = m.listStatements((Resource) null, DbnaryModel.isTranslationOf, (RDFNode) null);
 
 		while (translations.hasNext()) {
@@ -267,17 +340,17 @@ public final class DisambiguateTranslationSources {
 			Statement g = e.getProperty(DbnaryModel.glossProperty);
 
 			if (null == g) {
-				stats.registerTranslation(e.getURI(), null);
+				if (null != stats) stats.registerTranslation(e.getURI(), null);
 			} else {
 				StructuredGloss sg = filter.extractGlossStructure(g.getString());
-				stats.registerTranslation(e.getURI(), sg);
+				if (null != stats) stats.registerTranslation(e.getURI(), sg);
 
 				if (null == sg) {
 					// remove gloss from model
 					g.remove();
 				} else {
 					if (null != sg.getSenseNumber()) {
-						g.getModel().add(g.getModel().createLiteralStatement(g.getSubject(), senseNumProperty, sg.getSenseNumber()));
+						g.getModel().add(g.getModel().createLiteralStatement(g.getSubject(), DbnaryModel.senseNumberProperty, sg.getSenseNumber()));
 					}
 					if (null == sg.getGloss()) {
 						// remove gloss from model
@@ -291,126 +364,57 @@ public final class DisambiguateTranslationSources {
 		}
 	}
 
-	private void processTranslations(Model m1) throws FileNotFoundException {
-
-		StmtIterator translations = m1.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
-
+	private void processTranslations(Model outputModel, String lang) throws FileNotFoundException {
+		
+		if (null != evaluator) evaluator.reset(lang);
+		SenseNumberBasedTranslationDisambiguationMethod snumDisamb = new SenseNumberBasedTranslationDisambiguationMethod();
+		TverskyBasedTranslationDisambiguationMethod tverskyDisamb = new TverskyBasedTranslationDisambiguationMethod(.05);
+		
+		Model inputModel = modelMap.get(lang);
+		StmtIterator translations = inputModel.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
+		
 		while (translations.hasNext()) {
 			Statement next = translations.next();
 
-			Resource e = next.getSubject();
-
-			Statement s = e.getProperty(senseNumProperty);
-			Statement g = e.getProperty(DbnaryModel.glossProperty);
-
-			boolean connected = false;
-			if (null != s) {
-				// Process sense number
-				// System.out.println("Avoiding treating " + s.toString());
-				connected = connectNumberedSenses(s, outputModel);
-			}
-			if (!connected && null != g) {
-				String gloss = g.getObject().toString();
-				Ambiguity ambiguity = new TranslationAmbiguity(gloss, e.getLocalName(), deltaThreshold);
-				String uri = g.getSubject().toString();
-				// Compute set of sense + definitions to be chosen among
-				Resource lexicalEntry = next.getObject().asResource();
-				StmtIterator senses = m1.listStatements(lexicalEntry, DbnaryModel.lemonSenseProperty, (RDFNode) null);
-				List<Disambiguable> choices = new ArrayList<>();
-                int senseCounter = 1;
-				while (senses.hasNext()) {
-					Statement nextSense = senses.next();
-					String sstr = nextSense.getObject().toString();
-					sstr = sstr.substring(sstr.indexOf("__ws_"));
-					Statement dRef = nextSense.getProperty(DbnaryModel.lemonDefinitionProperty);
-					Statement dVal = dRef.getProperty(DbnaryModel.lemonValueProperty);
-					String deftext = dVal.getObject().toString();
-					choices.add(new DisambiguableSense(deftext, sstr,senseCounter));
-                    senseCounter++;
-				}
-				disambiguator.disambiguate(ambiguity, choices);
-				
-				Resource sense = outputModel.createResource(uri);
-				for (Disambiguable d : ambiguity.getBestSolutions("FTiLs")) {
-					outputModel.add(outputModel.createStatement(sense, DbnaryModel.isTranslationOf, outputModel.createResource(NS + d.getId())));
-				}
-			}
-		}
-	}
-
-
-	private boolean connectNumberedSenses(Statement s, Model outModel) {
-		boolean connected = false;
-		Resource translation = s.getSubject();
-		Resource lexEntry = translation.getPropertyResourceValue(DbnaryModel.isTranslationOf);
-		String nums = s.getString();
-
-		if (lexEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType)) {
-			ArrayList<String> ns = getSenseNumbers(nums);
-			for (String n : ns) {
-				connected = connected || attachTranslationToNumberedSense(translation, lexEntry, n, outModel);
-			}
-		}
-		return connected;
-	}
-
-	private boolean attachTranslationToNumberedSense(Resource translation, Resource lexEntry, String n,
-			Model outModel) {
-		boolean connected = false;
-		StmtIterator senses = lexEntry.listProperties(DbnaryModel.lemonSenseProperty);
-		while (senses.hasNext()) {
-			Resource sense = senses.next().getResource();
-			Statement senseNumStatement = sense.getProperty(DbnaryModel.senseNumberProperty);
-			if (n.equalsIgnoreCase(senseNumStatement.getString())) {
-				connected = true;
-				outModel.add(outModel.createStatement(translation, DbnaryModel.isTranslationOf, sense));
-			}
-		}
-		return connected;
-	}
-
-	public ArrayList<String> getSenseNumbers(String nums) {
-		ArrayList<String> ns = new ArrayList<String>();
-
-		if (nums.contains(",")) {
-			String[] ni = nums.split(",");
-			for (int i = 0; i < ni.length; i++) {
-				ns.addAll(getSenseNumbers(ni[i]));
-			}
-		} else if (nums.contains("-") || nums.contains("—") || nums.contains("–")) {
-			String[] ni = nums.split("[-—–]");
-			if (ni.length != 2) {
-				System.err.append("Strange split on dash: " + nums);
-			} else {
+			Resource trans = next.getSubject();
+			
+			Resource lexicalEntry = next.getResource();
+			if (lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType)) {
 				try {
-					int s = Integer.parseInt(ni[0].trim());
-					int e = Integer.parseInt(ni[1].trim());
+				Set<Resource> resSenseNum = snumDisamb.selectWordSenses(lexicalEntry, trans);
+				Set<Resource> resSim = null;
 
-					if (e <= s) {
-						System.err.println("end of range is lower than beginning in: " + nums);
-					} else {
-						for (int i = s; i <= e ; i++) {
-							ns.add(Integer.toString(i));
-						}
+				if (null != evaluator || resSenseNum.size() == 0) {
+					// disambiguate by similarity
+					
+					resSim = tverskyDisamb.selectWordSenses(lexicalEntry, trans);
+					// compute confidence if snumdisamb is not empty and confidence is required
+					if (null != evaluator && resSenseNum.size() != 0) {
+						evaluator.registerAnswer(resSenseNum, resSim);
 					}
-				} catch (NumberFormatException e) {
-					System.err.println(e.getLocalizedMessage());
+				}
+				
+				// Register results in output Model
+				Resource translation = outputModel.createResource(trans.getURI());
+				
+				Set<Resource> res = (resSenseNum.isEmpty()) ? resSim : resSenseNum;
+				
+				if (res != null) {
+					for (Resource ws : res) {
+						outputModel.add(outputModel.createStatement(translation, DbnaryModel.isTranslationOf, outputModel.createResource(ws.getURI())));
+					}
+				}
+				
+				} catch (InvalidContextException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvalidEntryException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
-		} else {
-			try {
-				ns.add(nums.trim());
-			}  catch (NumberFormatException e) {
-				System.err.println(e.getLocalizedMessage() + ": " + nums);
-			}
 		}
-		return ns;
 	}
-
-	public void setDeltaThreshold(double deltaThreshold) {
-		this.deltaThreshold = deltaThreshold;
-	}
-
 
 }
 

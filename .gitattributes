@@ -288,7 +288,12 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/DisambiguateTrans
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/LLD2014Main.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Ambiguity.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Disambiguable.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/DisambiguationMethod.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Disambiguator.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/InvalidContextException.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/InvalidEntryException.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/SenseNumberBasedTranslationDisambiguationMethod.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/TverskyBasedTranslationDisambiguationMethod.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/DisambiguableSense.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/MFSTranslationDisambiguator.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/TranslationAmbiguity.java -text

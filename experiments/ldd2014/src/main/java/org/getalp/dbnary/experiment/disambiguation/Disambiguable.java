@@ -6,7 +6,7 @@ public interface Disambiguable {
     public double getScore();
 
     public String getId();
-    public int getNum();
+    public String getNum();
     public void setScore(final double score);
 
     public boolean hasBeenProcessed();

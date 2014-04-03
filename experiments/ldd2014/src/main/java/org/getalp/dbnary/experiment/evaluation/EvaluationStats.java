@@ -1,52 +1,81 @@
 package org.getalp.dbnary.experiment.evaluation;
 
+import java.io.PrintStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 public class EvaluationStats {
-    private int correct;
-    private int expected;
-    private int provided;
+	
+	private class Stat {
+		private int sumPrec;
+		private int sumRecall;
+		private int nbReq;
 
-    {
-        correct = 0;
-        expected = 0;
-        provided = 0;
-    }
+		{
+			sumPrec = 0;
+			sumRecall = 0;
+			nbReq = 0;
+		}
+	
+		public double getPrecision() {
+	        if(0 == nbReq){
+	            return 0;
+	        } else {
+	            return (sumPrec) / (nbReq);
+	        }
+	    }
 
-    public double getPrecision() {
-        if(0 == provided){
-            return 0;
-        } else {
-            return (correct) / (provided);
-        }
-    }
+	    public double getRecall() {
+	        if(0 == nbReq){
+	            return 0;
+	        } else {
+	            return (sumRecall) / (nbReq);
+	        }
+	    }
 
-    public double getRecall() {
-        if(0 == provided){
-            return 0;
-        } else {
-            return (correct) / (expected);
-        }
-    }
+	    public double getF1Score() {
+	        if(0==getPrecision() + getRecall()){
+	            return 0;
+	        } else {
+	            return (2.0 * getPrecision() * getRecall()) / (getPrecision() + getRecall());
+	        }
+	    }
 
-    public double getF1Score() {
-        if(0==getPrecision() + getRecall()){
-            return 0;
-        } else {
-            return (2.0 * getPrecision() * getRecall()) / (getPrecision() + getRecall());
-        }
-    }
+	    public <T> void registerAnswer(Collection<T> expected, Collection<T> provided) {
+	        System.err.println("Registered "+expected+"|"+provided);
+	        double numExp = expected.size();
+	        double numRet = provided.size();
+	        double numRel = 0;
+	        for (T c : provided) {
+				if (expected.contains(c)) numRel++;
+			}
+	        
+	        sumRecall += numRel/numExp;
+	        sumPrec += numRel/numRet;
+	        nbReq++;
+	    }
 
-    public <T> void registerAnswer(Comparable<T> exp, Comparable<T> prov) {
-        System.err.println("Registered "+exp+"|"+prov);
-        if (exp != null) {
-            expected++;
-        }
-        if (prov != null) {
-            provided++;
-        }
-        if(exp != null && prov != null){
-            if(exp.equals(prov)){
-                correct++;
-            }
-        }
+	}
+
+
+	private Map<String,Stat> confidenceMap = new HashMap<String, Stat>();
+	private Stat currentStat;
+	
+    
+	public void reset(String lang) {
+		confidenceMap.put(lang, new Stat());
+		currentStat = confidenceMap.get(lang);
+	}
+	
+    public <T> void registerAnswer(Collection<T> expected, Collection<T> provided) {
+        currentStat.registerAnswer(expected, provided);
     }
+    
+	public void printConfidenceStats(PrintStream out) {
+		// TODO
+		
+	}
 }

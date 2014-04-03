@@ -3,6 +3,7 @@ package org.getalp.dbnary.experiment;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.wcohen.ss.ScaledLevenstein;
+
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.getalp.blexisma.api.ISO639_3;
@@ -312,9 +313,9 @@ public final class DisambiguateAllTranslationSources {
         }
     }
 
-    private void processGlossedTranslations(Model m1, String lang) throws FileNotFoundException {
+    private void processGlossedTranslations(Model inputModel, String lang) throws FileNotFoundException {
 
-        StmtIterator translations = m1.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
+        StmtIterator translations = inputModel.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
 
         while (translations.hasNext()) {
             Statement next = translations.next();
@@ -340,17 +341,18 @@ public final class DisambiguateAllTranslationSources {
             List<Disambiguable> choices = new ArrayList<>();
 
             //Retrieving senses for the current lexical entry
-            StmtIterator senses = m1.listStatements(lexicalEntry, DbnaryModel.lemonSenseProperty, (RDFNode) null);
-            int senseCounter = 1;
+            StmtIterator senses = inputModel.listStatements(lexicalEntry, DbnaryModel.lemonSenseProperty, (RDFNode) null);
             while (senses.hasNext()) {
-                Statement nextSense = senses.next();
-                String sstr = nextSense.getObject().toString();
-                sstr = sstr.substring(sstr.indexOf("__ws_"));
-                Statement dRef = nextSense.getProperty(DbnaryModel.lemonDefinitionProperty);
-                Statement dVal = dRef.getProperty(DbnaryModel.lemonValueProperty);
-                String deftext = dVal.getObject().toString();
-                choices.add(new DisambiguableSense(deftext, sstr,senseCounter));
-                senseCounter++;
+				Statement nextSense = senses.next();
+				Resource wordsense = nextSense.getResource();
+				String wsUri = wordsense.getURI();
+				Statement dRef = wordsense.getProperty(DbnaryModel.lemonDefinitionProperty);
+				Statement dVal = dRef.getProperty(DbnaryModel.lemonValueProperty);
+				String deftext = dVal.getObject().toString();
+				Resource dSenseNum = wordsense.getPropertyResourceValue(DbnaryModel.senseNumberProperty);
+				String senseNum = (dSenseNum == null) ? null : dSenseNum.asLiteral().getLexicalForm();
+				
+				choices.add(new DisambiguableSense(deftext, wsUri, senseNum));
             }
 
             //If we do not need to evaluate, we will only operate on nodes that have not already been connected
@@ -366,12 +368,12 @@ public final class DisambiguateAllTranslationSources {
 
                 disambiguator.disambiguate(ambiguity, choices);
 
-                Resource sense = m1.createResource(uri);
+                Resource sense = outputModel.createResource(uri);
                 System.out.println("Glossed | solutions="+ambiguity.getDisambiguations("FTiLs").size());
 
                 for (Disambiguable d : ambiguity.getBestSolutions("FTiLs")) {
                     if(s==null) {
-                        m1.add(m1.createStatement(sense, DbnaryModel.isTranslationOf, m1.createResource(langNS.get(lang) + d.getId())));
+                        inputModel.add(inputModel.createStatement(sense, DbnaryModel.isTranslationOf, inputModel.createResource(langNS.get(lang) + d.getId())));
                         System.out.println("Not Connected ");
                     } else{
                         String nums = s.getString();

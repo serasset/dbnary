@@ -317,6 +317,7 @@ public final class DisambiguateTranslationSources {
 				Resource lexicalEntry = next.getObject().asResource();
 				StmtIterator senses = m1.listStatements(lexicalEntry, DbnaryModel.lemonSenseProperty, (RDFNode) null);
 				List<Disambiguable> choices = new ArrayList<>();
+                int senseCounter = 1;
 				while (senses.hasNext()) {
 					Statement nextSense = senses.next();
 					String sstr = nextSense.getObject().toString();
@@ -324,7 +325,8 @@ public final class DisambiguateTranslationSources {
 					Statement dRef = nextSense.getProperty(DbnaryModel.lemonDefinitionProperty);
 					Statement dVal = dRef.getProperty(DbnaryModel.lemonValueProperty);
 					String deftext = dVal.getObject().toString();
-					choices.add(new DisambiguableSense(deftext, sstr));
+					choices.add(new DisambiguableSense(deftext, sstr,senseCounter));
+                    senseCounter++;
 				}
 				disambiguator.disambiguate(ambiguity, choices);
 				

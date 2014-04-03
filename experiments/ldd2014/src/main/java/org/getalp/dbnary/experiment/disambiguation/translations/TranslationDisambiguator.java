@@ -34,7 +34,7 @@ public class TranslationDisambiguator implements Disambiguator {
         for (String m : measures.keySet()) {
             for (Disambiguable d : choices) {
                 double sim = measures.get(m).compute(d.getGloss(), a.getGloss());
-                Disambiguable newD = new DisambiguableSense(d.getGloss(), d.getId());
+                Disambiguable newD = new DisambiguableSense(d.getGloss(), d.getId(),d.getNum());
                 newD.setScore(sim);
                 a.addDisambiguation(m, newD);
             }

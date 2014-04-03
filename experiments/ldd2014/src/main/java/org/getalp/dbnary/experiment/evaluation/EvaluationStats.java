@@ -2,30 +2,41 @@ package org.getalp.dbnary.experiment.evaluation;
 
 public class EvaluationStats {
     private int correct;
-    private int incorrect;
     private int expected;
     private int provided;
 
     {
         correct = 0;
-        incorrect = 0;
         expected = 0;
         provided = 0;
     }
 
     public double getPrecision() {
-        return (correct)/(provided);
+        if(0 == provided){
+            return 0;
+        } else {
+            return (correct) / (provided);
+        }
     }
 
     public double getRecall() {
-        return (correct)/(expected);
+        if(0 == provided){
+            return 0;
+        } else {
+            return (correct) / (expected);
+        }
     }
 
     public double getF1Score() {
-        return (2.0 * getPrecision() * getRecall()) / (getPrecision() + getRecall());
+        if(0==getPrecision() + getRecall()){
+            return 0;
+        } else {
+            return (2.0 * getPrecision() * getRecall()) / (getPrecision() + getRecall());
+        }
     }
 
-    private <T> void registerAnswer(Comparable<T> exp, Comparable<T> prov) {
+    public <T> void registerAnswer(Comparable<T> exp, Comparable<T> prov) {
+        System.err.println("Registered "+exp+"|"+prov);
         if (exp != null) {
             expected++;
         }
@@ -35,8 +46,6 @@ public class EvaluationStats {
         if(exp != null && prov != null){
             if(exp.equals(prov)){
                 correct++;
-            } else {
-                incorrect++;
             }
         }
     }

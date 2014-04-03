@@ -16,10 +16,13 @@ public class DisambiguableSense implements Disambiguable {
         processed = false;
     }
 
+    private int number;
 
-    public DisambiguableSense(final String gloss, final String id) {
+
+    public DisambiguableSense(final String gloss, final String id, final int number) {
         this.gloss = gloss;
         this.id = id;
+        this.number = number;
     }
 
     /*public DisambiguableSense(final LexicalSense ls) {
@@ -50,6 +53,11 @@ public class DisambiguableSense implements Disambiguable {
 
     public String getId() {
         return id;
+    }
+
+    @Override
+    public int getNum() {
+        return number;
     }
 
     @Override

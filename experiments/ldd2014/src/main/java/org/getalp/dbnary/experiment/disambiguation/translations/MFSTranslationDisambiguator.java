@@ -39,7 +39,7 @@ public class MFSTranslationDisambiguator implements Disambiguator {
             randomBaseline += 1.0 / ((double) choices.size());
             numberWords++;
             Disambiguable d = choices.get(0);
-            Disambiguable newD = new DisambiguableSense(d.getGloss(), d.getId());
+            Disambiguable newD = new DisambiguableSense(d.getGloss(), d.getId(),d.getNum());
             newD.setScore(1.0);
             a.addDisambiguation("MFS", newD);
         }

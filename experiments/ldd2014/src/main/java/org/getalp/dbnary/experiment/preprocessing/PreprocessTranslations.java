@@ -4,7 +4,7 @@ import com.hp.hpl.jena.rdf.model.*;
 import org.apache.commons.cli.*;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
-import org.getalp.dbnary.experiment.DbnaryModel;
+import org.getalp.dbnary.DbnaryModel;
 
 import java.lang.reflect.InvocationTargetException;
 

@@ -74,6 +74,7 @@ public final class DisambiguateAllTranslationSources {
     private OutputStream outputModelStream;
     private String rdfFormat;
     private SimilarityMeasure similarityMeasure;
+    private boolean evaluate;
 
 
     private DisambiguateAllTranslationSources() {
@@ -84,7 +85,8 @@ public final class DisambiguateAllTranslationSources {
         String mstr = String.format("_%f_%f", w1, w2);
 
         similarityMeasure = new TverskiIndex(w1, w2, true, false, new ScaledLevenstein());
-        disambiguator.registerSimilarity("FTiLs" + mstr, similarityMeasure);
+        disambiguator.registerSimilarity("FTiLs", similarityMeasure);
+        evaluate = true;
     }
 
     public static void main(String[] args) throws IOException {
@@ -93,6 +95,7 @@ public final class DisambiguateAllTranslationSources {
         lld.loadArgs(args);
 
         lld.preprocessAndDisambiguateGlossedTraslationSources();
+        System.err.println(lld.getEvalStats().getF1Score());
     }
 
     public static void printUsage() {
@@ -324,38 +327,76 @@ public final class DisambiguateAllTranslationSources {
             boolean connected = false;
             if (null != s) {
                 // Process sense number
-                // System.out.println("Avoiding treating " + s.toString());
+                //System.out.println("Avoiding treating " + s.toString());
                 connected = connectNumberedSenses(s, outputModel);
             }
 
             Resource lexicalEntry = next.getObject().asResource();
+            Statement stmtPos = lexicalEntry.getProperty(DbnaryModel.posProperty);
+            String pos = null;
+            if(stmtPos!=null){
+                pos = stmtPos.getObject().toString();
+            }
+            List<Disambiguable> choices = new ArrayList<>();
 
-            if (!connected && null != g) {
+            //Retrieving senses for the current lexical entry
+            StmtIterator senses = m1.listStatements(lexicalEntry, DbnaryModel.lemonSenseProperty, (RDFNode) null);
+            int senseCounter = 1;
+            while (senses.hasNext()) {
+                Statement nextSense = senses.next();
+                String sstr = nextSense.getObject().toString();
+                sstr = sstr.substring(sstr.indexOf("__ws_"));
+                Statement dRef = nextSense.getProperty(DbnaryModel.lemonDefinitionProperty);
+                Statement dVal = dRef.getProperty(DbnaryModel.lemonValueProperty);
+                String deftext = dVal.getObject().toString();
+                choices.add(new DisambiguableSense(deftext, sstr,senseCounter));
+                senseCounter++;
+            }
+
+            //If we do not need to evaluate, we will only operate on nodes that have not already been connected
+            // (i.e. there was no sense number in the translation gloss)
+            //If we need to evaluate, we will also consider nodes that are already connected so as to evaluate
+
+            //When g has a gloss, we can apply the fuzzy overlap measure
+            if (null != g) {
                 String uri = g.getSubject().toString();
                 String gloss = g.getObject().toString();
                 Ambiguity ambiguity = new TranslationAmbiguity(gloss, e.getLocalName(), deltaThreshold);
                 // Compute set of sense + definitions to be chosen among
 
-                StmtIterator senses = m1.listStatements(lexicalEntry, DbnaryModel.lemonSenseProperty, (RDFNode) null);
-                List<Disambiguable> choices = new ArrayList<>();
-                while (senses.hasNext()) {
-                    Statement nextSense = senses.next();
-                    String sstr = nextSense.getObject().toString();
-                    sstr = sstr.substring(sstr.indexOf("__ws_"));
-                    Statement dRef = nextSense.getProperty(DbnaryModel.lemonDefinitionProperty);
-                    Statement dVal = dRef.getProperty(DbnaryModel.lemonValueProperty);
-                    String deftext = dVal.getObject().toString();
-                    choices.add(new DisambiguableSense(deftext, sstr));
-                }
                 disambiguator.disambiguate(ambiguity, choices);
 
                 Resource sense = m1.createResource(uri);
+                System.out.println("Glossed | solutions="+ambiguity.getDisambiguations("FTiLs").size());
+
                 for (Disambiguable d : ambiguity.getBestSolutions("FTiLs")) {
-                    m1.add(m1.createStatement(sense, DbnaryModel.isTranslationOf, m1.createResource(langNS.get(lang) + d.getId())));
+                    if(s==null) {
+                        m1.add(m1.createStatement(sense, DbnaryModel.isTranslationOf, m1.createResource(langNS.get(lang) + d.getId())));
+                        System.out.println("Not Connected ");
+                    } else{
+                        String nums = s.getString();
+                        ArrayList<String> ns = getSenseNumbers(nums);
+                        System.out.println("Connected "+nums);
+                        for(String sn: ns) {
+                            evalStats.registerAnswer(Integer.valueOf(sn),d.getNum());
+                        }
+                    }
                 }
-            } else {
+            }
+            //When g has no gloss we can apply the structural similarity measure
+            if(g==null && (evaluate || (!evaluate && !connected))){
                 //TODO: Call new code in prod
-                List<String> transClo = computeTranslationClosure(e,3);
+//                System.err.println("w: "+lexicalEntry.toString()+"#"+pos);
+                //List<String> transClo = computeTranslationClosure(e,pos,3);
+
+                //Here we only evaluate
+                if(s!=null){
+                    String nums = s.getString();
+                    ArrayList<String> ns = getSenseNumbers(nums);
+                    //System.out.println("Connected "+nums);
+                } else { // We need to add the disambiguated translation to the output model
+                    //System.out.println("Not Connected ");
+                }
             }
         }
     }
@@ -370,30 +411,49 @@ public final class DisambiguateAllTranslationSources {
         return lang;
     }
 
-    private List<String> computeTranslationClosure(Resource translation, int degree){
-        return computeTranslationClosure(translation,degree,this.lang);
+    private List<String> computeTranslationClosure(Resource translation, String pos, int degree){
+        return computeTranslationClosure(translation,pos,degree,this.lang);
     }
 
-    private List<String> computeTranslationClosure(Resource translation, int degree, String topLevelLang){
+    private List<String> computeTranslationClosure(Resource translation,String pos, int degree, String topLevelLang){
         String currentLang = getTranslationLanguage(translation.getURI());
         List<String> output = new ArrayList<>();
         if(degree!=0 && models.containsKey(currentLang)){
             String writtenForm = translation.getProperty(DbnaryModel.equivalentTargetProperty).getObject().toString();
-            String uri = DbnaryModel.uriEncode(writtenForm);
+
+            String uri = DbnaryModel.DBNARY_NS_PREFIX+"/"+currentLang+"/"+DbnaryModel.uriEncode(writtenForm).split("@")[0];
+            //System.out.println(uri);
             Resource r = models.get(currentLang).getResource(uri);
-            //Find translations pointing back to top level lang
-            StmtIterator trans = models.get(currentLang).listStatements(r, DbnaryModel.isTranslationOf, (RDFNode) null);
-            while (trans.hasNext()) {
-                Statement ctransstmt = trans.next();
-                Resource ctrans = ctransstmt.getSubject();
-                Statement l = ctrans.getProperty(DbnaryModel.targetLanguageCodeProperty);
+//            System.out.println(r.getURI());
+            StmtIterator lexEntries = models.get(currentLang).listStatements(r, DbnaryModel.refersTo, (RDFNode) null);
+            while(lexEntries.hasNext()) {
+                Statement lnext = lexEntries.next();
+                Statement stmtPos = lnext.getObject().asResource().getProperty(DbnaryModel.posProperty);
+                String foreignpos = null;
+                if(stmtPos!=null){
+                    foreignpos = stmtPos.getObject().toString();
+                }
+
+
+                if(pos==null || (pos!=null && foreignpos!=null && pos.equals(foreignpos))) {
+                    RDFNode lexEntryNode = lnext.getObject();
+//                    System.out.println("\t ->" + lexEntryNode);
+                    //Find translations pointing back to top level lang
+                    StmtIterator trans = models.get(currentLang).listStatements(lexEntryNode.asResource(), DbnaryModel.isTranslationOf, (RDFNode) null);
+                    while (trans.hasNext()) {
+                        Statement ctransstmt = trans.next();
+                        Resource ctrans = ctransstmt.getSubject();
+                        System.out.println(ctrans.getURI());
+                        Statement l = ctrans.getProperty(DbnaryModel.targetLanguageCodeProperty);
+                    }
+                }
             }
 
         }
         return output;
     }
 
-    private boolean connectNumberedSenses(Statement s, Model outModel) {
+    private boolean connectNumberedSenses(final Statement s, Model outModel) {
         boolean connected = false;
         Resource translation = s.getSubject();
         Resource lexEntry = translation.getPropertyResourceValue(DbnaryModel.isTranslationOf);
@@ -465,6 +525,8 @@ public final class DisambiguateAllTranslationSources {
         this.deltaThreshold = deltaThreshold;
     }
 
-
+    public EvaluationStats getEvalStats() {
+        return evalStats;
+    }
 }
 

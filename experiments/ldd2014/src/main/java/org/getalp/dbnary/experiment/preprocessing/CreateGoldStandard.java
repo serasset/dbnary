@@ -15,8 +15,6 @@ import org.getalp.blexisma.api.ISO639_3;
 
 import org.getalp.blexisma.api.ISO639_3.Lang;
 
-import org.getalp.dbnary.experiment.DbnaryModel;
-
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -24,6 +22,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import org.getalp.dbnary.DbnaryModel;
 
 public class CreateGoldStandard {
 	

@@ -14,15 +14,25 @@ public class DbnaryWikiModel extends WikiModel {
 	// 	ignoredTemplates.add("Incorrect");
 	// }
 	
-	WiktionaryIndex wi = null;
+	protected WiktionaryIndex wi = null;
+	protected String templateNamespace = null;
 	
 	
 	public DbnaryWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
-		this((WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+		this((WiktionaryIndex) null, locale, null, imageBaseURL, linkBaseURL);
+	}
+	
+	public DbnaryWikiModel(Locale locale, String templateNamespace, String imageBaseURL, String linkBaseURL) {
+		this((WiktionaryIndex) null, locale, templateNamespace, imageBaseURL, linkBaseURL);
 	}
 	
 	public DbnaryWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+		this(wi, locale, null, imageBaseURL, linkBaseURL);
+	}
+
+	public DbnaryWikiModel(WiktionaryIndex wi, Locale locale, String templateNamespace, String imageBaseURL, String linkBaseURL) {
 		super(Configuration.DEFAULT_CONFIGURATION, locale, imageBaseURL, linkBaseURL);
+		this.templateNamespace = templateNamespace;
 		this.wi = wi;
 	}
 
@@ -86,6 +96,17 @@ public class DbnaryWikiModel extends WikiModel {
 		super.setUp();
 	}
 */
+	@Override
+	public String getTemplateNamespace() {
+		if (null != this.templateNamespace) return this.templateNamespace;
+		return super.get2ndTemplateNamespace();
+	}
+
+	@Override
+	public boolean isTemplateNamespace(String namespace) {
+		if (null != this.templateNamespace) return this.templateNamespace.equalsIgnoreCase(templateNamespace);
+		return super.isTemplateNamespace(namespace);
+	}
 	
 	@Override
     public String getRawWikiContent(String namespace, String articleName, Map<String, String> map) {
@@ -97,11 +118,6 @@ public class DbnaryWikiModel extends WikiModel {
             // replace SPACES with underscore('_') and first character as uppercase
             String name = encodeTitleToUrl(articleName, true);
  
-			// if (ignoredTemplates.contains(name)) return "";
-            
-            // System.err.println("getRawWikiContent for: " + namespace + ":" + articleName);
-            // System.err.println("Map is: " + map.toString());
-
             if (isTemplateNamespace(namespace)) {
             	if (null != wi)
                     return wi.getTextOfPage(namespace+":"+articleName);

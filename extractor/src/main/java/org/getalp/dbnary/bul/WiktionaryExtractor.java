@@ -5,6 +5,9 @@ package org.getalp.dbnary.bul;
 
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -14,6 +17,8 @@ import java.util.regex.Pattern;
  * @author serasset
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
+	
+	private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
 
     protected final static String languageSectionPatternString = "(\\{\\{\\-..\\-\\}\\})";
@@ -40,13 +45,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected boolean isCurrentlyExtracting = false;
     private int bulgarianBlockStart = -1;
 
-    private boolean isCorrectPOS;
+   //  private boolean isCorrectPOS;
 
     public WiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
     }
 
-    public boolean isCurrentlyExtracting() {
+    
+
+
+	public boolean isCurrentlyExtracting() {
         return isCurrentlyExtracting;
     }
 
@@ -71,6 +79,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         int bulgarianSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
         extractBulgarianData(bulgarianSectionStartOffset, bulgarianSectionEndOffset);
+        
     }
 
     private boolean isBulgarianLanguageHeader(Matcher m) {
@@ -104,11 +113,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void gotoBulgarianBlock(Matcher m) {
         state = BULGARIANBLOCK;
         bulgarianBlockStart = m.start();
-        isCorrectPOS = false;
     }
 
     private void leaveBulgarianBlock(Matcher m) {
-        isCorrectPOS = extractMorpho(bulgarianBlockStart, computeRegionEnd(bulgarianBlockStart, m));
+    	extractMorpho(bulgarianBlockStart, computeRegionEnd(bulgarianBlockStart, m));
         bulgarianBlockStart = -1;
         state = NODATA;
     }
@@ -131,7 +139,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                         gotoBulgarianBlock(m);
                     } else {
                         leaveBulgarianBlock(m);
-                        if (isCorrectPOS) gotoNoData(m);
+                        // if (isCorrectPOS) 
+                        	gotoNoData(m);
                     }
                     break;
                 default:
@@ -151,9 +160,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         wdh.finalizeEntryExtraction();
     }
 
-    private boolean extractMorpho(int startOffset, int endOffset) {
+    private void extractMorpho(int startOffset, int endOffset) {
         BulgarianWikiModel dbnmodel = new BulgarianWikiModel(this.wdh, this.wi, new Locale("bg"), "/${image}", "/${title}");
-        return dbnmodel.parseBulgarianBlock(pageContent.substring(startOffset, endOffset));
+        dbnmodel.parseBulgarianBlock(pageContent.substring(startOffset, endOffset));
+        if (log.isDebugEnabled()) {
+        	dbnmodel.displayUsedTemplates();
+        }
     }
 
 }

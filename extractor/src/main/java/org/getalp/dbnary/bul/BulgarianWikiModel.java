@@ -1,9 +1,13 @@
 package org.getalp.dbnary.bul;
 
 import info.bliki.wiki.filter.WikipediaParser;
+
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.wiki.WikiPatterns;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -11,6 +15,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BulgarianWikiModel extends DbnaryWikiModel {
+
+	private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
     protected final static Set<String> bulgarianPOS = new TreeSet<String>();
     protected final static HashMap<String, String> nymMarkerToNymName;
@@ -61,6 +67,9 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
     private WiktionaryDataHandler delegate;
     private boolean hasAPOS = false;
 
+	private DefinitionsWikiModel expander;
+	Set<String> templates = null;
+
     public BulgarianWikiModel(WiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
         this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
     }
@@ -68,6 +77,8 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
     public BulgarianWikiModel(WiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
         super(wi, locale, imageBaseURL, linkBaseURL);
         this.delegate = we;
+        if (log.isDebugEnabled()) templates = new HashSet<String>();
+        this.expander = new DefinitionsWikiModel(wi, this.fLocale, "Шаблон", this.getImageBaseURL(), this.getWikiBaseURL(), templates);
     }
 
     public boolean parseBulgarianBlock(String block) {
@@ -92,10 +103,8 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
             delegate.addPartOfSpeech(pos);
 
             for (String section : parameterMap.keySet()) {
-                if (section.contains("ЗНАЧЕНИЕ")) {
-                    String def = parameterMap.get(section).replace("# ", "");
-                    def = def.replace("[0-9]+\\.", "").trim();
-                    delegate.registerNewDefinition(def);
+                if (section.contains("ЗНАЧЕНИЕ")) {	
+                	extractDefinitions(parameterMap.get(section));
                 } else if (section.contains("ПРЕВОД")) {
                     String sectionContent = parameterMap.get(section).replaceAll("\\[\\[:[^:]+:[^\\|]*\\|\\(?[^\\)]+\\)?\\]\\]", "");
                     Matcher langTranslations = translationPattern.matcher(sectionContent);
@@ -146,7 +155,17 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
         }
     }
 
-    private String getPOS(String templateName) {
+    private void extractDefinitions(String defSection) {
+    	String protectedDefs = defSection.replaceAll("(?m)^(#{1,2})", "__$1__");
+    	String def = expander.expandAll(protectedDefs);
+    	def = def.replaceAll("(?m)^__(#{1,2})__", "$1");
+    	Matcher definitionMatcher = WikiPatterns.definitionPattern.matcher(def);
+        while (definitionMatcher.find()) {
+            delegate.registerNewDefinition(definitionMatcher.group(1));
+        }
+	}
+
+	private String getPOS(String templateName) {
         for (String p : bulgarianPOS) {
             if (templateName.startsWith(p)) return p;
         }
@@ -219,4 +238,8 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
         }
     }
 
+    public void displayUsedTemplates() {
+    	if (templates != null && templates.size() > 0)
+    		log.debug("{}: {}", this.delegate.currentLexEntry(), templates.toString());
+    }
 }

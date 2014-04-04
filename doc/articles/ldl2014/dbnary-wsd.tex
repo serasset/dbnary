@@ -14,7 +14,7 @@
 
 \address{ LIG-GETALP, Univ Grenoble Alpes\\
                BP 53 – 38051 Grenoble cedex 9 \\
-               firstname.lastname@imag.fr\\}
+               \texttt{firstname.lastname@imag.fr}\\}
 
 
 \abstract{ 
@@ -73,7 +73,7 @@ As such, we chose to use a simple string distance measure for the approximate st
 
 \section{The DBnary Dataset}
 
-DBnary is a Lexical Linked Open Dataset extracted from 10 Wiktionary language editions (English, Finnish, French, German, Greek, Italian, Japanese, Portuguese, Russian and Turkish). It is available on-line at \url{http://kaiko.getalp.org/about-DBnary}. DBnary currently contains 35+M triples. This number is steadily growing as the dataset evolves in parallel with the original Wiktionary data. Indeed, the dataset is automatically updated as soon as Wikimedia releases new Wiktionary dumps, i.e. every 10-15 days per language edition. 
+DBnary is a Lexical Linked Open Dataset extracted from 10 Wiktionary language editions (English, Finnish, French, German, Greek, Italian, Japanese, Portuguese, Russian and Turkish). It is available on-line at \url{http://kaiko.getalp.org/about-dbnary}. DBnary currently contains 35+M triples. This number is steadily growing as the dataset evolves in parallel with the original Wiktionary data. Indeed, the dataset is automatically updated as soon as Wikimedia releases new Wiktionary dumps, i.e. every 10-15 days per language edition. 
 
 DBnary is structured according the LEMON ontology for lexical linked data \cite{McCrae2012}. Table \ref{lemon-elts} shows the number of Lexical Elements, as defined in the LEMON ontologies, for the different extracted languages. 
 
@@ -354,9 +354,9 @@ We can see that for all three languages we achieve a good performance compared t
 
 \begin{figure}
 \centering
-\includegraphics[width=.65\columnwidth]{french}
-\includegraphics[width=.65\columnwidth]{portuguese}
-\includegraphics[width=.65\columnwidth]{finnish}
+\includegraphics[width=.55\columnwidth]{french}
+\includegraphics[width=.55\columnwidth]{portuguese}
+\includegraphics[width=.55\columnwidth]{finnish}
 \caption{Graphical representation of the F1 score against delta for our measure and other Level 2 Measures.}
 \label{fig.2}
 \end{figure}
@@ -381,6 +381,10 @@ Then, we compared the results and concluded that our method is viable for the ta
 
 For translation relations without glosses, the disambiguation process is more complex and is part of the Future Work that we plan on carrying out.
 
+\section{Acknowledgements}
+
+This work was conducted as a part of the CHIST-ERA CAMOMILE project,
+which was funded by the ANR (Agence Nationale de la Recherche, France).
 %\nocite{*}
 
 \bibliographystyle{lrec2006}

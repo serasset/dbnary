@@ -44,11 +44,11 @@ public class TverskyBasedTranslationDisambiguationMethod implements
 		if (context instanceof Resource) {
 			Resource trans = (Resource) context;
 			if (! trans.hasProperty(RDF.type, DbnaryModel.translationType)) throw new InvalidContextException("Expecting a DBnary Translation Resource.");
-						
-			String gloss = trans.getProperty(DbnaryModel.glossProperty).getString();
-			
-			
-			if (null != gloss) {
+
+            Statement glossStmt = trans.getProperty(DbnaryModel.glossProperty);
+
+			if (null != glossStmt) {
+                String gloss = glossStmt.getString();
 				ArrayList<WeigthedSense> weightedList = new ArrayList<WeigthedSense>();
 
 				// get a list of wordsenses, sorted by decreasing similarity.

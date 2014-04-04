@@ -331,7 +331,7 @@ public final class DisambiguateTranslationSources {
 		// TODO: adapt stats module for current language
 		if (null != stats) stats.reset(lang);
 		Model m = modelMap.get(lang);
-		
+
 		StmtIterator translations = m.listStatements((Resource) null, DbnaryModel.isTranslationOf, (RDFNode) null);
 
 		while (translations.hasNext()) {

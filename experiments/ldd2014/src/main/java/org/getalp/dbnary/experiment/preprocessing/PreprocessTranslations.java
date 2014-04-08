@@ -91,7 +91,7 @@ public class PreprocessTranslations {
         }
 
         initializeTBox(language);
-        stats = new StatsModule(langName);
+        //stats = new StatsModule(langName);
         filter = createGlossFilter(language);
 
         if (null == filter) {

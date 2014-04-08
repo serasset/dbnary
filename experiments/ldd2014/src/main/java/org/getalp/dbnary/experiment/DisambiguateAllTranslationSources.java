@@ -96,7 +96,7 @@ public final class DisambiguateAllTranslationSources {
         lld.loadArgs(args);
 
         lld.preprocessAndDisambiguateGlossedTraslationSources();
-        System.err.println(lld.getEvalStats().getF1Score());
+       // System.err.println(lld.getEvalStats().getF1Score());
     }
 
     public static void printUsage() {
@@ -211,7 +211,7 @@ public final class DisambiguateAllTranslationSources {
                     String lang3 = lf.getId();
                     initializeTBox(lang);
 
-                    stats.put(lang3,new StatsModule(lf.getEn()));
+                    //stats.put(lang3,new StatsModule(lf.getEn()));
                     filter.put(lang3, createGlossFilter(lang3));
                     models.put(lang3, m);
                 }
@@ -380,7 +380,7 @@ public final class DisambiguateAllTranslationSources {
                         ArrayList<String> ns = getSenseNumbers(nums);
                         System.out.println("Connected "+nums);
                         for(String sn: ns) {
-                            evalStats.registerAnswer(Integer.valueOf(sn),d.getNum());
+                        //    evalStats.registerAnswer(Integer.valueOf(sn),d.getNum());
                         }
                     }
                 }

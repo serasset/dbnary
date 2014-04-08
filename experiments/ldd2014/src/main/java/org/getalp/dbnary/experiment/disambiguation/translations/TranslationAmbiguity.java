@@ -98,7 +98,7 @@ public class TranslationAmbiguity implements Ambiguity {
                     bestSense = id;
                 }
             }
-            voteResult = new DisambiguableSense("", bestSense,1);
+            //voteResult = new DisambiguableSense("", bestSense,1);
             voteResult.setScore(bestCount);
         }
         return voteResult;

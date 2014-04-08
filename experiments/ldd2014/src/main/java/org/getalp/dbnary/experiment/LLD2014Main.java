@@ -202,7 +202,7 @@ public final class LLD2014Main {
                     Statement dRef = nextSense.getProperty(DbnaryModel.lemonDefinitionProperty);
                     Statement dVal = dRef.getProperty(DbnaryModel.lemonValueProperty);
                     String deftext = dVal.getObject().toString();
-                    choices.add(new DisambiguableSense(deftext, sstr,senseCounter));
+                    //choices.add(new DisambiguableSense(deftext, sstr,senseCounter));
                     senseCounter++;
                 }
                 disambiguator.disambiguate(ambiguity, choices);

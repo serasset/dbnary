@@ -13,6 +13,9 @@ public class StatsModule {
 		private int nbGlossesWithText = 0;
 		private int nbGlossesWithSensNumberAndDescription = 0;
 
+        {
+            glossesWithSenseNumber = new HashMap<String,String>();
+        }
 
 		public void registerTranslation(String translationUri, StructuredGloss sg) {
 			nbTranslations++;

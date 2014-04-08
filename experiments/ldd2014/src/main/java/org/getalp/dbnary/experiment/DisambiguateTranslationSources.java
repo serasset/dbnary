@@ -10,13 +10,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
-import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
-import org.getalp.dbnary.experiment.disambiguation.Disambiguator;
-import org.getalp.dbnary.experiment.disambiguation.InvalidContextException;
-import org.getalp.dbnary.experiment.disambiguation.InvalidEntryException;
-import org.getalp.dbnary.experiment.disambiguation.SenseNumberBasedTranslationDisambiguationMethod;
-import org.getalp.dbnary.experiment.disambiguation.TverskyBasedTranslationDisambiguationMethod;
+import org.getalp.dbnary.experiment.disambiguation.*;
 import org.getalp.dbnary.experiment.disambiguation.translations.DisambiguableSense;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationAmbiguity;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationDisambiguator;
@@ -136,7 +130,7 @@ public final class DisambiguateTranslationSources {
 			this.preprocessTranslations(filter, lang);
 		}
 
-		if (statsOutput != null) {
+		if (null!= statsOutput) {
 			System.err.println("Writing Stats");
 			stats.displayStats(statsOutput);
 			statsOutput.close();
@@ -152,6 +146,11 @@ public final class DisambiguateTranslationSources {
 			this.output(lang, m);
 		}
 
+        if(null != confidenceOutput){
+            System.err.println("Writing confidence stats");
+            evaluator.printConfidenceStats(confidenceOutput);
+            confidenceOutput.close();
+        }
 	}
 
 	public static void printUsage() {
@@ -369,6 +368,7 @@ public final class DisambiguateTranslationSources {
 		if (null != evaluator) evaluator.reset(lang);
 		SenseNumberBasedTranslationDisambiguationMethod snumDisamb = new SenseNumberBasedTranslationDisambiguationMethod();
 		TverskyBasedTranslationDisambiguationMethod tverskyDisamb = new TverskyBasedTranslationDisambiguationMethod(.05);
+        TransitiveTranslationClosireDisambiguationMethod transitDisamb = new TransitiveTranslationClosireDisambiguationMethod(1,lang,modelMap);
 		
 		Model inputModel = modelMap.get(lang);
 		StmtIterator translations = inputModel.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
@@ -388,6 +388,10 @@ public final class DisambiguateTranslationSources {
 					// disambiguate by similarity
 					
 					resSim = tverskyDisamb.selectWordSenses(lexicalEntry, trans);
+
+                    if(resSim.isEmpty()){ //No gloss!
+                        resSim = transitDisamb.selectWordSenses(lexicalEntry,trans);
+                    }
 					// compute confidence if snumdisamb is not empty and confidence is required
 					if (null != evaluator && resSenseNum.size() != 0) {
 						evaluator.registerAnswer(resSenseNum, resSim);

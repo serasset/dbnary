@@ -75,7 +75,9 @@ public class EvaluationStats {
     }
     
 	public void printConfidenceStats(PrintStream out) {
-		// TODO
-		
+        for(String lang: confidenceMap.keySet()){
+            Stat lstat = confidenceMap.get(lang);
+            out.format("%s,%.2f,%.2f,.2f",lang+lstat.getPrecision(),lstat.getRecall(),lstat.getF1Score());
+        }
 	}
 }

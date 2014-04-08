@@ -24,7 +24,7 @@ public class EvaluationStats {
 	        if(0 == nbReq){
 	            return 0;
 	        } else {
-	            return (sumPrec) / (nbReq);
+	            return ((double)sumPrec) / ((double)nbReq);
 	        }
 	    }
 
@@ -32,7 +32,7 @@ public class EvaluationStats {
 	        if(0 == nbReq){
 	            return 0;
 	        } else {
-	            return (sumRecall) / (nbReq);
+	            return ((double)sumRecall) / (double)(nbReq);
 	        }
 	    }
 
@@ -58,7 +58,17 @@ public class EvaluationStats {
 	        nbReq++;
 	    }
 
-	}
+        @Override
+        public String toString() {
+            return "Stat{" +
+                    "sumPrec=" + sumPrec +
+                    ", sumRecall=" + sumRecall +
+                    ", nbReq=" + nbReq +
+                    ", P=" + getPrecision() +
+                    ", R=" + getRecall() +
+                    '}';
+        }
+    }
 
 
 	private Map<String,Stat> confidenceMap = new HashMap<String, Stat>();
@@ -77,7 +87,8 @@ public class EvaluationStats {
 	public void printConfidenceStats(PrintStream out) {
         for(String lang: confidenceMap.keySet()){
             Stat lstat = confidenceMap.get(lang);
-            out.format("%s,%.2f,%.2f,.2f",lang+lstat.getPrecision(),lstat.getRecall(),lstat.getF1Score());
+            System.err.println(lstat);
+            out.format("%s,%.2f,%.2f,%.2f",lang,lstat.getPrecision(),lstat.getRecall(),lstat.getF1Score());
         }
 	}
 }

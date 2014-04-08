@@ -353,6 +353,7 @@ extractor/src/main/java/org/getalp/dbnary/WiktionaryIndexer.java -text
 extractor/src/main/java/org/getalp/dbnary/WiktionaryIndexerException.java -text
 extractor/src/main/java/org/getalp/dbnary/bul/BulgarianLangtoCode.java -text
 extractor/src/main/java/org/getalp/dbnary/bul/BulgarianWikiModel.java -text
+extractor/src/main/java/org/getalp/dbnary/bul/DefinitionsWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/bul/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/cli/CompareTradsAndIWLinks.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/cli/ExtractWiktionary.java -text
@@ -405,6 +406,7 @@ extractor/src/main/java/org/getalp/dbnary/tools/CounterSet.java -text svneol=uns
 extractor/src/main/java/org/getalp/dbnary/tools/miseEnFormlang.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/tur/TurkishLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/tur/WiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/wiki/ExpandAllWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/wiki/WikiPatterns.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/wiki/WikiTool.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dilaf/DilafExtractorException.java -text

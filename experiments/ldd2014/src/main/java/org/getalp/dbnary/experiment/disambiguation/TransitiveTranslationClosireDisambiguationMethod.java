@@ -106,7 +106,7 @@ public class TransitiveTranslationClosireDisambiguationMethod implements
             InvalidEntryException {
         HashSet<Resource> res = new HashSet<Resource>();
 
-        if (!lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType))
+        if (!lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType) && !lexicalEntry.hasProperty(RDF.type, DbnaryModel.wordEntryType))
             throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
         if (context instanceof Resource) {
             Resource trans = (Resource) context;

@@ -14,6 +14,8 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public class SenseNumberBasedTranslationDisambiguationMethod implements
 		DisambiguationMethod {
 
+    public static int NUMSN=0;
+
 	public SenseNumberBasedTranslationDisambiguationMethod() {
 		// TODO Auto-generated constructor stub
 	}
@@ -22,13 +24,11 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements
 	public Set<Resource> selectWordSenses(Resource lexicalEntry,
 			Object context) throws InvalidContextException,
 			InvalidEntryException {
-		if (! lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType)) throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
+		if (! lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType) && !lexicalEntry.hasProperty(RDF.type, DbnaryModel.wordEntryType)) throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
 		if (context instanceof Resource) {
 			Resource trans = (Resource) context;
 			if (! trans.hasProperty(RDF.type, DbnaryModel.translationType)) throw new InvalidContextException("Expecting a DBnary Translation Resource.");
-			
 			Statement s = trans.getProperty(DbnaryModel.senseNumberProperty);
-			
 			if (null != s) {
 				// Process sense number
 				// System.out.println("Avoiding treating " + s.toString());
@@ -51,7 +51,6 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements
 		for (String n : ns) {
 			addNumberedWordSenseToResult(res, lexicalEntry, n);
 		}
-
 		return res;
 	}
 
@@ -62,6 +61,7 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements
 			Resource sense = senses.next().getResource();
 			Statement senseNumStatement = sense.getProperty(DbnaryModel.senseNumberProperty);
 			if (n.equalsIgnoreCase(senseNumStatement.getString())) {
+                //System.err.println(n+" | "+senseNumStatement.getString());
 				res.add(sense);
 			}
 		}

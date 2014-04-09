@@ -283,7 +283,6 @@ experiments/ldd2014/pom.xml -text
 experiments/ldd2014/results/finnish_ref_gold.out -text
 experiments/ldd2014/results/french_ref_gold.out -text
 experiments/ldd2014/results/gen_all_res.sh -text
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/DisambiguateAllTranslationSources.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/DisambiguateTranslationSources.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/LLD2014Main.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Ambiguity.java -text

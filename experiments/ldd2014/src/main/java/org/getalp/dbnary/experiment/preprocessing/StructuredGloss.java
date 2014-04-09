@@ -3,7 +3,7 @@ package org.getalp.dbnary.experiment.preprocessing;
 public class StructuredGloss {
 	protected String senseNumber = null;
 	protected String gloss = null;
-	
+
 	public StructuredGloss() {
 		super();
 	}

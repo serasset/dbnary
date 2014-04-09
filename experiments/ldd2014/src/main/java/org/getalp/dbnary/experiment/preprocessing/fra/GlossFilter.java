@@ -87,7 +87,6 @@ public class GlossFilter extends AbstractGlossFilter {
 		}
 		
 		// if (rawGloss.matches(".*\\d.*")) System.err.println("Digit in gloss: " + rawGloss );
-		
 		return new StructuredGloss(null, rawGloss);
 	}
 }

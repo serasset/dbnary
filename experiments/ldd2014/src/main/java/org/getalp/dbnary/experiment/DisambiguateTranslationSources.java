@@ -9,6 +9,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.blexisma.api.Sense;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.experiment.disambiguation.*;
 import org.getalp.dbnary.experiment.disambiguation.translations.DisambiguableSense;
@@ -25,10 +26,7 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public final class DisambiguateTranslationSources {
@@ -332,7 +330,6 @@ public final class DisambiguateTranslationSources {
 		Model m = modelMap.get(lang);
 
 		StmtIterator translations = m.listStatements((Resource) null, DbnaryModel.isTranslationOf, (RDFNode) null);
-
 		while (translations.hasNext()) {
 			Resource e = translations.next().getSubject();
 
@@ -345,7 +342,7 @@ public final class DisambiguateTranslationSources {
 				if (null != stats) stats.registerTranslation(e.getURI(), sg);
 
 				if (null == sg) {
-					// remove gloss from model
+                    // remove gloss from model
 					g.remove();
 				} else {
 					if (null != sg.getSenseNumber()) {
@@ -359,7 +356,6 @@ public final class DisambiguateTranslationSources {
 					}
 				}
 			}
-
 		}
 	}
 
@@ -372,14 +368,13 @@ public final class DisambiguateTranslationSources {
 		
 		Model inputModel = modelMap.get(lang);
 		StmtIterator translations = inputModel.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
-		
 		while (translations.hasNext()) {
 			Statement next = translations.next();
 
 			Resource trans = next.getSubject();
 			
 			Resource lexicalEntry = next.getResource();
-			if (lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType)) {
+			if (lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType) || lexicalEntry.hasProperty(RDF.type, DbnaryModel.wordEntryType)) {
 				try {
 				Set<Resource> resSenseNum = snumDisamb.selectWordSenses(lexicalEntry, trans);
 				Set<Resource> resSim = null;
@@ -387,13 +382,14 @@ public final class DisambiguateTranslationSources {
 				if (null != evaluator || resSenseNum.size() == 0) {
 					// disambiguate by similarity
 					
-					resSim = tverskyDisamb.selectWordSenses(lexicalEntry, trans);
+				   resSim = tverskyDisamb.selectWordSenses(lexicalEntry, trans);
 
-                    if(resSim.isEmpty()){ //No gloss!
+                   if(resSim.isEmpty()){ //No gloss!
                         resSim = transitDisamb.selectWordSenses(lexicalEntry,trans);
-                    }
+                   }
 					// compute confidence if snumdisamb is not empty and confidence is required
 					if (null != evaluator && resSenseNum.size() != 0) {
+                        evals++;
 						evaluator.registerAnswer(resSenseNum, resSim);
 					}
 				}
@@ -417,7 +413,7 @@ public final class DisambiguateTranslationSources {
 					e.printStackTrace();
 				}
 			}
-		}
+        }
 	}
 
 }

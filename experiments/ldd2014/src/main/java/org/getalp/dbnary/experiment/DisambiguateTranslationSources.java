@@ -389,7 +389,6 @@ public final class DisambiguateTranslationSources {
                    }
 					// compute confidence if snumdisamb is not empty and confidence is required
 					if (null != evaluator && resSenseNum.size() != 0) {
-                        evals++;
 						evaluator.registerAnswer(resSenseNum, resSim);
 					}
 				}

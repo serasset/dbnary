@@ -9,11 +9,8 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
-import org.getalp.blexisma.api.Sense;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.experiment.disambiguation.*;
-import org.getalp.dbnary.experiment.disambiguation.translations.DisambiguableSense;
-import org.getalp.dbnary.experiment.disambiguation.translations.TranslationAmbiguity;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationDisambiguator;
 import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
 import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
@@ -364,11 +361,11 @@ public final class DisambiguateTranslationSources {
 		if (null != evaluator) evaluator.reset(lang);
 		SenseNumberBasedTranslationDisambiguationMethod snumDisamb = new SenseNumberBasedTranslationDisambiguationMethod();
 		TverskyBasedTranslationDisambiguationMethod tverskyDisamb = new TverskyBasedTranslationDisambiguationMethod(.05);
-        TransitiveTranslationClosireDisambiguationMethod transitDisamb = new TransitiveTranslationClosireDisambiguationMethod(1,lang,modelMap);
+        TransitiveTranslationClosureDisambiguationMethod transitDisamb = new TransitiveTranslationClosureDisambiguationMethod(1,lang,modelMap,0.05);
 		
 		Model inputModel = modelMap.get(lang);
 		StmtIterator translations = inputModel.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
-		while (translations.hasNext()) {
+        while (translations.hasNext()) {
 			Statement next = translations.next();
 
 			Resource trans = next.getSubject();
@@ -386,6 +383,7 @@ public final class DisambiguateTranslationSources {
 
                    if(resSim.isEmpty()){ //No gloss!
                         resSim = transitDisamb.selectWordSenses(lexicalEntry,trans);
+                        //System.out.println("Transitive dismabiguation: "+resSim.size());
                    }
 					// compute confidence if snumdisamb is not empty and confidence is required
 					if (null != evaluator && resSenseNum.size() != 0) {

@@ -292,7 +292,7 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Di
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/InvalidContextException.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/InvalidEntryException.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/SenseNumberBasedTranslationDisambiguationMethod.java -text svneol=unset#text/plain
-experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/TransitiveTranslationClosireDisambiguationMethod.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/TransitiveTranslationClosureDisambiguationMethod.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/TverskyBasedTranslationDisambiguationMethod.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/DisambiguableSense.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/MFSTranslationDisambiguator.java -text

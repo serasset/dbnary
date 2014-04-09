@@ -11,9 +11,10 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TransitiveTranslationClosireDisambiguationMethod implements
+public class TransitiveTranslationClosureDisambiguationMethod implements
         DisambiguationMethod {
 
+    private final double delta;
     int degree = 0;
 
     {
@@ -25,10 +26,11 @@ public class TransitiveTranslationClosireDisambiguationMethod implements
     private Map<String, Model> models;
     private String lang;
 
-    public TransitiveTranslationClosireDisambiguationMethod(int degree, String lang, Map<String, Model> models) {
+    public TransitiveTranslationClosureDisambiguationMethod(int degree, String lang, Map<String, Model> models, double delta) {
         this.degree = degree;
         this.models = models;
         this.lang = lang;
+        this.delta = delta;
     }
 
     private String getTranslationLanguage(String uri) {
@@ -64,20 +66,30 @@ public class TransitiveTranslationClosireDisambiguationMethod implements
 
                 if (pos == null || (pos != null && foreignpos != null && pos.equals(foreignpos))) {
                     RDFNode lexEntryNode = lnext.getObject();
-//                    System.out.println("\t ->" + lexEntryNode);
+                    //System.out.println("\t ->" + lexEntryNode +"@"+currentLang);
                     //Find translations pointing back to top level lang
-                    StmtIterator trans = models.get(currentLang).listStatements(lexEntryNode.asResource(), DbnaryModel.isTranslationOf, (RDFNode) null);
+                    StmtIterator trans = models.get(currentLang).listStatements(null, DbnaryModel.isTranslationOf, lexEntryNode);
                     while (trans.hasNext()) {
                         Statement ctransstmt = trans.next();
                         Resource ctrans = ctransstmt.getSubject();
-                        System.out.println(ctrans.getURI());
-                        Statement l = ctrans.getProperty(DbnaryModel.targetLanguageCodeProperty);
-                        if (l != null && l.getString().equals(topLevelLang)) { // Back to topLevel
-                            StmtIterator backLex = getTranslationLexicalEntryStmtIterator(ctrans, l.getString());
+                        String l = getTranslationLanguage(ctrans.getURI());
+                        if (l.equalsIgnoreCase(topLevelLang)) { // Back to topLevel
+                            StmtIterator backLex = getTranslationLexicalEntryStmtIterator(ctrans, l);
+                            //System.out.println("\t\t"+ ctrans.getURI()+"L="+l);
                             while (backLex.hasNext()) {
+                                //System.out.println("\t\t\t=>Fetching senses");
                                 Statement backLexnext = backLex.next();
-                                Statement lexcfp = backLexnext.getObject().asResource().getProperty(DbnaryModel.canonicalFormProperty);
-                                output.add(lexcfp.getObject().toString());
+                                Statement lexcfp = backLexnext.getProperty(DbnaryModel.canonicalFormProperty);
+                                String writtenRep = "";
+                                if(lexcfp!=null){
+                                    Statement wrepstmt = lexcfp.getProperty(DbnaryModel.writtenRepresentationProperty);
+                                    writtenRep = wrepstmt.getObject().toString();
+                                }
+                                if(writtenRep.contains("@")){
+                                    output.add(writtenRep.split("@")[0]);
+                                } else {
+                                    output.add(writtenRep);
+                                }
                                 //Iterating senses
                                 StmtIterator senses = backLexnext.getObject().asResource().listProperties(DbnaryModel.lemonSenseProperty);
                                 while (senses.hasNext()) {
@@ -86,11 +98,16 @@ public class TransitiveTranslationClosireDisambiguationMethod implements
                                     Statement dRef = wordsense.getProperty(DbnaryModel.lemonDefinitionProperty);
                                     Statement dVal = dRef.getProperty(DbnaryModel.lemonValueProperty);
                                     String deftext = dVal.getObject().toString();
-                                    output.add(deftext);
+                                    if(deftext.contains("@")){
+                                        output.add(deftext.split("@")[0]);
+                                    } else {
+                                        output.add(deftext);
+                                    }
                                 }
                             }
-                        } else if(degree>0){ //Recurse away!
-                            output.addAll(computeTranslationClosure(ctrans, pos, degree--));
+                        }
+                        if(degree>0){ //Recurse away!
+                            output.addAll(computeTranslationClosure(ctrans, pos, degree-1));
                         }
                     }
                 }
@@ -112,11 +129,20 @@ public class TransitiveTranslationClosireDisambiguationMethod implements
             Resource trans = (Resource) context;
             if (!trans.hasProperty(RDF.type, DbnaryModel.translationType))
                 throw new InvalidContextException("Expecting a DBnary Translation Resource.");
+
             List<String> closure = computeTranslationClosure(trans, null, this.degree);
+
+
             StringBuilder concatAll = new StringBuilder();
             for(String item: closure){
-                concatAll.append(item);
+                concatAll.append(item+" ");
             }
+
+
+            if(closure.isEmpty()) return res;
+
+            //System.out.println("Def="+concatAll.toString());
+
             ArrayList<WeigthedSense> weightedList = new ArrayList<WeigthedSense>();
 
             StmtIterator senses = lexicalEntry.listProperties(DbnaryModel.lemonSenseProperty);
@@ -130,6 +156,14 @@ public class TransitiveTranslationClosireDisambiguationMethod implements
                 insert(weightedList, wordsense, sim);
             }
 
+            if (weightedList.size() == 0) return res;
+
+            int i = 0;
+            double worstScore = weightedList.get(0).weight - delta;
+            while(i != weightedList.size() && weightedList.get(i).weight >= worstScore) {
+                res.add(weightedList.get(i).sense);
+                i++;
+            }
         } else {
             throw new InvalidContextException("Expecting a JENA Resource.");
         }

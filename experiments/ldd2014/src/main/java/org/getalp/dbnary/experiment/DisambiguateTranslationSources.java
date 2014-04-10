@@ -37,6 +37,7 @@ import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
 import org.getalp.dbnary.experiment.preprocessing.StatsModule;
 import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
 
+import com.hp.hpl.jena.rdf.model.LiteralRequiredException;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -405,8 +406,9 @@ public final class DisambiguateTranslationSources {
 
 		while (translations.hasNext()) {
 			Statement next = translations.next();
-
+			
 			Resource trans = next.getSubject();
+			if (! modelMap.containsKey(getTargetLanguage(trans))) continue;
 
 			Resource lexicalEntry = next.getResource();
 			if (lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType) ||
@@ -452,6 +454,20 @@ public final class DisambiguateTranslationSources {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+
+	private Object getTargetLanguage(Resource trans) {
+		try {
+			Resource lang = trans.getPropertyResourceValue(DbnaryModel.targetLanguageProperty);
+			if (lang == null) {
+				Statement slang = trans.getProperty(DbnaryModel.targetLanguageCodeProperty);
+				return slang.getLiteral();
+			} else {
+				return lang.getLocalName();
+			}
+		} catch (LiteralRequiredException e) {
+			return null;
 		}
 	}
 

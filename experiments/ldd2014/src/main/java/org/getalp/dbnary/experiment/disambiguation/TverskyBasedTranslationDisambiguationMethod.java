@@ -17,14 +17,14 @@ public class TverskyBasedTranslationDisambiguationMethod implements
 		DisambiguationMethod {
 
 	private double delta;
-    private double alpha;
-    private double beta;
+//    private double alpha;
+//    private double beta;
 	private TverskiIndex tversky;
 	
 	public TverskyBasedTranslationDisambiguationMethod(double alpha, double beta, double threshold) {
 		delta = threshold;
-        this.alpha = alpha;
-        this.beta = beta;
+//        this.alpha = alpha;
+//        this.beta = beta;
         tversky = new TverskiIndex(alpha, beta, true, false, new ScaledLevenstein());
 	}
 
@@ -49,11 +49,11 @@ public class TverskyBasedTranslationDisambiguationMethod implements
 		if (context instanceof Resource) {
 			Resource trans = (Resource) context;
 			if (! trans.hasProperty(RDF.type, DbnaryModel.translationType)) throw new InvalidContextException("Expecting a DBnary Translation Resource.");
-
-            Statement glossStmt = trans.getProperty(DbnaryModel.glossProperty);
-
+			
+			Statement glossStmt = trans.getProperty(DbnaryModel.glossProperty);		
+			
 			if (null != glossStmt) {
-                String gloss = glossStmt.getString();
+				String gloss = glossStmt.getString();
 				ArrayList<WeigthedSense> weightedList = new ArrayList<WeigthedSense>();
 
 				// get a list of wordsenses, sorted by decreasing similarity.

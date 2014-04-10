@@ -1,29 +1,49 @@
 package org.getalp.dbnary.experiment;
 
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.wcohen.ss.ScaledLevenstein;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.experiment.disambiguation.*;
-import org.getalp.dbnary.experiment.disambiguation.translations.TranslationDisambiguator;
+import org.getalp.dbnary.experiment.disambiguation.InvalidContextException;
+import org.getalp.dbnary.experiment.disambiguation.InvalidEntryException;
+import org.getalp.dbnary.experiment.disambiguation.SenseNumberBasedTranslationDisambiguationMethod;
+import org.getalp.dbnary.experiment.disambiguation.TransitiveTranslationClosureDisambiguationMethod;
+import org.getalp.dbnary.experiment.disambiguation.TverskyBasedTranslationDisambiguationMethod;
 import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
 import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
 import org.getalp.dbnary.experiment.preprocessing.StatsModule;
 import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
-import org.getalp.dbnary.experiment.similarity.SimilarityMeasure;
-import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
 
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 
 public final class DisambiguateTranslationSources {
@@ -69,17 +89,12 @@ public final class DisambiguateTranslationSources {
         options.addOption(PARAM_DEGREE_OPTION,true,"Degree of the transitive closure (default="+DEFAULT_DEGREE_VALUE+")");
 	}
 
-//	private static Model model;
-//	private static Model outputModel;
 	private CommandLine cmd = null; // Command Line arguments
 
-	// private Locale language;
 	private String[] languages;
-	// private String NS;
 	private PrintStream statsOutput = null;
 	private StatsModule stats = null;
 	private String rdfFormat;
-	private SimilarityMeasure similarityMeasure;
 	private PrintStream confidenceOutput;
 	private EvaluationStats evaluator = null;
 	private String outputFileSuffix;
@@ -93,7 +108,7 @@ public final class DisambiguateTranslationSources {
     private double beta;
     private int degree;
 
-    private DisambiguateTranslationSources() {
+	private DisambiguateTranslationSources() {
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -374,6 +389,7 @@ public final class DisambiguateTranslationSources {
 					}
 				}
 			}
+
 		}
 	}
 
@@ -386,7 +402,8 @@ public final class DisambiguateTranslationSources {
 		
 		Model inputModel = modelMap.get(lang);
 		StmtIterator translations = inputModel.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
-        while (translations.hasNext()) {
+		
+		while (translations.hasNext()) {
 			Statement next = translations.next();
 
 			Resource trans = next.getSubject();
@@ -433,7 +450,7 @@ public final class DisambiguateTranslationSources {
 					e.printStackTrace();
 				}
 			}
-        }
+		}
 	}
 
 }

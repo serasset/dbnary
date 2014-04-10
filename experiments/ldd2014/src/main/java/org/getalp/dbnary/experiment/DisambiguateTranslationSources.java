@@ -73,7 +73,6 @@ public final class DisambiguateTranslationSources {
 //	private static Model outputModel;
 	private CommandLine cmd = null; // Command Line arguments
 
-	private Disambiguator disambiguator;
 	// private Locale language;
 	private String[] languages;
 	// private String NS;
@@ -95,14 +94,6 @@ public final class DisambiguateTranslationSources {
     private int degree;
 
     private DisambiguateTranslationSources() {
-
-		disambiguator = new TranslationDisambiguator();
-		double w1 = 0.1;
-		double w2 = 1d - w1;
-		String mstr = String.format("_%f_%f", w1, w2);
-
-        similarityMeasure = new TverskiIndex(w1, w2, true, false, new ScaledLevenstein());
-        disambiguator.registerSimilarity("FTiLs" + mstr, similarityMeasure);
 	}
 
 	public static void main(String[] args) throws IOException {

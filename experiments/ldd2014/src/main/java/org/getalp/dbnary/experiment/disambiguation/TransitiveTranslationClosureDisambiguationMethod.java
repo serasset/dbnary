@@ -52,12 +52,12 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
 
     private List<String> computeTranslationClosure(Resource translation, String pos, int degree) {
         for(int i=0;i<(this.degree-degree);i++) System.err.print("\t");
-        System.err.println("Recursive closure of degree " + (this.degree-degree) + " | " + translation.getURI());
         String topLevelLang = lang;
         String currentLang = getTranslationLanguage(translation.getURI());
         List<String> output = new ArrayList<>();
         if (degree != 0 && models.containsKey(currentLang)) {
             StmtIterator lexEntries = getTranslationLexicalEntryStmtIterator(translation, currentLang);
+            if (lexEntries.hasNext()) System.err.println("Recursive closure of degree " + (this.degree-degree) + " | " + translation.getURI());
             while (lexEntries.hasNext()) {
                 Statement lnext = lexEntries.next();
                 Statement stmtPos = lnext.getObject().asResource().getProperty(DbnaryModel.posProperty);

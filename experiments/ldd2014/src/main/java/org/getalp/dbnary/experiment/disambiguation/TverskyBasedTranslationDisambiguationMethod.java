@@ -17,10 +17,15 @@ public class TverskyBasedTranslationDisambiguationMethod implements
 		DisambiguationMethod {
 
 	private double delta;
-	private TverskiIndex tversky = new TverskiIndex(.1, .9, true, false, new ScaledLevenstein());
+    private double alpha;
+    private double beta;
+	private TverskiIndex tversky;
 	
-	public TverskyBasedTranslationDisambiguationMethod(double threshold) {
+	public TverskyBasedTranslationDisambiguationMethod(double alpha, double beta, double threshold) {
 		delta = threshold;
+        this.alpha = alpha;
+        this.beta = beta;
+        tversky = new TverskiIndex(alpha, beta, true, false, new ScaledLevenstein());
 	}
 
 	private class WeigthedSense {

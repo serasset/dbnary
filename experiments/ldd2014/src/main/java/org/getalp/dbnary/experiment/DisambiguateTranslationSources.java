@@ -30,6 +30,14 @@ public final class DisambiguateTranslationSources {
 
 	private static final String LANGUAGES_OPTION = "l";
     private static final String USE_GLOSSES_OPTION = "g";
+    private static final String PARAM_DEGREE_OPTION = "pdg";
+    private static final String DEFAULT_DEGREE_VALUE = "1";
+    private static final String PARAM_DELTA_OPTION = "pdl";
+    private static final String DEFAULT_DELTA_VALUE = "0.05";
+    private static final String PARAM_ALPHA_OPTION = "pda";
+    private static final String DEFAULT_ALPHA_VALUE = "0.1";
+    private static final String PARAM_BETA_OPTION = "pdb";
+    private static final String DEFAULT_BETA_VALUE = "0.9";
     private static final String USE_STRUCTURE_OPTION = "st";
 	private static final String DEFAULT_LANGUAGES = "fra,eng,deu,rus";
 	private static final String RDF_FORMAT_OPTION = "f";
@@ -53,8 +61,12 @@ public final class DisambiguateTranslationSources {
 		options.addOption(OUTPUT_FILE_SUFFIX_OPTION, true, "if present, use the specified value as the filename suffix for the output "
 				+ "RDF model containing the computed disambiguated relations for each language." + DEFAULT_OUTPUT_FILE_SUFFIX + " by default.");
 		options.addOption(COMPRESS_OPTION, false, "if present, compress the ouput with BZip2.");
-        options.addOption(USE_GLOSSES_OPTION,false,"Use translation glosses for disambiguation when available");
-        options.addOption(USE_STRUCTURE_OPTION,false,"Use structure for disambiguation when available");
+        options.addOption(USE_GLOSSES_OPTION,false,"Use translation glosses for disambiguation when available (default=false)");
+        options.addOption(USE_STRUCTURE_OPTION,false,"Use structure for disambiguation when available (default=false)");
+        options.addOption(PARAM_ALPHA_OPTION,true,"Alpha parameter for the Tversky index (default="+DEFAULT_ALPHA_VALUE+")");
+        options.addOption(PARAM_BETA_OPTION,true,"Beta parameter for the Tversky index (default="+DEFAULT_BETA_VALUE+")");
+        options.addOption(PARAM_DELTA_OPTION,true,"Delta parameter for the choice of disambiguations to keep as a solution (default="+DEFAULT_DELTA_VALUE+")");
+        options.addOption(PARAM_DEGREE_OPTION,true,"Degree of the transitive closure (default="+DEFAULT_DEGREE_VALUE+")");
 	}
 
 //	private static Model model;
@@ -77,8 +89,12 @@ public final class DisambiguateTranslationSources {
 
     private boolean useGlosses = false;
     private boolean useStructure = false;
+    private double delta;
+    private double alpha;
+    private double beta;
+    private int degree;
 
-	private DisambiguateTranslationSources() {
+    private DisambiguateTranslationSources() {
 
 		disambiguator = new TranslationDisambiguator();
 		double w1 = 0.1;
@@ -192,6 +208,11 @@ public final class DisambiguateTranslationSources {
 		
 		rdfFormat = cmd.getOptionValue(RDF_FORMAT_OPTION, DEFAULT_RDF_FORMAT);
 		rdfFormat = rdfFormat.toUpperCase();
+
+        delta = Double.valueOf(cmd.getOptionValue(PARAM_DELTA_OPTION,DEFAULT_DELTA_VALUE));
+        alpha = Double.valueOf(cmd.getOptionValue(PARAM_ALPHA_OPTION,DEFAULT_ALPHA_VALUE));
+        beta = Double.valueOf(cmd.getOptionValue(PARAM_BETA_OPTION,DEFAULT_BETA_VALUE));
+        degree = Integer.valueOf(cmd.getOptionValue(PARAM_DEGREE_OPTION,DEFAULT_DEGREE_VALUE));
 
 		languages = cmd.getOptionValue(LANGUAGES_OPTION, DEFAULT_LANGUAGES).split(",");
 		for (int i = 0; i < languages.length; i++) {
@@ -369,8 +390,8 @@ public final class DisambiguateTranslationSources {
 		
 		if (null != evaluator) evaluator.reset(lang);
 		SenseNumberBasedTranslationDisambiguationMethod snumDisamb = new SenseNumberBasedTranslationDisambiguationMethod();
-		TverskyBasedTranslationDisambiguationMethod tverskyDisamb = new TverskyBasedTranslationDisambiguationMethod(.05);
-        TransitiveTranslationClosureDisambiguationMethod transitDisamb = new TransitiveTranslationClosureDisambiguationMethod(2,lang,modelMap,0.05);
+		TverskyBasedTranslationDisambiguationMethod tverskyDisamb = new TverskyBasedTranslationDisambiguationMethod(alpha, beta, delta);
+        TransitiveTranslationClosureDisambiguationMethod transitDisamb = new TransitiveTranslationClosureDisambiguationMethod(degree,lang,modelMap,delta);
 		
 		Model inputModel = modelMap.get(lang);
 		StmtIterator translations = inputModel.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);

@@ -21,7 +21,7 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
         wordDistribution = new HashMap<>();
     }
 
-    private TverskiIndex tversky = new TverskiIndex(.1, .9, true, false, new ScaledLevenstein());
+    private TverskiIndex tversky = new TverskiIndex(.5, .5, true, false, new ScaledLevenstein());
     private Map<String, Double> wordDistribution;
     private Map<String, Model> models;
     private String lang;
@@ -51,6 +51,8 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
     }
 
     private List<String> computeTranslationClosure(Resource translation, String pos, int degree) {
+        for(int i=0;i<(this.degree-degree);i++) System.err.print("\t");
+        System.err.println("Recursive closure of degree " + (this.degree-degree) + " | " + translation.getURI());
         String topLevelLang = lang;
         String currentLang = getTranslationLanguage(translation.getURI());
         List<String> output = new ArrayList<>();
@@ -63,21 +65,23 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
                 if (stmtPos != null) {
                     foreignpos = stmtPos.getObject().toString();
                 }
-
+                for(int i=0;i<(this.degree-degree);i++) System.err.print("\t");
+                System.err.println("\t ->" + lnext.getObject() +"@"+currentLang);
                 if (pos == null || (pos != null && foreignpos != null && pos.equals(foreignpos))) {
                     RDFNode lexEntryNode = lnext.getObject();
-                    //System.out.println("\t ->" + lexEntryNode +"@"+currentLang);
                     //Find translations pointing back to top level lang
                     StmtIterator trans = models.get(currentLang).listStatements(null, DbnaryModel.isTranslationOf, lexEntryNode);
                     while (trans.hasNext()) {
                         Statement ctransstmt = trans.next();
                         Resource ctrans = ctransstmt.getSubject();
                         String l = getTranslationLanguage(ctrans.getURI());
+                        for(int i=0;i<(this.degree-degree);i++) System.err.print("\t");
+                        System.err.println("\t\t"+ ctrans.getURI()+"L="+l);
                         if (l.equalsIgnoreCase(topLevelLang)) { // Back to topLevel
                             StmtIterator backLex = getTranslationLexicalEntryStmtIterator(ctrans, l);
-                            //System.out.println("\t\t"+ ctrans.getURI()+"L="+l);
                             while (backLex.hasNext()) {
-                                //System.out.println("\t\t\t=>Fetching senses");
+                                for(int i=0;i<(this.degree-degree);i++) System.err.print("\t");
+                                System.err.println("\t\t\t=>Fetching senses");
                                 Statement backLexnext = backLex.next();
                                 Statement lexcfp = backLexnext.getProperty(DbnaryModel.canonicalFormProperty);
                                 String writtenRep = "";
@@ -105,9 +109,9 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
                                     }
                                 }
                             }
-                        }
-                        if(degree>0){ //Recurse away!
-                            output.addAll(computeTranslationClosure(ctrans, pos, degree-1));
+                        } else if(degree>0){ //Recurse away!
+                            List<String> recSol = computeTranslationClosure(ctrans, pos, degree-1);
+                            output.addAll(recSol);
                         }
                     }
                 }
@@ -139,6 +143,7 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
             }
 
 
+            // If the definition is empty we don't need to compute any similarities
             if(closure.isEmpty()) return res;
 
             //System.out.println("Def="+concatAll.toString());
@@ -161,6 +166,7 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
             int i = 0;
             double worstScore = weightedList.get(0).weight - delta;
             while(i != weightedList.size() && weightedList.get(i).weight >= worstScore) {
+                System.err.println(weightedList.get(i).sense.getURI());
                 res.add(weightedList.get(i).sense);
                 i++;
             }

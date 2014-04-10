@@ -29,6 +29,8 @@ import java.util.*;
 public final class DisambiguateTranslationSources {
 
 	private static final String LANGUAGES_OPTION = "l";
+    private static final String USE_GLOSSES_OPTION = "g";
+    private static final String USE_STRUCTURE_OPTION = "st";
 	private static final String DEFAULT_LANGUAGES = "fra,eng,deu,rus";
 	private static final String RDF_FORMAT_OPTION = "f";
 	private static final String DEFAULT_RDF_FORMAT = "turtle";
@@ -51,6 +53,8 @@ public final class DisambiguateTranslationSources {
 		options.addOption(OUTPUT_FILE_SUFFIX_OPTION, true, "if present, use the specified value as the filename suffix for the output "
 				+ "RDF model containing the computed disambiguated relations for each language." + DEFAULT_OUTPUT_FILE_SUFFIX + " by default.");
 		options.addOption(COMPRESS_OPTION, false, "if present, compress the ouput with BZip2.");
+        options.addOption(USE_GLOSSES_OPTION,false,"Use translation glosses for disambiguation when available");
+        options.addOption(USE_STRUCTURE_OPTION,false,"Use structure for disambiguation when available");
 	}
 
 //	private static Model model;
@@ -71,6 +75,8 @@ public final class DisambiguateTranslationSources {
 	private boolean doCompress;
 	private HashMap<String,Model> modelMap;
 
+    private boolean useGlosses = false;
+    private boolean useStructure = false;
 
 	private DisambiguateTranslationSources() {
 
@@ -180,6 +186,9 @@ public final class DisambiguateTranslationSources {
 		}
 
 		doCompress = cmd.hasOption(COMPRESS_OPTION);
+
+        useGlosses = cmd.hasOption(USE_GLOSSES_OPTION);
+        useStructure = cmd.hasOption(USE_STRUCTURE_OPTION);
 		
 		rdfFormat = cmd.getOptionValue(RDF_FORMAT_OPTION, DEFAULT_RDF_FORMAT);
 		rdfFormat = rdfFormat.toUpperCase();
@@ -361,7 +370,7 @@ public final class DisambiguateTranslationSources {
 		if (null != evaluator) evaluator.reset(lang);
 		SenseNumberBasedTranslationDisambiguationMethod snumDisamb = new SenseNumberBasedTranslationDisambiguationMethod();
 		TverskyBasedTranslationDisambiguationMethod tverskyDisamb = new TverskyBasedTranslationDisambiguationMethod(.05);
-        TransitiveTranslationClosureDisambiguationMethod transitDisamb = new TransitiveTranslationClosureDisambiguationMethod(1,lang,modelMap,0.05);
+        TransitiveTranslationClosureDisambiguationMethod transitDisamb = new TransitiveTranslationClosureDisambiguationMethod(2,lang,modelMap,0.05);
 		
 		Model inputModel = modelMap.get(lang);
 		StmtIterator translations = inputModel.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
@@ -379,14 +388,16 @@ public final class DisambiguateTranslationSources {
 				if (null != evaluator || resSenseNum.size() == 0) {
 					// disambiguate by similarity
 					
-				   resSim = tverskyDisamb.selectWordSenses(lexicalEntry, trans);
+				   if (useGlosses) resSim = tverskyDisamb.selectWordSenses(lexicalEntry, trans);
 
-                   if(resSim.isEmpty()){ //No gloss!
+                   if((resSim ==null || resSim.isEmpty()) && useStructure){ //No gloss!
                         resSim = transitDisamb.selectWordSenses(lexicalEntry,trans);
-                        //System.out.println("Transitive dismabiguation: "+resSim.size());
                    }
 					// compute confidence if snumdisamb is not empty and confidence is required
 					if (null != evaluator && resSenseNum.size() != 0) {
+                        if(resSim==null){
+                            resSim = new HashSet<>();
+                        }
 						evaluator.registerAnswer(resSenseNum, resSim);
 					}
 				}
@@ -396,7 +407,7 @@ public final class DisambiguateTranslationSources {
 				
 				Set<Resource> res = (resSenseNum.isEmpty()) ? resSim : resSenseNum;
 				
-				if (res != null) {
+				if (res != null && !res.isEmpty()) {
 					for (Resource ws : res) {
 						outputModel.add(outputModel.createStatement(translation, DbnaryModel.isTranslationOf, outputModel.createResource(ws.getURI())));
 					}

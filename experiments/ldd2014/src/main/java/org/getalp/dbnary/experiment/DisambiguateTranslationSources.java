@@ -49,16 +49,16 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public final class DisambiguateTranslationSources {
 
 	private static final String LANGUAGES_OPTION = "l";
-    private static final String USE_GLOSSES_OPTION = "g";
-    private static final String PARAM_DEGREE_OPTION = "pdg";
-    private static final String DEFAULT_DEGREE_VALUE = "1";
-    private static final String PARAM_DELTA_OPTION = "pdl";
-    private static final String DEFAULT_DELTA_VALUE = "0.05";
-    private static final String PARAM_ALPHA_OPTION = "pda";
-    private static final String DEFAULT_ALPHA_VALUE = "0.1";
-    private static final String PARAM_BETA_OPTION = "pdb";
-    private static final String DEFAULT_BETA_VALUE = "0.9";
-    private static final String USE_STRUCTURE_OPTION = "st";
+	private static final String USE_GLOSSES_OPTION = "g";
+	private static final String PARAM_DEGREE_OPTION = "pdg";
+	private static final String DEFAULT_DEGREE_VALUE = "1";
+	private static final String PARAM_DELTA_OPTION = "pdl";
+	private static final String DEFAULT_DELTA_VALUE = "0.05";
+	private static final String PARAM_ALPHA_OPTION = "pda";
+	private static final String DEFAULT_ALPHA_VALUE = "0.1";
+	private static final String PARAM_BETA_OPTION = "pdb";
+	private static final String DEFAULT_BETA_VALUE = "0.9";
+	private static final String USE_STRUCTURE_OPTION = "st";
 	private static final String DEFAULT_LANGUAGES = "fra,eng,deu,rus";
 	private static final String RDF_FORMAT_OPTION = "f";
 	private static final String DEFAULT_RDF_FORMAT = "turtle";
@@ -81,12 +81,12 @@ public final class DisambiguateTranslationSources {
 		options.addOption(OUTPUT_FILE_SUFFIX_OPTION, true, "if present, use the specified value as the filename suffix for the output "
 				+ "RDF model containing the computed disambiguated relations for each language." + DEFAULT_OUTPUT_FILE_SUFFIX + " by default.");
 		options.addOption(COMPRESS_OPTION, false, "if present, compress the ouput with BZip2.");
-        options.addOption(USE_GLOSSES_OPTION,false,"Use translation glosses for disambiguation when available (default=false)");
-        options.addOption(USE_STRUCTURE_OPTION,false,"Use structure for disambiguation when available (default=false)");
-        options.addOption(PARAM_ALPHA_OPTION,true,"Alpha parameter for the Tversky index (default="+DEFAULT_ALPHA_VALUE+")");
-        options.addOption(PARAM_BETA_OPTION,true,"Beta parameter for the Tversky index (default="+DEFAULT_BETA_VALUE+")");
-        options.addOption(PARAM_DELTA_OPTION,true,"Delta parameter for the choice of disambiguations to keep as a solution (default="+DEFAULT_DELTA_VALUE+")");
-        options.addOption(PARAM_DEGREE_OPTION,true,"Degree of the transitive closure (default="+DEFAULT_DEGREE_VALUE+")");
+		options.addOption(USE_GLOSSES_OPTION,false,"Use translation glosses for disambiguation when available (default=false)");
+		options.addOption(USE_STRUCTURE_OPTION,false,"Use structure for disambiguation when available (default=false)");
+		options.addOption(PARAM_ALPHA_OPTION,true,"Alpha parameter for the Tversky index (default="+DEFAULT_ALPHA_VALUE+")");
+		options.addOption(PARAM_BETA_OPTION,true,"Beta parameter for the Tversky index (default="+DEFAULT_BETA_VALUE+")");
+		options.addOption(PARAM_DELTA_OPTION,true,"Delta parameter for the choice of disambiguations to keep as a solution (default="+DEFAULT_DELTA_VALUE+")");
+		options.addOption(PARAM_DEGREE_OPTION,true,"Degree of the transitive closure (default="+DEFAULT_DEGREE_VALUE+")");
 	}
 
 	private CommandLine cmd = null; // Command Line arguments
@@ -101,12 +101,12 @@ public final class DisambiguateTranslationSources {
 	private boolean doCompress;
 	private HashMap<String,Model> modelMap;
 
-    private boolean useGlosses = false;
-    private boolean useStructure = false;
-    private double delta;
-    private double alpha;
-    private double beta;
-    private int degree;
+	private boolean useGlosses = false;
+	private boolean useStructure = false;
+	private double delta;
+	private double alpha;
+	private double beta;
+	private int degree;
 
 	private DisambiguateTranslationSources() {
 	}
@@ -117,7 +117,7 @@ public final class DisambiguateTranslationSources {
 		lld.loadArgs(args);
 
 		lld.doit();
-		
+
 	}
 
 	private void output(String lang, Model m) {
@@ -133,7 +133,7 @@ public final class DisambiguateTranslationSources {
 			}
 
 			m.write(outputModelStream, this.rdfFormat);
-			
+
 		} catch (FileNotFoundException e) {
 			System.err.println("Could not create output stream: " + e.getLocalizedMessage());
 			e.printStackTrace(System.err);
@@ -147,7 +147,7 @@ public final class DisambiguateTranslationSources {
 
 	private void doit() throws FileNotFoundException {
 		System.err.println("Pre-processing translations.");
-		
+
 		for(String lang: languages) {
 			AbstractGlossFilter filter = createGlossFilter(lang);
 			this.preprocessTranslations(filter, lang);
@@ -158,7 +158,7 @@ public final class DisambiguateTranslationSources {
 			stats.displayStats(statsOutput);
 			statsOutput.close();
 		}
-		
+
 		for(String lang: languages) {
 			System.err.println("Disambiguating " + lang);
 			Model m = ModelFactory.createDefaultModel();
@@ -169,11 +169,11 @@ public final class DisambiguateTranslationSources {
 			this.output(lang, m);
 		}
 
-        if(null != confidenceOutput){
-            System.err.println("Writing confidence stats");
-            evaluator.printConfidenceStats(confidenceOutput);
-            confidenceOutput.close();
-        }
+		if(null != confidenceOutput){
+			System.err.println("Writing confidence stats");
+			evaluator.printConfidenceStats(confidenceOutput);
+			confidenceOutput.close();
+		}
 	}
 
 	public static void printUsage() {
@@ -201,7 +201,7 @@ public final class DisambiguateTranslationSources {
 			printUsage();
 			System.exit(1);
 		}
-		
+
 		if (cmd.hasOption("h")) {
 			printUsage();
 			System.exit(0);
@@ -209,23 +209,23 @@ public final class DisambiguateTranslationSources {
 
 		doCompress = cmd.hasOption(COMPRESS_OPTION);
 
-        useGlosses = cmd.hasOption(USE_GLOSSES_OPTION);
-        useStructure = cmd.hasOption(USE_STRUCTURE_OPTION);
-		
+		useGlosses = cmd.hasOption(USE_GLOSSES_OPTION);
+		useStructure = cmd.hasOption(USE_STRUCTURE_OPTION);
+
 		rdfFormat = cmd.getOptionValue(RDF_FORMAT_OPTION, DEFAULT_RDF_FORMAT);
 		rdfFormat = rdfFormat.toUpperCase();
 
-        delta = Double.valueOf(cmd.getOptionValue(PARAM_DELTA_OPTION,DEFAULT_DELTA_VALUE));
-        alpha = Double.valueOf(cmd.getOptionValue(PARAM_ALPHA_OPTION,DEFAULT_ALPHA_VALUE));
-        beta = Double.valueOf(cmd.getOptionValue(PARAM_BETA_OPTION,DEFAULT_BETA_VALUE));
-        degree = Integer.valueOf(cmd.getOptionValue(PARAM_DEGREE_OPTION,DEFAULT_DEGREE_VALUE));
+		delta = Double.valueOf(cmd.getOptionValue(PARAM_DELTA_OPTION,DEFAULT_DELTA_VALUE));
+		alpha = Double.valueOf(cmd.getOptionValue(PARAM_ALPHA_OPTION,DEFAULT_ALPHA_VALUE));
+		beta = Double.valueOf(cmd.getOptionValue(PARAM_BETA_OPTION,DEFAULT_BETA_VALUE));
+		degree = Integer.valueOf(cmd.getOptionValue(PARAM_DEGREE_OPTION,DEFAULT_DEGREE_VALUE));
 
 		languages = cmd.getOptionValue(LANGUAGES_OPTION, DEFAULT_LANGUAGES).split(",");
 		for (int i = 0; i < languages.length; i++) {
 			Lang l = ISO639_3.sharedInstance.getLang(languages[i]);
 			languages[i] = l.getId();
 		}
-		
+
 		if (cmd.hasOption(STATS_FILE_OPTION)) {
 			String statsFile = cmd.getOptionValue(STATS_FILE_OPTION);
 			try {
@@ -240,7 +240,7 @@ public final class DisambiguateTranslationSources {
 			}
 			stats = new StatsModule();
 		}
-		
+
 		if (cmd.hasOption(CONFIDENCE_FILE_OPTION)) {
 			String confidenceFile = cmd.getOptionValue(CONFIDENCE_FILE_OPTION);
 			try {
@@ -255,11 +255,11 @@ public final class DisambiguateTranslationSources {
 			}
 			evaluator = new EvaluationStats();
 		}
-		
+
 		outputFileSuffix = cmd.getOptionValue(OUTPUT_FILE_SUFFIX_OPTION, DEFAULT_OUTPUT_FILE_SUFFIX);
-		
+
 		modelMap = new HashMap<String,Model>();
-		
+
 		for (String arg: remainingArgs) {
 			Model m = ModelFactory.createDefaultModel();
 			String lang = guessLanguage(arg);
@@ -287,17 +287,17 @@ public final class DisambiguateTranslationSources {
 			}
 
 		}
-		
+
 	}
 
 	// TODO: adapt for several comma separated languages
-	
+
 	private String guessLanguage(String arg) {
 		if (arg.matches("[^:]{2,6}:.*")) {
 			// It's an URL
-            try {
+			try {
 				String fname = new File (new URL(arg).getPath()).getName();
-	            return ISO639_3.sharedInstance.getIdCode(fname.split("_")[0]);
+				return ISO639_3.sharedInstance.getIdCode(fname.split("_")[0]);
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -305,8 +305,8 @@ public final class DisambiguateTranslationSources {
 
 		} else {
 			// It's a file
-            String fname = new File(arg).getName();
-            return ISO639_3.sharedInstance.getIdCode(fname.split("_")[0]);
+			String fname = new File(arg).getName();
+			return ISO639_3.sharedInstance.getIdCode(fname.split("_")[0]);
 		}
 		return null;
 	}
@@ -375,7 +375,7 @@ public final class DisambiguateTranslationSources {
 				if (null != stats) stats.registerTranslation(e.getURI(), sg);
 
 				if (null == sg) {
-                    // remove gloss from model
+					// remove gloss from model
 					g.remove();
 				} else {
 					if (null != sg.getSenseNumber()) {
@@ -394,54 +394,56 @@ public final class DisambiguateTranslationSources {
 	}
 
 	private void processTranslations(Model outputModel, String lang) throws FileNotFoundException {
-		
+
 		if (null != evaluator) evaluator.reset(lang);
 		SenseNumberBasedTranslationDisambiguationMethod snumDisamb = new SenseNumberBasedTranslationDisambiguationMethod();
 		TverskyBasedTranslationDisambiguationMethod tverskyDisamb = new TverskyBasedTranslationDisambiguationMethod(alpha, beta, delta);
-        TransitiveTranslationClosureDisambiguationMethod transitDisamb = new TransitiveTranslationClosureDisambiguationMethod(degree,lang,modelMap,delta);
-		
+		TransitiveTranslationClosureDisambiguationMethod transitDisamb = new TransitiveTranslationClosureDisambiguationMethod(degree,lang,modelMap,delta);
+
 		Model inputModel = modelMap.get(lang);
 		StmtIterator translations = inputModel.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
-		
+
 		while (translations.hasNext()) {
 			Statement next = translations.next();
 
 			Resource trans = next.getSubject();
-			
+
 			Resource lexicalEntry = next.getResource();
-			if (lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType) || lexicalEntry.hasProperty(RDF.type, DbnaryModel.wordEntryType)) {
+			if (lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType) ||
+					lexicalEntry.hasProperty(RDF.type, DbnaryModel.wordEntryType) ||
+					lexicalEntry.hasProperty(RDF.type, DbnaryModel.phraseEntryType)) {
 				try {
-				Set<Resource> resSenseNum = snumDisamb.selectWordSenses(lexicalEntry, trans);
-				Set<Resource> resSim = null;
+					Set<Resource> resSenseNum = snumDisamb.selectWordSenses(lexicalEntry, trans);
+					Set<Resource> resSim = null;
 
-				if (null != evaluator || resSenseNum.size() == 0) {
-					// disambiguate by similarity
-					
-				   if (useGlosses) resSim = tverskyDisamb.selectWordSenses(lexicalEntry, trans);
+					if (null != evaluator || resSenseNum.size() == 0) {
+						// disambiguate by similarity
 
-                   if((resSim ==null || resSim.isEmpty()) && useStructure){ //No gloss!
-                        resSim = transitDisamb.selectWordSenses(lexicalEntry,trans);
-                   }
-					// compute confidence if snumdisamb is not empty and confidence is required
-					if (null != evaluator && resSenseNum.size() != 0) {
-                        if(resSim==null){
-                            resSim = new HashSet<>();
-                        }
-						evaluator.registerAnswer(resSenseNum, resSim);
+						if (useGlosses) resSim = tverskyDisamb.selectWordSenses(lexicalEntry, trans);
+
+						if ((resSim == null || resSim.isEmpty()) && useStructure) { //No gloss!
+							resSim = transitDisamb.selectWordSenses(lexicalEntry,trans);
+						}
+						// compute confidence if snumdisamb is not empty and confidence is required
+						if (null != evaluator && resSenseNum.size() != 0) {
+							if(resSim==null){
+								resSim = new HashSet<>();
+							}
+							evaluator.registerAnswer(resSenseNum, resSim);
+						}
 					}
-				}
-				
-				// Register results in output Model
-				Resource translation = outputModel.createResource(trans.getURI());
-				
-				Set<Resource> res = (resSenseNum.isEmpty()) ? resSim : resSenseNum;
-				
-				if (res != null && !res.isEmpty()) {
-					for (Resource ws : res) {
-						outputModel.add(outputModel.createStatement(translation, DbnaryModel.isTranslationOf, outputModel.createResource(ws.getURI())));
+
+					// Register results in output Model
+					Resource translation = outputModel.createResource(trans.getURI());
+
+					Set<Resource> res = (resSenseNum.isEmpty()) ? resSim : resSenseNum;
+
+					if (res != null && !res.isEmpty()) {
+						for (Resource ws : res) {
+							outputModel.add(outputModel.createStatement(translation, DbnaryModel.isTranslationOf, outputModel.createResource(ws.getURI())));
+						}
 					}
-				}
-				
+
 				} catch (InvalidContextException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

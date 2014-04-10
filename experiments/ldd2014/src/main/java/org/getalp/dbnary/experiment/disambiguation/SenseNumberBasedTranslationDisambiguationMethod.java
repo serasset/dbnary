@@ -24,7 +24,10 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements
 	public Set<Resource> selectWordSenses(Resource lexicalEntry,
 			Object context) throws InvalidContextException,
 			InvalidEntryException {
-		if (! lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType) && !lexicalEntry.hasProperty(RDF.type, DbnaryModel.wordEntryType)) throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
+		if (! lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType) &&
+				!lexicalEntry.hasProperty(RDF.type, DbnaryModel.wordEntryType) && 
+				!lexicalEntry.hasProperty(RDF.type, DbnaryModel.phraseEntryType))
+			throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
 		if (context instanceof Resource) {
 			Resource trans = (Resource) context;
 			if (! trans.hasProperty(RDF.type, DbnaryModel.translationType)) throw new InvalidContextException("Expecting a DBnary Translation Resource.");

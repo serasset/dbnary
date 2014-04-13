@@ -1,15 +1,5 @@
 package org.getalp.dbnary.experiment.disambiguation;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.wcohen.ss.ScaledLevenstein;
-import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +8,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.wcohen.ss.ScaledLevenstein;
 
 public class TransitiveTranslationClosureDisambiguationMethod implements
         DisambiguationMethod {

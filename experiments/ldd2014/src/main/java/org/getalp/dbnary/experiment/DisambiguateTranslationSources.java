@@ -47,7 +47,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 
-public final class DisambiguateTranslationSources {
+public class DisambiguateTranslationSources {
 
 	private static final String LANGUAGES_OPTION = "l";
 	private static final String USE_GLOSSES_OPTION = "g";
@@ -416,6 +416,7 @@ public final class DisambiguateTranslationSources {
 					lexicalEntry.hasProperty(RDF.type, DbnaryModel.phraseEntryType)) {
 				try {
 					Set<Resource> resSenseNum = snumDisamb.selectWordSenses(lexicalEntry, trans);
+					
 					Set<Resource> resSim = null;
 
 					if (null != evaluator || resSenseNum.size() == 0) {
@@ -431,7 +432,8 @@ public final class DisambiguateTranslationSources {
 							if(resSim==null){
 								resSim = new HashSet<>();
 							}
-							evaluator.registerAnswer(resSenseNum, resSim);
+							int nsense = getNumberOfSenses(lexicalEntry);
+							evaluator.registerAnswer(resSenseNum, resSim, nsense);
 						}
 					}
 
@@ -455,6 +457,16 @@ public final class DisambiguateTranslationSources {
 				}
 			}
 		}
+	}
+
+	private int getNumberOfSenses(Resource lexicalEntry) {
+		StmtIterator senses = lexicalEntry.listProperties(DbnaryModel.lemonSenseProperty);
+		int n = 0;
+		while (senses.hasNext()) {
+			n++;
+			senses.next();
+		}
+		return n;
 	}
 
 	private Object getTargetLanguage(Resource trans) {

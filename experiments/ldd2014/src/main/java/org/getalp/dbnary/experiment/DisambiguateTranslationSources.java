@@ -32,6 +32,7 @@ import org.getalp.dbnary.experiment.disambiguation.InvalidEntryException;
 import org.getalp.dbnary.experiment.disambiguation.SenseNumberBasedTranslationDisambiguationMethod;
 import org.getalp.dbnary.experiment.disambiguation.TransitiveTranslationClosureDisambiguationMethod;
 import org.getalp.dbnary.experiment.disambiguation.TverskyBasedTranslationDisambiguationMethod;
+import org.getalp.dbnary.experiment.disambiguation.XlingualTverskyBasedTranslationDisambiguationMethod;
 import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
 import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
 import org.getalp.dbnary.experiment.preprocessing.StatsModule;
@@ -60,6 +61,11 @@ public class DisambiguateTranslationSources {
 	private static final String PARAM_BETA_OPTION = "pdb";
 	private static final String DEFAULT_BETA_VALUE = "0.9";
 	private static final String USE_STRUCTURE_OPTION = "st";
+	private static final String TRANSLATIONAPI_ID_OPTION = "tid";
+	private static final String TRANSLATIONAPI_PASS_OPTION = "tpw";
+	private static final String DEFAULT_TRANSLATIONAPI_ID = "DBnary_def_xans";
+	private static final String TRANSLATIONAPI_CACHE_OPTION = "tcache";
+	private static final String DEFAULT_TRANSLATIONAPI_CACHE = "xlationCache";
 	private static final String DEFAULT_LANGUAGES = "fra,eng,deu,rus";
 	private static final String RDF_FORMAT_OPTION = "f";
 	private static final String DEFAULT_RDF_FORMAT = "turtle";
@@ -84,6 +90,9 @@ public class DisambiguateTranslationSources {
 		options.addOption(COMPRESS_OPTION, false, "if present, compress the ouput with BZip2.");
 		options.addOption(USE_GLOSSES_OPTION,false,"Use translation glosses for disambiguation when available (default=false)");
 		options.addOption(USE_STRUCTURE_OPTION,false,"Use structure for disambiguation when available (default=false)");
+		options.addOption(TRANSLATIONAPI_ID_OPTION,true,"Use this ID for BING translation API to compute xlingual similarity (default=" + DEFAULT_TRANSLATIONAPI_ID + ")");
+		options.addOption(TRANSLATIONAPI_PASS_OPTION,true,"Use this password for BING translation API to compute xlingual similarity (no default, mandatory if " + TRANSLATIONAPI_ID_OPTION + " option was specified)");
+		options.addOption(TRANSLATIONAPI_PASS_OPTION,true,"folder containing the h2db used for translation caching (default=" + DEFAULT_TRANSLATIONAPI_CACHE + ")");
 		options.addOption(PARAM_ALPHA_OPTION,true,"Alpha parameter for the Tversky index (default="+DEFAULT_ALPHA_VALUE+")");
 		options.addOption(PARAM_BETA_OPTION,true,"Beta parameter for the Tversky index (default="+DEFAULT_BETA_VALUE+")");
 		options.addOption(PARAM_DELTA_OPTION,true,"Delta parameter for the choice of disambiguations to keep as a solution (default="+DEFAULT_DELTA_VALUE+")");
@@ -108,6 +117,10 @@ public class DisambiguateTranslationSources {
 	private double alpha;
 	private double beta;
 	private int degree;
+	private boolean useTranslator = false;
+	private String translatorId;
+	private String translatorPass;
+	private String translationCache;
 
 	private DisambiguateTranslationSources() {
 	}
@@ -212,7 +225,17 @@ public class DisambiguateTranslationSources {
 
 		useGlosses = cmd.hasOption(USE_GLOSSES_OPTION);
 		useStructure = cmd.hasOption(USE_STRUCTURE_OPTION);
-
+		useTranslator  = cmd.hasOption(TRANSLATIONAPI_ID_OPTION);
+		translatorId = cmd.getOptionValue(TRANSLATIONAPI_ID_OPTION, DEFAULT_TRANSLATIONAPI_ID);
+		translatorPass = cmd.getOptionValue(TRANSLATIONAPI_PASS_OPTION);
+		
+		if (useTranslator && (translatorPass == null || translatorPass.length() == 0)) {
+			System.err.println("Translation API secret is mandatory when translkation API is requested.");
+			printUsage();
+			System.exit(0);
+		}
+		translationCache = cmd.getOptionValue(TRANSLATIONAPI_CACHE_OPTION, DEFAULT_TRANSLATIONAPI_CACHE);
+		
 		rdfFormat = cmd.getOptionValue(RDF_FORMAT_OPTION, DEFAULT_RDF_FORMAT);
 		rdfFormat = rdfFormat.toUpperCase();
 
@@ -400,7 +423,10 @@ public class DisambiguateTranslationSources {
 		SenseNumberBasedTranslationDisambiguationMethod snumDisamb = new SenseNumberBasedTranslationDisambiguationMethod();
 		TverskyBasedTranslationDisambiguationMethod tverskyDisamb = new TverskyBasedTranslationDisambiguationMethod(alpha, beta, delta);
 		TransitiveTranslationClosureDisambiguationMethod transitDisamb = new TransitiveTranslationClosureDisambiguationMethod(degree,lang,modelMap,delta);
-
+		XlingualTverskyBasedTranslationDisambiguationMethod xlingualTverskyDisamb = null;
+		if (useTranslator)
+			xlingualTverskyDisamb = new XlingualTverskyBasedTranslationDisambiguationMethod(modelMap, alpha, beta, delta, translatorId, translatorPass, translationCache);
+		
 		Model inputModel = modelMap.get(lang);
 		StmtIterator translations = inputModel.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
 
@@ -424,9 +450,14 @@ public class DisambiguateTranslationSources {
 
 						if (useGlosses) resSim = tverskyDisamb.selectWordSenses(lexicalEntry, trans);
 
+						if ((resSim == null || resSim.isEmpty()) && useTranslator) { 
+							resSim = xlingualTverskyDisamb.selectWordSenses(lexicalEntry,trans);
+						}
+
 						if ((resSim == null || resSim.isEmpty()) && useStructure) { //No gloss!
 							resSim = transitDisamb.selectWordSenses(lexicalEntry,trans);
 						}
+												
 						// compute confidence if snumdisamb is not empty and confidence is required
 						if (null != evaluator && resSenseNum.size() != 0) {
 							if(resSim==null){

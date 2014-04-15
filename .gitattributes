@@ -294,6 +294,7 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/In
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/SenseNumberBasedTranslationDisambiguationMethod.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/TransitiveTranslationClosureDisambiguationMethod.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/TverskyBasedTranslationDisambiguationMethod.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/XlingualTverskyBasedTranslationDisambiguationMethod.java -text svneol=unset#text/plain
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/DisambiguableSense.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/MFSTranslationDisambiguator.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/TranslationAmbiguity.java -text
@@ -327,6 +328,9 @@ experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/Spac
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/SimilarityMeasure.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/string/Level2Sim.java -text
 experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/string/TverskiIndex.java -text
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/translation/BingAPITranslator.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/translation/CachedTranslator.java -text svneol=unset#text/plain
+experiments/ldd2014/src/main/java/org/getalp/dbnary/experiment/translation/Translator.java -text svneol=unset#text/plain
 experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFinnishGlossFilter.java -text svneol=unset#text/plain
 experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFrenchPreprocessing.java -text svneol=unset#text/plain
 experiments/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestJapaneseGlossFilter.java -text svneol=unset#text/plain

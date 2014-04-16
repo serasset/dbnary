@@ -46,9 +46,9 @@ public class CachedTranslator implements Translator {
 
 				String createString;
 				createString = "create table TM (" +
-						"source TEXT, " +
+						"source VARCHAR(2048), " +
 						"slang VARCHAR(3), " +
-						"target TEXT, " + 
+						"target VARCHAR(2048), " + 
 						"tlang VARCHAR(3)" + 
 						")";
 

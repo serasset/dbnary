@@ -65,7 +65,7 @@ public class DisambiguateTranslationSources {
 	private static final String TRANSLATIONAPI_PASS_OPTION = "tpw";
 	private static final String DEFAULT_TRANSLATIONAPI_ID = "DBnary_def_xans";
 	private static final String TRANSLATIONAPI_CACHE_OPTION = "tcache";
-	private static final String DEFAULT_TRANSLATIONAPI_CACHE = "xlationCache";
+	private static final String DEFAULT_TRANSLATIONAPI_CACHE = "./xlationCache";
 	private static final String DEFAULT_LANGUAGES = "fra,eng,deu,rus";
 	private static final String RDF_FORMAT_OPTION = "f";
 	private static final String DEFAULT_RDF_FORMAT = "turtle";

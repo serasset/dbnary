@@ -1,7 +1,6 @@
 package org.getalp.dbnary.experiment.disambiguation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +12,8 @@ import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
 import org.getalp.dbnary.experiment.translation.BingAPITranslator;
 import org.getalp.dbnary.experiment.translation.CachedTranslator;
 import org.getalp.dbnary.experiment.translation.Translator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -31,6 +32,8 @@ DisambiguationMethod {
 	private TverskiIndex tversky;
 	private Map<String, Model> models;
 	private Translator translator;
+
+	private Logger log = LoggerFactory.getLogger(XlingualTverskyBasedTranslationDisambiguationMethod.class);
 
 
 	public XlingualTverskyBasedTranslationDisambiguationMethod(Map<String, Model> models, double alpha, double beta, double threshold, String translatorId, String translatorPass, String translationCache) {
@@ -74,8 +77,6 @@ DisambiguationMethod {
 			
 			List<Resource> targets = getTargetSenses(trans, null);
 
-			System.out.println(targets);
-
 			if (null != targets && ! targets.isEmpty()) {
 				List<Resource> swsList = getLexicalSenses(lexicalEntry);
 
@@ -98,7 +99,7 @@ DisambiguationMethod {
 							tdef = translator.translate(tdef, tlang, "eng");
 
 						double sim = tversky.compute(sdef, tdef);
-						System.err.println(slang + " : \"" + sdef + "\" <<<===>>> " + tlang + " \"" + tdef +"\" ----> " + sim);
+						log.debug("[{}]: \"{}\" <<<===>>> [{}]: \"{}\" ----> {}", slang, sdef, tlang, tdef, sim);
 						insert(weightedList, sws, tws, sim);
 					}
 				}

@@ -87,11 +87,11 @@ public class CachedTranslator implements Translator {
 			ResultSet rs = getCachedTranslation.executeQuery();
 			if (rs.first()) {
 				target = rs.getString("target");
-				System.err.println("Got cached translation:[" + slang + "] " + target);
+				log.debug("Got cached translation:[{}] {}", slang, target);
 			} else {
 				// Ask for translation and update cache if asked to !
 				target = t.translate(source, slang, tlang);
-				System.err.println("Computed translation:[" + slang + "] " + target);
+				log.debug("Computed translation:[{}] {}", tlang, target);
 
 				if (target != null && doUpdate) {
 					PreparedStatement cacheTranslation = db.prepareStatement(setTranslationMemory);
@@ -101,7 +101,7 @@ public class CachedTranslator implements Translator {
 					cacheTranslation.setString(4, tlang);
 					
 					cacheTranslation.executeUpdate();
-					System.err.println("Updated cached translation:[" + slang + "] " + target);
+					log.debug("Updated cached translation:[{}] {}", slang, target);
 
 				}
 			}

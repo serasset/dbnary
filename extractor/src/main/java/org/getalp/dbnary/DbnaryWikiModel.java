@@ -15,24 +15,16 @@ public class DbnaryWikiModel extends WikiModel {
 	// }
 	
 	protected WiktionaryIndex wi = null;
-	protected String templateNamespace = null;
+//	protected String templateNamespace = null;
 	
 	
 	public DbnaryWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
-		this((WiktionaryIndex) null, locale, null, imageBaseURL, linkBaseURL);
+		this((WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
 	}
-	
-	public DbnaryWikiModel(Locale locale, String templateNamespace, String imageBaseURL, String linkBaseURL) {
-		this((WiktionaryIndex) null, locale, templateNamespace, imageBaseURL, linkBaseURL);
-	}
-	
+		
 	public DbnaryWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
-		this(wi, locale, null, imageBaseURL, linkBaseURL);
-	}
-
-	public DbnaryWikiModel(WiktionaryIndex wi, Locale locale, String templateNamespace, String imageBaseURL, String linkBaseURL) {
 		super(Configuration.DEFAULT_CONFIGURATION, locale, imageBaseURL, linkBaseURL);
-		this.templateNamespace = templateNamespace;
+//		this.templateNamespace = templateNamespace;
 		this.wi = wi;
 	}
 
@@ -96,17 +88,7 @@ public class DbnaryWikiModel extends WikiModel {
 		super.setUp();
 	}
 */
-	@Override
-	public String getTemplateNamespace() {
-		if (null != this.templateNamespace) return this.templateNamespace;
-		return super.get2ndTemplateNamespace();
-	}
 
-	@Override
-	public boolean isTemplateNamespace(String namespace) {
-		if (null != this.templateNamespace) return this.templateNamespace.equalsIgnoreCase(templateNamespace);
-		return super.isTemplateNamespace(namespace);
-	}
 	
 	@Override
     public String getRawWikiContent(String namespace, String articleName, Map<String, String> map) {

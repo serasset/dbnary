@@ -25,11 +25,11 @@ public class ExpandAllWikiModel extends DbnaryWikiModel {
 	private Set<String> templates = null;
 	
 	public ExpandAllWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
-		this((WiktionaryIndex) null, locale, null, imageBaseURL, linkBaseURL);
+		this((WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
 	}
 	
-	public ExpandAllWikiModel(WiktionaryIndex wi, Locale locale, String templateNamespace, String imageBaseURL, String linkBaseURL) {
-		super(wi, locale, templateNamespace, imageBaseURL, linkBaseURL);
+	public ExpandAllWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+		super(wi, locale, imageBaseURL, linkBaseURL);
 	}
 
 	/**

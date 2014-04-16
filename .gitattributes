@@ -416,6 +416,7 @@ extractor/src/main/java/org/getalp/dbnary/wiki/WikiTool.java -text svneol=unset#
 extractor/src/main/java/org/getalp/dilaf/DilafExtractorException.java -text
 extractor/src/main/java/org/getalp/dilaf/DilafLemonDataHandler.java -text
 extractor/src/main/java/org/getalp/dilaf/DilafZarmaExtractor.java -text
+extractor/src/main/resources/Messages_bg.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
 extractor/src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
 extractor/src/main/resources/org/getalp/dbnary/lemon.ttl -text

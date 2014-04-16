@@ -78,7 +78,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
         super(wi, locale, imageBaseURL, linkBaseURL);
         this.delegate = we;
         if (log.isDebugEnabled()) templates = new HashSet<String>();
-        this.expander = new DefinitionsWikiModel(wi, this.fLocale, "Шаблон", this.getImageBaseURL(), this.getWikiBaseURL(), templates);
+        this.expander = new DefinitionsWikiModel(wi, this.fLocale, this.getImageBaseURL(), this.getWikiBaseURL(), templates);
     }
 
     public boolean parseBulgarianBlock(String block) {

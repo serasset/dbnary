@@ -25,15 +25,15 @@ public class DefinitionsWikiModel extends DbnaryWikiModel {
 	private Set<String> templates = null;
 	
 	public DefinitionsWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
-		this((WiktionaryIndex) null, locale, null, imageBaseURL, linkBaseURL);
+		this((WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
 	}
 	
-	public DefinitionsWikiModel(WiktionaryIndex wi, Locale locale, String templateNamespace, String imageBaseURL, String linkBaseURL) {
-		super(wi, locale, templateNamespace, imageBaseURL, linkBaseURL);
+	public DefinitionsWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+		super(wi, locale, imageBaseURL, linkBaseURL);
 	}
 	
-	public DefinitionsWikiModel(WiktionaryIndex wi, Locale locale, String templateNamespace, String imageBaseURL, String linkBaseURL, Set<String> templates) {
-		super(wi, locale, templateNamespace, imageBaseURL, linkBaseURL);
+	public DefinitionsWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL, Set<String> templates) {
+		super(wi, locale, imageBaseURL, linkBaseURL);
 		this.templates = templates;
 	}
 

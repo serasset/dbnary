@@ -356,7 +356,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
             String leftGroup = linkMatcher.group(1) ;
             if (leftGroup != null && ! leftGroup.equals("") && 
             		! leftGroup.startsWith("Wikisaurus:") &&
-            		! leftGroup.startsWith("Catégorie:")) {
+            		! leftGroup.startsWith("Catégorie:") &&
+            		! leftGroup.startsWith("#")) {
             	wdh.registerNymRelation(leftGroup, synRelation);  
             }
         }      

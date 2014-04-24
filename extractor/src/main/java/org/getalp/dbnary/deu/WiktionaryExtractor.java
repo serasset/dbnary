@@ -17,11 +17,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-	protected final static String senseNumberRegExp = "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d)*\\.?[abcdefghij]?)";
+	protected final static String senseNumberRegExp = "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d)*\\.?[abcdefghijklmn]?)";
+	protected final static String senseNumberOrRangeRegExp = "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d|-|–|–)*\\.?[abcdefghij]?)";
+	protected static final String simpleNumListFilter = "^\\s*(" + senseNumberRegExp +"(?:\\s*[\\,\\-–]\\s*" + senseNumberRegExp +")*)\\s*$";
+
 	protected final static String languageSectionPatternString = "={2}\\s*([^\\(]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
 	protected final static String partOfSpeechPatternString = "={3}[^\\{]*\\{\\{Wortart\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
 	protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
 	protected final static String germanDefinitionPatternString = "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
+	protected final static String germanNymLinePatternString = "^:{1,3}\\s*(?:\\[(" + senseNumberOrRangeRegExp + "*)\\])?([^\n\r]*)$";
 
 	private final int NODATA = 0;
 	private final int TRADBLOCK = 1;
@@ -38,6 +42,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected final static String macroOrPOSPatternString;
 	protected final static Pattern languageSectionPattern;
 	protected final static Pattern germanDefinitionPattern;
+	protected final static Pattern germanNymLinePattern;
 	protected final static String multilineMacroPatternString;
 	protected final static Pattern macroOrPOSPattern; // Combine macro pattern
 	// and pos pattern.
@@ -68,7 +73,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 		macroOrPOSPattern = Pattern.compile(macroOrPOSPatternString);
 		germanDefinitionPattern = Pattern.compile(germanDefinitionPatternString, Pattern.MULTILINE);
-
+		germanNymLinePattern = Pattern.compile(germanNymLinePatternString, Pattern.MULTILINE);
+		
 		posMarkers = new HashSet<String>(20);
 		posMarkers.add("Substantiv"); // Should I get the
 		// Toponym/Vorname/Nachname additional
@@ -563,7 +569,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     @Override
 	protected void extractNyms(String synRelation, int startOffset, int endOffset) {
 
-		Matcher nymLineMatcher = germanDefinitionPattern.matcher(this.pageContent);
+		Matcher nymLineMatcher = germanNymLinePattern.matcher(this.pageContent);
 		nymLineMatcher.region(startOffset, endOffset);
 
 		String currentLevel1SenseNumber = "";

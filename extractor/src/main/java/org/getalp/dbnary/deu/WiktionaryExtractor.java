@@ -560,6 +560,65 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		}
 	}
 
+    @Override
+	protected void extractNyms(String synRelation, int startOffset, int endOffset) {
+
+		Matcher nymLineMatcher = germanDefinitionPattern.matcher(this.pageContent);
+		nymLineMatcher.region(startOffset, endOffset);
+
+		String currentLevel1SenseNumber = "";
+		String currentLevel2SenseNumber = "";
+		while (nymLineMatcher.find()) {
+			String nymLine = nymLineMatcher.group(2);
+			String senseNum = nymLineMatcher.group(1);
+			if (null == senseNum) {
+				log.debug("Null sense number in synonym \"{}\" for entry {}", nymLine, this.wiktionaryPageName);
+			} else {
+				senseNum = senseNum.trim();
+				senseNum = senseNum.replaceAll("<[^>]*>", "");
+				if (nymLineMatcher.group().length() >= 2 && nymLineMatcher.group().charAt(1) == ':') {
+					if (nymLineMatcher.group().length() >= 3 && nymLineMatcher.group().charAt(2) == ':') {
+						// Level 3
+						log.debug("Level 3 definition: \"{}\" in entry {}", nymLineMatcher.group(), this.wiktionaryPageName);
+						if (! senseNum.startsWith(currentLevel2SenseNumber)) {
+							senseNum = currentLevel2SenseNumber + senseNum;
+						}
+						log.debug("Sense number is: {}", senseNum);
+					} else {
+						// Level 2
+						// log.debug("Level 2 definition: \"{}\" in entry {}", definitionMatcher.group(), this.wiktionaryPageName);
+						if (! senseNum.startsWith(currentLevel1SenseNumber)) {
+							senseNum = currentLevel1SenseNumber + senseNum;
+						}
+						currentLevel2SenseNumber = senseNum;
+					}
+				} else {
+					// Level 1 definition
+					currentLevel1SenseNumber = senseNum;
+					currentLevel2SenseNumber = senseNum;
+				}
+				
+				if (nymLine != null && !nymLine.equals("")) {
+					
+					Matcher linkMatcher = WikiPatterns.linkPattern.matcher(nymLine);
+			        while (linkMatcher.find()) {
+			            // It's a link, only keep the alternate string if present.
+			            String leftGroup = linkMatcher.group(1) ;
+			            if (leftGroup != null && ! leftGroup.equals("") && 
+			            		! leftGroup.startsWith("Wikisaurus:") &&
+			            		! leftGroup.startsWith("Catégorie:") &&
+			            		! leftGroup.startsWith("#")) {
+			            	wdh.registerNymRelation(leftGroup, synRelation, senseNum);  
+			            }
+			        }      
+					
+				}
+			}
+		}
+		
+	
+    }
+
 
 	@Override
 	protected void extractDefinitions(int startOffset, int endOffset) {

@@ -257,7 +257,13 @@ public class LMFBasedRDFDataHandler implements WiktionaryDataHandler {
     	aBox.add(aBox.createStatement(nym, entryRelationLabelProperty, synRelation));
     	aBox.add(aBox.createStatement(nym, entryRelationTargetProperty, targetResource));
     }
- 
+
+	
+	@Override
+	public void registerNymRelation(String target, String synRelation, String gloss) {
+		registerNymRelation(target, synRelation);
+	}
+	
 	@Override
 	public void registerPronunciation(String pron, String lang) {
 		// TODO Auto-generated method stub

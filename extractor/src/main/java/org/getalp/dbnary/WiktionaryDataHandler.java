@@ -51,6 +51,9 @@ public interface WiktionaryDataHandler {
     public void registerAlternateSpelling(String alt);
     
     public void registerNymRelation(String target, String synRelation);
+    
+    public void registerNymRelation(String target, String synRelation, String gloss);
+
 
     public void registerTranslation(String lang, String currentGlose, String usage, String word);
 

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.ReifiedStatement;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -43,6 +44,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	private int currentSenseNumber;
 	private int currentSubSenseNumber;
 	private CounterSet translationCount = new CounterSet();
+	private CounterSet reifiedNymCount = new CounterSet();
 	protected String extractedLang;
 	protected Resource lexvoExtractedLanguage;
 
@@ -163,6 +165,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		aBox.setNsPrefix("rdfs", RDFS);
 		aBox.setNsPrefix("dcterms", DCTerms.NS);
 		aBox.setNsPrefix("lexvo", LEXVO);
+		aBox.setNsPrefix("rdf", RDF.getURI());
 
 	}
 	
@@ -176,6 +179,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
         currentWiktionaryPos = null;
         currentLexieCount.resetAll();
         translationCount.resetAll();
+        reifiedNymCount.resetAll();
         currentPreferredWrittenRepresentation = null;
         currentSharedPronunciations = new HashSet<PrononciationPair>();
         
@@ -215,6 +219,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
         
         // All translation numbers are local to a lexEntry
         translationCount.resetAll();
+        reifiedNymCount.resetAll();
 
         currentPreferredWrittenRepresentation = aBox.createResource(); 
         
@@ -394,6 +399,39 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		
     	aBox.add(aBox.createStatement(currentLexEntry, nymProperty, targetResource));
     }
+	
+	@Override
+	public void registerNymRelation(String target, String synRelation, String gloss) {
+		if (null == currentLexEntry) {
+			log.debug("Registering Lexical Relation when lex entry is null in \"{}\".", this.currentMainLexEntry);
+			return; // Don't register anything if current lex entry is not known.
+		}
+		// Some links point to Annex pages or Images, just ignore these.
+		int colon = target.indexOf(':');
+		if (colon != -1) {
+			return;
+		}
+		int hash = target.indexOf('#');
+		if (hash != -1) {
+			// The target contains an intra page href. Remove it from the target uri and keep it in the relation.
+			target = target.substring(0,hash);
+			// TODO: keep additional intra-page href
+	    	// aBox.add(aBox.createStatement(nym, isAnnotatedBy, target.substring(hash)));
+		}
+		Property nymProperty = nymPropertyMap.get(synRelation);
+		
+		Resource targetResource = aBox.createResource(NS + uriEncode(target), vocableEntryType);
+		
+		Statement nymR = aBox.createStatement(currentLexEntry, nymProperty, targetResource);
+    	aBox.add(nymR);
+		ReifiedStatement rnymR = nymR.createReifiedStatement(computeNymId(synRelation));
+		rnymR.addProperty(glossProperty, gloss);
+		
+	}
+
+	private String computeNymId(String nym) {
+		return NS + "__" + nym + "_" + reifiedNymCount.incr(nym) + "_" + currentEncodedPageName;
+	}
 
 	@Override
 	public void registerNymRelationOnCurrentSense(String target, String synRelation) {
@@ -421,6 +459,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		
     	aBox.add(aBox.createStatement(currentSense, nymProperty, targetResource));
     }
+	
 	
 	@Override
 	public void registerPronunciation(String pron, String lang) {

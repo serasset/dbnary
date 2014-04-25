@@ -577,9 +577,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		while (nymLineMatcher.find()) {
 			String nymLine = nymLineMatcher.group(2);
 			String senseNum = nymLineMatcher.group(1);
-			if (null == senseNum) {
-				log.debug("Null sense number in synonym \"{}\" for entry {}", nymLine, this.wiktionaryPageName);
-			} else {
+			if (null != senseNum) {
 				senseNum = senseNum.trim();
 				senseNum = senseNum.replaceAll("<[^>]*>", "");
 				if (nymLineMatcher.group().length() >= 2 && nymLineMatcher.group().charAt(1) == ':') {
@@ -603,22 +601,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					currentLevel1SenseNumber = senseNum;
 					currentLevel2SenseNumber = senseNum;
 				}
+			}
+			
+			if (nymLine != null && !nymLine.equals("")) {
 				
-				if (nymLine != null && !nymLine.equals("")) {
-					
-					Matcher linkMatcher = WikiPatterns.linkPattern.matcher(nymLine);
-			        while (linkMatcher.find()) {
-			            // It's a link, only keep the alternate string if present.
-			            String leftGroup = linkMatcher.group(1) ;
-			            if (leftGroup != null && ! leftGroup.equals("") && 
-			            		! leftGroup.startsWith("Wikisaurus:") &&
-			            		! leftGroup.startsWith("Catégorie:") &&
-			            		! leftGroup.startsWith("#")) {
-			            	wdh.registerNymRelation(leftGroup, synRelation, senseNum);  
-			            }
-			        }      
-					
-				}
+				Matcher linkMatcher = WikiPatterns.linkPattern.matcher(nymLine);
+		        while (linkMatcher.find()) {
+		            // It's a link, only keep the alternate string if present.
+		            String leftGroup = linkMatcher.group(1) ;
+		            if (leftGroup != null && ! leftGroup.equals("") && 
+		            		! leftGroup.startsWith("Wikisaurus:") &&
+		            		! leftGroup.startsWith("Catégorie:") &&
+		            		! leftGroup.startsWith("#")) {
+		            	if (null == senseNum) {
+		            		wdh.registerNymRelation(leftGroup, synRelation);  
+		            	} else {
+		            		wdh.registerNymRelation(leftGroup, synRelation, senseNum);  
+		            	}
+		            }
+		        }      
+				
 			}
 		}
 		

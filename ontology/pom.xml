@@ -106,7 +106,8 @@
                 -i ${basedir}/src/main/resources/org/getalp/dbnary/dbnary.owl \
                 --package org.getalp.dbnary \
                 -o ${project.build.directory}/generated-sources/java \
-                -n DBnaryOnt
+                -n DBnaryOnt \
+                --owl
               </commandlineArgs>
             </configuration>
           </execution>
@@ -122,7 +123,8 @@
                 -i ${basedir}/src/main/resources/org/getalp/dbnary/lemon.ttl \
                 --package org.getalp.dbnary \
                 -o ${project.build.directory}/generated-sources/java \
-                -n LemonOnt
+                -n LemonOnt \
+                --owl
               </commandlineArgs>
             </configuration>
           </execution>
@@ -138,7 +140,8 @@
                 -i ${basedir}/src/main/resources/org/getalp/dbnary/lexinfo.owl \
                 --package org.getalp.dbnary \
                 -o ${project.build.directory}/generated-sources/java \
-                -n LexinfoOnt
+                -n LexinfoOnt \
+                --owl
               </commandlineArgs>
             </configuration>
           </execution>

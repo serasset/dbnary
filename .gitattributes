@@ -447,3 +447,7 @@ extractor/src/site/site.xml -text
 extractor/src/test/java/org/getalp/blexisma/wiktionary/TestDbnaryWikiModel.java -text svneol=unset#text/plain
 extractor/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
 extractor/src/test/resources/org/getalp/blexisma/wiktionary/sample-semnet.snet -text
+ontology/pom.xml -text
+ontology/src/main/resources/org/getalp/dbnary/dbnary.owl -text
+ontology/src/main/resources/org/getalp/dbnary/lemon.ttl -text
+ontology/src/main/resources/org/getalp/dbnary/lexinfo.owl -text

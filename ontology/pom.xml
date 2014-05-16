@@ -40,10 +40,6 @@
   </organization>
 
   <distributionManagement>
-    <site>
-      <id>dbnary.website</id>
-      <url>scpexe://forge.imag.fr/home/groups/dbnary/htdocs/</url>
-    </site>
     <repository>
       <id>getalp.repository</id>
       <name>Getalp Projects and third party repository</name>

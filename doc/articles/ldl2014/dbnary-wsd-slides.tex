@@ -17,12 +17,14 @@
 
 \usepackage{verbatim}
 
-\usepackage[french,algoruled,vlined,noend]{algorithm2e}
-\SetKwIF{Si}{SinonSi}{Sinon}{si}{}{sinon si}{sinon}{}
-\SetKwFor{Pour}{pour}{}{}
-\SetKwFor{RepeterNFois}{répéter}{fois}{}
-\SetKwFor{TantQue}{tant que}{}{}%
-\SetKwFor{PourChaque}{pour chaque}{}{}%
+\usepackage{mdframed}
+
+\usepackage[algoruled,vlined,noend]{algorithm2e}
+%\SetKwIF{Si}{SinonSi}{Sinon}{si}{}{sinon si}{sinon}{}
+%\SetKwFor{Pour}{pour}{}{}
+%\SetKwFor{RepeterNFois}{répéter}{fois}{}
+%\SetKwFor{TantQue}{tant que}{}{}%
+%\SetKwFor{PourChaque}{pour chaque}{}{}%
 
 \usepackage{CJKutf8}
 
@@ -55,8 +57,8 @@
 
 \title[Disambiguating Translations in DBnary]{Attaching Translations to Proper Lexical Senses in DBnary}
 %\subtitle{Wiktionnaire, RDF, Linked Data: une colonne vertébrale pour le lexique ?}
-\author[Tchechmedjiev et al.]{Andon Tchechmedjiev, Gilles Sérasset, Jérôme Goulian, Didier Schwab}
-\institute[GETALP-LIG, Grenoble]{GETALP-LIG, Univ Grenoble Alpes, France}
+\author[Tchechmedjiev et al. \hspace{-2mm}]{Andon Tchechmedjiev, Gilles Sérasset, Jérôme Goulian, Didier Schwab}
+\institute[\fontsize{1.8mm}{1mm}\selectfont GETALP-LIG, Grenoble]{GETALP-LIG, Univ Grenoble Alpes, France}
 \titlegraphic{\pgfuseimage{logobig}}
 \date{May 27, 2014}
 
@@ -87,19 +89,19 @@
 	\begin{itemize} 
 	\item Wiktionary
 	\end{itemize}
-\item Intéropérabilité "à grain fin"\\
+\item ``Fine grained'' interoperability\\
 	\begin{itemize} 
 	\item RDF
 	\end{itemize}
-\item Un modèle standard
+\item A standard model
 	\begin{itemize} 
-	\item LEMON (inspiré de LMF)
+	\item LEMON (inspired by LMF)
 	\end{itemize}
-\item Multilingue
+\item Multilingual
 	\begin{itemize} 
-	\item extraction de plusieurs "language edition" de Wiktionary
+	\item Extraction of several language edition of Wiktionary
 	\end{itemize}
-\item Disponible, utilisable et utilisé
+\item Available, Usable et Used
 	\begin{itemize} 
 	\item Linked Data
 	\end{itemize}
@@ -108,7 +110,7 @@
 }
 
 \frame{  
-\frametitle{Dbnary: Wiktionary comme graphe lexical}
+\frametitle{Dbnary: Wiktionary as a lexical graph}
 
      \includegraphics<1>[width=\linewidth]{img/cat1.png}
      \includegraphics<2>[width=\linewidth]{img/cat2.png}
@@ -132,18 +134,18 @@
 }
 
 \frame{
-\frametitle{Principe d'extraction}
+\frametitle{Extraction principles}
 \begin{itemize}
-\item 8 éditions extraites: en, fr, de, ru, it, pt, fi, el
-\item Extraction à partir des dumps de wikimedia
-\item Chaque édition met à jour son dump tous les 10-15j
-\item l'extraction est faite en direct, les fichiers sont accessibles en ligne immédiatement
-\item le serveur "Linked Data" contient des données plus anciennes
+\item 10 editions extracted: en, fr, de, ru, it, pt, fi, el
+\item Extraction from wikimedia dumps
+\item Every edition is updated with the latest dump every 10-15 days
+\item Extraction is performed on-line, the files are available on-the-fly
+\item A Linked Data server holds older version of the dataset
 \end{itemize}
 }
 
 \frame{  
-\frametitle{Taille des données (aujourd'hui)}
+\frametitle{Dataset Size (as of today)}
 
 \begin{table}[htb]
 \begin{tabular}{lrrrr}
@@ -163,7 +165,7 @@
 }
 
 \frame{  
-\frametitle{Taille des données (aujourd'hui)}
+\frametitle{Dataset Size (as of today)}
 \begin{table}[htb]
 \begin{tabular}{lrrrrrr}
  & \textbf{syn}  & \textbf{ant} & \textbf{hyper} & \textbf{hypo} & \textbf{mero} & \textbf{holo} \\
@@ -182,7 +184,7 @@
 }
 
 \frame{  
-\frametitle{Taille des données (aujourd'hui)}
+\frametitle{Dataset Size (as of today)}
 \begin{table}[htb]
 \begin{tabular}{lrrrrrrrrrrrrr}
 \textbf{Source/Target}  & \textbf{deu} & \textbf{ell} & \textbf{eng} & \textbf{fin} & \textbf{fra} & \textbf{ita} & \textbf{por} & \textbf{rus}& \textbf{others} & \textbf{Total} & \textbf{\# of target languages}\\
@@ -200,7 +202,7 @@
 }
 
 \frame{  
-\frametitle{Taille des données (aujourd'hui)}
+\frametitle{Dataset Size (as of today)}
 \begin{table}[htb]
 \begin{tabular}{lrrrrrr}
 \textbf{Source/Target}  & \textbf{por} & \textbf{rus}& \textbf{others} & \textbf{Total} & \textbf{\# of lang}\\
@@ -218,19 +220,19 @@
 }
 
 \frame{  
-\frametitle{Qualité des données}
+\frametitle{Quality of the data}
 
 \begin{itemize}
-\item Évaluer la qualité des données est difficile
-\item Qualité de l'extraction $\ne$ qualité des données
-\item Pas d'application particulière actuellement
-\item Pas encore d'alignement avec d'autres ressources (wordnet, jeuxdemots, ...)
-\item Mais quelques indices...
+\item Evaluating the quality of the data is  difficult
+\item Extraction quality $\ne$ data quality
+\item No particular applications at the moment
+\item No alignments yet with other resources (Wordnet, Jeuxdemots, ...)
+\item However, several direction are available
 \end{itemize}
 }
 
 \frame{  
-\frametitle{Qualité des données (hier)}
+\frametitle{Data quality (yesterday)}
 \begin{table}[htb]
 \begin{tabular}{lrr}
 \textbf{language} & \textbf{\# of transl.}\\
@@ -255,19 +257,19 @@
 \frame{  
 \frametitle{The problem}
 
-\centering{Use part of Andon's graph of the 1rst year presentation
-}
+\only<1>{\begin{mdframed}\includegraphics[width=\linewidth]{img/dbnarystrc1}\end{mdframed}}
+\only<2>{\begin{mdframed}\includegraphics[width=\linewidth]{img/dbnarystrc2}\end{mdframed}}
 
 }
 
-
 \subsection{Selecting a Similarity Measure}
 
-\subsection{Selecting a Similarity Measure}
+
+\subsection{Selecting parameter values}
 
 \section{Evaluation}
 
-\subsection{Extracting an Endogeneous Gold Standard}
+\subsection{Extraction of an Endogeneous Gold Standard}
 
 \subsection{Results}
 
@@ -277,7 +279,7 @@
 \frametitle{Conclusion}
 
 \begin{itemize}
-
+\item 
 \end{itemize}
 }
 

@@ -1,0 +1,289 @@
+\documentclass{beamer}
+
+\usepackage{beamerthemesplit}
+
+\usetheme{Boadilla} 
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{vietnam}
+\usepackage[english]{babel}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage{tikz}
+\usepackage{eurosym}
+
+\usepackage{alltt}
+
+\usepackage{verbatim}
+
+\usepackage[french,algoruled,vlined,noend]{algorithm2e}
+\SetKwIF{Si}{SinonSi}{Sinon}{si}{}{sinon si}{sinon}{}
+\SetKwFor{Pour}{pour}{}{}
+\SetKwFor{RepeterNFois}{répéter}{fois}{}
+\SetKwFor{TantQue}{tant que}{}{}%
+\SetKwFor{PourChaque}{pour chaque}{}{}%
+
+\usepackage{CJKutf8}
+
+\usepackage[overlap, CJK]{ruby}
+\usepackage{CJKulem}
+
+\renewcommand{\rubysep}{-0.2ex}
+
+\newenvironment{SChinese}{%
+  \CJKfamily{gbsn}%
+  \CJKtilde
+  \CJKnospace}{}
+\newenvironment{TChinese}{%
+  \CJKfamily{bsmi}%
+  \CJKtilde
+  \CJKnospace}{}
+\newenvironment{Japanese}{%
+  \CJKfamily{min}%
+  \CJKtilde
+  \CJKnospace}{}
+\newenvironment{Korean}{%
+  \CJKfamily{mj}}{}
+  
+\newcommand{\cntext}[1]{\begin{CJK}{UTF8}{}\begin{Japanese}#1\end{Japanese}\end{CJK}}
+
+\pgfdeclareimage[height=0.8cm]{logo}{img/getalp}
+\pgfdeclareimage[height=1.5cm]{logobig}{img/getalp} 
+
+\logo{\pgfuseimage{logo}}
+
+\title[Disambiguating Translations in DBnary]{Attaching Translations to Proper Lexical Senses in DBnary}
+%\subtitle{Wiktionnaire, RDF, Linked Data: une colonne vertébrale pour le lexique ?}
+\author[Tchechmedjiev et al.]{Andon Tchechmedjiev, Gilles Sérasset, Jérôme Goulian, Didier Schwab}
+\institute[GETALP-LIG, Grenoble]{GETALP-LIG, Univ Grenoble Alpes, France}
+\titlegraphic{\pgfuseimage{logobig}}
+\date{May 27, 2014}
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\begin{document}
+
+\frame{\titlepage}
+
+
+\section{Introduction}
+
+
+
+\section{Overview of the DBnary dataset}
+
+\frame{\frametitle{What is Dbnary?}
+\begin{itemize}
+\item Extracting lexical data from 12 different Wiktionary language editions
+	\begin{itemize} 
+	\item Wiktionary
+	\end{itemize}
+\item Intéropérabilité "à grain fin"\\
+	\begin{itemize} 
+	\item RDF
+	\end{itemize}
+\item Un modèle standard
+	\begin{itemize} 
+	\item LEMON (inspiré de LMF)
+	\end{itemize}
+\item Multilingue
+	\begin{itemize} 
+	\item extraction de plusieurs "language edition" de Wiktionary
+	\end{itemize}
+\item Disponible, utilisable et utilisé
+	\begin{itemize} 
+	\item Linked Data
+	\end{itemize}
+	
+\end{itemize}
+}
+
+\frame{  
+\frametitle{Dbnary: Wiktionary comme graphe lexical}
+
+     \includegraphics<1>[width=\linewidth]{img/cat1.png}
+     \includegraphics<2>[width=\linewidth]{img/cat2.png}
+     \includegraphics<3>[width=\linewidth]{img/cat3.png}
+     \includegraphics<4>[width=\linewidth]{img/cat4.png}
+     \includegraphics<5>[width=\linewidth]{img/cat5.png}
+     \includegraphics<6>[width=\linewidth]{img/cat6.png}
+     \includegraphics<7>[width=\linewidth]{img/cat_struct}
+     \includegraphics<8>[width=\linewidth]{img/cat_syn}
+     \includegraphics<9>[width=\linewidth]{img/cat_translations}
+
+}
+
+\frame{  
+\frametitle{LEMON}
+
+     \includegraphics<1>[width=\linewidth]{img/lemon-core.png}
+     \includegraphics<2>[width=\linewidth]{img/lemon-descr.png}
+     \includegraphics<3>[width=\linewidth]{img/dbnary-lemon-xtension.pdf}
+
+}
+
+\frame{
+\frametitle{Principe d'extraction}
+\begin{itemize}
+\item 8 éditions extraites: en, fr, de, ru, it, pt, fi, el
+\item Extraction à partir des dumps de wikimedia
+\item Chaque édition met à jour son dump tous les 10-15j
+\item l'extraction est faite en direct, les fichiers sont accessibles en ligne immédiatement
+\item le serveur "Linked Data" contient des données plus anciennes
+\end{itemize}
+}
+
+\frame{  
+\frametitle{Taille des données (aujourd'hui)}
+
+\begin{table}[htb]
+\begin{tabular}{lrrrr}
+ & \textbf{Entries} & \textbf{Vocables} & \textbf{Senses} & \textbf{Translations}\\
+ \hline
+\textbf{eng} & 527067 & 504594 & 421232 & 1126463 \\
+\textbf{fra} & 273822 & 283847 & 358921 & 464956 \\
+\textbf{deu} & 135103 & 201736 & 95593 & 471892 \\
+\textbf{rus} & 127271 & 139235 & 99243 & 325345 \\
+\textbf{ell} & 74056 & 74800 & 34932 & 55652 \\
+\textbf{fin} & 48164 & 48050 & 56559 & 118728 \\
+\textbf{por} & 43042 & 44061 & 77631 & 225065 \\
+\textbf{ita} & 25279 & 31935 & 35061 & 57796 \\
+\end{tabular}
+\caption{Number of resources by type and language, sorted by number of lexical entries.}\label{globalsize}
+\end{table}
+}
+
+\frame{  
+\frametitle{Taille des données (aujourd'hui)}
+\begin{table}[htb]
+\begin{tabular}{lrrrrrr}
+ & \textbf{syn}  & \textbf{ant} & \textbf{hyper} & \textbf{hypo} & \textbf{mero} & \textbf{holo} \\
+ \hline
+\textbf{eng} & 31461& 6877& 959& 1103& 114& 0 \\ 
+\textbf{fra} & 30088& 6735& 8215& 3557& 943& 1847 \\ 
+\textbf{deu} & 27516& 14315& 30202& 9509& 0& 0 \\ 
+\textbf{rus} & 22631& 9204& 21028& 4756& 0& 0 \\ 
+\textbf{ell} & 3975& 1116& 0& 0& 0& 0 \\ 
+\textbf{fin} & 2255& 0& 0& 0& 0& 0 \\ 
+\textbf{por} & 3527& 575& 6& 3& 0& 0 \\ 
+\textbf{ita} & 7091& 2337& 0& 0& 0& 0 \\ 
+\end{tabular}
+\caption{Number of lexicon-semantic relations. Languages are sorted according to their number of lexical entries.}\label{nymsize}
+\end{table}
+}
+
+\frame{  
+\frametitle{Taille des données (aujourd'hui)}
+\begin{table}[htb]
+\begin{tabular}{lrrrrrrrrrrrrr}
+\textbf{Source/Target}  & \textbf{deu} & \textbf{ell} & \textbf{eng} & \textbf{fin} & \textbf{fra} & \textbf{ita} & \textbf{por} & \textbf{rus}& \textbf{others} & \textbf{Total} & \textbf{\# of target languages}\\
+\textbf{eng} & 62501 & 23794 & 1 & 74938 & 57959 & 37467 & 30256 & 74837 & 764710 & 1126463 & 1143\\
+\textbf{fra} & 34608 & 7063 & 74687 & 7589 & 12 & 18806 & 17784 & 7783 & 296624 & 464956 & 952\\
+\textbf{deu} & 0 & 2675 & 81015 & 4947 & 67143 & 41485 & 8872 & 17354 & 248401 & 471892 & 355\\
+\textbf{rus} & 23056 & 3295 & 48559 & 3966 & 14776 & 12643 & 5567 & 0 & 206709 & 318571 & 490\\
+\textbf{ell} & 2242 & 2 & 10090 & 1056 & 8436 & 1470 & 1149 & 1315 & 29892 & 55652 & 246\\
+\textbf{fin} & 8046 & 918 & 30103 & 0 & 6700 & 3856 & 2196 & 7997 & 58912 & 118728 & 329\\
+\textbf{por} & 7000 & 2816 & 11284 & 4607 & 8720 & 7096 & 4 & 4396 & 179142 & 225065 & 695\\
+\textbf{ita} & 4619 & 506 & 17539 & 925 & 4461 & 75 & 1219 & 938 & 27514 & 57796 & 315\\
+\end{tabular}
+\caption{Number of translations from/to the 8 currently extracted languages. Source languages are sorted according to their number of lexical entries. Target languages are sorted by their ISO 639-3 language code. The number of different target languages is also given.}\label{tradsize1}
+\end{table}
+}
+
+\frame{  
+\frametitle{Taille des données (aujourd'hui)}
+\begin{table}[htb]
+\begin{tabular}{lrrrrrr}
+\textbf{Source/Target}  & \textbf{por} & \textbf{rus}& \textbf{others} & \textbf{Total} & \textbf{\# of lang}\\
+\textbf{eng} & 30256 & 74837 & 764710 & 1126463 & 1143\\
+\textbf{fra} & 17784 & 7783 & 296624 & 464956 & 952\\
+\textbf{deu} & 8872 & 17354 & 248401 & 471892 & 355\\
+\textbf{rus} &  5567 & 0 & 206709 & 318571 & 490\\
+\textbf{ell} &  1149 & 1315 & 29892 & 55652 & 246\\
+\textbf{fin} &  2196 & 7997 & 58912 & 118728 & 329\\
+\textbf{por} &  4 & 4396 & 179142 & 225065 & 695\\
+\textbf{ita} &  1219 & 938 & 27514 & 57796 & 315\\
+\end{tabular}
+\caption{Number of translations from/to the 8 currently extracted languages. Source languages are sorted according to their number of lexical entries. Target languages are sorted by their ISO 639-3 language code. The number of different target languages is also given.}\label{tradsize2}
+\end{table}
+}
+
+\frame{  
+\frametitle{Qualité des données}
+
+\begin{itemize}
+\item Évaluer la qualité des données est difficile
+\item Qualité de l'extraction $\ne$ qualité des données
+\item Pas d'application particulière actuellement
+\item Pas encore d'alignement avec d'autres ressources (wordnet, jeuxdemots, ...)
+\item Mais quelques indices...
+\end{itemize}
+}
+
+\frame{  
+\frametitle{Qualité des données (hier)}
+\begin{table}[htb]
+\begin{tabular}{lrr}
+\textbf{language} & \textbf{\# of transl.}\\
+ \hline
+\textbf{eng} & 5110 (99.1 \%) \\
+\textbf{fra} & 5799 (107.0 \%) \\
+\textbf{deu} & 10287 (99.2 \%)\\
+\textbf{rus} & 8436 (24811.7 \%) \\
+\textbf{ell} & 2598 (64.3 \%) \\
+\textbf{fin} & 7245 (28980 \%) \\
+\textbf{por} & 17720 (93.2 \%) \\
+\textbf{ita} & 7855 (3167.3 \%) 
+\end{tabular}
+\caption{Extracted translations vs interwiki links, on a random sample of 1000 entries.}\label{iwlinks}
+\end{table}
+}
+
+\section{Attaching Translation to their Proper Lexical Sense}
+
+\subsection{Problem}
+
+\frame{  
+\frametitle{The problem}
+
+\centering{Use part of Andon's graph of the 1rst year presentation
+}
+
+}
+
+
+\subsection{Selecting a Similarity Measure}
+
+\subsection{Selecting a Similarity Measure}
+
+\section{Evaluation}
+
+\subsection{Extracting an Endogeneous Gold Standard}
+
+\subsection{Results}
+
+\section{Conclusion}
+
+\frame{  
+\frametitle{Conclusion}
+
+\begin{itemize}
+
+\end{itemize}
+}
+
+
+\end{document}
+
+
+
+

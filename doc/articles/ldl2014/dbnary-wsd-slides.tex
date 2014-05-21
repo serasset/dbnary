@@ -48,6 +48,9 @@
 \newenvironment{Korean}{%
   \CJKfamily{mj}}{}
   
+  
+\DeclareMathOperator*{\argmax}{arg\!\max}
+  
 \newcommand{\cntext}[1]{\begin{CJK}{UTF8}{}\begin{Japanese}#1\end{Japanese}\end{CJK}}
 
 \pgfdeclareimage[height=0.8cm]{logo}{img/getalp}
@@ -127,9 +130,9 @@
 \frame{  
 \frametitle{LEMON}
 
-     \includegraphics<1>[width=\linewidth]{img/lemon-core.png}
-     \includegraphics<2>[width=\linewidth]{img/lemon-descr.png}
-     \includegraphics<3>[width=\linewidth]{img/dbnary-lemon-xtension.pdf}
+     \includegraphics<1>[width=0.95\linewidth]{img/lemon-core.png}
+     \includegraphics<2>[width=0.95\linewidth]{img/lemon-descr.png}
+     \includegraphics<3>[width=0.95\linewidth]{img/dbnary-lemon-xtension.pdf}
 
 }
 
@@ -186,7 +189,7 @@
 \frame{  
 \frametitle{Dataset Size (as of today)}
 \begin{table}[htb]
-\begin{tabular}{lrrrrrrrrrrrrr}
+\begin{tabular}{lrrrrrrrrrrrrr}\tiny
 \textbf{Source/Target}  & \textbf{deu} & \textbf{ell} & \textbf{eng} & \textbf{fin} & \textbf{fra} & \textbf{ita} & \textbf{por} & \textbf{rus}& \textbf{others} & \textbf{Total} & \textbf{\# of target languages}\\
 \textbf{eng} & 62501 & 23794 & 1 & 74938 & 57959 & 37467 & 30256 & 74837 & 764710 & 1126463 & 1143\\
 \textbf{fra} & 34608 & 7063 & 74687 & 7589 & 12 & 18806 & 17784 & 7783 & 296624 & 464956 & 952\\
@@ -259,13 +262,97 @@
 
 \only<1>{\begin{mdframed}\includegraphics[width=\linewidth]{img/dbnarystrc1}\end{mdframed}}
 \only<2>{\begin{mdframed}\includegraphics[width=\linewidth]{img/dbnarystrc2}\end{mdframed}}
+\begin{overprint}
+\onslide<3>
+\begin{center}
+\[T, \mbox{ the set of translation relations}\]
+\[
+\forall T_i \in T, S=Senses(Source(T_i)): 
+\]
+\[
+  M_S = \max_{S_k\in S}(Score((Gloss(T_i),Def(S^k))),
+\]
+\vfill
+\[
+\argmax_{S_i\in S}^\delta \{Score(Gloss(T_i),Def(S^k))\}=
+\]
+\[
+\{S^k\in S|  M_S > Score((Gloss(T_i),Def(S^k)) > M_S-\delta \}
+\]
+\end{center}
+\end{overprint}	
+}
+
+
+\subsection{Selecting a Similarity Measure}
+\frame{
+\frametitle{Selecting a Similarity Measure}
+\textbf{Cues available}
+\begin{itemize}
+\item Some translation sources contain glosses that reprise a part of the definition of the corresponding senses 
+\item We can compare the gloss to sense definitions
+\end{itemize}
+\vfill
+\textbf{Constraints}
+\begin{itemize}
+	\item Gloss overlap measure
+	\item No lemmatisation/stemming $\Rightarrow$ approximate matching
+\end{itemize}
+}
+
+\frame{
+\frametitle{Selecting a Similarity Measure}
+
+\textbf{Possibilities}
+\begin{itemize}
+	\item Text similarity $\rightarrow$ Strings, no word distinctions
+	\item Simple overlap $\rightarrow$ Few matches on surface forms
+	\item Hybrid measures $\Rightarrow$ Combine word overlap + Text similarity
+\end{itemize}
+\vfill
+\textbf{Hybrid measure}
+\begin{itemize}
+\item An overlap measure (Lesk, Jaccard, Tverski, etc.)
+\item Set cardinality $\Leftrightarrow$ Sum of pairwise word textual similarities
+\item What is the most suitable textual similarity measure?
+\end{itemize}
+}
+
+\frame{
+\frametitle{Selecting a Similarity Measure}
+
+\textbf{Tversky index}
+\begin{center}
+
+\[
+	\frac{|d_1\cap d_2|}{|d_1\cap d_2| + \alpha |d_1 - d_2| + \beta |d_2 - d_1|}
+\]
+\end{center}
+\vfill
+\textbf{Hybrid Tverski}
+\[|d_1\cap d_2| \longrightarrow
+		\sum_{(x,y)\in d_1 \times d_2}{sim(x,y)}\]
 
 }
 
-\subsection{Selecting a Similarity Measure}
 
-
-\subsection{Selecting parameter values}
+\subsection{Parameters}
+\begin{frame}
+\frametitle{Parameters to Estimate}
+\begin{itemize}
+  \item $\delta$ Similarity value range around the best disambiguation
+  \vfill
+  \item $\alpha$ \& $\beta$  Relative importance of the differences in one or the other set of words. If we want a Tverski index that remains between 0 and 1, then we must have $\alpha=1-\beta$.
+  \vfill
+  \item $sim$ The similarity measure to use, we have the choice between
+  \begin{itemize}
+	  \item Jaro-Winkler
+	  \item Scaled-Levenshtein distance
+	  \item Monge-Elkan
+	  \item Normalized Longest Common Substring
+  \end{itemize}
+\end{itemize}
+\end{frame}
 
 \section{Evaluation}
 

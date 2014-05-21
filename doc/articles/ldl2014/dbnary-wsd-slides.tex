@@ -319,7 +319,7 @@
 }
 
 \frame{
-\frametitle{Selecting a Similarity Measure}
+\frametitle{Our Similarity Measure}
 
 \textbf{Tversky index}
 \begin{center}
@@ -346,10 +346,11 @@
   \vfill
   \item $sim$ The similarity measure to use, we have the choice between
   \begin{itemize}
-	  \item Jaro-Winkler
-	  \item Scaled-Levenshtein distance
-	  \item Monge-Elkan
-	  \item Normalized Longest Common Substring
+	  \item Jaro-Winkler~(FTiJW)
+	  \item Scaled-Levenshtein distance~(FTiLs)
+	  \item Monge-Elkan~(FTiME)
+	  \item Normalized Longest Common Substring~(FTiLcss)
+	  \item None~(Ti)
   \end{itemize}
 \end{itemize}
 \end{frame}
@@ -357,8 +358,103 @@
 \section{Evaluation}
 
 \subsection{Extraction of an Endogeneous Gold Standard}
+\begin{frame}
+	\frametitle{Extraction of an Endogeneous Gold Standard}
+	\begin{itemize}
+	\item Translation links with glosses $\cap$ Translation links with sense numbers
+	\begin{itemize}
+		\item Gold standard -- entries built from sense numbers
+		\item Algorithm -- sense numbers removed, only glosses considered
+	\end{itemize}
+	
+	\vfill
+	
+		\item Three language editions with sufficient data:
+		\begin{itemize}
+			\item Finnish -- 115,~550
+			\item Portuguese -- 69,~172
+			\item French -- 28,~114
+		\end{itemize}
+	\vfill
+	\item Gold standard and algorithm output in Trec\_eval format
+	\end{itemize}
+\end{frame}
+\subsection{Experimental Protocol}
+\begin{frame}
+	\frametitle{Experimental Protocol}
+	\begin{enumerate}
+	\item Estimate independent parameters -- \(\alpha\), \(\beta\), \(sim\)
+	\vfill
+	\item Evaluate the results w.r.t. dependent parameter \(delta\)
+	\vfill
+	\item Compare results to textual similarity hybrid measures w.r.t \(delta\)
+	\begin{itemize}
+	\item Level 2 Jaro-Winkler~(L2JW)
+	\item Level 2 Scaled Levenstein distance~(L2Ls)
+	\item Level 2 Monge-Elkan~(L2ME)
+	\end{itemize}
+	\end{enumerate}
+\end{frame}
+
+\subsection{Parameter Estimation}
+
+\begin{frame}
+	\frametitle{Parameter Estimation -- \(sim\)}
+	\begin{table}
+	{\centering \footnotesize
+	\begin{tabular}{|c|c|c|c|}
+	\hline &French&Portuguese&Finnish\\
+	\hline &F1&F1&F1\\
+	\hline FTiJW&0.7853&0.8079&0.9479\\
+	\hline FTiLcss&0.7778&0.7697&0.9495\\
+	\hline FTiLs&\textbf{0.7861}&\textbf{0.8176}&\textbf{0.9536}\\
+	\hline FTiME&0.7684&0.7683&0.9495\\
+	\hline Ti&0.7088&0.7171&0.8806\\
+	\hline 
+	\end{tabular} 
+	\caption{\scriptsize F\_1 score for French, Finnish and Portuguese for each textual similarity measure}
+	\label{tab:expe1}
+	}
+	\end{table}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Parameter Estimation -- \(\alpha\) \& \(\beta\)}
+	\begin{figure}\centering
+	 \begin{tikzpicture}
+		            \node<1-2>[anchor=south west,inner sep=0] at (0,0) {	\includegraphics[width=0.7\textwidth]{alphabetafig}};
+		            \draw<2>[green,very thick,rounded corners] (1.4,2.3) rectangle (1.9,5.4);
+		        \end{tikzpicture}
+
+	\caption{\scriptsize F1 score for Finnish, French and Portuguese w.r.t. \(\alpha\) and \(\beta\).}
+	\label{fig.1}
+	\end{figure}
+\end{frame}
+
+
 
 \subsection{Results}
+
+\begin{frame}
+	\frametitle{Results w.r.t \(\delta\)}
+	\begin{figure}
+	\centering
+	%TikZ picture pour entourer le meilleur résultat en rouge en overlay
+	        \begin{tikzpicture}
+	            \node<1-2>[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=.40\textwidth]{french}\includegraphics[width=.39	\textwidth]{portuguese}};
+	            \draw<2>[orange,thick,rounded corners] (.9,2.65) rectangle (1.2,2.95);
+	            \draw<2>[orange,thick,rounded corners] (5.6,2.68) rectangle (5.9,2.98);
+	        \end{tikzpicture}
+	        
+	        \begin{tikzpicture}
+	            \node<1-2>[anchor=south west,inner sep=0] at (0,0) {	\includegraphics[width=.40\textwidth]{finnish}};
+	            \draw<2>[orange,thick,rounded corners] (.8,2.50) rectangle (1.1,2.80);
+	        \end{tikzpicture}	        
+	\caption{\scriptsize F1 score against delta for our measure and other Level 2 Measures.}
+	\label{fig.2}
+	\end{figure}
+\end{frame}
 
 \section{Conclusion}
 

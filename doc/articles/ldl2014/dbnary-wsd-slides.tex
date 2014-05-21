@@ -260,8 +260,8 @@
 \frame{  
 \frametitle{The problem}
 
-\only<1>{\begin{mdframed}\includegraphics[width=\linewidth]{img/dbnarystrc1}\end{mdframed}}
-\only<2>{\begin{mdframed}\includegraphics[width=\linewidth]{img/dbnarystrc2}\end{mdframed}}
+\only<1>{\vfill\begin{mdframed}\includegraphics[width=\linewidth]{img/dbnarystrc1}\end{mdframed}}
+\only<2>{\vfill\begin{mdframed}\includegraphics[width=\linewidth]{img/dbnarystrc2}\end{mdframed}}
 \begin{overprint}
 \onslide<3>
 \begin{center}
@@ -279,6 +279,7 @@
 \[
 \{S^k\in S|  M_S > Score((Gloss(T_i),Def(S^k)) > M_S-\delta \}
 \]
+\vfill
 \end{center}
 \end{overprint}	
 }
@@ -340,11 +341,11 @@
 \begin{frame}
 \frametitle{Parameters to Estimate}
 \begin{itemize}
-  \item $\delta$ Similarity value range around the best disambiguation
+  \item $\delta$ --- Similarity value range around the best disambiguation
   \vfill
-  \item $\alpha$ \& $\beta$  Relative importance of the differences in one or the other set of words. If we want a Tverski index that remains between 0 and 1, then we must have $\alpha=1-\beta$.
+  \item $\alpha$ \& $\beta$ --- Relative importance of the differences in one or the other set of words. If we want a Tverski index that remains between 0 and 1, then we must have $\alpha=1-\beta$.
   \vfill
-  \item $sim$ The similarity measure to use, we have the choice between
+  \item $sim$ --- The similarity measure to use, we have the choice between
   \begin{itemize}
 	  \item Jaro-Winkler~(FTiJW)
 	  \item Scaled-Levenshtein distance~(FTiLs)
@@ -383,11 +384,11 @@
 \begin{frame}
 	\frametitle{Experimental Protocol}
 	\begin{enumerate}
-	\item Estimate independent parameters -- \(\alpha\), \(\beta\), \(sim\)
+	\item Estimate independent parameters ---  \(\alpha\), \(\beta\), \(sim\)
 	\vfill
-	\item Evaluate the results w.r.t. dependent parameter \(delta\)
+	\item Evaluate the results w.r.t. dependent parameter --- \(\delta\)
 	\vfill
-	\item Compare results to textual similarity hybrid measures w.r.t \(delta\)
+	\item Compare results to textual similarity hybrid measures w.r.t \(\delta\)
 	\begin{itemize}
 	\item Level 2 Jaro-Winkler~(L2JW)
 	\item Level 2 Scaled Levenstein distance~(L2Ls)
@@ -424,7 +425,7 @@
 	\begin{figure}\centering
 	 \begin{tikzpicture}
 		            \node<1-2>[anchor=south west,inner sep=0] at (0,0) {	\includegraphics[width=0.7\textwidth]{alphabetafig}};
-		            \draw<2>[green,very thick,rounded corners] (1.4,2.3) rectangle (1.9,5.4);
+		            \draw<2>[green,very thick,rounded corners] (2.0,2.4) rectangle (2.5,5.6);
 		        \end{tikzpicture}
 
 	\caption{\scriptsize F1 score for Finnish, French and Portuguese w.r.t. \(\alpha\) and \(\beta\).}

@@ -7,7 +7,7 @@
 	<key>ApplicationVersion</key>
 	<array>
 		<string>com.omnigroup.OmniGraffle</string>
-		<string>139.16.0.171715</string>
+		<string>139.18.0.187838</string>
 	</array>
 	<key>AutoAdjust</key>
 	<true/>
@@ -53,7 +53,7 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
-			<string>{{481.37637419674138, 172.75625051963016}, {43, 24}}</string>
+			<string>{{410.43280416727066, 167.40587544950176}, {43, 24}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -101,8 +101,8 @@
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -125,8 +125,8 @@
 			<integer>63</integer>
 			<key>Points</key>
 			<array>
-				<string>{453.076904296875, 113.82109069824219}</string>
-				<string>{537, 233.36248779296875}</string>
+				<string>{372, 106.5}</string>
+				<string>{473, 229.36248779296875}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -155,13 +155,20 @@
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{537, 219.36248779296875}, {235, 14}}</string>
+					<string>{{473, 212.36248779296875}, {235, 17}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
 					<string>Vertical</string>
 					<key>Flow</key>
 					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Helvetica-Bold</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
 					<key>ID</key>
 					<integer>61</integer>
 					<key>Shape</key>
@@ -177,12 +184,12 @@
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
 
-\f0\b\fs24 \cf0 eng:__ws_2_cat__Noun__1 ...}</string>
+\f0\b\fs28 \cf0 eng:__ws_2_cat__Noun__1 ...}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -191,13 +198,20 @@
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{537, 233.36248779296875}, {235, 14}}</string>
+					<string>{{473, 229.36248779296875}, {235, 17}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
 					<string>Vertical</string>
 					<key>Flow</key>
 					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Helvetica-Bold</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
 					<key>ID</key>
 					<integer>62</integer>
 					<key>Shape</key>
@@ -215,12 +229,12 @@
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
 
-\f0\fs24 \cf0 ...}</string>
+\f0\fs28 \cf0 ...}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -252,7 +266,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{462.44547289601906, 101.82109069824219}, {43, 24}}</string>
+			<string>{{391.85618227720261, 98.590171873569489}, {43, 24}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -300,8 +314,8 @@
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -324,8 +338,8 @@
 			<integer>58</integer>
 			<key>Points</key>
 			<array>
-				<string>{453.076904296875, 113.82109069824219}</string>
-				<string>{521, 113.82109069824219}</string>
+				<string>{372, 106.5}</string>
+				<string>{463, 115.5}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -352,13 +366,20 @@
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{521, 64.821090698242188}, {267, 14}}</string>
+					<string>{{463, 39}, {292, 34}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
 					<string>Vertical</string>
 					<key>Flow</key>
 					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Helvetica-Bold</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
 					<key>ID</key>
 					<integer>56</integer>
 					<key>Shape</key>
@@ -374,12 +395,12 @@
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
 
-\f0\b\fs24 \cf0 eng:__ws_1_cat__Noun__1 a :LexicalSense}</string>
+\f0\b\fs28 \cf0 eng:__ws_1_cat__Noun__1 a :LexicalSense}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -388,13 +409,20 @@
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{521, 78.821090698242188}, {267, 84}}</string>
+					<string>{{463, 73}, {292, 119}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
 					<string>Vertical</string>
 					<key>Flow</key>
 					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Helvetica-Bold</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
 					<key>ID</key>
 					<integer>57</integer>
 					<key>Shape</key>
@@ -412,12 +440,12 @@
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
 
-\f0\fs24 \cf0 dbnary:senseNumber=1\
+\f0\fs28 \cf0 dbnary:senseNumber=1\
 dbnary:partOfSpeech="Noun"\
 lemon:definition=[\
       lemon:value="A domesticated subspecies, Felis silvestris catus, of feline animal..."]\
@@ -453,7 +481,7 @@ lemon:definition=[\
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{182.64165194133309, 205.54339159523465}, {77, 24}}</string>
+			<string>{{179.45465860678294, 229.157744946408}, {77, 24}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -501,8 +529,8 @@ lemon:definition=[\
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -525,8 +553,8 @@ lemon:definition=[\
 			<integer>53</integer>
 			<key>Points</key>
 			<array>
-				<string>{172.06967163085938, 226.36248779296875}</string>
-				<string>{280.04749393463135, 206.95697784423828}</string>
+				<string>{172.06967163085938, 236.36248779296875}</string>
+				<string>{273.03484439849854, 246.91395568847656}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -550,7 +578,7 @@ lemon:definition=[\
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{226.77760017644869, 233.1402949097378}, {77, 24}}</string>
+			<string>{{167.69234542634695, 261.84576827155615}, {77, 24}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -598,8 +626,8 @@ lemon:definition=[\
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -622,8 +650,8 @@ lemon:definition=[\
 			<integer>51</integer>
 			<key>Points</key>
 			<array>
-				<string>{172.06967163085938, 226.36248779296875}</string>
-				<string>{327.57794189453125, 257.69141387939453}</string>
+				<string>{172.06967163085938, 236.36248779296875}</string>
+				<string>{229, 298.899658203125}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -647,7 +675,7 @@ lemon:definition=[\
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{154.47828015210416, 163.21652925706758}, {77, 24}}</string>
+			<string>{{168.14713570008917, 192.38530449824793}, {77, 24}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -695,8 +723,8 @@ lemon:definition=[\
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
@@ -713,14 +741,14 @@ lemon:definition=[\
 				<key>ID</key>
 				<integer>36</integer>
 				<key>Info</key>
-				<integer>8</integer>
+				<integer>5</integer>
 			</dict>
 			<key>ID</key>
 			<integer>48</integer>
 			<key>Points</key>
 			<array>
-				<string>{172.06967163085938, 226.36248779296875}</string>
-				<string>{218.076904296875, 113.82109069824219}</string>
+				<string>{172.06967163085938, 236.36248779296875}</string>
+				<string>{248.15380859375, 166}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -749,13 +777,20 @@ lemon:definition=[\
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{280.04749393463135, 192.95697784423828}, {163, 14}}</string>
+					<string>{{273.03484439849854, 229.91395568847656}, {163, 17}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
 					<string>Vertical</string>
 					<key>Flow</key>
 					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Helvetica-Bold</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
 					<key>ID</key>
 					<integer>46</integer>
 					<key>Shape</key>
@@ -771,12 +806,12 @@ lemon:definition=[\
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
 
-\f0\b\fs24 \cf0 eng:cat__Noun__2 ...}</string>
+\f0\b\fs28 \cf0 eng:cat__Noun__2 ...}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -785,13 +820,20 @@ lemon:definition=[\
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{280.04749393463135, 206.95697784423828}, {163, 14}}</string>
+					<string>{{273.03484439849854, 246.91395568847656}, {163, 17}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
 					<string>Vertical</string>
 					<key>Flow</key>
 					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Helvetica-Bold</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
 					<key>ID</key>
 					<integer>47</integer>
 					<key>Shape</key>
@@ -809,12 +851,12 @@ lemon:definition=[\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
 
-\f0\fs24 \cf0 ...}</string>
+\f0\fs28 \cf0 ...}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -851,13 +893,20 @@ lemon:definition=[\
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{327.57794189453125, 243.69141387939453}, {163, 14}}</string>
+					<string>{{229, 281.899658203125}, {163, 17}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
 					<string>Vertical</string>
 					<key>Flow</key>
 					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Helvetica-Bold</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
 					<key>ID</key>
 					<integer>43</integer>
 					<key>Shape</key>
@@ -873,12 +922,12 @@ lemon:definition=[\
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
 
-\f0\b\fs24 \cf0 eng:cat__Verb__1 ...}</string>
+\f0\b\fs28 \cf0 eng:cat__Verb__1 ...}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -887,13 +936,20 @@ lemon:definition=[\
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{327.57794189453125, 257.69141387939453}, {163, 14}}</string>
+					<string>{{229, 298.899658203125}, {163, 17}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
 					<string>Vertical</string>
 					<key>Flow</key>
 					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Helvetica-Bold</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
 					<key>ID</key>
 					<integer>44</integer>
 					<key>Shape</key>
@@ -911,12 +967,12 @@ lemon:definition=[\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
 
-\f0\fs24 \cf0 ...}</string>
+\f0\fs28 \cf0 ...}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -953,13 +1009,20 @@ lemon:definition=[\
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{9.069671630859375, 219.36248779296875}, {163, 14}}</string>
+					<string>{{9.069671630859375, 219.36248779296875}, {163, 34}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
 					<string>Vertical</string>
 					<key>Flow</key>
 					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Helvetica-Bold</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
 					<key>ID</key>
 					<integer>40</integer>
 					<key>Shape</key>
@@ -975,12 +1038,12 @@ lemon:definition=[\
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
 
-\f0\b\fs24 \cf0 eng:cat a dbnary:Vocable}</string>
+\f0\b\fs28 \cf0 eng:cat a dbnary:Vocable}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -1011,13 +1074,20 @@ lemon:definition=[\
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{218.076904296875, 64.821090698242188}, {235, 14}}</string>
+					<string>{{124.3076171875, 47}, {247.6923828125, 17}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
 					<string>Vertical</string>
 					<key>Flow</key>
 					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Helvetica-Bold</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
 					<key>ID</key>
 					<integer>37</integer>
 					<key>Shape</key>
@@ -1033,12 +1103,12 @@ lemon:definition=[\
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
 
-\f0\b\fs24 \cf0 eng:cat__Noun__1 a :LexicalEntry}</string>
+\f0\b\fs28 \cf0 eng:cat__Noun__1 a :LexicalEntry}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -1047,13 +1117,20 @@ lemon:definition=[\
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{218.076904296875, 78.821090698242188}, {235, 84}}</string>
+					<string>{{124.3076171875, 64}, {247.6923828125, 102}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
 					<string>Vertical</string>
 					<key>Flow</key>
 					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Helvetica-Bold</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
 					<key>ID</key>
 					<integer>38</integer>
 					<key>Shape</key>
@@ -1071,12 +1148,12 @@ lemon:definition=[\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 GillSans;}
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
 
-\f0\fs24 \cf0 lemon:canonicalForm=[\
+\f0\fs28 \cf0 lemon:canonicalForm=[\
       lemon:writtenRep="cat"@en\
       lexinfo:pronunciation="/
 \f1 k\'e6t/" 
@@ -1161,7 +1238,7 @@ lexinfo:partOfSpeech=lexinfo:noun\
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2013-06-03 07:48:11 +0000</string>
+	<string>2014-05-22 13:14:23 +0000</string>
 	<key>Modifier</key>
 	<string>Gilles Serasset</string>
 	<key>NotesVisible</key>
@@ -1257,7 +1334,7 @@ lexinfo:partOfSpeech=lexinfo:noun\
 			</dict>
 		</array>
 		<key>Frame</key>
-		<string>{{80, 154}, {1254, 1024}}</string>
+		<string>{{103, 20}, {1254, 1024}}</string>
 		<key>ListView</key>
 		<true/>
 		<key>OutlineWidth</key>

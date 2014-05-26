@@ -80,71 +80,39 @@
 \frame{\titlepage}
 
 
-\section{Introduction}
-
-
-
-\section{Overview of the DBnary dataset}
+\section{Context: DBnary dataset}
 
 \frame{\frametitle{What is Dbnary?}
-\begin{itemize}
-\item Extracting lexical data from 12 different Wiktionary language editions
-	\begin{itemize} 
-	\item Wiktionary
-	\end{itemize}
-\item ``Fine grained'' interoperability\\
-	\begin{itemize} 
-	\item RDF
-	\end{itemize}
-\item A standard model
-	\begin{itemize} 
-	\item LEMON (inspired by LMF)
-	\end{itemize}
-\item Multilingual
-	\begin{itemize} 
-	\item Extraction of several language edition of Wiktionary
-	\end{itemize}
-\item Available, Usable et Used
-	\begin{itemize} 
-	\item Linked Data
-	\end{itemize}
+
+\begin{center}
+	     \includegraphics<1->[width=.8\linewidth]{img/logos/logos.pdf}
+\end{center}
+
+
+\only<1>{Lexical data extracted from 12 different Wiktionary language editions\\
+$\rightarrow$ 2 more in alpha version.}
+
+\only<2>{Extracted data is available as Linked Data\\
+$\rightarrow$ structure using LEMON, LEXINFO and few BDnary extensions.}
+
 	
-\end{itemize}
-}
-
-\frame{  
-\frametitle{Dbnary: Wiktionary as a lexical graph}
-
-     \includegraphics<1>[width=\linewidth]{img/cat1.png}
-     \includegraphics<2>[width=\linewidth]{img/cat2.png}
-     \includegraphics<3>[width=\linewidth]{img/cat3.png}
-     \includegraphics<4>[width=\linewidth]{img/cat4.png}
-     \includegraphics<5>[width=\linewidth]{img/cat5.png}
-     \includegraphics<6>[width=\linewidth]{img/cat6.png}
-     \includegraphics<7>[width=\linewidth]{img/cat_struct}
-     \includegraphics<8>[width=\linewidth]{img/cat_syn}
-     \includegraphics<9>[width=\linewidth]{img/cat_translations}
-
-}
-
-\frame{  
-\frametitle{LEMON}
-
-     \includegraphics<1>[width=0.95\linewidth]{img/lemon-core.png}
-     \includegraphics<2>[width=0.95\linewidth]{img/lemon-descr.png}
-     \includegraphics<3>[width=0.95\linewidth]{img/dbnary-lemon-xtension.pdf}
-
 }
 
 \frame{
-\frametitle{Extraction principles}
-\begin{itemize}
-\item 10 editions extracted: en, fr, de, ru, it, pt, fi, el
-\item Extraction from wikimedia dumps
-\item Every edition is updated with the latest dump every 10-15 days
-\item Extraction is performed on-line, the files are available on-the-fly
-\item A Linked Data server holds older version of the dataset
-\end{itemize}
+	\frametitle{LEMON and Dbnary}
+
+     \includegraphics<1>[width=0.95\linewidth]{img/lemon-core.png}
+     \includegraphics<2>[width=0.95\linewidth]{img/dbnary-lemon-xtension.pdf}
+
+}
+
+\frame{  
+\frametitle{Dbnary: an example}
+
+     \includegraphics<1>[width=\linewidth]{img/cat_struct}
+     \includegraphics<2>[width=\linewidth]{img/cat_syn}
+     \includegraphics<3>[width=\linewidth]{img/cat_translations}
+
 }
 
 \frame{  
@@ -152,16 +120,23 @@
 
 \begin{table}[htb]
 \begin{tabular}{lrrrr}
- & \textbf{Entries} & \textbf{Vocables} & \textbf{Senses} & \textbf{Translations}\\
+ & \textbf{Vocables} & \textbf{Entries} & \textbf{Senses} & \textbf{Translations}\\
  \hline
-\textbf{eng} & 527067 & 504594 & 421232 & 1126463 \\
-\textbf{fra} & 273822 & 283847 & 358921 & 464956 \\
-\textbf{deu} & 135103 & 201736 & 95593 & 471892 \\
-\textbf{rus} & 127271 & 139235 & 99243 & 325345 \\
-\textbf{ell} & 74056 & 74800 & 34932 & 55652 \\
-\textbf{fin} & 48164 & 48050 & 56559 & 118728 \\
-\textbf{por} & 43042 & 44061 & 77631 & 225065 \\
-\textbf{ita} & 25279 & 31935 & 35061 & 57796 \\
+\textbf{English}	&	523,300	&	562,538	&	454,285	&	1,366,385	\\
+\textbf{French}	&	285,497	&	299,444	&	388,642	&	514,525	\\
+\textbf{Greek}	&	242,470	&	248,107	&	140,190	&	58,952	\\
+\textbf{German}	&	212,226	&	215,808	&	104,556	&	396,376	\\
+\textbf{Russian}	&	149,534	&	152,488	&	152,394	&	381,641	\\
+\textbf{Turkish}	&	66,830	&	67,820	&	99,148	&	68,416	\\
+\textbf{Spanish}	&	57,385	&	60,438	&	88,022	&	116,912	\\
+\textbf{Finnish}	&	54,376	&	55,783	&	64,931	&	125,615	\\
+\textbf{Portuguese}	&	42,503	&	46,553	&	82,900	&	269,516	\\
+\textbf{Italian}	&	32,735	&	35,313	&	46,367	&	63,711	\\
+\textbf{Japanese}	&	21,547	&	26,267	&	30,720	&	93,161	\\
+\textbf{Bulgarian}	&	18,792	&	18,823	&	18,299	&	13,925	\\
+\hline
+\textbf{Total}	&	1,707,195	&	1,789,382	&	1,670,454	&	3,469,135
+
 \end{tabular}
 \caption{Number of resources by type and language, sorted by number of lexical entries.}\label{globalsize}
 \end{table}
@@ -171,87 +146,61 @@
 \frametitle{Dataset Size (as of today)}
 \begin{table}[htb]
 \begin{tabular}{lrrrrrr}
- & \textbf{syn}  & \textbf{ant} & \textbf{hyper} & \textbf{hypo} & \textbf{mero} & \textbf{holo} \\
- \hline
-\textbf{eng} & 31461& 6877& 959& 1103& 114& 0 \\ 
-\textbf{fra} & 30088& 6735& 8215& 3557& 943& 1847 \\ 
-\textbf{deu} & 27516& 14315& 30202& 9509& 0& 0 \\ 
-\textbf{rus} & 22631& 9204& 21028& 4756& 0& 0 \\ 
-\textbf{ell} & 3975& 1116& 0& 0& 0& 0 \\ 
-\textbf{fin} & 2255& 0& 0& 0& 0& 0 \\ 
-\textbf{por} & 3527& 575& 6& 3& 0& 0 \\ 
-\textbf{ita} & 7091& 2337& 0& 0& 0& 0 \\ 
+	&	\textbf{syn}	&	\textbf{ant}	&	\textbf{hyper}	&	\textbf{hypo}	&	\textbf{holo}	&	\textbf{mero}\\
+\textbf{German}	&	123,550	&	55,158	&	95,962	&	81,467	&	0	&	0	\\
+\textbf{English}	&	32,147	&	7,056	&	1,210	&	1,234	&	0	&	114	\\
+\textbf{French}	&	32,089	&	6,929	&	9,673	&	3,776	&	1,914	&	978	\\
+\textbf{Russian}	&	25,844	&	10,134	&	42,955	&	5,250	&	0	&	0	\\
+\textbf{Bulgarian}	&	17,623	&	34	&	0	&	0	&	0	&	0	\\
+\textbf{Spanish}	&	15,562	&	1,602	&	784	&	565	&	0	&	0	\\
+\textbf{Italian}	&	10,148	&	3,718	&	0	&	0	&	0	&	0	\\
+\textbf{Greek}	&	5,439	&	1,553	&	0	&	0	&	0	&	0	\\
+\textbf{Japanese}	&	4,002	&	1,631	&	10	&	18	&	0	&	0	\\
+\textbf{Portuguese}	&	3,395	&	621	&	6	&	4	&	0	&	0	\\
+\textbf{Turkish}	&	3,219	&	242	&	484	&	166	&	0	&	0	\\
+\textbf{Finnish}	&	2,654	&	0	&	0	&	0	&	0	&	0	\\
+\hline
+\textbf{Total}	&	275,672	&	88,678	&	151,084	&	92,480	&	1,914	&	1,092	
 \end{tabular}
-\caption{Number of lexicon-semantic relations. Languages are sorted according to their number of lexical entries.}\label{nymsize}
+\caption{Number of lexicon-semantic relations. Languages are sorted according to the number of synonym.}\label{nymsize}
 \end{table}
 }
 
-\frame{  
-\frametitle{Dataset Size (as of today)}
-\begin{table}[htb]
-\begin{tabular}{lrrrrrrrrrrrrr}\tiny
-\textbf{Source/Target}  & \textbf{deu} & \textbf{ell} & \textbf{eng} & \textbf{fin} & \textbf{fra} & \textbf{ita} & \textbf{por} & \textbf{rus}& \textbf{others} & \textbf{Total} & \textbf{\# of target languages}\\
-\textbf{eng} & 62501 & 23794 & 1 & 74938 & 57959 & 37467 & 30256 & 74837 & 764710 & 1126463 & 1143\\
-\textbf{fra} & 34608 & 7063 & 74687 & 7589 & 12 & 18806 & 17784 & 7783 & 296624 & 464956 & 952\\
-\textbf{deu} & 0 & 2675 & 81015 & 4947 & 67143 & 41485 & 8872 & 17354 & 248401 & 471892 & 355\\
-\textbf{rus} & 23056 & 3295 & 48559 & 3966 & 14776 & 12643 & 5567 & 0 & 206709 & 318571 & 490\\
-\textbf{ell} & 2242 & 2 & 10090 & 1056 & 8436 & 1470 & 1149 & 1315 & 29892 & 55652 & 246\\
-\textbf{fin} & 8046 & 918 & 30103 & 0 & 6700 & 3856 & 2196 & 7997 & 58912 & 118728 & 329\\
-\textbf{por} & 7000 & 2816 & 11284 & 4607 & 8720 & 7096 & 4 & 4396 & 179142 & 225065 & 695\\
-\textbf{ita} & 4619 & 506 & 17539 & 925 & 4461 & 75 & 1219 & 938 & 27514 & 57796 & 315\\
-\end{tabular}
-\caption{Number of translations from/to the 8 currently extracted languages. Source languages are sorted according to their number of lexical entries. Target languages are sorted by their ISO 639-3 language code. The number of different target languages is also given.}\label{tradsize1}
-\end{table}
-}
+% \frame{  
+% \frametitle{Dataset Size (as of today)}
+% \begin{table}[htb]
+% \begin{tabular}{lrrrrrrrrrrrrr}\tiny
+% \textbf{Source/Target}  & \textbf{deu} & \textbf{ell} & \textbf{eng} & \textbf{fin} & \textbf{fra} & \textbf{ita} & \textbf{por} & \textbf{rus}& \textbf{others} & \textbf{Total} & \textbf{\# of target languages}\\
+% \textbf{eng} & 62501 & 23794 & 1 & 74938 & 57959 & 37467 & 30256 & 74837 & 764710 & 1126463 & 1143\\
+% \textbf{fra} & 34608 & 7063 & 74687 & 7589 & 12 & 18806 & 17784 & 7783 & 296624 & 464956 & 952\\
+% \textbf{deu} & 0 & 2675 & 81015 & 4947 & 67143 & 41485 & 8872 & 17354 & 248401 & 471892 & 355\\
+% \textbf{rus} & 23056 & 3295 & 48559 & 3966 & 14776 & 12643 & 5567 & 0 & 206709 & 318571 & 490\\
+% \textbf{ell} & 2242 & 2 & 10090 & 1056 & 8436 & 1470 & 1149 & 1315 & 29892 & 55652 & 246\\
+% \textbf{fin} & 8046 & 918 & 30103 & 0 & 6700 & 3856 & 2196 & 7997 & 58912 & 118728 & 329\\
+% \textbf{por} & 7000 & 2816 & 11284 & 4607 & 8720 & 7096 & 4 & 4396 & 179142 & 225065 & 695\\
+% \textbf{ita} & 4619 & 506 & 17539 & 925 & 4461 & 75 & 1219 & 938 & 27514 & 57796 & 315\\
+% \end{tabular}
+% \caption{Number of translations from/to the 8 currently extracted languages. Source languages are sorted according to their number of lexical entries. Target languages are sorted by their ISO 639-3 language code. The number of different target languages is also given.}\label{tradsize1}
+% \end{table}
+% }
 
-\frame{  
-\frametitle{Dataset Size (as of today)}
-\begin{table}[htb]
-\begin{tabular}{lrrrrrr}
-\textbf{Source/Target}  & \textbf{por} & \textbf{rus}& \textbf{others} & \textbf{Total} & \textbf{\# of lang}\\
-\textbf{eng} & 30256 & 74837 & 764710 & 1126463 & 1143\\
-\textbf{fra} & 17784 & 7783 & 296624 & 464956 & 952\\
-\textbf{deu} & 8872 & 17354 & 248401 & 471892 & 355\\
-\textbf{rus} &  5567 & 0 & 206709 & 318571 & 490\\
-\textbf{ell} &  1149 & 1315 & 29892 & 55652 & 246\\
-\textbf{fin} &  2196 & 7997 & 58912 & 118728 & 329\\
-\textbf{por} &  4 & 4396 & 179142 & 225065 & 695\\
-\textbf{ita} &  1219 & 938 & 27514 & 57796 & 315\\
-\end{tabular}
-\caption{Number of translations from/to the 8 currently extracted languages. Source languages are sorted according to their number of lexical entries. Target languages are sorted by their ISO 639-3 language code. The number of different target languages is also given.}\label{tradsize2}
-\end{table}
-}
-
-\frame{  
-\frametitle{Quality of the data}
-
-\begin{itemize}
-\item Evaluating the quality of the data is  difficult
-\item Extraction quality $\ne$ data quality
-\item No particular applications at the moment
-\item No alignments yet with other resources (Wordnet, Jeuxdemots, ...)
-\item However, several direction are available
-\end{itemize}
-}
-
-\frame{  
-\frametitle{Data quality (yesterday)}
-\begin{table}[htb]
-\begin{tabular}{lrr}
-\textbf{language} & \textbf{\# of transl.}\\
- \hline
-\textbf{eng} & 5110 (99.1 \%) \\
-\textbf{fra} & 5799 (107.0 \%) \\
-\textbf{deu} & 10287 (99.2 \%)\\
-\textbf{rus} & 8436 (24811.7 \%) \\
-\textbf{ell} & 2598 (64.3 \%) \\
-\textbf{fin} & 7245 (28980 \%) \\
-\textbf{por} & 17720 (93.2 \%) \\
-\textbf{ita} & 7855 (3167.3 \%) 
-\end{tabular}
-\caption{Extracted translations vs interwiki links, on a random sample of 1000 entries.}\label{iwlinks}
-\end{table}
-}
+% \frame{  
+% \frametitle{Dataset Size (as of today)}
+% \begin{table}[htb]
+% \begin{tabular}{lrrrrrr}
+% \textbf{Source/Target}  & \textbf{por} & \textbf{rus}& \textbf{others} & \textbf{Total} & \textbf{\# of lang}\\
+% \textbf{eng} & 30256 & 74837 & 764710 & 1126463 & 1143\\
+% \textbf{fra} & 17784 & 7783 & 296624 & 464956 & 952\\
+% \textbf{deu} & 8872 & 17354 & 248401 & 471892 & 355\\
+% \textbf{rus} &  5567 & 0 & 206709 & 318571 & 490\\
+% \textbf{ell} &  1149 & 1315 & 29892 & 55652 & 246\\
+% \textbf{fin} &  2196 & 7997 & 58912 & 118728 & 329\\
+% \textbf{por} &  4 & 4396 & 179142 & 225065 & 695\\
+% \textbf{ita} &  1219 & 938 & 27514 & 57796 & 315\\
+% \end{tabular}
+% \caption{Number of translations from/to the 8 currently extracted languages. Source languages are sorted according to their number of lexical entries. Target languages are sorted by their ISO 639-3 language code. The number of different target languages is also given.}\label{tradsize2}
+% \end{table}
+% }
 
 \section{Attaching Translation to their Proper Lexical Sense}
 
@@ -283,6 +232,61 @@
 \end{center}
 \end{overprint}	
 }
+
+\frame{  
+\frametitle{Some Cues}
+
+As an example, the English \texttt{LexicalEntry} \emph{frog} contains 8 word senses, defined as follows:
+
+\begin{tiny}\begin{enumerate}
+\item A small tailless amphibian of the order Anura that typically hops
+\item The part of a violin bow (or that of other similar string instruments such as the viola, cello and contrabass) located at the end held by the player, to which the horsehair is attached
+\item (Cockney rhyming slang) Road. Shorter, more common form of frog and toad
+\item The depression in the upper face of a pressed or handmade clay brick
+\item An organ on the bottom of a horse’s hoof that assists in the circulation of blood
+\item The part of a railway switch or turnout where the running-rails cross (from the resemblance to the frog in a horse’s hoof)
+\item An oblong cloak button, covered with netted thread, and fastening into a loop instead of a button hole.
+\item The loop of the scabbard of a bayonet or sword. 
+\end{enumerate}\end{tiny}
+
+Translations of this entry are divided in 4 groups corresponding to: ``\emph{amphibian}'', ``\emph{end of a string instrument’s bow}'', ``\emph{organ in a horse’s foot}'' and ``\emph{part of a railway}''. This is what we call the \textbf{glosses}.
+
+}
+
+\frame{  
+\frametitle{Different languages, different cues}
+
+German language edition uses the sense number to annotate translations.
+
+French language edition uses sometimes a gloss, sometime a sense number.
+
+}
+
+\frame{  
+\frametitle{Glosses vs Sense Numbers}
+
+\begin{center}\begin{footnotesize}
+\begin{tabular}{lrrrrrrr}
+\textbf{Language} & \textbf{Translations} & \textbf{w. gloss} &  \textbf{w. sense num.} & \textbf{w. both}\\
+\hline
+English	&	1317545	&	1288667	97.81\%	&	515	&	515	\\
+Finnish	&	121278	&	120329	99.22\%	&	115949	&	115550	\\
+French	&	504061	&	135612	26.90\%	&	28821	&	28114	\\
+German	&	388630	&	3101	0.80\%	&	385452	&	0	\\
+Modern Greek	&	56638	&	8368	14.77\%	&	12	&	12	\\
+Italian	&	62546	&	0	0.00\%	&	0	&	0	\\
+Japanese	&	85606	&	20686	24.16\%	&	4148	&	2512	\\
+Portuguese	&	267048	&	72339	27.09\%	&	71734	&	69172	\\
+Russian	&	360016	&	150985	41.94\%	&	115	&	0	\\
+Turkish	&	66290	&	585	0.88\%	&	52901	&	138	\\
+\hline
+\end{tabular}
+\end{footnotesize}\end{center}
+
+}
+
+
+%% Add the figures about glosses + numbers
 
 
 \subsection{Selecting a Similarity Measure}

@@ -8,11 +8,6 @@ public class WiktionaryExtractorFactory {
 	public static IWiktionaryExtractor getExtractor(String language, WiktionaryDataHandler wdh) {
 		IWiktionaryExtractor we = null;
 		
-		if (language.equals("fra")) {
-			we = new FrenchWiktionaryExtractor(wdh);
-		} else if (language.equals("eng")) {
-			we = new EnglishWiktionaryExtractor(wdh);
-		} else {
 			String cname = WiktionaryExtractorFactory.class.getCanonicalName();
 			int dpos = cname.lastIndexOf('.');
 			String pack = cname.substring(0, dpos);
@@ -37,7 +32,6 @@ public class WiktionaryExtractorFactory {
 			} catch (NoSuchMethodException e) {
 				System.err.println("No appropriate constructor when instanciating wiktionary extractor for " + language);
 			}
-		}
 		return we;
 	}
 

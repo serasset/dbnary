@@ -1,0 +1,589 @@
+package org.getalp.dbnary.pol;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.wiki.WikiPatterns;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
+
+
+	private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+
+	protected final static String senseNumberRegExp = "[^\\)]*";
+	//== cebula ({{język polski}}) ==
+	protected final static String languageSectionPatternString = "={2}\\s*([^\\(]*)\\((.*)\\)\\s*={2}";
+	
+	protected final static String partOfSpeechPatternString = "''(.*)''";
+	protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
+	protected final static String polishDefinitionPatternString = "^:{1,3}\\s*(?:\\((" + senseNumberRegExp + ")\\))?([^\n\r]*)$";
+
+	protected org.getalp.dbnary.pol.WiktionaryDataHandler wdh;
+	
+	private final int NODATA = 0;
+	private final int TRADBLOCK = 1;
+	private final int DEFBLOCK = 2;
+	private final int ORTHOALTBLOCK = 3;
+	private final int NYMBLOCK = 4;
+    private final int PRONBLOCK = 5;
+	private final int IGNOREPOS = 6;
+
+	protected enum SectionType {
+		DEFS, NYMS, TRANS, PRON, MORPH, EXAMPLES, IGNORE, NOTASECTION
+	}
+	
+	public WiktionaryExtractor(WiktionaryDataHandler wdh) {
+		super(wdh);
+		this.wdh = (org.getalp.dbnary.pol.WiktionaryDataHandler) wdh;
+	}
+	
+	protected final static Pattern languageSectionPattern;
+	protected final static Pattern polishDefinitionPattern;
+	protected final static Pattern polishNymLinePattern;
+	protected final static Pattern sectionPattern; // Combine macro pattern
+	// and pos pattern.
+	protected final static HashSet<String> posMarkers;
+	protected final static HashMap<String, SectionType> validSectionTemplates;
+
+	protected final static HashSet<String> nymMarkers;
+	protected final static HashMap<String, String> nymMarkerToNymName;
+
+	static {
+		// languageSectionPattern =
+		// Pattern.compile(languageSectionPatternString);
+
+		languageSectionPattern = Pattern.compile(languageSectionPatternString);
+
+		sectionPattern = WikiPatterns.macroPattern;
+
+		String nymLinePattern = new StringBuilder()
+		.append("(?:").append(polishDefinitionPatternString)
+		.append(")|(?:").append("^(.*)$")
+		.append(")").toString();
+
+		polishNymLinePattern = Pattern.compile(nymLinePattern, Pattern.MULTILINE);
+		
+		String defPattern = new StringBuilder()
+		.append("(?:").append(polishDefinitionPatternString)
+		.append(")|(?:").append(partOfSpeechPatternString)
+		.append(")|(?:").append("^(.*)$")
+		.append(")").toString();
+
+		polishDefinitionPattern = Pattern.compile(defPattern, Pattern.MULTILINE);
+
+		posMarkers = new HashSet<String>(20);
+		posMarkers.add("Substantiv"); // Should I get the
+		// Toponym/Vorname/Nachname additional
+		// info ?
+		posMarkers.add("Adjektiv");
+		posMarkers.add("Absolutadjektiv");
+		posMarkers.add("Partizip");
+		posMarkers.add("Adverb");
+		posMarkers.add("Wortverbindung");
+		posMarkers.add("Verb");
+
+		validSectionTemplates = new HashMap<String, SectionType>(20);
+		validSectionTemplates.put("wymowa", SectionType.PRON);
+		validSectionTemplates.put("znaczenia", SectionType.DEFS);
+		validSectionTemplates.put("odmiana", SectionType.MORPH);
+		validSectionTemplates.put("przykłady", SectionType.EXAMPLES);
+		validSectionTemplates.put("składnia", SectionType.IGNORE); // SYNTAX
+		validSectionTemplates.put("kolokacje", SectionType.IGNORE); // COLLOCATIONS
+		validSectionTemplates.put("synonimy", SectionType.NYMS); // SYNTAX
+		validSectionTemplates.put("antonimy", SectionType.NYMS); // SYNTAX
+		validSectionTemplates.put("hiperonimy", SectionType.NYMS); // SYNTAX
+		validSectionTemplates.put("hiponimy", SectionType.NYMS); // SYNTAX
+		validSectionTemplates.put("holonimy", SectionType.NYMS); // SYNTAX
+		validSectionTemplates.put("meronimy", SectionType.NYMS); // SYNTAX
+		validSectionTemplates.put("pokrewne", SectionType.IGNORE); // RELATED TERMS
+		validSectionTemplates.put("frazeologia", SectionType.IGNORE); // COLOCATION/PHRASES
+		validSectionTemplates.put("etymologia", SectionType.IGNORE); // ETYMOLOGY
+		validSectionTemplates.put("uwagi", SectionType.IGNORE); // COMMENTS
+		validSectionTemplates.put("tłumaczenia", SectionType.TRANS); 
+		validSectionTemplates.put("źródła", SectionType.IGNORE); // SOURCES
+		
+
+		
+		nymMarkers = new HashSet<String>(20);
+		nymMarkers.add("Synonyme");
+		nymMarkers.add("Gegenwörter");
+		nymMarkers.add("Gegenworte");
+		nymMarkers.add("Oberbegriffe");
+		nymMarkers.add("Unterbegriffe");
+		nymMarkers.add("Meronyms"); // TODO: Any meronym/metonym info in German
+		// ?
+
+		nymMarkerToNymName = new HashMap<String, String>(20);
+		nymMarkerToNymName.put("synonimy", "syn");
+		nymMarkerToNymName.put("antonimy", "ant");
+		nymMarkerToNymName.put("hiponimy", "hypo");
+		nymMarkerToNymName.put("hiperonimy", "hyper");
+		nymMarkerToNymName.put("holonimy", "holo");
+		nymMarkerToNymName.put("meronimy", "mero");
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang
+	 * .String, org.getalp.blexisma.semnet.SemanticNetwork)
+	 */
+	@Override
+	public void extractData() {
+
+		// System.out.println(pageContent);
+		Matcher languageFilter = languageSectionPattern.matcher(pageContent);
+
+		// Either the filter is at end of sequence or on Polish language header.
+		while ( languageFilter.find() && ! languageFilter.group(2).contains("polski")) {
+			;
+		}
+		
+		if (languageFilter.hitEnd()) return;
+		
+		int polishSectionStartOffset = languageFilter.end();
+		
+		// Advance till end of sequence or new language section
+		languageFilter.find();
+		int polishSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+
+		extractPolishData(polishSectionStartOffset, polishSectionEndOffset);
+	}
+
+	int state = NODATA;
+	int definitionBlockStart = -1;
+	int orthBlockStart = -1;
+	int translationBlockStart = -1;
+	private int nymBlockStart = -1;
+	private String currentNym = null;
+
+	void gotoNoData(Matcher m) {
+		state = NODATA;
+	}
+
+	void gotoTradBlock(Matcher m) {
+		translationBlockStart = m.end();
+		state = TRADBLOCK;
+	}
+
+	void registerNewPartOfSpeech(Matcher m) {
+		wdh.addPartOfSpeech(m.group(3));
+	}
+
+	void gotoDefBlock(Matcher m) {
+		state = DEFBLOCK;
+		definitionBlockStart = m.end();
+	}
+
+	void gotoOrthoAltBlock(Matcher m) {
+		state = ORTHOALTBLOCK;
+		orthBlockStart = m.end();
+	}
+
+	void leaveDefBlock(Matcher m) {
+		extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
+		definitionBlockStart = -1;
+	}
+
+	void leaveTradBlock(Matcher m) {
+		extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m));
+		translationBlockStart = -1;
+	}
+
+	void leaveOrthoAltBlock(Matcher m) {
+		extractOrthoAlt(orthBlockStart, computeRegionEnd(orthBlockStart, m));
+		orthBlockStart = -1;
+	}
+
+	private void gotoNymBlock(Matcher m) {
+		state = NYMBLOCK;
+		currentNym = nymMarkerToNymName.get(m.group(1));
+		nymBlockStart = m.end();
+	}
+
+	private void leaveNymBlock(Matcher m) {
+		extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
+		currentNym = null;
+		nymBlockStart = -1;
+	}
+
+	private void extractPolishData(int startOffset, int endOffset) {
+		
+		Matcher m = sectionPattern.matcher(pageContent);
+		m.region(startOffset, endOffset);
+		wdh.initializeEntryExtraction(wiktionaryPageName);
+		gotoNoData(m);
+		while (m.find()) {
+			SectionType t = getSectionType(m.group(1));
+			switch (state) {
+			case NODATA:
+				switch (t) {
+				case DEFS:
+					gotoDefBlock(m);
+					break;
+				case NYMS:
+					gotoNymBlock(m);
+					break;
+				case TRANS:
+					gotoTradBlock(m);
+					break;
+				case EXAMPLES:
+					gotoNoData(m);
+					break;
+				case MORPH:
+					gotoNoData(m);
+					break;
+				case PRON:
+					gotoNoData(m);
+					break;
+				case IGNORE:
+					gotoNoData(m);
+					break;
+				case NOTASECTION:
+					break;
+				default:
+					break;
+				}
+				break;
+			case DEFBLOCK:
+				switch (t) {
+				case DEFS:
+					leaveDefBlock(m);
+					gotoDefBlock(m);
+					break;
+				case NYMS:
+					leaveDefBlock(m);
+					gotoNymBlock(m);
+					break;
+				case TRANS:
+					leaveDefBlock(m);
+					gotoTradBlock(m);
+					break;
+				case EXAMPLES:
+					leaveDefBlock(m);
+					gotoNoData(m);
+					break;
+				case MORPH:
+					leaveDefBlock(m);
+					gotoNoData(m);
+					break;
+				case PRON:
+					leaveDefBlock(m);
+					gotoNoData(m);
+					break;
+				case IGNORE:
+					leaveDefBlock(m);
+					gotoNoData(m);
+					break;
+				case NOTASECTION:
+					break;
+				default:
+					break;
+				}
+				break;
+			case TRADBLOCK:
+				switch (t) {
+				case DEFS:
+					leaveTradBlock(m);
+					gotoDefBlock(m);
+					break;
+				case NYMS:
+					leaveTradBlock(m);
+					gotoNymBlock(m);
+					break;
+				case TRANS:
+					leaveTradBlock(m);
+					gotoTradBlock(m);
+					break;
+				case EXAMPLES:
+					leaveTradBlock(m);
+					gotoNoData(m);
+					break;
+				case MORPH:
+					leaveTradBlock(m);
+					gotoNoData(m);
+					break;
+				case PRON:
+					leaveTradBlock(m);
+					gotoNoData(m);
+					break;
+				case IGNORE:
+					leaveTradBlock(m);
+					gotoNoData(m);
+					break;
+				case NOTASECTION:
+					break;
+				default:
+					break;
+				}
+				break;
+
+			case ORTHOALTBLOCK:
+				switch (t) {
+				case DEFS:
+					leaveOrthoAltBlock(m);
+					gotoDefBlock(m);
+					break;
+				case NYMS:
+					leaveOrthoAltBlock(m);
+					gotoNymBlock(m);
+					break;
+				case TRANS:
+					leaveOrthoAltBlock(m);
+					gotoTradBlock(m);
+					break;
+				case EXAMPLES:
+					leaveOrthoAltBlock(m);
+					gotoNoData(m);
+					break;
+				case MORPH:
+					leaveOrthoAltBlock(m);
+					gotoNoData(m);
+					break;
+				case PRON:
+					leaveOrthoAltBlock(m);
+					gotoNoData(m);
+					break;
+				case IGNORE:
+					leaveOrthoAltBlock(m);
+					gotoNoData(m);
+					break;
+				case NOTASECTION:
+					break;
+				default:
+					break;
+				}
+				break;
+
+			case NYMBLOCK:
+				switch (t) {
+				case DEFS:
+					leaveNymBlock(m);
+					gotoDefBlock(m);
+					break;
+				case NYMS:
+					leaveNymBlock(m);
+					gotoNymBlock(m);
+					break;
+				case TRANS:
+					leaveNymBlock(m);
+					gotoTradBlock(m);
+					break;
+				case EXAMPLES:
+					leaveNymBlock(m);
+					gotoNoData(m);
+					break;
+				case MORPH:
+					leaveNymBlock(m);
+					gotoNoData(m);
+					break;
+				case PRON:
+					leaveNymBlock(m);
+					gotoNoData(m);
+					break;
+				case IGNORE:
+					leaveNymBlock(m);
+					gotoNoData(m);
+					break;
+				case NOTASECTION:
+					break;
+				default:
+					break;
+				}
+				break;
+			default:
+				assert false : "Unexpected state while extracting translations from dictionary.";
+			}
+		}
+		// Finalize the entry parsing
+		switch (state) {
+		case NODATA:
+			break;
+		case DEFBLOCK:
+			leaveDefBlock(m);
+			break;
+		case TRADBLOCK:
+			leaveTradBlock(m);
+			break;
+		case ORTHOALTBLOCK:
+			leaveOrthoAltBlock(m);
+			break;
+		case NYMBLOCK:
+			leaveNymBlock(m);
+			break;
+		default:
+			assert false : "Unexpected state while extracting translations from dictionary.";
+		}
+		wdh.finalizeEntryExtraction();
+	}
+
+	private SectionType getSectionType(String m) {
+		SectionType st = validSectionTemplates.get(m);
+		return (null == st) ? SectionType.NOTASECTION : st;
+	}
+
+	static final String glossOrMacroPatternString;
+	static final Pattern glossOrMacroPattern;
+
+	static {
+		glossOrMacroPatternString = "(?:\\[([^\\]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\|?([^\\}]*)\\}\\})";
+		glossOrMacroPattern = Pattern.compile(glossOrMacroPatternString);
+	}
+
+	private void extractTranslations(int startOffset, int endOffset) {
+		Matcher macroMatcher = glossOrMacroPattern.matcher(pageContent);
+		macroMatcher.region(startOffset, endOffset);
+		String currentGlose = null;
+
+		while (macroMatcher.find()) {
+			String glose = macroMatcher.group(1);
+
+			if (glose != null) {
+				currentGlose = glose ;
+			} else {
+				String g1 = macroMatcher.group(2);
+				String g2 = macroMatcher.group(3);
+				String g3 = macroMatcher.group(4);
+				String g4 = macroMatcher.group(5);
+
+
+				if (g1.equals("Ü") || g1.equals("Üxx")) {
+					String lang;
+					String word = null;
+					String trans1 = null;
+					String trans2 = null;
+					String transcription = null;
+
+					lang = g2;
+					// normalize language code
+					String normLangCode;
+					if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
+						lang = normLangCode;
+					}
+
+					// Extract word and transcription
+					// there are three case with 5 "|" : 1-"{{ .. }}'' or 2-"" [[ .. ]]"" or 3-just "|"
+
+
+					int i1,i2, i3;
+					int i4 = 0; 
+					int i5 = 0;
+					if (g4 != null && (i1 = g4.indexOf('|')) != -1 && (i3 = g4.indexOf('|', i1+1)) == -1 ) { // only 5 "|" 
+
+						if ((i4 = g4.indexOf(']')) != -1 && (i5 = g3.indexOf('[')) != -1 ) {
+							i1 = g4.indexOf('|', i4); // the {{..}} can contain more than 1 "|", since the word is after the {{..}}, we ignore the others "|" and match the last one
+							trans1 = g3.substring(i5+1);
+							trans2 = g4.substring(0, i4+1);
+							transcription = trans1 + "|" + trans2;
+							word = g4.substring(i1+1);
+
+						} else if (g4 != null && g4.equals("")) {
+							word = g3;
+
+						} else {
+							transcription =g3;
+							word = g4;
+						}
+					}
+
+					if (g4 != null && g4.equals("")) {
+						word = g3;
+
+					} else {
+						transcription =g3;
+						word = g4;
+					}
+
+					lang=null;//GermanLangToCode.triletterCode(lang);
+					if(lang!=null){
+						wdh.registerTranslation(lang, currentGlose, transcription, word);
+					}
+
+				} else if (g1.equals("Ü-links")) {
+					// German wiktionary does not provide a glose to disambiguate.
+					// Just ignore this marker.
+				} else if (g1.equals("Ü-Abstand")) {
+					// just ignore it
+				} else if (g1.equals("Ü-rechts")) {
+					// Forget the current gloss
+					currentGlose = null;
+				}
+
+			}
+		}
+	}
+
+	@Override
+	protected void extractDefinitions(int startOffset, int endOffset) {
+		Matcher definitionMatcher = polishDefinitionPattern.matcher(this.pageContent);
+		definitionMatcher.region(startOffset, endOffset);
+		while (definitionMatcher.find()) {
+			if (definitionMatcher.group(2) != null && wdh.posIsValid()) {
+				// It's a definition
+				String def = cleanUpMarkup(definitionMatcher.group(2));
+				String senseNum = definitionMatcher.group(1);
+				if (null == senseNum) {
+					log.debug("Null sense number in definition\"{}\" for entry {}", def, this.wiktionaryPageName);
+					if (def != null && !def.equals("")) {
+						wdh.registerNewDefinition(definitionMatcher.group(2));
+					}
+				} else {
+					senseNum = senseNum.trim();
+					senseNum = senseNum.replaceAll("<[^>]*>", "");
+					if (def != null && !def.equals("")) {
+						wdh.registerNewDefinition(definitionMatcher.group(2), senseNum);
+					}
+				}
+			} else if (definitionMatcher.group(3) != null) {
+				// It's a part of speech
+				wdh.addPartOfSpeech(definitionMatcher.group(3));
+			} else if (definitionMatcher.group(4) != null && definitionMatcher.group(4).trim().length() > 0) {
+				log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", definitionMatcher.group(4), this.wiktionaryPageName);
+			} 
+		}
+	}
+	
+	@Override
+    protected void extractNyms(String synRelation, int startOffset, int endOffset) {
+		Matcher nymLineMatcher = polishNymLinePattern.matcher(this.pageContent);
+		nymLineMatcher.region(startOffset, endOffset);
+		while (nymLineMatcher.find()) {
+			if (nymLineMatcher.group(2) != null) {
+				// It's a line with a sense number
+				String senseNum = nymLineMatcher.group(1);
+				if (null == senseNum) {
+					log.debug("Null sense number in nym line\"{}\" for entry {}", nymLineMatcher.group(), this.wiktionaryPageName);
+					// TODO: attach the nym to the Vocable
+					
+				} else {
+					senseNum = senseNum.trim();
+					senseNum = senseNum.replaceAll("<[^>]*>", "");
+			        // Extract all links
+			        Matcher linkMatcher = WikiPatterns.linkPattern.matcher(nymLineMatcher.group(2));
+			        while (linkMatcher.find()) {
+			            // It's a link, only keep the alternate string if present.
+			            String leftGroup = linkMatcher.group(1) ;
+			            if (leftGroup != null && ! leftGroup.equals("") && 
+			            		! leftGroup.startsWith("Wikisaurus:") &&
+			            		! leftGroup.startsWith("Catégorie:") &&
+			            		! leftGroup.startsWith("#")) {
+			            	wdh.registerNymRelation(leftGroup, synRelation, senseNum);  
+			            }
+			        }      
+				}
+			} else if (nymLineMatcher.group(3) != null && nymLineMatcher.group(3).trim().length() > 0) {
+				log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", nymLineMatcher.group(3), this.wiktionaryPageName);
+			} 
+		}
+		
+    }
+}

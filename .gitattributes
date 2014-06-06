@@ -474,12 +474,12 @@ extractor/src/main/java/org/getalp/dbnary/FrenchLangtoCode.java -text svneol=uns
 extractor/src/main/java/org/getalp/dbnary/FrenchWiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/IWiktionaryExtractor.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/KoreanLangtoCode.java -text svneol=unset#text/plain
-extractor/src/main/java/org/getalp/dbnary/LMFBasedRDFDataHandler.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/LemonBasedRDFDataHandler.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/OffsetValue.java -text
 extractor/src/main/java/org/getalp/dbnary/WiktionaryDataHandler.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/WiktionaryDataHandlerFactory.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/WiktionaryExtractorFactory.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/WiktionaryGrep.java -text
 extractor/src/main/java/org/getalp/dbnary/WiktionaryIndex.java -text
@@ -497,7 +497,6 @@ extractor/src/main/java/org/getalp/dbnary/cli/GrepInWiktionary.java -text svneol
 extractor/src/main/java/org/getalp/dbnary/cli/IConv.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/cli/RDFDiff.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/cli/StatLemonExtract.java -text svneol=unset#text/plain
-extractor/src/main/java/org/getalp/dbnary/cli/StatRDFExtract.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/cli/TestInterwikiLinks.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/cli/UpdateDiachronicStatistics.java -text svneol=unset#text/plain
@@ -520,6 +519,8 @@ extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseLangtoCode.java -text svne
 extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseRelatedWordsExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseTranslationsExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/jpn/WiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/pol/WiktionaryDataHandler.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/pol/WiktionaryExtractor.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/por/PortugueseDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/por/PortugueseLangToCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/por/PortugueseMorphoExtractorWikiModel.java -text svneol=unset#text/plain

@@ -129,7 +129,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     // DONE: some xml comments may be in the string values. Remove them.
     public void extractData(String wiktionaryPageName, String pageContent) {
     	// Entries containing the special char ":" are pages belonging to specific namespaces.(Wiktionary:, Categories:, ...).
-    	// Such pages are simply ingnored.
+    	// Such pages are simply ignored.
     	if (wiktionaryPageName.contains(":")) {
     		return;
     	}

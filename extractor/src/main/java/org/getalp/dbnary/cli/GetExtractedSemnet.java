@@ -10,9 +10,9 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.IWiktionaryExtractor;
-import org.getalp.dbnary.LMFBasedRDFDataHandler;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryDataHandlerFactory;
 import org.getalp.dbnary.WiktionaryExtractorFactory;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexerException;
@@ -102,9 +102,10 @@ public class GetExtractedSemnet {
 				outputFormat.equals("TTL") ||
 				outputFormat.equals("RDFABBREV") ) {
 			if (model.equals("LEMON")) {
-				wdh = new LemonBasedRDFDataHandler(language);
+				wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
 			} else {
-				wdh = new LMFBasedRDFDataHandler(language);
+				System.err.println("LMF format not supported anymore.");
+				System.exit(1);
 			}
 		} else {
 			System.err.println("unsupported format :" + outputFormat);

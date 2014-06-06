@@ -56,38 +56,58 @@ public class DbnaryModel {
 	public static final Property equivalentTargetProperty;
 	public static final Property glossProperty;
 	public static final Property usageProperty;
+	public static final Property fromProperty;
+	public static final Property toProperty;
+	
 	// protected static final Property textProperty;
 	public static final Property senseNumberProperty;
 	// protected static final Property entryRelationTargetProperty;
 
 	// protected static final Property entryRelationLabelProperty;
 
+	public static final Property synonymReifiedRelation ;
+	public static final Property antonymReifiedRelation ;
+	public static final Property hypernymReifiedRelation ;
+	public static final Property hyponymReifiedRelation ;
+	public static final Property nearSynonymReifiedRelation ;
+	public static final Property meronymReifiedRelation ;
+	public static final Property holonymReifiedRelation ;
+
 	public static Model tBox;
 	
-	public static Property synonymProperty ;
-	public static Property antonymProperty ;
-	public static Property hypernymProperty ;
-	public static Property hyponymProperty ;
-	public static Property nearSynonymProperty ;
+	public static final Property synonymProperty ;
+	public static final Property antonymProperty ;
+	public static final Property hypernymProperty ;
+	public static final Property hyponymProperty ;
+	public static final Property nearSynonymProperty ;
 
 	// non standard nym (not in lexinfo);
-	public static Property meronymProperty ;
-	public static Property holonymProperty ;
+	public static final Property meronymProperty ;
+	public static final Property holonymProperty ;
 
-	public static Resource nounPOS;
-	public static Resource adjPOS;
-	public static Resource properNounPOS ;
-	public static Resource verbPOS ;
-	public static Resource adverbPOS ;
-	public static Resource otherPOS ;
+	public static final Resource nounPOS;
+	public static final Resource adjPOS;
+	public static final Resource properNounPOS ;
+	public static final Resource verbPOS ;
+	public static final Resource adverbPOS ;
+	public static final Resource otherPOS ;
 
+	public static final Resource genderProperty;
+	public static final Resource masculine;
+	public static final Resource feminine;
+	public static final Resource neuter;
+
+	public static final Resource animacyProperty;
+	public static final Resource inanimate;
+	public static final Resource animate;
+	
 	static {
 		// Create T-Box and read rdf schema associated to it.
 		tBox = ModelFactory.createDefaultModel();
-		// InputStream fis = LemonBasedRDFDataHandler.class.getResourceAsStream("LMF-rdf-rev14.xml");
-		// tBox.read( fis, LMF );
 		InputStream lis = DbnaryModel.class.getResourceAsStream("lemon.ttl");
 		tBox.read( lis, LEMON, "TURTLE");
+		lis = DbnaryModel.class.getResourceAsStream("lexinfo.owl");
+		tBox.read( lis, LEMON);
 
 		lexEntryType = tBox.getResource(LEMON + "LexicalEntry");
 		wordEntryType = tBox.getResource(LEMON + "Word");
@@ -115,6 +135,8 @@ public class DbnaryModel {
 		equivalentTargetProperty = tBox.getProperty(DBNARY + "writtenForm");
 		glossProperty = tBox.getProperty(DBNARY + "gloss");
 		usageProperty = tBox.getProperty(DBNARY + "usage");
+		fromProperty = tBox.getProperty(DBNARY + "from");
+		toProperty = tBox.getProperty(DBNARY + "to");
 		// textProperty = tBox.getProperty(DBNARY + "text");
 		senseNumberProperty = tBox.getProperty(DBNARY + "senseNumber");
 		// entryRelationLabelProperty = tBox.getProperty(DBNARY + "label");
@@ -127,22 +149,40 @@ public class DbnaryModel {
 		
 		pronProperty = tBox.getProperty(LEXINFO + "pronunciation");
 
+		synonymReifiedRelation = tBox.getProperty(DBNARY + "Synonym");
+		antonymReifiedRelation = tBox.getProperty(DBNARY + "Antonym");
+		hypernymReifiedRelation = tBox.getProperty(DBNARY + "Hypernym");
+		hyponymReifiedRelation = tBox.getProperty(DBNARY + "Hyponym");
+		nearSynonymReifiedRelation = tBox.getProperty(DBNARY + "ApproximateSynonym");
+		meronymReifiedRelation = tBox.getProperty(DBNARY + "Meronym");
+		holonymReifiedRelation = tBox.getProperty(DBNARY + "Holonym");
+
 		synonymProperty = tBox.getProperty(DBNARY + "synonym");
 		antonymProperty = tBox.getProperty(DBNARY + "antonym");
 		hypernymProperty = tBox.getProperty(DBNARY + "hypernym");
 		hyponymProperty = tBox.getProperty(DBNARY + "hyponym");
 		nearSynonymProperty = tBox.getProperty(DBNARY + "approximateSynonym");
-
 		meronymProperty = tBox.getProperty(DBNARY + "meronym");
 		holonymProperty = tBox.getProperty(DBNARY + "holonym");
 
 		nounPOS = tBox.getResource(LEXINFO + "noun");
-		adjPOS = tBox.getResource(LEXINFO + "adj");
+		adjPOS = tBox.getResource(LEXINFO + "adjective");
 		properNounPOS = tBox.getResource(LEXINFO + "properNoun");
 		verbPOS = tBox.getResource(LEXINFO + "verb");
 		adverbPOS = tBox.getResource(LEXINFO + "adverb");
 		otherPOS = tBox.getResource(LEXINFO + "otherPartOfSpeech");
 
+		genderProperty = tBox.getResource(LEXINFO + "gender");
+		masculine = tBox.getResource(LEXINFO + "masculine");
+		feminine = tBox.getResource(LEXINFO + "feminine");
+		neuter = tBox.getResource(LEXINFO + "neuter");
+		
+		animacyProperty = tBox.getResource(LEXINFO + "animacy");
+		animate = tBox.getResource(LEXINFO + "animate");
+		inanimate = tBox.getResource(LEXINFO + "inanimate");
+		
+		// syntacticBehaviourProperty = tBox.getResource(LEMON + "synBehavior");
+		
 	}
 	
 	

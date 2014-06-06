@@ -37,10 +37,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 
 	// States used for processing
 	protected Resource currentLexEntry;
-	private Resource currentLexinfoPos;
-	private String currentWiktionaryPos;
+	protected Resource currentLexinfoPos;
+	protected String currentWiktionaryPos;
 	
-	private Resource currentSense;
+	protected Resource currentSense;
 	private int currentSenseNumber;
 	private int currentSubSenseNumber;
 	private CounterSet translationCount = new CounterSet();
@@ -205,17 +205,16 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		promoteNymProperties();
 	}
 
-	@Override
-	public void addPartOfSpeech(String pos) {
+	
+	public void addPartOfSpeech(String originalPOS, Resource normalizedPOS, Resource normalizedType) {
     	// DONE: create a LexicalEntry for this part of speech only and attach info to it.
-		currentWiktionaryPos = pos;
-		PosAndType pat = posAndTypeValueMap.get(pos);
-    	currentLexinfoPos = (null == pat) ? null : pat.pos;
-    	Resource entryType = (null == pat) ? lexEntryType : pat.type;
+		currentWiktionaryPos = originalPOS;
+		currentLexinfoPos = normalizedPOS;
+		
     	nbEntries++;
     	
         currentEncodedPageName = uriEncode(currentWiktionaryPageName, currentWiktionaryPos) + "__" + currentLexieCount.incr(currentWiktionaryPos);
-        currentLexEntry = aBox.createResource(NS + currentEncodedPageName, entryType);
+        currentLexEntry = aBox.createResource(NS + currentEncodedPageName, normalizedType);
         
         // All translation numbers are local to a lexEntry
         translationCount.resetAll();
@@ -246,8 +245,18 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
         }
         heldBackStatements.clear();
         aBox.add(aBox.createStatement(currentMainLexEntry, refersTo, currentLexEntry));
+	}
+	
+	@Override
+	public void addPartOfSpeech(String pos) {
+		PosAndType pat = posAndTypeValueMap.get(pos);
+    	Resource lexinfoPOS = (null == pat) ? null : pat.pos;
+    	Resource entryType = (null == pat) ? lexEntryType : pat.type;
+    	
+    	addPartOfSpeech(pos, lexinfoPOS, entryType);
     }
 
+	
 	@Override
     public void registerAlternateSpelling(String alt) {
 		if (null == currentLexEntry) {
@@ -374,9 +383,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     	return res;
     }
     
-	@Override
-	public void registerNymRelation(String target, String synRelation) {
-		if (null == currentLexEntry) {
+	public void registerNymRelationToEntity(String target, String synRelation, Resource entity) {
+		if (null == entity) {
 			log.debug("Registering Lexical Relation when lex entry is null in \"{}\".", this.currentMainLexEntry);
 			return; // Don't register anything if current lex entry is not known.
 		}
@@ -397,7 +405,12 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		
 		Resource targetResource = aBox.createResource(NS + uriEncode(target), vocableEntryType);
 		
-    	aBox.add(aBox.createStatement(currentLexEntry, nymProperty, targetResource));
+    	aBox.add(aBox.createStatement(entity, nymProperty, targetResource));
+    }
+    
+	@Override
+	public void registerNymRelation(String target, String synRelation) {
+		registerNymRelationToEntity(target, synRelation, currentLexEntry);
     }
 	
 	@Override

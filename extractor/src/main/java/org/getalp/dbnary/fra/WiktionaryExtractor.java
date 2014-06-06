@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.getalp.dbnary;
+package org.getalp.dbnary.fra;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 
@@ -18,7 +20,7 @@ import org.getalp.dbnary.wiki.WikiTool;
  * @author serasset
  *
  */
-public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
+public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	// NOTE: to subclass the extractor, you need to define how a language section is recognized.
 	// then, how are sections recognized and what is their semantics.
@@ -428,7 +430,7 @@ public class FrenchWiktionaryExtractor extends AbstractWiktionaryExtractor {
         // affixesToDiscardFromLinks.add("s");
     }
     
-    public FrenchWiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
     }
 

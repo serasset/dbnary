@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.getalp.dbnary;
+package org.getalp.dbnary.eng;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,13 +9,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
 
 /**
  * @author serasset
  *
  */
-public class EnglishWiktionaryExtractor extends AbstractWiktionaryExtractor {
+public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     //TODO: Handle Wikisaurus entries.
 	//DONE: extract pronunciation
@@ -31,7 +33,7 @@ public class EnglishWiktionaryExtractor extends AbstractWiktionaryExtractor {
     private final int NYMBLOCK = 4;
     private final int PRONBLOCK = 5;
         
-    public EnglishWiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
     }
 

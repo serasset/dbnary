@@ -564,11 +564,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				currentTranslation = currentTranslation + " " + lexer.group(2);
 			} else if (lexer.group(4) != null) {
 				// A macro (group 4 = macro name, group 5 = parameters)
+				// TODO: handle brazport macros.
 				if ("furi".equals(lexer.group(4))) {
 					Map<String, String> args = WikiTool.parseArgs(lexer.group(5));
 					currentTranslation += args.get("1");
-				} else if ("brazport".equals(lexer.group(4))) {
-					
 				} else {
 					currentUsage = currentUsage + "{{" + lexer.group(4) + "}}";
 					if (lexer.group(5) != null) {

@@ -483,6 +483,7 @@ extractor/src/main/java/org/getalp/dbnary/bul/BulgarianWikiModel.java -text
 extractor/src/main/java/org/getalp/dbnary/bul/DefinitionsWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/bul/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/cli/CompareTradsAndIWLinks.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/cli/ExtractLanguageNamesFromLexvo.java -text
 extractor/src/main/java/org/getalp/dbnary/cli/ExtractWiktionary.java -text
 extractor/src/main/java/org/getalp/dbnary/cli/GetExtractedSemnet.java -text
 extractor/src/main/java/org/getalp/dbnary/cli/GetRawEntry.java -text svneol=unset#text/plain

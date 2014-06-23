@@ -120,9 +120,6 @@ doc/articles/monnet-challenge2012/lrec2006.bst -text
 doc/articles/monnet-challenge2012/lrec2006.sty -text
 doc/articles/monnet-challenge2012/monnet_dbnary.pdf -text
 doc/articles/monnet-challenge2012/monnet_dbnary.tex -text
-doc/articles/monnet-challenge2014/Poster-LDLchallenge-14.300dpi.jpg -text
-doc/articles/monnet-challenge2014/Poster-LDLchallenge-14.600dpi.jpg -text
-doc/articles/monnet-challenge2014/Poster-LDLchallenge-14.pages-x3.pdf -text
 doc/articles/monnet-challenge2014/Poster-LDLchallenge-14.pages.pdf -text
 doc/articles/monnet-challenge2014/Poster-LDLchallenge-14.pages/Data/LIG_coul_Illustrator-19.pdf -text
 doc/articles/monnet-challenge2014/Poster-LDLchallenge-14.pages/Data/LIG_coul_Illustrator-small-20.png -text
@@ -519,6 +516,7 @@ extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseLangtoCode.java -text svne
 extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseRelatedWordsExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseTranslationsExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/jpn/WiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/pol/PolishLangToCode.java -text
 extractor/src/main/java/org/getalp/dbnary/pol/WiktionaryDataHandler.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/pol/WiktionaryExtractor.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/por/PortugueseDefinitionExtractorWikiModel.java -text svneol=unset#text/plain

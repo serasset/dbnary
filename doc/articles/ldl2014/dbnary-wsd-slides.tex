@@ -211,26 +211,26 @@ $\rightarrow$ structure using LEMON, LEXINFO and few BDnary extensions.}
 
 \only<1>{\vfill\begin{mdframed}\includegraphics[width=\linewidth]{img/dbnarystrc1}\end{mdframed}}
 \only<2>{\vfill\begin{mdframed}\includegraphics[width=\linewidth]{img/dbnarystrc2}\end{mdframed}}
-\begin{overprint}
-\onslide<3>
-\begin{center}
-\[T, \mbox{ the set of translation relations}\]
-\[
-\forall T_i \in T, S=Senses(Source(T_i)): 
-\]
-\[
-  M_S = \max_{S_k\in S}(Score((Gloss(T_i),Def(S^k))),
-\]
-\vfill
-\[
-\argmax_{S_i\in S}^\delta \{Score(Gloss(T_i),Def(S^k))\}=
-\]
-\[
-\{S^k\in S|  M_S > Score((Gloss(T_i),Def(S^k)) > M_S-\delta \}
-\]
-\vfill
-\end{center}
-\end{overprint}	
+% \begin{overprint}
+% \onslide<3>
+% \begin{center}
+% \[T, \mbox{ the set of translation relations}\]
+% \[
+% \forall T_i \in T, S=Senses(Source(T_i)): 
+% \]
+% \[
+%   M_S = \max_{S_k\in S}(Score((Gloss(T_i),Def(S^k))),
+% \]
+% \vfill
+% \[
+% \argmax_{S_i\in S}^\delta \{Score(Gloss(T_i),Def(S^k))\}=
+% \]
+% \[
+% \{S^k\in S|  M_S > Score((Gloss(T_i),Def(S^k)) > M_S-\delta \}
+% \]
+% \vfill
+% \end{center}
+% \end{overprint}	
 }
 
 \frame{  
@@ -256,9 +256,12 @@ Translations of this entry are divided in 4 groups corresponding to: ``\emph{amp
 \frame{  
 \frametitle{Different languages, different cues}
 
-German language edition uses the sense number to annotate translations.
+\begin{itemize}
+	\item English language edition uses glosses to annotate translations.
+	\item German language edition uses the sense number to annotate translations.
+	\item French language edition uses sometimes a gloss, sometime a sense number.
+\end{itemize}
 
-French language edition uses sometimes a gloss, sometime a sense number.
 
 }
 
@@ -269,25 +272,33 @@ French language edition uses sometimes a gloss, sometime a sense number.
 \begin{tabular}{lrrrrrrr}
 \textbf{Language} & \textbf{Translations} & \textbf{w. gloss} &  \textbf{w. sense num.} & \textbf{w. both}\\
 \hline
-English	&	1317545	&	1288667	97.81\%	&	515	&	515	\\
-Finnish	&	121278	&	120329	99.22\%	&	115949	&	115550	\\
-French	&	504061	&	135612	26.90\%	&	28821	&	28114	\\
-German	&	388630	&	3101	0.80\%	&	385452	&	0	\\
-Modern Greek	&	56638	&	8368	14.77\%	&	12	&	12	\\
-Italian	&	62546	&	0	0.00\%	&	0	&	0	\\
-Japanese	&	85606	&	20686	24.16\%	&	4148	&	2512	\\
-Portuguese	&	267048	&	72339	27.09\%	&	71734	&	69172	\\
-Russian	&	360016	&	150985	41.94\%	&	115	&	0	\\
-Turkish	&	66290	&	585	0.88\%	&	52901	&	138	\\
+English	&	1317545	&	1288667	(97.81\%)	&	515	&	515	\\
+Finnish	&	121278	&	120329	(99.22\%)	&	115949	&	115550	\\
+French	&	504061	&	135612	(26.90\%)	&	28821	&	28114	\\
+German	&	388630	&	3101	(0.80\%)	&	385452	&	0	\\
+Greek	&	56638	&	8368	(14.77\%)	&	12	&	12	\\
+Italian	&	62546	&	0	(0.00\%)	&	0	&	0	\\
+Japanese	&	85606	&	20686	(24.16\%)	&	4148	&	2512	\\
+Portuguese	&	267048	&	72339	(27.09\%)	&	71734	&	69172	\\
+Russian	&	360016	&	150985	(41.94\%)	&	115	&	0	\\
+Turkish	&	66290	&	585	(0.88\%)	&	52901	&	138	\\
 \hline
 \end{tabular}
 \end{footnotesize}\end{center}
 
 }
 
+\frame{  
+\frametitle{Where do we go from here ?}
 
-%% Add the figures about glosses + numbers
+\begin{itemize}
+\item For some languages, we only need to match sense numbers (e.g. Turkish, German, ...)
+\item for other languages, we cannot do anything for now (e.g. Italian)
+\item for others, we need to match a gloss to the definition it rephrases (e.g. English, French, ...)
+\item and some editions are kind enough to offer us a Gold Standard on this very specific task...
+\end{itemize}
 
+}
 
 \subsection{Selecting a Similarity Measure}
 \frame{
@@ -447,30 +458,42 @@ Turkish	&	66290	&	585	0.88\%	&	52901	&	138	\\
 	\centering
 	%TikZ picture pour entourer le meilleur résultat en rouge en overlay
 	        \begin{tikzpicture}
-	            \node<1-3>[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=.40\textwidth]{french}\includegraphics[width=.39	\textwidth]{portuguese}};
-	            \draw<2-3>[orange,thick,rounded corners] (.9,2.65) rectangle (1.2,2.95);
-	            \draw<2-3>[orange,thick,rounded corners] (5.6,2.68) rectangle (5.9,2.98);
-	            \node<3>[anchor=south west,inner sep=0, fill=white!20] at (0.25,0){
-	            
-	            
-	            \centering \footnotesize
-	            \begin{tabular}{|c|c|c|c|c|c|}
-	            \hline &P&R&F1&MFS F1&Random\\
-	            \hline Portuguese&0.8572&0.8814&0.8651&0.2397&0.3103\\
-	            \hline Finnish&0.9642&0.9777&0.9687&0.7218&0.7962\\
-	            \hline French&0.8267&0.8313&0.8263&0.3542&0.3767\\
-	            \hline 
-	            \end{tabular}	            
-	            };
+	            \node<1-2>[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=.40\textwidth]{french}\includegraphics[width=.39	\textwidth]{portuguese}};
+	            \draw<2>[orange,thick,rounded corners] (.9,2.65) rectangle (1.2,2.95);
+	            \draw<2>[orange,thick,rounded corners] (5.6,2.68) rectangle (5.9,2.98);
 	        \end{tikzpicture}
 	        
 	        \begin{tikzpicture}
-	            \node<1-3>[anchor=south west,inner sep=0] at (0,0) {	\includegraphics[width=.40\textwidth]{finnish}};
-	            \draw<2-3>[orange,thick,rounded corners] (.8,2.50) rectangle (1.1,2.80);
+	            \node<1-2>[anchor=south west,inner sep=0] at (0,0) {	\includegraphics[width=.40\textwidth]{finnish}};
+	            \draw<2>[orange,thick,rounded corners] (.8,2.50) rectangle (1.1,2.80);
 	        \end{tikzpicture}	        
 	\caption{\scriptsize F1 score against delta for our measure and other Level 2 Measures.}
 	\label{fig.2}
 	\end{figure}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Final Results — Relations added to the dataset}
+
+\begin{center}\begin{footnotesize}\begin{tabular}{lrrrrrr}
+&\textbf{added}&\textbf{P}&\textbf{R}&\textbf{F1}&\textbf{MFS F1}&\textbf{Random}\\
+\hline
+\textbf{Bulgarian}	&	10,068	\\
+\textbf{German}	&	388,988	\\
+\textbf{Greek}	&	8,506	\\
+\textbf{English}	&	1,299,299	\\
+\textbf{Spanish}	&	61,079	\\
+\textbf{Finnish}	&	121,660	&0.9642&0.9777&0.9687&0.7218&0.7962\\
+\textbf{French}	&	136,685	&0.8267&0.8313&0.8263&0.3542&0.3767 \\
+\textbf{Italian}	&	0	\\
+\textbf{Japanese}	&	22,229	\\
+\textbf{Portuguese}	&	74,426	&0.8572&0.8814&0.8651&0.2397&0.3103 \\
+\textbf{Russian}	&	153,485	\\
+\textbf{Turkish}	&	51,791	\\
+\hline
+\end{tabular}
+\end{footnotesize}\end{center}
+
 \end{frame}
 
 \section{Conclusions}

@@ -2,6 +2,7 @@ package org.getalp.dbnary.pol;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,6 +10,7 @@ import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,6 +168,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private int nymBlockStart = -1;
 	private String currentNym = null;
 
+	private int pronBlockStart = -1;
+
 	void gotoNoData(Matcher m) {
 		state = NODATA;
 	}
@@ -216,6 +220,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		nymBlockStart = -1;
 	}
 
+	private void gotoPronBlock(Matcher m) {
+		state = PRONBLOCK;
+		pronBlockStart = m.end();
+	}
+
+	private void leavePronBlock(Matcher m) {
+		extractPron(pronBlockStart, computeRegionEnd(pronBlockStart, m));
+		
+	}
+
 	private void extractPolishData(int startOffset, int endOffset) {
 		
 		Matcher m = sectionPattern.matcher(pageContent);
@@ -243,7 +257,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					gotoNoData(m);
 					break;
 				case PRON:
-					gotoNoData(m);
+					gotoPronBlock(m);
 					break;
 				case IGNORE:
 					gotoNoData(m);
@@ -278,7 +292,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					break;
 				case PRON:
 					leaveDefBlock(m);
-					gotoNoData(m);
+					gotoPronBlock(m);
 					break;
 				case IGNORE:
 					leaveDefBlock(m);
@@ -314,7 +328,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					break;
 				case PRON:
 					leaveTradBlock(m);
-					gotoNoData(m);
+					gotoPronBlock(m);
 					break;
 				case IGNORE:
 					leaveTradBlock(m);
@@ -351,7 +365,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					break;
 				case PRON:
 					leaveOrthoAltBlock(m);
-					gotoNoData(m);
+					gotoPronBlock(m);
 					break;
 				case IGNORE:
 					leaveOrthoAltBlock(m);
@@ -388,10 +402,46 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					break;
 				case PRON:
 					leaveNymBlock(m);
-					gotoNoData(m);
+					gotoPronBlock(m);
 					break;
 				case IGNORE:
 					leaveNymBlock(m);
+					gotoNoData(m);
+					break;
+				case NOTASECTION:
+					break;
+				default:
+					break;
+				}
+				break;
+			case PRONBLOCK:
+				switch (t) {
+				case DEFS:
+					leavePronBlock(m);
+					gotoDefBlock(m);
+					break;
+				case NYMS:
+					leavePronBlock(m);
+					gotoNymBlock(m);
+					break;
+				case TRANS:
+					leavePronBlock(m);
+					gotoTradBlock(m);
+					break;
+				case EXAMPLES:
+					leavePronBlock(m);
+					gotoNoData(m);
+					break;
+				case MORPH:
+					leavePronBlock(m);
+					gotoNoData(m);
+					break;
+				case PRON:
+					leavePronBlock(m);
+					gotoPronBlock(m);
+					break;
+				case IGNORE:
+					leavePronBlock(m);
 					gotoNoData(m);
 					break;
 				case NOTASECTION:
@@ -420,12 +470,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		case NYMBLOCK:
 			leaveNymBlock(m);
 			break;
+		case PRONBLOCK:
+			
 		default:
 			assert false : "Unexpected state while extracting translations from dictionary.";
 		}
 		wdh.finalizeEntryExtraction();
 	}
 
+	
 	private SectionType getSectionType(String m) {
 		SectionType st = validSectionTemplates.get(m);
 		return (null == st) ? SectionType.NOTASECTION : st;
@@ -433,93 +486,109 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	static final String glossOrMacroPatternString;
 	static final Pattern glossOrMacroPattern;
+	static final String linePatternString;
+	static final Pattern linePattern;
+	static final String bulletListPatternString;
+	static final Pattern bulletListPattern;
 
 	static {
 		glossOrMacroPatternString = "(?:\\[([^\\]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\|?([^\\}]*)\\}\\})";
 		glossOrMacroPattern = Pattern.compile(glossOrMacroPatternString);
+		linePatternString = "^[^\n\r]*$";
+		linePattern = Pattern.compile(linePatternString, Pattern.MULTILINE);
+		bulletListPatternString = "^\\*\\s*([^:]*):([^\n\r]*)$";
+		bulletListPattern = Pattern.compile(bulletListPatternString);
 	}
 
+	
+	
 	private void extractTranslations(int startOffset, int endOffset) {
-		Matcher macroMatcher = glossOrMacroPattern.matcher(pageContent);
-		macroMatcher.region(startOffset, endOffset);
-		String currentGlose = null;
+		Matcher lineMatcher = linePattern.matcher(pageContent);
+		lineMatcher.region(startOffset, endOffset);
 
-		while (macroMatcher.find()) {
-			String glose = macroMatcher.group(1);
-
-			if (glose != null) {
-				currentGlose = glose ;
-			} else {
-				String g1 = macroMatcher.group(2);
-				String g2 = macroMatcher.group(3);
-				String g3 = macroMatcher.group(4);
-				String g4 = macroMatcher.group(5);
-
-
-				if (g1.equals("Ü") || g1.equals("Üxx")) {
-					String lang;
-					String word = null;
-					String trans1 = null;
-					String trans2 = null;
-					String transcription = null;
-
-					lang = g2;
-					// normalize language code
-					String normLangCode;
-					if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-						lang = normLangCode;
-					}
-
-					// Extract word and transcription
-					// there are three case with 5 "|" : 1-"{{ .. }}'' or 2-"" [[ .. ]]"" or 3-just "|"
-
-
-					int i1,i2, i3;
-					int i4 = 0; 
-					int i5 = 0;
-					if (g4 != null && (i1 = g4.indexOf('|')) != -1 && (i3 = g4.indexOf('|', i1+1)) == -1 ) { // only 5 "|" 
-
-						if ((i4 = g4.indexOf(']')) != -1 && (i5 = g3.indexOf('[')) != -1 ) {
-							i1 = g4.indexOf('|', i4); // the {{..}} can contain more than 1 "|", since the word is after the {{..}}, we ignore the others "|" and match the last one
-							trans1 = g3.substring(i5+1);
-							trans2 = g4.substring(0, i4+1);
-							transcription = trans1 + "|" + trans2;
-							word = g4.substring(i1+1);
-
-						} else if (g4 != null && g4.equals("")) {
-							word = g3;
-
-						} else {
-							transcription =g3;
-							word = g4;
-						}
-					}
-
-					if (g4 != null && g4.equals("")) {
-						word = g3;
-
-					} else {
-						transcription =g3;
-						word = g4;
-					}
-
-					lang=null;//GermanLangToCode.triletterCode(lang);
-					if(lang!=null){
-						wdh.registerTranslation(lang, currentGlose, transcription, word);
-					}
-
-				} else if (g1.equals("Ü-links")) {
-					// German wiktionary does not provide a glose to disambiguate.
-					// Just ignore this marker.
-				} else if (g1.equals("Ü-Abstand")) {
-					// just ignore it
-				} else if (g1.equals("Ü-rechts")) {
-					// Forget the current gloss
-					currentGlose = null;
+		while (lineMatcher.find()) {
+			String currentLine = lineMatcher.group();
+			if (currentLine.length() == 0) continue;
+			Matcher translationMatcher = bulletListPattern.matcher(currentLine);
+			
+			if (translationMatcher.matches()) {
+				String language = translationMatcher.group(1);
+				String lang;
+				if ((lang = PolishLangToCode.triletterCode(language)) != null) {
+					String translations = translationMatcher.group(2);
+					extractTranslationLine(lang, translations);
+				} else {
+					log.debug("Unknown Language : {}", language);
 				}
 
+			} else {
+				log.debug("INCORRECT Translation Line : {}", currentLine);
+			}
+
+			
+		
+		}
+	}
+
+	static final String translationLexerString;
+	static final Pattern translationLexer;
+
+	static {
+		translationLexerString = new StringBuffer()
+		.append("(?:")
+		.append("\\(([^\\)]*)\\)")
+		.append(")|(?:")
+		.append(WikiPatterns.linkPatternString)
+		.append(")|(?:")
+		.append(WikiPatterns.macroPatternString)
+		.append(")|(?:")
+		.append("(.)")
+		.append(")").toString();
+		
+		translationLexer = Pattern.compile(translationLexerString);
+
+	}
+	
+	private void extractTranslationLine(String lang, String translations) {
+		Matcher lexer = translationLexer.matcher(translations + ";");
+		String currentGlose = null;
+		String currentTranslation = "";
+		String currentUsage = "";
+		
+		while (lexer.find()) {
+			if (lexer.group(1) != null) {
+				// Sense number
+				currentGlose = lexer.group(1);
+			} else if (lexer.group(2) != null) {
+				// A link (group 2 = target; group 3 = form)
+				currentTranslation = currentTranslation + " " + lexer.group(2);
+			} else if (lexer.group(4) != null) {
+				// A macro (group 4 = macro name, group 5 = parameters)
+				if ("furi".equals(lexer.group(4))) {
+					Map<String, String> args = WikiTool.parseArgs(lexer.group(5));
+					currentTranslation += args.get("1");
+				} else if ("brazport".equals(lexer.group(4))) {
+					
+				} else {
+					currentUsage = currentUsage + "{{" + lexer.group(4) + "}}";
+					if (lexer.group(5) != null) {
+						log.debug("non empty parameter in {} macro: {}", lexer.group(4), lexer.group(5));
+					}
+				}
+			} else if (lexer.group(6) != null) {
+				// A char...
+				String character = lexer.group(6);
+				
+				if (character.equals(",") || character.equals(";")) {
+					wdh.registerTranslation(lang, currentGlose, currentUsage.trim(), currentTranslation.trim());
+					currentTranslation = "";
+					currentUsage = "";
+				} else {
+					currentUsage += character;
+				}
 			}
 		}
+		
 	}
 
 	@Override
@@ -586,4 +655,23 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		}
 		
     }
+	
+	
+	private void extractPron(int startOffset, int endOffset) {
+		Matcher macroMatcher = WikiPatterns.macroPattern.matcher(this.pageContent);
+		macroMatcher.region(startOffset, endOffset);
+
+		while (macroMatcher.find()) {
+			if (macroMatcher.group(1).equals("IPA3")) {
+				Map<String,String> args = WikiTool.parseArgs(macroMatcher.group(2));
+				wdh.registerPronunciation(args.get("1"), "pl-ipa");
+				if (args.get("2") != null) {
+					log.debug("More than one pronunciation: {} in {}", args, this.wiktionaryPageName);
+				}
+			} else {
+				log.debug("UNKNOWN MACRO: \"{}\" in \"{}\"", macroMatcher.group(1), this.wiktionaryPageName);
+			} 
+		}
+	}
+
 }

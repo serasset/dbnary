@@ -1,4 +1,5 @@
 * text=auto !eol
+/dbnary-extractor -text
 /pom.xml -text
 src/main/java/org/getalp/dbnary/AbstractWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/DbnaryModel.java -text svneol=unset#text/plain

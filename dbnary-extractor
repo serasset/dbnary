@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+
+# LOG=debug
+
+CP=~/.m2/repository/org/getalp/dbnary/1.1-SNAPSHOT/dbnary-1.1-SNAPSHOT-jar-with-dependencies.jar
+
+if [ "$1" = "" ]; then
+	echo "Usage: dbnary-extractor cmd arguments"
+	echo "launch the cmd command of DBnary extractor."
+	echo "type dbnary-extractor list to list commands you can use."
+	return
+fi
+
+if [ "$1" = "list" ]; then
+	echo 'CompareTradsAndIWLinks'
+	echo 'GetExtractedSemnet'
+	echo 'GrepInWiktionary'
+	echo 'RDFDiff'
+	echo 'TestInterwikiLinks'
+	echo 'UpdateDiachronicStatistics'
+	echo 'ExtractWiktionary'
+	echo 'GetRawEntry'
+	echo 'IConv'
+	echo 'StatLemonExtract'
+	echo 'UpdateAndExtractDumps'
+	echo 'UpdateLatestStatistics'
+	return
+fi
+
+CMD=$1
+
+shift
+
+java -cp $CP  -Xmx4G -Dorg.slf4j.simpleLogger.log.org.getalp.dbnary=$LOG org.getalp.dbnary.cli.$CMD $*

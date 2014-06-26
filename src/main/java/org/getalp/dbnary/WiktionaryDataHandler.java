@@ -78,8 +78,8 @@ public interface WiktionaryDataHandler {
 	public void dump(OutputStream out, String format);
 
 	void registerNymRelationOnCurrentSense(String target, String synRelation);
+	
+	public void setWiktionaryIndex(WiktionaryIndex wi);
 
 	public void registerOtherForm(String form);
-
-	public void setWiktionaryIndex(WiktionaryIndex wi);
 }

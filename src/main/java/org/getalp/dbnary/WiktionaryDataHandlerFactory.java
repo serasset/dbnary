@@ -10,37 +10,38 @@ public class WiktionaryDataHandlerFactory {
 	private static Logger log = LoggerFactory.getLogger(WiktionaryDataHandlerFactory.class);
 
 	public static WiktionaryDataHandler getDataHandler(String language) {
-		WiktionaryDataHandler we = null;
+		WiktionaryDataHandler wdh = null;
 
 		String cname = WiktionaryDataHandlerFactory.class.getCanonicalName();
 		int dpos = cname.lastIndexOf('.');
 		String pack = cname.substring(0, dpos);
 		try {
-			Class<?> wec = Class.forName(pack + "." + language + ".WiktionaryDataHandler");
-			we = (WiktionaryDataHandler) wec.getConstructor(String.class).newInstance(language);
+			Class<?> wdhc = Class.forName(pack + "." + language + ".WiktionaryDataHandler");
+			wdh = (WiktionaryDataHandler) wdhc.getConstructor(String.class).newInstance(language);
 		} catch (ClassNotFoundException e) {
-			log.debug("No wiktionary extractor found for {}", language);
+			log.debug("No wiktionary data handler found for {}", language);
 		} catch (InstantiationException e) {
-			log.debug("Could not instanciate wiktionary extractor for {}", language);
+			log.debug("Could not instanciate wiktionary data handler for {}", language);
 		} catch (IllegalAccessException e) {
-			log.debug("Illegal access to wiktionary extractor for {}", language);
+			log.debug("Illegal access to wiktionary data handler for {}", language);
 		} catch (IllegalArgumentException e) {
-			log.debug("Illegal argument passed to wiktionary extractor's constructor for {}", language);
+			log.debug("Illegal argument passed to wiktionary data handler's constructor for {}", language);
 			e.printStackTrace(System.err);
 		} catch (SecurityException e) {
-			log.debug("Security exception while instanciating wiktionary extractor for {}", language);
+			log.debug("Security exception while instanciating wiktionary data handler for {}", language);
 			e.printStackTrace(System.err);
 		} catch (InvocationTargetException e) {
-			log.debug("InvocationTargetException exception while instanciating wiktionary extractor for {}", language);
+			log.debug("InvocationTargetException exception while instanciating wiktionary data handler for {}", language);
 			e.printStackTrace(System.err);
 		} catch (NoSuchMethodException e) {
-			log.debug("No appropriate constructor when instanciating wiktionary extractor for {}", language);
+			log.debug("No appropriate constructor when instanciating wiktionary data handler for {}", language);
 		}
 
-		if (null == we) {
-			we = new LemonBasedRDFDataHandler(language);
+		if (null == wdh) {
+			wdh = new LemonBasedRDFDataHandler(language);
 		}
-		return we;
+
+		return wdh;
 	}
 
 }

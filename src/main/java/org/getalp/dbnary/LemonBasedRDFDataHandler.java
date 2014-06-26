@@ -35,6 +35,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	
 	Model aBox;
 
+	protected WiktionaryIndex wi;
+
 	// States used for processing
 	protected Resource currentLexEntry;
 	protected Resource currentLexinfoPos;
@@ -513,7 +515,9 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		}
 	}
 
-	
+	public void setWiktionaryIndex(WiktionaryIndex wi) {
+		this.wi = wi;
+	}
 	
 	public void dump(OutputStream out) {
 		dump(out, null);

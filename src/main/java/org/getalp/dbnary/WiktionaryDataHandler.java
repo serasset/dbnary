@@ -80,5 +80,5 @@ public interface WiktionaryDataHandler {
 	void registerNymRelationOnCurrentSense(String target, String synRelation);
 
 
-	
+	public void setWiktionaryIndex(WiktionaryIndex wi);
 }

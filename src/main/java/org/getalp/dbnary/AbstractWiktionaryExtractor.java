@@ -27,6 +27,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     @Override
 	public void setWiktionaryIndex(WiktionaryIndex wi) {
 		this.wi = wi;
+		this.wdh.setWiktionaryIndex(wi);
 	}
 
 

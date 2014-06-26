@@ -157,10 +157,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	 */
 	@Override
 	public void extractData() {
-
 		// System.out.println(pageContent);
 		Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-		while (languageFilter.find() && !languageFilter.group(2).equals("Deutsch")) {
+		while (languageFilter.find() && !isGermanLanguageHeader(languageFilter)) {
 			;
 		}
 		// Either the filter is at end of sequence or on German language header.
@@ -177,7 +176,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 		extractGermanData(germanSectionStartOffset, germanSectionEndOffset);
 	}
+	
+	private boolean isGermanLanguageHeader(Matcher m) {
+		return m.group(2).equals("Deutsch");
+	}
 
+	
 	/**
 	 * @uml.property  name="state"
 	 */
@@ -265,6 +269,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		Matcher m = macroOrPOSPattern.matcher(pageContent);
 		m.region(startOffset, endOffset);
 		wdh.initializeEntryExtraction(wiktionaryPageName);
+		wdh.setWiktionaryIndex(wi);
 		gotoNoData(m);
 		while (m.find()) {
 			switch (state) {

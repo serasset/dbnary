@@ -456,7 +456,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
      */
     @Override
     public void extractData() {
-        // System.out.println(pageContent);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
         while (languageFilter.find() && ! isFrenchLanguageHeader(languageFilter)) {
             ;

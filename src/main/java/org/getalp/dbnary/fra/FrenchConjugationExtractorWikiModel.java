@@ -61,29 +61,13 @@ public class FrenchConjugationExtractorWikiModel extends DbnaryWikiModel {
 			ele = ele.getNextSibling();
 		}
 
-		if (ele == null) {
-			System.out.println("returning null!!");
-		}
-
-		if ((Element) ele == null) {
-			System.out.println("null cast!!");
-		}
-
 		return (Element) ele;
 	}
 
 	public static boolean hasRealPreviousSibling(Node ele) {
-		System.out.println(ele.getNodeName() + " " + ele.getNodeType() + " " + Node.ELEMENT_NODE + " " + Node.TEXT_NODE);
 		do {
 			ele = ele.getPreviousSibling();
-			if (ele != null) {
-				System.out.println(ele.getNodeName() + " " + ele.getNodeType() + " " + Node.ELEMENT_NODE + " " + Node.TEXT_NODE);
-			}
 		} while (ele != null && ele.getNodeType() != Node.ELEMENT_NODE);
-
-		if (ele != null) {
-			System.out.println(ele.getNodeName());
-		}
 
 		return ele != null;
 	}
@@ -96,29 +80,17 @@ public class FrenchConjugationExtractorWikiModel extends DbnaryWikiModel {
 		}
 
 		if (table.getParentNode().getNodeName().equals("div")) {
-			System.out.println("ignoring table");
 			// we ignore the tables at the right of the page as they
 			// give composed tenses.
 			return;
 		}
 
-		System.out.println("grepping table !");
-
 		NodeList lines = table.getElementsByTagName("tr");
 
 		for (int i = 1; i < lines.getLength(); i++) {
 			Element line = (Element) lines.item(i);
-			if (line == null) {
-				System.out.println("BONJOUR !!!");
-			}
-
 			NodeList tdList = line.getElementsByTagName("td");
 
-			if (tdList.getLength() < 2) {
-				System.out.println("BONJOUR3 !!! " + lines.item(0).getTextContent().trim());
-			}
-
-			System.out.println("New form : '" + tdList.item(1).getTextContent().trim() + '"');
 			delegate.registerOtherForm(
 				tdList.item(1).getTextContent().trim()
 			);

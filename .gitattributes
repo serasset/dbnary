@@ -34,6 +34,7 @@ src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unse
 src/main/java/org/getalp/dbnary/cli/UpdateDiachronicStatistics.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/cli/UpdateLatestStatistics.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/deu/GermanLangToCode.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/deu/WiktionaryDataHandler.java -text
 src/main/java/org/getalp/dbnary/deu/WiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/ell/GreekLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ell/WiktionaryExtractor.java -text

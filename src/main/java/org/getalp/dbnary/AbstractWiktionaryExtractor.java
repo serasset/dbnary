@@ -365,62 +365,28 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     }
 
 	public static String stripParentheses(String s) {
-		final int A= 0; 
-		final int B = 1;
+		boolean firstStep = true;
+		int begin = 0, end, i; 
 
-		int ET = A;
-		String resultat="";
-		int debut =0;
-		int fin =0 ;    // la fin de partie qui nous inter
-		int i= 0; 
+		String res = "";
 
-		while(i!=s.length()){
-			switch (ET){
-			case A:
-				if(s.charAt(i)=='('){
-					// On a trouvé un debut de parenthese 
-
-					//On place la fin de la partie qui nous interesse
-					fin= i;
-					//on change d'etat
-					ET=B;
-					resultat = resultat +s.substring(debut, fin);
+		for (i = 0; i < s.length(); i++) {
+			if (firstStep) {
+				if (s.charAt(i) == '(') {
+					end = i;
+					firstStep = false;
+					res += s.substring(begin, end);
 				}
-				break;
-			case B:
-				if(s.charAt(i)==')'){
-					// On a trouvé la fin du commentaire 
-
-					// on place le debut se le partie qui nous interesse 
-					debut= i+1;;
-					// on change d'etat 
-					ET=A;
-				}
-				break;
-
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
-			}
-
-			// On passe au caractère suivant ;
-			i=i+1;
-
-		}
-		if (i==s.length()) {
-			switch (ET){
-			case A:
-				resultat = resultat +s.substring(debut);
-				break;
-			case B:
-				break;
-
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
+			} else if (s.charAt(i) == ')') {
+				begin = i + 1;
+				firstStep = true;
 			}
 		}
-		return resultat;
+
+		if (i == s.length() && firstStep)
+			res += s.substring(begin);
+
+		return res;
 	}
 
 }

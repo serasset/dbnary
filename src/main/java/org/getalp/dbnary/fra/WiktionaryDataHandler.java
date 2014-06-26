@@ -32,7 +32,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 			Matcher conjugationFilter = conjugationPattern.matcher(conjugationPageContent);
 
 		    if (conjugationFilter.find()) {
-				FrenchConjugationExtractorWikiModel dbnmodel = new FrenchConjugationExtractorWikiModel(this, wi, new Locale("fr"), "/${image}", "/${title}");
+				FrenchExtractorWikiModel dbnmodel = new FrenchExtractorWikiModel(this, wi, new Locale("fr"), "/${image}", "/${title}");
 				dbnmodel.parseConjugation(conjugationFilter.group());
 		    }
     	}

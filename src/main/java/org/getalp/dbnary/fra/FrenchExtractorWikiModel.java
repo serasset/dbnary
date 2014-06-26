@@ -25,34 +25,43 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import java.io.IOException;
 
-public class FrenchConjugationExtractorWikiModel extends DbnaryWikiModel {
+/**
+ * @author jakse
+ */
+
+public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	private WiktionaryDataHandler delegate;
 
-    private Logger log = LoggerFactory.getLogger(FrenchConjugationExtractorWikiModel.class);
+	private Logger log = LoggerFactory.getLogger(FrenchExtractorWikiModel.class);
 
-    public static final String impersonalMoodIdString = "Modes_impersonnels";
 
 	public static DocumentBuilder docBuilder;
 	public static final InputSource docSource;
+
+	public static final String notSpecialHREFPatternString = "^/[^:]+$";
+	public static final Pattern notSpecialHREFPattern;
 
     static {
 		try {
 			docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
 			docBuilder = null;
-			System.err.println("got a ParserConfigurationException in the FrenchConjugationExtractorWikiModel class.");
+			System.err.println("got a ParserConfigurationException in the FrenchExtractorWikiModel class.");
 		}
 
 		docSource = new InputSource();
+
+		notSpecialHREFPattern = Pattern.compile(notSpecialHREFPatternString);
     }
 
-    public FrenchConjugationExtractorWikiModel(WiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
+    public FrenchExtractorWikiModel(WiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
 		this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
 	}
 	
-	public FrenchConjugationExtractorWikiModel(WiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+	public 	FrenchExtractorWikiModel(WiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wi, locale, imageBaseURL, linkBaseURL);
 		this.delegate = we;
+		setPageName(we.currentLexEntry());
 	}
 
 	public static Element adjacentDiv (Node ele) {
@@ -70,6 +79,28 @@ public class FrenchConjugationExtractorWikiModel extends DbnaryWikiModel {
 		} while (ele != null && ele.getNodeType() != Node.ELEMENT_NODE);
 
 		return ele != null;
+	}
+
+	private Document docFromTemplateCall (String templateCall) {
+		String html = render(new HTMLConverter(), templateCall);
+
+		if (docBuilder == null) {
+			return null;
+		}
+
+		docSource.setCharacterStream(new StringReader("<div>" + html + "</div>"));
+
+		Document doc = null;
+
+		try {
+			doc = docBuilder.parse(docSource);
+		} catch (SAXException e) {
+			log.error("Unable to parse template call in FrenchExtractorWikiModel.");
+		} catch (IOException e) {
+			log.error("got IOException in FrenchExtractorWikiModel ‽");
+		}
+
+		return doc;
 	}
 
 	public void handleConjugationTable(NodeList tables, int tableIndex) {
@@ -98,26 +129,12 @@ public class FrenchConjugationExtractorWikiModel extends DbnaryWikiModel {
 	}
 
 	public void parseConjugation(String conjugationTemplateCall) {
-		// Render the conjugation to plain text, while ignoring the example template
+		// Render the conjugation to html, while ignoring the example template
 
-		if (docBuilder == null) {
-			return;
-		}
+		Document doc = docFromTemplateCall(conjugationTemplateCall);
 
-		String conj = render(new HTMLConverter(), conjugationTemplateCall).trim();
-
-		docSource.setCharacterStream(new StringReader("<div>" + conj + "</div>"));
-
-		Document doc;
-
-		try {
-			doc = docBuilder.parse(docSource);
-		} catch (SAXException e) {
-			log.error("Unable to parse conjugation tables in FrenchConjugationExtractorWikiModel.");
-			return;
-		} catch (IOException e) {
-			log.error("got IOException in FrenchConjugationExtractorWikiModel ‽");
-			return;
+		if (doc == null) {
+			return; // failing silently: error message already given.
 		}
 
 		NodeList tables = doc.getElementsByTagName("table");
@@ -136,7 +153,25 @@ public class FrenchConjugationExtractorWikiModel extends DbnaryWikiModel {
 		for (int i = 2; i < tables.getLength(); i++) {
 			handleConjugationTable(tables, i);
 		}
+	}
 
-// 		delegate.registerNewConjugation(conj);
+	public void parseOtherForm(String templateCall) {
+		Document doc = docFromTemplateCall(templateCall);
+
+		if (doc == null) {
+			return; // failing silently: error message already given.
+		}
+
+
+		NodeList links = doc.getElementsByTagName("a");
+
+		for (int i = 0; i < links.getLength(); i++) {
+			Node a = links.item(i);
+
+			String word = a.getTextContent().trim();
+			if (!word.equals(delegate.currentLexEntry()) && a.getAttributes().getNamedItem("href").getTextContent().toLowerCase().equals("/" + word)) {
+				delegate.registerOtherForm(word);
+			}
+		}
 	}
 }

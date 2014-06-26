@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +32,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected final static String languageSectionPatternString2 = "==\\s*\\{\\{langue\\|([^\\}]*)\\}\\}\\s*==";
     // TODO: handle morphological informations e.g. fr-rég template ?
     protected final static String pronounciationPatternString = "\\{\\{pron\\|([^\\|\\}]*)(.*)\\}\\}";
-    
+
+    protected final static String otherFormPatternString = "\\{\\{fr-[^\\}]*\\}\\}";
+
     private final int NODATA = 0;
     private final int TRADBLOCK = 1;
     protected final int DEFBLOCK = 2;
@@ -437,10 +440,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	protected final static Pattern languageSectionPattern;
 	private final static Pattern pronunciationPattern;
+	private final static Pattern otherFormPattern;
 
     static {
         languageSectionPattern = Pattern.compile(languageSectionPatternString);
         pronunciationPattern = Pattern.compile(pronounciationPatternString);
+        otherFormPattern = Pattern.compile(otherFormPatternString);
     }
 
     int state = NODATA;
@@ -469,11 +474,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // Advance till end of sequence or new language section
         languageFilter.find();
         int frenchSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
-        
-        extractFrenchData(frenchSectionStartOffset, frenchSectionEndOffset);
-     }
 
-    
+        extractFrenchData(frenchSectionStartOffset, frenchSectionEndOffset);
+        extractOtherForms();
+    }
+
+
     private boolean isFrenchLanguageHeader(Matcher m) {
 		return (null != m.group(1) && m.group(1).equals("fr")) || (null != m.group(2) && m.group(2).equals("fr"));
 	}
@@ -929,9 +935,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     		if (lang.startsWith("|lang=")) lang = lang.substring(5);
 
     		if (! pron.equals("")) wdh.registerPronunciation(pron, "fr-fonipa");
-    		
 		}
     }
 
-
+	private void extractOtherForms() {
+		Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
+		while (otherFormMatcher.find()) {
+			FrenchExtractorWikiModel dbnmodel = new FrenchExtractorWikiModel(wdh, wi, new Locale("fr"), "/${image}", "/${title}");
+			dbnmodel.parseOtherForm(otherFormMatcher.group());
+		}
+	}
 }

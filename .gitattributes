@@ -43,7 +43,7 @@ src/main/java/org/getalp/dbnary/eng/WiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/fin/FinnishTranslationExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/fin/SuomiLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/fin/WiktionaryExtractor.java -text
-src/main/java/org/getalp/dbnary/fra/FrenchConjugationExtractorWikiModel.java -text
+src/main/java/org/getalp/dbnary/fra/FrenchExtractorWikiModel.java -text
 src/main/java/org/getalp/dbnary/fra/FrenchLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/fra/WiktionaryDataHandler.java -text
 src/main/java/org/getalp/dbnary/fra/WiktionaryExtractor.java -text

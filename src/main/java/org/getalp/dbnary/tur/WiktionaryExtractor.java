@@ -509,7 +509,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				} else if (character != null) {
 					if (character.equals(":")) {
 						lang = langname.trim();
-						lang=AbstractWiktionaryExtractor.supParenthese(lang);
+						lang=AbstractWiktionaryExtractor.stripParentheses(lang);
 						lang = TurkishLangtoCode.triletterCode(lang);
 						langname = "";
 						ETAT = TRAD;

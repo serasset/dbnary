@@ -251,7 +251,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 				} else if (character != null) {
 					if (character.equals(":")) {
 						lang = langname.trim();
-						lang=AbstractWiktionaryExtractor.supParenthese(lang);
+						lang=AbstractWiktionaryExtractor.stripParentheses(lang);
 						lang =SuomiLangToCode.triletterCode(lang);
 						langname = "";
 						ETAT = TRAD;

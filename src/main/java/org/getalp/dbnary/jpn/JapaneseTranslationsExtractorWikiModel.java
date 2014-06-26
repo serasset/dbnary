@@ -210,7 +210,7 @@ public class JapaneseTranslationsExtractorWikiModel {
 				} else if (car != null) {
 					if (car.equals(":")) {
 						lang = langname.trim();
-						lang = AbstractWiktionaryExtractor.supParenthese(lang);
+						lang = AbstractWiktionaryExtractor.stripParentheses(lang);
 						lang = JapaneseLangtoCode.triletterCode(lang);
 						langname = "";
 						ETAT = TRAD;
@@ -233,7 +233,7 @@ public class JapaneseTranslationsExtractorWikiModel {
 							currentGlose = null;
 						}
 						//if (word != null && word.length() != 0) {
-							//lang=supParenthese(lang);
+							//lang=stripParentheses(lang);
 							//wdh.registerTranslation(lang, currentGlose, usage, word);
 						//}
 						langname = ""; word = ""; usage = ""; lang=null;

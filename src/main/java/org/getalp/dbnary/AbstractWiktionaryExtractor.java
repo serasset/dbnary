@@ -364,7 +364,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         }      
     }
 
-	public static String supParenthese(String s) {
+	public static String stripParentheses(String s) {
 		final int A= 0; 
 		final int B = 1;
 

@@ -531,7 +531,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				} else if (g6 != null) {
 					if (g6.equals(":")) {
 						lang = langname.trim();
-						lang=supParenthese(lang);
+						lang=stripParentheses(lang);
 						lang =ItalianLangToCode.triletterCode(lang);
 						langname = "";
 						ETAT = TRAD;
@@ -554,7 +554,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 							currentGlose = null;
 						}
 						//if (word != null && word.length() != 0) {
-							//lang=supParenthese(lang);
+							//lang=stripParentheses(lang);
 							//wdh.registerTranslation(lang, currentGlose, usage, word);
 						//}
 						langname = ""; word = ""; usage = ""; lang=null;

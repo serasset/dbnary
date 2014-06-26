@@ -79,6 +79,7 @@ public interface WiktionaryDataHandler {
 
 	void registerNymRelationOnCurrentSense(String target, String synRelation);
 
+	public void registerOtherForm(String form);
 
 	public void setWiktionaryIndex(WiktionaryIndex wi);
 }

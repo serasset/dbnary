@@ -39,6 +39,7 @@ public class DbnaryModel {
 	public static final Property dbnaryPosProperty;
 	public static final Resource vocableEntryType;
 	public static final Property refersTo;
+	public static final Property otherFormProperty;
 
 	// LEMON properties
 	public static final Property posProperty;
@@ -143,6 +144,7 @@ public class DbnaryModel {
 		// entryRelationTargetProperty = tBox.getProperty(DBNARY + "target");
 		refersTo = tBox.getProperty(DBNARY + "refersTo");
 		isTranslationOf = tBox.getProperty(DBNARY + "isTranslationOf");
+		otherFormProperty = tBox.getProperty(DBNARY + "otherForm");
 				
 		posProperty = tBox.getProperty(LEXINFO + "partOfSpeech");
 		dbnaryPosProperty = tBox.getProperty(DBNARY + "partOfSpeech");

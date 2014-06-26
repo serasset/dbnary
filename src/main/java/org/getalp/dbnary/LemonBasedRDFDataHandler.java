@@ -545,5 +545,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		// TODO Auto-generated method stub
 		return currentWiktionaryPageName;
 	}
-	
+
+	public void registerOtherForm(String form)  {
+		aBox.add(aBox.createStatement(currentLexEntry, otherFormProperty, form));
+	}
 }

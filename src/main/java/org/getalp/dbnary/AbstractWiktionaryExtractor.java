@@ -30,89 +30,29 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 		this.wdh.setWiktionaryIndex(wi);
 	}
 
+	public static String removeXMLComments(String s) {
+		StringBuffer result = new StringBuffer();
+		int i = 0, len = s.length();
+		int beginKeep = 0;
 
-
-    
-  // Suppression des commentaires XML d'un texte 
-    
-	protected final static String debutOrfinDecomPatternString;
-
-	static {
-		debutOrfinDecomPatternString=new StringBuilder()
-		.append("(?:")
-		.append("(<!--)")
-		.append(")|(?:")
-		.append("(-->)")
-		.append(")")
-		.toString();
-	}
-	protected final static Pattern xmlCommentPattern;
-
-	static {
-		xmlCommentPattern=Pattern.compile(debutOrfinDecomPatternString, Pattern.DOTALL);
-	}
-	
-	private static final int A= 0; 
-	private static final int B = 1;
-
-	public static String removeXMLComments(String s){
-		int ET = A;
-		Matcher xmlCommentMatcher = xmlCommentPattern.matcher(s);
-
-
-		int indexEnd=0;   // index du debut de la partie qui nous interesse 
-		int indexBegin=0; // index de la fin de la partie qui nous interesse 
-
-		StringBuffer result = new StringBuffer(); // la nouvelles chaine de caracteres
-
-		while(xmlCommentMatcher.find()) {
-			String g1 = xmlCommentMatcher.group(1); // g1 =<!-- ou null
-			String g2 = xmlCommentMatcher.group(2); // g2=-> ou null 
-
-			switch (ET) {
-			case A:
-				if (g1!=null) {
-					// On a trouvé un debut de commentaire 
-
-					//On place la fin de la partie qui nous interesse
-					indexEnd = xmlCommentMatcher.start(1);
-					//on change d'etat
-					ET=B;
-					result.append(s.substring(indexBegin, indexEnd));
+		while (i + 6 < len) {
+			if (s.charAt(i) == '<' && s.charAt(i+1) == '!' && s.charAt(i+2) == '-' && s.charAt(i+3) == '-') {
+				int j = i + 4; // after the comment's opening tag
+				while (j + 2 < len) {
+					if (s.charAt(j) == '-' && s.charAt(j+1) == '-' && s.charAt(j+2) == '>') {
+						result.append(s.substring(beginKeep, i));
+						beginKeep = j + 3;
+						i = beginKeep;
+						break;
+					}
+					j++;
 				}
-				break;
-			case B:
-				if(g2!=null){
-					// On a trouvé la fin du commentaire 
-
-					// on place le debut de le partie qui nous interesse 
-					indexBegin= xmlCommentMatcher.end(2);
-					// on change d'etat 
-					ET=A;
-				}
-				break;
-
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
 			}
-
+			i++;
 		}
-		if (xmlCommentMatcher.hitEnd()) {
-			switch (ET) {
-			case A:
-				result.append(s.substring(indexBegin));
-				break;
-			case B:
-				break;
 
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
-			}
-		}
-	   return result.toString();
-
+		result.append(s.substring(beginKeep));
+		return result.toString();
 	}
     
     
@@ -364,6 +304,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         }      
     }
 
+    // FIXME this doesn't handle nested parentheses. Is it correct?
 	public static String stripParentheses(String s) {
 		boolean firstStep = true;
 		int begin = 0, end, i; 

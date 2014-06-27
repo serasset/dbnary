@@ -115,5 +115,5 @@ src/site/resources/robots.txt -text svneol=unset#text/plain
 src/site/site.xml -text
 src/test/java/org/getalp/blexisma/wiktionary/TestDbnaryWikiModel.java -text svneol=unset#text/plain
 src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
-src/test/java/org/getalp/dbnary/StripParenthesesTest.java -text
+src/test/java/org/getalp/dbnary/AbstractWiktionaryExtractorUtilitiesTest.java -text
 src/test/resources/org/getalp/blexisma/wiktionary/sample-semnet.snet -text

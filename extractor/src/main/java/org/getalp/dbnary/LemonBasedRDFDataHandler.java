@@ -33,7 +33,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	
 	private Logger log = LoggerFactory.getLogger(LemonBasedRDFDataHandler.class);
 	
-	Model aBox;
+	protected Model aBox;
 
 	// States used for processing
 	protected Resource currentLexEntry;
@@ -322,23 +322,21 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? "" : (char) ('a' + currentSubSenseNumber - 1));
 	}
 
-	@Override
-    public void registerTranslation(String lang, String currentGlose,
-			String usage, String word) {
-		if (null == currentLexEntry) {
+    protected Resource registerTranslationToEntity(Resource entity, String lang, String currentGlose, String usage, String word) {
+		if (null == entity) {
 			log.debug("Registering Translation when lex entry is null in \"{}\".", this.currentMainLexEntry);
-			return; // Don't register anything if current lex entry is not known.
+			return null; // Don't register anything if current lex entry is not known.
 		}
 		word = word.trim();
 		// Do not register empty translations
 		if (word.length() == 0) {
-			return;
+			return null;
 		}
 		// Ensure language is in its standard form.
     	Lang t = ISO639_3.sharedInstance.getLang(lang);
     	if (null != t) lang = t.getId();
-		Resource trans = aBox.createResource(computeTransId(lang), translationType);
-    	aBox.add(aBox.createStatement(trans, isTranslationOf, currentLexEntry));
+		Resource trans = aBox.createResource(computeTransId(lang, entity), translationType);
+    	aBox.add(aBox.createStatement(trans, isTranslationOf, entity));
     	aBox.add(createTargetLanguageProperty(trans, lang));
     	if (null == t) {
         	aBox.add(aBox.createStatement(trans, equivalentTargetProperty, word));
@@ -351,8 +349,15 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     	}
     	if (usage != null && ! usage.equals("")) {
         	aBox.add(aBox.createStatement(trans, usageProperty, usage));
-    	}	
+    	}
+    	return trans;
+    }
+
+	@Override
+    public void registerTranslation(String lang, String currentGlose, String usage, String word) {
+		registerTranslationToEntity(currentLexEntry, lang, currentGlose, usage, word);
 	}
+
 
     private Statement createTargetLanguageProperty(Resource trans, String lang) {
     	lang = lang.trim();
@@ -369,9 +374,9 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		return iso3letters.matcher(lang).matches();
 	}
 
-	private String computeTransId(String lang) {
+	private String computeTransId(String lang, Resource entity) {
 		lang = uriEncode(lang);
-		return NS + "__tr_" + lang + "_" + translationCount.incr(lang) + "_" + currentEncodedPageName;
+		return NS + "__tr_" + lang + "_" + translationCount.incr(lang) + "_" + entity.getURI().substring(NS.length());
 	}
 
     private Resource getLexvoLanguageResource(String lang) {

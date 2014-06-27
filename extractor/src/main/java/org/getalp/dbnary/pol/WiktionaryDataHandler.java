@@ -2,8 +2,16 @@ package org.getalp.dbnary.pol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.LemonOnt;
@@ -15,10 +23,11 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
-
+	
 	private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 	
-	private Map<String,Resource> currentWordsenses = new HashMap<String,Resource>();
+	private Map<String,Resource[]> currentWordsenses = new HashMap<String,Resource[]>();
+	private Set<Resource> currentLexEntries = new HashSet<Resource>();
 	
 	class DecodedPOS {
 		class PropValPair {
@@ -58,18 +67,29 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 	public void registerNewDefinition(String def, String senseNumber) {
 		super.registerNewDefinition(def, senseNumber);
 		if (null != this.currentLexEntry) {
-			currentWordsenses.put(senseNumber, this.currentSense);
+			currentWordsenses.put(senseNumber, new Resource[]{this.currentSense, this.currentLexEntry});
+			currentLexEntries.add(this.currentLexEntry);
 		}
 	}
 	
 	public void registerNymRelation(String target, String synRelation, String senseNum) {
-		Resource ws = currentWordsenses.get(senseNum);
-		registerNymRelationToEntity(target, synRelation, ws);
-    }
+		// parse the gloss to get the sense number(s)
+		ArrayList<String> numlist = getSenseNumbers(senseNum);
+		for (String n : numlist) {
+			Resource[] senseAndEntry = currentWordsenses.get(n);
+			if (null == senseAndEntry) {
+				log.debug("Could not fetch sense resource for nym property of {} in {}", n, currentLexEntry());
+				super.registerNymRelation(target, synRelation, n); 
+			} else {
+				Resource ws = senseAndEntry[0];
+				registerNymRelationToEntity(target, synRelation, ws);			
+			}
+		}
+	}
+	
 	
 	private DecodedPOS decodePOS(String group) {
 		String orig = new String(group);
-		if (group.contains("forma")) return null;
 		
 		if (group.startsWith("rzeczownik")
 			|| group.startsWith("przymiotnik")
@@ -192,31 +212,66 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 				dpos.addAnnotation(LexinfoOnt.partOfSpeech, LexinfoOnt.adjective);
 				group = group.replace("w użyciu przymiotnikowym", "");
 			} 
+			if (group.contains("w użyciu przymiotnikowym")) {
+				dpos.addAnnotation(LexinfoOnt.partOfSpeech, LexinfoOnt.adjective);
+				group = group.replace("w użyciu przymiotnikowym", "");
+			} 
+			if (group.contains("czynny")) {
+				dpos.addAnnotation(LexinfoOnt.voice, LexinfoOnt.activeVoice);
+				group = group.replace("czynny", "");
+			} 
+			if (group.contains("bierny")) {
+				dpos.addAnnotation(LexinfoOnt.voice, LexinfoOnt.passiveVoice);
+				group = group.replace("bierny", "");
+			} 
 			
-			
-			
-			
-			group = group.replace("nazwa własna", "");
-			group = group.replace("fraza rzeczownikowa", "");
-			group = group.replace("fraza przymiotnikowa", "");
-			group = group.replace("fraza czasownikowa", "");
-			group = group.replace("fraza przysłówekowa", "");
-			group = group.replace("rzeczownik", "");
-			group = group.replace("przymiotnik dzierżawczy", "");
-			group = group.replace("przymiotnik", "");
-			group = group.replace("czasownik modalny", "");
-			group = group.replace("czasownik ułomny", "");
-			group = group.replace("czasownik", "");
-			group = group.replace("przysłówek", "");
-			group = group.replace("związek frazeologiczny", "");
-			group = group.replace("{{przysłowie polskie}}", "");
-			group = group.replace("skrótowiec", "");
-			
-			group = group.replaceAll("[\\.,\\?i]", "");
-			group = group.trim();
-			
-			// TODO: check if there are remaining elements in pos.
-			if (group.length() > 0) log.debug("Did not parse {} in MorphoSyntactic info \"{}\"", group, orig );
+			if (log.isDebugEnabled()) {
+				group = group.replace("nazwa własna", "");
+				group = group.replace("fraza rzeczownikowa", "");
+				group = group.replace("fraza przymiotnikowa", "");
+				group = group.replace("fraza czasownikowa", "");
+				group = group.replace("fraza przysłówekowa", "");
+				group = group.replace("fraza przysłówkowa", "");
+				group = group.replace("fraza wykrzyknikowa", "");
+				group = group.replace("fraza wykrzyknkowa", "");
+
+				group = group.replace("imiesłów przymiotnikowy", "");
+
+				group = group.replace("liczebnik", "");
+				group = group.replace("porządkowy", "");
+				group = group.replace("mnożny", "");
+				group = group.replace("główny", "");
+				group = group.replace("zbiorowy", "");
+
+				group = group.replace("rzeczownik", "");
+				group = group.replace("przymiotnik dzierżawczy", "");
+				group = group.replace("przymiotnik", "");
+				group = group.replace("czasownik modalny", "");
+				group = group.replace("czasownik ułomny", "");
+				group = group.replace("czasownik", "");
+				group = group.replace("przysłówek", "");
+				group = group.replace("związek frazeologiczny", "");
+				group = group.replace("{{przysłowie polskie}}", "");
+				group = group.replace("skrótowiec", "");
+				group = group.replace("symbol", "");
+				group = group.replace("zwrot", "");
+				group = group.replace("temat słowotwórczy", "");
+				group = group.replace("przyrostek", "");
+				group = group.replace("przedrostek", "");
+				group = group.replace("partykuła", "");
+				group = group.replace("przyimek", "");
+				group = group.replace("spójnik", "");
+				
+				group = group.replaceAll("[\\.,\\?i/]", "");
+				group = group.trim();
+
+				// TODO: check if there are remaining elements in pos.
+				if (group.length() > 0) log.debug("Did not parse {} in MorphoSyntactic info \"{}\"", group, orig );
+			}
+		} else if (group.contains("forma")) {
+			return null;
+		} else {
+			return new DecodedPOS(group, null, LemonOnt.LexicalEntry);
 		}
 		
 		return dpos;
@@ -260,9 +315,9 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 				return new DecodedPOS("czasownik", LexinfoOnt.verb, LemonOnt.Phrase);
 			} else if (group.contains("przysłówekowa") || group.contains("przysłówkowa")) {
 				return new DecodedPOS("przysłówek", LexinfoOnt.adverb, LemonOnt.Phrase);
-			} else if (group.contains("wykrzyknikowa")) {
+			} else if (group.contains("wykrzyknikowa") || group.contains("wykrzyknkowa")) {
 				return new DecodedPOS("wykrzyknik", LexinfoOnt.interjection, LemonOnt.Phrase);
-			}
+			} 
 		} else if (group.startsWith("związek frazeologiczny")) {
 			return new DecodedPOS("związek frazeologiczny", LexinfoOnt.idiom, LemonOnt.Phrase);
 		} else if (group.startsWith("{{przysłowie polskie")) {
@@ -307,7 +362,21 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 				// TODO add other type of pronouns
 				return new DecodedPOS("liczebnik", LexinfoOnt.numeral, LexinfoOnt.Numeral);
 			}
-		}
+		} else if (group.startsWith("symbol")) {
+			return new DecodedPOS("symbol", LexinfoOnt.symbol, LexinfoOnt.Symbol);
+		} else if (group.startsWith("zwrot")) {
+			return new DecodedPOS("zwrot", null, LemonOnt.LexicalEntry);
+		} else if (group.startsWith("temat słowotwórczy")) {
+			return new DecodedPOS("temat słowotwórczy", null, LemonOnt.Part);
+		} else if (group.startsWith("przyrostek")) {
+			return new DecodedPOS("przyrostek", LexinfoOnt.suffix, LexinfoOnt.Suffix);
+		} else if (group.startsWith("przedrostek")) {
+			return new DecodedPOS("przedrostek", LexinfoOnt.prefix, LexinfoOnt.Prefix);
+		} else if (group.startsWith("imiesłów przymiotnikowy przeszły")) {
+			return new DecodedPOS("imiesłów przymiotnikowy przeszły", LexinfoOnt.pastParticipleAdjective, LexinfoOnt.Adjective);
+		} else if (group.startsWith("imiesłów przymiotnikowy")) {
+			return new DecodedPOS("imiesłów przymiotnikowy", LexinfoOnt.participleAdjective, LexinfoOnt.Adjective);
+		} 
 		
 		return null;
 	}
@@ -342,4 +411,168 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 		return currentWiktionaryPos != null;
 	}
 	
+	@Override
+    public void registerTranslation(String lang, String currentGlose, String usage, String word) {
+		
+		if (null == currentGlose) {
+			if (currentLexEntries.size() == 1) {
+				// Only one entry, link the translation to it
+				Resource entry = currentLexEntries.iterator().next();
+				registerTranslationToEntity(entry, lang, currentGlose, usage, word);
+			} else {
+				// Forget this translation.
+				log.debug("No gloss for a translation in a multi entry page: {}, {} : {} / {}", currentLexEntry(), lang, word, usage);
+			}
+		} else {
+			// parse the gloss to get the sense number(s)
+			ArrayList<String> numlist = getSenseNumbers(currentGlose);
+			ArrayList<Resource[]> senseAndEntries = new ArrayList<Resource[]>();
+			for (String n : numlist) {
+				Resource[] se = currentWordsenses.get(n);
+				if (se == null) {
+					log.debug("Could not fetch sense resource for {} in {}", n, currentLexEntry());
+				} else {
+					senseAndEntries.add(se);
+				}
+			}
+			Map<Resource, ArrayList<Resource>> sensesByEntry = new HashMap<Resource, ArrayList<Resource>>();
+			for (Resource[] se : senseAndEntries) {
+				Resource sense = se[0];
+				Resource entry = se[1];
+
+				ArrayList<Resource> senses = sensesByEntry.get(entry);
+				if (senses == null) {
+					senses = new ArrayList<Resource>();
+				}
+				senses.add(sense);
+				sensesByEntry.put(entry, senses);
+
+			}
+			for (Entry<Resource, ArrayList<Resource>> es : sensesByEntry.entrySet()) {
+				// register definition to the currentLexEntry
+				Resource trans = registerTranslationToEntity(es.getKey(), lang, currentGlose, usage, word);
+
+				// add a reference to the correct word sense(s)
+				if (null != trans) {
+					for (Resource s : es.getValue()) {
+						aBox.add(aBox.createStatement(trans, DBnaryOnt.isTranslationOf, s));
+					}
+				}
+			}
+		}
+	}
+
+	static Pattern range1 = Pattern.compile("(\\d+)\\.(\\d+)[\\-,—–]\\s*(\\d+)");
+	static Pattern range2 = Pattern.compile("(\\d+)[\\-—–](\\d+)");
+//	static Pattern range3 = Pattern.compile("(\\d+)\\.(\\d+)[\\-—–](\\d+)\\.(\\d+)");
+	
+	public ArrayList<String> getSenseNumbers(String nums) {
+		ArrayList<String> ns = new ArrayList<String>();
+		nums = nums.trim();
+		Matcher mRange1 = range1.matcher(nums);
+		Matcher mRange2 = range2.matcher(nums);
+//		Matcher mRange3 = range3.matcher(nums);
+
+		if (nums.matches("\\d+")) {
+			// When there is only one number, we attach to all wordsense whose prefix is the given number
+			for (String n : currentWordsenses.keySet()) {
+				if (n.startsWith(nums + ".")) {
+					ns.add(n);
+				}
+			}
+		} else if (nums.matches("\\d+\\.")) {
+			// When there is only one number, we attach to all wordsense whose prefix is the given number
+			for (String n : currentWordsenses.keySet()) {
+				if (n.startsWith(nums)) {
+					ns.add(n);
+				}
+			}
+		} else if (mRange1.matches()) {
+			String n1 = mRange1.group(1);
+			String n2 = mRange1.group(2);
+			String n3 = mRange1.group(3);
+
+			try {
+				int i2 = Integer.parseInt(n2);
+				int i3 = Integer.parseInt(n3);
+				
+				if (i2 < i3) {
+					for (int i = i2; i <= i3; i++) {
+						ns.add(n1 + "." + i);
+					}
+				} else {
+					log.debug("Invalide range: {} in {}", nums, currentLexEntry());
+					ns.add(nums);
+				}
+			} catch (NumberFormatException e) {
+				log.debug(e.getLocalizedMessage());
+				ns.add(nums);
+			}
+		} else if (mRange2.matches()) {
+			String n1 = mRange2.group(1);
+			String n2 = mRange2.group(2);
+
+			try {
+				int i1 = Integer.parseInt(n1);
+				int i2 = Integer.parseInt(n2);
+				
+				if (i1 < i2) {
+					for (int i = i1; i <= i2; i++) {
+						// When there is only one number, we attach to all wordsense whose prefix is the given number
+						for (String n : currentWordsenses.keySet()) {
+							if (n.startsWith(nums + ".")) {
+								ns.add(n);
+							}
+						}
+					}
+				} else {
+					log.debug("Invalide range: {} in {}", nums, currentLexEntry());
+					ns.add(nums);
+				}
+			} catch (NumberFormatException e) {
+				log.debug(e.getLocalizedMessage());
+				ns.add(nums);
+			}
+//		} else if (mRange3.matches()) {
+//			String n1 = mRange3.group(1);
+//			String n11 = mRange3.group(2);
+//			String n2 = mRange3.group(3);
+//			String n22 = mRange3.group(4);
+//
+//			try {
+//				int i1 = Integer.parseInt(n1);
+//				int i11 = Integer.parseInt(n11);
+//				int i2 = Integer.parseInt(n2);
+//				int i22 = Integer.parseInt(n22);
+//				
+//				if (i1 < i2) {
+//					for (int i = i1; i <= i2; i++) {
+//						// When there is only one number, we attach to all wordsense whose prefix is the given number
+//						for (String n : currentWordsenses.keySet()) {
+//							if (n.startsWith(nums + ".")) {
+//								ns.add(n);
+//							}
+//						}
+//					}
+//				} else {
+//					log.debug("Invalide range: {} in {}", nums, currentLexEntry());
+//					ns.add(nums);
+//				}
+//			} catch (NumberFormatException e) {
+//				log.debug(e.getLocalizedMessage());
+//				ns.add(nums);
+//			}
+		} else if (nums.contains(",")) {
+			String[] list = nums.split(",");
+			for (String n : list) {
+				if (n != null && ! (n = n.trim()).equals("")) {
+					ns.addAll(getSenseNumbers(n));
+				}
+			}
+		} else {
+			ns.add(nums);
+		}
+		return ns;
+	}
+
 }

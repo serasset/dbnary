@@ -9,6 +9,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.nio.file.Files;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.net.URLEncoder;
 
 /**
  * WiktionaryIndex is a Persistent HashMap designed to hold an index on a
@@ -21,7 +25,7 @@ public class WiktionaryIndex implements Map<String, String> {
 
     // TODO: Create a static map to hold shared instances (1 per dump file) and avoid allocating more than one 
     // WiktionaryIndexer per wiktionary language.
-    
+	
     /**
 	 * 
 	 */
@@ -32,6 +36,15 @@ public class WiktionaryIndex implements Map<String, String> {
     private static final String UTF_16LE = "UTF-16LE";
     private static final String UTF_8 = "UTF-8";
     private static final String INDEX_SIGNATURE = "Wkt!01";
+
+    private static final String dumpPagesDirSuffix = "-pages";
+    private static final String dumpPageNamePrefix = "/p";
+    private String dumpPagesPrefix;
+    private String dumpPagesDir;
+
+	private Logger log = LoggerFactory.getLogger(WiktionaryIndex.class);
+
+	private boolean lazyMap = false;
 
     /**
 	 * @uml.property  name="dumpFile"
@@ -49,7 +62,7 @@ public class WiktionaryIndex implements Map<String, String> {
 	 * @uml.property  name="map"
 	 * @uml.associationEnd  qualifier="key:java.lang.String org.getalp.dbnary.OffsetValue"
 	 */
-    HashMap<String, OffsetValue> map;
+    HashMap<String, OffsetValue> map = null;
     /**
 	 * @uml.property  name="xmlf"
 	 */
@@ -179,13 +192,26 @@ public class WiktionaryIndex implements Map<String, String> {
     }
 
     public void loadIndex() throws WiktionaryIndexerException {
+		loadIndex(false);
+    }
+
+    public void loadIndex(boolean force) throws WiktionaryIndexerException {
+	    if (!force) {
+			dumpPagesDir = dumpFile.getPath() + dumpPagesDirSuffix;
+		    if (new File(dumpPagesDir).isDirectory()) {
+			    dumpPagesPrefix = dumpPagesDir + dumpPageNamePrefix;
+				lazyMap = true;
+				return;
+		    }
+	    }
+
         RandomAccessFile in = null;
         try {
             in = new RandomAccessFile(indexFile, "r");
             FileChannel fc = in.getChannel();
-            
+
             ByteBuffer buf = ByteBuffer.allocate(4098);
-            
+
             fc.read(buf);
             buf.flip();
             byte[] signature = INDEX_SIGNATURE.getBytes(UTF_8); // Hence the byte array has the exact expected size; 
@@ -269,17 +295,60 @@ public class WiktionaryIndex implements Map<String, String> {
      * @see java.util.Map#get(java.lang.Object)
      */
     public String get(Object key) {
+	    File dumpPageFile = null;
+
+ 	    String res = null;
+
+	    if (lazyMap) {
+		    dumpPageFile = new File(dumpPagesPrefix + URLEncoder.encode((String) key));
+		    if (dumpPageFile.isFile() && dumpPageFile.canRead()) {
+			    try {
+				    byte[] b = Files.readAllBytes(dumpPageFile.toPath());
+				    if (b.length != 0) {
+					    res = new String(b, encoding);
+				    }
+				    return res;
+	            } catch (IOException ex) {
+		            log.debug("Didn't find dump page " + dumpPageFile);
+		            // lets continue the classic way
+	            }
+		    }
+
+		    if (map == null) {
+			    try {
+					loadIndex(true);
+				} catch (WiktionaryIndexerException e) {
+					System.err.println(e.getMessage());
+				}
+			}
+	    }
+
         OffsetValue ofs = map.get(key);
-        if (ofs == null) return null;
-        String res = null;
-        try {
-            xmlf.seek(ofs.start*2 + 2); // in utf-16, 2 first bytes for the BOM
-            byte[] b = new byte[ofs.length*2];
-            xmlf.readFully(b);
-            res = new String(b, encoding);
-        } catch (IOException ex) {
-            res = null;
+
+        byte[] b = null;
+
+        if (ofs == null) {
+	        b = new byte[0];
+        } else {
+	        try {
+	            xmlf.seek(ofs.start*2 + 2); // in utf-16, 2 first bytes for the BOM
+	            b = new byte[ofs.length*2];
+	            xmlf.readFully(b);
+	            res = new String(b, encoding);
+	        } catch (IOException ex) {
+				// we return null
+	        }
         }
+
+        if (dumpPageFile != null) {
+            try {
+	            Files.write(dumpPageFile.toPath(), b);
+            } catch (IOException ex) {
+	            log.debug("Could not write to the dumpPage folder.");
+	            // lets ignore this exception as dumpPages are "bonus"
+            }
+        }
+
         return res;
     }
 
@@ -310,9 +379,15 @@ public class WiktionaryIndex implements Map<String, String> {
     public Collection<String> values() {
         throw new RuntimeException("values: unsupported method.");        
     }
-    
+
+    private Map<String, String> cachedTextOfPage = new HashMap<String,String>();
     public String getTextOfPage(Object key) {
-        return WiktionaryIndexer.getTextElementContent(this.get(key));
+        if (cachedTextOfPage.containsKey((String)key)) {
+	        return cachedTextOfPage.get((String)key);
+        }
+
+        String res = WiktionaryIndexer.getTextElementContent(this.get(key));
+        cachedTextOfPage.put((String)key, res);
+        return res;
     }
-    
 }

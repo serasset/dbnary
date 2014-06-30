@@ -3,65 +3,20 @@ package org.getalp.dbnary.fra;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.StringReader;
-
-import info.bliki.wiki.filter.HTMLConverter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.xml.sax.InputSource;
 import org.w3c.dom.*;
-
-/* import stupidity */
-import org.xml.sax.SAXException;
-import java.io.IOException;
 
 /**
  * @author jakse
  */
 
 public class FrenchExtractorWikiModel extends DbnaryWikiModel {
-	private WiktionaryDataHandler delegate;
-
-	private Logger log = LoggerFactory.getLogger(FrenchExtractorWikiModel.class);
-
-
-	public static DocumentBuilder docBuilder;
-	public static final InputSource docSource;
-
-	public static final String notSpecialHREFPatternString = "^/[^:]+$";
-	public static final Pattern notSpecialHREFPattern;
-
-    static {
-		try {
-			docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			docBuilder = null;
-			System.err.println("got a ParserConfigurationException in the FrenchExtractorWikiModel class.");
-		}
-
-		docSource = new InputSource();
-
-		notSpecialHREFPattern = Pattern.compile(notSpecialHREFPatternString);
-    }
-
-    public FrenchExtractorWikiModel(WiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
-		this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
-	}
-	
-	public 	FrenchExtractorWikiModel(WiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
-		super(wi, locale, imageBaseURL, linkBaseURL);
-		this.delegate = we;
-		setPageName(we.currentLexEntry());
+	public FrenchExtractorWikiModel(WiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+		super(wdh, wi, locale, imageBaseURL, linkBaseURL);
 	}
 
 	public static Element adjacentDiv (Node ele) {
@@ -79,28 +34,6 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		} while (ele != null && ele.getNodeType() != Node.ELEMENT_NODE);
 
 		return ele != null;
-	}
-
-	private Document docFromTemplateCall (String templateCall) {
-		String html = render(new HTMLConverter(), templateCall);
-
-		if (docBuilder == null) {
-			return null;
-		}
-
-		docSource.setCharacterStream(new StringReader("<div>" + html + "</div>"));
-
-		Document doc = null;
-
-		try {
-			doc = docBuilder.parse(docSource);
-		} catch (SAXException e) {
-			log.error("Unable to parse template call in FrenchExtractorWikiModel.");
-		} catch (IOException e) {
-			log.error("got IOException in FrenchExtractorWikiModel ‽");
-		}
-
-		return doc;
 	}
 
 	public void handleConjugationTable(NodeList tables, int tableIndex) {
@@ -131,7 +64,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	public void parseConjugation(String conjugationTemplateCall) {
 		// Render the conjugation to html, while ignoring the example template
 
-		Document doc = docFromTemplateCall(conjugationTemplateCall);
+		Document doc = wikicodeToHtmlDOM(conjugationTemplateCall);
 
 		if (doc == null) {
 			return; // failing silently: error message already given.
@@ -156,7 +89,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	}
 
 	public void parseOtherForm(String templateCall) {
-		Document doc = docFromTemplateCall(templateCall);
+		Document doc = wikicodeToHtmlDOM(templateCall);
 
 		if (doc == null) {
 			return; // failing silently: error message already given.

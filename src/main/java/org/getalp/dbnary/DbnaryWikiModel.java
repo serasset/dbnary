@@ -6,8 +6,29 @@ import info.bliki.wiki.model.WikiModel;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.xml.sax.InputSource;
+
+import org.xml.sax.SAXException;
+import java.io.IOException;
+
+import org.w3c.dom.*;
+
+import java.io.StringReader;
+import info.bliki.wiki.filter.HTMLConverter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DbnaryWikiModel extends WikiModel {
-	
+
+	private Logger log = LoggerFactory.getLogger(DbnaryWikiModel.class);
+
+	protected WiktionaryDataHandler delegate;
+
 	// static Set<String> ignoredTemplates = new TreeSet<String>();
 	// static {
 	// 	ignoredTemplates.add("Wikipedia");
@@ -24,12 +45,24 @@ public class DbnaryWikiModel extends WikiModel {
 		
 	public DbnaryWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(Configuration.DEFAULT_CONFIGURATION, locale, imageBaseURL, linkBaseURL);
-//		this.templateNamespace = templateNamespace;
+//		this.templateNamespace = tQemplateNamespace;
 		this.wi = wi;
 	}
 
-
+    public DbnaryWikiModel(WiktionaryDataHandler wdh, Locale locale, String imageBaseURL, String linkBaseURL) {
+		this(wdh, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+	}
 	
+	public 	DbnaryWikiModel(WiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+		this(wi, locale, imageBaseURL, linkBaseURL);
+		this.delegate = wdh;
+		setPageName(wdh.currentLexEntry());
+	}
+
+
+	private static DocumentBuilder docBuilder = null;
+	private static InputSource docSource = null;
+
 	/* @Override
 	public void addCategory(String categoryName, String sortKey) {
 		System.err.println("Called addCategory : " + categoryName);
@@ -89,6 +122,37 @@ public class DbnaryWikiModel extends WikiModel {
 	}
 */
 
+	// get the DOM representation of the HTML code corresponding
+	// to the wikicode given in arguments
+	public Document wikicodeToHtmlDOM (String wikicode) {
+
+		if (docBuilder == null) {
+			try {
+				docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			} catch (ParserConfigurationException e) {
+				System.err.println("got a ParserConfigurationException in the DBnaryWikiModel class.");
+				return null;
+			}
+
+			docSource = new InputSource();
+		}
+
+		String html = render(new HTMLConverter(), wikicode);
+
+		docSource.setCharacterStream(new StringReader("<div>" + html + "</div>"));
+
+		Document doc = null;
+
+		try {
+			doc = docBuilder.parse(docSource);
+		} catch (SAXException e) {
+			log.error("Unable to parse template call in DBnaryWikiModel.");
+		} catch (IOException e) {
+			log.error("got IOException in DBnaryWikiModel ‽");
+		}
+
+		return doc;
+	}
 	
 	@Override
     public String getRawWikiContent(String namespace, String articleName, Map<String, String> map) {

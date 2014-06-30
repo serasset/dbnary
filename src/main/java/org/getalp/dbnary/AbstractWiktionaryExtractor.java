@@ -31,6 +31,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 	}
 
 	public static String removeXMLComments(String s) {
+		if (s == null) return null;
+
 		StringBuffer result = new StringBuffer();
 		int i = 0, len = s.length();
 		int beginKeep = 0;

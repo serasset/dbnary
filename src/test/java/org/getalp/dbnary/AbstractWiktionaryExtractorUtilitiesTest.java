@@ -29,6 +29,7 @@ public class AbstractWiktionaryExtractorUtilitiesTest {
 	    // was in AbstractWiktionaryExtractor.java in June 2014.
 	    // it was created to tests its new version, stripParentheses.
 
+	    assertEquals(AbstractWiktionaryExtractor.removeXMLComments(null), null);
 	    assertEquals(AbstractWiktionaryExtractor.removeXMLComments(""), "");
 	    assertEquals(AbstractWiktionaryExtractor.removeXMLComments("<!---->"), "");
 	    assertEquals(AbstractWiktionaryExtractor.removeXMLComments("<!--"), "<!--");

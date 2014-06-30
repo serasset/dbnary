@@ -476,7 +476,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         int frenchSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
         extractFrenchData(frenchSectionStartOffset, frenchSectionEndOffset);
-        extractOtherForms();
     }
 
 
@@ -522,6 +521,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     	int end = computeRegionEnd(definitionBlockStart, m);
         extractDefinitions(definitionBlockStart, end);
         extractPronounciation(definitionBlockStart, end);
+        extractOtherForms(definitionBlockStart, end);
         definitionBlockStart = -1;
     }
 
@@ -938,8 +938,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		}
     }
 
-	private void extractOtherForms() {
+	private void extractOtherForms(int start, int end) {
 		Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
+		otherFormMatcher.region(start, end);
 		while (otherFormMatcher.find()) {
 			FrenchExtractorWikiModel dbnmodel = new FrenchExtractorWikiModel(wdh, wi, new Locale("fr"), "/${image}", "/${title}");
 			dbnmodel.parseOtherForm(otherFormMatcher.group());

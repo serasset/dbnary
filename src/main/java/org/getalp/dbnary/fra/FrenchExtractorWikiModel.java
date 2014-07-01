@@ -10,11 +10,16 @@ import org.getalp.dbnary.WiktionaryIndex;
 
 import org.w3c.dom.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author jakse
  */
 
 public class FrenchExtractorWikiModel extends DbnaryWikiModel {
+	private static Logger log = LoggerFactory.getLogger(FrenchExtractorWikiModel.class);
+
 	public FrenchExtractorWikiModel(WiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wdh, wi, locale, imageBaseURL, linkBaseURL);
 	}
@@ -55,9 +60,64 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			Element line = (Element) lines.item(i);
 			NodeList tdList = line.getElementsByTagName("td");
 
-			delegate.registerOtherForm(
-				tdList.item(1).getTextContent().trim()
-			);
+			if (tdList.getLength() < 2) {
+				log.debug("Missing cells in the conjugation table for '" + delegate.currentLexEntry() + "'");
+			} else {
+				delegate.registerOtherForm(
+					tdList.item(1).getTextContent().trim()
+				);
+			}
+		}
+	}
+
+	public int handleImpersonnalTableConjugation(NodeList tables) {
+		for (int i = 0; i < tables.getLength(); i++) {
+			Element table = (Element) tables.item(i);
+			Node modeTH = table.getElementsByTagName("th").item(0);
+			if (modeTH != null && modeTH.getTextContent().replace('\u00A0', ' ').trim().equals("Mode")) {
+				handleImpersonnalTableConjugation(table);
+				return i;
+			}
+		}
+
+		log.error("Cannot find the impersonal mood table for '" + delegate.currentLexEntry() + "' " + tables.getLength());
+		return -1;
+	}
+
+	public void  handleImpersonnalTableConjugation(Element impersonalMoodTable) {
+		if (impersonalMoodTable == null) {
+			log.error("impersonalMoodTable is null for '" + delegate.currentLexEntry() + "'");
+		} else {
+			NodeList interestingTDs = ((Element) (impersonalMoodTable.getElementsByTagName("tr").item(3)))
+			                          .getElementsByTagName("td");
+
+	        if (interestingTDs.getLength() < 3) {
+				log.error("Cannot get present and past participle of '" + delegate.currentLexEntry() + "'");
+	        } else {
+				String presentParticiple = interestingTDs.item(2).getTextContent();
+				delegate.registerOtherForm(presentParticiple.trim());
+
+		        if (interestingTDs.getLength() < 6) {
+					log.error("Cannot get past participle of '" + delegate.currentLexEntry() + "'");
+		        } else {
+					String pastParticiple = interestingTDs.item(5).getTextContent();
+					delegate.registerOtherForm(pastParticiple.trim());
+				}
+	        }
+        }
+	}
+
+	public void handleConjugationAtom(Element parent) {
+		if (parent == null) {
+			log.error("Cannot get the element containing the conjugation tables of '" + delegate.currentLexEntry() + "'");
+		}
+
+		NodeList tables = parent.getElementsByTagName("table");
+
+		int impersonnalTableIndex = handleImpersonnalTableConjugation(tables);
+
+		for (int i = 1 + impersonnalTableIndex; i < tables.getLength(); i++) {
+			handleConjugationTable(tables, i);
 		}
 	}
 
@@ -70,22 +130,17 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			return; // failing silently: error message already given.
 		}
 
-		NodeList tables = doc.getElementsByTagName("table");
+		handleConjugationAtom(doc.getDocumentElement());
+	}
 
-		Element impersonalMoodTable = (Element) tables.item(1);
-
-		NodeList interestingTDs = ((Element) (impersonalMoodTable.getElementsByTagName("tr").item(3)))
-		                          .getElementsByTagName("td");
-
-		String presentParticiple = interestingTDs.item(2).getTextContent();
-		String pastParticiple    = interestingTDs.item(5).getTextContent();
-
-		delegate.registerOtherForm(presentParticiple.trim());
-		delegate.registerOtherForm(pastParticiple.trim());
-
-		for (int i = 2; i < tables.getLength(); i++) {
-			handleConjugationTable(tables, i);
+	public void parseImpersonnalTableConjugation(String conjugationTemplateCall) {
+		Document doc = wikicodeToHtmlDOM(conjugationTemplateCall);
+		if (doc == null) {
+			return; // failing silently: error message already given.
 		}
+
+		handleImpersonnalTableConjugation(doc.getDocumentElement()); // "Orthographe traditionnelle"
+
 	}
 
 	public void parseOtherForm(String templateCall) {
@@ -94,7 +149,6 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		if (doc == null) {
 			return; // failing silently: error message already given.
 		}
-
 
 		NodeList links = doc.getElementsByTagName("a");
 

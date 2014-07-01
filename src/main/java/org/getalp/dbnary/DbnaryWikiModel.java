@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public class DbnaryWikiModel extends WikiModel {
 
-	private Logger log = LoggerFactory.getLogger(DbnaryWikiModel.class);
+	private static Logger log = LoggerFactory.getLogger(DbnaryWikiModel.class);
 
 	protected WiktionaryDataHandler delegate;
 

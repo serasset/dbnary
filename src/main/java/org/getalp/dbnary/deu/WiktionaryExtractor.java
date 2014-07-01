@@ -26,6 +26,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
 	protected final static String germanDefinitionPatternString = "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
 	protected final static String germanNymLinePatternString = "^:{1,3}\\s*(?:\\[(" + senseNumberOrRangeRegExp + "*)\\])?([^\n\r]*)$";
+	
+	private final static Pattern otherFormPattern= Pattern.compile("");
 
 	private final int NODATA = 0;
 	private final int TRADBLOCK = 1;
@@ -678,6 +680,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		}
 	}
 
+	public void extractOtherForms( int start, int end){
+		Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
+		otherFormMatcher.region(start, end);
+		while(otherFormMatcher.find()){
+			System.out.println(otherFormMatcher.group());
+		}
+	}
+	
 
 
 }

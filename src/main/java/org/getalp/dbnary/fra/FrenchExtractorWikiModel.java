@@ -157,7 +157,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			Node a = links.item(i);
 
 			String word = a.getTextContent().trim();
-			if (!word.equals(delegate.currentLexEntry()) && a.getAttributes().getNamedItem("href").getTextContent().toLowerCase(fr).equals("/" + word.toLowerCase(fr))) {
+			if (!word.equals(delegate.currentLexEntry()) && a.getAttributes().getNamedItem("title").getTextContent().equals(word)) {
 				delegate.registerOtherForm(word);
 			}
 		}

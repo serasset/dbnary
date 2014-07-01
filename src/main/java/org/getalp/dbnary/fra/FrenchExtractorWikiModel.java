@@ -151,12 +151,13 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		}
 
 		NodeList links = doc.getElementsByTagName("a");
+		Locale fr = new Locale("fr");
 
 		for (int i = 0; i < links.getLength(); i++) {
 			Node a = links.item(i);
 
 			String word = a.getTextContent().trim();
-			if (!word.equals(delegate.currentLexEntry()) && a.getAttributes().getNamedItem("href").getTextContent().toLowerCase(new Locale("fr")).equals("/" + word)) {
+			if (!word.equals(delegate.currentLexEntry()) && a.getAttributes().getNamedItem("href").getTextContent().toLowerCase(fr).equals("/" + word.toLowerCase(fr))) {
 				delegate.registerOtherForm(word);
 			}
 		}

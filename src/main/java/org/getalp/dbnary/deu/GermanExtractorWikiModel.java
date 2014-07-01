@@ -59,7 +59,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 				NodeList interrestingTDs = ((Element)tablesItem.getElementsByTagName("tr").item(j)).getElementsByTagName("td");
 				String form=interrestingTDs.item(i).getTextContent();
 				if(!form.equals("—")){
-					wdh.registerOtherForm(getForm(form));
+					addForm(form);
 				}
 			}
 		}
@@ -105,12 +105,29 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
 	
 	
-	private String getForm(String s){
+	private void addForm(String s){
 		int ind;
-		if((ind=s.indexOf(" "))!=-1){
-			return s.substring(ind+1);
+		s=s.replace(","," ").replace("\n"," ");
+		String[] tab=s.split(" ");
+		for(int i=0;i<tab.length;i++){
+			//for normal Verb forms
+			if(i%2==1){
+				wdh.registerOtherForm(tab[i]);
+//				System.out.println(tab[i]);
+			}
+			//for imperativs
+			else if((ind=tab[i].indexOf("!"))!=-1){
+				for(String r : tab[i].split("!")){
+					wdh.registerOtherForm(r);
+//					System.out.println(r);
+				}
+			}
+			//for past and present particips 
+			else if(tab.length==1){
+				wdh.registerOtherForm(tab[i]);
+			}
 		}
-		return s;
+			
 	}
 	
 	
@@ -132,7 +149,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 						int ind = r.indexOf("=");
 						if(ind!=-1){
 //							System.out.println(r.substring(ind+1).replace("[","").replace("]",""));
-							wdh.registerOtherForm(r.substring(ind+1).replace("[","").replace("]",""));
+							wdh.registerOtherForm(r.substring(ind+1));
 						}
 					}
 				}

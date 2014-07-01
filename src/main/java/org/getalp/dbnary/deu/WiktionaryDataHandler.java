@@ -64,14 +64,13 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 					}
 				}
 			}
-//			String lexEntry=currentLexEntry();
-//			String page=wi.getTextOfPage(lexEntry);
-//			GermanExtractorWikiModel gewm= new GermanExtractorWikiModel(this, wi, new Locale("de"),"/${image}", "/${title}");
-//			gewm.addOtherForms(page, originalPOS);
 		}
 	}
 
-	
+	public void registerOtherForm(String form){
+		super.registerOtherForm(form.replace("\n", "").replace("[","").replace("]", ""));
+		
+	}
 	
 	
 //	/**

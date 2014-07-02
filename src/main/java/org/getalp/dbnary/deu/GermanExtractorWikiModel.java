@@ -53,22 +53,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 
 	}
 	
-	private void getTablesConj(Element tablesItem, int lbegin, int lend, int cbegin, int cend){
-		for(int i=cbegin;i!=cend;i++){
-			for(int j=lbegin;j!=lend;j++){
-				NodeList interrestingTDs = ((Element)tablesItem.getElementsByTagName("tr").item(j)).getElementsByTagName("td");
-				String form=interrestingTDs.item(i).getTextContent();
-				if(!form.equals("—")){
-					addForm(form);
-				}
-			}
-		}
-		
-	
-	}
-
-	
-	
 	public void parseDeclination(String declinationTemplateCall){
 		Document doc = wikicodeToHtmlDOM(declinationTemplateCall);
 		if (doc == null){
@@ -84,23 +68,71 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		
 	}
 	
+	public void parseOtherForm(String page,String originalPos){
+		if(page!=null){
+			String s = getForm(page, originalPos);
+			if(s!=null){
+				String[] tab = s.split("\n");
+				for(String r : tab){
+					if(r.indexOf("Hilfsverb")==-1 && r.indexOf("Weitere_Konjugationen")==-1){
+						int ind = r.indexOf("=");
+						if(ind!=-1){
+//							System.out.println(r.substring(ind+1).replace("[","").replace("]",""));
+							wdh.registerOtherForm(r.substring(ind+1));
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	private void getTablesConj(Element tablesItem, int lbegin, int lend, int cbegin, int cend){
+		for(int i=cbegin;i!=cend;i++){
+			for(int j=lbegin;j!=lend;j++){
+				NodeList interrestingTDs = ((Element)tablesItem.getElementsByTagName("tr").item(j)).getElementsByTagName("td");
+				String form=interrestingTDs.item(i).getTextContent();
+				if(!form.equals("—")){
+					addForm(form);
+				}
+			}
+		}
+		
+	
+	}
+
+	
 	private void getTablesDeclination(Element tablesItem){
-		int i=0,j=1;
-		String form="";
-		NodeList interrestingTDs = ((Element)tablesItem.getElementsByTagName("tr").item(i)).getElementsByTagName("td");
-		int l=interrestingTDs.getLength();
-		while(interrestingTDs!=null && l!=5){
+		int i=0;
+		Element someTRs = ((Element)tablesItem.getElementsByTagName("tr").item(i));
+		NodeList interrestingTDs;
+		while(someTRs!=null){
+			interrestingTDs=someTRs.getElementsByTagName("td");
+			int l=interrestingTDs.getLength();
 			if(l==8){
-				for(j=0;j<l;j++){
+				for(int j=0;j<l;j=j+1){
 					if((j%2)==1){
 						wdh.registerOtherForm(interrestingTDs.item(j).getTextContent());
 					}
 				}
 			}
-			i++;
-			interrestingTDs = ((Element)tablesItem.getElementsByTagName("tr").item(i)).getElementsByTagName("td");
+			i=i+1;
+			someTRs = ((Element)tablesItem.getElementsByTagName("tr").item(i));
 			l=interrestingTDs.getLength();
 		}
+	}
+	
+	private String getForm(String s, String originalPos){
+
+		String res=null,section=null;
+				
+		section=extractString(s, originalPos, "{{Wortart");
+		res=extractString(section, germanMorphoBegin, germanMorphoEnd);
+		
+		if(res.isEmpty()){
+			res = extractString(section, "Tabelle", germanMorphoEnd);
+		}
+		
+		return res;
 	}
 	
 	
@@ -133,44 +165,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
 	
 	
-	//
-	//
-	//
-	//
-	//
-	//
-	public void addOtherDesi(String page,String originalPos){
-		if(page!=null){
-			String s = extractDesi(page, originalPos);
-			if(s!=null){
-				String[] tab = s.split("\n");
-				for(String r : tab){
-					if(r.indexOf("Hilfsverb")==-1 && r.indexOf("Weitere_Konjugationen")==-1){
-						int ind = r.indexOf("=");
-						if(ind!=-1){
-//							System.out.println(r.substring(ind+1).replace("[","").replace("]",""));
-							wdh.registerOtherForm(r.substring(ind+1));
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	
-	private String extractDesi(String s, String originalPos){
-
-		String res=null,section=null;
-				
-		section=extractString(s, originalPos, "{{Wortart");
-		res=extractString(section, germanMorphoBegin, germanMorphoEnd);
-		
-		if(res.isEmpty()){
-			res = extractString(section, "Tabelle", germanMorphoEnd);
-		}
-		
-		return res;
-	}
 
 	private String extractString(String s, String start, String end){
 		String res;

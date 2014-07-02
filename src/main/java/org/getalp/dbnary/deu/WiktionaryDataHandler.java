@@ -48,7 +48,7 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 					gewm.parseConjugation(conjugationPageContent);
 				}
 				else{
-					gewm.addOtherDesi(wi.getTextOfPage(currentLexEntry()), originalPOS);
+					gewm.parseOtherForm(wi.getTextOfPage(currentLexEntry()), originalPOS);
 				}
 				
 			}
@@ -60,7 +60,7 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 						gewm.parseDeclination(declinationPageContent);
 					}
 					else{
-						gewm.addOtherDesi(wi.getTextOfPage(currentLexEntry()), originalPOS);
+						gewm.parseOtherForm(wi.getTextOfPage(currentLexEntry()), originalPOS);
 					}
 				}
 			}

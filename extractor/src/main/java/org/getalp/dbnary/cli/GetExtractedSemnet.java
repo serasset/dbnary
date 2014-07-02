@@ -35,6 +35,9 @@ public class GetExtractedSemnet {
 	private String outputFormat = DEFAULT_OUTPUT_FORMAT;
 	private String language = DEFAULT_LANGUAGE;
 	private String model = DEFAULT_MODEL;
+
+	private static final String FOREIGN_EXTRACTION_OPTION = "x";
+
 	static {
 		options = new Options();
 		options.addOption("h", false, "Prints usage and exits. ");	
@@ -44,6 +47,7 @@ public class GetExtractedSemnet {
 				"Output format (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_OUTPUT_FORMAT + " by default.");
 		options.addOption(MODEL_OPTION, true, 
 				"Ontology Model used  (lmf or lemon). Only useful with rdf base formats." + DEFAULT_MODEL + " by default.");
+		options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign languages");
 	}
 	
 	WiktionaryIndex wi;
@@ -102,7 +106,11 @@ public class GetExtractedSemnet {
 				outputFormat.equals("TTL") ||
 				outputFormat.equals("RDFABBREV") ) {
 			if (model.equals("LEMON")) {
-				wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
+				if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)){
+					wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language);
+				} else {
+					wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
+				}
 			} else {
 				System.err.println("LMF format not supported anymore.");
 				System.exit(1);
@@ -112,8 +120,12 @@ public class GetExtractedSemnet {
 			System.exit(1);
 		}
 		
-		we = WiktionaryExtractorFactory.getExtractor(language, wdh);
-		
+		if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)){
+			we = WiktionaryExtractorFactory.getForeignExtractor(language, wdh);
+		} else {
+			we = WiktionaryExtractorFactory.getExtractor(language, wdh);
+		}
+
 		if (null == we) {
 			System.err.println("Wiktionary Extraction not yet available for " + ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
 			System.exit(1);

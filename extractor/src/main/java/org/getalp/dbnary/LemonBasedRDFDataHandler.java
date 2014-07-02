@@ -41,9 +41,9 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	protected String currentWiktionaryPos;
 	
 	protected Resource currentSense;
-	private int currentSenseNumber;
-	private int currentSubSenseNumber;
-	private CounterSet translationCount = new CounterSet();
+	protected int currentSenseNumber;
+	protected int currentSubSenseNumber;
+	protected CounterSet translationCount = new CounterSet();
 	private CounterSet reifiedNymCount = new CounterSet();
 	protected String extractedLang;
 	protected Resource lexvoExtractedLanguage;
@@ -53,8 +53,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	protected int nbEntries = 0;
 	protected String NS;
 	protected String currentEncodedPageName;
-	private String currentWiktionaryPageName;
-	private CounterSet currentLexieCount = new CounterSet();
+	protected String currentWiktionaryPageName;
+	protected CounterSet currentLexieCount = new CounterSet();
 	private Resource currentMainLexEntry;
 	private Resource currentPreferredWrittenRepresentation;
 	
@@ -185,7 +185,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
         
         // Create a dummy lexical entry that points to the one that corresponds to a part of speech
         String encodedPageName = uriEncode(wiktionaryPageName);
-        currentMainLexEntry = aBox.createResource(NS + encodedPageName);
+        currentMainLexEntry = aBox.createResource(getPrefix() + encodedPageName);
         
         // Create the resource without typing so that the type statement is added only if the currentStatement are added to the model.
         // Resource lemma = aBox.createResource(encodedPageName);
@@ -214,7 +214,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     	nbEntries++;
     	
         currentEncodedPageName = uriEncode(currentWiktionaryPageName, currentWiktionaryPos) + "__" + currentLexieCount.incr(currentWiktionaryPos);
-        currentLexEntry = aBox.createResource(NS + currentEncodedPageName, normalizedType);
+        currentLexEntry = aBox.createResource(getPrefix() + currentEncodedPageName, normalizedType);
         
         // All translation numbers are local to a lexEntry
         translationCount.resetAll();
@@ -315,7 +315,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	}
 
 	private String computeSenseId(String senseNumber) {
-		return NS + "__ws_" + senseNumber + "_" + currentEncodedPageName;
+		return getPrefix() + "__ws_" + senseNumber + "_" + currentEncodedPageName;
 	}
 	
 	private String computeSenseNum() {
@@ -376,7 +376,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 
 	private String computeTransId(String lang, Resource entity) {
 		lang = uriEncode(lang);
-		return NS + "__tr_" + lang + "_" + translationCount.incr(lang) + "_" + entity.getURI().substring(NS.length());
+		return getPrefix() + "__tr_" + lang + "_" + translationCount.incr(lang) + "_" + entity.getURI().substring(getPrefix().length());
 	}
 
     private Resource getLexvoLanguageResource(String lang) {
@@ -408,7 +408,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		
 		Property nymProperty = nymPropertyMap.get(synRelation);
 		
-		Resource targetResource = aBox.createResource(NS + uriEncode(target), vocableEntryType);
+		Resource targetResource = aBox.createResource(getPrefix() + uriEncode(target), vocableEntryType);
 		
     	aBox.add(aBox.createStatement(entity, nymProperty, targetResource));
     }
@@ -438,7 +438,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		}
 		Property nymProperty = nymPropertyMap.get(synRelation);
 		
-		Resource targetResource = aBox.createResource(NS + uriEncode(target), vocableEntryType);
+		Resource targetResource = aBox.createResource(getPrefix() + uriEncode(target), vocableEntryType);
 		
 		Statement nymR = aBox.createStatement(currentLexEntry, nymProperty, targetResource);
     	aBox.add(nymR);
@@ -448,7 +448,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	}
 
 	private String computeNymId(String nym) {
-		return NS + "__" + nym + "_" + reifiedNymCount.incr(nym) + "_" + currentEncodedPageName;
+		return getPrefix() + "__" + nym + "_" + reifiedNymCount.incr(nym) + "_" + currentEncodedPageName;
 	}
 
 	@Override
@@ -473,7 +473,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		
 		Property nymProperty = nymPropertyMap.get(synRelation);
 		
-		Resource targetResource = aBox.createResource(NS + uriEncode(target), vocableEntryType);
+		Resource targetResource = aBox.createResource(getPrefix() + uriEncode(target), vocableEntryType);
 		
     	aBox.add(aBox.createStatement(currentSense, nymProperty, targetResource));
     }
@@ -545,6 +545,16 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	public String currentLexEntry() {
 		// TODO Auto-generated method stub
 		return currentWiktionaryPageName;
+	}
+
+	public String getPrefix() {
+		return NS;
+	}
+
+	@Override
+	public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
+		// TODO Auto-generated method stub
+		throw new RuntimeException("Cannot initialize a foreign language entry.");
 	}
 	
 }

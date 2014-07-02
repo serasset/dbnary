@@ -5,6 +5,7 @@ import java.io.OutputStream;
 public interface WiktionaryDataHandler {
 
     public void initializeEntryExtraction(String wiktionaryPageName);
+    public void initializeEntryExtraction(String wiktionaryPageName, String lang);
 
     public void addPartOfSpeech(String pos);
 

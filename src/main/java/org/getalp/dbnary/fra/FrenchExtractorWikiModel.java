@@ -80,7 +80,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			}
 		}
 
-		log.error("Cannot find the impersonal mood table for '" + delegate.currentLexEntry() + "' " + tables.getLength());
+		log.error("Cannot find the impersonal mood table for '" + delegate.currentLexEntry() + "'");
 		return -1;
 	}
 
@@ -157,7 +157,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			Node a = links.item(i);
 
 			String word = a.getTextContent().trim();
-			if (!word.equals(delegate.currentLexEntry()) && a.getAttributes().getNamedItem("title").getTextContent().equals(word)) {
+			Node title = a.getAttributes().getNamedItem("title");
+			if (!word.equals(delegate.currentLexEntry()) && title != null && title.getTextContent().equals(word)) {
 				delegate.registerOtherForm(word);
 			}
 		}

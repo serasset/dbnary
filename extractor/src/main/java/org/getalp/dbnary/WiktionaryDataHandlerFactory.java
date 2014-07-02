@@ -10,13 +10,21 @@ public class WiktionaryDataHandlerFactory {
 	private static Logger log = LoggerFactory.getLogger(WiktionaryDataHandlerFactory.class);
 
 	public static WiktionaryDataHandler getDataHandler(String language) {
+		return getDataHandler("WiktionaryDataHandler", language);
+	}
+
+	public static WiktionaryDataHandler getForeignDataHandler(String language) {
+		return getDataHandler("ForeignLanguagesWiktionaryDataHandler", language);
+	}
+
+	private static WiktionaryDataHandler getDataHandler(String className, String language) {
 		WiktionaryDataHandler we = null;
 
 		String cname = WiktionaryDataHandlerFactory.class.getCanonicalName();
 		int dpos = cname.lastIndexOf('.');
 		String pack = cname.substring(0, dpos);
 		try {
-			Class<?> wec = Class.forName(pack + "." + language + ".WiktionaryDataHandler");
+			Class<?> wec = Class.forName(pack + "." + language + "." + className);
 			we = (WiktionaryDataHandler) wec.getConstructor(String.class).newInstance(language);
 		} catch (ClassNotFoundException e) {
 			log.debug("No wiktionary extractor found for {}", language);

@@ -6,13 +6,21 @@ import java.lang.reflect.InvocationTargetException;
 public class WiktionaryExtractorFactory {
 
 	public static IWiktionaryExtractor getExtractor(String language, WiktionaryDataHandler wdh) {
+		return getExtractor("WiktionaryExtractor", language, wdh);
+	}
+
+	public static IWiktionaryExtractor getForeignExtractor(String language, WiktionaryDataHandler wdh) {
+		return getExtractor("ForeignLanguagesWiktionaryExtractor", language, wdh);
+	}
+
+	public static IWiktionaryExtractor getExtractor(String className, String language, WiktionaryDataHandler wdh) {
 		IWiktionaryExtractor we = null;
 		
 			String cname = WiktionaryExtractorFactory.class.getCanonicalName();
 			int dpos = cname.lastIndexOf('.');
 			String pack = cname.substring(0, dpos);
 			try {
-				Class<?> wec = Class.forName(pack + "." + language + ".WiktionaryExtractor");
+				Class<?> wec = Class.forName(pack + "." + language + "." + className);
 				we = (IWiktionaryExtractor) wec.getConstructor(WiktionaryDataHandler.class).newInstance(wdh);
 			} catch (ClassNotFoundException e) {
 				System.err.println("No wiktionary extractor found for " + language);

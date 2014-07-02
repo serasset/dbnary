@@ -19,6 +19,7 @@ experiments/ldd2014/.settings
 experiments/ldd2014/target
 extractor/*.iml
 extractor/.classpath
+extractor/.idea
 extractor/.project
 extractor/.settings
 extractor/src/.classpath

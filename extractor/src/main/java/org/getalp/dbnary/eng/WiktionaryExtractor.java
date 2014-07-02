@@ -23,21 +23,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	//DONE: extract pronunciation
 	//TODO: attach multiple pronounciation correctly
 	
+	protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
     protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
     protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
     
-    private final int NODATA = 0;
-    private final int TRADBLOCK = 1;
-    private final int DEFBLOCK = 2;
-    private final int ORTHOALTBLOCK = 3;
-    private final int NYMBLOCK = 4;
-    private final int PRONBLOCK = 5;
+    protected static final int NODATA = 0;
+    protected static final int TRADBLOCK = 1;
+    protected static final int DEFBLOCK = 2;
+    protected static final int ORTHOALTBLOCK = 3;
+    protected static final int NYMBLOCK = 4;
+    protected static final int PRONBLOCK = 5;
         
     public WiktionaryExtractor(WiktionaryDataHandler wdh) {
         super(wdh);
     }
 
-    // protected final static Pattern languageSectionPattern;
+    protected static Pattern languageSectionPattern;
     protected final static Pattern sectionPattern;
     protected final static HashSet<String> posMarkers;
     protected final static HashSet<String> nymMarkers;
@@ -45,7 +46,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected final static Pattern pronPattern;
 
     static {
-        // languageSectionPattern = Pattern.compile(languageSectionPatternString);
+        languageSectionPattern = Pattern.compile(languageSectionPatternString);
        
         sectionPattern = Pattern.compile(sectionPatternString);
         pronPattern = Pattern.compile(pronPatternString);
@@ -156,29 +157,29 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
 
-    private void gotoNymBlock(Matcher m) {
+    protected void gotoNymBlock(Matcher m) {
         state = NYMBLOCK; 
         currentNym = nymMarkerToNymName.get(m.group(1));
         nymBlockStart = m.end();      
      }
 
-    private void leaveNymBlock(Matcher m) {
+    protected void leaveNymBlock(Matcher m) {
         extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
         currentNym = null;
         nymBlockStart = -1;         
      }
 
-    private void gotoPronBlock(Matcher m) {
+    protected void gotoPronBlock(Matcher m) {
         state = PRONBLOCK; 
         pronBlockStart = m.end();      
      }
 
-    private void leavePronBlock(Matcher m) {
+    protected void leavePronBlock(Matcher m) {
         extractPron(pronBlockStart, computeRegionEnd(pronBlockStart, m));
         pronBlockStart = -1;         
      }
 
-	private void extractEnglishData(int startOffset, int endOffset) {        
+	protected void extractEnglishData(int startOffset, int endOffset) {
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         wdh.initializeEntryExtraction(wiktionaryPageName);

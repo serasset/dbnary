@@ -30,15 +30,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected final static String languageSectionPatternString1 = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
     protected final static String languageSectionPatternString2 = "==\\s*\\{\\{langue\\|([^\\}]*)\\}\\}\\s*==";
     // TODO: handle morphological informations e.g. fr-rég template ?
-    protected final static String pronounciationPatternString = "\\{\\{pron\\|([^\\|\\}]*)(.*)\\}\\}";
+    protected final static String pronounciationPatternString = "\\{\\{pron\\|([^\\|\\}]*)\\|([^\\}]*)\\}\\}";
     
-    private final int NODATA = 0;
-    private final int TRADBLOCK = 1;
-    protected final int DEFBLOCK = 2;
-    private final int ORTHOALTBLOCK = 3;
-    private final int NYMBLOCK = 4;
-    private final int PRONBLOCK = 5;
-	private final int IGNOREPOS = 6;
+    protected static final int NODATA = 0;
+    protected static final int TRADBLOCK = 1;
+    protected static final int DEFBLOCK = 2;
+    protected static final int ORTHOALTBLOCK = 3;
+    protected static final int NYMBLOCK = 4;
+    protected static final int PRONBLOCK = 5;
+    protected static final int IGNOREPOS = 6;
 
     private static HashMap<String,String> posMarkers;
     private static HashSet<String> ignorablePosMarkers;
@@ -436,7 +436,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
 	protected final static Pattern languageSectionPattern;
-	private final static Pattern pronunciationPattern;
+	protected final static Pattern pronunciationPattern;
 
     static {
         languageSectionPattern = Pattern.compile(languageSectionPatternString);
@@ -475,7 +475,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
      }
 
     
-    private boolean isFrenchLanguageHeader(Matcher m) {
+    protected boolean isFrenchLanguageHeader(Matcher m) {
 		return (null != m.group(1) && m.group(1).equals("fr")) || (null != m.group(2) && m.group(2).equals("fr"));
 	}
 
@@ -768,32 +768,32 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
 
-	private boolean isValidSection(Matcher m) {
+	protected boolean isValidSection(Matcher m) {
 		if (sectionMarkers.contains(m.group(1))) return true;
 		if ("S".equals(m.group(1))) return true;
 		return false;
 	}
 
 
-	private void leavePronBlock(Matcher m) {
+	protected void leavePronBlock(Matcher m) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
-	private void gotoPronBlock(Matcher m) {
+	protected void gotoPronBlock(Matcher m) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
-	private boolean isPronounciation(Matcher m) {
+	protected boolean isPronounciation(Matcher m) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 
-	private String getValidPOS(Matcher m) {
+	protected String getValidPOS(Matcher m) {
 		String pos;
 		if (null != (pos = posMarkers.get(m.group(1)))) return pos;
 		if ("S".equals(m.group(1))) {
@@ -810,7 +810,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 
-	private boolean isTranslation(Matcher m) {
+	protected boolean isTranslation(Matcher m) {
 		if (m.group(1).equals("-trad-")) return true;
 		if (m.group(1).equals("S")) {
 			Map<String,String> args = WikiTool.parseArgs(m.group(2));
@@ -838,7 +838,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		variantSections.add("anciennes ortho");	
 	}
 	
-	private boolean isAlternate(Matcher m) {
+	protected boolean isAlternate(Matcher m) {
 		if (m.group(1).equals("-ortho-alt-") || m.group(1).equals("-var-ortho-")) return true;
 		if (m.group(1).equals("S")) {
 			Map<String,String> args = WikiTool.parseArgs(m.group(2));
@@ -851,7 +851,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	
 
 
-    private String isNymHeader(Matcher m) {
+    protected String isNymHeader(Matcher m) {
 		if (nymMarkerToNymName.containsKey(m.group(1))) return nymMarkerToNymName.get(m.group(1));
 		if (m.group(1).equals("S")) {
 			Map<String,String> args = WikiTool.parseArgs(m.group(2));

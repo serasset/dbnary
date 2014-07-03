@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -40,16 +41,20 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		
 		NodeList tables =doc.getElementsByTagName("table");
 
+		Element tablesItem =(Element) tables.item(1);
+		getTablesConj(tablesItem,11,0);
 		
-		Element tablesItem =(Element) tables.item(3);
-		getTablesConj(tablesItem, 3, 9, 2, 4);
-		getTablesConj(tablesItem, 13, 19, 2, 4);
-//		
+		
 		tablesItem =(Element) tables.item(2);
-		getTablesConj(tablesItem, 2, 4, 1, 2);
+		getTablesConj(tablesItem,2,1,3,2);
 		
-		tablesItem =(Element) tables.item(1);
-		getTablesConj(tablesItem,11 ,12 , 0, 2);
+		
+		tablesItem =(Element) tables.item(3);
+		getTablesConj(tablesItem,3,2);
+		getTablesConj(tablesItem,13,2);
+		
+		
+		
 
 	}
 	
@@ -77,8 +82,8 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 					if(r.indexOf("Hilfsverb")==-1 && r.indexOf("Weitere_Konjugationen")==-1){
 						int ind = r.indexOf("=");
 						if(ind!=-1){
-//							System.out.println(r.substring(ind+1).replace("[","").replace("]",""));
-							wdh.registerOtherForm(r.substring(ind+1));
+							System.out.println(r.substring(ind+1).replace("[","").replace("]",""));
+//							wdh.registerOtherForm(r.substring(ind+1).replace("!",""));
 						}
 					}
 				}
@@ -86,17 +91,46 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 	}
 	
-	private void getTablesConj(Element tablesItem, int lbegin, int lend, int cbegin, int cend){
-		for(int i=cbegin;i!=cend;i++){
-			for(int j=lbegin;j!=lend;j++){
-				NodeList interrestingTDs = ((Element)tablesItem.getElementsByTagName("tr").item(j)).getElementsByTagName("td");
-				String form=interrestingTDs.item(i).getTextContent();
-				if(!form.equals("—")){
-					addForm(form);
-				}
+	private void getTablesConj(Element tablesItem, int iBegin, int jBegin){
+		int iEnd,jEnd;
+		iEnd=iBegin+8;
+		jEnd=jBegin+2;
+		getTablesConj(tablesItem, iBegin, jBegin, iEnd, jEnd);
+	}
+	
+	private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd, int jEnd){
+		boolean change=false;
+		
+		NodeList someTRs = tablesItem.getElementsByTagName("tr");
+		for(int i=iBegin;i<iEnd;i++){
+			Element trItem= (Element)someTRs.item(i);
+			if(trItem!=null){
+				NodeList interrestingTDs = trItem.getElementsByTagName("td") ;
+					for(int j=jBegin;j<jEnd;j++){
+						Element tdItem=(Element)interrestingTDs.item(j);
+						if(tdItem!=null){
+							NodeList itemsList = tdItem.getChildNodes();
+							for(int e=0; e<itemsList.getLength();e++){
+								String form=itemsList.item(e).getTextContent().replace("—","");
+								String name=itemsList.item(e).getNodeName();
+								form=form.replace(" "," ");//remove insecable spaces
+								// for verbs like ankommen : ich komme an
+								if(name.equals("#text") && !form.isEmpty())// j=1 conjug classique, j=0 impératif
+								{
+									if(!change && form.split(" ").length>2 ){
+										change= true;
+										iBegin=iBegin+1;
+										iEnd=iEnd+1;
+										jEnd=jEnd+2;
+									}
+									addVerbForm(form);
+								}
+//									
+							}
+						}
+					}
 			}
 		}
-		
 	
 	}
 
@@ -137,29 +171,31 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
 	
 	
-	private void addForm(String s){
-		int ind;
-		s=s.replace(","," ").replace("\n"," ");
-		String[] tab=s.split(" ");
-		for(int i=0;i<tab.length;i++){
-			//for normal Verb forms
-			if(i%2==1){
-				wdh.registerOtherForm(tab[i]);
-//				System.out.println(tab[i]);
-			}
-			//for imperativs
-			else if((ind=tab[i].indexOf("!"))!=-1){
-				for(String r : tab[i].split("!")){
+	//comp Verb
+	private void addVerbForm(String s){
+		int indimp, indsp;
+		s=s.replace("\n",",");
+		s=s.replace("!","!,");
+		String [] tab= s.split(",");
+		for(String r : tab){
+			indsp= r.indexOf(" ");
+			indimp=r.indexOf("!");
+			if(indimp==-1){
+				if(indsp==-1 || indsp==r.length()-1){
+//					System.out.println("comp1 : "+r);
 					wdh.registerOtherForm(r);
-//					System.out.println(r);
+				}
+				else{
+					
+//					System.out.println("comp2 : "+r.substring(indsp));
+					wdh.registerOtherForm(r.substring(indsp));
 				}
 			}
-			//for past and present particips 
-			else if(tab.length==1){
-				wdh.registerOtherForm(tab[i]);
+			else{
+//				System.out.println("comp3 : "+r.replace("!",""));
+				wdh.registerOtherForm(r.replace("!",""));
 			}
 		}
-			
 	}
 	
 	

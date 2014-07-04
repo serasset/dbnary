@@ -42,10 +42,12 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 	
 	public void addPartOfSpeech(String originalPOS, Resource normalizedPOS, Resource normalizedType){
 		super.addPartOfSpeech(originalPOS,normalizedPOS,normalizedType);
+		
+		GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(this, wi, new Locale("de"), "/${Bild}", "/${title}");
+		
 		if (((normalizedType == wordEntryType) || (normalizedType == lexEntryType))) {
 			if(normalizedPOS==verbPOS){
 				String conjugationPageContent = wi.getTextOfPage(currentLexEntry()+germanConjugationSuffix);
-				GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(this, wi, new Locale("de"), "/${Bild}", "/${title}");
 				if(conjugationPageContent!=null){
 					gewm.parseConjugation(conjugationPageContent);
 				}
@@ -57,7 +59,6 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 			else{
 				if(!originalPOS.equals("Konjugierte Form") && !originalPOS.equals("Deklinierte Form")){
 					String declinationPageContent = wi.getTextOfPage(currentLexEntry()+germanDeclinationSuffix);
-					GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(this, wi, new Locale("de"), "/${Bild}", "/${title}");
 					if(declinationPageContent!=null){
 						gewm.parseDeclination(declinationPageContent);
 					}
@@ -69,14 +70,34 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 					//add the infinitiv form if the current lex Entry is inflected
 					Matcher m = basedFormPattern.matcher(wi.getTextOfPage(currentLexEntry()));
 					if(m.find()){
-						this.registerOtherForm(m.group(1));
-						
+//						this.registerOtherForm(m.group(1));
+						String pageContent = lexEntryToPage(m.group(1));
+						if(null!= pageContent){
+							if(originalPOS.equals("Konjugierte Form")){
+								gewm.parseConjugation(pageContent);
+							}
+							else{
+								gewm.parseDeclination(pageContent);
+							}
+						}
 					}
 				}
 			}
 		}
 	}
+	
+	
+	private String lexEntryToPage(String lexEntry){
+		int i=0;
+		String[] suffix={germanConjugationSuffix,germanDeclinationSuffix,""};
+		String pageContent = null;
 
+			while(null==pageContent && i< suffix.length){
+				pageContent=wi.getTextOfPage(lexEntry+suffix[i]);
+				i++;
+			}
+		return pageContent;
+	}
 	public void registerOtherForm(String form){
 		super.registerOtherForm(form.replace("\n", "").replace("[","").replace("]", ""));
 		

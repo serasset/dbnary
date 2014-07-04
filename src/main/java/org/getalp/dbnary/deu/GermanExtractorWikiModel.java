@@ -23,7 +23,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	private final static String germanMorphoEnd = "}}";
 	
 	
-	private Logger log = LoggerFactory.getLogger(FrenchExtractorWikiModel.class);
+	private Logger log = LoggerFactory.getLogger(GermanExtractorWikiModel.class);
 	
 	private WiktionaryDataHandler wdh;
 	
@@ -177,6 +177,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		int indimp, indsp;
 		s=s.replace("\n",",");
 		s=s.replace("!","!,");
+		s=s.replace(".","");
 		String [] tab= s.split(",");
 		for(String r : tab){
 			indsp= r.indexOf(" ");

@@ -21,14 +21,16 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 	
 	private final static Pattern conjugationPattern;
 	private final static Pattern declinationPattern;
+	private final static Pattern basedFormPattern;
 	
 	private final static String conjugationStringPattern ="\\{\\{Deutsch Verb";
 	private final static String declinationStringPattern ="\\{\\{Deutsch";
 	private final static String germanDeclinationSuffix =" (Deklination)";
 	private final static String germanConjugationSuffix =" (Konjugation)";
-	
+	private final static String basedFormPrefix="\\{\\{Grundformverweis\\|(.*)\\}\\}";
 	
 	static{
+		basedFormPattern=Pattern.compile(basedFormPrefix);
 		conjugationPattern = Pattern.compile(conjugationStringPattern);
 		declinationPattern = Pattern.compile(declinationStringPattern);
 	}
@@ -53,7 +55,7 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 				
 			}
 			else{
-				if(!originalPOS.equals("Konjugierte Form")){
+				if(!originalPOS.equals("Konjugierte Form") && !originalPOS.equals("Deklinierte Form")){
 					String declinationPageContent = wi.getTextOfPage(currentLexEntry()+germanDeclinationSuffix);
 					GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(this, wi, new Locale("de"), "/${Bild}", "/${title}");
 					if(declinationPageContent!=null){
@@ -61,6 +63,14 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 					}
 					else{
 						gewm.parseOtherForm(wi.getTextOfPage(currentLexEntry()), originalPOS);
+					}
+				}
+				else{
+					//add the infinitiv form if the current lex Entry is inflected
+					Matcher m = basedFormPattern.matcher(wi.getTextOfPage(currentLexEntry()));
+					if(m.find()){
+						this.registerOtherForm(m.group(1));
+						
 					}
 				}
 			}

@@ -114,9 +114,10 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 								String form=itemsList.item(e).getTextContent().replace("—","");
 								String name=itemsList.item(e).getNodeName();
 								form=form.replace(" "," ");//remove insecable spaces
-								// for verbs like ankommen : ich komme an
+								
 								if(name.equals("#text") && !form.isEmpty())// j=1 conjug classique, j=0 impératif
 								{
+									// for verbs like ankommen : ich komme an
 									if(!change && form.split(" ").length>2 ){
 										change= true;
 										iBegin=iBegin+1;
@@ -188,7 +189,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 				else{
 					
 //					System.out.println("comp2 : "+r.substring(indsp));
-					wdh.registerOtherForm(r.substring(indsp));
+					wdh.registerOtherForm(r.substring(indsp+1));
 				}
 			}
 			else{

@@ -156,6 +156,14 @@
     
 
 
+    <!-- http://kaiko.getalp.org/dbnary#exampleSource -->
+
+    <owl:DatatypeProperty rdf:about="&dbnary;exampleSource">
+        <rdfs:domain rdf:resource="&lemon;UsageExample"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://kaiko.getalp.org/dbnary#gloss -->
 
     <owl:DatatypeProperty rdf:about="&dbnary;gloss">

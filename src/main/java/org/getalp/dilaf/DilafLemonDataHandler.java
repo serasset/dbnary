@@ -69,7 +69,7 @@ public class DilafLemonDataHandler extends DbnaryModel {
 		Statement alreadyRegisteredCanonicalForm = aBox.getProperty(lexEntry, canonicalFormProperty);
 		if (null != alreadyRegisteredCanonicalForm) {
 			// Check that it is the same form/pronounciation
-			Statement oldWrittenRep = aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), writtenRepresentationProperty);
+			Statement oldWrittenRep = aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), writtenRepProperty);
 			if (oldWrittenRep == null || ! oldWrittenRep.getString().equals(lemma)) {
 				System.err.println("Old written representation is null or different from current representation.");
 			}
@@ -79,7 +79,7 @@ public class DilafLemonDataHandler extends DbnaryModel {
 			}
 		} else {
 			Resource lexForm = aBox.createResource();
-			aBox.add(aBox.createStatement(lexForm, writtenRepresentationProperty, lemma, twoLetterLanguageCode));
+			aBox.add(aBox.createStatement(lexForm, writtenRepProperty, lemma, twoLetterLanguageCode));
 			aBox.add(aBox.createStatement(lexForm, pronProperty, pron));
 			aBox.add(aBox.createStatement(lexEntry, canonicalFormProperty, lexForm));
 		}

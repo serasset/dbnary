@@ -561,7 +561,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		case IGNOREPOS:
 			break;
 		case DEFBLOCK:
-			System.out.println("YES");
 			extractDefinitions(blockStart, end);
 			extractPronounciation(blockStart, end);
 			extractOtherForms(blockStart, end);

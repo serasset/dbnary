@@ -511,33 +511,36 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					currentBlock = Block.IGNOREPOS;
 				} else {
 					currentBlock = Block.DEFBLOCK;
+			        blockStart = m.end();
 					wdh.addPartOfSpeech(pos);
 				}
-			}
-
-			if (currentBlock == Block.IGNOREPOS) {
-				continue;
-			}
-
-			if (isTranslation(m, sectionTitle)) {
-				leaveCurrentBlock(m);
-				currentBlock = Block.TRADBLOCK;
-			} else if (isAlternate(m, sectionTitle)) {
-				leaveCurrentBlock(m);
-				currentBlock = Block.ORTHOALTBLOCK;
-			} else if (null != (nym = getNymHeader(m, sectionTitle))) {
-				leaveCurrentBlock(m);
-				currentBlock = Block.NYMBLOCK;
-				currentNym = nym;
 			} else {
-				if (isValidSection(m, sectionTitle)) {
-					leaveCurrentBlock(m);
-					currentBlock = Block.NOBLOCK;
+				if (currentBlock == Block.IGNOREPOS) {
+					continue;
 				}
-				continue;
-			}
 
-			blockStart = m.end();
+				if (isTranslation(m, sectionTitle)) {
+					leaveCurrentBlock(m);
+					currentBlock = Block.TRADBLOCK;
+				} else if (isAlternate(m, sectionTitle)) {
+					leaveCurrentBlock(m);
+					currentBlock = Block.ORTHOALTBLOCK;
+				} else if (null != (nym = getNymHeader(m, sectionTitle))) {
+					leaveCurrentBlock(m);
+					currentBlock = Block.NYMBLOCK;
+					currentNym = nym;
+				} else {
+					if (isValidSection(m, sectionTitle)) {
+						leaveCurrentBlock(m);
+						currentBlock = Block.NOBLOCK;
+					}
+					continue;
+				}
+
+				if (currentBlock != Block.NOBLOCK) {
+					blockStart = m.end();
+				}
+			}
 		}
 		
 		// Finalize the entry parsing
@@ -558,6 +561,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		case IGNOREPOS:
 			break;
 		case DEFBLOCK:
+			System.out.println("YES");
 			extractDefinitions(blockStart, end);
 			extractPronounciation(blockStart, end);
 			extractOtherForms(blockStart, end);

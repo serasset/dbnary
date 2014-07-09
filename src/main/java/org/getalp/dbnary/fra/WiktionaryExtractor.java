@@ -494,7 +494,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 		while (m.find()) {
 			// Iterate until we find a new section
-			leaveCurrentBlock(m);
 
 			if (m.group(1).equals("S")) {
 				sectionArgs  = WikiTool.parseArgs(m.group(2));
@@ -507,6 +506,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			pos = getValidPOS(m, sectionTitle, sectionArgs);
 
 			if (pos != null) {
+				leaveCurrentBlock(m);
 				if (pos.length() == 0)  {
 					currentBlock = Block.IGNOREPOS;
 				} else {
@@ -520,14 +520,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			}
 
 			if (isTranslation(m, sectionTitle)) {
+				leaveCurrentBlock(m);
 				currentBlock = Block.TRADBLOCK;
 			} else if (isAlternate(m, sectionTitle)) {
+				leaveCurrentBlock(m);
 				currentBlock = Block.ORTHOALTBLOCK;
 			} else if (null != (nym = getNymHeader(m, sectionTitle))) {
+				leaveCurrentBlock(m);
 				currentBlock = Block.NYMBLOCK;
 				currentNym = nym;
 			} else {
 				if (isValidSection(m, sectionTitle)) {
+					leaveCurrentBlock(m);
 					currentBlock = Block.NOBLOCK;
 				}
 				continue;

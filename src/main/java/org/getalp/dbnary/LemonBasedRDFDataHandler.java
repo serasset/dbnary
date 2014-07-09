@@ -190,7 +190,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		currentSharedPronunciations = new HashSet<PrononciationPair>();
 
 		// Create a dummy lexical entry that points to the one that corresponds to a part of speech
-		currentMainLexEntry = getVocable(wiktionaryPageName);
+		currentMainLexEntry = getVocable(wiktionaryPageName, true);
 
 		// Create the resource without typing so that the type statement is added only if the currentStatement are added to the model.
 
@@ -359,8 +359,15 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		}
 	}
 
-	public Resource getVocable(String vocable) {
+	public Resource getVocable(String vocable, boolean dontLinkWithType) {
+		if (dontLinkWithType) {
+			return aBox.createResource(NS + uriEncode(vocable));
+		}
 		return aBox.createResource(NS + uriEncode(vocable), vocableEntryType);
+	}
+
+	public Resource getVocable(String vocable) {
+		return getVocable(vocable, false);
 	}
 
 	private void addInflectionMorphology(Resource inflectionResource, String wikicodeMorphology) {

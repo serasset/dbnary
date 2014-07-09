@@ -33,7 +33,7 @@ public class DbnaryModel {
 
 	public static final Property canonicalFormProperty;
 	public static final Property lexicalVariantProperty;
-	public static final Property writtenRepresentationProperty;
+	public static final Property writtenRepProperty;
 	
 	// DBNARY properties
 	public static final Property dbnaryPosProperty;
@@ -101,92 +101,102 @@ public class DbnaryModel {
 	public static final Resource animacyProperty;
 	public static final Resource inanimate;
 	public static final Resource animate;
-	
+
+	public static final Resource inflectionType;
+	public static final Property hasInflectionForm;
+	public static final Property hasWikiCodeMorphology;
+	public static final Property isInflectionOf;
+	public static final Property isInflectionType;
+
+
 	static {
 		// Create T-Box and read rdf schema associated to it.
 		tBox = ModelFactory.createDefaultModel();
+
 		InputStream lis = DbnaryModel.class.getResourceAsStream("lemon.ttl");
-		tBox.read( lis, LEMON, "TURTLE");
+		tBox.read(lis, LEMON,  "TURTLE");
+
 		lis = DbnaryModel.class.getResourceAsStream("lexinfo.owl");
-		tBox.read( lis, LEMON);
+		tBox.read(lis, LEMON);
 
-		lexEntryType = tBox.getResource(LEMON + "LexicalEntry");
-		wordEntryType = tBox.getResource(LEMON + "Word");
-		phraseEntryType = tBox.getResource(LEMON + "Phrase");
+		lexEntryType               = tBox.createResource(LEMON   + "LexicalEntry");
+		wordEntryType              = tBox.createResource(LEMON   + "Word");
+		phraseEntryType            = tBox.createResource(LEMON   + "Phrase");
+		vocableEntryType           = tBox.createResource(DBNARY  + "Vocable");
 
-		lexicalFormType = tBox.getResource(LEMON + "LexicalForm");
-		lexicalSenseType = tBox.getResource(LEMON + "LexicalSense");
-		canonicalFormProperty = tBox.getProperty(LEMON + "canonicalForm");
-		lemonSenseProperty = tBox.getProperty(LEMON + "sense");
-		lexicalVariantProperty = tBox.getProperty(LEMON + "lexicalVariant");
-		writtenRepresentationProperty =  tBox.getProperty(LEMON + "writtenRep");
-		lemonDefinitionProperty = tBox.getProperty(LEMON + "definition");
-		lemonValueProperty = tBox.getProperty(LEMON + "value");
-		languageProperty = tBox.getProperty(LEMON + "language");
+		lexicalFormType            = tBox.createResource(LEMON   + "LexicalForm");
+		lexicalSenseType           = tBox.createResource(LEMON   + "LexicalSense");
+
+		canonicalFormProperty      = tBox.createProperty(LEMON,    "canonicalForm");
+		lemonSenseProperty         = tBox.createProperty(LEMON,    "sense");
+		lexicalVariantProperty     = tBox.createProperty(LEMON,    "lexicalVariant");
+		lemonDefinitionProperty    = tBox.createProperty(LEMON,    "definition");
+		lemonValueProperty         = tBox.createProperty(LEMON,    "value");
+		languageProperty           = tBox.createProperty(LEMON,    "language");
 		
-		vocableEntryType = tBox.getResource(DBNARY + "Vocable");
+		writtenRepProperty         = tBox.createProperty(LEMON,    "writtenRep");
 
-		translationType = tBox.getResource(DBNARY + "Translation");
-		// definitionType = tBox.getResource(LMF + "Definition");
-		// lexicalEntryRelationType = tBox.getResource(NS + "LexicalEntryRelation");
+		translationType            = tBox.createResource(DBNARY +  "Translation");
 
-		// formProperty = tBox.getProperty(NS + "writtenForm");
-		targetLanguageProperty = tBox.getProperty(DBNARY + "targetLanguage");
-		targetLanguageCodeProperty = tBox.getProperty(DBNARY + "targetLanguageCode");
-		equivalentTargetProperty = tBox.getProperty(DBNARY + "writtenForm");
-		glossProperty = tBox.getProperty(DBNARY + "gloss");
-		usageProperty = tBox.getProperty(DBNARY + "usage");
-		fromProperty = tBox.getProperty(DBNARY + "from");
-		toProperty = tBox.getProperty(DBNARY + "to");
-		// textProperty = tBox.getProperty(DBNARY + "text");
-		senseNumberProperty = tBox.getProperty(DBNARY + "senseNumber");
-		// entryRelationLabelProperty = tBox.getProperty(DBNARY + "label");
-		// entryRelationTargetProperty = tBox.getProperty(DBNARY + "target");
-		refersTo = tBox.getProperty(DBNARY + "refersTo");
-		isTranslationOf = tBox.getProperty(DBNARY + "isTranslationOf");
-		otherFormProperty = tBox.getProperty(DBNARY + "otherForm");
-				
-		posProperty = tBox.getProperty(LEXINFO + "partOfSpeech");
-		dbnaryPosProperty = tBox.getProperty(DBNARY + "partOfSpeech");
+		targetLanguageProperty     = tBox.createProperty(DBNARY,   "targetLanguage");
+		targetLanguageCodeProperty = tBox.createProperty(DBNARY,   "targetLanguageCode");
+		equivalentTargetProperty   = tBox.createProperty(DBNARY,   "writtenForm");
+
+		glossProperty              = tBox.createProperty(DBNARY,   "gloss");
+		usageProperty              = tBox.createProperty(DBNARY,   "usage");
+		fromProperty               = tBox.createProperty(DBNARY,   "from");
+		toProperty                 = tBox.createProperty(DBNARY,   "to");
+
+		refersTo                   = tBox.createProperty(DBNARY,   "refersTo");
+		isTranslationOf            = tBox.createProperty(DBNARY,   "isTranslationOf");
+		senseNumberProperty        = tBox.createProperty(DBNARY,   "senseNumber");
+		otherFormProperty          = tBox.createProperty(DBNARY,   "otherForm");
+		pronProperty               = tBox.createProperty(LEXINFO,  "pronunciation");
+
+
+		synonymReifiedRelation     = tBox.createProperty(DBNARY,   "Synonym");
+		antonymReifiedRelation     = tBox.createProperty(DBNARY,   "Antonym");
+		hypernymReifiedRelation    = tBox.createProperty(DBNARY,   "Hypernym");
+		hyponymReifiedRelation     = tBox.createProperty(DBNARY,   "Hyponym");
+		nearSynonymReifiedRelation = tBox.createProperty(DBNARY,   "ApproximateSynonym");
+		meronymReifiedRelation     = tBox.createProperty(DBNARY,   "Meronym");
+		holonymReifiedRelation     = tBox.createProperty(DBNARY,   "Holonym");
+
+		synonymProperty            = tBox.createProperty(DBNARY,   "synonym");
+		antonymProperty            = tBox.createProperty(DBNARY,   "antonym");
+		hypernymProperty           = tBox.createProperty(DBNARY,   "hypernym");
+		hyponymProperty            = tBox.createProperty(DBNARY,   "hyponym");
+		nearSynonymProperty        = tBox.createProperty(DBNARY,   "approximateSynonym");
+		meronymProperty            = tBox.createProperty(DBNARY,   "meronym");
+		holonymProperty            = tBox.createProperty(DBNARY,   "holonym");
+
+
+		posProperty                = tBox.createProperty(LEXINFO,  "partOfSpeech");
+		dbnaryPosProperty          = tBox.createProperty(DBNARY,   "partOfSpeech");
+		nounPOS                    = tBox.createResource(LEXINFO + "noun");
+		adjPOS                     = tBox.createResource(LEXINFO + "adjective");
+		properNounPOS              = tBox.createResource(LEXINFO + "properNoun");
+		verbPOS                    = tBox.createResource(LEXINFO + "verb");
+		adverbPOS                  = tBox.createResource(LEXINFO + "adverb");
+		otherPOS                   = tBox.createResource(LEXINFO + "otherPartOfSpeech");
+
 		
-		pronProperty = tBox.getProperty(LEXINFO + "pronunciation");
-
-		synonymReifiedRelation = tBox.getProperty(DBNARY + "Synonym");
-		antonymReifiedRelation = tBox.getProperty(DBNARY + "Antonym");
-		hypernymReifiedRelation = tBox.getProperty(DBNARY + "Hypernym");
-		hyponymReifiedRelation = tBox.getProperty(DBNARY + "Hyponym");
-		nearSynonymReifiedRelation = tBox.getProperty(DBNARY + "ApproximateSynonym");
-		meronymReifiedRelation = tBox.getProperty(DBNARY + "Meronym");
-		holonymReifiedRelation = tBox.getProperty(DBNARY + "Holonym");
-
-		synonymProperty = tBox.getProperty(DBNARY + "synonym");
-		antonymProperty = tBox.getProperty(DBNARY + "antonym");
-		hypernymProperty = tBox.getProperty(DBNARY + "hypernym");
-		hyponymProperty = tBox.getProperty(DBNARY + "hyponym");
-		nearSynonymProperty = tBox.getProperty(DBNARY + "approximateSynonym");
-		meronymProperty = tBox.getProperty(DBNARY + "meronym");
-		holonymProperty = tBox.getProperty(DBNARY + "holonym");
-
-		nounPOS = tBox.getResource(LEXINFO + "noun");
-		adjPOS = tBox.getResource(LEXINFO + "adjective");
-		properNounPOS = tBox.getResource(LEXINFO + "properNoun");
-		verbPOS = tBox.getResource(LEXINFO + "verb");
-		adverbPOS = tBox.getResource(LEXINFO + "adverb");
-		otherPOS = tBox.getResource(LEXINFO + "otherPartOfSpeech");
-
-		genderProperty = tBox.getResource(LEXINFO + "gender");
-		masculine = tBox.getResource(LEXINFO + "masculine");
-		feminine = tBox.getResource(LEXINFO + "feminine");
-		neuter = tBox.getResource(LEXINFO + "neuter");
+		genderProperty             = tBox.createResource(LEXINFO + "gender");
+		masculine                  = tBox.createResource(LEXINFO + "masculine");
+		feminine                   = tBox.createResource(LEXINFO + "feminine");
+		neuter                     = tBox.createResource(LEXINFO + "neuter");
 		
-		animacyProperty = tBox.getResource(LEXINFO + "animacy");
-		animate = tBox.getResource(LEXINFO + "animate");
-		inanimate = tBox.getResource(LEXINFO + "inanimate");
-		
-		// syntacticBehaviourProperty = tBox.getResource(LEMON + "synBehavior");
-		
+		animacyProperty            = tBox.createResource(LEXINFO + "animacy");
+		animate                    = tBox.createResource(LEXINFO + "animate");
+		inanimate                  = tBox.createResource(LEXINFO + "inanimate");
+
+
+		inflectionType             = tBox.createResource(DBNARY  + "Inflection");
+		hasInflectionForm          = tBox.createProperty(DBNARY,   "inflectionForm");
+		hasWikiCodeMorphology      = tBox.createProperty(DBNARY  + "wikiMorphology");
+		isInflectionOf             = tBox.createProperty(DBNARY  + "inflectionOf");
+		isInflectionType           = tBox.createProperty(DBNARY  + "inflectionType");
 	}
-	
 	
 	public static String uriEncode(String s) {
 		StringBuffer res = new StringBuffer();

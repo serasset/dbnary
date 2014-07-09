@@ -2,6 +2,7 @@ package org.getalp.dbnary.deu;
 
 import java.util.Locale;
 
+import org.apache.jena.iri.impl.ViolationCodeInfo.InSpec;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -74,6 +75,37 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	}
 	
 	public void parseOtherForm(String page,String originalPos){
+//		Document doc = wikicodeToHtmlDOM(page);
+//		if ( null == doc) {
+//			return ;
+//		}
+//		NodeList tables = doc.getElementsByTagName("table");
+//		if (null!=tables) {
+//			for(int i=0;i<tables.getLength();i++){
+//				Element tableItem = (Element)tables.item(i);
+//				if(null!=tableItem){
+//					System.out.println(tableItem.getLocalName());
+//					NodeList trList=tableItem.getElementsByTagName("tr");
+//					for(int j=0;j<trList.getLength();j++){
+//						Element trItem = (Element) trList.item(j);
+//						if(null!=trItem){
+//							NodeList child = trItem.getChildNodes();
+//							for(int k=0;k<child.getLength();k++){
+//								String form=child.item(k).getTextContent();
+//								String name=child.item(k).getNodeName();
+////								System.out.println("forme: "+form+" name : "+name);
+//								if(name.equals("td") && null!=form) {
+//									System.out.println(form);
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//		
+//		
+		
 		if(page!=null){
 			String s = getForm(page, originalPos);
 			if(s!=null){
@@ -82,8 +114,8 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 					if(r.indexOf("Hilfsverb")==-1 && r.indexOf("Weitere_Konjugationen")==-1){
 						int ind = r.indexOf("=");
 						if(ind!=-1){
-							System.out.println(r.substring(ind+1).replace("[","").replace("]",""));
-//							wdh.registerOtherForm(r.substring(ind+1).replace("!",""));
+//							System.out.println(r.substring(ind+1).replace("[","").replace("]",""));
+							wdh.registerOtherForm(r.substring(ind+1).replace("!",""));
 						}
 					}
 				}
@@ -99,7 +131,8 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	}
 	
 	private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd, int jEnd){
-		boolean change=false;
+		
+		boolean change=false;	//this bool changes if the current verb is a phrasal verb
 		
 		NodeList someTRs = tablesItem.getElementsByTagName("tr");
 		for(int i=iBegin;i<iEnd;i++){
@@ -114,11 +147,9 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 								String form=itemsList.item(e).getTextContent().replace("—","");
 								String name=itemsList.item(e).getNodeName();
 								form=form.replace(" "," ");//remove insecable spaces
-								
-								if(name.equals("#text") && !form.isEmpty())// j=1 conjug classique, j=0 impératif
-								{
+								if (name.equals("#text") && !form.isEmpty()) {
 									// for verbs like ankommen : ich komme an
-									if(!change && form.split(" ").length>2 ){
+									if (!change && form.split(" ").length>2 ) {
 										change= true;
 										iBegin=iBegin+1;
 										iEnd=iEnd+1;
@@ -137,22 +168,31 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 
 	
 	private void getTablesDeclination(Element tablesItem){
-		int i=0;
-		Element someTRs = ((Element)tablesItem.getElementsByTagName("tr").item(i));
-		NodeList interrestingTDs;
-		while(someTRs!=null){
-			interrestingTDs=someTRs.getElementsByTagName("td");
-			int l=interrestingTDs.getLength();
-			if(l==8){
-				for(int j=0;j<l;j=j+1){
-					if((j%2)==1){
-						wdh.registerOtherForm(interrestingTDs.item(j).getTextContent());
+		
+		if (null != tablesItem) {
+			NodeList someTRs = tablesItem.getElementsByTagName("tr");
+			if (null!=someTRs) {
+				for (int i=0;i<someTRs.getLength();i++) {
+					Element trItem= (Element)someTRs.item(i);
+					if (null!=trItem) {
+						NodeList someTD=trItem.getElementsByTagName("td");
+						for (int j=0;j<someTD.getLength();j++) {
+							if ((j%2)==1 && someTD.getLength()==8) {
+								Element tdItem=(Element)someTD.item(j);
+								if (null!=tdItem) {
+									NodeList tdContent=tdItem.getChildNodes();
+									for (int k=0;k<tdContent.getLength();k++) {
+										String form=tdContent.item(k).getTextContent();
+										if( !form.isEmpty() ) {
+											addDeclinationForm(form);
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			}
-			i=i+1;
-			someTRs = ((Element)tablesItem.getElementsByTagName("tr").item(i));
-			l=interrestingTDs.getLength();
 		}
 	}
 	
@@ -170,7 +210,13 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		return res;
 	}
 	
-	
+	private void addDeclinationForm(String s){
+		s=s.replace("\n"," ");
+		String [] tab= s.split(" ");
+		for(String r : tab){
+			wdh.registerOtherForm(r);
+		}
+	}
 	
 	//comp Verb
 	private void addVerbForm(String s){
@@ -180,22 +226,21 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		s=s.replace(".","");
 		String [] tab= s.split(",");
 		for(String r : tab){
-			indsp= r.indexOf(" ");
+			indsp= r.indexOf(" ",1);
 			indimp=r.indexOf("!");
 			if(indimp==-1){
 				if(indsp==-1 || indsp==r.length()-1){
-//					System.out.println("comp1 : "+r);
-					wdh.registerOtherForm(r);
+					System.out.println("comp1 : "+r);
+//					wdh.registerOtherForm(r);
 				}
 				else{
-					
-//					System.out.println("comp2 : "+r.substring(indsp));
-					wdh.registerOtherForm(r.substring(indsp+1));
+					System.out.println("comp2 : "+r.substring(indsp) +" "+indsp);
+//					wdh.registerOtherForm(r.substring(indsp+1));
 				}
 			}
 			else{
-//				System.out.println("comp3 : "+r.replace("!",""));
-				wdh.registerOtherForm(r.replace("!",""));
+				System.out.println("comp3 : "+r.replace("!",""));
+//				wdh.registerOtherForm(r.replace("!",""));
 			}
 		}
 	}

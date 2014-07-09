@@ -50,6 +50,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 	@Override
 	public void addPartOfSpeech(String originalPOS, Resource normalizedPOS, Resource normalizedType) {
 		super.addPartOfSpeech(originalPOS, normalizedPOS, normalizedType);
+
     	if (normalizedPOS == verbPOS && ((normalizedType == wordEntryType) || (normalizedType == lexEntryType))) {
 			String conjugationPageContent = wi.getTextOfPage(FrenchConjugationPagePrefix + currentLexEntry());
 

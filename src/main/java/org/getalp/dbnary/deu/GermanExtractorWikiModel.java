@@ -230,17 +230,17 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			indimp=r.indexOf("!");
 			if(indimp==-1){
 				if(indsp==-1 || indsp==r.length()-1){
-					System.out.println("comp1 : "+r);
-//					wdh.registerOtherForm(r);
+//					System.out.println("comp1 : "+r);
+					wdh.registerOtherForm(r);
 				}
 				else{
-					System.out.println("comp2 : "+r.substring(indsp) +" "+indsp);
-//					wdh.registerOtherForm(r.substring(indsp+1));
+//					System.out.println("comp2 : "+r.substring(indsp) +" "+indsp);
+					wdh.registerOtherForm(r.substring(indsp+1));
 				}
 			}
 			else{
-				System.out.println("comp3 : "+r.replace("!",""));
-//				wdh.registerOtherForm(r.replace("!",""));
+//				System.out.println("comp3 : "+r.replace("!",""));
+				wdh.registerOtherForm(r.replace("!",""));
 			}
 		}
 	}

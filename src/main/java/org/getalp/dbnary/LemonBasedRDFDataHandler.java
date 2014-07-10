@@ -423,10 +423,12 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 
 	public void registerInflection(String inflectionForm,
 	                               String inflectionPOS,
-	                               Resource normalizedInflectionPOS,
 	                               String wikicodeMorphology,
 	                               String canonicalForm) {
-		registerInflection(inflectionForm, inflectionPOS, normalizedInflectionPOS, wikicodeMorphology, canonicalForm, getVocable(canonicalForm));
+
+		PosAndType pat = posAndTypeValueMap.get(inflectionPOS);
+		Resource lexinfoPOS = (null == pat) ? null : pat.pos;
+		registerInflection(inflectionForm, inflectionPOS, lexinfoPOS, wikicodeMorphology, canonicalForm, getVocable(canonicalForm));
 	}
 
 	public void registerInflection(String inflectionForm,

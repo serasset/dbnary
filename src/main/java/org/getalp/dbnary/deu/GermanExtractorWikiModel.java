@@ -75,53 +75,30 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	}
 	
 	public void parseOtherForm(String page,String originalPos){
-//		Document doc = wikicodeToHtmlDOM(page);
-//		if ( null == doc) {
-//			return ;
-//		}
-//		NodeList tables = doc.getElementsByTagName("table");
-//		if (null!=tables) {
-//			for(int i=0;i<tables.getLength();i++){
-//				Element tableItem = (Element)tables.item(i);
-//				if(null!=tableItem){
-//					System.out.println(tableItem.getLocalName());
-//					NodeList trList=tableItem.getElementsByTagName("tr");
-//					for(int j=0;j<trList.getLength();j++){
-//						Element trItem = (Element) trList.item(j);
-//						if(null!=trItem){
-//							NodeList child = trItem.getChildNodes();
-//							for(int k=0;k<child.getLength();k++){
-//								String form=child.item(k).getTextContent();
-//								String name=child.item(k).getNodeName();
-////								System.out.println("forme: "+form+" name : "+name);
-//								if(name.equals("td") && null!=form) {
-//									System.out.println(form);
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//		
-//		
-		
 		if(page!=null){
 			String s = getForm(page, originalPos);
+			s=s.replace("<br />","\n");
 			if(s!=null){
 				String[] tab = s.split("\n");
 				for(String r : tab){
-					if(r.indexOf("Hilfsverb")==-1 && r.indexOf("Weitere_Konjugationen")==-1){
-						int ind = r.indexOf("=");
+					if(r.indexOf("Hilfsverb")==-1 && r.indexOf("Bild")==-1 && r.indexOf("Weitere_Konjugationen")==-1){
+        				int ind = r.indexOf("=");
 						if(ind!=-1){
-//							System.out.println(r.substring(ind+1).replace("[","").replace("]",""));
-							wdh.registerOtherForm(r.substring(ind+1).replace("!",""));
+							String e=extractString(r, "=", "\n").substring(1);
+							if(!originalPos.equals("Verb")){
+								if (-1!=e.indexOf(" ")){
+									e=extractString(e, " ", "\n").substring(1);
+								}
+							}
+//							System.out.println(e);
+//							System.out.println(e.replace("[","").replace("]",""));
+							wdh.registerOtherForm(e.replace("!",""));
 						}
-					}
-				}
-			}
-		}
-	}
+			       		}
+			        }
+		        }
+	        }
+        }
 	
 	private void getTablesConj(Element tablesItem, int iBegin, int jBegin){
 		int iEnd,jEnd;

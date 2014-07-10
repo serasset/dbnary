@@ -110,8 +110,6 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		posAndTypeValueMap.put("Adjective", new PosAndType(adjPOS, lexEntryType));
 		posAndTypeValueMap.put("Verb", new PosAndType(verbPOS, lexEntryType));
 		posAndTypeValueMap.put("Adverb", new PosAndType(adverbPOS, lexEntryType));
-		
-		posAndTypeValueMap.put("Hilfsverb", new PosAndType(verbPOS, lexEntryType));
 
 
 		// German
@@ -122,6 +120,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		posAndTypeValueMap.put("Verb", new PosAndType(verbPOS, lexEntryType));
 		posAndTypeValueMap.put("Adverb", new PosAndType(adverbPOS, lexEntryType));
 
+		posAndTypeValueMap.put("Hilfsverb", new PosAndType(verbPOS, lexEntryType));
 		// Italian
 		posAndTypeValueMap.put("noun", new PosAndType(nounPOS, lexEntryType));
 		posAndTypeValueMap.put("sost", new PosAndType(nounPOS, lexEntryType));

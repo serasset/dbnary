@@ -1,5 +1,6 @@
 package org.getalp.dbnary;
 
+
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -109,6 +110,9 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		posAndTypeValueMap.put("Adjective", new PosAndType(adjPOS, lexEntryType));
 		posAndTypeValueMap.put("Verb", new PosAndType(verbPOS, lexEntryType));
 		posAndTypeValueMap.put("Adverb", new PosAndType(adverbPOS, lexEntryType));
+		
+		posAndTypeValueMap.put("Hilfsverb", new PosAndType(verbPOS, lexEntryType));
+
 
 		// German
 		posAndTypeValueMap.put("Substantiv", new PosAndType(nounPOS, lexEntryType));

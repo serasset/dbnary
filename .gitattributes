@@ -585,7 +585,6 @@ extractor/src/site/resources/robots.txt -text svneol=unset#text/plain
 extractor/src/site/site.xml -text
 extractor/src/test/java/org/getalp/blexisma/wiktionary/TestDbnaryWikiModel.java -text svneol=unset#text/plain
 extractor/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
-extractor/src/test/resources/org/getalp/blexisma/wiktionary/sample-semnet.snet -text
 ontology/pom.xml -text
 ontology/src/main/resources/org/getalp/dbnary/catalog-v001.xml -text
 ontology/src/main/resources/org/getalp/dbnary/dbnary.owl -text

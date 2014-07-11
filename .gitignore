@@ -1,11 +1,6 @@
 /.classpath
 /.project
 /.settings
-experiments/ldd2014/*.iml
-experiments/ldd2014/.classpath
-experiments/ldd2014/.project
-experiments/ldd2014/.settings
-experiments/ldd2014/target
 extractor/*.iml
 extractor/.classpath
 extractor/.idea

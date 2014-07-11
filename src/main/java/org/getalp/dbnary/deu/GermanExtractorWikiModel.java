@@ -100,26 +100,28 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			if(s!=null){
 				String[] tab = s.split("\n");
 				for(String r : tab){
-					if(r.indexOf("Hilfsverb")==-1 && r.indexOf("Bild")==-1 && r.indexOf("Weitere_Konjugationen")==-1){
-        				int ind = r.indexOf("=");
-						if(ind!=-1){
-							String e=extractString(r, "=", "\n").substring(1);
-							if(!originalPos.equals("Verb")){
-								if (-1!=e.indexOf(" ")){
-									e=extractString(e, " ", "\n");
-									if(!e.isEmpty()){
-										e=e.substring(1);
+					if(!r.isEmpty()){
+						if(r.indexOf("Hilfsverb")==-1 && r.indexOf("Bild")==-1 && r.indexOf("Weitere_Konjugationen")==-1){
+	        				int ind = r.indexOf("=");
+							if(ind!=-1){
+								String e=extractString(r, "=", "\n").substring(1);
+								if(!originalPos.equals("Verb")){
+									if (-1!=e.indexOf(" ")){
+										e=extractString(e, " ", "\n");
+										if(!e.isEmpty()){
+											e=e.substring(1);
+										}
 									}
 								}
+	//							System.out.println(e);
+	//							System.out.println(e.replace("[","").replace("]",""));
+								e=e.replace("—","");
+								if(!e.isEmpty()){
+									wdh.registerOtherForm(e.replace("!",""));
+								}
 							}
-//							System.out.println(e);
-//							System.out.println(e.replace("[","").replace("]",""));
-							e=e.replace("—","");
-							if(!e.isEmpty()){
-								wdh.registerOtherForm(e.replace("!",""));
-							}
-						}
-			       		}
+				       		}
+					}
 			        }
 		        }
 	        }

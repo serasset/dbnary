@@ -136,39 +136,40 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd, int jEnd){
 		
 		boolean change=false;	//this bool changes if the current verb is a phrasal verb
-		
-		NodeList someTRs = tablesItem.getElementsByTagName("tr");
-		
-		for(int i=iBegin;i<iEnd;i++){
-			Element trItem= (Element)someTRs.item(i);
-			if(trItem!=null){
-				NodeList interrestingTDs = trItem.getElementsByTagName("td") ;
-					for(int j=jBegin;j<jEnd;j++){
-						Element tdItem=(Element)interrestingTDs.item(j);
-						if(tdItem!=null){
-							NodeList itemsList = tdItem.getChildNodes();
-							for(int e=0; e<itemsList.getLength();e++){
-								String form=itemsList.item(e).getTextContent().replace("—","");
-								String name=itemsList.item(e).getNodeName();
-								form=form.replace(" "," ");//remove insecable spaces
-								form =removeUselessSpaces(form);
-								if (name.equals("#text") && !form.isEmpty()) {
-									// for verbs like ankommen : ich komme an
-									if (!change && isPhrasalVerb(form) ) {
-										part=(form.substring(form.lastIndexOf(" "))).replace(" ","").replace("\n","");
-										if(!part.isEmpty()){
-											change= true;
-											iBegin=iBegin+1;
-											iEnd=iEnd+1;
-											jEnd=jEnd+2;
+		if(null!=tablesItem){
+			NodeList someTRs = tablesItem.getElementsByTagName("tr");
+			
+			for(int i=iBegin;i<iEnd;i++){
+				Element trItem= (Element)someTRs.item(i);
+				if(trItem!=null){
+					NodeList interrestingTDs = trItem.getElementsByTagName("td") ;
+						for(int j=jBegin;j<jEnd;j++){
+							Element tdItem=(Element)interrestingTDs.item(j);
+							if(tdItem!=null){
+								NodeList itemsList = tdItem.getChildNodes();
+								for(int e=0; e<itemsList.getLength();e++){
+									String form=itemsList.item(e).getTextContent().replace("—","");
+									String name=itemsList.item(e).getNodeName();
+									form=form.replace(" "," ");//remove insecable spaces
+									form =removeUselessSpaces(form);
+									if (name.equals("#text") && !form.isEmpty()) {
+										// for verbs like ankommen : ich komme an
+										if (!change && isPhrasalVerb(form) ) {
+											part=(form.substring(form.lastIndexOf(" "))).replace(" ","").replace("\n","");
+											if(!part.isEmpty()){
+												change= true;
+												iBegin=iBegin+1;
+												iEnd=iEnd+1;
+												jEnd=jEnd+2;
+											}
 										}
+	//									System.out.println("i : "+i+" j : "+j+"  form : "+form);
+										addVerbForm(form, change);
 									}
-//									System.out.println("i : "+i+" j : "+j+"  form : "+form);
-									addVerbForm(form, change);
 								}
 							}
 						}
-					}
+				}
 			}
 		}
 	

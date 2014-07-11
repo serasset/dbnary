@@ -1,10 +1,7 @@
 package org.getalp.dbnary;
 
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
@@ -525,7 +522,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	}
     
 	/**
-	 * Write a serialized represention of this model in a specified language.
+	 * Write a serialized representation of this model in a specified language.
 	 * The language in which to write the model is specified by the lang argument. 
 	 * Predefined values are "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3". 
 	 * The default value, represented by null, is "RDF/XML".
@@ -555,6 +552,26 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
 		// TODO Auto-generated method stub
 		throw new RuntimeException("Cannot initialize a foreign language entry.");
+	}
+
+	@Override
+	public Resource registerExample(String ex, Map<Property, String> context) {
+		if (null == currentSense) {
+			log.debug("Registering example when lex sense is null in \"{}\".", this.currentMainLexEntry);
+			return null; // Don't register anything if current lex entry is not known.
+		}
+		
+		// Create new word sense + a definition element 
+    	Resource example = aBox.createResource();	
+    	aBox.add(aBox.createStatement(example, LemonOnt.value, ex, extractedLang));
+        if (null != context) {
+            for (Map.Entry<Property, String> c : context.entrySet()) {
+                aBox.add(aBox.createStatement(example,c.getKey(),c.getValue(),extractedLang));
+            }
+        }
+    	aBox.add(aBox.createStatement(currentSense, LemonOnt.example, example));
+		return example;
+
 	}
 	
 }

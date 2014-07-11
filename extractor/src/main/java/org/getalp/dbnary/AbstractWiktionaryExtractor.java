@@ -148,11 +148,25 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
     public abstract void extractData();
     
+    static String defOrExamplePatternString = new StringBuilder()
+    .append("(?:")
+    .append(WikiPatterns.definitionPatternString)
+    .append(")|(?:")
+    .append(WikiPatterns.examplePatternString)
+    .append(")").toString();
+    
+    static Pattern defOrExamplePattern = Pattern.compile(defOrExamplePatternString, Pattern.MULTILINE);
+    
     protected void extractDefinitions(int startOffset, int endOffset) { 
-        Matcher definitionMatcher = WikiPatterns.definitionPattern.matcher(this.pageContent);
-        definitionMatcher.region(startOffset, endOffset);
-        while (definitionMatcher.find()) {
-        	extractDefinition(definitionMatcher);
+    	
+        Matcher defOrExampleMatcher = defOrExamplePattern.matcher(this.pageContent);
+        defOrExampleMatcher.region(startOffset, endOffset);
+        while (defOrExampleMatcher.find()) {
+        	if (null != defOrExampleMatcher.group(1)) {
+        		extractDefinition(defOrExampleMatcher);        		
+        	} else if (null != defOrExampleMatcher.group(2)) {
+        		extractExample(defOrExampleMatcher);
+        	}
         }
     }
     
@@ -163,7 +177,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 		if (definitionMatcher.group().charAt(1) == '#') defLevel = 2;
 		extractDefinition(definition, defLevel);
 	}
-	
+
 	public void extractDefinition(String definition, int defLevel) {
 		String def = cleanUpMarkup(definition);
         if (def != null && ! def.equals("")) {
@@ -179,7 +193,19 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         return cleanUpMarkup(group, false);
     }
 
-    
+	public void extractExample(Matcher definitionMatcher) {
+		String example = definitionMatcher.group(2);
+		extractExample(example);
+    }
+
+	public void extractExample(String example) {
+		// TODO: properly handle macros in definitions. 
+		String ex = cleanUpMarkup(example);
+        if (ex != null && ! ex.equals("")) {
+        	wdh.registerExample(example, null);
+        }	
+    }
+	
     // Some utility methods that should be common to all languages
     // DONE: (priority: top) keep annotated lemma (#{lemma}#) in definitions.
     // DONE: handle ''...'' and '''...'''.
@@ -391,7 +417,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 					// On a trouvé la fin du commentaire 
 
 					// on place le debut se le partie qui nous interesse 
-					debut= i+1;;
+					debut= i+1;
 					// on change d'etat 
 					ET=A;
 				}

@@ -9,6 +9,7 @@ public class WikiPatterns {
     public final static String macroOrLinkPatternString;
     public final static String definitionPatternString = "^#{1,2}([^\\*#:].*)$";
     public final static String bulletListPatternString = "\\*\\s*(.*)";
+    public final static String examplePatternString = "^#{1,2}\\*\\s*(.*)$";
 
     public final static String catOrInterwikiLink = "^\\s*\\[\\[([^\\:\\]]*)\\:([^\\]]*)\\]\\]\\s*$";
     public final static Pattern categoryOrInterwikiLinkPattern;

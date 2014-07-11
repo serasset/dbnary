@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
-	
 	private Logger log = LoggerFactory.getLogger(ForeignLanguagesWiktionaryDataHandler.class);
 	
 	private HashMap<String,String> prefixes = new HashMap<String,String>();
@@ -19,7 +18,6 @@ public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHand
 
 	public ForeignLanguagesWiktionaryDataHandler(String lang) {
 		super(lang);
-		
 	}
 	
 	public void initializeEntryExtraction(String wiktionaryPageName, String lang) {

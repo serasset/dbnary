@@ -1,6 +1,10 @@
 package org.getalp.dbnary;
 
 import java.io.OutputStream;
+import java.util.Map;
+
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public interface WiktionaryDataHandler {
 
@@ -36,6 +40,15 @@ public interface WiktionaryDataHandler {
 	 * @param lvl an integer giving the level of the definition (1 or 2).
 	 */
 	public void registerNewDefinition(String def, int lvl);
+	
+	/**
+	 * Register example ex for the current lexical sense. 
+	 * 
+	 * @param ex the example string
+	 * @param context map of property + object that are to be attached to the example object.
+	 */
+	public Resource registerExample(String ex, Map<Property, String> context);
+
 	
 	/**
 	 * Register definition def for the current lexical entry. 

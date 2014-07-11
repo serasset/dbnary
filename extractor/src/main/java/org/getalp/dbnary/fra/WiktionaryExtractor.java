@@ -5,6 +5,7 @@ package org.getalp.dbnary.fra;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -12,9 +13,14 @@ import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.pol.DefinitionExpanderWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
+
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * @author serasset
@@ -300,35 +306,35 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addPos("onoma");
         addPos("onom");
  
-    // PARTIES
-//        posMarkers.add("affixe");
-//        posMarkers.add("aff");
-//        posMarkers.add("circonfixe");
-//        posMarkers.add("circonf");
-//        posMarkers.add("circon");
-//        posMarkers.add("infixe");
-//        posMarkers.add("inf");
-//        posMarkers.add("interfixe");
-//        posMarkers.add("interf");
-//        posMarkers.add("particule");
-//        posMarkers.add("part");
-//        posMarkers.add("particule numérale");
-//        posMarkers.add("part-num");
-//        posMarkers.add("particule num");
-//        posMarkers.add("postposition");
-//        posMarkers.add("post");
-//        posMarkers.add("postpos");
-//        posMarkers.add("préfixe");
-//        posMarkers.add("préf");
-//        posMarkers.add("radical");
-//        posMarkers.add("rad");
-//        posMarkers.add("suffixe");
-//        posMarkers.add("suff");
-//        posMarkers.add("suf");
-// 
-//        posMarkers.add("pré-verbe");
-//        posMarkers.add("pré-nom");
-// 
+    // PARTIES   TODO: Extract affixes in French
+//        addPos("affixe");
+//        addPos("aff");
+//        addPos("circonfixe");
+//        addPos("circonf");
+//        addPos("circon");
+//        addPos("infixe");
+//        addPos("inf");
+//        addPos("interfixe");
+//        addPos("interf");
+//        addPos("particule");
+//        addPos("part");
+//        addPos("particule numérale");
+//        addPos("part-num");
+//        addPos("particule num");
+//        addPos("postposition");
+//        addPos("post");
+//        addPos("postpos");
+//        addPos("préfixe");
+//        addPos("préf");
+//        addPos("radical");
+//        addPos("rad");
+//        addPos("suffixe");
+//        addPos("suff");
+//        addPos("suf");
+//
+//        addPos("pré-verbe");
+//        addPos("pré-nom");
+
     // PHRASES
         addPos("locution");
         addPos("loc");
@@ -451,6 +457,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private String currentNym = null;
 
+	private ExampleExpanderWikiModel exampleExpander;
+
+	private Set<String> defTemplates = null;
+
     /* (non-Javadoc)
      * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
      */
@@ -458,6 +468,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     public void extractData() {
         // System.out.println(pageContent);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
+        
+    	exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("fr"), this.wiktionaryPageName, "");
+
         while (languageFilter.find() && ! isFrenchLanguageHeader(languageFilter)) {
             ;
         }
@@ -519,7 +532,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractPronounciation(definitionBlockStart, end);
         definitionBlockStart = -1;
     }
-
+    
 	void gotoNymBlock(Matcher m, String nym) {
         state = NYMBLOCK;
         currentNym = nym;
@@ -862,7 +875,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		return null;
 	}
 
-
+    
 	private void extractTranslations(int startOffset, int endOffset) {
     	Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
     	macroMatcher.region(startOffset, endOffset);
@@ -934,5 +947,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		}
     }
 
+
+	public void extractExample(String example) {
+        Map<Property, String> context = new HashMap<Property, String>();
+
+        String ex = exampleExpander.expandExample(example, defTemplates, context);
+		Resource exampleNode = null;
+        if (ex != null && ! ex.equals("")) {
+        	exampleNode = wdh.registerExample(ex, context);
+        }
+    }
 
 }

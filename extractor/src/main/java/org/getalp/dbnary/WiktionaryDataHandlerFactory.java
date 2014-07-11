@@ -27,25 +27,26 @@ public class WiktionaryDataHandlerFactory {
 			Class<?> wec = Class.forName(pack + "." + language + "." + className);
 			we = (WiktionaryDataHandler) wec.getConstructor(String.class).newInstance(language);
 		} catch (ClassNotFoundException e) {
-			log.debug("No wiktionary extractor found for {}", language);
+			log.debug("No wiktionary data handler found for {}", language);
 		} catch (InstantiationException e) {
-			log.debug("Could not instanciate wiktionary extractor for {}", language);
+			log.debug("Could not instanciate wiktionary data handler for {}", language);
 		} catch (IllegalAccessException e) {
-			log.debug("Illegal access to wiktionary extractor for {}", language);
+			log.debug("Illegal access to wiktionary data handler for {}", language);
 		} catch (IllegalArgumentException e) {
-			log.debug("Illegal argument passed to wiktionary extractor's constructor for {}", language);
+			log.debug("Illegal argument passed to wiktionary data handler constructor for {}", language);
 			e.printStackTrace(System.err);
 		} catch (SecurityException e) {
-			log.debug("Security exception while instanciating wiktionary extractor for {}", language);
+			log.debug("Security exception while instanciating wiktionary data handler for {}", language);
 			e.printStackTrace(System.err);
 		} catch (InvocationTargetException e) {
-			log.debug("InvocationTargetException exception while instanciating wiktionary extractor for {}", language);
+			log.debug("InvocationTargetException exception while instanciating wiktionary data handler for {}", language);
 			e.printStackTrace(System.err);
 		} catch (NoSuchMethodException e) {
-			log.debug("No appropriate constructor when instanciating wiktionary extractor for {}", language);
+			log.debug("No appropriate constructor when instanciating wiktionary data handler for {}", language);
 		}
 
 		if (null == we) {
+			log.debug("Using default data handler.", language);
 			we = new LemonBasedRDFDataHandler(language);
 		}
 		return we;

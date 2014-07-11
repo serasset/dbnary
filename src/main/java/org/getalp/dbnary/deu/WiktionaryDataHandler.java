@@ -19,6 +19,8 @@ import com.hp.hpl.jena.sparql.function.library.substr;
 
 public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 	
+//	//for some modal verbs
+//	posAndTypeValueMap.put("Hilfsverb", new PosAndType(verbPOS, lexEntryType));
 	private final static Pattern conjugationPattern;
 	private final static Pattern declinationPattern;
 	private final static Pattern basedFormPattern;
@@ -45,6 +47,7 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 		
 		GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(this, wi, new Locale("de"), "/${Bild}", "/${title}");
 		
+		//problem with Hilfsverb
 		if (((normalizedType == wordEntryType) || (normalizedType == lexEntryType))) {
 			if(normalizedPOS==verbPOS){
 				String conjugationPageContent = wi.getTextOfPage(currentLexEntry()+germanConjugationSuffix);
@@ -70,7 +73,7 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 					//add the infinitiv form if the current lex Entry is inflected
 					Matcher m = basedFormPattern.matcher(wi.getTextOfPage(currentLexEntry()));
 					if(m.find()){
-//						this.registerOtherForm(m.group(1));
+						this.registerOtherForm(m.group(1));
 						String pageContent = lexEntryToPage(m.group(1));
 						if(null!= pageContent){
 							if(originalPOS.equals("Konjugierte Form")){

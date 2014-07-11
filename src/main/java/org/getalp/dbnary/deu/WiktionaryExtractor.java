@@ -27,7 +27,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected final static String germanDefinitionPatternString = "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
 	protected final static String germanNymLinePatternString = "^:{1,3}\\s*(?:\\[(" + senseNumberOrRangeRegExp + "*)\\])?([^\n\r]*)$";
 	
-	private final static Pattern otherFormPattern= Pattern.compile("");
+	private final static Pattern otherFormPattern= Pattern.compile("\\{\\{Deutsch(.*)\\}\\}");
 
 	private final int NODATA = 0;
 	private final int TRADBLOCK = 1;
@@ -238,16 +238,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 	void leaveDefBlock(Matcher m) {
-		extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
+		int end = computeRegionEnd(definitionBlockStart, m);
+		extractDefinitions(definitionBlockStart,end );
 		definitionBlockStart = -1;
 	}
 
 	void leaveTradBlock(Matcher m) {
-		extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m));
+		int end = computeRegionEnd(translationBlockStart, m);
+		extractTranslations(translationBlockStart, end);
 		translationBlockStart = -1;
 	}
 
 	void leaveOrthoAltBlock(Matcher m) {
+		int end = computeRegionEnd(orthBlockStart, m);
 		extractOrthoAlt(orthBlockStart, computeRegionEnd(orthBlockStart, m));
 		orthBlockStart = -1;
 	}
@@ -268,6 +271,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	// TODO: Prise en compte des "concepts dérivés" ? (Abgeleitete Begriffe)
 	// TODO: supprimer les "Deklinierte Form" des catégories extraites.
 	private void extractGermanData(int startOffset, int endOffset) {
+//		System.out.println(pageContent.substring(startOffset, endOffset));
 		Matcher m = macroOrPOSPattern.matcher(pageContent);
 		m.region(startOffset, endOffset);
 		wdh.initializeEntryExtraction(wiktionaryPageName);
@@ -453,6 +457,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			}
 		}
 		// Finalize the entry parsing
+		
 		switch (state) {
 		case NODATA:
 			break;
@@ -681,11 +686,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 	public void extractOtherForms( int start, int end){
-		Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
-		otherFormMatcher.region(start, end);
-		while(otherFormMatcher.find()){
-			System.out.println(otherFormMatcher.group());
-		}
+		System.out.println("plop");
+		System.out.println(pageContent.substring(start, end));
+//		Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
+//		otherFormMatcher.region(start, end);
+//		while(otherFormMatcher.find()){
+//			System.out.println("blablabla"+otherFormMatcher.group());
+//		}
 	}
 	
 

@@ -91,4 +91,6 @@ extractor/src/test/resources/.settings
 extractor/src/test/resources/target
 extractor/src/test/target
 extractor/target
+ontology/*.iml
+ontology/.idea
 /target

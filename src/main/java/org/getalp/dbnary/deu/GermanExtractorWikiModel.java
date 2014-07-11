@@ -106,12 +106,18 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 							String e=extractString(r, "=", "\n").substring(1);
 							if(!originalPos.equals("Verb")){
 								if (-1!=e.indexOf(" ")){
-									e=extractString(e, " ", "\n").substring(1);
+									e=extractString(e, " ", "\n");
+									if(!e.isEmpty()){
+										e=e.substring(1);
+									}
 								}
 							}
 //							System.out.println(e);
 //							System.out.println(e.replace("[","").replace("]",""));
-							wdh.registerOtherForm(e.replace("!",""));
+							e=e.replace("—","");
+							if(!e.isEmpty()){
+								wdh.registerOtherForm(e.replace("!",""));
+							}
 						}
 			       		}
 			        }
@@ -239,8 +245,10 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	private void addDeclinationForm(String s){
 		s=s.replace("\n"," ");
 		String [] tab= s.split(" ");
-		for(String r : tab){
-			wdh.registerOtherForm(r);
+		for (String r : tab) {
+			if (!r.isEmpty()) {
+				wdh.registerOtherForm(r);
+			}
 		}
 	}
 	
@@ -248,30 +256,30 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	private void addVerbForm(String s, boolean isPhrasal){
 		s=(s.replace("\n","")).replace(",","");
 
-		if(!s.isEmpty()){
+		if (!s.isEmpty()) {
 			int nbsp= nbSpaceForm(s);
 			String res="";
 			boolean imp=s.contains("!");
-			if(!imp){
+			if (!imp) {
 				if(!isPhrasal){
 //					System.out.println("non phrasal");
-					if(nbsp==1){
+					if( nbsp==1) {
 							res=s.substring(s.indexOf(" ")+1);
 						
 					}
-					else if(nbsp==0){
+					else if (nbsp==0) {
 						res =s;
 					}
 				}
 				else{
 //					System.out.println("phrasal");
 					//three words subject verb part
-					if(nbsp==2){
+					if (nbsp==2) {
 						res=s.substring(s.indexOf(" ")+1);
 					}
 					//two words subject verb or verb + part
-					else if(nbsp==1){
-						if(s.substring(s.lastIndexOf(" ")+1).equals(part)){
+					else if (nbsp==1) {
+						if (s.substring(s.lastIndexOf(" ")+1).equals(part)) {
 							res=s;
 						}
 						else{
@@ -280,7 +288,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 						
 					}
 					//only one word
-					else if(nbsp==0 && !s.equals(part)){
+					else if (nbsp==0 && !s.equals(part)) {
 						res =s;
 					}
 				}

@@ -68,12 +68,12 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		Matcher mr = germanRegularVerbPattern.matcher(conjugationTemplateCall);
 //		Matcher mu=germanNonRegularVerbPattern.matcher(conjugationTemplateCall);
 		if(mr.find()){
-			System.out.println("regelmäßig");
+//			System.out.println("regelmäßig");
 			getTablesConj(tablesItem,2,1);
 			getTablesConj(tablesItem,11,1);
 		}
 		else{
-			System.out.println("unregelmäßig");			
+//			System.out.println("unregelmäßig");			
 			getTablesConj(tablesItem,3,2);
 			getTablesConj(tablesItem,13,2);
 		}

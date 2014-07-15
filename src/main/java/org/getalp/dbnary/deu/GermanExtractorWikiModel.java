@@ -26,13 +26,13 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	private final static String germanMorphoBegin = "{{Deutsch ";
 	private final static String germanMorphoEnd = "}}";
 	private final static String germanRegularVerbString="Deutsch Verb regelmäßig";
-//	private final static String germanNonRegularVerbString=" unregelmäßig";
+	private final static String germanNonRegularVerbString=" unregelmäßig";
 	private static Pattern germanRegularVerbPattern;
-//	private static Pattern germanNonRegularVerbPattern;
+	private static Pattern germanNonRegularVerbPattern;
 	
 	static{
 		germanRegularVerbPattern= Pattern.compile(germanRegularVerbString);
-//		germanNonRegularVerbPattern= Pattern.compile(germanNonRegularVerbString);
+		germanNonRegularVerbPattern= Pattern.compile(germanNonRegularVerbString);
 	}
 	
 	private Logger log = LoggerFactory.getLogger(GermanExtractorWikiModel.class);
@@ -46,7 +46,8 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
 	public void parseConjugation(String conjugationTemplateCall) {
 		// Render the conjugation to html, while ignoring the example template
-//		System.out.println(conjugationTemplateCall);
+		Matcher mr = germanRegularVerbPattern.matcher(conjugationTemplateCall);
+		Matcher mu=germanNonRegularVerbPattern.matcher(conjugationTemplateCall);
 		
 		Document doc = wikicodeToHtmlDOM(conjugationTemplateCall);
 		if (doc == null){
@@ -61,29 +62,26 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		
 		tablesItem =(Element) tables.item(2);
 		getTablesConj(tablesItem,2,1,3,2);
-//		
+		
 		
 		tablesItem =(Element) tables.item(3);
 		
-		Matcher mr = germanRegularVerbPattern.matcher(conjugationTemplateCall);
-//		Matcher mu=germanNonRegularVerbPattern.matcher(conjugationTemplateCall);
+		
 		if(mr.find()){
-//			System.out.println("regelmäßig");
+			System.out.println("regelmäßig");
 			getTablesConj(tablesItem,2,1);
 			getTablesConj(tablesItem,11,1);
 		}
-		else{
-//			System.out.println("unregelmäßig");			
+		else if (mu.find()){
+			System.out.println("unregelmäßig");			
 			getTablesConj(tablesItem,3,2);
 			getTablesConj(tablesItem,13,2);
 		}
-		
-		
-		
-		
-		
-		
-
+		else{
+			System.out.println("anderen Type");
+			getTablesConj(tablesItem,3,2);
+			getTablesConj(tablesItem,13,2);
+		}
 	}
 	
 	public void parseDeclination(String declinationTemplateCall){
@@ -127,7 +125,10 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 									}
 									e=e.replace("—","");
 									if(!e.isEmpty()){
-										wdh.registerOtherForm(e.replace("!",""));
+										if(e.indexOf('(')!=-1){
+											wdh.registerOtherForm(e.replaceAll("!|\\(|\\)",""));
+										}
+										wdh.registerOtherForm(e.replaceAll("!|\\(.*\\)", ""));
 									}
 								}
 							}
@@ -162,23 +163,30 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 							if(tdItem!=null){
 								NodeList itemsList = tdItem.getChildNodes();
 								for(int e=0; e<itemsList.getLength();e++){
-									String form=itemsList.item(e).getTextContent().replace("—","");
+									String form=itemsList.item(e).getTextContent().replace("—|\n|,","");
 									String name=itemsList.item(e).getNodeName();
 									form=form.replace(" |  "," ");//remove insecable spaces
 									form =removeUselessSpaces(form);
 									if (name.equals("#text") && !form.isEmpty()) {
-										// for verbs like ankommen : ich komme an
-										if (!change && isPhrasalVerb(form) ) {
-											part=(form.substring(form.lastIndexOf(" "))).replace(" ","").replace("\n","");
-											if(!part.isEmpty()){
-												change= true;
-												iBegin=iBegin+1;
-												iEnd=iEnd+1;
-												jEnd=jEnd+2;
+										if(!form.contains("Pers.")){
+											// for verbs like ankommen : ich komme an
+											if (!change && isPhrasalVerb(form) ) {
+												part=(form.substring(form.lastIndexOf(" "))).replace(" |\n","");
+												if(!part.isEmpty()){
+													System.out.println("phrasal");
+													change= true;
+													iBegin=iBegin+1;
+													iEnd=iEnd+1;
+													jEnd=jEnd+2;
+												}
 											}
+		//									System.out.println("i : "+i+" j : "+j+"  form : "+form);
+											addVerbForm(form, change);
 										}
-	//									System.out.println("i : "+i+" j : "+j+"  form : "+form);
-										addVerbForm(form, change);
+										else{
+											jEnd=jEnd+1;
+											jBegin=jBegin+1;
+										}
 									}
 								}
 							}
@@ -270,7 +278,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
 	//comp Verb
 	private void addVerbForm(String s, boolean isPhrasal){
-		s=(s.replace("\n|,",""));//.replace(",","");
 
 		if (!s.isEmpty()) {
 			int nbsp= nbSpaceForm(s);

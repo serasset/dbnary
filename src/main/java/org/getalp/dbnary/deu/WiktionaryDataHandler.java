@@ -45,7 +45,7 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 	public void addPartOfSpeech(String originalPOS, Resource normalizedPOS, Resource normalizedType){
 		super.addPartOfSpeech(originalPOS,normalizedPOS,normalizedType);
 		
-		GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(this, wi, new Locale("de"), "/${Bild}", "/${title}");
+		GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(this, wi, new Locale("de"), "/${Bild}", "/${Titel}");
 		
 		//problem with Hilfsverb
 		if (((normalizedType == wordEntryType) || (normalizedType == lexEntryType))) {

@@ -68,17 +68,17 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		
 		
 		if(mr.find()){
-			System.out.println("regelmäßig");
+//			System.out.println("regelmäßig");
 			getTablesConj(tablesItem,2,1);
 			getTablesConj(tablesItem,11,1);
 		}
 		else if (mu.find()){
-			System.out.println("unregelmäßig");			
+//			System.out.println("unregelmäßig");			
 			getTablesConj(tablesItem,3,2);
 			getTablesConj(tablesItem,13,2);
 		}
 		else{
-			System.out.println("anderen Type");
+//			System.out.println("anderen Type");
 			getTablesConj(tablesItem,3,2);
 			getTablesConj(tablesItem,13,2);
 		}
@@ -173,7 +173,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 											if (!change && isPhrasalVerb(form) ) {
 												part=(form.substring(form.lastIndexOf(" "))).replace(" |\n","");
 												if(!part.isEmpty()){
-													System.out.println("phrasal");
+//													System.out.println("phrasal");
 													change= true;
 													iBegin=iBegin+1;
 													iEnd=iEnd+1;

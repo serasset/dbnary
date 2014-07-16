@@ -148,7 +148,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	}
 	private String part="";
 	
-	private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd, int jEnd){
+private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd, int jEnd){
 		
 		boolean change=false;	//this bool changes if the current verb is a phrasal verb
 		if(null!=tablesItem){
@@ -163,30 +163,24 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 							if(tdItem!=null){
 								NodeList itemsList = tdItem.getChildNodes();
 								for(int e=0; e<itemsList.getLength();e++){
-									String form=itemsList.item(e).getTextContent().replace("—|\n|,","");
+									String form=itemsList.item(e).getTextContent().replace("—","");
 									String name=itemsList.item(e).getNodeName();
-									form=form.replace(" |  "," ");//remove insecable spaces
+									form=form.replace(" "," ");//remove insecable spaces
 									form =removeUselessSpaces(form);
 									if (name.equals("#text") && !form.isEmpty()) {
-										if(!form.contains("Pers.")){
-											// for verbs like ankommen : ich komme an
-											if (!change && isPhrasalVerb(form) ) {
-												part=(form.substring(form.lastIndexOf(" "))).replace(" |\n","");
-												if(!part.isEmpty()){
-//													System.out.println("phrasal");
-													change= true;
-													iBegin=iBegin+1;
-													iEnd=iEnd+1;
-													jEnd=jEnd+2;
-												}
+										// for verbs like ankommen : ich komme an
+										if (!change && isPhrasalVerb(form) ) {
+											part=(form.substring(form.lastIndexOf(" "))).replace(" ","").replace("\n","");
+											if(!part.isEmpty()){
+												change= true;
+												iBegin=iBegin+1;
+												iEnd=iEnd+1;
+												jEnd=jEnd+2;
 											}
-		//									System.out.println("i : "+i+" j : "+j+"  form : "+form);
-											addVerbForm(form, change);
 										}
-										else{
-											jEnd=jEnd+1;
-											jBegin=jBegin+1;
-										}
+	//									System.out.println("i : "+i+" j : "+j+"  form : "+form);
+										form =(form.replace("\n","")).replace(",","");
+										addVerbForm(form, change);
 									}
 								}
 							}

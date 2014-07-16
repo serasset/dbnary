@@ -167,7 +167,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 									String name=itemsList.item(e).getNodeName();
 									form=form.replace(" "," ");//remove insecable spaces
 									form =removeUselessSpaces(form);
-									if (name.equals("#text") && !form.isEmpty()) {
+									if (name.equals("#text") && !form.isEmpty() && !form.contains("Pers.")) {
 										// for verbs like ankommen : ich komme an
 										if (!change && isPhrasalVerb(form) ) {
 											part=(form.substring(form.lastIndexOf(" "))).replace(" ","").replace("\n","");
@@ -192,7 +192,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 	}
 	
 	private String removeUselessSpaces(String form){
-		String res=form;//.replace("  "," ");
+		String res=form.replace("  "," ");
 		while(!res.isEmpty() && res.charAt(0)==' '){
 			res=res.substring(1);
 		}

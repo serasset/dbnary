@@ -9,6 +9,9 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.LemonOnt;
+
 /**
  * @author Raphaël Jakse
  */
@@ -51,7 +54,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 	public void addPartOfSpeech(String originalPOS, Resource normalizedPOS, Resource normalizedType) {
 		super.addPartOfSpeech(originalPOS, normalizedPOS, normalizedType);
 
-    	if (normalizedPOS == verbPOS && ((normalizedType == wordEntryType) || (normalizedType == lexEntryType))) {
+    	if (normalizedPOS == LexinfoOnt.verb && ((normalizedType == LemonOnt.Word) || (normalizedType == LemonOnt.LexicalEntry))) {
 			String conjugationPageContent = wi.getTextOfPage(FrenchConjugationPagePrefix + currentLexEntry());
 
 			if (conjugationPageContent == null) {

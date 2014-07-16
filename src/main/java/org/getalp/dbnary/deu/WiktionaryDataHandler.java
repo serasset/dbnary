@@ -11,6 +11,10 @@ import org.w3c.dom.Document;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.function.library.substr;
 
+import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.DbnaryModel;
+
 /**
  * 
  * @author suzan
@@ -20,7 +24,7 @@ import com.hp.hpl.jena.sparql.function.library.substr;
 public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 	
 //	//for some modal verbs
-//	posAndTypeValueMap.put("Hilfsverb", new PosAndType(verbPOS, lexEntryType));
+//	posAndTypeValueMap.put("Hilfsverb", new PosAndType(LexinfoOnt.verb, LemonOnt.LexicalEntry));
 	private final static Pattern conjugationPattern;
 	private final static Pattern declinationPattern;
 	private final static Pattern basedFormPattern;
@@ -48,8 +52,8 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 		GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(this, wi, new Locale("de"), "/${Bild}", "/${Titel}");
 		
 		//problem with Hilfsverb
-		if (((normalizedType == wordEntryType) || (normalizedType == lexEntryType))) {
-			if(normalizedPOS==verbPOS){
+		if (((normalizedType == LemonOnt.Word) || (normalizedType == LemonOnt.LexicalEntry))) {
+			if(normalizedPOS==LexinfoOnt.verb){
 				String conjugationPageContent = wi.getTextOfPage(currentLexEntry()+germanConjugationSuffix);
 				if(conjugationPageContent!=null){
 					gewm.parseConjugation(conjugationPageContent);
@@ -114,13 +118,13 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 //	 */
 //	private String getPosString(Resource normalizedPos){
 //		String res=germanMorphoBegin;
-//		if (normalizedPos==verbPOS){
+//		if (normalizedPos==LexinfoOnt.verb){
 //			res=germanMorphoBegin+verbCat;
-//		} else if(normalizedPos==adjPOS){
+//		} else if(normalizedPos==LexinfoOnt.adjective){
 //			res=germanMorphoBegin+adjCat;
-//		} else if(normalizedPos==nounPOS){
+//		} else if(normalizedPos==LexinfoOnt.noun){
 //			res=germanMorphoBegin+nounCat;
-//		} else if(normalizedPos==adverbPOS){
+//		} else if(normalizedPos==LexinfoOnt.adverb){
 //			res=germanMorphoBegin+advCat;
 //		}
 //		return res;

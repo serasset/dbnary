@@ -50,7 +50,7 @@ public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHand
 		if(this.prefixes.containsKey(lang))
 			return this.prefixes.get(lang);
 		else {
-			String prefix = DBNARY_NS_PREFIX + "/" + lang + "/fra/";
+			String prefix = DBNARY_URL + "/" + lang + "/fra/";
 			prefixes.put(lang, prefix);
 			aBox.setNsPrefix(ISO639_3.sharedInstance.getIdCode(lang) + "-fra", prefix);
 			return prefix;

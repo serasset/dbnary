@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 
 import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.DBnaryOnt;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -34,13 +34,13 @@ public class NymStatistics {
 		}
 		
 		//out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
-		out.print(countRelations(DbnaryModel.synonymProperty, m1));
-		out.print("," + countRelations(DbnaryModel.nearSynonymProperty, m1));
-		out.print("," + countRelations(DbnaryModel.antonymProperty, m1));
-		out.print("," + countRelations(DbnaryModel.hypernymProperty, m1));
-		out.print("," + countRelations(DbnaryModel.hyponymProperty, m1));
-		out.print("," + countRelations(DbnaryModel.meronymProperty, m1));
-		out.print("," + countRelations(DbnaryModel.holonymProperty, m1));
+		out.print(countRelations(DBnaryOnt.synonym, m1));
+		out.print("," + countRelations(DBnaryOnt.approximateSynonym, m1));
+		out.print("," + countRelations(DBnaryOnt.antonym, m1));
+		out.print("," + countRelations(DBnaryOnt.hypernym, m1));
+		out.print("," + countRelations(DBnaryOnt.hyponym, m1));
+		out.print("," + countRelations(DBnaryOnt.meronym, m1));
+		out.print("," + countRelations(DBnaryOnt.holonym, m1));
 
 		out.flush();
 

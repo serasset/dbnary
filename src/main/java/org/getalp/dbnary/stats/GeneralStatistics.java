@@ -4,7 +4,9 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 
 import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.dbnary.DbnaryModel;
+
+import org.getalp.dbnary.DBnaryOnt;
+import org.getalp.dbnary.LemonOnt;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -33,14 +35,14 @@ public class GeneralStatistics {
 		
 		// Number of Lexical Entries
 
-		int nble = countResourcesOfType(DbnaryModel.lexEntryType, m1);
-		int nblv = countResourcesOfType(DbnaryModel.vocableEntryType, m1);
-		int nblw = countResourcesOfType(DbnaryModel.wordEntryType, m1);
-		int nblp = countResourcesOfType(DbnaryModel.phraseEntryType, m1);
+		int nble = countResourcesOfType(LemonOnt.LexicalEntry, m1);
+		int nblv = countResourcesOfType(DBnaryOnt.Vocable, m1);
+		int nblw = countResourcesOfType(LemonOnt.Word, m1);
+		int nblp = countResourcesOfType(LemonOnt.Phrase, m1);
 		
 				
-		int nbEquiv = countResourcesOfType(DbnaryModel.translationType, m1);
-		int nbsense = countResourcesOfType(DbnaryModel.lexicalSenseType, m1);
+		int nbEquiv = countResourcesOfType(DBnaryOnt.Translation, m1);
+		int nbsense = countResourcesOfType(LemonOnt.LexicalSense, m1);
 		
 		if (verbose) {
 			out.println(getHeaders());

@@ -347,7 +347,7 @@ public class UpdateAndExtractDumps {
 
 
 			} catch(IOException e) {
-				System.out.println(e);
+				System.err.println(e);
 			}
 			client.logout();
 			return lastDir;

@@ -2,6 +2,7 @@ package org.getalp.dbnary.pol;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +10,7 @@ import java.util.regex.Pattern;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.wiki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
@@ -40,6 +42,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected enum SectionType {
 		DEFS, NYMS, TRANS, PRON, MORPH, EXAMPLES, IGNORE, NOTASECTION
 	}
+
+	protected ExpandAllWikiModel definitionExpander;
 	
 	public WiktionaryExtractor(WiktionaryDataHandler wdh) {
 		super(wdh);
@@ -144,6 +148,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 		// System.out.println(pageContent);
 		Matcher languageFilter = languageSectionPattern.matcher(pageContent);
+		
+		definitionExpander = new DefinitionExpanderWikiModel(wi, new Locale("pl"), this.wiktionaryPageName, "");
 
 		// Either the filter is at end of sequence or on Polish language header.
 		while ( languageFilter.find() && ! languageFilter.group(2).contains("polski")) {
@@ -515,12 +521,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				String language = translationMatcher.group(1);
 				String lang;
 				if ((lang = PolishLangToCode.triletterCode(language)) != null) {
-					String translations = translationMatcher.group(2);
-					extractTranslationLine(lang, translations);
+					language = lang;
 				} else {
 					log.debug("Unknown Language : {}", language);
 				}
-
+				String translations = translationMatcher.group(2);
+				extractTranslationLine(language, translations);
 			} else {
 				log.debug("INCORRECT Translation Line : {}", currentLine);
 			}
@@ -536,11 +542,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	static {
 		translationLexerString = new StringBuffer()
 		.append("(?:")
-		.append("\\(([^\\)]*)\\)")
+		.append("\\(([\\d\\.\\-—–\\,\\s]*)\\)")
 		.append(")|(?:")
 		.append(WikiPatterns.linkPatternString)
 		.append(")|(?:")
 		.append(WikiPatterns.macroPatternString)
+		.append(")|(?:")
+		.append("\\(([^\\)]*)\\)")
 		.append(")|(?:")
 		.append("(.)")
 		.append(")").toString();
@@ -564,11 +572,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				currentTranslation = currentTranslation + " " + lexer.group(2);
 			} else if (lexer.group(4) != null) {
 				// A macro (group 4 = macro name, group 5 = parameters)
+				// TODO: handle brazport macros.
 				if ("furi".equals(lexer.group(4))) {
 					Map<String, String> args = WikiTool.parseArgs(lexer.group(5));
 					currentTranslation += args.get("1");
-				} else if ("brazport".equals(lexer.group(4))) {
-					
 				} else {
 					currentUsage = currentUsage + "{{" + lexer.group(4) + "}}";
 					if (lexer.group(5) != null) {
@@ -576,8 +583,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					}
 				}
 			} else if (lexer.group(6) != null) {
+				// A usage note in between parenthesis...
+				currentUsage = currentUsage + "(" + lexer.group(6) + ")";
+			} else if (lexer.group(7) != null) {
 				// A char...
-				String character = lexer.group(6);
+				String character = lexer.group(7);
 				
 				if (character.equals(",") || character.equals(";")) {
 					wdh.registerTranslation(lang, currentGlose, currentUsage.trim(), currentTranslation.trim());
@@ -598,18 +608,30 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		while (definitionMatcher.find()) {
 			if (definitionMatcher.group(2) != null && wdh.posIsValid()) {
 				// It's a definition
-				String def = cleanUpMarkup(definitionMatcher.group(2));
+				HashSet<String> defTemplates = null;
+				if (log.isDebugEnabled()) defTemplates = new HashSet<String>();
+				String def = definitionExpander.expandAll(definitionMatcher.group(2), defTemplates);
+				if (log.isDebugEnabled()) {
+					for (String t : defTemplates) {
+						log.debug("Encountered template in definition : {}", t);
+					}
+				}
+				// Cleanup remaining html flags from definition expansion...
+				def = def.replaceAll("<[^>]*>", "");
+				def = def.replaceAll("&nbsp;", " ");
+				def = def.replaceAll("&lt;", "<");
+				def = def.replaceAll("&gt;", ">");
 				String senseNum = definitionMatcher.group(1);
 				if (null == senseNum) {
 					log.debug("Null sense number in definition\"{}\" for entry {}", def, this.wiktionaryPageName);
 					if (def != null && !def.equals("")) {
-						wdh.registerNewDefinition(definitionMatcher.group(2));
+						wdh.registerNewDefinition(def);
 					}
 				} else {
 					senseNum = senseNum.trim();
 					senseNum = senseNum.replaceAll("<[^>]*>", "");
 					if (def != null && !def.equals("")) {
-						wdh.registerNewDefinition(definitionMatcher.group(2), senseNum);
+						wdh.registerNewDefinition(def, senseNum);
 					}
 				}
 			} else if (definitionMatcher.group(3) != null) {
@@ -632,7 +654,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				if (null == senseNum) {
 					log.debug("Null sense number in nym line\"{}\" for entry {}", nymLineMatcher.group(), this.wiktionaryPageName);
 					// TODO: attach the nym to the Vocable
-					
 				} else {
 					senseNum = senseNum.trim();
 					senseNum = senseNum.replaceAll("<[^>]*>", "");
@@ -662,14 +683,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		macroMatcher.region(startOffset, endOffset);
 
 		while (macroMatcher.find()) {
-			if (macroMatcher.group(1).equals("IPA3")) {
+			if (macroMatcher.group(1).startsWith("IPA")) {
 				Map<String,String> args = WikiTool.parseArgs(macroMatcher.group(2));
-				wdh.registerPronunciation(args.get("1"), "pl-ipa");
-				if (args.get("2") != null) {
-					log.debug("More than one pronunciation: {} in {}", args, this.wiktionaryPageName);
+				for (int i = 1; i <= 5; i++) {
+					if (null != args.get(Integer.toString(i))) {
+						wdh.registerPronunciation(args.get(Integer.toString(i)), "pl-ipa");
+					}
+				}
+				if (args.get("6") != null) {
+					log.debug("More than 5 pronunciations: {} in {}", args, this.wiktionaryPageName);
 				}
 			} else {
-				log.debug("UNKNOWN MACRO: \"{}\" in \"{}\"", macroMatcher.group(1), this.wiktionaryPageName);
+				log.debug("UNKNOWN PRONOUNCIATION MACRO: \"{}\" in \"{}\"", macroMatcher.group(1), this.wiktionaryPageName);
 			} 
 		}
 	}

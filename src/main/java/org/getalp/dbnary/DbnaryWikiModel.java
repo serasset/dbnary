@@ -45,7 +45,7 @@ public class DbnaryWikiModel extends WikiModel {
 		
 	public DbnaryWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(Configuration.DEFAULT_CONFIGURATION, locale, imageBaseURL, linkBaseURL);
-//		this.templateNamespace = tQemplateNamespace;
+//		this.templateNamespace = templateNamespace;
 		this.wi = wi;
 	}
 
@@ -166,9 +166,28 @@ public class DbnaryWikiModel extends WikiModel {
  
             if (isTemplateNamespace(namespace)) {
             	if (null != wi)
-                    return wi.getTextOfPage(namespace+":"+articleName);
+                    return getIncludeOnlyText(wi.getTextOfPage(namespace + ":" + articleName));
             }
             return null;
     }
 
+    public String getIncludeOnlyText(String rawWikiText) {
+        if (null == rawWikiText) return null;
+
+        int noIncludeOffset = rawWikiText.indexOf("<noinclude>");
+        if (-1 != noIncludeOffset) {
+            int noIncludeEndOffset = rawWikiText.indexOf("</noinclude>", noIncludeOffset);
+            if (-1 != noIncludeEndOffset)
+                return new StringBuffer().append(rawWikiText.substring(0, noIncludeOffset))
+                        .append(rawWikiText.substring(noIncludeEndOffset)).toString();
+        }
+        int includeOnlyOffset = rawWikiText.indexOf("<includeonly>");
+        if (-1 != includeOnlyOffset) {
+            int includeOnlyEndOffset = rawWikiText.indexOf("</includeonly>", noIncludeOffset);
+            if (-1 != includeOnlyEndOffset)
+                return rawWikiText.substring(includeOnlyOffset + "<includeonly>".length(), includeOnlyEndOffset);
+        }
+        return rawWikiText;
+
+    }
 }

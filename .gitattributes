@@ -22,6 +22,7 @@ src/main/java/org/getalp/dbnary/bul/BulgarianWikiModel.java -text
 src/main/java/org/getalp/dbnary/bul/DefinitionsWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/bul/WiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/cli/CompareTradsAndIWLinks.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/cli/ExtractLanguageNamesFromLexvo.java -text
 src/main/java/org/getalp/dbnary/cli/ExtractWiktionary.java -text
 src/main/java/org/getalp/dbnary/cli/GetExtractedSemnet.java -text
 src/main/java/org/getalp/dbnary/cli/GetRawEntry.java -text svneol=unset#text/plain
@@ -40,10 +41,15 @@ src/main/java/org/getalp/dbnary/deu/WiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/ell/GreekLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ell/WiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/eng/EnglishLangToCode.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/eng/ForeignLanguagesWiktionaryDataHandler.java -text
+src/main/java/org/getalp/dbnary/eng/ForeignLanguagesWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/eng/WiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/fin/FinnishTranslationExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/fin/SuomiLangToCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/fin/WiktionaryExtractor.java -text
+src/main/java/org/getalp/dbnary/fra/ExampleExpanderWikiModel.java -text
+src/main/java/org/getalp/dbnary/fra/ForeignLanguagesWiktionaryDataHandler.java -text
+src/main/java/org/getalp/dbnary/fra/ForeignLanguagesWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/fra/FrenchExtractorWikiModel.java -text
 src/main/java/org/getalp/dbnary/fra/FrenchLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/fra/WiktionaryDataHandler.java -text
@@ -59,6 +65,7 @@ src/main/java/org/getalp/dbnary/jpn/JapaneseLangtoCode.java -text svneol=unset#t
 src/main/java/org/getalp/dbnary/jpn/JapaneseRelatedWordsExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/jpn/JapaneseTranslationsExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/jpn/WiktionaryExtractor.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/pol/DefinitionExpanderWikiModel.java -text
 src/main/java/org/getalp/dbnary/pol/PolishLangToCode.java -text
 src/main/java/org/getalp/dbnary/pol/WiktionaryDataHandler.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/pol/WiktionaryExtractor.java -text svneol=unset#text/plain
@@ -89,6 +96,7 @@ src/main/java/org/getalp/dilaf/DilafExtractorException.java -text
 src/main/java/org/getalp/dilaf/DilafLemonDataHandler.java -text
 src/main/java/org/getalp/dilaf/DilafZarmaExtractor.java -text
 src/main/resources/Messages_bg.properties -text svneol=unset#text/plain
+src/main/resources/Messages_pl.properties -text
 src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
 src/main/resources/org/getalp/dbnary/lemon.ttl -text
@@ -117,4 +125,3 @@ src/site/site.xml -text
 src/test/java/org/getalp/blexisma/wiktionary/TestDbnaryWikiModel.java -text svneol=unset#text/plain
 src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
 src/test/java/org/getalp/dbnary/AbstractWiktionaryExtractorUtilitiesTest.java -text
-src/test/resources/org/getalp/blexisma/wiktionary/sample-semnet.snet -text

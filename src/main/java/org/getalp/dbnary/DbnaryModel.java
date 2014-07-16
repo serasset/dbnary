@@ -102,11 +102,11 @@ public class DbnaryModel {
 	public static final Resource inanimate;
 	public static final Resource animate;
 
-	public static final Resource inflectionType;
-	public static final Property hasInflectionForm;
-	public static final Property hasWikiCodeMorphology;
-	public static final Property isInflectionOf;
-	public static final Property isInflectionType;
+// 	public static final Resource inflectionType;
+// 	public static final Property hasInflectionForm;
+// 	public static final Property hasWikiCodeMorphology;
+// 	public static final Property isInflectionOf;
+// 	public static final Property isInflectionType;
 
 
 	static {
@@ -191,11 +191,11 @@ public class DbnaryModel {
 		inanimate                  = tBox.createResource(LEXINFO + "inanimate");
 
 
-		inflectionType             = tBox.createResource(DBNARY  + "Inflection");
-		hasInflectionForm          = tBox.createProperty(DBNARY,   "inflectionForm");
-		hasWikiCodeMorphology      = tBox.createProperty(DBNARY  + "wikiMorphology");
-		isInflectionOf             = tBox.createProperty(DBNARY  + "inflectionOf");
-		isInflectionType           = tBox.createProperty(DBNARY  + "inflectionType");
+// 		inflectionType             = tBox.createResource(DBNARY  + "Inflection");
+// 		hasInflectionForm          = tBox.createProperty(DBNARY,   "inflectionForm");
+// 		hasWikiCodeMorphology      = tBox.createProperty(DBNARY  + "wikiMorphology");
+// 		isInflectionOf             = tBox.createProperty(DBNARY  + "inflectionOf");
+// 		isInflectionType           = tBox.createProperty(DBNARY  + "inflectionType");
 	}
 	
 	public static String uriEncode(String s) {

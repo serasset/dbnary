@@ -641,7 +641,7 @@ public class PolishLangToCode {
 		polishLangNameToLangCode.put("klasyczny język chiński", "lzh");
 		polishLangNameToLangCode.put("język mesapijski", "cms");
 		polishLangNameToLangCode.put("języki ilirskie", "xil");
-		polishLangNameToLangCode.put("chiński", "cmn");
+		// polishLangNameToLangCode.put("chiński", "cmn");
 		polishLangNameToLangCode.put("języki mandaryńskie", "cmn");
 		polishLangNameToLangCode.put("język mongolski klasyczny", "cmg");
 		polishLangNameToLangCode.put("plautdietsch", "pdt");
@@ -1348,7 +1348,13 @@ public class PolishLangToCode {
 		
 		// Manual additions to lexvo
 		polishLangNameToLangCode.put("holenderski", "nld");
-
+		polishLangNameToLangCode.put("afrykanerski", "afr");
+		polishLangNameToLangCode.put("chiński standardowy", "zho");
+		polishLangNameToLangCode.put("wilamowski", "wim");
+		polishLangNameToLangCode.put("fryzyjski", "fry");
+		polishLangNameToLangCode.put("dolnośląski", "sli");
+		polishLangNameToLangCode.put("śląski", "szl");
+		
 	}
 
 	public static String triletterCode(String s){ 

@@ -5,18 +5,23 @@ package org.getalp.dbnary.fra;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.pol.DefinitionExpanderWikiModel;
 import org.getalp.dbnary.fra.FrenchExtractorWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
+
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * @author serasset
@@ -32,9 +37,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected final static String languageSectionPatternString1 = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
 	protected final static String languageSectionPatternString2 = "==\\s*\\{\\{langue\\|([^\\}]*)\\}\\}\\s*==";
 	// TODO: handle morphological informations e.g. fr-rég template ?
-	protected final static String pronounciationPatternString = "\\{\\{pron\\|([^\\|\\}]*)(.*)\\}\\}";
+	protected final static String pronunciationPatternString = "\\{\\{pron\\|([^\\|\\}]*)\\|([^\\}]*)\\}\\}";
 
 	protected final static String otherFormPatternString = "\\{\\{fr-[^\\}]*\\}\\}";
+
+	private String lastExtractedPronounciationLang = null;
+
+// 	protected final static String inflectionDefPatternString = "^\\# ''[^\n]+ de'' \\[\\[[^\n]\\]^\\]\.$";
 
 	private static HashMap<String,String> posMarkers;
 	private static HashSet<String> ignorablePosMarkers;
@@ -44,7 +53,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	
 	private static HashSet<String> unsupportedMarkers = new HashSet<String>();
 
-	
 	// private static Set<String> affixesToDiscardFromLinks = null;
 	private static void addPos(String pos) {posMarkers.put(pos, pos);}
 	private static void addPos(String p, String n) {posMarkers.put(p, n);}
@@ -170,7 +178,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		addPos("-verb-");
 		addPos("-verb-pr-");
 		
-		// titres de section S
+		// S section titles
 		// TODO: get alternate from https://fr.wiktionary.org/wiki/Module:types_de_mots/data and normalise the part of speech
 		// ADJECTIFS
 		addPos("adjectif", "-adj-");
@@ -291,35 +299,35 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		addPos("onoma");
 		addPos("onom");
  
-	// PARTIES
-//		posMarkers.add("affixe");
-//		posMarkers.add("aff");
-//		posMarkers.add("circonfixe");
-//		posMarkers.add("circonf");
-//		posMarkers.add("circon");
-//		posMarkers.add("infixe");
-//		posMarkers.add("inf");
-//		posMarkers.add("interfixe");
-//		posMarkers.add("interf");
-//		posMarkers.add("particule");
-//		posMarkers.add("part");
-//		posMarkers.add("particule numérale");
-//		posMarkers.add("part-num");
-//		posMarkers.add("particule num");
-//		posMarkers.add("postposition");
-//		posMarkers.add("post");
-//		posMarkers.add("postpos");
-//		posMarkers.add("préfixe");
-//		posMarkers.add("préf");
-//		posMarkers.add("radical");
-//		posMarkers.add("rad");
-//		posMarkers.add("suffixe");
-//		posMarkers.add("suff");
-//		posMarkers.add("suf");
-// 
-//		posMarkers.add("pré-verbe");
-//		posMarkers.add("pré-nom");
-// 
+    // PARTIES   TODO: Extract affixes in French
+//		addPos("affixe");
+//		addPos("aff");
+//		addPos("circonfixe");
+//		addPos("circonf");
+//		addPos("circon");
+//		addPos("infixe");
+//		addPos("inf");
+//		addPos("interfixe");
+//		addPos("interf");
+//		addPos("particule");
+//		addPos("part");
+//		addPos("particule numérale");
+//		addPos("part-num");
+//		addPos("particule num");
+//		addPos("postposition");
+//		addPos("post");
+//		addPos("postpos");
+//		addPos("préfixe");
+//		addPos("préf");
+//		addPos("radical");
+//		addPos("rad");
+//		addPos("suffixe");
+//		addPos("suff");
+//		addPos("suf");
+//
+//		addPos("pré-verbe");
+//		addPos("pré-nom");
+
 	// PHRASES
 		addPos("locution");
 		addPos("loc");
@@ -426,57 +434,86 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 
-	private final static Pattern languageSectionPattern;
-	private final static Pattern pronunciationPattern;
-	private final static Pattern otherFormPattern;
+	protected final static Pattern languageSectionPattern;
+	protected final static Pattern pronunciationPattern;
+	protected final static Pattern otherFormPattern;
 
 	static {
 		languageSectionPattern = Pattern.compile(languageSectionPatternString);
-		pronunciationPattern   = Pattern.compile(pronounciationPatternString);
+		pronunciationPattern   = Pattern.compile(pronunciationPatternString);
 		otherFormPattern       = Pattern.compile(otherFormPatternString);
 	}
 
-
-	private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, ORTHOALTBLOCK, NYMBLOCK};
+	private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK};
 
 	private Block currentBlock = Block.NOBLOCK;
-
 	private int blockStart   = -1;
-	
 
 	private String currentNym = null;
 
-	/* (non-Javadoc)
-	 * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
-	 */
-	@Override
-	public void extractData() {
-		Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-		while (languageFilter.find() && ! isFrenchLanguageHeader(languageFilter)) {
-			;
-		}
-		// Either the filter is at end of sequence or on French language header.
-		if (languageFilter.hitEnd()) {
-			// There is no french data in this page.
-			return ;
-		}
-		int frenchSectionStartOffset = languageFilter.end();
-		// Advance till end of sequence or new language section
-		languageFilter.find();
-		int frenchSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+	protected ExampleExpanderWikiModel exampleExpander;
 
-		extractFrenchData(frenchSectionStartOffset, frenchSectionEndOffset);
-	}
+	private Set<String> defTemplates = null;
 
-
-	private boolean isFrenchLanguageHeader(Matcher m) {
+	protected boolean isFrenchLanguageHeader(Matcher m) {
 		return (null != m.group(1) && m.group(1).equals("fr")) || (null != m.group(2) && m.group(2).equals("fr"));
 	}
 
-	protected void extractFrenchData(int startOffset, int endOffset) {
+	public String getLanguageInHeader(Matcher m) {
+		if (null != m.group(1))
+			return m.group(1);
+
+		if (null != m.group(2))
+			return m.group(2);
+
+		return null;
+	}
+
+	@Override
+	public void extractData() {
+		extractData(false);
+	}
+
+	protected void extractData(boolean extractForeignData) {
+		Matcher languageFilter = languageSectionPattern.matcher(pageContent);
+		int startSection = -1;
+
+		exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("fr"), this.wiktionaryPageName, "");
+
+		String nextLang = null, lang = null;
+
+		while (languageFilter.find()) {
+			nextLang = getLanguageInHeader(languageFilter);
+			extractData(startSection, languageFilter.start(), lang, extractForeignData);
+			lang = nextLang;
+			startSection = languageFilter.end();
+		}
+
+		// Either the filter is at end of sequence or on French language header.
+		if (languageFilter.hitEnd()) {
+			extractData(startSection, pageContent.length(), lang, extractForeignData);
+		}
+	}
+
+	protected void extractData(int startOffset, int endOffset, String lang, boolean extractForeignData) {
+		if (lang == null) {
+			return;
+		}
+
+		if (extractForeignData) {
+			if ("fr".equals(lang))
+				return;
+
+			wdh.initializeEntryExtraction(wiktionaryPageName, lang);
+		} else {
+			if (!"fr".equals(lang))
+				return;
+
+			wdh.initializeEntryExtraction(wiktionaryPageName);		
+		}
+
 		Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
 		m.region(startOffset, endOffset);
-		wdh.initializeEntryExtraction(wiktionaryPageName);
 
 		// WONTDO: (priority: low) should I use a macroOrLink pattern to detect translations that are not macro based ?
 		// DONE: (priority: top) link the definition node with the current Part of Speech
@@ -508,17 +545,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				if (pos.length() == 0)  {
 					currentBlock = Block.IGNOREPOS;
 				} else {
-					currentBlock = Block.DEFBLOCK;
-			        blockStart = m.end();
+					blockStart = m.end();
 
-			        if (posIsInflection) {
-// 						wdh.registerInflection(
-// 							wdh.currentLexEntry(),
-// 							pos,
-// 							inflectionMorphology,
-// 							inflectionCanonicalForm
-// 						);
+					if (posIsInflection) {
+						currentBlock = Block.INFLECTIONBLOCK;
+// 						inflectionInfos = new InflectionsInfos();
 					} else {
+						currentBlock = Block.DEFBLOCK;
 						wdh.addPartOfSpeech(pos);
 					}
 				}
@@ -537,6 +570,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					leaveCurrentBlock(m);
 					currentBlock = Block.NYMBLOCK;
 					currentNym = nym;
+//				} else if (isInflection(m, sectionTitle)) {
+// 					for (int i = 3; i <= m.groupCount(); i++) {
+// 						wdh.registerInflection(
+// 							currentLexEntry(),
+// 							pos,
+// 							m.group(i).substring(0, m.group(i).indexOf('=')),
+// 							m.group(2)
+// 						);
+// 					}
+				} else if (currentBlock == Block.INFLECTIONBLOCK) {
+					if ("m".equals(m.group(1)) || "f".equals(m.group(1))) {
+						
+					}
+					continue;
 				} else {
 					if (isValidSection(m, sectionTitle)) {
 						leaveCurrentBlock(m);
@@ -568,9 +615,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		case NOBLOCK:
 		case IGNOREPOS:
 			break;
+		case INFLECTIONBLOCK:
+// 			extractInflections(blockStart, end);
+			break;
 		case DEFBLOCK:
 			extractDefinitions(blockStart, end);
-			extractPronounciation(blockStart, end);
+			extractPronunciation(blockStart, end);
 			extractOtherForms(blockStart, end);
 			break;
 		case TRADBLOCK:
@@ -590,6 +640,28 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		blockStart = -1;
 	}
 
+// 	private void extractInflections(blockStart, end) {
+// 		
+// 		wdh.InflectionData infl = new wdh.InflectionData();
+// 
+// 		if (infl.pronunciation == null) {
+// 			infl.pronunciation     = extractPronunciation(blockStart, end, false);
+// 			infl.pronunciationLang = lastExtractedPronounciationLang == null ? null : lastExtractedPronounciationLang + "-fonipa";
+// 		}
+// 
+// 		Matcher m = inflectionDefPatternString.matcher(pageContent);
+// 		m.region(blockStart, end);
+// 
+// 		boolean firstMatch = true;
+// 
+// 		while (m.find()) {
+// 			if (firstMatch) {
+// 				extractGlobalInflectionData(infl, pageContent.substring(blockStart, m.start());
+// 				firstMatch = false;
+// 			} 
+// 		}
+// 	}
+
 
 	private boolean isValidSection(Matcher m, String sectionTitle) {
 		return sectionTitle != null || sectionMarkers.contains(m.group(1));
@@ -597,15 +669,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	private boolean posIsInflection;
 
-	private void fillInflectionInformations(Matcher m, String sectionTitle, Map<String,String> sectionArgs) {
-		
-	}
+// 	private void fillInflectionInformations(Matcher m, String sectionTitle, Map<String,String> sectionArgs) {
+// 		
+// 	}
 
 	private String getPOS(Matcher m, String sectionTitle, Map<String,String> sectionArgs) {
 		if (sectionTitle != null) {
 			if("flexion".equals(sectionArgs.get("3"))) {
 				posIsInflection = true;
-				fillInflectionInformations(m, sectionTitle, sectionArgs);
+// 				fillInflectionInformations(m, sectionTitle, sectionArgs);
 			}
 
 			if (ignorablePosMarkers.contains(sectionTitle)) {
@@ -618,7 +690,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		return posMarkers.get(m.group(1));
 	}
 
-	private boolean isTranslation(Matcher m, String sectionTitle) {
+	protected boolean isTranslation(Matcher m, String sectionTitle) {
 		if (sectionTitle != null) {
 			return sectionTitle.startsWith("trad");
 		}
@@ -711,29 +783,52 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				currentGlose = null;
 			} else if (g1.equals("T")) {
 				// this a a language identifier, just ignore it as we get the language id from the trad macro parameter.
-
 			}
 		}
 	}
-	
-	private void extractPronounciation(int startOffset, int endOffset) {
+
+	protected void extractPronunciation(int startOffset, int endOffset) {
+		extractPronunciation(startOffset, endOffset, true);
+	}
+
+	private String extractPronunciation(int startOffset, int endOffset, boolean registerPronunciation) {
 		Matcher pronMatcher = pronunciationPattern.matcher(pageContent);
 		pronMatcher.region(startOffset, endOffset);
+
+		lastExtractedPronounciationLang = null;
 
 		while (pronMatcher.find()) {
 			String pron = pronMatcher.group(1);
 			String lang = pronMatcher.group(2);
 
-			if (pron == null || pron.equals("")) return;
-			if (lang == null || lang.equals("")) return;
+			if (pron == null || pron.equals("")) return null;
+			if (lang == null || lang.equals("")) return null;
 			
 			if (pron.startsWith("1=")) pron = pron.substring(2);
 			if (lang.startsWith("|2=")) lang = lang.substring(2);
 			if (lang.startsWith("|lang=")) lang = lang.substring(5);
 
-			if (! pron.equals("")) wdh.registerPronunciation(pron, "fr-fonipa");
+			lastExtractedPronounciationLang = lang;
+			if (!pron.equals("")) {
+				if (registerPronunciation) {
+					wdh.registerPronunciation(pron, lang + "-fonipa");
+				}
+				return pron;
+			}
 		}
+		return null;
 	}
+
+
+	public void extractExample(String example) {
+        Map<Property, String> context = new HashMap<Property, String>();
+
+        String ex = exampleExpander.expandExample(example, defTemplates, context);
+		Resource exampleNode = null;
+        if (ex != null && ! ex.equals("")) {
+        	exampleNode = wdh.registerExample(ex, context);
+        }
+    }
 
 	private void extractOtherForms(int start, int end) {
 		Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);

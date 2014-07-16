@@ -22,7 +22,7 @@ import info.bliki.wiki.model.WikiModel;
 
 public class ExpandAllWikiModel extends DbnaryWikiModel {
 		
-	private Set<String> templates = null;
+	protected Set<String> templates = null;
 	
 	public ExpandAllWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
 		this((WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);

@@ -159,6 +159,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	 */
 	@Override
 	public void extractData() {
+
 		// System.out.println(pageContent);
 		Matcher languageFilter = languageSectionPattern.matcher(pageContent);
 		while (languageFilter.find() && !isGermanLanguageHeader(languageFilter)) {
@@ -183,7 +184,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		return m.group(2).equals("Deutsch");
 	}
 
-	
 	/**
 	 * @uml.property  name="state"
 	 */

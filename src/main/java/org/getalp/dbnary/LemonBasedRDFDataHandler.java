@@ -373,6 +373,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		return getVocable(vocable, false);
 	}
 
+<<<<<<< HEAD
 // 	private void addInflectionMorphology(Resource inflectionResource, String wikicodeMorphology) {
 // 		aBox.add(inflectionResource, hasWikiCodeMorphology, wikicodeMorphology);
 // 	}
@@ -464,6 +465,100 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 // 
 // 		aBox.add(inflectionEntry, hasInflectionForm, ii.representation);
 // 	}
+=======
+	private void addInflectionMorphology(Resource inflectionResource, String wikicodeMorphology) {
+		aBox.add(inflectionResource, hasWikiCodeMorphology, wikicodeMorphology);
+	}
+
+	private class InflectionIdentity {
+		private final String f, p, w;
+		private final Resource r;
+
+		InflectionIdentity(String form, String pos, String wikicodeMorphology, Resource referenceEntry) {
+			f = form;
+			p = pos;
+			w = wikicodeMorphology;
+			r = referenceEntry;
+		}
+
+		@Override
+		public boolean equals(Object ob) {
+			InflectionIdentity o = (InflectionIdentity) ob;
+
+			if (o == null) {
+				return false;
+			}
+
+			return this == o || (
+					 r == o.r
+				  && f.equals(o.f)
+				  && p.equals(o.p)
+				  && w.equals(o.w)
+			);
+		}
+	}
+
+	private HashSet<InflectionIdentity> registeredInflections = new HashSet<InflectionIdentity>();
+
+
+	public void registerInflection(String inflectionForm,
+	                               String inflectionPOS,
+	                               Resource normalizedInflectionPOS,
+	                               String wikicodeMorphology) {
+
+		if (null == currentLexEntry) {
+			log.debug("Registering Inflection when lex entry is null in \"{}\".", this.currentMainLexEntry);
+			return; // Don't register anything if current lex entry is not known.
+		}
+
+		registerInflection(inflectionForm, inflectionPOS, normalizedInflectionPOS, wikicodeMorphology, currentWiktionaryPageName, currentLexEntry);
+	}
+
+	public void registerInflection(String inflectionForm,
+	                               String inflectionPOS,
+	                               String wikicodeMorphology,
+	                               String canonicalForm) {
+
+		PosAndType pat = posAndTypeValueMap.get(inflectionPOS);
+		Resource lexinfoPOS = (null == pat) ? null : pat.pos;
+		registerInflection(inflectionForm, inflectionPOS, lexinfoPOS, wikicodeMorphology, canonicalForm, getVocable(canonicalForm));
+	}
+
+	public void registerInflection(String inflectionForm,
+	                               String inflectionPOS,             // the part of speech
+	                               Resource normalizedInflectionPOS, // of the canonical form
+	                               String wikicodeMorphology,
+	                               String canonicalForm,
+	                               Resource referenceEntry) {
+
+
+		InflectionIdentity ii = new InflectionIdentity(inflectionForm, inflectionPOS, wikicodeMorphology, referenceEntry);
+
+		if (registeredInflections.contains(ii)) {
+			return;
+		}
+
+		registeredInflections.add(ii);
+
+		String inflectionEntryName = NS + "inflection__" + inflectionPOS + "__" + canonicalForm;
+
+		Resource inflectionEntry = aBox.createResource(
+		                             inflectionEntryName,
+		                             inflectionType
+		                         );
+
+		aBox.add(inflectionEntry, isInflectionOf, referenceEntry);
+		aBox.add(inflectionEntry, isInflectionType, normalizedInflectionPOS);
+
+		Resource inflectionResource = aBox.createResource();
+
+		aBox.add(inflectionResource, writtenRepProperty, inflectionForm);
+
+		addInflectionMorphology(inflectionResource, wikicodeMorphology);
+
+		aBox.add(inflectionEntry, hasInflectionForm, inflectionResource);
+	}
+>>>>>>> begin inflections handling in French extractor
 
 	private Statement createTargetLanguageProperty(Resource trans, String lang) {
 		lang = lang.trim();

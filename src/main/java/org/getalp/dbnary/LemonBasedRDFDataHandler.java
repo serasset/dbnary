@@ -699,6 +699,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	}
 
 	public void registerOtherForm(String form)  {
-		aBox.add(currentLexEntry, DBnaryOnt.otherForm, form);
+        Resource otherForm = aBox.createResource();
+        aBox.add(currentLexEntry, LemonOnt.otherForm, otherForm);
+        aBox.add(otherForm, LemonOnt.writtenRep, form, extractedLang);
 	}
 }

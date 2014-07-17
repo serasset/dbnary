@@ -544,7 +544,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				if (pos.length() == 0)  {
 					currentBlock = Block.IGNOREPOS;
 				} else {
-<<<<<<< HEAD
 					blockStart = m.end();
 
 					if (posIsInflection) {
@@ -552,19 +551,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 // 						inflectionInfos = new InflectionsInfos();
 					} else {
 						currentBlock = Block.DEFBLOCK;
-=======
-					currentBlock = Block.DEFBLOCK;
-			        blockStart = m.end();
-
-			        if (posIsInflection) {
-// 						wdh.registerInflection(
-// 							wdh.currentLexEntry(),
-// 							pos,
-// 							inflectionMorphology,
-// 							inflectionCanonicalForm
-// 						);
-					} else {
->>>>>>> begin inflections handling in French extractor
 						wdh.addPartOfSpeech(pos);
 					}
 				}
@@ -682,25 +668,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	private boolean posIsInflection;
 
-<<<<<<< HEAD
 // 	private void fillInflectionInformations(Matcher m, String sectionTitle, Map<String,String> sectionArgs) {
 // 		
 // 	}
-=======
-	private void fillInflectionInformations(Matcher m, String sectionTitle, Map<String,String> sectionArgs) {
-		
-	}
->>>>>>> begin inflections handling in French extractor
 
 	private String getPOS(Matcher m, String sectionTitle, Map<String,String> sectionArgs) {
 		if (sectionTitle != null) {
 			if("flexion".equals(sectionArgs.get("3"))) {
 				posIsInflection = true;
-<<<<<<< HEAD
 // 				fillInflectionInformations(m, sectionTitle, sectionArgs);
-=======
-				fillInflectionInformations(m, sectionTitle, sectionArgs);
->>>>>>> begin inflections handling in French extractor
 			}
 
 			if (ignorablePosMarkers.contains(sectionTitle)) {

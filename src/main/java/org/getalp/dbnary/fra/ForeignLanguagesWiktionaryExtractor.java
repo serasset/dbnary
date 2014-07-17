@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 
 import java.util.Locale;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
 

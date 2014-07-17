@@ -2,9 +2,9 @@ package org.getalp.dbnary.eng;
 
 import java.util.HashMap;
 
-import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.LangTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,11 +48,11 @@ public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHand
 	public String getPrefixe(String lang){
 		if(this.prefixes.containsKey(lang))
 			return this.prefixes.get(lang);
-		else {
-			String prefix = DBNARY_URL + "/" + ISO639_3.sharedInstance.getIdCode(EnglishLangToCode.triletterCode(lang)) + "/eng/";
-			prefixes.put(lang, prefix);
-			aBox.setNsPrefix(ISO639_3.sharedInstance.getIdCode(EnglishLangToCode.triletterCode(lang)) + "-eng", prefix);
-			return prefix;
-		}
+
+		lang = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
+		String prefix = DBNARY_URL + "/" + lang + "/eng/";
+		prefixes.put(lang, prefix);
+		aBox.setNsPrefix(lang + "-eng", prefix);
+		return prefix;
 	}
 }

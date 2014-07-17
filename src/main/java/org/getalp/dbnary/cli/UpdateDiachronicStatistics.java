@@ -22,7 +22,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.stats.GeneralStatistics;
 import org.getalp.dbnary.stats.NymStatistics;
@@ -97,7 +97,7 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
 		}
 
 		String lang = remainingArgs[0];
-		lg2 = ISO639_3.sharedInstance.getTerm2Code(lang);
+		lg2 = LangTools.getTerm2Code(lang);
 		if (null == lg2) lg2=lang;
 		extractsDir = prefixDir + File.separator + "lemon" + File.separator + lg2;
 		statsDir = prefixDir + File.separator + "stats" + File.separator + lg2;
@@ -139,7 +139,7 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
 
 			if (m.matches()) {
 				String date = m.group(1);
-				String language = ISO639_3.sharedInstance.getIdCode(lg2);
+				String language = LangTools.getCode(lg2);
 
 				String checksum = getCheckSumColumn(gstats.get(date));
 				String md5 = getMD5Checksum(e);

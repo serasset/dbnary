@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -57,9 +57,7 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 			if (null != gloss) gloss = gloss.trim();
 			for (Entry<String, String> kv : parameterMap.entrySet()) {
 				if ("1".equals(kv.getKey())) continue;
-				String lang = ISO639_3.sharedInstance.getIdCode(kv.getKey());
-				if (null == lang) lang = kv.getKey();
-				extractTranslations(gloss, lang, kv.getValue());
+				extractTranslations(gloss, LangTools.normalize(kv.getKey()), kv.getValue());
 			}
 		} else {
 			// Just ignore the other template calls (uncomment to expand the template calls).

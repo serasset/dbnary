@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
@@ -519,12 +519,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					String trans2 = null;
 					String transcription = null;
 
-					lang = g2;
-					// normalize language code
-					String normLangCode;
-					if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-						lang = normLangCode;
-					}
+					lang = LangTools.normalize(g2);
 
 					// Extract word and transcription
 					// there are three case with 5 "|" : 1-"{{ .. }}'' or 2-"" [[ .. ]]"" or 3-just "|"
@@ -559,7 +554,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						word = g4;
 					}
 
-					lang=GermanLangToCode.triletterCode(lang);
+					lang=GermanLangToCode.threeLettersCode(lang);
 					if(lang!=null){
 						wdh.registerTranslation(lang, currentGlose, transcription, word);
 					}

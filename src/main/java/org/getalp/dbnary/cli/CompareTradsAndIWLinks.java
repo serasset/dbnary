@@ -28,6 +28,7 @@ import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
+import org.getalp.dbnary.LangTools;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -160,7 +161,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 		String clangs[] = countLanguages.split(",");
 		int i = 0;
 		while(i != clangs.length) {
-			counts.put(ISO639_3.sharedInstance.getIdCode(clangs[i]), new IncrementableInt());
+			counts.put(LangTools.getCode(clangs[i]), new IncrementableInt());
 			i = i + 1;
 		}
 

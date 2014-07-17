@@ -26,7 +26,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.stats.GeneralStatistics;
 import org.getalp.dbnary.stats.NymStatistics;
@@ -137,8 +137,8 @@ public class UpdateLatestStatistics extends DbnaryModel {
 				return name.matches(".._dbnary_lemon\\..*");
 			}})) {
 			String l2 = e.getName().substring(0, 2);
-			String language = ISO639_3.sharedInstance.getIdCode(l2);
-			String elang = ISO639_3.sharedInstance.getLanguageNameInEnglish(language);
+			String language = LangTools.getCode(l2);
+			String elang = LangTools.inEnglish(language);
 			
 			String checksum = getCheckSumColumn(gstats.get(elang));
 			String md5 = getMD5Checksum(e);

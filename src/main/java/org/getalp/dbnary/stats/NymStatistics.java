@@ -3,7 +3,7 @@ package org.getalp.dbnary.stats;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.DBnaryOnt;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -33,7 +33,7 @@ public class NymStatistics {
 			out.println(getHeaders());
 		}
 		
-		//out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+		//out.print(ISO639_3.sharedInstance.inEnglish(language));
 		out.print(countRelations(DBnaryOnt.synonym, m1));
 		out.print("," + countRelations(DBnaryOnt.approximateSynonym, m1));
 		out.print("," + countRelations(DBnaryOnt.antonym, m1));

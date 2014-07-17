@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.wiki.ExpandAllWikiModel;
@@ -520,7 +520,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			if (translationMatcher.matches()) {
 				String language = translationMatcher.group(1);
 				String lang;
-				if ((lang = PolishLangToCode.triletterCode(language)) != null) {
+				if ((lang = PolishLangToCode.threeLettersCode(language)) != null) {
 					language = lang;
 				} else {
 					log.debug("Unknown Language : {}", language);

@@ -20,7 +20,6 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.IWiktionaryExtractor;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.WiktionaryDataHandler;
@@ -29,6 +28,7 @@ import org.getalp.dbnary.WiktionaryExtractorFactory;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexer;
 import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.dbnary.LangTools;
 
 public class ExtractWiktionary {
 
@@ -158,7 +158,7 @@ public class ExtractWiktionary {
 		
 		if (cmd.hasOption(LANGUAGE_OPTION)){
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
-			language = ISO639_3.sharedInstance.getIdCode(language);
+			language = LangTools.getCode(language);
 		}
 		
 		String[] remainingArgs = cmd.getArgs();
@@ -196,7 +196,7 @@ public class ExtractWiktionary {
 		}
 
 		if (null == we) {
-			System.err.println("Wiktionary Extraction not yet available for " + ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+			System.err.println("Wiktionary Extraction not yet available for " + LangTools.inEnglish(language));
 			System.exit(1);
 		}
 		

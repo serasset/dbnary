@@ -3,7 +3,7 @@
  */
 package org.getalp.dbnary.bul;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 
 import java.util.HashMap;
 
@@ -11,8 +11,7 @@ import java.util.HashMap;
  * @author Andon
  *
  */
-public class BulgarianLangtoCode {
-
+public class BulgarianLangtoCode extends LangTools {
 	static HashMap<String,String> h = new HashMap<String,String>();
 	
 	static {
@@ -222,28 +221,7 @@ public class BulgarianLangtoCode {
         h.put("Шаблон:zu", "zu");
 	}
 
-	public static String triletterCode(String s){ 
-		if(s!=null && s!="") {
-			s= s.trim();
-			s=s.toLowerCase();
-			String resultat;
-			if (ISO639_3.sharedInstance.getIdCode(s) != null) {
-				resultat =ISO639_3.sharedInstance.getIdCode(s);
-			}else{
-				if(h.containsKey(s)){
-					s=h.get(s);
-					
-						resultat =ISO639_3.sharedInstance.getIdCode(s);
-					
-				}else {
-					resultat=null;
-				}
-			}
-			return resultat;
-		}else{
-
-			return s;
-		}
+	public static String threeLettersCode(String s) {
+		return threeLettersCode(h, s);
 	}
-
 }

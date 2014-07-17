@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -82,7 +82,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
 			Map<String, String> parameterMap, Appendable writer)
 			throws IOException {
 		if ("t+".equals(templateName)) {
-			String lang = normalizeLang(parameterMap.get("1"));
+			String lang = LangTools.normalize(parameterMap.get("1"));
 			int i = 2;
 			String s = null;
 			String usage = "", trans = null, currentGloss = null;
@@ -163,13 +163,4 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
 			// super.substituteTemplateCall(templateName, parameterMap, writer);
 		}
 	}
-
-	private String normalizeLang(String lang) {
-		String normLangCode;
-		if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-			lang = normLangCode;
-		}
-		return lang;
-	}
-
 }

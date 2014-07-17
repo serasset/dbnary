@@ -2,7 +2,7 @@ package org.getalp.dbnary.fra;
 
 import java.util.HashMap;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +50,10 @@ public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHand
 		if(this.prefixes.containsKey(lang))
 			return this.prefixes.get(lang);
 		else {
+			lang = LangTools.normalize(lang);
 			String prefix = DBNARY_URL + "/" + lang + "/fra/";
 			prefixes.put(lang, prefix);
-			aBox.setNsPrefix(ISO639_3.sharedInstance.getIdCode(lang) + "-fra", prefix);
+			aBox.setNsPrefix(lang + "-fra", prefix);
 			return prefix;
 		}
 	}

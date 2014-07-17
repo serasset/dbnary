@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -185,22 +185,12 @@ public class JapaneseTranslationsExtractorWikiModel {
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
 					} else {
-						langname = macro;
-						String l = ISO639_3.sharedInstance.getIdCode(langname);
-						if (l != null) {
-							langname = l;
-						}
+						langname = LangTools.normalize(macro);
 					}
 				} else if(link!=null) {
 					// TODO: extract [[{{eng}}]] kind of links
 					// TODO: some links come from *# bullet list used in a language.
-					langname = extractLanguage(link);
-					String l = ISO639_3.sharedInstance.getIdCode(langname);
-					if (l != null) {
-						langname = l;
-					} else { 
-						// System.err.println("Unexpected link: " + link + " while in LANGUE state.");
-					}
+					langname = LangTools.normalize(extractLanguage(link));
 				} else if (star != null) {
 					//System.err.println("Skipping '*' while in LANGUE state.");
 				} else if (term != null) {
@@ -211,7 +201,7 @@ public class JapaneseTranslationsExtractorWikiModel {
 					if (car.equals(":")) {
 						lang = langname.trim();
 						lang = AbstractWiktionaryExtractor.stripParentheses(lang);
-						lang = JapaneseLangtoCode.triletterCode(lang);
+						lang = JapaneseLangtoCode.threeLettersCode(lang);
 						langname = "";
 						ETAT = TRAD;
 					} else if (car.equals("\n") || car.equals("\r")) {
@@ -292,7 +282,7 @@ public class JapaneseTranslationsExtractorWikiModel {
 						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
 						if (null != word && word.length() != 0) log.debug("Word is not null ({}) when handling t+- macro in {}", word, this.delegate.currentLexEntry());
 						String l = argmap.get("1");
-						if (null != l && (null != lang) && ! lang.equals(ISO639_3.sharedInstance.getIdCode(l))) {
+						if (null != l && (null != lang) && ! lang.equals(LangTools.getCode(l))) {
 							// System.err.println("Language in t+ macro does not map language in list in ");// + this.delegate.currentLexEntry());
 						}
 						word = argmap.get("2");
@@ -302,7 +292,7 @@ public class JapaneseTranslationsExtractorWikiModel {
 						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
 						if (null != word && word.length() != 0) log.debug("Word is not null ({}) when handling lang macro in {}", word, this.delegate.currentLexEntry());
 						String l = argmap.get("1");
-						if (null != l && (null != lang) && ! lang.equals(ISO639_3.sharedInstance.getIdCode(l))) {
+						if (null != l && (null != lang) && ! lang.equals(LangTools.getCode(l))) {
 							// System.err.println("Language in lang macro does not map language in list in ");// + this.delegate.currentLexEntry());
 						}
 						word = AbstractWiktionaryExtractor.cleanUpMarkup(argmap.get("2"), true);

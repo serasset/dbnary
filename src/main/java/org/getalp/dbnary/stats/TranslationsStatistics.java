@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.DBnaryOnt;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -80,7 +80,7 @@ public class TranslationsStatistics {
 		total = total + others;
 		
 		
-		//out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+		//out.print(ISO639_3.sharedInstance.inEnglish(language));
 		for (Entry<String, IncrementableInt> j : counts.entrySet()) {
 			out.print(j.getValue().val + ",");
 		}
@@ -96,7 +96,7 @@ public class TranslationsStatistics {
 		String clangs[] = targets.split(",");
 		int i = 0;
 		while(i != clangs.length) {
-			counts.put(ISO639_3.sharedInstance.getIdCode(clangs[i]), new IncrementableInt());
+			counts.put(LangTools.getCode(clangs[i]), new IncrementableInt());
 			i = i + 1;
 		}
 		return counts;

@@ -3,7 +3,7 @@ package org.getalp.dbnary.stats;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.LemonOnt;
@@ -48,7 +48,7 @@ public class GeneralStatistics {
 			out.println(getHeaders());
 		}
 		
-		//out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+		//out.print(ISO639_3.sharedInstance.inEnglish(language));
 		out.print((nble + nblw + nblp));
 		out.print("," + nblv);
 		out.print("," + nbsense);

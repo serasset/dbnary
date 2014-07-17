@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.pol.DefinitionExpanderWikiModel;
@@ -748,12 +748,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				int i1, i2;
 				String lang, word;
 				if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
-					lang = g2.substring(0, i1);
-					// normalize language code
-					String normLangCode;
-					if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-						lang = normLangCode;
-					} 
+					lang = LangTools.normalize(g2.substring(0, i1));
 					String usage = null;
 					if ((i2 = g2.indexOf('|', i1 + 1)) == -1) {
 						word = g2.substring(i1 + 1);
@@ -762,7 +757,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						usage = g2.substring(i2 + 1);
 					}
 
-					lang = FrenchLangtoCode.triletterCode(lang);
+					lang = FrenchLangtoCode.threeLettersCode(lang);
 
 					if(lang != null) {
 						wdh.registerTranslation(lang, currentGlose, usage, word);

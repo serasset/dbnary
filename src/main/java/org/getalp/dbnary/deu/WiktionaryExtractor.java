@@ -185,39 +185,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 	/**
-	 * @uml.property  name="state"
-	 */
-	int state = NODATA;
-	/**
-	 * @uml.property  name="definitionBlockStart"
-	 */
-	int definitionBlockStart = -1;
-	/**
-	 * @uml.property  name="orthBlockStart"
-	 */
-	int orthBlockStart = -1;
-	/**
-	 * @uml.property  name="translationBlockStart"
-	 */
-	int translationBlockStart = -1;
-	/**
-	 * @uml.property  name="nymBlockStart"
-	 */
-	private int nymBlockStart = -1;
-	/**
 	 * @uml.property  name="currentNym"
 	 * @uml.associationEnd  qualifier="key:java.lang.String java.lang.String"
 	 */
 	private String currentNym = null;
 
-	void gotoNoData(Matcher m) {
-		state = NODATA;
-	}
-
-	void gotoTradBlock(Matcher m) {
-		translationBlockStart = m.end();
-		state = TRADBLOCK;
-	}
 
 	void registerNewPartOfSpeech(Matcher m) {
 		// if (m.group(4) != null && ! m.group(4).equals("Deutsch"))
@@ -227,258 +199,117 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		wdh.addPartOfSpeech(m.group(3));
 	}
 
-	void gotoDefBlock(Matcher m) {
-		state = DEFBLOCK;
-		definitionBlockStart = m.end();
-	}
-
-	void gotoOrthoAltBlock(Matcher m) {
-		state = ORTHOALTBLOCK;
-		orthBlockStart = m.end();
-	}
-
-	void leaveDefBlock(Matcher m) {
-		int end = computeRegionEnd(definitionBlockStart, m);
-		extractDefinitions(definitionBlockStart,end );
-		definitionBlockStart = -1;
-	}
-
-	void leaveTradBlock(Matcher m) {
-		int end = computeRegionEnd(translationBlockStart, m);
-		extractTranslations(translationBlockStart, end);
-		translationBlockStart = -1;
-	}
-
-	void leaveOrthoAltBlock(Matcher m) {
-		int end = computeRegionEnd(orthBlockStart, m);
-		extractOrthoAlt(orthBlockStart, computeRegionEnd(orthBlockStart, m));
-		orthBlockStart = -1;
-	}
-
-	private void gotoNymBlock(Matcher m) {
-		state = NYMBLOCK;
-		currentNym = nymMarkerToNymName.get(m.group(1));
-		nymBlockStart = m.end();
-	}
-
-	private void leaveNymBlock(Matcher m) {
-		extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
-		currentNym = null;
-		nymBlockStart = -1;
-	}
-
 	// TODO: Prise en compte des diminutifs (Verkleinerungsformen)
 	// TODO: Prise en compte des "concepts dérivés" ? (Abgeleitete Begriffe)
 	// TODO: supprimer les "Deklinierte Form" des catégories extraites.
-	private void extractGermanData(int startOffset, int endOffset) {
-//		System.out.println(pageContent.substring(startOffset, endOffset));
+	
+	private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK};
+
+	private Block currentBlock=Block.NOBLOCK;
+
+	int blockStart=-1;
+	
+//	private String currentNym = null;
+	
+	
+	private void extractGermanData(int startOffset, int endOffset){
 		Matcher m = macroOrPOSPattern.matcher(pageContent);
 		m.region(startOffset, endOffset);
 		wdh.initializeEntryExtraction(wiktionaryPageName);
 		wdh.setWiktionaryIndex(wi);
-		gotoNoData(m);
-		while (m.find()) {
-			switch (state) {
-			case NODATA:
-				if (m.group(1) != null) {
-					// It's a macro
-					if (m.group(1).equals("Bedeutungen")) {
-						// Definitions
-						gotoDefBlock(m);
-					} else if (m.group(1).equals("Alternative Schreibweisen")) {
-						// Alternative spelling
-						gotoOrthoAltBlock(m);
-					} else if (nymMarkers.contains(m.group(1))) {
-						// Nyms
-						gotoNymBlock(m);
-					} else if (ignorableSectionMarkers.contains(m.group(1))) {
-						gotoNoData(m);
-					}
-				} else if (m.group(3) != null) {
-					// partOfSpeech
-					registerNewPartOfSpeech(m);
-				} else if (m.group(5) != null) {
-					// translations
-					if (m.group(5).trim().equals("Übersetzungen")) {
-						gotoTradBlock(m);
-					}
-				} else {
-					// Multiline macro
-					// System.out.println(m.group());
-				}
-
-				break;
-			case DEFBLOCK:
-				if (m.group(1) != null) {
-					// It's a macro
-					if (m.group(1).equals("Bedeutungen")) {
-						// Definitions
-						leaveDefBlock(m);
-						gotoDefBlock(m);
-					} else if (m.group(1).equals("Alternative Schreibweisen")) {
-						// Alternative spelling
-						leaveDefBlock(m);
-						gotoOrthoAltBlock(m);
-					} else if (nymMarkers.contains(m.group(1))) {
-						// Nyms
-						leaveDefBlock(m);
-						gotoNymBlock(m);
-					} else if (ignorableSectionMarkers.contains(m.group(1))) {
-						leaveDefBlock(m);
-						gotoNoData(m);
-					}
-				} else if (m.group(3) != null) {
-					// partOfSpeech
-					leaveDefBlock(m);
-					registerNewPartOfSpeech(m);
-					gotoNoData(m);
-				} else if (m.group(5) != null) {
-					// translations
-					if (m.group(5).trim().equals("Übersetzungen")) {
-						leaveDefBlock(m);
-						gotoTradBlock(m);
-					}
-				} else {
-					// Multiline macro
-					// System.out.println(m.group());
-				}
-
-				break;
-			case TRADBLOCK:
-				if (m.group(1) != null) {
-					// It's a macro
-					if (m.group(1).equals("Bedeutungen")) {
-						// Definitions
-						leaveTradBlock(m);
-						gotoDefBlock(m);
-					} else if (m.group(1).equals("Alternative Schreibweisen")) {
-						// Alternative spelling
-						leaveTradBlock(m);
-						gotoOrthoAltBlock(m);
-					} else if (nymMarkers.contains(m.group(1))) {
-						// Nyms
-						leaveTradBlock(m);
-						gotoNymBlock(m);
-					} else if (ignorableSectionMarkers.contains(m.group(1))) {
-						leaveTradBlock(m);
-						gotoNoData(m);
-					}
-				} else if (m.group(3) != null) {
-					// partOfSpeech
-					leaveTradBlock(m);
-					registerNewPartOfSpeech(m);
-					gotoNoData(m);
-				} else if (m.group(5) != null) {
-					// translations
-					if (m.group(5).trim().equals("Übersetzungen")) {
-						leaveTradBlock(m);
-						gotoTradBlock(m);
-					}
-				} else {
-					// Multiline macro
-					// System.out.println(m.group());
-				}
-
-				break;
-			case ORTHOALTBLOCK:
-				if (m.group(1) != null) {
-					// It's a macro
-					if (m.group(1).equals("Bedeutungen")) {
-						// Definitions
-						leaveOrthoAltBlock(m);
-						gotoDefBlock(m);
-					} else if (m.group(1).equals("Alternative Schreibweisen")) {
-						// Alternative spelling
-						leaveOrthoAltBlock(m);
-						gotoOrthoAltBlock(m);
-					} else if (nymMarkers.contains(m.group(1))) {
-						// Nyms
-						leaveOrthoAltBlock(m);
-						gotoNymBlock(m);
-					} else if (ignorableSectionMarkers.contains(m.group(1))) {
-						leaveOrthoAltBlock(m);
-						gotoNoData(m);
-					}
-				} else if (m.group(3) != null) {
-					// partOfSpeech
-					leaveOrthoAltBlock(m);
-					registerNewPartOfSpeech(m);
-					gotoNoData(m);
-				} else if (m.group(5) != null) {
-					// translations
-					if (m.group(5).trim().equals("Übersetzungen")) {
-						leaveOrthoAltBlock(m);
-						gotoTradBlock(m);
-					}
-				} else {
-					// Multiline macro
-					// System.out.println(m.group());
-				}
-
-				break;
-			case NYMBLOCK:
-				// ICI
-				if (m.group(1) != null) {
-					// It's a macro
-					if (m.group(1).equals("Bedeutungen")) {
-						// Definitions
-						leaveNymBlock(m);
-						gotoDefBlock(m);
-					} else if (m.group(1).equals("Alternative Schreibweisen")) {
-						// Alternative spelling
-						leaveNymBlock(m);
-						gotoOrthoAltBlock(m);
-					} else if (nymMarkers.contains(m.group(1))) {
-						// Nyms
-						leaveNymBlock(m);
-						gotoNymBlock(m);
-					} else if (ignorableSectionMarkers.contains(m.group(1))) {
-						leaveNymBlock(m);
-						gotoNoData(m);
-					}
-				} else if (m.group(3) != null) {
-					// partOfSpeech
-					leaveNymBlock(m);
-					registerNewPartOfSpeech(m);
-					gotoNoData(m);
-				} else if (m.group(5) != null) {
-					// translations
-					if (m.group(5).trim().equals("Übersetzungen")) {
-						leaveNymBlock(m);
-						gotoTradBlock(m);
-					}
-				} else {
-					// Multiline macro
-					// System.out.println(m.group());
-				}
-				break;
-			default:
-				assert false : "Unexpected state while extracting translations from dictionary.";
-			}
-		}
-		// Finalize the entry parsing
 		
-		switch (state) {
-		case NODATA:
-			break;
-		case DEFBLOCK:
-			leaveDefBlock(m);
-			break;
-		case TRADBLOCK:
-			leaveTradBlock(m);
-			break;
-		case ORTHOALTBLOCK:
-			leaveOrthoAltBlock(m);
-			break;
-		case NYMBLOCK:
-			leaveNymBlock(m);
-			break;
-		default:
-			assert false : "Unexpected state while extracting translations from dictionary.";
-		}
+		currentBlock=Block.NOBLOCK;
+		
+//		Map <String, String> sectionArgs;
+		
+		while(m.find()){
+			if (null != m.group(1)) {
+				
+				//go to the good block
+				if (m.group(1).equals("Bedeutungen")) {
+					leaveCurrentBlock(m);
+					// go to DefBlock
+					currentBlock=Block.DEFBLOCK;
+					blockStart=m.end();
+				} else if (m.group(1).equals("Alternative Schreibweisen")) {
+					leaveCurrentBlock(m);
+					//go to OrthoAltBlock
+					currentBlock=Block.ORTHOALTBLOCK;
+					blockStart = m.end();
+				} else if (nymMarkers.contains(m.group(1))) {
+					leaveCurrentBlock(m);
+					//go to NymBlock
+					currentBlock=Block.NYMBLOCK;
+					currentNym = nymMarkerToNymName.get(m.group(1));
+					blockStart = m.end();
+				} else if (ignorableSectionMarkers.contains(m.group(1))) {
+					leaveCurrentBlock(m);
+					//go to NODATA
+					currentBlock=Block.NOBLOCK;
+				} else {
+				}
+			} else if (null != m.group(3)) {
+				//part Of speech
+				leaveCurrentBlock(m);
+				registerNewPartOfSpeech(m);
+				//go to the NODATA block
+				currentBlock=Block.NOBLOCK;
+			} else if (null != m.group(5)) {
+				if (m.group(5).trim().equals("Übersetzungen")) {
+					leaveCurrentBlock(m);
+					//go to the trad block
+					currentBlock=Block.TRADBLOCK;
+					blockStart = m.end();
+				}
+				
+			} else {
+			}
+	 	}
+		leaveCurrentBlock(m);
 		wdh.finalizeEntryExtraction();
+			
 	}
 
+	private void leaveCurrentBlock(Matcher m){
+		if (blockStart == -1) {
+				return;
+			}
+
+			int end = computeRegionEnd(blockStart, m);
+					extractOtherForms(blockStart, end);
+			switch (currentBlock) {
+				case NOBLOCK:
+				case IGNOREPOS:
+					break;
+				case DEFBLOCK:
+					extractDefinitions(blockStart, end);
+					break;
+				case TRADBLOCK:
+					extractTranslations(blockStart, end);
+					break;
+				case ORTHOALTBLOCK:
+					extractOrthoAlt(blockStart, end);
+					break;
+				case NYMBLOCK:
+					extractNyms(currentNym, blockStart, end);
+					currentNym = null;
+					break;
+				case INFLECTIONBLOCK:
+		// 			extractInflections(blockStart, end);
+					break;
+				default:
+					assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+			}
+
+			blockStart = -1;
+		
+	}
+	
+	
+	
+	
+	
+	
 	static final String glossOrMacroPatternString;
 	static final Pattern glossOrMacroPattern;
 
@@ -681,12 +512,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 	public void extractOtherForms( int start, int end){
-		System.out.println("plop");
-		System.out.println(pageContent.substring(start, end));
 //		Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
 //		otherFormMatcher.region(start, end);
+//		GermanExtractorWikiModel gewm = new
 //		while(otherFormMatcher.find()){
-//			System.out.println("blablabla"+otherFormMatcher.group());
 //		}
 	}
 	

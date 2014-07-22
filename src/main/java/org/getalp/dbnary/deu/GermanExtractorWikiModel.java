@@ -1,24 +1,18 @@
 package org.getalp.dbnary.deu;
 
-import java.security.acl.LastOwnerException;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.jena.iri.impl.ViolationCodeInfo.InSpec;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.dbnary.fra.FrenchExtractorWikiModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.hp.hpl.jena.rdf.model.Resource;
 
 public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
@@ -100,7 +94,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		if (doc == null){
 			return ;
 		}
-		
 		NodeList tables =doc.getElementsByTagName("table");
 		for(int i=0;i<3;i++){
 			Element tablesItem=(Element) tables.item(i);
@@ -176,7 +169,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 									String name=itemsList.item(e).getNodeName();
 									if (name.equals("#text")) {
 										String form=itemsList.item(e).getTextContent();
-										form=removeUselessSpaces(form.replace(" "," ").replaceAll("\\<.*\\>", "").replace("—",""));//remove insecable spaces and </noinclude> markup
+										form=removeUselessSpaces(form.replaceAll("\\<.*\\>", "").replace("—",""));//remove insecable spaces and </noinclude> markup
 										if( !form.isEmpty() && !form.contains("Pers.")) {
 											// for verbs like ankommen : ich komme an
 											if (!change && isPhrasalVerb(form) ) {
@@ -218,10 +211,11 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 								if (null!=tdItem) {
 									NodeList tdContent=tdItem.getChildNodes();
 									for (int k=0;k<tdContent.getLength();k++) {
-										String form=tdContent.item(k).getTextContent().replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", "").replace(" "," ");
+										String form=tdContent.item(k).getTextContent();
+										form=removeUselessSpaces(form).replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", "");
 											if( !form.replace(" ","").isEmpty() ) {
 //											System.out.println(i+":"+form);
-												addDeclinationForm(form);
+//												addDeclinationForm(form);
 											}
 									}
 								}
@@ -340,6 +334,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 
 
 	private String removeUselessSpaces(String form){
+		form =form.replace(" "," ");//replace unsecable spaces
 		String res=form.replace("  "," ");
 		if(!res.isEmpty()){
 		int debut=0,fin=res.length()-1;

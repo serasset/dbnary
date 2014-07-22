@@ -22,7 +22,11 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
-
+	//test template matcher
+	private final static String germanTemplateString="\\{\\{Deutsch(.*|\\|.*\\=.*)*\\}\\}";
+	private static Pattern germanTemplatePattern;
+	
+	//
 	private final static String germanMorphoBegin = "{{Deutsch ";
 	private final static String germanMorphoEnd = "}}";
 	private final static String germanRegularVerbString="Deutsch Verb regelmäßig";
@@ -33,6 +37,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	static{
 		germanRegularVerbPattern= Pattern.compile(germanRegularVerbString);
 		germanNonRegularVerbPattern= Pattern.compile(germanNonRegularVerbString);
+		germanTemplatePattern=Pattern.compile(germanTemplateString);
 	}
 	
 	private Logger log = LoggerFactory.getLogger(GermanExtractorWikiModel.class);
@@ -49,13 +54,18 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		Matcher mr = germanRegularVerbPattern.matcher(conjugationTemplateCall);
 		Matcher mu=germanNonRegularVerbPattern.matcher(conjugationTemplateCall);
 		
+		
 		Document doc = wikicodeToHtmlDOM(conjugationTemplateCall);
+		
+		
+		
 		if (doc == null){
 			return ;
 		}
+
 		
 		NodeList tables =doc.getElementsByTagName("table");
-
+		
 		Element tablesItem =(Element) tables.item(1);
 		getTablesConj(tablesItem,11,0);
 		
@@ -82,6 +92,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			getTablesConj(tablesItem,3,2);
 			getTablesConj(tablesItem,13,2);
 		}
+
 	}
 	
 	public void parseDeclination(String declinationTemplateCall){
@@ -102,7 +113,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	public void parseOtherForm(String page,String originalPos){
 		if(page!=null){
 			String s = getForm(page, originalPos);
-//			Pattern markups = Pattern.compile("<.*>");
 			s=s.replaceAll("\\<.*\\>", "\n  =");
 			s=s.replace(" "," ");
 			if(s!=null){
@@ -149,38 +159,41 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	private String part="";
 	
 private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd, int jEnd){
-		
+	
 		boolean change=false;	//this bool changes if the current verb is a phrasal verb
 		if(null!=tablesItem){
 			NodeList someTRs = tablesItem.getElementsByTagName("tr");
 			
 			for(int i=iBegin;i<iEnd;i++){
-				Element trItem= (Element)someTRs.item(i);
-				if(trItem!=null){
-					NodeList interrestingTDs = trItem.getElementsByTagName("td") ;
+				Element linesItem= (Element)someTRs.item(i);
+				if(linesItem!=null){
+					NodeList interrestingTDs = linesItem.getElementsByTagName("td") ;
 						for(int j=jBegin;j<jEnd;j++){
-							Element tdItem=(Element)interrestingTDs.item(j);
-							if(tdItem!=null){
-								NodeList itemsList = tdItem.getChildNodes();
+							Element colsItem=(Element)interrestingTDs.item(j);
+							if(colsItem!=null){
+								NodeList itemsList = colsItem.getChildNodes();
 								for(int e=0; e<itemsList.getLength();e++){
-									String form=itemsList.item(e).getTextContent().replace("—","");
 									String name=itemsList.item(e).getNodeName();
-									form=form.replace(" "," ");//remove insecable spaces
-									form =removeUselessSpaces(form);
-									if (name.equals("#text") && !form.isEmpty() && !form.contains("Pers.")) {
-										// for verbs like ankommen : ich komme an
-										if (!change && isPhrasalVerb(form) ) {
-											part=(form.substring(form.lastIndexOf(" "))).replace(" ","").replace("\n","");
-											if(!part.isEmpty()){
-												change= true;
-												iBegin=iBegin+1;
-												iEnd=iEnd+1;
-												jEnd=jEnd+2;
+									if (name.equals("#text")) {
+										String form=itemsList.item(e).getTextContent();
+										form=removeUselessSpaces(form.replace(" "," ").replaceAll("\\<.*\\>", "").replace("—",""));//remove insecable spaces and </noinclude> markup
+										if( !form.isEmpty() && !form.contains("Pers.")) {
+											// for verbs like ankommen : ich komme an
+											if (!change && isPhrasalVerb(form) ) {
+												part=extractPart(form);
+												if(!part.isEmpty()){
+													change= true;
+													iBegin=iBegin+1;
+													iEnd=iEnd+1;
+													jEnd=jEnd+2;
+												}
+											}
+		//									System.out.println("i : "+i+" j : "+j+"  form : "+form);
+											form =(form.replace("\n","")).replace(",","");
+											if(!form.replace(" ","").isEmpty()){
+												addVerbForm(form, change);
 											}
 										}
-	//									System.out.println("i : "+i+" j : "+j+"  form : "+form);
-										form =(form.replace("\n","")).replace(",","");
-										addVerbForm(form, change);
 									}
 								}
 							}
@@ -188,32 +201,6 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 				}
 			}
 		}
-	
-	}
-	
-	private String removeUselessSpaces(String form){
-		String res=form.replace("  "," ");
-		while(!res.isEmpty() && res.charAt(0)==' '){
-			res=res.substring(1);
-		}
-		while(!res.isEmpty() && res.length()!=0 && res.charAt(res.length()-1)==' '){
-			res=res.substring(0,res.length()-1);
-		}
-		return res;
-	}
-
-	private boolean isPhrasalVerb(String form){
-		return nbSpaceForm(form)>=2;
-	}
-	
-	private int nbSpaceForm(String form){
-		int nbsp=0;
-		for(int i=1; i<form.length()-1;i++){
-			if(form.charAt(i)==' '){
-				nbsp++;
-			}
-		}
-		return nbsp;
 	}
 	
 		
@@ -227,18 +214,17 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 					if (null!=trItem) {
 						NodeList someTD=trItem.getElementsByTagName("td");
 						for (int j=0;j<someTD.getLength();j++) {
-							if ((j%2)==1 && someTD.getLength()==8) {
-								Element tdItem=(Element)someTD.item(j);
+							Element tdItem=(Element)someTD.item(j);
 								if (null!=tdItem) {
 									NodeList tdContent=tdItem.getChildNodes();
 									for (int k=0;k<tdContent.getLength();k++) {
-										String form=tdContent.item(k).getTextContent();
-										if( !form.isEmpty() ) {
-											addDeclinationForm(form);
-										}
+										String form=tdContent.item(k).getTextContent().replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", "").replace(" "," ");
+											if( !form.replace(" ","").isEmpty() ) {
+//											System.out.println(i+":"+form);
+												addDeclinationForm(form);
+											}
 									}
 								}
-							}
 						}
 					}
 				}
@@ -261,25 +247,18 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 	}
 	
 	private void addDeclinationForm(String s){
-		s=s.replace("\n"," ");
-//		String [] tab= s.split(" ");
-//		for (String r : tab) {
-			if (!s.isEmpty()) {
-				wdh.registerOtherForm(s);
-			}
-//		}
+		wdh.registerOtherForm(s);
 	}
 	
 	//comp Verb
 	private void addVerbForm(String s, boolean isPhrasal){
-
 		if (!s.isEmpty()) {
 			int nbsp= nbSpaceForm(s);
 			String res="";
 			boolean imp=s.contains("!");
 			if (!imp) {
 				if(!isPhrasal){
-//					System.out.println("non phrasal");
+					//System.out.println("non phrasal");
 					if( nbsp==1) {
 							res=s.substring(s.indexOf(" ")+1);
 						
@@ -289,7 +268,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 					}
 				}
 				else{
-//					System.out.println("phrasal");
+					//System.out.println("phrasal");
 					//three words subject verb part
 					if (nbsp==2) {
 						res=s.substring(s.indexOf(" ")+1);
@@ -315,7 +294,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 			}
 			if (!res.isEmpty()) {
 				wdh.registerOtherForm(res);
-//				System.out.println(res);
+				//System.out.println("adding :"+res);
 			}
 		}
 	}
@@ -347,6 +326,53 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 		return ind;
 	}
 	
+	private String extractPart(String form){
+		String res="";
+		int i=form.length()-1;
+		char cc=form.charAt(i);
+		while(i>=0 && ' '!=cc){
+			res=cc+res;
+			i--;
+			cc=form.charAt(i);
+		}
+		return res;
+	}
+
+
+	private String removeUselessSpaces(String form){
+		String res=form.replace("  "," ");
+		if(!res.isEmpty()){
+		int debut=0,fin=res.length()-1;
+		char cdebut=res.charAt(debut),cfin=res.charAt(fin);
+		
+		while(fin> debut && (cdebut==' ' || cfin==' ')){
+			if(cdebut == ' '){
+				debut++;
+				cdebut=res.charAt(debut);
+			}
+			if(cfin==' '){
+				fin--;
+				cfin=res.charAt(fin);
+			}
+		}
+		res = res.substring(debut,fin+1);
+		}
+		return res;
+	}
+
+	private boolean isPhrasalVerb(String form){
+		return nbSpaceForm(form)>=2;
+	}
+	
+	private int nbSpaceForm(String form){
+		int nbsp=0;
+		for(int i=1; i<form.length()-1;i++){
+			if(form.charAt(i)==' '){
+				nbsp++;
+			}
+		}
+		return nbsp;
+	}
 	
 	
 	

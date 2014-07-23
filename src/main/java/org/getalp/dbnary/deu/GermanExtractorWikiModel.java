@@ -1,5 +1,6 @@
 package org.getalp.dbnary.deu;
 
+import java.security.acl.LastOwnerException;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,11 +17,6 @@ import org.w3c.dom.NodeList;
 
 public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
-	//test template matcher
-	private final static String germanTemplateString="\\{\\{Deutsch(.*|\\|.*\\=.*)*\\}\\}";
-	private static Pattern germanTemplatePattern;
-	
-	//
 	private final static String germanMorphoBegin = "{{Deutsch ";
 	private final static String germanMorphoEnd = "}}";
 	private final static String germanRegularVerbString="Deutsch Verb regelmäßig";
@@ -31,7 +27,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	static{
 		germanRegularVerbPattern= Pattern.compile(germanRegularVerbString);
 		germanNonRegularVerbPattern= Pattern.compile(germanNonRegularVerbString);
-		germanTemplatePattern=Pattern.compile(germanTemplateString);
 	}
 	
 	private Logger log = LoggerFactory.getLogger(GermanExtractorWikiModel.class);
@@ -106,41 +101,64 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	public void parseOtherForm(String page,String originalPos){
 		if(page!=null){
 			String s = getForm(page, originalPos);
-			s=s.replaceAll("\\<.*\\>", "\n  =");
-			s=s.replace(" "," ");
-			if(s!=null){
-				String[] tab = s.split("\n");
-				for(String r : tab){
-					if(!r.isEmpty()){
-						if(r.indexOf("Hilfsverb")==-1 && r.indexOf("Bild")==-1 && r.indexOf("Titel")==-1 && r.indexOf("Weitere_Konjugationen")==-1){
-	        				int ind = r.indexOf("=");
-							if(ind!=-1){
-								String e=extractString(r, "=", "\n");
-								if(!e.isEmpty()){
-										e=e.substring(1);
-									if(!originalPos.equals("Verb")){
-										if (-1!=e.indexOf(" ")){
-											e=extractString(e," ", "\n");
-											if(!e.isEmpty()){
-												e=e.substring(1);
+			
+			
+			/*
+			 * commented code begin to treat pronomen
+			 */
+//			String otherFormTemplateString=germanMorphoBegin.replace("{","\\{")+originalPos+"\\|*.*"+germanMorphoEnd.replace("}", "\\}");
+//			Pattern otherFormPattern=Pattern.compile(otherFormTemplateString);
+//			Matcher m=otherFormPattern.matcher(page);
+//			if(m.find()){
+//				Document doc = wikicodeToHtmlDOM(m.group());
+//				if (doc == null){
+//					return ;
+//				}
+//				NodeList tables =doc.getElementsByTagName("table");
+//				for(int i=0;i<tables.getLength();i++){
+//					Element tablesItem=(Element) tables.item(i);
+//					getTablesDeclination(tablesItem);
+//				}
+//			}
+//			else{
+			
+			
+				s=s.replaceAll("\\<.*\\>", "\n  =");
+				s=s.replace(" "," ");
+				if(s!=null){
+					String[] tab = s.split("\n");
+					for(String r : tab){
+						if(!r.isEmpty()){
+							if(r.indexOf("Hilfsverb")==-1 && r.indexOf("Bild")==-1 && r.indexOf("Titel")==-1 && r.indexOf("Weitere_Konjugationen")==-1){
+		        				int ind = r.indexOf("=");
+								if(ind!=-1){
+									String e=extractString(r, "=", "\n");
+									if(!e.isEmpty()){
+											e=e.substring(1);
+										if(!originalPos.equals("Verb")){
+											if (-1!=e.indexOf(" ")){
+												e=extractString(e," ", "\n");
+												if(!e.isEmpty()){
+													e=e.substring(1);
+												}
 											}
 										}
-									}
-									e=e.replace("—","");
-									if(!e.isEmpty()){
-										if(e.indexOf('(')!=-1){
-											wdh.registerOtherForm(e.replaceAll("!|\\(|\\)",""));
+										e=e.replace("—","");
+										if(!e.isEmpty()){
+											if(e.indexOf('(')!=-1){
+												wdh.registerOtherForm(e.replaceAll("!|\\(|\\)",""));
+											}
+											wdh.registerOtherForm(e.replaceAll("!|\\(.*\\)", ""));
 										}
-										wdh.registerOtherForm(e.replaceAll("!|\\(.*\\)", ""));
 									}
 								}
+								
+					       	}
 							}
-							
-				       	}
-						}
+				        }
 			        }
 		        }
-	        }
+//			}
         }
 	
 	private void getTablesConj(Element tablesItem, int iBegin, int jBegin){
@@ -200,25 +218,33 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 	private void getTablesDeclination(Element tablesItem){
 		
 		if (null != tablesItem) {
-			NodeList someTRs = tablesItem.getElementsByTagName("tr");
+			NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
 			if (null!=someTRs) {
 				for (int i=0;i<someTRs.getLength();i++) {
 					Element trItem= (Element)someTRs.item(i);
 					if (null!=trItem) {
-						NodeList someTD=trItem.getElementsByTagName("td");
+						NodeList someTD=trItem.getElementsByTagName("td");//list of cols Elements
 						for (int j=0;j<someTD.getLength();j++) {
+							if((j%2)==1){
 							Element tdItem=(Element)someTD.item(j);
 								if (null!=tdItem) {
 									NodeList tdContent=tdItem.getChildNodes();
 									for (int k=0;k<tdContent.getLength();k++) {
 										String form=tdContent.item(k).getTextContent();
-										form=removeUselessSpaces(form).replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", "");
-											if( !form.replace(" ","").isEmpty() ) {
-//											System.out.println(i+":"+form);
-//												addDeclinationForm(form);
-											}
+										if(!form.isEmpty()){
+											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", ""));
+											System.out.println(form);
+												if(nbSpaceForm(form)!=0){
+													form=form.substring(form.lastIndexOf(" ")+1);
+												}
+												if( !form.replace(" ","").isEmpty() ) {
+	//											System.out.println(form);
+													addDeclinationForm(form);
+												}
+										}
 									}
 								}
+							}
 						}
 					}
 				}
@@ -264,13 +290,15 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 				else{
 					//System.out.println("phrasal");
 					//three words subject verb part
-					if (nbsp==2) {
+					if (nbsp==2 &&  part.equals(s.substring(s.lastIndexOf(" ")+1))) {
 						res=s.substring(s.indexOf(" ")+1);
 					}
 					//two words subject verb or verb + part
 					else if (nbsp==1) {
+						
 						if (s.substring(s.lastIndexOf(" ")+1).equals(part)) {
 							res=s;
+							
 						}
 						else{
 							res=s.substring(s.indexOf(" ")+1);
@@ -288,7 +316,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 			}
 			if (!res.isEmpty()) {
 				wdh.registerOtherForm(res);
-				//System.out.println("adding :"+res);
+//				System.out.println("::"+res);
 			}
 		}
 	}
@@ -369,6 +397,10 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 		return nbsp;
 	}
 	
+	
+	public String getIncludeOnlyText(String rawWikiText) {
+		return rawWikiText;
+	}
 	
 	
 }

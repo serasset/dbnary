@@ -1,19 +1,14 @@
 package org.getalp.dbnary.deu;
 
 import java.util.Locale;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.w3c.dom.Document;
 
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sparql.function.library.substr;
 
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.LemonOnt;
-import org.getalp.dbnary.DbnaryModel;
 
 /**
  * 
@@ -51,7 +46,7 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 		
 		GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(this, wi, new Locale("de"), "/${Bild}", "/${Titel}");
 		
-		//problem with Hilfsverb
+		//problem with deklination...
 		if (((normalizedType == LemonOnt.Word) || (normalizedType == LemonOnt.LexicalEntry))) {
 			if(normalizedPOS==LexinfoOnt.verb){
 				String conjugationPageContent = wi.getTextOfPage(currentLexEntry()+germanConjugationSuffix);
@@ -64,7 +59,8 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 				
 			}
 			else{
-				if(!originalPOS.equals("Konjugierte Form") && !originalPOS.equals("Deklinierte Form")){
+				
+//				if(!originalPOS.equals("Konjugierte Form") && !originalPOS.equals("Deklinierte Form")){
 					String declinationPageContent = wi.getTextOfPage(currentLexEntry()+germanDeclinationSuffix);
 					if(declinationPageContent!=null){
 						gewm.parseDeclination(declinationPageContent);
@@ -72,23 +68,23 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 					else{
 						gewm.parseOtherForm(wi.getTextOfPage(currentLexEntry()), originalPOS);
 					}
-				}
-				else{
-					//add the infinitiv form if the current lex Entry is inflected
-					Matcher m = basedFormPattern.matcher(wi.getTextOfPage(currentLexEntry()));
-					if(m.find()){
-						this.registerOtherForm(m.group(1));
-						String pageContent = lexEntryToPage(m.group(1));
-						if(null!= pageContent){
-							if(originalPOS.equals("Konjugierte Form")){
-								gewm.parseConjugation(pageContent);
-							}
-							else{
-								gewm.parseDeclination(pageContent);
-							}
-						}
-					}
-				}
+//				}
+//				else{
+//					//add the infinitiv form if the current lex Entry is inflected
+//					Matcher m = basedFormPattern.matcher(wi.getTextOfPage(currentLexEntry()));
+//					if(m.find()){
+//						this.registerOtherForm(m.group(1));
+//						String pageContent = lexEntryToPage(m.group(1));
+//						if(null!= pageContent){
+//							if(originalPOS.equals("Konjugierte Form")){
+//								gewm.parseConjugation(pageContent);
+//							}
+//							else{
+//								gewm.parseDeclination(pageContent);
+//							}
+//						}
+//					}
+//				}
 			}
 		}
 	}

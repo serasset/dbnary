@@ -51,7 +51,7 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 			if(normalizedPOS==LexinfoOnt.verb){
 				String conjugationPageContent = wi.getTextOfPage(currentLexEntry()+germanConjugationSuffix);
 				if(conjugationPageContent!=null){
-					gewm.parseConjugation(conjugationPageContent);
+					gewm.parseConjugation(conjugationPageContent, originalPOS);
 				}
 				else{
 					gewm.parseOtherForm(wi.getTextOfPage(currentLexEntry()), originalPOS);
@@ -63,7 +63,7 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler{
 //				if(!originalPOS.equals("Konjugierte Form") && !originalPOS.equals("Deklinierte Form")){
 					String declinationPageContent = wi.getTextOfPage(currentLexEntry()+germanDeclinationSuffix);
 					if(declinationPageContent!=null){
-						gewm.parseDeclination(declinationPageContent);
+						gewm.parseDeclination(declinationPageContent, originalPOS);
 					}
 					else{
 						gewm.parseOtherForm(wi.getTextOfPage(currentLexEntry()), originalPOS);

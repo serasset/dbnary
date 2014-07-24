@@ -1,5 +1,6 @@
 package org.getalp.dbnary.deu;
 
+import java.awt.PageAttributes.OriginType;
 import java.security.acl.LastOwnerException;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -38,15 +39,31 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		this.wdh=super.delegate;
 	}
 	
-	public void parseConjugation(String conjugationTemplateCall) {
+	public Document wikicodeToHtmlDOM (String wikicode, String regex) {
+		String otherFormTemplateString=regex+"(\\||.*|\\(|\\)| |=|\n|\r)*"+germanMorphoEnd.replace("}", "\\}");
+		Pattern otherFormPattern=Pattern.compile(otherFormTemplateString);
+		Matcher m=otherFormPattern.matcher(wikicode);
+		if(m.find()){
+			return wikicodeToHtmlDOM(m.group(0));
+		}
+		else{
+			System.out.println("null");
+			return null;
+		}
+		
+	}
+	public void parseConjugation(String conjugationTemplateCall, String originalPos) {
 		// Render the conjugation to html, while ignoring the example template
 		Matcher mr = germanRegularVerbPattern.matcher(conjugationTemplateCall);
 		Matcher mu=germanNonRegularVerbPattern.matcher(conjugationTemplateCall);
-		
-		
-		Document doc = wikicodeToHtmlDOM(conjugationTemplateCall);
-		
-		
+		Document doc =null;
+		//Hilfsverb have Verb originalPOS in conjugation's pages
+		if(originalPos.equals("Hilfsverb")){
+			doc = wikicodeToHtmlDOM(conjugationTemplateCall);
+		}
+		else{
+			doc = wikicodeToHtmlDOM(conjugationTemplateCall, "\\{\\{Deutsch Verb");
+		}
 		
 		if (doc == null){
 			return ;
@@ -84,8 +101,8 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 
 	}
 	
-	public void parseDeclination(String declinationTemplateCall){
-		Document doc = wikicodeToHtmlDOM(declinationTemplateCall);
+	public void parseDeclination(String declinationTemplateCall, String originalPos){
+		Document doc = wikicodeToHtmlDOM(declinationTemplateCall, "\\{\\{Deklinationsseite "+originalPos);
 		if (doc == null){
 			return ;
 		}
@@ -100,29 +117,19 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
 	public void parseOtherForm(String page,String originalPos){
 		if(page!=null){
-			String s = getForm(page, originalPos);
 			
-			
-			/*
-			 * commented code begin to treat pronomen
-			 */
-//			String otherFormTemplateString=germanMorphoBegin.replace("{","\\{")+originalPos+"\\|*.*"+germanMorphoEnd.replace("}", "\\}");
-//			Pattern otherFormPattern=Pattern.compile(otherFormTemplateString);
-//			Matcher m=otherFormPattern.matcher(page);
-//			if(m.find()){
-//				Document doc = wikicodeToHtmlDOM(m.group());
-//				if (doc == null){
-//					return ;
-//				}
-//				NodeList tables =doc.getElementsByTagName("table");
-//				for(int i=0;i<tables.getLength();i++){
-//					Element tablesItem=(Element) tables.item(i);
-//					getTablesDeclination(tablesItem);
-//				}
-//			}
-//			else{
-			
-			
+				String s = getForm(page, originalPos);
+				if(!s.contains("\n")){
+					Document doc = wikicodeToHtmlDOM(s);
+					if(null!= doc){
+						NodeList tables =doc.getElementsByTagName("table");
+						for(int i=0;i<tables.getLength();i++){
+							Element tablesItem=(Element) tables.item(i);
+							getTablesOtherForm(tablesItem);
+						}
+					}
+				}
+				else{
 				s=s.replaceAll("\\<.*\\>", "\n  =");
 				s=s.replace(" "," ");
 				if(s!=null){
@@ -158,7 +165,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 				        }
 			        }
 		        }
-//			}
+			}
         }
 	
 	private void getTablesConj(Element tablesItem, int iBegin, int jBegin){
@@ -233,9 +240,8 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 										String form=tdContent.item(k).getTextContent();
 										if(!form.isEmpty()){
 											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", ""));
-											System.out.println(form);
 												if(nbSpaceForm(form)!=0){
-													form=form.substring(form.lastIndexOf(" ")+1);
+													form=extractPart(form);
 												}
 												if( !form.replace(" ","").isEmpty() ) {
 	//											System.out.println(form);
@@ -252,19 +258,40 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 		}
 	}
 	
-	private String getForm(String s, String originalPos){
-
-		String res=null,section=null;
-				
-		section=extractString(s, originalPos, "{{Wortart");
-		res=extractString(section, germanMorphoBegin, germanMorphoEnd);
-		
-		if(res.isEmpty()){
-			res = extractString(section, "Tabelle", germanMorphoEnd);
+	private void getTablesOtherForm(Element tablesItem){
+		if (null != tablesItem) {
+			NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
+			if (null!=someTRs) {
+				for (int i=2;i<someTRs.getLength();i++) {
+					Element trItem= (Element)someTRs.item(i);
+					if (null!=trItem) {
+						NodeList someTD=trItem.getElementsByTagName("td");//list of cols Elements
+						for (int j=1;j<someTD.getLength();j++) {
+							Element tdItem=(Element)someTD.item(j);
+								if (null!=tdItem) {
+									NodeList tdContent=tdItem.getChildNodes();
+									for (int k=0;k<tdContent.getLength();k++) {
+										String form=tdContent.item(k).getTextContent();
+										if(!form.isEmpty()){
+											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", ""));
+												if(nbSpaceForm(form)!=0){
+													form=form.substring(form.lastIndexOf(" ")+1);
+												}
+												if( !form.replace(" ","").isEmpty() ) {
+//												System.out.println(form);
+													addDeclinationForm(form);
+												}
+										}
+									}
+							}
+						}
+					}
+				}
+			}
 		}
-		
-		return res;
+
 	}
+	
 	
 	private void addDeclinationForm(String s){
 		wdh.registerOtherForm(s);
@@ -321,10 +348,23 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 		}
 	}
 	
-	
-	
-	
+	//return the form's table
+	private String getForm(String s, String originalPos){
 
+		String res=null,section=null;
+				
+		section=extractString(s, originalPos, "{{Wortart");
+		res=extractString(section, germanMorphoBegin, germanMorphoEnd)+"}}";
+		
+		if(res.isEmpty()){
+			res = extractString(section, "Tabelle", germanMorphoEnd);
+		}
+		
+		return res;
+	}
+	
+	
+	//extract a String in s between start and end
 	private String extractString(String s, String start, String end){
 		String res;
 		int startIndex,endIndex;
@@ -334,20 +374,16 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 		return res;
 	}
 	
-	/**
-	 * 
-	 * @param s text where I look for regex
-	 * @param pattern
-	 * @return where pattern starts
-	 */
+	//return the index of pattern in s after start
 	private int getIndexOf(String s, String pattern, int start){
 		int ind = s.indexOf(pattern, start);
-		if(ind==-1 || ind <=start || ind >s.length()){
+		if(ind <=start || ind >s.length()){
 			ind=s.length();
 		}
 		return ind;
 	}
-	
+
+	//for the phrasal verb, extract the part without spaces : example extractPart("ich komme an")->an
 	private String extractPart(String form){
 		String res="";
 		int i=form.length()-1;
@@ -360,14 +396,14 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 		return res;
 	}
 
-
+	//remove spaces before the first form's character and after the last form's character
+	//and the unsecable spaces
 	private String removeUselessSpaces(String form){
 		form =form.replace(" "," ");//replace unsecable spaces
 		String res=form.replace("  "," ");
 		if(!res.isEmpty()){
 		int debut=0,fin=res.length()-1;
 		char cdebut=res.charAt(debut),cfin=res.charAt(fin);
-		
 		while(fin> debut && (cdebut==' ' || cfin==' ')){
 			if(cdebut == ' '){
 				debut++;
@@ -383,6 +419,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 		return res;
 	}
 
+	//return if the form given in parameter is a phrasal verb
 	private boolean isPhrasalVerb(String form){
 		return nbSpaceForm(form)>=2;
 	}
@@ -397,10 +434,10 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 		return nbsp;
 	}
 	
-	
-	public String getIncludeOnlyText(String rawWikiText) {
-		return rawWikiText;
-	}
+
+    public String getIncludeOnlyText(String rawWikiText) {
+    	return rawWikiText;
+    }
 	
 	
 }

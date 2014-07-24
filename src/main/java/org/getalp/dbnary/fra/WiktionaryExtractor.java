@@ -54,8 +54,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private String lastExtractedPronunciationLang = null;
 
 	private static Pattern inflectionMacroNamePattern = Pattern.compile("^fr-");
-	protected final static String inflectionDefPatternString = "^\\# ''([^\\n]+) de'' \\[\\[([^\\n])\\]^\\]\\.$";
-	protected final static Pattern inflectionDefPattern = Pattern.compile(inflectionDefPatternString);
+	protected final static String inflectionDefPatternString = "^\\# ''([^\n]+) de'' \\[\\[([^\n]+)\\]\\]\\.$";
+	protected final static Pattern inflectionDefPattern = Pattern.compile(inflectionDefPatternString, Pattern.MULTILINE);
 
 	private static HashMap<String,String> posMarkers;
 	private static HashSet<String> ignorablePosMarkers;
@@ -932,7 +932,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				addAtomicMorphologicalInfo(infos, info.trim().toLowerCase(frLocale));
 			}
 
-			for (Set<SimpleImmutableEntry<Property,Resource>> inflection : commonInflectionInformations.inflections) {
+			if (commonInflectionInformations.inflections.size() == 0) {
+				commonInflectionInformations.inflections.add(new HashSet<SimpleImmutableEntry<Property,Resource>>());
+			}
+
+			for (HashSet<SimpleImmutableEntry<Property,Resource>> inflection : commonInflectionInformations.inflections) {
 				HashSet<SimpleImmutableEntry<Property,Resource>> union = new HashSet<SimpleImmutableEntry<Property,Resource>>(infos);
 				union.addAll(inflection);
 

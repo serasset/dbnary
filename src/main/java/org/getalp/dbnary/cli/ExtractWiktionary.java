@@ -311,7 +311,7 @@ public class ExtractWiktionary {
     
     public static void printUsage() {
     	HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.cli.ExtractWiktionary [OPTIONS] dumpFile", 
+		formatter.printHelp("java -cp /path/to/dbnary.jar org.getalp.dbnary.cli.ExtractWiktionary [OPTIONS] dumpFile", 
 				"With OPTIONS in:", options, 
 				"dumpFile must be a Wiktionary dump file in UTF-16 encoding. dumpFile directory must be writable to store the index.", false);
     }

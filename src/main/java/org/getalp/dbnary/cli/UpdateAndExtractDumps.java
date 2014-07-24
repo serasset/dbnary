@@ -534,7 +534,7 @@ public class UpdateAndExtractDumps {
 
 	public static void printUsage() {
 		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.cli.ExtractWiktionary [OPTIONS] languageCode...", 
+		formatter.printHelp("java -cp /path/to/dbnary.jar org.getalp.dbnary.cli.ExtractWiktionary [OPTIONS] languageCode...", 
 				"With OPTIONS in:", options, 
 				"languageCode is the wiktionary code for a language (usualy a 2 letter code).", false);
 	}

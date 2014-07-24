@@ -9,8 +9,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 
 import org.getalp.dbnary.DbnaryModel;

@@ -155,6 +155,12 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 	}
 
+	private void addAtomicMorphologicalInfo(HashSet<PropertyResourcePair> properties, NodeList list) {
+		for (int i = 0; i < list.getLength(); i++) {
+			WiktionaryExtractor.addAtomicMorphologicalInfo(properties, list.item(i).getTextContent());
+		}
+	}
+
 	public void parseOtherForm(String templateCall) {
 		Document doc = wikicodeToHtmlDOM(templateCall);
 
@@ -177,17 +183,19 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 				HashSet<PropertyResourcePair> properties = new HashSet<PropertyResourcePair>();
 
 				Node cell = a;
-				while (cell != null && !cell.getNodeName().equals("td")) {
+				while (cell != null && !cell.getNodeName().toLowerCase().equals("td")) {
 					cell = cell.getParentNode();
+				}
+
+				if (cell == null) {
+					log.error("Could not find the parent cell while extracting other form's template.");
+					return;
 				}
 
 
 				Element cellParent = (Element) cell.getParentNode();
-				Node thLine = cellParent.getElementsByTagName("th").item(0);
-
-				if (thLine != null) {
-					WiktionaryExtractor.addAtomicMorphologicalInfo(properties, thLine.getTextContent());
-				}
+				addAtomicMorphologicalInfo(properties, cellParent.getElementsByTagName("th"));
+				addAtomicMorphologicalInfo(properties, cellParent.getElementsByTagName("b"));
 
 				NodeList tds = cellParent.getElementsByTagName("td");
 
@@ -196,23 +204,29 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 				for (int j = 0; j < tds.getLength(); j++) {
 					if (tds.item(j).equals(cell)) {
 						colNumber = j;
+						break;
 					}
 				}
 
 				if (colNumber != -1) {
-					String trait = (
-								(Element) (
-									(Element) cellParent.getParentNode()
-								).getElementsByTagName("tr").item(0)
-							).getElementsByTagName("th").item(colNumber)
-							.getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale);
+					Element table = (Element) cellParent.getParentNode();
+					NodeList trs = table.getElementsByTagName("tr");
 
-					try {
-						WiktionaryExtractor.addAtomicMorphologicalInfo(
-							properties,
-							trait
-						);
-					} catch (Exception e) {}
+					if (trs.getLength() == 0) {
+						log.error("BUG: no lines found in the table!");
+						return;
+					}
+
+					NodeList ths = ((Element) trs.item(0)).getElementsByTagName("th");
+
+					if (ths.getLength() <= colNumber) {
+						 log.error("BUG: not enougth cols in the row of the table!");
+						 return;
+					}
+
+					Node th = ths.item(colNumber);
+					String text = th.getTextContent();
+					WiktionaryExtractor.addAtomicMorphologicalInfo(properties, text.trim().toLowerCase(WiktionaryExtractor.frLocale));
 				}
 
 				delegate.registerInflection(

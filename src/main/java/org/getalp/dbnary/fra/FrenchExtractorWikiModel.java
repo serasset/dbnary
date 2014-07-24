@@ -170,7 +170,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		}
 
 		if (cell == null) {
-			log.error("Could not find the parent cell while extracting other form's template. Page :" + delegate.currentLexEntry() + ", form: " + word);
+			log.error("Could not find the parent cell while extracting other form's template. Page: " + delegate.currentLexEntry() + ", form: " + word);
 			return;
 		}
 
@@ -195,14 +195,14 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			NodeList trs = table.getElementsByTagName("tr");
 
 			if (trs.getLength() == 0) {
-				log.error("BUG: no lines found in the table!");
+				log.error("BUG: no lines found in the table. Page: " + delegate.currentLexEntry() + ", form: " + word);
 				return;
 			}
 
 			NodeList ths = ((Element) trs.item(0)).getElementsByTagName("th");
 
 			if (ths.getLength() <= colNumber) {
-				 log.error("BUG: not enougth cols in the row of the table!");
+				 log.error("BUG: not enougth cols in the row of the table. Page: " + delegate.currentLexEntry() + ", form: " + word);
 				 return;
 			}
 
@@ -251,7 +251,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 				 t = title.getTextContent().toLowerCase(WiktionaryExtractor.frLocale);
 			}
 
-			if (t != null && !word.equals("Modèle:") && (t.equals(wordLower) || t.equals(wordLower + " (page inexistante)"))) {
+			if (t != null && !word.startsWith("Modèle:") && (t.equals(wordLower) || t.equals(wordLower + " (page inexistante)"))) {
 				registerInflectionFromCellChild(a, word);
 			}
 		}

@@ -14,7 +14,6 @@ public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHand
 	
 	private HashMap<String,String> prefixes = new HashMap<String,String>();
 
-	private String currentEntryLanguage = null;
 	private String currentPrefix = null;
 
 	public ForeignLanguagesWiktionaryDataHandler(String lang) {
@@ -23,14 +22,12 @@ public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHand
 	}
 	
 	public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
-		currentEntryLanguage = lang;
 		currentPrefix = getPrefix(lang);
 		super.initializeEntryExtraction(wiktionaryPageName);
     }
 
 	@Override
 	public void finalizeEntryExtraction() {
-		currentEntryLanguage = null;
 		currentPrefix = null;
 	}
 

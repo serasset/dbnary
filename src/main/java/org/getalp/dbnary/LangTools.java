@@ -2,6 +2,7 @@ package org.getalp.dbnary;
 
 import java.util.Iterator;
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.blexisma.api.ISO639_3.Lang;
 
 public class LangTools {
 	public static String threeLettersCode(java.util.HashMap<String,String> h, String s) {
@@ -27,6 +28,16 @@ public class LangTools {
 
 	public static String getCode(String lang) {
 		return ISO639_3.sharedInstance.getIdCode(lang);
+	}
+
+	public static String getPart1OrId(String lang) {
+		Lang l = ISO639_3.sharedInstance.getLang(lang);
+
+		if (l == null) {
+			return null;
+		}
+
+		return (null != l.getPart1()) ? l.getPart1() : l.getId();
 	}
 
 	public static String normalize(String lang) {

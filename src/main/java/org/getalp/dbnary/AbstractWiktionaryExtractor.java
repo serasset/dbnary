@@ -3,7 +3,6 @@ package org.getalp.dbnary;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.wiki.WikiPatterns;
 
 public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtractor {
@@ -276,15 +275,14 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
             Matcher links = WikiPatterns.categoryOrInterwikiLinkPattern.matcher(pageContent);
             links.region(blockStart, m.regionEnd());
             while (links.find()) {
-                if 	(	links.group(2).equals(this.wiktionaryPageName) ||
-                		links.group(1).equalsIgnoreCase("Catégorie") ||
-                		links.group(1).equalsIgnoreCase("Category") ||
-                		links.group(1).equalsIgnoreCase("Kategorie") ||
-                		links.group(1).equalsIgnoreCase("Annexe") ||
-                		ISO639_3.sharedInstance.getLang(links.group(1)) != null
-                		)
+                if (links.group(2).equals(this.wiktionaryPageName)
+                 || links.group(1).equalsIgnoreCase("Catégorie")
+                 || links.group(1).equalsIgnoreCase("Category")
+                 || links.group(1).equalsIgnoreCase("Kategorie")
+                 || links.group(1).equalsIgnoreCase("Annexe")
+                 || LangTools.getCode(links.group(1)) != null) {
                     return links.start();
-                else if (links.group(1) != null) {
+				} else if (links.group(1) != null) {
                 	// System.out.println("--- In: " + this.wiktionaryPageName + " --->");
                 	// System.out.println(links.group());
                 }

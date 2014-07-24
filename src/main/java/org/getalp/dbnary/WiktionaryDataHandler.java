@@ -2,6 +2,8 @@ package org.getalp.dbnary;
 
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -96,4 +98,12 @@ public interface WiktionaryDataHandler {
 	public void setWiktionaryIndex(WiktionaryIndex wi);
 
 	public void registerOtherForm(String form);
+
+	public void registerInflection(String languageCode,
+	                               String pos,
+	                               String inflection,
+	                               String canonicalForm,
+	                               int defNumber,
+	                               HashSet<SimpleImmutableEntry<Property,Resource>> properties);
+
 }

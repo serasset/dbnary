@@ -170,7 +170,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		}
 
 		if (cell == null) {
-			log.error("Could not find the parent cell while extracting other form's template.");
+			log.error("Could not find the parent cell while extracting other form's template. Page :" + delegate.currentLexEntry() + ", form: " + word);
 			return;
 		}
 

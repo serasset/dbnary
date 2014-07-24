@@ -16,9 +16,10 @@ import org.getalp.dbnary.LexinfoOnt;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ReifiedStatement;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.DCTerms;
@@ -74,30 +75,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 //	private String currentSharedPronunciation;
 //	private String currentSharedPronunciationLang;
 
-	private HashMap<SimpleImmutableEntry<String,String>, HashSet<Resource>> heldBackOtherForms = new HashMap<SimpleImmutableEntry<String,String>, HashSet<Resource>>();
-
-// 	public static class SimpleImmutableEntry<Property,Resource> {
-// 		private Property p;
-// 		private Resource o;
-//
-// 		SimpleImmutableEntry<Property,Resource>(Property prop, Resource ob) {
-// 			o = ob;
-// 			p = prop;
-// 		}
-//
-// 		@Override
-// 		public equals(Object o1) {
-// 			SimpleImmutableEntry<Property,Resource> obj = (SimpleImmutableEntry<Property,Resource>) o1;
-//
-// 			if (obj == null)
-// 				return;
-//
-// 			return p.equals(obj.p) && o.equals(obj.o);
-// 		}
-//
-// 		public Property getProperty() { return p; }
-// 		public Resource getObject()   { return o; }
-// 	}
+	private HashMap<SimpleImmutableEntry<String,String>, HashSet<HashSet<PropertyResourcePair>>> heldBackOtherForms = new HashMap<SimpleImmutableEntry<String,String>, HashSet<HashSet<PropertyResourcePair>>>();
 
 	private static HashMap<String,Property> nymPropertyMap = new HashMap<String,Property>();
 	private static HashMap<String,PosAndType> posAndTypeValueMap = new HashMap<String,PosAndType>();
@@ -257,6 +235,13 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		return aBox.createResource(getPrefix() + encodedPageName, typeResource);
 	}
 
+	public int currentDefinitionNumber() {
+		return currentLexieCount.get(currentWiktionaryPos);
+	}
+
+	public String currentWiktionaryPos() {
+		return currentWiktionaryPos;
+	}
 
 	public void addPartOfSpeech(String posString, Resource posResource, Resource typeResource) {
 		// DONE: create a LexicalEntry for this part of speech only and attach info to it.
@@ -272,11 +257,11 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		// import other forms
 		SimpleImmutableEntry<String,String> keyOtherForms = new SimpleImmutableEntry<String,String>(currentWiktionaryPageName, posString);
 
-		Set<Resource> otherForms = heldBackOtherForms.get(keyOtherForms);
+		HashSet<HashSet<PropertyResourcePair>> otherForms = heldBackOtherForms.get(keyOtherForms);
 
 		if (otherForms != null) {
-			for (Resource otherForm : otherForms) {
-				aBox.add(currentLexEntry, LemonOnt.otherForm, otherForm);
+			for (HashSet<PropertyResourcePair> otherForm : otherForms) {
+				addOtherFormPropertiesToLexicalEntry(currentLexEntry, otherForm);
 			}
 		}
 
@@ -333,7 +318,15 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		addPartOfSpeech(pos, posResource(pat), typeResource(pat));
 	}
 
-	
+	public void registerProperty(Property p, Resource r) {
+		if (null == currentLexEntry) {
+			log.debug("Registering property when lex entry is null in \"{}\".", this.currentMainLexEntry);
+			return; // Don't register anything if current lex entry is not known.
+		}
+
+		aBox.add(currentLexEntry, p, r);
+	}
+
 	@Override
 	public void registerAlternateSpelling(String alt) {
 		if (null == currentLexEntry) {
@@ -451,21 +444,61 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		return getVocableResource(vocable, false);
 	}
 
+	private void mergePropertiesIntoResource(HashSet<PropertyResourcePair> properties, Resource res) {
+		for (PropertyResourcePair p : properties) {
+			if (res.getProperty(p.getKey()) == null) {
+				Object o = p.getValue();
+				if (o instanceof Literal) {
+					aBox.add(res, p.getKey(), (Literal) o);
+				} else if (o instanceof Resource) {
+					aBox.add(res, p.getKey(), (Resource) o);
+				} else {
+					log.error("Bad type in mergePropertiesIntoResource");
+				}
+			}
+		}
+	}
+
+	private boolean isResourceCompatible(Resource r, HashSet<PropertyResourcePair> properties) {
+		for (PropertyResourcePair p : properties) {
+			Object ro = r.getPropertyResourceValue(p.getKey());
+			if (ro != null && !ro.equals(p.getValue())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private void addOtherFormPropertiesToLexicalEntry(Resource lexEntry, HashSet<PropertyResourcePair> properties) {
+		boolean foundCompatible = false;
+
+		StmtIterator otherForms = lexEntry.listProperties(LemonOnt.otherForm);
+
+		while (otherForms.hasNext() && !foundCompatible) {
+			Resource otherForm = otherForms.next().getResource();
+			if (isResourceCompatible(otherForm, properties)) {
+				foundCompatible = true;
+				mergePropertiesIntoResource(properties, otherForm);
+			}
+		}
+
+		if (!foundCompatible) {
+			Resource otherForm = aBox.createResource();
+			aBox.add(lexEntry, LemonOnt.otherForm, otherForm);
+			mergePropertiesIntoResource(properties, otherForm);
+		}
+	}
+
 	public void registerInflection(String languageCode,
 	                               String pos,
 	                               String inflection,
 	                               String canonicalForm,
 	                               int defNumber,
-	                               HashSet<SimpleImmutableEntry<Property,Resource>> properties) {
+	                               HashSet<PropertyResourcePair> props) {
 
-		Resource otherForm = aBox.createResource();
 		Resource posResource = posResource(pos);
-
-		for (SimpleImmutableEntry<Property,Resource> p : properties) {
-			aBox.add(otherForm, p.getKey(), p.getValue());
-		}
-
-		aBox.add(otherForm, LemonOnt.writtenRep, inflection, extractedLang);
+		
+		props.add(new PropertyResourcePair(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang)));
 
 		if (defNumber == 0) {
 			// the definition number was not specified, we have to register this
@@ -479,27 +512,26 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 			while (entries.hasNext()) {
 				Resource lexEntry = entries.next().getResource();
 				if (aBox.contains(lexEntry, LexinfoOnt.partOfSpeech, posResource)) {
-					aBox.add(lexEntry, LemonOnt.otherForm, otherForm);
+					addOtherFormPropertiesToLexicalEntry(lexEntry, props);
 				}
 			}
 
 			// Second, we store the other form for future possible matching entries
 			SimpleImmutableEntry<String,String> key = new SimpleImmutableEntry<String,String>(canonicalForm, pos);
 
-			HashSet<Resource> otherForms = heldBackOtherForms.get(key);
+			HashSet<HashSet<PropertyResourcePair>> otherForms = heldBackOtherForms.get(key);
 
 			if (otherForms == null) {
-				otherForms = new HashSet<Resource>();
+				otherForms = new HashSet<HashSet<PropertyResourcePair>>();
 				heldBackOtherForms.put(key, otherForms);
 			}
 
-			otherForms.add(otherForm);
+			otherForms.add(props);
 		} else {
 			// the definition number was specified, this makes registration easy.
-
-			aBox.add(
+			addOtherFormPropertiesToLexicalEntry(
 				getLexEntry(languageCode, canonicalForm, pos, defNumber),
-				LemonOnt.otherForm, otherForm
+				props
 			);
 		}
 	}

@@ -99,11 +99,16 @@ public interface WiktionaryDataHandler {
 
 	public void registerOtherForm(String form);
 
+	public void registerProperty(Property p, Resource r);
+
 	public void registerInflection(String languageCode,
 	                               String pos,
 	                               String inflection,
 	                               String canonicalForm,
 	                               int defNumber,
-	                               HashSet<SimpleImmutableEntry<Property,Resource>> properties);
+	                               HashSet<PropertyResourcePair> properties);
 
+	public int currentDefinitionNumber();
+
+	public String currentWiktionaryPos();
 }

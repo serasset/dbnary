@@ -1,12 +1,19 @@
 package org.getalp.dbnary.fra;
 
 import java.util.Locale;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.getalp.dbnary.PropertyResourcePair;
 
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+
+import org.getalp.dbnary.LexinfoOnt;
+
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 import org.w3c.dom.*;
 
@@ -20,8 +27,13 @@ import org.slf4j.LoggerFactory;
 public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	private static Logger log = LoggerFactory.getLogger(FrenchExtractorWikiModel.class);
 
+	private static Pattern frAccordPattern = Pattern.compile("^\\{\\{(?:fr-accord|fr-rég)");
+
+	private WiktionaryDataHandler wdh;
+
 	public FrenchExtractorWikiModel(WiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wdh, wi, locale, imageBaseURL, linkBaseURL);
+		this.wdh = wdh;
 	}
 
 	public static Element adjacentDiv (Node ele) {
@@ -146,6 +158,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	public void parseOtherForm(String templateCall) {
 		Document doc = wikicodeToHtmlDOM(templateCall);
 
+		Matcher frAccordMatcher = frAccordPattern.matcher(templateCall);
+
 		if (doc == null) {
 			return; // failing silently: error message already given.
 		}
@@ -159,7 +173,56 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			String word = a.getTextContent().trim();
 			Node title = a.getAttributes().getNamedItem("title");
 			if (!word.equals(delegate.currentLexEntry()) && title != null && title.getTextContent().equals(word)) {
-				delegate.registerOtherForm(word);
+
+				HashSet<PropertyResourcePair> properties = new HashSet<PropertyResourcePair>();
+
+				Node cell = a;
+				while (cell != null && !cell.getNodeName().equals("td")) {
+					cell = cell.getParentNode();
+				}
+
+
+				Element cellParent = (Element) cell.getParentNode();
+				Node thLine = cellParent.getElementsByTagName("th").item(0);
+
+				if (thLine != null) {
+					WiktionaryExtractor.addAtomicMorphologicalInfo(properties, thLine.getTextContent());
+				}
+
+				NodeList tds = cellParent.getElementsByTagName("td");
+
+				int colNumber = -1;
+
+				for (int j = 0; j < tds.getLength(); j++) {
+					if (tds.item(j).equals(cell)) {
+						colNumber = j;
+					}
+				}
+
+				if (colNumber != -1) {
+					String trait = (
+								(Element) (
+									(Element) cellParent.getParentNode()
+								).getElementsByTagName("tr").item(0)
+							).getElementsByTagName("th").item(colNumber)
+							.getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale);
+
+					try {
+						WiktionaryExtractor.addAtomicMorphologicalInfo(
+							properties,
+							trait
+						);
+					} catch (Exception e) {}
+				}
+
+				delegate.registerInflection(
+					"",
+					wdh.currentWiktionaryPos(),
+					word,
+					wdh.currentLexEntry(),
+					wdh.currentDefinitionNumber(),
+					properties
+				);
 			}
 		}
 	}

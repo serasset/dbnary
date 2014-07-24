@@ -51,18 +51,16 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 		
 	}
+	
 	public void parseConjugation(String conjugationTemplateCall, String originalPos) {
 		// Render the conjugation to html, while ignoring the example template
 		Matcher mr = germanRegularVerbPattern.matcher(conjugationTemplateCall);
 		Matcher mu=germanNonRegularVerbPattern.matcher(conjugationTemplateCall);
-		Document doc =null;
-		//Hilfsverb have Verb originalPOS in conjugation's pages
-		if(originalPos.equals("Hilfsverb")){
-			doc = wikicodeToHtmlDOM(conjugationTemplateCall);
-		}
-		else{
-			doc = wikicodeToHtmlDOM(conjugationTemplateCall, "\\{\\{Deutsch Verb");
-		}
+		
+		
+		Document doc = wikicodeToHtmlDOM(conjugationTemplateCall);
+		
+		
 		
 		if (doc == null){
 			return ;
@@ -101,7 +99,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	}
 	
 	public void parseDeclination(String declinationTemplateCall, String originalPos){
-		Document doc = wikicodeToHtmlDOM(declinationTemplateCall, "\\{\\{Deklinationsseite "+originalPos);
+		Document doc = wikicodeToHtmlDOM(declinationTemplateCall);
 		if (doc == null){
 			return ;
 		}

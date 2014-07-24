@@ -175,19 +175,28 @@ public class DbnaryWikiModel extends WikiModel {
         if (null == rawWikiText) return null;
 
         int noIncludeOffset = rawWikiText.indexOf("<noinclude>");
+
         if (-1 != noIncludeOffset) {
             int noIncludeEndOffset = rawWikiText.indexOf("</noinclude>", noIncludeOffset);
-            if (-1 != noIncludeEndOffset)
-                return new StringBuffer().append(rawWikiText.substring(0, noIncludeOffset))
-                        .append(rawWikiText.substring(noIncludeEndOffset)).toString();
+
+            if (-1 != noIncludeEndOffset) {
+                return getIncludeOnlyText(
+	                new StringBuffer()
+		                .append(rawWikiText.substring(0, noIncludeOffset))
+                        .append(rawWikiText.substring(noIncludeEndOffset + "</noinclude>".length()))
+                        .toString()
+                );
+            }
         }
+
         int includeOnlyOffset = rawWikiText.indexOf("<includeonly>");
+
         if (-1 != includeOnlyOffset) {
             int includeOnlyEndOffset = rawWikiText.indexOf("</includeonly>", noIncludeOffset);
             if (-1 != includeOnlyEndOffset)
                 return rawWikiText.substring(includeOnlyOffset + "<includeonly>".length(), includeOnlyEndOffset);
         }
-        return rawWikiText;
 
+        return rawWikiText;
     }
 }

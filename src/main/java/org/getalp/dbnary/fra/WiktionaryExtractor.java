@@ -8,8 +8,10 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
@@ -19,14 +21,23 @@ import org.getalp.dbnary.fra.FrenchExtractorWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+
+import org.getalp.dbnary.LexinfoOnt;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author serasset
  *
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
+
+	private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
 	// NOTE: to subclass the extractor, you need to define how a language section is recognized.
 	// then, how are sections recognized and what is their semantics.
@@ -40,9 +51,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	protected final static String otherFormPatternString = "\\{\\{fr-[^\\}]*\\}\\}";
 
-	private String lastExtractedPronounciationLang = null;
+	private String lastExtractedPronunciationLang = null;
 
-// 	protected final static String inflectionDefPatternString = "^\\# ''[^\n]+ de'' \\[\\[[^\n]\\]^\\]\.$";
+	private static Pattern inflectionMacroNamePattern = Pattern.compile("^fr-");
+	protected final static String inflectionDefPatternString = "^\\# ''([^\\n]+) de'' \\[\\[([^\\n])\\]^\\]\\.$";
+	protected final static Pattern inflectionDefPattern = Pattern.compile(inflectionDefPatternString);
 
 	private static HashMap<String,String> posMarkers;
 	private static HashSet<String> ignorablePosMarkers;
@@ -51,6 +64,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private final static HashMap<String, String> nymMarkerToNymName;
 	
 	private static HashSet<String> unsupportedMarkers = new HashSet<String>();
+
+	private static Locale frLocale = new Locale("fr");
 
 	// private static Set<String> affixesToDiscardFromLinks = null;
 	private static void addPos(String pos) {posMarkers.put(pos, pos);}
@@ -178,7 +193,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		addPos("-verb-pr-");
 		
 		// S section titles
-		// TODO: get alternate from https://fr.wiktionary.org/wiki/Module:types_de_mots/data and normalise the part of speech
+		// TODO: get alternate from https://fr.wiktionary.org/wiki/Module:types_de_mots/data and normalize the part of speech
 		// ADJECTIFS
 		addPos("adjectif", "-adj-");
 		addPos("adj", "-adj-");
@@ -298,7 +313,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		addPos("onoma");
 		addPos("onom");
  
-    // PARTIES   TODO: Extract affixes in French
+	// PARTIES   TODO: Extract affixes in French
 //		addPos("affixe");
 //		addPos("aff");
 //		addPos("circonfixe");
@@ -440,7 +455,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	static {
 		languageSectionPattern = Pattern.compile(languageSectionPatternString);
 		pronunciationPattern   = Pattern.compile(pronunciationPatternString);
-		otherFormPattern       = Pattern.compile(otherFormPatternString);
+		otherFormPattern	   = Pattern.compile(otherFormPatternString);
 	}
 
 	private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK};
@@ -477,7 +492,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		Matcher languageFilter = languageSectionPattern.matcher(pageContent);
 		int startSection = -1;
 
-		exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("fr"), this.wiktionaryPageName, "");
+		exampleExpander = new ExampleExpanderWikiModel(wi, frLocale, this.wiktionaryPageName, "");
 
 		String nextLang = null, lang = null;
 
@@ -492,6 +507,152 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		if (languageFilter.hitEnd()) {
 			extractData(startSection, pageContent.length(), lang, extractForeignData);
 		}
+	}
+
+	public boolean isInflectionMacro(Matcher m, String macroName) {
+		return macroName != null && currentBlock == Block.INFLECTIONBLOCK && inflectionMacroNamePattern.matcher(macroName).matches();
+	}
+
+	public HashSet<SimpleImmutableEntry<Property,Resource>> morphologicalPropertiesFromWikicode(String wikicodeMophology) {
+		HashSet<SimpleImmutableEntry<Property,Resource>> infl = new HashSet<SimpleImmutableEntry<Property,Resource>>();
+
+		switch(wikicodeMophology) {
+		case "ppr":
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.present));
+			// participe présent.
+			break;
+		case "ppms":
+		case "ppm":
+		case "pp":
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense,  LexinfoOnt.past));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			// past participle masculine singular (or invariable).
+			break;
+		case "ppfs":
+		case "ppf":
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense,  LexinfoOnt.past));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			// past participle au féminin singulier.
+			break;
+		case "ppmp":
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense,  LexinfoOnt.past));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			// past participle au masculin pluriel.
+			break;
+		case "ppfp":
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense,  LexinfoOnt.past));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			// past participle au féminin pluriel.
+			break;
+
+		//FIXME: we ignore these morphological informations which describe the entire verb, not only this inflection.
+		case "impers": // if verb is pronominal
+			return null;
+		case "réfl": // if verb is pronominal
+			return null;
+		case "'": // if "je" is to be written "j'".
+			return null;
+
+		default:
+			String[] infos = wikicodeMophology.split(".");
+
+			// See http://fr.wiktionary.org/wiki/Mod%C3%A8le:fr-verbe-flexion for documentation about this stuff.
+			if (infos.length < 3) {
+				log.error("wikicode morphology was not recognized for " + commonInflectionInformations.partOfSpeech + " form in article " + wdh.currentLexEntry());
+				return null;
+			}
+
+			// Mood
+			switch (infos[0]) {
+			case "ind":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
+				break;
+			case "cond":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.conditional));
+				break;
+			case "imp":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
+				break;
+			case "sub":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.subjunctive));
+				break;
+			default:
+				log.error("wikicode's mood part was not recognized for " + commonInflectionInformations.partOfSpeech + " form in article " + wdh.currentLexEntry());
+				return null;
+			}
+
+			// Tense
+			switch (infos[1]) {
+			case "p":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.present));
+				break;
+			case "f":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.future));
+				break;
+			case "i":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.imperfect));
+				break;
+			case "ps":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.past));
+				break;
+			default:
+				log.error("wikicode's tense part was not recognized for " + commonInflectionInformations.partOfSpeech + " form in article " + wdh.currentLexEntry());
+				return null;
+			}
+
+			// Person
+			switch (infos[2]) {
+			case "1s":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.firstPerson));
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+				break;
+			case "2s":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.secondPerson));
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+				break;
+			case "3s":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+				break;
+			case "1p":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.firstPerson));
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+				break;
+			case "2p":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.secondPerson));
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+				break;
+			case "3p":
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+				break;
+			default:
+				log.error("wikicode's person part was not recognized for " + commonInflectionInformations.partOfSpeech + " form in article " + wdh.currentLexEntry());
+				return null;
+			}
+		}
+
+		return infl;
+	}
+
+	public void addInflectionMorphologicalSet(String pos, String canonicalForm, String wikicodeMophology) {
+		if (!"verb".equals(pos)) {
+			log.error("inflection macro not handled for " + pos + " form in article " + wdh.currentLexEntry());
+			return;
+		}
+
+		HashSet<SimpleImmutableEntry<Property,Resource>> infl = morphologicalPropertiesFromWikicode(wikicodeMophology);
+
+		commonInflectionInformations.inflections.add(infl);
 	}
 
 	protected void extractData(int startOffset, int endOffset, String lang, boolean extractForeignData) {
@@ -548,7 +709,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 					if (posIsInflection) {
 						currentBlock = Block.INFLECTIONBLOCK;
-// 						inflectionInfos = new InflectionsInfos();
+						fillInflectionInformations(pos, sectionArgs);
 					} else {
 						currentBlock = Block.DEFBLOCK;
 						wdh.addPartOfSpeech(pos);
@@ -569,15 +730,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					leaveCurrentBlock(m);
 					currentBlock = Block.NYMBLOCK;
 					currentNym = nym;
-//				} else if (isInflection(m, sectionTitle)) {
-// 					for (int i = 3; i <= m.groupCount(); i++) {
-// 						wdh.registerInflection(
-// 							currentLexEntry(),
-// 							pos,
-// 							m.group(i).substring(0, m.group(i).indexOf('=')),
-// 							m.group(2)
-// 						);
-// 					}
+				} else if (isInflectionMacro(m, sectionTitle)) {
+					for (int i = 3; i <= m.groupCount(); i++) {
+						// an infection macro can hava several morphological information parameter
+						addInflectionMorphologicalSet(pos, m.group(2), m.group(i).substring(0, m.group(i).indexOf('=')));
+					}
 				} else if (currentBlock == Block.INFLECTIONBLOCK) {
 					if ("m".equals(m.group(1)) || "f".equals(m.group(1))) {
 						
@@ -615,7 +772,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		case IGNOREPOS:
 			break;
 		case INFLECTIONBLOCK:
-// 			extractInflections(blockStart, end);
+			extractInflections(blockStart, end);
 			break;
 		case DEFBLOCK:
 			extractDefinitions(blockStart, end);
@@ -639,27 +796,157 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		blockStart = -1;
 	}
 
-// 	private void extractInflections(blockStart, end) {
-// 		
-// 		wdh.InflectionData infl = new wdh.InflectionData();
-// 
-// 		if (infl.pronunciation == null) {
-// 			infl.pronunciation     = extractPronunciation(blockStart, end, false);
-// 			infl.pronunciationLang = lastExtractedPronounciationLang == null ? null : lastExtractedPronounciationLang + "-fonipa";
-// 		}
-// 
-// 		Matcher m = inflectionDefPatternString.matcher(pageContent);
-// 		m.region(blockStart, end);
-// 
-// 		boolean firstMatch = true;
-// 
-// 		while (m.find()) {
-// 			if (firstMatch) {
-// 				extractGlobalInflectionData(infl, pageContent.substring(blockStart, m.start());
-// 				firstMatch = false;
-// 			} 
-// 		}
-// 	}
+	private static ArrayList<String> explode(char sep, String str) {
+		int lastI = 0;
+		ArrayList<String> res = new ArrayList<String>();
+		int pos = str.indexOf(sep, lastI);
+
+		while (pos != -1) {
+			res.add(str.substring(lastI, pos));
+			lastI = pos + 1;
+			pos = str.indexOf(sep, lastI);
+		}
+
+		res.add(str.substring(lastI, str.length()));
+		return res;
+	}
+
+	static void addAtomicMorphologicalInfo(Set<SimpleImmutableEntry<Property,Resource>> infos, String word) {
+		switch(word) {
+		case "singulier":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			break;
+		case "pluriel":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			break;
+		case "masculin":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
+			break;
+		case "féminin":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
+			break;
+		case "présent":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.present));
+			break;
+		case "imparfait":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.imperfect));
+			break;
+		case "passé":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.past));
+			break;
+		case "futur":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.future));
+			break;
+		case "indicatif":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.mood, LexinfoOnt.indicative));
+			break;
+		case "subjonctif":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.mood, LexinfoOnt.subjunctive));
+			break;
+		case "conditionnel":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.mood, LexinfoOnt.conditional));
+			break;
+		case "impératif":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.mood, LexinfoOnt.imperative));
+			break;
+		case "première personne":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.firstPerson));
+			break;
+		case "deuxième personne":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.secondPerson));
+			break;
+		case "troisième personne":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+			break;
+		case "futur simple":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.future));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.mood, LexinfoOnt.indicative));
+			break;
+		case "passé simple":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.past));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.mood, LexinfoOnt.indicative));
+			break;
+		case "masculin singulier":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			break;
+		case "féminin singulier":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			break;
+		case "masculin pluriel":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			break;
+		case "féminin pluriel":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			break;
+		case "participe passé masculin singulier":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			break;
+		case "participe passé féminin singulier":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			break;
+		case "participe passé masculin pluriel":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense,  LexinfoOnt.past));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			break;
+		case "participe passé féminin pluriel":
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense,  LexinfoOnt.past));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			break;
+		default:
+			ArrayList<String> multiwords = explode(' ', word);
+			if (multiwords.size() > 1) {
+				for (String w : multiwords) {
+					addAtomicMorphologicalInfo(infos, w);
+				}
+			}
+		}
+	}
+
+	private void extractInflections(int blockStart, int end) {
+		Matcher m = inflectionDefPattern.matcher(pageContent);
+		m.region(blockStart, end);
+
+		while (m.find()) {
+
+			// Getting the canonical form of the inflection
+			String canonicalForm = m.group(2);
+
+			int pipePos = canonicalForm.indexOf('|');
+			if (pipePos != -1) {
+				canonicalForm = canonicalForm.substring(pipePos + 1);
+			}
+
+			Set<SimpleImmutableEntry<Property,Resource>> infos = new HashSet<SimpleImmutableEntry<Property,Resource>>();
+
+			for (String info : m.group(1).split("de l’|du|de")) {
+				addAtomicMorphologicalInfo(infos, info.trim().toLowerCase(frLocale));
+			}
+
+			for (Set<SimpleImmutableEntry<Property,Resource>> inflection : commonInflectionInformations.inflections) {
+				HashSet<SimpleImmutableEntry<Property,Resource>> union = new HashSet<SimpleImmutableEntry<Property,Resource>>(infos);
+				union.addAll(inflection);
+
+				wdh.registerInflection(
+					commonInflectionInformations.languageCode,
+					commonInflectionInformations.partOfSpeech,
+					wdh.currentLexEntry(),
+					canonicalForm,
+					commonInflectionInformations.defNumber,
+					union
+				);
+			}
+		}
+	}
 
 
 	private boolean isValidSection(Matcher m, String sectionTitle) {
@@ -668,15 +955,31 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	private boolean posIsInflection;
 
-// 	private void fillInflectionInformations(Matcher m, String sectionTitle, Map<String,String> sectionArgs) {
-// 		
-// 	}
+	private class InflectionSection {
+		String partOfSpeech;
+		String languageCode;
+		int defNumber;
+		HashSet<HashSet<SimpleImmutableEntry<Property,Resource>>> inflections = new HashSet<HashSet<SimpleImmutableEntry<Property,Resource>>>();
+	}
+
+	private InflectionSection commonInflectionInformations;
+
+	private void fillInflectionInformations(String pos, Map<String,String> sectionArgs) {
+		commonInflectionInformations = new InflectionSection();
+		commonInflectionInformations.partOfSpeech = pos;
+		commonInflectionInformations.languageCode = LangTools.normalize(sectionArgs.get("2"));
+
+		try {
+			commonInflectionInformations.defNumber = Integer.parseInt(sectionArgs.get("num"));
+		} catch (java.lang.NumberFormatException e) {
+			commonInflectionInformations.defNumber = 0;
+		}
+	}
 
 	private String getPOS(Matcher m, String sectionTitle, Map<String,String> sectionArgs) {
 		if (sectionTitle != null) {
 			if("flexion".equals(sectionArgs.get("3"))) {
 				posIsInflection = true;
-// 				fillInflectionInformations(m, sectionTitle, sectionArgs);
 			}
 
 			if (ignorablePosMarkers.contains(sectionTitle)) {
@@ -789,7 +1092,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		Matcher pronMatcher = pronunciationPattern.matcher(pageContent);
 		pronMatcher.region(startOffset, endOffset);
 
-		lastExtractedPronounciationLang = null;
+		lastExtractedPronunciationLang = null;
 
 		while (pronMatcher.find()) {
 			String pron = pronMatcher.group(1);
@@ -802,7 +1105,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			if (lang.startsWith("|2=")) lang = lang.substring(2);
 			if (lang.startsWith("|lang=")) lang = lang.substring(5);
 
-			lastExtractedPronounciationLang = lang;
+			lastExtractedPronunciationLang = lang;
 			if (!pron.equals("")) {
 				if (registerPronunciation) {
 					wdh.registerPronunciation(pron, lang + "-fonipa");
@@ -815,21 +1118,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
 	public void extractExample(String example) {
-        Map<Property, String> context = new HashMap<Property, String>();
+		Map<Property, String> context = new HashMap<Property, String>();
 
-        String ex = exampleExpander.expandExample(example, defTemplates, context);
+		String ex = exampleExpander.expandExample(example, defTemplates, context);
 		Resource exampleNode = null;
-        if (ex != null && ! ex.equals("")) {
-        	exampleNode = wdh.registerExample(ex, context);
-        }
-    }
+		if (ex != null && ! ex.equals("")) {
+			exampleNode = wdh.registerExample(ex, context);
+		}
+	}
 
 	private void extractOtherForms(int start, int end) {
 		Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
 		otherFormMatcher.region(start, end);
 
 		while (otherFormMatcher.find()) {
-			FrenchExtractorWikiModel dbnmodel = new FrenchExtractorWikiModel(wdh, wi, new Locale("fr"), "/${image}", "/${title}");
+			FrenchExtractorWikiModel dbnmodel = new FrenchExtractorWikiModel(wdh, wi, frLocale, "/${image}", "/${title}");
 			dbnmodel.parseOtherForm(otherFormMatcher.group());
 		}
 	}

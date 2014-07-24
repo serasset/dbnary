@@ -324,7 +324,14 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 			return; // Don't register anything if current lex entry is not known.
 		}
 
-		aBox.add(currentLexEntry, p, r);
+		Resource canonicalForm = currentLexEntry.getPropertyResourceValue(LemonOnt.canonicalForm);
+
+		if (canonicalForm == null) {
+			log.debug("Registering property when lex entry's canonicalForm is null in \"{}\".", this.currentMainLexEntry);
+			return;
+		}
+
+		aBox.add(canonicalForm, p, r);
 	}
 
 	@Override
@@ -459,11 +466,30 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		}
 	}
 
+	private boolean incompatibleProperties(Property p1, Property p2, boolean applyCommutativity) {
+		return (
+			p1 == LexinfoOnt.mood && p2 == LexinfoOnt.gender
+		) || (applyCommutativity && incompatibleProperties(p2, p1, false));
+	}
+
+	private boolean incompatibleProperties(Property p1, Property p2) {
+		return incompatibleProperties(p1, p2, true);
+	}
+
 	private boolean isResourceCompatible(Resource r, HashSet<PropertyResourcePair> properties) {
-		for (PropertyResourcePair p : properties) {
-			Object ro = r.getPropertyResourceValue(p.getKey());
-			if (ro != null && !ro.equals(p.getValue())) {
+		for (PropertyResourcePair pr : properties) {
+			Property p = pr.getKey();
+
+			Object ro = r.getPropertyResourceValue(p);
+			if (ro != null && !ro.equals(pr.getValue())) {
 				return false;
+			}
+
+			StmtIterator i = r.listProperties();
+			while (i.hasNext()) {
+				if (incompatibleProperties(p, i.nextStatement().getPredicate())) {
+					return false;
+				}
 			}
 		}
 		return true;

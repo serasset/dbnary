@@ -29,11 +29,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 	private static Pattern frAccordPattern = Pattern.compile("^\\{\\{(?:fr-accord|fr-rég)");
 
-	private WiktionaryDataHandler wdh;
-
 	public FrenchExtractorWikiModel(WiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wdh, wi, locale, imageBaseURL, linkBaseURL);
-		this.wdh = wdh;
 	}
 
 	public static Element adjacentDiv (Node ele) {
@@ -157,7 +154,10 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 	private void addAtomicMorphologicalInfo(HashSet<PropertyResourcePair> properties, NodeList list) {
 		for (int i = 0; i < list.getLength(); i++) {
-			WiktionaryExtractor.addAtomicMorphologicalInfo(properties, list.item(i).getTextContent());
+			WiktionaryExtractor.addAtomicMorphologicalInfo(
+				properties,
+				list.item(i).getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale)
+			);
 		}
 	}
 
@@ -178,8 +178,12 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 			String word = a.getTextContent().trim();
 			Node title = a.getAttributes().getNamedItem("title");
-			if (!word.equals(delegate.currentLexEntry()) && title != null && title.getTextContent().equals(word)) {
+			String t = null;
+			if (title != null) {
+				 t = title.getTextContent();
+			}
 
+			if (t != null && t.equals(word) || t.equals(word + " (page inexistante)")) {
 				HashSet<PropertyResourcePair> properties = new HashSet<PropertyResourcePair>();
 
 				Node cell = a;
@@ -229,14 +233,20 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 					WiktionaryExtractor.addAtomicMorphologicalInfo(properties, text.trim().toLowerCase(WiktionaryExtractor.frLocale));
 				}
 
-				delegate.registerInflection(
-					"",
-					wdh.currentWiktionaryPos(),
-					word,
-					wdh.currentLexEntry(),
-					wdh.currentDefinitionNumber(),
-					properties
-				);
+				if (word.equals(delegate.currentLexEntry())) {
+					for (PropertyResourcePair p : properties) {
+						delegate.registerProperty(p.getKey(), p.getResource());
+					}
+				} else {
+					delegate.registerInflection(
+						"",
+						delegate.currentWiktionaryPos(),
+						word,
+						delegate.currentLexEntry(),
+						delegate.currentDefinitionNumber(),
+						properties
+					);
+				}
 			}
 		}
 	}

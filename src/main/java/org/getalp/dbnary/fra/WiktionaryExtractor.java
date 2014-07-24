@@ -789,7 +789,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			extractDefinitions(blockStart, end);
 			extractPronunciation(blockStart, end);
 			extractOtherForms(blockStart, end);
-// 			extractMorphologicalData(blockStart, end);
+			extractMorphologicalData(blockStart, end);
 			break;
 		case TRADBLOCK:
 			extractTranslations(blockStart, end);
@@ -1134,21 +1134,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 // 	static Pattern conjugationGroup = Pattern.compile("\\{\\{conjugaison\\|fr\\|groupe=(\\d)\\}\\}");
 
-// 	private void extractMorphologicalData(int blockStart, int end) {
-// 		String block = pageContent.substring(blockStart, end);
-// 
-// 		if (block.indexOf("{{m}}") != -1 || block.indexOf("{{mf}}") != -1) {
-// 			wdh.registerProperty(LexinfoOnt.gender, LexinfoOnt.masculine);
-// 		}
-//
-// 		if (block.indexOf("{{f}}") != -1 || block.indexOf("{{mf}}") != -1) {
-// 			wdh.registerProperty(LexinfoOnt.gender, LexinfoOnt.feminine);
-// 		}
-//
-// 		if (block.indexOf("{{plurale tantum|fr}}") != -1) {
-// 			// plural-only word
-// 			wdh.registerProperty(LexinfoOnt.number, LexinfoOnt.plural);
-// 		}
+	private void extractMorphologicalData(int blockStart, int end) {
+		String block = pageContent.substring(blockStart, end);
+
+		if (block.matches("[\\s\\S]*\\{\\{m\\}\\}(?! *:)[\\s\\S]*") || block.matches("[\\s\\S]*\\{\\{mf\\}\\}(?! *:)[\\s\\S]*")) {
+			wdh.registerProperty(LexinfoOnt.gender, LexinfoOnt.masculine);
+		}
+
+		if (block.matches("[\\s\\S]*\\{\\{f\\}\\}(?! *:)[\\s\\S]*") || block.matches("[\\s\\S]*\\{\\{mf\\}\\}(?! *:)[\\s\\S]*")) {
+			wdh.registerProperty(LexinfoOnt.gender, LexinfoOnt.feminine);
+		}
+
+		if (block.matches("[\\s\\S]*\\{\\{plurale tantum|fr\\}\\}(?! *:)[\\s\\S]*")) {
+			// plural-only word
+			wdh.registerProperty(LexinfoOnt.number, LexinfoOnt.plural);
+		}
+	}
 //
 // // 		if (block.indexOf("{{t|fr}}") != -1) {
 // // 			//FIXME check conformance

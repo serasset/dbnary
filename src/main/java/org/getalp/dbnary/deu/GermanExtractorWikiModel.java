@@ -47,7 +47,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			return wikicodeToHtmlDOM(m.group(0));
 		}
 		else{
-			System.out.println("null");
 			return null;
 		}
 		

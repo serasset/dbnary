@@ -516,7 +516,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	                               HashSet<PropertyResourcePair> props,
 	                               PronunciationPair pronunciation) {
 
-       props.add(new PropertyResourcePair(LexinfoOnt.pronunciation, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+       if (pronunciation != null) {
+	       props.add(new PropertyResourcePair(LexinfoOnt.pronunciation, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+       }
+
        registerInflection(languageCode, pos, inflection, canonicalForm, defNumber, props);
 	}
 

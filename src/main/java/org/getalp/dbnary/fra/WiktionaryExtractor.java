@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.AbstractMap.SimpleImmutableEntry;
 
 import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
@@ -27,6 +26,8 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import org.getalp.dbnary.LexinfoOnt;
+
+import org.getalp.dbnary.PropertyResourcePair;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	
 	private static HashSet<String> unsupportedMarkers = new HashSet<String>();
 
-	private static Locale frLocale = new Locale("fr");
+	public static final Locale frLocale = new Locale("fr");
 
 	// private static Set<String> affixesToDiscardFromLinks = null;
 	private static void addPos(String pos) {posMarkers.put(pos, pos);}
@@ -513,44 +514,44 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		return macroName != null && currentBlock == Block.INFLECTIONBLOCK && inflectionMacroNamePattern.matcher(macroName).matches();
 	}
 
-	public HashSet<SimpleImmutableEntry<Property,Resource>> morphologicalPropertiesFromWikicode(String wikicodeMophology) {
-		HashSet<SimpleImmutableEntry<Property,Resource>> infl = new HashSet<SimpleImmutableEntry<Property,Resource>>();
+	public HashSet<PropertyResourcePair> morphologicalPropertiesFromWikicode(String wikicodeMophology) {
+		HashSet<PropertyResourcePair> infl = new HashSet<PropertyResourcePair>();
 
 		switch(wikicodeMophology) {
 		case "ppr":
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.present));
+			infl.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.present));
 			// participe présent.
 			break;
 		case "ppms":
 		case "ppm":
 		case "pp":
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense,  LexinfoOnt.past));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			infl.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(new PropertyResourcePair(LexinfoOnt.tense,  LexinfoOnt.past));
+			infl.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infl.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
 			// past participle masculine singular (or invariable).
 			break;
 		case "ppfs":
 		case "ppf":
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense,  LexinfoOnt.past));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			infl.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(new PropertyResourcePair(LexinfoOnt.tense,  LexinfoOnt.past));
+			infl.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infl.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
 			// past participle au féminin singulier.
 			break;
 		case "ppmp":
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense,  LexinfoOnt.past));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			infl.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(new PropertyResourcePair(LexinfoOnt.tense,  LexinfoOnt.past));
+			infl.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infl.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
 			// past participle au masculin pluriel.
 			break;
 		case "ppfp":
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense,  LexinfoOnt.past));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
-			infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			infl.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(new PropertyResourcePair(LexinfoOnt.tense,  LexinfoOnt.past));
+			infl.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infl.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
 			// past participle au féminin pluriel.
 			break;
 
@@ -574,16 +575,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			// Mood
 			switch (infos[0]) {
 			case "ind":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
+				infl.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
 				break;
 			case "cond":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.conditional));
+				infl.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.conditional));
 				break;
 			case "imp":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
+				infl.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
 				break;
 			case "sub":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.subjunctive));
+				infl.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.subjunctive));
 				break;
 			default:
 				log.error("wikicode's mood part was not recognized for " + commonInflectionInformations.partOfSpeech + " form in article " + wdh.currentLexEntry());
@@ -593,16 +594,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			// Tense
 			switch (infos[1]) {
 			case "p":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.present));
+				infl.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.present));
 				break;
 			case "f":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.future));
+				infl.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.future));
 				break;
 			case "i":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.imperfect));
+				infl.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.imperfect));
 				break;
 			case "ps":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.past));
+				infl.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.past));
 				break;
 			default:
 				log.error("wikicode's tense part was not recognized for " + commonInflectionInformations.partOfSpeech + " form in article " + wdh.currentLexEntry());
@@ -612,28 +613,28 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			// Person
 			switch (infos[2]) {
 			case "1s":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.firstPerson));
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+				infl.add(new PropertyResourcePair(LexinfoOnt.person, LexinfoOnt.firstPerson));
+				infl.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
 				break;
 			case "2s":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.secondPerson));
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+				infl.add(new PropertyResourcePair(LexinfoOnt.person, LexinfoOnt.secondPerson));
+				infl.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
 				break;
 			case "3s":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.thirdPerson));
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+				infl.add(new PropertyResourcePair(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+				infl.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
 				break;
 			case "1p":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.firstPerson));
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+				infl.add(new PropertyResourcePair(LexinfoOnt.person, LexinfoOnt.firstPerson));
+				infl.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
 				break;
 			case "2p":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.secondPerson));
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+				infl.add(new PropertyResourcePair(LexinfoOnt.person, LexinfoOnt.secondPerson));
+				infl.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
 				break;
 			case "3p":
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.thirdPerson));
-				infl.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+				infl.add(new PropertyResourcePair(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+				infl.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
 				break;
 			default:
 				log.error("wikicode's person part was not recognized for " + commonInflectionInformations.partOfSpeech + " form in article " + wdh.currentLexEntry());
@@ -650,7 +651,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			return;
 		}
 
-		HashSet<SimpleImmutableEntry<Property,Resource>> infl = morphologicalPropertiesFromWikicode(wikicodeMophology);
+		HashSet<PropertyResourcePair> infl = morphologicalPropertiesFromWikicode(wikicodeMophology);
 
 		commonInflectionInformations.inflections.add(infl);
 	}
@@ -736,15 +737,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						addInflectionMorphologicalSet(pos, m.group(2), m.group(i).substring(0, m.group(i).indexOf('=')));
 					}
 				} else if (currentBlock == Block.INFLECTIONBLOCK) {
-					if ("m".equals(m.group(1)) || "f".equals(m.group(1))) {
-						
+					if ("m".equals(m.group(1)) || "mf".equals(m.group(1))) {
+						HashSet<PropertyResourcePair> infl = new HashSet<PropertyResourcePair>();
+						infl.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));
+						commonInflectionInformations.inflections.add(infl);
 					}
+
+					if ("f".equals(m.group(1)) || "mf".equals(m.group(1))) {
+						HashSet<PropertyResourcePair> infl = new HashSet<PropertyResourcePair>();
+						infl.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.feminine));
+						commonInflectionInformations.inflections.add(infl);
+					}
+
 					continue;
 				} else {
 					if (isValidSection(m, sectionTitle)) {
 						leaveCurrentBlock(m);
 						currentBlock = Block.NOBLOCK;
 					}
+
 					continue;
 				}
 
@@ -778,6 +789,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			extractDefinitions(blockStart, end);
 			extractPronunciation(blockStart, end);
 			extractOtherForms(blockStart, end);
+// 			extractMorphologicalData(blockStart, end);
 			break;
 		case TRADBLOCK:
 			extractTranslations(blockStart, end);
@@ -811,96 +823,96 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		return res;
 	}
 
-	static void addAtomicMorphologicalInfo(Set<SimpleImmutableEntry<Property,Resource>> infos, String word) {
+	static void addAtomicMorphologicalInfo(Set<PropertyResourcePair> infos, String word) {
 		switch(word) {
 		case "singulier":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "pluriel":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "masculin":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));
 			break;
 		case "féminin":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.feminine));
 			break;
 		case "présent":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.present));
+			infos.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.present));
 			break;
 		case "imparfait":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.imperfect));
+			infos.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.imperfect));
 			break;
 		case "passé":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.past));
+			infos.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.past));
 			break;
 		case "futur":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.future));
+			infos.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.future));
 			break;
 		case "indicatif":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.mood, LexinfoOnt.indicative));
+			infos.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.indicative));
 			break;
 		case "subjonctif":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.mood, LexinfoOnt.subjunctive));
+			infos.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.subjunctive));
 			break;
 		case "conditionnel":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.mood, LexinfoOnt.conditional));
+			infos.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.conditional));
 			break;
 		case "impératif":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.mood, LexinfoOnt.imperative));
+			infos.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.imperative));
 			break;
 		case "première personne":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.firstPerson));
+			infos.add(new PropertyResourcePair(LexinfoOnt.person, LexinfoOnt.firstPerson));
 			break;
 		case "deuxième personne":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.secondPerson));
+			infos.add(new PropertyResourcePair(LexinfoOnt.person, LexinfoOnt.secondPerson));
 			break;
 		case "troisième personne":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+			infos.add(new PropertyResourcePair(LexinfoOnt.person, LexinfoOnt.thirdPerson));
 			break;
 		case "futur simple":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.future));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.mood, LexinfoOnt.indicative));
+			infos.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.future));
+			infos.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.indicative));
 			break;
 		case "passé simple":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense, LexinfoOnt.past));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.mood, LexinfoOnt.indicative));
+			infos.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.past));
+			infos.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.indicative));
 			break;
 		case "masculin singulier":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "féminin singulier":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "masculin pluriel":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "féminin pluriel":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "participe passé masculin singulier":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "participe passé féminin singulier":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "participe passé masculin pluriel":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense,  LexinfoOnt.past));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.masculine));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infos.add(new PropertyResourcePair(LexinfoOnt.tense,  LexinfoOnt.past));
+			infos.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "participe passé féminin pluriel":
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.tense,  LexinfoOnt.past));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.gender, LexinfoOnt.feminine));
-			infos.add(new SimpleImmutableEntry<Property,Resource>(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infos.add(new PropertyResourcePair(LexinfoOnt.tense,  LexinfoOnt.past));
+			infos.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		default:
 			ArrayList<String> multiwords = explode(' ', word);
@@ -926,18 +938,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				canonicalForm = canonicalForm.substring(pipePos + 1);
 			}
 
-			Set<SimpleImmutableEntry<Property,Resource>> infos = new HashSet<SimpleImmutableEntry<Property,Resource>>();
+			Set<PropertyResourcePair> infos = new HashSet<PropertyResourcePair>();
 
 			for (String info : m.group(1).split("de l’|du|de")) {
 				addAtomicMorphologicalInfo(infos, info.trim().toLowerCase(frLocale));
 			}
 
 			if (commonInflectionInformations.inflections.size() == 0) {
-				commonInflectionInformations.inflections.add(new HashSet<SimpleImmutableEntry<Property,Resource>>());
+				commonInflectionInformations.inflections.add(new HashSet<PropertyResourcePair>());
 			}
 
-			for (HashSet<SimpleImmutableEntry<Property,Resource>> inflection : commonInflectionInformations.inflections) {
-				HashSet<SimpleImmutableEntry<Property,Resource>> union = new HashSet<SimpleImmutableEntry<Property,Resource>>(infos);
+			for (HashSet<PropertyResourcePair> inflection : commonInflectionInformations.inflections) {
+				HashSet<PropertyResourcePair> union = new HashSet<PropertyResourcePair>(infos);
 				union.addAll(inflection);
 
 				wdh.registerInflection(
@@ -963,7 +975,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		String partOfSpeech;
 		String languageCode;
 		int defNumber;
-		HashSet<HashSet<SimpleImmutableEntry<Property,Resource>>> inflections = new HashSet<HashSet<SimpleImmutableEntry<Property,Resource>>>();
+		HashSet<HashSet<PropertyResourcePair>> inflections = new HashSet<HashSet<PropertyResourcePair>>();
 	}
 
 	private InflectionSection commonInflectionInformations;
@@ -1120,6 +1132,40 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		return null;
 	}
 
+// 	static Pattern conjugationGroup = Pattern.compile("\\{\\{conjugaison\\|fr\\|groupe=(\\d)\\}\\}");
+
+// 	private void extractMorphologicalData(int blockStart, int end) {
+// 		String block = pageContent.substring(blockStart, end);
+// 
+// 		if (block.indexOf("{{m}}") != -1 || block.indexOf("{{mf}}") != -1) {
+// 			wdh.registerProperty(LexinfoOnt.gender, LexinfoOnt.masculine);
+// 		}
+//
+// 		if (block.indexOf("{{f}}") != -1 || block.indexOf("{{mf}}") != -1) {
+// 			wdh.registerProperty(LexinfoOnt.gender, LexinfoOnt.feminine);
+// 		}
+//
+// 		if (block.indexOf("{{plurale tantum|fr}}") != -1) {
+// 			// plural-only word
+// 			wdh.registerProperty(LexinfoOnt.number, LexinfoOnt.plural);
+// 		}
+//
+// // 		if (block.indexOf("{{t|fr}}") != -1) {
+// // 			//FIXME check conformance
+// // 			wdh.registerProperty(LexinfoOnt.property, LexinfoOnt.TransitiveFrame);
+// // 		}
+// //
+// // 		if (block.indexOf("{{i|fr}}") {
+// // 			//FIXME check conformance
+// // 			wdh.registerProperty(LexinfoOnt.property, LexinfoOnt.IntransitiveFrame);
+// // 		}
+// //
+// // 		Matcher m = conjugationGroup.matcher(block)
+// // 		if (m.find()) {
+// // 			//FIXME check conformance
+// // 			wdh.registerProperty(DBnaryOnt.conjugationGroup, m.group(1));
+// // 		}
+// 	}
 
 	public void extractExample(String example) {
 		Map<Property, String> context = new HashMap<Property, String>();

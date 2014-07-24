@@ -473,15 +473,26 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		for (PropertyResourcePair pr : properties) {
 			Property p = pr.getKey();
 
-			Object ro = r.getPropertyResourceValue(p);
-			if (ro != null && !ro.equals(pr.getValue())) {
-				return false;
-			}
+			Statement roStat = r.getProperty(p);
 
-			StmtIterator i = r.listProperties();
-			while (i.hasNext()) {
-				if (incompatibleProperties(p, i.nextStatement().getPredicate())) {
+			if (roStat != null) {
+				Object ro;
+
+				try {
+					ro = roStat.getResource();
+				} catch (Exception e) {
+					ro = roStat.getLiteral();
+				}
+
+				if (ro != null && !ro.equals(pr.getValue())) {
 					return false;
+				}
+
+				StmtIterator i = r.listProperties();
+				while (i.hasNext()) {
+					if (incompatibleProperties(p, i.nextStatement().getPredicate())) {
+						return false;
+					}
 				}
 			}
 		}
@@ -531,8 +542,12 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	                               HashSet<PropertyResourcePair> props) {
 
 		Resource posResource = posResource(pos);
-		
-		props.add(new PropertyResourcePair(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang)));
+
+
+
+		PropertyResourcePair p = new PropertyResourcePair(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+
+		props.add(p);
 
 		if (defNumber == 0) {
 			// the definition number was not specified, we have to register this

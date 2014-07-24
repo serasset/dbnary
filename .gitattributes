@@ -11,6 +11,7 @@ src/main/java/org/getalp/dbnary/LemonBasedRDFDataHandler.java -text svneol=unset
 src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/OffsetValue.java -text
+src/main/java/org/getalp/dbnary/PronunciationPair.java -text
 src/main/java/org/getalp/dbnary/PropertyResourcePair.java -text
 src/main/java/org/getalp/dbnary/WiktionaryDataHandler.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/WiktionaryDataHandlerFactory.java -text svneol=unset#text/plain

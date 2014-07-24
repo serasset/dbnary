@@ -64,13 +64,6 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	private Resource currentMainLexEntry;
 	private Resource currentPreferredWrittenRepresentation;
 	
-	private static class PronunciationPair {
-		String pron, lang;
-		public PronunciationPair(String pron, String lang) {
-			this.pron = pron; this.lang = lang;
-		}
-	}
-
 	private Set<PronunciationPair> currentSharedPronunciations;
 //	private String currentSharedPronunciation;
 //	private String currentSharedPronunciationLang;
@@ -513,6 +506,18 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 			aBox.add(lexEntry, LemonOnt.otherForm, otherForm);
 			mergePropertiesIntoResource(properties, otherForm);
 		}
+	}
+
+	public void registerInflection(String languageCode,
+	                               String pos,
+	                               String inflection,
+	                               String canonicalForm,
+	                               int defNumber,
+	                               HashSet<PropertyResourcePair> props,
+	                               PronunciationPair pronunciation) {
+
+       props.add(new PropertyResourcePair(LexinfoOnt.pronunciation, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+       registerInflection(languageCode, pos, inflection, canonicalForm, defNumber, props);
 	}
 
 	public void registerInflection(String languageCode,

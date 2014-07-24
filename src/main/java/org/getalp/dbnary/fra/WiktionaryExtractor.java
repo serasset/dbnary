@@ -28,6 +28,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.LexinfoOnt;
 
 import org.getalp.dbnary.PropertyResourcePair;
+import org.getalp.dbnary.PronunciationPair;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private String lastExtractedPronunciationLang = null;
 
 	private static Pattern inflectionMacroNamePattern = Pattern.compile("^fr-");
-	protected final static String inflectionDefPatternString = "^\\# ''([^\n]+) de'' \\[\\[([^\n]+)\\]\\]\\.$";
+	protected final static String inflectionDefPatternString = "^\\# ''([^\n]+) (?:de'' |d\\’'')\\[\\[([^\n]+)\\]\\]\\.$";
 	protected final static Pattern inflectionDefPattern = Pattern.compile(inflectionDefPatternString, Pattern.MULTILINE);
 
 	private static HashMap<String,String> posMarkers;
@@ -783,6 +784,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		case IGNOREPOS:
 			break;
 		case INFLECTIONBLOCK:
+			commonInflectionInformations.pronunciation = extractPronunciation(blockStart, end, false);
 			extractInflections(blockStart, end);
 			break;
 		case DEFBLOCK:
@@ -929,7 +931,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		m.region(blockStart, end);
 
 		while (m.find()) {
-
 			// Getting the canonical form of the inflection
 			String canonicalForm = m.group(2);
 
@@ -958,7 +959,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					wdh.currentLexEntry(),
 					canonicalForm,
 					commonInflectionInformations.defNumber,
-					union
+					union,
+					commonInflectionInformations.pronunciation
 				);
 			}
 		}
@@ -974,6 +976,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private class InflectionSection {
 		String partOfSpeech;
 		String languageCode;
+		PronunciationPair pronunciation;
 		int defNumber;
 		HashSet<HashSet<PropertyResourcePair>> inflections = new HashSet<HashSet<PropertyResourcePair>>();
 	}
@@ -1104,7 +1107,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		extractPronunciation(startOffset, endOffset, true);
 	}
 
-	private String extractPronunciation(int startOffset, int endOffset, boolean registerPronunciation) {
+	private PronunciationPair extractPronunciation(int startOffset, int endOffset, boolean registerPronunciation) {
 		Matcher pronMatcher = pronunciationPattern.matcher(pageContent);
 		pronMatcher.region(startOffset, endOffset);
 
@@ -1126,7 +1129,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				if (registerPronunciation) {
 					wdh.registerPronunciation(pron, lang + "-fonipa");
 				}
-				return pron;
+				return new PronunciationPair(pron, lang + "-fonipa");
 			}
 		}
 		return null;

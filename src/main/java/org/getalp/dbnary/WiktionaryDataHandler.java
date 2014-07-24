@@ -106,6 +106,14 @@ public interface WiktionaryDataHandler {
 	                               String inflection,
 	                               String canonicalForm,
 	                               int defNumber,
+	                               HashSet<PropertyResourcePair> properties,
+	                               PronunciationPair pronunciation);
+
+	public void registerInflection(String languageCode,
+	                               String pos,
+	                               String inflection,
+	                               String canonicalForm,
+	                               int defNumber,
 	                               HashSet<PropertyResourcePair> properties);
 
 	public int currentDefinitionNumber();

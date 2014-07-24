@@ -183,7 +183,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 				 t = title.getTextContent();
 			}
 
-			if (t != null && t.equals(word) || t.equals(word + " (page inexistante)")) {
+			if (t != null && (t.equals(word) || t.equals(word + " (page inexistante)"))) {
 				HashSet<PropertyResourcePair> properties = new HashSet<PropertyResourcePair>();
 
 				Node cell = a;

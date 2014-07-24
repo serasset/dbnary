@@ -108,13 +108,10 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			Element tablesItem=(Element) tables.item(i);
 			getTablesDeclination(tablesItem);
 		}
-		
-		
 	}
 	
 	public void parseOtherForm(String page,String originalPos){
 		if(page!=null){
-			
 				String s = getForm(page, originalPos);
 				if(!s.contains("\n")){
 					Document doc = wikicodeToHtmlDOM(s);
@@ -431,10 +428,12 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 		return nbsp;
 	}
 	
+	//otherway some phrasal verb don't have any inflected form
+	public String getIncludeOnlyText(String rawWikiText) {
+		return rawWikiText;
+	}
+	
 
-    public String getIncludeOnlyText(String rawWikiText) {
-    	return rawWikiText;
-    }
 	
 	
 }

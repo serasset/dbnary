@@ -284,11 +284,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	 	}
 		leaveCurrentBlock(m);
 		wdh.finalizeEntryExtraction();
-//		System.out.println(pass);
+
 			
 	}
 
-//	int pass=0;
 	private void leaveCurrentBlock(Matcher m){
 		if (blockStart == -1) {
 				return;
@@ -315,7 +314,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				case INFLECTIONBLOCK:
 		 			extractInflections(blockStart, end);
 		 			blockStart=end;
-//		 			pass++;
 					break;
 				default:
 					assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
@@ -325,8 +323,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		
 	}
 	
-	//TODO : pattern inflection Block 
-	private static HashSet<String> verbMarker;
+		private static HashSet<String> verbMarker;
 	static{
 		verbMarker=new HashSet<String>();
 		verbMarker.add("Verb");

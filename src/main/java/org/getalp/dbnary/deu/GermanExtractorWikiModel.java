@@ -51,7 +51,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 		
 	}
-	
+
 	public void parseConjugation(String conjugationTemplateCall, String originalPos) {
 		// Render the conjugation to html, while ignoring the example template
 		Matcher mr = germanRegularVerbPattern.matcher(conjugationTemplateCall);
@@ -112,9 +112,8 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
 	public void parseOtherForm(String page,String originalPos){
 		if(page!=null){
-				String s = getForm(page, originalPos);
-				if(!s.contains("\n")){
-					Document doc = wikicodeToHtmlDOM(s);
+				if(!page.contains("\n")){
+					Document doc = wikicodeToHtmlDOM(page);
 					if(null!= doc){
 						NodeList tables =doc.getElementsByTagName("table");
 						for(int i=0;i<tables.getLength();i++){
@@ -123,15 +122,15 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 						}
 					}
 				}
-				else{
-				s=s.replaceAll("\\<.*\\>", "\n  =");
-				s=s.replace(" "," ");
-				if(s!=null){
-					String[] tab = s.split("\n");
+			else{
+				//here we can Use a Map<String,String> and parseArgs from Wikitool
+				page=page.replaceAll("\\<.*\\>", "\n  =");
+				page=page.replace(" "," ");
+					String[] tab = page.split("\n");
 					for(String r : tab){
 						if(!r.isEmpty()){
 							if(r.indexOf("Hilfsverb")==-1 && r.indexOf("Bild")==-1 && r.indexOf("Titel")==-1 && r.indexOf("Weitere_Konjugationen")==-1){
-		        				int ind = r.indexOf("=");
+			    				int ind = r.indexOf("=");
 								if(ind!=-1){
 									String e=extractString(r, "=", "\n");
 									if(!e.isEmpty()){
@@ -148,19 +147,19 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 										if(!e.isEmpty()){
 											if(e.indexOf('(')!=-1){
 												wdh.registerOtherForm(e.replaceAll("!|\\(|\\)",""));
+//												System.out.println(e.replaceAll("!|\\(|\\)",""));
 											}
-											wdh.registerOtherForm(e.replaceAll("!|\\(.*\\)", ""));
+//											System.out.println(e.replaceAll("!|\\(.*\\)", ""));
+														wdh.registerOtherForm(e.replaceAll("!|\\(.*\\)", ""));
 										}
 									}
 								}
-								
 					       	}
-							}
-				        }
+						}
 			        }
-		        }
-			}
-        }
+		    }
+		}
+    }
 	
 	private void getTablesConj(Element tablesItem, int iBegin, int jBegin){
 		int iEnd,jEnd;
@@ -288,6 +287,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 	
 	
 	private void addDeclinationForm(String s){
+//		System.out.println(s);
 		wdh.registerOtherForm(s);
 	}
 	
@@ -337,7 +337,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 			}
 			if (!res.isEmpty()) {
 				wdh.registerOtherForm(res);
-//				System.out.println("::"+res);
+//				System.out.println(res);
 			}
 		}
 	}

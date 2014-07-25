@@ -1,14 +1,20 @@
 package org.getalp.dbnary.deu;
 
+import java.awt.PageAttributes.OriginType;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +51,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected final static HashSet<String> ignorableSectionMarkers;
 	protected final static HashSet<String> nymMarkers;
 	protected final static HashMap<String, String> nymMarkerToNymName;
+//	protected final static HashSet<String> inflectionMarkers;
 
 	static {
+		
+		
 		// languageSectionPattern =
 		// Pattern.compile(languageSectionPatternString);
 
@@ -181,7 +190,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	 * @uml.property  name="currentNym"
 	 * @uml.associationEnd  qualifier="key:java.lang.String java.lang.String"
 	 */
-	private String currentNym = null;
 
 
 	void registerNewPartOfSpeech(Matcher m) {
@@ -202,7 +210,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	int blockStart=-1;
 	
-//	private String currentNym = null;
+	private String currentNym = null;
+
 	
 	
 	private void extractGermanData(int startOffset, int endOffset){
@@ -210,14 +219,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		m.region(startOffset, endOffset);
 		wdh.initializeEntryExtraction(wiktionaryPageName);
 		wdh.setWiktionaryIndex(wi);
-		
+
 		currentBlock=Block.NOBLOCK;
 		
-//		Map <String, String> sectionArgs;
-		
 		while(m.find()){
-			if (null != m.group(1)) {
-				
+//			for(int i=0;i<m.groupCount();i++){
+//				System.out.println(i+":"+m.group(i));
+//			}
+//			System.out.println(currentBlock);
+//			System.out.println(m.group());
+			if (null != m.group(1) ) {
 				//go to the good block
 				if (m.group(1).equals("Bedeutungen")) {
 					leaveCurrentBlock(m);
@@ -228,7 +239,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					leaveCurrentBlock(m);
 					//go to OrthoAltBlock
 					currentBlock=Block.ORTHOALTBLOCK;
-					blockStart = m.end();
+					blockStart = m.end();					
 				} else if (nymMarkers.contains(m.group(1))) {
 					leaveCurrentBlock(m);
 					//go to NymBlock
@@ -239,6 +250,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					leaveCurrentBlock(m);
 					//go to NODATA
 					currentBlock=Block.NOBLOCK;
+					//inflection block
+				} else if(m.group(1).contains("Deutsch")){
+						leaveCurrentBlock(m);
+						
+						currentBlock=Block.INFLECTIONBLOCK;
+						blockStart=m.start();
 				} else {
 				}
 			} else if (null != m.group(3)) {
@@ -254,7 +271,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					currentBlock=Block.TRADBLOCK;
 					blockStart = m.end();
 				}
-				
+				//inflection block
+			} else if (null != m.group(6)) {
+					if(m.group(6).contains("Deutsch")){
+						leaveCurrentBlock(m);
+						
+						currentBlock=Block.INFLECTIONBLOCK;
+						blockStart=m.start();
+					}
 			} else {
 			}
 	 	}
@@ -263,13 +287,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			
 	}
 
+	
 	private void leaveCurrentBlock(Matcher m){
+
 		if (blockStart == -1) {
 				return;
-			}
-
+		}
+		
 			int end = computeRegionEnd(blockStart, m);
-					extractOtherForms(blockStart, end);
 			switch (currentBlock) {
 				case NOBLOCK:
 				case IGNOREPOS:
@@ -288,7 +313,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					currentNym = null;
 					break;
 				case INFLECTIONBLOCK:
-		// 			extractInflections(blockStart, end);
+		 			extractInflections(blockStart, end);
+		 			blockStart=m.end();
 					break;
 				default:
 					assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
@@ -298,8 +324,57 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		
 	}
 	
+	//TODO : pattern inflection Block 
+	private static HashSet<String> verbMarker;
+	static{
+		verbMarker=new HashSet<String>();
+		verbMarker.add("Verb");
+		verbMarker.add("Hilfsverb");
+		
+		
+		
+	}
+	private void extractInflections(int startOffset, int endOffset){
+		String page=lexEntryToPage(wiktionaryPageName);
+		String normalizedPOS=wdh.currentWiktionaryPos();
+		//if the currentEntry has a page of conjugation or declination
+		GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
+		if(null!=page){
+			if(verbMarker.contains(normalizedPOS)){
+				gewm.parseConjugation(page, normalizedPOS);
+			}
+			else{
+				gewm.parseDeclination(page, normalizedPOS);
+			}
+		}
+		else{
+		Pattern pattern=Pattern.compile(macroOrPOSPatternString);
+		Matcher m=pattern.matcher(pageContent.substring(startOffset, endOffset));
+			if(m.find()){
+				gewm.parseOtherForm(m.group(0), normalizedPOS);
+			}
+			
+		}
+		
+		
+		
+		
+	}
 	
+	private final static String germanDeclinationSuffix =" (Deklination)";
+	private final static String germanConjugationSuffix =" (Konjugation)";
 	
+	private String lexEntryToPage(String lexEntry){
+		int i=0;
+		String[] suffix={germanConjugationSuffix,germanDeclinationSuffix};
+		String pageContent = null;
+
+			while(null==pageContent && i< suffix.length){
+				pageContent=wi.getTextOfPage(lexEntry+suffix[i]);
+				i++;
+			}
+		return pageContent;
+	}
 	
 	
 	
@@ -498,6 +573,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				}
 				
 				if (def != null && !def.equals("")) {
+//					System.out.println(senseNum+":"+definitionMatcher.group(2));
 					wdh.registerNewDefinition(definitionMatcher.group(2), senseNum);
 				}
 			}

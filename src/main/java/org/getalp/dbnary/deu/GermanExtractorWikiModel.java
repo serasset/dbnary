@@ -111,6 +111,10 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	}
 	
 	public void parseOtherForm(String page,String originalPos){
+		if(null==originalPos){
+			wdh.addPartOfSpeech("");
+			originalPos="";
+		}
 		if(page!=null){
 				if(!page.contains("\n")){
 					Document doc = wikicodeToHtmlDOM(page);

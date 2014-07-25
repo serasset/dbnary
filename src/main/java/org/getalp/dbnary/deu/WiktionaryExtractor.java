@@ -284,12 +284,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	 	}
 		leaveCurrentBlock(m);
 		wdh.finalizeEntryExtraction();
+//		System.out.println(pass);
 			
 	}
 
-	
+//	int pass=0;
 	private void leaveCurrentBlock(Matcher m){
-
 		if (blockStart == -1) {
 				return;
 		}
@@ -314,7 +314,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					break;
 				case INFLECTIONBLOCK:
 		 			extractInflections(blockStart, end);
-		 			blockStart=m.end();
+		 			blockStart=end;
+//		 			pass++;
 					break;
 				default:
 					assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
@@ -353,7 +354,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			if(m.find()){
 				gewm.parseOtherForm(m.group(0), normalizedPOS);
 			}
-			
 		}
 		
 		

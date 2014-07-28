@@ -261,7 +261,6 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 	}
 	
 	private void getTablesOtherForm(Element tablesItem){
-		System.out.println("otherFormlalalalalal");
 		if (null != tablesItem) {
 			NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
 			if (null!=someTRs) {

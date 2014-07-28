@@ -16,7 +16,6 @@ public class DbnaryModel {
 	public static final String DBNARY_URL = "http://kaiko.getalp.org/dbnary";
 	// protected static final String LMF = "http://www.lexicalmarkupframework.org/lmf/r14#";
 
-	public static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
 	public static final String LEXVO = "http://lexvo.org/id/iso639-3/";
 
 	public static Model tBox;

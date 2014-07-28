@@ -24,6 +24,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 
@@ -172,7 +173,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		aBox.setNsPrefix("dbnary", DBnaryOnt.NS);
 		aBox.setNsPrefix("lemon", LemonOnt.NS);
 		aBox.setNsPrefix("lexinfo", LexinfoOnt.NS);
-		aBox.setNsPrefix("rdfs", RDFS);
+		aBox.setNsPrefix("rdfs", RDFS.getURI());
 		aBox.setNsPrefix("dcterms", DCTerms.NS);
 		aBox.setNsPrefix("lexvo", LEXVO);
 		aBox.setNsPrefix("rdf", RDF.getURI());
@@ -310,7 +311,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		PosAndType pat = posAndTypeValueMap.get(pos);
 		addPartOfSpeech(pos, posResource(pat), typeResource(pat));
 	}
-
+//
 	public void registerProperty(Property p, Resource r) {
 		if (null == currentLexEntry) {
 			log.debug("Registering property when lex entry is null in \"{}\".", this.currentMainLexEntry);

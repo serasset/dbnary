@@ -19,6 +19,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class DilafLemonDataHandler extends DbnaryModel {
 
@@ -47,7 +48,7 @@ public class DilafLemonDataHandler extends DbnaryModel {
 		aBox.setNsPrefix("dbnary", DBnaryOnt.NS);
 		aBox.setNsPrefix("lemon", LemonOnt.NS);
 		aBox.setNsPrefix("lexinfo", LexinfoOnt.NS);
-		aBox.setNsPrefix("rdfs", RDFS);
+		aBox.setNsPrefix("rdfs", RDFS.getURI());
 		aBox.setNsPrefix("dcterms", DCTerms.NS);
 		aBox.setNsPrefix("lexvo", LEXVO);
 	}

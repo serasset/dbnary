@@ -141,9 +141,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			    				int ind = r.indexOf("=");
 								if(ind!=-1){
 									String e=extractString(r, "=", "\n");
-									System.out.println(e);
 									e=removeUselessSpaces(e);
-									System.out.println(e);
 									if(!e.isEmpty()){
 											e=e.substring(1);
 										if(!originalPos.equals("Verb")){

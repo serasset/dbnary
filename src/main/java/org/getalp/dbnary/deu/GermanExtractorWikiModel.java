@@ -24,7 +24,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	private final static String germanNonRegularVerbString=" unregelmäßig";
 	private static Pattern germanRegularVerbPattern;
 	private static Pattern germanNonRegularVerbPattern;
-	
+//	private boolean reflexiv=false;
 	static{
 		germanRegularVerbPattern= Pattern.compile(germanRegularVerbString);
 		germanNonRegularVerbPattern= Pattern.compile(germanNonRegularVerbString);
@@ -66,6 +66,10 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			return ;
 		}
 
+		
+//		if(conjugationTemplateCall.indexOf("reflexiv")!=-1){
+//			reflexiv=true;
+//		}
 		
 		NodeList tables =doc.getElementsByTagName("table");
 		
@@ -137,6 +141,9 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			    				int ind = r.indexOf("=");
 								if(ind!=-1){
 									String e=extractString(r, "=", "\n");
+									System.out.println(e);
+									e=removeUselessSpaces(e);
+									System.out.println(e);
 									if(!e.isEmpty()){
 											e=e.substring(1);
 										if(!originalPos.equals("Verb")){
@@ -150,11 +157,11 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 										e=e.replace("—","");
 										if(!e.isEmpty()){
 											if(e.indexOf('(')!=-1){
-												wdh.registerOtherForm(e.replaceAll("!|\\(|\\)",""));
+												addDeclinationForm(e.replaceAll("!|\\(|\\)",""));
 //												System.out.println(e.replaceAll("!|\\(|\\)",""));
 											}
 //											System.out.println(e.replaceAll("!|\\(.*\\)", ""));
-														wdh.registerOtherForm(e.replaceAll("!|\\(.*\\)", ""));
+											addDeclinationForm(e.replaceAll("!|\\(.*\\)", ""));
 										}
 									}
 								}
@@ -256,6 +263,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 	}
 	
 	private void getTablesOtherForm(Element tablesItem){
+		System.out.println("otherFormlalalalalal");
 		if (null != tablesItem) {
 			NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
 			if (null!=someTRs) {
@@ -292,6 +300,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 	
 	private void addDeclinationForm(String s){
 //		System.out.println(s);
+		s=s.replace("]", "").replace("[","");
 		wdh.registerOtherForm(s);
 	}
 	
@@ -352,10 +361,10 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 		String res=null,section=null;
 				
 		section=extractString(s, originalPos, "{{Wortart");
-		res=extractString(section, germanMorphoBegin, germanMorphoEnd)+"}}";
+		res=extractString(s, germanMorphoBegin, germanMorphoEnd)+"}}";
 		
 		if(res.isEmpty()){
-			res = extractString(section, "Tabelle", germanMorphoEnd);
+			res = extractString(s, "Tabelle", germanMorphoEnd);
 		}
 		
 		return res;
@@ -397,7 +406,7 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 	//remove spaces before the first form's character and after the last form's character
 	//and the unsecable spaces
 	private String removeUselessSpaces(String form){
-		form =form.replace(" "," ");//replace unsecable spaces
+		form =form.replace(" "," ").replace("&nbsp;"," ").replace("\t"," ");//replace unsecable spaces
 		String res=form.replace("  "," ");
 		if(!res.isEmpty()){
 		int debut=0,fin=res.length()-1;
@@ -419,7 +428,9 @@ private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd,
 
 	//return if the form given in parameter is a phrasal verb
 	private boolean isPhrasalVerb(String form){
-		return nbSpaceForm(form)>=2;
+		int nbsp=nbSpaceForm(form);
+//		return ((!reflexiv && nbsp>=2) || (reflexiv && nbsp>=3));
+		return nbsp>=2;
 	}
 	
 	private int nbSpaceForm(String form){

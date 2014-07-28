@@ -715,6 +715,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					} else {
 						currentBlock = Block.DEFBLOCK;
 						wdh.addPartOfSpeech(pos);
+						if ("-verb-".equals(pos)) {
+							wdh.registerProperty(LexinfoOnt.verbFormMood, LexinfoOnt.infinitive);
+						}
 					}
 				}
 			} else {

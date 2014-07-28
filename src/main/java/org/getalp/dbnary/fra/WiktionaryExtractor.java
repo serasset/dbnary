@@ -852,16 +852,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			infos.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.future));
 			break;
 		case "indicatif":
-			infos.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.indicative));
+			infos.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
 			break;
 		case "subjonctif":
-			infos.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.subjunctive));
+			infos.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.subjunctive));
 			break;
 		case "conditionnel":
-			infos.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.conditional));
+			infos.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.conditional));
 			break;
 		case "impératif":
-			infos.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.imperative));
+			infos.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
 			break;
 		case "première personne":
 			infos.add(new PropertyResourcePair(LexinfoOnt.person, LexinfoOnt.firstPerson));
@@ -874,11 +874,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			break;
 		case "futur simple":
 			infos.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.future));
-			infos.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.indicative));
+			infos.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
 			break;
 		case "passé simple":
 			infos.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.past));
-			infos.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.indicative));
+			infos.add(new PropertyResourcePair(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
 			break;
 		case "masculin singulier":
 			infos.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));

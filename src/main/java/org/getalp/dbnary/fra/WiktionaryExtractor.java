@@ -1134,7 +1134,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			lang = LangTools.getPart1OrId(lang.trim());
 
 			lastExtractedPronunciationLang = lang;
-			if (lang != null && !pron.equals("")) {
+			if (lang != null && !lang.equals("") && !pron.equals("")) {
 				if (registerPronunciation) {
 					wdh.registerPronunciation(pron, lang + "-fonipa");
 				} else {

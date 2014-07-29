@@ -224,6 +224,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		
 		while(m.find()){
 //			for(int i=0;i<m.groupCount();i++){
+//				if(null!=m.group(i))
 //				System.out.println(i+":"+m.group(i));
 //			}
 //			System.out.println(currentBlock);
@@ -273,7 +274,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				}
 				//inflection block
 			} else if (null != m.group(6)) {
-					if(m.group(6).contains("Deutsch")){
+					if(m.group(6).contains("Deutsch") || (m.group(6).contains("Tabelle") && !m.group(6).contains("Ü"))){
+//						System.out.println(m.group(6));
 						leaveCurrentBlock(m);
 						
 						currentBlock=Block.INFLECTIONBLOCK;
@@ -282,6 +284,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			} else {
 			}
 	 	}
+//		System.exit(0);
 		leaveCurrentBlock(m);
 		wdh.finalizeEntryExtraction();
 
@@ -323,37 +326,33 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		
 	}
 	
-		private static HashSet<String> verbMarker;
+	private static HashSet<String> verbMarker;
 	static{
 		verbMarker=new HashSet<String>();
 		verbMarker.add("Verb");
 		verbMarker.add("Hilfsverb");
-		
-		
-		
 	}
+
+	
 	private void extractInflections(int startOffset, int endOffset){
+		//TODO : next step : for each page with more than one conjugation use all the table
 		String page=lexEntryToPage(wiktionaryPageName);
 		String normalizedPOS=wdh.currentWiktionaryPos();
 		//if the currentEntry has a page of conjugation or declination
 		GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
-		if(null!=page){
-			if(verbMarker.contains(normalizedPOS)){
+		if (null!=page && -1!=page.indexOf(normalizedPOS)) {
+			if (verbMarker.contains(normalizedPOS)) {
 				gewm.parseConjugation(page, normalizedPOS);
-			}
-			else{
+			} else {
 				gewm.parseDeclination(page, normalizedPOS);
 			}
+		} else {
+			Pattern pattern=Pattern.compile(macroOrPOSPatternString);
+			Matcher m=pattern.matcher(pageContent.substring(startOffset, endOffset));
+				if(m.find()){
+					gewm.parseOtherForm(m.group(0), normalizedPOS);
+				}
 		}
-		else{
-		Pattern pattern=Pattern.compile(macroOrPOSPatternString);
-		Matcher m=pattern.matcher(pageContent.substring(startOffset, endOffset));
-			if(m.find()){
-				gewm.parseOtherForm(m.group(0), normalizedPOS);
-			}
-		}
-		
-		
 		
 		
 	}

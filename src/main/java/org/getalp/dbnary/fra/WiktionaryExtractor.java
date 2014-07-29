@@ -1124,8 +1124,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			if (lang == null || lang.equals("")) return null;
 			
 			if (pron.startsWith("1=")) pron = pron.substring(2);
-			if (lang.startsWith("|2=")) lang = lang.substring(2);
-			if (lang.startsWith("|lang=")) lang = lang.substring(5);
+
+			if      (lang.startsWith("|2="))    lang = lang.substring(3);
+			else if (lang.startsWith("|lang=")) lang = lang.substring(6);
+			else if (lang.startsWith("lang="))  lang = lang.substring(5);
 
 			lastExtractedPronunciationLang = lang;
 			if (!pron.equals("")) {

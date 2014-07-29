@@ -979,7 +979,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private class InflectionSection {
 		String partOfSpeech;
 		String languageCode;
-		PronunciationPair pronunciation;
+		HashSet<PronunciationPair> pronunciation = new HashSet<PronunciationPair>();
 		int defNumber;
 		HashSet<HashSet<PropertyResourcePair>> inflections = new HashSet<HashSet<PropertyResourcePair>>();
 	}
@@ -1110,11 +1110,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		extractPronunciation(startOffset, endOffset, true);
 	}
 
-	private PronunciationPair extractPronunciation(int startOffset, int endOffset, boolean registerPronunciation) {
+	private HashSet<PronunciationPair> extractPronunciation(int startOffset, int endOffset, boolean registerPronunciation) {
 		Matcher pronMatcher = pronunciationPattern.matcher(pageContent);
 		pronMatcher.region(startOffset, endOffset);
 
 		lastExtractedPronunciationLang = null;
+
+		HashSet<PronunciationPair> res = registerPronunciation ? null : new HashSet<PronunciationPair>();
 
 		while (pronMatcher.find()) {
 			String pron = pronMatcher.group(1);
@@ -1136,11 +1138,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				if (registerPronunciation) {
 					wdh.registerPronunciation(pron, lang + "-fonipa");
 				} else {
-					return new PronunciationPair(pron, lang + "-fonipa");
+					res.add(new PronunciationPair(pron, lang + "-fonipa"));
 				}
 			}
 		}
-		return null;
+
+		return res;
 	}
 
 // 	static Pattern conjugationGroup = Pattern.compile("\\{\\{conjugaison\\|fr\\|groupe=(\\d)\\}\\}");

@@ -107,7 +107,7 @@ public interface WiktionaryDataHandler {
 	                               String canonicalForm,
 	                               int defNumber,
 	                               HashSet<PropertyResourcePair> properties,
-	                               PronunciationPair pronunciation);
+	                               HashSet<PronunciationPair> pronunciations);
 
 	public void registerInflection(String languageCode,
 	                               String pos,

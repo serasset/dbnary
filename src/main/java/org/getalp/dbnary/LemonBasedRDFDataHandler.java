@@ -526,13 +526,15 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	                               String canonicalForm,
 	                               int defNumber,
 	                               HashSet<PropertyResourcePair> props,
-	                               PronunciationPair pronunciation) {
+	                               HashSet<PronunciationPair> pronunciations) {
 
-       if (pronunciation != null) {
-	       props.add(new PropertyResourcePair(LexinfoOnt.pronunciation, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
-       }
+		if (pronunciations != null) {
+			for (PronunciationPair pronunciation : pronunciations) {
+				props.add(new PropertyResourcePair(LexinfoOnt.pronunciation, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+			}
+		}
 
-       registerInflection(languageCode, pos, inflection, canonicalForm, defNumber, props);
+		registerInflection(languageCode, pos, inflection, canonicalForm, defNumber, props);
 	}
 
 	public void registerInflection(String languageCode,

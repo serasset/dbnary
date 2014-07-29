@@ -1129,6 +1129,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			else if (lang.startsWith("|lang=")) lang = lang.substring(6);
 			else if (lang.startsWith("lang="))  lang = lang.substring(5);
 
+			lang = lang.trim();
+
 			lastExtractedPronunciationLang = lang;
 			if (!pron.equals("")) {
 				if (registerPronunciation) {

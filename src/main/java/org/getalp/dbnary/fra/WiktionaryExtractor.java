@@ -990,12 +990,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		commonInflectionInformations = new InflectionSection();
 		commonInflectionInformations.partOfSpeech = pos;
 		commonInflectionInformations.languageCode = LangTools.normalize(sectionArgs.get("2"));
-
-		try {
-			commonInflectionInformations.defNumber = Integer.parseInt(sectionArgs.get("num"));
-		} catch (java.lang.NumberFormatException e) {
-			commonInflectionInformations.defNumber = 0;
-		}
+		commonInflectionInformations.defNumber = 0; // always 0 for the moment.
 	}
 
 	private String getPOS(Matcher m, String sectionTitle, Map<String,String> sectionArgs) {

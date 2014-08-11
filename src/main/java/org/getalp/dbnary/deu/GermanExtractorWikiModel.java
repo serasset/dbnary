@@ -176,43 +176,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 					
 				}
 				return;
-//				System.exit(0);
-				/*
-				//here we can Use a Map<String,String> and parseArgs from Wikitool
-				page=page.replaceAll("\\<.*\\>", "\n  =");
-				page=page.replace(" "," ");
-					String[] tab = page.split("\n");
-					for (String r : tab) {
-						if (!r.isEmpty()) {
-							if (-1==r.indexOf("Hilfsverb") && -1==r.indexOf("Bild") && -1==r.indexOf("Titel") && -1==r.indexOf("Weitere_Konjugationen")) {
-			    				int ind = r.indexOf("=");
-								if (-1!=ind) {
-									String e=extractString(r, "=", "\n");
-									e=removeUselessSpaces(e);
-									if (!e.isEmpty()) {
-											e=e.substring(1);
-										if (!originalPos.equals("Verb")) {
-											if (-1!=e.indexOf(" ")) {
-												e=extractString(e," ", "\n");
-												if (!e.isEmpty()) {
-													e=e.substring(1);
-												}
-											}
-										}
-										e=e.replace("—","");
-										if (!e.isEmpty()) {
-											if (-1!=e.indexOf('(')) {
-												addForm(e.replaceAll("!|\\(|\\)",""));
-//												System.out.println(e.replaceAll("!|\\(|\\)",""));
-											}
-//											System.out.println(e.replaceAll("!|\\(.*\\)", ""));
-											addForm(e.replaceAll("!|\\(.*\\)", ""));
-										}
-									}
-								}
-					       	}
-						}
-			        }*/
 		    }
 		}
     }
@@ -249,7 +212,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 											if (!change && isPhrasalVerb(form) ) {
 												part=extractPart(form);
 												if (!part.isEmpty()) {
-													System.out.println("phrasal");
+//													System.out.println("phrasal");
 													change= true;
 													iBegin=iBegin+1;
 													iEnd=iEnd+1;

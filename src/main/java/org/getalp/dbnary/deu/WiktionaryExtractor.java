@@ -1,10 +1,12 @@
 package org.getalp.dbnary.deu;
 
 import java.awt.PageAttributes.OriginType;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +14,7 @@ import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.PropertyResourcePair;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
@@ -584,6 +587,5 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 //		}
 	}
 	
-
 
 }

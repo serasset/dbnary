@@ -1,7 +1,10 @@
 package org.getalp.dbnary.deu;
 
+import java.awt.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +35,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
 	
 	
+	private  boolean isPhrasal=false;
 	
 	private HashSet<PropertyResourcePair> inflections;
 	
@@ -63,7 +67,8 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 		
 	}
-	
+//	private enum Genre {MASCULIN, FEMININ,NEUTRUM};
+	private enum Cas {NOMINATIF,ACCUSATIF,DATIF, GENITIF,NOTHING};
 	private enum Mode {PARTICIPS,IMPERATIV,INDICATIV,NOTHING};
 	private Mode mode=Mode.NOTHING;
 	private enum Tense {PRESENT,PAST,NOTHING};
@@ -91,17 +96,8 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 //		}
 		
 		NodeList tables =doc.getElementsByTagName("table");
-		mode=Mode.PARTICIPS;
-		Element tablesItem =(Element) tables.item(1);
-		getTablesConj(tablesItem,11,0);
 		
-		mode=Mode.IMPERATIV;
-		tablesItem =(Element) tables.item(2);
-		getTablesConj(tablesItem,2,1);
-//		getTablesConj(tablesItem,2,1,5,2);
-		
-		tablesItem =(Element) tables.item(3);
-		
+		Element tablesItem =(Element) tables.item(3);
 		mode=Mode.INDICATIV;
 		if(mr.find()) {
 //			System.out.println("regelmäßig");
@@ -124,6 +120,19 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			tense=Tense.PAST;
 			getTablesConj(tablesItem,13,2);
 		}
+		mode=Mode.PARTICIPS;
+		
+		
+		tablesItem =(Element) tables.item(1);
+		getTablesConj(tablesItem,11,0);
+		
+		mode=Mode.IMPERATIV;
+		tablesItem =(Element) tables.item(2);
+		getTablesConj(tablesItem,2,1);
+//		getTablesConj(tablesItem,2,1,5,2);
+		
+		
+		
 
 	}
 	
@@ -157,7 +166,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			} else {
 				page=page.replaceAll("\\<.*\\>", "\n  =");
 				HashMap<String,String> pag = new HashMap<String,String>();
-				pag=(HashMap)WikiTool.parseArgs(page.replace("{","").replace("}",""));
+				pag=(HashMap) (WikiTool.parseArgs(page.replace("{","").replace("}","")));
 				for(String key : pag.keySet()){
 					String r=pag.get(key);
 					if (-1==r.indexOf("Bild") && -1==r.indexOf("Titel") && -1==r.indexOf("Konjugation") && (-1==r.indexOf("Deutsch") && -1!=r.indexOf(wdh.currentWiktionaryPos()))) {
@@ -192,54 +201,54 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		boolean change=false;	//this bool changes if the current verb is a phrasal verb
 		if (null!=tablesItem) {
 			NodeList someTRs = tablesItem.getElementsByTagName("tr");
-			
 			for (int i=iBegin;i<iEnd;i++) {
 				Element linesItem= (Element)someTRs.item(i);
 				if (null!=linesItem) {
 					NodeList interrestingTDs = linesItem.getElementsByTagName("td") ;
-						for (int j=jBegin;j<jEnd;j++) {
-							Element colsItem=(Element)interrestingTDs.item(j);
-							if (null!=colsItem) {
-								NodeList itemsList = colsItem.getChildNodes();
-								for (int e=0; e<itemsList.getLength();e++) {
-									inflections=new HashSet<PropertyResourcePair>();
-									String name=itemsList.item(e).getNodeName();
-									if (name.equals("#text")) {
-										String form=itemsList.item(e).getTextContent();
-										form=removeUselessSpaces(form.replaceAll("\\<.*\\>", "").replace("—",""));//remove insecable spaces and </noinclude> markup
-										if ( !form.isEmpty() && !form.contains("Pers.")) {
-											// for verbs like ankommen : ich komme an
-											if (!change && isPhrasalVerb(form) ) {
-												part=extractPart(form);
-												if (!part.isEmpty()) {
+					for (int j=jBegin;j<jEnd;j++) {
+						Element colsItem=(Element)interrestingTDs.item(j);
+						if (null!=colsItem) {
+							NodeList itemsList = colsItem.getChildNodes();
+							for (int e=0; e<itemsList.getLength();e++) {
+								inflections=new HashSet<PropertyResourcePair>();
+								String name=itemsList.item(e).getNodeName();
+								if (name.equals("#text")) {
+									String form=itemsList.item(e).getTextContent();
+									form=removeUselessSpaces(form.replaceAll("\\<.*\\>", "").replace("—",""));//remove insecable spaces and </noinclude> markup
+									if ( !form.isEmpty() && !form.contains("Pers.")) {
+										// for verbs like ankommen : ich komme an
+										if (!change && isPhrasalVerb(form) ) {
+											part=extractPart(form);
+											if (!part.isEmpty()) {
 //													System.out.println("phrasal");
-													change= true;
-													iBegin=iBegin+1;
-													iEnd=iEnd+1;
-													jEnd=jEnd+2;
-												}
+												change= true;
+												isPhrasal=true;
+												iBegin=iBegin+1;
+												iEnd=iEnd+1;
+												jEnd=jEnd+2;
 											}
-											if(mode==Mode.PARTICIPS){
-												if(j==jBegin){
-													tense=Tense.PRESENT;
-												} else {
-													tense=Tense.PAST;
-												}
+										}
+										if(mode==Mode.PARTICIPS){
+											if(j==jBegin){
+												tense=Tense.PRESENT;
+											} else {
+												tense=Tense.PAST;
 											}
-											int tmp=change?(j-jBegin>=2?(j-jBegin)-2:j-jBegin):(j-jBegin);
-											int nbr = (i-iBegin+1);
-											addVerbInfo(nbr,tmp, form);
-		//									System.out.println("i : "+i+" j : "+j+"  form : "+form);
-											form =(form.replace("\n","")).replace(",","");
-											if (!form.replace(" ","").isEmpty()) {
-												
-												addVerbForm(form, change);
-											}
+										}
+										int tmp=change?(j-jBegin>=2?(j-jBegin)-2:j-jBegin):(j-jBegin);
+										int nbr = (i-iBegin+1);
+										addVerbInfo(nbr,tmp, form);
+	//									System.out.println("i : "+i+" j : "+j+"  form : "+form);
+										form =(form.replace("\n","")).replace(",","");
+										if (!form.replace(" ","").isEmpty()) {
+											
+											addVerbForm(form);
 										}
 									}
 								}
 							}
 						}
+					}
 				}
 			}
 		}
@@ -257,7 +266,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			break;
 		case INDICATIV:
 				inflections.add(new PropertyResourcePair(LexinfoOnt.number,(3>=nbr?LexinfoOnt.singular:LexinfoOnt.plural)));
-				nbr=(nbr-3<=0)?nbr:nbr-3;
+				nbr= ((nbr-3)<=0) ? nbr:(nbr-3);
 				switch(nbr) {
 				case 1:
 					inflections.add(new PropertyResourcePair(LexinfoOnt.person,LexinfoOnt.firstPersonForm));
@@ -296,12 +305,15 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		
 	}
 		
+	Cas cas[]= Cas.values();
+
 	private void getTablesDeclination(Element tablesItem){
-		
+
 		if (null != tablesItem) {
 			NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
 			if (null!=someTRs) {
 				for (int i=0;i<someTRs.getLength();i++) {
+					inflections=new HashSet<PropertyResourcePair>();
 					Element trItem= (Element)someTRs.item(i);
 					if (null!=trItem) {
 						NodeList someTD=trItem.getElementsByTagName("td");//list of cols Elements
@@ -320,6 +332,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 												if (!form.replace(" ","").isEmpty()) {
 	//											System.out.println(form);
 													addForm(form);
+													addDeclinationInflections(cas[i%4], j/2);
 												}
 										}
 									}
@@ -329,6 +342,44 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 					}
 				}
 			}
+		}
+	}
+	
+	//TODO: ajouter le genre, le cas, le nombre, si superlatif ou comparatif
+	private void addDeclinationInflections(Cas cas, int nbgnr){
+		
+		switch(nbgnr){
+		case 0:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));
+			break;
+		case 1:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.feminine));
+			break;
+		case 2:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.neuter));
+			break;
+		default :
+			break;
+		}
+		if(nbgnr<3){
+			inflections.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
+		} else{
+			inflections.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
+		}
+		switch(cas){
+		case NOMINATIF:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.nominativeCase));
+			break;
+		case GENITIF:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.genitiveCase));
+			break;
+		case ACCUSATIF:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.accusativeCase));
+			break;
+		case DATIF:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.dativeCase));
+		case NOTHING:
+			break;
 		}
 	}
 	
@@ -372,16 +423,17 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	private void addForm(String s){
 		s=s.replace("]", "").replace("[","").replaceAll(".*\\) *","").replace("(","");
 //		System.out.println(s);
-//		wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 0, inflections);
-		wdh.registerOtherForm(s);
+		wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 0, inflections);
+//		wdh.registerOtherForm(s);
 	}
 	
 	//comp Verb
-	private void addVerbForm(String s, boolean isPhrasal){
+	private void addVerbForm(String s){
 		if (!s.isEmpty()) {
 			int nbsp= nbSpaceForm(s);
 			String res="";
 			boolean imp=s.contains("!");
+			
 			if (!imp) {
 				if (!isPhrasal) {
 					//System.out.println("non phrasal");
@@ -418,14 +470,15 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 				}
 			}
 			else{
-				if(0==nbsp){
+				if(0==nbsp || isPhrasal){
 					res=s.replace("!","");
+					System.out.println(res);
 				} else {
-					res=s.substring(0, s.indexOf(" "));
+					res=s.substring(0, s.lastIndexOf(" "));
 				}
 			}
 			if (!res.isEmpty()) {
-				wdh.registerInflection(null, wdh.currentWiktionaryPos(), res, wdh.currentLexEntry(), 1 , inflections);
+				wdh.registerInflection("deu", wdh.currentWiktionaryPos(), res, wdh.currentLexEntry(), 1 , inflections);
 //				wdh.registerOtherForm(res);
 //				System.out.println("otherForm : "+res);
 			}

@@ -572,7 +572,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				}
 				
 				if (def != null && !def.equals("")) {
-//					System.out.println(senseNum+":"+definitionMatcher.group(2));
 					wdh.registerNewDefinition(definitionMatcher.group(2), senseNum);
 				}
 			}

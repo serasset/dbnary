@@ -68,11 +68,15 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		
 	}
 //	private enum Genre {MASCULIN, FEMININ,NEUTRUM};
+//	private Genre genre= Genre.MASCULIN;
 	private enum Cas {NOMINATIF,ACCUSATIF,DATIF, GENITIF,NOTHING};
 	private enum Mode {PARTICIPS,IMPERATIV,INDICATIV,NOTHING};
-	private Mode mode=Mode.NOTHING;
 	private enum Tense {PRESENT,PAST,NOTHING};
+	private enum  Degree {POSITIVE,COMPARATIVE,SUPERLATIVE};
+	private Degree degree;
+	private Mode mode=Mode.NOTHING;
 	private Tense tense = Tense.NOTHING;
+	Cas cas[]= Cas.values();
 	
 	public void parseConjugation(String conjugationTemplateCall, String originalPos) {
 		
@@ -143,6 +147,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 		NodeList tables =doc.getElementsByTagName("table");
 		for (int i=0;i<3;i++) {
+			degree=Degree.values()[i];
 			Element tablesItem=(Element) tables.item(i);
 			getTablesDeclination(tablesItem);
 		}
@@ -305,7 +310,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		
 	}
 		
-	Cas cas[]= Cas.values();
+
 
 	private void getTablesDeclination(Element tablesItem){
 
@@ -332,7 +337,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 												if (!form.replace(" ","").isEmpty()) {
 	//											System.out.println(form);
 													addForm(form);
-													addDeclinationInflections(cas[i%4], j/2);
+													addDeclinationInflections(i%4,j/2);
 												}
 										}
 									}
@@ -345,9 +350,19 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 	}
 	
-	//TODO: ajouter le genre, le cas, le nombre, si superlatif ou comparatif
-	private void addDeclinationInflections(Cas cas, int nbgnr){
+	private void addDeclinationInflections(int icas, int nbgnr){	
 		
+		switch(degree){
+		case POSITIVE:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.degree, LexinfoOnt.positive));
+			break;
+		case COMPARATIVE:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.degree, LexinfoOnt.comparative));
+			break;
+		case SUPERLATIVE:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.degree, LexinfoOnt.superlative));
+			break;			
+		}
 		switch(nbgnr){
 		case 0:
 			inflections.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));
@@ -366,7 +381,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		} else{
 			inflections.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
 		}
-		switch(cas){
+		switch(cas[icas]){
 		case NOMINATIF:
 			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.nominativeCase));
 			break;

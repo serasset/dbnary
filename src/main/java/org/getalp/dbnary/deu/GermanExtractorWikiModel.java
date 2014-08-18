@@ -67,17 +67,29 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 		
 	}
-//	private enum Genre {MASCULIN, FEMININ,NEUTRUM};
-//	private Genre genre= Genre.MASCULIN;
+	private enum Genre {MASCULIN, FEMININ,NEUTRUM,NOTHING};
 	private enum Cas {NOMINATIF,ACCUSATIF,DATIF, GENITIF,NOTHING};
-	private enum Mode {PARTICIPS,IMPERATIV,INDICATIV,NOTHING};
+	private enum Mode {PARTICIPS,IMPERATIV,INDICATIV,SUBJONCTIVE,NOTHING};
 	private enum Tense {PRESENT,PAST,NOTHING};
-	private enum  Degree {POSITIVE,COMPARATIVE,SUPERLATIVE};
-	private Degree degree;
+	private enum  Degree {POSITIVE,COMPARATIVE,SUPERLATIVE,NOTHING};
+	private enum Number {SINGULAR,PLURAL,NOTHING};
+	private enum Person {FIRST,SECOND,THIRD,NOTHING};
+	private Degree degree=Degree.NOTHING;
 	private Mode mode=Mode.NOTHING;
 	private Tense tense = Tense.NOTHING;
-	Cas cas[]= Cas.values();
+	private Number number=Number.NOTHING;
+	private Cas cas=Cas.NOTHING;
+	private Genre genre= Genre.NOTHING;
+	private Person person = Person.NOTHING;
 	
+	private void intializeExclusiveInflectionInfo(){
+		inflections=new HashSet<PropertyResourcePair>();
+//		tense = Tense.NOTHING;
+		number=Number.NOTHING;
+		cas=Cas.NOTHING;
+		genre= Genre.NOTHING;
+		person = Person.NOTHING;
+	}
 	public void parseConjugation(String conjugationTemplateCall, String originalPos) {
 		
 		
@@ -102,7 +114,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		NodeList tables =doc.getElementsByTagName("table");
 		
 		Element tablesItem =(Element) tables.item(3);
-		mode=Mode.INDICATIV;
+		mode=Mode.NOTHING;
 		if(mr.find()) {
 //			System.out.println("regelmäßig");
 			tense=Tense.PRESENT;
@@ -215,7 +227,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 						if (null!=colsItem) {
 							NodeList itemsList = colsItem.getChildNodes();
 							for (int e=0; e<itemsList.getLength();e++) {
-								inflections=new HashSet<PropertyResourcePair>();
+								intializeExclusiveInflectionInfo();
 								String name=itemsList.item(e).getNodeName();
 								if (name.equals("#text")) {
 									String form=itemsList.item(e).getTextContent();
@@ -233,20 +245,39 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 												jEnd=jEnd+2;
 											}
 										}
+										int tmp=change?(j-jBegin>=2?(j-jBegin)-2:j-jBegin):(j-jBegin);
+										int nbr = (i-iBegin);
+
 										if(mode==Mode.PARTICIPS){
+											person=Person.NOTHING;
 											if(j==jBegin){
 												tense=Tense.PRESENT;
 											} else {
 												tense=Tense.PAST;
 											}
+										} else if(mode==Mode.IMPERATIV) {
+											person=Person.NOTHING;
+											tense=Tense.PRESENT;
+											if(1>=nbr){
+												number=Number.SINGULAR;
+											} else {
+												number=Number.PLURAL;
+											}
+										} else {
+											person=Person.values()[nbr%3];
+											number=Number.values()[(nbr/3)%2];
+											if(0==tmp){
+												mode=Mode.INDICATIV;
+											} else if (1==tmp){
+												mode=Mode.SUBJONCTIVE;
+											}
 										}
-										int tmp=change?(j-jBegin>=2?(j-jBegin)-2:j-jBegin):(j-jBegin);
-										int nbr = (i-iBegin+1);
-										addVerbInfo(nbr,tmp, form);
+										
+//										addVerbInfo(nbr,tmp, form);
 	//									System.out.println("i : "+i+" j : "+j+"  form : "+form);
 										form =(form.replace("\n","")).replace(",","");
 										if (!form.replace(" ","").isEmpty()) {
-											
+											addInflectionsInfo();
 											addVerbForm(form);
 										}
 									}
@@ -259,57 +290,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 	}
 	
-	//TODO :completer pour les participes passé/présents
-	private void addVerbInfo(int nbr, int tmp, String form){
-		switch(mode){
-		case PARTICIPS:
-			break;
-		case IMPERATIV:
-			tense=Tense.PRESENT;
-			inflections.add(new PropertyResourcePair(LexinfoOnt.number,(1>=nbr?LexinfoOnt.singular:LexinfoOnt.plural)));
-			inflections.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.imperative));
-			break;
-		case INDICATIV:
-				inflections.add(new PropertyResourcePair(LexinfoOnt.number,(3>=nbr?LexinfoOnt.singular:LexinfoOnt.plural)));
-				nbr= ((nbr-3)<=0) ? nbr:(nbr-3);
-				switch(nbr) {
-				case 1:
-					inflections.add(new PropertyResourcePair(LexinfoOnt.person,LexinfoOnt.firstPersonForm));
-					break;
-				case 2:
-					inflections.add(new PropertyResourcePair(LexinfoOnt.person,LexinfoOnt.secondPersonForm));
-					break;
-				case 3:
-					inflections.add(new PropertyResourcePair(LexinfoOnt.person,LexinfoOnt.thirdPersonForm));
-					break;
-				}
-				switch(tmp){
-				case 0:
-					inflections.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.indicative));
-					break;
-				case 1:
-					inflections.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.subjunctive));
-					break;
-				default:
-					break;
-				}
-			break;
-		default:
-			break;
-		}
-		switch(tense){
-		case PRESENT:
-			inflections.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.presentTenseForm));
-			break;
-		case PAST:
-			inflections.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.pastTenseForm));
-			break;
-		default:
-			break;
-		}
-		
-	}
-		
 
 
 	private void getTablesDeclination(Element tablesItem){
@@ -318,7 +298,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
 			if (null!=someTRs) {
 				for (int i=0;i<someTRs.getLength();i++) {
-					inflections=new HashSet<PropertyResourcePair>();
+					intializeExclusiveInflectionInfo();
 					Element trItem= (Element)someTRs.item(i);
 					if (null!=trItem) {
 						NodeList someTD=trItem.getElementsByTagName("td");//list of cols Elements
@@ -330,14 +310,26 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 									for (int k=0;k<tdContent.getLength();k++) {
 										String form=tdContent.item(k).getTextContent();
 										if (!form.isEmpty()) {
-											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", ""));
+//											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", ""));
+											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(—|-|\\}|\\{))*", ""));
 												if (0!=nbSpaceForm(form)) {
 													form=extractPart(form);
 												}
 												if (!form.replace(" ","").isEmpty()) {
 	//											System.out.println(form);
-													addForm(form);
-													addDeclinationInflections(i%4,j/2);
+													cas=Cas.values()[i%4];
+													if(j/2<3){
+														genre=Genre.values()[j/2];
+														number=Number.SINGULAR;
+													} else {
+														number =Number.PLURAL;
+													}
+													addInflectionsInfo();
+													
+													if (-1!=form.indexOf('(')) {
+														addForm(form.replaceAll("!|\\(|\\)",""));
+													}
+													addForm(form.replaceAll("!|\\(.*\\)", ""));
 												}
 										}
 									}
@@ -350,53 +342,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 	}
 	
-	private void addDeclinationInflections(int icas, int nbgnr){	
-		
-		switch(degree){
-		case POSITIVE:
-			inflections.add(new PropertyResourcePair(LexinfoOnt.degree, LexinfoOnt.positive));
-			break;
-		case COMPARATIVE:
-			inflections.add(new PropertyResourcePair(LexinfoOnt.degree, LexinfoOnt.comparative));
-			break;
-		case SUPERLATIVE:
-			inflections.add(new PropertyResourcePair(LexinfoOnt.degree, LexinfoOnt.superlative));
-			break;			
-		}
-		switch(nbgnr){
-		case 0:
-			inflections.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));
-			break;
-		case 1:
-			inflections.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.feminine));
-			break;
-		case 2:
-			inflections.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.neuter));
-			break;
-		default :
-			break;
-		}
-		if(nbgnr<3){
-			inflections.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
-		} else{
-			inflections.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
-		}
-		switch(cas[icas]){
-		case NOMINATIF:
-			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.nominativeCase));
-			break;
-		case GENITIF:
-			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.genitiveCase));
-			break;
-		case ACCUSATIF:
-			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.accusativeCase));
-			break;
-		case DATIF:
-			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.dativeCase));
-		case NOTHING:
-			break;
-		}
-	}
 	
 	
 	
@@ -405,6 +350,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
 			if (null!=someTRs) {
 				for (int i=2;i<someTRs.getLength();i++) {
+					intializeExclusiveInflectionInfo();
 					Element trItem= (Element)someTRs.item(i);
 					if (null!=trItem) {
 						NodeList someTD=trItem.getElementsByTagName("td");//list of cols Elements
@@ -415,14 +361,23 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 									for (int k=0;k<tdContent.getLength();k++) {
 										String form=tdContent.item(k).getTextContent();
 										if (!form.isEmpty()) {
+											if(j%2==1){
+												number=Number.SINGULAR;
+											}
+											else {
+												number= Number.PLURAL;
+											}
+											cas=Cas.values()[i%4];
 											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", ""));
-												if (0!=nbSpaceForm(form)) {
-													form=form.substring(form.lastIndexOf(" ")+1);
-												}
-												if( !form.replace(" ","").isEmpty() ) {
-//												System.out.println(form);
-													addForm(form);
-												}
+											if (0!=nbSpaceForm(form)) {
+												form=form.substring(form.lastIndexOf(" ")+1);
+											}
+											
+											addInflectionsInfo();
+											if( !form.replace(" ","").isEmpty() ) {
+//													System.out.println(form);
+												addForm(form);
+											}
 										}
 									}
 							}
@@ -437,7 +392,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
 	private void addForm(String s){
 		s=s.replace("]", "").replace("[","").replaceAll(".*\\) *","").replace("(","");
-//		System.out.println(s);
 		wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 0, inflections);
 //		wdh.registerOtherForm(s);
 	}
@@ -487,7 +441,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			else{
 				if(0==nbsp || isPhrasal){
 					res=s.replace("!","");
-					//System.out.println(res);
+//					System.out.println(res);
 				} else {
 					res=s.substring(0, s.lastIndexOf(" "));
 				}
@@ -593,4 +547,95 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		return rawWikiText;
 	}
 	
+	private void addInflectionsInfo(){
+		switch(degree){
+		case POSITIVE:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.degree, LexinfoOnt.positive));
+			break;
+		case COMPARATIVE:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.degree, LexinfoOnt.comparative));
+			break;
+		case SUPERLATIVE:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.degree, LexinfoOnt.superlative));
+			break;	
+		default:
+			break;
+		}
+		switch(cas){
+		case NOMINATIF:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.nominativeCase));
+			break;
+		case GENITIF:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.genitiveCase));
+			break;
+		case ACCUSATIF:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.accusativeCase));
+			break;
+		case DATIF:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.case_, LexinfoOnt.dativeCase));
+		default:
+			break;
+		}
+		switch(genre){
+		case MASCULIN:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.masculine));
+			break;
+		case FEMININ:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.feminine));
+			break;
+		case NEUTRUM:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.gender, LexinfoOnt.neuter));
+			break;
+		default :
+			break;
+		}
+		switch(number){
+		case SINGULAR:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.singular));
+			break;
+		case PLURAL:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.number, LexinfoOnt.plural));
+			break;
+		default:
+			break;
+		}
+		switch(tense){
+		case PAST:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.past));
+			break;
+		case PRESENT:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.tense, LexinfoOnt.present));
+			break;
+		default:
+			break;			
+		}
+		switch(mode){
+		case IMPERATIV:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.imperative));
+			break;
+		case INDICATIV:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.indicative));
+			break;
+		case SUBJONCTIVE:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.mood, LexinfoOnt.subjunctive));
+			break;
+		case PARTICIPS:
+			break;
+		default:
+			break;
+		}
+		switch(person) {
+		case FIRST:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.person,LexinfoOnt.firstPersonForm));
+			break;
+		case SECOND:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.person,LexinfoOnt.secondPersonForm));
+			break;
+		case THIRD:
+			inflections.add(new PropertyResourcePair(LexinfoOnt.person,LexinfoOnt.thirdPersonForm));
+			break;
+		default:
+			break;
+		}
+	}
 }

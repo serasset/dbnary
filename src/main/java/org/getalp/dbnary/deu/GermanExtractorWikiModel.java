@@ -487,7 +487,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			else{
 				if(0==nbsp || isPhrasal){
 					res=s.replace("!","");
-					System.out.println(res);
+					//System.out.println(res);
 				} else {
 					res=s.substring(0, s.lastIndexOf(" "));
 				}

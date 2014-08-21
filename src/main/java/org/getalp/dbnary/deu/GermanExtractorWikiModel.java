@@ -68,7 +68,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		
 	}
 	private enum Genre {MASCULIN, FEMININ,NEUTRUM,NOTHING};
-	private enum Cas {NOMINATIF,ACCUSATIF,DATIF, GENITIF,NOTHING};
+	private enum Cas {NOMINATIF,GENITIF,DATIF,ACCUSATIF, NOTHING};
 	private enum Mode {PARTICIPS,IMPERATIV,INDICATIV,SUBJONCTIVE,NOTHING};
 	private enum Tense {PRESENT,PAST,NOTHING};
 	private enum  Degree {POSITIVE,COMPARATIVE,SUPERLATIVE,NOTHING};
@@ -82,9 +82,10 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	private Genre genre= Genre.NOTHING;
 	private Person person = Person.NOTHING;
 	
-	private void intializeExclusiveInflectionInfo(){
+	
+	private int isOtherForm=0;
+	private void initializeExclusiveInflectionInfo(){
 		inflections=new HashSet<PropertyResourcePair>();
-//		tense = Tense.NOTHING;
 		number=Number.NOTHING;
 		cas=Cas.NOTHING;
 		genre= Genre.NOTHING;
@@ -161,50 +162,54 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		for (int i=0;i<3;i++) {
 			degree=Degree.values()[i];
 			Element tablesItem=(Element) tables.item(i);
-			getTablesDeclination(tablesItem);
+			int iEnd=(tablesItem.getElementsByTagName("tr")!=null)?tablesItem.getElementsByTagName("tr").getLength()-4:0;
+			getTablesDeclination(tablesItem,iEnd);
 		}
 	}
 	
 	public void parseOtherForm(String page,String originalPos){
+		isOtherForm=1;
 		if (null==originalPos) {
 			wdh.addPartOfSpeech("");
 			originalPos="";
 		}
 		if (null!=page) {
-			if (!page.contains("\n")) {
-				Document doc = wikicodeToHtmlDOM(page);
-				if (null!= doc) {
+			Document doc = wikicodeToHtmlDOM(page);
+			if(null!=doc && !page.contains("\n")){
+					initializeExclusiveInflectionInfo();
 					NodeList tables =doc.getElementsByTagName("table");
 					for(int i=0;i<tables.getLength();i++){
 						Element tablesItem=(Element) tables.item(i);
-						getTablesOtherForm(tablesItem);
+						if(originalPos.equals("Possessivpronomen")){
+							getTablesDeclination(tablesItem);
+						} else {
+							getTablesOtherForm(tablesItem);
+						}
 					}
 				}
-			} else {
-				page=page.replaceAll("\\<.*\\>", "\n  =");
-				HashMap<String,String> pag = new HashMap<String,String>();
-				pag=(HashMap) (WikiTool.parseArgs(page.replace("{","").replace("}","")));
-				for(String key : pag.keySet()){
-					String r=pag.get(key);
-					if (-1==r.indexOf("Bild") && -1==r.indexOf("Titel") && -1==r.indexOf("Konjugation") && (-1==r.indexOf("Deutsch") && -1!=r.indexOf(wdh.currentWiktionaryPos()))) {
-						r=extractString(r, "=", "\n");
-						if(!r.isEmpty()){
-							if(key.equals("Hilfsverb")){
-	////							inflections.add(e)
-							} else {
-							if (-1!=r.indexOf('(')) {
-								addForm(r.replaceAll("!|\\(|\\)",""));
-							}
-							addForm(r.replaceAll("!|\\(.*\\)", ""));
+				} else {
+					page=page.replaceAll("\\<.*\\>", "\n  =");
+					System.out.println(page);
+					HashMap<String,String> pag = new HashMap<String,String>();
+					pag=(HashMap) (WikiTool.parseArgs(page.replace("{","").replace("}","")));
+					for(String key : pag.keySet()){
+						String r=pag.get(key);
+						if (-1==r.indexOf("Bild") && -1==r.indexOf("Titel") && -1==r.indexOf("Konjugation") && (-1==r.indexOf("Deutsch") && -1!=r.indexOf(wdh.currentWiktionaryPos()))) {
+							r=extractString(r, "=", "\n");
+							if(!r.isEmpty()){
+								if(!key.equals("Hilfsverb")){
+									if (-1!=r.indexOf('(')) {
+										addForm(r.replaceAll("!|\\(|\\)",""));
+									}
+									addForm(r.replaceAll("!|\\(.*\\)", ""));
+								}
 							}
 						}
 					}
-					
 				}
-				return;
-		    }
+//			}
 		}
-    }
+//    }
 	
 	private void getTablesConj(Element tablesItem, int iBegin, int jBegin){
 		int iEnd,jEnd;
@@ -227,7 +232,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 						if (null!=colsItem) {
 							NodeList itemsList = colsItem.getChildNodes();
 							for (int e=0; e<itemsList.getLength();e++) {
-								intializeExclusiveInflectionInfo();
+								initializeExclusiveInflectionInfo();
 								String name=itemsList.item(e).getNodeName();
 								if (name.equals("#text")) {
 									String form=itemsList.item(e).getTextContent();
@@ -290,34 +295,40 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 	}
 	
-
-
 	private void getTablesDeclination(Element tablesItem){
+		int iEnd=(tablesItem.getElementsByTagName("tr")!=null)?tablesItem.getElementsByTagName("tr").getLength():0;
+		getTablesDeclination(tablesItem, iEnd );
+	}
 
+
+	private void getTablesDeclination(Element tablesItem, int iEnd){
+		int nb=0;
 		if (null != tablesItem) {
 			NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
 			if (null!=someTRs) {
-				for (int i=0;i<someTRs.getLength();i++) {
-					intializeExclusiveInflectionInfo();
+				for (int i=0;i<iEnd;i++) {
 					Element trItem= (Element)someTRs.item(i);
 					if (null!=trItem) {
 						NodeList someTD=trItem.getElementsByTagName("td");//list of cols Elements
 						for (int j=0;j<someTD.getLength();j++) {
 							if (1==(j%2)) {
 							Element tdItem=(Element)someTD.item(j);
-								if (null!=tdItem) {
+								if (null==tdItem) {
+									nb++;
+								} else if(nb<3) {
 									NodeList tdContent=tdItem.getChildNodes();
 									for (int k=0;k<tdContent.getLength();k++) {
+										initializeExclusiveInflectionInfo();
 										String form=tdContent.item(k).getTextContent();
 										if (!form.isEmpty()) {
+//											System.out.println("i : "+i+" j : "+j+" k : "+k+" form : "+form+" i%4 : "+i%4+" j/2 : "+j/2);
 //											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", ""));
 											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(—|-|\\}|\\{))*", ""));
 												if (0!=nbSpaceForm(form)) {
 													form=extractPart(form);
 												}
 												if (!form.replace(" ","").isEmpty()) {
-	//											System.out.println(form);
-													cas=Cas.values()[i%4];
+													cas=Cas.values()[((i-1)+isOtherForm)%4];
 													if(j/2<3){
 														genre=Genre.values()[j/2];
 														number=Number.SINGULAR;
@@ -349,19 +360,21 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		if (null != tablesItem) {
 			NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
 			if (null!=someTRs) {
-				for (int i=2;i<someTRs.getLength();i++) {
-					intializeExclusiveInflectionInfo();
+				for (int i=0;i<someTRs.getLength();i++) {
+					System.out.println("i : "+i);
 					Element trItem= (Element)someTRs.item(i);
 					if (null!=trItem) {
 						NodeList someTD=trItem.getElementsByTagName("td");//list of cols Elements
-						for (int j=1;j<someTD.getLength();j++) {
+						for (int j=0;j<someTD.getLength();j++) {
+							initializeExclusiveInflectionInfo();
+							System.out.println("j : "+j);
 							Element tdItem=(Element)someTD.item(j);
 								if (null!=tdItem) {
 									NodeList tdContent=tdItem.getChildNodes();
 									for (int k=0;k<tdContent.getLength();k++) {
 										String form=tdContent.item(k).getTextContent();
 										if (!form.isEmpty()) {
-											if(j%2==1){
+											if(j%2==0){
 												number=Number.SINGULAR;
 											}
 											else {
@@ -392,7 +405,8 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
 	private void addForm(String s){
 		s=s.replace("]", "").replace("[","").replaceAll(".*\\) *","").replace("(","");
-		wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 0, inflections);
+//		System.out.println("form : "+s);
+		wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 1, inflections);
 //		wdh.registerOtherForm(s);
 	}
 	

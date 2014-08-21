@@ -361,7 +361,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
 			if (null!=someTRs) {
 				for (int i=0;i<someTRs.getLength();i++) {
-					System.out.println("i : "+i);
 					Element trItem= (Element)someTRs.item(i);
 					if (null!=trItem) {
 						NodeList someTD=trItem.getElementsByTagName("td");//list of cols Elements

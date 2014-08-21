@@ -165,7 +165,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	@Override
 	public void extractData() {
 
-		// System.out.println(pageContent);
 		Matcher languageFilter = languageSectionPattern.matcher(pageContent);
 		while (languageFilter.find() && !isGermanLanguageHeader(languageFilter)) {
 			;
@@ -184,7 +183,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 		extractGermanData(germanSectionStartOffset, germanSectionEndOffset);
 	}
-	
+	private boolean hasGermanLanguageHeader(String pageContent){
+		
+		Matcher languageFilter = languageSectionPattern.matcher(pageContent);
+		while (languageFilter.find() && !isGermanLanguageHeader(languageFilter)) {
+			;
+		}
+		
+		return !languageFilter.hitEnd();
+		
+	}
 	private boolean isGermanLanguageHeader(Matcher m) {
 		return m.group(2).equals("Deutsch");
 	}
@@ -372,6 +380,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				pageContent=wi.getTextOfPage(lexEntry+suffix[i]);
 				i++;
 			}
+		if(pageContent!=null && !hasGermanLanguageHeader(pageContent)){
+			pageContent=null;
+		}
 		return pageContent;
 	}
 	

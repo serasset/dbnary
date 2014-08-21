@@ -99,6 +99,10 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		Matcher mu=germanNonRegularVerbPattern.matcher(conjugationTemplateCall);
 		//FIXME : check for reflexiv Verbs and adapt ConjTable
 		
+//		if(conjugationTemplateCall.indexOf("reflexiv")!=-1){
+//			conjugationTemplateCall.replace("reflexiv", "");
+//		}
+		
 		Document doc = wikicodeToHtmlDOM(conjugationTemplateCall);
 		
 		
@@ -108,9 +112,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 
 		
-//		if(conjugationTemplateCall.indexOf("reflexiv")!=-1){
-//			reflexiv=true;
-//		}
 		
 		NodeList tables =doc.getElementsByTagName("table");
 		
@@ -278,11 +279,11 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 											}
 										}
 										
-//										addVerbInfo(nbr,tmp, form);
-	//									System.out.println("i : "+i+" j : "+j+"  form : "+form);
+//										System.out.println("i : "+i+" j : "+j+"  form : "+form);
 										form =(form.replace("\n","")).replace(",","");
 										if (!form.replace(" ","").isEmpty()) {
 											addInflectionsInfo();
+//											System.out.println(form);
 											addVerbForm(form);
 										}
 									}
@@ -386,7 +387,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 											
 											addInflectionsInfo();
 											if( !form.replace(" ","").isEmpty() ) {
-//													System.out.println(form);
 												addForm(form);
 											}
 										}

@@ -159,11 +159,11 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			return ;
 		}
 		NodeList tables =doc.getElementsByTagName("table");
-		for (int i=0;i<3;i++) {
-			degree=Degree.values()[i];
+		for (int i=0;i<tables.getLength();i++) {
+			degree=Degree.values()[i%3];
 			Element tablesItem=(Element) tables.item(i);
 			int iEnd=(tablesItem.getElementsByTagName("tr")!=null)?tablesItem.getElementsByTagName("tr").getLength()-4:0;
-			getTablesDeclination(tablesItem,iEnd);
+			getTablesDeclination(tablesItem,iEnd);			
 		}
 	}
 	
@@ -367,7 +367,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 						NodeList someTD=trItem.getElementsByTagName("td");//list of cols Elements
 						for (int j=0;j<someTD.getLength();j++) {
 							initializeExclusiveInflectionInfo();
-							System.out.println("j : "+j);
 							Element tdItem=(Element)someTD.item(j);
 								if (null!=tdItem) {
 									NodeList tdContent=tdItem.getChildNodes();

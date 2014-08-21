@@ -289,6 +289,7 @@ public class DisambiguateTranslationSources {
 			String lang = guessLanguage(arg);
 			modelMap.put(lang, m);
 			try {
+                System.err.println("Reading model: " + arg);
 				if (arg.matches("[^:]{2,6}:.*")) {
 					// It's an URL
 					m.read(arg);

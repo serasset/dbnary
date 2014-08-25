@@ -58,10 +58,10 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		return ele != null;
 	}
 
-	private void getMoodTense(Element table, HashSet<PropertyObjectPair> infos, NodeList lines) {
+	private boolean getMoodTense(Element table, HashSet<PropertyObjectPair> infos, NodeList lines) {
 		if (lines.getLength() < 1) {
 			log.debug("Missing lines in the conjugation table for '" + delegate.currentLexEntry() + "'");
-			return;
+			return false;
 		}
 
 		// tense
@@ -77,22 +77,39 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 		if (parent == null) {
 			log.debug("Cannot find mood in the conjugation table for '" + delegate.currentLexEntry() + "'");
-			return;
+			return false;
 		}
 
-		while (parent != null && parent.getNodeName().toLowerCase() != "h3") {
-			parent = parent.getPreviousSibling();
+		Node title = parent;
+
+		while (title != null && title.getNodeName().toLowerCase() != "h3") {
+			title = title.getPreviousSibling();
 		}
 
-		if (parent == null) {
-			log.debug("Cannot find mood title in the conjugation table for '" + delegate.currentLexEntry() + "'");
-			return;
+		if (title == null) {
+			title = parent.getParentNode();
+
+			while (title != null && title.getNodeName().toLowerCase() != "h3") {
+				title = title.getPreviousSibling();
+			}
+
+			if (title == null) {
+				log.debug("Cannot find mood title in the conjugation table for '" + delegate.currentLexEntry() + "'");
+				return false;
+			}
+		}
+
+		String moodInfo = title.getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale);
+		if (moodInfo.indexOf("(défectif)") != -1) {
+			return false;
 		}
 
 		WiktionaryExtractor.addAtomicMorphologicalInfo(
 			infos,
-			parent.getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale)
+			moodInfo
 		);
+
+		return true;
 	}
 
 	public void getPerson(HashSet<PropertyObjectPair> infos, String person, int rowNumber, int rowCount) {
@@ -118,33 +135,59 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		}
 
 		switch (person) {
+		case "j’":
+		case "que j’":
 		case "je":
+		case "je me":
+		case "je m’":
 		case "que je":
+		case "que je me":
+		case "que je m’":
 			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "tu":
+		case "tu t’":
+		case "tu te":
 		case "que tu":
+		case "que tu te":
+		case "que tu t’":
 			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
+		case "il":
+		case "qu’il":
+		case "il s’":
+		case "qu’il s’":
 		case "il/elle/on":
+		case "il/elle/on se":
+		case "il/elle/on s’":
 		case "qu’il/elle/on":
+		case "qu’il/elle/on se":
+		case "qu’il/elle/on s’":
 			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.thirdPerson));
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "nous":
+		case "nous nous":
 		case "que nous":
+		case "que nous nous":
 			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "vous":
+		case "vous vous":
 		case "que vous":
+		case "que vous vous":
 			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "ils/elles":
 		case "qu’ils/elles":
+		case "ils/elles se":
+		case "qu’ils/elles se":
+		case "ils/elles s’":
+		case "qu’ils/elles s’":
 			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.thirdPerson));
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
@@ -173,28 +216,38 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 		NodeList lines = table.getElementsByTagName("tr");
 
-		getMoodTense(table, infos, lines);
+		if (getMoodTense(table, infos, lines)) {
+			for (int i = 1; i < lines.getLength(); i++) {
+				Element line = (Element) lines.item(i);
+				NodeList tdList = line.getElementsByTagName("td");
 
-		for (int i = 1; i < lines.getLength(); i++) {
-			Element line = (Element) lines.item(i);
-			NodeList tdList = line.getElementsByTagName("td");
+				if (tdList.getLength() < 2) {
+					if (!line.getTextContent().trim().equals("—")) {
+						log.debug("Missing cells in the conjugation table for '" + delegate.currentLexEntry() + "'");
+					}
+				} else {
+					HashSet<PropertyObjectPair> infl = new HashSet<PropertyObjectPair>(infos);
 
-			if (tdList.getLength() < 2) {
-				log.debug("Missing cells in the conjugation table for '" + delegate.currentLexEntry() + "'");
-			} else {
-				HashSet<PropertyObjectPair> infl = new HashSet<PropertyObjectPair>(infos);
+					getPerson(infl, tdList.item(0).getTextContent().replace('\u00A0', ' ').trim(), i, lines.getLength());
 
-				getPerson(infl, tdList.item(0).getTextContent().replace(' ', ' ').trim(), i, lines.getLength());
+					String form = tdList.item(1).getTextContent().trim();
+					if (form.charAt(0) == '-') {
+						// "dépèche-toi"
+						form = tdList.item(0).getTextContent().trim();
+					}
 
-				delegate.registerInflection(
-					"fr",
-					"-verb-",
-					tdList.item(1).getTextContent().trim(),
-					delegate.currentLexEntry(),
-					0,
-					infl,
-					null
-				);
+					if (!"—".equals(form)) {
+						delegate.registerInflection(
+							"fr",
+							"-verb-",
+							form,
+							delegate.currentLexEntry(),
+							0,
+							infl,
+							null
+						);
+					}
+				}
 			}
 		}
 	}
@@ -209,7 +262,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			}
 		}
 
-		log.error("Cannot find the impersonal mood table for '" + delegate.currentLexEntry() + "'");
+		log.info("Cannot find the impersonal mood table for '" + delegate.currentLexEntry() + "'");
 		return -1;
 	}
 
@@ -282,13 +335,15 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	public void parseConjugation(String conjugationTemplateCall) {
 		// Render the conjugation to html, while ignoring the example template
 
-		Document doc = wikicodeToHtmlDOM(conjugationTemplateCall);
+		if (!conjugationTemplateCall.startsWith("{{fr-conj-0")) {
+			Document doc = wikicodeToHtmlDOM(conjugationTemplateCall);
 
-		if (doc == null) {
-			return; // failing silently: error message already given.
+			if (doc == null) {
+				return; // failing silently: error message already given.
+			}
+
+			handleConjugationDocument(doc.getDocumentElement());
 		}
-
-		handleConjugationDocument(doc.getDocumentElement());
 	}
 
 	public void parseImpersonnalTableConjugation(String conjugationTemplateCall) {
@@ -297,7 +352,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			return; // failing silently: error message already given.
 		}
 
-		handleImpersonnalTableConjugation(doc.getDocumentElement()); // "Orthographe traditionnelle"
+		handleImpersonnalTableConjugation(doc.getDocumentElement());
 
 	}
 

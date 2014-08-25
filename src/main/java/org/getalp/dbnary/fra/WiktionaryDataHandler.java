@@ -36,12 +36,28 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 			if (page.charAt(curPos) == '}') {
 				if (page.charAt(curPos+1) == '}') {
 					openedBrackets--;
+					curPos++;
 				}
-				curPos++;
 			} else if (page.charAt(curPos) == '{') {
 				if (page.charAt(curPos+1) == '{') {
 					openedBrackets++;
 					curPos++;
+				}
+			} else if (page.charAt(curPos) == '<' && curPos + 3 < len && page.charAt(curPos + 1) == '!' && page.charAt(curPos + 2) == '-' && page.charAt(curPos + 3) == '-') {
+				curPos += 4;
+				while (curPos + 2 < len) {
+					if (page.charAt(curPos) == '-' && page.charAt(curPos + 1) == '-' && page.charAt(curPos + 2) == '-') {
+						break;
+					}
+					curPos++;
+				}
+
+				if (curPos + 2 < len) {
+					// comment found
+					curPos += 2;
+				} else {
+					// comment not found
+					curPos--;
 				}
 			}
 			curPos++;
@@ -58,7 +74,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 			String conjugationPageContent = wi.getTextOfPage(FrenchConjugationPagePrefix + currentLexEntry());
 
 			if (conjugationPageContent == null) {
-				log.debug("Cannot get conjugation page for '" + currentLexEntry() + "'");
+// 				log.debug("Cannot get conjugation page for '" + currentLexEntry() + "'");
 			} else {
 				FrenchExtractorWikiModel dbnmodel = null;
 				int curPos = -1;
@@ -67,7 +83,6 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 					curPos = conjugationPageContent.indexOf("{{fr-conj", curPos);
 				    if (curPos != -1 && !conjugationPageContent.startsWith("{{fr-conj-intro", curPos)) {
 					    String templateCall = getTemplateCall(conjugationPageContent, curPos);
-
 						if (dbnmodel == null) {
 							dbnmodel = new FrenchExtractorWikiModel(this, wi, new Locale("fr"), "/${image}", "/${title}");
 						}

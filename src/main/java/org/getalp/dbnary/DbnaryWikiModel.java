@@ -125,7 +125,6 @@ public class DbnaryWikiModel extends WikiModel {
 	// get the DOM representation of the HTML code corresponding
 	// to the wikicode given in arguments
 	public Document wikicodeToHtmlDOM (String wikicode) {
-
 		if (docBuilder == null) {
 			try {
 				docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();

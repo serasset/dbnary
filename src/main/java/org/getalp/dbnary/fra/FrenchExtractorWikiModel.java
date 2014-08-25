@@ -184,7 +184,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			} else {
 				HashSet<PropertyObjectPair> infl = new HashSet<PropertyObjectPair>(infos);
 
-				getPerson(infl, tdList.item(0).getTextContent().trim(), i, lines.getLength());
+				getPerson(infl, tdList.item(0).getTextContent().replace(' ', ' ').trim(), i, lines.getLength());
 
 				delegate.registerInflection(
 					"fr",

@@ -97,8 +97,6 @@ public interface WiktionaryDataHandler {
 	
 	public void setWiktionaryIndex(WiktionaryIndex wi);
 
-	public void registerOtherForm(String form);
-
 	public void registerProperty(Property p, Resource r);
 
 	public void registerInflection(String languageCode,

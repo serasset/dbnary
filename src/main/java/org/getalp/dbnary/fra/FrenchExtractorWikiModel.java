@@ -72,9 +72,9 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			if (tdList.getLength() < 2) {
 				log.debug("Missing cells in the conjugation table for '" + delegate.currentLexEntry() + "'");
 			} else {
-				delegate.registerOtherForm(
-					tdList.item(1).getTextContent().trim()
-				);
+// 				delegate.registerOtherForm(
+// 					tdList.item(1).getTextContent().trim()
+// 				);
 			}
 		}
 	}
@@ -100,20 +100,20 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			NodeList interestingTDs = ((Element) (impersonalMoodTable.getElementsByTagName("tr").item(3)))
 			                          .getElementsByTagName("td");
 
-	        if (interestingTDs.getLength() < 3) {
+			if (interestingTDs.getLength() < 3) {
 				log.error("Cannot get present and past participle of '" + delegate.currentLexEntry() + "'");
-	        } else {
+			} else {
 				String presentParticiple = interestingTDs.item(2).getTextContent();
-				delegate.registerOtherForm(presentParticiple.trim());
+// 				delegate.registerOtherForm(presentParticiple.trim());
 
-		        if (interestingTDs.getLength() < 6) {
+				if (interestingTDs.getLength() < 6) {
 					log.error("Cannot get past participle of '" + delegate.currentLexEntry() + "'");
-		        } else {
+				} else {
 					String pastParticiple = interestingTDs.item(5).getTextContent();
-					delegate.registerOtherForm(pastParticiple.trim());
+// 					delegate.registerOtherForm(pastParticiple.trim());
 				}
-	        }
-        }
+			}
+		}
 	}
 
 	public void handleConjugationAtom(Element parent) {

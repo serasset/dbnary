@@ -54,6 +54,7 @@ src/main/java/org/getalp/dbnary/fra/ForeignLanguagesWiktionaryDataHandler.java -
 src/main/java/org/getalp/dbnary/fra/ForeignLanguagesWiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/fra/FrenchExtractorWikiModel.java -text
 src/main/java/org/getalp/dbnary/fra/FrenchLangtoCode.java -text svneol=unset#text/plain
+src/main/java/org/getalp/dbnary/fra/WiktionaryDataHandler.java -text
 src/main/java/org/getalp/dbnary/fra/WiktionaryExtractor.java -text
 src/main/java/org/getalp/dbnary/ita/ItalianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/ita/ItalianLangToCode.java -text svneol=unset#text/plain

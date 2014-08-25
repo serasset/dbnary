@@ -6,13 +6,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.getalp.dbnary.PropertyObjectPair;
 
+import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 
 import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.DBnaryOnt;
 
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import org.w3c.dom.*;
@@ -26,6 +29,11 @@ import org.slf4j.LoggerFactory;
 
 public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	private static Logger log = LoggerFactory.getLogger(FrenchExtractorWikiModel.class);
+
+	private static Literal trueLiteral = DbnaryModel.tBox.createTypedLiteral(true);
+
+	private static Property extractedFromConjTable = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromConjTable");
+	private static Property extractedFromInflectionTable = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromInflectionTable");
 
 	private static Pattern frAccordPattern = Pattern.compile("^\\{\\{(?:fr-accord|fr-rég)");
 
@@ -50,6 +58,102 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		return ele != null;
 	}
 
+	private void getMoodTense(Element table, HashSet<PropertyObjectPair> infos, NodeList lines) {
+		if (lines.getLength() < 1) {
+			log.debug("Missing lines in the conjugation table for '" + delegate.currentLexEntry() + "'");
+			return;
+		}
+
+		// tense
+		WiktionaryExtractor.addAtomicMorphologicalInfo(
+			infos,
+			lines.item(0).getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale)
+		);
+
+		Node parent = table.getParentNode();
+		while (parent != null && parent.getNodeName().toLowerCase() != "div") {
+			parent = parent.getParentNode();
+		}
+
+		if (parent == null) {
+			log.debug("Cannot find mood in the conjugation table for '" + delegate.currentLexEntry() + "'");
+			return;
+		}
+
+		while (parent.getNodeName().toLowerCase() != "h3") {
+			parent = parent.getPreviousSibling();
+		}
+
+		if (parent == null) {
+			log.debug("Cannot find mood title in the conjugation table for '" + delegate.currentLexEntry() + "'");
+			return;
+		}
+
+		WiktionaryExtractor.addAtomicMorphologicalInfo(
+			infos,
+			parent.getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale)
+		);
+	}
+
+	public void getPerson(HashSet<PropertyObjectPair> infos, String person, int rowNumber, int rowCount) {
+		if (person.equals("") && rowCount == 4) {
+			// imperative
+			switch (rowNumber) {
+			case 1:
+				infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
+				infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+				return;
+			case 2:
+				infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
+				infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+				return;
+			case 3:
+				infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
+				infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+				return;
+			default:
+				log.debug("BUG: unexpected row number '" + person + "' while parsing imperative table for '" + delegate.currentLexEntry() + "'");
+				return;
+			}
+		}
+
+		switch (person) {
+		case "je":
+		case "que je":
+			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
+			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			break;
+		case "tu":
+		case "que tu":
+			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
+			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			break;
+		case "il/elle/on":
+		case "qu’il/elle/on":
+			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			break;
+		case "nous":
+		case "que nous":
+			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
+			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			break;
+		case "vous":
+		case "que vous":
+			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
+			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			break;
+		case "ils/elles":
+		case "qu’ils/elles":
+			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			break;
+		default:
+			log.debug("Unexpected person '" + person + "' for '" + delegate.currentLexEntry() + "'");
+			break;
+		}
+	}
+
 	public void handleConjugationTable(NodeList tables, int tableIndex) {
 		Element table = (Element) tables.item(tableIndex);
 		if (table.getElementsByTagName("table").getLength() > 0) {
@@ -63,7 +167,13 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			return;
 		}
 
+		HashSet<PropertyObjectPair> infos = new HashSet<PropertyObjectPair>();
+
+		infos.add(new PropertyObjectPair(extractedFromConjTable, trueLiteral));
+
 		NodeList lines = table.getElementsByTagName("tr");
+
+		getMoodTense(table, infos, lines);
 
 		for (int i = 1; i < lines.getLength(); i++) {
 			Element line = (Element) lines.item(i);
@@ -72,9 +182,19 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			if (tdList.getLength() < 2) {
 				log.debug("Missing cells in the conjugation table for '" + delegate.currentLexEntry() + "'");
 			} else {
-// 				delegate.registerOtherForm(
-// 					tdList.item(1).getTextContent().trim()
-// 				);
+				HashSet<PropertyObjectPair> infl = new HashSet<PropertyObjectPair>(infos);
+
+				getPerson(infl, tdList.item(0).getTextContent().trim(), i, lines.getLength());
+
+				delegate.registerInflection(
+					"fr",
+					"-verb-",
+					tdList.item(1).getTextContent().trim(),
+					delegate.currentLexEntry(),
+					0,
+					infl,
+					null
+				);
 			}
 		}
 	}
@@ -100,23 +220,52 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			NodeList interestingTDs = ((Element) (impersonalMoodTable.getElementsByTagName("tr").item(3)))
 			                          .getElementsByTagName("td");
 
+			HashSet<PropertyObjectPair> infos;
+
 			if (interestingTDs.getLength() < 3) {
 				log.error("Cannot get present and past participle of '" + delegate.currentLexEntry() + "'");
 			} else {
-				String presentParticiple = interestingTDs.item(2).getTextContent();
-// 				delegate.registerOtherForm(presentParticiple.trim());
+				infos = new HashSet<PropertyObjectPair>();
+				String presentParticiple = interestingTDs.item(2).getTextContent().trim();
+				infos.add(new PropertyObjectPair(extractedFromConjTable, trueLiteral));
+				infos = new HashSet<PropertyObjectPair>();
+				infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+				infos.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.present));
+				delegate.registerInflection(
+					"fr",
+					"-verb-",
+					presentParticiple,
+					delegate.currentLexEntry(),
+					0,
+					infos,
+					null
+				);
 
 				if (interestingTDs.getLength() < 6) {
 					log.error("Cannot get past participle of '" + delegate.currentLexEntry() + "'");
 				} else {
 					String pastParticiple = interestingTDs.item(5).getTextContent();
-// 					delegate.registerOtherForm(pastParticiple.trim());
+					infos = new HashSet<PropertyObjectPair>();
+					infos.add(new PropertyObjectPair(extractedFromConjTable, trueLiteral));
+					infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+					infos.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.past));
+					infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
+					infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+					delegate.registerInflection(
+						"fr",
+						"-verb-",
+						pastParticiple,
+						delegate.currentLexEntry(),
+						0,
+						infos,
+						null
+					);
 				}
 			}
 		}
 	}
 
-	public void handleConjugationAtom(Element parent) {
+	public void handleConjugationDocument(Element parent) {
 		if (parent == null) {
 			log.error("Cannot get the element containing the conjugation tables of '" + delegate.currentLexEntry() + "'");
 		}
@@ -139,7 +288,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			return; // failing silently: error message already given.
 		}
 
-		handleConjugationAtom(doc.getDocumentElement());
+		handleConjugationDocument(doc.getDocumentElement());
 	}
 
 	public void parseImpersonnalTableConjugation(String conjugationTemplateCall) {
@@ -163,6 +312,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 	private void registerInflectionFromCellChild(Node c, String word) {
 		HashSet<PropertyObjectPair> properties = new HashSet<PropertyObjectPair>();
+		properties.add(new PropertyObjectPair(extractedFromInflectionTable, trueLiteral));
 
 		Node cell = c;
 		while (cell != null && !cell.getNodeName().toLowerCase().equals("td")) {

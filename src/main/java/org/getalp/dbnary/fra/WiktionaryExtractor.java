@@ -866,6 +866,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		case "impératif":
 			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
 			break;
+		case "participe":
+			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			break;
 		case "première personne":
 			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
 			break;
@@ -918,6 +921,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			infos.add(new PropertyObjectPair(LexinfoOnt.tense,  LexinfoOnt.past));
 			infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.feminine));
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			break;
+		case "participe présent":
+			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infos.add(new PropertyObjectPair(LexinfoOnt.tense,  LexinfoOnt.present));
 			break;
 		default:
 			ArrayList<String> multiwords = explode(' ', word);

@@ -19,6 +19,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ReifiedStatement;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -69,7 +70,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 //	private String currentSharedPronunciation;
 //	private String currentSharedPronunciationLang;
 
-	private HashMap<SimpleImmutableEntry<String,String>, HashSet<HashSet<PropertyResourcePair>>> heldBackOtherForms = new HashMap<SimpleImmutableEntry<String,String>, HashSet<HashSet<PropertyResourcePair>>>();
+	private HashMap<SimpleImmutableEntry<String,String>, HashSet<HashSet<PropertyObjectPair>>> heldBackOtherForms = new HashMap<SimpleImmutableEntry<String,String>, HashSet<HashSet<PropertyObjectPair>>>();
 
 	private static HashMap<String,Property> nymPropertyMap = new HashMap<String,Property>();
 	private static HashMap<String,PosAndType> posAndTypeValueMap = new HashMap<String,PosAndType>();
@@ -251,10 +252,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		// import other forms
 		SimpleImmutableEntry<String,String> keyOtherForms = new SimpleImmutableEntry<String,String>(currentWiktionaryPageName, posString);
 
-		HashSet<HashSet<PropertyResourcePair>> otherForms = heldBackOtherForms.get(keyOtherForms);
+		HashSet<HashSet<PropertyObjectPair>> otherForms = heldBackOtherForms.get(keyOtherForms);
 
 		if (otherForms != null) {
-			for (HashSet<PropertyResourcePair> otherForm : otherForms) {
+			for (HashSet<PropertyObjectPair> otherForm : otherForms) {
 				addOtherFormPropertiesToLexicalEntry(currentLexEntry, otherForm);
 			}
 		}
@@ -445,8 +446,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		return getVocableResource(vocable, false);
 	}
 
-	private void mergePropertiesIntoResource(HashSet<PropertyResourcePair> properties, Resource res) {
-		for (PropertyResourcePair p : properties) {
+	private void mergePropertiesIntoResource(HashSet<PropertyObjectPair> properties, Resource res) {
+		for (PropertyObjectPair p : properties) {
 			if (res.getProperty(p.getKey()) == null) {
 				Object o = p.getValue();
 				if (o instanceof Literal) {
@@ -470,20 +471,14 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		return incompatibleProperties(p1, p2, true);
 	}
 
-	private boolean isResourceCompatible(Resource r, HashSet<PropertyResourcePair> properties) {
-		for (PropertyResourcePair pr : properties) {
+	private boolean isResourceCompatible(Resource r, HashSet<PropertyObjectPair> properties) {
+		for (PropertyObjectPair pr : properties) {
 			Property p = pr.getKey();
 
 			Statement roStat = r.getProperty(p);
 
 			if (roStat != null) {
-				Object ro;
-
-				try {
-					ro = roStat.getResource();
-				} catch (Exception e) {
-					ro = roStat.getLiteral();
-				}
+				RDFNode ro = roStat.getObject();
 
 				if (ro != null && !ro.equals(pr.getValue())) {
 					return false;
@@ -500,7 +495,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		return true;
 	}
 
-	private void addOtherFormPropertiesToLexicalEntry(Resource lexEntry, HashSet<PropertyResourcePair> properties) {
+	private void addOtherFormPropertiesToLexicalEntry(Resource lexEntry, HashSet<PropertyObjectPair> properties) {
 		boolean foundCompatible = false;
 
 		StmtIterator otherForms = lexEntry.listProperties(LemonOnt.otherForm);
@@ -525,12 +520,12 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	                               String inflection,
 	                               String canonicalForm,
 	                               int defNumber,
-	                               HashSet<PropertyResourcePair> props,
+	                               HashSet<PropertyObjectPair> props,
 	                               HashSet<PronunciationPair> pronunciations) {
 
 		if (pronunciations != null) {
 			for (PronunciationPair pronunciation : pronunciations) {
-				props.add(new PropertyResourcePair(LexinfoOnt.pronunciation, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+				props.add(new PropertyObjectPair(LexinfoOnt.pronunciation, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
 			}
 		}
 
@@ -542,13 +537,13 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 	                               String inflection,
 	                               String canonicalForm,
 	                               int defNumber,
-	                               HashSet<PropertyResourcePair> props) {
+	                               HashSet<PropertyObjectPair> props) {
 
 		Resource posResource = posResource(pos);
 
 
 
-		PropertyResourcePair p = new PropertyResourcePair(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+		PropertyObjectPair p = new PropertyObjectPair(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
 
 		props.add(p);
 
@@ -571,10 +566,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 			// Second, we store the other form for future possible matching entries
 			SimpleImmutableEntry<String,String> key = new SimpleImmutableEntry<String,String>(canonicalForm, pos);
 
-			HashSet<HashSet<PropertyResourcePair>> otherForms = heldBackOtherForms.get(key);
+			HashSet<HashSet<PropertyObjectPair>> otherForms = heldBackOtherForms.get(key);
 
 			if (otherForms == null) {
-				otherForms = new HashSet<HashSet<PropertyResourcePair>>();
+				otherForms = new HashSet<HashSet<PropertyObjectPair>>();
 				heldBackOtherForms.put(key, otherForms);
 			}
 

@@ -12,7 +12,7 @@ src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#tex
 src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/OffsetValue.java -text
 src/main/java/org/getalp/dbnary/PronunciationPair.java -text
-src/main/java/org/getalp/dbnary/PropertyResourcePair.java -text
+src/main/java/org/getalp/dbnary/PropertyObjectPair.java -text
 src/main/java/org/getalp/dbnary/WiktionaryDataHandler.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/WiktionaryDataHandlerFactory.java -text svneol=unset#text/plain
 src/main/java/org/getalp/dbnary/WiktionaryExtractorFactory.java -text svneol=unset#text/plain

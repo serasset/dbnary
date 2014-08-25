@@ -4,7 +4,7 @@ import java.util.Locale;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.getalp.dbnary.PropertyResourcePair;
+import org.getalp.dbnary.PropertyObjectPair;
 
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
@@ -152,7 +152,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 	}
 
-	private void addAtomicMorphologicalInfo(HashSet<PropertyResourcePair> properties, NodeList list) {
+	private void addAtomicMorphologicalInfo(HashSet<PropertyObjectPair> properties, NodeList list) {
 		for (int i = 0; i < list.getLength(); i++) {
 			WiktionaryExtractor.addAtomicMorphologicalInfo(
 				properties,
@@ -162,7 +162,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	}
 
 	private void registerInflectionFromCellChild(Node c, String word) {
-		HashSet<PropertyResourcePair> properties = new HashSet<PropertyResourcePair>();
+		HashSet<PropertyObjectPair> properties = new HashSet<PropertyObjectPair>();
 
 		Node cell = c;
 		while (cell != null && !cell.getNodeName().toLowerCase().equals("td")) {
@@ -218,7 +218,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		}
 
 		if (word.equals(delegate.currentLexEntry())) {
-			for (PropertyResourcePair p : properties) {
+			for (PropertyObjectPair p : properties) {
 				delegate.registerProperty(p.getKey(), p.getResource());
 			}
 		} else {

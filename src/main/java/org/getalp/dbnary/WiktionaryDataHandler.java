@@ -104,7 +104,7 @@ public interface WiktionaryDataHandler {
 	                               String inflection,
 	                               String canonicalForm,
 	                               int defNumber,
-	                               HashSet<PropertyResourcePair> properties,
+	                               HashSet<PropertyObjectPair> properties,
 	                               HashSet<PronunciationPair> pronunciations);
 
 	public void registerInflection(String languageCode,
@@ -112,7 +112,7 @@ public interface WiktionaryDataHandler {
 	                               String inflection,
 	                               String canonicalForm,
 	                               int defNumber,
-	                               HashSet<PropertyResourcePair> properties);
+	                               HashSet<PropertyObjectPair> properties);
 
 	public int currentDefinitionNumber();
 

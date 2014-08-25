@@ -80,7 +80,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			return;
 		}
 
-		while (parent.getNodeName().toLowerCase() != "h3") {
+		while (parent != null && parent.getNodeName().toLowerCase() != "h3") {
 			parent = parent.getPreviousSibling();
 		}
 

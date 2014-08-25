@@ -313,7 +313,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		addPartOfSpeech(pos, posResource(pat), typeResource(pat));
 	}
 //
-	public void registerProperty(Property p, Resource r) {
+	public void registerProperty(Property p, RDFNode r) {
 		if (null == currentLexEntry) {
 			log.debug("Registering property when lex entry is null in \"{}\".", this.currentMainLexEntry);
 			return; // Don't register anything if current lex entry is not known.

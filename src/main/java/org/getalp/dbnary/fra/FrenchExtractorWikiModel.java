@@ -369,7 +369,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 		if (word.equals(delegate.currentLexEntry())) {
 			for (PropertyObjectPair p : properties) {
-				delegate.registerProperty(p.getKey(), p.getResource());
+				delegate.registerProperty(p.getKey(), p.getValue());
 			}
 		} else {
 			delegate.registerInflection(

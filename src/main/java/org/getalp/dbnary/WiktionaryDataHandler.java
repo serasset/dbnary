@@ -7,6 +7,7 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public interface WiktionaryDataHandler {
 
@@ -97,7 +98,7 @@ public interface WiktionaryDataHandler {
 	
 	public void setWiktionaryIndex(WiktionaryIndex wi);
 
-	public void registerProperty(Property p, Resource r);
+	public void registerProperty(Property p, RDFNode r);
 
 	public void registerInflection(String languageCode,
 	                               String pos,

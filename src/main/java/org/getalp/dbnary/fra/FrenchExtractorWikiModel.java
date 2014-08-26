@@ -385,9 +385,14 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 	public void parseConjugation(String conjugationTemplateCall) {
 		// Render the conjugation to html, while ignoring the example template
-		if (conjugationTemplateCall.indexOf("}|") != -1) {
+		if (conjugationTemplateCall.indexOf("}|") != -1 && conjugationTemplateCall.indexOf("}}|") == -1) {
 			log.warn("Suspicious '}|' in conjugation template call for '" + delegate.currentLexEntry() + "'. Surely a wikicode error. Trying to fix it. Call: '" + conjugationTemplateCall + "'");
 			conjugationTemplateCall = conjugationTemplateCall.replace("}|", "|");
+		}
+
+		if (conjugationTemplateCall.indexOf("|}") != -1 && conjugationTemplateCall.indexOf("|}}") == -1) {
+			log.warn("Suspicious '|}' in conjugation template call for '" + delegate.currentLexEntry() + "'. Surely a wikicode error. Trying to fix it. Call: '" + conjugationTemplateCall + "'");
+			conjugationTemplateCall = conjugationTemplateCall.replace("|}", "|");
 		}
 
 		if (!conjugationTemplateCall.startsWith("{{fr-conj-0")) {

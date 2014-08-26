@@ -32,9 +32,9 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 	public static final Literal trueLiteral = DbnaryModel.tBox.createTypedLiteral(true);
 
-	public static final Property extractedFromConjTable       = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromConjTable");
-	public static final Property extractedFromFrenchSentence  = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromFrenchSentence");
-	public static final Property extractedFromInflectionTable = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromInflectionTable");
+// 	public static final Property extractedFromConjTable       = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromConjTable");
+// 	public static final Property extractedFromFrenchSentence  = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromFrenchSentence");
+// 	public static final Property extractedFromInflectionTable = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromInflectionTable");
 
 	private static Pattern frAccordPattern = Pattern.compile("^\\{\\{(?:fr-accord|fr-rég)");
 
@@ -254,7 +254,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 		HashSet<PropertyObjectPair> infos = new HashSet<PropertyObjectPair>();
 
-		infos.add(new PropertyObjectPair(extractedFromConjTable, trueLiteral));
+// 		infos.add(new PropertyObjectPair(extractedFromConjTable, trueLiteral));
 
 		NodeList lines = table.getElementsByTagName("tr");
 
@@ -332,7 +332,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			} else {
 				infos = new HashSet<PropertyObjectPair>();
 				String presentParticiple = interestingTDs.item(2).getTextContent().trim();
-				infos.add(new PropertyObjectPair(extractedFromConjTable, trueLiteral));
+// 				infos.add(new PropertyObjectPair(extractedFromConjTable, trueLiteral));
 				infos = new HashSet<PropertyObjectPair>();
 				infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
 				infos.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.present));
@@ -351,7 +351,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 				} else {
 					String pastParticiple = interestingTDs.item(5).getTextContent();
 					infos = new HashSet<PropertyObjectPair>();
-					infos.add(new PropertyObjectPair(extractedFromConjTable, trueLiteral));
+// 					infos.add(new PropertyObjectPair(extractedFromConjTable, trueLiteral));
 					infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
 					infos.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.past));
 					infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
@@ -440,7 +440,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 	private void registerInflectionFromCellChild(Node c, String word) {
 		HashSet<PropertyObjectPair> properties = new HashSet<PropertyObjectPair>();
-		properties.add(new PropertyObjectPair(extractedFromInflectionTable, trueLiteral));
+// 		properties.add(new PropertyObjectPair(extractedFromInflectionTable, trueLiteral));
 
 		Node cell = c;
 		while (cell != null && !cell.getNodeName().toLowerCase().equals("td")) {

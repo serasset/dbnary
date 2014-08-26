@@ -383,14 +383,26 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		}
 	}
 
+	public static boolean notMatchingBrackets(String s) {
+		int opened = 0;
+		for (int i = 0; i < s.length(); i++) {
+			if (s.charAt(i) == '{') {
+				opened++;
+			} else if (s.charAt(i) == '}') {
+				opened--;
+			}
+		}
+		return opened != 0;
+	}
+
 	public void parseConjugation(String conjugationTemplateCall) {
 		// Render the conjugation to html, while ignoring the example template
-		if (conjugationTemplateCall.indexOf("}|") != -1 && conjugationTemplateCall.indexOf("}}|") == -1) {
+		if (conjugationTemplateCall.indexOf("}|") != -1 && notMatchingBrackets(conjugationTemplateCall)) {
 			log.warn("Suspicious '}|' in conjugation template call for '" + delegate.currentLexEntry() + "'. Surely a wikicode error. Trying to fix it. Call: '" + conjugationTemplateCall + "'");
 			conjugationTemplateCall = conjugationTemplateCall.replace("}|", "|");
 		}
 
-		if (conjugationTemplateCall.indexOf("|}") != -1 && conjugationTemplateCall.indexOf("|}}") == -1) {
+		if (conjugationTemplateCall.indexOf("|}") != -1 && notMatchingBrackets(conjugationTemplateCall)) {
 			log.warn("Suspicious '|}' in conjugation template call for '" + delegate.currentLexEntry() + "'. Surely a wikicode error. Trying to fix it. Call: '" + conjugationTemplateCall + "'");
 			conjugationTemplateCall = conjugationTemplateCall.replace("|}", "|");
 		}

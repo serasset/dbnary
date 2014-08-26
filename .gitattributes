@@ -409,62 +409,6 @@ doc/presentations/lig-lidilem/img/wkt-chat1.png -text
 doc/presentations/lig-lidilem/img/wncompose.png -text
 doc/presentations/lig-lidilem/img/wnnetwork.pdf -text
 doc/presentations/lig-lidilem/thoughts.oo3/contents.xml -text
-experiments/ldl2014.bck/ldd2014/lib/secondstring-20120620.jar -text
-experiments/ldl2014.bck/ldd2014/pom.xml -text
-experiments/ldl2014.bck/ldd2014/results/finnish_ref_gold.out -text
-experiments/ldl2014.bck/ldd2014/results/french_ref_gold.out -text
-experiments/ldl2014.bck/ldd2014/results/gen_all_res.sh -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/DisambiguateTranslationSources.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/LLD2014Main.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Ambiguity.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Disambiguable.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/DisambiguationMethod.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/Disambiguator.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/InvalidContextException.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/InvalidEntryException.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/SenseNumberBasedTranslationDisambiguationMethod.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/TransitiveTranslationClosureDisambiguationMethod.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/TverskyBasedTranslationDisambiguationMethod.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/XlingualTverskyBasedTranslationDisambiguationMethod.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/DisambiguableSense.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/MFSTranslationDisambiguator.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/TranslationAmbiguity.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/TranslationDisambiguator.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/disambiguation/translations/VoteType.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/encoding/CodePointIterator.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/encoding/CodePointWrapper.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/evaluation/EvaluationStats.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/jdm/JDMDumpSectionType.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/jdm/JDMModelParser.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/jdm/model/JDMModel.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/jdm/model/JDMRelationTypes.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/AbstractGlossFilter.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/CreateGoldStandard.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/DefaultGlossFilter.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/PreprocessTranslations.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/StatsModule.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/StructuredGloss.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/deu/GlossFilter.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/ell/GlossFilter.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/eng/GlossFilter.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/fin/GlossFilter.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/fra/GlossFilter.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/jpn/GlossFilter.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/por/GlossFilter.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/rus/GlossFilter.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/spa/GlossFilter.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/preprocessing/tur/GlossFilter.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/Segmenter.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/segmentation/SpaceSegmenter.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/SimilarityMeasure.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/string/Level2Sim.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/similarity/string/TverskiIndex.java -text
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/translation/BingAPITranslator.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/translation/CachedTranslator.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/main/java/org/getalp/dbnary/experiment/translation/Translator.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFinnishGlossFilter.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFrenchPreprocessing.java -text svneol=unset#text/plain
-experiments/ldl2014.bck/ldd2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestJapaneseGlossFilter.java -text svneol=unset#text/plain
 experiments/ldl2014/lib/secondstring-20120620.jar -text
 experiments/ldl2014/pom.xml -text
 experiments/ldl2014/results/finnish_ref_gold.out -text

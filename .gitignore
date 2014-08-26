@@ -12,16 +12,6 @@ doc/presentations/lig-lidilem/*.snm
 doc/presentations/lig-lidilem/*.synctex.gz
 doc/presentations/lig-lidilem/*.toc
 doc/presentations/lig-lidilem/*.vrb
-experiments/ldl2014.bck/*.iml
-experiments/ldl2014.bck/.classpath
-experiments/ldl2014.bck/.project
-experiments/ldl2014.bck/.settings
-experiments/ldl2014.bck/ldd2014/*.iml
-experiments/ldl2014.bck/ldd2014/.classpath
-experiments/ldl2014.bck/ldd2014/.project
-experiments/ldl2014.bck/ldd2014/.settings
-experiments/ldl2014.bck/ldd2014/target
-experiments/ldl2014.bck/target
 experiments/ldl2014/*.iml
 experiments/ldl2014/.classpath
 experiments/ldl2014/.project

@@ -67,23 +67,22 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 		String tense = lines.item(0).getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale);
 
-		switch (tense) {
-		case "passé composé":
-		case "plus-que-parfait":
-		case "passé antérieur":
-		case "futur antérieur":
-		case "passé":
-		case "passé 1e forme":
-		case "passé 1re forme":
-		case "passé 2e forme":
-		case "passé 2re forme":
+		if (tense.startsWith("passé composé")
+		 || tense.startsWith("plus-que-parfait")
+		 || tense.startsWith("passé antérieur")
+		 || tense.startsWith("futur antérieur")
+		 || tense.startsWith("passé 1e forme")
+		 || tense.startsWith("passé 1re forme")
+		 || tense.startsWith("passé 2e forme")
+		 || tense.startsWith("passé 2re forme")
+		 || tense.startsWith("passé")) {
 			return false;
-		case "présent":
-		case "imparfait":
-		case "futur simple":
-		case "passé simple":
-			break;
-		default:
+		} else if (!(
+		    tense.startsWith("futur simple")
+		 || tense.startsWith("passé simple")
+		 || tense.startsWith("présent")
+		 || tense.startsWith("imparfait")
+		)) {
 			log.debug("Unexpected tense '" + tense + "' while parsing table for '" + delegate.currentLexEntry() + "'");
 			return false;
 		}
@@ -143,27 +142,6 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	}
 
 	public void getPerson(HashSet<PropertyObjectPair> infos, String person, int rowNumber, int rowCount) {
-		if (person.equals("") && rowCount == 4) {
-			// imperative
-			switch (rowNumber) {
-			case 1:
-				infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
-				infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
-				return;
-			case 2:
-				infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
-				infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
-				return;
-			case 3:
-				infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
-				infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
-				return;
-			default:
-				log.debug("BUG: unexpected row number '" + person + "' while parsing imperative table for '" + delegate.currentLexEntry() + "'");
-				return;
-			}
-		}
-
 		switch (person) {
 		case "j’":
 		case "que j’":
@@ -182,6 +160,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		case "que tu":
 		case "que tu te":
 		case "que tu t’":
+		case "-toi":
 			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
@@ -202,6 +181,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		case "nous nous":
 		case "que nous":
 		case "que nous nous":
+		case "-nous":
 			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
@@ -209,6 +189,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		case "vous vous":
 		case "que vous":
 		case "que vous vous":
+		case "-vous":
 			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
@@ -222,7 +203,28 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		default:
-			log.debug("Unexpected person '" + person + "' for '" + delegate.currentLexEntry() + "'");
+			if (person.equals("") || person.charAt(0) == '-' && rowCount == 4) {
+				// imperative
+				switch (rowNumber) {
+				case 1:
+					infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
+					infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+					return;
+				case 2:
+					infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
+					infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+					return;
+				case 3:
+					infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
+					infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+					return;
+				default:
+					log.debug("BUG: unexpected row number '" + person + "' while parsing imperative table for '" + delegate.currentLexEntry() + "'");
+					return;
+				}
+			} else {
+				log.debug("Unexpected person '" + person + "' for '" + delegate.currentLexEntry() + "'");
+			}
 			break;
 		}
 	}
@@ -252,12 +254,13 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 				} else {
 					HashSet<PropertyObjectPair> infl = new HashSet<PropertyObjectPair>(infos);
 
-					getPerson(infl, tdList.item(0).getTextContent().replace('\u00A0', ' ').trim(), i, lines.getLength());
-
-					String form = tdList.item(1).getTextContent().trim();
+					String form = tdList.item(1).getTextContent().replace('\u00A0', ' ').trim();
 					if (form.charAt(0) == '-') {
 						// "dépèche-toi"
-						form = tdList.item(0).getTextContent().trim();
+						getPerson(infl, form, i, lines.getLength());
+						form = tdList.item(0).getTextContent().replace('\u00A0', ' ').trim();
+					} else {
+						getPerson(infl, tdList.item(0).getTextContent().replace('\u00A0', ' ').trim(), i, lines.getLength());
 					}
 
 					if (!"—".equals(form)) {

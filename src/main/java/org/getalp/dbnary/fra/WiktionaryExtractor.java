@@ -951,6 +951,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 			Set<PropertyObjectPair> infos = new HashSet<PropertyObjectPair>();
 
+			infos.add(new PropertyObjectPair(FrenchExtractorWikiModel.extractedFromConjTable, FrenchExtractorWikiModel.trueLiteral));
 			for (String info : m.group(1).split("de l’|du|de")) {
 				addAtomicMorphologicalInfo(infos, info.trim().toLowerCase(frLocale));
 			}

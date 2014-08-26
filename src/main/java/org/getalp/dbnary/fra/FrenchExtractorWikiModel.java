@@ -30,10 +30,11 @@ import org.slf4j.LoggerFactory;
 public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	private static Logger log = LoggerFactory.getLogger(FrenchExtractorWikiModel.class);
 
-	private static Literal trueLiteral = DbnaryModel.tBox.createTypedLiteral(true);
+	public static final Literal trueLiteral = DbnaryModel.tBox.createTypedLiteral(true);
 
-	private static Property extractedFromConjTable = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromConjTable");
-	private static Property extractedFromInflectionTable = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromInflectionTable");
+	public static final Property extractedFromConjTable       = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromConjTable");
+	public static final Property extractedFromFrenchSentence  = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromFrenchSentence");
+	public static final Property extractedFromInflectionTable = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromInflectionTable");
 
 	private static Pattern frAccordPattern = Pattern.compile("^\\{\\{(?:fr-accord|fr-rég)");
 

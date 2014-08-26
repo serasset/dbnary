@@ -65,10 +65,33 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			return false;
 		}
 
+		String tense = lines.item(0).getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale);
+
+		switch (tense) {
+		case "passé composé":
+		case "plus-que-parfait":
+		case "passé antérieur":
+		case "futur antérieur":
+		case "passé":
+		case "passé 1e forme":
+		case "passé 1re forme":
+		case "passé 2e forme":
+		case "passé 2re forme":
+			return false;
+		case "présent":
+		case "imparfait":
+		case "futur simple":
+		case "passé simple":
+			break;
+		default:
+			log.debug("Unexpected tense '" + tense + "' while parsing table for '" + delegate.currentLexEntry() + "'");
+			return false;
+		}
+
 		// tense
 		WiktionaryExtractor.addAtomicMorphologicalInfo(
 			infos,
-			lines.item(0).getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale)
+			tense
 		);
 
 		Node parent = table.getParentNode();
@@ -79,6 +102,11 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		if (parent == null) {
 			log.debug("Cannot find mood in the conjugation table for '" + delegate.currentLexEntry() + "'");
 			return false;
+		} else if (parent.getParentNode() != null && parent.getParentNode().getNodeName().toLowerCase() == "td") {
+			parent = parent.getParentNode();
+			for (int i = 0; i < 3 && parent != null; i++) { //tr, table, div
+				parent = parent.getParentNode();
+			}
 		}
 
 		Node title = parent;
@@ -101,6 +129,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		}
 
 		String moodInfo = title.getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale);
+
 		if (moodInfo.indexOf("(défectif)") != -1) {
 			return false;
 		}
@@ -201,14 +230,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	public void handleConjugationTable(NodeList tables, int tableIndex) {
 		Element table = (Element) tables.item(tableIndex);
 		if (table.getElementsByTagName("table").getLength() > 0) {
-			// we ignore tables which contain <tables, as they don’t contain conjugations.
+			// we ignore tables which contain <table>s, as they don’t contain conjugations.
  			return;
-		}
-
-		if (table.getParentNode().getNodeName().equals("div")) {
-			// we ignore the tables at the right of the page as they
-			// give composed tenses.
-			return;
 		}
 
 		HashSet<PropertyObjectPair> infos = new HashSet<PropertyObjectPair>();

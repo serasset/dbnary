@@ -83,6 +83,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		 || tense.startsWith("passé 1re forme")
 		 || tense.startsWith("passé 2e forme")
 		 || tense.startsWith("passé 2re forme")
+		 || tense.startsWith("conjugaison en français")
 		 || tense.startsWith("passé")) {
 			return false;
 		} else if (!(

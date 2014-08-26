@@ -12,11 +12,11 @@ doc/presentations/lig-lidilem/*.snm
 doc/presentations/lig-lidilem/*.synctex.gz
 doc/presentations/lig-lidilem/*.toc
 doc/presentations/lig-lidilem/*.vrb
-experiments/ldd2014/*.iml
-experiments/ldd2014/.classpath
-experiments/ldd2014/.project
-experiments/ldd2014/.settings
-experiments/ldd2014/target
+experiments/ldl2014/*.iml
+experiments/ldl2014/.classpath
+experiments/ldl2014/.project
+experiments/ldl2014/.settings
+experiments/ldl2014/target
 extractor/*.iml
 extractor/.classpath
 extractor/.idea

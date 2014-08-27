@@ -562,74 +562,74 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	private void addInflectionsInfo(){
 		switch(degree){
 		case POSITIVE:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.degree, LexinfoOnt.positive));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.degree, LexinfoOnt.positive));
 			break;
 		case COMPARATIVE:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.degree, LexinfoOnt.comparative));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.degree, LexinfoOnt.comparative));
 			break;
 		case SUPERLATIVE:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.degree, LexinfoOnt.superlative));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.degree, LexinfoOnt.superlative));
 			break;	
 		default:
 			break;
 		}
 		switch(cas){
 		case NOMINATIF:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.case_, LexinfoOnt.nominativeCase));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.case_, LexinfoOnt.nominativeCase));
 			break;
 		case GENITIF:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.case_, LexinfoOnt.genitiveCase));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.case_, LexinfoOnt.genitiveCase));
 			break;
 		case ACCUSATIF:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.case_, LexinfoOnt.accusativeCase));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.case_, LexinfoOnt.accusativeCase));
 			break;
 		case DATIF:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.case_, LexinfoOnt.dativeCase));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.case_, LexinfoOnt.dativeCase));
 		default:
 			break;
 		}
 		switch(genre){
 		case MASCULIN:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
 			break;
 		case FEMININ:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.feminine));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
 			break;
 		case NEUTRUM:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.neuter));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.neuter));
 			break;
 		default :
 			break;
 		}
 		switch(number){
 		case SINGULAR:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case PLURAL:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		default:
 			break;
 		}
 		switch(tense){
 		case PAST:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.past));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
 			break;
 		case PRESENT:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.present));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
 			break;
 		default:
 			break;			
 		}
 		switch(mode){
 		case IMPERATIV:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.mood, LexinfoOnt.imperative));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.mood, LexinfoOnt.imperative));
 			break;
 		case INDICATIV:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.mood, LexinfoOnt.indicative));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.mood, LexinfoOnt.indicative));
 			break;
 		case SUBJONCTIVE:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.mood, LexinfoOnt.subjunctive));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.mood, LexinfoOnt.subjunctive));
 			break;
 		case PARTICIPS:
 			break;
@@ -638,13 +638,13 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 		switch(person) {
 		case FIRST:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.person,LexinfoOnt.firstPersonForm));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.person,LexinfoOnt.firstPersonForm));
 			break;
 		case SECOND:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.person,LexinfoOnt.secondPersonForm));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.person,LexinfoOnt.secondPersonForm));
 			break;
 		case THIRD:
-			inflections.add(new PropertyObjectPair(LexinfoOnt.person,LexinfoOnt.thirdPersonForm));
+			inflections.add(PropertyObjectPair.get(LexinfoOnt.person,LexinfoOnt.thirdPersonForm));
 			break;
 		default:
 			break;

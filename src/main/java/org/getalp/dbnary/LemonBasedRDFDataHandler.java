@@ -518,7 +518,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 
 		if (pronunciations != null) {
 			for (PronunciationPair pronunciation : pronunciations) {
-				props.add(new PropertyObjectPair(LexinfoOnt.pronunciation, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+				props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
 			}
 		}
 
@@ -536,7 +536,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 
 
 
-		PropertyObjectPair p = new PropertyObjectPair(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+		PropertyObjectPair p = PropertyObjectPair.get(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
 
 		props.add(p);
 

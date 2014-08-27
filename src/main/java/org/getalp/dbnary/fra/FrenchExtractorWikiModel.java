@@ -161,8 +161,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		case "que je":
 		case "que je me":
 		case "que je m’":
-			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.firstPerson));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "tu":
 		case "tu t’":
@@ -171,8 +171,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		case "que tu te":
 		case "que tu t’":
 		case "-toi":
-			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.secondPerson));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "il":
 		case "qu’il":
@@ -184,24 +184,24 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		case "qu’il/elle/on":
 		case "qu’il/elle/on se":
 		case "qu’il/elle/on s’":
-			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.thirdPerson));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "nous":
 		case "nous nous":
 		case "que nous":
 		case "que nous nous":
 		case "-nous":
-			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.firstPerson));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "vous":
 		case "vous vous":
 		case "que vous":
 		case "que vous vous":
 		case "-vous":
-			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.secondPerson));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "ils/elles":
 		case "qu’ils/elles":
@@ -209,24 +209,24 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		case "qu’ils/elles se":
 		case "ils/elles s’":
 		case "qu’ils/elles s’":
-			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.thirdPerson));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		default:
 			if ((person.equals("") || person.charAt(0) == '-') && rowCount == 4) {
 				// imperative
 				switch (rowNumber) {
 				case 1:
-					infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
-					infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+					infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.secondPerson));
+					infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 					return;
 				case 2:
-					infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
-					infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+					infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.firstPerson));
+					infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 					return;
 				case 3:
-					infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
-					infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+					infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.secondPerson));
+					infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 					return;
 				default:
 					log.debug("BUG: unexpected row number '" + rowNumber + "' while parsing imperative table for '" + delegate.currentLexEntry() + "'");
@@ -253,7 +253,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 		HashSet<PropertyObjectPair> infos = new HashSet<PropertyObjectPair>();
 
-// 		infos.add(new PropertyObjectPair(extractedFromConjTable, trueLiteral));
+// 		infos.add(PropertyObjectPair.get(extractedFromConjTable, trueLiteral));
 
 		NodeList lines = table.getElementsByTagName("tr");
 
@@ -331,10 +331,10 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			} else {
 				infos = new HashSet<PropertyObjectPair>();
 				String presentParticiple = interestingTDs.item(2).getTextContent().trim();
-// 				infos.add(new PropertyObjectPair(extractedFromConjTable, trueLiteral));
+// 				infos.add(PropertyObjectPair.get(extractedFromConjTable, trueLiteral));
 				infos = new HashSet<PropertyObjectPair>();
-				infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-				infos.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.present));
+				infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+				infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
 				delegate.registerInflection(
 					"fr",
 					"-verb-",
@@ -350,11 +350,11 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 				} else {
 					String pastParticiple = interestingTDs.item(5).getTextContent();
 					infos = new HashSet<PropertyObjectPair>();
-// 					infos.add(new PropertyObjectPair(extractedFromConjTable, trueLiteral));
-					infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-					infos.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.past));
-					infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
-					infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+// 					infos.add(PropertyObjectPair.get(extractedFromConjTable, trueLiteral));
+					infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+					infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
+					infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
+					infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 					delegate.registerInflection(
 						"fr",
 						"-verb-",
@@ -439,7 +439,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
 	private void registerInflectionFromCellChild(Node c, String word) {
 		HashSet<PropertyObjectPair> properties = new HashSet<PropertyObjectPair>();
-// 		properties.add(new PropertyObjectPair(extractedFromInflectionTable, trueLiteral));
+// 		properties.add(PropertyObjectPair.get(extractedFromInflectionTable, trueLiteral));
 
 		Node cell = c;
 		while (cell != null && !cell.getNodeName().toLowerCase().equals("td")) {

@@ -520,39 +520,39 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 		switch(wikicodeMophology) {
 		case "ppr":
-			infl.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infl.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.present));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
 			// participe présent.
 			break;
 		case "ppms":
 		case "ppm":
 		case "pp":
-			infl.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infl.add(new PropertyObjectPair(LexinfoOnt.tense,  LexinfoOnt.past));
-			infl.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
-			infl.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.tense,  LexinfoOnt.past));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 			// past participle masculine singular (or invariable).
 			break;
 		case "ppfs":
 		case "ppf":
-			infl.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infl.add(new PropertyObjectPair(LexinfoOnt.tense,  LexinfoOnt.past));
-			infl.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.feminine));
-			infl.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.tense,  LexinfoOnt.past));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 			// past participle au féminin singulier.
 			break;
 		case "ppmp":
-			infl.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infl.add(new PropertyObjectPair(LexinfoOnt.tense,  LexinfoOnt.past));
-			infl.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
-			infl.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.tense,  LexinfoOnt.past));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 			// past participle au masculin pluriel.
 			break;
 		case "ppfp":
-			infl.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infl.add(new PropertyObjectPair(LexinfoOnt.tense,  LexinfoOnt.past));
-			infl.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.feminine));
-			infl.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.tense,  LexinfoOnt.past));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 			// past participle au féminin pluriel.
 			break;
 
@@ -576,16 +576,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			// Mood
 			switch (infos[0]) {
 			case "ind":
-				infl.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
 				break;
 			case "cond":
-				infl.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.conditional));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.conditional));
 				break;
 			case "imp":
-				infl.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
 				break;
 			case "sub":
-				infl.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.subjunctive));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.subjunctive));
 				break;
 			default:
 				log.error("wikicode's mood part was not recognized for " + commonInflectionInformations.partOfSpeech + " form in article " + wdh.currentLexEntry());
@@ -595,16 +595,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			// Tense
 			switch (infos[1]) {
 			case "p":
-				infl.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.present));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
 				break;
 			case "f":
-				infl.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.future));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.future));
 				break;
 			case "i":
-				infl.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.imperfect));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.imperfect));
 				break;
 			case "ps":
-				infl.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.past));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
 				break;
 			default:
 				log.error("wikicode's tense part was not recognized for " + commonInflectionInformations.partOfSpeech + " form in article " + wdh.currentLexEntry());
@@ -614,28 +614,28 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			// Person
 			switch (infos[2]) {
 			case "1s":
-				infl.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
-				infl.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.firstPerson));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 				break;
 			case "2s":
-				infl.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
-				infl.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.secondPerson));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 				break;
 			case "3s":
-				infl.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.thirdPerson));
-				infl.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 				break;
 			case "1p":
-				infl.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
-				infl.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.firstPerson));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 				break;
 			case "2p":
-				infl.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
-				infl.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.secondPerson));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 				break;
 			case "3p":
-				infl.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.thirdPerson));
-				infl.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+				infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 				break;
 			default:
 				log.error("wikicode's person part was not recognized for " + commonInflectionInformations.partOfSpeech + " form in article " + wdh.currentLexEntry());
@@ -743,13 +743,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				} else if (currentBlock == Block.INFLECTIONBLOCK) {
 					if ("m".equals(m.group(1)) || "mf".equals(m.group(1))) {
 						HashSet<PropertyObjectPair> infl = new HashSet<PropertyObjectPair>();
-						infl.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
+						infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
 						commonInflectionInformations.inflections.add(infl);
 					}
 
 					if ("f".equals(m.group(1)) || "mf".equals(m.group(1))) {
 						HashSet<PropertyObjectPair> infl = new HashSet<PropertyObjectPair>();
-						infl.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.feminine));
+						infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
 						commonInflectionInformations.inflections.add(infl);
 					}
 
@@ -831,101 +831,101 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	static void addAtomicMorphologicalInfo(Set<PropertyObjectPair> infos, String word) {
 		switch (word) {
 		case "singulier":
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "pluriel":
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "masculin":
 		case "masculinet": // happens when we should have "masculin et féminin", the "et" gets sticked to the "masculin".
-			infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
 			break;
 		case "féminin":
-			infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
 			break;
 		case "présent":
-			infos.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.present));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
 			break;
 		case "imparfait":
-			infos.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.imperfect));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.imperfect));
 			break;
 		case "passé":
-			infos.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.past));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
 			break;
 		case "futur":
-			infos.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.future));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.future));
 			break;
 		case "indicatif":
-			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
 			break;
 		case "subjonctif":
-			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.subjunctive));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.subjunctive));
 			break;
 		case "conditionnel":
-			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.conditional));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.conditional));
 			break;
 		case "impératif":
-			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
 			break;
 		case "participe":
-			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
 			break;
 		case "première personne":
-			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.firstPerson));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.firstPerson));
 			break;
 		case "deuxième personne":
-			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.secondPerson));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.secondPerson));
 			break;
 		case "troisième personne":
-			infos.add(new PropertyObjectPair(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.thirdPerson));
 			break;
 		case "futur simple":
-			infos.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.future));
-			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.future));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
 			break;
 		case "passé simple":
-			infos.add(new PropertyObjectPair(LexinfoOnt.tense, LexinfoOnt.past));
-			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
 			break;
 		case "masculin singulier":
-			infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "féminin singulier":
-			infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.feminine));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "masculin pluriel":
-			infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "féminin pluriel":
-			infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.feminine));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "participe passé masculin singulier":
-			infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "participe passé féminin singulier":
-			infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.feminine));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
 		case "participe passé masculin pluriel":
-			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infos.add(new PropertyObjectPair(LexinfoOnt.tense,  LexinfoOnt.past));
-			infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.tense,  LexinfoOnt.past));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "participe passé féminin pluriel":
-			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infos.add(new PropertyObjectPair(LexinfoOnt.tense,  LexinfoOnt.past));
-			infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.feminine));
-			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.tense,  LexinfoOnt.past));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "participe présent":
-			infos.add(new PropertyObjectPair(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-			infos.add(new PropertyObjectPair(LexinfoOnt.tense,  LexinfoOnt.present));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+			infos.add(PropertyObjectPair.get(LexinfoOnt.tense,  LexinfoOnt.present));
 			break;
 		default:
 			ArrayList<String> multiwords = explode(' ', word);
@@ -951,7 +951,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 			Set<PropertyObjectPair> infos = new HashSet<PropertyObjectPair>();
 
-// 			infos.add(new PropertyObjectPair(FrenchExtractorWikiModel.extractedFromFrenchSentence, FrenchExtractorWikiModel.trueLiteral));
+// 			infos.add(PropertyObjectPair.get(FrenchExtractorWikiModel.extractedFromFrenchSentence, FrenchExtractorWikiModel.trueLiteral));
 			for (String info : m.group(1).split("de l’|du|de")) {
 				addAtomicMorphologicalInfo(infos, info.trim().toLowerCase(frLocale));
 			}

@@ -448,15 +448,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 
 	private void mergePropertiesIntoResource(HashSet<PropertyObjectPair> properties, Resource res) {
 		for (PropertyObjectPair p : properties) {
-			if (res.getProperty(p.getKey()) == null) {
-				Object o = p.getValue();
-				if (o instanceof Literal) {
-					aBox.add(res, p.getKey(), (Literal) o);
-				} else if (o instanceof Resource) {
-					aBox.add(res, p.getKey(), (Resource) o);
-				} else {
-					log.error("Bad type in mergePropertiesIntoResource");
-				}
+			if (!aBox.contains(res, p.getKey(), p.getValue())) {
+                            aBox.add(res, p.getKey(), p.getValue());
 			}
 		}
 	}

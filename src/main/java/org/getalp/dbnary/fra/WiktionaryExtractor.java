@@ -829,7 +829,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 	static void addAtomicMorphologicalInfo(Set<PropertyObjectPair> infos, String word) {
-		switch(word) {
+		switch (word) {
 		case "singulier":
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.singular));
 			break;
@@ -837,6 +837,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			infos.add(new PropertyObjectPair(LexinfoOnt.number, LexinfoOnt.plural));
 			break;
 		case "masculin":
+		case "masculinet": // happens when we should have "masculin et féminin", the "et" gets sticked to the "masculin".
 			infos.add(new PropertyObjectPair(LexinfoOnt.gender, LexinfoOnt.masculine));
 			break;
 		case "féminin":
@@ -939,7 +940,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private void extractInflections(int blockStart, int end) {
 		Matcher m = inflectionDefPattern.matcher(pageContent);
 		m.region(blockStart, end);
-
 		while (m.find()) {
 			// Getting the canonical form of the inflection
 			String canonicalForm = m.group(2);

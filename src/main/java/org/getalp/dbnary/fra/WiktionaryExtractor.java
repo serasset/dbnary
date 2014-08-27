@@ -304,9 +304,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	// VERBES
 		addPos("verbe", "-verb-");
 		addPos("verb", "-verb-");
-		addPos("verbe pronominal");
-		addPos("verb-pr");
-		addPos("verbe pr");
+		addPos("verbe pronominal", "-verb-");
+		addPos("verb-pr", "-verb-");
+		addPos("verbe pr", "-verb-");
  
 	// EXCLAMATIONS
 		addPos("interjection");

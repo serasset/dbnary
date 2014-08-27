@@ -56,7 +56,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private String lastExtractedPronunciationLang = null;
 
 	private static Pattern inflectionMacroNamePattern = Pattern.compile("^fr-");
-	protected final static String inflectionDefPatternString = "^\\# ''([^\n]+) (?:de'' |d\\’'')\\[\\[([^\n]+)\\]\\]\\.$";
+	protected final static String inflectionDefPatternString = "^\\# ''([^\n]+) (?:de'' |d\\’''||(?:du verbe|du nom|de l’adjectif)'' )\\[\\[([^\n]+)\\]\\]\\.$";
 	protected final static Pattern inflectionDefPattern = Pattern.compile(inflectionDefPatternString, Pattern.MULTILINE);
 
 	private static HashMap<String,String> posMarkers;

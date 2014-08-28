@@ -1,28 +1,17 @@
 package org.getalp.dbnary.experiment.preprocessing;
 
+import com.hp.hpl.jena.rdf.model.*;
+import org.apache.commons.cli.*;
+import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.dbnary.DBnaryOnt;
+import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.LemonOnt;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
-import org.getalp.blexisma.api.ISO639_3;
-
-import org.getalp.blexisma.api.ISO639_3.Lang;
-
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import org.getalp.dbnary.DbnaryModel;
 
 public class CreateGoldStandard {
 	
@@ -58,8 +47,8 @@ public class CreateGoldStandard {
 
 	private void initializeTBox(String lang) {
 		NS = DbnaryModel.DBNARY_NS_PREFIX + "/" + lang + "/";
-		senseNumProperty = DbnaryModel.tBox.getProperty(DbnaryModel.DBNARY + "translationSenseNumber");
-		transNumProperty = DbnaryModel.tBox.getProperty(DbnaryModel.DBNARY + "translationNumber");
+		senseNumProperty = DbnaryModel.tBox.getProperty(DBnaryOnt.getURI() + "translationSenseNumber");
+		transNumProperty = DbnaryModel.tBox.getProperty(DBnaryOnt.getURI() + "translationNumber");
 	}
 
 	private void loadArgs(String[] args) {
@@ -136,7 +125,7 @@ public class CreateGoldStandard {
 	private void processTranslations() {
 		// Iterate over all translations
 		
-		StmtIterator translations = m1.listStatements((Resource) null, DbnaryModel.isTranslationOf, (RDFNode) null);
+		StmtIterator translations = m1.listStatements((Resource) null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 		
 		while (translations.hasNext()) {
 			Statement isTransOf = translations.next();
@@ -144,7 +133,7 @@ public class CreateGoldStandard {
 			
 			Statement n = e.getProperty(transNumProperty);
 			Statement s = e.getProperty(senseNumProperty);
-			Statement g = e.getProperty(DbnaryModel.glossProperty);
+			Statement g = e.getProperty(DBnaryOnt.gloss);
 			
 			if (null != s && null != g) {
 				String sn = s.getString();
@@ -154,11 +143,11 @@ public class CreateGoldStandard {
 				if (! nums.isEmpty()) {
 					// Fetch all entries senses and select the correct ones.
 					Resource entry = isTransOf.getResource();
-					StmtIterator senses = entry.listProperties(DbnaryModel.lemonSenseProperty);
+					StmtIterator senses = entry.listProperties(LemonOnt.sense);
 					
 					while (senses.hasNext()) {
 						Resource sens = senses.next().getResource();
-						String sensenum = sens.getProperty(DbnaryModel.senseNumberProperty).getString();
+						String sensenum = sens.getProperty(DBnaryOnt.senseNumber).getString();
 						if (nums.contains(sensenum)) {
 							String localName = sens.getURI();
 							int k = localName.indexOf("__ws_");

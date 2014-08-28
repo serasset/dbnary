@@ -5,9 +5,12 @@ package org.getalp.dbnary.eng;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
@@ -340,7 +343,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         } 
         wdh.finalizeEntryExtraction();
     }
-    
 
     private void extractTranslations(int startOffset, int endOffset) {
        Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
@@ -392,8 +394,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                currentGlose = null;
            }
        }
-   }
-    
+    }
+
+    @Override
+    public void extractExample(String example) {
+        // TODO: current example extractor cannot handle English data where different lines are used to define the example.
+
+    }
+
     private void extractPron(int startOffset, int endOffset) {
     	
     	Matcher pronMatcher = pronPattern.matcher(pageContent);

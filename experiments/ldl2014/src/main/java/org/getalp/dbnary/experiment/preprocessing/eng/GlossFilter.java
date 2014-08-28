@@ -1,10 +1,10 @@
 package org.getalp.dbnary.experiment.preprocessing.eng;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
 import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GlossFilter extends AbstractGlossFilter {
 	

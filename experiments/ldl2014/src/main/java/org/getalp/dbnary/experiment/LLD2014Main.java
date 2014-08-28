@@ -6,11 +6,12 @@ import com.wcohen.ss.Level2Levenstein;
 import org.apache.commons.cli.*;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguator;
-import org.getalp.dbnary.experiment.disambiguation.translations.DisambiguableSense;
 import org.getalp.dbnary.experiment.disambiguation.translations.MFSTranslationDisambiguator;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationAmbiguity;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationDisambiguator;
@@ -48,8 +49,8 @@ public final class LLD2014Main {
     private Property transNumProperty;
 
     {
-        senseNumProperty = DbnaryModel.tBox.getProperty(DbnaryModel.DBNARY + "translationSenseNumber");
-        transNumProperty = DbnaryModel.tBox.getProperty(DbnaryModel.DBNARY + "translationNumber");
+        senseNumProperty = DbnaryModel.tBox.getProperty(DBnaryOnt.getURI() + "translationSenseNumber");
+        transNumProperty = DbnaryModel.tBox.getProperty(DBnaryOnt.getURI() + "translationNumber");
     }
 
     private Disambiguator disambiguator;
@@ -168,7 +169,7 @@ public final class LLD2014Main {
         }
 
 
-        StmtIterator translations = m1.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
+        StmtIterator translations = m1.listStatements(null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 
 
         while (translations.hasNext()) {
@@ -178,7 +179,7 @@ public final class LLD2014Main {
 
             Statement n = e.getProperty(transNumProperty);
             Statement s = e.getProperty(senseNumProperty);
-            Statement g = e.getProperty(DbnaryModel.glossProperty);
+            Statement g = e.getProperty(DBnaryOnt.gloss);
 
             boolean connected = false;
             if (null != s) {
@@ -192,15 +193,15 @@ public final class LLD2014Main {
                 String uri = g.getSubject().toString();
                 Ambiguity mfcAmbiguity = new TranslationAmbiguity(gloss, n.getObject().toString().split("\\^\\^")[0]);
                 Resource lexicalEntry = next.getObject().asResource();
-                StmtIterator senses = m1.listStatements(lexicalEntry, DbnaryModel.lemonSenseProperty, (RDFNode) null);
+                StmtIterator senses = m1.listStatements(lexicalEntry, LemonOnt.sense, (RDFNode) null);
                 List<Disambiguable> choices = new ArrayList<>();
                 int senseCounter = 1;
                 while (senses.hasNext()) {
                     Statement nextSense = senses.next();
                     String sstr = nextSense.getObject().toString();
                     sstr = sstr.substring(sstr.indexOf("__ws_"));
-                    Statement dRef = nextSense.getProperty(DbnaryModel.lemonDefinitionProperty);
-                    Statement dVal = dRef.getProperty(DbnaryModel.lemonValueProperty);
+                    Statement dRef = nextSense.getProperty(LemonOnt.definition);
+                    Statement dVal = dRef.getProperty(LemonOnt.value);
                     String deftext = dVal.getObject().toString();
                     //choices.add(new DisambiguableSense(deftext, sstr,senseCounter));
                     senseCounter++;
@@ -211,7 +212,7 @@ public final class LLD2014Main {
                     streams.get(m).println(ambiguity.toString(m));
 
                     Resource sense = outputModel.createResource(uri);
-                    outputModel.add(outputModel.createStatement(sense, DbnaryModel.isTranslationOf, outputModel.createResource(NS + ambiguity.getBestSolution(m).getId())));
+                    outputModel.add(outputModel.createStatement(sense, DBnaryOnt.isTranslationOf, outputModel.createResource(NS + ambiguity.getBestSolution(m).getId())));
 
                 }
                 psmfs.println(mfcAmbiguity.toString("MFS"));
@@ -234,10 +235,10 @@ public final class LLD2014Main {
     private boolean connectNumberedSenses(Statement s, Model outModel) {
     	boolean connected = false;
 		Resource translation = s.getSubject();
-		Resource lexEntry = translation.getPropertyResourceValue(DbnaryModel.isTranslationOf);
+		Resource lexEntry = translation.getPropertyResourceValue(DBnaryOnt.isTranslationOf);
 		String nums = s.getString();
 		
-		if (lexEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType)) {
+		if (lexEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry)) {
 			ArrayList<String> ns = getSenseNumbers(nums);
 			for (String n : ns) {
 				connected = connected || attachTranslationToNumberedSense(translation, lexEntry, n, outModel);
@@ -249,13 +250,13 @@ public final class LLD2014Main {
 	private boolean attachTranslationToNumberedSense(Resource translation, Resource lexEntry, String n,
 			Model outModel) {
 		boolean connected = false;
-		StmtIterator senses = lexEntry.listProperties(DbnaryModel.lemonSenseProperty);
+		StmtIterator senses = lexEntry.listProperties(LemonOnt.sense);
 		while (senses.hasNext()) {
 			Resource sense = senses.next().getResource();
-			Statement senseNumStatement = sense.getProperty(DbnaryModel.senseNumberProperty);
+			Statement senseNumStatement = sense.getProperty(DBnaryOnt.senseNumber);
 			if (n.equalsIgnoreCase(senseNumStatement.getString())) {
 				connected = true;
-				outModel.add(outModel.createStatement(translation, DbnaryModel.isTranslationOf, sense));
+				outModel.add(outModel.createStatement(translation, DBnaryOnt.isTranslationOf, sense));
 			}
 		}
 		return connected;

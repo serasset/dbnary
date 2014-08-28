@@ -1,10 +1,10 @@
 package org.getalp.dbnary.experiment.preprocessing;
 
-import static org.junit.Assert.*;
-
 import org.getalp.dbnary.experiment.preprocessing.jpn.GlossFilter;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class TestJapaneseGlossFilter {
 

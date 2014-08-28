@@ -118,7 +118,7 @@ public class ExtractWiktionary {
 	 * @param args String[] args as featured in public static void main()
 	 * @throws WiktionaryIndexerException 
 	 */
-	private void loadArgs(String[] args) throws WiktionaryIndexerException{
+	private void loadArgs(String[] args) throws WiktionaryIndexerException {
 		CommandLineParser parser = new PosixParser();
 		try {
 			cmd = parser.parse(options, args);
@@ -213,8 +213,8 @@ public class ExtractWiktionary {
         // create new XMLStreamReader
 
         long startTime = System.currentTimeMillis();
-        long totalRelevantTime = 0, relevantstartTime = 0, relevantTimeOfLastThousands;
-        int nbpages = 0, nbrelevantPages = 0;
+        long totalRelevantTime = 0, relevantStartTime = 0, relevantTimeOfLastThousands;
+        int nbPages = 0, nbRelevantPages = 0;
         relevantTimeOfLastThousands = System.currentTimeMillis();
 
         XMLStreamReader2 xmlr = null;
@@ -237,24 +237,60 @@ public class ExtractWiktionary {
                 	page = xmlr.getElementText();
                 } else if (xmlr.isEndElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
                 	if (!title.equals("")) {               	
-                        nbpages++;
+                        nbPages++;
                         int nbnodes = wdh.nbEntries();
                 		we.extractData(title, page);
                 		if (nbnodes != wdh.nbEntries()) {
-                			totalRelevantTime += (System.currentTimeMillis() - relevantstartTime);
-                			nbrelevantPages++;
-                			if (nbrelevantPages % 1000 == 0) {
-                				System.err.println("Extracted: " + nbrelevantPages + " pages in: " + totalRelevantTime + " / Average = " 
-                						+ (totalRelevantTime/nbrelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbpages 
-                						+ " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbpages + ")" );
+                			totalRelevantTime += (System.currentTimeMillis() - relevantStartTime);
+                			nbRelevantPages++;
+                			if (nbRelevantPages % 1000 == 0) {
+                				System.err.println("Extracted: " + nbRelevantPages + " pages in: " + totalRelevantTime + " / Average = "
+                						+ (totalRelevantTime/nbRelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) (" + nbPages
+                						+ " processed Pages in " + (System.currentTimeMillis() - startTime) + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbPages + ")" );
                 				// System.err.println("      NbNodes = " + s.getNbNodes());
                 				relevantTimeOfLastThousands = System.currentTimeMillis();
                 			}
-                			// if (nbrelevantPages == 1100) break;
+                			// if (nbRelevantPages == 1100) break;
                 		}	
                 	}
                 }
             }
+
+            OutputStream ostream;
+            if (compress) {
+                // outputFile = outputFile + ".bz2";
+                ostream = new BZip2CompressorOutputStream(new FileOutputStream(outputFile));
+            } else {
+                ostream = new FileOutputStream(outputFile);
+            }
+            try {
+                System.err.println("Dumping " + outputFormat + " representation of the extracted data.");
+                if (outputFormat.equals("RDF")) {
+                    wdh.dump(new PrintStream(ostream, false, "UTF-8"));
+                } else if (outputFormat.equals("TURTLE")) {
+                    wdh.dump(new PrintStream(ostream, false, "UTF-8"), "TURTLE");
+                } else if (outputFormat.equals("NTRIPLE")) {
+                    (wdh).dump(new PrintStream(ostream, false, "UTF-8"), "N-TRIPLE");
+                } else if (outputFormat.equals("N3")) {
+                    (wdh).dump(new PrintStream(ostream, false, "UTF-8"), "N3");
+                } else if (outputFormat.equals("TTL")) {
+                    (wdh).dump(new PrintStream(ostream, false, "UTF-8"), "TTL");
+                } else if (outputFormat.equals("RDFABBREV")) {
+                    (wdh).dump(new PrintStream(ostream, false, "UTF-8"), "RDF/XML-ABBREV");
+                }
+            } catch (IOException e) {
+                System.err.println("Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
+                e.printStackTrace(System.err);
+                throw e;
+            } finally {
+                if (null != ostream) {
+                    ostream.flush();
+                    ostream.close();
+                }
+            }
+            System.err.println(nbPages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
+            System.err.println("Semnet contains: " + wdh.nbEntries() + " nodes.");
+
         } catch (XMLStreamException ex) {
             System.out.println(ex.getMessage());
 
@@ -272,40 +308,7 @@ public class ExtractWiktionary {
             }
         }
          
-        OutputStream ostream;
-        if (compress) {
-        	// outputFile = outputFile + ".bz2";
-        	ostream = new BZip2CompressorOutputStream(new FileOutputStream(outputFile));
-        } else {
-        	ostream = new FileOutputStream(outputFile);
-        }
-        try {
-        	System.err.println("Dumping " + outputFormat + " representation of the extracted data.");
-        	if (outputFormat.equals("RDF")) {
-        		wdh.dump(new PrintStream(ostream, false, "UTF-8"));
-        	} else if (outputFormat.equals("TURTLE")) {
-        		wdh.dump(new PrintStream(ostream, false, "UTF-8"), "TURTLE");
-        	} else if (outputFormat.equals("NTRIPLE")) {
-        		(wdh).dump(new PrintStream(ostream, false, "UTF-8"), "N-TRIPLE");
-        	} else if (outputFormat.equals("N3")) {
-        		(wdh).dump(new PrintStream(ostream, false, "UTF-8"), "N3");
-        	} else if (outputFormat.equals("TTL")) {
-        		(wdh).dump(new PrintStream(ostream, false, "UTF-8"), "TTL");
-        	} else if (outputFormat.equals("RDFABBREV")) {
-        		(wdh).dump(new PrintStream(ostream, false, "UTF-8"), "RDF/XML-ABBREV");
-        	} 
-        } catch (IOException e) {
-            System.err.println("Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
-            e.printStackTrace(System.err);
-            throw e;
-        } finally {
-        	if (null != ostream) {
-        		ostream.flush();
-        		ostream.close();
-        	}
-        }
-        System.err.println(nbpages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
-        System.err.println("Semnet contains: " + wdh.nbEntries() + " nodes.");
+
     }
 
     

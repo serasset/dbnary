@@ -3,9 +3,13 @@ package org.getalp.dilaf;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import com.hp.hpl.jena.vocabulary.RDFS;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.tools.CounterSet;
 
 import com.hp.hpl.jena.rdf.model.AnonId;
@@ -38,14 +42,16 @@ public class DilafLemonDataHandler extends DbnaryModel {
 		
 		// Create aBox
 		aBox = ModelFactory.createDefaultModel();
-			
+
 		aBox.setNsPrefix("dlf_" + lang, NS);
-		aBox.setNsPrefix("dbnary", DBNARY);
-		aBox.setNsPrefix("lemon", LEMON);
-		aBox.setNsPrefix("lexinfo", LEXINFO);
-		aBox.setNsPrefix("rdfs", RDFS);
-		aBox.setNsPrefix("dcterms", DCTerms.NS);
-		aBox.setNsPrefix("lexvo", LEXVO);
+        aBox.setNsPrefix(lang, NS);
+        aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
+        aBox.setNsPrefix("lemon", LemonOnt.getURI());
+        aBox.setNsPrefix("lexinfo", LexinfoOnt.getURI());
+        aBox.setNsPrefix("rdfs", RDFS.getURI());
+        aBox.setNsPrefix("dcterms", DCTerms.getURI());
+        aBox.setNsPrefix("lexvo", LEXVO);
+        aBox.setNsPrefix("rdf", RDF.getURI());
 	}
 	
 	public Resource registerNewLexicalSense(String lemma, String pos, String pron, String senseNumber) {
@@ -57,37 +63,37 @@ public class DilafLemonDataHandler extends DbnaryModel {
 		if (null == lexEntry) {
 			int count = lexEntryCount.incr(encodedLemma);
 			lexEntry = aBox.createResource(NS + encodedLemma + "__" + count);
-			aBox.add(aBox.createStatement(lexEntry, RDF.type, lexEntryType));
+			aBox.add(aBox.createStatement(lexEntry, RDF.type, LemonOnt.LexicalEntry));
 			lexicalEntries.put(encodedLemma + "__" + pron, lexEntry);
-			aBox.add(aBox.createStatement(lexEntry, dbnaryPosProperty, pos));
+			aBox.add(aBox.createStatement(lexEntry, DBnaryOnt.partOfSpeech, pos));
 		}
 		
 		String lexEntryId = lexEntry.getLocalName();
 
 		// Validate / eventually create a lexical form element
 		// Check if the lexical form already exists before creating it...
-		Statement alreadyRegisteredCanonicalForm = aBox.getProperty(lexEntry, canonicalFormProperty);
+		Statement alreadyRegisteredCanonicalForm = aBox.getProperty(lexEntry, LemonOnt.canonicalForm);
 		if (null != alreadyRegisteredCanonicalForm) {
 			// Check that it is the same form/pronounciation
-			Statement oldWrittenRep = aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), writtenRepresentationProperty);
+			Statement oldWrittenRep = aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), LemonOnt.writtenRep );
 			if (oldWrittenRep == null || ! oldWrittenRep.getString().equals(lemma)) {
 				System.err.println("Old written representation is null or different from current representation.");
 			}
-			Statement oldPronunciation = aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), pronProperty);
+			Statement oldPronunciation = aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), LexinfoOnt.pronunciation);
 			if (oldPronunciation == null || ! oldPronunciation.getString().equals(pron)) {
 				System.err.println("Old pronunciation is null or different from current representation.");
 			}
 		} else {
 			Resource lexForm = aBox.createResource();
-			aBox.add(aBox.createStatement(lexForm, writtenRepresentationProperty, lemma, twoLetterLanguageCode));
-			aBox.add(aBox.createStatement(lexForm, pronProperty, pron));
-			aBox.add(aBox.createStatement(lexEntry, canonicalFormProperty, lexForm));
+			aBox.add(aBox.createStatement(lexForm, LemonOnt.writtenRep , lemma, twoLetterLanguageCode));
+			aBox.add(aBox.createStatement(lexForm, LexinfoOnt.pronunciation, pron));
+			aBox.add(aBox.createStatement(lexEntry, LemonOnt.canonicalForm , lexForm));
 		}
 		// Create and register the lexical sense itself.
 		Resource lexicalSense = aBox.createResource(createSenseId(lexEntryId, senseNumber));
-		aBox.add(aBox.createStatement(lexEntry, RDF.type, lexicalSenseType));
-		aBox.add(aBox.createStatement(lexEntry, lemonSenseProperty, lexicalSense));
-		aBox.add(aBox.createLiteralStatement(lexicalSense, senseNumberProperty, aBox.createTypedLiteral(Integer.parseInt(senseNumber))));
+		aBox.add(aBox.createStatement(lexEntry, RDF.type, LemonOnt.LexicalSense));
+		aBox.add(aBox.createStatement(lexEntry, LemonOnt.sense, lexicalSense));
+		aBox.add(aBox.createLiteralStatement(lexicalSense, DBnaryOnt.senseNumber, aBox.createTypedLiteral(Integer.parseInt(senseNumber))));
 
 		
 		return lexicalSense;

@@ -1,17 +1,18 @@
 package org.getalp.dbnary.experiment.disambiguation;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
-
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.wcohen.ss.ScaledLevenstein;
+import org.getalp.dbnary.DBnaryOnt;
+// import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TverskyBasedTranslationDisambiguationMethod implements
 		DisambiguationMethod {
@@ -45,27 +46,27 @@ public class TverskyBasedTranslationDisambiguationMethod implements
 			InvalidEntryException {
 		HashSet<Resource> res = new HashSet<Resource>();
       
-		if (! lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType) &&
-				!lexicalEntry.hasProperty(RDF.type, DbnaryModel.wordEntryType) && 
-				!lexicalEntry.hasProperty(RDF.type, DbnaryModel.phraseEntryType)) 
+		if (! lexicalEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry) &&
+				!lexicalEntry.hasProperty(RDF.type, LemonOnt.Word) &&
+				!lexicalEntry.hasProperty(RDF.type, LemonOnt.Phrase))
 			throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
 		if (context instanceof Resource) {
 			Resource trans = (Resource) context;
-			if (! trans.hasProperty(RDF.type, DbnaryModel.translationType)) throw new InvalidContextException("Expecting a DBnary Translation Resource.");
+			if (! trans.hasProperty(RDF.type, DBnaryOnt.Translation)) throw new InvalidContextException("Expecting a DBnary Translation Resource.");
 			
-			Statement glossStmt = trans.getProperty(DbnaryModel.glossProperty);		
+			Statement glossStmt = trans.getProperty(DBnaryOnt.gloss);
 			
 			if (null != glossStmt) {
 				String gloss = glossStmt.getString();
 				ArrayList<WeigthedSense> weightedList = new ArrayList<WeigthedSense>();
 
 				// get a list of wordsenses, sorted by decreasing similarity.
-				StmtIterator senses = lexicalEntry.listProperties(DbnaryModel.lemonSenseProperty);
+				StmtIterator senses = lexicalEntry.listProperties(LemonOnt.sense);
 				while (senses.hasNext()) {
 					Statement nextSense = senses.next();
 					Resource wordsense = nextSense.getResource();
-					Statement dRef = wordsense.getProperty(DbnaryModel.lemonDefinitionProperty);
-					Statement dVal = dRef.getProperty(DbnaryModel.lemonValueProperty);
+					Statement dRef = wordsense.getProperty(LemonOnt.definition);
+					Statement dVal = dRef.getProperty(LemonOnt.value);
 					String deftext = dVal.getObject().toString();
 
 					double sim = tversky.compute(deftext, gloss);

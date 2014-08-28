@@ -1,13 +1,13 @@
 package org.getalp.dbnary.experiment.disambiguation;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.wcohen.ss.ScaledLevenstein;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.DBnaryOnt;
+import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
 import org.getalp.dbnary.experiment.translation.BingAPITranslator;
 import org.getalp.dbnary.experiment.translation.CachedTranslator;
@@ -15,13 +15,7 @@ import org.getalp.dbnary.experiment.translation.Translator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.wcohen.ss.ScaledLevenstein;
+import java.util.*;
 
 public class XlingualTverskyBasedTranslationDisambiguationMethod implements
 DisambiguationMethod {
@@ -64,13 +58,13 @@ DisambiguationMethod {
 			InvalidEntryException {
 		HashSet<Resource> res = new HashSet<Resource>();
 
-		if (! lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType) &&
-				!lexicalEntry.hasProperty(RDF.type, DbnaryModel.wordEntryType) && 
-				!lexicalEntry.hasProperty(RDF.type, DbnaryModel.phraseEntryType)) 
+		if (! lexicalEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry) &&
+				!lexicalEntry.hasProperty(RDF.type, LemonOnt.Word) &&
+				!lexicalEntry.hasProperty(RDF.type, LemonOnt.Phrase))
 			throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
 		if (context instanceof Resource) {
 			Resource trans = (Resource) context;
-			if (! trans.hasProperty(RDF.type, DbnaryModel.translationType)) throw new InvalidContextException("Expecting a DBnary Translation Resource.");
+			if (! trans.hasProperty(RDF.type, DBnaryOnt.Translation)) throw new InvalidContextException("Expecting a DBnary Translation Resource.");
 
 			String slang = getLanguage(lexicalEntry);
 			String tlang = getTargetLanguage(trans);
@@ -83,16 +77,16 @@ DisambiguationMethod {
 				ArrayList<WeigthedSensePair> weightedList = new ArrayList<WeigthedSensePair>();
 
 				for (Resource sws : swsList) {
-					Statement sdRef = sws.getProperty(DbnaryModel.lemonDefinitionProperty);
-					Statement sdVal = sdRef.getProperty(DbnaryModel.lemonValueProperty);
+					Statement sdRef = sws.getProperty(LemonOnt.definition);
+					Statement sdVal = sdRef.getProperty(LemonOnt.value);
 					String sdef = sdVal.getString();
 					
 					if (! "eng".equals(slang)) 
 						sdef = translator.translate(sdef, slang, "eng");
 							
 					for (Resource tws : targets) {
-						Statement tdRef = tws.getProperty(DbnaryModel.lemonDefinitionProperty);
-						Statement tdVal = tdRef.getProperty(DbnaryModel.lemonValueProperty);
+						Statement tdRef = tws.getProperty(LemonOnt.definition);
+						Statement tdVal = tdRef.getProperty(LemonOnt.value);
 						String tdef = tdVal.getString();
 						
 						if (! "eng".equals(slang)) 
@@ -124,10 +118,10 @@ DisambiguationMethod {
 
 	StmtIterator getTranslationLexicalEntryStmtIterator(Resource translation, String targetLang) {
 		// TODO: duplicate code with Translation closure. Keep this one and factorize...
-		String writtenForm = translation.getProperty(DbnaryModel.equivalentTargetProperty).getString();
+		String writtenForm = translation.getProperty(DBnaryOnt.writtenForm).getString();
 		String uri = DbnaryModel.DBNARY_NS_PREFIX + "/" + targetLang + "/" + DbnaryModel.uriEncode(writtenForm);
 		Resource r = models.get(targetLang).getResource(uri);
-		return models.get(targetLang).listStatements(r, DbnaryModel.refersTo, (RDFNode) null);
+		return models.get(targetLang).listStatements(r, DBnaryOnt.refersTo, (RDFNode) null);
 	}
 
 	private List<Resource> getTargetSenses(Resource trans, String pos) {
@@ -139,7 +133,7 @@ DisambiguationMethod {
 			StmtIterator lexEntries = getTranslationLexicalEntryStmtIterator(trans, lang);
 			while (lexEntries.hasNext()) {
 				Statement lnext = lexEntries.next();
-				Statement stmtPos = lnext.getObject().asResource().getProperty(DbnaryModel.posProperty);
+				Statement stmtPos = lnext.getObject().asResource().getProperty(LexinfoOnt.partOfSpeech);
 				String foreignpos = null;
 				if (stmtPos != null) {
 					foreignpos = stmtPos.getResource().getLocalName();
@@ -158,9 +152,9 @@ DisambiguationMethod {
 
 	private String getTargetLanguage(Resource trans) {
 		String lang;
-		Resource lexvoLang = trans.getPropertyResourceValue(DbnaryModel.targetLanguageProperty);
+		Resource lexvoLang = trans.getPropertyResourceValue(DBnaryOnt.targetLanguage);
 		if (lexvoLang == null) {
-			lang = trans.getProperty(DbnaryModel.targetLanguageCodeProperty).getString();
+			lang = trans.getProperty(DBnaryOnt.targetLanguageCode).getString();
 		} else {
 			lang = lexvoLang.getLocalName();
 		}
@@ -168,12 +162,12 @@ DisambiguationMethod {
 	}
 
 	private String getLanguage(Resource lexEntry) {
-		return ISO639_3.sharedInstance.getIdCode(lexEntry.getProperty(DbnaryModel.languageProperty).getString());
+		return ISO639_3.sharedInstance.getIdCode(lexEntry.getProperty(LemonOnt.language).getString());
 	}
 
 	private List<Resource> getLexicalSenses(Resource lexEntryNode) {
 		List<Resource> res = new ArrayList<Resource>();
-		StmtIterator ws = lexEntryNode.listProperties(DbnaryModel.lemonSenseProperty);
+		StmtIterator ws = lexEntryNode.listProperties(LemonOnt.sense);
 		while (ws.hasNext()) {
 			res.add(ws.next().getResource());
 		}

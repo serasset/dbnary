@@ -26,6 +26,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 
@@ -40,6 +41,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.RDF;
+import org.getalp.dbnary.LemonOnt;
 
 public class CompareTradsAndIWLinks extends DbnaryModel {
 
@@ -247,22 +249,22 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 	private HashSet<Resource> getTranslationsFor(String name) {
 		HashSet<Resource> res = new HashSet<Resource>();
 		Resource voc = m1.getResource(NS+name);
-		StmtIterator entries = m1.listStatements(voc, DbnaryModel.refersTo, (RDFNode) null);
+		StmtIterator entries = m1.listStatements(voc, DBnaryOnt.refersTo, (RDFNode) null);
 		
 		while (entries.hasNext()) {
 			Resource e = entries.next().getResource();
 			
-			StmtIterator translations = m1.listStatements(null, DbnaryModel.isTranslationOf, e);
+			StmtIterator translations = m1.listStatements(null, DBnaryOnt.isTranslationOf, e);
 			while (translations.hasNext()) {
 				Resource t = translations.next().getSubject();
 				
 				res.add(t);
 			}
 			
-			StmtIterator senses = m1.listStatements(e, DbnaryModel.lemonSenseProperty, (RDFNode) null);
+			StmtIterator senses = m1.listStatements(e, LemonOnt.sense, (RDFNode) null);
 			while (senses.hasNext()) {
 				Resource s = senses.next().getObject().asResource();
-				StmtIterator senseTranslations = m1.listStatements(null, DbnaryModel.isTranslationOf, s);
+				StmtIterator senseTranslations = m1.listStatements(null, DBnaryOnt.isTranslationOf, s);
 				while (senseTranslations.hasNext()) {
 					Resource t = translations.next().getSubject();
 					
@@ -319,17 +321,17 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 	
 	private HashSet<String> getRandomEntries(int n) {
 		HashSet<String> res = new HashSet<String>();
-		int total = countResourcesOfType(DbnaryModel.lexEntryType);
+		int total = countResourcesOfType(LemonOnt.LexicalEntry);
 		int stepWidth = total / n;
 				
-		ResIterator vocables = m1.listResourcesWithProperty(RDF.type, DbnaryModel.vocableEntryType);		
+		ResIterator vocables = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Vocable);
 		
 		// Only keep vocable that are valid pages.
 		ExtendedIterator<Resource> vocs = vocables.filterKeep(new Filter<Resource>(){
 
 			@Override
 			public boolean accept(Resource o) {
-				return o.hasProperty(DbnaryModel.refersTo);
+				return o.hasProperty(DBnaryOnt.refersTo);
 			}});
 		int i = 0;
 		while (vocs.hasNext() && i != n) {
@@ -374,12 +376,12 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 
 	private void printEquivalentsStats() {
 		// Number of relations
-		ResIterator relations = m1.listResourcesWithProperty(RDF.type, translationType);
+		ResIterator relations = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Translation);
 		HashSet<String> langs = new HashSet<String>();
 		int others = 0;
 		while(relations.hasNext()) {
 			Resource r = relations.next();
-			Statement t = r.getProperty(targetLanguageProperty);
+			Statement t = r.getProperty(DBnaryOnt.targetLanguage);
 			if (null != t) {
 				RDFNode lang = t.getObject();
 				langs.add(getCode(lang.asResource()));

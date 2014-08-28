@@ -3,6 +3,7 @@
  */
 package org.getalp.dbnary.fra;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -11,16 +12,22 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.fau.cs.osr.ptk.common.EntityMap;
+import de.fau.cs.osr.ptk.common.ast.AstNode;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.WiktionaryDataHandler;
-import org.getalp.dbnary.pol.DefinitionExpanderWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import org.sweble.wikitext.engine.*;
+import org.sweble.wikitext.engine.Compiler;
+import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
+import org.sweble.wikitext.lazy.LinkTargetException;
+
+import javax.xml.bind.JAXBException;
 
 /**
  * @author serasset
@@ -466,6 +473,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
      */
     @Override
     public void extractData() {
+        // test swebble
+        testSwebble();
+
         // System.out.println(pageContent);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
         
@@ -487,7 +497,57 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractFrenchData(frenchSectionStartOffset, frenchSectionEndOffset);
      }
 
-    
+    private void testSwebble() {
+        try {
+            SimpleWikiConfiguration config = new SimpleWikiConfiguration(
+                    "classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml"
+            );
+
+            // Instantiate a compiler for wiki pages
+            Compiler compiler = new Compiler(config);
+            EntityMap entityMap= new EntityMap();
+
+            // Retrieve a page
+            PageTitle pageTitle = PageTitle.make(config, this.wiktionaryPageName);
+
+            PageId pageId = new PageId(pageTitle, 1l);
+
+            CompiledPage page = compiler.parse(pageId, this.pageContent, null);
+
+            printOutCompiledPage(page);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        } catch (CompilerException e) {
+            e.printStackTrace();
+        } catch (LinkTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected static void printOutCompiledPage(CompiledPage page) {
+        System.err.println(page.getLog());
+        System.err.println("\n");
+        System.err.println(page.getWarnings());
+        System.err.println("\n");
+        for (AstNode astNode : page) {
+            printOutCompiledPage(astNode);
+        }
+    }
+
+    private static void printOutCompiledPage(AstNode astNode) {
+        System.err.println("Node");
+    }
+
+    protected static void printOutCompiledPage(Page page) {
+        System.err.println("Page");
+        for (AstNode astNode : page) {
+            printOutCompiledPage(astNode);
+        }
+    }
+
+
     protected boolean isFrenchLanguageHeader(Matcher m) {
 		return (null != m.group(1) && m.group(1).equals("fr")) || (null != m.group(2) && m.group(2).equals("fr"));
 	}
@@ -529,7 +589,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     void leaveDefBlock(Matcher m) {
     	int end = computeRegionEnd(definitionBlockStart, m);
         extractDefinitions(definitionBlockStart, end);
-        extractPronounciation(definitionBlockStart, end);
+        extractPronunciation(definitionBlockStart, end);
         definitionBlockStart = -1;
     }
     
@@ -927,7 +987,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     	}
     }
     
-    private void extractPronounciation(int startOffset, int endOffset) {
+    private void extractPronunciation(int startOffset, int endOffset) {
 		Matcher pronMatcher = pronunciationPattern.matcher(pageContent);
 		pronMatcher.region(startOffset, endOffset);
 
@@ -947,7 +1007,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		}
     }
 
-
+    @Override
 	public void extractExample(String example) {
         Map<Property, String> context = new HashMap<Property, String>();
 

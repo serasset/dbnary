@@ -12,6 +12,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -22,6 +23,7 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
+import org.getalp.dbnary.LemonOnt;
 
 public class StatLemonExtract extends DbnaryModel {
 
@@ -195,14 +197,14 @@ public class StatLemonExtract extends DbnaryModel {
 		
 		// Number of Lexical Entries
 
-		int nble = countResourcesOfType(lexEntryType);
-		int nblv = countResourcesOfType(vocableEntryType);
-		int nblw = countResourcesOfType(wordEntryType);
-		int nblp = countResourcesOfType(phraseEntryType);
+		int nble = countResourcesOfType(LemonOnt.LexicalSense);
+		int nblv = countResourcesOfType(DBnaryOnt.Vocable);
+		int nblw = countResourcesOfType(LemonOnt.Word);
+		int nblp = countResourcesOfType(LemonOnt.Phrase);
 		
 				
-		int nbEquiv = countResourcesOfType(translationType);
-		int nbsense = countResourcesOfType(lexicalSenseType);
+		int nbEquiv = countResourcesOfType(DBnaryOnt.Translation);
+		int nbsense = countResourcesOfType(LemonOnt.LexicalSense);
 		comma = ("LATEX".equals(statsFormat)) ?  " & " : ",";
 		nl = ("LATEX".equals(statsFormat)) ?  "\\\\" : "";
 		
@@ -238,19 +240,19 @@ public class StatLemonExtract extends DbnaryModel {
 		else 
 			System.out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
 		System.out.print(comma);
-		System.out.print(countRelations(synonymProperty));
+		System.out.print(countRelations(DBnaryOnt.synonym));
 		System.out.print(comma);
-		System.out.print(countRelations(nearSynonymProperty));
+		System.out.print(countRelations(DBnaryOnt.approximateSynonym));
 		System.out.print(comma);
-		System.out.print(countRelations(antonymProperty));
+		System.out.print(countRelations(DBnaryOnt.antonym));
 		System.out.print(comma);
-		System.out.print(countRelations(hypernymProperty));
+		System.out.print(countRelations(DBnaryOnt.hypernym));
 		System.out.print(comma);
-		System.out.print(countRelations(hyponymProperty));
+		System.out.print(countRelations(DBnaryOnt.hyponym));
 		System.out.print(comma);
-		System.out.print(countRelations(meronymProperty));
+		System.out.print(countRelations(DBnaryOnt.meronym));
 		System.out.print(comma);
-		System.out.print(countRelations(holonymProperty));
+		System.out.print(countRelations(DBnaryOnt.holonym));
 		System.out.println(nl);
 		System.out.println("");
 		System.out.println("");
@@ -285,12 +287,13 @@ public class StatLemonExtract extends DbnaryModel {
 
 	private void printTranslationsStats() {
 		// Number of relations
-		ResIterator relations = m1.listResourcesWithProperty(RDF.type, translationType);
+		ResIterator relations = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Translation);
 		HashSet<String> langs = new HashSet<String>();
 		int others = 0;
 		while(relations.hasNext()) {
 			Resource r = relations.next();
-			Statement t = r.getProperty(targetLanguageProperty);
+            // TODO: Also count targetLanguageCode properties
+			Statement t = r.getProperty(DBnaryOnt.targetLanguage);
 			if (null != t) {
 				RDFNode lang = t.getObject();
 				langs.add(getCode(lang.asResource()));

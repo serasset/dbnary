@@ -514,7 +514,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
             CompiledPage page = compiler.parse(pageId, this.pageContent, null);
 
-            printOutCompiledPage(page);
+//            printOutCompiledPage(page);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (JAXBException e) {

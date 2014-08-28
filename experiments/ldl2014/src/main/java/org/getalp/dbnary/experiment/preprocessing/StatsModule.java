@@ -1,9 +1,9 @@
 package org.getalp.dbnary.experiment.preprocessing;
 
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.io.PrintStream;
 
 public class StatsModule {
 	private class Stat {

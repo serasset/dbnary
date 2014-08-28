@@ -1,8 +1,8 @@
 package org.getalp.dbnary.experiment.disambiguation;
 
-import java.util.Set;
-
 import com.hp.hpl.jena.rdf.model.Resource;
+
+import java.util.Set;
 
 public interface DisambiguationMethod {
 	

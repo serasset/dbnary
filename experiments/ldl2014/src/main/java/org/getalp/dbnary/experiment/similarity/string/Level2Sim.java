@@ -1,7 +1,6 @@
 package org.getalp.dbnary.experiment.similarity.string;
 
 import com.wcohen.ss.AbstractTokenizedStringDistance;
-import com.wcohen.ss.Level2JaroWinkler;
 import org.getalp.dbnary.experiment.similarity.SimilarityMeasure;
 
 import java.util.List;

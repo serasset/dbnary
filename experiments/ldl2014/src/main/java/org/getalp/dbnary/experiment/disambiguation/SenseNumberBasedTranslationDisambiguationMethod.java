@@ -1,15 +1,15 @@
 package org.getalp.dbnary.experiment.disambiguation;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.getalp.dbnary.DbnaryModel;
-
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
+import org.getalp.dbnary.DBnaryOnt;
+import org.getalp.dbnary.LemonOnt;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SenseNumberBasedTranslationDisambiguationMethod implements
 		DisambiguationMethod {
@@ -24,14 +24,15 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements
 	public Set<Resource> selectWordSenses(Resource lexicalEntry,
 			Object context) throws InvalidContextException,
 			InvalidEntryException {
-		if (! lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType) &&
-				!lexicalEntry.hasProperty(RDF.type, DbnaryModel.wordEntryType) && 
-				!lexicalEntry.hasProperty(RDF.type, DbnaryModel.phraseEntryType))
+		if (! lexicalEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry) &&
+				!lexicalEntry.hasProperty(RDF.type, LemonOnt.Word) &&
+				!lexicalEntry.hasProperty(RDF.type, LemonOnt.Phrase))
 			throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
 		if (context instanceof Resource) {
 			Resource trans = (Resource) context;
-			if (! trans.hasProperty(RDF.type, DbnaryModel.translationType)) throw new InvalidContextException("Expecting a DBnary Translation Resource.");
-			Statement s = trans.getProperty(DbnaryModel.senseNumberProperty);
+			if (! trans.hasProperty(RDF.type, DBnaryOnt.Translation)) throw new InvalidContextException("Expecting a DBnary Translation Resource.");
+            // TODO: the sense number property is not defined for translations... However, it is added by the preprocessing.
+			Statement s = trans.getProperty(DBnaryOnt.senseNumber);
 			if (null != s) {
 				// Process sense number
 				// System.out.println("Avoiding treating " + s.toString());
@@ -59,10 +60,10 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements
 
 	private void addNumberedWordSenseToResult(Set<Resource> res,
 			Resource lexicalEntry, String n) {
-		StmtIterator senses = lexicalEntry.listProperties(DbnaryModel.lemonSenseProperty);
+		StmtIterator senses = lexicalEntry.listProperties(LemonOnt.sense);
 		while (senses.hasNext()) {
 			Resource sense = senses.next().getResource();
-			Statement senseNumStatement = sense.getProperty(DbnaryModel.senseNumberProperty);
+			Statement senseNumStatement = sense.getProperty(DBnaryOnt.senseNumber);
 			if (n.equalsIgnoreCase(senseNumStatement.getString())) {
                 //System.err.println(n+" | "+senseNumStatement.getString());
 				res.add(sense);

@@ -1,51 +1,28 @@
 package org.getalp.dbnary.experiment;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
+import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.commons.cli.*;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.dbnary.DBnaryOnt;
+// import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.experiment.disambiguation.*;
+import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
+import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
+import org.getalp.dbnary.experiment.preprocessing.StatsModule;
+import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
+
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.api.ISO639_3.Lang;
-import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.experiment.disambiguation.InvalidContextException;
-import org.getalp.dbnary.experiment.disambiguation.InvalidEntryException;
-import org.getalp.dbnary.experiment.disambiguation.SenseNumberBasedTranslationDisambiguationMethod;
-import org.getalp.dbnary.experiment.disambiguation.TransitiveTranslationClosureDisambiguationMethod;
-import org.getalp.dbnary.experiment.disambiguation.TverskyBasedTranslationDisambiguationMethod;
-import org.getalp.dbnary.experiment.disambiguation.XlingualTverskyBasedTranslationDisambiguationMethod;
-import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
-import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
-import org.getalp.dbnary.experiment.preprocessing.StatsModule;
-import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
-
-import com.hp.hpl.jena.rdf.model.LiteralRequiredException;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 
 public class DisambiguateTranslationSources {
@@ -387,11 +364,11 @@ public class DisambiguateTranslationSources {
 		if (null != stats) stats.reset(lang);
 		Model m = modelMap.get(lang);
 
-		StmtIterator translations = m.listStatements((Resource) null, DbnaryModel.isTranslationOf, (RDFNode) null);
+		StmtIterator translations = m.listStatements((Resource) null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 		while (translations.hasNext()) {
 			Resource e = translations.next().getSubject();
 
-			Statement g = e.getProperty(DbnaryModel.glossProperty);
+			Statement g = e.getProperty(DBnaryOnt.gloss);
 
 			if (null == g) {
 				if (null != stats) stats.registerTranslation(e.getURI(), null);
@@ -404,7 +381,7 @@ public class DisambiguateTranslationSources {
 					g.remove();
 				} else {
 					if (null != sg.getSenseNumber()) {
-						g.getModel().add(g.getModel().createLiteralStatement(g.getSubject(), DbnaryModel.senseNumberProperty, sg.getSenseNumber()));
+						g.getModel().add(g.getModel().createLiteralStatement(g.getSubject(), DBnaryOnt.senseNumber, sg.getSenseNumber()));
 					}
 					if (null == sg.getGloss()) {
 						// remove gloss from model
@@ -429,7 +406,7 @@ public class DisambiguateTranslationSources {
 			xlingualTverskyDisamb = new XlingualTverskyBasedTranslationDisambiguationMethod(modelMap, alpha, beta, delta, translatorId, translatorPass, translationCache);
 		
 		Model inputModel = modelMap.get(lang);
-		StmtIterator translations = inputModel.listStatements(null, DbnaryModel.isTranslationOf, (RDFNode) null);
+		StmtIterator translations = inputModel.listStatements(null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 
 		while (translations.hasNext()) {
 			Statement next = translations.next();
@@ -438,9 +415,9 @@ public class DisambiguateTranslationSources {
 			if (! modelMap.containsKey(getTargetLanguage(trans))) continue;
 
 			Resource lexicalEntry = next.getResource();
-			if (lexicalEntry.hasProperty(RDF.type, DbnaryModel.lexEntryType) ||
-					lexicalEntry.hasProperty(RDF.type, DbnaryModel.wordEntryType) ||
-					lexicalEntry.hasProperty(RDF.type, DbnaryModel.phraseEntryType)) {
+			if (lexicalEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry) ||
+					lexicalEntry.hasProperty(RDF.type, LemonOnt.Word) ||
+					lexicalEntry.hasProperty(RDF.type, LemonOnt.Phrase)) {
 				try {
 					Set<Resource> resSenseNum = snumDisamb.selectWordSenses(lexicalEntry, trans);
 					
@@ -476,7 +453,7 @@ public class DisambiguateTranslationSources {
 
 					if (res != null && !res.isEmpty()) {
 						for (Resource ws : res) {
-							outputModel.add(outputModel.createStatement(translation, DbnaryModel.isTranslationOf, outputModel.createResource(ws.getURI())));
+							outputModel.add(outputModel.createStatement(translation, DBnaryOnt.isTranslationOf, outputModel.createResource(ws.getURI())));
 						}
 					}
 
@@ -492,7 +469,7 @@ public class DisambiguateTranslationSources {
 	}
 
 	private int getNumberOfSenses(Resource lexicalEntry) {
-		StmtIterator senses = lexicalEntry.listProperties(DbnaryModel.lemonSenseProperty);
+		StmtIterator senses = lexicalEntry.listProperties(LemonOnt.sense);
 		int n = 0;
 		while (senses.hasNext()) {
 			n++;
@@ -503,9 +480,9 @@ public class DisambiguateTranslationSources {
 
 	private Object getTargetLanguage(Resource trans) {
 		try {
-			Resource lang = trans.getPropertyResourceValue(DbnaryModel.targetLanguageProperty);
+			Resource lang = trans.getPropertyResourceValue(DBnaryOnt.targetLanguage);
 			if (lang == null) {
-				Statement slang = trans.getProperty(DbnaryModel.targetLanguageCodeProperty);
+				Statement slang = trans.getProperty(DBnaryOnt.targetLanguageCode);
 				return slang.getLiteral();
 			} else {
 				return lang.getLocalName();

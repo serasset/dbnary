@@ -129,20 +129,20 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 			}
 			if (group.contains("rodzaj męskorzeczowy") || group.contains("rodzaju męskorzeczowego") || group.contains("lub męskorzeczowy") ) {
 				dpos.addAnnotation(LexinfoOnt.gender, LexinfoOnt.masculine);
-				dpos.addAnnotation(LexinfoOnt.animacy, DbnaryModel.inanimate);
+				dpos.addAnnotation(LexinfoOnt.animacy, LexinfoOnt.inanimate);
 				group = group.replace("rodzaj męskorzeczowy", "");
 				group = group.replace("rodzaju męskorzeczowego", "");
 				group = group.replace("lub męskorzeczowy", "");
 			}
 			if (group.contains("rodzaj męskozwierzęcy") || group.contains("lub męskozwierzęcy")) {
 				dpos.addAnnotation(LexinfoOnt.gender, LexinfoOnt.masculine);
-				dpos.addAnnotation(LexinfoOnt.animacy, DbnaryModel.animate);
+				dpos.addAnnotation(LexinfoOnt.animacy, LexinfoOnt.animate);
 				group = group.replace("rodzaj męskozwierzęcy", "");
 				group = group.replace("lub męskozwierzęcy", "");
 			}
 			if (group.contains("rodzaj męskoosobowy") || group.contains("lub męskoosobowy")) {
 				dpos.addAnnotation(LexinfoOnt.gender, LexinfoOnt.masculine);
-				dpos.addAnnotation(LexinfoOnt.animacy, DbnaryModel.animate);
+				dpos.addAnnotation(LexinfoOnt.animacy, LexinfoOnt.animate);
 				dpos.addAnnotation(LexinfoOnt.referentType, LexinfoOnt.personal);
 				group = group.replace("rodzaj męskoosobowy", "");
 				group = group.replace("lub męskoosobowy", "");
@@ -153,11 +153,11 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 				group = group.replace("rodzaj niemęskoosobowy", "");
 			} 
 			if (group.contains("nieżywotny")) {
-				dpos.addAnnotation(LexinfoOnt.animacy, DbnaryModel.inanimate);
+				dpos.addAnnotation(LexinfoOnt.animacy, LexinfoOnt.inanimate);
 				group = group.replace("nieżywotny", "");
 			}
 			if (group.contains("lub męskorzeczowy")) {
-				dpos.addAnnotation(LexinfoOnt.animacy, DbnaryModel.inanimate);
+				dpos.addAnnotation(LexinfoOnt.animacy, LexinfoOnt.inanimate);
 				group = group.replace("lub męskorzeczowy", "");
 			}
 			if (group.contains("liczebnik")) {

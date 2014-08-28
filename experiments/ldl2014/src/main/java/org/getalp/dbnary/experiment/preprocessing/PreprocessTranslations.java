@@ -4,6 +4,7 @@ import com.hp.hpl.jena.rdf.model.*;
 import org.apache.commons.cli.*;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
 
 import java.lang.reflect.InvocationTargetException;
@@ -52,8 +53,9 @@ public class PreprocessTranslations {
 
     private void initializeTBox(String lang) {
         NS = DbnaryModel.DBNARY_NS_PREFIX + "/" + lang + "/";
-        senseNumProperty = DbnaryModel.tBox.getProperty(DbnaryModel.DBNARY + "translationSenseNumber");
-        transNumProperty = DbnaryModel.tBox.getProperty(DbnaryModel.DBNARY + "translationNumber");
+        // TODO: create these adhoc properties another way. They are not part of the DBnary ontology
+        senseNumProperty = DbnaryModel.tBox.getProperty(DBnaryOnt.getURI() + "translationSenseNumber");
+        transNumProperty = DbnaryModel.tBox.getProperty(DBnaryOnt.getURI() + "translationNumber");
     }
 
     private void loadArgs(String[] args) {
@@ -186,16 +188,17 @@ public class PreprocessTranslations {
     private void processTranslations() {
         // Iterate over all translations
 
-        StmtIterator translations = m1.listStatements((Resource) null, DbnaryModel.isTranslationOf, (RDFNode) null);
+        StmtIterator translations = m1.listStatements((Resource) null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 
         while (translations.hasNext()) {
             Resource e = translations.next().getSubject();
 
             if (cleanup) {
+                // TODO: remove this cleanup option that was only used to create trec_eval compatible files
                 numTrans++;
                 m1.add(m1.createLiteralStatement(e, transNumProperty, numTrans));
             }
-            Statement g = e.getProperty(DbnaryModel.glossProperty);
+            Statement g = e.getProperty(DBnaryOnt.gloss);
 
             if (null == g) {
                 stats.registerTranslation(e.getURI(), null);

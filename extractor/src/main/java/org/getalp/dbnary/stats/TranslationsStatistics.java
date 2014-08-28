@@ -7,6 +7,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -50,12 +51,12 @@ public class TranslationsStatistics {
 		// TODO: extract iso code from lexvo entity.
 		SortedMap<String, IncrementableInt> counts = initCounts(targets);
 		
-		ResIterator relations = m1.listResourcesWithProperty(RDF.type, DbnaryModel.translationType);
+		ResIterator relations = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Translation);
 		HashSet<String> langs = new HashSet<String>();
 		int others = 0;
 		while(relations.hasNext()) {
 			Resource r = relations.next();
-			Statement t = r.getProperty(DbnaryModel.targetLanguageProperty);
+			Statement t = r.getProperty(DBnaryOnt.targetLanguage);
 			if (null != t) {
 				RDFNode lang = t.getObject();
 				langs.add(getCode(lang.asResource()));

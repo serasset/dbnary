@@ -4,6 +4,8 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.LexinfoOnt;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -16,11 +18,8 @@ public class JDMModel {
 	
 	public static final String JDM_NS_PREFIX = "http://kaiko.getalp.org/jeuxdemots";
 	public static final String DBNARY = JDM_NS_PREFIX+"#";
-	// protected static final String LMF = "http://www.lexicalmarkupframework.org/lmf/r14#";
-	public static final String LEMON = "http://www.lemon-model.net/lemon#";
-	public static final String LEXINFO = "http://www.lexinfo.net/ontology/2.0/lexinfo#";
-	public static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
-	public static final String LEXVO = "http://lexvo.org/id/iso639-3/";
+	public static final String LEMON = LemonOnt.getURI();
+	public static final String LEXINFO = LexinfoOnt.getURI();
 
 	public static final Resource lexEntryType;
 	public static final Resource wordEntryType;

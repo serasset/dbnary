@@ -559,9 +559,6 @@ extractor/src/main/java/org/getalp/dilaf/DilafZarmaExtractor.java -text
 extractor/src/main/resources/Messages_bg.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_pl.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
-extractor/src/main/resources/org/getalp/dbnary/LMF-rdf-rev14.xml -text svneol=unset#text/plain
-extractor/src/main/resources/org/getalp/dbnary/lemon.ttl -text
-extractor/src/main/resources/org/getalp/dbnary/lexinfo.owl -text
 extractor/src/main/scripts/old/README.txt -text
 extractor/src/main/scripts/old/compare_extracts.sh -text
 extractor/src/main/scripts/old/de_extract-defposNoyau -text

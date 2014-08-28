@@ -474,7 +474,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     @Override
     public void extractData() {
         // test swebble
-        testSwebble();
+        // testSwebble();
 
         // System.out.println(pageContent);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
@@ -526,26 +526,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
     }
 
-    protected static void printOutCompiledPage(CompiledPage page) {
-        System.err.println(page.getLog());
-        System.err.println("\n");
-        System.err.println(page.getWarnings());
-        System.err.println("\n");
-        for (AstNode astNode : page) {
-            printOutCompiledPage(astNode);
-        }
-    }
+//    protected static void printOutCompiledPage(CompiledPage page) {
+//        System.err.println(page.getLog());
+//        System.err.println("\n");
+//        System.err.println(page.getWarnings());
+//        System.err.println("\n");
+//        for (AstNode astNode : page) {
+//            printOutCompiledPage(astNode);
+//        }
+//    }
 
-    private static void printOutCompiledPage(AstNode astNode) {
-        System.err.println("Node");
-    }
+ //   private static void printOutCompiledPage(AstNode astNode) {
+//        System.err.println("Node");
+//    }
 
-    protected static void printOutCompiledPage(Page page) {
-        System.err.println("Page");
-        for (AstNode astNode : page) {
-            printOutCompiledPage(astNode);
-        }
-    }
+//    protected static void printOutCompiledPage(Page page) {
+//        System.err.println("Page");
+//        for (AstNode astNode : page) {
+//            printOutCompiledPage(astNode);
+//        }
+//    }
 
 
     protected boolean isFrenchLanguageHeader(Matcher m) {

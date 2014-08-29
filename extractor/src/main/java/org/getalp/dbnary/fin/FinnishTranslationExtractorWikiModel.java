@@ -93,7 +93,10 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 			glossbuff.append("|");
 			i++;
 		}
-		if (glossbuff.length() > 0) glossbuff.setLength(glossbuff.length()-1);
+        while (glossbuff.length() > 0 && glossbuff.charAt(glossbuff.length()-1) == '|') {
+            glossbuff.setLength(glossbuff.length()-1);
+        }
+		// if (glossbuff.length() > 0) glossbuff.setLength(glossbuff.length()-1);
 		return glossbuff.toString();
 	}
 

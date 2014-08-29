@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri id="User Entered Import Resolution" name="http://www.lemon-model.net/lemon" uri="lemon.ttl"/>
     <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
-        <uri id="Automatically generated entry, Timestamp=1409229072891" name="http://kaiko.getalp.org/dbnary" uri="dbnary.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1409229072891" name="http://www.lexinfo.net/ontology/2.0/lexinfo" uri="lexinfo.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1404467563311" name="http://kaiko.getalp.org/dbnary" uri="dbnary.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1404467563311" name="http://www.lexinfo.net/ontology/2.0/lexinfo" uri="lexinfo.owl"/>
     </group>
 </catalog>

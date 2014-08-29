@@ -23,8 +23,8 @@
      xmlns:lemon="http://www.lemon-model.net/lemon#">
     <owl:Ontology rdf:about="http://kaiko.getalp.org/dbnary">
         <rdfs:label>dbnary</rdfs:label>
+        <rdfs:comment xml:lang="en">DBnary: A wiktionary lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the lemon model (http://www.lemon-model.net/lemon).</rdfs:comment>
         <rdfs:seeAlso>http://kaiko.getalp.org/about-dbnary/</rdfs:seeAlso>
-        <rdfs:comment xml:lang="en">dbnary: A wiktionary lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the lemon model (http://www.lemon-model.net/lemon).</rdfs:comment>
         <owl:imports rdf:resource="http://www.lemon-model.net/lemon"/>
     </owl:Ontology>
     
@@ -178,7 +178,9 @@
     <!-- http://kaiko.getalp.org/dbnary#exampleSource -->
 
     <owl:DatatypeProperty rdf:about="&dbnary;exampleSource"/>
-    
+        <rdfs:domain rdf:resource="&lemon;UsageExample"/>
+    </owl:DatatypeProperty>
+
 
 
     <!-- http://kaiko.getalp.org/dbnary#gloss -->

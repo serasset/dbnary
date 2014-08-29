@@ -17,6 +17,7 @@ import de.fau.cs.osr.ptk.common.ast.AstNode;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 
@@ -466,7 +467,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	private ExampleExpanderWikiModel exampleExpander;
 
-	private Set<String> defTemplates = null;
+    @Override
+    public void setWiktionaryIndex(WiktionaryIndex wi) {
+        super.setWiktionaryIndex(wi);
+        exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("fr"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    }
+
+    private Set<String> defTemplates = null;
 
     /* (non-Javadoc)
      * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
@@ -478,8 +485,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         // System.out.println(pageContent);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-        
-    	exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("fr"), this.wiktionaryPageName, "");
+
+        exampleExpander.setPageName(this.wiktionaryPageName);
 
         while (languageFilter.find() && ! isFrenchLanguageHeader(languageFilter)) {
             ;

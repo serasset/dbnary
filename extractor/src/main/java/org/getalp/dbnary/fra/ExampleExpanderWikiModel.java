@@ -29,18 +29,19 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
 	private Map<Property, String> context;
 	private ExpandAllWikiModel simpleExpander;
 
-	public ExampleExpanderWikiModel(Locale locale, String imageBaseURL,
-			String linkBaseURL) {
-        this(null, locale, imageBaseURL, linkBaseURL);
-	}
-
 	public ExampleExpanderWikiModel(WiktionaryIndex wi, Locale locale,
 			String imageBaseURL, String linkBaseURL) {
         super(wi, locale, imageBaseURL, linkBaseURL);
         simpleExpander = new ExpandAllWikiModel(wi, locale, imageBaseURL, linkBaseURL);
     }
 
-	/**
+    @Override
+    public void setPageName(String pageTitle) {
+        super.setPageName(pageTitle);
+        simpleExpander.setPageName(pageTitle);
+    }
+
+    /**
 	 * Convert an example wiki code to plain text, while keeping track of all template calls and of context definition (source, etc.).
 	 * @param definition the wiki code
 	 * @param templates if not null, the method will add all called templates to the set.
@@ -64,11 +65,11 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
 				context.put(DBnaryOnt.exampleSource, source);
 				parameterMap.remove("1");
 				if (! parameterMap.isEmpty()) {
-					log.debug("Non empty parameter map {} in {}", parameterMap, this.getImageBaseURL());
+					log.debug("Non empty parameter map {} in {}", parameterMap, this.getPageName());
 				}
 			}
 		} else {
-			log.debug("Caught template call: {} --in-- {}", templateName, this.getImageBaseURL());
+			log.debug("Caught template call: {} --in-- {}", templateName, this.getPageName());
 			super.substituteTemplateCall(templateName, parameterMap, writer);
 		}
 	}

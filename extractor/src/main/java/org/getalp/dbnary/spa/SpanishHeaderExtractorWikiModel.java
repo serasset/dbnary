@@ -51,9 +51,10 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
 			Map<String, String> parameterMap, Appendable writer)
 			throws IOException {
 		if ("pronunciación".equals(templateName)) {
-				if (parameterMap.get("1") != null) {
+            String p1;
+				if ((p1 = parameterMap.get("1")) != null && p1.length() > 0) {
 					if (isApi(parameterMap.get("2"))) {
-						if (! parameterMap.get("1").equals("-") && !parameterMap.get("1").equals("&nbsp;"))
+						if (! p1.equals("-") && ! p1.equals("&nbsp;"))
 							delegate.registerPronunciation(parameterMap.get("1"), "es-ipa");
 						parameterMap.remove("1"); parameterMap.remove("2");
 						// DONE: maybe register alternate pronunciations

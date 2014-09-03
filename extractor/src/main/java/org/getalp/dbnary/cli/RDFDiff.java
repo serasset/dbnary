@@ -124,7 +124,9 @@ public class RDFDiff {
                 			if (! bound(stmt.getSubject(),ec.getSubject())) {
                 				resultModel.add(stmt);
                 			}
-                		}
+                		} else {
+                            resultModel.add(stmt);
+                        }
                 	} finally {
                 		stmts.close();
                 	}
@@ -141,7 +143,9 @@ public class RDFDiff {
                 			if (! bound(stmt.getObject().asResource(),ec.getObject().asResource())) {
                 				resultModel.add(stmt);
                 			}
-                		}
+                		} else {
+                            resultModel.add(stmt);
+                        }
                 	} finally {
                 		stmts.close();
                 	}

@@ -18,14 +18,14 @@ public class WiktionaryDataHandlerFactory {
 	}
 
 	private static WiktionaryDataHandler getDataHandler(String className, String language) {
-		WiktionaryDataHandler we = null;
+		WiktionaryDataHandler wdh = null;
 
 		String cname = WiktionaryDataHandlerFactory.class.getCanonicalName();
 		int dpos = cname.lastIndexOf('.');
 		String pack = cname.substring(0, dpos);
 		try {
-			Class<?> wec = Class.forName(pack + "." + language + "." + className);
-			we = (WiktionaryDataHandler) wec.getConstructor(String.class).newInstance(language);
+			Class<?> wdhc = Class.forName(pack + "." + language + "." + className);
+			wdh = (WiktionaryDataHandler) wdhc.getConstructor(String.class).newInstance(language);
 		} catch (ClassNotFoundException e) {
 			log.debug("No wiktionary data handler found for {}", language);
 		} catch (InstantiationException e) {
@@ -45,11 +45,11 @@ public class WiktionaryDataHandlerFactory {
 			log.debug("No appropriate constructor when instanciating wiktionary data handler for {}", language);
 		}
 
-		if (null == we) {
+		if (null == wdh) {
 			log.debug("Using default data handler.", language);
-			we = new LemonBasedRDFDataHandler(language);
+			wdh = new LemonBasedRDFDataHandler(language);
 		}
-		return we;
+		return wdh;
 	}
 
 }

@@ -115,7 +115,7 @@ public class DbnaryWikiModel extends WikiModel {
             int noIncludeEndOffset = rawWikiText.indexOf("</noinclude>", noIncludeOffset);
             if (-1 != noIncludeEndOffset)
                 return new StringBuffer().append(rawWikiText.substring(0, noIncludeOffset))
-                        .append(rawWikiText.substring(noIncludeEndOffset + 12)).toString();
+                        .append(rawWikiText.substring(noIncludeEndOffset + "</noinclude>".length())).toString();
         }
         int includeOnlyOffset = rawWikiText.indexOf("<includeonly>");
         if (-1 != includeOnlyOffset) {

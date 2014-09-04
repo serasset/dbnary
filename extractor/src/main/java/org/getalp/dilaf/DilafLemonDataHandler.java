@@ -85,9 +85,9 @@ public class DilafLemonDataHandler extends DbnaryModel {
 			}
 		} else {
 			Resource lexForm = aBox.createResource();
-			aBox.add(aBox.createStatement(lexForm, LemonOnt.writtenRep , lemma, twoLetterLanguageCode));
+			aBox.add(aBox.createStatement(lexForm, LemonOnt.writtenRep, lemma, twoLetterLanguageCode));
 			aBox.add(aBox.createStatement(lexForm, LexinfoOnt.pronunciation, pron));
-			aBox.add(aBox.createStatement(lexEntry, LemonOnt.canonicalForm , lexForm));
+			aBox.add(aBox.createStatement(lexEntry, LemonOnt.canonicalForm, lexForm));
 		}
 		// Create and register the lexical sense itself.
 		Resource lexicalSense = aBox.createResource(createSenseId(lexEntryId, senseNumber));

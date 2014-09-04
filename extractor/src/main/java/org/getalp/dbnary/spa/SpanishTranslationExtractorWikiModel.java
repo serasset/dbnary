@@ -90,7 +90,9 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
 			while (i != 31 && (s = parameterMap.get(""+i)) != null) {
 				s = s.trim();
 				senseNumberOrRangeMatcher.reset(s);
-				if (",".equals(s)) {
+                if ("".equals(s)) {
+                    // Just ignore empty parameters
+                } else if (",".equals(s)) {
 					if (usage.length() == 0) {
 						usage = null;
 					} else {
@@ -130,7 +132,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
 					// transcription
 					i++;
 					s = parameterMap.get(""+i);
-					usage = usage + "|" + "tr=" + s;
+					if (null != s && ! "".equals(s)) usage = usage + "|" + "tr=" + s;
 				} else if ("nl".equals(s)) {
 					// ?
 					i++;
@@ -157,7 +159,25 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
 			// nop
 		} else if ("trad-abajo".equals(templateName)) {
 			// nop
-		} else {
+		} else if ("l".equals(templateName)) {
+            // Catch l template and expand it correctly as the template is now expanded before the
+            // enclosing template
+            int i = 2;
+            StringBuffer text = new StringBuffer();
+            String s;
+            while (i <= 31 && (s = parameterMap.get(""+i)) != null) {
+                s = s.trim();
+                if (",".equals(s)) {
+                    text.append(",");
+                    // ignore next parameter which is the language
+                    i++;
+                } else {
+                    text.append(s);
+                }
+                i++;
+            }
+            writer.append(text);
+        } else {
 			log.debug("Called template: {} while parsing translations of: {}", templateName, this.getImageBaseURL());
 			// Just ignore the other template calls (uncomment to expand the template calls).
 			// super.substituteTemplateCall(templateName, parameterMap, writer);

@@ -328,7 +328,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		}
 		word = word.trim();
 		// Do not register empty translations
-		if (word.length() == 0) {
+		if (word.length() == 0 && (usage == null || usage.length() == 0)) {
 			return null;
 		}
 		// Ensure language is in its standard form.

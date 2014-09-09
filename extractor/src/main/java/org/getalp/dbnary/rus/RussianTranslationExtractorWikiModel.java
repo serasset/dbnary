@@ -13,6 +13,8 @@ import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 	
@@ -23,9 +25,10 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 	// }
 	
 	private WiktionaryDataHandler delegate;
-	
-	
-	public RussianTranslationExtractorWikiModel(WiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
+
+    private Logger log = LoggerFactory.getLogger(RussianTranslationExtractorWikiModel.class);
+
+    public RussianTranslationExtractorWikiModel(WiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
 		this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
 	}
 	
@@ -61,9 +64,15 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 				if (null == lang) lang = kv.getKey();
 				extractTranslations(gloss, lang, kv.getValue());
 			}
-		} else {
+		} else if ("помета".equals(templateName)) {
+            writer.append("(").append(parameterMap.get("1")).append(")");
+        } else {
 			// Just ignore the other template calls (uncomment to expand the template calls).
 			// super.substituteTemplateCall(templateName, parameterMap, writer);
+            // As template calls are expanded BEFORE (since gwtwiki-3.20-SNAPSHOT) enclosing template,
+            // we now expand by the source code to restore previous behaviour
+            log.debug("Called macro: {} when expanding translation block in {}.", templateName, this.getImageBaseURL());
+            writer.append("{{").append(templateName).append("}}"); // TODO: reconstruct template with all args
 		}
 	}
 
@@ -104,7 +113,7 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 	private void extractTranslation(String gloss, String lang, String trans) {
 		trans = restoreCommas(trans);
 		Matcher macros = macroPattern.matcher(trans);
-		String word = macros.replaceAll("");
+		String word = macros.replaceAll(""); // TODO: usages are now in macros
 		Matcher links = linkPattern.matcher(word);
 		word = links.replaceAll("$1").trim();
 		StringBuffer usage = new StringBuffer();

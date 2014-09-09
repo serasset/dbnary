@@ -427,7 +427,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     
 	private void extractTranslations(int startOffset, int endOffset) {
        String transCode = pageContent.substring(startOffset, endOffset);
-       RussianTranslationExtractorWikiModel dbnmodel = new RussianTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), "/${image}", "/${title}");
+       RussianTranslationExtractorWikiModel dbnmodel = new RussianTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), this.wiktionaryPageName, "/${title}");
        dbnmodel.parseTranslationBlock(transCode);
    }
     
@@ -438,7 +438,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     @Override
 	public void extractDefinition(String definition) {
 		// TODO: properly handle macros in definitions.
-        RussianDefinitionExtractorWikiModel dbnmodel = new RussianDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), "/${image}", "/${title}");
+        RussianDefinitionExtractorWikiModel dbnmodel = new RussianDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), this.wiktionaryPageName, "/${title}");
         dbnmodel.parseDefinition(definition);
 	}
     

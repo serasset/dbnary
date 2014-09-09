@@ -42,10 +42,10 @@ public class ItalianPronunciationExtractorWikiModel extends DbnaryWikiModel {
 			Map<String, String> parameterMap, Appendable writer)
 			throws IOException {
 		if ("IPA".equals(templateName)) {
-            if (parameterMap.get("4") != null) delegate.registerPronunciation(parameterMap.get("4"), "it-fonipa");
-            if (parameterMap.get("3") != null) delegate.registerPronunciation(parameterMap.get("3"), "it-fonipa");
-            if (parameterMap.get("2") != null) delegate.registerPronunciation(parameterMap.get("2"), "it-fonipa");
-            if (parameterMap.get("1") != null) delegate.registerPronunciation(parameterMap.get("1"), "it-fonipa");
+            if (isValidPronunciation(parameterMap.get("4"))) delegate.registerPronunciation(parameterMap.get("4"), "it-fonipa");
+            if (isValidPronunciation(parameterMap.get("3"))) delegate.registerPronunciation(parameterMap.get("3"), "it-fonipa");
+            if (isValidPronunciation(parameterMap.get("2"))) delegate.registerPronunciation(parameterMap.get("2"), "it-fonipa");
+            if (isValidPronunciation(parameterMap.get("1"))) delegate.registerPronunciation(parameterMap.get("1"), "it-fonipa");
 		} if ("SAMPA".equals(templateName)) {
             // TODO !
 		} else {
@@ -55,4 +55,7 @@ public class ItalianPronunciationExtractorWikiModel extends DbnaryWikiModel {
 		}
 	}
 
+    private boolean isValidPronunciation(String p) {
+        return p != null && ! p.trim().equals("");
+    }
 }

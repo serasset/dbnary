@@ -2,6 +2,7 @@ package org.getalp.dbnary.bul;
 
 import info.bliki.wiki.filter.WikipediaParser;
 
+import org.apache.jena.atlas.iterator.Iter;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -149,9 +150,33 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
                     }
                 }
             }
+        } else if ("п".equals(templateName))  {
+            String trad = parameterMap.get("2");
+            if (null != trad) writer.append(trad);
         } else {
             // Just ignore the other template calls (uncomment to expand the template calls).
             // super.substituteTemplateCall(templateName, parameterMap, writer);
+            appendTemplateCall(templateName, parameterMap, writer);
+        }
+    }
+
+    private void appendTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) {
+        try {
+            writer.append("{{").append(templateName);
+            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+                // gwtWiki provides a parameter map that is sorted by insertion time
+                // and unnamed parameters are inserted in the expected order.
+                String key = entry.getKey();
+                String val = entry.getValue();
+                if (key.matches("\\d+")) {
+                    writer.append("|").append(val);
+                } else {
+                    writer.append("|").append(key).append("=").append(val);
+                }
+            }
+        writer.append("}}");
+        } catch (IOException e) {
+            // NOP
         }
     }
 

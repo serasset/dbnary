@@ -1,6 +1,7 @@
 package org.getalp.dbnary.deu;
 
 import java.awt.List;
+import java.awt.PageAttributes.OriginType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +9,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.print.attribute.standard.MediaSize.Other;
 
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.LexinfoOnt;
@@ -55,18 +58,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		inflections= new HashSet<PropertyObjectPair>();
 	}
 	
-	public Document wikicodeToHtmlDOM (String wikicode, String regex) {
-		String otherFormTemplateString=regex+"(\\||.*|\\(|\\)| |=|\n|\r)*"+germanMorphoEnd.replace("}", "\\}");
-		Pattern otherFormPattern=Pattern.compile(otherFormTemplateString);
-		Matcher m=otherFormPattern.matcher(wikicode);
-		if(m.find()){
-			return wikicodeToHtmlDOM(m.group(0));
-		}
-		else{
-			return null;
-		}
-		
-	}
+
 	private enum Genre {MASCULIN, FEMININ,NEUTRUM,NOTHING};
 	private enum Cas {NOMINATIF,GENITIF,DATIF,ACCUSATIF, NOTHING};
 	private enum Mode {PARTICIPS,IMPERATIV,INDICATIV,SUBJONCTIVE,NOTHING};
@@ -84,6 +76,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
 	
 	private int isOtherForm=0;
+	
 	private void initializeExclusiveInflectionInfo(){
 		inflections=new HashSet<PropertyObjectPair>();
 		number=Number.NOTHING;
@@ -91,6 +84,11 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		genre= Genre.NOTHING;
 		person = Person.NOTHING;
 	}
+	
+	public void parseInflectedForms(String page, String normalizedPOS){
+		System.out.println("page : "+page);
+	}
+	
 	public void parseConjugation(String conjugationTemplateCall, String originalPos) {
 		
 		
@@ -99,9 +97,9 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		Matcher mu=germanNonRegularVerbPattern.matcher(conjugationTemplateCall);
 		//FIXME : check for reflexiv Verbs and adapt ConjTable
 		
-//		if(conjugationTemplateCall.indexOf("reflexiv")!=-1){
-//			conjugationTemplateCall.replace("reflexiv", "");
-//		}
+		if(conjugationTemplateCall.indexOf("reflexiv")!=-1){
+			conjugationTemplateCall.replace("reflexiv", "");
+		}
 		
 		Document doc = wikicodeToHtmlDOM(conjugationTemplateCall);
 		
@@ -110,7 +108,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		if (null==doc) {
 			return ;
 		}
-
 		
 		
 		NodeList tables =doc.getElementsByTagName("table");
@@ -167,9 +164,13 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 			getTablesDeclination(tablesItem,iEnd);			
 		}
 	}
+	private static HashSet<String> declinatedFormMarker;
+	static{
+		declinatedFormMarker = new HashSet<String>();
+		declinatedFormMarker.add("adjektivische Deklination");
+	}
 	
 	public void parseOtherForm(String page,String originalPos){
-		isOtherForm=1;
 		if (null==originalPos) {
 			wdh.addPartOfSpeech("");
 			originalPos="";
@@ -182,8 +183,12 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 					for(int i=0;i<tables.getLength();i++){
 						Element tablesItem=(Element) tables.item(i);
 						if(originalPos.equals("Possessivpronomen")){
+							isOtherForm=1;
 							getTablesDeclination(tablesItem);
-						} else {
+						} else if (page.contains("adjektivische Deklination")){
+							isOtherForm=3;
+							getTablesOtherForm(tablesItem);
+						}else {
 							getTablesOtherForm(tablesItem);
 						}
 					}
@@ -243,7 +248,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 										if (!change && isPhrasalVerb(form) ) {
 											part=extractPart(form);
 											if (!part.isEmpty()) {
-//													System.out.println("phrasal");
+//												System.out.println("phrasal");
 												change= true;
 												isPhrasal=true;
 												iBegin=iBegin+1;
@@ -278,7 +283,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 												mode=Mode.SUBJONCTIVE;
 											}
 										}
-										
+
 //										System.out.println("i : "+i+" j : "+j+"  form : "+form);
 										form =(form.replace("\n","")).replace(",","");
 										if (!form.replace(" ","").isEmpty()) {
@@ -307,7 +312,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		if (null != tablesItem) {
 			NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
 			if (null!=someTRs) {
-				for (int i=0;i<iEnd;i++) {
+				for (int i=0; i<iEnd;i++) {
 					Element trItem= (Element)someTRs.item(i);
 					if (null!=trItem) {
 						NodeList someTD=trItem.getElementsByTagName("td");//list of cols Elements
@@ -316,21 +321,23 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 							Element tdItem=(Element)someTD.item(j);
 								if (null==tdItem) {
 									nb++;
-								} else if(nb<3) {
+								} else if (nb<3) {
 									NodeList tdContent=tdItem.getChildNodes();
 									for (int k=0;k<tdContent.getLength();k++) {
 										initializeExclusiveInflectionInfo();
 										String form=tdContent.item(k).getTextContent();
 										if (!form.isEmpty()) {
+											int nbsp=nbSpaceForm(form);
 //											System.out.println("i : "+i+" j : "+j+" k : "+k+" form : "+form+" i%4 : "+i%4+" j/2 : "+j/2);
 //											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", ""));
-											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(—|-|\\}|\\{))*", ""));
-												if (0!=nbSpaceForm(form)) {
+											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|\\».*\\«|(—|-|\\}|\\{))*", ""));
+											if (3>nbsp) {
+												if (0!=nbsp) {
 													form=extractPart(form);
 												}
 												if (!form.replace(" ","").isEmpty()) {
 													cas=Cas.values()[((i-1)+isOtherForm)%4];
-													if(j/2<3){
+													if (j/2<3) {
 														genre=Genre.values()[j/2];
 														number=Number.SINGULAR;
 													} else {
@@ -343,6 +350,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 													}
 													addForm(form.replaceAll("!|\\(.*\\)", ""));
 												}
+											}
 										}
 									}
 								}
@@ -372,22 +380,31 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 									NodeList tdContent=tdItem.getChildNodes();
 									for (int k=0;k<tdContent.getLength();k++) {
 										String form=tdContent.item(k).getTextContent();
+										int nbsp=nbSpaceForm(form);
+										form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(\\».*\\«|\\(.*\\)))*(—|-|\\}|\\{)*", ""));
 										if (!form.isEmpty()) {
-											if(j%2==0){
-												number=Number.SINGULAR;
-											}
-											else {
-												number= Number.PLURAL;
-											}
-											cas=Cas.values()[i%4];
-											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", ""));
-											if (0!=nbSpaceForm(form)) {
-												form=form.substring(form.lastIndexOf(" ")+1);
-											}
-											
-											addInflectionsInfo();
-											if( !form.replace(" ","").isEmpty() ) {
-												addForm(form);
+											if(3>nbsp){
+												if (0!=nbsp) {
+													form=form.substring(form.lastIndexOf(" ")+1);
+												}
+												//TODO change condition i-isOtherForm for Unbekannter word
+												if( (someTD.getLength()-1)!=j &&(form.equals(wdh.currentLexEntry()) || (i-isOtherForm)<=0)){
+													isOtherForm=i;
+												}
+												if(j%2==0){
+													number=Number.SINGULAR;
+												}
+												else {
+													number= Number.PLURAL;
+												}
+												if(!wdh.currentWiktionaryPos().equals("Verb")){
+													cas=Cas.values()[(i-isOtherForm)%4];
+												}
+												
+												if(!form.isEmpty() && !form.replace(" ","").isEmpty() ) {
+													addInflectionsInfo();
+													addForm(form);
+												}
 											}
 										}
 									}
@@ -407,7 +424,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 1, inflections);
 //		wdh.registerOtherForm(s);
 	}
-	
 	//comp Verb
 	private void addVerbForm(String s){
 		if (!s.isEmpty()) {
@@ -459,28 +475,12 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 				}
 			}
 			if (!res.isEmpty()) {
+				
 				wdh.registerInflection("deu", wdh.currentWiktionaryPos(), res, wdh.currentLexEntry(), 1 , inflections);
-//				wdh.registerOtherForm(res);
 //				System.out.println("otherForm : "+res);
 			}
 		}
 	}
-	
-/*	//return the form's table
-	private String getForm(String s, String originalPos){
-
-		String res=null,section=null;
-				
-		section=extractString(s, originalPos, "{{Wortart");
-		res=extractString(s, germanMorphoBegin, germanMorphoEnd)+"}}";
-		
-		if(res.isEmpty()){
-			res = extractString(s, "Tabelle", germanMorphoEnd);
-		}
-		
-		return res;
-	}
-	*/
 	
 	//extract a String in s between start and end
 	private String extractString(String s, String start, String end){

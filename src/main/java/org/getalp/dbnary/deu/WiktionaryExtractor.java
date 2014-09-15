@@ -1,6 +1,10 @@
 package org.getalp.dbnary.deu;
 
 import java.awt.PageAttributes.OriginType;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -229,7 +233,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		m.region(startOffset, endOffset);
 		wdh.initializeEntryExtraction(wiktionaryPageName);
 		wdh.setWiktionaryIndex(wi);
-
+		boolean inflectedform=false;
 		currentBlock=Block.NOBLOCK;
 		
 		while(m.find()){
@@ -263,10 +267,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					currentBlock=Block.NOBLOCK;
 					//inflection block
 				} else if(m.group(1).contains("Deutsch")){
+					
 						leaveCurrentBlock(m);
-						
 						currentBlock=Block.INFLECTIONBLOCK;
 						blockStart=m.start();
+				//the followed comentary permit the recognition of page which are containing inflected form
+//				}else if(m.group(1).equals("Lemmaverweis") || m.group(1).equals("Grundformverweis")){
+//					if(inflectedform && null!=m.group(2)){
+						//TODO : adding a parser for this kind of page
+//					}
 				} else {
 				}
 			} else if (null != m.group(3)) {
@@ -275,6 +284,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				registerNewPartOfSpeech(m);
 				//go to the NODATA block
 				currentBlock=Block.NOBLOCK;
+				if(m.group(3).equals("Deklinierte Form")){
+					inflectedform=true;
+				}
 			} else if (null != m.group(5)) {
 				if (m.group(5).trim().equals("Übersetzungen")) {
 					leaveCurrentBlock(m);
@@ -297,10 +309,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 //		System.exit(0);
 		leaveCurrentBlock(m);
 		wdh.finalizeEntryExtraction();
-
-			
+	
 	}
-
+	
+	
 	private void leaveCurrentBlock(Matcher m){
 		if (blockStart == -1) {
 				return;
@@ -342,6 +354,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		verbMarker.add("Verb");
 		verbMarker.add("Hilfsverb");
 	}
+	private static HashSet<String> inflectedFormMarker;
+	static{
+		inflectedFormMarker=new HashSet<String>();
+		inflectedFormMarker.add("Konjugierte Form");
+		inflectedFormMarker.add("Deklinierte Form");
+	}
 
 	
 	private void extractInflections(int startOffset, int endOffset){
@@ -351,6 +369,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		//if the currentEntry has a page of conjugation or declination
 		GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
 		if (null!=page && -1!=page.indexOf(normalizedPOS)) {
+//			if(inflectedFormMarker.contains(normalizedPOS)){
+//				gewm.parseInflectedForms(page, normalizedPOS);
+//			}
 			if (verbMarker.contains(normalizedPOS)) {
 				gewm.parseConjugation(page, normalizedPOS);
 			} else {
@@ -379,7 +400,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				pageContent=wi.getTextOfPage(lexEntry+suffix[i]);
 				i++;
 			}
-		if(pageContent!=null && !hasGermanLanguageHeader(pageContent)){
+		if(pageContent!=null && !pageContent.contains("Deutsch")){
 			pageContent=null;
 		}
 		return pageContent;

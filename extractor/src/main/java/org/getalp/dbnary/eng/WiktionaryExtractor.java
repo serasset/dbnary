@@ -65,6 +65,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         posMarkers.add("Proper noun");
         posMarkers.add("Prefix");
         posMarkers.add("Suffix");
+        posMarkers.add("Proverb");
+        posMarkers.add("Interjection");
+        posMarkers.add("Phrase");
 
         nymMarkers = new HashSet<String>(20);
         nymMarkers.add("Synonyms");

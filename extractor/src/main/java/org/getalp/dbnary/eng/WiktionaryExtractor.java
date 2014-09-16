@@ -15,6 +15,8 @@ import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author serasset
@@ -25,8 +27,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     //TODO: Handle Wikisaurus entries.
 	//DONE: extract pronunciation
 	//TODO: attach multiple pronounciation correctly
-	
-	protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
+    static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+
+    protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
     protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
     protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
     
@@ -60,7 +63,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         posMarkers.add("Adverb");
         posMarkers.add("Verb");
         posMarkers.add("Proper noun");
-        
+        posMarkers.add("Prefix");
+        posMarkers.add("Suffix");
+
         nymMarkers = new HashSet<String>(20);
         nymMarkers.add("Synonyms");
         nymMarkers.add("Antonyms");
@@ -117,6 +122,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 //    private HashSet<String> unsupportedSections = new HashSet<String>(100);
     void gotoNoData(Matcher m) {
         state = NODATA;
+        log.debug("Ignoring content of section {} in {}", m.group(1), wdh.currentLexEntry());
 //        try {
 //            if (! unsupportedSections.contains(m.group(1))) {
 //                unsupportedSections.add(m.group(1));
@@ -206,6 +212,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     gotoNymBlock(m);
                 } else if (m.group(1).equals("Pronunciation")) {
                 	gotoPronBlock(m);
+                } else {
+                    gotoNoData(m);
                 }
                 
                 break;

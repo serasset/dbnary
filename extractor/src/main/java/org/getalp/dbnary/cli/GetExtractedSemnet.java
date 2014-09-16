@@ -170,7 +170,7 @@ public class GetExtractedSemnet {
 			"dumpFile must be a Wiktionary dump file in UTF-16 encoding. dumpFile directory must be writable to store the index." +
 			System.getProperty("line.separator", "\n") +
 			"Displays the extracted semnet of the wiktionary page(s) named \"entryname\", ...";
-		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.cli.GetExtractedSemnet [OPTIONS] dumpFile entryname ...", 
+		formatter.printHelp("java -cp /path/to/dbnary.jar org.getalp.dbnary.cli.GetExtractedSemnet [OPTIONS] dumpFile entryname ...", 
 				"With OPTIONS in:", options, 
 				help, false);
 	}

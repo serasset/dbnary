@@ -131,7 +131,7 @@ public class ExtractLanguageNamesFromLexvo {
 			"url must point on an RDF model file extracted from wiktionary." +
 			System.getProperty("line.separator", "\n") +
 			"Displays stats on the LMF based RDF dump.";
-		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.cli.StatRDFExtract [OPTIONS] url", 
+		formatter.printHelp("java -cp /path/to/dbnary.jar org.getalp.dbnary.cli.StatRDFExtract [OPTIONS] url", 
 				"With OPTIONS in:", options, 
 				help, false);
 	}

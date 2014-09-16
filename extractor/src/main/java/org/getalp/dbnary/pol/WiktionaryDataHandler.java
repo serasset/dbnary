@@ -9,17 +9,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.LexinfoOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
@@ -317,7 +313,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 				return new DecodedPOS("przysłówek", LexinfoOnt.adverb, LemonOnt.Phrase);
 			} else if (group.contains("wykrzyknikowa") || group.contains("wykrzyknkowa")) {
 				return new DecodedPOS("wykrzyknik", LexinfoOnt.interjection, LemonOnt.Phrase);
-			} 
+			}
 		} else if (group.startsWith("związek frazeologiczny")) {
 			return new DecodedPOS("związek frazeologiczny", LexinfoOnt.idiom, LemonOnt.Phrase);
 		} else if (group.startsWith("{{przysłowie polskie")) {

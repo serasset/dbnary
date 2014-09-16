@@ -1,26 +1,12 @@
 package org.getalp.dbnary.cli;
 
+import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.util.iterator.Filter;
+import com.hp.hpl.jena.vocabulary.RDF;
 import info.bliki.api.Connector;
 import info.bliki.api.User;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.*;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -28,20 +14,11 @@ import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.util.iterator.Filter;
-import com.hp.hpl.jena.vocabulary.RDF;
 import org.getalp.dbnary.LemonOnt;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class CompareTradsAndIWLinks extends DbnaryModel {
 
@@ -324,7 +301,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 		int total = countResourcesOfType(LemonOnt.LexicalEntry);
 		int stepWidth = total / n;
 				
-		ResIterator vocables = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Vocable);
+		ResIterator vocables = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Vocable);		
 		
 		// Only keep vocable that are valid pages.
 		ExtendedIterator<Resource> vocs = vocables.filterKeep(new Filter<Resource>(){
@@ -423,7 +400,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 			"url must point on an RDF model file extracted from wiktionary." +
 			System.getProperty("line.separator", "\n") +
 			"Displays stats on the LMF based RDF dump.";
-		formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.cli.StatRDFExtract [OPTIONS] url", 
+		formatter.printHelp("java -cp /path/to/dbnary.jar org.getalp.dbnary.cli.StatRDFExtract [OPTIONS] url", 
 				"With OPTIONS in:", options, 
 				help, false);
 	}

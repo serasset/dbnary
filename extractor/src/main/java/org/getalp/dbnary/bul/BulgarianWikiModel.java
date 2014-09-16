@@ -2,7 +2,6 @@ package org.getalp.dbnary.bul;
 
 import info.bliki.wiki.filter.WikipediaParser;
 
-import org.apache.jena.atlas.iterator.Iter;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;

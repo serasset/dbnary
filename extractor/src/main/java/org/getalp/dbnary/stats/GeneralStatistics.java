@@ -37,8 +37,8 @@ public class GeneralStatistics {
 
 		int nble = countResourcesOfType(LemonOnt.LexicalEntry, m1);
 		int nblv = countResourcesOfType(DBnaryOnt.Vocable, m1);
-		int nblw = countResourcesOfType(LemonOnt.Word, m1);
-		int nblp = countResourcesOfType(LemonOnt.Phrase, m1);
+		// int nblw = countResourcesOfType(LemonOnt.Word, m1);
+		// int nblp = countResourcesOfType(LemonOnt.Phrase, m1);
 		
 				
 		int nbEquiv = countResourcesOfType(DBnaryOnt.Translation, m1);
@@ -49,7 +49,7 @@ public class GeneralStatistics {
 		}
 		
 		//out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
-		out.print((nble + nblw + nblp));
+		out.print((nble));
 		out.print("," + nblv);
 		out.print("," + nbsense);
 		out.print("," + nbEquiv);

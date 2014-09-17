@@ -212,7 +212,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         if (! normalizedType.equals(LemonOnt.LexicalEntry)) {
             // Add the Lexical Entry type so that users may refer to all entries using the top hierarchy without any reasoner.
-            aBox.createStatement(currentLexEntry, RDF.type, LemonOnt.LexicalEntry);
+            aBox.add(aBox.createStatement(currentLexEntry, RDF.type, LemonOnt.LexicalEntry));
         }
         
         // All translation numbers are local to a lexEntry

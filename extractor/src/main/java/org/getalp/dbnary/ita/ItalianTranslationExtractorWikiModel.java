@@ -9,18 +9,18 @@ import java.util.Map.Entry;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.DbnaryWikiModel;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 
 public class ItalianTranslationExtractorWikiModel extends DbnaryWikiModel {
 	
-	private WiktionaryDataHandler delegate;
+	private IWiktionaryDataHandler delegate;
 	
-	public ItalianTranslationExtractorWikiModel(WiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
+	public ItalianTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
 		this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
 	}
 	
-	public ItalianTranslationExtractorWikiModel(WiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+	public ItalianTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wi, locale, imageBaseURL, linkBaseURL);
 		this.delegate = we;
 	}

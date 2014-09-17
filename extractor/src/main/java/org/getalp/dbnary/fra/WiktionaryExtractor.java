@@ -13,10 +13,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.fau.cs.osr.ptk.common.EntityMap;
-import de.fau.cs.osr.ptk.common.ast.AstNode;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
@@ -444,7 +443,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // affixesToDiscardFromLinks.add("s");
     }
     
-    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
     }
 

@@ -5,15 +5,12 @@ package org.getalp.dbnary.eng;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,15 +36,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected static final int ORTHOALTBLOCK = 3;
     protected static final int NYMBLOCK = 4;
     protected static final int PRONBLOCK = 5;
-        
-    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
+
+    public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
     }
 
     protected static Pattern languageSectionPattern;
     protected final static Pattern sectionPattern;
-    protected final static HashSet<String> posMarkers;
-    protected final static HashSet<String> nymMarkers;
     protected final static HashMap<String, String> nymMarkerToNymName;
 	protected final static Pattern pronPattern;
 
@@ -56,33 +51,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
        
         sectionPattern = Pattern.compile(sectionPatternString);
         pronPattern = Pattern.compile(pronPatternString);
-        
-        posMarkers = new HashSet<String>(20);
-        posMarkers.add("Noun");
-        posMarkers.add("Adjective");
-        posMarkers.add("Adverb");
-        posMarkers.add("Verb");
-        posMarkers.add("Proper noun");
-        posMarkers.add("Prefix");
-        posMarkers.add("Suffix");
-        posMarkers.add("Proverb");
-        posMarkers.add("Interjection");
-        posMarkers.add("Phrase");
 
-        nymMarkers = new HashSet<String>(20);
-        nymMarkers.add("Synonyms");
-        nymMarkers.add("Antonyms");
-        nymMarkers.add("Hyponyms");
-        nymMarkers.add("Hypernyms");
-        nymMarkers.add("Meronyms");
-        
         nymMarkerToNymName = new HashMap<String,String>(20);
         nymMarkerToNymName.put("Synonyms", "syn");
         nymMarkerToNymName.put("Antonyms", "ant");
         nymMarkerToNymName.put("Hyponyms", "hypo");
         nymMarkerToNymName.put("Hypernyms", "hyper");
         nymMarkerToNymName.put("Meronyms", "mero");
-        // TODO: metonymie ?
+        nymMarkerToNymName.put("Holonyms", "holo");
+
+        // TODO: Treat Abbreviations and Acronyms and contractions and Initialisms
+        // TODO: Alternative forms
+        // TODO: Extract quotations from definition block + from Quotations section
 
     }
 
@@ -125,7 +105,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 //    private HashSet<String> unsupportedSections = new HashSet<String>(100);
     void gotoNoData(Matcher m) {
         state = NODATA;
-        log.debug("Ignoring content of section {} in {}", m.group(1), wdh.currentLexEntry());
 //        try {
 //            if (! unsupportedSections.contains(m.group(1))) {
 //                unsupportedSections.add(m.group(1));
@@ -145,7 +124,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     void gotoDefBlock(Matcher m){
         state = DEFBLOCK;
         definitionBlockStart = m.end();
-        wdh.addPartOfSpeech(m.group(1));
+        wdh.addPartOfSpeech(m.group(1).trim());
     }
     
     void gotoOrthoAltBlock(Matcher m) {
@@ -171,7 +150,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     protected void gotoNymBlock(Matcher m) {
         state = NYMBLOCK; 
-        currentNym = nymMarkerToNymName.get(m.group(1));
+        currentNym = nymMarkerToNymName.get(m.group(1).trim());
         nymBlockStart = m.end();      
      }
 
@@ -203,127 +182,134 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // DONE: extract synonyms
         // DONE: extract antonyms
         while (m.find()) {
+            String title = m.group(1).trim();
             switch (state) {
             case NODATA:
-                if (m.group(1).equals("Translations")) {
+                if (title.equals("Translations")) {  // TODO: some sections are using Translation in the singular form...
                     gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
+                } else if (WiktionaryDataHandler.isValidPOS(title)) {
                     gotoDefBlock(m);
-                } else if (m.group(1).equals("Alternative spellings")) {
+                } else if (title.equals("Alternative spellings")) {
                     gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
+                } else if (nymMarkerToNymName.containsKey(title)) {
                     gotoNymBlock(m);
-                } else if (m.group(1).equals("Pronunciation")) {
+                } else if (title.equals("Pronunciation")) {
                 	gotoPronBlock(m);
                 } else {
                     gotoNoData(m);
+                    log.debug("Ignoring content of section {} in {}", m.group(), wdh.currentLexEntry());
                 }
                 
                 break;
             case DEFBLOCK:
                 // Iterate until we find a new section
-                if (m.group(1).equals("Translations")) {
+                if (title.equals("Translations")) {
                     leaveDefBlock(m);
                     gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
+                } else if (WiktionaryDataHandler.isValidPOS(title)) {
                     leaveDefBlock(m);
                     gotoDefBlock(m);
-                } else if (m.group(1).equals("Alternative spellings")) {
+                } else if (title.equals("Alternative spellings")) {
                     leaveDefBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
+                } else if (nymMarkerToNymName.containsKey(title)) {
                     leaveDefBlock(m);
                     gotoNymBlock(m);
-                } else if (m.group(1).equals("Pronunciation")) {
+                } else if (title.equals("Pronunciation")) {
                     leaveDefBlock(m);
                     gotoPronBlock(m);
                 } else {
                     leaveDefBlock(m);
                     gotoNoData(m);
+                    log.debug("Ignoring content of section {} in {}", m.group(), wdh.currentLexEntry());
                 } 
                 break;
             case TRADBLOCK:
-                if (m.group(1).equals("Translations")) {
+                if (title.equals("Translations")) {
                     leaveTradBlock(m);
                     gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
+                } else if (WiktionaryDataHandler.isValidPOS(title)) {
                     leaveTradBlock(m);
                     gotoDefBlock(m);
-                } else if (m.group(1).equals("Alternative spellings")) {
+                } else if (title.equals("Alternative spellings")) {
                     leaveTradBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
+                } else if (nymMarkerToNymName.containsKey(title)) {
                     leaveTradBlock(m);
                     gotoNymBlock(m);
-                } else if (m.group(1).equals("Pronunciation")) {
+                } else if (title.equals("Pronunciation")) {
                     leaveTradBlock(m);
                     gotoPronBlock(m);
                 } else {
                     leaveTradBlock(m);
                     gotoNoData(m);
-                } 
+                    log.debug("Ignoring content of section {} in {}", m.group(), wdh.currentLexEntry());
+                }
                 break;
             case ORTHOALTBLOCK:
-                if (m.group(1).equals("Translations")) {
+                if (title.equals("Translations")) {
                     leaveOrthoAltBlock(m);
                     gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
+                } else if (WiktionaryDataHandler.isValidPOS(title)) {
                     leaveOrthoAltBlock(m);
                     gotoDefBlock(m);
-                } else if (m.group(1).equals("Alternative spellings")) {
+                } else if (title.equals("Alternative spellings")) {
                     leaveOrthoAltBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
+                } else if (nymMarkerToNymName.containsKey(title)) {
                     leaveOrthoAltBlock(m);
                     gotoNymBlock(m);
-                } else if (m.group(1).equals("Pronunciation")) {
+                } else if (title.equals("Pronunciation")) {
                 	leaveOrthoAltBlock(m);
                     gotoPronBlock(m);
                 } else {
                     leaveOrthoAltBlock(m);
                     gotoNoData(m);
+                    log.debug("Ignoring content of section {} in {}", m.group(), wdh.currentLexEntry());
                 }
                 break;
             case NYMBLOCK:
-                if (m.group(1).equals("Translations")) {
+                if (title.equals("Translations")) {
                     leaveNymBlock(m);
                     gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
+                } else if (WiktionaryDataHandler.isValidPOS(title)) {
                     leaveNymBlock(m);
                     gotoDefBlock(m);
-                } else if (m.group(1).equals("Alternative spellings")) {
+                } else if (title.equals("Alternative spellings")) {
                     leaveNymBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
+                } else if (nymMarkerToNymName.containsKey(title)) {
                     leaveNymBlock(m);
                     gotoNymBlock(m);
-                } else if (m.group(1).equals("Pronunciation")) {
+                } else if (title.equals("Pronunciation")) {
                 	leaveNymBlock(m);
                     gotoPronBlock(m);
                 } else {
                     leaveNymBlock(m);
                     gotoNoData(m);
+                    log.debug("Ignoring content of section {} in {}", m.group(), wdh.currentLexEntry());
                 }
                 break;
             case PRONBLOCK:
-            	if (m.group(1).equals("Translations")) {
+            	if (title.equals("Translations")) {
                     leavePronBlock(m);
                     gotoTradBlock(m);
-                } else if (posMarkers.contains(m.group(1))) {
+                } else if (WiktionaryDataHandler.isValidPOS(title)) {
                 	leavePronBlock(m);
                     gotoDefBlock(m);
-                } else if (m.group(1).equals("Alternative spellings")) {
+                } else if (title.equals("Alternative spellings")) {
                 	leavePronBlock(m);
                     gotoOrthoAltBlock(m);
-                } else if (nymMarkers.contains(m.group(1))) {
+                } else if (nymMarkerToNymName.containsKey(title)) {
                 	leavePronBlock(m);
                     gotoNymBlock(m);
-                } else if (m.group(1).equals("Pronunciation")) {
+                } else if (title.equals("Pronunciation")) {
                 	leavePronBlock(m);
                     gotoPronBlock(m);
                 } else {
                 	leavePronBlock(m);
                     gotoNoData(m);
+                    log.debug("Ignoring content of section {} in {}", m.group(), wdh.currentLexEntry());
                 }
             	break;
             default:

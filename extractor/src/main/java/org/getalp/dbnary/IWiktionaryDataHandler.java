@@ -6,7 +6,7 @@ import java.util.Map;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-public interface WiktionaryDataHandler {
+public interface IWiktionaryDataHandler {
 
     public void initializeEntryExtraction(String wiktionaryPageName);
     public void initializeEntryExtraction(String wiktionaryPageName, String lang);

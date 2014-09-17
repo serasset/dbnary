@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
@@ -22,15 +22,15 @@ public class JapaneseTranslationsExtractorWikiModel {
 	// 	ignoredTemplates.add("Incorrect");
 	// }
 	
-	private WiktionaryDataHandler delegate;
+	private IWiktionaryDataHandler delegate;
 	
 	private Logger log = LoggerFactory.getLogger(JapaneseTranslationsExtractorWikiModel.class);
 	
-	public JapaneseTranslationsExtractorWikiModel(WiktionaryDataHandler we) {
+	public JapaneseTranslationsExtractorWikiModel(IWiktionaryDataHandler we) {
 		this(we, (WiktionaryIndex) null);
 	}
 	
-	public JapaneseTranslationsExtractorWikiModel(WiktionaryDataHandler we, WiktionaryIndex wi) {
+	public JapaneseTranslationsExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi) {
 		this.delegate = we;
 	}
 

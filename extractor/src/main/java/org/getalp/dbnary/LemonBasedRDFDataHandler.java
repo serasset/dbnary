@@ -21,12 +21,12 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 
-public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryDataHandler {
+public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionaryDataHandler {
 
 	protected static class PosAndType {
 		protected Resource pos;
 		protected Resource type;
-		protected PosAndType(Resource p, Resource t) {this.pos = p; this.type = t;}
+		public PosAndType(Resource p, Resource t) {this.pos = p; this.type = t;}
 	}
 	
 	private Logger log = LoggerFactory.getLogger(LemonBasedRDFDataHandler.class);
@@ -68,7 +68,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 //	private String currentSharedPronunciationLang;
 	
 	private static HashMap<String,Property> nymPropertyMap = new HashMap<String,Property>();
-	private static HashMap<String,PosAndType> posAndTypeValueMap = new HashMap<String,PosAndType>();
+	protected static HashMap<String,PosAndType> posAndTypeValueMap = new HashMap<String,PosAndType>();
 
 	static {
 				
@@ -97,18 +97,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
 		posAndTypeValueMap.put("Adjetivo", new PosAndType(LexinfoOnt.adjective, LemonOnt.LexicalEntry));
 		posAndTypeValueMap.put("Verbo", new PosAndType(LexinfoOnt.verb, LemonOnt.LexicalEntry));
 		posAndTypeValueMap.put("Advérbio", new PosAndType(LexinfoOnt.adverb, LemonOnt.LexicalEntry));
-		// English
-		posAndTypeValueMap.put("Noun", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
-		posAndTypeValueMap.put("Proper noun", new PosAndType(LexinfoOnt.properNoun, LemonOnt.LexicalEntry));
-		posAndTypeValueMap.put("Adjective", new PosAndType(LexinfoOnt.adjective, LemonOnt.LexicalEntry));
-		posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, LemonOnt.LexicalEntry));
-		posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Prefix", new PosAndType(LexinfoOnt.prefix, LexinfoOnt.Prefix));
-        posAndTypeValueMap.put("Suffix", new PosAndType(LexinfoOnt.suffix, LexinfoOnt.Suffix));
-        posAndTypeValueMap.put("Proverb", new PosAndType(LexinfoOnt.proverb, LemonOnt.Phrase));
-        posAndTypeValueMap.put("Interjection", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
-        posAndTypeValueMap.put("Phrase", new PosAndType(LexinfoOnt.phraseologicalUnit, LemonOnt.Phrase));
-		// German
+
+        // German
 		posAndTypeValueMap.put("Substantiv", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
 		posAndTypeValueMap.put("Nachname", new PosAndType(LexinfoOnt.properNoun, LemonOnt.LexicalEntry));
 		posAndTypeValueMap.put("Vorname", new PosAndType(LexinfoOnt.properNoun, LemonOnt.LexicalEntry));
@@ -219,6 +209,11 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements WiktionaryD
     	
         currentEncodedPageName = uriEncode(currentWiktionaryPageName, currentWiktionaryPos) + "__" + currentLexieCount.incr(currentWiktionaryPos);
         currentLexEntry = aBox.createResource(getPrefix() + currentEncodedPageName, normalizedType);
+
+        if (! normalizedType.equals(LemonOnt.LexicalEntry)) {
+            // Add the Lexical Entry type so that users may refer to all entries using the top hierarchy without any reasoner.
+            aBox.createStatement(currentLexEntry, RDF.type, LemonOnt.LexicalEntry);
+        }
         
         // All translation numbers are local to a lexEntry
         translationCount.resetAll();

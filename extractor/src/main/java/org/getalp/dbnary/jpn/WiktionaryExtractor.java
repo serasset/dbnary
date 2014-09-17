@@ -9,9 +9,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	// TODO: handle pronounciation
 	protected final static String pronounciationPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
 
-	public WiktionaryExtractor(WiktionaryDataHandler wdh) {
+	public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
 		super(wdh);
 	}
 

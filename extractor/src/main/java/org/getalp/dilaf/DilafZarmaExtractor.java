@@ -7,7 +7,6 @@ import javax.xml.stream.XMLStreamException;
 
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.getalp.dbnary.WiktionaryDataHandler;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 

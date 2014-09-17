@@ -4,8 +4,7 @@
 package org.getalp.dbnary.bul;
 
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryDataHandler;
-import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +46,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
    //  private boolean isCorrectPOS;
 
-    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
     }
 

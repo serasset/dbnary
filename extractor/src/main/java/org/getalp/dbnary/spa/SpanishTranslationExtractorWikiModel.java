@@ -12,22 +12,22 @@ import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.DbnaryWikiModel;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
 	
-	private WiktionaryDataHandler delegate;
+	private IWiktionaryDataHandler delegate;
 	
 	private Logger log = LoggerFactory.getLogger(SpanishTranslationExtractorWikiModel.class);
 
-	public SpanishTranslationExtractorWikiModel(WiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
+	public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
 		this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
 	}
 	
-	public SpanishTranslationExtractorWikiModel(WiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+	public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wi, locale, imageBaseURL, linkBaseURL);
 		this.delegate = we;
 	}

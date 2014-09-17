@@ -7,22 +7,22 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.getalp.dbnary.DbnaryWikiModel;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
 	
-	private WiktionaryDataHandler delegate;
+	private IWiktionaryDataHandler delegate;
 	
 	private Logger log = LoggerFactory.getLogger(SpanishHeaderExtractorWikiModel.class);
 
-	public SpanishHeaderExtractorWikiModel(WiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
+	public SpanishHeaderExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
 		this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
 	}
 	
-	public SpanishHeaderExtractorWikiModel(WiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+	public SpanishHeaderExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wi, locale, imageBaseURL, linkBaseURL);
 		this.delegate = we;
 	}

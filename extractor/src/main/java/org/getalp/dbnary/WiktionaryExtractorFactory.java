@@ -5,15 +5,15 @@ import java.lang.reflect.InvocationTargetException;
 
 public class WiktionaryExtractorFactory {
 
-	public static IWiktionaryExtractor getExtractor(String language, WiktionaryDataHandler wdh) {
+	public static IWiktionaryExtractor getExtractor(String language, IWiktionaryDataHandler wdh) {
 		return getExtractor("WiktionaryExtractor", language, wdh);
 	}
 
-	public static IWiktionaryExtractor getForeignExtractor(String language, WiktionaryDataHandler wdh) {
+	public static IWiktionaryExtractor getForeignExtractor(String language, IWiktionaryDataHandler wdh) {
 		return getExtractor("ForeignLanguagesWiktionaryExtractor", language, wdh);
 	}
 
-	public static IWiktionaryExtractor getExtractor(String className, String language, WiktionaryDataHandler wdh) {
+	public static IWiktionaryExtractor getExtractor(String className, String language, IWiktionaryDataHandler wdh) {
 		IWiktionaryExtractor we = null;
 		
 			String cname = WiktionaryExtractorFactory.class.getCanonicalName();
@@ -21,7 +21,7 @@ public class WiktionaryExtractorFactory {
 			String pack = cname.substring(0, dpos);
 			try {
 				Class<?> wec = Class.forName(pack + "." + language + "." + className);
-				we = (IWiktionaryExtractor) wec.getConstructor(WiktionaryDataHandler.class).newInstance(wdh);
+				we = (IWiktionaryExtractor) wec.getConstructor(IWiktionaryDataHandler.class).newInstance(wdh);
 			} catch (ClassNotFoundException e) {
 				System.err.println("No wiktionary extractor found for " + language);
 			} catch (InstantiationException e) {

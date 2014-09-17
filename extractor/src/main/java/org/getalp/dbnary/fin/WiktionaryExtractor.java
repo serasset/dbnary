@@ -13,9 +13,7 @@ import java.util.regex.Pattern;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryDataHandler;
-import org.getalp.dbnary.rus.RussianTranslationExtractorWikiModel;
-import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 
 /**
  * @author serasset
@@ -48,7 +46,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private final int ORTHOALTBLOCK = 3;
 	private final int NYMBLOCK = 4;
 
-	public WiktionaryExtractor(WiktionaryDataHandler wdh) {
+	public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
 		super(wdh);
 	}
 

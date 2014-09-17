@@ -7,9 +7,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
@@ -45,7 +44,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	protected ExpandAllWikiModel definitionExpander;
 	
-	public WiktionaryExtractor(WiktionaryDataHandler wdh) {
+	public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
 		super(wdh);
 		this.wdh = (org.getalp.dbnary.pol.WiktionaryDataHandler) wdh;
 	}

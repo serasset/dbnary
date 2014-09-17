@@ -12,8 +12,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryDataHandler;
-import org.getalp.dbnary.fin.SuomiLangToCode;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
@@ -47,7 +46,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     
 
 
-    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
     }
     protected final static Pattern languageSectionPattern;

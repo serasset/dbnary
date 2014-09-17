@@ -14,12 +14,12 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
     
     protected String pageContent;
-    protected WiktionaryDataHandler wdh;
+    protected IWiktionaryDataHandler wdh;
 	protected String wiktionaryPageName;
     
 	protected WiktionaryIndex wi = null;
 	
-    public AbstractWiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public AbstractWiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super();
         this.wdh = wdh;
     }

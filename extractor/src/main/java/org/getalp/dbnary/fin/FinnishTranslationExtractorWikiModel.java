@@ -6,14 +6,13 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.DbnaryWikiModel;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.jpn.JapaneseTranslationsExtractorWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
@@ -23,14 +22,14 @@ import org.slf4j.LoggerFactory;
 
 public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 	
-	private WiktionaryDataHandler delegate;
+	private IWiktionaryDataHandler delegate;
 	private Logger log = LoggerFactory.getLogger(JapaneseTranslationsExtractorWikiModel.class);
 
-	public FinnishTranslationExtractorWikiModel(WiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
+	public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
 		this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
 	}
 	
-	public FinnishTranslationExtractorWikiModel(WiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+	public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wi, locale, imageBaseURL, linkBaseURL);
 		this.delegate = we;
 	}

@@ -3,7 +3,7 @@ package org.getalp.dbnary.bul;
 import info.bliki.wiki.filter.WikipediaParser;
 
 import org.getalp.dbnary.DbnaryWikiModel;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;
@@ -64,17 +64,17 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
     static final Pattern linkPattern = Pattern.compile("\\[\\[([^\\]]*)\\]\\]");
     static final Pattern macroPattern = Pattern.compile("\\{\\{([^\\}]*)\\}\\}");
     static final Pattern parens = Pattern.compile("\\(([^\\)]*)\\)");
-    private WiktionaryDataHandler delegate;
+    private IWiktionaryDataHandler delegate;
     private boolean hasAPOS = false;
 
 	private DefinitionsWikiModel expander;
 	Set<String> templates = null;
 
-    public BulgarianWikiModel(WiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
+    public BulgarianWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
         this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
     }
 
-    public BulgarianWikiModel(WiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+    public BulgarianWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
         super(wi, locale, imageBaseURL, linkBaseURL);
         this.delegate = we;
         if (log.isDebugEnabled()) templates = new HashSet<String>();

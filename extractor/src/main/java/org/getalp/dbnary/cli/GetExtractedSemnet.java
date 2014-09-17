@@ -9,13 +9,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.dbnary.IWiktionaryExtractor;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.WiktionaryDataHandler;
-import org.getalp.dbnary.WiktionaryDataHandlerFactory;
-import org.getalp.dbnary.WiktionaryExtractorFactory;
-import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.dbnary.*;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 
 public class GetExtractedSemnet {
 
@@ -53,7 +48,7 @@ public class GetExtractedSemnet {
 	WiktionaryIndex wi;
 	String[] remainingArgs;
 	IWiktionaryExtractor we;
-	WiktionaryDataHandler wdh;
+	IWiktionaryDataHandler wdh;
 	
 	/**
 	 * Validate and set command line arguments.

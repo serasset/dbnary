@@ -21,14 +21,8 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.dbnary.IWiktionaryExtractor;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.WiktionaryDataHandler;
-import org.getalp.dbnary.WiktionaryDataHandlerFactory;
-import org.getalp.dbnary.WiktionaryExtractorFactory;
-import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.dbnary.WiktionaryIndexer;
-import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.dbnary.*;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 
 public class ExtractWiktionary {
 
@@ -70,7 +64,7 @@ public class ExtractWiktionary {
 	String[] remainingArgs;
 	IWiktionaryExtractor we;
 
-	private WiktionaryDataHandler wdh;
+	private IWiktionaryDataHandler wdh;
 
 
 	static {

@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 
 /**
  * @author serasset
@@ -34,7 +34,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	    private final int PRONBLOCK = 5;
 	    private final int MORPHOBLOCK = 6;
 
-    public WiktionaryExtractor(WiktionaryDataHandler wdh) {
+    public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
     }
 

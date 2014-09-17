@@ -2,14 +2,13 @@ package org.getalp.dbnary.spa;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
@@ -31,7 +30,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private static final int HEADERBLOCK = 5;
 	private static final int IGNOREPOS = 6;
 
-	public WiktionaryExtractor(WiktionaryDataHandler wdh) {
+	public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
 		super(wdh);
 	}
 

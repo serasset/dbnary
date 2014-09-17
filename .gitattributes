@@ -477,13 +477,13 @@ extractor/pom.xml -text
 extractor/src/main/java/org/getalp/dbnary/AbstractWiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/DbnaryModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/DbnaryWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/IWiktionaryDataHandler.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/IWiktionaryExtractor.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/KoreanLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/LemonBasedRDFDataHandler.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/OffsetValue.java -text
-extractor/src/main/java/org/getalp/dbnary/WiktionaryDataHandler.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/WiktionaryDataHandlerFactory.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/WiktionaryExtractorFactory.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/WiktionaryGrep.java -text
@@ -515,6 +515,7 @@ extractor/src/main/java/org/getalp/dbnary/ell/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/eng/EnglishLangToCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/eng/ForeignLanguagesWiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/eng/ForeignLanguagesWiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/eng/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/eng/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/fin/FinnishTranslationExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/fin/SuomiLangToCode.java -text svneol=unset#text/plain

@@ -9,23 +9,23 @@ import org.slf4j.LoggerFactory;
 public class WiktionaryDataHandlerFactory {
 	private static Logger log = LoggerFactory.getLogger(WiktionaryDataHandlerFactory.class);
 
-	public static WiktionaryDataHandler getDataHandler(String language) {
+	public static IWiktionaryDataHandler getDataHandler(String language) {
 		return getDataHandler("WiktionaryDataHandler", language);
 	}
 
-	public static WiktionaryDataHandler getForeignDataHandler(String language) {
+	public static IWiktionaryDataHandler getForeignDataHandler(String language) {
 		return getDataHandler("ForeignLanguagesWiktionaryDataHandler", language);
 	}
 
-	private static WiktionaryDataHandler getDataHandler(String className, String language) {
-		WiktionaryDataHandler wdh = null;
+	private static IWiktionaryDataHandler getDataHandler(String className, String language) {
+		IWiktionaryDataHandler wdh = null;
 
 		String cname = WiktionaryDataHandlerFactory.class.getCanonicalName();
 		int dpos = cname.lastIndexOf('.');
 		String pack = cname.substring(0, dpos);
 		try {
 			Class<?> wdhc = Class.forName(pack + "." + language + "." + className);
-			wdh = (WiktionaryDataHandler) wdhc.getConstructor(String.class).newInstance(language);
+			wdh = (IWiktionaryDataHandler) wdhc.getConstructor(String.class).newInstance(language);
 		} catch (ClassNotFoundException e) {
 			log.debug("No wiktionary data handler found for {}", language);
 		} catch (InstantiationException e) {

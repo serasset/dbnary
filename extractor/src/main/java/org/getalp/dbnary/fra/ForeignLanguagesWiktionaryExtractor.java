@@ -2,13 +2,12 @@ package org.getalp.dbnary.fra;
 
 import java.util.regex.Matcher;
 
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.dbnary.WiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
 
 public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
 
-	public ForeignLanguagesWiktionaryExtractor(WiktionaryDataHandler wdh) {
+	public ForeignLanguagesWiktionaryExtractor(IWiktionaryDataHandler wdh) {
 		super(wdh);
 	}
 

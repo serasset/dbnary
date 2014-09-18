@@ -31,31 +31,84 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     
   // Suppression des commentaires XML d'un texte 
     
-public static String removeXMLComments(String s) {
-		if (s == null) return null;
+	protected final static String debutOrfinDecomPatternString;
 
-		StringBuffer result = new StringBuffer();
-		int i = 0, len = s.length();
-		int beginKeep = 0;
+	static {
+		debutOrfinDecomPatternString=new StringBuilder()
+		.append("(?:")
+		.append("(<!--)")
+		.append(")|(?:")
+		.append("(-->)")
+		.append(")")
+		.toString();
+	}
+	protected final static Pattern xmlCommentPattern;
 
-		while (i + 6 < len) {
-			if (s.charAt(i) == '<' && s.charAt(i+1) == '!' && s.charAt(i+2) == '-' && s.charAt(i+3) == '-') {
-				int j = i + 4; // after the comment's opening tag
-				while (j + 2 < len) {
-					if (s.charAt(j) == '-' && s.charAt(j+1) == '-' && s.charAt(j+2) == '>') {
-						result.append(s.substring(beginKeep, i));
-						beginKeep = j + 3;
-						i = beginKeep;
-						break;
-					}
-					j++;
+	static {
+		xmlCommentPattern=Pattern.compile(debutOrfinDecomPatternString, Pattern.DOTALL);
+	}
+
+	private static final int A= 0;
+	private static final int B = 1;
+
+	public static String removeXMLComments(String s){
+		int ET = A;
+		Matcher xmlCommentMatcher = xmlCommentPattern.matcher(s);
+
+
+		int indexEnd=0;   // index du debut de la partie qui nous interesse
+		int indexBegin=0; // index de la fin de la partie qui nous interesse
+
+		StringBuffer result = new StringBuffer(); // la nouvelles chaine de caracteres
+
+		while(xmlCommentMatcher.find()) {
+			String g1 = xmlCommentMatcher.group(1); // g1 =<!-- ou null
+			String g2 = xmlCommentMatcher.group(2); // g2=-> ou null
+
+			switch (ET) {
+			case A:
+				if (g1!=null) {
+					// On a trouvé un debut de commentaire
+
+					//On place la fin de la partie qui nous interesse
+					indexEnd = xmlCommentMatcher.start(1);
+					//on change d'etat
+					ET=B;
+					result.append(s.substring(indexBegin, indexEnd));
 				}
-			}
-			i++;
-		}
+				break;
+			case B:
+				if(g2!=null){
+					// On a trouvé la fin du commentaire
 
-		result.append(s.substring(beginKeep));
-		return result.toString();
+					// on place le debut de le partie qui nous interesse
+					indexBegin= xmlCommentMatcher.end(2);
+					// on change d'etat
+					ET=A;
+				}
+				break;
+
+			default:
+				System.err.println("Unexpected state number:" + ET);
+				break;
+			}
+
+		}
+		if (xmlCommentMatcher.hitEnd()) {
+			switch (ET) {
+			case A:
+				result.append(s.substring(indexBegin));
+				break;
+			case B:
+				break;
+
+			default:
+				System.err.println("Unexpected state number:" + ET);
+				break;
+			}
+		}
+	   return result.toString();
+
 	}
     
     
@@ -335,28 +388,62 @@ public static String removeXMLComments(String s) {
 
     // FIXME this doesn't handle nested parentheses. Is it correct?
 	public static String stripParentheses(String s) {
-		boolean firstStep = true;
-		int begin = 0, end, i; 
+		final int A= 0;
+		final int B = 1;
 
-		String res = "";
+		int ET = A;
+		String resultat="";
+		int debut =0;
+		int fin =0 ;    // la fin de partie qui nous inter
+		int i= 0;
 
-		for (i = 0; i < s.length(); i++) {
-			if (firstStep) {
-				if (s.charAt(i) == '(') {
-					end = i;
-					firstStep = false;
-					res += s.substring(begin, end);
+		while(i!=s.length()){
+			switch (ET){
+			case A:
+				if(s.charAt(i)=='('){
+					// On a trouvé un debut de parenthese
+
+					//On place la fin de la partie qui nous interesse
+					fin= i;
+					//on change d'etat
+					ET=B;
+					resultat = resultat +s.substring(debut, fin);
 				}
-			} else if (s.charAt(i) == ')') {
-				begin = i + 1;
-				firstStep = true;
+				break;
+			case B:
+				if(s.charAt(i)==')'){
+					// On a trouvé la fin du commentaire
+
+					// on place le debut se le partie qui nous interesse
+					debut= i+1;
+					// on change d'etat
+					ET=A;
+				}
+				break;
+
+			default:
+				System.err.println("Unexpected state number:" + ET);
+				break;
+			}
+
+			// On passe au caractère suivant ;
+			i=i+1;
+
+		}
+		if (i==s.length()) {
+			switch (ET){
+			case A:
+				resultat = resultat +s.substring(debut);
+				break;
+			case B:
+				break;
+
+			default:
+				System.err.println("Unexpected state number:" + ET);
+				break;
 			}
 		}
-
-		if (i == s.length() && firstStep)
-			res += s.substring(begin);
-
-		return res;
+		return resultat;
 	}
 
 }

@@ -10,9 +10,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.LangTools;
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
@@ -490,11 +490,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
 					} else {
-						langname = macro;
-						String l = ISO639_3.sharedInstance.getIdCode(langname);
-						if (l != null) {
-							langname = l;
-						}
+						langname = LangTools.normalize(macro);
 					}
 				} else if(link!=null) {
 					//System.err.println("Unexpected link while in LANGUE state.");
@@ -508,8 +504,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				} else if (character != null) {
 					if (character.equals(":")) {
 						lang = langname.trim();
-						lang=AbstractWiktionaryExtractor.supParenthese(lang);
-						lang = TurkishLangtoCode.triletterCode(lang);
+						lang=AbstractWiktionaryExtractor.stripParentheses(lang);
+						lang = TurkishLangtoCode.threeLettersCode(lang);
 						langname = "";
 						ETAT = TRAD;
 					} else if (character.equals("\n") || character.equals("\r")) {
@@ -561,7 +557,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrCarMatcher.group(2));
 						if (null != word && word.length() != 0) log.debug("Word is not null ({}) when handling çeviri macro in {}", word, wdh.currentLexEntry());
 						String l = argmap.get("1");
-						if (null != l && (null != lang) && ! lang.equals(ISO639_3.sharedInstance.getIdCode(l))) {
+						if (null != l && (null != lang) && ! lang.equals(LangTools.getCode(l))) {
 							log.debug("Language in çeviri macro ({}) does not map language in list ({}) in {}", l, lang, wdh.currentLexEntry());
 						}
 						word = argmap.get("2");
@@ -646,10 +642,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 //
 //            	lang = g2;
 //        		// normalize language code
-//                String normLangCode;
-//                if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
-//                    lang = normLangCode;
-//                }
+//              lang = LangTools.normalize(lang, lang);
 //                  int i1;    
 //                if ((i1 = g3.indexOf('|')) == -1) {
 //                    word = g3;
@@ -657,7 +650,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 //                    word = g3.substring(0, i1);
 //                    usage = g3.substring(i1+1);
 //                }
-//            	lang=TurkishLangtoCode.triletterCode(lang);
+//            	lang=TurkishLangtoCode.threeLettersCode(lang);
 //                if(lang!=null && word != null){
 //             	   wdh.registerTranslation(lang, currentGlose, usage, word);
 //                }

@@ -3,7 +3,6 @@ package org.getalp.dbnary;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.wiki.WikiPatterns;
 
 public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtractor {
@@ -29,89 +28,34 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 		this.wi = wi;
 	}
 
-
-
     
   // Suppression des commentaires XML d'un texte 
     
-	protected final static String debutOrfinDecomPatternString;
+public static String removeXMLComments(String s) {
+		if (s == null) return null;
 
-	static {
-		debutOrfinDecomPatternString=new StringBuilder()
-		.append("(?:")
-		.append("(<!--)")
-		.append(")|(?:")
-		.append("(-->)")
-		.append(")")
-		.toString();
-	}
-	protected final static Pattern xmlCommentPattern;
+		StringBuffer result = new StringBuffer();
+		int i = 0, len = s.length();
+		int beginKeep = 0;
 
-	static {
-		xmlCommentPattern=Pattern.compile(debutOrfinDecomPatternString, Pattern.DOTALL);
-	}
-	
-	private static final int A= 0; 
-	private static final int B = 1;
-
-	public static String removeXMLComments(String s){
-		int ET = A;
-		Matcher xmlCommentMatcher = xmlCommentPattern.matcher(s);
-
-
-		int indexEnd=0;   // index du debut de la partie qui nous interesse 
-		int indexBegin=0; // index de la fin de la partie qui nous interesse 
-
-		StringBuffer result = new StringBuffer(); // la nouvelles chaine de caracteres
-
-		while(xmlCommentMatcher.find()) {
-			String g1 = xmlCommentMatcher.group(1); // g1 =<!-- ou null
-			String g2 = xmlCommentMatcher.group(2); // g2=-> ou null 
-
-			switch (ET) {
-			case A:
-				if (g1!=null) {
-					// On a trouvé un debut de commentaire 
-
-					//On place la fin de la partie qui nous interesse
-					indexEnd = xmlCommentMatcher.start(1);
-					//on change d'etat
-					ET=B;
-					result.append(s.substring(indexBegin, indexEnd));
+		while (i + 6 < len) {
+			if (s.charAt(i) == '<' && s.charAt(i+1) == '!' && s.charAt(i+2) == '-' && s.charAt(i+3) == '-') {
+				int j = i + 4; // after the comment's opening tag
+				while (j + 2 < len) {
+					if (s.charAt(j) == '-' && s.charAt(j+1) == '-' && s.charAt(j+2) == '>') {
+						result.append(s.substring(beginKeep, i));
+						beginKeep = j + 3;
+						i = beginKeep;
+						break;
+					}
+					j++;
 				}
-				break;
-			case B:
-				if(g2!=null){
-					// On a trouvé la fin du commentaire 
-
-					// on place le debut de le partie qui nous interesse 
-					indexBegin= xmlCommentMatcher.end(2);
-					// on change d'etat 
-					ET=A;
-				}
-				break;
-
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
 			}
-
+			i++;
 		}
-		if (xmlCommentMatcher.hitEnd()) {
-			switch (ET) {
-			case A:
-				result.append(s.substring(indexBegin));
-				break;
-			case B:
-				break;
 
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
-			}
-		}
-	   return result.toString();
-
+		result.append(s.substring(beginKeep));
+		return result.toString();
 	}
     
     
@@ -333,15 +277,15 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
             Matcher links = WikiPatterns.categoryOrInterwikiLinkPattern.matcher(pageContent);
             links.region(blockStart, m.regionEnd());
             while (links.find()) {
-                if 	(	links.group(2).equals(this.wiktionaryPageName) ||
-                		links.group(1).equalsIgnoreCase("Catégorie") ||
-                		links.group(1).equalsIgnoreCase("Category") ||
-                		links.group(1).equalsIgnoreCase("Kategorie") ||
-                		links.group(1).equalsIgnoreCase("Annexe") ||
-                		ISO639_3.sharedInstance.getLang(links.group(1)) != null
-                		)
+                // TODO: use localized versions of the namespaces
+                if (links.group(2).equals(this.wiktionaryPageName)
+                 || links.group(1).equalsIgnoreCase("Catégorie")
+                 || links.group(1).equalsIgnoreCase("Category")
+                 || links.group(1).equalsIgnoreCase("Kategorie")
+                 || links.group(1).equalsIgnoreCase("Annexe")
+                 || LangTools.getCode(links.group(1)) != null) {
                     return links.start();
-                else if (links.group(1) != null) {
+				} else if (links.group(1) != null) {
                 	// System.out.println("--- In: " + this.wiktionaryPageName + " --->");
                 	// System.out.println(links.group());
                 }
@@ -389,63 +333,30 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         }      
     }
 
-	public static String supParenthese(String s) {
-		final int A= 0; 
-		final int B = 1;
+    // FIXME this doesn't handle nested parentheses. Is it correct?
+	public static String stripParentheses(String s) {
+		boolean firstStep = true;
+		int begin = 0, end, i; 
 
-		int ET = A;
-		String resultat="";
-		int debut =0;
-		int fin =0 ;    // la fin de partie qui nous inter
-		int i= 0; 
+		String res = "";
 
-		while(i!=s.length()){
-			switch (ET){
-			case A:
-				if(s.charAt(i)=='('){
-					// On a trouvé un debut de parenthese 
-
-					//On place la fin de la partie qui nous interesse
-					fin= i;
-					//on change d'etat
-					ET=B;
-					resultat = resultat +s.substring(debut, fin);
+		for (i = 0; i < s.length(); i++) {
+			if (firstStep) {
+				if (s.charAt(i) == '(') {
+					end = i;
+					firstStep = false;
+					res += s.substring(begin, end);
 				}
-				break;
-			case B:
-				if(s.charAt(i)==')'){
-					// On a trouvé la fin du commentaire 
-
-					// on place le debut se le partie qui nous interesse 
-					debut= i+1;
-					// on change d'etat 
-					ET=A;
-				}
-				break;
-
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
-			}
-
-			// On passe au caractère suivant ;
-			i=i+1;
-
-		}
-		if (i==s.length()) {
-			switch (ET){
-			case A:
-				resultat = resultat +s.substring(debut);
-				break;
-			case B:
-				break;
-
-			default:
-				System.err.println("Unexpected state number:" + ET);
-				break;	
+			} else if (s.charAt(i) == ')') {
+				begin = i + 1;
+				firstStep = true;
 			}
 		}
-		return resultat;
+
+		if (i == s.length() && firstStep)
+			res += s.substring(begin);
+
+		return res;
 	}
 
 }

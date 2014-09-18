@@ -11,16 +11,10 @@ import java.util.Date;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 
@@ -38,7 +32,7 @@ public class ExtractWiktionary {
 	private static final String DEFAULT_MODEL = "lemon";
 
 	private static final String OUTPUT_FILE_OPTION = "o";
-	private static final String DEFAULT_OUTPUT_FILE = "fr_extract";
+	private static final String DEFAULT_OUTPUT_FILE = "extract";
 	
 	private static final String SUFFIX_OUTPUT_FILE_OPTION = "s";
 
@@ -47,13 +41,18 @@ public class ExtractWiktionary {
 	
 	private static final String FOREIGN_EXTRACTION_OPTION = "x";
 
+    private static final String MORPHOLOGY_OUTPUT_FILE_LONG_OPTION = "morpho";
+    private static final String MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION = "M";
+
+
     public static final XMLInputFactory2 xmlif;
 
 
 	private CommandLine cmd = null; // Command Line arguments
 	
 	private String outputFile = DEFAULT_OUTPUT_FILE;
-	private String outputFormat = DEFAULT_OUTPUT_FORMAT;
+    private String morphoOutputFile = null;
+    private String outputFormat = DEFAULT_OUTPUT_FORMAT;
 	private String model = DEFAULT_MODEL;
 	private boolean compress;
 	private String language = DEFAULT_LANGUAGE;
@@ -69,7 +68,7 @@ public class ExtractWiktionary {
 
 	static {
 		options = new Options();
-		options.addOption("h", false, "Prints usage and exits. ");	
+		options.addOption("h", "help", false, "Prints usage and exits. ");
 		options.addOption(SUFFIX_OUTPUT_FILE_OPTION, false, "Add a unique suffix to output file. ");	
 		options.addOption(LANGUAGE_OPTION, true, 
 				"Language (fra, eng, deu or por). " + DEFAULT_LANGUAGE + " by default.");
@@ -80,6 +79,11 @@ public class ExtractWiktionary {
 		options.addOption(MODEL_OPTION, true, 
 				"Ontology Model used  (lmf or lemon). Only useful with rdf base formats." + DEFAULT_MODEL + " by default.");
 		options.addOption(OUTPUT_FILE_OPTION, true, "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");
+        options.addOption( OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
+                .withDescription( "Output file for morphology data. Undefined by default." )
+                .hasArg()
+                .withArgName("file")
+                .create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION) );
 		options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign Languages");
 	}
 	
@@ -94,8 +98,9 @@ public class ExtractWiktionary {
             throw new RuntimeException("Cannot initialize XMLInputFactory", ex);
         }
     }
-	
-	/**
+
+
+    /**
 	 * @param args
 	 * @throws IOException 
 	 * @throws WiktionaryIndexerException 
@@ -149,10 +154,14 @@ public class ExtractWiktionary {
 		if (cmd.hasOption(OUTPUT_FILE_OPTION)){
 			outputFile = cmd.getOptionValue(OUTPUT_FILE_OPTION);
 		}
-		
-		if (cmd.hasOption(LANGUAGE_OPTION)){
+
+        if (cmd.hasOption(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)){
+            morphoOutputFile = cmd.getOptionValue(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION);
+        }
+
+        if (cmd.hasOption(LANGUAGE_OPTION)){
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
-			language = ISO639_3.sharedInstance.getIdCode(language);
+			language = LangTools.getCode(language);
 		}
 		
 		String[] remainingArgs = cmd.getArgs();
@@ -178,6 +187,7 @@ public class ExtractWiktionary {
 				System.err.println("LMF format not supported anymore.");
 				System.exit(1);
 			}
+            if (morphoOutputFile != null) wdh.enableMorphologyExtraction();
 		} else {
 			System.err.println("unsupported format :" + outputFormat);
 			System.exit(1);
@@ -190,7 +200,7 @@ public class ExtractWiktionary {
 		}
 
 		if (null == we) {
-			System.err.println("Wiktionary Extraction not yet available for " + ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+			System.err.println("Wiktionary Extraction not yet available for " + LangTools.inEnglish(language));
 			System.exit(1);
 		}
 		

@@ -480,6 +480,7 @@ extractor/src/main/java/org/getalp/dbnary/DbnaryWikiModel.java -text svneol=unse
 extractor/src/main/java/org/getalp/dbnary/IWiktionaryDataHandler.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/IWiktionaryExtractor.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/KoreanLangtoCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/LangTools.java -text
 extractor/src/main/java/org/getalp/dbnary/LemonBasedRDFDataHandler.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain

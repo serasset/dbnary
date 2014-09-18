@@ -519,7 +519,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			if (translationMatcher.matches()) {
 				String language = translationMatcher.group(1);
 				String lang;
-				if ((lang = PolishLangToCode.triletterCode(language)) != null) {
+				if ((lang = PolishLangToCode.threeLettersCode(language)) != null) {
 					language = lang;
 				} else {
 					log.debug("Unknown Language : {}", language);

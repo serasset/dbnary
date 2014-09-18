@@ -116,7 +116,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
                         if (!trans.isEmpty()) {
                             Matcher translationLangMatcher = translationLangPattern.matcher(trans);
                             if (translationLangMatcher.find()) {
-                                lang = BulgarianLangtoCode.triletterCode(translationLangMatcher.group().replace("*", "").replace("{", "").replace("}", ""));
+                                lang = BulgarianLangtoCode.threeLettersCode(translationLangMatcher.group().replace("*", "").replace("{", "").replace("}", ""));
 
                                 Matcher translationBodyMatcher = translationBodyPattern.matcher(trans);
                                 if (translationBodyMatcher.find()) {

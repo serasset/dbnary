@@ -8,7 +8,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 
@@ -84,7 +83,7 @@ public class GetExtractedSemnet {
 
 		if (cmd.hasOption(LANGUAGE_OPTION)){
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
-			language = ISO639_3.sharedInstance.getIdCode(language);
+			language = LangTools.getCode(language);
 		}
 
 		remainingArgs = cmd.getArgs();
@@ -122,7 +121,7 @@ public class GetExtractedSemnet {
 		}
 
 		if (null == we) {
-			System.err.println("Wiktionary Extraction not yet available for " + ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+			System.err.println("Wiktionary Extraction not yet available for " + LangTools.inEnglish(language));
 			System.exit(1);
 		}
 

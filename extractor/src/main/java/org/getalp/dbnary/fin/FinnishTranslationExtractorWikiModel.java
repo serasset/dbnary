@@ -9,12 +9,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.DbnaryWikiModel;
+import org.getalp.dbnary.*;
 import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.dbnary.jpn.JapaneseTranslationsExtractorWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
@@ -23,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 	
 	private IWiktionaryDataHandler delegate;
-	private Logger log = LoggerFactory.getLogger(JapaneseTranslationsExtractorWikiModel.class);
+	private Logger log = LoggerFactory.getLogger(FinnishTranslationExtractorWikiModel.class);
 
 	public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
 		this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
@@ -237,11 +233,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
 					} else {
-						langname = macro;
-						String l = ISO639_3.sharedInstance.getIdCode(langname);
-						if (l != null) {
-							langname = l;
-						}
+						langname = LangTools.normalize(macro);
 					}
 				} else if(link!=null) {
 					//System.err.println("Unexpected link while in LANGUE state.");
@@ -253,8 +245,8 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 				} else if (character != null) {
 					if (character.equals(":")) {
 						lang = langname.trim();
-						lang=AbstractWiktionaryExtractor.supParenthese(lang);
-						lang =SuomiLangToCode.triletterCode(lang);
+						lang=AbstractWiktionaryExtractor.stripParentheses(lang);
+						lang =SuomiLangToCode.threeLettersCode(lang);
 						langname = "";
 						ETAT = TRAD;
 					} else if (character.equals("\n") || character.equals("\r")) {
@@ -304,7 +296,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 						Map<String,String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
 						if (null != word && word.length() != 0) log.debug("Word is not null ({}) when handling käännös macro in {}", word, this.delegate.currentLexEntry());
 						String l = argmap.get("1");
-						if (null != l && (null != lang) && ! lang.equals(ISO639_3.sharedInstance.getIdCode(l))) {
+						if (null != l && (null != lang) && ! lang.equals(LangTools.getCode(l))) {
 							log.debug("Language in käännös macro does not map language in list in {}", this.delegate.currentLexEntry());
 						}
 						word = argmap.get("2");

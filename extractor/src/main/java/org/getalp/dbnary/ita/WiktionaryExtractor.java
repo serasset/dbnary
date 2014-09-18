@@ -8,9 +8,9 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.LangTools;
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiPatterns;
 
 /**
@@ -517,11 +517,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
 					} else {
-						langname = g1;
-						String l = ISO639_3.sharedInstance.getIdCode(langname);
-						if (l != null) {
-							langname = l;
-						}
+						langname = LangTools.normalize(g1);
 					}
 				} else if(g3!=null) {
 					//System.err.println("Unexpected link while in LANGUE state.");
@@ -530,8 +526,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				} else if (g6 != null) {
 					if (g6.equals(":")) {
 						lang = langname.trim();
-						lang=supParenthese(lang);
-						lang =ItalianLangToCode.triletterCode(lang);
+						lang=stripParentheses(lang);
+						lang =ItalianLangToCode.threeLettersCode(lang);
 						langname = "";
 						ETAT = TRAD;
 					} else if (g6.equals("\n") || g6.equals("\r")) {
@@ -553,7 +549,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 							currentGlose = null;
 						}
 						//if (word != null && word.length() != 0) {
-							//lang=supParenthese(lang);
+							//lang=stripParentheses(lang);
 							//wdh.registerTranslation(lang, currentGlose, usage, word);
 						//}
 						langname = ""; word = ""; usage = ""; lang=null;

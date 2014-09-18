@@ -8,6 +8,11 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 public interface IWiktionaryDataHandler {
 
+    /**
+     * Enable the extraction of morphological data in a second Model if available.
+     */
+    void enableMorphologyExtraction();
+
     public void initializeEntryExtraction(String wiktionaryPageName);
     public void initializeEntryExtraction(String wiktionaryPageName, String lang);
 
@@ -94,5 +99,4 @@ public interface IWiktionaryDataHandler {
 	void registerNymRelationOnCurrentSense(String target, String synRelation);
 
 
-	
 }

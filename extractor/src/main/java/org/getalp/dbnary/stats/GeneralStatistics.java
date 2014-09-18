@@ -3,16 +3,16 @@ package org.getalp.dbnary.stats;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
+
 import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.LemonOnt;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
-import org.getalp.dbnary.LemonOnt;
 
 public class GeneralStatistics {
 
@@ -48,7 +48,7 @@ public class GeneralStatistics {
 			out.println(getHeaders());
 		}
 		
-		//out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+		//out.print(ISO639_3.sharedInstance.inEnglish(language));
 		out.print((nble));
 		out.print("," + nblv);
 		out.print("," + nbsense);

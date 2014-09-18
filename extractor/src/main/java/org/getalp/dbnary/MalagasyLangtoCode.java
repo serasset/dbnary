@@ -5,17 +5,15 @@ package org.getalp.dbnary;
 
 import java.util.HashMap;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 
 /**
  * @author Mariam
  *
  */
-public class MalagasyLangtoCode {
-
+public class MalagasyLangtoCode extends LangTools {
 	static HashMap<String,String> h = new HashMap<String,String>();
-	static{
-
+	static {
 	    h.put("afara", "aa");
 	    h.put("afrikaans", "af");
 	    h.put("akan", "ak");
@@ -436,31 +434,9 @@ public class MalagasyLangtoCode {
 	    h.put("xhosa", "xh");
 	    h.put("yiddish", "yi");
 	    h.put("zolo", "zu");
-	    
 	}
 
-	public static String triletterCode(String s){ 
-		if(s!=null && s!="") {
-			s= s.trim();
-			s=s.toLowerCase();
-			String resultat;
-			if (ISO639_3.sharedInstance.getIdCode(s) != null) {
-				resultat =ISO639_3.sharedInstance.getIdCode(s);
-			}else{
-				if(h.containsKey(s)){
-					s=h.get(s);
-					
-						resultat =ISO639_3.sharedInstance.getIdCode(s);
-					
-				}else {
-					resultat=null;
-				}
-			}
-			return resultat;
-		}else{
-
-			return s;
-		}
+	public static String threeLettersCode(String s) {
+		return threeLettersCode(h, s);
 	}
-
 }

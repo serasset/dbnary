@@ -1,24 +1,45 @@
 package org.getalp.dbnary.cli;
 
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.util.iterator.Filter;
-import com.hp.hpl.jena.vocabulary.RDF;
 import info.bliki.api.Connector;
 import info.bliki.api.User;
-import org.apache.commons.cli.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
-import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.LangTools;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.util.iterator.Filter;
+import com.hp.hpl.jena.vocabulary.RDF;
+
+import org.getalp.dbnary.DBnaryOnt;
+import org.getalp.dbnary.LemonOnt;
 
 public class CompareTradsAndIWLinks extends DbnaryModel {
 
@@ -136,7 +157,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 		String clangs[] = countLanguages.split(",");
 		int i = 0;
 		while(i != clangs.length) {
-			counts.put(ISO639_3.sharedInstance.getIdCode(clangs[i]), new IncrementableInt());
+			counts.put(LangTools.getCode(clangs[i]), new IncrementableInt());
 			i = i + 1;
 		}
 

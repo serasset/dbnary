@@ -3,14 +3,14 @@ package org.getalp.dilaf;
 import java.io.OutputStream;
 import java.util.HashMap;
 
-import com.hp.hpl.jena.vocabulary.RDFS;
 import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.blexisma.api.ISO639_3.Lang;
-import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.tools.CounterSet;
+
+import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.tools.CounterSet;
 
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -19,6 +19,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class DilafLemonDataHandler extends DbnaryModel {
 

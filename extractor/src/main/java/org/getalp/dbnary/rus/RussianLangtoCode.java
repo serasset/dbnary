@@ -5,16 +5,14 @@ package org.getalp.dbnary.rus;
 
 import java.util.HashMap;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 
 /**
  * @author Mariam
  *
  */
-public class RussianLangtoCode {
-
+public class RussianLangtoCode extends LangTools {
 	static HashMap<String,String> h = new HashMap<String,String>();
-	
 	static {
 	    h.put("Абхазскийab", "ab");
 	    h.put("Аварскийav", "av");
@@ -438,28 +436,7 @@ public class RussianLangtoCode {
 	    h.put("Японскийja", "ja");
 	}
 
-	public static String triletterCode(String s){ 
-		if(s!=null && s!="") {
-			s= s.trim();
-			s=s.toLowerCase();
-			String resultat;
-			if (ISO639_3.sharedInstance.getIdCode(s) != null) {
-				resultat =ISO639_3.sharedInstance.getIdCode(s);
-			}else{
-				if(h.containsKey(s)){
-					s=h.get(s);
-					
-						resultat =ISO639_3.sharedInstance.getIdCode(s);
-					
-				}else {
-					resultat=null;
-				}
-			}
-			return resultat;
-		}else{
-
-			return s;
-		}
+	public static String threeLettersCode(String s) {
+		return threeLettersCode(h, s);
 	}
-
 }

@@ -11,9 +11,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.dbnary.DBnaryOnt;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.DbnaryModel;
+
+import org.getalp.dbnary.DBnaryOnt;
+import org.getalp.dbnary.LemonOnt;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -23,7 +25,6 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
-import org.getalp.dbnary.LemonOnt;
 
 public class StatLemonExtract extends DbnaryModel {
 
@@ -135,7 +136,7 @@ public class StatLemonExtract extends DbnaryModel {
 
 		if (cmd.hasOption(LANGUAGE_OPTION)) {
 			language = cmd.getOptionValue(LANGUAGE_OPTION);
-			language = ISO639_3.sharedInstance.getIdCode(language);
+			language = LangTools.getCode(language);
 		}
 
 		if (cmd.hasOption(COUNT_LANGUAGE_OPTION)){
@@ -144,7 +145,7 @@ public class StatLemonExtract extends DbnaryModel {
 		String clangs[] = countLanguages.split(",");
 		int i = 0;
 		while(i != clangs.length) {
-			counts.put(ISO639_3.sharedInstance.getIdCode(clangs[i]), new IncrementableInt());
+			counts.put(LangTools.getCode(clangs[i]), new IncrementableInt());
 			i = i + 1;
 		}
 
@@ -217,7 +218,7 @@ public class StatLemonExtract extends DbnaryModel {
 		if ("LATEX".equals(statsFormat)) 
 			System.out.print("\\textbf{" + language  + "}");
 		else 
-			System.out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+			System.out.print(LangTools.inEnglish(language));
 		System.out.print(comma);
 		System.out.print("" + (nble + nblw + nblp));
 		System.out.print(comma);
@@ -238,7 +239,7 @@ public class StatLemonExtract extends DbnaryModel {
 		if ("LATEX".equals(statsFormat)) 
 			System.out.print("\\textbf{" + language  + "}");
 		else 
-			System.out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+			System.out.print(LangTools.inEnglish(language));
 		System.out.print(comma);
 		System.out.print(countRelations(DBnaryOnt.synonym));
 		System.out.print(comma);
@@ -323,7 +324,7 @@ public class StatLemonExtract extends DbnaryModel {
 		if ("LATEX".equals(statsFormat)) 
 			System.out.print("\\textbf{" + language  + "}");
 		else 
-			System.out.print(ISO639_3.sharedInstance.getLanguageNameInEnglish(language));
+			System.out.print(LangTools.inEnglish(language));
 		for (Entry<String, IncrementableInt> i : counts.entrySet()) {
 			System.out.print(comma + i.getValue().val);
 		}

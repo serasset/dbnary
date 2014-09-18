@@ -9,8 +9,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

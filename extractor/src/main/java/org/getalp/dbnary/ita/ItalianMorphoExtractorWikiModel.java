@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryIndex;
 
 public class ItalianMorphoExtractorWikiModel extends DbnaryWikiModel {

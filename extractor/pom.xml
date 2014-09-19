@@ -1,12 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!--parent> <artifactId>blexisma-modules-parent</artifactId> <groupId>org.getalp.blexisma</groupId>
         <version>1.1-SNAPSHOT</version> </parent -->
 
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -55,10 +54,10 @@
         </repository>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:svn://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/trunk
+        <connection>scm:svn:svn://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/tags/dbnary-1.1</connection>
+        <developerConnection>scm:svn:svn+ssh://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/tags/dbnary-1.1
         </developerConnection>
-        <url>https://forge.imag.fr/scm/browser.php?group_id=362</url>
+        <url>scm:svn:svn+ssh://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/tags/dbnary-1.1</url>
     </scm>
 
     <dependencies>
@@ -268,7 +267,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute/>
+                                        <execute />
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>

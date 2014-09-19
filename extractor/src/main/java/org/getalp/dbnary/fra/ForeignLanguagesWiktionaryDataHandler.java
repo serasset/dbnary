@@ -2,7 +2,7 @@ package org.getalp.dbnary.fra;
 
 import java.util.HashMap;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,6 @@ public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHand
 	
 	private HashMap<String,String> prefixes = new HashMap<String,String>();
 
-	private String currentEntryLanguage = null;
 	private String currentPrefix = null;
 
 	public ForeignLanguagesWiktionaryDataHandler(String lang) {
@@ -23,14 +22,12 @@ public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHand
 	}
 	
 	public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
-		currentEntryLanguage = lang;
-		currentPrefix = getPrefixe(lang);
+		currentPrefix = getPrefix(lang);
 		super.initializeEntryExtraction(wiktionaryPageName);
     }
 
 	@Override
 	public void finalizeEntryExtraction() {
-		currentEntryLanguage = null;
 		currentPrefix = null;
 	}
 
@@ -46,13 +43,14 @@ public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHand
 		return currentPrefix;
 	}
 	
-	public String getPrefixe(String lang){
+	public String getPrefix(String lang) {
 		if(this.prefixes.containsKey(lang))
 			return this.prefixes.get(lang);
 		else {
+			lang = LangTools.normalize(lang);
 			String prefix = DBNARY_NS_PREFIX + "/" + lang + "/fra/";
 			prefixes.put(lang, prefix);
-			aBox.setNsPrefix(ISO639_3.sharedInstance.getIdCode(lang) + "-fra", prefix);
+			aBox.setNsPrefix(lang + "-fra", prefix);
 			return prefix;
 		}
 	}

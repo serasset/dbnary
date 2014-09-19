@@ -3,7 +3,6 @@
  */
 package org.getalp.dbnary.fra;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -12,22 +11,15 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.fau.cs.osr.ptk.common.EntityMap;
-import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import org.sweble.wikitext.engine.*;
-import org.sweble.wikitext.engine.Compiler;
-import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
-import org.sweble.wikitext.lazy.LinkTargetException;
-
-import javax.xml.bind.JAXBException;
 
 /**
  * @author serasset
@@ -503,34 +495,34 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractFrenchData(frenchSectionStartOffset, frenchSectionEndOffset);
      }
 
-    private void testSwebble() {
-        try {
-            SimpleWikiConfiguration config = new SimpleWikiConfiguration(
-                    "classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml"
-            );
-
-            // Instantiate a compiler for wiki pages
-            Compiler compiler = new Compiler(config);
-            EntityMap entityMap= new EntityMap();
-
-            // Retrieve a page
-            PageTitle pageTitle = PageTitle.make(config, this.wiktionaryPageName);
-
-            PageId pageId = new PageId(pageTitle, 1l);
-
-            CompiledPage page = compiler.parse(pageId, this.pageContent, null);
-
-//            printOutCompiledPage(page);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        } catch (CompilerException e) {
-            e.printStackTrace();
-        } catch (LinkTargetException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void testSwebble() {
+//        try {
+//            SimpleWikiConfiguration config = new SimpleWikiConfiguration(
+//                    "classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml"
+//            );
+//
+//            // Instantiate a compiler for wiki pages
+//            Compiler compiler = new Compiler(config);
+//            EntityMap entityMap= new EntityMap();
+//
+//            // Retrieve a page
+//            PageTitle pageTitle = PageTitle.make(config, this.wiktionaryPageName);
+//
+//            PageId pageId = new PageId(pageTitle, 1l);
+//
+//            CompiledPage page = compiler.parse(pageId, this.pageContent, null);
+//
+////            printOutCompiledPage(page);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (JAXBException e) {
+//            e.printStackTrace();
+//        } catch (CompilerException e) {
+//            e.printStackTrace();
+//        } catch (LinkTargetException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 //    protected static void printOutCompiledPage(CompiledPage page) {
 //        System.err.println(page.getLog());
@@ -959,7 +951,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     				lang = g2.substring(0, i1);
     				// normalize language code
     				String normLangCode;
-    				if ((normLangCode = ISO639_3.sharedInstance.getIdCode(lang)) != null) {
+    				if ((normLangCode = LangTools.getCode(lang)) != null) {
     					lang = normLangCode;
     				} 
     				String usage = null;
@@ -969,10 +961,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     					word = g2.substring(i1+1, i2);
     					usage = g2.substring(i2+1);
     				}
-    				 lang=FrenchLangtoCode.triletterCode(lang);
-                     if(lang!=null){
-                  	   wdh.registerTranslation(lang, currentGlose, usage, word);
-                     }
+    				lang=FrenchLangtoCode.threeLettersCode(lang);
+                    if(lang!=null){
+                  	    wdh.registerTranslation(lang, currentGlose, usage, word);
+                    }
     			}
     		} else if (g1.equals("boîte début") || g1.equals("trad-début") || g1.equals("(")) {
     			// Get the glose that should help disambiguate the source acception

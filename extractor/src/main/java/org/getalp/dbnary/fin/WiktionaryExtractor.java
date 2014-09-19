@@ -5,13 +5,10 @@ package org.getalp.dbnary.fin;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 
@@ -98,16 +95,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	}
 
-
-
-
-	public void afficherLang(){
-		Iterator<Lang> it = ISO639_3.sharedInstance.knownLanguagesIterator();
-		while (it.hasNext()) {
-			Lang l = it.next();
-			
-		}
-	}
 	int state = NODATA;
 	int definitionBlockStart = -1;
 	int orthBlockStart = -1;

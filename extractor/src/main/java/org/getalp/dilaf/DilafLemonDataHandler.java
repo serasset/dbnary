@@ -3,9 +3,8 @@ package org.getalp.dilaf;
 import java.io.OutputStream;
 import java.util.HashMap;
 
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.tools.CounterSet;
 
 import org.getalp.dbnary.DBnaryOnt;
@@ -37,8 +36,7 @@ public class DilafLemonDataHandler extends DbnaryModel {
 		
 		NS = DILAF_NS + "/" + lang + "/";
 		
-		Lang l = ISO639_3.sharedInstance.getLang(lang);
-		twoLetterLanguageCode = (null != l.getPart1()) ? l.getPart1() : l.getId();	
+		twoLetterLanguageCode = LangTools.getPart1OrId(lang);
 		lexvoLanguageElement = tBox.getResource(LEXVO + lang); 
 		
 		// Create aBox

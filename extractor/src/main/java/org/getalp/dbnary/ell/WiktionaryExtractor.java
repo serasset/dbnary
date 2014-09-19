@@ -396,7 +396,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						usage = g2.substring(i2+1);
 					}
 					lang=GreekLangtoCode.threeLettersCode(lang);
-					if(lang!=null){
+					if (lang!=null) {
 						wdh.registerTranslation(lang, currentGlose, usage, word);
 					}
 				}

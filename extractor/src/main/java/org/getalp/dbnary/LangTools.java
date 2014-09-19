@@ -30,13 +30,21 @@ public class LangTools {
 		return ISO639_3.sharedInstance.getIdCode(lang);
 	}
 
+    public static String getPart1(String language) {
+        Lang l = ISO639_3.sharedInstance.getLang(language);
+
+        if (l == null) {
+            return null;
+        }
+        return l.getPart1();
+    }
+
 	public static String getPart1OrId(String lang) {
-		Lang l = ISO639_3.sharedInstance.getLang(lang);
+        Lang l = ISO639_3.sharedInstance.getLang(lang);
 
-		if (l == null) {
-			return null;
-		}
-
+        if (l == null) {
+            return null;
+        }
 		return (null != l.getPart1()) ? l.getPart1() : l.getId();
 	}
 
@@ -61,4 +69,6 @@ public class LangTools {
 	public static String getTerm2Code(String l) {
 		return ISO639_3.sharedInstance.getTerm2Code(l);
 	}
+
+
 }

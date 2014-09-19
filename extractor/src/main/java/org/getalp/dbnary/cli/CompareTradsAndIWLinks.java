@@ -21,8 +21,6 @@ import org.apache.commons.cli.PosixParser;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.api.ISO639_3.Lang;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.LangTools;
 
@@ -146,9 +144,9 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 		outputFormat = outputFormat.toUpperCase();
 
 		language = cmd.getOptionValue(LANGUAGE_OPTION, DEFAULT_LANGUAGE);
-		Lang lg = ISO639_3.sharedInstance.getLang(language);
-		language = lg.getId();
-		wktLangCode = lg.getPart1();
+		// Lang lg = ISO639_3.sharedInstance.getLang(language);
+		language = LangTools.getCode(language);
+		wktLangCode = LangTools.getPart1(language);
 		
 
 		if (cmd.hasOption(COUNT_LANGUAGE_OPTION)){

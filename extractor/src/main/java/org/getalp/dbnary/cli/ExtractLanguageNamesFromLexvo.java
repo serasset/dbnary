@@ -11,19 +11,16 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.api.ISO639_3.Lang;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import org.getalp.dbnary.LangTools;
 
 public class ExtractLanguageNamesFromLexvo {
 
@@ -70,8 +67,7 @@ public class ExtractLanguageNamesFromLexvo {
 		}
 
 		language = cmd.getOptionValue(LANGUAGE_OPTION, DEFAULT_LANGUAGE);
-		Lang l = ISO639_3.sharedInstance.getLang(language);
-		language = l.getPart1();
+		language = LangTools.getPart1(language);
 		if (language == null || language.equals("")) {
 			printUsage();
 			System.exit(0);

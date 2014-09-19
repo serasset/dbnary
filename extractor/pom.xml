@@ -150,20 +150,20 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.0</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>de.tudarmstadt.ukp.omegawikiapi</groupId>
             <artifactId>de.tudarmstadt.ukp.omegawikiapi-asl</artifactId>
             <version>0.2.0</version>
-        </dependency>
-        <dependency>
+        </dependency-->
+        <!--dependency>
             <groupId>org.sweble.wikitext</groupId>
             <artifactId>swc-engine</artifactId>
             <version>1.1.1-SNAPSHOT</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.getalp.dbnary</groupId>
             <artifactId>ontology</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.1</version>
         </dependency>
     </dependencies>
 

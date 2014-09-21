@@ -1354,6 +1354,19 @@ public class PolishLangToCode extends LangTools {
 	}
 
 	public static String threeLettersCode(String s) {
-		return threeLettersCode(h, s);
+		if(s == null || s.equals("")) return null;
+
+        s= s.trim();
+        s=s.toLowerCase();
+        if (h.containsKey(s)) {
+            s = h.get(s);
+        } else if (h.containsKey("język " + s)) {
+            s = h.get("język " + s);
+        } else {
+            s = s.replace("(", "");
+            s = s.replace(")", "");
+            s = h.get(s);
+        }
+        return LangTools.getCode(s);
 	}
 }

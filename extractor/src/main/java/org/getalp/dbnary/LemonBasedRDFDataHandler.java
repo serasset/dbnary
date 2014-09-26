@@ -20,6 +20,8 @@ import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
+
 public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionaryDataHandler {
 
 	protected static class PosAndType {
@@ -31,7 +33,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 	private Logger log = LoggerFactory.getLogger(LemonBasedRDFDataHandler.class);
 	
 	protected Model aBox;
-    protected Model morphoBox = null;
+    protected Map<Feature,Model> featureBoxes;
 
 	// States used for processing
 	protected Resource currentLexEntry;
@@ -56,16 +58,11 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 	private Resource currentMainLexEntry;
 	private Resource currentPreferredWrittenRepresentation;
 	
-	private static class PrononciationPair {
-		String pron, lang;
-		public PrononciationPair(String pron, String lang) {
-			this.pron = pron; this.lang = lang;
-		}
-	}
-
-	private Set<PrononciationPair> currentSharedPronunciations;
+	private Set<PronunciationPair> currentSharedPronunciations;
 //	private String currentSharedPronunciation;
 //	private String currentSharedPronunciationLang;
+
+	private HashMap<SimpleImmutableEntry<String,String>, HashSet<HashSet<PropertyObjectPair>>> heldBackOtherForms = new HashMap<SimpleImmutableEntry<String,String>, HashSet<HashSet<PropertyObjectPair>>>();
 
 	private static HashMap<String,Property> nymPropertyMap = new HashMap<String,Property>();
 	protected static HashMap<String,PosAndType> posAndTypeValueMap = new HashMap<String,PosAndType>();
@@ -107,6 +104,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, LemonOnt.LexicalEntry));
 		posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, LemonOnt.LexicalEntry));
 
+		posAndTypeValueMap.put("Hilfsverb", new PosAndType(LexinfoOnt.verb, LemonOnt.LexicalEntry));
 		// Italian
 		posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
 		posAndTypeValueMap.put("sost", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
@@ -152,11 +150,6 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		
 		// Create aBox
 		aBox = ModelFactory.createDefaultModel();
-		registerPrefixes(aBox, lang);
-
-	}
-
-    private void registerPrefixes(Model aBox, String lang) {
         aBox.setNsPrefix(lang, NS);
         aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
         aBox.setNsPrefix("lemon", LemonOnt.getURI());
@@ -165,12 +158,16 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         aBox.setNsPrefix("dcterms", DCTerms.getURI());
         aBox.setNsPrefix("lexvo", LEXVO);
         aBox.setNsPrefix("rdf", RDF.getURI());
-    }
+
+        featureBoxes = new HashMap<>();
+        featureBoxes.put(Feature.MAIN, aBox);
+	}
 
     @Override
-    public void enableMorphologyExtraction() {
-        morphoBox = ModelFactory.createDefaultModel();
-        fillInPrefixes(aBox, morphoBox);
+    public void enableFeature(Feature f) {
+        Model box = ModelFactory.createDefaultModel();
+        fillInPrefixes(aBox, box);
+        featureBoxes.put(f, box);
     }
 
     private void fillInPrefixes(Model aBox, Model morphoBox) {
@@ -191,14 +188,11 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         translationCount.resetAll();
         reifiedNymCount.resetAll();
         currentPreferredWrittenRepresentation = null;
-        currentSharedPronunciations = new HashSet<PrononciationPair>();
+        currentSharedPronunciations = new HashSet<PronunciationPair>();
 
         // Create a dummy lexical entry that points to the one that corresponds to a part of speech
-        String encodedPageName = uriEncode(wiktionaryPageName);
-        currentMainLexEntry = aBox.createResource(getPrefix() + encodedPageName);
+        currentMainLexEntry = getVocableResource(wiktionaryPageName, true);
 
-        // Create the resource without typing so that the type statement is added only if the currentStatement are added to the model.
-        // Resource lemma = aBox.createResource(encodedPageName);
 
         // Retain these statements to be inserted in the model when we know that the entry corresponds to a proper part of speech
         heldBackStatements.add(aBox.createStatement(currentMainLexEntry, RDF.type, DBnaryOnt.Vocable));
@@ -214,6 +208,35 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		promoteNymProperties();
 	}
 
+	public static String getEncodedPageName(String pageName, String pos, int defNumber) {
+		return uriEncode(pageName, pos) + "__" + defNumber;
+	}
+
+	public Resource getLexEntry(String languageCode, String pageName, String pos, int defNumber) {
+		//FIXME this doesn't use its languageCode parameter
+		return getLexEntry(
+			getEncodedPageName(pageName, pos, defNumber),
+			typeResource(pos)
+		);
+	}
+
+	public Resource getLexEntry(String encodedPageName, Resource typeResource) {
+		return aBox.createResource(getPrefix() + encodedPageName, typeResource);
+	}
+
+	public int currentDefinitionNumber() {
+		return currentLexieCount.get(currentWiktionaryPos);
+	}
+
+    @Override
+	public String currentWiktionaryPos() {
+		return currentWiktionaryPos;
+	}
+
+    @Override
+    public Resource currentLexinfoPos() {
+        return currentLexinfoPos;
+    }
 
 	public void addPartOfSpeech(String originalPOS, Resource normalizedPOS, Resource normalizedType) {
         // DONE: create a LexicalEntry for this part of speech only and attach info to it.
@@ -221,15 +244,26 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		currentLexinfoPos = normalizedPOS;
 		
         nbEntries++;
-    	
-        currentEncodedPageName = uriEncode(currentWiktionaryPageName, currentWiktionaryPos) + "__" + currentLexieCount.incr(currentWiktionaryPos);
-        currentLexEntry = aBox.createResource(getPrefix() + currentEncodedPageName, normalizedType);
+
+		currentEncodedPageName = getEncodedPageName(currentWiktionaryPageName, originalPOS, currentLexieCount.incr(currentWiktionaryPos));
+		currentLexEntry = getLexEntry(currentEncodedPageName, normalizedType);
 
         if (! normalizedType.equals(LemonOnt.LexicalEntry)) {
             // Add the Lexical Entry type so that users may refer to all entries using the top hierarchy without any reasoner.
             aBox.add(aBox.createStatement(currentLexEntry, RDF.type, LemonOnt.LexicalEntry));
         }
         
+		// import other forms
+		SimpleImmutableEntry<String,String> keyOtherForms = new SimpleImmutableEntry<String,String>(currentWiktionaryPageName, originalPOS);
+		HashSet<HashSet<PropertyObjectPair>> otherForms = heldBackOtherForms.get(keyOtherForms);
+
+        // TODO: check that other forms point to valid entries and log faulty entries for wiktionary correction.
+		if (otherForms != null) {
+			for (HashSet<PropertyObjectPair> otherForm : otherForms) {
+				addOtherFormPropertiesToLexicalEntry(currentLexEntry, otherForm);
+			}
+		}
+
         // All translation numbers are local to a lexEntry
         translationCount.resetAll();
         reifiedNymCount.resetAll();
@@ -237,40 +271,68 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         currentPreferredWrittenRepresentation = aBox.createResource(); 
         
         // If a pronunciation was given before the first part of speech, it means that it is shared amoung pos/etymologies
-        for (PrononciationPair p : currentSharedPronunciations) {
-        	if (null != p.lang && p.lang.length() > 0) 
-        		aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, LexinfoOnt.pronunciation, p.pron, p.lang));
-        	else
-        		aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, LexinfoOnt.pronunciation, p.pron));
+        for (PronunciationPair p : currentSharedPronunciations) {
+            if (null != p.lang && p.lang.length() > 0)  {
+                aBox.add(currentPreferredWrittenRepresentation, LexinfoOnt.pronunciation, p.pron, p.lang);
+            } else {
+                aBox.add(currentPreferredWrittenRepresentation, LexinfoOnt.pronunciation, p.pron);
+            }
         }
-        	
 
-    	aBox.add(aBox.createStatement(currentLexEntry, LemonOnt.canonicalForm, currentPreferredWrittenRepresentation));
-    	aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, LemonOnt.writtenRep, currentWiktionaryPageName, extractedLang));
-    	aBox.add(aBox.createStatement(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos));
-    	if (null != currentLexinfoPos)
-    		aBox.add(aBox.createStatement(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos));
-    	aBox.add(aBox.createStatement(currentLexEntry, LemonOnt.language, extractedLang));
-    	aBox.add(aBox.createStatement(currentLexEntry, DCTerms.language, lexvoExtractedLanguage));
+		aBox.add(currentLexEntry, LemonOnt.canonicalForm, currentPreferredWrittenRepresentation);
+		aBox.add(currentPreferredWrittenRepresentation, LemonOnt.writtenRep, currentWiktionaryPageName, extractedLang);
+		aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
+		if (null != currentLexinfoPos)
+			aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);
+		aBox.add(currentLexEntry, LemonOnt.language, extractedLang);
+		aBox.add(currentLexEntry, DCTerms.language, lexvoExtractedLanguage);
 
-    	// Register the pending statements.
-        for (Statement s: heldBackStatements) {
-        	aBox.add(s);
-        }
-        heldBackStatements.clear();
-        aBox.add(aBox.createStatement(currentMainLexEntry, DBnaryOnt.refersTo, currentLexEntry));
+		// Register the pending statements.
+		for (Statement s: heldBackStatements) {
+			aBox.add(s);
+		}
+		heldBackStatements.clear();
+		aBox.add(currentMainLexEntry, DBnaryOnt.refersTo, currentLexEntry);
 	}
-	
+
+	public Resource posResource(PosAndType pat) {
+		return (null == pat) ? null : pat.pos;
+	}
+
+	public Resource typeResource(PosAndType pat) {
+		return (pat == null) ? LemonOnt.LexicalEntry : pat.type;
+	}
+
+	public Resource posResource(String pos) {
+		return posResource(posAndTypeValueMap.get(pos));
+	}
+
+	public Resource typeResource(String pos) {
+		return typeResource(posAndTypeValueMap.get(pos));
+	}
+
 	@Override
 	public void addPartOfSpeech(String pos) {
 		PosAndType pat = posAndTypeValueMap.get(pos);
-    	Resource lexinfoPOS = (null == pat) ? null : pat.pos;
-    	Resource entryType = (null == pat) ? LemonOnt.LexicalEntry : pat.type;
-    	
-    	addPartOfSpeech(pos, lexinfoPOS, entryType);
-    }
+		addPartOfSpeech(pos, posResource(pat), typeResource(pat));
+	}
+//
+	public void registerProperty(Property p, RDFNode r) {
+		if (null == currentLexEntry) {
+			log.debug("Registering property when lex entry is null in \"{}\".", this.currentMainLexEntry);
+			return; // Don't register anything if current lex entry is not known.
+		}
 
-	
+		Resource canonicalForm = currentLexEntry.getPropertyResourceValue(LemonOnt.canonicalForm);
+
+		if (canonicalForm == null) {
+			log.debug("Registering property when lex entry's canonicalForm is null in \"{}\".", this.currentMainLexEntry);
+			return;
+		}
+
+		aBox.add(canonicalForm, p, r);
+	}
+
 	@Override
     public void registerAlternateSpelling(String alt) {
 		if (null == currentLexEntry) {
@@ -279,8 +341,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		}
 
     	Resource altlemma = aBox.createResource();
-    	aBox.add(aBox.createStatement(currentLexEntry, LemonOnt.lexicalVariant , altlemma));
-    	aBox.add(aBox.createStatement(altlemma, LemonOnt.writtenRep, alt, extractedLang));
+    	aBox.add(currentLexEntry, LemonOnt.lexicalVariant, altlemma);
+    	aBox.add(altlemma, LemonOnt.writtenRep, alt, extractedLang);
     }
     
 	@Override
@@ -311,17 +373,17 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		
 		// Create new word sense + a definition element 
     	currentSense = aBox.createResource(computeSenseId(senseNumber), LemonOnt.LexicalSense);
-    	aBox.add(aBox.createStatement(currentLexEntry, LemonOnt.sense, currentSense));
+    	aBox.add(currentLexEntry, LemonOnt.sense, currentSense);
     	aBox.add(aBox.createLiteralStatement(currentSense, DBnaryOnt.senseNumber, aBox.createTypedLiteral(senseNumber)));
     	// pos is not usefull anymore for word sense as they should be correctly linked to an entry with only one pos.
     	// if (currentPos != null && ! currentPos.equals("")) {
-        //	aBox.add(aBox.createStatement(currentSense, posProperty, currentPos));
+        //	aBox.add(currentSense, LexinfoOnt.partOfSpeech, currentPos);
         //}
 
     	Resource defNode = aBox.createResource();
-    	aBox.add(aBox.createStatement(currentSense, LemonOnt.definition, defNode));
+    	aBox.add(currentSense, LemonOnt.definition, defNode);
     	// Keep a human readable version of the definition, removing all links annotations.
-    	aBox.add(aBox.createStatement(defNode, LemonOnt.value, AbstractWiktionaryExtractor.cleanUpMarkup(def, true), extractedLang));
+    	aBox.add(defNode, LemonOnt.value, AbstractWiktionaryExtractor.cleanUpMarkup(def, true), extractedLang);
 
     	// TODO: Extract domain/usage field from the original definition.
 
@@ -374,6 +436,153 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		registerTranslationToEntity(currentLexEntry, lang, currentGlose, usage, word);
 	}
 
+	public String getVocableResourceName(String vocable) {
+		return getPrefix() + uriEncode(vocable);
+	}
+	public Resource getVocableResource(String vocable, boolean dontLinkWithType) {
+		if (dontLinkWithType) {
+			return aBox.createResource(getVocableResourceName(vocable));
+		}
+		return aBox.createResource(getVocableResourceName(vocable), DBnaryOnt.Vocable);
+	}
+
+	public Resource getVocableResource(String vocable) {
+		return getVocableResource(vocable, false);
+	}
+
+	private void mergePropertiesIntoResource(HashSet<PropertyObjectPair> properties, Resource res) {
+		for (PropertyObjectPair p : properties) {
+			if (!res.getModel().contains(res, p.getKey(), p.getValue())) {
+                res.getModel().add(res, p.getKey(), p.getValue());
+			}
+		}
+	}
+
+	private boolean incompatibleProperties(Property p1, Property p2, boolean applyCommutativity) {
+		return (
+			p1 == LexinfoOnt.mood && p2 == LexinfoOnt.gender
+		) || (applyCommutativity && incompatibleProperties(p2, p1, false));
+	}
+
+	private boolean incompatibleProperties(Property p1, Property p2) {
+		return incompatibleProperties(p1, p2, true);
+	}
+
+	private boolean isResourceCompatible(Resource r, HashSet<PropertyObjectPair> properties) {
+		for (PropertyObjectPair pr : properties) {
+			Property p = pr.getKey();
+
+			Statement roStat = r.getProperty(p);
+
+			if (roStat != null) {
+				RDFNode ro = roStat.getObject();
+
+				if (ro != null && !ro.equals(pr.getValue())) {
+					return false;
+				}
+
+				StmtIterator i = r.listProperties();
+				while (i.hasNext()) {
+					if (incompatibleProperties(p, i.nextStatement().getPredicate())) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	private void addOtherFormPropertiesToLexicalEntry(Resource lexEntry, HashSet<PropertyObjectPair> properties) {
+		boolean foundCompatible = false;
+        Model morphoBox = featureBoxes.get(Feature.MORPHOLOGY);
+
+        if (null == morphoBox) return;
+
+        lexEntry = lexEntry.inModel(morphoBox);
+
+        // TODO: Add other forms to a morphology dedicated model.
+		StmtIterator otherForms = lexEntry.listProperties(LemonOnt.otherForm);
+
+		while (otherForms.hasNext() && !foundCompatible) {
+			Resource otherForm = otherForms.next().getResource();
+			if (isResourceCompatible(otherForm, properties)) {
+				foundCompatible = true;
+				mergePropertiesIntoResource(properties, otherForm);
+			}
+		}
+
+		if (!foundCompatible) {
+			Resource otherForm = morphoBox.createResource();
+            morphoBox.add(lexEntry, LemonOnt.otherForm, otherForm);
+			mergePropertiesIntoResource(properties, otherForm);
+		}
+	}
+
+	public void registerInflection(String languageCode,
+	                               String pos,
+	                               String inflection,
+	                               String canonicalForm,
+	                               int defNumber,
+	                               HashSet<PropertyObjectPair> props,
+	                               HashSet<PronunciationPair> pronunciations) {
+
+		if (pronunciations != null) {
+			for (PronunciationPair pronunciation : pronunciations) {
+				props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+			}
+		}
+
+		registerInflection(languageCode, pos, inflection, canonicalForm, defNumber, props);
+	}
+
+	public void registerInflection(String languageCode,
+	                               String pos,
+	                               String inflection,
+	                               String canonicalForm,
+	                               int defNumber,
+	                               HashSet<PropertyObjectPair> props) {
+
+		Resource posResource = posResource(pos);
+
+		PropertyObjectPair p = PropertyObjectPair.get(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+
+		props.add(p);
+
+		if (defNumber == 0) {
+			// the definition number was not specified, we have to register this
+			// inflection for each entry.
+
+			// First, we store the other form for all the existing entries
+			Resource vocable = getVocableResource(canonicalForm, true);
+
+			StmtIterator entries = vocable.listProperties(DBnaryOnt.refersTo);
+
+			while (entries.hasNext()) {
+				Resource lexEntry = entries.next().getResource();
+				if (aBox.contains(lexEntry, LexinfoOnt.partOfSpeech, posResource)) {
+					addOtherFormPropertiesToLexicalEntry(lexEntry, props);
+				}
+			}
+
+			// Second, we store the other form for future possible matching entries
+			SimpleImmutableEntry<String,String> key = new SimpleImmutableEntry<String,String>(canonicalForm, pos);
+
+			HashSet<HashSet<PropertyObjectPair>> otherForms = heldBackOtherForms.get(key);
+
+			if (otherForms == null) {
+				otherForms = new HashSet<HashSet<PropertyObjectPair>>();
+				heldBackOtherForms.put(key, otherForms);
+			}
+
+			otherForms.add(props);
+		} else {
+			// the definition number was specified, this makes registration easy.
+			addOtherFormPropertiesToLexicalEntry(
+				getLexEntry(languageCode, canonicalForm, pos, defNumber),
+				props
+			);
+		}
+	}
 
 	private Statement createTargetLanguageProperty(Resource trans, String lang) {
 		lang = lang.trim();
@@ -424,11 +633,11 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		
 		Property nymProperty = nymPropertyMap.get(synRelation);
 		
-		Resource targetResource = aBox.createResource(getPrefix() + uriEncode(target), DBnaryOnt.Vocable);
+		Resource targetResource = getVocableResource(target);
 		
-    	aBox.add(aBox.createStatement(entity, nymProperty, targetResource));
-    }
-    
+		aBox.add(entity, nymProperty, targetResource);
+	}
+
 	@Override
 	public void registerNymRelation(String target, String synRelation) {
 		registerNymRelationToEntity(target, synRelation, currentLexEntry);
@@ -450,11 +659,11 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 			// The target contains an intra page href. Remove it from the target uri and keep it in the relation.
 			target = target.substring(0,hash);
 			// TODO: keep additional intra-page href
-	    	// aBox.add(aBox.createStatement(nym, isAnnotatedBy, target.substring(hash)));
+			// aBox.add(nym, isAnnotatedBy, target.substring(hash));
 		}
 		Property nymProperty = nymPropertyMap.get(synRelation);
 		
-		Resource targetResource = aBox.createResource(getPrefix() + uriEncode(target), DBnaryOnt.Vocable);
+		Resource targetResource = getVocableResource(target);
 		
 		Statement nymR = aBox.createStatement(currentLexEntry, nymProperty, targetResource);
     	aBox.add(nymR);
@@ -484,30 +693,34 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 			// The target contains an intra page href. Remove it from the target uri and keep it in the relation.
 			target = target.substring(0,hash);
 			// TODO: keep additional intra-page href
-	    	// aBox.add(aBox.createStatement(nym, isAnnotatedBy, target.substring(hash)));
+	    	// aBox.add(nym, isAnnotatedBy, target.substring(hash));
 		}
 		
 		Property nymProperty = nymPropertyMap.get(synRelation);
 		
-		Resource targetResource = aBox.createResource(getPrefix() + uriEncode(target), DBnaryOnt.Vocable);
-		
-    	aBox.add(aBox.createStatement(currentSense, nymProperty, targetResource));
-    }
-	
-	
+		Resource targetResource = getVocableResource(target);
+
+		aBox.add(currentSense, nymProperty, targetResource);
+	}
+
 	@Override
 	public void registerPronunciation(String pron, String lang) {
 		if (null == currentPreferredWrittenRepresentation) {
-			currentSharedPronunciations.add(new PrononciationPair(pron, lang));
+			currentSharedPronunciations.add(new PronunciationPair(pron, lang));
 		} else {
-			if (null != lang && lang.length() > 0)
-				aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, LexinfoOnt.pronunciation, pron, lang));
-			else
-				aBox.add(aBox.createStatement(currentPreferredWrittenRepresentation, LexinfoOnt.pronunciation, pron));
+			registerPronunciation(currentPreferredWrittenRepresentation, pron, lang);
 		}
 	}
 
-    private void promoteNymProperties() {
+	private void registerPronunciation(Resource writtenRepresentation, String pron, String lang) {
+		if (null != lang && lang.length() > 0) {
+			aBox.add(writtenRepresentation, LexinfoOnt.pronunciation, pron, lang);
+		} else {
+			aBox.add(writtenRepresentation, LexinfoOnt.pronunciation, pron);
+		}
+	}
+
+	private void promoteNymProperties() {
 		StmtIterator entries = currentMainLexEntry.listProperties(DBnaryOnt.refersTo);
 		HashSet<Statement> toBeRemoved = new HashSet<Statement>();
 		while (entries.hasNext()) {
@@ -522,7 +735,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 					StmtIterator nyms = lu.listProperties(nymProp);
 					while (nyms.hasNext()) {
 						Statement nymRel = nyms.next();
-						aBox.add(aBox.createStatement(s, nymProp, nymRel.getObject()));
+						aBox.add(s, nymProp, nymRel.getObject());
 						toBeRemoved.add(nymRel);
 					}
 				}
@@ -533,23 +746,13 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		}
 	}
 
-	
-	
-	public void dump(OutputStream out) {
-		dump(out, null);
-	}
-
-	/**
-	 * Write a serialized representation of this model in a specified language.
-	 * The language in which to write the model is specified by the lang argument. 
-	 * Predefined values are "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3". 
-	 * The default value, represented by null, is "RDF/XML".
-	 * @param out
-	 * @param format
-	 */
-	public void dump(OutputStream out, String format) {
-		aBox.write(out, format);
-	}
+    @Override
+    public void dump(Feature f, OutputStream out, String format) {
+        Model box = featureBoxes.get(f);
+        if (null != box) {
+            box.write(out, format);
+        }
+    }
 
 	@Override
 	public int nbEntries() {

@@ -485,6 +485,8 @@ extractor/src/main/java/org/getalp/dbnary/LemonBasedRDFDataHandler.java -text sv
 extractor/src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/OffsetValue.java -text
+extractor/src/main/java/org/getalp/dbnary/PronunciationPair.java -text
+extractor/src/main/java/org/getalp/dbnary/PropertyObjectPair.java -text
 extractor/src/main/java/org/getalp/dbnary/WiktionaryDataHandlerFactory.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/WiktionaryExtractorFactory.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/WiktionaryGrep.java -text
@@ -524,6 +526,7 @@ extractor/src/main/java/org/getalp/dbnary/fin/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/fra/ExampleExpanderWikiModel.java -text
 extractor/src/main/java/org/getalp/dbnary/fra/ForeignLanguagesWiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/fra/ForeignLanguagesWiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/fra/FrenchExtractorWikiModel.java -text
 extractor/src/main/java/org/getalp/dbnary/fra/FrenchLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/fra/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
@@ -593,6 +596,7 @@ extractor/src/site/resources/robots.txt -text svneol=unset#text/plain
 extractor/src/site/site.xml -text
 extractor/src/test/java/org/getalp/blexisma/wiktionary/TestDbnaryWikiModel.java -text svneol=unset#text/plain
 extractor/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
+extractor/src/test/java/org/getalp/dbnary/AbstractWiktionaryExtractorUtilitiesTest.java -text
 ontology/pom.xml -text
 ontology/src/main/resources/org/getalp/dbnary/catalog-v001.xml -text
 ontology/src/main/resources/org/getalp/dbnary/dbnary.owl -text

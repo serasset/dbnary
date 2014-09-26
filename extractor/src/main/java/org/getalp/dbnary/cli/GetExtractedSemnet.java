@@ -1,15 +1,14 @@
 package org.getalp.dbnary.cli;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.*;
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.IWiktionaryDataHandler.Feature;
 
 public class GetExtractedSemnet {
 
@@ -29,10 +28,16 @@ public class GetExtractedSemnet {
 	private String outputFormat = DEFAULT_OUTPUT_FORMAT;
 	private String language = DEFAULT_LANGUAGE;
 	private String model = DEFAULT_MODEL;
+    private boolean extractsMorpho = false;
 
-	private static final String FOREIGN_EXTRACTION_OPTION = "x";
 
-	static {
+    private static final String FOREIGN_EXTRACTION_OPTION = "x";
+
+    private static final String MORPHOLOGY_OUTPUT_FILE_LONG_OPTION = "morpho";
+    private static final String MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION = "M";
+
+
+    static {
 		options = new Options();
 		options.addOption("h", false, "Prints usage and exits. ");	
 		options.addOption(LANGUAGE_OPTION, true, 
@@ -42,14 +47,17 @@ public class GetExtractedSemnet {
 		options.addOption(MODEL_OPTION, true, 
 				"Ontology Model used  (lmf or lemon). Only useful with rdf base formats." + DEFAULT_MODEL + " by default.");
 		options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign languages");
+        options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
+                .withDescription("extract morphology data.")
+                .create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION) );
 	}
 	
 	WiktionaryIndex wi;
 	String[] remainingArgs;
 	IWiktionaryExtractor we;
 	IWiktionaryDataHandler wdh;
-	
-	/**
+
+    /**
 	 * Validate and set command line arguments.
 	 * Exit after printing usage if anything is astray
 	 * @param args String[] args as featured in public static void main()
@@ -86,7 +94,9 @@ public class GetExtractedSemnet {
 			language = LangTools.getCode(language);
 		}
 
-		remainingArgs = cmd.getArgs();
+        extractsMorpho = cmd.hasOption(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION);
+
+        remainingArgs = cmd.getArgs();
 		if (remainingArgs.length <= 1) {
 			printUsage();
 			System.exit(1);
@@ -105,7 +115,8 @@ public class GetExtractedSemnet {
 				} else {
 					wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
 				}
-			} else {
+                if (extractsMorpho) wdh.enableFeature(Feature.MORPHOLOGY);
+            } else {
 				System.err.println("LMF format not supported anymore.");
 				System.exit(1);
 			}
@@ -143,20 +154,27 @@ public class GetExtractedSemnet {
 			we.extractData(remainingArgs[i], pageContent);
 		}
 		
-		if (outputFormat.equals("RDF")) {
-        	wdh.dump(System.out);
-        } else if (outputFormat.equals("TURTLE")) {
-        	wdh.dump(System.out, "TURTLE");
-        } else if (outputFormat.equals("NTRIPLE")) {
-        	wdh.dump(System.out, "N-TRIPLE");
-        } else if (outputFormat.equals("N3")) {
-        	wdh.dump(System.out, "N3");
-        } else if (outputFormat.equals("TTL")) {
-        	wdh.dump(System.out, "TTL");
-        } else if (outputFormat.equals("RDFABBREV")) {
-        	wdh.dump(System.out, "RDF/XML-ABBREV");
+		dumpBox(Feature.MAIN);
+        if (extractsMorpho) {
+            System.out.println("----------- MORPHOLOGY ----------");
+            dumpBox(Feature.MORPHOLOGY);
         }
-	}
+    }
+
+    public void dumpBox(IWiktionaryDataHandler.Feature f) throws IOException {
+        OutputStream ostream = System.out;
+        try {
+            wdh.dump(f, new PrintStream(ostream, false, "UTF-8"), outputFormat);
+        } catch (IOException e) {
+            System.err.println("Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
+            e.printStackTrace(System.err);
+            throw e;
+        } finally {
+            if (null != ostream) {
+                ostream.flush();
+            }
+        }
+    }
 
 	public static void printUsage() {
 		HelpFormatter formatter = new HelpFormatter();

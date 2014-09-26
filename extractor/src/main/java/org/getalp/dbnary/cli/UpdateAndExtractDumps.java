@@ -11,17 +11,13 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -53,7 +49,9 @@ public class UpdateAndExtractDumps {
 	private static final String COMPRESS_OPTION = "z";
 	private static final boolean DEFAULT_COMPRESS = true;
 
-	private CommandLine cmd = null; // Command Line arguments
+    private static final String ENABLE_FEATURE_OPTION = "enable";
+
+    private CommandLine cmd = null; // Command Line arguments
 
 	private String outputDir;
 	private String extractDir;
@@ -62,6 +60,7 @@ public class UpdateAndExtractDumps {
 	private boolean compress = DEFAULT_COMPRESS;
 	private String server = DEFAULT_SERVER_URL;
 	private String model = DEFAULT_MODEL;
+    private String features = "";
 
 	String[] remainingArgs;
 
@@ -78,7 +77,12 @@ public class UpdateAndExtractDumps {
 		options.addOption(PREFIX_DIR_OPTION, true, "directory containing the wiktionary dumps and extracts. " + DEFAULT_PREFIX_DIR + " by default ");	
 		options.addOption(MODEL_OPTION, true, "model of the extracts (LMF or LEMON) extracts. " + DEFAULT_MODEL + " by default ");	
 		options.addOption(COMPRESS_OPTION, false, "compress the output file using bzip2." + DEFAULT_COMPRESS + " by default ");	
-		options.addOption(NETWORK_OFF_OPTION, false, "Do not use the ftp network, but decompress and extract.");	
+		options.addOption(NETWORK_OFF_OPTION, false, "Do not use the ftp network, but decompress and extract.");
+        options.addOption(OptionBuilder.withLongOpt(ENABLE_FEATURE_OPTION)
+                .withDescription("Enable additional extraction features." )
+                .hasArg()
+                .withArgName("feature")
+                .create() );
 
 	}
 
@@ -95,7 +99,6 @@ public class UpdateAndExtractDumps {
 
 
 	private String dumpFileName(String lang, String date) {
-
 		return lang + "wiktionary-"+date+"-pages-articles.xml.bz2";
 	}
 
@@ -132,7 +135,11 @@ public class UpdateAndExtractDumps {
 		compress = cmd.hasOption(COMPRESS_OPTION);
 		
 		networkIsOff = cmd.hasOption(NETWORK_OFF_OPTION);
-		
+
+        if (cmd.hasOption(ENABLE_FEATURE_OPTION)) {
+            features = cmd.getOptionValue(ENABLE_FEATURE_OPTION);
+        }
+
 		if (cmd.hasOption(MODEL_OPTION)) {
 			model = cmd.getOptionValue(MODEL_OPTION);
 		}
@@ -498,22 +505,29 @@ public class UpdateAndExtractDumps {
 	
 		// TODO: correctly test for compressed file if compress is enabled
 		String extractFile = odir + "/" + lang +"_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
-		if (compress) extractFile = extractFile + ".bz2";
-		
+        String morphoFile = odir + "/" + lang +"_dbnary_morpho_" + dir + ".ttl";
+		if (compress) {
+            extractFile = extractFile + ".bz2";
+            morphoFile = morphoFile + ".bz2";
+        }
+
 		File file = new File(extractFile);
 		if (file.exists() && !force) {
 			// System.err.println("Extracted wiktionary file " + extractFile + " already exists.");
 			return true;
 		}
 		System.err.println("========= EXTRACTING file " + extractFile + " ===========");
-		
-		String[] args = new String[] {"-f", "turtle", 
-				"-l", lang, 
-				"-o", extractFile,
-				"-m", model,
-				"-z", compress ? "yes" : "no",
-				uncompressDumpFileName(lang, dir)
-				};
+
+        ArrayList<String> a = new ArrayList<>();
+        a.add("-f"); a.add("turtle");
+        a.add("-l"); a.add(lang);
+        a.add("-o"); a.add(extractFile);
+        a.add("-m"); a.add(model);
+        a.add("-z"); a.add(compress ? "yes" : "no");
+        if (features.contains("morpho")) { a.add("--morpho"); a.add(morphoFile); }
+        a.add(uncompressDumpFileName(lang, dir));
+
+        String[] args = a.toArray(new String[0]);
 		
 		try {
 			ExtractWiktionary.main(args);

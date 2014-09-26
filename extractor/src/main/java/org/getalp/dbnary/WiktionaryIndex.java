@@ -33,26 +33,10 @@ public class WiktionaryIndex implements Map<String, String> {
     private static final String UTF_8 = "UTF-8";
     private static final String INDEX_SIGNATURE = "Wkt!01";
 
-    /**
-	 * @uml.property  name="dumpFile"
-	 */
     File dumpFile;
-    /**
-	 * @uml.property  name="indexFile"
-	 */
     File indexFile;
-    /**
-	 * @uml.property  name="encoding"
-	 */
     String encoding;
-    /**
-	 * @uml.property  name="map"
-	 * @uml.associationEnd  qualifier="key:java.lang.String org.getalp.dbnary.OffsetValue"
-	 */
     HashMap<String, OffsetValue> map;
-    /**
-	 * @uml.property  name="xmlf"
-	 */
     RandomAccessFile xmlf ;
     
     public static String indexFilename(String dumpFilename) {

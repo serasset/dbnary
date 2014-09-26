@@ -1,10 +1,6 @@
 package org.getalp.dbnary.cli;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -17,6 +13,7 @@ import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
 
 public class ExtractWiktionary {
 
@@ -60,7 +57,6 @@ public class ExtractWiktionary {
 	private String outputFileSuffix = "";
 
 	WiktionaryIndex wi;
-	String[] remainingArgs;
 	IWiktionaryExtractor we;
 
 	private IWiktionaryDataHandler wdh;
@@ -79,7 +75,7 @@ public class ExtractWiktionary {
 		options.addOption(MODEL_OPTION, true, 
 				"Ontology Model used  (lmf or lemon). Only useful with rdf base formats." + DEFAULT_MODEL + " by default.");
 		options.addOption(OUTPUT_FILE_OPTION, true, "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");
-        options.addOption( OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
+        options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
                 .withDescription( "Output file for morphology data. Undefined by default." )
                 .hasArg()
                 .withArgName("file")
@@ -187,7 +183,7 @@ public class ExtractWiktionary {
 				System.err.println("LMF format not supported anymore.");
 				System.exit(1);
 			}
-            if (morphoOutputFile != null) wdh.enableMorphologyExtraction();
+            if (morphoOutputFile != null) wdh.enableFeature(Feature.MORPHOLOGY);
 		} else {
 			System.err.println("unsupported format :" + outputFormat);
 			System.exit(1);
@@ -260,40 +256,12 @@ public class ExtractWiktionary {
                 }
             }
 
-            OutputStream ostream;
-            if (compress) {
-                // outputFile = outputFile + ".bz2";
-                ostream = new BZip2CompressorOutputStream(new FileOutputStream(outputFile));
-            } else {
-                ostream = new FileOutputStream(outputFile);
-            }
-            try {
-                System.err.println("Dumping " + outputFormat + " representation of the extracted data.");
-                if (outputFormat.equals("RDF")) {
-                    wdh.dump(new PrintStream(ostream, false, "UTF-8"));
-                } else if (outputFormat.equals("TURTLE")) {
-                    wdh.dump(new PrintStream(ostream, false, "UTF-8"), "TURTLE");
-                } else if (outputFormat.equals("NTRIPLE")) {
-                    (wdh).dump(new PrintStream(ostream, false, "UTF-8"), "N-TRIPLE");
-                } else if (outputFormat.equals("N3")) {
-                    (wdh).dump(new PrintStream(ostream, false, "UTF-8"), "N3");
-                } else if (outputFormat.equals("TTL")) {
-                    (wdh).dump(new PrintStream(ostream, false, "UTF-8"), "TTL");
-                } else if (outputFormat.equals("RDFABBREV")) {
-                    (wdh).dump(new PrintStream(ostream, false, "UTF-8"), "RDF/XML-ABBREV");
-                }
-            } catch (IOException e) {
-                System.err.println("Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
-                e.printStackTrace(System.err);
-                throw e;
-            } finally {
-                if (null != ostream) {
-                    ostream.flush();
-                    ostream.close();
-                }
-            }
+            saveBox(Feature.MAIN, outputFile);
             System.err.println(nbPages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
             System.err.println("Semnet contains: " + wdh.nbEntries() + " nodes.");
+            if (null != morphoOutputFile) {
+                saveBox(Feature.MORPHOLOGY, morphoOutputFile);
+            }
 
         } catch (XMLStreamException ex) {
             System.out.println(ex.getMessage());
@@ -315,6 +283,32 @@ public class ExtractWiktionary {
 
     }
 
+    public void saveBox(IWiktionaryDataHandler.Feature f, String of) throws IOException {
+        OutputStream ostream;
+        if (compress) {
+            // outputFile = outputFile + ".bz2";
+            ostream = new BZip2CompressorOutputStream(new FileOutputStream(of));
+        } else {
+            ostream = new FileOutputStream(of);
+        }
+        try {
+            System.err.println("Dumping " + outputFormat + " representation of " + f.name() + ".");
+            if (outputFormat.equals("RDF")) {
+                wdh.dump(f, new PrintStream(ostream, false, "UTF-8"), null);
+            } else {
+                wdh.dump(f, new PrintStream(ostream, false, "UTF-8"), outputFormat);
+            }
+        } catch (IOException e) {
+            System.err.println("Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
+            e.printStackTrace(System.err);
+            throw e;
+        } finally {
+            if (null != ostream) {
+                ostream.flush();
+                ostream.close();
+            }
+        }
+    }
     
     public static void printUsage() {
     	HelpFormatter formatter = new HelpFormatter();

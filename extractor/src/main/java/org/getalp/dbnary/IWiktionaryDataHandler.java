@@ -2,16 +2,19 @@ package org.getalp.dbnary;
 
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.HashSet;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public interface IWiktionaryDataHandler {
 
+    public enum Feature {MAIN, MORPHOLOGY};
     /**
      * Enable the extraction of morphological data in a second Model if available.
      */
-    void enableMorphologyExtraction();
+    void enableFeature(Feature f);
 
     public void initializeEntryExtraction(String wiktionaryPageName);
     public void initializeEntryExtraction(String wiktionaryPageName, String lang);
@@ -83,9 +86,7 @@ public interface IWiktionaryDataHandler {
 	public int nbEntries();
 	
 	public String currentLexEntry();
-	
-	public void dump(OutputStream out);
-    
+
 	/**
 	 * Write a serialized represention of this model in a specified language.
 	 * The language in which to write the model is specified by the lang argument. 
@@ -94,9 +95,30 @@ public interface IWiktionaryDataHandler {
 	 * @param out
 	 * @param format
 	 */
-	public void dump(OutputStream out, String format);
+	public void dump(Feature f, OutputStream out, String format);
 
 	void registerNymRelationOnCurrentSense(String target, String synRelation);
 
+	public void registerProperty(Property p, RDFNode r);
+
+	public void registerInflection(String languageCode,
+	                               String pos,
+	                               String inflection,
+	                               String canonicalForm,
+	                               int defNumber,
+	                               HashSet<PropertyObjectPair> properties,
+	                               HashSet<PronunciationPair> pronunciations);
+
+	public void registerInflection(String languageCode,
+	                               String pos,
+	                               String inflection,
+	                               String canonicalForm,
+	                               int defNumber,
+	                               HashSet<PropertyObjectPair> properties);
+
+	public int currentDefinitionNumber();
+
+	public String currentWiktionaryPos();
+    public Resource currentLexinfoPos();
 
 }

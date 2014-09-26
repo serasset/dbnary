@@ -28,7 +28,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 		this.wi = wi;
 	}
 
-    
+
   // Suppression des commentaires XML d'un texte 
     
 	protected final static String debutOrfinDecomPatternString;
@@ -51,7 +51,9 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 	private static final int A= 0;
 	private static final int B = 1;
 
-	public static String removeXMLComments(String s){
+	public static String removeXMLComments(String s) {
+        if (null == s) return null;
+
 		int ET = A;
 		Matcher xmlCommentMatcher = xmlCommentPattern.matcher(s);
 

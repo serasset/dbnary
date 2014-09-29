@@ -461,8 +461,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK}
 
-    ;
-
     private Block currentBlock = Block.NOBLOCK;
     private int blockStart = -1;
 
@@ -517,6 +515,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
     }
 
+    // TODO: move to the data hanlder ?
     public HashSet<PropertyObjectPair> morphologicalPropertiesFromWikicode(String wikicodeMophology) {
         HashSet<PropertyObjectPair> infl = new HashSet<PropertyObjectPair>();
 
@@ -669,27 +668,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 return;
 
             wdh.initializeEntryExtraction(wiktionaryPageName, lang);
-        } else {
+        } else
+        {
             if (!"fr".equals(lang))
                 return;
 
             wdh.initializeEntryExtraction(wiktionaryPageName);
         }
-
         Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
 
         // WONTDO: (priority: low) should I use a macroOrLink pattern to detect translations that are not macro based ?
         // DONE: (priority: top) link the definition node with the current Part of Speech
-        // DONE: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
         // DONE: handle alternative spelling
-        // DONE: extract synonyms
-        // DONE: extract antonyms
-        // DONE: add an IGNOREPOS currentBlock to ignore the entire part of speech
 
         currentBlock = Block.NOBLOCK;
-
-        Map<String, String> sectionArgs;
 
         while (m.find()) {
             // Iterate until we find a new section

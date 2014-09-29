@@ -5,13 +5,16 @@ package org.getalp.dbnary.eng;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,13 +32,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
     protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
     protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
-    
-    protected static final int NODATA = 0;
-    protected static final int TRADBLOCK = 1;
-    protected static final int DEFBLOCK = 2;
-    protected static final int ORTHOALTBLOCK = 3;
-    protected static final int NYMBLOCK = 4;
-    protected static final int PRONBLOCK = 5;
+
+    private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK}
 
     public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
@@ -66,12 +64,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     }
 
-    int state = NODATA;
-    int definitionBlockStart = -1;
-    int orthBlockStart = -1;
-    int translationBlockStart = -1;
-    private int nymBlockStart = -1;
-    private int pronBlockStart = -1;
+    private Block currentBlock;
+    private int blockStart = -1;
+
     private String currentNym = null;
     
     /* (non-Javadoc)
@@ -79,8 +74,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
      */
     @Override
     public void extractData() {
-        
-        // System.out.println(pageContent);
+        extractData(false);
+    }
+
+    protected void extractData(boolean foreignExtraction) {
+        // TODO: adapt extractor to allow extraction of foreign data.
+
         Matcher languageFilter = sectionPattern.matcher(pageContent);
         while (languageFilter.find() && ! languageFilter.group(1).equals("English")) {
             ;
@@ -100,244 +99,111 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         
         extractEnglishData(englishSectionStartOffset, englishSectionEndOffset);
      }
-    
-    
-//    private HashSet<String> unsupportedSections = new HashSet<String>(100);
-    void gotoNoData(Matcher m) {
-        state = NODATA;
-//        try {
-//            if (! unsupportedSections.contains(m.group(1))) {
-//                unsupportedSections.add(m.group(1));
-//                System.out.println(m.group(1));
-//            }
-//        } catch (IllegalStateException e) {
-//            // nop
-//        }
-    }
 
-    
-    void gotoTradBlock(Matcher m) {
-        translationBlockStart = m.end();
-        state = TRADBLOCK;
-    }
-
-    void gotoDefBlock(Matcher m){
-        state = DEFBLOCK;
-        definitionBlockStart = m.end();
-        wdh.addPartOfSpeech(m.group(1).trim());
-    }
-    
-    void gotoOrthoAltBlock(Matcher m) {
-        state = ORTHOALTBLOCK;    
-        orthBlockStart = m.end();
-    }
-    
-    void leaveDefBlock(Matcher m) {
-        extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
-        definitionBlockStart = -1;
-    }
-    
-    void leaveTradBlock(Matcher m) {
-        extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m));
-        translationBlockStart = -1;
-    }
-
-    void leaveOrthoAltBlock(Matcher m) {
-        extractOrthoAlt(orthBlockStart, computeRegionEnd(orthBlockStart, m));
-        orthBlockStart = -1;
-    }
-
-
-    protected void gotoNymBlock(Matcher m) {
-        state = NYMBLOCK; 
-        currentNym = nymMarkerToNymName.get(m.group(1).trim());
-        nymBlockStart = m.end();      
-     }
-
-    protected void leaveNymBlock(Matcher m) {
-        extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
-        currentNym = null;
-        nymBlockStart = -1;         
-     }
-
-    protected void gotoPronBlock(Matcher m) {
-        state = PRONBLOCK; 
-        pronBlockStart = m.end();      
-     }
-
-    protected void leavePronBlock(Matcher m) {
-        extractPron(pronBlockStart, computeRegionEnd(pronBlockStart, m));
-        pronBlockStart = -1;         
-     }
-
-	protected void extractEnglishData(int startOffset, int endOffset) {
+    protected void extractEnglishData(int startOffset, int endOffset) {
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         wdh.initializeEntryExtraction(wiktionaryPageName);
-        gotoNoData(m);
-        // WONTDO: should I use a macroOrLink pattern to detect translations that are not macro based ?
-        // DONE: (priority: top) link the definition node with the current Part of Speech
-        // DONE: (priority: top) type all nodes by prefixing it by language, or #pos or #def.
-        // DONE: handle alternative spelling
-        // DONE: extract synonyms
-        // DONE: extract antonyms
-        while (m.find()) {
-            String title = m.group(1).trim();
-            switch (state) {
-            case NODATA:
-                if (title.equals("Translations")) {  // TODO: some sections are using Translation in the singular form...
-                    gotoTradBlock(m);
-                } else if (WiktionaryDataHandler.isValidPOS(title)) {
-                    gotoDefBlock(m);
-                } else if (title.equals("Alternative spellings")) {
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkerToNymName.containsKey(title)) {
-                    gotoNymBlock(m);
-                } else if (title.equals("Pronunciation")) {
-                	gotoPronBlock(m);
-                } else {
-                    gotoNoData(m);
-                    log.debug("Ignoring content of section {} in {}", m.group(), wdh.currentLexEntry());
-                }
-                
-                break;
-            case DEFBLOCK:
-                // Iterate until we find a new section
-                if (title.equals("Translations")) {
-                    leaveDefBlock(m);
-                    gotoTradBlock(m);
-                } else if (WiktionaryDataHandler.isValidPOS(title)) {
-                    leaveDefBlock(m);
-                    gotoDefBlock(m);
-                } else if (title.equals("Alternative spellings")) {
-                    leaveDefBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkerToNymName.containsKey(title)) {
-                    leaveDefBlock(m);
-                    gotoNymBlock(m);
-                } else if (title.equals("Pronunciation")) {
-                    leaveDefBlock(m);
-                    gotoPronBlock(m);
-                } else {
-                    leaveDefBlock(m);
-                    gotoNoData(m);
-                } 
-                break;
-            case TRADBLOCK:
-                if (title.equals("Translations")) {
-                    leaveTradBlock(m);
-                    gotoTradBlock(m);
-                } else if (WiktionaryDataHandler.isValidPOS(title)) {
-                    leaveTradBlock(m);
-                    gotoDefBlock(m);
-                } else if (title.equals("Alternative spellings")) {
-                    leaveTradBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkerToNymName.containsKey(title)) {
-                    leaveTradBlock(m);
-                    gotoNymBlock(m);
-                } else if (title.equals("Pronunciation")) {
-                    leaveTradBlock(m);
-                    gotoPronBlock(m);
-                } else {
-                    leaveTradBlock(m);
-                    gotoNoData(m);
-                    log.debug("Ignoring content of section {} in {}", m.group(), wdh.currentLexEntry());
-                }
-                break;
-            case ORTHOALTBLOCK:
-                if (title.equals("Translations")) {
-                    leaveOrthoAltBlock(m);
-                    gotoTradBlock(m);
-                } else if (WiktionaryDataHandler.isValidPOS(title)) {
-                    leaveOrthoAltBlock(m);
-                    gotoDefBlock(m);
-                } else if (title.equals("Alternative spellings")) {
-                    leaveOrthoAltBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkerToNymName.containsKey(title)) {
-                    leaveOrthoAltBlock(m);
-                    gotoNymBlock(m);
-                } else if (title.equals("Pronunciation")) {
-                	leaveOrthoAltBlock(m);
-                    gotoPronBlock(m);
-                } else {
-                    leaveOrthoAltBlock(m);
-                    gotoNoData(m);
-                    log.debug("Ignoring content of section {} in {}", m.group(), wdh.currentLexEntry());
-                }
-                break;
-            case NYMBLOCK:
-                if (title.equals("Translations")) {
-                    leaveNymBlock(m);
-                    gotoTradBlock(m);
-                } else if (WiktionaryDataHandler.isValidPOS(title)) {
-                    leaveNymBlock(m);
-                    gotoDefBlock(m);
-                } else if (title.equals("Alternative spellings")) {
-                    leaveNymBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkerToNymName.containsKey(title)) {
-                    leaveNymBlock(m);
-                    gotoNymBlock(m);
-                } else if (title.equals("Pronunciation")) {
-                	leaveNymBlock(m);
-                    gotoPronBlock(m);
-                } else {
-                    leaveNymBlock(m);
-                    gotoNoData(m);
-                    log.debug("Ignoring content of section {} in {}", m.group(), wdh.currentLexEntry());
-                }
-                break;
-            case PRONBLOCK:
-            	if (title.equals("Translations")) {
-                    leavePronBlock(m);
-                    gotoTradBlock(m);
-                } else if (WiktionaryDataHandler.isValidPOS(title)) {
-                	leavePronBlock(m);
-                    gotoDefBlock(m);
-                } else if (title.equals("Alternative spellings")) {
-                	leavePronBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkerToNymName.containsKey(title)) {
-                	leavePronBlock(m);
-                    gotoNymBlock(m);
-                } else if (title.equals("Pronunciation")) {
-                	leavePronBlock(m);
-                    gotoPronBlock(m);
-                } else {
-                	leavePronBlock(m);
-                    gotoNoData(m);
-                    log.debug("Ignoring content of section {} in {}", m.group(), wdh.currentLexEntry());
-                }
-            	break;
-            default:
-                assert false : "Unexpected state while extracting translations from dictionary.";
-            } 
+        currentBlock = Block.NOBLOCK;
+
+        while(m.find()) {
+            HashMap<String, Object> context = new HashMap<String, Object>();
+            Block nextBlock = computeNextBlock(m, context);
+
+            if (nextBlock == null) continue;
+            // If current block is IGNOREPOS, we should ignore everything but a new DEFBLOCK/INFLECTIONBLOCK
+            if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
+                leaveCurrentBlock(m);
+                gotoNextBlock(nextBlock, context);
+            }
         }
         // Finalize the entry parsing
-        switch (state) {
-        case NODATA:
-            break;
-        case DEFBLOCK:
-            leaveDefBlock(m);
-            break;
-        case TRADBLOCK:
-            leaveTradBlock(m);
-            break;
-        case ORTHOALTBLOCK:
-            leaveOrthoAltBlock(m);
-            break;
-        case NYMBLOCK:
-            leaveNymBlock(m);
-            break;
-        case PRONBLOCK:
-        	leavePronBlock(m);
-            break;
-        default:
-            assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
-        } 
+        leaveCurrentBlock(m);
         wdh.finalizeEntryExtraction();
+    }
+
+    private Block computeNextBlock(Matcher m, Map<String, Object> context) {
+        String title = m.group(1).trim();
+        String nym;
+        context.put("start", m.end());
+
+        if (title.equals("Pronunciation")) {
+            return Block.PRONBLOCK;
+        } else if (WiktionaryDataHandler.isValidPOS(title)) {
+            context.put("pos", title);
+            return Block.DEFBLOCK;
+        } else if (title.equals("Translations")) { // TODO: some sections are using Translation in the singular form...
+            return Block.TRADBLOCK;
+        } else if (title.equals("Alternative spellings")) {
+            return Block.ORTHOALTBLOCK;
+        } else if (null != (nym = nymMarkerToNymName.get(title))) {
+            context.put("nym", nym);
+            return Block.NYMBLOCK;
+        } else {
+            log.debug("Ignoring content of section {} in {}", title, this.wiktionaryPageName);
+            return Block.NOBLOCK;
+        }
+    }
+
+    private void gotoNextBlock(Block nextBlock, HashMap<String, Object> context) {
+        currentBlock = nextBlock;
+        Object start = context.get("start");
+        blockStart = (null == start) ? -1 : (int) start;
+        switch (nextBlock) {
+            case NOBLOCK:
+            case IGNOREPOS:
+                break;
+            case DEFBLOCK:
+                String pos = (String) context.get("pos");
+                wdh.addPartOfSpeech(pos);
+                break;
+            case TRADBLOCK:
+                break;
+            case ORTHOALTBLOCK:
+                break;
+            case NYMBLOCK:
+                currentNym = (String) context.get("nym");
+                break;
+            case PRONBLOCK:
+                break;
+            default:
+                assert false : "Unexpected block while parsing: " + wiktionaryPageName;
+        }
+
+    }
+
+    private void leaveCurrentBlock(Matcher m) {
+        if (blockStart == -1) {
+            return;
+        }
+
+        int end = computeRegionEnd(blockStart, m);
+
+        switch (currentBlock) {
+            case NOBLOCK:
+            case IGNOREPOS:
+                break;
+            case DEFBLOCK:
+                extractDefinitions(blockStart, end);
+                break;
+            case TRADBLOCK:
+                extractTranslations(blockStart, end);
+                break;
+            case ORTHOALTBLOCK:
+                extractOrthoAlt(blockStart, end);
+                break;
+            case NYMBLOCK:
+                extractNyms(currentNym, blockStart, end);
+                currentNym = null;
+                break;
+            case PRONBLOCK:
+                extractPron(blockStart, end);
+                break;
+            default:
+                assert false : "Unexpected block while parsing: " + wiktionaryPageName;
+        }
+
+        blockStart = -1;
     }
 
     private void extractTranslations(int startOffset, int endOffset) {

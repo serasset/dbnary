@@ -511,6 +511,7 @@ extractor/src/main/java/org/getalp/dbnary/cli/TestInterwikiLinks.java -text svne
 extractor/src/main/java/org/getalp/dbnary/cli/UpdateAndExtractDumps.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/cli/UpdateDiachronicStatistics.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/cli/UpdateLatestStatistics.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/deu/GermanExtractorWikiModel.java -text
 extractor/src/main/java/org/getalp/dbnary/deu/GermanLangToCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/deu/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/deu/WiktionaryExtractor.java -text

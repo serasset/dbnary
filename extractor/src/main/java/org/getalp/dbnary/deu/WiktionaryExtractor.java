@@ -2,6 +2,8 @@ package org.getalp.dbnary.deu;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,11 +29,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected final static String germanDefinitionPatternString = "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
 	protected final static String germanNymLinePatternString = "^:{1,3}\\s*(?:\\[(" + senseNumberOrRangeRegExp + "*)\\])?([^\n\r]*)$";
 
-	private final int NODATA = 0;
-	private final int TRADBLOCK = 1;
-	private final int DEFBLOCK = 2;
-	private final int ORTHOALTBLOCK = 3;
-	private final int NYMBLOCK = 4;
 
 	public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
 		super(wdh);
@@ -50,8 +47,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected final static HashSet<String> ignorableSectionMarkers;
 	protected final static HashSet<String> nymMarkers;
 	protected final static HashMap<String, String> nymMarkerToNymName;
+//	protected final static HashSet<String> inflectionMarkers;
 
 	static {
+		
+		
 		// languageSectionPattern =
 		// Pattern.compile(languageSectionPatternString);
 
@@ -158,9 +158,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	@Override
 	public void extractData() {
 
-		// System.out.println(pageContent);
 		Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-		while (languageFilter.find() && !languageFilter.group(2).equals("Deutsch")) {
+		while (languageFilter.find() && !isGermanLanguageHeader(languageFilter)) {
 			;
 		}
 		// Either the filter is at end of sequence or on German language header.
@@ -178,295 +177,247 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		extractGermanData(germanSectionStartOffset, germanSectionEndOffset);
 	}
 
-	/**
-	 * @uml.property  name="state"
-	 */
-	int state = NODATA;
-	/**
-	 * @uml.property  name="definitionBlockStart"
-	 */
-	int definitionBlockStart = -1;
-	/**
-	 * @uml.property  name="orthBlockStart"
-	 */
-	int orthBlockStart = -1;
-	/**
-	 * @uml.property  name="translationBlockStart"
-	 */
-	int translationBlockStart = -1;
-	/**
-	 * @uml.property  name="nymBlockStart"
-	 */
-	private int nymBlockStart = -1;
+	private boolean isGermanLanguageHeader(Matcher m) {
+		return m.group(2).equals("Deutsch");
+	}
+
 	/**
 	 * @uml.property  name="currentNym"
 	 * @uml.associationEnd  qualifier="key:java.lang.String java.lang.String"
 	 */
-	private String currentNym = null;
-
-	void gotoNoData(Matcher m) {
-		state = NODATA;
-	}
-
-	void gotoTradBlock(Matcher m) {
-		translationBlockStart = m.end();
-		state = TRADBLOCK;
-	}
-
-	void registerNewPartOfSpeech(Matcher m) {
-		// if (m.group(4) != null && ! m.group(4).equals("Deutsch"))
-		//	System.err.println("lang = " + m.group(4) + " where pos = " + m.group(3) + " in page: " + wiktionaryPageName);
-		// TODO: language in group 4 is the language of origin of the entry. Maybe we should keep it.
-		// TODO: filter out ignorable part of speech;
-		wdh.addPartOfSpeech(m.group(3));
-	}
-
-	void gotoDefBlock(Matcher m) {
-		state = DEFBLOCK;
-		definitionBlockStart = m.end();
-	}
-
-	void gotoOrthoAltBlock(Matcher m) {
-		state = ORTHOALTBLOCK;
-		orthBlockStart = m.end();
-	}
-
-	void leaveDefBlock(Matcher m) {
-		extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
-		definitionBlockStart = -1;
-	}
-
-	void leaveTradBlock(Matcher m) {
-		extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m));
-		translationBlockStart = -1;
-	}
-
-	void leaveOrthoAltBlock(Matcher m) {
-		extractOrthoAlt(orthBlockStart, computeRegionEnd(orthBlockStart, m));
-		orthBlockStart = -1;
-	}
-
-	private void gotoNymBlock(Matcher m) {
-		state = NYMBLOCK;
-		currentNym = nymMarkerToNymName.get(m.group(1));
-		nymBlockStart = m.end();
-	}
-
-	private void leaveNymBlock(Matcher m) {
-		extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
-		currentNym = null;
-		nymBlockStart = -1;
-	}
 
 	// TODO: Prise en compte des diminutifs (Verkleinerungsformen)
 	// TODO: Prise en compte des "concepts dérivés" ? (Abgeleitete Begriffe)
 	// TODO: supprimer les "Deklinierte Form" des catégories extraites.
-	private void extractGermanData(int startOffset, int endOffset) {
+	
+	private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, POSBLOCK, NYMBLOCK};
+
+	private Block currentBlock=Block.NOBLOCK;
+
+	int blockStart=-1;
+	
+	private String currentNym = null;
+
+	private void extractGermanData(int startOffset, int endOffset){
 		Matcher m = macroOrPOSPattern.matcher(pageContent);
 		m.region(startOffset, endOffset);
 		wdh.initializeEntryExtraction(wiktionaryPageName);
-		gotoNoData(m);
-		while (m.find()) {
-			switch (state) {
-			case NODATA:
-				if (m.group(1) != null) {
-					// It's a macro
-					if (m.group(1).equals("Bedeutungen")) {
-						// Definitions
-						gotoDefBlock(m);
-					} else if (m.group(1).equals("Alternative Schreibweisen")) {
-						// Alternative spelling
-						gotoOrthoAltBlock(m);
-					} else if (nymMarkers.contains(m.group(1))) {
-						// Nyms
-						gotoNymBlock(m);
-					} else if (ignorableSectionMarkers.contains(m.group(1))) {
-						gotoNoData(m);
-					}
-				} else if (m.group(3) != null) {
-					// partOfSpeech
-					registerNewPartOfSpeech(m);
-				} else if (m.group(5) != null) {
-					// translations
-					if (m.group(5).trim().equals("Übersetzungen")) {
-						gotoTradBlock(m);
-					}
-				} else {
-					// Multiline macro
-					// System.out.println(m.group());
-				}
+		currentBlock=Block.NOBLOCK;
+		
+		while(m.find()) {
+            HashMap<String, Object> context = new HashMap<String, Object>();
+            Block nextBlock = computeNextBlock(m, context);
 
-				break;
-			case DEFBLOCK:
-				if (m.group(1) != null) {
-					// It's a macro
-					if (m.group(1).equals("Bedeutungen")) {
-						// Definitions
-						leaveDefBlock(m);
-						gotoDefBlock(m);
-					} else if (m.group(1).equals("Alternative Schreibweisen")) {
-						// Alternative spelling
-						leaveDefBlock(m);
-						gotoOrthoAltBlock(m);
-					} else if (nymMarkers.contains(m.group(1))) {
-						// Nyms
-						leaveDefBlock(m);
-						gotoNymBlock(m);
-					} else if (ignorableSectionMarkers.contains(m.group(1))) {
-						leaveDefBlock(m);
-						gotoNoData(m);
-					}
-				} else if (m.group(3) != null) {
-					// partOfSpeech
-					leaveDefBlock(m);
-					registerNewPartOfSpeech(m);
-					gotoNoData(m);
-				} else if (m.group(5) != null) {
-					// translations
-					if (m.group(5).trim().equals("Übersetzungen")) {
-						leaveDefBlock(m);
-						gotoTradBlock(m);
-					}
-				} else {
-					// Multiline macro
-					// System.out.println(m.group());
-				}
-
-				break;
-			case TRADBLOCK:
-				if (m.group(1) != null) {
-					// It's a macro
-					if (m.group(1).equals("Bedeutungen")) {
-						// Definitions
-						leaveTradBlock(m);
-						gotoDefBlock(m);
-					} else if (m.group(1).equals("Alternative Schreibweisen")) {
-						// Alternative spelling
-						leaveTradBlock(m);
-						gotoOrthoAltBlock(m);
-					} else if (nymMarkers.contains(m.group(1))) {
-						// Nyms
-						leaveTradBlock(m);
-						gotoNymBlock(m);
-					} else if (ignorableSectionMarkers.contains(m.group(1))) {
-						leaveTradBlock(m);
-						gotoNoData(m);
-					}
-				} else if (m.group(3) != null) {
-					// partOfSpeech
-					leaveTradBlock(m);
-					registerNewPartOfSpeech(m);
-					gotoNoData(m);
-				} else if (m.group(5) != null) {
-					// translations
-					if (m.group(5).trim().equals("Übersetzungen")) {
-						leaveTradBlock(m);
-						gotoTradBlock(m);
-					}
-				} else {
-					// Multiline macro
-					// System.out.println(m.group());
-				}
-
-				break;
-			case ORTHOALTBLOCK:
-				if (m.group(1) != null) {
-					// It's a macro
-					if (m.group(1).equals("Bedeutungen")) {
-						// Definitions
-						leaveOrthoAltBlock(m);
-						gotoDefBlock(m);
-					} else if (m.group(1).equals("Alternative Schreibweisen")) {
-						// Alternative spelling
-						leaveOrthoAltBlock(m);
-						gotoOrthoAltBlock(m);
-					} else if (nymMarkers.contains(m.group(1))) {
-						// Nyms
-						leaveOrthoAltBlock(m);
-						gotoNymBlock(m);
-					} else if (ignorableSectionMarkers.contains(m.group(1))) {
-						leaveOrthoAltBlock(m);
-						gotoNoData(m);
-					}
-				} else if (m.group(3) != null) {
-					// partOfSpeech
-					leaveOrthoAltBlock(m);
-					registerNewPartOfSpeech(m);
-					gotoNoData(m);
-				} else if (m.group(5) != null) {
-					// translations
-					if (m.group(5).trim().equals("Übersetzungen")) {
-						leaveOrthoAltBlock(m);
-						gotoTradBlock(m);
-					}
-				} else {
-					// Multiline macro
-					// System.out.println(m.group());
-				}
-
-				break;
-			case NYMBLOCK:
-				// ICI
-				if (m.group(1) != null) {
-					// It's a macro
-					if (m.group(1).equals("Bedeutungen")) {
-						// Definitions
-						leaveNymBlock(m);
-						gotoDefBlock(m);
-					} else if (m.group(1).equals("Alternative Schreibweisen")) {
-						// Alternative spelling
-						leaveNymBlock(m);
-						gotoOrthoAltBlock(m);
-					} else if (nymMarkers.contains(m.group(1))) {
-						// Nyms
-						leaveNymBlock(m);
-						gotoNymBlock(m);
-					} else if (ignorableSectionMarkers.contains(m.group(1))) {
-						leaveNymBlock(m);
-						gotoNoData(m);
-					}
-				} else if (m.group(3) != null) {
-					// partOfSpeech
-					leaveNymBlock(m);
-					registerNewPartOfSpeech(m);
-					gotoNoData(m);
-				} else if (m.group(5) != null) {
-					// translations
-					if (m.group(5).trim().equals("Übersetzungen")) {
-						leaveNymBlock(m);
-						gotoTradBlock(m);
-					}
-				} else {
-					// Multiline macro
-					// System.out.println(m.group());
-				}
-				break;
-			default:
-				assert false : "Unexpected state while extracting translations from dictionary.";
-			}
-		}
-		// Finalize the entry parsing
-		switch (state) {
-		case NODATA:
-			break;
-		case DEFBLOCK:
-			leaveDefBlock(m);
-			break;
-		case TRADBLOCK:
-			leaveTradBlock(m);
-			break;
-		case ORTHOALTBLOCK:
-			leaveOrthoAltBlock(m);
-			break;
-		case NYMBLOCK:
-			leaveNymBlock(m);
-			break;
-		default:
-			assert false : "Unexpected state while extracting translations from dictionary.";
-		}
+            if (nextBlock == null) continue;
+            // If current block is IGNOREPOS, we should ignore everything but a new DEFBLOCK/INFLECTIONBLOCK
+            if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
+                leaveCurrentBlock(m);
+                gotoNextBlock(nextBlock, context);
+            }
+        }
+        // Finalize the entry parsing
+		leaveCurrentBlock(m);
 		wdh.finalizeEntryExtraction();
+
 	}
 
+    private Block computeNextBlock(Matcher m, Map<String, Object> context) {
+        String pos, nym;
+        context.put("start", m.end());
+
+        if (null != m.group(1) ) {
+            //go to the good block
+            if (m.group(1).equals("Bedeutungen")) {
+                return Block.DEFBLOCK;
+            } else if (m.group(1).equals("Alternative Schreibweisen")) {
+                return Block.ORTHOALTBLOCK;
+            } else if (nymMarkers.contains(m.group(1))) {
+                context.put("nym", nymMarkerToNymName.get(m.group(1)));
+                return Block.NYMBLOCK;
+            } else if (ignorableSectionMarkers.contains(m.group(1))) {
+                return Block.NOBLOCK;
+            } else if(isInflexionMacro(m.group(1))) {
+                context.put("start", m.start());
+                return Block.INFLECTIONBLOCK;
+                //the followed comentary permit the recognition of page which are containing inflected form
+//				}else if(m.group(1).equals("Lemmaverweis") || m.group(1).equals("Grundformverweis")){
+//					if(inflectedform && null!=m.group(2)){
+                //TODO : adding a parser for this kind of page
+//					}
+            } else {
+                return null;
+            }
+        } else if (null != m.group(3)) {
+            if(m.group(3).equals("Deklinierte Form")) {
+                context.put("inflectedForm",true);
+
+            }
+            //TODO: what should I do with deklinierte formen
+            context.put("pos", m.group(3).trim());
+            // TODO: language in group 4 is the language of origin of the entry. Maybe we should keep it.
+            // TODO: filter out ignorable part of speech;
+            return Block.POSBLOCK;
+        } else if (null != m.group(5)) {
+            if (m.group(5).trim().equals("Übersetzungen")) {
+                return Block.TRADBLOCK;
+            } else {
+                return null;
+            }
+            //inflection block
+        } else if (null != m.group(6)) {
+            // TODO: this condition captures more than the expected macros.
+            if (isInflexionMacro(m.group(6))) {
+                context.put("start", m.start());
+                return Block.INFLECTIONBLOCK;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+   }
+
+    private boolean isInflexionMacro(String macro) {
+        macro = macro.trim();
+        if (macro.startsWith("Lit-"))
+            return false;
+        else if (macro.contains("(Deutsch)") || macro.contains("Deutshchland") || macro.contains("Deutsche"))
+            return false;
+        else if (macro.startsWith("Ü-"))
+            return false;
+        else
+            return (macro.contains("Deutsch")) || (macro.contains("Tabelle"));
+
+    }
+
+
+    private void gotoNextBlock(Block nextBlock, HashMap<String, Object> context) {
+        currentBlock = nextBlock;
+        Object start = context.get("start");
+        blockStart = (null == start) ? -1 : (int) start;
+        switch (nextBlock) {
+            case NOBLOCK:
+            case IGNOREPOS:
+                break;
+            case POSBLOCK:
+                String pos = (String) context.get("pos");
+                wdh.addPartOfSpeech(pos);
+                break;
+            case INFLECTIONBLOCK:
+                break;
+            case DEFBLOCK:
+                break;
+            case TRADBLOCK:
+                break;
+            case ORTHOALTBLOCK:
+                break;
+            case NYMBLOCK:
+                currentNym = (String) context.get("nym");
+                break;
+            default:
+                assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+        }
+
+    }
+
+    private void leaveCurrentBlock(Matcher m){
+		if (blockStart == -1) {
+				return;
+		}
+		
+			int end = computeRegionEnd(blockStart, m);
+			switch (currentBlock) {
+				case NOBLOCK:
+				case IGNOREPOS:
+                case POSBLOCK:
+					break;
+				case DEFBLOCK:
+					extractDefinitions(blockStart, end);
+					break;
+				case TRADBLOCK:
+					extractTranslations(blockStart, end);
+					break;
+				case ORTHOALTBLOCK:
+					extractOrthoAlt(blockStart, end);
+					break;
+				case NYMBLOCK:
+					extractNyms(currentNym, blockStart, end);
+					currentNym = null;
+					break;
+				case INFLECTIONBLOCK:
+		 			extractInflections(blockStart, end);
+		 			blockStart=end;
+					break;
+				default:
+					assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+			}
+
+			blockStart = -1;
+		
+	}
+	
+	private static HashSet<String> verbMarker;
+	static{
+		verbMarker=new HashSet<String>();
+		verbMarker.add("Verb");
+		verbMarker.add("Hilfsverb");
+	}
+
+    // TODO [CHECK] this is never used...
+	private static HashSet<String> inflectedFormMarker;
+	static{
+		inflectedFormMarker=new HashSet<String>();
+		inflectedFormMarker.add("Konjugierte Form");
+		inflectedFormMarker.add("Deklinierte Form");
+	}
+
+	
+	private void extractInflections(int startOffset, int endOffset){
+		//TODO : next step : for each page with more than one conjugation use all the table
+		String page=lexEntryToPage(wiktionaryPageName);
+		String normalizedPOS=wdh.currentWiktionaryPos();
+		//if the currentEntry has a page of conjugation or declination
+		GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
+		if (null!=page && -1!=page.indexOf(normalizedPOS)) {
+//			if(inflectedFormMarker.contains(normalizedPOS)){
+//				gewm.parseInflectedForms(page, normalizedPOS);
+//			}
+			if (verbMarker.contains(normalizedPOS)) {
+				gewm.parseConjugation(page, normalizedPOS);
+			} else {
+				gewm.parseDeclination(page, normalizedPOS);
+			}
+		} else {
+			Pattern pattern=Pattern.compile(macroOrPOSPatternString);
+			Matcher m=pattern.matcher(pageContent.substring(startOffset, endOffset));
+				if(m.find()){
+					gewm.parseOtherForm(m.group(0), normalizedPOS);
+				}
+		}
+		
+		
+	}
+	
+	private final static String germanDeclinationSuffix =" (Deklination)";
+	private final static String germanConjugationSuffix =" (Konjugation)";
+	
+	private String lexEntryToPage(String lexEntry){
+		int i=0;
+		String[] suffix={germanConjugationSuffix,germanDeclinationSuffix};
+		String pageContent = null;
+
+			while(null==pageContent && i< suffix.length){
+				pageContent=wi.getTextOfPage(lexEntry+suffix[i]);
+				i++;
+			}
+		if(pageContent!=null && !pageContent.contains("Deutsch")){
+			pageContent=null;
+		}
+		return pageContent;
+	}
+	
+	
+	
 	static final String glossOrMacroPatternString;
 	static final Pattern glossOrMacroPattern;
 
@@ -668,6 +619,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		}
 	}
 
-
+	public void extractOtherForms( int start, int end){
+//		Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
+//		otherFormMatcher.region(start, end);
+//		GermanExtractorWikiModel gewm = new
+//		while(otherFormMatcher.find()){
+//		}
+	}
+	
 
 }

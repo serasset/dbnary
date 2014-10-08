@@ -105,6 +105,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
      */
     @Override
     public void extractData() {
+        wdh.initializePageExtraction(wiktionaryPageName);
     	Matcher l1 = level1HeaderPattern.matcher(pageContent);
     	int porStart = -1;
         wdh.initializeEntryExtraction(wiktionaryPageName);
@@ -124,6 +125,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			extractPortugueseData(porStart, pageContent.length());
 		}
     	wdh.finalizeEntryExtraction();
+        wdh.finalizePageExtraction();
     }
     
     private boolean isPortuguese(Matcher l1) {

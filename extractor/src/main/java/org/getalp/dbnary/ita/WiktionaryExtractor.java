@@ -5,6 +5,7 @@ package org.getalp.dbnary.ita;
 
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +13,8 @@ import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author serasset
@@ -19,7 +22,7 @@ import org.getalp.dbnary.wiki.WikiPatterns;
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-
+    private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
 	protected final static String level2HeaderPatternString = "^==([^=].*[^=])==$";
 		   
@@ -35,15 +38,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		
 	}
 
-		protected final static String wikiSectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
-	    private final int NODATA = 0;
-	    private final int TRADBLOCK = 1;
-	    private final int DEFBLOCK = 2;
-	    private final int ORTHOALTBLOCK = 3;
-	    private final int NYMBLOCK = 4;
-	    private final int PRONBLOCK = 5;
-	    private final int MORPHOBLOCK = 6;
-		private final int IGNOREPOS = 7;
+	protected final static String wikiSectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
+
+    private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK}
 
 	    // TODO: handle pronounciation
 	    protected final static String pronounciationPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
@@ -53,35 +50,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     // protected final static Pattern languageSectionPattern;
-    protected final static HashMap<String,String> posMarkers;
     //protected final static HashSet<String> nymMarkers;
     protected final static HashMap<String, String> nymMarkerToNymName;
     		
     static {
-              
-    	 posMarkers = new HashMap<String,String>(20);
-         posMarkers.put("noun", "Noun");
-         posMarkers.put("sost", "Noun");
-         posMarkers.put("loc noun", "Noun");
-         posMarkers.put("loc nom", "Noun");
-         posMarkers.put("nome", "Proper noun");
-         posMarkers.put("name", "Proper noun");
-         posMarkers.put("adj", "Adjective");
-         posMarkers.put("agg", "Adjective");
-         posMarkers.put("loc adjc", "Adjective");
-         posMarkers.put("loc agg", "Adjective");
-         posMarkers.put("avv", "Adverb");
-         posMarkers.put("adv", "Adverb");
-         posMarkers.put("loc avv", "Adverb");
-         posMarkers.put("verb", "Verb");
-         posMarkers.put("loc verb", "Verb");
-         
+
          // TODO: -acron-, -acronim-, -acronym-, -espr-, -espress- mark locution as phrases
                   
          nymMarkerToNymName = new HashMap<String,String>(20);
          nymMarkerToNymName.put("syn", "syn");
          nymMarkerToNymName.put("sin", "syn");
          nymMarkerToNymName.put("ant", "ant");
+        nymMarkerToNymName.put("ipon", "hypo");
          nymMarkerToNymName.put("Hipônimos", "hypo");
          nymMarkerToNymName.put("Hiperônimos", "hyper");
          nymMarkerToNymName.put("Sinónimos", "syn");
@@ -104,23 +84,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         pronunciationPattern = Pattern.compile(pronounciationPatternString);
     }
 
-    int state = NODATA;
-    int definitionBlockStart = -1;
-    int translationBlockStart = -1;
-    int orthBlockStart = -1;
-    private int nymBlockStart = -1;
-    private int pronBlockStart = -1;
-    private int morphoBlockStart = -1;
+    private Block currentBlock;
+    private int blockStart = -1;
 
     private String currentNym = null;
 
-    protected boolean isCurrentlyExtracting = false;
 	private boolean isCorrectPOS;
-   
-    
-    public boolean isCurrentlyExtracting() {
-		return isCurrentlyExtracting;
-	}
 
     /* (non-Javadoc)
      * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
@@ -129,11 +98,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     public void extractData() {
     	Matcher l1 = level2HeaderPattern.matcher(pageContent);
     	int itaStart = -1;
-        wdh.initializeEntryExtraction(wiktionaryPageName);
+        wdh.initializePageExtraction(wiktionaryPageName);
     	while (l1.find()) {
     		// System.err.println(l1.group());
     		if (-1 != itaStart) {
-    			// System.err.println("Parsing previous portuguese entry");
+    			// System.err.println("Parsing previous italian entry");
     			extractItalianData(itaStart, l1.start());
     			itaStart = -1;
     		}
@@ -142,275 +111,125 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     		}
     	}
     	if (-1 != itaStart) {
-			//System.err.println("Parsing previous portuguese entry");
+			//System.err.println("Parsing previous italian entry");
 			extractItalianData(itaStart, pageContent.length());
 		}
-    	
+    	wdh.finalizePageExtraction();
     }
     
     private boolean isItalian(Matcher l1) {
-		if (l1.group(1).trim().startsWith("{{-it-")) return true;
-		return false;
-	}
-    
-//    private HashSet<String> unsupportedSections = new HashSet<String>(100);
-    void gotoNoData(Matcher m) {
-        state = NODATA;
-    }
-
-    
-    void gotoTradBlock(Matcher m) {
-        translationBlockStart = m.start(); // Keep -trad1- in translation block 
-        state = TRADBLOCK;
-    }
-
-    void gotoDefBlock(Matcher m){
-        state = DEFBLOCK;
-        definitionBlockStart = m.end();
-        wdh.addPartOfSpeech(m.group(1));
-    }
-    
-    void gotoOrthoAltBlock(Matcher m) {
-        state = ORTHOALTBLOCK;    
-        orthBlockStart = m.end();
-    }
-    
-    void leaveDefBlock(Matcher m) {
-    	int end = computeRegionEnd(definitionBlockStart, m);
-    	// System.err.println(pageContent.substring(definitionBlockStart, end));
-        extractDefinitions(definitionBlockStart, end);
-        definitionBlockStart = -1;
-    }
-    
-    void leaveTradBlock(Matcher m) {
-        extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m));
-        translationBlockStart = -1;
-    }
-
-    void leaveOrthoAltBlock(Matcher m) {
-        extractOrthoAlt(orthBlockStart, computeRegionEnd(orthBlockStart, m));
-        orthBlockStart = -1;
-    }
-
-
-    private void gotoNymBlock(Matcher m) {
-        state = NYMBLOCK; 
-        currentNym = nymMarkerToNymName.get(m.group(1));
-        nymBlockStart = m.end();      
-     }
-
-    private void leaveNymBlock(Matcher m) {
-        extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
-        currentNym = null;
-        nymBlockStart = -1;         
-     }
-
-    private void gotoPronBlock(Matcher m) {
-        state = PRONBLOCK; 
-        pronBlockStart = m.end();      
-     }
-
-    private void leavePronBlock(Matcher m) {
-        extractPron(pronBlockStart, computeRegionEnd(pronBlockStart, m));
-        pronBlockStart = -1;
-     }
-
-	private void gotoIgnorePos() {
-		state = IGNOREPOS;
+        // log.debug("Considering header == {}",l1.group(1));
+        String t = l1.group(1).trim();
+		return (t.startsWith("{{-it-") || t.startsWith("{{it"));
 	}
 
-	// TODO: variants, pronunciations and other elements are common to the different entries in the page.
-	private void extractItalianData(int startOffset, int endOffset) {        
+    // TODO: variants, pronunciations and other elements are common to the different entries in the page.
+    protected void extractItalianData(int startOffset, int endOffset) {
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
-        gotoNoData(m);
-        while (m.find()) {
-            switch (state) {
-            case NODATA:
-            	if (m.group(1).startsWith("trad1")) {
-                    gotoTradBlock(m);
-                } else if (posMarkers.containsKey(m.group(1))) {
-                    gotoDefBlock(m);
-                } else if (m.group(1).equals("var")) {
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
-                    gotoNymBlock(m);
-                } else if (m.group(1).equals("pron")) {
-                	gotoPronBlock(m);
-                } else if (isLevel3Header(m)) {
-                	// Level 2 header that are not a correct POS, or Etimology or Pronunciation are considered as ignorable POS.
-                	gotoIgnorePos();
-                }
-                
-                break;
-            case DEFBLOCK:
-                // Iterate until we find a new section
-            	if (m.group(1).equals("trad1")) {
-                    leaveDefBlock(m);
-                    gotoTradBlock(m);
-                } else if (posMarkers.containsKey(m.group(1))) {
-                    leaveDefBlock(m);
-                    gotoDefBlock(m);
-                } else if (m.group(1).equals("var")) {
-                    leaveDefBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
-                    leaveDefBlock(m);
-                    gotoNymBlock(m);
-                } else if (m.group(1).equals("pron")) {
-                    leaveDefBlock(m);
-                    gotoPronBlock(m);
-                } else if (isLevel3Header(m)) {
-                    leaveDefBlock(m);
-                    gotoIgnorePos();
-                } else {
-                    leaveDefBlock(m);
-                    gotoNoData(m);
-                } 
-                break;
-            case TRADBLOCK:
-            	if (m.group(1).equals("trad1")) {
-                    leaveTradBlock(m);
-                    gotoTradBlock(m);
-                } else if (posMarkers.containsKey(m.group(1))) {
-                    leaveTradBlock(m);
-                    gotoDefBlock(m);
-                } else if (m.group(1).equals("var")) {
-                    leaveTradBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
-                    leaveTradBlock(m);
-                    gotoNymBlock(m);
-                } else if (m.group(1).equals("pron")) {
-                    leaveTradBlock(m);
-                    gotoPronBlock(m);
-                } else if (isLevel3Header(m)) {
-                    leaveTradBlock(m);
-                    gotoIgnorePos();
-                } else {
-                    leaveTradBlock(m);
-                    gotoNoData(m);
-                } 
-                break;
-            case ORTHOALTBLOCK:
-            	if (m.group(1).equals("trad1")) {
-                    leaveOrthoAltBlock(m);
-                    gotoTradBlock(m);
-                } else if (posMarkers.containsKey(m.group(1))) {
-                    leaveOrthoAltBlock(m);
-                    gotoDefBlock(m);
-                } else if (m.group(1).equals("var")) {
-                    leaveOrthoAltBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
-                    leaveOrthoAltBlock(m);
-                    gotoNymBlock(m);
-                } else if (m.group(1).equals("pron")) {
-                	leaveOrthoAltBlock(m);
-                    gotoPronBlock(m);
-                } else if (isLevel3Header(m)) {
-                	leaveOrthoAltBlock(m);
-                    gotoIgnorePos();
-                } else {
-                    leaveOrthoAltBlock(m);
-                    gotoNoData(m);
-                }
-                break;
-            case NYMBLOCK:
-            	if (m.group(1).equals("trad1")) {
-                    leaveNymBlock(m);
-                    gotoTradBlock(m);
-                } else if (posMarkers.containsKey(m.group(1))) {
-                    leaveNymBlock(m);
-                    gotoDefBlock(m);
-                } else if (m.group(1).equals("var")) {
-                    leaveNymBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
-                    leaveNymBlock(m);
-                    gotoNymBlock(m);
-                } else if (m.group(1).equals("pron")) {
-                	leaveNymBlock(m);
-                    gotoPronBlock(m);
-                } else if (isLevel3Header(m)) {
-                	leaveNymBlock(m);
-                    gotoIgnorePos();
-                } else {
-                    leaveNymBlock(m);
-                    gotoNoData(m);
-                }
-            	break;
-            case PRONBLOCK:
-            	if (m.group(1).equals("trad1")) {
-                    leavePronBlock(m);
-                    gotoTradBlock(m);
-                } else if (posMarkers.containsKey(m.group(1))) {
-                	leavePronBlock(m);
-                    gotoDefBlock(m);
-                } else if (m.group(1).equals("var")) {
-                	leavePronBlock(m);
-                    gotoOrthoAltBlock(m);
-                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
-                	leavePronBlock(m);
-                    gotoNymBlock(m);
-                } else if (m.group(1).equals("pron")) {
-                	leavePronBlock(m);
-                    gotoPronBlock(m);
-                } else if (isLevel3Header(m)) {
-                	leavePronBlock(m);
-                    gotoIgnorePos();
-                } else {
-                	leavePronBlock(m);
-                    gotoNoData(m);
-                }
-            	break;
-            case IGNOREPOS:
-            	if (m.group(1).equals("trad1")) {
-                } else if (posMarkers.containsKey(m.group(1))) {
-                	gotoDefBlock(m);
-                } else if (m.group(1).equals("var")) {
-                } else if (nymMarkerToNymName.containsKey(m.group(1))) {
-                } else if (m.group(1).equals("pron")) {
-                	// gotoPronBlock(m);
-                } else if (isLevel3Header(m)) {
-                    gotoIgnorePos();
-                }
-            	break;
-            default:
-                assert false : "Unexpected state while extracting translations from dictionary.";
-            } 
+        wdh.initializeEntryExtraction(wiktionaryPageName);
+        currentBlock = Block.NOBLOCK;
+        while(m.find()) {
+            HashMap<String, Object> context = new HashMap<String, Object>();
+            Block nextBlock = computeNextBlock(m, context);
+
+            if (nextBlock == null) continue;
+            // If current block is IGNOREPOS, we should ignore everything but a new DEFBLOCK/INFLECTIONBLOCK
+            if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
+                leaveCurrentBlock(m);
+                gotoNextBlock(nextBlock, context);
+            }
         }
         // Finalize the entry parsing
-        switch (state) {
-        case NODATA:
-            break;
-        case DEFBLOCK:
-            leaveDefBlock(m);
-            break;
-        case TRADBLOCK:
-            leaveTradBlock(m);
-            break;
-        case ORTHOALTBLOCK:
-            leaveOrthoAltBlock(m);
-            break;
-        case NYMBLOCK:
-            leaveNymBlock(m);
-            break;
-        case PRONBLOCK:
-        	leavePronBlock(m);
-            break;
-        case IGNOREPOS:
-            break;
-       default:
-            assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
-        } 
+        leaveCurrentBlock(m);
         wdh.finalizeEntryExtraction();
     }
-    
-	private boolean isLevel3Header(Matcher m) {
-		return m.group(0).startsWith("==") && ! m.group(0).startsWith("===") ;
-	}
 
+    private Block computeNextBlock(Matcher m, Map<String, Object> context) {
+        String title = m.group(1).trim();
+        String nym;
+        context.put("start", m.end());
+
+        if (title.startsWith("trad1") || title.equals("trad")) {
+            context.put("start", m.start()); // Keep trad1 in block
+            return Block.TRADBLOCK;
+        } else if (WiktionaryDataHandler.isValidPOS(title)) {
+            context.put("pos", title);
+            return Block.DEFBLOCK;
+        } else if (title.equals("var")) {
+            return Block.ORTHOALTBLOCK;
+        } else if (null != (nym = nymMarkerToNymName.get(title))) {
+            context.put("nym", nym);
+            return Block.NYMBLOCK;
+        } else if (title.equals("pron")) {
+            return Block.PRONBLOCK;
+        } else {
+            // WARN: in previous implementation, L2 headers where considered as ignoredpos.
+            log.debug("Ignoring content of section {} in {}", title, this.wiktionaryPageName);
+            return Block.NOBLOCK;
+        }
+    }
+
+    private void gotoNextBlock(Block nextBlock, HashMap<String, Object> context) {
+        currentBlock = nextBlock;
+        Object start = context.get("start");
+        blockStart = (null == start) ? -1 : (int) start;
+        switch (nextBlock) {
+            case NOBLOCK:
+            case IGNOREPOS:
+                break;
+            case DEFBLOCK:
+                String pos = (String) context.get("pos");
+                wdh.addPartOfSpeech(pos);
+                break;
+            case TRADBLOCK:
+                break;
+            case ORTHOALTBLOCK:
+                break;
+            case NYMBLOCK:
+                currentNym = (String) context.get("nym");
+                break;
+            case PRONBLOCK:
+                break;
+            default:
+                assert false : "Unexpected block while parsing: " + wiktionaryPageName;
+        }
+
+    }
+
+    private void leaveCurrentBlock(Matcher m) {
+        if (blockStart == -1) {
+            return;
+        }
+
+        int end = computeRegionEnd(blockStart, m);
+
+        switch (currentBlock) {
+            case NOBLOCK:
+            case IGNOREPOS:
+                break;
+            case DEFBLOCK:
+                extractDefinitions(blockStart, end);
+                break;
+            case TRADBLOCK:
+                extractTranslations(blockStart, end);
+                break;
+            case ORTHOALTBLOCK:
+                extractOrthoAlt(blockStart, end);
+                break;
+            case NYMBLOCK:
+                extractNyms(currentNym, blockStart, end);
+                currentNym = null;
+                break;
+            case PRONBLOCK:
+                extractPron(blockStart, end);
+                break;
+            default:
+                assert false : "Unexpected block while parsing: " + wiktionaryPageName;
+        }
+
+        blockStart = -1;
+    }
 	
 	
     protected final static String carPatternString;
@@ -448,7 +267,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	// TODO: delegate translation extraction to the appropriate wiki model
     private void extractTranslations(int startOffset, int endOffset) {
-	Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(pageContent);
+	    Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(pageContent);
 		macroOrLinkOrcarMatcher.region(startOffset, endOffset);
 		int ETAT = INIT;
 
@@ -468,14 +287,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 			case INIT:
 				if (g1!=null) {
-					if (g1.equalsIgnoreCase("-trad1-"))  {
+					if (g1.equalsIgnoreCase("-trad1-") || g1.equalsIgnoreCase("("))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
 						} else {
 							currentGlose = null;
 						}
 
-					} else if (g1.equalsIgnoreCase("-trad2-")) {
+					} else if (g1.equalsIgnoreCase("-trad2-") || g1.equalsIgnoreCase(")")) {
 						currentGlose = null;
 					} else if (g1.equalsIgnoreCase("mid")) {
 						//ignore
@@ -501,7 +320,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			case LANGUE:
 
 				if (g1!=null) {
-					if (g1.equalsIgnoreCase("-trad1-"))  {
+					if (g1.equalsIgnoreCase("-trad1-") || g1.equalsIgnoreCase("("))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
 						} else {
@@ -509,7 +328,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						}
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("-trad2-")) {
+					} else if (g1.equalsIgnoreCase("-trad2-") || g1.equalsIgnoreCase(")")) {
 						currentGlose = null;
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
@@ -542,7 +361,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				break ;
 			case TRAD:
 				if (g1!=null) {
-					if (g1.equalsIgnoreCase("-trad1-"))  {
+					if (g1.equalsIgnoreCase("-trad1-") || g1.equalsIgnoreCase("("))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
 						} else {
@@ -554,7 +373,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						//}
 						langname = ""; word = ""; usage = ""; lang=null;
 						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("-trad2-")) {
+					} else if (g1.equalsIgnoreCase("-trad2-") || g1.equalsIgnoreCase(")")) {
 						if (word != null && word.length() != 0) {
 							if(lang!=null) {
 								wdh.registerTranslation(lang, currentGlose, usage, word);
@@ -591,7 +410,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						usage = "";
 						word="";
 						ETAT = INIT;
-					} else if (g6.equals(",") || g6.equals(";")) {
+					} else if (g6.equals(",") || g6.equals(";")|| g6.equals("/")) {
 						usage = usage.trim();
 						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
 						if (word != null && word.length() != 0) {
@@ -624,14 +443,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     
     private void extractPron(int startOffset, int endOffset) {
         String pronCode = pageContent.substring(startOffset, endOffset);
-    	ItalianPronunciationExtractorWikiModel dbnmodel = new ItalianPronunciationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}", "/${title}");
+    	ItalianPronunciationExtractorWikiModel dbnmodel = new ItalianPronunciationExtractorWikiModel(this.wdh, this.wi, new Locale("it"), "/${image}", "/${title}");
         dbnmodel.parsePronunciation(pronCode);
 	}
     
     @Override
 	public void extractDefinition(String definition) {
 		// TODO: properly handle macros in definitions.
-        ItalianDefinitionExtractorWikiModel dbnmodel = new ItalianDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}", "/${title}");
+        ItalianDefinitionExtractorWikiModel dbnmodel = new ItalianDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("it"), "/${image}", "/${title}");
         dbnmodel.parseDefinition(definition);
 	}
     

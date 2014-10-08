@@ -77,19 +77,6 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		nymPropertyMap.put("holo", DBnaryOnt.holonym);
 		nymPropertyMap.put("qsyn", DBnaryOnt.approximateSynonym);
 
-
-		// French
-		posAndTypeValueMap.put("-nom-", new PosAndType(LexinfoOnt.noun, LemonOnt.Word));
-		posAndTypeValueMap.put("-nom-pr-", new PosAndType(LexinfoOnt.properNoun, LemonOnt.Word));
-		posAndTypeValueMap.put("-prénom-", new PosAndType(LexinfoOnt.properNoun, LemonOnt.Word));
-		posAndTypeValueMap.put("-adj-", new PosAndType(LexinfoOnt.adjective, LemonOnt.Word));
-		posAndTypeValueMap.put("-verb-", new PosAndType(LexinfoOnt.verb, LemonOnt.Word));
-		posAndTypeValueMap.put("-adv-", new PosAndType(LexinfoOnt.adverb, LemonOnt.Word));
-		posAndTypeValueMap.put("-loc-adv-", new PosAndType(LexinfoOnt.adverb, LemonOnt.Phrase));
-		posAndTypeValueMap.put("-loc-adj-", new PosAndType(LexinfoOnt.adjective, LemonOnt.Phrase));
-		posAndTypeValueMap.put("-loc-nom-", new PosAndType(LexinfoOnt.noun, LemonOnt.Phrase));
-		posAndTypeValueMap.put("-loc-verb-", new PosAndType(LexinfoOnt.verb, LemonOnt.Phrase));
-
 		// Portuguese
 		posAndTypeValueMap.put("Substantivo", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
 		posAndTypeValueMap.put("Adjetivo", new PosAndType(LexinfoOnt.adjective, LemonOnt.LexicalEntry));
@@ -161,6 +148,16 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         featureBoxes.put(f, box);
     }
 
+    @Override
+    public void initializePageExtraction(String wiktionaryPageName) {
+        currentLexieCount.resetAll();
+    }
+
+    @Override
+    public void finalizePageExtraction() {
+
+    }
+
     private void fillInPrefixes(Model aBox, Model morphoBox) {
         for (Map.Entry<String, String> e : aBox.getNsPrefixMap().entrySet()) {
             morphoBox.setNsPrefix(e.getKey(), e.getValue());
@@ -175,7 +172,6 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         currentWiktionaryPageName = wiktionaryPageName;
         currentLexinfoPos = null;
         currentWiktionaryPos = null;
-        currentLexieCount.resetAll();
         translationCount.resetAll();
         reifiedNymCount.resetAll();
         currentPreferredWrittenRepresentation = null;

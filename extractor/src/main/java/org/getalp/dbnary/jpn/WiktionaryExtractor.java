@@ -132,6 +132,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		unknownHeaders = new HashSet<String>();
 		Matcher l1 = level2HeaderPattern.matcher(pageContent);
 		int jpnStart = -1;
+        wdh.initializePageExtraction(wiktionaryPageName);
+        // TODO: should I initialize the entry in the japanese extraction method ?
 		wdh.initializeEntryExtraction(wiktionaryPageName);
 		while (l1.find()) {
 			if (-1 != jpnStart) {
@@ -147,6 +149,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		}
 
 		wdh.finalizeEntryExtraction();
+        wdh.finalizePageExtraction();
 		for (String h : unknownHeaders) {
 			log.debug("--> {}", h);
 		}

@@ -1,5 +1,11 @@
 package org.getalp.dbnary;
 
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.config.Configuration;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -18,6 +24,9 @@ import java.util.Set;
  * 
  */
 public class WiktionaryIndex implements Map<String, String> {
+
+    private static final CacheManager cacheManager = CacheManager.newInstance();
+    private static final Ehcache cache = cacheManager.getEhcache("wiktcache");
 
     // TODO: Create a static map to hold shared instances (1 per dump file) and avoid allocating more than one 
     // WiktionaryIndexer per wiktionary language.
@@ -296,7 +305,18 @@ public class WiktionaryIndex implements Map<String, String> {
     }
     
     public String getTextOfPage(Object key) {
-        return WiktionaryIndexer.getTextElementContent(this.get(key));
+        String skey = (String) key;
+        boolean notMainSpace = skey.contains(":");
+        Element element = cache.get(skey);
+        if (element != null && notMainSpace) {
+            return (String) element.getObjectValue();
+        }
+        String res = WiktionaryIndexer.getTextElementContent(this.get(key));
+        if (res != null && notMainSpace) {
+            element = new Element(skey, res);
+            cache.put(element);
+        }
+        return res;
     }
     
 }

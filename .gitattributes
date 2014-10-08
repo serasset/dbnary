@@ -530,12 +530,14 @@ extractor/src/main/java/org/getalp/dbnary/fra/ForeignLanguagesWiktionaryDataHand
 extractor/src/main/java/org/getalp/dbnary/fra/ForeignLanguagesWiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/fra/FrenchExtractorWikiModel.java -text
 extractor/src/main/java/org/getalp/dbnary/fra/FrenchLangtoCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/fra/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/fra/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianLangToCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianPronunciationExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/ita/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/ita/WiktionaryExtractor.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseLangtoCode.java -text svneol=unset#text/plain
@@ -575,6 +577,7 @@ extractor/src/main/java/org/getalp/dilaf/DilafZarmaExtractor.java -text
 extractor/src/main/resources/Messages_bg.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_pl.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
+extractor/src/main/resources/ehcache.xml -text
 extractor/src/main/scripts/old/README.txt -text
 extractor/src/main/scripts/old/compare_extracts.sh -text
 extractor/src/main/scripts/old/de_extract-defposNoyau -text

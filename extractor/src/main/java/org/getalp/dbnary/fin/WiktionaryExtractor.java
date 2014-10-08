@@ -108,7 +108,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
 	public void extractData() {
-		
+		wdh.initializePageExtraction(wiktionaryPageName);
 		// System.out.println(pageContent);
 		Matcher languageFilter = languagePattern.matcher(pageContent);
 		while (languageFilter.find() && ! languageFilter.group(1).equals("Suomi")) {
@@ -128,7 +128,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		int suomiSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
 		extractSuomihData(suomiSectionStartOffset, suomiSectionEndOffset);
-
+        wdh.finalizePageExtraction();
 	}
 	
 	//    private HashSet<String> unsupportedSections = new HashSet<String>(100);

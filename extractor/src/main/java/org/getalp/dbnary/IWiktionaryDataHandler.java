@@ -16,8 +16,12 @@ public interface IWiktionaryDataHandler {
      */
     void enableFeature(Feature f);
 
+    public void initializePageExtraction(String wiktionaryPageName);
+    public void finalizePageExtraction();
+
     public void initializeEntryExtraction(String wiktionaryPageName);
     public void initializeEntryExtraction(String wiktionaryPageName, String lang);
+    public void finalizeEntryExtraction();
 
     public void addPartOfSpeech(String pos);
 
@@ -80,8 +84,6 @@ public interface IWiktionaryDataHandler {
     public void registerTranslation(String lang, String currentGlose, String usage, String word);
 
     public void registerPronunciation(String pron, String lang);
-
-	public void finalizeEntryExtraction();
 
 	public int nbEntries();
 	

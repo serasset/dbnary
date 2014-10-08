@@ -79,7 +79,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     protected void extractData(boolean foreignExtraction) {
         // TODO: adapt extractor to allow extraction of foreign data.
-
+        wdh.initializePageExtraction(wiktionaryPageName);
         Matcher languageFilter = sectionPattern.matcher(pageContent);
         while (languageFilter.find() && ! languageFilter.group(1).equals("English")) {
             ;
@@ -98,6 +98,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         int englishSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
         
         extractEnglishData(englishSectionStartOffset, englishSectionEndOffset);
+        wdh.finalizePageExtraction();
      }
 
     protected void extractEnglishData(int startOffset, int endOffset) {

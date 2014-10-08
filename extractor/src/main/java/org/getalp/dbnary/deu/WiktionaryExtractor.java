@@ -157,7 +157,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	 */
 	@Override
 	public void extractData() {
-
+        wdh.initializePageExtraction(wiktionaryPageName);
 		Matcher languageFilter = languageSectionPattern.matcher(pageContent);
 		while (languageFilter.find() && !isGermanLanguageHeader(languageFilter)) {
 			;
@@ -175,6 +175,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		int germanSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
 		extractGermanData(germanSectionStartOffset, germanSectionEndOffset);
+        wdh.finalizePageExtraction();
 	}
 
 	private boolean isGermanLanguageHeader(Matcher m) {

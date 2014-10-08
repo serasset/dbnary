@@ -175,7 +175,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 	public void extractData() {
-
+        wdh.initializePageExtraction(wiktionaryPageName);
 		// System.out.println(pageContent);
 		Matcher languageFilter =  languageSectionPattern.matcher(pageContent);
 		while (isnotgreek(languageFilter)) {
@@ -193,6 +193,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		int greekSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
 		extractGreekData(greekSectionStartOffset, greekSectionEndOffset);
+        wdh.finalizeEntryExtraction();
 	}
 
 

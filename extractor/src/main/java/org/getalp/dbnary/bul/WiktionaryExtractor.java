@@ -62,7 +62,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
      */
     @Override
     public void extractData() {
-
+        wdh.initializePageExtraction(wiktionaryPageName);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
         while (languageFilter.find() && !isBulgarianLanguageHeader(languageFilter)) {
             ;
@@ -78,7 +78,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         int bulgarianSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
         extractBulgarianData(bulgarianSectionStartOffset, bulgarianSectionEndOffset);
-        
+        wdh.finalizePageExtraction();
     }
 
     private boolean isBulgarianLanguageHeader(Matcher m) {

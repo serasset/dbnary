@@ -144,7 +144,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	 */
 	@Override
 	public void extractData() {
-
+        wdh.initializePageExtraction(wiktionaryPageName);
 		// System.out.println(pageContent);
 		Matcher languageFilter = languageSectionPattern.matcher(pageContent);
 		
@@ -164,6 +164,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		int polishSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
 		extractPolishData(polishSectionStartOffset, polishSectionEndOffset);
+        wdh.finalizePageExtraction();
 	}
 
 	int state = NODATA;

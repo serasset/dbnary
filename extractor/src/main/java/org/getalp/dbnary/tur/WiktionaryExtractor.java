@@ -114,7 +114,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     	
     public void extractData() {
-
+        wdh.initializePageExtraction(wiktionaryPageName);
         // System.out.println(pageContent);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
         while (languageFilter.find() && !languageFilter.group(1).equals("Türkçe")) {
@@ -133,6 +133,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         int turkishSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
         extractTurkishData(turkishSectionStartOffset, turkishSectionEndOffset);
+        wdh.finalizePageExtraction();
     }
 	
     int state = NODATA;

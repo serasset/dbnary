@@ -495,6 +495,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     protected void extractData(boolean extractForeignData) {
+        wdh.initializePageExtraction(wiktionaryPageName);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
         int startSection = -1;
 
@@ -513,6 +514,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (languageFilter.hitEnd()) {
             extractData(startSection, pageContent.length(), lang, extractForeignData);
         }
+        wdh.finalizePageExtraction();
     }
 
     // TODO: move to the data hanlder ?

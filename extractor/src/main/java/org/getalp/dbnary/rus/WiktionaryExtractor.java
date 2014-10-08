@@ -95,7 +95,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
      */
     @Override
     public void extractData() {	
-    	
+    	wdh.initializePageExtraction(wiktionaryPageName);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
         while (languageFilter.find() && ! isRussianLanguageHeader(languageFilter)) {
             ;
@@ -111,6 +111,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         int russianSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
         
         extractRussianData(russianSectionStartOffset, russianSectionEndOffset);
+        wdh.finalizePageExtraction();
     }
     
     private boolean isRussianLanguageHeader(Matcher m) {

@@ -5,7 +5,7 @@
 
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>1.2</version>
+    <version>1.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -54,10 +54,10 @@
         </repository>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:svn://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/tags/dbnary-extractor-1.2</connection>
-        <developerConnection>scm:svn:svn+ssh://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/tags/dbnary-extractor-1.2
+        <connection>scm:svn:svn://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/trunk</connection>
+        <developerConnection>scm:svn:svn+ssh://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/trunk
         </developerConnection>
-        <url>scm:svn:svn+ssh://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/tags/dbnary-extractor-1.2</url>
+        <url>https://forge.imag.fr/scm/browser.php?group_id=362</url>
     </scm>
 
     <dependencies>

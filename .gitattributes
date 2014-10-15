@@ -534,7 +534,6 @@ extractor/src/main/java/org/getalp/dbnary/fra/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/fra/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianLangToCode.java -text svneol=unset#text/plain
-extractor/src/main/java/org/getalp/dbnary/ita/ItalianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianPronunciationExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ita/WiktionaryDataHandler.java -text

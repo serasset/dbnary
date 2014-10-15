@@ -30,11 +30,11 @@ public class ItalianDefinitionExtractorWikiModel extends DbnaryWikiModel {
 		this.delegate = we;
 	}
 
-	public void parseDefinition(String definition) {
+	public void parseDefinition(String definition, int defLevel) {
 		// Render the definition to plain text, while ignoring the example template
 		String def = render(new PlainTextConverter(), definition).trim();
 		if (null != def && ! def.equals(""))
-			delegate.registerNewDefinition(def);
+			delegate.registerNewDefinition(def, defLevel);
 	}
 	
 	@Override

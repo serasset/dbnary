@@ -415,7 +415,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         nymMarkerToNymName.put("anto", "ant");
          
         // paronymes, troponymes, gentillés ?
-        
+
+        // Check if these markers still exist in new french organization...
         sectionMarkers = new HashSet<String>(200);
         sectionMarkers.addAll(posMarkers.keySet());
         sectionMarkers.addAll(nymMarkerToNymName.keySet());
@@ -1321,6 +1322,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         while (otherFormMatcher.find()) {
             FrenchExtractorWikiModel dbnmodel = new FrenchExtractorWikiModel(wdh, wi, frLocale, "/${image}", "/${title}");
             dbnmodel.parseOtherForm(otherFormMatcher.group());
+        }
+    }
+
+    @Override
+    public void extractDefinition(String definition, int defLevel) {
+        // TODO: USE A WikiModel to correctly extract French definitions
+        String def = cleanUpMarkup(definition);
+        if (def != null && ! def.equals("")) {
+            wdh.registerNewDefinition(definition, defLevel);
         }
     }
 }

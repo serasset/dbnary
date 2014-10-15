@@ -62,6 +62,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
          nymMarkerToNymName.put("sin", "syn");
          nymMarkerToNymName.put("ant", "ant");
         nymMarkerToNymName.put("ipon", "hypo");
+        nymMarkerToNymName.put("iperon", "hypo");
          nymMarkerToNymName.put("Hipônimos", "hypo");
          nymMarkerToNymName.put("Hiperônimos", "hyper");
          nymMarkerToNymName.put("Sinónimos", "syn");
@@ -150,8 +151,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String nym;
         context.put("start", m.end());
 
-        if (title.startsWith("trad1") || title.equals("trad")) {
+        if (title.startsWith("trad1")) {
             context.put("start", m.start()); // Keep trad1 in block
+            return Block.TRADBLOCK;
+        } else if (title.equals("trad")) {
             return Block.TRADBLOCK;
         } else if (WiktionaryDataHandler.isValidPOS(title)) {
             context.put("pos", title);
@@ -287,14 +290,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 			case INIT:
 				if (g1!=null) {
-					if (g1.equalsIgnoreCase("-trad1-") || g1.equalsIgnoreCase("("))  {
+					if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("("))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
 						} else {
 							currentGlose = null;
 						}
 
-					} else if (g1.equalsIgnoreCase("-trad2-") || g1.equalsIgnoreCase(")")) {
+					} else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
 						currentGlose = null;
 					} else if (g1.equalsIgnoreCase("mid")) {
 						//ignore
@@ -320,7 +323,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			case LANGUE:
 
 				if (g1!=null) {
-					if (g1.equalsIgnoreCase("-trad1-") || g1.equalsIgnoreCase("("))  {
+					if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("("))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
 						} else {
@@ -328,7 +331,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						}
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("-trad2-") || g1.equalsIgnoreCase(")")) {
+					} else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
 						currentGlose = null;
 						langname = ""; word = ""; usage = "";
 						ETAT = INIT;
@@ -361,7 +364,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				break ;
 			case TRAD:
 				if (g1!=null) {
-					if (g1.equalsIgnoreCase("-trad1-") || g1.equalsIgnoreCase("("))  {
+					if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("("))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
 						} else {
@@ -373,7 +376,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						//}
 						langname = ""; word = ""; usage = ""; lang=null;
 						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("-trad2-") || g1.equalsIgnoreCase(")")) {
+					} else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
 						if (word != null && word.length() != 0) {
 							if(lang!=null) {
 								wdh.registerTranslation(lang, currentGlose, usage, word);
@@ -394,7 +397,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 						usage = usage + "{{" + g1 + "}}";
 					}
 				} else if (g3!=null) {
-					word =word+" " +g3;
+					word =word+" " + removeAnchor(g3);
 				} else if (g5 != null) {
 					//System.err.println("Skipping '*' while in LANGUE state.");
 				} else if (g6 != null) {
@@ -433,7 +436,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         }
     }
-  
+
+    private String removeAnchor(String g3) {
+        if (null == g3) return null;
+        int hash = g3.indexOf('#');
+        if (-1 == hash) {
+            return g3;
+        } else {
+            return g3. substring(0, hash);
+        }
+    }
+
     // TODO: try to use gwtwiki to extract translations
 //	private void extractTranslations(int startOffset, int endOffset) {
 //       String transCode = pageContent.substring(startOffset, endOffset);
@@ -448,10 +461,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
     
     @Override
-	public void extractDefinition(String definition) {
+	public void extractDefinition(String definition, int defLevel) {
 		// TODO: properly handle macros in definitions.
         ItalianDefinitionExtractorWikiModel dbnmodel = new ItalianDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("it"), "/${image}", "/${title}");
-        dbnmodel.parseDefinition(definition);
+        dbnmodel.parseDefinition(definition, defLevel);
 	}
     
 

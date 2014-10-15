@@ -1,5 +1,6 @@
 package org.getalp.dbnary.fra;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.LexinfoOnt;
@@ -34,13 +35,18 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
     @Override
     public void addPartOfSpeech(String pos) {
-        // TODO: compute if the entry is a phrase or a word.
+        // DONE: compute if the entry is a phrase or a word.
         PosAndType pat = posAndTypeValueMap.get(pos);
-        addPartOfSpeech(pos, posResource(pat), typeResource(pat));
+        Resource typeR = typeResource(pat);
+        if (currentWiktionaryPageName.startsWith("se ")) {
+            if (currentWiktionaryPageName.substring(2).trim().contains(" ")) {
+                typeR = LemonOnt.Phrase;
+            }
+        } else if (currentWiktionaryPageName.contains(" ")) {
+            typeR = LemonOnt.Phrase;
+        }
+        addPartOfSpeech(pos, posResource(pat), typeR);
     }
 
-    public static PosAndType getPosAndType(String pos) {
-        return posAndTypeValueMap.get(pos);
-    }
 
 }

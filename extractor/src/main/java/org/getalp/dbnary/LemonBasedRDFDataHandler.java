@@ -55,7 +55,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 	protected String currentEncodedPageName;
 	protected String currentWiktionaryPageName;
 	protected CounterSet currentLexieCount = new CounterSet();
-	private Resource currentMainLexEntry;
+	protected Resource currentMainLexEntry;
 	private Resource currentPreferredWrittenRepresentation;
 	
 	private Set<PronunciationPair> currentSharedPronunciations;
@@ -225,7 +225,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         return currentLexinfoPos;
     }
 
-	public void addPartOfSpeech(String originalPOS, Resource normalizedPOS, Resource normalizedType) {
+	public Resource addPartOfSpeech(String originalPOS, Resource normalizedPOS, Resource normalizedType) {
         // DONE: create a LexicalEntry for this part of speech only and attach info to it.
 		currentWiktionaryPos = originalPOS;
 		currentLexinfoPos = normalizedPOS;
@@ -280,6 +280,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		}
 		heldBackStatements.clear();
 		aBox.add(currentMainLexEntry, DBnaryOnt.refersTo, currentLexEntry);
+        return currentLexEntry;
 	}
 
 	public Resource posResource(PosAndType pat) {

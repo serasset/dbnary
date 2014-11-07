@@ -32,7 +32,7 @@ then
 	mkdir -p $DATASETDIR
 fi
 
-if [ ! -z `ls $DATASETDIR/*.ttl` ] ; then
+if [ ! -f $DATASETDIR/*.ttl ] ; then
 	echo "Dataset already exists and is not empty, assuming its content is up to date."
 else
 	echo "Copying and expanding latest extracts."

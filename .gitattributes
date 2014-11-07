@@ -601,6 +601,8 @@ extractor/src/site/site.xml -text
 extractor/src/test/java/org/getalp/blexisma/wiktionary/TestDbnaryWikiModel.java -text svneol=unset#text/plain
 extractor/src/test/java/org/getalp/blexisma/wiktionary/WiktionaryExtractorTest.java -text
 extractor/src/test/java/org/getalp/dbnary/AbstractWiktionaryExtractorUtilitiesTest.java -text
+kaiko/bootstrap-virtuoso-db.sh -text
+kaiko/virtuoso.ini.tmpl -text
 ontology/pom.xml -text
 ontology/src/main/resources/org/getalp/dbnary/catalog-v001.xml -text
 ontology/src/main/resources/org/getalp/dbnary/dbnary.owl -text

@@ -20,11 +20,11 @@ fi
 
 if [ ! -d $DBFOLDER ] ; then
 	mkdir -p $DBFOLDER
-	sed 's|@@DBFOLDER@@|$DBFOLDER|g' < $VIRTUOSOINITMPL | \
-	sed 's|@@DATASETDIR@@|$DATASETDIR|g' | \
-	sed 's|@@SERVERPORT|$SERVERPORT|g' | \
-	sed 's|@@SSLSERVERPORT|$SSLSERVERPORT|g' | \
-	sed 's|@@WEBSERVERPORT@@|$WEBSERVERPORT|g' > $DBFOLDER/virtuoso.ini
+	sed "s|@@DBFOLDER@@|$DBFOLDER|g" < $VIRTUOSOINITMPL | \
+	sed "s|@@DATASETDIR@@|$DATASETDIR|g" | \
+	sed "s|@@SERVERPORT|$SERVERPORT|g" | \
+	sed "s|@@SSLSERVERPORT|$SSLSERVERPORT|g" | \
+	sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" > $DBFOLDER/virtuoso.ini
 fi
 
 if [ ! -d $DATASETDIR ]

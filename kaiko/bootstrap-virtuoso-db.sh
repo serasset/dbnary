@@ -32,12 +32,16 @@ then
 	mkdir -p $DATASETDIR
 fi
 
-if [ ! -f $DATASETDIR/*.ttl ] ; then
-	echo "Dataset already exists and is not empty, assuming its content is up to date."
-else
-	echo "Copying and expanding latest extracts."
+(
+  shopt -s nullglob
+  files=($DATASETDIR/*.ttl)
+  if [[ "${#files[@]}" -gt 0 ]] ; then
+    echo "Dataset already exists and is not empty, assuming its content is up to date."
+  else
+    echo "Copying and expanding latest extracts."
 	cp $DBNARYLATEST/*.ttl.bz2 $DATASETDIR
 	pushd $DATASETDIR
 	bunzip2 *.ttl.bz2
-fi
+  fi
+)
 

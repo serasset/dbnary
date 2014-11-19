@@ -466,6 +466,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         ItalianDefinitionExtractorWikiModel dbnmodel = new ItalianDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("it"), "/${image}", "/${title}");
         dbnmodel.parseDefinition(definition, defLevel);
 	}
-    
+
+    @Override
+    public void extractExample(String example) {
+        ItalianExampleExtractorWikiModel dbnmodel = new ItalianExampleExtractorWikiModel(this.wdh, this.wi, new Locale("it"), "/${image}", "/${title}", this.wiktionaryPageName);
+        dbnmodel.parseExample(example);
+    }
 
 }

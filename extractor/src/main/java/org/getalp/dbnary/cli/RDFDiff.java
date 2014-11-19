@@ -5,6 +5,9 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import com.hp.hpl.jena.graph.GraphUtil;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -12,6 +15,7 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public class RDFDiff {
 	
@@ -50,51 +54,49 @@ public class RDFDiff {
 
 	public static void buildBinding(Model m1, Model m2) {
 		// Creates a binding between equivalent blank nodes in m1 and m2;
-		ResIterator iter = null;
-		Resource s;
+		ExtendedIterator<Node> iter = null;
+		Node s;
 		try {
-			iter =  m1.listSubjects();
+			iter =  GraphUtil.listSubjects(m1.getGraph(), Node.ANY, Node.ANY);
 			while (iter.hasNext()) {
-				s = iter.nextResource();
-				if (s.isAnon()) {
-					StmtIterator stmts = m1.listStatements(s, null, (RDFNode)null);
-					SortedSet<String> signature = new TreeSet<String>();
-					while (stmts.hasNext()) {
-						Statement stmt = stmts.nextStatement();
-						signature.add(stmt.getPredicate().toString() + "+" + stmt.getObject().toString());
+				s = iter.next();
+				if (s.isBlank()) {
+                    ExtendedIterator<Triple> it = m1.getGraph().find(s, Node.ANY, Node.ANY);
+                    SortedSet<String> signature = new TreeSet<String>();
+					while (it.hasNext()) {
+						Triple t = it.next();
+						signature.add(t.getPredicate().toString() + "+" + t.getObject().toString());
 					}
 					StringBuffer b = new StringBuffer();
 					for (String r: signature) {
 						b.append(r).append("|");
 					}
 					String key = b.toString();
-					assert anodes2id.get(s.getId().getLabelString()) == null;
-					anodes2id.put(s.getId().getLabelString(), key);
+					assert anodes2id.get(s.getBlankNodeLabel()) == null;
+					anodes2id.put(s.getBlankNodeLabel(), key);
 				}
 			}
 		} finally {
 			if (null != iter) iter.close();
 		}
 		try {
-			iter = m2.listSubjects();
-			long tt1 = 0, tt2=0, tt3 = 0, tt4 = 0, tt5 = 0;
+			iter = GraphUtil.listSubjects(m2.getGraph(), Node.ANY, Node.ANY);
 			while (iter.hasNext()) {
-				s = iter.nextResource();
-				if (s.isAnon()) {
-					long t = System.nanoTime();
-					StmtIterator stmts = m2.listStatements(s, null, (RDFNode)null);
+				s = iter.next();
+				if (s.isBlank()) {
+                    ExtendedIterator<Triple> it = m2.getGraph().find(s, Node.ANY, Node.ANY);
 					SortedSet<String> signature = new TreeSet<String>();
-					while (stmts.hasNext()) {
-						Statement stmt = stmts.nextStatement();
-						signature.add(stmt.getPredicate().toString() + "+" + stmt.getObject().toString());
+					while (it.hasNext()) {
+						Triple t = it.next();
+						signature.add(t.getPredicate().toString() + "+" + t.getObject().toString());
 					}
 					StringBuffer b = new StringBuffer();
 					for (String r: signature) {
 						b.append(r).append("|");
 					}
 					String key = b.toString();
-					assert anodes2id.get(s.getId().getLabelString()) == null;
-					anodes2id.put(s.getId().getLabelString(), key);
+					assert anodes2id.get(s.getBlankNodeLabel()) == null;
+					anodes2id.put(s.getBlankNodeLabel(), key);
 				}
 			}
 		} finally {
@@ -104,55 +106,65 @@ public class RDFDiff {
 	
 	private static Model difference(Model m1, Model m2) {
         Model resultModel = ModelFactory.createDefaultModel();
-        StmtIterator iter = null;
-        Statement stmt;
+        ExtendedIterator<Triple> iter = null;
+        Triple triple;
+        int nbprocessed = 0, nbdiffs = 0;
         try {
-            iter = m1.listStatements();
+            iter = GraphUtil.findAll(m1.getGraph());
             while (iter.hasNext()) {
-                stmt = iter.nextStatement();
-                if (stmt.getSubject().isAnon() && stmt.getObject().isAnon()) {
+                triple = iter.next();
+                nbprocessed++;
+                if (triple.getSubject().isBlank() && triple.getObject().isBlank()) {
                 	// TODO
-                } else if (stmt.getSubject().isAnon()) {
-                	StmtIterator stmts = null;
+                } else if (triple.getSubject().isBlank()) {
+                    ExtendedIterator<Node> it = null;
                 	try {
-                		stmts = m2.listStatements(null, stmt.getPredicate(), stmt.getObject());
-                		if (stmts.hasNext()) {
-                			Statement ec = stmts.nextStatement();
-                			while (stmts.hasNext() && ! bound(stmt.getSubject(),ec.getSubject())) {
-                				ec = stmts.nextStatement();
+                         it = GraphUtil.listSubjects(m2.getGraph(), triple.getPredicate(), triple.getObject());
+                		if (it.hasNext()) {
+                			Node ec = it.next();
+                			while (it.hasNext() && ! bound(triple.getSubject(),ec)) {
+                				ec = it.next();
                 			}
-                			if (! bound(stmt.getSubject(),ec.getSubject())) {
-                				resultModel.add(stmt);
+                			if (! bound(triple.getSubject(),ec)) {
+                				resultModel.getGraph().add(triple);
+                                nbdiffs++;
                 			}
                 		} else {
-                            resultModel.add(stmt);
+                            resultModel.getGraph().add(triple);
+                            nbdiffs++;
                         }
                 	} finally {
-                		stmts.close();
+                        if (null != it)
+                    		it.close();
                 	}
                 	
-                } else if (stmt.getObject().isAnon()) {
-                	StmtIterator stmts = null;
+                } else if (triple.getObject().isBlank()) {
+                    ExtendedIterator<Node> it = null;
                 	try {
-                		stmts = m2.listStatements(stmt.getSubject(), stmt.getPredicate(), (RDFNode)null);
-                		if (stmts.hasNext()) {
-                			Statement ec = stmts.nextStatement();
-                			while (stmts.hasNext() && ! bound(stmt.getObject().asResource(),ec.getObject().asResource())) {
-                				ec = stmts.nextStatement();
+                		it = GraphUtil.listObjects(m2.getGraph(),triple.getSubject(), triple.getPredicate());
+                		if (it.hasNext()) {
+                			Node ec = it.next();
+                			while (it.hasNext() && ! bound(triple.getObject(),ec)) {
+                				ec = it.next();
                 			}
-                			if (! bound(stmt.getObject().asResource(),ec.getObject().asResource())) {
-                				resultModel.add(stmt);
+                			if (! bound(triple.getObject(),ec)) {
+                				resultModel.getGraph().add(triple);
+                                nbdiffs++;
                 			}
                 		} else {
-                            resultModel.add(stmt);
+                            resultModel.getGraph().add(triple);
+                            nbdiffs++;
                         }
                 	} finally {
-                		stmts.close();
+                        if (null != it)
+                    		it.close();
                 	}
                 	
-                } else if (! m2.contains(stmt)) {
-                    resultModel.add(stmt);
+                } else if (! m2.getGraph().contains(triple)) {
+                    resultModel.getGraph().add(triple);
+                    nbdiffs++;
                 }
+            System.out.print("" + nbdiffs + "/" + nbprocessed + "\r");
             }
         } finally {
             iter.close();
@@ -161,10 +173,10 @@ public class RDFDiff {
 	}
 
 
-	private static boolean bound(Resource n1, Resource n2) {
-		if (n2.isAnon()) {
-			String k1 = anodes2id.get(n1.getId().getLabelString());
-			String k2 = anodes2id.get(n2.getId().getLabelString());
+	private static boolean bound(Node n1, Node n2) {
+		if (n2.isBlank()) {
+			String k1 = anodes2id.get(n1.getBlankNodeLabel());
+			String k2 = anodes2id.get(n2.getBlankNodeLabel());
 			return k1 == k2 || (k1 != null && k1.equals(k2));
 		}
 		return false;

@@ -468,10 +468,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private String currentNym = null;
 
     protected ExampleExpanderWikiModel exampleExpander;
+    protected FrenchDefinitionExtractorWikiModel definitionExpander;
+
     @Override
     public void setWiktionaryIndex(WiktionaryIndex wi) {
         super.setWiktionaryIndex(wi);
         exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("fr"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+        definitionExpander = new FrenchDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
     }
 
     private Set<String> defTemplates = null;
@@ -1327,10 +1330,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     @Override
     public void extractDefinition(String definition, int defLevel) {
-        // TODO: USE A WikiModel to correctly extract French definitions
-        String def = cleanUpMarkup(definition);
-        if (def != null && ! def.equals("")) {
-            wdh.registerNewDefinition(definition, defLevel);
-        }
+        // TODO: properly handle macros in definitions.
+        definitionExpander.parseDefinition(definition, defLevel);
     }
+
 }

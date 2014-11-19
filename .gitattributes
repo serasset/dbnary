@@ -473,7 +473,6 @@ experiments/ldl2014/src/main/java/org/getalp/dbnary/experiment/translation/Trans
 experiments/ldl2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFinnishGlossFilter.java -text svneol=unset#text/plain
 experiments/ldl2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestFrenchPreprocessing.java -text svneol=unset#text/plain
 experiments/ldl2014/src/test/java/org/getalp/dbnary/experiment/preprocessing/TestJapaneseGlossFilter.java -text svneol=unset#text/plain
-extractor/ItalianExampleExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/pom.xml -text
 extractor/src/main/java/org/getalp/dbnary/AbstractWiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/DbnaryModel.java -text svneol=unset#text/plain
@@ -535,6 +534,7 @@ extractor/src/main/java/org/getalp/dbnary/fra/FrenchLangtoCode.java -text svneol
 extractor/src/main/java/org/getalp/dbnary/fra/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/fra/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/ita/ItalianExampleExtractorWikiModel.java -text
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianLangToCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianPronunciationExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianTranslationExtractorWikiModel.java -text svneol=unset#text/plain

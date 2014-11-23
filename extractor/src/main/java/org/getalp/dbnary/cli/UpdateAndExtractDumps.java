@@ -11,6 +11,10 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -195,12 +199,13 @@ public class UpdateAndExtractDumps {
 		
 		String latestFile = latestdir + "/" + lang +"_dbnary_" + model.toLowerCase() + ".ttl";
 		if (compress) latestFile = latestFile + ".bz2";
-		File lf = new File(latestFile);
-		if (lf.exists()) {
-			// System.err.println("Deleting old link: " + latestFile );
-			lf.delete();
-		}
-		try {
+		Path lf = Paths.get(latestFile);
+        try {
+            Files.deleteIfExists(lf);
+        } catch (IOException e) {
+            System.err.format("IOException while attempting to delete file '%s'.", lf);
+        }
+        try {
 			String linkTo = "../" + lang + "/" + extractedFile.getName();
 			String linkName = lang + "_dbnary_" + model.toLowerCase() + ".ttl";
 			if (compress) linkName = linkName + ".bz2";

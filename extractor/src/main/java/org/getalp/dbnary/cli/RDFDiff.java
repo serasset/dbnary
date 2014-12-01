@@ -164,7 +164,7 @@ public class RDFDiff {
                     resultModel.getGraph().add(triple);
                     nbdiffs++;
                 }
-            System.out.print("" + nbdiffs + "/" + nbprocessed + "\r");
+            System.err.print("" + nbdiffs + "/" + nbprocessed + "\r");
             }
         } finally {
             iter.close();

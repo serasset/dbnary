@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
+import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
 		super(wdh);
+	}
+
+	protected GermanExtractorWikiModel gewm;
+
+	@Override
+	public void setWiktionaryIndex(WiktionaryIndex wi) {
+		super.setWiktionaryIndex(wi);
+		gewm = new GermanExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
 	}
 
 	// protected final static Pattern languageSectionPattern;
@@ -181,11 +190,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private boolean isGermanLanguageHeader(Matcher m) {
 		return m.group(2).equals("Deutsch");
 	}
-
-	/**
-	 * @uml.property  name="currentNym"
-	 * @uml.associationEnd  qualifier="key:java.lang.String java.lang.String"
-	 */
 
 	// TODO: Prise en compte des diminutifs (Verkleinerungsformen)
 	// TODO: Prise en compte des "concepts dérivés" ? (Abgeleitete Begriffe)
@@ -378,7 +382,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		String page=lexEntryToPage(wiktionaryPageName);
 		String normalizedPOS=wdh.currentWiktionaryPos();
 		//if the currentEntry has a page of conjugation or declination
-		GermanExtractorWikiModel gewm = new GermanExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
 		if (null!=page && -1!=page.indexOf(normalizedPOS)) {
 //			if(inflectedFormMarker.contains(normalizedPOS)){
 //				gewm.parseInflectedForms(page, normalizedPOS);
@@ -389,8 +392,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				gewm.parseDeclination(page, normalizedPOS);
 			}
 		} else {
-			Pattern pattern=Pattern.compile(macroOrPOSPatternString);
-			Matcher m=pattern.matcher(pageContent.substring(startOffset, endOffset));
+			Matcher m=macroOrPOSPattern.matcher(pageContent.substring(startOffset, endOffset));
 				if(m.find()){
 					gewm.parseOtherForm(m.group(0), normalizedPOS);
 				}

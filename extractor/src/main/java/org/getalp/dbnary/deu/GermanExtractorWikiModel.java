@@ -54,7 +54,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	private enum Cas {NOMINATIF,GENITIF,DATIF,ACCUSATIF, NOTHING};
 	private enum Mode {PARTICIPS,IMPERATIV,INDICATIV,SUBJONCTIVE,NOTHING};
 	private enum Tense {PRESENT,PAST,NOTHING};
-	private enum  Degree {POSITIVE,COMPARATIVE,SUPERLATIVE,NOTHING};
+	private enum Degree {POSITIVE,COMPARATIVE,SUPERLATIVE,NOTHING};
 	private enum Number {SINGULAR,PLURAL,NOTHING};
 	private enum Person {FIRST,SECOND,THIRD,NOTHING};
 	private Degree degree=Degree.NOTHING;

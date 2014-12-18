@@ -449,7 +449,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 				cell = c;
 				log.debug("[HORRIBLE] link is not in a TD, but in a TR element! Page: " + delegate.currentLexEntry() + ", form: " + word);
 			} else {
-				log.error("Could not find the parent cell while extracting other form's template. Page: " + delegate.currentLexEntry() + ", form: " + word);
+				log.debug("Could not find the parent cell while extracting other form's template. Page: " + delegate.currentLexEntry() + ", form: " + word);
 				return;
 			}
 		}

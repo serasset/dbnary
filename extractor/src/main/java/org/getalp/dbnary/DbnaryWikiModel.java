@@ -146,12 +146,16 @@ public class DbnaryWikiModel extends WikiModel {
                     // found magic word template
                     return result;
             }
-            // replace SPACES with underscore('_') and first character as uppercase
-            String name = encodeTitleToUrl(articleName, true);
- 
+
             if (isTemplateNamespace(namespace)) {
-            	if (null != wi)
-                    return getIncludeOnlyText(wi.getTextOfPage(namespace + ":" + articleName));
+            	if (null != wi) {
+					String rawText = getIncludeOnlyText(wi.getTextOfPage(namespace + ":" + articleName));
+					String name;
+					if (null == rawText && ! (name = articleName.trim()).equals(articleName))
+						rawText = getIncludeOnlyText(wi.getTextOfPage(namespace + ":" + name));
+					// TODO: should I try with: name = encodeTitleToUrl(articleName, true);
+					return rawText;
+				}
             }
             return null;
     }

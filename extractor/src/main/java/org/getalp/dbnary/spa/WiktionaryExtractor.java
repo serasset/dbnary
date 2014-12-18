@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	
 	private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-	protected final static String languageSectionPatternString = "\\{\\{([\\p{Upper}\\-]*)(?:\\|([^\\}]*))?\\}\\}";
+	protected final static String languageSectionPatternString = "^\\s*\\{\\{([\\p{Upper}\\-]*)(?:\\|([^\\}]*))?\\}\\}";
 	protected final static String headerPatternString ;
 	protected final static String spanishDefinitionPatternString;
 
@@ -45,11 +46,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected final static HashSet<String> ignorableSectionMarkers;
 	protected final static HashMap<String, String> nymMarkerToNymName;
 
-
+	protected SpanishDefinitionExtractorWikiModel definitionExpander;
 
 	static {
 	
-		languageSectionPattern = Pattern.compile(languageSectionPatternString);
+		languageSectionPattern = Pattern.compile(languageSectionPatternString, Pattern.MULTILINE);
 		multilineMacroPatternString = 
 				new StringBuilder().append("\\{\\{")
 				.append("([^\\}\\|]*)(?:\\|([^\\}]*))?")
@@ -141,6 +142,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		nymMarkerToNymName.put("hiperónimo", "hyper");
 		nymMarkerToNymName.put("hiperónimos", "hyper");
 
+	}
+
+	@Override
+	public void setWiktionaryIndex(WiktionaryIndex wi) {
+		super.setWiktionaryIndex(wi);
+		definitionExpander = new SpanishDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}", "/${title}");
 	}
 
 	@Override
@@ -425,7 +432,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 					}
 
 					if (def != null && !def.equals("")) {
-						wdh.registerNewDefinition(def, senseNumber);
+						extractDefinition(def, senseNumber);
 					}
 				}
 			} else if (definitionMatcher.group(3) != null) {
@@ -465,6 +472,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				}
 			}
 		}
+	}
+
+	public void extractDefinition(String definition, String senseNumber) {
+		definitionExpander.parseDefinition(definition, senseNumber);
 	}
 
 	Pattern nymValuesPattern = Pattern.compile("(?:" + WikiPatterns.linkPatternString + ")|(?:" + "(\\([^\\)]*\\))" + ")|(,)");

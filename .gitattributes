@@ -559,6 +559,7 @@ extractor/src/main/java/org/getalp/dbnary/rus/RussianLangtoCode.java -text svneo
 extractor/src/main/java/org/getalp/dbnary/rus/RussianMorphoExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/rus/RussianTranslationExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/rus/WiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/spa/SpanishDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/spa/SpanishHeaderExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/spa/SpanishTranslationExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/spa/WiktionaryExtractor.java -text svneol=unset#text/plain

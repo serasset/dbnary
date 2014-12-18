@@ -33,6 +33,7 @@ public class SpanishDefinitionExtractorWikiModel extends DbnaryWikiModel {
 		this.delegate = we;
 	}
 
+
 	public void parseDefinition(String definition, String senseNum) {
 		// Render the definition to plain text, while ignoring the example template
         String def = render(new PlainTextConverter(), definition).trim();
@@ -47,5 +48,19 @@ public class SpanishDefinitionExtractorWikiModel extends DbnaryWikiModel {
 		// Currently just expand the definition to get the full text.
 		super.substituteTemplateCall(templateName, parameterMap, writer);
 	}
+
+	// Hack: Spanish wiktionary uses #REDIRECCIÓN instead of #REDIRECT, fix it in the raw wiki text as bliki expects #redirect
+	@Override
+	public String getRawWikiContent(String namespace, String articleName, Map<String, String> map) {
+		String result = super.getRawWikiContent(namespace, articleName, map);
+		if (result != null) {
+			if (result.startsWith("#REDIRECCIÓN")) {
+				result = "#REDIRECT" + result.substring(12);
+			}
+			return result;
+		}
+		return null;
+	}
+
 
 }

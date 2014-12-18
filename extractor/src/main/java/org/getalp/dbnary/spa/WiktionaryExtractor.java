@@ -475,6 +475,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 	public void extractDefinition(String definition, String senseNumber) {
+		definitionExpander.setPageName(wiktionaryPageName);
 		definitionExpander.parseDefinition(definition, senseNumber);
 	}
 

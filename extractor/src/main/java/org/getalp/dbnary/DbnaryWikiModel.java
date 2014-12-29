@@ -149,10 +149,10 @@ public class DbnaryWikiModel extends WikiModel {
 
             if (isTemplateNamespace(namespace)) {
             	if (null != wi) {
-					String rawText = getIncludeOnlyText(wi.getTextOfPage(namespace + ":" + articleName));
+					String rawText = prepareForTransclusion(wi.getTextOfPage(namespace + ":" + articleName));
 					String name;
 					if (null == rawText && ! (name = articleName.trim()).equals(articleName))
-						rawText = getIncludeOnlyText(wi.getTextOfPage(namespace + ":" + name));
+						rawText = prepareForTransclusion(wi.getTextOfPage(namespace + ":" + name));
 					// TODO: should I try with: name = encodeTitleToUrl(articleName, true);
 					return rawText;
 				}
@@ -160,22 +160,33 @@ public class DbnaryWikiModel extends WikiModel {
             return null;
     }
 
-    public String getIncludeOnlyText(String rawWikiText) {
+    public String prepareForTransclusion(String rawWikiText) {
         if (null == rawWikiText) return null;
 
         int noIncludeOffset = rawWikiText.indexOf("<noinclude>");
         if (-1 != noIncludeOffset) {
             int noIncludeEndOffset = rawWikiText.indexOf("</noinclude>", noIncludeOffset);
             if (-1 != noIncludeEndOffset)
-                return new StringBuffer().append(rawWikiText.substring(0, noIncludeOffset))
-                        .append(rawWikiText.substring(noIncludeEndOffset + "</noinclude>".length())).toString();
+                return prepareForTransclusion(new StringBuffer().append(rawWikiText.substring(0, noIncludeOffset))
+                        .append(rawWikiText.substring(noIncludeEndOffset + "</noinclude>".length())).toString());
         }
-        int includeOnlyOffset = rawWikiText.indexOf("<includeonly>");
+		int onlyIncludeOffset = rawWikiText.indexOf("<onlyinclude>");
+		if (-1 != onlyIncludeOffset) {
+			int onlyIncludeEndOffset = rawWikiText.indexOf("</onlyinclude>", onlyIncludeOffset);
+			if (-1 != onlyIncludeEndOffset)
+				return rawWikiText.substring(onlyIncludeOffset + "<onlyinclude>".length(), onlyIncludeEndOffset);
+		}
+		int includeOnlyOffset = rawWikiText.indexOf("<includeonly>");
         if (-1 != includeOnlyOffset) {
             int includeOnlyEndOffset = rawWikiText.indexOf("</includeonly>", noIncludeOffset);
-            if (-1 != includeOnlyEndOffset)
-                return rawWikiText.substring(includeOnlyOffset + "<includeonly>".length(), includeOnlyEndOffset);
-        }
+            if (-1 != includeOnlyEndOffset) {
+				String removeTags = new StringBuffer()
+						.append(rawWikiText.substring(0, includeOnlyOffset))
+						.append(rawWikiText.substring(includeOnlyOffset + "<includeonly>".length(), includeOnlyEndOffset))
+						.append(rawWikiText.substring(includeOnlyEndOffset + "</includeonly>".length())).toString();
+				return prepareForTransclusion(removeTags);
+			}
+		}
         return rawWikiText;
 
     }

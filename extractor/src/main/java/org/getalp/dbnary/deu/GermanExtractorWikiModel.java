@@ -45,7 +45,6 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	public GermanExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wi, locale, imageBaseURL, linkBaseURL);
 		this.wdh=wdh;
-        setPageName(wdh.currentLexEntry());
 		inflections= new HashSet<PropertyObjectPair>();
 	}
 	
@@ -160,7 +159,7 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		declinatedFormMarker = new HashSet<String>();
 		declinatedFormMarker.add("adjektivische Deklination");
 	}
-	
+
 	public void parseOtherForm(String page,String originalPos){
 		if (null==originalPos) {
 			wdh.addPartOfSpeech("");
@@ -168,45 +167,45 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		}
 		if (null!=page) {
 			Document doc = wikicodeToHtmlDOM(page);
-			if(null!=doc && !page.contains("\n")){
-					initializeExclusiveInflectionInfo();
-					NodeList tables =doc.getElementsByTagName("table");
-					for(int i=0;i<tables.getLength();i++){
-						Element tablesItem=(Element) tables.item(i);
-						if(originalPos.equals("Possessivpronomen")){
-							isOtherForm=1;
-							getTablesDeclination(tablesItem);
-						} else if (page.contains("adjektivische Deklination")){
-							isOtherForm=3;
-							getTablesOtherForm(tablesItem);
-						}else {
-							getTablesOtherForm(tablesItem);
-						}
+			if(null!=doc && !page.contains("\n")) {
+				initializeExclusiveInflectionInfo();
+				NodeList tables = doc.getElementsByTagName("table");
+				for (int i = 0; i < tables.getLength(); i++) {
+					Element tablesItem = (Element) tables.item(i);
+					if (originalPos.equals("Possessivpronomen")) {
+						isOtherForm = 1;
+						getTablesDeclination(tablesItem);
+					} else if (page.contains("adjektivische Deklination")) {
+						isOtherForm = 3;
+						getTablesOtherForm(tablesItem);
+					} else {
+						getTablesOtherForm(tablesItem);
 					}
 				}
-				} else {
-					page=page.replaceAll("\\<.*\\>", "\n  =");
-					System.out.println(page);
-					HashMap<String,String> pag = new HashMap<String,String>();
-					pag=(HashMap) (WikiTool.parseArgs(page.replace("{","").replace("}","")));
-					for(String key : pag.keySet()){
-						String r=pag.get(key);
-						if (-1==r.indexOf("Bild") && -1==r.indexOf("Titel") && -1==r.indexOf("Konjugation") && (-1==r.indexOf("Deutsch") && -1!=r.indexOf(wdh.currentWiktionaryPos()))) {
-							r=extractString(r, "=", "\n");
-							if(!r.isEmpty()){
-								if(!key.equals("Hilfsverb")){
-									if (-1!=r.indexOf('(')) {
-										addForm(r.replaceAll("!|\\(|\\)",""));
-									}
-									addForm(r.replaceAll("!|\\(.*\\)", ""));
-								}
+			}
+		} else {
+			page=page.replaceAll("\\<.*\\>", "\n  =");
+			System.out.println(page);
+			HashMap<String,String> pag = new HashMap<String,String>();
+			pag=(HashMap) (WikiTool.parseArgs(page.replace("{","").replace("}","")));
+			for(String key : pag.keySet()){
+				String r=pag.get(key);
+				if (-1==r.indexOf("Bild") && -1==r.indexOf("Titel") && -1==r.indexOf("Konjugation") && (-1==r.indexOf("Deutsch") && -1!=r.indexOf(wdh.currentWiktionaryPos()))) {
+					r=extractString(r, "=", "\n");
+					if(!r.isEmpty()){
+						if(!key.equals("Hilfsverb")){
+							if (-1!=r.indexOf('(')) {
+								addForm(r.replaceAll("!|\\(|\\)",""));
 							}
+							addForm(r.replaceAll("!|\\(.*\\)", ""));
 						}
 					}
 				}
-//			}
+			}
 		}
-//    }
+		//			}
+	}
+	 //   }
 	
 	private void getTablesConj(Element tablesItem, int iBegin, int jBegin){
 		int iEnd,jEnd;
@@ -546,9 +545,9 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	}
 	
 	//otherway some phrasal verb don't have any inflected form
-	public String getIncludeOnlyText(String rawWikiText) {
-		return rawWikiText;
-	}
+//	public String prepareForTransclusion(String rawWikiText) {
+//		return rawWikiText;
+//	}
 	
 	private void addInflectionsInfo(){
 		switch(degree){

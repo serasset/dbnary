@@ -98,6 +98,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		ignorableSectionMarkers = new HashSet<String>(20);
 		ignorableSectionMarkers.add("Silbentrennung");
 		ignorableSectionMarkers.add("Aussprache");
+		ignorableSectionMarkers.add("Worttrennung");
 		ignorableSectionMarkers.add("Herkunft");
 		ignorableSectionMarkers.add("Gegenworte");
 		ignorableSectionMarkers.add("Beispiele");
@@ -286,13 +287,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         macro = macro.trim();
         if (macro.startsWith("Lit-"))
             return false;
-        else if (macro.contains("(Deutsch)") || macro.contains("Deutshchland") || macro.contains("Deutsche"))
+        else if (macro.contains("(Deutsch)") || macro.contains("Deutschland") || macro.contains("Deutsche"))
             return false;
         else if (macro.startsWith("Ü-"))
             return false;
-        else
-            return (macro.contains("Deutsch")) || (macro.contains("Tabelle"));
-
+        else if ((macro.contains("Deutsch")) || (macro.contains("Tabelle"))) {
+			log.debug("Inflexion Macro: {} in {}", macro, this.wiktionaryPageName);
+			return true;
+		} else
+			return false;
     }
 
 
@@ -381,6 +384,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		//TODO : next step : for each page with more than one conjugation use all the table
 		String page=lexEntryToPage(wiktionaryPageName);
 		String normalizedPOS=wdh.currentWiktionaryPos();
+		gewm.setPageName(wiktionaryPageName);
 		//if the currentEntry has a page of conjugation or declination
 		if (null!=page && -1!=page.indexOf(normalizedPOS)) {
 //			if(inflectedFormMarker.contains(normalizedPOS)){

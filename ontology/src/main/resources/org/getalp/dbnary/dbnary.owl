@@ -23,8 +23,8 @@
      xmlns:lemon="http://www.lemon-model.net/lemon#">
     <owl:Ontology rdf:about="http://kaiko.getalp.org/dbnary">
         <rdfs:label>dbnary</rdfs:label>
-        <rdfs:comment xml:lang="en">DBnary: A wiktionary lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the lemon model (http://www.lemon-model.net/lemon).</rdfs:comment>
         <rdfs:seeAlso>http://kaiko.getalp.org/about-dbnary/</rdfs:seeAlso>
+        <rdfs:comment xml:lang="en">DBnary: A wiktionary lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the lemon model (http://www.lemon-model.net/lemon).</rdfs:comment>
         <owl:imports rdf:resource="http://www.lemon-model.net/lemon"/>
     </owl:Ontology>
     
@@ -177,10 +177,8 @@
 
     <!-- http://kaiko.getalp.org/dbnary#exampleSource -->
 
-    <owl:DatatypeProperty rdf:about="&dbnary;exampleSource">
-        <rdfs:domain rdf:resource="&lemon;UsageExample"/>
-    </owl:DatatypeProperty>
-
+    <owl:DatatypeProperty rdf:about="&dbnary;exampleSource"/>
+    
 
 
     <!-- http://kaiko.getalp.org/dbnary#gloss -->
@@ -188,6 +186,16 @@
     <owl:DatatypeProperty rdf:about="&dbnary;gloss">
         <rdfs:comment xml:lang="en">A textual gloss that may be used to disambiguate the translation&apos;s source sense. </rdfs:comment>
         <rdfs:domain rdf:resource="&dbnary;Translation"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnary#note -->
+
+    <owl:DatatypeProperty rdf:about="&dbnary;note">
+        <rdfs:comment xml:lang="en">Textual note that may be used to add information to a LemonElement when no standard vocabularies exists to explicit it.</rdfs:comment>
+        <rdfs:domain rdf:resource="&lemon;LemonElement"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     

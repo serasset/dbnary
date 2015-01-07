@@ -141,6 +141,23 @@
                             </commandlineArgs>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>olia</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>jena.schemagen</mainClass>
+                            <commandlineArgs>
+                                -i ${basedir}/src/main/resources/org/getalp/dbnary/olia.owl \
+                                --package org.getalp.dbnary \
+                                -o ${project.build.directory}/generated-sources/java \
+                                -n OliaOnt \
+                                --owl
+                            </commandlineArgs>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>

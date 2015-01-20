@@ -59,11 +59,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 		headerPatternString = new StringBuilder()
 		.append("(?:")
-		.append("^==([^=].*)==$")
+		.append("^==([^=].*)==\\s*$")
 		.append(")|(?:")
-		.append("^===([^=].*)===$")
+		.append("^===([^=].*)===\\s*$")
 		.append(")|(?:")
-		.append("^====([^=].*)====$")
+		.append("^====([^=].*)====\\s*$")
 		.append(")").toString();
 
 		sectionPatternString = new StringBuilder()

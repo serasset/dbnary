@@ -573,6 +573,11 @@ extractor/src/main/java/org/getalp/dbnary/tur/WiktionaryExtractor.java -text svn
 extractor/src/main/java/org/getalp/dbnary/wiki/ExpandAllWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/wiki/WikiPatterns.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/wiki/WikiTool.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/zho/ChineseDefinitionExtractorWikiModel.java -text
+extractor/src/main/java/org/getalp/dbnary/zho/ChineseLangtoCode.java -text
+extractor/src/main/java/org/getalp/dbnary/zho/ChineseRelatedWordsExtractorWikiModel.java -text
+extractor/src/main/java/org/getalp/dbnary/zho/ChineseTranslationExtractorWikiModel.java -text
+extractor/src/main/java/org/getalp/dbnary/zho/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dilaf/DilafExtractorException.java -text
 extractor/src/main/java/org/getalp/dilaf/DilafLemonDataHandler.java -text
 extractor/src/main/java/org/getalp/dilaf/DilafZarmaExtractor.java -text

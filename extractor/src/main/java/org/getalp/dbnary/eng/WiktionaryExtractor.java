@@ -57,6 +57,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         nymMarkerToNymName.put("Hypernyms", "hyper");
         nymMarkerToNymName.put("Meronyms", "mero");
         nymMarkerToNymName.put("Holonyms", "holo");
+        nymMarkerToNymName.put("Troponyms", "tropo");
 
         // TODO: Treat Abbreviations and Acronyms and contractions and Initialisms
         // TODO: Alternative forms
@@ -264,6 +265,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void extractPron(int startOffset, int endOffset) {
     	
     	Matcher pronMatcher = pronPattern.matcher(pageContent);
+        pronMatcher.region(startOffset,endOffset);
     	while (pronMatcher.find()) {
     		String pron = pronMatcher.group(1);
     		

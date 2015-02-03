@@ -413,8 +413,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         nymMarkerToNymName.put("antonymes", "ant");
         nymMarkerToNymName.put("ant", "ant");
         nymMarkerToNymName.put("anto", "ant");
-         
-        // paronymes, troponymes, gentillés ?
+        nymMarkerToNymName.put("troponymes", "tropo");
+        nymMarkerToNymName.put("tropo", "tropo");
+
+        // paronymes, gentillés ?
 
         // Check if these markers still exist in new french organization...
         sectionMarkers = new HashSet<String>(200);

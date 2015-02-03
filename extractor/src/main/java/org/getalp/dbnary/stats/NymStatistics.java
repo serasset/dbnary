@@ -41,13 +41,14 @@ public class NymStatistics {
 		out.print("," + countRelations(DBnaryOnt.hyponym, m1));
 		out.print("," + countRelations(DBnaryOnt.meronym, m1));
 		out.print("," + countRelations(DBnaryOnt.holonym, m1));
+        out.print("," + countRelations(DBnaryOnt.troponym, m1));
 
 		out.flush();
 
 	}
 
 	public static String getHeaders() {
-		return "syn,qsyn,ant,hyper,hypo,mero,holo";
+		return "syn,qsyn,ant,hyper,hypo,mero,holo,tropo";
 	}
 
 	public static void printStats(Model m1, String language, PrintWriter printWriter) {

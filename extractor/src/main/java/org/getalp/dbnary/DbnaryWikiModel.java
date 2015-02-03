@@ -122,7 +122,7 @@ public class DbnaryWikiModel extends WikiModel {
 			docSource = new InputSource();
 		}
 
-		String html = render(new HTMLConverter(), wikicode);
+		String html = expandWikiCode(wikicode);
 
 		docSource.setCharacterStream(new StringReader("<div>" + html + "</div>"));
 
@@ -138,7 +138,11 @@ public class DbnaryWikiModel extends WikiModel {
 
 		return doc;
 	}
-	
+
+	protected String expandWikiCode(String wikicode) {
+		return render(new HTMLConverter(), wikicode);
+	}
+
 	@Override
     public String getRawWikiContent(String namespace, String articleName, Map<String, String> map) {
             String result = super.getRawWikiContent(namespace, articleName, map);

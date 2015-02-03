@@ -76,6 +76,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		nymPropertyMap.put("mero", DBnaryOnt.meronym);
 		nymPropertyMap.put("holo", DBnaryOnt.holonym);
 		nymPropertyMap.put("qsyn", DBnaryOnt.approximateSynonym);
+        nymPropertyMap.put("tropo", DBnaryOnt.troponym);
 
 		// Portuguese
 		posAndTypeValueMap.put("Substantivo", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));

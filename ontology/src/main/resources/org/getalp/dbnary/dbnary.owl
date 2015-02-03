@@ -164,6 +164,15 @@
     
 
 
+    <!-- http://kaiko.getalp.org/dbnary#troponym -->
+
+    <owl:ObjectProperty rdf:about="&dbnary;troponym">
+        <rdfs:comment xml:lang="en">A verb that indicates more precisely the manner of doing something by replacing a verb of a more generalized meaning. E.g.: &quot;Stroll&quot; is a troponym of &quot;walk&quot;, since it involves a slow and relaxed sort of walking.</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&dbnary;topNymProperty"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //

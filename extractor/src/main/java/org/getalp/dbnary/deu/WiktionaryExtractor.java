@@ -35,12 +35,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		super(wdh);
 	}
 
-	protected GermanExtractorWikiModel gewm;
+	protected GermanMorphologyExtractorWikiModel morphologyExtractorWikiModel;
 
 	@Override
 	public void setWiktionaryIndex(WiktionaryIndex wi) {
 		super.setWiktionaryIndex(wi);
-		gewm = new GermanExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
+		morphologyExtractorWikiModel = new GermanMorphologyExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
 	}
 
 	// protected final static Pattern languageSectionPattern;
@@ -139,6 +139,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		ignorableSectionMarkers.add("Charakteristische Wortkombinationen");
 		ignorableSectionMarkers.add("Abgeleitete Begriffe");
 
+		// Others
+		ignorableSectionMarkers.add("Anmerkung");
+		ignorableSectionMarkers.add("Anmerkung Küpper");
+		ignorableSectionMarkers.add("Anmerkung Steigerung");
+		ignorableSectionMarkers.add("Lemmaverweis"); // TODO: Refers to another entry... Should keep the info.
+		ignorableSectionMarkers.add("Veraltete Schreibweisen");
+		ignorableSectionMarkers.add("Steigerbarkeit Adjektiv");
+
 		nymMarkers = new HashSet<String>(20);
 		nymMarkers.add("Synonyme");
 		nymMarkers.add("Gegenwörter");
@@ -233,16 +241,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         if (null != m.group(1) ) {
             //go to the good block
-            if (m.group(1).equals("Bedeutungen")) {
+			String template = m.group(1).trim();
+            if (template.equals("Bedeutungen")) {
                 return Block.DEFBLOCK;
-            } else if (m.group(1).equals("Alternative Schreibweisen")) {
+            } else if (template.equals("Alternative Schreibweisen")) {
                 return Block.ORTHOALTBLOCK;
-            } else if (nymMarkers.contains(m.group(1))) {
-                context.put("nym", nymMarkerToNymName.get(m.group(1)));
+            } else if (nymMarkers.contains(template)) {
+                context.put("nym", nymMarkerToNymName.get(template));
                 return Block.NYMBLOCK;
-            } else if (ignorableSectionMarkers.contains(m.group(1))) {
+            } else if (ignorableSectionMarkers.contains(template)) {
                 return Block.NOBLOCK;
-            } else if(isInflexionMacro(m.group(1))) {
+            } else if(isInflexionMacro(template)) {
                 context.put("start", m.start());
                 return Block.INFLECTIONBLOCK;
                 //the followed comentary permit the recognition of page which are containing inflected form
@@ -254,12 +263,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 return null;
             }
         } else if (null != m.group(3)) {
-            if(m.group(3).equals("Deklinierte Form")) {
+			String template = m.group(3).trim();
+			if(template.equals("Deklinierte Form")) {
                 context.put("inflectedForm",true);
 
             }
             //TODO: what should I do with deklinierte formen
-            context.put("pos", m.group(3).trim());
+            context.put("pos", template);
             // TODO: language in group 4 is the language of origin of the entry. Maybe we should keep it.
             // TODO: filter out ignorable part of speech;
             return Block.POSBLOCK;
@@ -292,7 +302,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         else if (macro.startsWith("Ü-"))
             return false;
         else if ((macro.contains("Deutsch")) || (macro.contains("Tabelle"))) {
-			log.debug("Inflexion Macro: {} in {}", macro, this.wiktionaryPageName);
+			// log.debug("Inflexion Macro: {} in {}", macro, this.wiktionaryPageName);
 			return true;
 		} else
 			return false;
@@ -381,30 +391,45 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	
 	private void extractInflections(int startOffset, int endOffset){
+		parseInflectionTables(startOffset, endOffset);
+
+		// parseConjugationAndDeclinationPages(startOffset, endOffset);
+		
+	}
+
+	private void parseConjugationAndDeclinationPages(int startOffset, int endOffset) {
+
 		//TODO : next step : for each page with more than one conjugation use all the table
+		// TODO: check and refactor
 		String page=lexEntryToPage(wiktionaryPageName);
 		String normalizedPOS=wdh.currentWiktionaryPos();
-		gewm.setPageName(wiktionaryPageName);
+		// deklinationExtractor.setPageName(wiktionaryPageName);
 		//if the currentEntry has a page of conjugation or declination
 		if (null!=page && -1!=page.indexOf(normalizedPOS)) {
 //			if(inflectedFormMarker.contains(normalizedPOS)){
-//				gewm.parseInflectedForms(page, normalizedPOS);
+//				deklinationExtractor.parseInflectedForms(page, normalizedPOS);
 //			}
 			if (verbMarker.contains(normalizedPOS)) {
-				gewm.parseConjugation(page, normalizedPOS);
+				// deklinationExtractor.parseConjugation(page, normalizedPOS);
 			} else {
-				gewm.parseDeclination(page, normalizedPOS);
+				// deklinationExtractor.parseTables(page, normalizedPOS);
 			}
 		} else {
 			Matcher m=macroOrPOSPattern.matcher(pageContent.substring(startOffset, endOffset));
-				if(m.find()){
-					gewm.parseOtherForm(m.group(0), normalizedPOS);
-				}
+			if(m.find()){
+				// deklinationExtractor.parseOtherForm(m.group(0), normalizedPOS);
+			}
 		}
-		
-		
+
 	}
-	
+
+	private void parseInflectionTables(int startOffset, int endOffset) {
+		morphologyExtractorWikiModel.setPageName(wiktionaryPageName);
+		String region = pageContent.substring(startOffset, endOffset);
+
+		morphologyExtractorWikiModel.parseOtherForm(region, wdh.currentWiktionaryPos());
+	}
+
 	private final static String germanDeclinationSuffix =" (Deklination)";
 	private final static String germanConjugationSuffix =" (Konjugation)";
 	
@@ -629,7 +654,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	public void extractOtherForms( int start, int end){
 //		Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
 //		otherFormMatcher.region(start, end);
-//		GermanExtractorWikiModel gewm = new
+//		GermanDeklinationExtractorWikiModel deklinationExtractor = new
 //		while(otherFormMatcher.find()){
 //		}
 	}

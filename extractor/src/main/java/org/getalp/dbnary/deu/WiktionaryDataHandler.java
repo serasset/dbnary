@@ -3,6 +3,7 @@ package org.getalp.dbnary.deu;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.OliaOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
     public WiktionaryDataHandler(String lang) {
         super(lang);
+        aBox.setNsPrefix("olia", OliaOnt.getURI());
     }
 
     public static boolean isValidPOS(String pos) {

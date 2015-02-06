@@ -1,13 +1,6 @@
 package org.getalp.dbnary.deu;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.getalp.dbnary.*;
-import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,34 +8,39 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
-public class GermanExtractorWikiModel extends DbnaryWikiModel {
-	
+public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
+
 	private final static String germanMorphoBegin = "{{Deutsch ";
 	private final static String germanMorphoEnd = "}}";
 	private final static String germanRegularVerbString="Deutsch Verb regelmäßig";
 	private final static String germanNonRegularVerbString=" unregelmäßig";
 	private static Pattern germanRegularVerbPattern;
 	private static Pattern germanNonRegularVerbPattern;
-	
-	
-	
+
+
+
 	private  boolean isPhrasal=false;
-	
+
 	private HashSet<PropertyObjectPair> inflections;
-	
+
 //	private boolean reflexiv=false;
 	static{
 		germanRegularVerbPattern= Pattern.compile(germanRegularVerbString);
 		germanNonRegularVerbPattern= Pattern.compile(germanNonRegularVerbString);
 	}
-	
-	private Logger log = LoggerFactory.getLogger(GermanExtractorWikiModel.class);
-	
+
+	private Logger log = LoggerFactory.getLogger(GermanOriginalExtractorWikiModel.class);
+
 	private IWiktionaryDataHandler wdh;
-	
-	public GermanExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+
+	public GermanOriginalExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wi, locale, imageBaseURL, linkBaseURL);
 		this.wdh=wdh;
 		inflections= new HashSet<PropertyObjectPair>();
@@ -56,11 +54,11 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	private enum Degree {POSITIVE,COMPARATIVE,SUPERLATIVE,NOTHING};
 	private enum Number {SINGULAR,PLURAL,NOTHING};
 	private enum Person {FIRST,SECOND,THIRD,NOTHING};
-	private Degree degree=Degree.NOTHING;
-	private Mode mode=Mode.NOTHING;
+	private Degree degree= Degree.NOTHING;
+	private Mode mode= Mode.NOTHING;
 	private Tense tense = Tense.NOTHING;
-	private Number number=Number.NOTHING;
-	private Cas cas=Cas.NOTHING;
+	private Number number= Number.NOTHING;
+	private Cas cas= Cas.NOTHING;
 	private Genre genre= Genre.NOTHING;
 	private Person person = Person.NOTHING;
 	
@@ -69,8 +67,8 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 	
 	private void initializeExclusiveInflectionInfo(){
 		inflections=new HashSet<PropertyObjectPair>();
-		number=Number.NOTHING;
-		cas=Cas.NOTHING;
+		number= Number.NOTHING;
+		cas= Cas.NOTHING;
 		genre= Genre.NOTHING;
 		person = Person.NOTHING;
 	}
@@ -103,35 +101,35 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 		NodeList tables =doc.getElementsByTagName("table");
 		
 		Element tablesItem =(Element) tables.item(3);
-		mode=Mode.NOTHING;
+		mode= Mode.NOTHING;
 		if(mr.find()) {
 //			System.out.println("regelmäßig");
-			tense=Tense.PRESENT;
+			tense= Tense.PRESENT;
 			getTablesConj(tablesItem,2,1);
-			tense=Tense.PAST;
+			tense= Tense.PAST;
 			getTablesConj(tablesItem,11,1);
 		}
 		else if (mu.find()) {
 //			System.out.println("unregelmäßig");			
-			tense=Tense.PRESENT;
+			tense= Tense.PRESENT;
 			getTablesConj(tablesItem,3,2);
-			tense=Tense.PAST;
+			tense= Tense.PAST;
 			getTablesConj(tablesItem,13,2);
 		}
 		else{
 //			System.out.println("anderen Type");
-			tense=Tense.PRESENT;
+			tense= Tense.PRESENT;
 			getTablesConj(tablesItem,3,2);
-			tense=Tense.PAST;
+			tense= Tense.PAST;
 			getTablesConj(tablesItem,13,2);
 		}
-		mode=Mode.PARTICIPS;
+		mode= Mode.PARTICIPS;
 		
 		
 		tablesItem =(Element) tables.item(1);
 		getTablesConj(tablesItem,11,0);
 		
-		mode=Mode.IMPERATIV;
+		mode= Mode.IMPERATIV;
 		tablesItem =(Element) tables.item(2);
 		getTablesConj(tablesItem,2,1);
 //		getTablesConj(tablesItem,2,1,5,2);
@@ -141,19 +139,20 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 
 	}
 	
-	public void parseDeclination(String declinationTemplateCall, String originalPos){
+	public void parseDeclination(String declinationTemplateCall){
 		Document doc = wikicodeToHtmlDOM(declinationTemplateCall);
 		if (null==doc) {
 			return ;
 		}
 		NodeList tables =doc.getElementsByTagName("table");
 		for (int i=0;i<tables.getLength();i++) {
-			degree=Degree.values()[i%3];
+			degree= Degree.values()[i%3];
 			Element tablesItem=(Element) tables.item(i);
 			int iEnd=(tablesItem.getElementsByTagName("tr")!=null)?tablesItem.getElementsByTagName("tr").getLength()-4:0;
 			getTablesDeclination(tablesItem,iEnd);			
 		}
 	}
+	
 	private static HashSet<String> declinatedFormMarker;
 	static{
 		declinatedFormMarker = new HashSet<String>();
@@ -162,12 +161,14 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 
 	public void parseOtherForm(String page,String originalPos){
 		if (null==originalPos) {
+			log.debug("Null original PartOfSpeech while parsing other forms in {}", this.getPageName());
 			wdh.addPartOfSpeech("");
 			originalPos="";
 		}
 		if (null!=page) {
-			Document doc = wikicodeToHtmlDOM(page);
-			if(null!=doc && !page.contains("\n")) {
+			if (!page.contains("\n")) {
+				Document doc = wikicodeToHtmlDOM(page);
+				if (doc == null) return;
 				initializeExclusiveInflectionInfo();
 				NodeList tables = doc.getElementsByTagName("table");
 				for (int i = 0; i < tables.getLength(); i++) {
@@ -182,30 +183,30 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 						getTablesOtherForm(tablesItem);
 					}
 				}
-			}
-		} else {
-			page=page.replaceAll("\\<.*\\>", "\n  =");
-			System.out.println(page);
-			HashMap<String,String> pag = new HashMap<String,String>();
-			pag=(HashMap) (WikiTool.parseArgs(page.replace("{","").replace("}","")));
-			for(String key : pag.keySet()){
-				String r=pag.get(key);
-				if (-1==r.indexOf("Bild") && -1==r.indexOf("Titel") && -1==r.indexOf("Konjugation") && (-1==r.indexOf("Deutsch") && -1!=r.indexOf(wdh.currentWiktionaryPos()))) {
-					r=extractString(r, "=", "\n");
-					if(!r.isEmpty()){
-						if(!key.equals("Hilfsverb")){
-							if (-1!=r.indexOf('(')) {
-								addForm(r.replaceAll("!|\\(|\\)",""));
+			} else {
+				// TODO TODOTODO
+				page = page.replaceAll("\\<.*\\>", "\n  =");
+				System.out.println(page);
+				HashMap<String, String> pag = new HashMap<String, String>();
+				pag = (HashMap) (WikiTool.parseArgs(page.replace("{", "").replace("}", "")));
+				for (String key : pag.keySet()) {
+					String r = pag.get(key);
+					if (-1 == r.indexOf("Bild") && -1 == r.indexOf("Titel") && -1 == r.indexOf("Konjugation") && (-1 == r.indexOf("Deutsch") && -1 != r.indexOf(wdh.currentWiktionaryPos()))) {
+						r = extractString(r, "=", "\n");
+						if (!r.isEmpty()) {
+							if (!key.equals("Hilfsverb")) {
+								if (-1 != r.indexOf('(')) {
+									addForm(r.replaceAll("!|\\(|\\)", ""));
+								}
+								addForm(r.replaceAll("!|\\(.*\\)", ""));
 							}
-							addForm(r.replaceAll("!|\\(.*\\)", ""));
 						}
 					}
 				}
 			}
+			//			}
 		}
-		//			}
 	}
-	 //   }
 	
 	private void getTablesConj(Element tablesItem, int iBegin, int jBegin){
 		int iEnd,jEnd;
@@ -249,28 +250,28 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 										int tmp=change?(j-jBegin>=2?(j-jBegin)-2:j-jBegin):(j-jBegin);
 										int nbr = (i-iBegin);
 
-										if(mode==Mode.PARTICIPS){
-											person=Person.NOTHING;
+										if(mode== Mode.PARTICIPS){
+											person= Person.NOTHING;
 											if(j==jBegin){
-												tense=Tense.PRESENT;
+												tense= Tense.PRESENT;
 											} else {
-												tense=Tense.PAST;
+												tense= Tense.PAST;
 											}
-										} else if(mode==Mode.IMPERATIV) {
-											person=Person.NOTHING;
-											tense=Tense.PRESENT;
+										} else if(mode== Mode.IMPERATIV) {
+											person= Person.NOTHING;
+											tense= Tense.PRESENT;
 											if(1>=nbr){
-												number=Number.SINGULAR;
+												number= Number.SINGULAR;
 											} else {
-												number=Number.PLURAL;
+												number= Number.PLURAL;
 											}
 										} else {
-											person=Person.values()[nbr%3];
-											number=Number.values()[(nbr/3)%2];
+											person= Person.values()[nbr%3];
+											number= Number.values()[(nbr/3)%2];
 											if(0==tmp){
-												mode=Mode.INDICATIV;
+												mode= Mode.INDICATIV;
 											} else if (1==tmp){
-												mode=Mode.SUBJONCTIVE;
+												mode= Mode.SUBJONCTIVE;
 											}
 										}
 
@@ -326,12 +327,12 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 													form=extractPart(form);
 												}
 												if (!form.replace(" ","").isEmpty()) {
-													cas=Cas.values()[((i-1)+isOtherForm)%4];
+													cas= Cas.values()[((i-1)+isOtherForm)%4];
 													if (j/2<3) {
-														genre=Genre.values()[j/2];
-														number=Number.SINGULAR;
+														genre= Genre.values()[j/2];
+														number= Number.SINGULAR;
 													} else {
-														number =Number.PLURAL;
+														number = Number.PLURAL;
 													}
 													addInflectionsInfo();
 													
@@ -382,13 +383,13 @@ public class GermanExtractorWikiModel extends DbnaryWikiModel {
 													isOtherForm=i;
 												}
 												if(j%2==0){
-													number=Number.SINGULAR;
+													number= Number.SINGULAR;
 												}
 												else {
 													number= Number.PLURAL;
 												}
 												if(!wdh.currentWiktionaryPos().equals("Verb")){
-													cas=Cas.values()[(i-isOtherForm)%4];
+													cas= Cas.values()[(i-isOtherForm)%4];
 												}
 												
 												if(!form.isEmpty() && !form.replace(" ","").isEmpty() ) {

@@ -3,6 +3,8 @@ package org.getalp.dbnary.deu;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +14,7 @@ import static org.getalp.dbnary.deu.GermanInflectionData.*;
 
 
 public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWikiModel {
-
+    private Logger log = LoggerFactory.getLogger(GermanDeklinationExtractorWikiModel.class);
 
 	public GermanDeklinationExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wi, locale, imageBaseURL, linkBaseURL, wdh);
@@ -23,7 +25,8 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
 		GermanInflectionData inflection = new GermanInflectionData();
 		boolean isArticleColumn = false;
 		for (String h : context) {
-			switch (h) {
+            h = h.trim();
+            switch (h) {
 				case "Positiv":
 					inflection.degree = Degree.POSITIVE;
 					break;
@@ -67,7 +70,21 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
 				case "Wortform":
 					isArticleColumn = false;
 					break;
+                case "Nominativ":
+                    inflection.cas = Cas.NOMINATIF;
+                    break;
+                case "Genitiv":
+                    inflection.cas = Cas.GENITIF;
+                    break;
+                case "Dativ":
+                    inflection.cas = Cas.DATIF;
+                    break;
+                case "Akkusativ":
+                    inflection.cas = Cas.ACCUSATIF;
+                    break;
 				case "—":
+                case "":
+                case " ":
 					break;
 				default:
 					log.debug("Deklination Extraction: Unhandled header {} in {}", h, wdh.currentLexEntry());

@@ -101,7 +101,7 @@
             <groupId>org.apache.jena</groupId>
             <artifactId>apache-jena-libs</artifactId>
             <type>pom</type>
-            <version>2.11.1</version>
+            <version>2.12.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -148,6 +148,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.0</version>
+        </dependency>
+        <!-- WARN: this dependency is also used by JENA, check that the required version has not evolved since. -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.2.6</version>
         </dependency>
         <!--dependency>
             <groupId>de.tudarmstadt.ukp.omegawikiapi</groupId>

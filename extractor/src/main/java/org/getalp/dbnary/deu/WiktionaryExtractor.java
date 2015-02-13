@@ -1,9 +1,6 @@
 package org.getalp.dbnary.deu;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +9,7 @@ import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,12 +44,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	// protected final static Pattern languageSectionPattern;
 	
 	protected final static String macroOrPOSPatternString;
-	protected final static Pattern languageSectionPattern;
+    protected final static String posHeaderElementsPatternString;
+
+    protected final static Pattern languageSectionPattern;
 	protected final static Pattern germanDefinitionPattern;
 	protected final static Pattern germanNymLinePattern;
 	protected final static String multilineMacroPatternString;
-	protected final static Pattern macroOrPOSPattern; // Combine macro pattern
-	// and pos pattern.
+	protected final static Pattern macroOrPOSPattern; // Combine macro pattern and pos pattern.
+    protected final static Pattern posHeaderElementsPattern;
 	protected final static HashSet<String> posMarkers;
 	protected final static HashSet<String> ignorableSectionMarkers;
 	protected final static HashSet<String> nymMarkers;
@@ -81,6 +81,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		.toString();
 
 		macroOrPOSPattern = Pattern.compile(macroOrPOSPatternString);
+
+        posHeaderElementsPatternString = new StringBuilder()
+                .append("(?:").append(WikiPatterns.macroPatternString)
+                .append(")|(?:").append("''(.*)''")
+                .append(")|(?:").append("[,/\\(\\)]\\s*")
+                .append(")|(?:").append("((?:ohne\\s+)?[^\\s,/\\(\\)]+)")
+                .append(")").toString();
+        posHeaderElementsPattern = Pattern.compile(posHeaderElementsPatternString);
+
 		germanDefinitionPattern = Pattern.compile(germanDefinitionPatternString, Pattern.MULTILINE);
 		germanNymLinePattern = Pattern.compile(germanNymLinePatternString, Pattern.MULTILINE);
 		
@@ -146,6 +155,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		ignorableSectionMarkers.add("Lemmaverweis"); // TODO: Refers to another entry... Should keep the info.
 		ignorableSectionMarkers.add("Veraltete Schreibweisen");
 		ignorableSectionMarkers.add("Steigerbarkeit Adjektiv");
+        ignorableSectionMarkers.add("Wortbildungen");
+        ignorableSectionMarkers.add("Symbole");
+
 
 		nymMarkers = new HashSet<String>(20);
 		nymMarkers.add("Synonyme");
@@ -216,7 +228,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		Matcher m = macroOrPOSPattern.matcher(pageContent);
 		m.region(startOffset, endOffset);
 		wdh.initializeEntryExtraction(wiktionaryPageName);
-		currentBlock=Block.NOBLOCK;
+		currentBlock=Block.IGNOREPOS;
 		
 		while(m.find()) {
             HashMap<String, Object> context = new HashMap<String, Object>();
@@ -224,7 +236,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
             if (nextBlock == null) continue;
             // If current block is IGNOREPOS, we should ignore everything but a new DEFBLOCK/INFLECTIONBLOCK
-            if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
+            if (Block.IGNOREPOS != currentBlock || (Block.POSBLOCK == nextBlock)) {
                 leaveCurrentBlock(m);
                 gotoNextBlock(nextBlock, context);
             }
@@ -263,13 +275,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 return null;
             }
         } else if (null != m.group(3)) {
-			String template = m.group(3).trim();
-			if(template.equals("Deklinierte Form")) {
-                context.put("inflectedForm",true);
-
+			String fullHeader = m.group().trim();
+			if(fullHeader.contains("{{Wortart|Deklinierte Form")) {
+                //TODO: Should I extract morphological data from deklinierte formen ?
+                return Block.IGNOREPOS;
             }
-            //TODO: what should I do with deklinierte formen
-            context.put("pos", template);
+            context.put("posHeader", m.group());
+            // log.debug("Entry Section: {} --in-- {}", m.group(), this.wiktionaryPageName);
             // TODO: language in group 4 is the language of origin of the entry. Maybe we should keep it.
             // TODO: filter out ignorable part of speech;
             return Block.POSBLOCK;
@@ -318,8 +330,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case IGNOREPOS:
                 break;
             case POSBLOCK:
-                String pos = (String) context.get("pos");
-                wdh.addPartOfSpeech(pos);
+                String header = (String) context.get("posHeader");
+                registerAllPosInformation(header);
+                // wdh.addPartOfSpeech(pos);
                 break;
             case INFLECTIONBLOCK:
                 break;
@@ -338,43 +351,86 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     }
 
-    private void leaveCurrentBlock(Matcher m){
-		if (blockStart == -1) {
-				return;
-		}
-		
-			int end = computeRegionEnd(blockStart, m);
-			switch (currentBlock) {
-				case NOBLOCK:
-				case IGNOREPOS:
-                case POSBLOCK:
-					break;
-				case DEFBLOCK:
-					extractDefinitions(blockStart, end);
-					break;
-				case TRADBLOCK:
-					extractTranslations(blockStart, end);
-					break;
-				case ORTHOALTBLOCK:
-					extractOrthoAlt(blockStart, end);
-					break;
-				case NYMBLOCK:
-					extractNyms(currentNym, blockStart, end);
-					currentNym = null;
-					break;
-				case INFLECTIONBLOCK:
-		 			extractInflections(blockStart, end);
-		 			blockStart=end;
-					break;
-				default:
-					assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
-			}
+    private void leaveCurrentBlock(Matcher m) {
+        if (blockStart == -1) {
+            return;
+        }
 
-			blockStart = -1;
-		
-	}
-	
-	private static HashSet<String> verbMarker;
+        int end = computeRegionEnd(blockStart, m);
+        switch (currentBlock) {
+            case NOBLOCK:
+            case IGNOREPOS:
+            case POSBLOCK:
+                break;
+            case DEFBLOCK:
+                extractDefinitions(blockStart, end);
+                break;
+            case TRADBLOCK:
+                extractTranslations(blockStart, end);
+                break;
+            case ORTHOALTBLOCK:
+                extractOrthoAlt(blockStart, end);
+                break;
+            case NYMBLOCK:
+                extractNyms(currentNym, blockStart, end);
+                currentNym = null;
+                break;
+            case INFLECTIONBLOCK:
+                extractInflections(blockStart, end);
+                blockStart=end;
+                break;
+            default:
+                assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+        }
+
+        blockStart = -1;
+
+    }
+
+    private void registerAllPosInformation(String header) {
+        header = header.replaceAll("===", "");
+        Matcher m = posHeaderElementsPattern.matcher(header);
+        StringBuffer unhandledData = new StringBuffer();
+        ArrayList<String> partOfSpeeches = new ArrayList<>();
+        HashSet<String> additionalInfo = new HashSet<>();
+
+        while(m.find()) {
+            m.appendReplacement(unhandledData, "");
+            if (null != m.group(1)) {
+                Map<String, String> args = WikiTool.parseArgs(m.group(2));
+                String template = m.group(1);
+                // Template
+                switch (template) {
+                    case "Wortart":
+                        if (null == args.get("1")) log.error("No part of speech in Wortart macro in {}", this.wiktionaryPageName);
+                        partOfSpeeches.add(args.get("1"));
+                        break;
+                    default:
+                        additionalInfo.add(template);
+                }
+            } else if (null != m.group(3)) {
+                // Italics
+                additionalInfo.addAll(Arrays.asList(m.group(3).split(",")));
+            } else if (m.group(4) != null) {
+                additionalInfo.add(m.group(4));
+            }
+        }
+        m.appendTail(unhandledData);
+        String unhandledDataString = unhandledData.toString().trim();
+        if (unhandledDataString.length() != 0)
+            log.debug("Unhandled POS data: ", m.toString());
+        // TODO: maybe use all POS instead of the first one to create the entry label...
+        wdh.addPartOfSpeech(partOfSpeeches.remove(0));
+        // TODO register other POS links + additional information
+        WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
+        for (String pos: partOfSpeeches)
+            dwdh.addExtraPartOfSpeech(pos);
+        for (String info: additionalInfo)
+            dwdh.addExtraInformation(info);
+
+    }
+
+    private static HashSet<String> verbMarker;
 	static{
 		verbMarker=new HashSet<String>();
 		verbMarker.add("Verb");
@@ -466,14 +522,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private void extractTranslations(int startOffset, int endOffset) {
 		Matcher macroMatcher = glossOrMacroPattern.matcher(pageContent);
 		macroMatcher.region(startOffset, endOffset);
-		String currentGlose = null;
+		String currentGloss = null;
 
+        // TODO: The german translation has changed drastically with the introduction of ÜT and new versions of Üxx/Ü
 		while (macroMatcher.find()) {
-			String glose = macroMatcher.group(1);
+			String gloss = macroMatcher.group(1);
 
-			if(glose != null){
+			if(gloss != null){
 
-				currentGlose = glose ;
+				currentGloss = gloss ;
 
 			} else {
 
@@ -483,7 +540,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 				String g4 = macroMatcher.group(5);
 
 
-				if (g1.equals("Ü") || g1.equals("Üxx")) {
+				if (g1.equals("Ü") || g1.equals("Üxx") || g1.equals("Üt")) {
 					String lang;
 					String word = null;
 					String trans1 = null;
@@ -527,17 +584,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 					lang=GermanLangToCode.threeLettersCode(lang);
 					if(lang!=null){
-						wdh.registerTranslation(lang, currentGlose, transcription, word);
+						wdh.registerTranslation(lang, currentGloss, transcription, word);
 					}
 
 				} else if (g1.equals("Ü-links")) {
-					// German wiktionary does not provide a glose to disambiguate.
+					// German wiktionary does not provide a gloss to disambiguate.
 					// Just ignore this marker.
 				} else if (g1.equals("Ü-Abstand")) {
 					// just ignore it
 				} else if (g1.equals("Ü-rechts")) {
 					// Forget the current gloss
-					currentGlose = null;
+					currentGloss = null;
 				}
 
 			}

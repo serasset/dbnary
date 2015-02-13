@@ -3,15 +3,18 @@ package org.getalp.dbnary.deu;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Pattern;
 
 import static org.getalp.dbnary.deu.GermanInflectionData.*;
 
 
 public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWikiModel {
+    private Logger log = LoggerFactory.getLogger(GermanKonjugationExtractorWikiModel.class);
 
 	public GermanKonjugationExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wi, locale, imageBaseURL, linkBaseURL, wdh);
@@ -26,8 +29,15 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
     protected boolean isHeaderCell(Element cell) {
         if (cell.tagName().equalsIgnoreCase("th")) return true;
         if (cell.tagName().equalsIgnoreCase("td")) {
-            String color = cell.attr("bgcolor");
-            return (color != null && color.equalsIgnoreCase("#F4F4F4"));
+            // Test if background color is grey.
+            String color = getBackgroundColor(cell);
+            if (color != null && (color.equalsIgnoreCase("#F4F4F4") || color.equalsIgnoreCase("#DEDEDE") || color.equalsIgnoreCase("#C1C1C1"))) return true;
+            // Test special cases when no gender/number metadata is given, but pronouns (ich, du, etc. are given)
+            if (! cell.select("i").isEmpty()) {
+                String text = cell.text();
+                return text.equalsIgnoreCase("ich") || text.equalsIgnoreCase("du") || text.equalsIgnoreCase("er") ||
+                        text.equalsIgnoreCase("wir") || text.equalsIgnoreCase("ihr") || text.equalsIgnoreCase("sie");
+            } else return false;
         }
         return false;
     }
@@ -37,12 +47,23 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
 		GermanInflectionData inflection = new GermanInflectionData();
 		boolean isArticleColumn = false;
 		for (String h : context) {
+            h = h.trim();
             if (h.startsWith("Gerundivum")) h = "Gerundivum";
 			switch (h) {
-				case "(nichterweiterte) Infinitive":
+                case "transitive Verwendung":
+                    inflection.valency = Valency.TRANSITIVE;
+                    break;
+                case "reflexive Verwendung":
+                case "reflexiv":
+                    inflection.voice = Voice.REFLEXIV;
+                    break;
+                case "(nichterweiterte) Infinitive":
+                case "nichterweitert":
+                case "Infinitive":
 					inflection.mode = Mode.INFINITIV;
 					break;
 				case "erweiterte Infinitive":
+                case "erweitert":
 					inflection.mode = Mode.ZU_INFINITIV;
 					break;
 				case "Partizipien":
@@ -55,6 +76,22 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
 				case "Infinitiv Perfekt":
                     inflection.mode = Mode.INFINITIV;
                     inflection.tense = Tense.PERFEKT;
+                    break;
+                case "Infinitiv Futur I":
+                    inflection.mode = Mode.INFINITIV;
+                    inflection.tense = Tense.FUTURE1;
+                    break;
+                case "Infinitiv Futur II":
+                    inflection.mode = Mode.INFINITIV;
+                    inflection.tense = Tense.FUTURE2;
+                    break;
+                case "Partizip Präsens":
+                    inflection.mode = Mode.PARTIZIPIEN;
+                    inflection.tense = Tense.PRÄSENS;
+                    break;
+                case "Partizip Perfekt":
+                    inflection.mode = Mode.PARTIZIPIEN;
+                    inflection.tense = Tense.PRÄSENS;
                     break;
 				case "Aktiv":
 					inflection.voice = Voice.AKTIV;
@@ -99,6 +136,8 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
                     inflection.tense = Tense.PERFEKT;
                     inflection.voice = Voice.ZUSTANDSPASSIV;
 					break;
+                case "Zustandsreflexiv":
+                    inflection.voice = Voice.ZUSTANDSREFLEXIVEPASSIV;
 				case "Höflichkeitsform":
                     inflection.person = Person.HÖFLICHKEITSFORM;
 					break;
@@ -118,27 +157,41 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
                     inflection.mode = Mode.KONJUNKTIV2;
                     break;
                 // Gender/number
-				case "Sg. 1. Pers.":
+                case "1. Person Singular":
+                case "Sg. 1. Pers.":
+                case "ich":
 					inflection.number = GNumber.SINGULAR;
                     inflection.person = Person.FIRST;
 					break;
-				case "Sg. 2. Pers.":
+                case "2. Person Singular":
+                case "Sg. 2. Pers.":
+                case "(du)":
+                case "du":
                     inflection.number = GNumber.SINGULAR;
                     inflection.person = Person.SECOND;
 					break;
-				case "Sg. 3. Pers.":
+                case "3. Person Singular":
+                case "Sg. 3. Pers.":
+                case "er":
                     inflection.number = GNumber.SINGULAR;
                     inflection.person = Person.THIRD;
 					break;
-				case "Pl. 1. Pers.":
+                case "1. Person Plural":
+                case "Pl. 1. Pers.":
+                case "wir":
                     inflection.number = GNumber.PLURAL;
                     inflection.person = Person.FIRST;
 					break;
-				case "Pl. 2. Pers.":
+                case "2. Person Plural":
+                case "Pl. 2. Pers.":
+                case "(ihr)":
+                case "ihr":
                     inflection.number = GNumber.PLURAL;
                     inflection.person = Person.SECOND;
 					break;
-				case "Pl. 3. Pers.":
+				case "3. Person Plural":
+                case "Pl. 3. Pers.":
+                case "sie":
                     inflection.number = GNumber.PLURAL;
                     inflection.person = Person.THIRD;
 					break;
@@ -148,6 +201,7 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
                     inflection.tense = Tense.PRÄSENS;
                     break;
 				case "Präteritum":
+                case "Präteritum (Imperfekt)":
                     inflection.note.clear();
                     inflection.tense = Tense.PRÄTERITUM;
 					break;
@@ -160,10 +214,12 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
                     inflection.tense = Tense.PLUSQUAMPERFEKT;
 					break;
 				case "Futur I":
+                case "Futur I.":
                     inflection.note.clear();
                     inflection.tense = Tense.FUTURE1;
 					break;
 				case "Futur II":
+                case "Futur II.":
                     inflection.note.clear();
                     inflection.tense = Tense.FUTURE2;
 					break;
@@ -171,7 +227,12 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
                 case "Text":
                     inflection.note.clear();
                     break;
+                case "Hilfsverb":
+                    // TODO: how do I represent the hilfsverbs ?
+                    break;
 				case "—":
+                case "":
+                case " ":
 					break;
 				default:
 					log.debug("Deklination Extraction: Unhandled header {} in {}", h, wdh.currentLexEntry());
@@ -181,7 +242,16 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
 		return inflection;
 	}
 
-	private static HashSet<String> declinatedFormMarker;
+    private static final Pattern reflexive = Pattern.compile("\\breflexiv\\b");
+    @Override
+    protected Collection<? extends String> decodeH2Context(String text) {
+        LinkedList<String> res = new LinkedList<>();
+        if (reflexive.matcher(text).find())
+            res.add("Reflexiv");
+        return res;
+    }
+
+    private static HashSet<String> declinatedFormMarker;
 	static{
 		declinatedFormMarker = new HashSet<String>();
 		declinatedFormMarker.add("adjektivische Deklination");
@@ -264,6 +334,17 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
 //	public String prepareForTransclusion(String rawWikiText) {
 //		return rawWikiText;
 //	}
-	
+
+    // Catch non German verb templates to avoid expanding them.
+    @Override
+    public void substituteTemplateCall(String templateName,
+                                       Map<String, String> parameterMap, Appendable writer)
+            throws IOException {
+        if (templateName.contains("Niederländisch")) {
+            log.debug("German Verb Conjugation Extraction: Ignoring template call: {}", templateName);
+        } else {
+            super.substituteTemplateCall(templateName, parameterMap, writer);
+        }
+    }
 
 }

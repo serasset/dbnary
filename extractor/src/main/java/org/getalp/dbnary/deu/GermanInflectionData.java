@@ -19,12 +19,13 @@ public class GermanInflectionData {
     public static enum Genre {MASCULIN,FEMININ,NEUTRUM,NOTHING};
     public static enum Cas {NOMINATIF,GENITIF,DATIF,ACCUSATIF, NOTHING};
     public static enum Mode {INFINITIV,ZU_INFINITIV,PARTIZIPIEN,GERUNDIVUM,IMPERATIV,INDICATIV, KONJUNKTIV2, KONJUNKTIV1, NOTHING};
-    public static enum Voice {AKTIV, VORGANGSPASSIV, ZUSTANDSPASSIV, PASSIV, NOTHING};
+    public static enum Voice {AKTIV, VORGANGSPASSIV, ZUSTANDSPASSIV, PASSIV, ZUSTANDSREFLEXIVEPASSIV, REFLEXIV, NOTHING};
     public static enum Tense {PRÄSENS, PRÄTERITUM, PERFEKT, FUTURE1, FUTURE2, PLUSQUAMPERFEKT, NOTHING};
     public static enum Degree {POSITIVE,COMPARATIVE,SUPERLATIVE,NOTHING};
     public static enum GNumber {SINGULAR,PLURAL,NOTHING};
     public static enum Person {FIRST, SECOND, THIRD, HÖFLICHKEITSFORM, NOTHING};
     public static enum InflectionType {STRONG, WEAK, MIXED, NOTHING};
+    public static enum Valency {TRANSITIVE, INTRANSITIVE, NOTHING};
 
 
     public Degree degree= Degree.NOTHING;
@@ -36,6 +37,7 @@ public class GermanInflectionData {
     public Genre genre= Genre.NOTHING;
     public Person person = Person.NOTHING;
     public InflectionType inflectionType= InflectionType.NOTHING;
+    public Valency valency = Valency.NOTHING;
     public Set<String> note = new HashSet<>();
 
     public static Model model = ModelFactory.createDefaultModel();
@@ -208,10 +210,29 @@ public class GermanInflectionData {
             case ZUSTANDSPASSIV:
                 note.add("Zustandpassiv");
                 break;
+            case ZUSTANDSREFLEXIVEPASSIV:
+                note.add("Zustandreflexiv");
+                break;
+            case REFLEXIV:
+                inflections.add(PropertyObjectPair.get(OliaOnt.hasVoice, OliaOnt.ReflexiveVoice));
+                break;
             case NOTHING:
                 break;
             default:
                 log.debug("Unexpected value {} for voice", this.voice);
+                break;
+        }
+        switch (this.valency) {
+            case TRANSITIVE:
+                inflections.add(PropertyObjectPair.get(OliaOnt.hasValency, OliaOnt.Transitive));
+                break;
+            case INTRANSITIVE:
+                inflections.add(PropertyObjectPair.get(OliaOnt.hasValency, OliaOnt.Intransitive));
+                break;
+            case NOTHING:
+                break;
+            default:
+                log.debug("Unexpected value {} for valency", this.valency);
                 break;
         }
         if (! note.isEmpty()) {

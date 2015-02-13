@@ -11,7 +11,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import static org.getalp.dbnary.deu.GermanInflectionData.Cas.*;
+import static org.getalp.dbnary.deu.GermanInflectionData.Degree.*;
 import static org.getalp.dbnary.deu.GermanInflectionData.GNumber.*;
+import static org.getalp.dbnary.deu.GermanInflectionData.InflectionType.*;
 
 
 public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
@@ -62,6 +64,7 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
 
 	public void parseOtherForm(String page,String originalPos) {
 		// Render the definition to plain text, while ignoring the example template
+        // this.setPageName(page);
 		render(new PlainTextConverter(), page).trim();
 	}
 
@@ -69,26 +72,125 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
 	public void substituteTemplateCall(String templateName,
 									   Map<String, String> parameterMap, Appendable writer)
 			throws IOException {
-		if (ignoredTemplates.contains(templateName)) {
-			; // NOP
-		} else if ("Deutsch Substantiv Übersicht".equals(templateName)) {
-			// TODO extract directly the data from the template call
-			extractSubstantiveForms(parameterMap);
-		} else if ("Deutsch Adjektiv Übersicht".equals(templateName)) {
-			// TODO fetch and expand deklination page and parse all tables.
-			String deklinationPageName = this.getPageName() + " (Deklination)";
-			extractAdjectiveForms(deklinationPageName);
-		} else if ("Deutsch Verb Übersicht".equals(templateName) || ("Verb-Tabelle".equals(templateName))) {
-			// TODO get the link to the Konjugationnen page and extract data from the expanded tables
-			String conjugationPage = this.getPageName() + " (Konjugation)";
-			extractVerbForms(conjugationPage);
-		} else {
-			log.debug("Morphology Extraction: Caught template call: {} --in-- {}", templateName, this.getPageName());
-			// super.substituteTemplateCall(templateName, parameterMap, writer);
-		}
+        try {
+            if (templateName.startsWith("Vorlage:")) templateName = templateName.substring(8);
+            if (ignoredTemplates.contains(templateName)) {
+                ; // NOP
+            } else if ("Deutsch Substantiv Übersicht".equals(templateName)) {
+                // TODO extract directly the data from the template call
+                extractSubstantiveForms(parameterMap);
+            } else if ("Deutsch Adjektiv Übersicht".equals(templateName)) {
+                // DONE fetch and expand deklination page and parse all tables.
+                // TODO: check if such template may be used on substantivs
+                if (wdh.currentWiktionaryPos().equals("Substantiv")) log.debug("Adjectiv ubersicht in noun : {} ", wdh.currentLexEntry());
+                // DONE: Extract comparative/Superlative from parametermap before fetching the full flexion page.
+                if (extractAdjectiveDegree(parameterMap)) {
+                    String deklinationPageName = this.getPageName() + " (Deklination)";
+                    extractAdjectiveForms(deklinationPageName);
+                }
+            } else if ("Deutsch Verb Übersicht".equals(templateName) || ("Verb-Tabelle".equals(templateName))) {
+                // DONE get the link to the Konjugationnen page and extract data from the expanded tables
+                String conjugationPage = this.getPageName() + " (Konjugation)";
+                extractVerbForms(conjugationPage);
+            } else if (templateName.equals("Deutsch adjektivische Deklination")) {
+                extractSubstantiveForms(parameterMap);
+            } else if (templateName.startsWith("Deutsch adjektivische Deklination ")) {
+                // Will expand to Deutsch adjektivische Deklination that will be caught afterwards.
+                super.substituteTemplateCall(templateName, parameterMap, writer);
+            } else {
+                log.debug("Morphology Extraction: Caught template call: {} --in-- {}", templateName, this.getPageName());
+                // super.substituteTemplateCall(templateName, parameterMap, writer);
+            }
+        } catch (RuntimeException e) {
+            log.debug("Runtime Exception in {}", this.getPageName());
+        }
 	}
 
-	private void extractAdjectiveForms(String deklinationPageName) {
+    private boolean extractAdjectiveDegree(Map<String, String> parameterMap) {
+        boolean noOtherForms = false;
+
+        for (Map.Entry<String, String> e : parameterMap.entrySet()) {
+            String key = e.getKey();
+            String value = e.getValue();
+            GermanInflectionData inflection = new GermanInflectionData();
+
+            if (key.contains("Bild") || key.matches("\\d+")) continue;
+            if (key.equalsIgnoreCase("keine weiteren Formen")) {
+                noOtherForms = true;
+                continue;
+            }
+
+            if (key.contains("Positiv")) {
+                inflection.degree = POSITIVE;
+            } else if (key.contains("Komparativ")) {
+                inflection.degree = COMPARATIVE;
+            } else if (key.contains("Superlativ")) {
+                inflection.degree = SUPERLATIVE;
+            } else {
+                log.debug("no known degree, neither singular in Substantiv Ubersicht: {} | {}", key, wdh.currentLexEntry());
+            }
+
+            value = value.replaceAll("<(?:/)?small>", "");
+            for (String form : value.split("(?:<br(?: */)?>)|(?:,\\s*)")) {
+                addForm(inflection.toPropertyObjectMap(), form);
+            }
+        }
+        return noOtherForms;
+    }
+
+    private void extractSubstantiveForms(Map<String, String> parameterMap) {
+
+        for (Map.Entry<String, String> e : parameterMap.entrySet()) {
+            String key = e.getKey();
+            String value = e.getValue();
+            GermanInflectionData inflection = new GermanInflectionData();
+
+            // TODO: pass if key is an image or non morphological parameter
+            if (key.contains("Bild") || key.matches("\\d+")) continue;
+            if (key.equals("kein Singular")) {
+                continue;
+            }
+            if (key.equals("kein Plural")) {
+                continue;
+            }
+
+            if (key.contains("Singular")) {
+                inflection.number = SINGULAR;
+            } else if (key.contains("Plural")) {
+                inflection.number = PLURAL;
+            } else {
+                log.debug("no plural, neither singular in Substantiv Ubersicht: {} | {}", key, wdh.currentLexEntry());
+            }
+
+            if (key.contains("Nominativ")) {
+                inflection.cas = NOMINATIF;
+            } else if (key.contains("Genitiv")) {
+                inflection.cas = GENITIF;
+            } else if (key.contains("Dativ")) {
+                inflection.cas = DATIF;
+            } else if (key.contains("Akkusativ")) {
+                inflection.cas = ACCUSATIF;
+            } else {
+                log.debug("no known case in Substantiv Ubersicht: {} | {}", key, wdh.currentLexEntry());
+            }
+
+            if (key.contains("stark")) {
+                inflection.inflectionType = STRONG;
+            } else if (key.contains("schwach")) {
+                inflection.inflectionType = WEAK;
+            } else if (key.contains("gemischt")) {
+                inflection.inflectionType = MIXED;
+            }
+
+            value = value.replaceAll("<(?:/)?small>", "");
+            for (String form : value.split("<br(?: */)?>")) {
+                addForm(inflection.toPropertyObjectMap(), form);
+            }
+
+        }
+    }
+
+    private void extractAdjectiveForms(String deklinationPageName) {
 		String deklinationPageContent = wi.getTextOfPage(deklinationPageName);
 		if (null == deklinationPageContent) return;
 		if(!deklinationPageContent.contains("Deutsch")) return;
@@ -97,52 +199,6 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
 		deklinationExtractor.parseTables(deklinationPageContent);
 	}
 
-	private void extractSubstantiveForms(Map<String, String> parameterMap) {
-		// {{Deutsch Substantiv Übersicht
-		// |Nominativ Singular=das Zyanid
-		//		|Nominativ Plural=die Zyanide
-		//		|Genitiv Singular=des Zyanids
-		//		|Genitiv Plural=der Zyanide
-		//		|Dativ Singular=dem Zyanid
-		//		|Dativ Plural=den Zyaniden
-		//		|Akkusativ Singular=das Zyanid
-		//		|Akkusativ Plural=die Zyanide
-		for (Map.Entry<String, String> e : parameterMap.entrySet()) {
-			String key = e.getKey();
-			String value = e.getValue();
-			GermanInflectionData inflection = new GermanInflectionData();
-
-			// TODO: pass if key is an image or non morphological parameter
-			if (key.contains("Bild") || key.matches("\\d+")) continue;
-
-
-			if (key.contains("Singular")) {
-				inflection.number = SINGULAR;
-			} else if (key.contains("Plural")) {
-				inflection.number = PLURAL;
-			} else {
-				log.debug("no plural, neither singular in Substantiv Ubersicht: {} | {}", key, wdh.currentLexEntry());
-			}
-
-			if (key.contains("Nominativ")) {
-				inflection.cas = NOMINATIF;
-			} else if (key.contains("Genitiv")) {
-				inflection.cas = GENITIF;
-			} else if (key.contains("Dativ")) {
-				inflection.cas = DATIF;
-			} else if (key.contains("Akkusativ")) {
-				inflection.cas = ACCUSATIF;
-			} else {
-				log.debug("no known case in Substantiv Ubersicht: {} | {}", key, wdh.currentLexEntry());
-			}
-
-			value = value.replaceAll("<(?:/)?small>", "");
-			for (String form : value.split("<br(?: */)?>")) {
-				addForm(inflection.toPropertyObjectMap(), form);
-			}
-
-		}
-	}
 
 	private void extractVerbForms(String conjugationPage) {
 		String konjugationPageContent = wi.getTextOfPage(conjugationPage);
@@ -155,7 +211,8 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
 
 
 	private void addForm(HashSet<PropertyObjectPair> infl, String s) {
-		s=s.replace("]", "").replace("[","").replaceAll(".*\\) *","").replace("(","").trim();
+		// TODO: check to see what this line is trimming out and do it in a better way...
+		// s=s.replace("]", "").replace("[","").replaceAll(".*\\) *","").replace("(","").trim();
 		if (s.length() == 0 || s.equals("—") || s.equals("-")) return;
 
 		wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 1, infl);

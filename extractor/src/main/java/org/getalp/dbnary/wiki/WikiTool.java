@@ -7,6 +7,7 @@ public class WikiTool {
 
 	// Parse a string of args, like: xxx=yyy|zzz=ttt
 	public static Map<String,String> parseArgs(String args) {
+        if (null == args) return null;
 		HashMap<String,String> res = new HashMap<String,String>();
 		int n = 1; // number for positional args.
 		String[] pairs = args.split("\\|");

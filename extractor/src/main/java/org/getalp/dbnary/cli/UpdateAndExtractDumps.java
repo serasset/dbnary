@@ -1,18 +1,10 @@
 package org.getalp.dbnary.cli;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -26,8 +18,17 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.getalp.dbnary.LangTools;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.HttpClientUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.getalp.dbnary.WiktionaryIndexerException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class UpdateAndExtractDumps {
 
@@ -132,6 +133,7 @@ public class UpdateAndExtractDumps {
 		
 		if (cmd.hasOption(SERVER_URL_OPTION)) {
 			server = cmd.getOptionValue(SERVER_URL_OPTION);
+            if (! server.endsWith("/")) server = server + "/";
 		}
 
 		force = cmd.hasOption(FORCE_OPTION);
@@ -307,75 +309,192 @@ public class UpdateAndExtractDumps {
 
 
 	private String updateDumpFile(String lang) {
-		if (networkIsOff) return getLastLocalDumpDir(lang);
-		FTPClient client = new FTPClient();
-
-		try {
-			System.err.println("Updating " + lang);
-			URL url = new URL(server);
-
-			if (url.getPort() != -1) {
-				client.connect(url.getHost(), url.getPort());
-			} else {
-				client.connect(url.getHost());
-			}
-			client.login( "anonymous", "" );
-			// System.err.println("Logged in...");
-			client.enterLocalPassiveMode();
-			client.changeWorkingDirectory(url.getPath());
-
-			client.changeWorkingDirectory(lang+"wiktionary");
-
-			SortedSet<String> dirs = new TreeSet<String>();
-			// System.err.println("Retrieving directory list.");
-			FTPFile[] ftpFiles = client.listFiles();
-			// System.err.println("Retrieved: " + ftpFiles);
-			for (FTPFile ftpFile : ftpFiles) {
-				if (ftpFile.getType() == FTPFile.DIRECTORY_TYPE && ! ftpFile.getName().startsWith(".")) {
-					dirs.add(ftpFile.getName());
-				}
-			}
-			String lastDir = getLastVersionDir(dirs);
-			// System.err.println("Last version of dump is " + lastDir);
-
-			client.changeWorkingDirectory(lastDir);
-
-			try {
-				String dumpdir = outputDir + "/" + lang + "/" + lastDir;
-				String filename = dumpdir + "/" + dumpFileName(lang,lastDir);
-				File file = new File(filename);
-				if (file.exists() && !force) {
-					// System.err.println("Dump file " + filename + " already retrieved.");
-					return lastDir;
-				}
-				File dumpFile = new File(dumpdir);
-				dumpFile.mkdirs();
-				client.setFileType(FTP.BINARY_FILE_TYPE);
-				FileOutputStream dfile = new FileOutputStream(file);
-				System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
-				long s = System.currentTimeMillis();
-				client.retrieveFile(dumpFileName(lang,lastDir),dfile);
-				System.err.println("Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
+        String defaultRes = getLastLocalDumpDir(lang);
+		if (networkIsOff) return defaultRes;
 
 
-			} catch(IOException e) {
-				System.err.println(e);
-			}
-			client.logout();
-			return lastDir;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		} finally {
-			try {
-				client.disconnect();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+        try {
+            URL url = new URL(server);
 
-	private String getLastLocalDumpDir(String lang) {
+            if (url.getProtocol().equals("ftp")) {
+
+                FTPClient client = new FTPClient();
+
+                try {
+                    System.err.println("Updating " + lang);
+
+                    if (url.getPort() != -1) {
+                        client.connect(url.getHost(), url.getPort());
+                    } else {
+                        client.connect(url.getHost());
+                    }
+                    client.login("anonymous", "");
+                    // System.err.println("Logged in...");
+                    client.enterLocalPassiveMode();
+                    client.changeWorkingDirectory(url.getPath());
+
+                    client.changeWorkingDirectory(lang + "wiktionary");
+
+                    SortedSet<String> dirs = new TreeSet<String>();
+                    // System.err.println("Retrieving directory list.");
+                    FTPFile[] ftpFiles = client.listFiles();
+                    // System.err.println("Retrieved: " + ftpFiles);
+                    for (FTPFile ftpFile : ftpFiles) {
+                        if (ftpFile.getType() == FTPFile.DIRECTORY_TYPE && !ftpFile.getName().startsWith(".")) {
+                            dirs.add(ftpFile.getName());
+                        }
+                    }
+                    String lastDir = getLastVersionDir(dirs);
+                    // System.err.println("Last version of dump is " + lastDir);
+
+                    client.changeWorkingDirectory(lastDir);
+
+                    try {
+                        String dumpdir = outputDir + "/" + lang + "/" + lastDir;
+                        String filename = dumpdir + "/" + dumpFileName(lang, lastDir);
+                        File file = new File(filename);
+                        if (file.exists() && !force) {
+                            // System.err.println("Dump file " + filename + " already retrieved.");
+                            return lastDir;
+                        }
+                        File dumpFile = new File(dumpdir);
+                        dumpFile.mkdirs();
+                        client.setFileType(FTP.BINARY_FILE_TYPE);
+                        FileOutputStream dfile = new FileOutputStream(file);
+                        System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
+                        long s = System.currentTimeMillis();
+                        client.retrieveFile(dumpFileName(lang, lastDir), dfile);
+                        System.err.println("Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
+
+
+                    } catch (IOException e) {
+                        System.err.println(e);
+                    }
+                    client.logout();
+                    return lastDir;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                } finally {
+                    try {
+                        client.disconnect();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (url.getProtocol().equals("http")) {
+                HttpClient client = new DefaultHttpClient();
+
+                String languageDumpFolder = server + lang + "wiktionary";
+                String lastDir = defaultRes;
+
+                try {
+                    System.err.println("Updating " + lang);
+                    SortedSet<String> dirs = null;
+
+                    HttpGet request = new HttpGet(languageDumpFolder);
+                    HttpResponse response = null;
+                    try {
+                        response = client.execute(request);
+                        HttpEntity entity = response.getEntity();
+
+                        if (null == entity) {
+                            System.err.format("Could not retrieve directory listing for language %s (url=%s)\n", lang, languageDumpFolder);
+                            System.err.format("Using locally available dump.\n");
+                            return defaultRes;
+                        }
+                        // parse directory listing to get the latest dump folder
+
+                        dirs = getFolderSetFromIndex(entity, languageDumpFolder);
+
+                    } finally {
+                        HttpClientUtils.closeQuietly(response);
+                    }
+                    lastDir = getLastVersionDir(dirs);
+
+                    if (null == lastDir) {
+                        System.err.format("Empty directory list for %s (url=%s)\n", lang, languageDumpFolder);
+                        System.err.format("Using locally available dump.\n");
+                        return defaultRes;
+                    }
+
+                    try {
+                        String dumpdir = outputDir + "/" + lang + "/" + lastDir;
+                        String filename = dumpdir + "/" + dumpFileName(lang, lastDir);
+                        File file = new File(filename);
+                        if (file.exists() && !force) {
+                            // System.err.println("Dump file " + filename + " already retrieved.");
+                            return lastDir;
+                        }
+                        File dumpFile = new File(dumpdir);
+                        dumpFile.mkdirs();
+
+                        String dumpFileUrl = languageDumpFolder + "/" + lastDir + "/" + dumpFileName(lang, lastDir);
+                        request = new HttpGet(dumpFileUrl);
+                        response = client.execute(request);
+                        HttpEntity entity = response.getEntity();
+
+                        if (entity != null) {
+                            FileOutputStream dfile = new FileOutputStream(file);
+                            System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
+                            long s = System.currentTimeMillis();
+                            entity.writeTo(dfile);
+                            System.err.println("Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
+                        }
+
+                    } catch (IOException e) {
+                        System.err.println(e);
+                    } finally {
+                        HttpClientUtils.closeQuietly(response);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                } finally {
+                    client.getConnectionManager().shutdown();
+                }
+                return lastDir;
+            } else { // URL protocol is not ftp
+                System.err.format("Unsupported protocol: %s", url.getProtocol());
+                return defaultRes;
+            }
+        } catch (MalformedURLException e) {
+            System.err.format("Malformed dump server URL: %s", server);
+            System.err.format("Using locally available dump.");
+            e.printStackTrace();
+            return defaultRes;
+        }
+    }
+
+    private SortedSet<String> getFolderSetFromIndex(HttpEntity entity, String url) {
+        SortedSet<String> folders = new TreeSet<String>();
+        InputStream is = null;
+        try {
+            is = entity.getContent();
+            Document doc = Jsoup.parse(entity.getContent(), "UTF-8", url);
+
+            if (null == doc) {
+                return folders;
+            }
+            Elements links = doc.select("a");
+            for (Element link : links) {
+                String href = link.attr("href");
+                if (null != href && href.length() > 0) {
+                    if (href.endsWith("/")) href = href.substring(0,href.length()-1);
+                    folders.add(href);
+                }
+            }
+        } catch (IOException e) {
+            System.err.format("IOException while parsing retrieved folder index.");
+        } finally {
+            try {
+                if (null != is) is.close();
+            } catch (IOException e) { }
+        }
+        return folders;
+    }
+
+    private String getLastLocalDumpDir(String lang) {
 		String langDir = outputDir + "/" + lang;
 		File[] dirs = new File(langDir).listFiles();
 		
@@ -399,6 +518,8 @@ public class UpdateAndExtractDumps {
 	
 	private String getLastVersionDir(SortedSet<String> dirs) {
 		String res = null;
+        if (null == dirs) return res;
+
 		Matcher m = vpat.matcher("");
 		for (String d: dirs) {
 			m.reset(d);

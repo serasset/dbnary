@@ -211,8 +211,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void extractTranslations(int startOffset, int endOffset) {
        Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
        macroMatcher.region(startOffset, endOffset);
-       String currentGlose = null;
-
+       String currentGloss = null;
+        // TODO: there are templates called "qualifier" used to further qualify the translation check and evaluate if extracting its data is useful.
        while (macroMatcher.find()) {
            String g1 = macroMatcher.group(1);
 
@@ -233,7 +233,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                    }
                    lang=EnglishLangToCode.threeLettersCode(lang);
                    if(lang!=null){
-                	   wdh.registerTranslation(lang, currentGlose, usage, word);
+                	   wdh.registerTranslation(lang, currentGloss, usage, word);
                    }
                   
                }
@@ -242,16 +242,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                String g2 = macroMatcher.group(2);
                // Ignore glose if it is a macro
                if (g2 != null && ! g2.startsWith("{{")) {
-                   currentGlose = g2;
+                   currentGloss = g2;
                }
            } else if (g1.equals("checktrans-top")) {
         	   // forget glose.
-        	   currentGlose = null;
+        	   currentGloss = null;
            } else if (g1.equals("trans-mid")) {
                // just ignore it
            } else if (g1.equals("trans-bottom")) {
                // Forget the current glose
-               currentGlose = null;
+               currentGloss = null;
            }
        }
     }

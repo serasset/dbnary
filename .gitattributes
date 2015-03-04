@@ -550,6 +550,7 @@ extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseDefinitionExtractorWikiMod
 extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseRelatedWordsExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseTranslationsExtractorWikiModel.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/jpn/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/jpn/WiktionaryExtractor.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/pol/DefinitionExpanderWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/pol/PolishLangToCode.java -text
@@ -589,7 +590,9 @@ extractor/src/main/java/org/getalp/dilaf/DilafExtractorException.java -text
 extractor/src/main/java/org/getalp/dilaf/DilafLemonDataHandler.java -text
 extractor/src/main/java/org/getalp/dilaf/DilafZarmaExtractor.java -text
 extractor/src/main/resources/Messages_bg.properties -text svneol=unset#text/plain
+extractor/src/main/resources/Messages_ja.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_pl.properties -text svneol=unset#text/plain
+extractor/src/main/resources/Messages_pt.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
 extractor/src/main/resources/ehcache.xml -text
 extractor/src/main/scripts/old/README.txt -text

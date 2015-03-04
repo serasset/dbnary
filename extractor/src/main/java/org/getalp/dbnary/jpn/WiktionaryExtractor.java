@@ -45,53 +45,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 	// protected final static Pattern languageSectionPattern;
-	protected final static HashMap<String,String> posMarkers;
 	//protected final static HashSet<String> nymMarkers;
 
-	static {
 
-		posMarkers = new HashMap<String,String>(20);
-		posMarkers.put("noun", "Noun");
-		posMarkers.put("名詞", "Noun");
-		posMarkers.put("idiom", "Ambig-Idiom");
-		posMarkers.put("四字熟語", "Idiom");
-		posMarkers.put("成句", "Ambig-Idiom"); // --> Parfois un POS, parfois une section (pour les kanjis seulement ?)
-		posMarkers.put("verb", "Verb");
-		posMarkers.put("adj", "Adjective");
-		posMarkers.put("adjective", "Adjective");
-		posMarkers.put("形容詞", "Adjective");
-		posMarkers.put("name", "Proper Noun");
-		posMarkers.put("固有名詞", "Proper Noun");
-		posMarkers.put("人名", "Proper Noun");         
-		posMarkers.put("adv", "Adverb");
-		posMarkers.put("adverb", "Adverb");
-		posMarkers.put("副詞", "Adverb");
-		posMarkers.put("abbr", "Abbrev");
-		posMarkers.put("略語", "Abbrev");
-		//        posMarkers.put("prov", "Proverb");
-		//        posMarkers.put("熟語", "Proverb");
-		//        posMarkers.put("ことわざ", "Proverb");
-		posMarkers.put("形容動詞", "AdjectiveNoun");
-		posMarkers.put("adjectivenoun", "AdjectiveNoun");
-		posMarkers.put("感動詞", "Interjection");
-		// Ignorable part of speech
-		posMarkers.put("助詞", ""); // particle
-		posMarkers.put("conj", ""); // conj
-		posMarkers.put("接続詞", ""); // conj
-		posMarkers.put("代名詞", "Pronoun"); // pronoun
-
-
-		// adjectivenoun, 形容動詞
-		// 慣用句 (Idiom)
-		// 和語の漢字表記 --> notes the kanji spelling of words from Japanese Origin. Sometimes, only points to the kana writing. (it may be used as a category)
-		// 慣用句 --> Idiom ? What is the difference with other Idioms
-		// 感動詞 --> Interjection
-		// 人名 --> Person's name: Proper Noun
-		// 成句 --> Idiomatic phrase --> Is this a pos or a section | 成句
-		// conj
-		// ===助詞=== particle
-
-	}
 
 	protected final static Pattern sectionPattern;
 
@@ -192,22 +148,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		// Only keep level 3 headers ? --> No.
 		// Heuristic is used: if entry length <= 2 then idiom is not a POS.
 		String head = m.group(1).trim();
-		String pos = null;
-		Matcher macro = WikiPatterns.macroPattern.matcher(head);
-		if (macro.lookingAt()) { // the section starts by a wiki macro
-			pos = posMarkers.get(macro.group(1));
-		} else { 
-			String [] h = head.split(":");
-			pos = posMarkers.get(h[0]);
-		}
-		if (null != pos && pos.equals("Ambig-Idiom"))
-			// When idiom is found on a 1 or 2 char entry, it is assumed to be a section giving the idioms build from the entry.
-			// Otherwiza it is believed to be a Part Of Speech.
-			if (wiktionaryPageName.length() <= 2)
-				pos = null;
-			else
-				pos = "Idiom";
-		return pos;
+
+		return WiktionaryDataHandler.getValidPOS(head, wiktionaryPageName);
 	}
 
 	void gotoDefBlock(Matcher m, String pos) {
@@ -627,7 +569,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	public void extractDefinition(String definition, int defLevel) {
 		// TODO: properly handle macros in definitions.
 		JapaneseDefinitionExtractorWikiModel dbnmodel = new JapaneseDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("ja"), "/${image}", "/${title}");
-		dbnmodel.parseDefinition(definition);
+		dbnmodel.parseDefinition(definition, defLevel);
 	}
 
 	public void extractTranslations(int startOffset, int endOffset) {

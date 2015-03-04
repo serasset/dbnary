@@ -405,7 +405,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	public void extractDefinition(String definition, int defLevel) {
 		// TODO: properly handle macros in definitions.
         PortugueseDefinitionExtractorWikiModel dbnmodel = new PortugueseDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}", "/${title}");
-        dbnmodel.parseDefinition(definition);
+        dbnmodel.parseDefinition(definition, defLevel);
 	}
     
 

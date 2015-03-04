@@ -1,9 +1,10 @@
 package org.getalp.dbnary.rus;
 
 import java.io.IOException;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
+import com.hp.hpl.jena.rdf.model.Property;
+import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -17,9 +18,20 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
 	// 	ignoredTemplates.add("Wikipedia");
 	// 	ignoredTemplates.add("Incorrect");
 	// }
-	
+
+    protected class Example {
+        String value;
+        Map<Property, String> context = new HashMap<>();
+        protected Example(String ex) {
+            value = ex;
+        }
+        protected void put(Property p, String v) {
+            context.put(p, v);
+        }
+    }
+
 	private IWiktionaryDataHandler delegate;
-	
+	private Set<Example> currentExamples = new HashSet<>();
 	
 	public RussianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
 		this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
@@ -30,11 +42,17 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
 		this.delegate = we;
 	}
 
-	public void parseDefinition(String definition) {
+	public void parseDefinition(String definition, int defLevel) {
 		// Render the definition to plain text, while ignoring the example template
+        currentExamples.clear();
 		String def = render(new PlainTextConverter(), definition).trim();
 		if (null != def && ! def.equals(""))
-			delegate.registerNewDefinition(def);
+			delegate.registerNewDefinition(def, defLevel);
+            if (! currentExamples.isEmpty()) {
+                for (Example example : currentExamples) {
+                    delegate.registerExample(example.value, example.context);
+                }
+            }
 	}
 	
 	@Override
@@ -43,12 +61,41 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
 			throws IOException {
 		if ("пример".equals(templateName)) {
 			// This is an example of usage of the definition. 
-            // TODO: add this example in the extracted data.
-			
+            // DONE: add this example in the extracted data.
+			if (parameterMap.containsKey("текст")) {
+                // Call with named parameters
+                // {{пример|текст=|перевод=|автор=|титул=|ответственный=|издание=|перев=|дата=|источник=}}
+                String ex = parameterMap.get("текст");
+                if (null != ex && ex.length()!= 0) {
+                    Example example = new Example(ex);
+                    parameterMap.remove("текст");
+                    example.put(DBnaryOnt.exampleSource, formatMap(parameterMap));
+                    currentExamples.add(example);
+                }
+            } else if (parameterMap.containsKey("1")) {
+                // Call with positional parameters
+                // {{пример|текст|автор|титул|дата|}}
+                String ex = parameterMap.get("1");
+                if (null != ex && ex.length()!= 0) {
+                    Example example = new Example(ex);
+                    parameterMap.remove("1");
+                    example.put(DBnaryOnt.exampleSource, formatMap(parameterMap));
+                    currentExamples.add(example);
+                }
+            }
 		} else {
 			// Do not ignore the other template calls.
 			super.substituteTemplateCall(templateName, parameterMap, writer);
 		}
 	}
+
+    private String formatMap(Map<String, String> parameterMap) {
+        StringBuffer b = new StringBuffer();
+        for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+            b.append(entry.getKey()).append("=").append(entry.getValue()).append("|");
+        }
+        b.setLength(b.length()-1);
+        return b.toString();
+    }
 
 }

@@ -440,7 +440,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	public void extractDefinition(String definition, int defLevel) {
 		// TODO: properly handle macros in definitions.
         RussianDefinitionExtractorWikiModel dbnmodel = new RussianDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), this.wiktionaryPageName, "/${title}");
-        dbnmodel.parseDefinition(definition);
+        dbnmodel.parseDefinition(definition, defLevel);
 	}
     
 	private boolean extractMorpho(int startOffset, int endOffset) {

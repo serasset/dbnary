@@ -624,7 +624,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 	@Override
-	public void extractDefinition(String definition) {
+	public void extractDefinition(String definition, int defLevel) {
 		// TODO: properly handle macros in definitions.
 		JapaneseDefinitionExtractorWikiModel dbnmodel = new JapaneseDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("ja"), "/${image}", "/${title}");
 		dbnmodel.parseDefinition(definition);

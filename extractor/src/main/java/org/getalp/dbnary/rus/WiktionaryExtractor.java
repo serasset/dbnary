@@ -437,7 +437,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
     
     @Override
-	public void extractDefinition(String definition) {
+	public void extractDefinition(String definition, int defLevel) {
 		// TODO: properly handle macros in definitions.
         RussianDefinitionExtractorWikiModel dbnmodel = new RussianDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), this.wiktionaryPageName, "/${title}");
         dbnmodel.parseDefinition(definition);

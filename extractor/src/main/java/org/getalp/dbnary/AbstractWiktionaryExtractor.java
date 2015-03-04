@@ -184,9 +184,9 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         }
 	}
 
-	public void extractDefinition(String definition) {
+	/* public void extractDefinition(String definition) {
 		extractDefinition(definition, 1);
-	}
+	}*/
 
 	public static String cleanUpMarkup(String group) {
         return cleanUpMarkup(group, false);

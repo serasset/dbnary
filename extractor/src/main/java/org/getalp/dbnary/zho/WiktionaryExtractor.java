@@ -606,8 +606,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor{
 		}
 
 		@Override
-		public void extractDefinition(String definition) {
-			ChineseDefinitionExtractorWikiModel dbnmodel = new ChineseDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("chs"), "/${image}", "/${title}");
+		public void extractDefinition(String definition, int defLevel) {
+			ChineseDefinitionExtractorWikiModel dbnmodel = new ChineseDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("zho"), "/${image}", "/${title}");
 			dbnmodel.parseDefinition(definition);
 		}
 

@@ -51,11 +51,15 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
             if (h.startsWith("Gerundivum")) h = "Gerundivum";
 			switch (h) {
                 case "transitive Verwendung":
+                case "transitive":
                     inflection.valency = Valency.TRANSITIVE;
                     break;
                 case "reflexive Verwendung":
                 case "reflexiv":
                     inflection.voice = Voice.REFLEXIV;
+                    break;
+                case "intransitive":
+                    inflection.valency = Valency.INTRANSITIVE;
                     break;
                 case "(nichterweiterte) Infinitive":
                 case "nichterweitert":

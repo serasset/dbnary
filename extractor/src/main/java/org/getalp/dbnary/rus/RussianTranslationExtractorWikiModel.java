@@ -75,9 +75,12 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 	}
 
 	static Pattern parens = Pattern.compile("\\(([^\\)]*)\\)");
-
+    static Pattern scripts = Pattern.compile("[^\\[\\]:,;]*:\\s*");
 	private void extractTranslations(String gloss, String lang, String value) {
 		// First black out commas that appear inside a pair of parenthesis
+        // TODO: Keep usage information that may be found as a prefix: e.g. "de=несов.: [[verwenden]], [[anwenden]], [[einsetzen]]; сов.: [[aufbrauchen]]"
+        Matcher scriptMatcher = scripts.matcher(value);
+        value = scriptMatcher.replaceAll("");
 		value = blackoutCommas(value);
 		String translations[] = value.split("[,;]");
 		for (int i = 0; i < translations.length; i++) {
@@ -106,13 +109,16 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 	}
 
 	static Pattern linkPattern = Pattern.compile("\\[\\[([^\\]]*)\\]\\]");
+    static Pattern linkWithTargetPattern = Pattern.compile("\\[\\[[^\\|]+\\|([^\\]]*)\\]\\]");
 	static Pattern macroPattern = Pattern.compile("\\{\\{([^\\}]*)\\}\\}");
 
 	private void extractTranslation(String gloss, String lang, String trans) {
 		trans = restoreCommas(trans);
 		Matcher macros = macroPattern.matcher(trans);
 		String word = macros.replaceAll(""); // TODO: usages are now in macros
-		Matcher links = linkPattern.matcher(word);
+        Matcher linksWithPattern = linkWithTargetPattern.matcher(word);
+        word = linksWithPattern.replaceAll("$1").trim();
+        Matcher links = linkPattern.matcher(word);
 		word = links.replaceAll("$1").trim();
 		StringBuffer usage = new StringBuffer();
 		StringBuffer w = new StringBuffer();

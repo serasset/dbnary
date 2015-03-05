@@ -7,9 +7,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,7 +63,7 @@ public class UpdateAndExtractDumps {
 	private boolean compress = DEFAULT_COMPRESS;
 	private String server = DEFAULT_SERVER_URL;
 	private String model = DEFAULT_MODEL;
-    private String features = "";
+    private List<String> features = null;
 
 	String[] remainingArgs;
 
@@ -143,7 +141,9 @@ public class UpdateAndExtractDumps {
 		networkIsOff = cmd.hasOption(NETWORK_OFF_OPTION);
 
         if (cmd.hasOption(ENABLE_FEATURE_OPTION)) {
-            features = cmd.getOptionValue(ENABLE_FEATURE_OPTION);
+            features = Arrays.asList(cmd.getOptionValue(ENABLE_FEATURE_OPTION).split("[,;]"));
+        } else {
+            features = new ArrayList<>();
         }
 
 		if (cmd.hasOption(MODEL_OPTION)) {
@@ -178,12 +178,15 @@ public class UpdateAndExtractDumps {
 		// link to the extracted file
 		System.err.println("==> Linking to latest versions.");
 		for (int i = 0; i < langs.length; i++) {
-			linkToLatestExtractFile(langs[i], dirs[i]);
-		}
+			linkToLatestExtractFile(langs[i], dirs[i], model.toLowerCase());
+            for (String f : features) {
+                linkToLatestExtractFile(langs[i], dirs[i], f);
+            }
+        }
 	}
 
 
-	private void linkToLatestExtractFile(String lang, String dir) {
+	private void linkToLatestExtractFile(String lang, String dir, String feature) {
 		if (null == dir || dir.equals("")) return;
 		
 		String latestdir = extractDir + "/" + model.toLowerCase() + "/latest";
@@ -191,7 +194,7 @@ public class UpdateAndExtractDumps {
 		File d = new File(latestdir);
 		d.mkdirs();
 
-		String extractFile = odir + "/" + lang +"_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
+		String extractFile = odir + "/" + lang +"_dbnary_" + feature + "_" + dir + ".ttl";
 		if (compress) extractFile = extractFile + ".bz2";
 		File extractedFile = new File(extractFile);
 		if (! extractedFile.exists()) {
@@ -199,7 +202,7 @@ public class UpdateAndExtractDumps {
 			return;
 		}
 		
-		String latestFile = latestdir + "/" + lang +"_dbnary_" + model.toLowerCase() + ".ttl";
+		String latestFile = latestdir + "/" + lang +"_dbnary_" + feature + ".ttl";
 		if (compress) latestFile = latestFile + ".bz2";
 		Path lf = Paths.get(latestFile);
         try {
@@ -209,7 +212,7 @@ public class UpdateAndExtractDumps {
         }
         try {
 			String linkTo = "../" + lang + "/" + extractedFile.getName();
-			String linkName = lang + "_dbnary_" + model.toLowerCase() + ".ttl";
+			String linkName = lang + "_dbnary_" + feature + ".ttl";
 			if (compress) linkName = linkName + ".bz2";
 
 			String[] args = {"ln", "-s", linkTo, linkName};
@@ -364,7 +367,7 @@ public class UpdateAndExtractDumps {
                         System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
                         long s = System.currentTimeMillis();
                         client.retrieveFile(dumpFileName(lang, lastDir), dfile);
-                        System.err.println("Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
+                        System.err.println("Retrieved " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
 
 
                     } catch (IOException e) {

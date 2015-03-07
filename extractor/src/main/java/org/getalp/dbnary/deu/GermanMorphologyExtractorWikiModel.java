@@ -191,8 +191,8 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
     }
 
     private void extractAdjectiveForms(String deklinationPageName) {
-		String deklinationPageContent = wi.getTextOfPage(deklinationPageName);
-		if (null == deklinationPageContent) return;
+		String deklinationPageContent = wi.getTextOfPageWithRedirects(deklinationPageName);
+        if (null == deklinationPageContent) return;
 		if(!deklinationPageContent.contains("Deutsch")) return;
 
 		deklinationExtractor.setPageName(this.getPageName());
@@ -201,8 +201,8 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
 
 
 	private void extractVerbForms(String conjugationPage) {
-		String konjugationPageContent = wi.getTextOfPage(conjugationPage);
-		if (null == konjugationPageContent) return;
+		String konjugationPageContent = wi.getTextOfPageWithRedirects(conjugationPage);
+        if (null == konjugationPageContent) return;
 		if(!konjugationPageContent.contains("Deutsch")) return;
 
 		konjugationExtractor.setPageName(this.getPageName());

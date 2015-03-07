@@ -10,6 +10,9 @@ import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 
 import info.bliki.wiki.filter.PlainTextConverter;
+import org.getalp.dbnary.wiki.ExpandAllWikiModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
 	
@@ -30,29 +33,40 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
         }
     }
 
+    private ExpandAllWikiModel expander;
+
 	private IWiktionaryDataHandler delegate;
 	private Set<Example> currentExamples = new HashSet<>();
-	
+    private Logger log = LoggerFactory.getLogger(RussianDefinitionExtractorWikiModel.class);
+
 	public RussianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
 		this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
 	}
 	
 	public RussianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
 		super(wi, locale, imageBaseURL, linkBaseURL);
+        expander = new ExpandAllWikiModel(wi, locale, imageBaseURL, linkBaseURL);
 		this.delegate = we;
 	}
 
-	public void parseDefinition(String definition, int defLevel) {
+    @Override
+    public void setPageName(String pageTitle) {
+        super.setPageName(pageTitle);
+        expander.setPageName(pageTitle);
+    }
+
+    public void parseDefinition(String definition, int defLevel) {
 		// Render the definition to plain text, while ignoring the example template
         currentExamples.clear();
 		String def = render(new PlainTextConverter(), definition).trim();
-		if (null != def && ! def.equals(""))
-			delegate.registerNewDefinition(def, defLevel);
-            if (! currentExamples.isEmpty()) {
+		if (null != def && ! def.equals("")) {
+            delegate.registerNewDefinition(def, defLevel);
+            if (!currentExamples.isEmpty()) {
                 for (Example example : currentExamples) {
                     delegate.registerExample(example.value, example.context);
                 }
             }
+        }
 	}
 	
 	@Override
@@ -65,7 +79,7 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
 			if (parameterMap.containsKey("текст")) {
                 // Call with named parameters
                 // {{пример|текст=|перевод=|автор=|титул=|ответственный=|издание=|перев=|дата=|источник=}}
-                String ex = parameterMap.get("текст");
+                String ex = expander.expandAll(parameterMap.get("текст"), null);
                 if (null != ex && ex.length()!= 0) {
                     Example example = new Example(ex);
                     parameterMap.remove("текст");
@@ -75,7 +89,7 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
             } else if (parameterMap.containsKey("1")) {
                 // Call with positional parameters
                 // {{пример|текст|автор|титул|дата|}}
-                String ex = parameterMap.get("1");
+                String ex = expander.expandAll(parameterMap.get("1"), null);
                 if (null != ex && ex.length()!= 0) {
                     Example example = new Example(ex);
                     parameterMap.remove("1");
@@ -85,7 +99,8 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
             }
 		} else {
 			// Do not ignore the other template calls.
-			super.substituteTemplateCall(templateName, parameterMap, writer);
+            // log.debug("Called macro: {} when expanding definition block in {}.", templateName, this.getPageName());
+            super.substituteTemplateCall(templateName, parameterMap, writer);
 		}
 	}
 

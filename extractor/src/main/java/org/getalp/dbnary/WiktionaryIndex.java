@@ -5,16 +5,15 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.Configuration;
+import org.getalp.dbnary.wiki.WikiPatterns;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Matcher;
 
 /**
  * WiktionaryIndex is a Persistent HashMap designed to hold an index on a
@@ -47,7 +46,7 @@ public class WiktionaryIndex implements Map<String, String> {
     String encoding;
     HashMap<String, OffsetValue> map;
     RandomAccessFile xmlf ;
-    
+
     public static String indexFilename(String dumpFilename) {
         return dumpFilename + ".idx";
     }
@@ -303,7 +302,25 @@ public class WiktionaryIndex implements Map<String, String> {
     public Collection<String> values() {
         throw new RuntimeException("values: unsupported method.");        
     }
-    
+
+    private static List<String> redirects = Arrays.asList("#REDIRECT", "#WEITERLEITUNG", "#REDIRECCIÓN");
+
+    public String getTextOfPageWithRedirects(Object key) {
+        String text = getTextOfPage(key);
+        if (null != text) {
+            for (String redirect : redirects) {
+                if (text.startsWith(redirect)) {
+                    String targetLink = text.substring(redirect.length()).trim();
+                    Matcher linkMatcher = WikiPatterns.linkPattern.matcher(targetLink);
+                    if (linkMatcher.matches()) {
+                        return getTextOfPageWithRedirects(linkMatcher.group(1));
+                    }
+                }
+            }
+        }
+        return text;
+    }
+
     public String getTextOfPage(Object key) {
         String skey = (String) key;
         boolean notMainSpace = skey.contains(":");

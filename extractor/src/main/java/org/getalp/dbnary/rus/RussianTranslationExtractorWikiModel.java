@@ -69,7 +69,7 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 			// super.substituteTemplateCall(templateName, parameterMap, writer);
             // As template calls are expanded BEFORE (since gwtwiki-3.20-SNAPSHOT) enclosing template,
             // we now expand by the source code to restore previous behaviour
-            log.debug("Called macro: {} when expanding translation block in {}.", templateName, this.getImageBaseURL());
+            log.debug("Called macro: {} when expanding translation block in {}.", templateName, this.getPageName());
             writer.append("{{").append(templateName).append("}}"); // TODO: reconstruct template with all args
 		}
 	}

@@ -106,27 +106,13 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
                 if (section.contains("ЗНАЧЕНИЕ")) {	
                 	extractDefinitions(parameterMap.get(section));
                 } else if (section.contains("ПРЕВОД")) {
-                    String sectionContent = parameterMap.get(section).replaceAll("\\[\\[:[^:]+:[^\\|]*\\|\\(?[^\\)]+\\)?\\]\\]", "");
-                    Matcher langTranslations = translationPattern.matcher(sectionContent);
-                    while (langTranslations.find()) {
-                        String trans = langTranslations.group();
-                        String lang = "";
-                        String body = "";
-                        String gloss = "";
-                        if (!trans.isEmpty()) {
-                            Matcher translationLangMatcher = translationLangPattern.matcher(trans);
-                            if (translationLangMatcher.find()) {
-                                lang = BulgarianLangtoCode.threeLettersCode(translationLangMatcher.group().replace("*", "").replace("{", "").replace("}", ""));
+                    String sectionContent = parameterMap.get(section).replaceAll("\\[\\[:[^:]+:[^\\|]*\\|\\(?[^\\)\\]]+\\)?\\]\\]", "");
+                    // if (sectionContent.contains("\n# ")) log.debug("Translation with sens number in {}", this.getPageName());
+                    // TODO: use a shared instance of the translation parser.
+                    TranslationsParser tp = new TranslationsParser();
+                    tp.extractTranslations(sectionContent, delegate);
 
-                                Matcher translationBodyMatcher = translationBodyPattern.matcher(trans);
-                                if (translationBodyMatcher.find()) {
-                                    body = translationBodyMatcher.group();
-                                    body = body.replaceAll("\\[\\[([^\\]\\[]*)\\s*,\\s*([^\\]\\[]*)\\]\\]","\\[\\[$1\\]\\],\\[\\[$2\\]\\]");
-                                }
-                                extractTranslations(lang, body);
-                            }
-                        }
-                    }
+                    // extractTranslationsFromRawWikiCode(sectionContent)
                     //delegate.registerTranslation();
                 } else if (section.contains("ID")) { // ID, same as page name for Bulgarian
                 } else if (section.contains("РОД")) { //Gender
@@ -156,6 +142,29 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
             // Just ignore the other template calls (uncomment to expand the template calls).
             // super.substituteTemplateCall(templateName, parameterMap, writer);
             appendTemplateCall(templateName, parameterMap, writer);
+        }
+    }
+
+    private void extractTranslationsFromRawWikiCode(String sectionContent) {
+        Matcher langTranslations = translationPattern.matcher(sectionContent);
+        while (langTranslations.find()) {
+            String trans = langTranslations.group();
+            String lang = "";
+            String body = "";
+            String gloss = "";
+            if (!trans.isEmpty()) {
+                Matcher translationLangMatcher = translationLangPattern.matcher(trans);
+                if (translationLangMatcher.find()) {
+                    lang = BulgarianLangtoCode.threeLettersCode(translationLangMatcher.group().replace("*", "").replace("{", "").replace("}", ""));
+
+                    Matcher translationBodyMatcher = translationBodyPattern.matcher(trans);
+                    if (translationBodyMatcher.find()) {
+                        body = translationBodyMatcher.group();
+                        body = body.replaceAll("\\[\\[([^\\]\\[]*)\\s*,\\s*([^\\]\\[]*)\\]\\]","\\[\\[$1\\]\\],\\[\\[$2\\]\\]");
+                    }
+                    extractTranslations(lang, body);
+                }
+            }
         }
     }
 

@@ -219,6 +219,36 @@ public class BulgarianLangtoCode extends LangTools {
         h.put("Шаблон:za", "za");
         h.put("китайски", "zh");
         h.put("Шаблон:zu", "zu");
+
+        // Do not delete, alternate forms and missing forms in Bulgarian templates.
+        h.put("интерлингва", "ina");
+        h.put("баварски", "bar");
+        h.put("азерски", "az");
+        h.put("азърски", "az");
+        h.put("рапануи", "rap");
+        h.put("хавайски", "haw");
+        h.put("шотландски", "gd");
+        h.put("кюрдски", "ku");
+        h.put("нидерландски", "nl");
+        h.put("финландски", "fi");
+        h.put("русский", "ru");
+        h.put("хаитянски креолски", "hat");
+        h.put("жемайтийски", "sgs");
+        h.put("кримскотатарски", "crh");
+        h.put("науатъл", "nci");
+        h.put("нахуатъл", "nci");
+        h.put("каталански", "ca");
+        h.put("каталан", "ca");
+        h.put("хъватски", "hrv");
+        h.put("крия", "cr");
+        h.put("филипински", "fil");
+        h.put("беларуски", "be");
+        h.put("санскрит", "sa");
+        h.put("идо", "io");
+        h.put("осетински", "os");
+        h.put("старобългарски", "cu");
+
+
 	}
 
 	public static String threeLettersCode(String s) {

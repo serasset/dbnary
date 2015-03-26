@@ -595,6 +595,7 @@ extractor/src/main/resources/Messages_pl.properties -text svneol=unset#text/plai
 extractor/src/main/resources/Messages_pt.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
 extractor/src/main/resources/ehcache.xml -text
+extractor/src/main/scala/org/getalp/dbnary/bul/TranslationsParser.scala -text
 extractor/src/main/scripts/old/README.txt -text
 extractor/src/main/scripts/old/compare_extracts.sh -text
 extractor/src/main/scripts/old/de_extract-defposNoyau -text

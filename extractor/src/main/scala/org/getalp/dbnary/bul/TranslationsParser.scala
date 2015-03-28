@@ -44,8 +44,8 @@ class TranslationsParser extends RegexParsers {
 
   def link: Parser[String] = matching(Link) ^^ {
     case Link(interwikilink, null, _) => ""
-    case Link(null, target, null) => target
-    case Link(null, target, value) => value
+    case Link(null, target, null) => target.trim()
+    case Link(null, target, value) => value.trim()
     case m => {
       logger.debug("Unhandled link structure in \"" + currentEntry + "\": " + m)
       ""
@@ -71,12 +71,12 @@ class TranslationsParser extends RegexParsers {
 
   def italics: Parser[String] = """''.*?''""".r
 
-  def simpleString = """[^'\(\{\n\*\#][^\s,;\*\#\n]*""".r
+  def simpleString = """[^'\(\{\n\*\#\,][^\s,;\*\#\n]*""".r
 
   def simpleStrings: Parser[String] = rep(simpleString) ^^ {
     case list => list filter {
       _.nonEmpty
-    } mkString ("")
+    } mkString (" ")
   }
 
 

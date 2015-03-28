@@ -106,7 +106,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
                 if (section.contains("ЗНАЧЕНИЕ")) {	
                 	extractDefinitions(parameterMap.get(section));
                 } else if (section.contains("ПРЕВОД")) {
-                    String sectionContent = parameterMap.get(section).replaceAll("\\[\\[:[^:]+:[^\\|]*\\|\\(?[^\\)\\]]+\\)?\\]\\]", "");
+                    String sectionContent = parameterMap.get(section).replaceAll("\\[\\[:[^:]+:[^\\|]*\\|\\s*\\(?[^\\)\\]]+\\)?\\s*\\]\\]", "");
                     // if (sectionContent.contains("\n# ")) log.debug("Translation with sens number in {}", this.getPageName());
                     // TODO: use a shared instance of the translation parser.
                     TranslationsParser tp = new TranslationsParser();

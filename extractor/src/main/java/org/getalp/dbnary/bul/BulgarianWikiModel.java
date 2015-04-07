@@ -195,6 +195,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
     	def = def.replaceAll("(?m)^__(#{1,2})__", "$1");
     	Matcher definitionMatcher = WikiPatterns.definitionPattern.matcher(def);
         while (definitionMatcher.find()) {
+            if (definitionMatcher.group(1).startsWith("Значението на думата все още не е въведено")) continue;
             delegate.registerNewDefinition(definitionMatcher.group(1));
         }
 	}

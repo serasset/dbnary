@@ -31,7 +31,7 @@ class TranslationsParser extends RegexParsers {
 
   private val logger = Logger(classOf[TranslationsParser])
   private var currentEntry: String = null
-  val Link = """\[\[(?:([^:]]*)|([^]]*))(?:\|([^]]*))?\]\]""".r
+  val Link = """\[\[(?:([^:\|\]]*)|([^\]\|]*:[^\]\|]*))(?:\|([^\]]*))?\]\]""".r
   val Link2 = """\[\[([^]]*)\]\]""".r
   val TranslationTemplate = """\{\{[tnп](?:\|([^\}\|]+)(?:\|([^\}\|]+)(?:\|([^\}]+))?)?)?\}\}""".r
   val TemplateWithoutArgs = """\{\{([^\}|]+)\}\}""".r
@@ -43,9 +43,9 @@ class TranslationsParser extends RegexParsers {
   }
 
   def link: Parser[String] = matching(Link) ^^ {
-    case Link(interwikilink, null, _) => ""
-    case Link(null, target, null) => target.trim()
-    case Link(null, target, value) => value.trim()
+    case Link(null, interwikilink, _) => ""
+    case Link(target, null, null) => target.trim()
+    case Link(target, null , value) => value.trim()
     case m => {
       logger.debug("Unhandled link structure in \"" + currentEntry + "\": " + m)
       ""
@@ -182,10 +182,15 @@ class TranslationsParser extends RegexParsers {
     }
   }
 
+  val TBracket = """\[([^\]]*)\]""".r
   def extractTranslations(input: String, delegate: IWiktionaryDataHandler): Unit =
     parseTranslations(input, delegate.currentLexEntry()).foreach {
-      t =>
-        delegate.registerTranslation(t.language, t.gloss, t.usage, t.writtenRep)
+      t => {
+        t.writtenRep match {
+          case TBracket(v) => delegate.registerTranslation(t.language, t.gloss, t.usage, v)
+          case _ => delegate.registerTranslation(t.language, t.gloss, t.usage, t.writtenRep)
+        }
+      }
     }
 
 }

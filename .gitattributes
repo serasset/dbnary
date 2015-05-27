@@ -539,6 +539,11 @@ extractor/src/main/java/org/getalp/dbnary/fra/FrenchExtractorWikiModel.java -tex
 extractor/src/main/java/org/getalp/dbnary/fra/FrenchLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/fra/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/fra/WiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/hbs/SerboCroatianInflectionData.java -text
+extractor/src/main/java/org/getalp/dbnary/hbs/SerboCroatianLangToCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/hbs/SerboCroatianMorphoExtractorWikiModel.java -text
+extractor/src/main/java/org/getalp/dbnary/hbs/WiktionaryDataHandler.java -text
+extractor/src/main/java/org/getalp/dbnary/hbs/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianExampleExtractorWikiModel.java -text
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianLangToCode.java -text svneol=unset#text/plain

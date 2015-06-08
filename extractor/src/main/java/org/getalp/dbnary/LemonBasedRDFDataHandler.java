@@ -631,9 +631,14 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 	public void registerNymRelation(String target, String synRelation) {
 		registerNymRelationToEntity(target, synRelation, currentLexEntry);
     }
-	
+
 	@Override
 	public void registerNymRelation(String target, String synRelation, String gloss) {
+		registerNymRelation(target, synRelation, gloss, null);
+	}
+	
+	@Override
+	public void registerNymRelation(String target, String synRelation, String gloss, String usage) {
 		if (null == currentLexEntry) {
 			log.debug("Registering Lexical Relation when lex entry is null in \"{}\".", this.currentMainLexEntry);
 			return; // Don't register anything if current lex entry is not known.
@@ -656,9 +661,17 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		
 		Statement nymR = aBox.createStatement(currentLexEntry, nymProperty, targetResource);
     	aBox.add(nymR);
-		ReifiedStatement rnymR = nymR.createReifiedStatement(computeNymId(synRelation));
-		rnymR.addProperty(DBnaryOnt.gloss, gloss);
-		
+    	
+    	if(gloss == null && usage == null)
+    		return;
+    	
+	    ReifiedStatement rnymR = nymR.createReifiedStatement(computeNymId(synRelation));
+	    if(gloss != null)
+	    	rnymR.addProperty(DBnaryOnt.gloss, gloss);
+		if(usage != null)
+			rnymR.addProperty(DBnaryOnt.usage, usage);
+			
+    	
 	}
 
 	private String computeNymId(String nym) {

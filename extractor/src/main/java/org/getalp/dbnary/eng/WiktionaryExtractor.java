@@ -4,17 +4,14 @@
 package org.getalp.dbnary.eng;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
-import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.wiki.WikiPatterns;
-import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

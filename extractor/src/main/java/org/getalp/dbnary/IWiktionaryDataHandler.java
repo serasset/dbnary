@@ -79,6 +79,7 @@ public interface IWiktionaryDataHandler {
     public void registerNymRelation(String target, String synRelation);
     
     public void registerNymRelation(String target, String synRelation, String gloss);
+    public void registerNymRelation(String target, String synRelation, String gloss,String usage);
 
 
     public void registerTranslation(String lang, String currentGlose, String usage, String word);
@@ -122,5 +123,7 @@ public interface IWiktionaryDataHandler {
 
 	public String currentWiktionaryPos();
     public Resource currentLexinfoPos();
+
+	
 
 }

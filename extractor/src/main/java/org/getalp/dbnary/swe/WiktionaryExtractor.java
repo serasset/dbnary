@@ -1,4 +1,4 @@
-package org.getalp.dbnary.nld;
+package org.getalp.dbnary.swe;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,17 +16,29 @@ import org.slf4j.LoggerFactory;
  * @author malick
  *
  */
-public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
+public class WiktionaryExtractor extends AbstractWiktionaryExtractor{
 
 
 
     static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
-    protected final static String languageSectionPatternString = "\\{\\{=\\s*([^=}]*)\\s*=\\}\\}";
     
-    protected final static String sectionPatternString ;	
+    protected final static String languageSectionPatternString = "==([^=\\s]*)==";
     
+    protected final static String sectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";	
     
-    protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
+    protected final static String pronPatternString = "\\*\\{\\{\\s*([^\\}\\|\n\r]*)\\s*\\|ipa=([^\\}\\|]*)\\|?";	// detecte le bloc de prononciation
+            
+    public final static String examplePatternString = "^#:\\s*(.*)$";
+    
+    protected final static String defOrExamplePatternString ;
+    
+    protected final static String nymSensePatternString = ";(.*)";
+    
+    protected final static String nymPatternString ;
+
+    protected final static String nymAndUsagePatternString ;
+
+
     
     
     private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK}
@@ -40,46 +52,50 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     static Pattern defOrExamplePattern ;
     protected final static HashMap<String, String> nymMarkerToNymName;
 	protected final static Pattern pronPattern;
+	protected final static Pattern nymPattern;
+
 
     static {
     	
-    	String examplePatternString = 
-                new StringBuilder().append("\\{\\{\\s*")
-                .append("([^\\}\\|\n\r]*)\\s*\\|([^\n\r]*)")
-                .append("(?:\\}\\})$")
-                .toString();
+    	 nymAndUsagePatternString = 
+    	            new StringBuilder()
+    	            .append("\\[\\[")
+    	            .append("([^\\]\\|\n\r]*)(?:\\|([^\\]\n\r]*))?")
+    	            .append("\\]\\]\\s*(''\\(([^\\)]*)\\)'')?(?:\\(''([^\\)]*)''\\))?")
+    	            .toString();
     	
-    	String defOrExamplePatternString = new StringBuilder()
+    	
+    	
+       defOrExamplePatternString = new StringBuilder()
     	    .append("(?:")
     	    .append(WikiPatterns.definitionPatternString)
     	    .append(")|(?:")
     	    .append(examplePatternString)
+    	    .append(")|(?:")
+    	    .append(pronPatternString)
     	    .append(")").toString();
-    	 
+    
+    	nymPatternString = new StringBuilder()
+	    .append("(?:")
+	    .append(nymSensePatternString)
+	    .append(")|(?:")
+	    .append(nymAndUsagePatternString)
+	    .append(")").toString();
+
     	
-    	sectionPatternString = 
-                new StringBuilder().append("\\{\\{\\s*-")
-                .append("([^\\}\\|\n\r]*)-\\s*(?:\\|([^\\}\n\r]*))?")
-                .append("\\}\\}")
-                .toString();
-      
     	defOrExamplePattern = Pattern.compile(defOrExamplePatternString, Pattern.MULTILINE);
-    	//defOrExamplePattern = Pattern.compile(examplePatternString);
-  	    	
+    	  	
         languageSectionPattern = Pattern.compile(languageSectionPatternString);
        
         sectionPattern = Pattern.compile(sectionPatternString);
         pronPattern = Pattern.compile(pronPatternString);
+        nymPattern = Pattern.compile(nymPatternString);
 
         nymMarkerToNymName = new HashMap<String,String>(20);
-        nymMarkerToNymName.put("synoniems", "syn");
-        nymMarkerToNymName.put("Antoniemen", "ant");
+        nymMarkerToNymName.put("Synonymer", "syn");
+        nymMarkerToNymName.put("Antonymer", "ant");
         nymMarkerToNymName.put("Hyponiemen", "hypo");
-        /*nymMarkerToNymName.put("Hypernyms", "hyper");
-        nymMarkerToNymName.put("Meronyms", "mero");
-        nymMarkerToNymName.put("Holonyms", "holo");
-        nymMarkerToNymName.put("Troponyms", "tropo");
-       */
+        
         
     }
 
@@ -96,35 +112,30 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractData(false);
     }
     protected void extractData(boolean foreignExtraction) {
-        wdh.initializePageExtraction(wiktionaryPageName);
-        
-        Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-        
-        int nldStart = -1;
-        // on parcours la page pour trouver la partie netherlandais
-        while (languageFilter.find()) {
-        	if (languageFilter.group(1).equals("nld")) {
-        		if (nldStart != -1) 
-        			extractNetherlandData(nldStart, languageFilter.start());
-        		nldStart = languageFilter.end();
-        	} else {
-        		if (nldStart != -1) 
-        			extractNetherlandData(nldStart, languageFilter.start());
-        		nldStart = -1;
-        	}
+         	
+    	wdh.initializePageExtraction(wiktionaryPageName);
+        Matcher languageFilter = sectionPattern.matcher(pageContent);
+        while (languageFilter.find() && ! languageFilter.group(1).equals("Svenska")) {
+            ;
         }
-       
-        // Either the filter is at end of sequence or on netherland language header.
+        // Either the filter is at end of sequence or on Swenden language header.
         if (languageFilter.hitEnd()) {
-            // There is no netherland data in this page.
-        	if (nldStart != -1) 
-    			extractNetherlandData(nldStart, pageContent.length());
-    	
+            // There is no sweden data in this page.
+            return ;
         }
+        int swedenSectionStartOffset = languageFilter.end();
+        // Advance till end of sequence or new language section
+        while (languageFilter.find() && languageFilter.group().charAt(2) == '=') {
+            ;
+        }
+        // languageFilter.find();
+        int swedenSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+        
+        extractSwedenData(swedenSectionStartOffset, swedenSectionEndOffset);
         wdh.finalizePageExtraction();
      }
 
-    protected void extractNetherlandData(int startOffset, int endOffset) {
+    protected void extractSwedenData(int startOffset, int endOffset) {
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         wdh.initializeEntryExtraction(wiktionaryPageName);
@@ -147,19 +158,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     private Block computeNextBlock(Matcher m, Map<String, Object> context) {
-        String title = m.group(1) ;
+        String title = (m.group(1) != null) ? m.group(1):m.group(2);
         String nym;
         context.put("start", m.end());
-       
-        if (title.equals("pron")) {
+        if (title.equals("utta")) {  
             return Block.PRONBLOCK;
         } else if (WiktionaryDataHandler.isValidPOS(title)) {
             context.put("pos", title);
             return Block.DEFBLOCK;
-        } else if (title.equals("trans")) { 
+        } else if (title.equals("Översättningar")) { 
             return Block.TRADBLOCK;
         } else if (null != (nym = nymMarkerToNymName.get(title))) {
-        	
             context.put("nym", nym);
             return Block.NYMBLOCK;
         } else {
@@ -219,9 +228,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 extractNyms(currentNym, blockStart, end);
                 currentNym = null;
                 break;
-            case PRONBLOCK:
-                extractPron(blockStart, end);
-                break;
+          
             default:
                 assert false : "Unexpected block while parsing: " + wiktionaryPageName;
         }
@@ -229,20 +236,23 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         blockStart = -1;
     }
 
-    private void extractTranslations(int startOffset, int endOffset) {
+    
+    
+	private void extractTranslations(int startOffset, int endOffset) {
        Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
        macroMatcher.region(startOffset, endOffset);
        String currentGloss = null;
-        // TODO: there are templates called "qualifier" used to further qualify the translation check and evaluate if extracting its data is useful.
+       // {{ö+|en|passport}}
+
        while (macroMatcher.find()) {
            String g1 = macroMatcher.group(1);
 
-           if (g1.equals("trad")) {
+           if (g1.equals("ö+") || g1.equals("ö") ) {
                // DONE: Sometimes translation links have a remaining info after the word, keep it.
                String g2 = macroMatcher.group(2);
                int i1, i2;
                String lang, word;
-               if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
+               if (g2 != null && (i1 = g2.indexOf('|')) != -1) { 
                    lang = LangTools.normalize(g2.substring(0, i1));
 
                    String usage = null;
@@ -252,61 +262,74 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                        word = g2.substring(i1+1, i2);
                        usage = g2.substring(i2+1);
                    }
-                 //  lang=NetherlandLangToCode.threeLettersCode(lang);
+                  // lang=NetherlandLangToCode.threeLettersCode(lang);
                    if(lang!=null){
                 	   wdh.registerTranslation(lang, currentGloss, usage, word);
                    }
                   
-               }
-           } else if (g1.equals("trans-top")) {
+               } 
+           } else if (g1.equals("ö-topp")) {
                // Get the glose that should help disambiguate the source acception
                String g2 = macroMatcher.group(2);
                // Ignore glose if it is a macro
                if (g2 != null && ! g2.startsWith("{{")) {
                    currentGloss = g2;
                }
-           } else if (g1.equals("trans-bottom")) {
-               // Forget the current glose
+           } else if (g1.equals("ö-botten")) {
+               // on remet le gloss à null à la fin du bloc de traduction
                currentGloss = null;
            }
        }
     }
 
-  
-    private void extractPron(int startOffset, int endOffset) {
-    	
-    	Matcher pronMatcher = pronPattern.matcher(pageContent);
-        pronMatcher.region(startOffset,endOffset);
-    	while (pronMatcher.find()) {
-    		String pron = pronMatcher.group(1);
-    		if (null == pron || pron.equals("")) return;
-    		
-    		if (! pron.equals("")) 
-    			wdh.registerPronunciation(pron, "nl-fonipa");
-    	}
-	}
-    
+
 	@Override
 	protected void extractDefinitions(int startOffset, int endOffset) {
-		    	
+		    	String pron;
 		        Matcher defOrExampleMatcher = defOrExamplePattern.matcher(pageContent);
 		        defOrExampleMatcher.region(startOffset, endOffset);
 		        while (defOrExampleMatcher.find()) {
-		        	if (null != defOrExampleMatcher.group(1)) {
+		        	if (null != defOrExampleMatcher.group(1)) { // extraire les definitions 
 		        		extractDefinition(defOrExampleMatcher);        		
-		        	} else if ( (null != defOrExampleMatcher.group(3)) && (defOrExampleMatcher.group(2).equals("bijv-1") ) ) { // Les exemples commencent toujours par bijv-1
+		        	} else if ( (null != defOrExampleMatcher.group(2)) ) { // extraire les exemples
 		        		extractExample(defOrExampleMatcher);
-		        	}
+		        	} else if ( (null != defOrExampleMatcher.group(4)) ) { // extraire les pronontiations
+		        		pron = defOrExampleMatcher.group(4);
+		        		if(defOrExampleMatcher.group(3).equals("uttal") && !pron.equals(" ") ) // les prononciations commencent toujours par uttal
+		        			wdh.registerPronunciation(pron, "sv-fonipa");		        	
+		        		}
 		        }
 		   
 	}
 	
-	@Override
-	public void extractExample(Matcher definitionMatcher) {
-		String example = definitionMatcher.group(3);
-		extractExample(example);
-	}
-    
+	
+	 @Override
+		protected void extractNyms(String synRelation, int startOffset,	int endOffset) {
+		
+
+		 	Matcher nymSenseMatcher =  nymPattern.matcher(this.pageContent);
+	        nymSenseMatcher.region(startOffset, endOffset);
+	        String gloss = null;
+
+	        while (nymSenseMatcher.find()) {
+	        	if(nymSenseMatcher.group(1)  != null ){
+	        		gloss = nymSenseMatcher.group(1);
+	        		
+	        	}else{
+		            String leftGroup = nymSenseMatcher.group(2) ;
+		            String usage = (nymSenseMatcher.group(5)!=null)? nymSenseMatcher.group(5):nymSenseMatcher.group(6);
+		            if (leftGroup != null && ! leftGroup.equals("") && 
+		            		! leftGroup.startsWith("Wikisaurus:") &&
+		            		! leftGroup.startsWith("Catégorie:") &&
+		            		! leftGroup.startsWith("#")) {
+		            	
+		            		wdh.registerNymRelation(leftGroup, synRelation, gloss,usage);
+		            		usage = null;
+		            	 
+ 		            }
+	        	}
+	        }      
+		}
     
 
 

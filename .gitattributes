@@ -557,6 +557,8 @@ extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseRelatedWordsExtractorWikiM
 extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseTranslationsExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/jpn/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/jpn/WiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/lit/WiktionaryDataHandler.java -text
+extractor/src/main/java/org/getalp/dbnary/lit/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/nld/NetherlandLangToCode.java -text
 extractor/src/main/java/org/getalp/dbnary/nld/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/nld/WiktionaryExtractor.java -text
@@ -601,9 +603,11 @@ extractor/src/main/java/org/getalp/dilaf/DilafLemonDataHandler.java -text
 extractor/src/main/java/org/getalp/dilaf/DilafZarmaExtractor.java -text
 extractor/src/main/resources/Messages_bg.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_ja.properties -text svneol=unset#text/plain
+extractor/src/main/resources/Messages_lt.properties -text
 extractor/src/main/resources/Messages_pl.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_pt.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
+extractor/src/main/resources/Messages_sh.properties -text svneol=unset#text/plain
 extractor/src/main/resources/ehcache.xml -text
 extractor/src/main/scala/org/getalp/dbnary/bul/TranslationsParser.scala -text
 extractor/src/main/scripts/old/README.txt -text

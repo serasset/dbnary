@@ -8,6 +8,9 @@ import org.getalp.dbnary.OliaOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 
 public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
@@ -21,12 +24,17 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
         posAndTypeValueMap.put("sh-imenica", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
         posAndTypeValueMap.put("sh-imenica2", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
+        posAndTypeValueMap.put("-znači-imenica-", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
+        posAndTypeValueMap.put("-znači-država-", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
+        posAndTypeValueMap.put("-znači-grad-", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
         posAndTypeValueMap.put("sh-noun", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
         posAndTypeValueMap.put("sh-vlastito ime", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
 
         posAndTypeValueMap.put("sh-glagol", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
-
     }
+
+    public HashMap<String, ArrayList<String>> alreadyRegisteredFlexion = new HashMap<>();
+    public HashMap<String, HashMap<String,String>> toBeRegisterFlexion = new HashMap<>();
 
     public WiktionaryDataHandler(String lang) {
         super(lang);
@@ -41,9 +49,12 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                 case "sh-prilog": // adv
                 case "sh-imenica": // noun
                 case "sh-imenica2": // noun
+                case "-znači-imenica-": // noun
                 case "sh-noun": // noun
                 case "sh-vlastito ime": // proper noun
                 case "sh-glagol": // verb
+                case "-znači-država-":
+                case "-znači-grad-":
                     addExtraInfo(posInfos);
                     break;
                 case "m":
@@ -86,7 +97,6 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                       //  log.debug("Head unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
                         break;
                     case "m":
-                        // TODO MORPHO
                         // log.debug("Plural form unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
                         break;
                     case "r":
@@ -150,7 +160,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                             }
                             break;
                         default:
-                            log.debug("Unused {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                            log.debug("Unused info {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
                     }
                 }
             }

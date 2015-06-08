@@ -11,7 +11,7 @@ import java.util.HashMap;
  *
  */
 public class SerboCroatianLangToCode extends LangTools {
-	static HashMap<String,String> h = new HashMap<String,String>();
+	static HashMap<String,String> h = new HashMap<>();
 	static {
 		// based on EnglishLangToCode
         // Warning : translated into Croatian,
@@ -30,7 +30,7 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("albanski","sq");
         h.put("alemanski","gsw");
         h.put("aleutski","ale");
-        h.put("amharik","am");
+        h.put("amharski","am");
         h.put("starogrčki","grc");
         h.put("angika","anp");
         h.put("arapski","ar");
@@ -38,7 +38,7 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("aramejski","arc");
         h.put("Arapaho","arp");
         h.put("arawak","arw");
-        h.put("Armenac","hy");
+        h.put("jermenski","hy");
         h.put("aromunjski","rup");
         h.put("Asamski","as");
         h.put("Asturijski","ast");
@@ -55,8 +55,9 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("baskijski","eu");
         h.put("Beja","bej");
         h.put("bjeloruski","be");
+        h.put("beloruski","be");
         h.put("Bemba","bem");
-        h.put("bengali","bn");
+        h.put("bengalski","bn");
         h.put("bhojpuri","bho");
         h.put("bikol","bik");
         h.put("Bini","bin");
@@ -90,8 +91,9 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("klasični sirski","syc");
         h.put("koptski","cop");
         h.put("kornvalski","kw");
+        h.put("korzikanski","co");
         h.put("čuvaški","co");
-        h.put("Cree","cr");
+        h.put("cree","cr");
         h.put("potok","mus");
         h.put("Name","crh");
         h.put("hrvatski","hr");
@@ -135,15 +137,16 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("ge'ez","gez");
         h.put("gruzijski","ka");
         h.put("njemački","de");
+        h.put("nemački","de");
         h.put("gilbertski","gil");
         h.put("gondi","gon");
         h.put("Gorontalo","gor");
         h.put("gotika","got");
         h.put("Grebo","grb");
         h.put("grčki","el");
-        h.put("grenlandski","kl");
+        h.put("tetumski","kl");
         h.put("Guaraní","gn");
-        h.put("gujarati","gu");
+        h.put("gudžarati","gu");
         h.put("gwich'in","gwi");
         h.put("Haida","hai");
         h.put("Haićanski kreolski","ht");
@@ -181,7 +184,7 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("kabyle","kab");
         h.put("kalmički","xal");
         h.put("Kamba","kam");
-        h.put("kannada","kn");
+        h.put("kanadski","kn");
         h.put("kanuri","kr");
         h.put("kapampangan","pam");
         h.put("Karachay-balkar","krc");
@@ -217,8 +220,8 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("letonski","lv");
         h.put("Lenapa","del");
         h.put("lezgi","lez");
-        h.put("Limburški","li");
-        h.put("Lingala","ln");
+        h.put("limburgijski","li");
+        h.put("lingala","ln");
         h.put("litvanski","lt");
         h.put("lojban","jbo");
         h.put("niska njemački","nds");
@@ -230,7 +233,7 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("Lule Sami","smj");
         h.put("Lunda","lun");
         h.put("Luo","luo");
-        h.put("Luksemburški","lb");
+        h.put("luksemburški","lb");
         h.put("Maasai","mas");
         h.put("makedonski","mk");
         h.put("madurese","mad");
@@ -241,15 +244,17 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("malajski","ms");
         h.put("Malayalam","ml");
         h.put("malteški","mt");
+        h.put("maltski","mt");
         h.put("Manchu","mnc");
         h.put("mandar","mdr");
         h.put("mandarin","zh");
-        h.put("Mandingo","man");
+        h.put("mandingo","man");
         h.put("manipuri","mni");
+        h.put("manski","max");
         h.put("s ostrva Mana","gv");
         h.put("Maor","mi");
         h.put("mapudungun","arn");
-        h.put("Marathi","mr");
+        h.put("marati","mr");
         h.put("mari","chm");
         h.put("maršalski","mh");
         h.put("Marwari","mwr");
@@ -273,7 +278,7 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("Navajo","nv");
         h.put("ndonga","ng");
         h.put("napolitanski","nap");
-        h.put("Nepalski","ne");
+        h.put("nepalski","ne");
         h.put("newari","new");
         h.put("nias","nia");
         h.put("niuean","niu");
@@ -290,7 +295,7 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("nyankole","nyn");
         h.put("nyoro","nyo");
         h.put("nzima","nzi");
-        h.put("Occitan","oc");
+        h.put("oksitanski","oc");
         h.put("Chippewa","oj");
         h.put("Staroslavenski","cu");
         h.put("Stari engleski","ang");
@@ -298,7 +303,7 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("Stara visoki njemački","goh");
         h.put("Stari Irski","sga");
         h.put("Stara Javanski","kaw");
-        h.put("staronorveški","non");
+        h.put("platdojč","non");
         h.put("Stara Provençal","pro");
         h.put("staroperzijski","peo");
         h.put("Oriya","or");
@@ -317,20 +322,21 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("pohnpeian","pon");
         h.put("poljski","pl");
         h.put("portugalski","pt");
-        h.put("Pendžabljanin","pa");
+        h.put("pendžabski","pa");
         h.put("kečua","qu");
         h.put("radžastanska","raj");
         h.put("Rapa Nui","rap");
         h.put("rarotongan","rar");
         h.put("Romani","rom");
         h.put("rumunski","ro");
+        h.put("rumunjski","ro");
         h.put("retoromanski","rm");
         h.put("ruski","ru");
         h.put("Samarijanac aramejski","sam");
         h.put("Samoanski","sm");
         h.put("sandawe","sad");
         h.put("Sango","sg");
-        h.put("sanskritski","sa");
+        h.put("sanskrit","sa");
         h.put("santali","sat");
         h.put("sardinijski","sc");
         h.put("sasak","sas");
@@ -345,7 +351,8 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("Sichuan yi","ii");
         h.put("Sicilijanac","scn");
         h.put("Sidamo","sid");
-        h.put("Sindhi","sd");
+        h.put("sindhi","sd");
+        h.put("sinhaleški","sin");
         h.put("cejlonski","si");
         h.put("Siska","tog");
         h.put("skolt Sami","sms");
@@ -353,7 +360,7 @@ public class SerboCroatianLangToCode extends LangTools {
         h.put("slovački","sk");
         h.put("slovenski","sl");
         h.put("sogdian","sog");
-        h.put("Somalijski","so");
+        h.put("somalijski","so");
         h.put("soninke","snk");
         h.put("Sotho","st");
         h.put("Južni Altai","alt");

@@ -562,6 +562,9 @@ extractor/src/main/java/org/getalp/dbnary/lit/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/nld/NetherlandLangToCode.java -text
 extractor/src/main/java/org/getalp/dbnary/nld/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/nld/WiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/nor/NorskLangToCode.java -text
+extractor/src/main/java/org/getalp/dbnary/nor/WiktionaryDataHandler.java -text
+extractor/src/main/java/org/getalp/dbnary/nor/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/pol/DefinitionExpanderWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/pol/PolishLangToCode.java -text
 extractor/src/main/java/org/getalp/dbnary/pol/WiktionaryDataHandler.java -text svneol=unset#text/plain

@@ -16,6 +16,7 @@ then
 fi
 
 VIRTUOSOINITMPL=./virtuoso.ini.tmpl
+BOOTSTRAPSQL=./bootstrap.sql
 
 DBFOLDER=$PREFIX/virtuoso/db.bootstrap
 DATASETDIR=$PREFIX/virtuoso/dataset
@@ -25,7 +26,15 @@ WEBSERVERPORT=8899
 
 DBNARYLATEST=/home/serasset/dev/wiktionary/extracts/lemon/latest
 
-declare -A iso3lang
+# Virtuoso installation variables
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
+DAEMON=/opt/virtuoso-opensource/bin/virtuoso-t
+NAME=virtuoso
+
+test -x $DAEMON || (echo "Could not find virtuoso-t bin" && exit 0)
+
+## Converting language codes
+declare -A iso3Lang
 iso3Lang[bg]=bul
 iso3Lang[de]=deu
 iso3Lang[el]=ell
@@ -34,16 +43,20 @@ iso3Lang[es]=spa
 iso3Lang[fi]=fin
 iso3Lang[fr]=fra
 iso3Lang[it]=ita
-iso3Lang[jp]=jpn
+iso3Lang[ja]=jpn
 iso3Lang[pl]=pol
-iso3Lang[pr]=por
+iso3Lang[pt]=por
 iso3Lang[ru]=rus
 iso3Lang[tr]=tur
+iso3Lang[nl]=nld
+iso3Lang[sh]=shr
+iso3Lang[sv]=swe
+iso3Lang[lt]=lit
 
 
 if [ ! -d $DBNARYLATEST ]
 then
-	echo "latest turtle data not available."
+	echo "Latest turtle data not available."
 	exit -1
 fi
 
@@ -54,6 +67,10 @@ if [ ! -d "$DBFOLDER" ] ; then
 	sed "s|@@SERVERPORT@@|$SERVERPORT|g" | \
 	sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" | \
 	sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" > "$DBFOLDER"/virtuoso.ini
+    cp $BOOTSTRAPSQL "$DBFOLDER"
+elif [[ -f virtuoso.db ]]; then
+    echo "Virtuoso database file already exists, please clean up the db.bootstrap dir."
+    exit -1
 fi
 
 if [ ! -d "$DATASETDIR" ]
@@ -77,28 +94,84 @@ fi
 )
 
 ## create the .graph files for all files in datasetdir
-langRegex='(..)_(.*)'
+langRegex2='(..)_(.*)'
+langRegex3='(...)_(.*)'
 for f in $DATASETDIR/*.ttl
 do
-    if [[ $f =~ $langRegex ]]
+    if [[ $f =~ $langRegex2 ]]
     then
-        lg3=${iso3lang[${BASH_REMATCH[1]}]}
-        echo "$lg3"
+        lg2=${BASH_REMATCH[1]}
+        lg3=${iso3Lang[$lg2]}
+        echo "http://kaiko.getalp.org/dbnary/$lg3" > "$f.graph"
+    elif [[ $f =~ $langRegex3 ]]
+    then
+        lg3=${BASH_REMATCH[1]}
+        echo "http://kaiko.getalp.org/dbnary/$lg3" > "$f.graph"
     fi
 done
 
-
 ## Launch virtuoso to create the new DB
+echo "Launching daemon."
+pushd "$DBFOLDER" || exit -1
+$DAEMON -c $NAME +wait &
+daemon_pid=$!
+wait
+### RECUPERER LE BON PID...
+
+# exit 0
 
 ## connect to isql to load the different configurations
+isql $SERVERPORT dba dba $BOOTSTRAPSQL
 
-## Change the dba and sparql password
+
+## This would be a good time to stop server and backup the empty database
 
 ## connect to isql and load all the data
+
+isql $SERVERPORT dba dba <<END
+ld_dir ('$DATASETDIR', '*.ttl', 'http://kaiko.getalp.org/dbnary');
+
+-- do the following to see which files were registered to be added:
+SELECT * FROM DB.DBA.LOAD_LIST;
+-- if unsatisfied use:
+-- delete from DB.DBA.LOAD_LIST;
+rdf_loader_run();
+
+-- do nothing too heavy while data is loading
+checkpoint;
+commit WORK;
+checkpoint;
+END
 
 ## (TODO: create the virtlabels for correct facetted browsing)
 
 ## index facetted browsing
+isql $SERVERPORT dba dba <<END
+sparql SELECT COUNT(*) WHERE { ?s ?p ?o } ;
+sparql SELECT ?g COUNT(*) { GRAPH ?g {?s ?p ?o.} } GROUP BY ?g ORDER BY DESC 2;
+
+-- Build Full Text Indexes by running the following commands using the Virtuoso isql program
+RDF_OBJ_FT_RULE_ADD (null, null, 'All');
+VT_INC_INDEX_DB_DBA_RDF_OBJ ();
+-- Run the following procedure using the Virtuoso isql program to populate label lookup tables periodically and activate the Label text box of the Entity Label Lookup tab:
+urilbl_ac_init_db();
+-- Run the following procedure using the Virtuoso isql program to calculate the IRI ranks. Note this should be run periodically as the data grows to re-rank the IRIs.
+s_rank();
+END
+
+echo "Now would be a good time to connect to http://localhost:$WEBSERVERPORT/ to change sparql and dba passwords." 
+
+## Change the dba and sparql password
+
+## Kill bootstrap server
+
+echo -n "Waiting for daemon process to terminate: "
+while kill -0 "$daemon_pid"
+do
+    echo -n "."
+    sleep 1
+done
+echo 'Done.'
 
 ## change .ini file to production settings
 

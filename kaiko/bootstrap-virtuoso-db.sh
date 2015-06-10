@@ -159,7 +159,7 @@ urilbl_ac_init_db();
 s_rank();
 END
 
-echo "Now would be a good time to connect to http://localhost:$WEBSERVERPORT/ to change sparql and dba passwords." 
+echo "Now would be a good time to connect to http://localhost:$WEBSERVERPORT/ to change dav and dba passwords."
 
 ## Change the dba and sparql password
 

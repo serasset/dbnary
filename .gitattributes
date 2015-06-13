@@ -544,6 +544,8 @@ extractor/src/main/java/org/getalp/dbnary/hbs/SerboCroatianLangToCode.java -text
 extractor/src/main/java/org/getalp/dbnary/hbs/SerboCroatianMorphoExtractorWikiModel.java -text
 extractor/src/main/java/org/getalp/dbnary/hbs/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/hbs/WiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/ind/WiktionaryDataHandler.java -text
+extractor/src/main/java/org/getalp/dbnary/ind/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianExampleExtractorWikiModel.java -text
 extractor/src/main/java/org/getalp/dbnary/ita/ItalianLangToCode.java -text svneol=unset#text/plain
@@ -559,6 +561,9 @@ extractor/src/main/java/org/getalp/dbnary/jpn/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/jpn/WiktionaryExtractor.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/lit/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/lit/WiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/mlg/MalagasyLangToCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/mlg/WiktionaryDataHandler.java -text
+extractor/src/main/java/org/getalp/dbnary/mlg/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/nld/NetherlandLangToCode.java -text
 extractor/src/main/java/org/getalp/dbnary/nld/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/nld/WiktionaryExtractor.java -text

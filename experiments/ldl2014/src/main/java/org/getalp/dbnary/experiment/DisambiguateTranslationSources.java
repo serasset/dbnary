@@ -412,7 +412,6 @@ public class DisambiguateTranslationSources {
 			Statement next = translations.next();
 			
 			Resource trans = next.getSubject();
-			if (! modelMap.containsKey(getTargetLanguage(trans))) continue;
 
 			Resource lexicalEntry = next.getResource();
 			if (lexicalEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry) ||
@@ -428,11 +427,13 @@ public class DisambiguateTranslationSources {
 
 						if (useGlosses) resSim = tverskyDisamb.selectWordSenses(lexicalEntry, trans);
 
-						if ((resSim == null || resSim.isEmpty()) && useTranslator) { 
+						if ((resSim == null || resSim.isEmpty()) && useTranslator) {
+							if (! modelMap.containsKey(getTargetLanguage(trans))) continue;
 							resSim = xlingualTverskyDisamb.selectWordSenses(lexicalEntry,trans);
 						}
 
 						if ((resSim == null || resSim.isEmpty()) && useStructure) { //No gloss!
+							if (! modelMap.containsKey(getTargetLanguage(trans))) continue;
 							resSim = transitDisamb.selectWordSenses(lexicalEntry,trans);
 						}
 												

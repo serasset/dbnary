@@ -91,12 +91,6 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-        <!-- dependency> <groupId>com.hp.hpl.jena</groupId> <artifactId>jena</artifactId>
-            <xxx When upgrading to apache JENA, use version > 2.11.0 which has a bug
-            that has been fixed in 2.11.1-SNAPSHOT trunk xxx> <version>2.6.4</version>
-            <type>jar</type> <scope>compile</scope> <exclusions> <exclusion> <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId> </exclusion> <exclusion> <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId> </exclusion> </exclusions> </dependency -->
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>apache-jena-libs</artifactId>
@@ -160,11 +154,16 @@
             <artifactId>de.tudarmstadt.ukp.omegawikiapi-asl</artifactId>
             <version>0.2.0</version>
         </dependency-->
-        <!--dependency>
+        <dependency>
             <groupId>org.sweble.wikitext</groupId>
             <artifactId>swc-engine</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
-        </dependency-->
+            <version>2.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sweble.wikitext</groupId>
+            <artifactId>swc-example-xpath</artifactId>
+            <version>2.0.1-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.getalp.dbnary</groupId>
             <artifactId>ontology</artifactId>
@@ -185,6 +184,11 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>2.11.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-xml</artifactId>
+            <version>2.11.0-M4</version>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>

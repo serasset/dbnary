@@ -559,6 +559,9 @@ extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseRelatedWordsExtractorWikiM
 extractor/src/main/java/org/getalp/dbnary/jpn/JapaneseTranslationsExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/jpn/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/jpn/WiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/lat/LatinLangtoCode.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/lat/WiktionaryDataHandler.java -text
+extractor/src/main/java/org/getalp/dbnary/lat/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/lit/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/lit/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/mlg/MalagasyLangToCode.java -text svneol=unset#text/plain
@@ -591,6 +594,9 @@ extractor/src/main/java/org/getalp/dbnary/spa/WiktionaryExtractor.java -text svn
 extractor/src/main/java/org/getalp/dbnary/stats/GeneralStatistics.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/stats/NymStatistics.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/stats/TranslationsStatistics.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/swc/TreeStructureConverter.java -text
+extractor/src/main/java/org/getalp/dbnary/swc/WiktionaryExtractor.java -text svneol=unset#text/plain
+extractor/src/main/java/org/getalp/dbnary/swc/XPathBasedProcessing.java -text
 extractor/src/main/java/org/getalp/dbnary/swe/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/swe/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/tools/ArrayMatrix.java -text

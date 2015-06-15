@@ -512,7 +512,7 @@ public class UpdateAndExtractDumps {
 	        }
 	    }
 		
-		return versions.first();
+		return (versions.isEmpty()) ? null : versions.first();
 		
 	}
 
@@ -580,7 +580,7 @@ public class UpdateAndExtractDumps {
 			e.printStackTrace();
 			System.err.println("Removing faulty compressed file: " + compressedDumpFile);
 			File f = new File(compressedDumpFile);
-			if (f.exists() && f.length() == 0L) {
+			if (f.exists()) {
 				f.delete();
 			}
 			status = false;

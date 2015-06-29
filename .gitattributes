@@ -417,6 +417,13 @@ doc/presentations/lig-lidilem/img/wkt-chat1.png -text
 doc/presentations/lig-lidilem/img/wncompose.png -text
 doc/presentations/lig-lidilem/img/wnnetwork.pdf -text
 doc/presentations/lig-lidilem/thoughts.oo3/contents.xml -text
+experiments/OUPLinker/data/ontology.properties -text
+experiments/OUPLinker/data/prefixes.rdf -text
+experiments/OUPLinker/pom.xml -text
+experiments/OUPLinker/src/main/java/LinkSaldoToWN.java -text
+experiments/OUPLinker/src/main/java/OUPLink.java -text
+experiments/OUPLinker/src/main/java/SaldoLink.java -text
+experiments/OUPLinker/src/main/java/WNLink.java -text
 experiments/ldl2014/lib/secondstring-20120620.jar -text
 experiments/ldl2014/pom.xml -text
 experiments/ldl2014/results/finnish_ref_gold.out -text

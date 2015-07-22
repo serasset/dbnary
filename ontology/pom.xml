@@ -14,7 +14,7 @@
     <description>DBnary API as generated from DBnary ontology using SchemaGen</description>
 
     <inceptionYear>2010</inceptionYear>
-    <url>http://getalp.imag.fr/dbnary</url>
+    <url>http://kaiko.getalp.org/about-dbnary</url>
     <licenses>
         <license>
             <name>LGPL 2.1</name>

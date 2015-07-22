@@ -17,7 +17,7 @@
         German, Italia, Portuguese, Suomi and Russian. More languages to be added later.
     </description>
     <inceptionYear>2010</inceptionYear>
-    <url>http://getalp.imag.fr/dbnary</url>
+    <url>http://kaiko.getalp.org/about-dbnary</url>
     <licenses>
         <license>
             <name>LGPL 2.1</name>
@@ -167,7 +167,7 @@
         <dependency>
             <groupId>org.getalp.dbnary</groupId>
             <artifactId>ontology</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
@@ -201,6 +201,7 @@
             <artifactId>grizzled-slf4j_2.11</artifactId>
             <version>1.0.2</version>
         </dependency>
+
     </dependencies>
 
     <build>

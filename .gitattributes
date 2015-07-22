@@ -663,6 +663,5 @@ ontology/pom.xml -text
 ontology/src/main/resources/org/getalp/dbnary/catalog-v001.xml -text
 ontology/src/main/resources/org/getalp/dbnary/dbnary.owl -text
 ontology/src/main/resources/org/getalp/dbnary/lemon.ttl -text
-ontology/src/main/resources/org/getalp/dbnary/lexinfo-old.owl -text
 ontology/src/main/resources/org/getalp/dbnary/lexinfo.owl -text
 ontology/src/main/resources/org/getalp/dbnary/olia.owl -text

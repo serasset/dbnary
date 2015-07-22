@@ -3,9 +3,9 @@
 
 <!DOCTYPE rdf:RDF [
     <!ENTITY dcterms "http://purl.org/dc/terms/" >
+    <!ENTITY lemon "http://lemon-model.net/lemon#" >
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY dbnary "http://kaiko.getalp.org/dbnary#" >
-    <!ENTITY lemon "http://www.lemon-model.net/lemon#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
@@ -19,12 +19,12 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:dbnary="http://kaiko.getalp.org/dbnary#"
-     xmlns:dcterms="http://purl.org/dc/terms/"
-     xmlns:lemon="http://www.lemon-model.net/lemon#">
+     xmlns:lemon="http://lemon-model.net/lemon#"
+     xmlns:dcterms="http://purl.org/dc/terms/">
     <owl:Ontology rdf:about="http://kaiko.getalp.org/dbnary">
         <rdfs:label>dbnary</rdfs:label>
         <rdfs:seeAlso>http://kaiko.getalp.org/about-dbnary/</rdfs:seeAlso>
-        <rdfs:comment xml:lang="en">DBnary: A wiktionary lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the lemon model (http://lemon-model.net/lemon).</rdfs:comment>
+        <rdfs:comment xml:lang="en">DBnary: A lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the lemon model (http://lemon-model.net/lemon).</rdfs:comment>
         <owl:imports rdf:resource="http://lemon-model.net/lemon"/>
     </owl:Ontology>
     
@@ -129,7 +129,7 @@
     <owl:ObjectProperty rdf:about="&dbnary;refersTo">
         <rdfs:comment xml:lang="en">links a vocable to any lexical entry that share the same written form. </rdfs:comment>
         <rdfs:domain rdf:resource="&dbnary;Vocable"/>
-        <rdfs:range rdf:resource="http://lemon-model.net/lemon#LexicalEntry"/>
+        <rdfs:range rdf:resource="&lemon;LexicalEntry"/>
     </owl:ObjectProperty>
     
 
@@ -204,7 +204,7 @@
 
     <owl:DatatypeProperty rdf:about="&dbnary;note">
         <rdfs:comment xml:lang="en">Textual note that may be used to add information to a LemonElement when no standard vocabularies exists to explicit it.</rdfs:comment>
-        <rdfs:domain rdf:resource="http://lemon-model.net/lemon#LemonElement"/>
+        <rdfs:domain rdf:resource="&lemon;LemonElement"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
@@ -214,7 +214,7 @@
 
     <owl:DatatypeProperty rdf:about="&dbnary;partOfSpeech">
         <rdfs:comment xml:lang="en">The original part of speech as it was defined in the Wiktionary page. This property takes a String litteral as object.</rdfs:comment>
-        <rdfs:domain rdf:resource="http://lemon-model.net/lemon#LexicalEntry"/>
+        <rdfs:domain rdf:resource="&lemon;LexicalEntry"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
@@ -224,7 +224,7 @@
 
     <owl:DatatypeProperty rdf:about="&dbnary;senseNumber">
         <rdfs:comment xml:lang="en">The number of the lexical Sense in the Lexical Entry, as given by Wiktionary. This property takes a String literal as an object.</rdfs:comment>
-        <rdfs:domain rdf:resource="http://lemon-model.net/lemon#LexicalSense"/>
+        <rdfs:domain rdf:resource="&lemon;LexicalSense"/>
     </owl:DatatypeProperty>
     
 
@@ -274,10 +274,10 @@
     <!-- http://kaiko.getalp.org/dbnary#LexicalEntity -->
 
     <owl:Class rdf:about="&dbnary;LexicalEntity">
-        <rdfs:subClassOf rdf:resource="http://lemon-model.net/lemon#LemonElement"/>
+        <rdfs:subClassOf rdf:resource="&lemon;LemonElement"/>
         <owl:disjointUnionOf rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://lemon-model.net/lemon#LexicalEntry"/>
-            <rdf:Description rdf:about="http://lemon-model.net/lemon#LexicalSense"/>
+            <rdf:Description rdf:about="&lemon;LexicalEntry"/>
+            <rdf:Description rdf:about="&lemon;LexicalSense"/>
         </owl:disjointUnionOf>
     </owl:Class>
     
@@ -295,7 +295,7 @@
     <!-- http://kaiko.getalp.org/dbnary#Vocable -->
 
     <owl:Class rdf:about="&dbnary;Vocable">
-        <rdfs:subClassOf rdf:resource="http://lemon-model.net/lemon#LexicalEntry"/>
+        <rdfs:subClassOf rdf:resource="&lemon;LexicalEntry"/>
         <rdfs:comment xml:lang="en">a Vocable corresponds to a set of Lexical Entries that usually share the same written form but that do not necessarily share the same Part Of Speech. E.g. cat_n and cat_v are distinct lexical entries while the vocable &quot;cat&quot; refers to both of them.</rdfs:comment>
     </owl:Class>
     
@@ -303,19 +303,19 @@
 
     <!-- http://lemon-model.net/lemon#LemonElement -->
 
-    <owl:Class rdf:about="http://lemon-model.net/lemon#LemonElement"/>
+    <owl:Class rdf:about="&lemon;LemonElement"/>
     
 
 
     <!-- http://lemon-model.net/lemon#LexicalEntry -->
 
-    <owl:Class rdf:about="http://lemon-model.net/lemon#LexicalEntry"/>
+    <owl:Class rdf:about="&lemon;LexicalEntry"/>
     
 
 
     <!-- http://lemon-model.net/lemon#LexicalSense -->
 
-    <owl:Class rdf:about="http://lemon-model.net/lemon#LexicalSense"/>
+    <owl:Class rdf:about="&lemon;LexicalSense"/>
     
 
 

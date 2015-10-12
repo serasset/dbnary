@@ -424,12 +424,12 @@
         <repository>
             <id>osr-public-releases</id>
             <name>OSR Public Releases</name>
-            <url>http://mojo.informatik.uni-erlangen.de/nexus/content/repositories/public-releases</url>
+            <url>https://mojo-maven.cs.fau.de/content/repositories/public-releases/</url>
         </repository>
         <repository>
             <id>osr-public-snapshots</id>
             <name>OSR Public snapshots</name>
-            <url>http://mojo.informatik.uni-erlangen.de/nexus/content/repositories/public-snapshots</url>
+            <url>https://mojo-maven.cs.fau.de/content/repositories/public-snapshots/</url>
         </repository>
     </repositories>
 </project>

@@ -95,7 +95,10 @@ public class WiktionaryIndexer {
                 xmlr.next();
                 if (xmlr.isStartElement() && xmlr.getLocalName().equals("text")) {
                     return xmlr.getElementText(); 
-                 }
+                } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("redirect")) {
+                    String target = xmlr.getAttributeValue("", "title");
+                    return "#REDIRECT [[" + target + "]]";
+                }
             }
         } catch (XMLStreamException ex) {
             System.out.println(ex.getMessage());

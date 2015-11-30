@@ -153,10 +153,10 @@ public class DbnaryWikiModel extends WikiModel {
 
             if (isTemplateNamespace(namespace)) {
             	if (null != wi) {
-					String rawText = prepareForTransclusion(wi.getTextOfPage(namespace + ":" + articleName));
+					String rawText = prepareForTransclusion(wi.getTextOfPageWithRedirects(namespace + ":" + articleName));
 					String name;
 					if (null == rawText && ! (name = articleName.trim()).equals(articleName))
-						rawText = prepareForTransclusion(wi.getTextOfPage(namespace + ":" + name));
+						rawText = prepareForTransclusion(wi.getTextOfPageWithRedirects(namespace + ":" + name));
 					// TODO: should I try with: name = encodeTitleToUrl(articleName, true);
 					return rawText;
 				}

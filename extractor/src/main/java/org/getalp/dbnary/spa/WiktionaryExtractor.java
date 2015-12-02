@@ -21,7 +21,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	
 	private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-	protected final static String languageSectionPatternString = "^\\s*\\{\\{([\\p{Upper}\\-]*)(?:\\|([^\\}]*))?\\}\\}";
+	protected final static String languageSectionPatternString;
 	protected final static String headerPatternString ;
 	protected final static String spanishDefinitionPatternString;
 
@@ -49,7 +49,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	protected SpanishDefinitionExtractorWikiModel definitionExpander;
 
 	static {
-	
+
+		languageSectionPatternString = new StringBuilder()
+				.append("(?:")
+				.append("^\\s*\\{\\{")
+				.append("([\\p{Upper}\\-]*)(?:\\|([^\\}]*))?")
+				.append("\\}\\}")
+				.append(")|(?:")
+				.append("^==\\s*\\{\\{lengua\\|(.*)\\}\\}\\s*==\\s*$")
+				.append(")")
+				.toString();
+
 		languageSectionPattern = Pattern.compile(languageSectionPatternString, Pattern.MULTILINE);
 		multilineMacroPatternString = 
 				new StringBuilder().append("\\{\\{")
@@ -174,7 +184,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 	
 	private boolean isSpanish(Matcher l1) {
-		return l1.group(1).equals("ES");
+		return (l1.group(1) != null && l1.group(1).toLowerCase().equals("es")
+				|| (l1.group(3) != null && l1.group(3).toLowerCase().equals("es")));
 	}
 
 
@@ -223,7 +234,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		if (getHeaderLevel(m) != 3) return null; // Only keep lvl 3 headings...
 		String head = h.trim().toLowerCase();
 		String pos = null;
-		if (head.contains("forma")) return "";
+		if ((head.startsWith("forma")) || head.startsWith("{{forma")) return "";
 		for (String p : posMarkers) {
 			if (head.contains(p)) return p;
 		}
@@ -247,7 +258,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	private boolean isTranslation(Matcher m) {
 		String head = getHeaderLabel(m);
 		if (null == head) return false;
-		if (getHeaderLevel(m) != 2) return false; // Only keep lvl 2 headings...
+        int lvl = getHeaderLevel(m);
+		if (lvl != 2 && lvl != 3) return false; // Only keep lvl 2 headings...
 		head = head.trim().toLowerCase();
 		return "traducciones".equals(head) || "traducción".equals(head);
 	}

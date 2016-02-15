@@ -505,7 +505,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
         int startSection = -1;
 
-        exampleExpander = new ExampleExpanderWikiModel(wi, frLocale, this.wiktionaryPageName, "");
+        //exampleExpander = new ExampleExpanderWikiModel(wi, frLocale, this.wiktionaryPageName, "");
+        exampleExpander.setPageName(this.wiktionaryPageName);
 
         String nextLang = null, lang = null;
 
@@ -765,7 +766,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 String pos = (String) context.get("pos");
                 wdh.addPartOfSpeech(pos);
                 if ("-verb-".equals(pos)) {
-                    wdh.registerProperty(LexinfoOnt.verbFormMood, LexinfoOnt.infinitive);
+                    wdh.registerPropertyOnCanonicalForm(LexinfoOnt.verbFormMood, LexinfoOnt.infinitive);
                 }
                 break;
             case TRADBLOCK:
@@ -872,7 +873,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else if (page.charAt(curPos) == '<' && curPos + 3 < len && page.charAt(curPos + 1) == '!' && page.charAt(curPos + 2) == '-' && page.charAt(curPos + 3) == '-') {
                 curPos += 4;
                 while (curPos + 2 < len) {
-                    if (page.charAt(curPos) == '-' && page.charAt(curPos + 1) == '-' && page.charAt(curPos + 2) == '-') {
+                    if (page.charAt(curPos) == '-' && page.charAt(curPos + 1) == '-' && page.charAt(curPos + 2) == '>') {
                         break;
                     }
                     curPos++;
@@ -1277,16 +1278,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String block = pageContent.substring(blockStart, end);
 
         if (block.matches("[\\s\\S]*\\{\\{m\\}\\}(?! *:)[\\s\\S]*") || block.matches("[\\s\\S]*\\{\\{mf\\}\\}(?! *:)[\\s\\S]*")) {
-            wdh.registerProperty(LexinfoOnt.gender, LexinfoOnt.masculine);
+            wdh.registerPropertyOnCanonicalForm(LexinfoOnt.gender, LexinfoOnt.masculine);
         }
 
         if (block.matches("[\\s\\S]*\\{\\{f\\}\\}(?! *:)[\\s\\S]*") || block.matches("[\\s\\S]*\\{\\{mf\\}\\}(?! *:)[\\s\\S]*")) {
-            wdh.registerProperty(LexinfoOnt.gender, LexinfoOnt.feminine);
+            wdh.registerPropertyOnCanonicalForm(LexinfoOnt.gender, LexinfoOnt.feminine);
         }
 
         if (block.matches("[\\s\\S]*\\{\\{plurale tantum|fr\\}\\}(?! *:)[\\s\\S]*")) {
             // plural-only word
-            wdh.registerProperty(LexinfoOnt.number, LexinfoOnt.plural);
+            wdh.registerPropertyOnCanonicalForm(LexinfoOnt.number, LexinfoOnt.plural);
         }
     }
     // TODO extract correct morphological/syntactical information from verbs
@@ -1295,18 +1296,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 //
 // // 		if (block.indexOf("{{t|fr}}") != -1) {
 // // 			//FIXME check conformance
-// // 			wdh.registerProperty(LexinfoOnt.property, LexinfoOnt.TransitiveFrame);
+// // 			wdh.registerPropertyOnCanonicalForm(LexinfoOnt.property, LexinfoOnt.TransitiveFrame);
 // // 		}
 // //
 // // 		if (block.indexOf("{{i|fr}}") {
 // // 			//FIXME check conformance
-// // 			wdh.registerProperty(LexinfoOnt.property, LexinfoOnt.IntransitiveFrame);
+// // 			wdh.registerPropertyOnCanonicalForm(LexinfoOnt.property, LexinfoOnt.IntransitiveFrame);
 // // 		}
 // //
 // // 		Matcher m = conjugationGroup.matcher(block)
 // // 		if (m.find()) {
 // // 			//FIXME check conformance
-// // 			wdh.registerProperty(DBnaryOnt.conjugationGroup, m.group(1));
+// // 			wdh.registerPropertyOnCanonicalForm(DBnaryOnt.conjugationGroup, m.group(1));
 // // 		}
 // 	}
 

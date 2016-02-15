@@ -10,7 +10,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public interface IWiktionaryDataHandler {
 
-    public enum Feature {MAIN, MORPHOLOGY};
+	public enum Feature {MAIN, MORPHOLOGY};
     /**
      * Enable the extraction of morphological data in a second Model if available.
      */
@@ -71,10 +71,10 @@ public interface IWiktionaryDataHandler {
 	 * @param senseNumber a string giving the sense number of the definition.
 	 */
 	public void registerNewDefinition(String def, String senseNumber);
-	
-	
 
-    public void registerAlternateSpelling(String alt);
+
+
+	public void registerAlternateSpelling(String alt);
     
     public void registerNymRelation(String target, String synRelation);
     
@@ -100,9 +100,10 @@ public interface IWiktionaryDataHandler {
 	 */
 	public void dump(Feature f, OutputStream out, String format);
 
-	void registerNymRelationOnCurrentSense(String target, String synRelation);
+	public void registerNymRelationOnCurrentSense(String target, String synRelation);
+	public void registerPropertyOnLexicalEntry(Property p, RDFNode r);
 
-	public void registerProperty(Property p, RDFNode r);
+	public void registerPropertyOnCanonicalForm(Property p, RDFNode r);
 
 	public void registerInflection(String languageCode,
 	                               String pos,

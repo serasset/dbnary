@@ -311,7 +311,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 String pos = (String) context.get("pos");
                 wdh.addPartOfSpeech(pos);
 //                if ("-verb-".equals(pos)) {
-//                    wdh.registerProperty(LexinfoOnt.verbFormMood, LexinfoOnt.infinitive);
+//                    wdh.registerPropertyOnCanonicalForm(LexinfoOnt.verbFormMood, LexinfoOnt.infinitive);
 //                }
                 break;
             case TRADBLOCK:

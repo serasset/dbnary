@@ -495,7 +495,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 		if (word.equals(delegate.currentLexEntry())) {
             // TODO [UNDERSTAND]: what about invariable elements, are all properties registered to the canonicalForm ?
 			for (PropertyObjectPair p : properties) {
-				delegate.registerProperty(p.getKey(), p.getValue());
+				delegate.registerPropertyOnCanonicalForm(p.getKey(), p.getValue());
 			}
 		} else {
 			delegate.registerInflection(

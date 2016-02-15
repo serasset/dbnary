@@ -61,8 +61,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
          nymMarkerToNymName.put("syn", "syn");
          nymMarkerToNymName.put("sin", "syn");
          nymMarkerToNymName.put("ant", "ant");
-        nymMarkerToNymName.put("ipon", "hypo");
-        nymMarkerToNymName.put("iperon", "hypo");
+         nymMarkerToNymName.put("ipon", "hypo");
+         nymMarkerToNymName.put("iperon", "hypo");
          nymMarkerToNymName.put("Hipônimos", "hypo");
          nymMarkerToNymName.put("Hiperônimos", "hyper");
          nymMarkerToNymName.put("Sinónimos", "syn");

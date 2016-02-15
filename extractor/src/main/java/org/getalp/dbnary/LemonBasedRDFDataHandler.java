@@ -56,7 +56,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 	protected String currentWiktionaryPageName;
 	protected CounterSet currentLexieCount = new CounterSet();
 	protected Resource currentMainLexEntry;
-	private Resource currentPreferredWrittenRepresentation;
+	protected Resource currentCanonicalForm;
 	
 	private Set<PronunciationPair> currentSharedPronunciations;
 //	private String currentSharedPronunciation;
@@ -137,8 +137,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         aBox.setNsPrefix("dcterms", DCTerms.getURI());
         aBox.setNsPrefix("lexvo", LEXVO);
         aBox.setNsPrefix("rdf", RDF.getURI());
+		aBox.setNsPrefix("olia", OliaOnt.getURI());
 
-        featureBoxes = new HashMap<>();
+
+		featureBoxes = new HashMap<>();
         featureBoxes.put(Feature.MAIN, aBox);
 	}
 
@@ -175,7 +177,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         currentWiktionaryPos = null;
         translationCount.resetAll();
         reifiedNymCount.resetAll();
-        currentPreferredWrittenRepresentation = null;
+        currentCanonicalForm = null;
         currentSharedPronunciations = new HashSet<PronunciationPair>();
 
         // Create a dummy lexical entry that points to the one that corresponds to a part of speech
@@ -256,19 +258,19 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         translationCount.resetAll();
         reifiedNymCount.resetAll();
 
-        currentPreferredWrittenRepresentation = aBox.createResource(); 
+        currentCanonicalForm = aBox.createResource();
         
         // If a pronunciation was given before the first part of speech, it means that it is shared amoung pos/etymologies
         for (PronunciationPair p : currentSharedPronunciations) {
             if (null != p.lang && p.lang.length() > 0)  {
-                aBox.add(currentPreferredWrittenRepresentation, LexinfoOnt.pronunciation, p.pron, p.lang);
+                aBox.add(currentCanonicalForm, LexinfoOnt.pronunciation, p.pron, p.lang);
             } else {
-                aBox.add(currentPreferredWrittenRepresentation, LexinfoOnt.pronunciation, p.pron);
+                aBox.add(currentCanonicalForm, LexinfoOnt.pronunciation, p.pron);
             }
         }
 
-		aBox.add(currentLexEntry, LemonOnt.canonicalForm, currentPreferredWrittenRepresentation);
-		aBox.add(currentPreferredWrittenRepresentation, LemonOnt.writtenRep, currentWiktionaryPageName, extractedLang);
+		aBox.add(currentLexEntry, LemonOnt.canonicalForm, currentCanonicalForm);
+		aBox.add(currentCanonicalForm, LemonOnt.writtenRep, currentWiktionaryPageName, extractedLang);
 		aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
 		if (null != currentLexinfoPos)
 			aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);
@@ -305,8 +307,9 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		PosAndType pat = posAndTypeValueMap.get(pos);
 		addPartOfSpeech(pos, posResource(pat), typeResource(pat));
 	}
-//
-	public void registerProperty(Property p, RDFNode r) {
+
+	@Override
+	public void registerPropertyOnCanonicalForm(Property p, RDFNode r) {
 		if (null == currentLexEntry) {
 			log.debug("Registering property when lex entry is null in \"{}\".", this.currentMainLexEntry);
 			return; // Don't register anything if current lex entry is not known.
@@ -321,6 +324,18 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
 		aBox.add(canonicalForm, p, r);
 	}
+
+
+	@Override
+	public void registerPropertyOnLexicalEntry(Property p, RDFNode r) {
+		if (null == currentLexEntry) {
+			log.debug("Registering property on null lex entry in \"{}\".", this.currentMainLexEntry);
+			return; // Don't register anything if current lex entry is not known.
+		}
+
+		aBox.add(currentLexEntry, p, r);
+	}
+
 
 	@Override
     public void registerAlternateSpelling(String alt) {
@@ -439,7 +454,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		return getVocableResource(vocable, false);
 	}
 
-	private void mergePropertiesIntoResource(HashSet<PropertyObjectPair> properties, Resource res) {
+	protected void mergePropertiesIntoResource(HashSet<PropertyObjectPair> properties, Resource res) {
 		for (PropertyObjectPair p : properties) {
 			if (!res.getModel().contains(res, p.getKey(), p.getValue())) {
                 res.getModel().add(res, p.getKey(), p.getValue());
@@ -481,7 +496,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		return true;
 	}
 
-	private void addOtherFormPropertiesToLexicalEntry(Resource lexEntry, HashSet<PropertyObjectPair> properties) {
+	protected void addOtherFormPropertiesToLexicalEntry(Resource lexEntry, HashSet<PropertyObjectPair> properties) {
 		boolean foundCompatible = false;
         Model morphoBox = featureBoxes.get(Feature.MORPHOLOGY);
 
@@ -489,7 +504,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         lexEntry = lexEntry.inModel(morphoBox);
 
-        // TODO: Add other forms to a morphology dedicated model.
+        // DONE: Add other forms to a morphology dedicated model.
 		StmtIterator otherForms = lexEntry.listProperties(LemonOnt.otherForm);
 
 		while (otherForms.hasNext() && !foundCompatible) {
@@ -707,10 +722,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
 	@Override
 	public void registerPronunciation(String pron, String lang) {
-		if (null == currentPreferredWrittenRepresentation) {
+		if (null == currentCanonicalForm) {
 			currentSharedPronunciations.add(new PronunciationPair(pron, lang));
 		} else {
-			registerPronunciation(currentPreferredWrittenRepresentation, pron, lang);
+			registerPronunciation(currentCanonicalForm, pron, lang);
 		}
 	}
 

@@ -74,11 +74,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
 		macroOrPOSPatternString = new StringBuilder()
-		.append("(?:").append(WikiPatterns.macroPatternString)
-		.append(")|(?:").append(partOfSpeechPatternString)
-		.append(")|(?:").append(subSection4PatternString).append(")")
-		.append("|(?:").append(multilineMacroPatternString).append(")")
-		.toString();
+                .append("(?:").append(WikiPatterns.macroPatternString)
+                .append(")|(?:").append(partOfSpeechPatternString)
+                .append(")|(?:").append(subSection4PatternString)
+                .append(")|(?:").append(multilineMacroPatternString)
+				.append(")").toString();
 
 		macroOrPOSPattern = Pattern.compile(macroOrPOSPatternString);
 

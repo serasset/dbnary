@@ -101,7 +101,7 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
 	}
 
 
-
+	// FIXME: check if remaining code is dead code...
 	private void addForm(HashSet<PropertyObjectPair> infl, String s){
 		s=s.replace("]", "").replace("[", "").replaceAll(".*\\) *", "").replace("(", "").trim();
 		if (s.length() == 0 || s.equals("—") || s.equals("-")) return;

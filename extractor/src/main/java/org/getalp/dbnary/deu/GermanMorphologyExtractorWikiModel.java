@@ -77,8 +77,15 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
             if (ignoredTemplates.contains(templateName)) {
                 ; // NOP
             } else if ("Deutsch Substantiv Übersicht".equals(templateName)) {
-                // TODO extract directly the data from the template call
+                // TODO: extract the data from generated table, so that it is less fragile.
                 extractSubstantiveForms(parameterMap);
+            } else if ("Deutsch Toponym Übersicht".equals(templateName)) {
+                // TODO: how do I encode toponyms in DBnary ?
+                // TODO: extract such toponym morphology
+                log.debug("Morphology Extraction: Toponym morphology not yet handled --in-- {}", this.getPageName());
+            } else if ("Deutsch Nachname Übersicht".equals(templateName)) {
+                // ?
+                log.debug("Morphology Extraction: Nachname morphology not yet handled --in-- {}", this.getPageName());
             } else if ("Deutsch Adjektiv Übersicht".equals(templateName)) {
                 // DONE fetch and expand deklination page and parse all tables.
                 // TODO: check if such template may be used on substantivs
@@ -97,9 +104,12 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
             } else if (templateName.startsWith("Deutsch adjektivische Deklination ")) {
                 // Will expand to Deutsch adjektivische Deklination that will be caught afterwards.
                 super.substituteTemplateCall(templateName, parameterMap, writer);
+            } else if (templateName.equalsIgnoreCase("flexlink")) {
+                // This should be expanded to keep link titles (that are usually written forms).
+                super.substituteTemplateCall(templateName, parameterMap, writer);
             } else {
                 log.debug("Morphology Extraction: Caught template call: {} --in-- {}", templateName, this.getPageName());
-                // super.substituteTemplateCall(templateName, parameterMap, writer);
+                super.substituteTemplateCall(templateName, parameterMap, writer);
             }
         } catch (RuntimeException e) {
             log.debug("Runtime Exception in {}", this.getPageName());
@@ -154,11 +164,23 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
                 continue;
             }
 
+            if (key.equals("Genus")) {
+                if (value.equals("m"))
+                    wdh.registerPropertyOnLexicalEntry(OliaOnt.hasGender, OliaOnt.Masculine);
+                else if (value.equals("f"))
+                    wdh.registerPropertyOnLexicalEntry(OliaOnt.hasGender, OliaOnt.Feminine);
+                else if (value.equals("n"))
+                    wdh.registerPropertyOnLexicalEntry(OliaOnt.hasGender, OliaOnt.Neuter);
+                else
+                    log.debug("unknown Genus in Substantiv Ubersicht: {} | {}", value, wdh.currentLexEntry());
+                continue;
+            }
+
             if (key.contains("Singular")) {
                 inflection.number = SINGULAR;
             } else if (key.contains("Plural")) {
                 inflection.number = PLURAL;
-            } else {
+            } else  {
                 log.debug("no plural, neither singular in Substantiv Ubersicht: {} | {}", key, wdh.currentLexEntry());
             }
 

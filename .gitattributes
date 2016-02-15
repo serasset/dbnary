@@ -489,8 +489,6 @@ extractor/src/main/java/org/getalp/dbnary/IWiktionaryExtractor.java -text svneol
 extractor/src/main/java/org/getalp/dbnary/KoreanLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/LangTools.java -text
 extractor/src/main/java/org/getalp/dbnary/LemonBasedRDFDataHandler.java -text svneol=unset#text/plain
-extractor/src/main/java/org/getalp/dbnary/LithuanianLangtoCode.java -text svneol=unset#text/plain
-extractor/src/main/java/org/getalp/dbnary/MalagasyLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/OffsetValue.java -text
 extractor/src/main/java/org/getalp/dbnary/PronunciationPair.java -text
 extractor/src/main/java/org/getalp/dbnary/PropertyObjectPair.java -text
@@ -569,6 +567,7 @@ extractor/src/main/java/org/getalp/dbnary/jpn/WiktionaryExtractor.java -text svn
 extractor/src/main/java/org/getalp/dbnary/lat/LatinLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/lat/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/lat/WiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/lit/LithuanianLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/lit/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/lit/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/mlg/MalagasyLangToCode.java -text svneol=unset#text/plain

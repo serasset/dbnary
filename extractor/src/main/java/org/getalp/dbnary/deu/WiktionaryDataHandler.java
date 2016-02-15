@@ -116,7 +116,6 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
     public WiktionaryDataHandler(String lang) {
         super(lang);
-        aBox.setNsPrefix("olia", OliaOnt.getURI());
     }
 
     public static boolean isValidPOS(String pos) {

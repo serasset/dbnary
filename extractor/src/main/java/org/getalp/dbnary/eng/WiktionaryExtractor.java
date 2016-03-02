@@ -1,17 +1,14 @@
 /**
- * 
+ *
  */
 package org.getalp.dbnary.eng;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.LangTools;
-import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.*;
+import org.getalp.dbnary.wiki.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,15 +19,15 @@ import org.slf4j.LoggerFactory;
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     //TODO: Handle Wikisaurus entries.
-	//DONE: extract pronunciation
-	//TODO: attach multiple pronounciation correctly
+    //DONE: extract pronunciation
+    //TODO: attach multiple pronounciation correctly
     static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
     protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
     protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
     protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
 
-    private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK}
+    private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, CONJUGATIONBLOCK, ETYMOLOGYBLOCK, PRONBLOCK}
 
     public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
@@ -39,11 +36,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected static Pattern languageSectionPattern;
     protected final static Pattern sectionPattern;
     protected final static HashMap<String, String> nymMarkerToNymName;
-	protected final static Pattern pronPattern;
+    protected final static Pattern pronPattern;
 
     static {
         languageSectionPattern = Pattern.compile(languageSectionPatternString);
-       
+
         sectionPattern = Pattern.compile(sectionPatternString);
         pronPattern = Pattern.compile(pronPatternString);
 
@@ -135,6 +132,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             return Block.TRADBLOCK;
         } else if (title.equals("Alternative spellings")) {
             return Block.ORTHOALTBLOCK;
+        } else if (title.equals("Conjugation")) {
+            return Block.CONJUGATIONBLOCK;
+        } else if (title.startsWith("Etymology")) {
+            return Block.ETYMOLOGYBLOCK;
         } else if (null != (nym = nymMarkerToNymName.get(title))) {
             context.put("nym", nym);
             return Block.NYMBLOCK;
@@ -164,6 +165,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 currentNym = (String) context.get("nym");
                 break;
             case PRONBLOCK:
+                break;
+            case CONJUGATIONBLOCK:
+                break;
+            case ETYMOLOGYBLOCK:
                 break;
             default:
                 assert false : "Unexpected block while parsing: " + wiktionaryPageName;
@@ -198,6 +203,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case PRONBLOCK:
                 extractPron(blockStart, end);
                 break;
+            case CONJUGATIONBLOCK:
+                extractConjugation(blockStart, end);
+                break;
+            case ETYMOLOGYBLOCK:
+                extractEtymology(blockStart, end);
+                break;
             default:
                 assert false : "Unexpected block while parsing: " + wiktionaryPageName;
         }
@@ -205,13 +216,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         blockStart = -1;
     }
 
+    private void extractEtymology(int blockStart, int end) {
+        // TODO: extract the Etymology information
+    }
+
+    private void extractConjugation(int blockStart, int end) {
+        // TODO: extract the Conjugation information
+    }
+
     private void extractTranslations(int startOffset, int endOffset) {
-       Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
-       macroMatcher.region(startOffset, endOffset);
-       String currentGloss = null;
+        Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
+        macroMatcher.region(startOffset, endOffset);
+        String currentGloss = null;
         // TODO: there are templates called "qualifier" used to further qualify the translation check and evaluate if extracting its data is useful.
-       while (macroMatcher.find()) {
-           String g1 = macroMatcher.group(1);
+        while (macroMatcher.find()) {
+            String g1 = macroMatcher.group(1);
 
            if (g1.equals("t+") || g1.equals("t-") || g1.equals("tø") || g1.equals("t")) {
                // DONE: Sometimes translation links have a remaining info after the word, keep it.
@@ -221,36 +240,36 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
                    lang = LangTools.normalize(g2.substring(0, i1));
 
-                   String usage = null;
-                   if ((i2 = g2.indexOf('|', i1+1)) == -1) {
-                       word = g2.substring(i1+1);
-                   } else {
-                       word = g2.substring(i1+1, i2);
-                       usage = g2.substring(i2+1);
-                   }
-                   lang=EnglishLangToCode.threeLettersCode(lang);
-                   if(lang!=null){
-                	   wdh.registerTranslation(lang, currentGloss, usage, word);
-                   }
-                  
-               }
-           } else if (g1.equals("trans-top")) {
-               // Get the glose that should help disambiguate the source acception
-               String g2 = macroMatcher.group(2);
-               // Ignore glose if it is a macro
-               if (g2 != null && ! g2.startsWith("{{")) {
-                   currentGloss = g2;
-               }
-           } else if (g1.equals("checktrans-top")) {
-        	   // forget glose.
-        	   currentGloss = null;
-           } else if (g1.equals("trans-mid")) {
-               // just ignore it
-           } else if (g1.equals("trans-bottom")) {
-               // Forget the current glose
-               currentGloss = null;
-           }
-       }
+                    String usage = null;
+                    if ((i2 = g2.indexOf('|', i1+1)) == -1) {
+                        word = g2.substring(i1+1);
+                    } else {
+                        word = g2.substring(i1+1, i2);
+                        usage = g2.substring(i2+1);
+                    }
+                    lang=EnglishLangToCode.threeLettersCode(lang);
+                    if(lang!=null){
+                        wdh.registerTranslation(lang, currentGloss, usage, word);
+                    }
+
+                }
+            } else if (g1.equals("trans-top")) {
+                // Get the glose that should help disambiguate the source acception
+                String g2 = macroMatcher.group(2);
+                // Ignore glose if it is a macro
+                if (g2 != null && ! g2.startsWith("{{")) {
+                    currentGloss = g2;
+                }
+            } else if (g1.equals("checktrans-top")) {
+                // forget glose.
+                currentGloss = null;
+            } else if (g1.equals("trans-mid")) {
+                // just ignore it
+            } else if (g1.equals("trans-bottom")) {
+                // Forget the current glose
+                currentGloss = null;
+            }
+        }
     }
 
     @Override
@@ -260,16 +279,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     private void extractPron(int startOffset, int endOffset) {
-    	
-    	Matcher pronMatcher = pronPattern.matcher(pageContent);
+
+        Matcher pronMatcher = pronPattern.matcher(pageContent);
         pronMatcher.region(startOffset,endOffset);
-    	while (pronMatcher.find()) {
-    		String pron = pronMatcher.group(1);
-    		
-    		if (null == pron || pron.equals("")) return;
-    		
-    		if (! pron.equals("")) wdh.registerPronunciation(pron, "en-fonipa");
-    	}
-	}
-    
+        while (pronMatcher.find()) {
+            String pron = pronMatcher.group(1);
+
+            if (null == pron || pron.equals("")) return;
+
+            if (! pron.equals("")) wdh.registerPronunciation(pron, "en-fonipa");
+        }
+    }
+
 }

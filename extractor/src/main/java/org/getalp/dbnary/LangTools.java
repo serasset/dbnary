@@ -1,8 +1,7 @@
 package org.getalp.dbnary;
 
-import java.util.Iterator;
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.iso639.ISO639_3;
+import org.getalp.iso639.ISO639_3.Lang;
 
 public class LangTools {
 	public static String threeLettersCode(java.util.HashMap<String,String> h, String s) {

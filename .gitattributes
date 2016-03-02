@@ -621,6 +621,8 @@ extractor/src/main/java/org/getalp/dbnary/zho/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dilaf/DilafExtractorException.java -text
 extractor/src/main/java/org/getalp/dilaf/DilafLemonDataHandler.java -text
 extractor/src/main/java/org/getalp/dilaf/DilafZarmaExtractor.java -text
+extractor/src/main/java/org/getalp/iso639/ISO639_1.java -text
+extractor/src/main/java/org/getalp/iso639/ISO639_3.java -text
 extractor/src/main/resources/Messages_bg.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_ja.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_lt.properties -text
@@ -629,6 +631,13 @@ extractor/src/main/resources/Messages_pt.properties -text svneol=unset#text/plai
 extractor/src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_sh.properties -text svneol=unset#text/plain
 extractor/src/main/resources/ehcache.xml -text
+extractor/src/main/resources/org/getalp/iso639/ISO639-eponym.tab -text
+extractor/src/main/resources/org/getalp/iso639/ISO639-fr.tab -text
+extractor/src/main/resources/org/getalp/iso639/ISO639.data -text
+extractor/src/main/resources/org/getalp/iso639/iso-639-3-macrolanguages.tab -text
+extractor/src/main/resources/org/getalp/iso639/iso-639-3.tab -text
+extractor/src/main/resources/org/getalp/iso639/iso-639-3_Name_Index.tab -text
+extractor/src/main/resources/org/getalp/iso639/iso-639-3_Retirements.tab -text
 extractor/src/main/scala/org/getalp/dbnary/bul/TranslationsParser.scala -text
 extractor/src/main/scripts/old/README.txt -text
 extractor/src/main/scripts/old/compare_extracts.sh -text

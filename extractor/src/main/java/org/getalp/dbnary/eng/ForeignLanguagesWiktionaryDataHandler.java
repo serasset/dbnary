@@ -2,12 +2,11 @@ package org.getalp.dbnary.eng;
 
 import java.util.HashMap;
 
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.LangTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler {
 
 	private Logger log = LoggerFactory.getLogger(ForeignLanguagesWiktionaryDataHandler.class);
 	
@@ -21,10 +20,14 @@ public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHand
 	}
 	
 	public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
-		currentEntryLanguage = lang;
-		currentPrefix = getPrefixe(lang);
+		setCurrentLanguage(lang);
 		super.initializeEntryExtraction(wiktionaryPageName);
     }
+
+	public void setCurrentLanguage(String lang) {
+		currentEntryLanguage = lang;
+		currentPrefix = getPrefixe(lang);
+	}
 
 	@Override
 	public void finalizeEntryExtraction() {

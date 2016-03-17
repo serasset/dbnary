@@ -27,7 +27,12 @@ public class ItalianExampleExtractorWikiModel extends DbnaryWikiModel {
 
 	public void parseExample(String example) {
 		// Render the definition to plain text, while ignoring the example template
-		String ex = render(new PlainTextConverter(), example).trim();
+		String ex = null;
+		try {
+			ex = render(new PlainTextConverter(), example).trim();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		if (null != ex && ! ex.equals(""))
 			delegate.registerExample(ex, null);
 	}

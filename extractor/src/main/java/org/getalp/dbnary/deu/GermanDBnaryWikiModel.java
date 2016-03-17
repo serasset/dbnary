@@ -1,5 +1,7 @@
 package org.getalp.dbnary.deu;
 
+import info.bliki.wiki.filter.ParsedPageName;
+import info.bliki.wiki.model.WikiModelContentException;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryIndex;
 
@@ -22,8 +24,8 @@ public class GermanDBnaryWikiModel extends DbnaryWikiModel {
     // Hack: German wiktionary uses #WEITERLEITUNG instead of #REDIRECT,
     // fix it in the raw wiki text as bliki expects #redirect
     @Override
-    public String getRawWikiContent(String namespace, String articleName, Map<String, String> map) {
-        String result = super.getRawWikiContent(namespace, articleName, map);
+    public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
+        String result = super.getRawWikiContent(parsedPagename, map);
         if (result != null) {
             if (result.startsWith("#WEITERLEITUNG")) {
                 result = "#REDIRECT" + result.substring(12);

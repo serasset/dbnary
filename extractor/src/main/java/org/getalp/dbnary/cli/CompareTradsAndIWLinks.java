@@ -4,13 +4,8 @@ import info.bliki.api.Connector;
 import info.bliki.api.User;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -278,9 +273,11 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 		HashSet<String> res = new HashSet<String>();
 		User user = new User("", "", "http://" + wktLangCode + ".wiktionary.org/w/api.php");
 		user.login();
-		String[] valuePairs = { "action", "parse", "prop", "iwlinks", "page", name , "format", "json"};
+		String[] valuePairs = { "action", "parse", "prop", "iwlinks", "format", "json"};
 		Connector connector = new Connector();
-		String rawJsonResponse = connector.queryXML(user, valuePairs);
+		List<String> titles = new ArrayList<>();
+        titles.add(name);
+		String rawJsonResponse = null; // connector.query(user, valuePairs);
 		if (rawJsonResponse == null) {
 			System.err.println("Got no result for the query: " + name);
 		}

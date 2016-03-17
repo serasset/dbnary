@@ -34,11 +34,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 	protected GermanMorphologyExtractorWikiModel morphologyExtractorWikiModel;
+    protected GermanMorphologyExtractor morphologyExtractor;
 
 	@Override
 	public void setWiktionaryIndex(WiktionaryIndex wi) {
 		super.setWiktionaryIndex(wi);
 		morphologyExtractorWikiModel = new GermanMorphologyExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
+        morphologyExtractor = new GermanMorphologyExtractor(wdh, wi);
 	}
 
 	// protected final static Pattern languageSectionPattern;
@@ -355,6 +357,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (blockStart == -1) {
             return;
         }
+		log.trace("Leaving block {} while parsing entry {}", currentBlock.name(), this.wiktionaryPageName);
 
         int end = computeRegionEnd(blockStart, m);
         switch (currentBlock) {
@@ -480,10 +483,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 
 	private void parseInflectionTables(int startOffset, int endOffset) {
-		morphologyExtractorWikiModel.setPageName(wiktionaryPageName);
-		String region = pageContent.substring(startOffset, endOffset);
 
-		morphologyExtractorWikiModel.parseOtherForm(region, wdh.currentWiktionaryPos());
+		// morphologyExtractorWikiModel.setPageName(wiktionaryPageName);
+		String region = pageContent.substring(startOffset, endOffset);
+        morphologyExtractor.extractMorphologicalData(region, wiktionaryPageName);
+		// morphologyExtractorWikiModel.parseOtherForm(region, wdh.currentWiktionaryPos());
 	}
 
 	private final static String germanDeclinationSuffix =" (Deklination)";

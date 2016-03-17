@@ -65,8 +65,12 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
 	public void parseOtherForm(String page,String originalPos) {
 		// Render the definition to plain text, while ignoring the example template
         // this.setPageName(page);
-		render(new PlainTextConverter(), page).trim();
-	}
+        try {
+            render(new PlainTextConverter(), page).trim();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 	@Override
 	public void substituteTemplateCall(String templateName,
@@ -85,6 +89,8 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
                 log.debug("Morphology Extraction: Toponym morphology not yet handled --in-- {}", this.getPageName());
             } else if ("Deutsch Nachname Übersicht".equals(templateName)) {
                 // ?
+                if (parameterMap.containsKey("Genus"))
+                    log.debug("Morphology Extraction: Nachname with Genus --in-- {}", this.getPageName());
                 log.debug("Morphology Extraction: Nachname morphology not yet handled --in-- {}", this.getPageName());
             } else if ("Deutsch Adjektiv Übersicht".equals(templateName)) {
                 // DONE fetch and expand deklination page and parse all tables.
@@ -109,7 +115,8 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
                 super.substituteTemplateCall(templateName, parameterMap, writer);
             } else {
                 log.debug("Morphology Extraction: Caught template call: {} --in-- {}", templateName, this.getPageName());
-                super.substituteTemplateCall(templateName, parameterMap, writer);
+                // Should I expand every other templates ?
+                // super.substituteTemplateCall(templateName, parameterMap, writer);
             }
         } catch (RuntimeException e) {
             log.debug("Runtime Exception in {}", this.getPageName());

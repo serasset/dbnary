@@ -1,6 +1,7 @@
 package org.getalp.dbnary.fra;
 
 import info.bliki.wiki.filter.PlainTextConverter;
+import org.getalp.iso639.ISO639_3;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -11,11 +12,9 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
-import org.getalp.dbnary.AbstractWiktionaryExtractor;
-
 public class FrenchDefinitionExtractorWikiModel extends DbnaryWikiModel {
 
-    private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+    private Logger log = LoggerFactory.getLogger(FrenchDefinitionExtractorWikiModel.class);
 
     // static Set<String> ignoredTemplates = new TreeSet<String>();
 	// static {
@@ -37,7 +36,13 @@ public class FrenchDefinitionExtractorWikiModel extends DbnaryWikiModel {
 
 	public void parseDefinition(String definition, int defLevel) {
 		// Render the definition to plain text, while ignoring the example template
-        String def = render(new PlainTextConverter(), definition).trim();
+        log.trace("extracting definitions in {}", this.getPageName());
+		String def = null;
+		try {
+			def = render(new PlainTextConverter(), definition).trim();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		if (null != def && ! def.equals(""))
 			delegate.registerNewDefinition(def, defLevel);
 	}
@@ -47,7 +52,18 @@ public class FrenchDefinitionExtractorWikiModel extends DbnaryWikiModel {
 			Map<String, String> parameterMap, Appendable writer)
 			throws IOException {
 		// Currently just expand the definition to get the full text.
-		super.substituteTemplateCall(templateName, parameterMap, writer);
+		if (templateName.equals("nom langue") || templateName.endsWith(":nom langue")) {
+            // intercept this template as it leads to a very inefficient Lua Script.
+            String langCode = parameterMap.get("1").trim();
+            String lang = ISO639_3.sharedInstance.getLanguageNameInFrench(langCode);
+            if (null != lang) writer.append(lang);
+        } else if (templateName.contains("langues")) {
+            log.debug("Got template {}\tin\t{}", templateName, this.getPageName());
+        } else if ("pron".equals(templateName)) {
+            // Ignore it as pronunciation is extracted independantly.
+        } else {
+            super.substituteTemplateCall(templateName, parameterMap, writer);
+        }
 	}
 
 }

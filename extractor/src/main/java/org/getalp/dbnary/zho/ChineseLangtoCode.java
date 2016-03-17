@@ -2,7 +2,7 @@ package org.getalp.dbnary.zho;
 
 import java.util.HashMap;
 
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.iso639.ISO639_3;
 
 
 public class ChineseLangtoCode {

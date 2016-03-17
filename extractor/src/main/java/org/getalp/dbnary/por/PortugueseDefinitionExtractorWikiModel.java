@@ -32,7 +32,13 @@ public class PortugueseDefinitionExtractorWikiModel extends DbnaryWikiModel {
 
 	public void parseDefinition(String definition, int defLevel) {
 		// Render the definition to plain text, while ignoring the example template
-		String def = render(new PlainTextConverter(), definition).trim();
+		logger.debug("Parsing definition for {}", this.getPageName());
+		String def = null;
+		try {
+			def = render(new PlainTextConverter(), definition).trim();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		if (null != def && ! def.equals(""))
 			delegate.registerNewDefinition(def, defLevel);
 	}

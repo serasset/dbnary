@@ -1,7 +1,9 @@
 package org.getalp.dbnary.fra;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +13,7 @@ import org.getalp.dbnary.IWiktionaryDataHandler;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 
+import org.getalp.iso639.ISO639_3;
 import org.w3c.dom.*;
 
 import org.slf4j.Logger;
@@ -393,26 +396,31 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	}
 
 	public void parseConjugation(String conjugationTemplateCall) {
-		// Render the conjugation to html, while ignoring the example template
-		if (conjugationTemplateCall.indexOf("}|") != -1 && notMatchingBrackets(conjugationTemplateCall)) {
-			log.warn("Suspicious '}|' in conjugation template call for '" + delegate.currentLexEntry() + "'. Surely a wikicode error. Trying to fix it. Call: '" + conjugationTemplateCall + "'");
-			conjugationTemplateCall = conjugationTemplateCall.replace("}|", "|");
-		}
+        try {
+            // Render the conjugation to html, while ignoring the example template
+            if (conjugationTemplateCall.indexOf("}|") != -1 && notMatchingBrackets(conjugationTemplateCall)) {
+                log.warn("Suspicious '}|' in conjugation template call for '" + delegate.currentLexEntry() + "'. Surely a wikicode error. Trying to fix it. Call: '" + conjugationTemplateCall + "'");
+                conjugationTemplateCall = conjugationTemplateCall.replace("}|", "|");
+            }
 
-		if (conjugationTemplateCall.indexOf("|}") != -1 && notMatchingBrackets(conjugationTemplateCall)) {
-			log.warn("Suspicious '|}' in conjugation template call for '" + delegate.currentLexEntry() + "'. Surely a wikicode error. Trying to fix it. Call: '" + conjugationTemplateCall + "'");
-			conjugationTemplateCall = conjugationTemplateCall.replace("|}", "|");
-		}
+            if (conjugationTemplateCall.indexOf("|}") != -1 && notMatchingBrackets(conjugationTemplateCall)) {
+                log.warn("Suspicious '|}' in conjugation template call for '" + delegate.currentLexEntry() + "'. Surely a wikicode error. Trying to fix it. Call: '" + conjugationTemplateCall + "'");
+                conjugationTemplateCall = conjugationTemplateCall.replace("|}", "|");
+            }
 
-		if (!conjugationTemplateCall.startsWith("{{fr-conj-0")) {
-			Document doc = wikicodeToHtmlDOM(conjugationTemplateCall);
+            if (!conjugationTemplateCall.startsWith("{{fr-conj-0")) {
+                Document doc = wikicodeToHtmlDOM(conjugationTemplateCall);
 
-			if (doc == null) {
-				return; // failing silently: error message already given.
-			}
+                if (doc == null) {
+                    return; // failing silently: error message already given.
+                }
 
-			handleConjugationDocument(doc.getDocumentElement());
-		}
+                handleConjugationDocument(doc.getDocumentElement());
+            }
+        } catch (Exception e) {
+            log.error("{} while parsing conjugation of {}", e.getLocalizedMessage(), this.getPageName());
+            e.printStackTrace();
+        }
 	}
 
 	public void parseImpersonnalTableConjugation(String conjugationTemplateCall) {
@@ -510,7 +518,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	}
 
 	public void parseOtherForm(String templateCall) {
-		Document doc = wikicodeToHtmlDOM(templateCall);
+        log.trace("extracting other forms in {}", this.getPageName());
+        Document doc = wikicodeToHtmlDOM(templateCall);
 
         // TODO [URGENT] What is this "fr-accord" meaning ? Supress ?
 		Matcher frAccordMatcher = frAccordPattern.matcher(templateCall);
@@ -549,4 +558,23 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 			}
 		}
 	}
+
+    @Override
+    public void substituteTemplateCall(String templateName,
+                                       Map<String, String> parameterMap, Appendable writer)
+            throws IOException {
+        // Currently just expand the definition to get the full text.
+        if (templateName.equals("nom langue") || templateName.endsWith(":nom langue")) {
+            // intercept this template as it leeds to a very inefficient Lua Script.
+            String langCode = parameterMap.get("1").trim();
+            String lang = ISO639_3.sharedInstance.getLanguageNameInFrench(langCode);
+            if (null != lang) writer.append(lang);
+        } else if (templateName.equals("pron")) {
+			// catch this template call as it resolves in a non useful very heavy Lua processing.
+			writer.append("\\" + parameterMap.get("1") + "\\");
+		} else {
+            super.substituteTemplateCall(templateName, parameterMap, writer);
+        }
+    }
+
 }

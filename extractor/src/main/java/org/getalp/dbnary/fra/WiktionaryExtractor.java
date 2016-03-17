@@ -471,12 +471,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     protected ExampleExpanderWikiModel exampleExpander;
     protected FrenchDefinitionExtractorWikiModel definitionExpander;
+    protected FrenchExtractorWikiModel conjugationExtractor;
 
     @Override
     public void setWiktionaryIndex(WiktionaryIndex wi) {
         super.setWiktionaryIndex(wi);
         exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("fr"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
         definitionExpander = new FrenchDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
+        conjugationExtractor = new FrenchExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
+
     }
 
     private Set<String> defTemplates = null;
@@ -687,6 +690,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
 
+        log.trace("Extracting page \t{}", this.wiktionaryPageName);
+
         // WONTDO: (priority: low) should I use a macroOrLink pattern to detect translations that are not macro based ?
         // DONE: (priority: top) link the definition node with the current Part of Speech
         // DONE: handle alternative spelling
@@ -789,6 +794,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         int end = computeRegionEnd(blockStart, m);
 
+        log.trace("Leaving block {} while parsing entry {}", currentBlock.name(), this.wiktionaryPageName);
         switch (currentBlock) {
             case NOBLOCK:
             case IGNOREPOS:
@@ -822,7 +828,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     private final static String FrenchConjugationPagePrefix = "Annexe:Conjugaison en français/";
+
     private void extractConjugationPage() {
+        log.trace("Extracting conjugation page in {}", this.wiktionaryPageName);
+        conjugationExtractor.setPageName(this.wiktionaryPageName);
         Resource pos = wdh.currentLexinfoPos();
         if (null != pos && pos.equals(LexinfoOnt.verb)) {
             String conjugationPageContent = wi.getTextOfPage(FrenchConjugationPagePrefix + wdh.currentLexEntry());
@@ -830,21 +839,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (conjugationPageContent == null) {
 // 				log.debug("Cannot get conjugation page for '" + currentLexEntry() + "'");
             } else {
-                FrenchExtractorWikiModel dbnmodel = null;
+
                 int curPos = -1;
                 do {
                     curPos++;
                     curPos = conjugationPageContent.indexOf("{{fr-conj", curPos);
                     if (curPos != -1 && !conjugationPageContent.startsWith("{{fr-conj-intro", curPos)) {
                         String templateCall = getTemplateCall(conjugationPageContent, curPos);
-                        if (dbnmodel == null) {
-                            dbnmodel = new FrenchExtractorWikiModel(wdh, wi, new Locale("fr"), "/${image}", "/${title}");
-                        }
 
                         if (templateCall.startsWith("{{fr-conj/Tableau-impersonnels")) {
-                            dbnmodel.parseImpersonnalTableConjugation(templateCall);
+                            conjugationExtractor.parseImpersonnalTableConjugation(templateCall);
                         } else {
-                            dbnmodel.parseConjugation(templateCall);
+                            conjugationExtractor.parseConjugation(templateCall);
                         }
                     }
                 } while (curPos != -1);
@@ -1019,7 +1025,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     private void extractInflections(int blockStart, int end) {
-
+        log.trace("extracting inflections in {}", this.wiktionaryPageName);
         Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
         m.region(blockStart, end);
 
@@ -1326,14 +1332,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         otherFormMatcher.region(start, end);
 
         while (otherFormMatcher.find()) {
-            FrenchExtractorWikiModel dbnmodel = new FrenchExtractorWikiModel(wdh, wi, frLocale, "/${image}", "/${title}");
-            dbnmodel.parseOtherForm(otherFormMatcher.group());
+            conjugationExtractor.setPageName(this.wiktionaryPageName);
+            conjugationExtractor.parseOtherForm(otherFormMatcher.group());
         }
     }
 
     @Override
     public void extractDefinition(String definition, int defLevel) {
         // TODO: properly handle macros in definitions.
+        definitionExpander.setPageName(this.wiktionaryPageName);
         definitionExpander.parseDefinition(definition, defLevel);
     }
 

@@ -1,5 +1,8 @@
 package org.getalp.dbnary.tools;
 
+
+import org.slf4j.Logger;
+
 import java.util.HashMap;
 
 public class CounterSet {
@@ -64,6 +67,12 @@ public class CounterSet {
 		} else {
 			counters.put(key, new MutableInteger(1));
 			return 1;
+		}
+	}
+
+	public void logCounters(Logger log) {
+		for (String s : counters.keySet()) {
+			log.debug("{}: {}", s, counters.get(s)._val);
 		}
 	}
 }

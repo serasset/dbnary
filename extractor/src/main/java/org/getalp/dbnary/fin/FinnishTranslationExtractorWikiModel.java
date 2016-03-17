@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,13 +71,30 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 			String gloss = computeGlossValue(parameterMap, translationPositionalArg);
 			extractTranslations(xans, gloss);
 			
-		} else if ("käännökset/korjattava".equals(templateName) || "kään/korj".equals(templateName) || "korjattava/käännökset".equals(templateName)) { 
+		} else if ("käännökset/korjattava".equalsIgnoreCase(templateName) || "kään/korj".equals(templateName) || "korjattava/käännökset".equals(templateName)) {
 			// Missing translation message, just ignore it
-		} else {
+		} else if (knownTranslationTemplates.contains(templateName)) {
+            // Language name, resubstitute it with its own value
+            writer.append("{-")
+                    .append(templateName)
+                    .append("|")
+                    .append(WikiTool.toParameterString(parameterMap))
+                    .append("-}");
+        } else if (isALanguageName(templateName)) {
+			// Language name, resubstitute it with its own value
+			writer.append(templateName);
+		} else if ("yhteys".equals(templateName) || "kuva".equals(templateName)) {
+            super.substituteTemplateCall(templateName, parameterMap, writer);
+        } else {
 			 log.debug("Called template: {} while parsing translations of: {}", templateName, delegate.currentLexEntry());
 			// Just ignore the other template calls (uncomment to expand the template calls).
 			// super.substituteTemplateCall(templateName, parameterMap, writer);
 		}
+	}
+
+	private boolean isALanguageName(String templateName) {
+		if (null != SuomiLangToCode.getCanonicalCode(templateName)) return true;
+		return false;
 	}
 
 	StringBuffer glossbuff = new StringBuffer();
@@ -123,19 +141,24 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 				new StringBuilder().append("(.)")
 				.toString();
 
-		// TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
-		macroOrLinkOrcarPatternString = new StringBuilder()
-		.append("(?:")
-		.append(WikiPatterns.macroPatternString)
-		.append(")|(?:")
-		.append(WikiPatterns.linkPatternString)
-		.append(")|(?:")
-		.append("(:*\\*)")
-		.append(")|(?:")
-		.append("(\\*:)")
-		.append(")|(?:")
-		.append(carPatternString)
-		.append(")").toString();
+        // TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
+        macroOrLinkOrcarPatternString = new StringBuilder()
+                .append("(?:")
+                // Macro-modified for translation extractions
+                .append("\\{\\-")
+                .append("([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?")
+                .append("\\-\\}")
+                .append(")|(?:")
+                .append(WikiPatterns.macroPatternString)
+                .append(")|(?:")
+                .append(WikiPatterns.linkPatternString)
+                .append(")|(?:")
+                .append("(:*\\*)")
+                .append(")|(?:")
+                .append("(\\*:)")
+                .append(")|(?:")
+                .append(carPatternString)
+                .append(")").toString();
 
 
 
@@ -153,7 +176,36 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 	public void extractTranslations(String block) {
 		extractTranslations(block, null);
 	}
-	
+
+    public static Set<String> knownTranslationTemplates = new HashSet<String>();
+    static {
+        knownTranslationTemplates.add("ylä");
+        knownTranslationTemplates.add("ala");
+        knownTranslationTemplates.add("keski");
+        knownTranslationTemplates.add("käännös");
+        knownTranslationTemplates.add("l");
+        knownTranslationTemplates.add("n");
+        knownTranslationTemplates.add("m");
+        knownTranslationTemplates.add("f");
+        knownTranslationTemplates.add("mf");
+        knownTranslationTemplates.add("ijekavica");
+        knownTranslationTemplates.add("ekavica");
+        knownTranslationTemplates.add("monikollinen");
+        knownTranslationTemplates.add("arkikieltä");
+        knownTranslationTemplates.add("ru-ia");
+        knownTranslationTemplates.add("BrE");
+        knownTranslationTemplates.add("AmE");
+        knownTranslationTemplates.add("Am");
+        knownTranslationTemplates.add("ru-pa");
+        knownTranslationTemplates.add("ru-tr");
+        knownTranslationTemplates.add("el-tr");
+        knownTranslationTemplates.add("sv-3");
+        knownTranslationTemplates.add("sv-4");
+        knownTranslationTemplates.add("sv-5");
+        knownTranslationTemplates.add("cs-ia");
+        knownTranslationTemplates.add("de-a");
+
+    }
 	public void extractTranslations(String block, String gloss) {
 		Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(block);
 		final int INIT = 1;
@@ -173,10 +225,11 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 		while (macroOrLinkOrcarMatcher.find()) {
 
 			String macro = macroOrLinkOrcarMatcher.group(1);
-			String link = macroOrLinkOrcarMatcher.group(3);
-			String star = macroOrLinkOrcarMatcher.group(5);
-			String starcont = macroOrLinkOrcarMatcher.group(6);
-			String character = macroOrLinkOrcarMatcher.group(7);
+            if (null == macro) macro = macroOrLinkOrcarMatcher.group(3);
+			String link = macroOrLinkOrcarMatcher.group(5);
+			String star = macroOrLinkOrcarMatcher.group(7);
+			String starcont = macroOrLinkOrcarMatcher.group(8);
+			String character = macroOrLinkOrcarMatcher.group(9);
 
 			switch (ETAT) {
 
@@ -185,8 +238,10 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 					if (macro.equalsIgnoreCase("ylä"))  {
 						if (macroOrLinkOrcarMatcher.group(2) != null) {
 							currentGlose = macroOrLinkOrcarMatcher.group(2);
-						} else {
-							currentGlose = null;
+						} else if (macroOrLinkOrcarMatcher.group(4) != null) {
+                            currentGlose = macroOrLinkOrcarMatcher.group(4);
+                        } else {
+                            currentGlose = null;
 						}
 
 					} else if (macro.equalsIgnoreCase("ala")) {

@@ -6,8 +6,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import info.bliki.wiki.filter.PlainTextConverter;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.ExpandAllWikiModel;
+import org.getalp.dbnary.wiki.WikiTool;
 
 public class DefinitionExpanderWikiModel extends ExpandAllWikiModel {
 
@@ -25,6 +27,12 @@ public class DefinitionExpanderWikiModel extends ExpandAllWikiModel {
 	public DefinitionExpanderWikiModel(WiktionaryIndex wi, Locale locale,
 			String imageBaseURL, String linkBaseURL) {
 		super(wi, locale, imageBaseURL, linkBaseURL);
+	}
+
+	@Override
+	public String expandAll(String definition, Set<String> templates) {
+		String def = WikiTool.removeReferencesIn(definition);
+		return super.expandAll(def, templates);
 	}
 
 	@Override

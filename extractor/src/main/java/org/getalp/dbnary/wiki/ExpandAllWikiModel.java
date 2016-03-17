@@ -30,7 +30,12 @@ public class ExpandAllWikiModel extends DbnaryWikiModel {
 	 */
 	public String expandAll(String definition, Set<String> templates) {
 		this.templates = templates;
-		return render(new PlainTextConverter(), definition).trim();
+		try {
+			return render(new PlainTextConverter(), definition).trim();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	@Override

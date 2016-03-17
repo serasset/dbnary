@@ -9,7 +9,6 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -36,7 +35,12 @@ public class ChineseDefinitionExtractorWikiModel extends DbnaryWikiModel {
 
 	public void parseDefinition(String definition) {
 		// Render the definition to plain text, while ignoring the example template
-		String def = render(new PlainTextConverter(), definition).trim();
+		String def = null;
+		try {
+			def = render(new PlainTextConverter(), definition).trim();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		if (null != def && ! def.equals(""))
 			delegate.registerNewDefinition(def);
 	}

@@ -1,5 +1,6 @@
 package org.getalp.dbnary;
 
+import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.Configuration;
 import info.bliki.wiki.model.WikiModel;
 
@@ -8,6 +9,11 @@ import java.util.Map;
 
 import javax.xml.parsers.*;
 
+import info.bliki.wiki.model.WikiModelContentException;
+import info.bliki.wiki.namespaces.INamespace;
+import info.bliki.wiki.namespaces.INamespace.INamespaceValue;
+import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
+import org.getalp.dbnary.tools.CounterSet;
 import org.xml.sax.InputSource;
 
 import org.xml.sax.SAXException;
@@ -25,23 +31,15 @@ public class DbnaryWikiModel extends WikiModel {
 
 	private static Logger log = LoggerFactory.getLogger(DbnaryWikiModel.class);
 
-	// static Set<String> ignoredTemplates = new TreeSet<String>();
-	// static {
-	// 	ignoredTemplates.add("Wikipedia");
-	// 	ignoredTemplates.add("Incorrect");
-	// }
-	
 	protected WiktionaryIndex wi = null;
-//	protected String templateNamespace = null;
-	
+
 	
 	public DbnaryWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
 		this((WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
 	}
 		
 	public DbnaryWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
-		super(Configuration.DEFAULT_CONFIGURATION, locale, imageBaseURL, linkBaseURL);
-//		this.templateNamespace = templateNamespace;
+		super(new Configuration(), locale, imageBaseURL, linkBaseURL);
 		this.wi = wi;
 	}
 
@@ -140,29 +138,47 @@ public class DbnaryWikiModel extends WikiModel {
 	}
 
 	protected String expandWikiCode(String wikicode) {
-		return render(new HTMLConverter(), wikicode);
+		try {
+			return render(new HTMLConverter(), wikicode);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
-	@Override
-    public String getRawWikiContent(String namespace, String articleName, Map<String, String> map) {
-            String result = super.getRawWikiContent(namespace, articleName, map);
-            if (result != null) {
-                    // found magic word template
-                    return result;
-            }
+    protected static CounterSet trace = new CounterSet();
 
-            if (isTemplateNamespace(namespace)) {
-            	if (null != wi) {
-					String rawText = prepareForTransclusion(wi.getTextOfPageWithRedirects(namespace + ":" + articleName));
-					String name;
-					if (null == rawText && ! (name = articleName.trim()).equals(articleName))
-						rawText = prepareForTransclusion(wi.getTextOfPageWithRedirects(namespace + ":" + name));
-					// TODO: should I try with: name = encodeTitleToUrl(articleName, true);
-					return rawText;
-				}
-            }
-            return null;
+    public static void logCounters() {
+        trace.logCounters(log);
     }
+    
+	@Override
+    public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
+			throws WikiModelContentException {
+		String result = super.getRawWikiContent(parsedPagename, map);
+		if (result != null) {
+			// found magic word template
+			return result;
+		}
+        trace.incr(parsedPagename.fullPagename());
+
+        if (null != wi) {
+			String rawText = wi.getTextOfPageWithRedirects(parsedPagename.fullPagename());
+			if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY))
+				rawText = prepareForTransclusion(rawText);
+			String name;
+			if (null == rawText && !(name = parsedPagename.pagename.trim()).equals(parsedPagename.pagename)) {
+				rawText = wi.getTextOfPageWithRedirects(parsedPagename.namespace + ":" + name);
+				if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY))
+					rawText = prepareForTransclusion(rawText);
+			}
+			// TODO: should I try with: name = encodeTitleToUrl(articleName, true);
+			return rawText;
+		}
+
+		log.debug("getRawWikiContent return null for {} in {}", parsedPagename.fullPagename(), this.getPageName());
+		return null;
+	}
 
     public String prepareForTransclusion(String rawWikiText) {
         if (null == rawWikiText) return null;

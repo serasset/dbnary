@@ -6,14 +6,9 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.blexisma.api.ISO639_3;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
-import org.getalp.dbnary.zho.ChineseDefinitionExtractorWikiModel;
-import org.getalp.dbnary.zho.ChineseRelatedWordsExtractorWikiModel;
-import org.getalp.dbnary.zho.ChineseTranslationExtractorWikiModel;
-import org.getalp.dbnary.zho.WiktionaryExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

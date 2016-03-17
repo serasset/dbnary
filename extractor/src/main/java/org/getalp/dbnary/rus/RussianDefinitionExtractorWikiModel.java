@@ -58,8 +58,13 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
     public void parseDefinition(String definition, int defLevel) {
 		// Render the definition to plain text, while ignoring the example template
         currentExamples.clear();
-		String def = render(new PlainTextConverter(), definition).trim();
-		if (null != def && ! def.equals("")) {
+        String def = null;
+        try {
+            def = render(new PlainTextConverter(), definition).trim();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (null != def && ! def.equals("")) {
             delegate.registerNewDefinition(def, defLevel);
             if (!currentExamples.isEmpty()) {
                 for (Example example : currentExamples) {

@@ -2,6 +2,7 @@ package org.getalp.blexisma.wiktionary;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import org.getalp.dbnary.rus.RussianTranslationExtractorWikiModel;
@@ -18,7 +19,7 @@ public class TestDbnaryWikiModel {
 	}
 
 	@Test
-	public void test() {
+	public void test() throws IOException {
 		String wikiText = "some wiki [[text]] we would like to {{convert}} to HTML\n" +
 				"* list item 1\n" +
 				"* list item 2\n" +

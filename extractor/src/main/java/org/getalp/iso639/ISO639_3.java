@@ -104,9 +104,9 @@ public class ISO639_3 {
 
                     langSet.add(l);
                     langMap.put(l.id, l);
-                    langMap.put(l.part1, l);
-                    langMap.put(l.part2b, l);
-                    langMap.put(l.part2t, l);
+                    if (l.part1.length() != 0) langMap.put(l.part1, l);
+                    if (l.part2b.length() != 0) langMap.put(l.part2b, l);
+                    if (l.part2t.length() != 0) langMap.put(l.part2t, l);
 
                 } else {
                     System.out.println("Unrecognized line:" + s);

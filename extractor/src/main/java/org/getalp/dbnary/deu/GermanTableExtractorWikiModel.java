@@ -1,5 +1,6 @@
 package org.getalp.dbnary.deu;
 
+import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -11,6 +12,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.*;
 
 
@@ -25,7 +27,21 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
 		this.wdh=wdh;
 	}
 
-	protected void parseTables(String declinationTemplateCall) {
+    @Override
+    public void substituteTemplateCall(String templateName,
+                                       Map<String, String> parameterMap, Appendable writer)
+            throws IOException {
+       if ("Flexlink".equals(templateName)) {
+           // Just display the link name and drop the link...
+           writer.append(parameterMap.get("1"));
+        } else {
+            log.debug("Caught template call: {} --in-- {}", templateName, this.getPageName());
+            super.substituteTemplateCall(templateName, parameterMap, writer);
+        }
+    }
+
+
+    protected void parseTables(String declinationTemplateCall) {
 
 		Document doc = Jsoup.parse(expandWikiCode(declinationTemplateCall));
 		if (null==doc) {

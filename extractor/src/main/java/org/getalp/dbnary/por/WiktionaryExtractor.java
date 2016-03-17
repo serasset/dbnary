@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
 
 /**
  * @author serasset
@@ -37,6 +38,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		private final int IGNOREPOS = 7;
 	    private final int PRONBLOCK = 5;
 	    private final int MORPHOBLOCK = 6;
+
 
     public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
@@ -94,7 +96,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     protected boolean isCurrentlyExtracting = false;
 	private boolean isCorrectPOS;
-   
+
+    protected PortugueseDefinitionExtractorWikiModel definitionExtractor;
+
+    @Override
+    public void setWiktionaryIndex(WiktionaryIndex wi) {
+        super.setWiktionaryIndex(wi);
+        definitionExtractor = new PortugueseDefinitionExtractorWikiModel(this.wdh, this.wi, Locale.forLanguageTag("pt"), "/${image}", "/${title}");
+    }
     
     public boolean isCurrentlyExtracting() {
 		return isCurrentlyExtracting;
@@ -400,12 +409,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void extractPron(int startOffset, int endOffset) {
     	
 	}
-    
+
     @Override
 	public void extractDefinition(String definition, int defLevel) {
 		// TODO: properly handle macros in definitions.
-        PortugueseDefinitionExtractorWikiModel dbnmodel = new PortugueseDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}", "/${title}");
-        dbnmodel.parseDefinition(definition, defLevel);
+        definitionExtractor.setPageName(this.wiktionaryPageName);
+        definitionExtractor.parseDefinition(definition, defLevel);
 	}
     
 

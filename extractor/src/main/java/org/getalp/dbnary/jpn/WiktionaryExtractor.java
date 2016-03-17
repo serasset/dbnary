@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +76,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 	private HashSet<String> unknownHeaders;
 	private int relBlockStart;
+
+	JapaneseDefinitionExtractorWikiModel definitionExtractor;
+	@Override
+	public void setWiktionaryIndex(WiktionaryIndex wi) {
+		super.setWiktionaryIndex(wi);
+		definitionExtractor = new JapaneseDefinitionExtractorWikiModel(wdh, wi, new Locale("ja"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+	}
 
 	public boolean isCurrentlyExtracting() {
 		return isCurrentlyExtracting;
@@ -568,8 +576,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	@Override
 	public void extractDefinition(String definition, int defLevel) {
 		// TODO: properly handle macros in definitions.
-		JapaneseDefinitionExtractorWikiModel dbnmodel = new JapaneseDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("ja"), "/${image}", "/${title}");
-		dbnmodel.parseDefinition(definition, defLevel);
+		definitionExtractor.setPageName(this.wiktionaryPageName);
+		definitionExtractor.parseDefinition(definition, defLevel);
 	}
 
 	public void extractTranslations(int startOffset, int endOffset) {

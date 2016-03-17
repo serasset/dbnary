@@ -1,6 +1,7 @@
 package org.getalp.dbnary;
 
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -20,6 +21,7 @@ import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+import javax.xml.bind.DatatypeConverter;
 import java.util.AbstractMap.SimpleImmutableEntry;
 
 public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionaryDataHandler {
@@ -51,7 +53,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 	private Set<Statement> heldBackStatements = new HashSet<Statement>();
 
 	protected int nbEntries = 0;
-	protected String NS;
+	private String NS;
 	protected String currentEncodedPageName;
 	protected String currentWiktionaryPageName;
 	protected CounterSet currentLexieCount = new CounterSet();
@@ -258,7 +260,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         translationCount.resetAll();
         reifiedNymCount.resetAll();
 
-        currentCanonicalForm = aBox.createResource();
+        currentCanonicalForm = aBox.createResource(getPrefix() + "__cf_" + currentLexEntry.getLocalName(), LemonOnt.Form);
         
         // If a pronunciation was given before the first part of speech, it means that it is shared amoung pos/etymologies
         for (PronunciationPair p : currentSharedPronunciations) {
@@ -516,13 +518,21 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		}
 
 		if (!foundCompatible) {
-			Resource otherForm = morphoBox.createResource();
+            String otherFormNodeName = computeOtherFormResourceName(lexEntry,properties);
+			Resource otherForm = morphoBox.createResource(getPrefix() + otherFormNodeName, LemonOnt.Form);
             morphoBox.add(lexEntry, LemonOnt.otherForm, otherForm);
 			mergePropertiesIntoResource(properties, otherForm);
 		}
 	}
 
-	public void registerInflection(String languageCode,
+    protected String computeOtherFormResourceName(Resource lexEntry, HashSet<PropertyObjectPair> properties) {
+        String lexEntryLocalName = lexEntry.getLocalName();
+        String compactProperties = DatatypeConverter.printBase64Binary(BigInteger.valueOf(properties.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
+
+        return "__wf_" + compactProperties + "_" + lexEntryLocalName;
+    }
+
+    public void registerInflection(String languageCode,
 	                               String pos,
 	                               String inflection,
 	                               String canonicalForm,

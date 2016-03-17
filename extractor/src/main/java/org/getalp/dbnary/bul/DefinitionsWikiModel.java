@@ -33,7 +33,12 @@ public class DefinitionsWikiModel extends DbnaryWikiModel {
 	 * @return
 	 */
 	public String expandAll(String definition) {
-		return render(new PlainTextConverter(), definition).trim();
+		try {
+			return render(new PlainTextConverter(), definition).trim();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public Set<String> getTemplates() {

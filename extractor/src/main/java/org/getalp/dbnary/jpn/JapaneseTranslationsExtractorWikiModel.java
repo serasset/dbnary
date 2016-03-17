@@ -190,7 +190,7 @@ public class JapaneseTranslationsExtractorWikiModel {
 				} else if(link!=null) {
 					// TODO: extract [[{{eng}}]] kind of links
 					// TODO: some links come from *# bullet list used in a language.
-					langname = LangTools.normalize(extractLanguage(link));
+					langname = extractLanguage(link);
 				} else if (star != null) {
 					//System.err.println("Skipping '*' while in LANGUE state.");
 				} else if (term != null) {
@@ -202,6 +202,7 @@ public class JapaneseTranslationsExtractorWikiModel {
 						lang = langname.trim();
 						lang = AbstractWiktionaryExtractor.stripParentheses(lang);
 						lang = JapaneseLangtoCode.threeLettersCode(lang);
+						if (null == lang) log.debug("Unknown language {} : {}", langname, this.delegate.currentLexEntry());
 						langname = "";
 						ETAT = TRAD;
 					} else if (car.equals("\n") || car.equals("\r")) {
@@ -366,10 +367,12 @@ public class JapaneseTranslationsExtractorWikiModel {
     
 	private String extractLanguage(String link) {
 		Matcher m = WikiPatterns.macroPattern.matcher(link);
+        String c;
 		if (m.matches())
-			return m.group(1);
+			c = LangTools.normalize(m.group(1));
 		else
-			return "";
+			c = JapaneseLangtoCode.threeLettersCode(link);
+        return (null == c) ? "" : c;
 	}
 
 	private boolean isAnExternalLink(String link) {

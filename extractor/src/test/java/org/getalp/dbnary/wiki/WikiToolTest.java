@@ -22,4 +22,35 @@ public class WikiToolTest {
         assertEquals(5, args.size());
 
     }
+
+    @Test
+    public void testRemoveReferences1() {
+        String def = "tagada <ref name=\"toto\"/>.";
+        assertEquals("tagada .", WikiTool.removeReferencesIn(def));
+    }
+
+    @Test
+    public void testRemoveReferences2() {
+        String def = "tagada <ref name=\"toto\">titi.";
+        assertEquals("tagada ", WikiTool.removeReferencesIn(def));
+    }
+
+    @Test
+    public void testRemoveReferences3() {
+        String def = "tagada <ref name=\"toto\">titi</ref>.";
+        assertEquals("tagada .", WikiTool.removeReferencesIn(def));
+    }
+
+    @Test
+    public void testRemoveReferences4() {
+        String def = "tagada <ref>titi</ref>.";
+        assertEquals("tagada .", WikiTool.removeReferencesIn(def));
+    }
+
+    @Test
+    public void testRemoveReferences5() {
+        String def = "tagada <ref >titi</ref>.";
+        assertEquals("tagada .", WikiTool.removeReferencesIn(def));
+    }
+
 }

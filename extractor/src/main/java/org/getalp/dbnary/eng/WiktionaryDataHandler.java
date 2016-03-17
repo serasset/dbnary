@@ -1,10 +1,14 @@
 package org.getalp.dbnary.eng;
 
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.LemonOnt;
-import org.getalp.dbnary.LexinfoOnt;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import org.getalp.dbnary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.AbstractMap;
+import java.util.HashSet;
 
 /**
  * Created by serasset on 17/09/14.
@@ -30,7 +34,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("Cardinal numeral", new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
         posAndTypeValueMap.put("Cardinal number", new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
 
-        posAndTypeValueMap.put("Numeral", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
+        posAndTypeValueMap.put("Number", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Number));
         posAndTypeValueMap.put("Particle", new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));
         posAndTypeValueMap.put("Preposition", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
         posAndTypeValueMap.put("Postposition", new PosAndType(LexinfoOnt.postposition, LexinfoOnt.Postposition));
@@ -63,4 +67,112 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         return posAndTypeValueMap.containsKey(pos);
     }
 
+    @Override
+    public void registerInflection(String languageCode,
+                                   String pos,
+                                   String inflection,
+                                   String canonicalForm,
+                                   int defNumber,
+                                   HashSet<PropertyObjectPair> props,
+                                   HashSet<PronunciationPair> pronunciations) {
+
+        if (pronunciations != null) {
+            for (PronunciationPair pronunciation : pronunciations) {
+                props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+            }
+        }
+
+        registerInflection(languageCode, pos, inflection, canonicalForm, defNumber, props);
+    }
+
+    @Override
+    protected void addOtherFormPropertiesToLexicalEntry(Resource lexEntry, HashSet<PropertyObjectPair> properties) {
+        // Do not try to merge new form with an existing compatible one in English.
+        // This would lead to a Past becoming a PastParticiple when registering the past participle form.
+        Model morphoBox = featureBoxes.get(Feature.MORPHOLOGY);
+
+        if (null == morphoBox) return;
+
+        lexEntry = lexEntry.inModel(morphoBox);
+
+        String otherFormNodeName = computeOtherFormResourceName(lexEntry,properties);
+        Resource otherForm = morphoBox.createResource(getPrefix() + otherFormNodeName, LemonOnt.Form);
+        morphoBox.add(lexEntry, LemonOnt.otherForm, otherForm);
+        mergePropertiesIntoResource(properties, otherForm);
+
+    }
+
+    public void registerInflection(String inflection,
+                                   String note,
+                                   HashSet<PropertyObjectPair> props) {
+
+        // Keep it simple for english: register forms on the current lexical entry
+        if (null != note) {
+            PropertyObjectPair p = PropertyObjectPair.get(DBnaryOnt.note, aBox.createLiteral(note, extractedLang));
+            props.add(p);
+        }
+        PropertyObjectPair p = PropertyObjectPair.get(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+        props.add(p);
+
+        addOtherFormPropertiesToLexicalEntry(currentLexEntry, props);
+
+    }
+
+    @Override
+    public void registerInflection(String languageCode,
+                                   String pos,
+                                   String inflection,
+                                   String canonicalForm,
+                                   int defNumber,
+                                   HashSet<PropertyObjectPair> props) {
+
+        // Keep it simple for english: register forms on the current lexical entry
+        // FIXME: check what is provided when we have different lex entries with the same pos and morph.
+
+        PropertyObjectPair p = PropertyObjectPair.get(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+
+        props.add(p);
+
+        addOtherFormPropertiesToLexicalEntry(currentLexEntry, props);
+
+    }
+
+
+    public void uncountable() {
+        if (currentLexEntry == null) {
+            log.debug("Registering countability on non existant lex entry in  {}", currentWiktionaryPageName);
+            return;
+        }
+        aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasCountability, OliaOnt.Uncountable));
+    }
+
+    public void countable() {
+        if (currentLexEntry == null) {
+            log.debug("Registering countability on non existant lex entry in  {}", currentWiktionaryPageName);
+            return;
+        }
+        aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasCountability, OliaOnt.Countable));
+    }
+
+    public void comparable() {
+        if (currentLexEntry == null) {
+            log.debug("Registering comparativity on non existant lex entry in  {}", currentWiktionaryPageName);
+            return;
+        }
+        // TODO: do we have a mean to say that an adjective is comparable ?
+        // aBox.add(aBox.createStatement(currentLexEntry, OliaOnt., OliaOnt.Uncountable));
+    }
+
+    public void notComparable() {
+        if (currentLexEntry == null) {
+            log.debug("Registering comparativity on non existant lex entry in  {}", currentWiktionaryPageName);
+            return;
+        }
+        // TODO: do we have a mean to say that an adjective is not comparable ?
+        // aBox.add(aBox.createStatement(currentLexEntry, OliaOnt., OliaOnt.Uncountable));
+    }
+
+    public void addInflectionOnCanonicalForm(EnglishInflectionData infl) {
+        this.mergePropertiesIntoResource(infl.toPropertyObjectMap(), currentCanonicalForm);
+    }
 }

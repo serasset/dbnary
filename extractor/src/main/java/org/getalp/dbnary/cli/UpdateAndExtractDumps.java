@@ -100,6 +100,7 @@ public class UpdateAndExtractDumps {
 		cliProg.updateAndExtract();
 	}
 
+	// TODO: Handle proxy parameter
 
 	private String dumpFileName(String lang, String date) {
 		return lang + "wiktionary-"+date+"-pages-articles.xml.bz2";

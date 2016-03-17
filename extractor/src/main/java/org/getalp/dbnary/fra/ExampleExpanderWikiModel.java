@@ -49,6 +49,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
 	 * @return
 	 */
 	public String expandExample(String definition, Set<String> templates, Map<Property, String> context) {
+		log.trace("extracting examples in {}", this.getPageName());
 		this.context = context;
 		return expandAll(definition, templates);
 	}

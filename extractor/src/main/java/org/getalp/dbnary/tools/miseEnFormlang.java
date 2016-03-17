@@ -3,8 +3,8 @@ package org.getalp.dbnary.tools;
 import java.io.IOException;
 import java.util.Iterator;
 
-import org.getalp.blexisma.api.ISO639_3;
-import org.getalp.blexisma.api.ISO639_3.Lang;
+import org.getalp.iso639.ISO639_3;
+import org.getalp.iso639.ISO639_3.Lang;
 
 public class miseEnFormlang {
 

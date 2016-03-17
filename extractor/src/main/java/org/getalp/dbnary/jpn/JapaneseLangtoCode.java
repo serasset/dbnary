@@ -362,11 +362,30 @@ public class JapaneseLangtoCode extends LangTools {
 	    h.put("アイマラ語", "ay");
 	    h.put("アイヌ語", "ain");
 	    h.put("アイスランド語", "is");
+	    h.put("低ザクセン語", "nds");
+	    h.put("アストゥリアス語", "ast");
+	    h.put("閩南語", "nan");
+	    h.put("韓国語", "kor");
+	    h.put("琉球語", "ryu");
+	    h.put("広東語", "yue");
+	    h.put("ソルブ語", "wen");
+	    h.put("スロバキア語", "slk");
+	    h.put("スコットランドゲール語", "gla");
+	    h.put("ギリシャ語", "ell");
+	    h.put("カタロニア語", "cat");
+	    h.put("インターリンガ", "ina");
+	    h.put("アラバマ語", "akz");
+	    h.put("アゼリー語", "aze");
+        h.put("tupinamba", "tpn");
+        h.put("sr-Cyrl", "sr");
+        h.put("sr-Latn", "sr");
 
 	}
 
 	public static String threeLettersCode(String s) {
-		return threeLettersCode(h, s);
+		String c = threeLettersCode(h, s);
+		if (null == c) c = threeLettersCode(h, s + "語");
+		return c;
 	}
 
 }

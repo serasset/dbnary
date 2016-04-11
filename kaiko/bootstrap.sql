@@ -68,36 +68,22 @@ NULL,
 ''
 );
 
--- cretae redirections for dilaf
+-- create redirections for dilaf
 
-DB.DBA.VHOST_REMOVE (
-     lhost=>'*ini*',
-     vhost=>'*ini*',
-     lpath=>'/dilaf'
+DB.DBA.VHOST_REMOVE ( lhost=>'*ini*', vhost=>'*ini*', lpath=>'/dilaf' );
+
+DB.DBA.VHOST_DEFINE ( lhost=>'*ini*', vhost=>'*ini*', lpath=>'/dilaf', ppath=>'/DAV/', is_dav=>1,
+def_page=>'', vsp_user=>'dba', ses_vars=>0, opts=>vector ('browse_sheet', '', 'url_rewrite', 'http_rule_list_2'),
+is_default_host=>0
 );
-
-DB.DBA.VHOST_DEFINE (
-     lhost=>'*ini*',
-     vhost=>'*ini*',
-     lpath=>'/dilaf',
-     ppath=>'/DAV/',
-     is_dav=>1,
-     def_page=>'',
-     vsp_user=>'dba',
-     ses_vars=>0,
-     opts=>vector ('browse_sheet', '', 'url_rewrite', 'http_rule_list_1'),
-     is_default_host=>0
-);
-
-
 
 DB.DBA.URLREWRITE_CREATE_RULELIST (
-'http_rule_list_1', 1,
-  vector ('http_rule_1', 'http_rule_2'));
+'http_rule_list_2', 1,
+vector ('http_rule_5', 'http_rule_6'));
 
 DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
-'http_rule_1', 1,
-  '^/(.*)$',
+'http_rule_5', 1,
+'^/(.*)\$',
 vector ('par_1'),
 1,
 '/sparql?query=DESCRIBE%%20%%3Chttp%%3A%%2F%%2Fkaiko.getalp.org%%2F%U%%3E&format=%U',
@@ -109,9 +95,10 @@ NULL,
 ''
 );
 
+
 DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
-'http_rule_2', 1,
-  '^/(.*)$',
+'http_rule_6', 1,
+'^/(.*)\$',
 vector ('par_1'),
 1,
 '/describe/?url=http%%3A%%2F%%2Fkaiko.getalp.org%%2F%s',

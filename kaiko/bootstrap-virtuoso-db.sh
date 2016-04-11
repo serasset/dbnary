@@ -52,6 +52,10 @@ iso3Lang[nl]=nld
 iso3Lang[sh]=shr
 iso3Lang[sv]=swe
 iso3Lang[lt]=lit
+iso3Lang[id]=ind
+iso3Lang[la]=lat
+iso3Lang[mg]=mlg
+iso3Lang[no]=nor
 iso3Lang[bm]=bam
 
 

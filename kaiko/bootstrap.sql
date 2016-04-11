@@ -55,7 +55,7 @@ NULL,
 );
 
 DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
-'http_rule_5', 1,
+'http_rule_4', 1,
 '^/dbnary/*\$',
 vector (),
 0,
@@ -129,7 +129,7 @@ NULL,
 DB.DBA.XML_SET_NS_DECL ('lexinfo', 'http://www.lexinfo.net/ontology/2.0/lexinfo#', 2);
 DB.DBA.XML_SET_NS_DECL ('lexvo', 'http://lexvo.org/id/iso639-3/', 2);
 DB.DBA.XML_SET_NS_DECL ('dcterms', 'http://purl.org/dc/terms/', 2);
-DB.DBA.XML_SET_NS_DECL ('lemon', 'http://www.lemon-model.net/lemon#', 2);
+DB.DBA.XML_SET_NS_DECL ('lemon', 'http://lemon-model.net/lemon#', 2);
 DB.DBA.XML_SET_NS_DECL ('dbnary', 'http://kaiko.getalp.org/dbnary#', 2);
 DB.DBA.XML_SET_NS_DECL ('olia', 'http://purl.org/olia/olia.owl#', 2);
 DB.DBA.XML_SET_NS_DECL ('dbnary-fra', 'http://kaiko.getalp.org/dbnary/fra/', 2);

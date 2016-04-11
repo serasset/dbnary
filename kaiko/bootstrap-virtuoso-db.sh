@@ -52,6 +52,7 @@ iso3Lang[nl]=nld
 iso3Lang[sh]=shr
 iso3Lang[sv]=swe
 iso3Lang[lt]=lit
+iso3Lang[bm]=bam
 
 
 if [ ! -d $DBNARYLATEST ]

@@ -99,19 +99,22 @@ fi
 )
 
 ## create the .graph files for all files in datasetdir
-langRegex2='(..)_(.*)'
-langRegex3='(...)_(.*)'
+## TODO: detect the graph (dbnary or dilaf ?)
+langRegex2='(..)_([^_]*)_(.*)'
+langRegex3='(...)_([^_]*)_(.*)'
 for f in $DATASETDIR/*.ttl
 do
     if [[ $f =~ $langRegex2 ]]
     then
         lg2=${BASH_REMATCH[1]}
+        graph=${BASH_REMATCH[2]}
         lg3=${iso3Lang[$lg2]}
-        echo "http://kaiko.getalp.org/dbnary/$lg3" > "$f.graph"
+        echo "http://kaiko.getalp.org/$graph/$lg3" > "$f.graph"
     elif [[ $f =~ $langRegex3 ]]
     then
         lg3=${BASH_REMATCH[1]}
-        echo "http://kaiko.getalp.org/dbnary/$lg3" > "$f.graph"
+        graph=${BASH_REMATCH[2]}
+        echo "http://kaiko.getalp.org/$graph/$lg3" > "$f.graph"
     fi
 done
 

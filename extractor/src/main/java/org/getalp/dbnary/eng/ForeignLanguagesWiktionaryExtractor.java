@@ -13,13 +13,10 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
 
 	protected final static String level2HeaderPatternString = "^==([^=].*[^=])==$";
 	protected final static Pattern level2HeaderPattern;
-    protected final static Map<String, String> enNames2Lang= new HashMap() ;
 
     static {
 		level2HeaderPattern = Pattern.compile(level2HeaderPatternString, Pattern.MULTILINE);
-        for (ISO639_3.Lang l : ISO639_3.sharedInstance.knownLanguages()) {
-            enNames2Lang.put(l.getEn(), l.getId());
-        }
+
     }
 
     private ForeignLanguagesWiktionaryDataHandler flwdh; // English specific version of the data handler.
@@ -62,15 +59,17 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
         String t = l1.group(1).trim();
         if (t.equals("English"))
             return null;
-        else
-            return enNames2Lang.get(t);
+        else {
+			String c = EnglishLangToCode.threeLettersCode(t);
+			if (null == c) log.debug("Unknown language : {} in {}", t, this.wiktionaryPageName);
+
+			return c;
+		}
     }
 
 	protected void extractNonEnglishData(String lang, int startOffset, int endOffset) {
 		flwdh.setCurrentLanguage(lang);
         super.extractEnglishData(startOffset, endOffset);
 	}
-
-
 
 }

@@ -151,7 +151,7 @@ public class ChineseRelatedWordsExtractorWikiModel {
 				} else if(link!=null) {
 					// We have a link while we try to get a relation. It means that the link poits to a related word for which the relation is not specified.
 					// should we keep these words with an un-specified relation ?
-;
+
 				} else if (star != null) {
 
 				} else if (term != null) {

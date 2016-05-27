@@ -297,11 +297,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 	public static boolean isImpersonnalTable(Element table) {
 		Node modeTH = table.getElementsByTagName("th").item(0);
 
-		if (modeTH != null && modeTH.getTextContent().replace('\u00A0', ' ').trim().equals("Mode")) {
-			return true;
-		}
+		return modeTH != null && modeTH.getTextContent().replace('\u00A0', ' ').trim().equals("Mode");
 
-		return false;
 	}
 
 	public int handleImpersonnalTableConjugation(NodeList tables) {
@@ -571,7 +568,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
             if (null != lang) writer.append(lang);
         } else if (templateName.equals("pron")) {
 			// catch this template call as it resolves in a non useful very heavy Lua processing.
-			writer.append("\\" + parameterMap.get("1") + "\\");
+			writer.append("\\").append(parameterMap.get("1")).append("\\");
 		} else {
             super.substituteTemplateCall(templateName, parameterMap, writer);
         }

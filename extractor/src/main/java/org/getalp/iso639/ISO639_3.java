@@ -75,8 +75,11 @@ public class ISO639_3 {
             "^(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)$";
     private final static String epolinePatternString =
             "^(.*?)\t(.*?)$";
+    private final static String uncommonPatternString =
+            "^(.*?)\t(.*?)\t(.*?)\t(.*?)$";
     private final static Pattern linePattern = Pattern.compile(linePatternString);
     private final static Pattern epolinePattern = Pattern.compile(epolinePatternString);
+    private final static Pattern uncommonPattern = Pattern.compile(uncommonPatternString);
 
     public static ISO639_3 sharedInstance = new ISO639_3();
     private Map<String, Lang> langMap = new HashMap<String, Lang>();
@@ -88,7 +91,7 @@ public class ISO639_3 {
             fis = this.getClass().getResourceAsStream("iso-639-3.tab");
             BufferedReader br = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
 
-            Matcher matcher = linePattern.matcher(new String(""));
+            Matcher matcher = linePattern.matcher("");
 
             String s = br.readLine();
             while (s != null) {
@@ -109,7 +112,7 @@ public class ISO639_3 {
                     if (l.part2t.length() != 0) langMap.put(l.part2t, l);
 
                 } else {
-                    System.out.println("Unrecognized line:" + s);
+                    System.err.println("Unrecognized line:" + s);
                 }
                 s = br.readLine();
             }
@@ -135,21 +138,21 @@ public class ISO639_3 {
             fis = this.getClass().getResourceAsStream("ISO639-eponym.tab");
             BufferedReader br = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
 
-            Matcher matcher = epolinePattern.matcher(new String(""));
+            Matcher matcher = epolinePattern.matcher("");
 
             String s = br.readLine();
             while (s != null) {
                 matcher.reset(s);
                 if (matcher.find()) {
-                    // System.out.println(matcher.group(5));
+                    // System.err.println(matcher.group(5));
                     // a3b, a3t, a2, en, fr
                     Lang l = langMap.get(matcher.group(1));
                     if (l != null)
                         l.epo = matcher.group(2);
                     // else
-                    // System.out.println("Unknown language code: " + matcher.group(1));
+                    // System.err.println("Unknown language code: " + matcher.group(1));
                 } else {
-                    System.out.println("Unrecognized line:" + s);
+                    System.err.println("Unrecognized line:" + s);
                 }
                 s = br.readLine();
             }
@@ -173,21 +176,21 @@ public class ISO639_3 {
             if (fis == null) throw new IOException("ISO639 French data not available");
             BufferedReader br = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
 
-            Matcher matcher = epolinePattern.matcher(new String(""));
+            Matcher matcher = epolinePattern.matcher("");
 
             String s = br.readLine();
             while (s != null) {
                 matcher.reset(s);
                 if (matcher.find()) {
-                    // System.out.println(matcher.group(5));
+                    // System.err.println(matcher.group(5));
                     // a3b, a3t, a2, en, fr
                     Lang l = langMap.get(matcher.group(1));
                     if (l != null)
                         l.fr = matcher.group(2);
 //                         else 
-//                             System.out.println("Unknown language code: " + matcher.group(1));        
+//                             System.err.println("Unknown language code: " + matcher.group(1));
                 } else {
-                    System.out.println("Unrecognized line:" + s);
+                    System.err.println("Unrecognized line:" + s);
                 }
                 s = br.readLine();
             }
@@ -203,6 +206,7 @@ public class ISO639_3 {
 
                 }
         }
+
     }
 
     public String getLanguageNameInFrench(String langcode) {

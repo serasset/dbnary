@@ -34,13 +34,11 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 	protected final static String debutOrfinDecomPatternString;
 
 	static {
-		debutOrfinDecomPatternString=new StringBuilder()
-		.append("(?:")
-		.append("(<!--)")
-		.append(")|(?:")
-		.append("(-->)")
-		.append(")")
-		.toString();
+		debutOrfinDecomPatternString= "(?:" +
+				"(<!--)" +
+				")|(?:" +
+				"(-->)" +
+				")";
 	}
 	protected final static Pattern xmlCommentPattern;
 

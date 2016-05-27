@@ -35,7 +35,10 @@ public class DilafBambaraExtractor extends DilafExtractor {
                 lexicalEntry = wdh.registerLexicalEntry(lexId, partOfSpeech);
                 wdh.setCanonicalForm(lexicalEntry, lemma);
             } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("bloc")) { // French translation
-            	if (null == lexicalEntry) System.out.format("Null lexical Entry while processing bloc in %s", lexId);
+            	if (null == lexicalEntry) {
+                    System.err.format("Null lexical Entry while processing bloc in %s\n", lexId);
+                    lexicalEntry = wdh.registerLexicalEntry(lexId, "");
+                }
             	extractBloc(xmlr, lexicalEntry);
             } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("feeriji")) { // Definition
             	String def = xmlr.getElementText();
@@ -53,7 +56,7 @@ public class DilafBambaraExtractor extends DilafExtractor {
             xmlr.next();
             if (xmlr.isStartElement() && xmlr.getLocalName().equals("sens")) {
                 extractMeaning(xmlr, lexicalEntry);
-            } else if (xmlr.isEndElement() && "sens".equals(xmlr.getLocalName())) {
+            } else if (xmlr.isEndElement() && "bloc".equals(xmlr.getLocalName())) {
                 return;
             }
         }

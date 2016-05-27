@@ -112,7 +112,7 @@ public class TranslationsStatistics {
 	private static String getHeaders(SortedMap<String, IncrementableInt> counts) {
 		StringBuffer sb = new StringBuffer();
 		for (Entry<String, IncrementableInt> j : counts.entrySet()) {
-			sb.append(j.getKey() + ",");
+			sb.append(j.getKey()).append(",");
 		}
 		sb.append("others,Total,# of lang");
 		// remove extra leading comma.

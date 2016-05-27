@@ -372,7 +372,8 @@ public class UpdateAndExtractDumps {
 
 
                     } catch (IOException e) {
-                        System.err.println(e);
+                        System.err.println(e.getLocalizedMessage());
+						e.printStackTrace(System.err);
                     }
                     client.logout();
                     return lastDir;
@@ -447,7 +448,8 @@ public class UpdateAndExtractDumps {
                         }
 
                     } catch (IOException e) {
-                        System.err.println(e);
+                        System.err.println(e.getLocalizedMessage());
+						e.printStackTrace(System.err);
                     } finally {
                         HttpClientUtils.closeQuietly(response);
                     }
@@ -657,7 +659,7 @@ public class UpdateAndExtractDumps {
         if (features.contains("morpho")) { a.add("--morpho"); a.add(morphoFile); }
         a.add(uncompressDumpFileName(lang, dir));
 
-        String[] args = a.toArray(new String[0]);
+        String[] args = a.toArray(new String[15]);
 		
 		try {
 			ExtractWiktionary.main(args);

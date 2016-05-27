@@ -44,7 +44,8 @@ public class LangTools {
         if (l == null) {
             return null;
         }
-		return (null != l.getPart1()) ? l.getPart1() : l.getId();
+		String p1 = l.getPart1();
+		return (null != p1 && ! "".equals(p1.trim())) ? l.getPart1() : l.getId();
 	}
 
 	public static String normalize(String lang) {

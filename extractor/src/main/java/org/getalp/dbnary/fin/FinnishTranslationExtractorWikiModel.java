@@ -93,9 +93,8 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 	}
 
 	private boolean isALanguageName(String templateName) {
-		if (null != SuomiLangToCode.getCanonicalCode(templateName)) return true;
-		return false;
-	}
+        return null != SuomiLangToCode.getCanonicalCode(templateName);
+    }
 
 	StringBuffer glossbuff = new StringBuffer();
 	private String computeGlossValue(Map<String, String> parameterMap, int translationPositionalArg) {

@@ -85,7 +85,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 	
 	
 	private DecodedPOS decodePOS(String group) {
-		String orig = new String(group);
+		String orig = group;
 		
 		if (group.startsWith("rzeczownik")
 			|| group.startsWith("przymiotnik")

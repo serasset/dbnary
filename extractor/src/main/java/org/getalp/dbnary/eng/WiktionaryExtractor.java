@@ -81,10 +81,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
      */
     @Override
     public void extractData() {
-        extractData(false);
-    }
-
-    protected void extractData(boolean foreignExtraction) {
         // TODO: adapt extractor to allow extraction of foreign data.
         wdh.initializePageExtraction(wiktionaryPageName);
         Matcher languageFilter = sectionPattern.matcher(pageContent);
@@ -251,6 +247,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void extractMorphology(int startOffset, int endOffset) {
         // TODO: For some entries, there are several morphology information covering different word senses
         // TODO: Handle such cases (by creating another lexical entry ?) // Similar to reflexiveness in French wiktionary
+        if (! ewdh.isEnabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) return;
+
         WikiText text = new WikiText(pageContent, startOffset, endOffset);
         HashSet<Class> templatesOnly = new HashSet<Class>();
         templatesOnly.add(WikiText.Template.class);
@@ -772,7 +770,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     }
 
-    private void extractPron(int startOffset, int endOffset) {
+    protected void extractPron(int startOffset, int endOffset) {
 
         Matcher pronMatcher = pronPattern.matcher(pageContent);
         pronMatcher.region(startOffset,endOffset);

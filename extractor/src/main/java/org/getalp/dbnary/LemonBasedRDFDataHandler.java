@@ -60,7 +60,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 	protected Resource currentMainLexEntry;
 	protected Resource currentCanonicalForm;
 	
-	private Set<PronunciationPair> currentSharedPronunciations;
+	protected Set<PronunciationPair> currentSharedPronunciations;
 //	private String currentSharedPronunciation;
 //	private String currentSharedPronunciationLang;
 
@@ -151,6 +151,11 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         Model box = ModelFactory.createDefaultModel();
         fillInPrefixes(aBox, box);
         featureBoxes.put(f, box);
+    }
+
+    @Override
+    public boolean isEnabled(Feature f) {
+        return featureBoxes.containsKey(f);
     }
 
     @Override
@@ -276,6 +281,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
 		if (null != currentLexinfoPos)
 			aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);
+
 		aBox.add(currentLexEntry, LemonOnt.language, extractedLang);
 		aBox.add(currentLexEntry, DCTerms.language, lexvoExtractedLanguage);
 
@@ -739,7 +745,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 		}
 	}
 
-	private void registerPronunciation(Resource writtenRepresentation, String pron, String lang) {
+	protected void registerPronunciation(Resource writtenRepresentation, String pron, String lang) {
 		if (null != lang && lang.length() > 0) {
 			aBox.add(writtenRepresentation, LexinfoOnt.pronunciation, pron, lang);
 		} else {

@@ -641,6 +641,7 @@ extractor/src/main/resources/Messages_pt.properties -text svneol=unset#text/plai
 extractor/src/main/resources/Messages_ru.properties -text svneol=unset#text/plain
 extractor/src/main/resources/Messages_sh.properties -text svneol=unset#text/plain
 extractor/src/main/resources/ehcache.xml -text
+extractor/src/main/resources/org/getalp/dbnary/eng/data3.txt -text
 extractor/src/main/resources/org/getalp/iso639/ISO639-eponym.tab -text
 extractor/src/main/resources/org/getalp/iso639/ISO639-fr.tab -text
 extractor/src/main/resources/org/getalp/iso639/ISO639.data -text

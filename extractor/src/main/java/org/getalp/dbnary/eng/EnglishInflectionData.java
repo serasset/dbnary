@@ -15,16 +15,16 @@ public class EnglishInflectionData {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-    public static enum Genre {MASCULINE, FEMININE,NEUTRUM,NOTHING};
-    public static enum Cas {NOMINATIF,GENITIF,DATIF,ACCUSATIF, NOTHING};
-    public static enum Mode {INFINITIVE,ZU_INFINITIV, PATICIPLE,GERUNDIVUM,IMPERATIV,INDICATIV, KONJUNKTIV2, KONJUNKTIV1, NOTHING};
-    public static enum Voice {AKTIV, VORGANGSPASSIV, ZUSTANDSPASSIV, PASSIV, ZUSTANDSREFLEXIVEPASSIV, REFLEXIV, NOTHING};
-    public static enum Tense {PRESENT, PAST, NOTHING};
-    public static enum Degree {POSITIVE,COMPARATIVE,SUPERLATIVE,NOTHING};
-    public static enum GNumber {SINGULAR,PLURAL,NOTHING};
-    public static enum Person {FIRST, SECOND, THIRD, HÖFLICHKEITSFORM, NOTHING};
-    public static enum InflectionType {STRONG, WEAK, MIXED, NOTHING};
-    public static enum Valency {TRANSITIVE, INTRANSITIVE, NOTHING};
+    public enum Genre {MASCULINE, FEMININE,NEUTRUM,NOTHING};
+    public enum Cas {NOMINATIF,GENITIF,DATIF,ACCUSATIF, NOTHING};
+    public enum Mode {INFINITIVE,ZU_INFINITIV, PATICIPLE,GERUNDIVUM,IMPERATIV,INDICATIV, KONJUNKTIV2, KONJUNKTIV1, NOTHING};
+    public enum Voice {AKTIV, VORGANGSPASSIV, ZUSTANDSPASSIV, PASSIV, ZUSTANDSREFLEXIVEPASSIV, REFLEXIV, NOTHING};
+    public enum Tense {PRESENT, PAST, NOTHING};
+    public enum Degree {POSITIVE,COMPARATIVE,SUPERLATIVE,NOTHING};
+    public enum GNumber {SINGULAR,PLURAL,NOTHING};
+    public enum Person {FIRST, SECOND, THIRD, HÖFLICHKEITSFORM, NOTHING};
+    public enum InflectionType {STRONG, WEAK, MIXED, NOTHING};
+    public enum Valency {TRANSITIVE, INTRANSITIVE, NOTHING};
 
 
     public Degree degree= Degree.NOTHING;

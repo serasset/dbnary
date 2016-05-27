@@ -712,13 +712,4 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		}
 	}
 
-	public void extractOtherForms( int start, int end){
-//		Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
-//		otherFormMatcher.region(start, end);
-//		GermanDeklinationExtractorWikiModel deklinationExtractor = new
-//		while(otherFormMatcher.find()){
-//		}
-	}
-	
-
 }

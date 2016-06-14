@@ -645,10 +645,10 @@ extractor/src/main/resources/org/getalp/dbnary/eng/data3.txt -text
 extractor/src/main/resources/org/getalp/iso639/ISO639-eponym.tab -text
 extractor/src/main/resources/org/getalp/iso639/ISO639-fr.tab -text
 extractor/src/main/resources/org/getalp/iso639/ISO639.data -text
-extractor/src/main/resources/org/getalp/iso639/iso-639-3-macrolanguages.tab -text
-extractor/src/main/resources/org/getalp/iso639/iso-639-3.tab -text
-extractor/src/main/resources/org/getalp/iso639/iso-639-3_Name_Index.tab -text
-extractor/src/main/resources/org/getalp/iso639/iso-639-3_Retirements.tab -text
+extractor/src/main/resources/org/getalp/iso639/iso-639-3-macrolanguages-old.tab -text
+extractor/src/main/resources/org/getalp/iso639/iso-639-3-old.tab -text
+extractor/src/main/resources/org/getalp/iso639/iso-639-3_Name_Index-old.tab -text
+extractor/src/main/resources/org/getalp/iso639/iso-639-3_Retirements-old.tab -text
 extractor/src/main/scala/org/getalp/dbnary/bul/TranslationsParser.scala -text
 extractor/src/main/scripts/old/README.txt -text
 extractor/src/main/scripts/old/compare_extracts.sh -text

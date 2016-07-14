@@ -70,10 +70,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private String currentNym = null;
     private ExpandAllWikiModel wikiExpander;
+    protected EnglishDefinitionExtractorWikiModel definitionExpander;
+
     @Override
     public void setWiktionaryIndex(WiktionaryIndex wi) {
         super.setWiktionaryIndex(wi);
         wikiExpander = new ExpandAllWikiModel(wi, Locale.ENGLISH, "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+        definitionExpander = new EnglishDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("en"), "/${image}", "/${title}");
     }
 
     /* (non-Javadoc)
@@ -111,6 +114,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         wikiExpander.setPageName(wiktionaryPageName);
         currentBlock = Block.NOBLOCK;
 
+        HashMap<String, Object> previousContext = new HashMap<String, Object>();
         while(m.find()) {
             HashMap<String, Object> context = new HashMap<String, Object>();
             Block nextBlock = computeNextBlock(m, context);
@@ -118,12 +122,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (nextBlock == null) continue;
             // If current block is IGNOREPOS, we should ignore everything but a new DEFBLOCK/INFLECTIONBLOCK
             if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
-                leaveCurrentBlock(m);
+                leaveCurrentBlock(m, previousContext);
                 gotoNextBlock(nextBlock, context);
+                previousContext = context;
             }
         }
         // Finalize the entry parsing
-        leaveCurrentBlock(m);
+        leaveCurrentBlock(m, previousContext);
         wdh.finalizeEntryExtraction();
     }
 
@@ -163,8 +168,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case IGNOREPOS:
                 break;
             case DEFBLOCK:
-                String pos = (String) context.get("pos");
-                wdh.addPartOfSpeech(pos);
                 break;
             case TRADBLOCK:
                 break;
@@ -185,7 +188,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     }
 
-    private void leaveCurrentBlock(Matcher m) {
+    private void leaveCurrentBlock(Matcher m, HashMap<String, Object> context) {
         if (blockStart == -1) {
             return;
         }
@@ -197,6 +200,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case IGNOREPOS:
                 break;
             case DEFBLOCK:
+                String pos = (String) context.get("pos");
+                wdh.addPartOfSpeech(pos);
                 extractMorphology(blockStart,end);
                 extractDefinitions(blockStart, end);
                 break;
@@ -207,7 +212,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 extractOrthoAlt(blockStart, end);
                 break;
             case NYMBLOCK:
-                extractNyms(currentNym, blockStart, end);
+                extractNyms((String) context.get("nym"), blockStart, end);
                 currentNym = null;
                 break;
             case PRONBLOCK:
@@ -250,8 +255,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (! ewdh.isEnabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) return;
 
         WikiText text = new WikiText(pageContent, startOffset, endOffset);
-        HashSet<Class> templatesOnly = new HashSet<Class>();
-        templatesOnly.add(WikiText.Template.class);
 
         WikiEventsSequence wikiTemplates = text.templates();
 
@@ -259,6 +262,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // macroMatcher.region(startOffset, endOffset);
 
         // while (macroMatcher.find()) {
+        // TODO: current code goes through all templates of the defintion block whil it should only process morphology templates.
+
         int nbTempl = 0;
         for (WikiText.Token wikiTemplate : wikiTemplates) {
             nbTempl++;
@@ -268,16 +273,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (g1.equals("en-noun")) {
                 // log.debug("MORPHOLOGY EXTRACTION FROM : {}\tin\t{}", tmpl.toString(), wiktionaryPageName);
 
-                Map<String, String> args = tmpl.parseArgs();
+                Map<String, String> args = tmpl.getParsedArgs();
                 extractNounMorphology(args, false);
             } else if (g1.equals("en-proper noun") || g1.equals("en-proper-noun") || g1.equals("en-prop")) {
                 // log.debug("MORPHOLOGY EXTRACTION FROM : {}\tin\t{}", tmpl.toString(), wiktionaryPageName);
 
-                Map<String, String> args = tmpl.parseArgs();
+                Map<String, String> args = tmpl.getParsedArgs();
                 extractNounMorphology(args, true);
             } else if (g1.equals("en-plural noun")) {
                 ewdh.addInflectionOnCanonicalForm(new EnglishInflectionData().plural());
-                Map<String, String> args = tmpl.parseArgs();
+                Map<String, String> args = tmpl.getParsedArgs();
                 if (args.containsKey("sg")) {
                     String singularForm = args.get("sg");
                     addForm(singular.toPropertyObjectMap(), singularForm);
@@ -293,13 +298,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 // log.debug("MORPHOLOGY EXTRACTION FROM : {}\tin\t{}", tmpl.toString(), wiktionaryPageName);
 
                 // TODO: mark canonicalForm as ????
-                Map<String, String> args = tmpl.parseArgs();
+                Map<String, String> args = tmpl.getParsedArgs();
                 extractAdjectiveMorphology(args);
 
 
             } else if (g1.equals("en-verb")) {
                 // TODO: extract verb morphology
-                Map<String, String> args = tmpl.parseArgs();
+                Map<String, String> args = tmpl.getParsedArgs();
 
                 extractVerbMorphology(args);
 
@@ -327,7 +332,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 // nothing to extract
             } else if (g1.equals("en-prefix")) {
                 // nothing to extract ??
-                Map<String, String> args = tmpl.parseArgs();
+                Map<String, String> args = tmpl.getParsedArgs();
                 args.remove("sort");
                 if (! args.isEmpty()) {
                     log.debug("other args in en-suffix template\t{}\tin\t{}", args, wiktionaryPageName);
@@ -338,7 +343,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 // TODO: the first argument is the head if different from pagename...
             } else if (g1.equals("en-pron")) {
                 // TODO: extract part morphology
-                Map<String, String> args = tmpl.parseArgs();
+                Map<String, String> args = tmpl.getParsedArgs();
                 if (null != args.get("desc")) {
                     log.debug("desc argument in en-pron template in\t{}", wiktionaryPageName);
                     args.remove("desc");
@@ -352,7 +357,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 // TODO: the first argument (or head argument) is the head if different from pagename...
             } else if (g1.equals("en-suffix")) {
                 // TODO: cat2 and cat3 sontains some additional categories...
-                Map<String, String> args = tmpl.parseArgs();
+                Map<String, String> args = tmpl.getParsedArgs();
                 args.remove("sort");
                 if (! args.isEmpty()) {
                     log.debug("other args in en-suffix template\t{}\tin\t{}", args, wiktionaryPageName);
@@ -362,12 +367,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else if (g1.equals("en-number")) {
                 // TODO:
             } else if (g1.equals("head")) {
-                Map<String, String> args = tmpl.parseArgs();
+                Map<String, String> args = tmpl.getParsedArgs();
                 String pos = args.get("2");
                 if (null != pos && pos.endsWith("form")) {
                     // This is a inflected form
                     // TODO: Check if the inflected form is available in the base word morphology.
-                    // TODO: we should remove the lexical entry as it is a form, so that definitions are not extracted.
                 } else {
                     log.debug("MORPH: direct call to head\t{}\tin\t{}", tmpl.toString(), this.wiktionaryPageName);
                 }
@@ -765,6 +769,124 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     @Override
+    protected void extractNyms(String synRelation, int startOffset, int endOffset) {
+        WikiText text = new WikiText(pageContent, startOffset, endOffset);
+        ClassBasedFilter filter = new ClassBasedFilter();
+        filter.allowListItem();
+
+        WikiEventsSequence wikiEvents = text.filteredTokens(filter);
+
+        for (WikiText.Token tok : wikiEvents) {
+            if (tok instanceof WikiText.ListItem) {
+                // It's a link, only keep the alternate string if present.
+                WikiText.ListItem li = (WikiText.ListItem) tok;
+                extractNyms(synRelation, li.getContent());
+            }
+        }
+    }
+
+    private void extractNyms(String synRelation, WikiText.WikiContent content) {
+        ClassBasedFilter filter = new ClassBasedFilter();
+        filter.allowInternalLink().allowTemplates();
+
+        WikiEventsSequence wikiEvents = content.filteredTokens(filter);
+
+        String currentGloss = null;
+        // TODO: extract glosses as present in wiktionary pages
+        for (WikiText.Token tok : wikiEvents) {
+            if (tok instanceof WikiText.InternalLink) {
+                // It's a link, only keep the alternate string if present.
+                WikiText.InternalLink link = (WikiText.InternalLink) tok;
+                String linkText = link.getLinkText();
+                if (linkText != null && !linkText.equals("") &&
+                        !linkText.startsWith("Catégorie:") &&
+                        !linkText.startsWith("#")) {
+                    if (linkText.startsWith("Wikisaurus:")) {
+                        handleWikisaurus(linkText, currentNym);
+                    } else {
+                        wdh.registerNymRelation(linkText, synRelation, currentGloss);
+                    }
+                }
+            } else if (tok instanceof WikiText.Template) {
+                WikiText.Template tmpl = (WikiText.Template) tok;
+                if ("l".equals(tmpl.getName()) || "link".equals(tmpl.getName())) {
+                    Map<String, String> args = tmpl.getParsedArgs();
+                    if ("en".equals(args.get("1"))) {
+                        String target = args.get("2");
+                        args.remove("2"); args.remove("1");
+                        if (! args.isEmpty()) {
+                            log.debug("Unhandled remaining args {} in {}", args.entrySet().toString(), this.wiktionaryPageName);
+                        }
+                        wdh.registerNymRelation(target, synRelation, currentGloss);
+                    }
+                } else if ("sense".equals(tmpl.getName())) {
+                    currentGloss = tmpl.getParsedArgs().get("1");
+                    for (int i = 2; i < 9; i++) {
+                        String p = tmpl.getParsedArgs().get(Integer.toString(i));
+                        if (null != p) {
+                            currentGloss += ", " + p;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    protected void extractNymsOld(String synRelation, int startOffset, int endOffset) {
+
+        WikiText text = new WikiText(pageContent, startOffset, endOffset);
+        ClassBasedFilter filter = new ClassBasedFilter();
+        filter.allowInternalLink().allowTemplates();
+
+        WikiEventsSequence wikiEvents = text.filteredTokens(filter);
+
+        String currentGloss = null;
+        // TODO: extract glosses as present in wiktionary pages
+        for (WikiText.Token tok : wikiEvents) {
+            if (tok instanceof WikiText.InternalLink) {
+                // It's a link, only keep the alternate string if present.
+                WikiText.InternalLink link = (WikiText.InternalLink) tok;
+                String linkText = link.getLinkText();
+                if (linkText != null && !linkText.equals("") &&
+                        !linkText.startsWith("Catégorie:") &&
+                        !linkText.startsWith("#")) {
+                    if (linkText.startsWith("Wikisaurus:")) {
+                        handleWikisaurus(linkText, currentNym);
+                    } else {
+                        wdh.registerNymRelation(linkText, synRelation);
+                    }
+                }
+            } else if (tok instanceof WikiText.Template) {
+                WikiText.Template tmpl = (WikiText.Template) tok;
+                if ("l".equals(tmpl.getName()) || "link".equals(tmpl.getName())) {
+                    Map<String, String> args = tmpl.getParsedArgs();
+                    if ("en".equals(args.get("1"))) {
+                        String target = args.get("2");
+                        args.remove("2"); args.remove("1");
+                        if (! args.isEmpty()) {
+                            log.debug("Unhandled remaining args {} in {}", args.entrySet().toString(), this.wiktionaryPageName);
+                        }
+                        wdh.registerNymRelation(target, synRelation, currentGloss);
+                    }
+                } else if ("sense".equals(tmpl.getName())) {
+                    currentGloss = tmpl.getParsedArgs().get("1");
+                    for (int i = 1; i < 9; i++) {
+                        String p = tmpl.getParsedArgs().get(Integer.toString(i));
+                        if (null != p) {
+                            currentGloss += ", " + p;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // TODO: handle Wikisaurus pages
+    private void handleWikisaurus(String linkText, String currentNym) {
+
+    }
+
+    @Override
     public void extractExample(String example) {
         // TODO: current example extractor cannot handle English data where different lines are used to define the example.
 
@@ -783,4 +905,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
     }
 
+    @Override
+    public void extractDefinition(String definition, int defLevel) {
+        // TODO: properly handle macros in definitions.
+        definitionExpander.setPageName(this.wiktionaryPageName);
+        definitionExpander.parseDefinition(definition, defLevel);
+    }
 }

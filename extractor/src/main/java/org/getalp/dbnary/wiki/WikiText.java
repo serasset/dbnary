@@ -1,9 +1,8 @@
 package org.getalp.dbnary.wiki;
 
-import org.sweble.wikitext.parser.WikitextEncodingValidator;
-import scala.collection.immutable.Stream;
-
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by serasset on 24/01/16.
@@ -19,7 +18,7 @@ public class WikiText {
      * position start and last character is at position end-1;
      */
     public class Segment {
-        int start, end;
+        int start = -1, end = -1;
 
         public Segment(int start) {
             this.start = start;
@@ -32,6 +31,18 @@ public class WikiText {
 
         public void setEnd(int end) {
             this.end = end;
+        }
+
+        public String toString() {
+            String c = WikiText.this.content;
+            if (-1 == end) {
+                if (start + 10 < c.length())
+                    return c.substring(start, start + 10) + "...";
+                else
+                    return c.substring(start, c.length());
+            } else {
+                return c.substring(start, end);
+            }
         }
     }
 
@@ -46,7 +57,7 @@ public class WikiText {
         }
 
         public String toString() {
-            return (null == offset) ? super.toString() : WikiText.this.content.substring(offset.start, offset.end);
+            return (null == offset) ? super.toString() : this.offset.toString();
         }
 
         public void addFlattenedTokens(Token t) {
@@ -84,6 +95,10 @@ public class WikiText {
         public void addToken(Token t) {
             tokens.add(t);
         }
+
+        public WikiEventsSequence filteredTokens(WikiEventFilter filter) {
+            return new WikiEventsSequence(this, filter);
+        }
     }
 
     public class HTMLComment extends Token {
@@ -97,6 +112,7 @@ public class WikiText {
     public class Template extends Token {
         protected WikiContent name;
         protected ArrayList<WikiContent> args;
+        protected Map<String, String> parsedArgs = null;
 
         public Template(int startOffset) {
             this.offset = new Segment(startOffset);
@@ -134,7 +150,7 @@ public class WikiText {
             if (null == args) {
                 this.name.addToken(t);
             } else {
-                // got a new parameter separator...
+                // got a new token inside an arg...
                 args.get(args.size()-1).addToken(t);
             }
         }
@@ -143,26 +159,30 @@ public class WikiText {
             return name.toString();
         }
 
-        public Map<String, String> parseArgs() {
-            HashMap<String,String> res = new HashMap<String,String>();
-            if (null == args) return res;
-            int n = 1; // number for positional args.
-            for (int i = 0; i < args.size(); i++) {
-                String arg = args.get(i).toString();
-                if (null == arg || arg.length() == 0) continue;
-                int eq = arg.indexOf('=');
-                if (eq == -1) {
-                    // There is no argument name.
-                    res.put(""+n, arg);
-                    n++;
-                } else {
-                    res.put(arg.substring(0,eq), arg.substring(eq+1));
+        public Map<String, String> getParsedArgs() {
+            if (parsedArgs == null) {
+                parsedArgs = new HashMap<String, String>();
+                if (null != args) {
+                    int n = 1; // number for positional args.
+                    for (int i = 0; i < args.size(); i++) {
+                        String arg = args.get(i).toString();
+                        if (null == arg || arg.length() == 0) continue;
+                        int eq = arg.indexOf('=');
+                        if (eq == -1) {
+                            // There is no argument name.
+                            parsedArgs.put("" + n, arg);
+                            n++;
+                        } else {
+                            parsedArgs.put(arg.substring(0, eq), arg.substring(eq + 1));
+                        }
+                    }
                 }
             }
-            return res;
+            return parsedArgs;
         }
 
     }
+
     public abstract class Link extends Token {
         WikiContent target;
         WikiContent text;
@@ -205,6 +225,17 @@ public class WikiText {
             }
         }
 
+        public String getTarget() {
+            return target.toString();
+        }
+
+        public String getLinkText() {
+            if (null == this.text)
+                return target.toString();
+            else
+                return text.toString();
+        }
+
     }
 
     public class ExternalLink extends Link {
@@ -237,6 +268,68 @@ public class WikiText {
 
     }
 
+    public class Heading extends Token {
+        int level;
+        WikiContent text;
+
+        public Heading(int position, int level) {
+            this.level = level;
+            this.offset = new Segment(position);
+            this.text = new WikiContent(position + level);
+        }
+
+        /**
+         * sets the end offset to the given position (should point to the first char of the closing "]")
+         * @param position the position of the first character of the enclosing "]"
+         */
+        @Override
+        public void setEndOffset(int position) {
+            super.setEndOffset(position+1);
+            this.text.setEndOffset(position);
+        }
+
+        @Override
+        public void addToken(Token t) {
+            this.text.addToken(t);
+        }
+
+    }
+
+    public class ListItem extends Token {
+        int level;
+        WikiContent content;
+
+        public ListItem(int position, int level) {
+            this.level = level;
+            this.offset = new Segment(position);
+            this.content = new WikiContent(position + level);
+        }
+
+        /**
+         * sets the end offset to the given position (should point to the first char of the closing "]")
+         * @param position the position of the first character of the enclosing "]"
+         */
+        @Override
+        public void setEndOffset(int position) {
+            super.setEndOffset(position+1);
+            this.content.setEndOffset(position);
+        }
+
+        @Override
+        public void addToken(Token t) {
+            this.content.addToken(t);
+        }
+
+        public WikiContent getContent() {
+            return this.content;
+        }
+
+        public int getLevel() {
+            return this.level;
+        }
+
+    }
+
     public WikiText(String content) {
         this(content, 0, content.length());
     }
@@ -258,20 +351,22 @@ public class WikiText {
         int end = this.endOffset;
         Stack<Token> stack = new Stack<>();
         stack.push(new WikiContent(0));
-
+        Matcher m;
+        String c;
         while (pos < end) {
-            if (lookup(pos, "{{")) {
+            if (null != (c = peekString(pos, "{{"))) {
                 // Template Start
                 stack.push(new Template(pos));
-                pos++;
-            } else if (lookup(pos, "[[")) {
+                pos += c.length();
+            } else if (null != (c = peekString(pos, "[["))) {
                 // InternalLink start
                 stack.push(new InternalLink(pos));
-                pos++;
-            } else if (lookup(pos, "[")) {
+                pos += c.length();
+            } else if (null != (c = peekString(pos, "["))) {
                 // External Link
                 stack.push(new ExternalLink(pos));
-            } if (lookup(pos, "}}")) {
+                pos += c.length();
+            } else if (null != (c = peekString(pos, "}}"))) {
                 // Template End
                 if (stack.peek() instanceof Template) {
                     Template t = (Template) stack.pop();
@@ -280,8 +375,8 @@ public class WikiText {
                 } else  {
                     // consider the closing element as a simple text
                 }
-                pos++;
-            } else if (lookup(pos, "]]")) {
+                pos += c.length();
+            } else if (null != (c = peekString(pos, "]]"))) {
                 // InternalLink end
                 if (stack.peek() instanceof InternalLink) {
                     InternalLink t = (InternalLink) stack.pop();
@@ -290,7 +385,8 @@ public class WikiText {
                 } else {
                     // consider the closing element as a simple text
                 }
-            } else if (lookup(pos, "]")) {
+                pos += c.length();
+            } else if (null != (c = peekString(pos, "]"))) {
                 // External Link End
                 if (stack.peek() instanceof ExternalLink) {
                     ExternalLink t = (ExternalLink) stack.pop();
@@ -299,15 +395,24 @@ public class WikiText {
                 } else {
                     // consider the closing element as a simple text
                 }
-            } else if (lookup(pos, "<!--")) {
+                pos += c.length();
+            } else if (null != (c = peekString(pos, "<!--"))) {
                 // HTML comment start, just pass through text ignoring everything
                 HTMLComment t = new HTMLComment(pos);
                 pos = pos + 4;
-                while (pos != end && ! lookup(pos, "-->")) pos++;
-                if (pos != end) pos = pos + 2;
+                while (pos != end && (null == peekString(pos, "-->"))) pos++;
+                if (pos != end) pos = pos + 3;
                 t.setEndOffset(pos+1);
                 stack.peek().addToken(t);
-            } else if (lookup(pos, "|")) {
+            } else if (null != (m = peekPattern(pos, "^={2,6}"))) {
+                //// TODO: ICICICICICICICICICI
+                m.group();
+                pos += m.group().length();
+            } else if (null != (m = peekPattern(pos, "^\\*+"))) {
+                int level = m.group().length();
+                stack.push(new ListItem(pos, level));
+                pos += level;
+            } else if (null != (c = peekString(pos, "|"))) {
                 // if in Template, it's a special char
                 Token t = stack.peek();
                 if (t instanceof Template) {
@@ -317,18 +422,39 @@ public class WikiText {
                     InternalLink template = (InternalLink) t;
                     template.gotAPipe(pos);
                 }
-            } else if (lookup(pos, " ")) {
+                pos += c.length();
+            } else if (null != (c = peekString(pos, " "))) {
                 // if in ExternalLink, it's a special char
                 Token t = stack.peek();
                 if (t instanceof ExternalLink) {
                     ExternalLink template = (ExternalLink) t;
                     template.gotASpace(pos);
                 }
+                pos += c.length();
+                //TODO Handle nowiki tags
+            } else if (null != (c = peekNewline(pos))) {
+                // if in ListItem, it's a closing char
+                Token t = stack.peek();
+                if (t instanceof ListItem) {
+                    ListItem li = (ListItem) stack.pop();
+                    li.setEndOffset(pos);
+                    stack.peek().addToken(t);
+                }
+                pos += c.length();
                 //TODO Handle nowiki tags
             } else {
                 // Normal characters, just advance...
+                pos++;
             }
-            pos++;
+        }
+
+        // the end of text is considered as a new line... Handle it.
+        // if in ListItem, it's a closing char
+        Token lastToken = stack.peek();
+        if (lastToken instanceof ListItem) {
+            ListItem li = (ListItem) stack.pop();
+            li.setEndOffset(pos);
+            stack.peek().addToken(lastToken);
         }
 
         while (stack.size() > 1) {
@@ -345,24 +471,59 @@ public class WikiText {
 
     }
 
-    public boolean lookup(int pos, String s) {
+    private String peekNewline(int pos) {
+        if (pos < content.length() - 1 && content.charAt(pos) == '\r' && content.charAt(pos) == '\n') return "\r\n";
+        if (pos < content.length() && content.charAt(pos) == '\n') return "\n";
+        if (pos < content.length() && content.charAt(pos) == '\r') return "\r";
+        return null;
+    }
+
+
+    public String peekString(int pos, String s) {
         int i = 0; int pi;
         int slength = s.length();
         int wtlength = content.length();
         while (i != slength && (pi = pos + i) != wtlength && s.charAt(i) == content.charAt(pi)) i++;
-        return i == slength;
+        if (i == slength)
+            return s;
+        else
+            return null;
+    }
+
+    private HashMap<String, Matcher> matcherCache = new HashMap<String, Matcher>();
+
+    private synchronized Matcher matcher(String pat) {
+        Matcher m;
+        if ((m = matcherCache.get(pat)) == null) {
+            m = Pattern.compile(pat).matcher(content);
+            matcherCache.put(pat, m);
+        }
+        return m;
+    }
+
+    private Matcher peekPattern(int pos, String pat) {
+        Matcher m = matcher(pat);
+        m.region(pos, content.length());
+        if (m.lookingAt())
+            return m;
+        else
+            return null;
+    }
+
+    public WikiContent content() {
+        if (null == root) root = parse();
+        return root;
     }
 
     public ArrayList<Token> tokens() {
-        if (null == root) root = parse();
-        return root.tokens;
+        return content().tokens;
     }
 
     public WikiEventsSequence filteredTokens(WikiEventFilter filter) {
-        if (null == root) root = parse();
-        return new WikiEventsSequence(this, filter);
+        return content().filteredTokens(filter);
     }
 
+    // frequent simple access to the wiki text
     public WikiEventsSequence links() {
         ClassBasedFilter filter = new ClassBasedFilter();
         filter.allowLink();

@@ -530,6 +530,7 @@ extractor/src/main/java/org/getalp/dbnary/deu/WiktionaryDataHandler.java -text
 extractor/src/main/java/org/getalp/dbnary/deu/WiktionaryExtractor.java -text
 extractor/src/main/java/org/getalp/dbnary/ell/GreekLangtoCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/ell/WiktionaryExtractor.java -text
+extractor/src/main/java/org/getalp/dbnary/eng/EnglishDefinitionExtractorWikiModel.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/eng/EnglishInflectionData.java -text
 extractor/src/main/java/org/getalp/dbnary/eng/EnglishLangToCode.java -text svneol=unset#text/plain
 extractor/src/main/java/org/getalp/dbnary/eng/ForeignLanguagesWiktionaryDataHandler.java -text

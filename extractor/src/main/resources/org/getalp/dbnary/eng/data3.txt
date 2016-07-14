@@ -6336,7 +6336,7 @@ txo	Toto
 txq	Tii
 txr	Tartessian
 txs	Tonsea
-txt	Citak
+con	Citak
 txu	Kayapó
 txx	Tatana
 tya	Tauya

@@ -72,7 +72,7 @@ public class ISO639_3 {
     }
 
     private final static String linePatternString =
-            "^(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)$";
+            "^(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)(?:\t(.*))?$";
     private final static String epolinePatternString =
             "^(.*?)\t(.*?)$";
     private final static String uncommonPatternString =
@@ -98,7 +98,7 @@ public class ISO639_3 {
                 matcher.reset(s);
                 if (matcher.find()) {
                     Lang l = new Lang();
-                    // Id   Part2B  Part2T  Part1   Scope   Language_Type   Ref_Name
+                    // Id   Part2B  Part2T  Part1   Scope   Language_Type   Ref_Name    Comment
                     l.id = matcher.group(1);
                     l.part2b = matcher.group(2);
                     l.part2t = matcher.group(3);

@@ -3,6 +3,7 @@ package org.getalp.iso639;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 public class ISO639Test {
@@ -65,5 +66,22 @@ public class ISO639Test {
         
         assertEquals("Français eponyme n'est pas français", ffr, fepo);
     }
-    
+
+    @Test
+    public void testTripleALanguage() {
+        // When language definition file is saved with UTF-8 BOM (as it is in SIL web site), the aaa language does not belong to the map.
+        ISO639_3 isoLanguages = ISO639_3.sharedInstance;
+        ISO639_3.Lang aaa = isoLanguages.getLang("aaa");
+
+        assertNotNull(aaa);
+    }
+
+    @Test
+    public void testTripleALanguage1() {
+        // When language definition file is saved with UTF-8 BOM (as it is in SIL web site), the aaa language does not belong to the map.
+        ISO639_1 isoLanguages = ISO639_1.sharedInstance;
+        ISO639_1.Lang aar = isoLanguages.getLang("aar");
+
+        assertNotNull(aar);
+    }
 }

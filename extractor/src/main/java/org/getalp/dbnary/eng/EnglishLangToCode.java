@@ -606,6 +606,9 @@ public class EnglishLangToCode extends LangTools {
         add("VL.", "la-vul");
         add("Wuhua Chinese", "hak-wuh");
 
+		add("Ammonite", "ammonite");
+
+
         InputStream fis = null;
         try {
             fis = EnglishLangToCode.class.getResourceAsStream("data3.txt");

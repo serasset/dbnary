@@ -659,7 +659,7 @@ public class UpdateAndExtractDumps {
         if (features.contains("morpho")) { a.add("--morpho"); a.add(morphoFile); }
         a.add(uncompressDumpFileName(lang, dir));
 
-        String[] args = a.toArray(new String[15]);
+        String[] args = a.toArray(new String[0]);
 		
 		try {
 			ExtractWiktionary.main(args);

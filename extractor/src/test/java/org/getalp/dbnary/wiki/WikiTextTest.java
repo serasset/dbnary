@@ -23,6 +23,12 @@ public class WikiTextTest {
         WikiText.InternalLink l = (WikiText.InternalLink) text.tokens().get(3);
         assertEquals("Category:English", l.target.toString());
         assertEquals("text", l.text.toString());
+        assertEquals("text", l.getLinkText());
+        assertEquals("Category:English", l.getTarget());
+
+        WikiText.InternalLink l1 = (WikiText.InternalLink) text.tokens().get(2);
+        assertEquals("lien", l1.getLinkText());
+        assertEquals("lien", l1.getTarget());
 
         assertTrue(text.tokens().get(4) instanceof WikiText.ExternalLink);
         WikiText.ExternalLink l2 = (WikiText.ExternalLink) text.tokens().get(4);
@@ -121,6 +127,51 @@ public class WikiTextTest {
     }
 
     @Test
+    public void testWikiTextIteratorWithEmbedding() throws Exception {
+        String test = "{{en-noun|text [[link]]}} text {{template}} text [[toto]]";
+        WikiText text = new WikiText(test);
+
+        ClassBasedFilter filter = new ClassBasedFilter();
+        filter.allowInternalLink().allowTemplates();
+        WikiEventsSequence s = text.filteredTokens(filter);
+        Iterator<WikiText.Token> it = s.iterator();
+
+        assertTrue(it.hasNext());
+        assertTrue(it.next() instanceof WikiText.Template);
+        // Internal Link is hidden inside the Template
+        assertTrue(it.hasNext());
+        assertTrue(it.next() instanceof WikiText.Template);
+        assertTrue(it.hasNext());
+        assertTrue(it.next() instanceof WikiText.InternalLink);
+        assertFalse(it.hasNext());
+    }
+
+
+    @Test
+    public void testList() throws Exception {
+        String test = "* {{l|en|thalamus}}\n" +
+                "* {{l|en|hypothalamus}}\n" +
+                "* {{l|en|prethalamus}}";
+        WikiText text = new WikiText(test);
+
+        ClassBasedFilter filter = new ClassBasedFilter();
+        filter.allowInternalLink().allowTemplates().allowListItem();
+        WikiEventsSequence s = text.filteredTokens(filter);
+        Iterator<WikiText.Token> it = s.iterator();
+
+        assertTrue(it.hasNext());
+        assertTrue(it.next() instanceof WikiText.ListItem);
+        assertTrue(it.hasNext());
+        assertTrue(it.next() instanceof WikiText.ListItem);
+        assertTrue(it.hasNext());
+        assertTrue(it.next() instanceof WikiText.ListItem);
+        assertFalse(it.hasNext());
+
+
+
+    }
+
+    @Test
     public void testParseTemplateArgs() throws Exception {
         String test = "{{en-noun|head=[[araneomorph]] {{vern|funnel-web spider|pedia=1}}|v1|xx=vxx|v2}}";
         WikiText text = new WikiText(test);
@@ -130,7 +181,7 @@ public class WikiTextTest {
         WikiText.Template tmpl = (WikiText.Template) text.tokens().get(0);
 
         assertEquals("en-noun", tmpl.getName());
-        Map<String, String> args = tmpl.parseArgs();
+        Map<String, String> args = tmpl.getParsedArgs();
         assertEquals(4, args.size());
         assertEquals("v1", args.get("1"));
         assertEquals("v2", args.get("2"));
@@ -144,11 +195,11 @@ public class WikiTextTest {
     public void testLookup() throws Exception {
         String test = "bonjour <!-- -->";
         WikiText text = new WikiText(test);
-        assertTrue(text.lookup(0, "bon"));
-        assertTrue(text.lookup(0, "b"));
-        assertTrue(text.lookup(0, ""));
-        assertTrue(text.lookup(0, "bonjour <!--"));
-        assertTrue(text.lookup(1, "onjour <!--"));
-        assertTrue(text.lookup(8, "<!--"));
+        assertNotNull(text.peekString(0, "bon"));
+        assertNotNull(text.peekString(0, "b"));
+        assertNotNull(text.peekString(0, ""));
+        assertNotNull(text.peekString(0, "bonjour <!--"));
+        assertNotNull(text.peekString(1, "onjour <!--"));
+        assertNotNull(text.peekString(8, "<!--"));
     }
 }

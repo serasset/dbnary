@@ -75,7 +75,7 @@ public class GermanMorphologyExtractor {
                 // TODO: check if such template may be used on substantivs
                 if (wdh.currentWiktionaryPos().equals("Substantiv")) log.debug("Adjectiv ubersicht in noun : {} ", wdh.currentLexEntry());
                 // DONE: Extract comparative/Superlative from parametermap before fetching the full flexion page.
-                if (extractAdjectiveDegree(wt.parseArgs())) {
+                if (extractAdjectiveDegree(wt.getParsedArgs())) {
                     String deklinationPageName = pageName + " (Deklination)";
                     extractFormsPageWithModel(deklinationPageName, pageName, deklinationExtractor);
                 }

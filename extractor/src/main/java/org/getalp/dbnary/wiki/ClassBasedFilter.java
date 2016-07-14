@@ -43,13 +43,23 @@ public class ClassBasedFilter implements WikiEventFilter {
         return this;
     }
 
+    public ClassBasedFilter allowListItem() {
+        allowedClasses.add(WikiText.ListItem.class);
+        return this;
+    }
+
+    public ClassBasedFilter allowHeading() {
+        allowedClasses.add(WikiText.ListItem.class);
+        return this;
+    }
+
     public ClassBasedFilter allowNowiki() {
         // TODO: implement nowiki handling
         return this;
     }
 
     public ClassBasedFilter allowAll() {
-        this.allowExternalLink().allowHTMLComment().allowInternalLink().allowNowiki().allowTemplates();
+        this.allowExternalLink().allowHTMLComment().allowInternalLink().allowNowiki().allowTemplates().allowListItem().allowHeading();
         return this;
     }
 

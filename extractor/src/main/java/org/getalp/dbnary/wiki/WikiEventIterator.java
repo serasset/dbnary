@@ -1,7 +1,6 @@
 package org.getalp.dbnary.wiki;
 
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Created by serasset on 28/01/16.
@@ -9,14 +8,14 @@ import java.util.Set;
 public class WikiEventIterator implements Iterator<WikiText.Token> {
 
     WikiEventFilter filter;
-    WikiText txt;
+    WikiText.WikiContent content;
     Iterator<WikiText.Token> baseIterator;
     WikiText.Token nextToken = null;
 
-    public WikiEventIterator(WikiText txt, WikiEventFilter filter) {
-        this.txt = txt;
+    public WikiEventIterator(WikiText.WikiContent content, WikiEventFilter filter) {
+        this.content = content;
         this.filter = filter;
-        this.baseIterator = txt.tokens().iterator();
+        this.baseIterator = content.tokens.iterator();
         advance();
     }
 

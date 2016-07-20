@@ -3,7 +3,7 @@
 
     <groupId>org.getalp.dbnary</groupId>
     <artifactId>ontology</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
     <packaging>jar</packaging>
 
     <properties>

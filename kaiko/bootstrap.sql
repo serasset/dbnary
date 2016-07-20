@@ -110,6 +110,48 @@ NULL,
 ''
 );
 
+-- create redirections for jdm
+
+DB.DBA.VHOST_REMOVE ( lhost=>'*ini*', vhost=>'*ini*', lpath=>'/jdm' );
+
+DB.DBA.VHOST_DEFINE ( lhost=>'*ini*', vhost=>'*ini*', lpath=>'/jdm', ppath=>'/DAV/', is_dav=>1,
+def_page=>'', vsp_user=>'dba', ses_vars=>0, opts=>vector ('browse_sheet', '', 'url_rewrite', 'http_rule_list_3'),
+is_default_host=>0
+);
+
+DB.DBA.URLREWRITE_CREATE_RULELIST (
+'http_rule_list_3', 1,
+vector ('http_rule_7', 'http_rule_8'));
+
+DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
+'http_rule_7', 1,
+'^/(.*)\$',
+vector ('par_1'),
+1,
+'/sparql?query=DESCRIBE%%20%%3Chttp%%3A%%2F%%2Fkaiko.getalp.org%%2F%U%%3E&format=%U',
+vector ('par_1', '*accept*'),
+NULL,
+'(text/rdf.n3)|(application/rdf.xml)',
+2,
+303,
+''
+);
+
+
+DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
+'http_rule_8', 1,
+'^/(.*)\$',
+vector ('par_1'),
+1,
+'/describe/?url=http%%3A%%2F%%2Fkaiko.getalp.org%%2F%s',
+vector ('par_1'),
+NULL,
+'(text/html)|(\\*/\\*)',
+0,
+303,
+''
+);
+
 
 -- Create namespaces for dbnary
 
@@ -138,6 +180,8 @@ DB.DBA.XML_SET_NS_DECL ('dbnary-lit', 'http://kaiko.getalp.org/dbnary/lit/', 2);
 DB.DBA.XML_SET_NS_DECL ('dbnary-shr', 'http://kaiko.getalp.org/dbnary/shr/', 2);
 DB.DBA.XML_SET_NS_DECL ('dbnary-nor', 'http://kaiko.getalp.org/dbnary/nor/', 2);
 DB.DBA.XML_SET_NS_DECL ('dilaf-bam', 'http://kaiko.getalp.org/dilaf/bam/', 2);
+DB.DBA.XML_SET_NS_DECL ('jdm-ont', 'http://kaiko.getalp.org/jdm#', 2);
+DB.DBA.XML_SET_NS_DECL ('jdm', 'http://kaiko.getalp.org/jdm/', 2);
 checkpoint;
 commit WORK;
 checkpoint;

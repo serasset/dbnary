@@ -1,0 +1,104 @@
+abh-prk	Abhiri	Abhiri Prakrit	Sanskrit
+fr-aca	Acadian French		French
+add-dv	Addu Dhivehi	Addu Divehi, Addu Bas	Dhivehi
+el-aeo	Aeolic Greek	Lesbic Greek, Lesbian Greek, Aeolian Greek	Greek
+en-US	American English		English
+nan-amo	Amoy	Xiamenese	Hokkien
+el-arc	Arcadian Greek		Greek
+el-arp	Arcadocypriot Greek		Greek
+el-att	Attic Greek		Greek
+de-AT	Austrian German		German
+prk-avt	Avanti	Avanti Prakrit	Sanskrit
+bhl-prk	Bahliki	Bahliki Prakrit	Sanskrit
+hi-mum	Bombay Hindi	Mumbai Hindi, Bambai Hindi	Hindi
+en-GB	British English		English
+gkm Medieval Greek	Byzantine Greek	Medieval Greek	Ancient Greek
+frc	Cajun French	Louisiana French	French
+fr-CA	Canadian French		French
+cnd-prk	Candali	Candali Prakrit	Sanskrit
+tl-cls	Classical Tagalog		Tagalog
+el-crt	Cretan Greek		Greek
+el-cyp	Cypriotic Greek		Greek
+dks-prk	Daksinatya	Daksinatya Prakrit	Sanskrit
+el-dor	Doric Greek		Greek
+drm-prk	Dramili	Dramili Prakrit	Sanskrit
+sco-osc	Early Scots	Old Scots, O.Sc.	Scots
+la-ecc	Ecclesiastical Latin	Church Latin, EL.	Latin
+el-ela	Elean Greek		Greek
+el-epc	Epic Greek		Greek
+el-grk	Griko	Grico	Greek
+roa-grn	Guernésiais		Norman
+nan-hai	Hainanese		Min Nan
+elu-prk	Helu	Hela, Elu Prakrit, Helu Prakrit, Hela Prakrit	Sanskrit
+nan-hok	Hokkien		Min Nan
+el-hmr	Homeric Greek		Greek
+hvd-dv	Huvadhu Dhivehi	Huvadhu Divehi, Huvadhu Bas	Dhivehi
+sco-ins	Insular Scots	Ins.Sc.	Scots
+el-ion	Ionic Greek		Greek
+roa-jer	Jèrriais		Norman
+sem-jar	Jewish Aramaic		Aramaic
+gu-kat	Kathiyawadi	Kathiyawadi Gujarati, Kathiawadi	Gujarati
+grc-koi Koine	Koine Greek		Ancient Greek
+alv-kro	Kromanti		creole or pidgin family
+la-lat	Late Latin	LL, LL.	Latin
+es-lun Lunfardo	Lunfardo		Spanish
+la-med	Medieval Latin	ML, ML.	Latin
+si-med	Medieval Sinhalese	Medieval Sinhala	Sinhalese
+ang-mer	Mercian Old English		Old English
+bn-mid	Middle Bengali		Bengali
+gu-mid	Middle Gujarati		Gujarati
+ira-mid Middle Iranian	MIr. 	Iranian family
+kn-mid	Middle Kannada		Kannada
+kok-mid	Middle Konkani	Medieval Konkani	Konkani
+or-mid	Middle Oriya		Oriya
+sco-smi	Middle Scots	Mid.Sc.	Scots
+ta-mid	Middle Tamil		Tamil
+el-GR ell	Modern Greek		Greek
+he-IL	Modern Israeli Hebrew		Hebrew
+mlk-dv	Mulaku Dhivehi	Mulaku Divehi, Mulaku Bas	Dhivehi
+la-new	New Latin	Modern Latin, NL.	Latin
+sco-nor	Northern Scots	Nor.Sc.	Scots
+ang-nor	Northumbrian Old English		Old English
+odr-prk	Odri	Odri Prakrit	Sanskrit
+bn-old	Old Bengali		Bengali
+gu-old	Old Gujarati		Gujarati
+hi-old	Old Hindi		Hindi
+ira-old	Old Iranian	OIr.	Iranian family
+kn-old	Old Kannada		Kannada
+kok-old	Old Konkani	Early Konkani	Konkani
+fro-nor	Old Northern French	Old Norman, Old Norman French, ONF	Old French
+or-old	Old Oriya		Oriya
+fro-pic	Old Picard		Old French
+pa-old	Old Punjabi		Punjabi
+tl-old	Old Tagalog		Tagalog
+hsn-old	Old Xiang	Lou-Shao	Xiang
+loc-opu	Opuntian Locrian		Greek
+loc-ozo	Ozolian Locrian		Greek
+psc-prk	Paisaci	Paisaci Prakrit	Sanskrit
+el-pam	Pamphylian Greek		Greek
+el-pap	Paphian Greek		Greek
+nan-phl	Philippine Hokkien		Hokkien
+pinhua	Pinghua		Cantonese
+prc-prk	Pracya	Pracya Prakrit	Sanskrit
+qfa-sub-grc	Pre-Greek		substrate family
+pregrc	Pre-Greek		substrate family
+und-bal	pre-Roman (Balkans)		substrate family
+und-ibe	pre-Roman (Iberia)		substrate family
+bat-pro	Proto-Baltic		Proto-Balto-Slavic
+sem-can-pro	Proto-Canaanite		Proto-Semitic
+fiu-fpr-pro	Proto-Finno-Permic		Proto-Uralic
+fiu-pro	Proto-Finno-Ugric		Proto-Uralic
+prv	Provençal		Occitan
+la-ren	Renaissance Latin	RL.	Latin
+sbr-prk	Sabari	Sabari Prakrit	Sanskrit
+wuu-sha	Shanghainese	Sha.	Wu
+sco-sou	Southern Scots	Borders Scots, Sou.Sc.	Scots
+gem-sue	Suevic	Suebian	West Germanic family
+yue-tai	Taishanese		Cantonese
+nan-teo	Teochew		Min Nan
+el-ths	Thessalian Greek		Greek
+xtg	Transalpine Gaulish		Gaulish
+sco-uls	Ulster Scots	Uls.Sc.	Scots
+de-AT-vie	Viennese German	VG.	Austrian German
+la-vul	Vulgar Latin	VL.	Latin
+hak-wuh	Wuhua Chinese		Hakka

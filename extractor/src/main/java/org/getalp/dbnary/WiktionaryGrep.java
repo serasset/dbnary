@@ -1,15 +1,14 @@
 package org.getalp.dbnary;
 
+import org.codehaus.stax2.XMLInputFactory2;
+import org.codehaus.stax2.XMLStreamReader2;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.Writer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-
-import org.codehaus.stax2.XMLInputFactory2;
-import org.codehaus.stax2.XMLStreamReader2;
 
 public class WiktionaryGrep {
 
@@ -42,19 +41,19 @@ public class WiktionaryGrep {
 
             // check if there are more events in the input stream
             String title = "";
-        	Matcher match = pat.matcher("");
+            Matcher match = pat.matcher("");
 
             while (xmlr.hasNext()) {
                 xmlr.next();
                 if (xmlr.isStartElement() && xmlr.getLocalName().equals(titleTag)) {
                     title = xmlr.getElementText();
                 } else if (xmlr.isStartElement() && xmlr.getLocalName().equals(textTag)) {
-                	String text = xmlr.getElementText();
-                	match.reset(text);
-                	if (match.find()) {
-                		out.write(title+"\n");
-                		out.flush();
-                	}
+                    String text = xmlr.getElementText();
+                    match.reset(text);
+                    if (match.find()) {
+                        out.write(title + "\n");
+                        out.flush();
+                    }
                 }
             }
         } catch (XMLStreamException ex) {

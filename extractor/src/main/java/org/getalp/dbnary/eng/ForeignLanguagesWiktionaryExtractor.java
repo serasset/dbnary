@@ -45,8 +45,9 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
 			}
 			if (null != (lang = getNonEnglishLanguageCode(l1))) {
 				nonEnglishSectionStart = l1.end();
-			}
-		}
+            }
+            // wdh.resetCurrentLexieCount();
+        }
 		if (-1 != nonEnglishSectionStart) {
 			//System.err.println("Parsing previous italian entry");
             extractNonEnglishData(lang, nonEnglishSectionStart, pageContent.length());

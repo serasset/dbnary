@@ -1,15 +1,14 @@
 package org.getalp.dbnary;
 
-import java.io.File;
-import java.io.StringReader;
-import java.util.Map;
+import org.codehaus.stax2.XMLInputFactory2;
+import org.codehaus.stax2.XMLStreamReader2;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
-import org.codehaus.stax2.XMLInputFactory2;
-import org.codehaus.stax2.XMLStreamReader2;
+import java.io.File;
+import java.io.StringReader;
+import java.util.Map;
 
 public class WiktionaryIndexer {
 
@@ -59,7 +58,7 @@ public class WiktionaryIndexer {
                 } else if (xmlr.isEndElement() && xmlr.getLocalName().equals(pageTag)) {
                     eoffset = xmlr.getLocationInfo().getEndingCharOffset();
                     if (!title.equals(""))
-                        map.put(title, new OffsetValue(boffset, (int)(eoffset - boffset) ));
+                        map.put(title, new OffsetValue(boffset, (int) (eoffset - boffset)));
                 }
             }
         } catch (XMLStreamException ex) {
@@ -94,7 +93,7 @@ public class WiktionaryIndexer {
             while (xmlr.hasNext()) {
                 xmlr.next();
                 if (xmlr.isStartElement() && xmlr.getLocalName().equals("text")) {
-                    return xmlr.getElementText(); 
+                    return xmlr.getElementText();
                 } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("redirect")) {
                     String target = xmlr.getAttributeValue("", "title");
                     return "#REDIRECT [[" + target + "]]";

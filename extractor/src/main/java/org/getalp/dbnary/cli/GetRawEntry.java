@@ -5,11 +5,7 @@ import org.getalp.dbnary.WiktionaryIndexerException;
 
 public class GetRawEntry {
 
-    /**
-     * @param args
-     * @throws WiktionaryIndexerException if any error occurs with indexer.
-     */
-    public static void main(String[] args) throws WiktionaryIndexerException {
+        public static void main(String[] args) throws WiktionaryIndexerException {
         if (args.length == 0) {
             printUsage();
             System.exit(1);
@@ -28,27 +24,27 @@ public class GetRawEntry {
                 System.exit(1);
             }
         }
-        
+
         WiktionaryIndex wi = new WiktionaryIndex(args[startIndex]);
         startIndex++;
-        
-        for(int i = startIndex; i < args.length; i++) {
+
+        for (int i = startIndex; i < args.length; i++) {
             if (allxml) {
-                System.out.println(wi.get(args[i])); 
+                System.out.println(wi.get(args[i]));
             } else {
-                System.out.println(wi.getTextOfPage(args[i])); 
+                System.out.println(wi.getTextOfPage(args[i]));
             }
         }
     }
 
-    
+
     public static void printUsage() {
         System.err.println("Usage: ");
         System.err.println("  java org.getalp.dbnary.cli.GetRawEntry [OPTIONS] wiktionaryDumpFile entryname ...");
         System.err.println("Displays the raw text of the wiktionary page named \"entryname\".");
         System.err.println("OPTIONS:");
         System.err.println("  --all (-a): Display all the xml elements defining the page.");
-        System.err.println("  --        : Stops the sequence of options and start the sequence of entrynames.");   
+        System.err.println("  --        : Stops the sequence of options and start the sequence of entrynames.");
         System.err.println("              This option is usefull when the wiktionaryDumpFile begins with a \"-\".");
     }
 }

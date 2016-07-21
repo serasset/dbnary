@@ -3,12 +3,16 @@ package org.getalp.dbnary.eng;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 import org.getalp.dbnary.*;
+import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Created by serasset on 17/09/14.
@@ -16,6 +20,26 @@ import java.util.HashSet;
 public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+
+    /**
+     * An entry in a specific language can have multiple etymologies that correspond to multiple POS-s.
+     * e.g.: the English noun and the English verb "tear" ("To cause to lose some kind of unity or coherence") derive from Proto-Indo-European "*der-", the noun "tear" ("A drop of clear, salty liquid produced from the eyes by crying or irritation.") derives from Proto-Indo-European  "*dáḱru-". see https://en.wiktionary.org/wiki/tear
+     * This ArrayList contains the list of POS associated to each etymology.
+     */
+    public ArrayList<Resource> etymologyPos = new ArrayList<Resource>();
+
+    /**
+     * A String containing the etymological definition.
+     */
+    public String etymologyString;
+    /**
+     * A Resource containing the current Etymology Entry.
+     */
+    protected Resource currentEtymologyEntry;
+    /**
+     * An integer counting the number of alternative etymologies for the same entry.
+     */
+    protected int currentEtymologyNumber;
 
     static {
         // English
@@ -63,8 +87,130 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         super(lang);
     }
 
+    @Override
+    public void initializeEntryExtraction(String wiktionaryPageName) {
+        super.initializeEntryExtraction(wiktionaryPageName);
+        etymologyString = null;
+        etymologyPos.clear();
+        currentEtymologyNumber = 0;
+        currentEtymologyEntry = null;
+    }
+
     public static boolean isValidPOS(String pos) {
         return posAndTypeValueMap.containsKey(pos);
+    }
+
+    @Override
+    public Resource addPartOfSpeech(String originalPOS, Resource normalizedPOS, Resource normalizedType) {
+        Resource lexEntry = super.addPartOfSpeech(originalPOS, normalizedPOS, normalizedType);
+        etymologyPos.add(currentLexEntry);
+        return lexEntry;
+    }
+
+    /**
+     * This functions extracts from the page content the text contained
+     * in the Etymology Section
+     * @param pageContent the page content
+     * @param pageContent the page content
+     * @param end position where the Etymology Section starts
+     */
+    public void extractEtymology(String pageContent, int start, int end) {
+        etymologyString = WikiTool.removeReferencesIn(pageContent.substring(start, end));
+        //System.out.format("ety=%s\n", etymologyString);
+    }
+
+    /**
+     * This function sets etymologyString and currentEtymologyEbtry to null and clears the ArrayList etymologyPos.
+     */
+    public void cleanEtymology() {
+        etymologyString = null;
+        etymologyPos.clear();
+        currentEtymologyEntry = null;
+    }
+
+    /**
+     * @return the String containing the etymology section extracted by
+     * function extractEtymology
+     */
+    public String getEtymology() {
+        return etymologyString;
+    }
+
+    private String computeEtymologyId(int etymologyNumber) {
+        return getPrefix() + "__ee_" + etymologyNumber + uriEncode(currentWiktionaryPageName) ;
+    }
+
+    //type = 0 etymologically equivalent
+    //type = 1 etymologically derives from
+    //type = 2 derives from
+    //type = 3 descendent of
+    public boolean registerEtymology(Map<String, String> args1, Map<String, String> args2, int type) {
+        // String tmp = currentEntryLanguage;
+        if (args1.size() == 0 || args2.size() == 0) {
+            return false;
+        }
+
+        if (currentEtymologyEntry == null) {
+            currentEtymologyNumber++;
+            currentEtymologyEntry = aBox.createResource(computeEtymologyId(currentEtymologyNumber), DBnaryEtymologyOnt.EtymologyEntry);
+            for (int i = 0; i < etymologyPos.size(); i++) {
+                aBox.add(currentEtymologyEntry, DBnaryOnt.refersTo, etymologyPos.get(i));
+            }
+        }
+
+        Resource vocable1;
+        if (args1.get("isCurrentEtymologyEntry") != null) {
+            vocable1 = currentEtymologyEntry;
+        } else {
+            vocable1 = getVocableResource(args1.get("word1").split(",")[0].trim(), true);
+        }
+        //if args2 represents a compound word return true
+        int counter = 0;
+        for (String key : args2.keySet()) {
+            if (key.startsWith("word")) {
+                counter++;
+                if (type == 0) {
+                    if (counter > 1) {
+                        //it cannot be a compound word
+                        System.out.format("Warning: word etymologically equivalent to a compound word; returning\n");
+                        break;
+                    }
+                } else if (type == 1 || type == 2 || type == 3) {
+                    // setCurrentLanguage(args2.get("lang"));
+                }
+                if (type == 0 || type == 1) {
+                    //split args2.get(key) and for each entry register it as an etymology entry and as etymologically equivalent to entry 0
+                    String[] words = args2.get(key).split(",");
+                    //entry 0
+                    Resource vocable2_0 = getVocableResource(words[0].trim(), true);
+                    aBox.add(vocable2_0, RDF.type, DBnaryEtymologyOnt.EtymologyEntry);
+                    if (type == 0) {
+                        aBox.add(vocable1, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable2_0);
+                    } else if (type == 1) {
+                        aBox.add(vocable1, DBnaryEtymologyOnt.etymologicallyDerivesFrom, vocable2_0);
+                    }
+                    if (words.length > 1) {
+                        for (int i = 1; i < words.length; i++) {
+                            Resource vocable2 = getVocableResource(words[i].trim(), true);
+                            aBox.add(vocable2, RDF.type, DBnaryEtymologyOnt.EtymologyEntry);
+                            aBox.add(vocable2_0, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable2);
+                        }
+                    }
+                } else if (type == 2 || type == 3) {
+                    Resource vocable2 = getVocableResource(args2.get(key), true);
+                    aBox.add(vocable2, RDF.type, DBnaryEtymologyOnt.EtymologyEntry);
+                    if (type == 2) {
+                        aBox.add(vocable2, DBnaryEtymologyOnt.derivesFrom, vocable1);
+                    } else if (type == 3) {
+                        aBox.add(vocable2, DBnaryEtymologyOnt.descendsFrom, vocable1);
+                    }
+                }
+            }
+        }
+
+        //set language back to initial value
+        // setCurrentLanguage(tmp);
+        return counter > 1 ? true : false;
     }
 
     @Override

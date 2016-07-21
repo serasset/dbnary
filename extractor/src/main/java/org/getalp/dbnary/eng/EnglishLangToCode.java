@@ -60,7 +60,7 @@ public class EnglishLangToCode extends LangTools {
 		add("Bemba","bem");
 		add("Bengali","bn");
 		add("Bhojpuri","bho");
-		add("Bikol","bik");
+		// add("Bikol","bik"); //bikol as bik is a MacroLanguage
 		add("Bini","bin");
 		add("Bislama","bi");
 		add("Blackfoot","bla");
@@ -606,9 +606,7 @@ public class EnglishLangToCode extends LangTools {
         add("VL.", "la-vul");
         add("Wuhua Chinese", "hak-wuh");
 
-		add("Ammonite", "ammonite");
-
-
+        //add lines from file data3.txt in resources folder
         InputStream fis = null;
         try {
             fis = EnglishLangToCode.class.getResourceAsStream("data3.txt");
@@ -622,7 +620,7 @@ public class EnglishLangToCode extends LangTools {
                     for (int i = 1; i < line.length; i++) {
                         add(line[i], code);
                     }
-               } else {
+                } else {
                     // System.err.println("Unrecognized line:" + s);
                 }
                 s = br.readLine();

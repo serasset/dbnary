@@ -2,15 +2,7 @@ package org.getalp.dbnary.cli;
 
 import info.bliki.api.Connector;
 import info.bliki.api.User;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import info.bliki.api.query.Parse;
-import org.xml.sax.SAXException;
 
 public class TestInterwikiLinks {
     public TestInterwikiLinks() {

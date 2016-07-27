@@ -12,10 +12,10 @@ public class LangTools {
         s = s.trim();
         s = s.toLowerCase();
         String res = getCode(s);
-
+        
         if (res == null && h != null && h.containsKey(s)) {
-            s = h.get(s);
-            res = getCode(s);
+            res = h.get(s);
+	    //res = getCode(s);//checkthis change!!!
         }
 
         return res;
@@ -40,7 +40,6 @@ public class LangTools {
 
     public static String getPart1OrId(String lang) {
         Lang l = ISO639_3.sharedInstance.getLang(lang);
-
         if (l == null) {
             return null;
         }

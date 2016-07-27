@@ -205,7 +205,13 @@ public class POE {
                 part.add("LEMMA");
                 args.put("word1", cleanUp(args.get("2")));
                 args.remove("2");
-            } else if (args.get("1").equals("m") || args.get("1").equals("mention") || args.get("1").equals("l") || args.get("1").equals("link")) {
+            } else if (args.get("1").equals("fi-form of")){
+		part.add("FROM");
+		part.add("LEMMA");
+		args.put("word1", args.get("2"));
+		args.put("lang", "fin");
+		args.remove("2");
+	    } else if (args.get("1").equals("m") || args.get("1").equals("mention") || args.get("1").equals("l") || args.get("1").equals("link")) {
                 args.put("1", "link");
                 if (args.get("2") != null) {
                     args.put("lang", args.get("2"));
@@ -336,7 +342,7 @@ public class POE {
                     log.debug("Processing wiki link {} as English word", string);
                     args = new HashMap<String, String>();
                     args.put("1", "l");
-                    args.put("word1", substring[0]);
+                    args.put("word1", cleanUp(substring[0]));
                     args.put("lang", "en");
                     //System.out.format("LEMMA");
                     part.add("LEMMA");
@@ -354,7 +360,7 @@ public class POE {
                         args = new HashMap<String, String>();
                         args.put("1", "l");
                         args.put("lang", substring[0]);
-                        args.put("word1", substring[1]);
+                        args.put("word1", cleanUp(substring[1]));
                         //System.out.format("LEMMA (from a wiktionary link)");
                         part.add("LEMMA");
                         log.debug("Processing wiki link {} as {} template \\{\\{{}\\}{}\\}\\}", string, "l|" + substring[0], substring[1]);
@@ -371,7 +377,10 @@ public class POE {
         if (args != null) {
             if (args.containsKey("lang")) {
                 String languageCode = args.get("lang");
-                languageCode = EnglishLangToCode.threeLettersCode(languageCode);
+		//System.out.format("calling normalize\n");
+		//System.out.format("languageCode=%s\n", languageCode);
+                languageCode = EnglishLangToCode.normalize(languageCode);
+		//System.out.format("after: languageCode=%s\n", languageCode);
                 if (languageCode != null) {
                     args.put("lang", languageCode);
                 }//else leave it as it is

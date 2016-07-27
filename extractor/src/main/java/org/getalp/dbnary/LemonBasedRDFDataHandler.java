@@ -42,7 +42,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
     protected int currentSubSenseNumber;
     protected CounterSet translationCount = new CounterSet();
     private CounterSet reifiedNymCount = new CounterSet();
-    protected String extractedLang;
+    public String extractedLang;
     protected Resource lexvoExtractedLanguage;
 
     private Set<Statement> heldBackStatements = new HashSet<Statement>();
@@ -51,7 +51,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
     private String NS;
     protected String currentEncodedPageName;
     protected String currentWiktionaryPageName;
-    protected CounterSet currentLexieCount = new CounterSet();
+    public CounterSet currentLexieCount = new CounterSet();
     protected Resource currentMainLexEntry;
     protected Resource currentCanonicalForm;
 
@@ -121,7 +121,6 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         NS = DBNARY_NS_PREFIX + "/" + lang + "/";
 
         extractedLang = LangTools.getPart1OrId(lang);
-
         lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
 
         // Create aBox

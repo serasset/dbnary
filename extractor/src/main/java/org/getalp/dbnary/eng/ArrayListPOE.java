@@ -30,6 +30,9 @@ public class ArrayListPOE extends ArrayList<POE> {
      * @param positions an ArrayList&lt;Pair&gt; specifying the start and end indexes of a subarray of ArrayListPOE
      */
     public void replaceMatch(ArrayList<Pair> positions) {
+	if (positions == null || positions.size() == 0){
+	    return;
+	}
         StringBuilder string = new StringBuilder();
         //iterate over elements of input positions
         //starting from the last Pair in ArrayList positions
@@ -95,6 +98,10 @@ public class ArrayListPOE extends ArrayList<POE> {
     }
 
     public ArrayList<Pair> match(Pattern p) {
+	ArrayList<Pair> toreturn = new ArrayList<Pair>();
+        if (this == null || this.size() == 0){
+	    return toreturn;
+	}
         ArrayList<Integer> arrayListInteger = new ArrayList<Integer>();
         ArrayList<Integer> arrayListPosition = new ArrayList<Integer>();
         int c = 0;
@@ -110,7 +117,6 @@ public class ArrayListPOE extends ArrayList<POE> {
         }
         Matcher m = p.matcher(this.toString());
 
-        ArrayList<Pair> toreturn = new ArrayList<Pair>();
         while (m.find()) {
             int start = -1, end = -1;
             for (int i = 0; i < arrayListPosition.size() - 1; i++) {
@@ -146,22 +152,4 @@ public class ArrayListPOE extends ArrayList<POE> {
         return s.toString();
     }
 
-    /**
-     * e.g., if a.toString() == "FROM LEMMA COMMA FROM LEMMA COMMA COGNATE_WITH LEMMA COMMA LEMMA COMMA LEMMA"
-     * a.getIndexOfCognateOr returns 6, the index of "COGNATE_WITH"
-     * e.g., if a.toString == "FROM LEMMA OR LEMMA" a.getIndexOfCognateOr returns 2, the index of "OR"
-     *
-     * @return an integer, the index of "COGNATE_WITH" or "OR" in the given ArrayListPOE
-     */
-    public int getIndexOfCognateOr() {
-        for (int i = 0; i < this.size(); i++) {
-            if (this.get(i).part.size() > 0) {
-                if (this.get(i).part.get(0).equals("COGNATE_WITH") || this.get(i).part.get(0).equals("OR")) {
-                    return i;
-                }
-            }
-        }
-        //if there is no "COGNATE_WITH" POE return size 
-        return this.size();
-    }
 }

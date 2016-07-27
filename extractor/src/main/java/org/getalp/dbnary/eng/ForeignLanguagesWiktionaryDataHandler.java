@@ -1,7 +1,5 @@
 package org.getalp.dbnary.eng;
 
-import java.util.HashMap;
-
 import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.PronunciationPair;
 import org.slf4j.Logger;
@@ -11,32 +9,30 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
 
 	private Logger log = LoggerFactory.getLogger(ForeignLanguagesWiktionaryDataHandler.class);
 	
-	private HashMap<String,String> prefixes = new HashMap<String,String>();
 
-	private String currentEntryLanguage = null;
 	private String currentPrefix = null;
 
 	public ForeignLanguagesWiktionaryDataHandler(String lang) {
 		super(lang);
 	}
-	
-	public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
-		setCurrentLanguage(lang);
-		super.initializeEntryExtraction(wiktionaryPageName);
-    }
+
+        @Override
+	public void initializeEntryExtraction(String wiktionaryPageName) {
+		setCurrentLanguage(extractedLang);
+		super.initializeEntryExtraction(wiktionaryPageName, extractedLang);
+        }
 
 	public void setCurrentLanguage(String lang) {
-		extractedLang = LangTools.getPart1OrId(lang);
-
+	    extractedLang = lang;//!!!! check this change
+	    //extractedLang = LangTools.getPart1OrId(lang);
 		lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
-		currentEntryLanguage = lang;
 		currentPrefix = getPrefixe(lang);
 	}
 
 	@Override
 	public void finalizeEntryExtraction() {
-		currentEntryLanguage = null;
-		currentPrefix = null;
+	    extractedLang = null;
+	    currentPrefix = null;
 	}
 
 
@@ -50,17 +46,16 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
 	public String getPrefix() {
 		return currentPrefix;
 	}
-	
-	public String getPrefixe(String lang){
-		if(this.prefixes.containsKey(lang))
-			return this.prefixes.get(lang);
 
-		lang = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
-		String prefix = DBNARY_NS_PREFIX + "/eng/" + lang + "/";
-		prefixes.put(lang, prefix);
-		aBox.setNsPrefix(lang + "-eng", prefix);
-		return prefix;
-	}
+    @Override
+    public void registerEtymologyPos(){
+	registerEtymologyPos(extractedLang);
+    }
+    
+    @Override
+    public void registerEtymology(ArrayListPOE arrayPOE){
+	registerEtymology(arrayPOE, extractedLang);
+    }
 
     @Override
     public void registerPronunciation(String pron, String lang) {

@@ -7,7 +7,7 @@ VERS=1.0-SNAPSHOT
 
 for lg in $LANGS
 do
-    $JAVA  -cp /home/serasset/.m2/repository/org/getalp/dbnary/experiment/lld2014-experiment/$VERS/lld2014-experiment-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.experiment.DisambiguateTranslationSources -c conf-fr.csv -s stats-fr.csv -l ${lg} ${DIR}/${lg}_dbnary_lemon.ttl.bz2
+    $JAVA  -cp /home/serasset/.m2/repository/org/getalp/dbnary/experiment/lld2014-experiment/$VERS/lld2014-experiment-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.experiment.DisambiguateTranslationSources -g -c conf-${lg}.csv -s stats-${lg}.csv -l ${lg} ${DIR}/${lg}_dbnary_lemon.ttl.bz2
 done
 
 # Updating latest extractions stats

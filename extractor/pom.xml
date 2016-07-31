@@ -200,7 +200,12 @@
             <artifactId>grizzled-slf4j_2.11</artifactId>
             <version>1.0.2</version>
         </dependency>
-
+        <!-- parboiled2 a scala PEG parser -->
+        <dependency>
+            <groupId>org.parboiled</groupId>
+            <artifactId>parboiled_2.11</artifactId>
+            <version>2.1.3</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -436,12 +441,12 @@
         <repository>
             <id>osr-public-releases</id>
             <name>OSR Public Releases</name>
-            <url>https://mojo-maven.cs.fau.de/content/repositories/public-releases/</url>
+            <url>http://mojo-maven.cs.fau.de/content/repositories/public-releases/</url>
         </repository>
         <repository>
             <id>osr-public-snapshots</id>
             <name>OSR Public snapshots</name>
-            <url>https://mojo-maven.cs.fau.de/content/repositories/public-snapshots/</url>
+            <url>http://mojo-maven.cs.fau.de/content/repositories/public-snapshots/</url>
         </repository>
     </repositories>
 </project>

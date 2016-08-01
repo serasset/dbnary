@@ -89,9 +89,9 @@ public class WikiTool {
     public static String removeTextWithin(String s, ArrayList<Pair> l) {
         int lsize = l.size();
         for (int i = 0; i < lsize; i++) {
-            int j = lsize - i - 1;
-            log.debug("Removing text {}", s.substring(l.get(j).start, l.get(j).end));
-            s = s.substring(0, l.get(j).start) + s.substring(l.get(j).end, s.length());
+	    Pair p = l.get(lsize - i - 1);
+            log.debug("Removing text {}", s.substring(p.start, p.end));
+            s = s.substring(0, p.start) + s.substring(p.end, s.length());
         }
         return s;
     }
@@ -122,7 +122,6 @@ public class WikiTool {
                     argsArray.add(argsString.substring(i, j).trim());
                 } else {
                     Pair p = new Pair(j, j + 1);
-                    //System.out.format("%s\n", templatesLocation);
                     if (templatesLocation.size() == 0 || (!(p.containedIn(templatesLocation)) && !(p.containedIn(linksLocation)))) {
                         argsArray.add(argsString.substring(i, j).trim());
                         i = j + 1;

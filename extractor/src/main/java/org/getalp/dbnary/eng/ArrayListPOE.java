@@ -34,17 +34,15 @@ public class ArrayListPOE extends ArrayList<POE> {
 	    return;
 	}
         StringBuilder string = new StringBuilder();
-        //iterate over elements of input positions
-        //starting from the last Pair in ArrayList positions
+        //iterate over all matches to a compound pattern
+        //starting from the last
         for (int i = positions.size() - 1; i >= 0; i--) {
             int start = positions.get(i).start, end = positions.get(i).end;
             int counter = 0;
-            string.setLength(0);
+            string.setLength(0);//clear StringBuilder
 
-            wholeloop:
             for (int k = start; k < end + 1; k++) {
                 POE poe = this.get(k);
-                partloop:
                 for (int j = 0; j < poe.part.size(); j++) {
                     if (poe.part.get(j).equals("LEMMA")) {
                         if (counter == 0) {//set template as compound
@@ -58,35 +56,34 @@ public class ArrayListPOE extends ArrayList<POE> {
                             string.append(poe.args.get("word1"));
                             string.append("|");
                             counter = 1;
-                            break partloop;
+                            break;
                         } else {//push words back in compound template
                             if (poe.args != null) {
                                 string.append(poe.args.get("word1"));
                             }
-                            POE p = new POE(string.toString(), 1);//1 corresponds to "TEMPLATE"
+                            POE p = new POE(string.toString());
                             this.set(start, p);
                             if (end > start) {
                                 this.subList(start + 1, end + 1).clear();
                             }
-                            break wholeloop;
+			    k = end + 1;
                         }
                     }
                 }
             }
         }
-                                                                                                                                                                      
         /*int j;         
-        for (int i=0; i<matches.size(); i++){                                                                                                                                    
-            j = matches.get(matches.size()-i-2);                                                                                                                                        
-            System.out.format("%s\n", a.get(j).args.get("1"));                                                                                                                                      
-            if (j == matches.get(matches.size()-i-1)){                                                                                                                                            
+        for (int i=0; i<matches.size(); i++){                   
+            j = matches.get(matches.size()-i-2);                                   
+            System.out.format("%s\n", a.get(j).args.get("1"));        
+            if (j == matches.get(matches.size()-i-1)){       
                 System.out.format("the match has length 1, so cannot be compressed anymore; leave everything as it is only replace with LEMMA??");                   
-            } else if (a.get(j).args.get("1").equals("compound")){                                                                              
-                System.out.format("use COMPOUND template and compress to LEMMA");                                                                              
+            } else if (a.get(j).args.get("1").equals("compound")){   
+                System.out.format("use COMPOUND template and compress to LEMMA");     
             } else if (a.get(j).args.get("1").equals("etycomp")){//All parameters except word1= can be omitted.                                                         
                 System.out.format("use ETYCOMP template and compress to LEMMA");//{{etycomp|lang1=de|inf1=|case1=|word1=dumm|trans1=dumb|lang2=|inf2=|case2=|word2=Kopf|trans2=head}}                   
-          } else if (a.get(j).args.get("1").equals("calque")){                                                    
-                System.out.format("use CALQUE template and compress to LEMMA");             
+          } else if (a.get(j).args.get("1").equals("calque")){        
+                System.out.format("use CALQUE template and compress to LEMMA");
             } else if (a.get(j).args.get("1").equals("blend")){                                        
                 System.out.format("use BLEND template and compress to LEMMA");                                                                   
             } else {                                                                                                                 

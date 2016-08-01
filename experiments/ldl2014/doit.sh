@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DIR=/home/serasset/dev/wiktionary/extracts/lemon/latest
-LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id"
+LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la"
 JAVA=/usr/java/jdk7/bin/java
 VERS=1.0-SNAPSHOT
 

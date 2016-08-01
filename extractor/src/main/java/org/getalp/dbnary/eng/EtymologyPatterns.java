@@ -2,10 +2,12 @@ package org.getalp.dbnary.eng;
 
 import java.util.regex.Pattern;
 
+/** 
+ * @author pantaleo
+ */
 public class EtymologyPatterns {
 
     public final static String textAfterSupersededPatternString;
-    //todo:deal with "equivalent to" string in etymology section
     public final static String textEquivalentToPatternString;
 
     public final static String plusPatternString;
@@ -14,7 +16,7 @@ public class EtymologyPatterns {
     public final static String fromPatternString;
     public final static String cognateWithPatternString;
     public final static String templatePatternString;
-    public final static String wiktionaryPatternString;
+    public final static String wiktionaryPatternString; 
     public final static String compoundOfPatternString;
     public final static String uncertainPatternString;
     public final static String abovePatternString;
@@ -23,6 +25,7 @@ public class EtymologyPatterns {
     public final static String orPatternString;
     public final static String withPatternString;
     public final static String possiblePatternString;
+    public final static String bulletPatternString; 
 
     static {
 
@@ -54,10 +57,10 @@ public class EtymologyPatterns {
                 .append("[Aa]phetic variation of|")
                 .append("[Dd]everbal of|")
                 .append("\\<").toString();
-        templatePatternString = new StringBuilder()
-                .append("\\{\\{").toString();
-        wiktionaryPatternString = new StringBuilder()
-                .append("(?:'')?\\[\\[").toString();
+	templatePatternString = new StringBuilder()
+	    .append("\\{\\{").toString();
+	wiktionaryPatternString = new StringBuilder()
+	    .append("\\[\\[").toString();//removed (?:'') as this causes an error in WiktionaryExtractor and function containedIn
         abovePatternString = "[Ss]ee above"; //this should precede cognateWithPatternString which matches against "[Ss]ee"
         cognateWithPatternString = new StringBuilder() //this should follow abovePatternString which matches against "[Ss]ee above"
                 .append("[Rr]elated(?: also)? to|")
@@ -77,15 +80,16 @@ public class EtymologyPatterns {
         andPatternString = "\\s+and\\s+";
         orPatternString = "[^a-zA-Z0-9]or[^a-zA-Z0-9]";
         withPatternString = "[^a-zA-Z0-9]with[^a-zA-Z0-9]";
-
+	bulletPatternString = new StringBuilder()
+	    .append("((SENSE )?(LEMMA )(SENSE )?(COMMA ))?(SENSE )?(LEMMA)( SENSE)?").toString();
         possiblePatternString = new StringBuilder()
                 .append("(")
                 .append(fromPatternString)
                 .append(")|(")
-                .append(templatePatternString)
-                .append(")|(")
-                .append(wiktionaryPatternString)
-                .append(")|(")
+	    .append(templatePatternString)
+	    .append(")|(")
+	    .append(wiktionaryPatternString)
+	    .append(")|(")  
                 .append(abovePatternString)
                 .append(")|(")
                 .append(cognateWithPatternString)
@@ -110,11 +114,11 @@ public class EtymologyPatterns {
                 .append(")").toString();
     }
 
-    public final static String[] possibleString = {"FROM", "", "LEMMA", "ABOVE", "COGNATE_WITH", "COMPOUND_OF", "UNCERTAIN", "COMMA", "YEAR", "AND", "PLUS", "DOT", "OR", "WITH"};
+    public final static String[] possibleString = {"FROM",  "", "LEMMA","ABOVE", "COGNATE_WITH", "COMPOUND_OF", "UNCERTAIN", "COMMA", "YEAR", "AND", "PLUS", "DOT", "OR", "WITH", "SENSE"};
     public final static Pattern possiblePattern = Pattern.compile(possiblePatternString);
     public final static Pattern templatePattern = Pattern.compile(templatePatternString);
     public final static Pattern wiktionaryPattern = Pattern.compile(wiktionaryPatternString);
-
+    
     public final static Pattern textEquivalentToPattern = Pattern.compile(textEquivalentToPatternString);
     public final static Pattern textAfterSupersededPattern = Pattern.compile(textAfterSupersededPatternString);
     //find COMPOUND_OF pattern (to replace it with compound template)
@@ -131,6 +135,7 @@ public class EtymologyPatterns {
             .append("(LANGUAGE )?")
             .append("(LEMMA ))").toString();
     public final static Pattern compoundPattern = Pattern.compile(compoundPatternString);
+    public final static Pattern bulletPattern = Pattern.compile(bulletPatternString);
 
     //(FROM )?(LANGUAGE|LANGUAGE LEMMA|LEMMA) (COMMA|DOT) unless FROM LANGUAGE LEMMA,LEMMA,LEMMA with all lemma from the same language                          
     public final static String originPatternString = new StringBuilder()
@@ -148,5 +153,4 @@ public class EtymologyPatterns {
             .append("(COMMA |AND )?)+")
             .append("(DOT )?").toString();
     public final static Pattern cognatePattern = Pattern.compile(cognatePatternString);
-
 }

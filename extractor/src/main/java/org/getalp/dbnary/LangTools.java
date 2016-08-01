@@ -15,7 +15,7 @@ public class LangTools {
         
         if (res == null && h != null && h.containsKey(s)) {
             res = h.get(s);
-	    //res = getCode(s);//checkthis change!!!
+	    //res = getCode(s);//check this change!!!
         }
 
         return res;
@@ -68,6 +68,4 @@ public class LangTools {
     public static String getTerm2Code(String l) {
         return ISO639_3.sharedInstance.getTerm2Code(l);
     }
-
-
 }

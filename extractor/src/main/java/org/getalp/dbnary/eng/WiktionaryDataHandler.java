@@ -136,26 +136,22 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     }
 
     public void registerDerived(ArrayListPOE derived){
-	if (derived.size() > 0){
+	if (derived != null && derived.size() > 0){
 	    String lang = null;
 	    Resource vocable0 = null;
 	    int counter = 0;
 	    for (POE poe : derived){
-		if (poe.part != null) {
-		    if (poe.part.get(0).equals("LEMMA")) {
-		        if (counter == 0){
-			    lang = poe.args.get("lang");
-		            //register derives_from
-	                    vocable0 = aBox.createResource(getPrefixe(lang) + "__ee_" + uriEncode(poe.args.get("word1").split(",")[0].trim()), DBnaryEtymologyOnt.EtymologyEntry);
-	                    aBox.add(vocable0, DBnaryEtymologyOnt.derivesFrom, currentEtymologyEntry);
-		        } else {
-		            //register etymologically_equivalent_to
-		            Resource vocable2 = aBox.createResource(getPrefixe(lang) + "__ee_" + uriEncode(poe.args.get("word1").split(",")[0].trim()), DBnaryEtymologyOnt.EtymologyEntry);
-		            aBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable0); 
-		        }
-		        counter ++;
-		    }
+	        if (counter == 0){
+	       	    lang = poe.args.get("lang");
+		    //register derives_from
+	            vocable0 = aBox.createResource(getPrefixe(lang) + "__ee_" + uriEncode(poe.args.get("word1").split(",")[0].trim()), DBnaryEtymologyOnt.EtymologyEntry);
+	            aBox.add(vocable0, DBnaryEtymologyOnt.derivesFrom, currentEtymologyEntry);
+		} else {
+		    //register etymologically_equivalent_to
+		    Resource vocable2 = aBox.createResource(getPrefixe(lang) + "__ee_" + uriEncode(poe.args.get("word1").split(",")[0].trim()), DBnaryEtymologyOnt.EtymologyEntry);
+		    aBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable0);
 		}
+		counter ++;
 	    }
 	}
     }
@@ -172,13 +168,12 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     }
 
     public void registerEtymology(ArrayListPOE arrayPOE, String currentLang){
-	currentEtymologyEntry = null;
-	registerCurrentEtymologyEntry(currentLang);
-	
+	currentEtymologyEntry = null;	
 	if (arrayPOE == null || arrayPOE.size() == 0){
 	    return;
 	}
-	
+
+	registerCurrentEtymologyEntry(currentLang);
 	int counter = 0;
 	Resource vocable0 = currentEtymologyEntry;
 	String lang0 = currentLang, lang = null;
@@ -188,12 +183,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 	    for (int k = 0; k < poe.part.size(); k++) {
 		int type = 1;
 	    	if (poe.part.get(k).equals("LEMMA")){
-		    if (k==0 && j>0 && arrayPOE.get(j-1).part.equals("LANGUAGE")){
-		        lang = arrayPOE.get(j-1).args.get("lang");
-		        poe.args.put("lang", lang);
-		    } else {
-		        lang = poe.args.get("lang");
-		    }
+		    lang = poe.args.get("lang");
 		    Resource vocable = aBox.createResource(getPrefixe(lang) + "__ee_" + uriEncode(poe.args.get("word1").split(",")[0].trim()), DBnaryEtymologyOnt.EtymologyEntry);
 
 		    if (lang != null && lang0 != null){
@@ -240,7 +230,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     }
     
     public void registerDescendants(ArrayListPOE descendants){
-	if (descendants.size() > 0){
+	if (descendants != null && descendants.size() > 0){
 	    int counter = 0; //number of etymologically equivalent descendants  
 	    String lang = null; //language of the descendant
 	    Resource vocable = null;

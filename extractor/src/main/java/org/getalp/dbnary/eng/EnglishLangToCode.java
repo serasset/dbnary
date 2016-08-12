@@ -652,16 +652,6 @@ public class EnglishLangToCode extends LangTools {
 		return threeLettersCode(h, s);
 	}
 
-    public static String enNormalize(String lang){
-	if (lang.equals("Medieval Latin")){
-	    return "lat-med";//note: this is not an ISO code
-	} else if (lang.equals("New Latin")){
-	    return "new-latin";
-	} else {
-	    return normalize(lang);
-	}
-    }
-
     private static void add(String n, String c) {
         h.put(n.toLowerCase(), c);
     }

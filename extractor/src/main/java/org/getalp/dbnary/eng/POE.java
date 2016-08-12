@@ -35,58 +35,74 @@ public class POE {
      * @param index an integer specifying the Etymology pattern among possibleString
      */
     public POE(String group, int index){
-	if (index==1 || index == 2){
+	if (index == 1 || index == 2){
 	    log.debug("error in group index");
 	}
 	string = group;
 	part = new ArrayList<String>(); 
 	part.add(EtymologyPatterns.possibleString[index]);
     }
+    
     //TODO: parse nested templates
     /**                                      
-     * Constructor
+     * Constructor used to parse wiktionary links
      * 
-     * @param group a String specifying the "string" parameter of the object of class POE (e.g., "from")
-     * @param index an integer specifying the Etymology pattern among possibleString                                 
+     * @param group a String containing the argument of the wiktionary link
+     * @param lang a String specifying the language
      */ 
     public POE(String group, String lang){
 	string = group;
 	part = new ArrayList<String>();
 
+	if (string.startsWith("Kanien'keh")) {
+	    string = "Kanienkehaka";
+	}
 	String[] subs = string.split("\\|");
-	if (subs.length > 1) {
-	    log.debug("Ignoring unexpected argument {} in wiktionary link", string);
-	    string = null;
+	String[] substring = subs[0].split(":"); 
+	String[] subsubs = subs[0].split("\\#");
+	for (String f : subs){
+	    System.out.format("subs=%s\n", f);
+	}
+	for (String f : substring){
+	    System.out.format("substring=%s\n", f);
+	}
+	for (String f : subsubs){
+	    System.out.format("subsubs=%s\n", f);
+	}
+       
+	System.out.format("%s\n", substring[0].length());
+	if (substring[0].length() == 0 || substring[0].equals("w") || substring[0].equals("Image") || substring[0].equals("Category") || substring[0].equals("File") || substring[0].equals("Wikisaurus")) { //it's not a Wiktionary link eg:  [[:Category:English words derived from: load (noun)]]
+	    log.debug("Ignoring unexpected argument {} in wiki link", string);
 	    args = null;
+	    string = null;
 	    part = null;
 	} else {
-	    if (string.startsWith("Kanien'keh")) {
-		string = "Kanienkehaka";
-	    }
-	    String[] substring = string.split(":");
-	    if (substring.length == 1) { //it's a Wiktionary link to the English version of Wiktionary
-		log.debug("Processing wiki link {} as {} word", string, lang);
-		args = new HashMap<String, String>();
-		args.put("1", "l");
-		args.put("word1", cleanUp(substring[0]));
-		args.put("lang", lang);
-		part.add("LEMMA");
-		string = "l|" + lang + "|" + substring[0];
-	    } else {
-		if (substring[0].length() == 0 || substring[0].equals("Image") || substring[0].equals("Category") || substring[0].equals("File") || substring[0].equals("Wikisaurus")) { //it's not a Wiktionary link eg:  [[:Category:English words derived from: load (noun)]]
-		    log.debug("Ignoring unexpected argument {} in wiki link", string);
-		    args = null;
-		    string = null;
-		    part = null;
-		} else {
-		    args = new HashMap<String, String>();
-		    args.put("1", "l");
-		    args.put("lang", substring[0]);
-		    args.put("word1", cleanUp(substring[1]));
+	    args = new HashMap<String, String>();
+	    args.put("1", "l");    
+	    if (subsubs.length > 1){
+		lang = EnglishLangToCode.threeLettersCode(subsubs[1].trim());
+		if (lang != null){
+		    args.put("word1", subsubs[0]);
+		    args.put("lang", lang);
 		    part.add("LEMMA");
-		    log.debug("Processing wiki link {} as {} template \\{\\{{}\\}{}\\}\\}", string, "l|" + substring[0], substring[1]);
-		    string = "l|" + substring[0] + "|" + substring[1];
+		    string = "l|" + lang + "|" + args.get("word1");   
+		} else {
+		    log.debug("Ignoring unexpected argument {} in wiki link", string); 
+		    args = null;
+		    part = null;
+		    string = null;
 		}
+	    } else {	    
+	        if (substring.length == 1) { //it's a Wiktionary link to the English version of Wiktionary
+	    	    args.put("lang", lang);
+		    args.put("word1", cleanUp(substring[0]));
+	        } else {
+		    args.put("lang", substring[0]); 
+		    args.put("word1", cleanUp(substring[1]));
+	        }
+		part.add("LEMMA"); 
+		string = "l|" + args.get("lang") + "|" + args.get("word1");   
+	        log.debug("Processing wiki link {} as {} word {}", string, args.get("lang"), args.get("word1"));
 	    }
 	}
 	this.normalizeLang();
@@ -96,7 +112,7 @@ public class POE {
 	if (this.args != null) {
 	    if (this.args.containsKey("lang")) {
 		String languageCode = this.args.get("lang");
-		languageCode = EnglishLangToCode.enNormalize(languageCode);
+		languageCode = EnglishLangToCode.threeLettersCode(this.args.get("lang"));
 		if (languageCode != null) {
 		    this.args.put("lang", languageCode);
 		}//else leave it as it is
@@ -131,7 +147,38 @@ public class POE {
         string = group;
         part = new ArrayList<String>();
             args = WikiTool.parseArgs(group);
-	    if (args.get("1").equals("sense")){
+	    if (args.get("1").equals("Han compound")){
+		part.add("FROM");
+	        part.add("LEMMA");
+		for (int kk = 2; kk < 10; kk++) {
+		    if (args.get(Integer.toString(kk)) != null) {
+			args.put("word" + Integer.toString(kk - 2), args.get(Integer.toString(kk)));
+			args.remove(Integer.toString(kk));
+		    } else {
+			break;
+		    }
+		}
+		args.put("lang", "Hani");//??
+	    } else if (args.get("1").equals("etymtree")){
+		if (args.get("3") != null && args.get("4") != null){
+		    args.put("lang", args.get("3"));
+		    args.remove("3");
+		    args.put("word1", args.get("4"));
+		    args.remove("4");
+		} else {
+		    log.debug("Skipping etymtree template {}", string);
+		}
+	    } else if (args.get("1").equals("Han simp")){
+		if (args.get("2") != null){
+		    part.add("FROM");
+		    part.add("LEMMA");
+		    args.put("lang", "Hani");//??  
+		    args.put("word1", args.get("2"));
+		    args.remove("2");
+		} else {
+		    log.debug("Skipping Han simp template {}", string);
+		}
+	    } else if (args.get("1").equals("sense")){
 		log.debug("Found sense template {}", string);
 		part.add("SENSE");
 	    } else if (args.get("1").equals("cog") || args.get("1").equals("cognate")) {//e.g.:       {{cog|fr|orgue}}
@@ -142,23 +189,24 @@ public class POE {
             } else if (args.get("1").equals("etymtwin")) {//e.g.:    {{etymtwin|lang=en}} {{m|en|foo}}
                 part.add("COGNATE_WITH");
             } else if (args.get("1").equals("bor") || args.get("1").equals("borrowing")){
+		part.add("FROM");
 		if (args.get("lang") != null){
+		    if (args.get("2") != null) {
+		        args.put("lang", args.get("2"));
+		        args.remove("2");
+		    }
 		    if (args.get("3") != null) {
-		        args.put("lang", args.get("3"));
+		        part.add("LEMMA");
+		        args.put("word1", cleanUp(args.get("3")));
 		        args.remove("3");
 		    }
-		    if (args.get("4") != null) {
-		        part.add("LEMMA");
-		        args.put("word1", cleanUp(args.get("4")));
-		        args.remove("4");
-		    }
 		} else {
-		    args.put("lang", args.get("2"));
-		    args.remove("2");
-		    if (args.get("3") != null) {
+		    args.put("lang", args.get("3"));
+		    args.remove("3");
+		    if (args.get("4") != null) {
 			part.add("LEMMA");
-			args.put("word1", cleanUp(args.get("3")));
-			args.remove("3");
+			args.put("word1", cleanUp(args.get("4")));
+			args.remove("4");
 		    }     
 		}
 	    } else if (args.get("1").equals("inh") || args.get("1").equals("inherited") || args.get("1").equals("der") || args.get("1").equals("derived") || args.get("1").equals("loan")) {//1=language, 2=language, (3=term), (4|alt=alternative), (tr=translation),(pos=) || 1=language, 2=language, (3=term)   || //1=language, 2=language, (3=term), (4|alt=alternative), (tr=translation),(pos=)
@@ -277,10 +325,28 @@ public class POE {
                     args.remove("4");
                 }
             } else if (args.get("1").equals("back-form") || args.get("1").equals("named-after")) { //1=term, (2=display form)
-                part.add("FROM");
-                part.add("LEMMA");
-                args.put("word1", cleanUp(args.get("2")));
-                args.remove("2");
+		if (args.get("lang")==null){//how to deal with {{back-form|ilu|lang=io|gloss=he, him|nodot=yes}}, {{l|io|elu|gloss=she, her}} and {{l|io|olu|gloss=it}}.
+		    if (args.get("2")!= null){
+			args.put("lang", args.get("2"));
+			args.remove("2");
+			part.add("FROM"); 
+		    } else {
+			args.put("lang", "en");
+			log.debug("Warning: no language specified for lemma {} in back-formation template, using English", string);
+		    }
+		    if (args.get("3")!= null){
+		        args.put("word1", cleanUp(args.get("3")));
+		        args.remove("3");
+			part.add("LEMMA");
+		    }
+		} else {
+		    if (args.get("2")!= null){ 
+                        args.put("word1", cleanUp(args.get("2")));
+                        args.remove("2");
+		        part.add("FROM");
+		        part.add("LEMMA");
+		    }
+		}
             } else if (args.get("1").equals("fi-form of")){
 		part.add("FROM");
 		part.add("LEMMA");
@@ -357,13 +423,14 @@ public class POE {
                 args.put("word1", cleanUp(args.get("2")));
                 args.remove("2");
                 part.add("LEMMA");
-            } else if (args.get("1").equals("etyl")) {
+            } else if (args.get("1").equals("etyl") || args.get("1").equals("_etyl")) {
                 part.add("LANGUAGE");
                 if (args.get("2") != null) {
                     args.put("lang", args.get("2"));
                     args.remove("2");
                 }
-            } else if (args.get("1").equals("etystub") || args.get("1").equals("rfe")) {
+            } else if (args.get("1").equals("etystub") || args.get("1").equals("rfe") || args.get(
+"1").equals("unk.")) {
                 part.add("EMPTY");
             } else if (args.get("1").equals("-er")) {
                 args.put("word1", cleanUp(args.get("2")));

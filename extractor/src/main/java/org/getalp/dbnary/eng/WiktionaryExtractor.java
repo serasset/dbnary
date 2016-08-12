@@ -6,7 +6,8 @@ package org.getalp.dbnary.eng;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import java.util.HashSet;
+    
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.wiki.*;
 import org.slf4j.Logger;
@@ -27,7 +28,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     //DONE: extract pronunciation
     //TODO: attach multiple pronounciation correctly
     static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
-
+    
+    private final static String etymtreePagePrefix = "Template:etymtree"; 
     protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
     protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
     protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
@@ -263,7 +265,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	    return;
 	}
 	currentEtymologyString = cleanUpEtymologyString(currentEtymologyString);
-
 	System.out.format("%s\n", currentEtymologyString);
 	ArrayListPOE currentEtymologyAsPOE = toArrayListPOE(currentEtymologyString, lang);
 	currentEtymologyAsPOE = replaceCompoundPatternMatch(currentEtymologyAsPOE);
@@ -272,27 +273,35 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	ewdh.registerEtymology(currentEtymologyAsPOE, lang);
     }
 
-    ArrayListPOE extractEquivalentLemmas(String bulletString, String lang){
-	ArrayListPOE equivalentLemmas = new ArrayListPOE();	
-	ArrayListPOE bulletPOE = toArrayListPOE(bulletString, lang);
+    ArrayListPOE extractBullet(String bulletString, String lang){
+	ArrayListPOE equivalentLemmas = new ArrayListPOE();
 	
+	//parse a bullet like this: "** Sardinian: [[pobulu]], [[poburu]], [[populu]]"
+	//parse a bullet like this: "* {{sense|kill}} {{l|en|top oneself}}"
+	String[] subs = bulletString.split(":");
+	if (subs.length == 2) {
+	    String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].trim());
+	    if (bulletLang != null){
+		bulletString = "{{_etyl|" + bulletLang + "|" + lang + "}} " + subs[1].trim();
+	    } else {
+		log.debug("Null language corresponding to bullet {}", subs[0].trim());
+	    }
+	} else if (subs.length > 2){
+	    log.debug("Ignoring bullet {}: unrecognized character ':'", bulletString);
+	    return equivalentLemmas;//return empty 
+	}
+	
+	ArrayListPOE bulletPOE = toArrayListPOE(bulletString, lang);	
 	bulletPOE = replaceSenseMatch(bulletPOE);
 	for (POE p : bulletPOE){
 	    if (p.part.get(0).equals("LEMMA")){
 		equivalentLemmas.add(p);
 	    }
 	}
-
-	//check that all lemmas share the same language
-        for (POE lemma : equivalentLemmas){
-	    if (! lemma.args.get("lang").equals(lang)){
-		log.debug("ignoring equivalent lemmas {}", bulletString);
-		return null;
-	    }
-	}
 	if (equivalentLemmas.size() > 1) {
 	    log.debug("Warning: more than one word found in bulletlist, registering them as etymologically equivalent: {}", bulletString);
 	}
+	//System.out.format("size of res = %s\n", equivalentLemmas.size());
 	return equivalentLemmas;
     }
 
@@ -306,41 +315,107 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	Matcher bulletListMatcher = WikiPatterns.bulletListPattern.matcher(pageContent);
 	bulletListMatcher.region(blockStart, end); 
         while (bulletListMatcher.find()) {
-            String bullet = bulletListMatcher.group(1);
-	    ArrayListPOE equivalentLemmas = extractEquivalentLemmas(bullet, lang);
-	    ewdh.registerDerived(equivalentLemmas);
+	    ArrayListPOE bulletPOE = extractBullet(bulletListMatcher.group(1), lang);
+	    //check that all lemmas share the same language
+	    for (POE lemma : bulletPOE){
+		if (! lemma.args.get("lang").equals(lang)){
+		    log.debug("Ignoring derived words {}", bulletListMatcher.group());
+		    return;
+		}
+	    }
+	    ewdh.registerDerived(bulletPOE);
         }
     }
 
     protected void extractDescendants(int blockStart, int end){
 	extractDescendants(blockStart, end, "eng");
     }
-    
-    protected void extractDescendants(int blockStart, int end, String lang) {
-	ewdh.registerCurrentEtymologyEntry(lang);
-	ewdh.addCurrentEtymologyEntryToAncestor();
-	
-	Matcher multipleBulletListMatcher = WikiPatterns.multipleBulletListPattern.matcher(pageContent);
-	multipleBulletListMatcher.region(blockStart, end);
+
+    protected boolean matchMultipleBulletList(String s, int start, int end, String lang){
+	Matcher multipleBulletListMatcher = WikiPatterns.multipleBulletListPattern.matcher(s);
+	multipleBulletListMatcher.region(start, end);
 
 	int nStars = 0;
 	while (multipleBulletListMatcher.find()) {
-	    String bullet = multipleBulletListMatcher.group(2);
 	    nStars = multipleBulletListMatcher.group(1).length();
-	    for (int i = nStars + 1; i < ewdh.ancestors.size(); i++){
-		ewdh.ancestors.remove(i);
-	    }
+	    ewdh.cutAncestors(nStars);
 	    //ewdh.trimToSize();//necessary?
 
-	    ArrayListPOE equivalentLemmas = extractEquivalentLemmas(bullet, lang);
-	    ewdh.registerDescendants(equivalentLemmas);
+	    ArrayListPOE bulletPOE = extractBullet(multipleBulletListMatcher.group(2), lang); 
+	    ewdh.addAncestorsAndRegisterDescendants(bulletPOE);      
 	}
-	ewdh.ancestors.clear();
+	return nStars > 0 ? true : false; 
+    }
+
+    protected boolean extractDescendantsBullets(int start, int end, String lang){
+      	ewdh.initializeAncestors();
+	ewdh.ancestors.add(ewdh.currentEtymologyEntry);  
+	boolean isMatch = matchMultipleBulletList(pageContent, start, end, lang);
+	ewdh.finalizeAncestors();
+	return isMatch;
+    }
+
+    protected void extractDescendantsEtymtree(int start, int end){
+	String descendantsContent = pageContent.substring(start, end);
+	ArrayList<Pair> templatesLocations = WikiTool.locateEnclosedString(descendantsContent, "{{", "}}");
+	for (Pair template : templatesLocations){
+	    POE poe = new POE(descendantsContent.substring(template.start + 2, template.end - 2));
+	    if (poe.args != null){
+		if (poe.args.get("1") != null){
+		    if (poe.args.get("1").equals("etymtree")){
+			String lemma = poe.args.get("word1");
+			String lang = poe.args.get("lang");
+			boolean adding = ewdh.etymtreeHashSet.add(lang + "_" + lemma);
+			if (adding){
+			    String etymtreePage = etymtreePagePrefix + "/" + lang + "/" + lemma;
+			    String etymtreePageContent = wi.getTextOfPage(etymtreePage);
+			    if (etymtreePageContent == null){
+				log.debug("Cannot get etymtree page {}", etymtreePage);
+			    } else {
+				log.debug("Extracting etymtree page {}", etymtreePage);
+
+				ewdh.initializeAncestors();
+				matchMultipleBulletList(etymtreePageContent, 0, etymtreePageContent.length(), lang);
+				ewdh.ancestors.clear();
+			    }
+			}
+		    } else {
+			log.debug("Ignoring template {} in Descendants section", poe.args.get("1"));
+		    }
+		}
+	    }
+	}
+    }
+    
+    protected void extractDescendants(int blockStart, int end, String lang){
+	ewdh.registerCurrentEtymologyEntry(lang);
+	boolean isMatch = extractDescendantsBullets(blockStart, end, lang);
+	//match with template etymtree       
+	//if there is no match to multiple bullet list 
+	if (isMatch == false){
+            extractDescendantsEtymtree(blockStart, end);
+	}
     }    
     
     private String cleanUpEtymologyString(String s) {
-	//WikiTool.removeReferencesIn(s);
 	s = s.trim();
+	
+	//REMOVE TEXT WITHIN HTML REFERENCE TAG
+	s = WikiTool.removeReferencesIn(s);
+	//REMOVE EVERYTHING AFTER {{rel-top|detailed etymology}}
+	int index = s.indexOf("{{rel-top|detailed etymology}}");
+	if (index > 0){
+	    s = s.substring(0, index);
+	}
+	//REMOVE EVERYTHING AFTER {{rel-top|cognates}}
+	index = s.indexOf("{{rel-top|cognates}}");
+	if (index > 0){
+	    s = s.substring(0, index);
+	}
+	//REMOVE TABLES
+	ArrayList<Pair> tableLocations = WikiTool.locateEnclosedString(s, "{|", "|}");
+	s = WikiTool.removeTextWithin(s, tableLocations);
+	
 	//REMOVE TEXT WITHIN PARENTHESES UNLESS PARENTHESES FALL INSIDE A WIKI LINK OR A WIKI TEMPLATE
         //locate templates {{}}
         ArrayList<Pair> templatesLocations = WikiTool.locateEnclosedString(s, "{{", "}}");
@@ -357,14 +432,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 parenthesesLocations.remove(j);//ignore parentheses that are contained in a link or a template
             }
         }
-        s = WikiTool.removeTextWithin(s, parenthesesLocations);//remove parentheses thatare not contained in a link or a template
-        //REMOVE TEXT WITHIN HTML REFERENCE TAG
-	s = WikiTool.removeReferencesIn(s);
-        //PUT A "." BEFORE STRING "SUPERSEDED" (or equivalent patterns)
+        s = WikiTool.removeTextWithin(s, parenthesesLocations);//remove parentheses that are not contained in a link or a template
+	
+        //REMOVE EVERYTHING AFTER STRING "SUPERSEDED" (or equivalent patterns)
+	//UNLESS "SUPERSEDED" FALLS INSIDE A WIKI LINK OR A WIKI TEMPLATE
+	//(i.e., unless isWiki == true)
+	//locate links and templates {{}}
+	ArrayList<Pair> templatesAndLinksLocations = WikiTool.locateEnclosedString(s, "{{", "}}");
+	templatesAndLinksLocations.addAll(WikiTool.locateEnclosedString(s, "[[", "]]"));
         Matcher m = EtymologyPatterns.textAfterSupersededPattern.matcher(s);
+	boolean isWiki = false;
         while (m.find()) {
-            s = s.substring(0, m.start()) + "." + s.substring(m.start(), s.length() - 1);
-            break;
+	    for (Pair p : templatesAndLinksLocations){
+		if (m.start() >= p.start && m.start() <= p.end){
+		    isWiki = true;
+		}
+	    }
+	    if (! isWiki){
+		s = s.substring(0, m.start());
+		break;
+	    }
         }
         //REMOVE EVERYTHING AFTER "equivalent to {{...}}"
         m = EtymologyPatterns.textEquivalentToPattern.matcher(s);
@@ -373,17 +460,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             log.debug("Ignoring string {} in Etymology section of word {}", m.group(), wiktionaryPageName);
             break;
         }
-	//REMOVE EVERYTHING AFTER {{rel-top|detailed etymology}}
-	int indexOfDetEty = s.indexOf("{{rel-top|detailed etymology}}");
-	if (indexOfDetEty > 0){
-	    s = s.substring(0, indexOfDetEty);
-	}
 	//ADD FINAL DOT
 	if (s != null && !s.trim().isEmpty()){
             //only useful to signal end of etymology when etymology string doesn't end with a dot
             s += ".";
 	}
-	//etymologyString = etymologyString.replaceAll(EtymologyPatterns.textImageCategory, " ");
         return s;
     }				    
     
@@ -411,12 +492,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                         if (match.containedIn(template)) {//match is contained in a template
                             isMatchContainedInTemplateOrLink = true;
                             if (i == 1) {//match is a template
+				//System.out.format("match is a template=%s\n", s.substring(template.start + 2, template.end - 2));
+				
                                 POE poe = new POE(s.substring(template.start + 2, template.end - 2));
                                 if (poe.part != null) {
 				    if (poe.args != null){
-					if (poe.args.get("1").equals("etyl")){
+					if (poe.args.get("1").equals("etyl") || poe.args.get("1").equals("_etyl")){
 					    etylLang = poe.args.get("lang");
 					    etylMatch = matchCounter;
+					    //System.out.format("etyllang=%s\n", etylLang);    
 					}
 					//when a LEMMA is preceded by a LANGUAGE etyl template
 					//set language of LEMMA to language of etyl template
@@ -429,7 +513,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                                     a.add(poe);
 				    matchCounter ++;
                                 }
-				
                                 break;
                             }//else ignore match
                         }
@@ -445,8 +528,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                             if (match.containedIn(link)) {
                                 isMatchContainedInTemplateOrLink = true;
                                 if (i == 2) {//match is a link
-                                    POE poe = new POE(s.substring(possibleMatcher.end(), link.end - 2), lang);
+                                    POE poe = new POE(s.substring(link.start + 2, link.end - 2), lang);
+				    //System.out.format("match is a link=%s, string %s, lang %s\n", s.substring(link.start + 2, link.end - 2), poe.string, lang);
                                     if (poe.part != null) {
+					if (matchCounter > 0){
+					    if (matchCounter == etylMatch + 1){
+						poe.args.put("lang", etylLang);
+					    }
+					}  
                                         a.add(poe);
 					matchCounter ++;
                                     }
@@ -465,21 +554,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 }
             }
         }
-        return a;
+	return a;
     }
 
     private ArrayListPOE replaceSenseMatch(ArrayListPOE a){
+	//deal with "SENSE LEMMA" and "LEMMA SENSE"
 	int aSize = a.size();
 	if (aSize > 1){
 	    for (int i = 0; i < aSize; i ++){
 	        if (a.get(i).part.get(0).equals("SENSE")){
 		    String sense = a.get(i).args.get("2");
+		    //System.out.format("found sense %s\n", sense); 
 		    if (i + 1 < aSize && a.get(i + 1).part.get(0).equals("LEMMA")){
 		        POE tmp = a.get(i + 1);
 		        tmp.args.put("sense", sense);
 		        a.set(i, tmp);
 		        a.remove(i + 1);
 		        aSize --;
+			//System.out.format("sense templ preceeds lemma, new lemma: %s\n",tmp.args);  
 		    } else if (i - 1 >= 0 && a.get(i - 1).part.get(0).equals("LEMMA")){
 			POE tmp = a.get(i - 1);
 			tmp.args.put("sense", sense);
@@ -487,6 +579,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 			a.remove(i - 1);
 			aSize --;
 			i --;
+			//System.out.format("sense templ follows lemma, new lemma: %s\n",tmp.args);  
 		    }
 		}
 	    }
@@ -1211,7 +1304,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     protected void extractPron(int startOffset, int endOffset) {
-
         Matcher pronMatcher = pronPattern.matcher(pageContent);
         pronMatcher.region(startOffset,endOffset);
         while (pronMatcher.find()) {

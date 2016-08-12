@@ -67,5 +67,4 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
             registerPronunciation(currentCanonicalForm, pron, lang);
         }
     }
-
 }

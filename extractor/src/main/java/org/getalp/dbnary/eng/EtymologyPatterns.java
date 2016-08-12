@@ -25,11 +25,11 @@ public class EtymologyPatterns {
     public final static String orPatternString;
     public final static String withPatternString;
     public final static String possiblePatternString;
-    public final static String bulletPatternString; 
-
+    public final static String bulletPatternString;
+    
     static {
 
-        textAfterSupersededPatternString = "(?:[Ss]uperseded|[Dd]isplaced( native)?|[Rr]eplaced|[Mm]ode(?:l)?led on)";
+        textAfterSupersededPatternString = "(?:[Ss]uperseded|[Dd]isplaced( native)?|[Rr]eplaced|[Mm]ode(?:l)?led on|[Rr]eplacing)";
         textEquivalentToPatternString = "equivalent to\\s*\\{\\{[^\\}]+\\}\\}";
 
         plusPatternString = "\\+";
@@ -47,13 +47,15 @@ public class EtymologyPatterns {
                 .append("[Ii]terative of|")
                 .append("[Ss]hort(?:hening|hen|hened)? (?:form )?(?:of|from)?|")
                 .append("[Tt]hrough|")
+	    .append("[Pp]articiple of|") 
                 //"\\>", //!!
                 .append("[Aa]lteration of|")
                 .append("[Vv]ia|")
                 .append("[Dd]iminutive (?:form )?of|")
                 .append("[Uu]ltimately of|")
                 .append("[Vv]ariant of|")
-                .append("[Pp]et form of|")
+	        .append("[Pp]lural of|")
+	    .append("form of|")//pet form, ablauted form of
                 .append("[Aa]phetic variation of|")
                 .append("[Dd]everbal of|")
                 .append("\\<").toString();
@@ -76,12 +78,12 @@ public class EtymologyPatterns {
                 .append("[Mm]erg(?:ing |er )(?:of |with )?(?: earlier )?|")
                 .append("[Uu]niverbation of ").toString();
         uncertainPatternString = "[Oo]rigin uncertain";
-        yearPatternString = "(?:[Aa].\\s*?[Cc].?|[Bb].?\\s*[Cc].?)?\\s*\\d++\\s*(?:[Aa].?\\s*[Cc].?|[Bb].?\\s*[Cc].?|th century|\\{\\{C\\.E\\.\\}\\})?";
-        andPatternString = "\\s+and\\s+";
+        yearPatternString = "(?:[Aa].\\s*?[Cc].?|[Bb].?\\s*[Cc].?)?\\s*\\d++\\s*(?:[Aa].?\\s*[Cc].?|[Bb].?\\s*[Cc].?|th century|\\{\\{C\\.E\\.\\}\\})?";//16th century
+        andPatternString = "\\s+and\\s+|with suffix ";
         orPatternString = "[^a-zA-Z0-9]or[^a-zA-Z0-9]";
         withPatternString = "[^a-zA-Z0-9]with[^a-zA-Z0-9]";
 	bulletPatternString = new StringBuilder()
-	    .append("((SENSE )?(LEMMA )(SENSE )?(COMMA ))?(SENSE )?(LEMMA)( SENSE)?").toString();
+	    .append("(LANGUAGE )?((SENSE )?(LEMMA)( SENSE)?( COMMA )?)+").toString();
         possiblePatternString = new StringBuilder()
                 .append("(")
                 .append(fromPatternString)

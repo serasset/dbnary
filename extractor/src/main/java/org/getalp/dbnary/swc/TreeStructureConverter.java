@@ -9,7 +9,6 @@ import org.sweble.wikitext.engine.nodes.EngPage;
 import org.sweble.wikitext.parser.nodes.*;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
 
-import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 
@@ -26,7 +25,7 @@ import java.util.regex.Pattern;
  * ://www.javaworld.com/javaworld/javatips/jw-javatip98.html</a> (the version we
  * use here)</li>
  * </ul>
- *
+ * <p>
  * The methods needed to descend into an AST and visit the children of a given
  * node <code>n</code> are
  * <ul>
@@ -42,8 +41,7 @@ import java.util.regex.Pattern;
  */
 public class TreeStructureConverter
         extends
-        AstVisitor<WtNode>
-{
+        AstVisitor<WtNode> {
     private static final Pattern ws = Pattern.compile("\\s+");
 
     private final WikiConfig config;
@@ -73,15 +71,13 @@ public class TreeStructureConverter
 
     // =========================================================================
 
-    public TreeStructureConverter(WikiConfig config, int wrapCol)
-    {
+    public TreeStructureConverter(WikiConfig config, int wrapCol) {
         this.config = config;
         this.wrapCol = wrapCol;
     }
 
     @Override
-    protected WtNode before(WtNode node)
-    {
+    protected WtNode before(WtNode node) {
         // This method is called by go() before visitation starts
         sb = new StringBuilder();
         line = new StringBuilder();
@@ -95,8 +91,7 @@ public class TreeStructureConverter
     }
 
     @Override
-    protected Object after(WtNode node, Object result)
-    {
+    protected Object after(WtNode node, Object result) {
         finishLine();
 
         // This method is called by go() after visitation has finished
@@ -106,14 +101,12 @@ public class TreeStructureConverter
 
     // =========================================================================
 
-    public void visit(WtNode n)
-    {
+    public void visit(WtNode n) {
         // Fallback for all nodes that are not explicitly handled below
         println(" + unhandled node: " + n.getNodeName() + "\n");
     }
 
-    public void visit(WtNodeList n)
-    {
+    public void visit(WtNodeList n) {
         println(" + Node List : \n");
         indent++;
         iterate(n);
@@ -121,8 +114,7 @@ public class TreeStructureConverter
         println(" - Node List : \n");
     }
 
-    public void visit(WtUnorderedList e)
-    {
+    public void visit(WtUnorderedList e) {
         println(" + Unordered List : \n");
         indent++;
         iterate(e);
@@ -130,8 +122,7 @@ public class TreeStructureConverter
         println(" - Unordered List : \n");
     }
 
-    public void visit(WtOrderedList e)
-    {
+    public void visit(WtOrderedList e) {
         println(" + Ordered List : \n");
         indent++;
         iterate(e);
@@ -139,8 +130,7 @@ public class TreeStructureConverter
         println(" - Ordered List : \n");
     }
 
-    public void visit(WtListItem item)
-    {
+    public void visit(WtListItem item) {
         println(" + item : \n");
         indent++;
         iterate(item);
@@ -148,8 +138,7 @@ public class TreeStructureConverter
         println(" - item : \n");
     }
 
-    public void visit(EngPage p)
-    {
+    public void visit(EngPage p) {
         println(" + Page : \n");
         indent++;
         iterate(p);
@@ -157,98 +146,77 @@ public class TreeStructureConverter
         println(" - Page : \n");
     }
 
-    public void visit(WtText text)
-    {
+    public void visit(WtText text) {
         println("-> Text: " + text.getContent());
     }
 
-    public void visit(WtWhitespace w)
-    {
+    public void visit(WtWhitespace w) {
         write("_");
     }
 
-    public void visit(WtBold b)
-    {
+    public void visit(WtBold b) {
         write("**");
         iterate(b);
         write("**");
     }
 
 
-    public void visit(WtItalics i)
-    {
+    public void visit(WtItalics i) {
         write("//");
         iterate(i);
         write("//");
     }
 
-    public void visit(WtXmlCharRef cr)
-    {
+    public void visit(WtXmlCharRef cr) {
         write(Character.toChars(cr.getCodePoint()));
     }
 
-    public void visit(WtXmlEntityRef er)
-    {
+    public void visit(WtXmlEntityRef er) {
         String ch = er.getResolved();
-        if (ch == null)
-        {
+        if (ch == null) {
             write('&');
             write(er.getName());
             write(';');
-        }
-        else
-        {
+        } else {
             write(ch);
         }
     }
 
-    public void visit(WtUrl wtUrl)
-    {
-        if (!wtUrl.getProtocol().isEmpty())
-        {
+    public void visit(WtUrl wtUrl) {
+        if (!wtUrl.getProtocol().isEmpty()) {
             write(wtUrl.getProtocol());
             write(':');
         }
         write(wtUrl.getPath());
     }
 
-    public void visit(WtExternalLink link)
-    {
+    public void visit(WtExternalLink link) {
         write('[');
         write(extLinkNum++);
         write(']');
     }
 
-    public void visit(WtInternalLink link)
-    {
-        try
-        {
-            if (link.getTarget().isResolved())
-            {
+    public void visit(WtInternalLink link) {
+        try {
+            if (link.getTarget().isResolved()) {
                 PageTitle page = PageTitle.make(config, link.getTarget().getAsString());
                 if (page.getNamespace().equals(config.getNamespace("Category")))
                     return;
             }
-        }
-        catch (LinkTargetException e)
-        {
+        } catch (LinkTargetException e) {
         }
 
         write(link.getPrefix());
-        if (!link.hasTitle())
-        {
+        if (!link.hasTitle()) {
             iterate(link.getTarget());
-        }
-        else
-        {
+        } else {
             iterate(link.getTitle());
         }
         write(link.getPostfix());
     }
 
-    public void visit(WtSection s)
-    {
-        println(" + Section (level=" + s.getLevel()  + "):");
+    public void visit(WtSection s) {
+        println(" + Section (level=" + s.getLevel() + "):");
         println(" +         (title) :");
         indent++;
         iterate(s.getHeading());
@@ -260,23 +228,17 @@ public class TreeStructureConverter
         println(" - Section");
     }
 
-    public void visit(WtParagraph p)
-    {
+    public void visit(WtParagraph p) {
         iterate(p);
     }
 
-    public void visit(WtHorizontalRule hr)
-    {
+    public void visit(WtHorizontalRule hr) {
     }
 
-    public void visit(WtXmlElement e)
-    {
-        if (e.getName().equalsIgnoreCase("br"))
-        {
+    public void visit(WtXmlElement e) {
+        if (e.getName().equalsIgnoreCase("br")) {
             newline(1);
-        }
-        else
-        {
+        } else {
             iterate(e.getBody());
         }
     }
@@ -284,85 +246,70 @@ public class TreeStructureConverter
     // =========================================================================
     // Stuff we want to hide
 
-    public void visit(WtImageLink n)
-    {
+    public void visit(WtImageLink n) {
     }
 
-    public void visit(WtIllegalCodePoint n)
-    {
+    public void visit(WtIllegalCodePoint n) {
     }
 
-    public void visit(WtXmlComment n)
-    {
+    public void visit(WtXmlComment n) {
     }
 
-    public void visit(WtTemplate n)
-    {
+    public void visit(WtTemplate n) {
         println(" + Template:" + n.getName());
         // println(n.getNodeName());
         println("    - " + String.valueOf(n.getArgs()));
         AstNodePropertyIterator it = n.propertyIterator();
-        while(it.next()) {
+        while (it.next()) {
             println("    - " + it.getName() + " : " + it.getValue());
         }
 
     }
 
-    public void visit(WtTemplateArgument n)
-    {
+    public void visit(WtTemplateArgument n) {
     }
 
-    public void visit(WtTemplateParameter n)
-    {
+    public void visit(WtTemplateParameter n) {
     }
 
-    public void visit(WtTagExtension n)
-    {
+    public void visit(WtTagExtension n) {
     }
 
-    public void visit(WtPageSwitch n)
-    {
+    public void visit(WtPageSwitch n) {
     }
 
     // =========================================================================
 
-    private void newline(int num)
-    {
-        if (pastBod)
-        {
+    private void newline(int num) {
+        if (pastBod) {
             if (num > needNewlines)
                 needNewlines = num;
         }
     }
 
-    private void wantSpace()
-    {
+    private void wantSpace() {
         if (pastBod)
             needSpace = true;
     }
 
-    private void finishLine()
-    {
+    private void finishLine() {
         sb.append(line.toString());
         line.setLength(0);
     }
 
-    private void writeNewlines(int num)
-    {
+    private void writeNewlines(int num) {
         finishLine();
         sb.append(StringUtils.strrep('\n', num));
         needNewlines = 0;
         needSpace = false;
     }
 
-    private void writeWord(String s)
-    {
+    private void writeWord(String s) {
         int length = s.length();
         if (length == 0)
             return;
 
-        if (!noWrap && needNewlines <= 0)
-        {
+        if (!noWrap && needNewlines <= 0) {
             if (needSpace)
                 length += 1;
 
@@ -381,8 +328,7 @@ public class TreeStructureConverter
         line.append(s);
     }
 
-    private void write(String s)
-    {
+    private void write(String s) {
         if (s.isEmpty())
             return;
 
@@ -390,8 +336,7 @@ public class TreeStructureConverter
             wantSpace();
 
         String[] words = ws.split(s);
-        for (int i = 0; i < words.length;)
-        {
+        for (int i = 0; i < words.length; ) {
             writeWord(words[i]);
             if (++i < words.length)
                 wantSpace();
@@ -401,18 +346,15 @@ public class TreeStructureConverter
             wantSpace();
     }
 
-    private void write(char[] cs)
-    {
+    private void write(char[] cs) {
         write(String.valueOf(cs));
     }
 
-    private void write(char ch)
-    {
+    private void write(char ch) {
         writeWord(String.valueOf(ch));
     }
 
-    private void write(int num)
-    {
+    private void write(int num) {
         writeWord(String.valueOf(num));
     }
 

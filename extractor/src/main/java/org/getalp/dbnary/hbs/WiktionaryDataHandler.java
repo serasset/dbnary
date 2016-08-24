@@ -34,17 +34,17 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     }
 
     public HashMap<String, ArrayList<String>> alreadyRegisteredFlexion = new HashMap<>();
-    public HashMap<String, HashMap<String,String>> toBeRegisterFlexion = new HashMap<>();
+    public HashMap<String, HashMap<String, String>> toBeRegisterFlexion = new HashMap<>();
 
     public WiktionaryDataHandler(String lang) {
         super(lang);
         aBox.setNsPrefix("olia", OliaOnt.getURI());
     }
 
-    public void extractPOSandExtraInfos(String posInfos){
+    public void extractPOSandExtraInfos(String posInfos) {
         String t[] = posInfos.split("\\|");
-        if(t.length > 0){
-            switch(t[0]) {
+        if (t.length > 0) {
+            switch (t[0]) {
                 case "sh-pridjev": // adj
                 case "sh-prilog": // adv
                 case "sh-imenica": // noun
@@ -88,63 +88,61 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     private void addExtraInfo(String posInfos) {
         String[] infos = posInfos.split("\\|");
         int i = 1;
-        while(i < infos.length){
+        while (i < infos.length) {
             String[] pair = infos[i].split("=");
-            if(pair.length == 2 ){
-                if(!pair[1].equals(""))
-                switch (pair[0]) {
-                    case "head":
-                      //  log.debug("Head unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
-                        break;
-                    case "m":
-                        // log.debug("Plural form unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
-                        break;
-                    case "r":
-                        addGender(pair[1]);
-                        break;
-                    case "g":
-                        if(infos[0].equals("sh-imenica")) {
-                            switch (pair[1]){
-                                case "e":
-                                    log.debug("Pronunciation ekavski unused in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
-                                    break;
-                                case "ije":
-                                    log.debug("Pronunciation ijekavski unused in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
-                                    break;
-                                case "i":
-                                    log.debug("Pronunciation ikavski unused in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
-                                    break;
-                                default:
-                                    log.debug("Pronunciation unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
-                            }
-                        }
-                        else{
+            if (pair.length == 2) {
+                if (!pair[1].equals(""))
+                    switch (pair[0]) {
+                        case "head":
+                            //  log.debug("Head unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                            break;
+                        case "m":
+                            // log.debug("Plural form unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                            break;
+                        case "r":
                             addGender(pair[1]);
-                        }
-                        break;
-                    case "g2":
-                        addGender(pair[1]);
-                        break;
-                    case "v":
-                        // TODO Geographic parameter
-                       //  log.debug("Version/Variant unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
-                        break;
-                    case "p":
-                        log.debug("Paradigme unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
-                        break;
-                    case "def":
-                    case"def_a":
-                    case"comp":
-                    case"comp_a":
-                        // TODO
-                        // log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
-                        break;
-                    default:
-                        log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
-                }
-            }
-            else{
-                if(!infos[i].contains("=")){ // neutralise g= or v=
+                            break;
+                        case "g":
+                            if (infos[0].equals("sh-imenica")) {
+                                switch (pair[1]) {
+                                    case "e":
+                                        log.debug("Pronunciation ekavski unused in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                                        break;
+                                    case "ije":
+                                        log.debug("Pronunciation ijekavski unused in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                                        break;
+                                    case "i":
+                                        log.debug("Pronunciation ikavski unused in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                                        break;
+                                    default:
+                                        log.debug("Pronunciation unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                                }
+                            } else {
+                                addGender(pair[1]);
+                            }
+                            break;
+                        case "g2":
+                            addGender(pair[1]);
+                            break;
+                        case "v":
+                            // TODO Geographic parameter
+                            //  log.debug("Version/Variant unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                            break;
+                        case "p":
+                            log.debug("Paradigme unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                            break;
+                        case "def":
+                        case "def_a":
+                        case "comp":
+                        case "comp_a":
+                            // TODO
+                            // log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                            break;
+                        default:
+                            log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                    }
+            } else {
+                if (!infos[i].contains("=")) { // neutralise g= or v=
                     switch (infos[i]) {
                         case "r":
                             String cirilica = null;
@@ -168,7 +166,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         }
     }
 
-    private void addGender(String info){
+    private void addGender(String info) {
         switch (info) {
             case "m":
             case "m-p":

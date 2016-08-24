@@ -2,12 +2,10 @@ package org.getalp.dbnary.eng;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
 import org.getalp.dbnary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.AbstractMap;
 import java.util.HashSet;
 
 /**
@@ -95,7 +93,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
         lexEntry = lexEntry.inModel(morphoBox);
 
-        String otherFormNodeName = computeOtherFormResourceName(lexEntry,properties);
+        String otherFormNodeName = computeOtherFormResourceName(lexEntry, properties);
         Resource otherForm = morphoBox.createResource(getPrefix() + otherFormNodeName, LemonOnt.Form);
         morphoBox.add(lexEntry, LemonOnt.otherForm, otherForm);
         mergePropertiesIntoResource(properties, otherForm);

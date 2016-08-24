@@ -3,7 +3,6 @@ package org.getalp.dbnary.deu;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.slf4j.Logger;
@@ -16,27 +15,56 @@ public class GermanInflectionData {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-    public enum Genre {MASCULIN,FEMININ,NEUTRUM,NOTHING};
-    public enum Cas {NOMINATIF,GENITIF,DATIF,ACCUSATIF, NOTHING};
-    public enum Mode {INFINITIV,ZU_INFINITIV,PARTIZIPIEN,GERUNDIVUM,IMPERATIV,INDICATIV, KONJUNKTIV2, KONJUNKTIV1, NOTHING};
-    public enum Voice {AKTIV, VORGANGSPASSIV, ZUSTANDSPASSIV, PASSIV, ZUSTANDSREFLEXIVEPASSIV, REFLEXIV, NOTHING};
-    public enum Tense {PRÄSENS, PRÄTERITUM, PERFEKT, FUTURE1, FUTURE2, PLUSQUAMPERFEKT, NOTHING};
-    public enum Degree {POSITIVE,COMPARATIVE,SUPERLATIVE,NOTHING};
-    public enum GNumber {SINGULAR,PLURAL,NOTHING};
-    public enum Person {FIRST, SECOND, THIRD, HÖFLICHKEITSFORM, NOTHING};
-    public enum InflectionType {STRONG, WEAK, MIXED, NOTHING};
-    public enum Valency {TRANSITIVE, INTRANSITIVE, NOTHING};
+    public enum Genre {MASCULIN, FEMININ, NEUTRUM, NOTHING}
+
+    ;
+
+    public enum Cas {NOMINATIF, GENITIF, DATIF, ACCUSATIF, NOTHING}
+
+    ;
+
+    public enum Mode {INFINITIV, ZU_INFINITIV, PARTIZIPIEN, GERUNDIVUM, IMPERATIV, INDICATIV, KONJUNKTIV2, KONJUNKTIV1, NOTHING}
+
+    ;
+
+    public enum Voice {AKTIV, VORGANGSPASSIV, ZUSTANDSPASSIV, PASSIV, ZUSTANDSREFLEXIVEPASSIV, REFLEXIV, NOTHING}
+
+    ;
+
+    public enum Tense {PRÄSENS, PRÄTERITUM, PERFEKT, FUTURE1, FUTURE2, PLUSQUAMPERFEKT, NOTHING}
+
+    ;
+
+    public enum Degree {POSITIVE, COMPARATIVE, SUPERLATIVE, NOTHING}
+
+    ;
+
+    public enum GNumber {SINGULAR, PLURAL, NOTHING}
+
+    ;
+
+    public enum Person {FIRST, SECOND, THIRD, HÖFLICHKEITSFORM, NOTHING}
+
+    ;
+
+    public enum InflectionType {STRONG, WEAK, MIXED, NOTHING}
+
+    ;
+
+    public enum Valency {TRANSITIVE, INTRANSITIVE, NOTHING}
+
+    ;
 
 
-    public Degree degree= Degree.NOTHING;
-    public Mode mode= Mode.NOTHING;
-    public Voice voice= Voice.NOTHING;
+    public Degree degree = Degree.NOTHING;
+    public Mode mode = Mode.NOTHING;
+    public Voice voice = Voice.NOTHING;
     public Tense tense = Tense.NOTHING;
-    public GNumber number= GNumber.NOTHING;
+    public GNumber number = GNumber.NOTHING;
     public Cas cas = Cas.NOTHING;
-    public Genre genre= Genre.NOTHING;
+    public Genre genre = Genre.NOTHING;
     public Person person = Person.NOTHING;
-    public InflectionType inflectionType= InflectionType.NOTHING;
+    public InflectionType inflectionType = InflectionType.NOTHING;
     public Valency valency = Valency.NOTHING;
     public Set<String> note = new HashSet<>();
 
@@ -45,7 +73,7 @@ public class GermanInflectionData {
 
     public HashSet<PropertyObjectPair> toPropertyObjectMap() {
         HashSet<PropertyObjectPair> inflections = new HashSet<PropertyObjectPair>();
-        switch(this.degree){
+        switch (this.degree) {
             case POSITIVE:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasDegree, OliaOnt.Positive));
                 break;
@@ -61,7 +89,7 @@ public class GermanInflectionData {
                 log.debug("Unexpected value {} for degree", this.degree);
                 break;
         }
-        switch(this.cas){
+        switch (this.cas) {
             case NOMINATIF:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasCase, OliaOnt.Nominative));
                 break;
@@ -79,7 +107,7 @@ public class GermanInflectionData {
                 log.debug("Unexpected value {} for case", this.cas);
                 break;
         }
-        switch(this.genre){
+        switch (this.genre) {
             case MASCULIN:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasGender, OliaOnt.Masculine));
                 break;
@@ -91,11 +119,11 @@ public class GermanInflectionData {
                 break;
             case NOTHING:
                 break;
-            default :
+            default:
                 log.debug("Unexpected value {} for genre", this.genre);
                 break;
         }
-        switch(this.number){
+        switch (this.number) {
             case SINGULAR:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasNumber, OliaOnt.Singular));
                 break;
@@ -108,7 +136,7 @@ public class GermanInflectionData {
                 log.debug("Unexpected value {} for number", this.number);
                 break;
         }
-        switch(this.tense){
+        switch (this.tense) {
             case PRÄTERITUM:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Past));
                 break;
@@ -133,7 +161,7 @@ public class GermanInflectionData {
                 log.debug("Unexpected value {} for tense", this.tense);
                 break;
         }
-        switch(this.mode) {
+        switch (this.mode) {
             case IMPERATIV:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.ImperativeMood));
                 break;
@@ -164,7 +192,7 @@ public class GermanInflectionData {
                 log.debug("Unexpected value {} for mode", this.mode);
                 break;
         }
-        switch(this.person) {
+        switch (this.person) {
             case FIRST:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasPerson, OliaOnt.First));
                 break;
@@ -183,7 +211,7 @@ public class GermanInflectionData {
                 log.debug("Unexpected value {} for person", this.person);
                 break;
         }
-        switch(this.inflectionType) {
+        switch (this.inflectionType) {
             case STRONG:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasInflectionType, OliaOnt.StrongInflection));
                 break;
@@ -235,12 +263,12 @@ public class GermanInflectionData {
                 log.debug("Unexpected value {} for valency", this.valency);
                 break;
         }
-        if (! note.isEmpty()) {
+        if (!note.isEmpty()) {
             StringBuffer notes = new StringBuffer();
             for (String s : note) {
                 notes.append(s).append("|");
             }
-            String tval = notes.toString().substring(0,notes.length()-1);
+            String tval = notes.toString().substring(0, notes.length() - 1);
             inflections.add(PropertyObjectPair.get(DBnaryOnt.note, model.createTypedLiteral(tval)));
         }
         return inflections;

@@ -17,15 +17,15 @@ import org.sweble.wikitext.parser.parser.LinkTargetException;
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
-	private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+    private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-	public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
-		super(wdh);
-	}
+    public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
+        super(wdh);
+    }
 
 
-	@Override
-	public void extractData() {
+    @Override
+    public void extractData() {
         // Test swebble parser
         // Set-up a simple wiki configuration
         WikiConfig config = DefaultConfigEnWp.generate();
@@ -52,14 +52,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 //            TreeStructureConverter p = new TreeStructureConverter(config, wrapCol);
 //            System.out.println(p.go(cp.getPage()));
-            long t3 =  System.currentTimeMillis();
+            long t3 = System.currentTimeMillis();
             System.out.println("Visit: " + (t3 - t2));
 
             XPathBasedProcessing proc = new XPathBasedProcessing();
             System.out.println(proc.process(cp, "//WtSection"));
             System.out.println(proc.process(cp, "//WtSection[@level=\"0\"]"));
             System.out.println(proc.process(cp, "//WtSection/WtBody"));
-            long t4 =  System.currentTimeMillis();
+            long t4 = System.currentTimeMillis();
             System.out.println("All Xpathes: " + (t4 - t3));
 
         } catch (LinkTargetException e) {

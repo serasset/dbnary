@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
  * @author serasset
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
-	
-	private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+
+    private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
 
     protected final static String languageSectionPatternString = "(\\{\\{\\-..\\-\\}\\})";
@@ -44,16 +44,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected boolean isCurrentlyExtracting = false;
     private int bulgarianBlockStart = -1;
 
-   //  private boolean isCorrectPOS;
+    //  private boolean isCorrectPOS;
 
     public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
     }
 
-    
 
-
-	public boolean isCurrentlyExtracting() {
+    public boolean isCurrentlyExtracting() {
         return isCurrentlyExtracting;
     }
 
@@ -115,7 +113,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     private void leaveBulgarianBlock(Matcher m) {
-    	extractMorpho(bulgarianBlockStart, computeRegionEnd(bulgarianBlockStart, m));
+        extractMorpho(bulgarianBlockStart, computeRegionEnd(bulgarianBlockStart, m));
         bulgarianBlockStart = -1;
         state = NODATA;
     }
@@ -139,7 +137,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     } else {
                         leaveBulgarianBlock(m);
                         // if (isCorrectPOS) 
-                        	gotoNoData(m);
+                        gotoNoData(m);
                     }
                     break;
                 default:
@@ -164,7 +162,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         dbnmodel.setPageName(this.wiktionaryPageName);
         dbnmodel.parseBulgarianBlock(pageContent.substring(startOffset, endOffset));
         if (log.isDebugEnabled()) {
-        	dbnmodel.displayUsedTemplates();
+            dbnmodel.displayUsedTemplates();
         }
     }
 

@@ -171,7 +171,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
             case "transitiv":
                 aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasValency, OliaOnt.Transitive));
                 break;
-            case"intrans.":
+            case "intrans.":
             case "intransitiv":
                 aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasValency, OliaOnt.Intransitive));
                 break;
@@ -197,7 +197,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                 break;
             default:
                 log.debug("Unknown additional information {} --in-- {}", info, this.currentLexEntry());
-            break;
+                break;
 
         }
     }

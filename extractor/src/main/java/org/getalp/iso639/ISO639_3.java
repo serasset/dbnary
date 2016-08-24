@@ -252,6 +252,7 @@ public class ISO639_3 {
     public Iterator<Lang> knownLanguagesIterator() {
         return langSet.iterator();
     }
+
     public Set<Lang> knownLanguages() {
         return langSet;
     }

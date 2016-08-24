@@ -21,8 +21,8 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
 
     private void advance() {
         nextToken = null;
-        while (baseIterator.hasNext() && ! filter.apply(nextToken = baseIterator.next())) ;
-        if (null != nextToken && ! baseIterator.hasNext() && ! filter.apply(nextToken))
+        while (baseIterator.hasNext() && !filter.apply(nextToken = baseIterator.next())) ;
+        if (null != nextToken && !baseIterator.hasNext() && !filter.apply(nextToken))
             nextToken = null;
     }
 

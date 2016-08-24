@@ -1,10 +1,8 @@
 package org.getalp.dbnary.jpn;
 
-import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +79,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         if (macro.lookingAt()) { // the section starts by a wiki macro
             posKey = macro.group(1);
         } else {
-            String [] h = head.split(":");
+            String[] h = head.split(":");
             posKey = h[0];
         }
         pos = posAndTypeValueMap.get(posKey);

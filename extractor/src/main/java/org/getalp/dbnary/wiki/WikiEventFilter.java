@@ -6,6 +6,7 @@ package org.getalp.dbnary.wiki;
 public interface WikiEventFilter {
     /**
      * returns true if tok should be kept in the event sequence.
+     *
      * @param tok the token to be considered
      * @return
      */

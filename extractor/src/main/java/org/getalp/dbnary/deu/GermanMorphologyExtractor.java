@@ -11,9 +11,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.getalp.dbnary.deu.GermanInflectionData.Degree.COMPARATIVE;
-import static org.getalp.dbnary.deu.GermanInflectionData.Degree.POSITIVE;
-import static org.getalp.dbnary.deu.GermanInflectionData.Degree.SUPERLATIVE;
+import static org.getalp.dbnary.deu.GermanInflectionData.Degree.*;
 
 /**
  * Created by serasset on 16/02/16.
@@ -73,7 +71,8 @@ public class GermanMorphologyExtractor {
             } else if ("Deutsch Adjektiv Übersicht".equals(templateName)) {
                 // DONE fetch and expand deklination page and parse all tables.
                 // TODO: check if such template may be used on substantivs
-                if (wdh.currentWiktionaryPos().equals("Substantiv")) log.debug("Adjectiv ubersicht in noun : {} ", wdh.currentLexEntry());
+                if (wdh.currentWiktionaryPos().equals("Substantiv"))
+                    log.debug("Adjectiv ubersicht in noun : {} ", wdh.currentLexEntry());
                 // DONE: Extract comparative/Superlative from parametermap before fetching the full flexion page.
                 if (extractAdjectiveDegree(wt.getParsedArgs())) {
                     String deklinationPageName = pageName + " (Deklination)";
@@ -136,7 +135,7 @@ public class GermanMorphologyExtractor {
     private void extractFormsPageWithModel(String formsPageName, String pageName, GermanTableExtractorWikiModel model) {
         String subPageContent = wi.getTextOfPageWithRedirects(formsPageName);
         if (null == subPageContent) return;
-        if(!subPageContent.contains("Deutsch")) return;
+        if (!subPageContent.contains("Deutsch")) return;
 
         extractFormsWithModel(subPageContent, pageName, model);
     }

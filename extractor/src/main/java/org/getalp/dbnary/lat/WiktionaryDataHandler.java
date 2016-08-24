@@ -4,7 +4,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.LemonBasedRDFDataHandler;
 import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.OliaOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,19 +1,16 @@
 package org.getalp.dbnary.jpn;
 
+import info.bliki.wiki.filter.ParsedPageName;
+import info.bliki.wiki.filter.PlainTextConverter;
+import info.bliki.wiki.model.WikiModelContentException;
+import org.getalp.dbnary.DbnaryWikiModel;
+import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.wiki.WikiTool;
+
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
-
-import info.bliki.wiki.filter.ParsedPageName;
-import info.bliki.wiki.model.WikiModelContentException;
-import info.bliki.wiki.namespaces.INamespace;
-import info.bliki.wiki.namespaces.Namespace;
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.DbnaryWikiModel;
-import org.getalp.dbnary.WiktionaryIndex;
-
-import info.bliki.wiki.filter.PlainTextConverter;
-import org.getalp.dbnary.wiki.WikiTool;
 
 public class JapaneseDefinitionExtractorWikiModel extends DbnaryWikiModel {
 
@@ -58,11 +55,11 @@ public class JapaneseDefinitionExtractorWikiModel extends DbnaryWikiModel {
     }
 
     @Override
-	public void substituteTemplateCall(String templateName,
-			Map<String, String> parameterMap, Appendable writer)
-			throws IOException {
-		// Currently just expand the definition to get the full text.
-		super.substituteTemplateCall(templateName, parameterMap, writer);
-	}
+    public void substituteTemplateCall(String templateName,
+                                       Map<String, String> parameterMap, Appendable writer)
+            throws IOException {
+        // Currently just expand the definition to get the full text.
+        super.substituteTemplateCall(templateName, parameterMap, writer);
+    }
 
 }

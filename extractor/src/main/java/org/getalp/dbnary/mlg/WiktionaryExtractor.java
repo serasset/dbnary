@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author roques
- *
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
@@ -53,37 +52,37 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
         int startSection = -1;
 
-        String nextLang , lang = null;
+        String nextLang, lang = null;
 
         while (languageFilter.find()) {
-            nextLang = languageFilter.group(1).replaceAll("=","").trim();
+            nextLang = languageFilter.group(1).replaceAll("=", "").trim();
             extractDataLang(startSection, languageFilter.start(), lang);
             lang = nextLang;
             startSection = languageFilter.end();
         }
 
         if (languageFilter.hitEnd()) {
-           extractDataLang(startSection, pageContent.length(), lang);
+            extractDataLang(startSection, pageContent.length(), lang);
         }
         wdh.finalizePageExtraction();
     }
 
     private enum Block {NOBLOCK, IGNOREPOS, DEFBLOCK, POSBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK}
 
-    protected static HashMap<String,Block> blockValue = new HashMap<>();
-    protected static HashMap<String,String> blockName = new HashMap<>();
+    protected static HashMap<String, Block> blockValue = new HashMap<>();
+    protected static HashMap<String, String> blockName = new HashMap<>();
 
-    static{
-        blockName.put("",""); // noblock
+    static {
+        blockName.put("", ""); // noblock
 
-        blockName.put("None","none");
+        blockName.put("None", "none");
 
-        blockName.put("ana","ana"); // noun
-        blockName.put("e-ana","ana");
-        blockName.put("flex-nom","ana");
-        blockName.put("ana-flex","ana");
-        blockName.put("nom-pr","ana");
-        blockName.put("nom","ana");
+        blockName.put("ana", "ana"); // noun
+        blockName.put("e-ana", "ana");
+        blockName.put("flex-nom", "ana");
+        blockName.put("ana-flex", "ana");
+        blockName.put("nom-pr", "ana");
+        blockName.put("nom", "ana");
 
         blockName.put("mat", "mat"); // verb
         blockName.put("e-mat", "mat");
@@ -168,28 +167,28 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         blockValue.put("ignore", Block.IGNOREPOS);
     }
 
-    private Block getBlock(String blockString){
+    private Block getBlock(String blockString) {
         Block res;
-        if((res = blockValue.get(blockString)) == null) {
+        if ((res = blockValue.get(blockString)) == null) {
             log.debug("Unknown block {} --in-- {}", blockString, this.wiktionaryPageName);
             res = Block.NOBLOCK;
         }
         return res;
     }
 
-    private String getBlockName(String blockString){
+    private String getBlockName(String blockString) {
         String res = blockString;
-        if(blockString != null) {
+        if (blockString != null) {
             if (blockString.equals("-")) {
                 blockString = "None";
             }
             if (blockString.charAt(blockString.length() - 1) == '-') {
                 blockString = blockString.substring(0, blockString.length() - 1);
             }
-            if(blockString.contains("ikan")){
+            if (blockString.contains("ikan")) {
                 blockString = "dika";
             }
-            if(blockString.equals("ay,")){
+            if (blockString.equals("ay,")) {
                 blockString = "";
             }
             if ((res = blockName.get(blockString)) == null) {
@@ -199,14 +198,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return res;
     }
 
-    protected void extractDataLang(int startOffset, int endOffset, String lang){
+    protected void extractDataLang(int startOffset, int endOffset, String lang) {
         if (lang == null) {
             return;
         }
-        if (lang.equals("mg")){
+        if (lang.equals("mg")) {
             wdh.initializeEntryExtraction(wiktionaryPageName);
-        }
-        else {
+        } else {
             //log.debug("Unused lang {} --in-- {}", lang, this.wiktionaryPageName);
             return;
             // wdh.initializeEntryExtraction(wiktionaryPageName, lang);
@@ -219,15 +217,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Block block = Block.IGNOREPOS;
         int start = startOffset;
 
-        if(m.find()){
+        if (m.find()) {
             start = m.start();
-            if(m.group(1) != null)
+            if (m.group(1) != null)
                 blockString = m.group(1).trim();
-            else if(m.group(2) != null)
+            else if (m.group(2) != null)
                 blockString = m.group(2).trim();
-            else if(m.group(3) != null)
+            else if (m.group(3) != null)
                 blockString = m.group(3).trim();
-            else if(m.group(4) != null)
+            else if (m.group(4) != null)
                 blockString = m.group(4).trim();
             blockString = getBlockName(blockString);
             block = getBlock(blockString);
@@ -235,13 +233,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         while (m.find()) {
             extractDataBlock(start, m.start(), block, blockString);
             start = m.end();
-            if(m.group(1) != null)
+            if (m.group(1) != null)
                 blockString = m.group(1).trim();
-            else if(m.group(2) != null)
+            else if (m.group(2) != null)
                 blockString = m.group(2).trim();
-            else if(m.group(3) != null)
+            else if (m.group(3) != null)
                 blockString = m.group(3).trim();
-            else if(m.group(4) != null)
+            else if (m.group(4) != null)
                 blockString = m.group(4).trim();
             blockString = getBlockName(blockString);
             block = getBlock(blockString);
@@ -262,10 +260,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 break;
             case POSBLOCK:
                 extractPOS(blockString);
-                extractDefinitions(startOffset,endOffset);
+                extractDefinitions(startOffset, endOffset);
                 break;
             case DEFBLOCK:
-                extractDefinitions(startOffset,endOffset);
+                extractDefinitions(startOffset, endOffset);
                 break;
             case NYMBLOCK:
                 extractNyms(startOffset, endOffset, blockString);
@@ -294,25 +292,23 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         while (trad.find()) {
 
-            if(trad.group(1) != null){
+            if (trad.group(1) != null) {
                 String[] tmp = trad.group(1).split("\\|");
-                if(tmp.length == 3){
+                if (tmp.length == 3) {
                     dwdh.addTranslation(tmp[2], currentGloss, null, tmp[1]);
-                }
-                else{
-                    if(trad.group(1).startsWith("ébauche-trad") || // missing
+                } else {
+                    if (trad.group(1).startsWith("ébauche-trad") || // missing
                             trad.group(1).startsWith("...") ||
                             trad.group(1).startsWith("T|") ||
                             trad.group(1).startsWith("vang") ||
                             trad.group(1).startsWith("Tsofoka")
-                            ){
+                            ) {
                         continue;
                     }
                     log.debug("Unknown Trad value {} --in-- {}", trad.group(1), wdh.currentLexEntry());
                 }
-            }
-            else if(trad.group(2) != null){
-                if(trad.group(2).startsWith("fototeny")){
+            } else if (trad.group(2) != null) {
+                if (trad.group(2).startsWith("fototeny")) {
                     continue;
                 }
                 String lang = trad.group(2).replaceAll("\\[", "");
@@ -322,23 +318,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 lang = lang.replaceAll("fiteny", "");
                 lang = lang.replaceAll("#", "").trim();
                 String lang3;
-                if(lang.length() == 2){
+                if (lang.length() == 2) {
                     lang3 = lang;
-                }
-                else {
+                } else {
                     lang3 = MalagasyLangToCode.threeLettersCode(lang);
                 }
-                if(lang3 != null){
+                if (lang3 != null) {
                     dwdh.addTranslation(lang3, currentGloss, null, trad.group(3));
-                }
-                else{
-                    if(trad.group(2).contains("...")){
+                } else {
+                    if (trad.group(2).contains("...")) {
                         continue;
                     }
                     log.debug("Unknown Trad2 lang value {} --in-- {}", lang, wdh.currentLexEntry());
                 }
-            }
-            else if(trad.group(4) != null){
+            } else if (trad.group(4) != null) {
                 dwdh.addTranslation(trad.group(4), currentGloss, null, trad.group(5));
             }
         }
@@ -347,21 +340,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected void extractNyms(int start, int end, String blockString) {
 
         Matcher m = nymsPattern.matcher(pageContent);
-        m.region(start,end);
+        m.region(start, end);
 
         while (m.find()) {
             wdh.registerNymRelation(m.group(1), blockString);
         }
     }
 
-    protected void extractPron(int start, int end){
+    protected void extractPron(int start, int end) {
         Matcher pron = pronPattern.matcher(pageContent);
         pron.region(start, end);
 
-        while(pron.find()){
+        while (pron.find()) {
             String[] tmp = pron.group(1).split("\\|");
-            if(tmp.length > 1 && !tmp[0].contains("X-SAMPA")
-                    && !tmp[0].startsWith("\n#") && !tmp[0].contains("\\{")){
+            if (tmp.length > 1 && !tmp[0].contains("X-SAMPA")
+                    && !tmp[0].startsWith("\n#") && !tmp[0].contains("\\{")) {
                 wdh.registerPronunciation(tmp[0], "mg-fonipa");
             }
         }
@@ -377,19 +370,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             String tmp;
             if (m.group(1) != null) {
                 tmp = m.group(1).trim();
-            }
-            else if(m.group(2) != null){
+            } else if (m.group(2) != null) {
                 tmp = m.group(2).trim();
-            }
-            else {
+            } else {
                 return;
             }
             if (!tmp.equals("")) {
-                if(startOffset != -1){
-                    extractExample(startOffset,m.start());
+                if (startOffset != -1) {
+                    extractExample(startOffset, m.start());
                     startOffset = -1;
-                }
-                else{
+                } else {
                     startOffset = m.end();
                 }
                 wdh.registerNewDefinition(cleanUpMarkup(tmp), "" + senseNum);
@@ -398,12 +388,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
     }
 
-    protected void extractExample(int start, int end){
-        if(start >= end){
+    protected void extractExample(int start, int end) {
+        if (start >= end) {
             return;
         }
         String ex = pageContent.substring(start, end);
-        if(!ex.trim().equals(""))
-            wdh.registerExample(ex.replaceAll("\n",""), new HashMap<Property, String>());
+        if (!ex.trim().equals(""))
+            wdh.registerExample(ex.replaceAll("\n", ""), new HashMap<Property, String>());
     }
 }

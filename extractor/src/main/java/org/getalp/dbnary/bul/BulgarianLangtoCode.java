@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.getalp.dbnary.bul;
 
@@ -9,12 +9,11 @@ import java.util.HashMap;
 
 /**
  * @author Andon
- *
  */
 public class BulgarianLangtoCode extends LangTools {
-	static HashMap<String,String> h = new HashMap<String,String>();
-	
-	static {
+    static HashMap<String, String> h = new HashMap<String, String>();
+
+    static {
         h.put("Шаблон:aa", "aa");
         h.put("Шаблон:ab", "ab");
         h.put("африкаанс", "af");
@@ -249,10 +248,10 @@ public class BulgarianLangtoCode extends LangTools {
         h.put("старобългарски", "cu");
 
 
-	}
+    }
 
-	public static String threeLettersCode(String s) {
-		return threeLettersCode(h, s);
-	}
+    public static String threeLettersCode(String s) {
+        return threeLettersCode(h, s);
+    }
 
 }

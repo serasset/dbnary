@@ -3,19 +3,18 @@
  */
 package org.getalp.dbnary.rus;
 
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.WiktionaryIndex;
-
 /**
  * @author serasset
- *
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
@@ -63,7 +62,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         posMarkers.add("Verb");
         posMarkers.add("Proper noun");
 
-        nymMarkerToNymName = new HashMap<String,String>(20);
+        nymMarkerToNymName = new HashMap<String, String>(20);
         nymMarkerToNymName.put("Синонимы", "syn");
         nymMarkerToNymName.put("Антонимы", "ant");
         nymMarkerToNymName.put("Гипонимы", "hypo");
@@ -104,13 +103,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     public void extractData() {
         wdh.initializePageExtraction(wiktionaryPageName);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-        while (languageFilter.find() && ! isRussianLanguageHeader(languageFilter)) {
+        while (languageFilter.find() && !isRussianLanguageHeader(languageFilter)) {
             ;
         }
         // Either the filter is at end of sequence or on French language header.
         if (languageFilter.hitEnd()) {
             // There is no Russian data in this page.
-            return ;
+            return;
         }
         int russianSectionStartOffset = languageFilter.end();
         // Advance till end of sequence or new language section
@@ -135,7 +134,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
 
-
     //    private HashSet<String> unsupportedSections = new HashSet<String>(100);
     void gotoNoData(Matcher m) {
         state = NODATA;
@@ -155,7 +153,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         state = TRADBLOCK;
     }
 
-    void gotoDefBlock(Matcher m){
+    void gotoDefBlock(Matcher m) {
         state = DEFBLOCK;
         definitionBlockStart = m.end();
     }
@@ -212,7 +210,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     private void leaveMorphoBlock(Matcher m) {
-        isCorrectPOS = extractMorpho(morphoBlockStart, computeRegionEnd(morphoBlockStart, m)) ;
+        isCorrectPOS = extractMorpho(morphoBlockStart, computeRegionEnd(morphoBlockStart, m));
         morphoBlockStart = -1;
     }
 
@@ -370,22 +368,28 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                         gotoMorphoBlock(m);
                     } else if (m.group(1).equals("Перевод")) {
                         leaveMorphoBlock(m);
-                        if (isCorrectPOS) gotoTradBlock(m); else gotoIgnorePos();
+                        if (isCorrectPOS) gotoTradBlock(m);
+                        else gotoIgnorePos();
                     } else if (m.group(1).equals("Значение")) {
                         leaveMorphoBlock(m);
-                        if (isCorrectPOS) gotoDefBlock(m); else gotoIgnorePos();
+                        if (isCorrectPOS) gotoDefBlock(m);
+                        else gotoIgnorePos();
                     } else if (m.group(1).equals("Alternative spellings")) {
                         leaveMorphoBlock(m);
-                        if (isCorrectPOS) gotoOrthoAltBlock(m); else gotoIgnorePos();
+                        if (isCorrectPOS) gotoOrthoAltBlock(m);
+                        else gotoIgnorePos();
                     } else if (nymMarkerToNymName.containsKey(m.group(1))) {
                         leaveMorphoBlock(m);
-                        if (isCorrectPOS) gotoNymBlock(m); else gotoIgnorePos();
+                        if (isCorrectPOS) gotoNymBlock(m);
+                        else gotoIgnorePos();
                     } else if (m.group(1).equals("Произношение")) {
                         leaveMorphoBlock(m);
-                        if (isCorrectPOS) gotoPronBlock(m); else gotoIgnorePos();
+                        if (isCorrectPOS) gotoPronBlock(m);
+                        else gotoIgnorePos();
                     } else {
                         leaveMorphoBlock(m);
-                        if (isCorrectPOS) gotoNoData(m); else gotoIgnorePos();
+                        if (isCorrectPOS) gotoNoData(m);
+                        else gotoIgnorePos();
                     }
                     break;
                 case IGNOREPOS:

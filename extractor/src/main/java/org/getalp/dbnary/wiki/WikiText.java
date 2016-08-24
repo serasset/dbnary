@@ -1,6 +1,9 @@
 package org.getalp.dbnary.wiki;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -116,11 +119,12 @@ public class WikiText {
 
         public Template(int startOffset) {
             this.offset = new Segment(startOffset);
-            name = new WikiContent(startOffset+2);
+            name = new WikiContent(startOffset + 2);
         }
 
         /**
          * sets the end offset to the given position (should point to the first char of the closing "}}")
+         *
          * @param position the position of the first character of the enclosing "}}"
          */
         @Override
@@ -128,20 +132,20 @@ public class WikiText {
             if (null == args) {
                 this.name.setEndOffset(position);
             } else {
-                args.get(args.size()-1).setEndOffset(position);
+                args.get(args.size() - 1).setEndOffset(position);
             }
-            super.setEndOffset(position+2);
+            super.setEndOffset(position + 2);
         }
 
         public void gotAPipe(int position) {
             if (null == args) {
                 this.name.setEndOffset(position);
                 args = new ArrayList<>();
-                args.add(new WikiContent(position+1));
+                args.add(new WikiContent(position + 1));
             } else {
                 // got a new parameter separator...
-                if (! args.isEmpty()) args.get(args.size()-1).setEndOffset(position);
-                args.add(new WikiContent(position+1));
+                if (!args.isEmpty()) args.get(args.size() - 1).setEndOffset(position);
+                args.add(new WikiContent(position + 1));
             }
         }
 
@@ -151,7 +155,7 @@ public class WikiText {
                 this.name.addToken(t);
             } else {
                 // got a new token inside an arg...
-                args.get(args.size()-1).addToken(t);
+                args.get(args.size() - 1).addToken(t);
             }
         }
 
@@ -201,16 +205,17 @@ public class WikiText {
 
         public InternalLink(int startOffset) {
             this.offset = new Segment(startOffset);
-            this.target = new WikiContent(startOffset+2);
+            this.target = new WikiContent(startOffset + 2);
         }
 
         /**
          * sets the end offset to the given position (should point to the first char of the closing "]]")
+         *
          * @param position the position of the first character of the enclosing "]]"
          */
         @Override
         public void setEndOffset(int position) {
-            super.setEndOffset(position+2);
+            super.setEndOffset(position + 2);
             if (null == this.text) {
                 this.target.setEndOffset(position);
             } else {
@@ -242,16 +247,17 @@ public class WikiText {
 
         public ExternalLink(int startOffset) {
             this.offset = new Segment(startOffset);
-            this.target = new WikiContent(startOffset+1);
+            this.target = new WikiContent(startOffset + 1);
         }
 
         /**
          * sets the end offset to the given position (should point to the first char of the closing "]")
+         *
          * @param position the position of the first character of the enclosing "]"
          */
         @Override
         public void setEndOffset(int position) {
-            super.setEndOffset(position+1);
+            super.setEndOffset(position + 1);
             if (null == this.text) {
                 this.target.setEndOffset(position);
             } else {
@@ -280,11 +286,12 @@ public class WikiText {
 
         /**
          * sets the end offset to the given position (should point to the first char of the closing "]")
+         *
          * @param position the position of the first character of the enclosing "]"
          */
         @Override
         public void setEndOffset(int position) {
-            super.setEndOffset(position+1);
+            super.setEndOffset(position + 1);
             this.text.setEndOffset(position);
         }
 
@@ -307,11 +314,12 @@ public class WikiText {
 
         /**
          * sets the end offset to the given position (should point to the first char of the closing "]")
+         *
          * @param position the position of the first character of the enclosing "]"
          */
         @Override
         public void setEndOffset(int position) {
-            super.setEndOffset(position+1);
+            super.setEndOffset(position + 1);
             this.content.setEndOffset(position);
         }
 
@@ -372,7 +380,7 @@ public class WikiText {
                     Template t = (Template) stack.pop();
                     t.setEndOffset(pos);
                     stack.peek().addToken(t);
-                } else  {
+                } else {
                     // consider the closing element as a simple text
                 }
                 pos += c.length();
@@ -402,7 +410,7 @@ public class WikiText {
                 pos = pos + 4;
                 while (pos != end && (null == peekString(pos, "-->"))) pos++;
                 if (pos != end) pos = pos + 3;
-                t.setEndOffset(pos+1);
+                t.setEndOffset(pos + 1);
                 stack.peek().addToken(t);
             } else if (null != (m = peekPattern(pos, "^={2,6}"))) {
                 //// TODO: ICICICICICICICICICI
@@ -480,7 +488,8 @@ public class WikiText {
 
 
     public String peekString(int pos, String s) {
-        int i = 0; int pi;
+        int i = 0;
+        int pi;
         int slength = s.length();
         int wtlength = content.length();
         while (i != slength && (pi = pos + i) != wtlength && s.charAt(i) == content.charAt(pi)) i++;

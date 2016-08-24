@@ -2,11 +2,11 @@ package org.getalp.dbnary.lit;
 
 
 import com.hp.hpl.jena.vocabulary.RDF;
-import org.getalp.dbnary.*;
+import org.getalp.dbnary.LemonBasedRDFDataHandler;
+import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.LexinfoOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
 
 public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
@@ -63,30 +63,30 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                                         case "f": // forma
                                             break;
                                         default:
-                                           // log.debug("Unused forma info {} in {} --in-- {}", tmp, infos[0], this.currentLexEntry());
+                                            // log.debug("Unused forma info {} in {} --in-- {}", tmp, infos[0], this.currentLexEntry());
                                     }
                                 }
                                 break;
                             case "gim":
-                                if(pair[1].length() > 5)
-                                    addGender(pair[1].substring(2,5));
+                                if (pair[1].length() > 5)
+                                    addGender(pair[1].substring(2, 5));
                                 else
                                     log.debug("Unknown Gim:gender {} --in-- {}", pair[1], this.currentLexEntry());
                                 break;
                             case "vnsdgst": // Gnumber : singular or plural
-                                 //  log.debug("Unused Gnumber info {} in {} --in-- {}", pair[1], infos[0], this.currentLexEntry());
+                                //  log.debug("Unused Gnumber info {} in {} --in-- {}", pair[1], infos[0], this.currentLexEntry());
                                 break;
                             case "šakn": // root
                             case "šakn2":
                             case "šakn3":
                             case "šakn4":
-                                aBox.add(LexinfoOnt.radical,LexinfoOnt.root,pair[1].trim());
+                                aBox.add(LexinfoOnt.radical, LexinfoOnt.root, pair[1].trim());
                                 break;
                             case "bšakn":    // alt root ?
                             case "eslšakn":  // alt root ?
                             case "btklšakn": // alt root ?
                             case "liepšakn": // alt root ?
-                                 //  log.debug("Unknown root info {} in {} --in-- {}", pair[1], infos[0], this.currentLexEntry());
+                                //  log.debug("Unknown root info {} in {} --in-- {}", pair[1], infos[0], this.currentLexEntry());
                                 break;
                             case "žodis": // word
                             case "tikr": // check
@@ -99,10 +99,10 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                             case "pformv":
                             case "pfrom":
                             case "ppform":
-                              //  log.debug("Unused pform {} in {} --in-- {}", pair[1], infos[0], this.currentLexEntry());
+                                //  log.debug("Unused pform {} in {} --in-- {}", pair[1], infos[0], this.currentLexEntry());
                                 break;
                             case "skiem": // syllable
-                             //   log.debug("Unused syllable info {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                                //   log.debug("Unused syllable info {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
                                 break;
                             case "el":  // present tense
                             case "bkl": // past simple tense
@@ -111,19 +111,19 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                                 // log.debug("Unused inflection {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
                                 break;
                             case "nl": // not comparable degree
-                               //  log.debug("Unused comparable info {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                                //  log.debug("Unused comparable info {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
                                 break;
                             case "vm":
                             case "vf":
                             case "dm":
                             case "df":
-                               //  log.debug("Unused inflexion {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                                //  log.debug("Unused inflexion {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
                                 break;
                             case "dalyviai":
-                               //  log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                                //  log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
                                 break;
                             case "tipas": // type
-                               //  log.debug("Unused type form {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                                //  log.debug("Unused type form {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
                                 break;
                             case "dkirt":
                             case "dkirt-typ":
@@ -133,20 +133,19 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                             case "l3": // gradual in ltprv
                                 break;
                             default:
-                                if(!pair[0].startsWith("v") && !pair[0].startsWith("d")){
+                                if (!pair[0].startsWith("v") && !pair[0].startsWith("d")) {
                                     log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
                                 }
                         }
                 }
                 i++;
             }
-            if(infos[0].equals("ltskt")){
+            if (infos[0].equals("ltskt")) {
                 String[] pair = infos[1].split("=");
-                if(pair.length == 2) {
+                if (pair.length == 2) {
                     addExtraPartOfSpeech(infos[0] + "-" + pair[1]);
                 }
-            }
-            else {
+            } else {
                 addExtraPartOfSpeech(infos[0]);
             }
         }
@@ -179,9 +178,9 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     }
 
     public void addNymInfo(String nymRel, String[] tNyms, String gloss) {
-        if(!nymRel.equals("") && tNyms.length >2) {
-            if(tNyms[1].equals("lt")) {
-               registerNymRelation(tNyms[2], nymRel, gloss);
+        if (!nymRel.equals("") && tNyms.length > 2) {
+            if (tNyms[1].equals("lt")) {
+                registerNymRelation(tNyms[2], nymRel, gloss);
             } else {
                 log.debug("Unused Nyms:lang {} --in-- {}", tNyms[1], this.currentLexEntry());
             }
@@ -189,8 +188,8 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     }
 
     public void addRelatedTermInfo(String[] tRel) {
-        if(tRel.length >2) {
-            if(tRel[1].equals("lt")) {
+        if (tRel.length > 2) {
+            if (tRel[1].equals("lt")) {
                 aBox.add(LexinfoOnt.relatedTerm, LexinfoOnt.relatedTerm, tRel[2]);
             } else {
                 log.debug("Unused RelatedTerm:lang {} --in-- {}", tRel[1], this.currentLexEntry());

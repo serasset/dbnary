@@ -5,51 +5,49 @@ import org.codehaus.stax2.XMLStreamReader2;
 
 import javax.xml.stream.XMLStreamException;
 
-import static org.getalp.dbnary.DBnaryOnt.usage;
-
 public class DilafBambaraExtractor extends DilafExtractor {
 
-	public DilafBambaraExtractor(DilafLemonDataHandler wdh) {
-		super(wdh);
-	}
+    public DilafBambaraExtractor(DilafLemonDataHandler wdh) {
+        super(wdh);
+    }
 
-	@Override
-	protected void importArticle(XMLStreamReader2 xmlr) throws XMLStreamException {
+    @Override
+    protected void importArticle(XMLStreamReader2 xmlr) throws XMLStreamException {
         String lexId = xmlr.getAttributeValue(null, "id");
-		String lemma = null, senseNumber = null, pronounciation = null, partOfSpeech = null;
-		Resource lexicalEntry = null;
+        String lemma = null, senseNumber = null, pronounciation = null, partOfSpeech = null;
+        Resource lexicalEntry = null;
         // <!ELEMENT item (forme, forme_tons*, phon*, morphologie?, (cf|(variante, variante_tons*))*, compo_ba?,compo_fr*, cat?, syntaxe?, bloc*)>
-		while (xmlr.hasNext()) {
+        while (xmlr.hasNext()) {
             xmlr.next();
             if (xmlr.isStartElement() && xmlr.getLocalName().equals("forme")) { // entrée
                 // attributs: usage, non_usage, orthographe, emplois
-            	lemma = xmlr.getElementText();
+                lemma = xmlr.getElementText();
             } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("forme_tons")) { // transcription phonétique
                 // ignore for now
             } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("phon")) { // transcription phonétique
-            	// Sometimes a pronunciation, sometime a french explanation on the pronunciation, sometimes a codde ("gw", "fl", etc...)
+                // Sometimes a pronunciation, sometime a french explanation on the pronunciation, sometimes a codde ("gw", "fl", etc...)
                 // Ignore for now
                 // pronounciation = xmlr.getElementText();
             } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("cat")) { // part of speech
-            	partOfSpeech = xmlr.getElementText();
+                partOfSpeech = xmlr.getElementText();
                 lexicalEntry = wdh.registerLexicalEntry(lexId, partOfSpeech);
                 wdh.setCanonicalForm(lexicalEntry, lemma);
             } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("bloc")) { // French translation
-            	if (null == lexicalEntry) {
+                if (null == lexicalEntry) {
                     System.err.format("Null lexical Entry while processing bloc in %s\n", lexId);
                     lexicalEntry = wdh.registerLexicalEntry(lexId, "");
                 }
-            	extractBloc(xmlr, lexicalEntry);
+                extractBloc(xmlr, lexicalEntry);
             } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("feeriji")) { // Definition
-            	String def = xmlr.getElementText();
-            	// wdh.registerDefinition(lexicalSense, def);
+                String def = xmlr.getElementText();
+                // wdh.registerDefinition(lexicalSense, def);
             } else if (xmlr.isEndElement() && articleElement().equals(xmlr.getLocalName())) {
-            	return;
+                return;
             }
-		}
-    	
-    	
-	}
+        }
+
+
+    }
 
     private void extractBloc(XMLStreamReader2 xmlr, Resource lexicalEntry) throws XMLStreamException {
         while (xmlr.hasNext()) {
@@ -69,7 +67,7 @@ public class DilafBambaraExtractor extends DilafExtractor {
         String nonUsage = xmlr.getAttributeValue(null, "non_usage");
         String status = xmlr.getAttributeValue(null, "status");
         String emploi = xmlr.getAttributeValue(null, "emploi");
-        Resource sense = wdh.registerLexicalSense(lexicalEntry, senseId, terme, usage, nonUsage,status, emploi);
+        Resource sense = wdh.registerLexicalSense(lexicalEntry, senseId, terme, usage, nonUsage, status, emploi);
         while (xmlr.hasNext()) {
             xmlr.next();
             if (xmlr.isStartElement()) {

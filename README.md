@@ -10,7 +10,7 @@ Extracted data is available in RDF. You will have to load it in an RDF database 
 
 You may also query the data from the above web page, using SPARQL.
 
-This repository hosts the programs that extracted the dat from Wiktionary. It does not contain tools to use it.
+This repository hosts the programs that extracted the data from Wiktionary. It does not contain tools to use it.
 
 ### How do I compile the extractor? ###
 

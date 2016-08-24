@@ -12,16 +12,18 @@ You may also query the data from the above web page, using SPARQL.
 
 This repository hosts the programs that extracted the dat from Wiktionary. It does not contain tools to use it.
 
-### How do I get set up? ###
+### How do I compile the extractor? ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+* DBnary extractor uses maven and is written in Java (with small parts in scala)
+* Dependencies should be taken care of by maven
+* There is no database to configure, the extractor directly uses the dump files
+
+### How do I use the extractor? ###
+
+Easiest way is to use the Command Line Interfaces found in the org.getalp.dbnary.cli package.
 
 ### Contribution guidelines ###
+
 
 * Writing tests
 * Code review

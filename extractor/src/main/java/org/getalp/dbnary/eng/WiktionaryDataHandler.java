@@ -140,7 +140,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 	return prefix;
     }
 
-    public void registerDerived(ArrayListPOE derived){
+    public void registerDerived(ArrayList<POE> derived){
 	if (derived != null && derived.size() > 0){
 	    String lang = null;
 	    Resource vocable0 = null;
@@ -163,41 +163,35 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         
     public void registerCurrentEtymologyEntry(String lang){
 	if (currentEtymologyEntry == null) {
-	    currentEtymologyNumber++;
+	    currentEtymologyNumber ++;
 	    currentEtymologyEntry = aBox.createResource(computeEtymologyId(currentEtymologyNumber, lang), DBnaryEtymologyOnt.EtymologyEntry);
 	}
-    }
-
-    public void registerEtymology(ArrayListPOE arrayPOE){
-	registerEtymology(arrayPOE, "eng");
     }
 
     public Resource createEtymologyEntryResource(String e, String lang){
 	return aBox.createResource(getPrefixe(lang) + "__ee_" + uriEncode(e).split(",")[0].trim(), DBnaryEtymologyOnt.EtymologyEntry);
     }
-    
-    public void registerEtymology(ArrayListPOE arrayPOE, String currentLang){
+        
+    public void registerEtymology(Etymology etymology){
 	currentEtymologyEntry = null;	
-	if (arrayPOE == null || arrayPOE.size() == 0){
+	if (etymology.asPOE == null || etymology.asPOE.size() == 0){
 	    return;
 	}
 
-	registerCurrentEtymologyEntry(currentLang);
+	registerCurrentEtymologyEntry(etymology.lang);
 	Resource vocable0 = currentEtymologyEntry, vocable = null;
-	String lang0 = currentLang, lang = null;
-	for (int j = 0; j < arrayPOE.size(); j ++){
-	    POE poe = arrayPOE.get(j);
+	String lang0 = etymology.lang, lang = null;
+	for (int j = 0; j < etymology.asPOE.size(); j ++){
+	    POE poe = etymology.asPOE.get(j);
 	    for (int k = 0; k < poe.part.size(); k ++) {
 		boolean isEquivalent = false;
 	    	if (poe.part.get(k).equals("LEMMA")){
-		    System.out.format("poe.string=%s\n", poe.string);
 		    lang = poe.args.get("lang");
-
 		    //handle etymologically equivalent words (i.e., isEquivalent = true)
 		    if (lang != null && lang0 != null){
 			if (lang0.equals(lang)){
 			    if (j > 1){
-				if (arrayPOE.get(j - 1).part.get(0).equals("COMMA")){
+				if (etymology.asPOE.get(j - 1).part.get(0).equals("COMMA")){
 				    isEquivalent = true;
 				}
 			    }
@@ -229,7 +223,6 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
     public void initializeAncestors(){
 	ancestors = new ArrayList<Resource>();
-	ancestors.add(currentEtymologyEntry);  
     }
 
     public void finalizeAncestors(){
@@ -242,7 +235,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 	}
     }
     
-    public void addAncestorsAndRegisterDescendants(ArrayListPOE descendants){
+    public void addAncestorsAndRegisterDescendants(ArrayList<POE> descendants){
 	if (descendants != null && descendants.size() > 0){
 	    int counter = 0; //number of descendants
 	    String lang = null; //language of the descendant

@@ -1,5 +1,6 @@
 package org.getalp.dbnary.eng;
 
+import java.util.ArrayList;
 import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.PronunciationPair;
 import org.slf4j.Logger;
@@ -52,11 +53,6 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
 	registerEtymologyPos(extractedLang);
     }
     
-    @Override
-    public void registerEtymology(ArrayListPOE arrayPOE){
-	registerEtymology(arrayPOE, extractedLang);
-    }
-
     @Override
     public void registerPronunciation(String pron, String lang) {
         // Catch the call for foreign languages and disregard passed language

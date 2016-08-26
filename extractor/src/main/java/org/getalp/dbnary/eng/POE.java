@@ -7,6 +7,7 @@ import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,122 +33,23 @@ public class POE {
      * Constructor
      *
      * @param group a String specifying the "string" parameter of the object of class POE (e.g., "from")
-     * @param index an integer specifying the Etymology pattern among possibleString
+     * @param s a String specifying the part of etymology
      */
-    public POE(String group, int index){
-	if (index == 1 || index == 2){
-	    log.debug("error in group index");
-	}
-	string = group;
-	part = new ArrayList<String>(); 
-	part.add(EtymologyPatterns.possibleString[index]);
-    }
-    
-    //TODO: parse nested templates
-    /**                                      
-     * Constructor used to parse wiktionary links
-     * 
-     * @param group a String containing the argument of the wiktionary link
-     * @param lang a String specifying the language
-     */ 
-    public POE(String group, String lang){
+    public POE(String group, String lang, String s){
 	string = group;
 	part = new ArrayList<String>();
-
-	if (string.startsWith("Kanien'keh")) {
-	    string = "Kanienkehaka";
-	}
-	String[] subs = string.split("\\|");
-	String[] substring = subs[0].split(":"); 
-	String[] subsubs = subs[0].split("\\#");
-	for (String f : subs){
-	    System.out.format("subs=%s\n", f);
-	}
-	for (String f : substring){
-	    System.out.format("substring=%s\n", f);
-	}
-	for (String f : subsubs){
-	    System.out.format("subsubs=%s\n", f);
-	}
-       
-	System.out.format("%s\n", substring[0].length());
-	if (substring[0].length() == 0 || substring[0].equals("w") || substring[0].equals("Image") || substring[0].equals("Category") || substring[0].equals("File") || substring[0].equals("Wikisaurus")) { //it's not a Wiktionary link eg:  [[:Category:English words derived from: load (noun)]]
-	    log.debug("Ignoring unexpected argument {} in wiki link", string);
-	    args = null;
-	    string = null;
-	    part = null;
-	} else {
-	    args = new HashMap<String, String>();
-	    args.put("1", "l");    
-	    if (subsubs.length > 1){
-		lang = EnglishLangToCode.threeLettersCode(subsubs[1].trim());
-		if (lang != null){
-		    args.put("word1", subsubs[0]);
-		    args.put("lang", lang);
-		    part.add("LEMMA");
-		    string = "l|" + lang + "|" + args.get("word1");   
-		} else {
-		    log.debug("Ignoring unexpected argument {} in wiki link", string); 
-		    args = null;
-		    part = null;
-		    string = null;
-		}
-	    } else {	    
-	        if (substring.length == 1) { //it's a Wiktionary link to the English version of Wiktionary
-	    	    args.put("lang", lang);
-		    args.put("word1", cleanUp(substring[0]));
-	        } else {
-		    args.put("lang", substring[0]); 
-		    args.put("word1", cleanUp(substring[1]));
-	        }
-		part.add("LEMMA"); 
-		string = "l|" + args.get("lang") + "|" + args.get("word1");   
-	        log.debug("Processing wiki link {} as {} word {}", string, args.get("lang"), args.get("word1"));
-	    }
-	}
-	this.normalizeLang();
-    }
-
-    private void normalizeLang(){
-	if (this.args != null) {
-	    if (this.args.containsKey("lang")) {
-		String languageCode = this.args.get("lang");
-		languageCode = EnglishLangToCode.threeLettersCode(this.args.get("lang"));
-		if (languageCode != null) {
-		    this.args.put("lang", languageCode);
-		}//else leave it as it is
-	    }
-	} 
-    }
-
-    /**
-     * Given a String, this function replaces some symbols
-     * e.g., cleanUp("[[door]],[[dur]]") returns "door,dur"
-     * e.g., cleanUp("o'hare") returns "o__hare"
-     * e.g., cleanUp("*duhr") returns "_duhr"
-     * e.g., cleanUp ("anti-particle") returns "anti__-particle"
-     *
-     * @param word an input String
-     * @return a String where some characters have been replaced
-     */
-    public String cleanUp(String word) {
-        word = word.replaceAll("\\[", "").replaceAll("\\]", "").trim().replaceAll("'", "__").replaceAll("\\*", "_").replaceAll("^-", "__-");
-        return word;
-    }
-
-    //template
-    /**
-     * Constructor for a template POE
-     * Usage: POE("m|en|door")
-     * e.g.: POE("cog|fr|orgue", 1) returns an object POE with POE.string="cog|fr|orgue", POE.part="COGNATE_WITH", POE.args={("1", "cog"), ("lang", "fra"), ("word1", "orgue"}
-     *
-     * @param group a String specifying the "string" parameter of the object of class POE (e.g., "m|en|door")
-     */
-    public POE(String group) {
-        string = group;
-        part = new ArrayList<String>();
+	
+	if (s.equals("")){//template
             args = WikiTool.parseArgs(group);
-	    if (args.get("1").equals("Han compound")){
+	    if (args.get("1").equals("rel-top") && args.get("2").equals("cognates")){
+		part.add("STOP");
+	    } else if (args.get("1").equals("rel-top") && args.get("2").equals("detailed etymology")){
+		part.add("STOP"); 
+	    } else if (args.get("1").equals("ja-r")){
+		part.add("LEMMA");
+		args.put("lang", "jpn");//Japanese
+		args.put("word1", args.get("2"));
+	    } else if (args.get("1").equals("Han compound")){
 		part.add("FROM");
 	        part.add("LEMMA");
 		for (int kk = 2; kk < 10; kk++) {
@@ -162,12 +64,11 @@ public class POE {
 	    } else if (args.get("1").equals("etymtree")){
 		if (args.get("3") != null && args.get("4") != null){
 		    args.put("lang", args.get("3"));
-		    args.remove("3");
 		    args.put("word1", args.get("4"));
+		    args.remove("3");
 		    args.remove("4");
-		} else {
-		    log.debug("Skipping etymtree template {}", string);
-		}
+		    part.add("ETYMTREE");
+		} 
 	    } else if (args.get("1").equals("Han simp")){
 		if (args.get("2") != null){
 		    part.add("FROM");
@@ -181,6 +82,34 @@ public class POE {
 	    } else if (args.get("1").equals("sense")){
 		log.debug("Found sense template {}", string);
 		part.add("SENSE");
+	    } else if (args.get("1").equals("jbo-etym")){//TODO: this is incorrect!!! 
+		int counter = 1;
+		ArrayList<String> tt = new ArrayList<>();
+		for (String kk : args.keySet()){
+		    tt.add(kk);
+		}
+		args.put("lang", "jbo");
+		for (String k : tt){		    
+		   if (args.get(k) != null){
+		      if (k.endsWith("_t")){
+			  k = k.substring(0, k.length() - 2);
+			  args.put("lang" + Integer.toString(counter), "k");
+			  args.put("word" + counter, args.get(k + "_t"));
+			  args.remove(k + "_t");
+		    	  String tr = args.get(k + "_tr");
+		    	  if (tr != null){
+			      args.put("tr" + counter, tr);
+			      args.remove(k + "_tr");
+		    	  }
+		    	  if (args.get(k) != null){
+			      args.remove(k);
+		    	  }
+		          counter ++;
+		      }
+		   }
+		}
+		part.add("FROM"); 
+		part.add("LEMMA"); 
 	    } else if (args.get("1").equals("cog") || args.get("1").equals("cognate")) {//e.g.:       {{cog|fr|orgue}}
                 part.add("COGNATE_WITH");
                 if (args.get("3") != null) {
@@ -250,7 +179,7 @@ public class POE {
 		part.add("LEMMA");
 		args.put("gloss1", args.get("etyl t"));
 		args.remove("etyl t");
-	    } else if (args.get("1").equals("compound") || args.get("1").equals("blend")) {
+	    } else if (args.get("1").equals("compound") || args.get("1").equals("blend") || args.get("1").equals("_compound")) {
                 if (args.get("lang") == null) {
                     args.put("lang", args.get("2"));
                     args.remove("2");
@@ -290,10 +219,26 @@ public class POE {
                         args.put("word" + Integer.toString(kk), cleanUp(args.get("word" + Integer.toString(kk))));
                     }
                 }
-            } else if (args.get("1").equals("vi-etym-sino")) {
+            } else if (args.get("1").equals("vi-l") || args.get("1").equals("vi-link")){
+		args.put("lang", "vi");
+		args.put("word1", args.get("2"));
+		args.remove("2");
+		if (args.get("4") != null){
+		    args.put("synonim", args.get("4"));
+		    args.remove("4");
+		}
+		if (args.get("3") != null){
+		    args.put("gloss", args.get("3"));
+		    args.remove("3"); 
+		}
+		part.add("LEMMA");
+	    } else if (args.get("1").equals("vi-etym-sino")) {
 		args.put("lang", "zh");//check this
-                args.put("word1", cleanUp(args.get("2")));
-                args.remove("2");
+                if (args.get("2") != null) {
+		    args.put("word1", cleanUp(args.get("2")));
+                    args.remove("2");
+		    part.add("LEMMA");
+		}
                 if (args.get("3") != null) {
                     args.put("gloss1", args.get("3"));
                     args.remove("3");
@@ -314,7 +259,6 @@ public class POE {
                     args.put("gloss3", args.get("7"));
                     args.remove("7");
                 }        
-                part.add("LEMMA");
             } else if (args.get("1").equals("abbreviation of")) {
                 part.add("FROM");
                 part.add("LEMMA");
@@ -347,7 +291,15 @@ public class POE {
 		        part.add("LEMMA");
 		    }
 		}
-            } else if (args.get("1").equals("fi-form of")){
+            } else if (args.get("1").equals("lang")){
+		if (args.get("2")!= null){
+		    args.put("lang", args.get("2"));
+		}
+		if (args.get("3")!= null){
+		    args.put("word1", cleanUp(args.get("3")));
+		    part.add("LEMMA");  
+		}
+	    } else if (args.get("1").equals("fi-form of")){
 		part.add("FROM");
 		part.add("LEMMA");
 		args.put("word1", args.get("2"));
@@ -454,6 +406,78 @@ public class POE {
                 //part.add("ERROR");
             }        
 	this.normalizeLang(); 
+	} else if (s.equals("LEMMA")){//link
+            if (string.startsWith("Kanien'keh")) {
+	        string = "Kanienkehaka";
+            }
+            String[] subs = string.split("\\|");
+            String[] substring = subs[0].split(":");
+            String[] subsubs = subs[0].split("\\#");
+
+            if (substring[0].length() == 0 || substring[0].equals("w") || substring[0].equals("Image") || substring[0].equals("Category") || substring[0].equals("File") || substring[0].equals("Wikisaurus")) { //it's not a Wiktionary link eg:  [[:Category:English words derived from: load (noun)]]
+	        log.debug("Ignoring unexpected argument {} in wiki link", string);
+                args = null;
+                string = null;
+                part = null;
+            } else {
+                args = new HashMap<String, String>();
+                args.put("1", "l");
+                if (subsubs.length > 1){
+	            lang = EnglishLangToCode.threeLettersCode(subsubs[1].trim());
+	            if (lang != null){
+	                args.put("word1", cleanUp(subsubs[0]));
+	                args.put("lang", lang);
+	                part.add("LEMMA");
+	                string = "l|" + lang + "|" + cleanUp(args.get("word1"));
+	            } else {
+	                log.debug("Ignoring unexpected argument {} in wiki link", string);
+	                args = null;
+	                part = null;
+	                string = null;
+	            }
+                } else {
+	            if (substring.length == 1) { //it's a Wiktionary link to the English version of Wiktionary
+	                args.put("lang", lang);
+	                args.put("word1", cleanUp(substring[0]));
+	            } else {
+	                args.put("lang", substring[0]);
+	                args.put("word1", cleanUp(substring[1]));
+	            }
+	            part.add("LEMMA");
+	            string = "l|" + args.get("lang") + "|" + args.get("word1");
+	            log.debug("Processing wiki link {} as {} word {}", group, args.get("lang"), args.get("word1"));
+                }
+            }
+            this.normalizeLang();
+         } else {
+             part.add(s);
+         }
     }
 
+    private void normalizeLang(){
+	if (this.args != null) {
+	    if (this.args.containsKey("lang")) {
+		String languageCode = this.args.get("lang");
+		languageCode = EnglishLangToCode.threeLettersCode(this.args.get("lang"));
+		if (languageCode != null) {
+		    this.args.put("lang", languageCode);
+		}//else leave it as it is
+	    }
+	}
+    }
+
+    /**                                                                                                                                 
+     * Given a String, this function replaces some symbols                                                        
+     * e.g., cleanUp("[[door]],[[dur]]") returns "door,dur"                                                                                     
+     * e.g., cleanUp("o'hare") returns "o__hare"
+     * e.g., cleanUp("*duhr") returns "_duhr" 
+     * e.g., cleanUp ("anti-particle") returns "anti__-particle"                                                                                 
+     *                                                                                                                                                    
+     * @param word an input String                                                       
+     * @return a String where some characters have been replaced
+     */
+    public String cleanUp(String word) {
+	word = word.replaceAll("\\[", "").replaceAll("\\]", "").trim().replaceAll("'", "__").replaceAll("\\*", "_").replaceAll("^-", "__-");
+	return word;
+    }    
 }

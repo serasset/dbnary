@@ -1,0 +1,17 @@
+package org.getalp.dbnary.eng;
+
+import java.util.List; 
+import java.util.regex.Pattern; 
+
+public class Sentence{
+    
+    List<String> elements;
+    Pattern elementsPattern;
+    Pattern pattern;
+
+    Sentence(List<String> e, pattern p){
+	elements = e;
+	elementsPattern = Pattern.compile(concatenateRegex(elements));
+	pattern = p;
+    }
+}

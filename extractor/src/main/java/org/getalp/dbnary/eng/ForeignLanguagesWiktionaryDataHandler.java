@@ -8,45 +8,43 @@ import org.slf4j.LoggerFactory;
 
 public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler {
 
-	private Logger log = LoggerFactory.getLogger(ForeignLanguagesWiktionaryDataHandler.class);
+    private Logger log = LoggerFactory.getLogger(ForeignLanguagesWiktionaryDataHandler.class);	
+
+    private String currentPrefix = null;
+
+    public ForeignLanguagesWiktionaryDataHandler(String lang) {
+	super(lang);
+    }
+
+    @Override
+    public void initializeEntryExtraction(String wiktionaryPageName) {
+	setCurrentLanguage(extractedLang);
+	super.initializeEntryExtraction(wiktionaryPageName, extractedLang);
+    }
+
+    public void setCurrentLanguage(String lang) {
+	extractedLang = lang;//!!!! check this change
+	//extractedLang = LangTools.getPart1OrId(lang);
+	lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
+	currentPrefix = getPrefixe(lang);
+    }
+
+    @Override
+    public void finalizeEntryExtraction() {
+	extractedLang = null;
+	currentPrefix = null;
+    }
+
+    @Override
+    public String currentLexEntry() {
+	// TODO Auto-generated method stub
+	return currentWiktionaryPageName;
+    }
 	
-
-	private String currentPrefix = null;
-
-	public ForeignLanguagesWiktionaryDataHandler(String lang) {
-		super(lang);
-	}
-
-        @Override
-	public void initializeEntryExtraction(String wiktionaryPageName) {
-		setCurrentLanguage(extractedLang);
-		super.initializeEntryExtraction(wiktionaryPageName, extractedLang);
-        }
-
-	public void setCurrentLanguage(String lang) {
-	    extractedLang = lang;//!!!! check this change
-	    //extractedLang = LangTools.getPart1OrId(lang);
-		lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
-		currentPrefix = getPrefixe(lang);
-	}
-
-	@Override
-	public void finalizeEntryExtraction() {
-	    extractedLang = null;
-	    currentPrefix = null;
-	}
-
-
-	@Override
-	public String currentLexEntry() {
-		// TODO Auto-generated method stub
-		return currentWiktionaryPageName;
-	}
-	
-	@Override
-	public String getPrefix() {
-		return currentPrefix;
-	}
+    @Override
+    public String getPrefix() {
+	return currentPrefix;
+    }
 
     @Override
     public void registerEtymologyPos(){

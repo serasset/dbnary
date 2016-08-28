@@ -48,7 +48,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
     private Set<Statement> heldBackStatements = new HashSet<Statement>();
 
     protected int nbEntries = 0;
-    private String NS;
+    protected String NS;
     protected String currentEncodedPageName;
     protected String currentWiktionaryPageName;
     public CounterSet currentLexieCount = new CounterSet();

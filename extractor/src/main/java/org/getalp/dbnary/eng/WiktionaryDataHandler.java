@@ -125,7 +125,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     public String getPrefixe(String lang){
 	lang = lang.trim();
 	if (lang.equals("eng")){
-	    return getPrefix();
+	    return NS;
 	}
 	if (this.prefixes.containsKey(lang)){
 	    return this.prefixes.get(lang);
@@ -174,18 +174,18 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         
     public void registerEtymology(Etymology etymology){
 	currentEtymologyEntry = null;	
+
 	if (etymology.asPOE == null || etymology.asPOE.size() == 0){
 	    return;
 	}
-
 	registerCurrentEtymologyEntry(etymology.lang);
 	Resource vocable0 = currentEtymologyEntry, vocable = null;
 	String lang0 = etymology.lang, lang = null;
 	for (int j = 0; j < etymology.asPOE.size(); j ++){
 	    POE poe = etymology.asPOE.get(j);
-	    for (int k = 0; k < poe.part.size(); k ++) {
+	    for (String part : poe.part) {
 		boolean isEquivalent = false;
-	    	if (poe.part.get(k).equals("LEMMA")){
+	    	if (part.equals("LEMMA")){
 		    lang = poe.args.get("lang");
 		    //handle etymologically equivalent words (i.e., isEquivalent = true)
 		    if (lang != null && lang0 != null){

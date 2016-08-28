@@ -70,7 +70,7 @@ public class Etymology{
 	}
 
 	//ADD FINAL DOT
-	if (asString != null && ! asString.trim().isEmpty() && !asString.endsWith(".")){
+	if (asString != null && ! asString.trim().isEmpty() && !asString.trim().endsWith(".")){
 	    //add final dot if etymology string doesn't end with a dot
 	    asString += ".";
 	}
@@ -86,21 +86,23 @@ public class Etymology{
 	ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(asString, "[[", "]]");
 
 	//match against regex
-	System.out.format("sentence = %s\n", sentence.elementsPattern);
+	//System.out.format("sentence = %s\n", sentence.elementsPattern);
 	Matcher m = sentence.elementsPattern.matcher(asString);
 	while (m.find()) {
-	    System.out.format("group = %s\n", m.group());
+	    //System.out.format("group = %s\n", m.group());
 	    for (int i = 0; i < m.groupCount(); i ++) {
+		//System.out.format("group %s = %s\n", i, m.group(i + 1));
 		if (m.group(i + 1) != null) {
-		    boolean isMatchContainedInTemplateOrLink = false;
+		    //check if match is contained in template or link
+		    boolean check = false;
 		    //check if match is contained in a template (or is a template)
 		    Pair match = new Pair(m.start(), m.end());
 		    for (Pair template : templatesLocations) {
 			if (match.containedIn(template)) {//match is contained in a template
-			    isMatchContainedInTemplateOrLink = true;
+			    check = true;
 			    if (i == 1) {//match is a template
 				POE poe = new POE(asString.substring(template.start + 2, template.end - 2), lang, sentence.elements.get(i));
-				System.out.format("template=%s, element=%s, part=%s\n", asString.substring(template.start + 2, template.end - 2), sentence.elements.get(i), poe.part);
+				//System.out.format("template=%s, element=%s, part=%s\n", asString.substring(template.start + 2, template.end - 2), sentence.elements.get(i), poe.part);
 				if (poe.part != null && poe.args != null) {
 				    if (poe.args.get("1").equals("etyl") || poe.args.get("1").equals("_etyl")){
 					etylLang = poe.args.get("lang");
@@ -110,11 +112,13 @@ public class Etymology{
 				    //set language of LEMMA to language of etyl template
 				    if (etylIndex != -1 && asPOE.size() == etylIndex + 1){
 					poe.args.put("lang", etylLang);
+					System.out.format("etylang=%s\n", etylLang);
 				    }
 				    if (poe.part.equals("STOP")){
 					return;
 				    } else {
 					asPOE.add(poe);
+					//System.out.format("poe part of template =%s\n", poe.part);
 				    }
 				}
 				break;
@@ -126,10 +130,10 @@ public class Etymology{
 		    //*   if match "''[[" is contained in link "[[...]]"
 		    //*   if match "[[" is contained in link "[[...]]"
 		    //check if match is contained in a link (or is a link)
-		    if (isMatchContainedInTemplateOrLink == false) {//if match is not contained in a template
+		    if (check == false) {//if match is not contained in a template
 			for (Pair link : linksLocations) {
 			    if (match.containedIn(link)) {
-				isMatchContainedInTemplateOrLink = true;
+				check = true;
 				if (i == 2) {//match is a link
 				    POE poe = new POE(asString.substring(link.start + 2, link.end - 2), lang, sentence.elements.get(i));
 				    if (poe.part != null && poe.args != null) {
@@ -143,7 +147,7 @@ public class Etymology{
 			    }
 			}
 		    }
-		    if (isMatchContainedInTemplateOrLink == false) {//if match is neither contained in a template nor in a link
+		    if (check == false) {//if match is neither contained in a template nor in a link
 			POE poe = new POE(m.group(i + 1), lang, sentence.elements.get(i));
 			if (poe.part != null) {
 			    if (poe.part.equals("STOP")){
@@ -316,7 +320,7 @@ public class Etymology{
 	//remove any POE that follows "COGNATE_WITH" or "OR"
 	for (int j = 0; j < asPOE.size(); j ++) {
 	    if (asPOE.get(j).part.size() > 0) {
-		System.out.format("string=%s, part = %s\n", asPOE.get(j).string, asPOE.get(j).part.get(0));
+		//System.out.format("string=%s, part = %s\n", asPOE.get(j).string, asPOE.get(j).part.get(0));
 		if (asPOE.get(j).part.get(0).equals("COGNATE_WITH") || asPOE.get(j).part.get(0).equals("OR")) {
 		    asPOE.subList(j, asPOE.size()).clear();
 		    break;
@@ -325,11 +329,10 @@ public class Etymology{
 	}
 
 	ArrayList<Pair> match = findMatch(asPOE, definitionPattern);
-	System.out.format("match=%s\n", match.get(0).start);
 	if (match.size() == 0) {
 	    return;//there is no match to the definitionPattern
 	}
-		
+	//System.out.format("match=%s\n", match.get(0).start); 		
 	//remove any POE after "DOT" or "AND" that follow a definitionPattern
 	for (int j = match.get(0).end + 1; j < asPOE.size(); j ++){
 	    for (String part : asPOE.get(j).part){

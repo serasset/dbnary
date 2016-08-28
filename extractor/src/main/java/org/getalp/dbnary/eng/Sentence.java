@@ -25,7 +25,7 @@ public class Sentence{
 	for (int i = 0; i < l.size(); i++){
 	    toreturn.append(regexElements.get(l.get(i)));
 	    if (i < l.size() - 1){
-		toreturn.append("|");
+		toreturn.append(")|(");
 	    }
 	}
 	toreturn.append(")");

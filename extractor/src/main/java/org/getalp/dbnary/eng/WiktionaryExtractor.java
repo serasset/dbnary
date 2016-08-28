@@ -281,7 +281,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         etymology.replaceLanguage();
 	
 	etymology.toPOE(etymology.bullet);
-
+	for (POE poe : etymology.asPOE){
+	    System.out.format("poe=%s, %s\n", poe.string, poe.part);
+	}
 	//REPLACE SENSE TEMPLATE
 	//parse a bullet like this: "* {{sense|kill}} {{l|en|top oneself}}"   
 	etymology.replaceSense();
@@ -311,15 +313,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 		        }
 		    }
 		    //case "[[color]], [[colour]]"
-	        } else if (bulletPatternMatcher.group(2) == null){//case "[[color]], [[colour]]" 
-		    if (bulletPatternMatcher.group(7).equals("LEMMA")){
-		        for (POE p : etymology.asPOE){
-			    if (p.part.get(0).equals("LEMMA")){
-			        equivalentLemmas.add(p);
-			    }
-		        }
-		    }
 	        }
+	    } else if (bulletPatternMatcher.group(2) == null && bulletPatternMatcher.group(5) == null){//case "[[color]], [[colour]]" 
+		if (bulletPatternMatcher.group(7).equals("LEMMA")){
+	            for (POE p : etymology.asPOE){
+         		if (p.part.get(0).equals("LEMMA")){
+			    equivalentLemmas.add(p);
+			}
+		    }
+		}
 	    }
 	}
 	if (equivalentLemmas.size() > 1) {
@@ -334,7 +336,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     protected void extractDerived(int blockStart, int end, String lang) {
 	ewdh.registerCurrentEtymologyEntry(lang);
-	
+
+	System.out.format("derived = %s\n", pageContent.substring(blockStart, end));
 	Matcher bulletListMatcher = WikiPatterns.bulletListPattern.matcher(pageContent);
 	bulletListMatcher.region(blockStart, end); 
         while (bulletListMatcher.find()) {
@@ -395,7 +398,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     
     protected void extractDescendants(int blockStart, int end, String lang){	
 	String descendantsPageContent = pageContent.substring(blockStart, end);
-
+	System.out.format("descendants = %s\n", descendantsPageContent);
 	boolean isMatch = extractMultipleBulletList(descendantsPageContent, lang, true);
 	
 	//if there is no match to multiple bullet list

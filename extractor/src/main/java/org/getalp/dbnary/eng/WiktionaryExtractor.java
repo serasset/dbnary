@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 /**
  * @author serasset, pantaleo
  */
-//TODO: deal with language extraction for {{etyl|la|en}} [[lac]] in etymology //maybe done
 //TODO: deal with {{compound|word1={{t|la|in}}|word2={{...}}}}
 //TODO: deal with onomatopoietic in etymology
 //TODO: deal with equivalent to compound in etymology
@@ -258,7 +257,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected void extractEtymology(int blockStart, int end) {
 	extractEtymology(blockStart, end, "eng"); 
     }
-	
+
+    //TODO: check correct parsing of From ''[[semel#Latin|semel]]''  + ''[[pro#Latin|pro]]''  + ''[[semper#Latin|semper]]'' 
     protected void extractEtymology(int blockStart, int end, String lang) {
 	Etymology etymology = new Etymology(pageContent.substring(blockStart, end), lang);
 	//check if etymology is empty or undefined
@@ -275,15 +275,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	ewdh.registerEtymology(etymology);
     }
 
+    //TODO: handle * [[crisismanager]] {{g|m}}
     ArrayList<POE> extractBullet(String bulletString, String lang){
 	Etymology etymology = new Etymology(bulletString, lang);
 	ArrayList<POE> equivalentLemmas = new ArrayList<>();
         etymology.replaceLanguage();
 	
 	etymology.toPOE(etymology.bullet);
-	for (POE poe : etymology.asPOE){
-	    System.out.format("poe=%s, %s\n", poe.string, poe.part);
-	}
 	//REPLACE SENSE TEMPLATE
 	//parse a bullet like this: "* {{sense|kill}} {{l|en|top oneself}}"   
 	etymology.replaceSense();
@@ -334,12 +332,36 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	extractDerived(blockStart, end, "eng");
     }
 
-    protected void extractDerived(int blockStart, int end, String lang) {
-	ewdh.registerCurrentEtymologyEntry(lang);
+    public ArrayList<String> separate(String s){
+	ArrayList<String> toreturn = new ArrayList<String>();
 
-	System.out.format("derived = %s\n", pageContent.substring(blockStart, end));
-	Matcher bulletListMatcher = WikiPatterns.bulletListPattern.matcher(pageContent);
-	bulletListMatcher.region(blockStart, end); 
+	String[] tmp = s.split(",");
+	for (String t : tmp){
+	    String [] tmp2 = t.split("/");
+            for (String t2 : tmp2){
+		if (t2.length() > 0){
+		    toreturn.add(t2);
+		}
+	    }
+        }
+	for (String t : toreturn){
+	    t = t.replaceAll("\\[", "").replaceAll("\\]", "").trim();
+	    //System.out.format("t=%s\n", t);
+	}
+	
+	return toreturn;
+    }
+    
+    //TODO: process * {{l|pt|mundinho}}, {{l|pt|mundozinho}} {{gloss|diminutives}}
+    //* {{l|pt|mundão}} {{gloss|augmentative}}
+    //DONE: process {{der4|title=Terms derived from ''free'' | [[freeball]], [[free-ball]] | [[freebooter]] }}
+    protected void extractDerived(int blockStart, int end, String lang) {
+	String derivedPageContent = pageContent.substring(blockStart, end);
+	
+	ewdh.registerCurrentEtymologyEntry(lang);
+	
+	System.out.format("derived = %s\n", derivedPageContent);
+	Matcher bulletListMatcher = WikiPatterns.bulletListPattern.matcher(derivedPageContent);
         while (bulletListMatcher.find()) {
 	    ArrayList<POE> bulletPOE = extractBullet(bulletListMatcher.group(1), lang);
 	    //check that all lemmas share the same language
@@ -351,6 +373,28 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	    }
 	    ewdh.registerDerived(bulletPOE);
         }
+	
+	ArrayList<Pair> derTableTemplatesLocations = WikiTool.locateEnclosedString(derivedPageContent, "{{", "}}");
+	for (Pair p : derTableTemplatesLocations){
+	    String s = derivedPageContent.substring(p.start + 2, p.start + 6);
+	    if (s.equals("der2") || s.equals("der3") || s.equals("der4")){ 
+	        Map<String, String> args = WikiTool.parseArgs(derivedPageContent.substring(p.start+8, p.end));
+	        for (int j = 1; j < args.size(); j ++){
+		    if (args.get(Integer.toString(j)) != null){
+			ArrayList<String> lemma = separate(args.get(Integer.toString(j)));
+		        ArrayList<POE> derPOE = new ArrayList<POE>();
+		        for (String l : lemma){
+		            if (l != null){
+			        //System.out.format("lemma=%s\n", l.trim()); 
+		                POE poe = new POE("_m|" + lang + "|" + l, lang, "");
+			        derPOE.add(poe);
+			    }
+		        }
+		        ewdh.registerDerived(derPOE);
+		    }
+		}
+	    }
+	}
     }
 
     protected void extractDescendants(int blockStart, int end){
@@ -380,10 +424,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     protected void extractEtymtree(String lemma, String lang){
-	if (lemma == null || lang == null){
+	if (lang == null){
 	    log.debug("Skipping etymtree template");
 	    return;
 	}
+
+	if (lemma == null){
+	    lemma = this.wiktionaryPageName;
+	}
+	
 	if (ewdh.etymtreeHashSet.add(lang + "_" + lemma)){//if etymtree hasn't been saved already
 	    String etymtreePage = etymtreePagePrefix + "/" + lang + "/" + lemma;
 	    String etymtreePageContent = wi.getTextOfPage(etymtreePage);
@@ -404,11 +453,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	//if there is no match to multiple bullet list
 	//match with template etymtree 
 	if (! isMatch){
-	    ArrayList<Pair> templateLocations = WikiTool.locateEnclosedString(pageContent, "{{", "}}");
+	    ArrayList<Pair> templateLocations = WikiTool.locateEnclosedString(descendantsPageContent, "{{", "}}");
 	    for (Pair template : templateLocations){
 	        POE poe = new POE(descendantsPageContent.substring(template.start + 2, template.end - 2), lang, "");
-	        if (poe.part.equals("ETYMTREE")){
-	            extractEtymtree(poe.args.get("word1"), poe.args.get("lang"));
+	        if (poe.part != null && poe.part.get(0).equals("ETYMTREE")){
+		    extractEtymtree(poe.args.get("word1"), poe.args.get("lang"));
 		    break;
 	        }
 	    }

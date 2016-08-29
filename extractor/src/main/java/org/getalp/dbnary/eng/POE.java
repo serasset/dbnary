@@ -61,14 +61,22 @@ public class POE {
 		    }
 		}
 		args.put("lang", "Hani");//??
+	    } else if (args.get("1").equals("SI link")){
+		args.put("lang", lang);
+		args.put("word1", args.get("2"));
+		part.add("LEMMA");
 	    } else if (args.get("1").equals("etymtree")){
 		if (args.get("3") != null && args.get("4") != null){
 		    args.put("lang", args.get("3"));
-		    args.put("word1", args.get("4"));
 		    args.remove("3");
-		    args.remove("4");
+		    args.put("word1", args.get("4"));
+		    args.remove("4"); 
 		    part.add("ETYMTREE");
-		} 
+		} else if (args.get("2")!= null){
+		    args.put("lang", args.get("2"));
+		    args.remove("2");
+		    part.add("ETYMTREE");     
+		}
 	    } else if (args.get("1").equals("Han simp")){
 		if (args.get("2") != null){
 		    part.add("FROM");
@@ -77,6 +85,8 @@ public class POE {
 		    args.put("word1", args.get("2"));
 		    args.remove("2");
 		} else {
+		    args.clear();
+		    part = null;
 		    log.debug("Skipping Han simp template {}", string);
 		}
 	    } else if (args.get("1").equals("sense")){
@@ -305,33 +315,27 @@ public class POE {
 		args.put("word1", args.get("2"));
 		args.put("lang", "fin");
 		args.remove("2");
-	    } else if (args.get("1").equals("m") || args.get("1").equals("mention") || args.get("1").equals("l") || args.get("1").equals("link")) {
+	    } else if (args.get("1").equals("m") || args.get("1").equals("mention") || args.get("1").equals("l") || args.get("1").equals("link") || args.get("1").equals("_m")) {
                 if (args.get("2") != null) {
                     args.put("lang", args.get("2"));
                     args.remove("2");
-                }
+                } 
                 if (args.get("3") != null) {
-                    if (args.get("3").equals("")) {
-                        args.remove("3");
-                        if (args.get("4") != null) {
-                            part.add("LEMMA");
-                            args.put("word1", cleanUp(args.get("4")));
-                            args.remove("4");
-                        }
-                    } else {
-                        part.add("LEMMA");
-                        args.put("word1", cleanUp(args.get("3")));
-                        args.remove("3");
-                        if (args.get("4") != null) {
-                            args.put("alt", args.get("4"));
-                            args.remove("4");
-                        }
-                        if (args.get("5") != null) {
-                            args.put("gloss1", args.get("5"));
-                            args.remove("5");
-                        }
+                    part.add("LEMMA");
+                    args.put("word1", cleanUp(args.get("3")));
+                    args.remove("3");
+                    if (args.get("4") != null) {
+                        args.put("alt", args.get("4"));
+                        args.remove("4");
                     }
-                }
+                    if (args.get("5") != null) {
+                        args.put("gloss1", args.get("5"));
+                        args.remove("5");
+                    }
+                } else {
+		    args.clear();
+		    part = null;
+		}
 	    } else if (args.get("1").equals("affix") || args.get("1").equals("confix") || args.get("1").equals("prefix") || args.get("1").equals("suffix")) {
                 part.add("LEMMA");
                 if (args.get("lang") == null) {

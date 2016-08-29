@@ -112,9 +112,9 @@ public class Etymology{
 				    //set language of LEMMA to language of etyl template
 				    if (etylIndex != -1 && asPOE.size() == etylIndex + 1){
 					poe.args.put("lang", etylLang);
-					System.out.format("etylang=%s\n", etylLang);
 				    }
-				    if (poe.part.equals("STOP")){
+				    //System.out.format("poe.part=%s, poe.string=%s\n", poe.part, poe.string);
+				    if (poe.part.get(0).equals("STOP")){
 					return;
 				    } else {
 					asPOE.add(poe);
@@ -150,7 +150,7 @@ public class Etymology{
 		    if (check == false) {//if match is neither contained in a template nor in a link
 			POE poe = new POE(m.group(i + 1), lang, sentence.elements.get(i));
 			if (poe.part != null) {
-			    if (poe.part.equals("STOP")){
+			    if (poe.part.get(0).equals("STOP")){
 				return;
 			    } else {
 				asPOE.add(poe);

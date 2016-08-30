@@ -13,6 +13,7 @@ public class WikiPatterns {
      * Pattern used to parse Section Descendants
      */
     public final static String multipleBulletListPatternString = "(\\*+)\\s*(.*)";
+    
     public final static String examplePatternString = "^#{1,2}\\*\\s*(.*)$";
 
     public final static String catOrInterwikiLink = "^\\s*\\[\\[([^\\:\\]]*)\\:([^\\]]*)\\]\\]\\s*$";

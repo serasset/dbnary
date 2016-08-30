@@ -58,11 +58,9 @@ public class WikiTool {
         int numberOfEnclosings = 0, start = -1, end = -1;
         ArrayList<Pair> toreturn = new ArrayList<Pair>();
         for (int i = 0; i + eSE <= s.length(); i++) {
-	    //System.out.format("reading %s\n", s.substring(i, i+1));
             if (i + eSS + eSE <= s.length()) {
                 if (s.substring(i, i + eSS).equals(enclosingStringStart)) {
 		    numberOfEnclosings ++;
-		    //System.out.format("found a start, number of enclosings=%s; ", numberOfEnclosings);
                     if (start == -1) {
                         start = i;
                     }
@@ -71,11 +69,9 @@ public class WikiTool {
             }
             if (s.substring(i, i + eSE).equals(enclosingStringEnd)) {
                 numberOfEnclosings --;
-		//System.out.format("found an end, number of enclosings=%s; ", numberOfEnclosings);
                 if (numberOfEnclosings == 0 && start != -1) {
                     end = i + eSE;
                     toreturn.add(new Pair(start, end));
-		    //System.out.format("string to be removed=%s\n", s.substring(start, end));  
                     start = -1;//initialize start
                 }
 		i += eSE - 1;
@@ -85,9 +81,9 @@ public class WikiTool {
     }
 
     /**
-     * This function removes from String s text between the positions specified in each of the Pair-s in ArrayList l
+     * This function removes text between the positions specified in each of the Pair-s in ArrayList l in String s
      *
-     * @param s the input string
+     * @param s the input String
      * @param l an ArrayList of Pairs, each Pair specifies a start and an end position
      * @return a substring of s without the text contained between each of the positions specified in l
      */

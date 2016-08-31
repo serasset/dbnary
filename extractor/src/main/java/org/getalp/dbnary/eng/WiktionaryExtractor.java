@@ -262,12 +262,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected void extractEtymology(int blockStart, int end, String lang) {
 	Etymology etymology = new Etymology(pageContent.substring(blockStart, end), lang);
 	//check if etymology is empty or undefined
-	if (etymology.asString == null || etymology.asString.equals("")) {
+	if (etymology.sentence == null || etymology.sentence.equals("")) {
 	    return;
 	}
 
 	etymology.cleanUpString();
-	System.out.format("etymology = %s\n", etymology.asString);
+	System.out.format("etymology = %s\n", etymology.sentence);
 	etymology.toPOE(etymology.definition);
 	etymology.replaceCompound();
 	etymology.cleanUpPOE();
@@ -323,7 +323,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	    }
 	}
 	if (equivalentLemmas.size() > 1) {
-	    log.debug("Warning: more than one word found in bulletlist, registering them as etymologically equivalent: {}", etymology.asString);
+	    log.debug("Warning: more than one word found in bulletlist, registering them as etymologically equivalent: {}", etymology.sentence);
 	}
 	return equivalentLemmas;
     }

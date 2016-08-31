@@ -20,13 +20,13 @@ import java.util.Map;
  * POE is a part of etymology
  * it has properties
  * .part an ArrayList&lt;String&gt;, e.g., {"LANGUAGE", "LEMMA"}
- * .args a Map&lt;String, String&gt;, e.g., {("1", "m"), ("lang","eng"), ("word1","door")}
+ * .args a Map&lt;String, String&gt;, e.g., {("1", "m"), ("lang", "eng"), ("word1", "door")}
  * .string, e.g., "m|en|door"
  */
 public class POE {
     public ArrayList<String> part;
     public Map<String, String> args;
-    public String string;
+    public String string;//needed only for debugging purposes
     static Logger log = LoggerFactory.getLogger(POE.class);
 
     /**

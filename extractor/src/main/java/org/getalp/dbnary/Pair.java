@@ -26,7 +26,7 @@ public class Pair {
     /*
      * Check if the given Pair is contained in any of the input ArrayList of Pair-s.
      *
-     * @param a an ArrayList of Pair objects
+     * @param a an ArrayList of Pair-s
      * @return true if the given Pair is contained in any of the input Pair-s, false otherwise
      */
     public boolean containedIn(ArrayList<Pair> a) {

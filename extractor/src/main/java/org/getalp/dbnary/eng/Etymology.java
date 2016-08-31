@@ -19,8 +19,8 @@ import java.util.regex.Pattern;
 public class Etymology{
     static Logger log = LoggerFactory.getLogger(Etymology.class);
     
-    public static List<String> bulletElements = Arrays.asList("COMMA", "", "LEMMA", "COLUMN");
-    public static List<String> definitionElements = Arrays.asList("FROM", "", "LEMMA", "ABOVE", "COGNATE_WITH", "COMPOUND_OF", "UNCERTAIN", "COMMA", "YEAR", "AND", "PLUS", "DOT", "OR", "WITH", "STOP");
+    public static List<String> bulletTerminals = Arrays.asList("COMMA", "", "LEMMA", "COLUMN");
+    public static List<String> definitionTerminals = Arrays.asList("FROM", "", "LEMMA", "ABOVE", "COGNATE_WITH", "COMPOUND_OF", "UNCERTAIN", "COMMA", "YEAR", "AND", "PLUS", "DOT", "OR", "WITH", "STOP");
         	
     public static Pattern definitionPattern = Pattern.compile("(FROM )?(LANGUAGE LEMMA |LEMMA )(COMMA |DOT |OR )");
 
@@ -28,66 +28,65 @@ public class Etymology{
 
     public static Pattern bulletPattern = Pattern.compile("(((LANGUAGE)|(LEMMA)) (COLUMN ))?((LEMMA)( COMMA )?)+");
     
-    public static Sentence definition = new Sentence(definitionElements, definitionPattern); 
-    public static Sentence bullet = new Sentence(bulletElements, bulletPattern); 
+    public static Terminals definition = new Terminals(definitionTerminals); 
+    public static Terminals bullet = new Terminals(bulletTerminals); 
     
     public String lang;
-    public String asString;
+    public String sentence;
     public ArrayList<POE> asPOE;
 
     public Etymology(String etyString, String etyLang){
-	asString = etyString;
+	sentence = etyString;
 	lang = etyLang;
 	asPOE = new ArrayList<POE>();
     }
     
     public void cleanUpString(){
-	asString = asString.trim();
+	sentence = sentence.trim();
 
 	//REMOVE TEXT WITHIN HTML REFERENCE TAG
-	asString = WikiTool.removeReferencesIn(asString);
+	sentence = WikiTool.removeReferencesIn(sentence);
 
 	//REMOVE TEXT WITHIN TABLES
-	for (Pair p : WikiTool.locateEnclosedString(asString, "{|", "|}")){
-	    asString = asString.substring(0, p.start) + asString.substring(p.end, asString.length());
+	for (Pair p : WikiTool.locateEnclosedString(sentence, "{|", "|}")){
+	    sentence = sentence.substring(0, p.start) + sentence.substring(p.end, sentence.length());
 	}
 
 	//REMOVE TEXT WITHIN PARENTHESES UNLESS PARENTHESES FALL INSIDE A WIKI LINK OR A WIKI TEMPLATE
 	//locate templates {{}} and links [[]]
-	ArrayList<Pair> templatesAndLinksLocations = WikiTool.locateEnclosedString(asString, "{{", "}}");
-	templatesAndLinksLocations.addAll(WikiTool.locateEnclosedString(asString, "[[", "]]"));
+	ArrayList<Pair> templatesAndLinksLocations = WikiTool.locateEnclosedString(sentence, "{{", "}}");
+	templatesAndLinksLocations.addAll(WikiTool.locateEnclosedString(sentence, "[[", "]]"));
 	//locate parentheses ()
-	ArrayList<Pair> parenthesesLocations = WikiTool.locateEnclosedString(asString, "(", ")");
+	ArrayList<Pair> parenthesesLocations = WikiTool.locateEnclosedString(sentence, "(", ")");
 	//ignore location of parentheses if they fall inside a link or a template
 	int parenthesesLocationsLength = parenthesesLocations.size();
 	for (int i = 0; i < parenthesesLocationsLength; i++) {
 	    Pair p = parenthesesLocations.get(parenthesesLocationsLength - i - 1);
 	    //check if parentheses are inside links [[  ()  ]]
 	    if (! p.containedIn(templatesAndLinksLocations)){
-		log.debug("Removing string {} in Etymology section of word {}", asString.substring(p.start, p.end));
-		asString = asString.substring(0, p.start) + asString.substring(p.end, asString.length());
+		log.debug("Removing string {} in Etymology section of word {}", sentence.substring(p.start, p.end));
+		sentence = sentence.substring(0, p.start) + sentence.substring(p.end, sentence.length());
 	    }
 	}
 
 	//ADD FINAL DOT
-	if (asString != null && ! asString.trim().isEmpty() && !asString.trim().endsWith(".")){
+	if (sentence != null && ! sentence.trim().isEmpty() && !sentence.trim().endsWith(".")){
 	    //add final dot if etymology string doesn't end with a dot
-	    asString += ".";
+	    sentence += ".";
 	}
     }
     
-    public void toPOE(Sentence sentence){
-	if (asString == null || asString.trim().isEmpty()){
+    public void toPOE(Terminals t){
+	if (sentence == null || sentence.trim().isEmpty()){
 	    return; //return null
 	}
 	String etylLang = null;
 	int etylIndex = - 1;
-	ArrayList<Pair> templatesLocations = WikiTool.locateEnclosedString(asString, "{{", "}}");
-	ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(asString, "[[", "]]");
+	ArrayList<Pair> templatesLocations = WikiTool.locateEnclosedString(sentence, "{{", "}}");
+	ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(sentence, "[[", "]]");
 
 	//match against regex
-	//System.out.format("sentence = %s\n", sentence.elementsPattern);
-	Matcher m = sentence.elementsPattern.matcher(asString);
+	Matcher m = t.pattern.matcher(sentence);
 	while (m.find()) {
 	    //System.out.format("group = %s\n", m.group());
 	    for (int i = 0; i < m.groupCount(); i ++) {
@@ -101,8 +100,8 @@ public class Etymology{
 			if (match.containedIn(template)) {//match is contained in a template
 			    check = true;
 			    if (i == 1) {//match is a template
-				POE poe = new POE(asString.substring(template.start + 2, template.end - 2), lang, sentence.elements.get(i));
-				//System.out.format("template=%s, element=%s, part=%s\n", asString.substring(template.start + 2, template.end - 2), sentence.elements.get(i), poe.part);
+				POE poe = new POE(sentence.substring(template.start + 2, template.end - 2), lang, t.list.get(i));
+				//System.out.format("template=%s, element=%s, part=%s\n", sentence.substring(template.start + 2, template.end - 2), sentence.terminals.get(i), poe.part);
 				if (poe.part != null && poe.args != null) {
 				    if (poe.args.get("1").equals("etyl") || poe.args.get("1").equals("_etyl")){
 					etylLang = poe.args.get("lang");
@@ -135,7 +134,7 @@ public class Etymology{
 			    if (match.containedIn(link)) {
 				check = true;
 				if (i == 2) {//match is a link
-				    POE poe = new POE(asString.substring(link.start + 2, link.end - 2), lang, sentence.elements.get(i));
+				    POE poe = new POE(sentence.substring(link.start + 2, link.end - 2), lang, t.list.get(i));
 				    if (poe.part != null && poe.args != null) {
 					if (etylIndex != -1 && asPOE.size() == etylIndex + 1){
 					    poe.args.put("lang", etylLang);
@@ -148,7 +147,7 @@ public class Etymology{
 			}
 		    }
 		    if (check == false) {//if match is neither contained in a template nor in a link
-			POE poe = new POE(m.group(i + 1), lang, sentence.elements.get(i));
+			POE poe = new POE(m.group(i + 1), lang, t.list.get(i));
 			if (poe.part != null) {
 			    if (poe.part.get(0).equals("STOP")){
 				return;
@@ -193,24 +192,24 @@ public class Etymology{
 	//REPLACE LANGUAGE STRING WITH LANGUAGE _ETYL TEMPLATE
 	//case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
 	//case "[[Asturian]]: {{l|ast|águila}}"
-	String[] subs = asString.split(":");
+	String[] subs = sentence.split(":");
 	if (subs.length == 2) {
 	    ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(subs[0], "[[", "]]");
 
 	    if (linksLocations.size() == 0){//PARSE case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
 		String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].trim());
 		if (bulletLang != null){
-		    asString = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
+		    sentence = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
 		}
 	    } else if (linksLocations.size() == 1){//PARSE case "[[Asturian]]: {{l|ast|águila}}"
 		String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].substring(2, subs[0].length() - 2));
 		if (bulletLang != null){
-		    asString = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
+		    sentence = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
 		}
 	    }
 	} else if (subs.length > 2){
-	    log.debug("Ignoring bullet {}", asString);
-	    asString = "";
+	    log.debug("Ignoring bullet {}", sentence);
+	    sentence = "";
 	}
     }
 

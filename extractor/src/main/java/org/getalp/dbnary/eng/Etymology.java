@@ -2,12 +2,13 @@ package org.getalp.dbnary.eng;
 
 import org.getalp.dbnary.wiki.WikiTool; 
 import org.getalp.dbnary.Pair;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.List;          
+import java.util.List;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,79 +19,199 @@ import java.util.regex.Pattern;
  */
 public class Etymology{
     static Logger log = LoggerFactory.getLogger(Etymology.class);
-    
-    public static List<String> bulletTerminals = Arrays.asList("COMMA", "", "LEMMA", "COLUMN");
-    public static List<String> definitionTerminals = Arrays.asList("FROM", "", "LEMMA", "ABOVE", "COGNATE_WITH", "COMPOUND_OF", "UNCERTAIN", "COMMA", "YEAR", "AND", "PLUS", "DOT", "OR", "WITH", "STOP");
-        	
-    public static Pattern definitionPattern = Pattern.compile("(FROM )?(LANGUAGE LEMMA |LEMMA )(COMMA |DOT |OR )");
 
-    public static Pattern compoundPattern = Pattern.compile("((COMPOUND_OF |FROM )(LANGUAGE )?(LEMMA )(PLUS |AND |WITH )(LANGUAGE )?(LEMMA ))|((LANGUAGE )?(LEMMA )(PLUS )(LANGUAGE )?(LEMMA ))");
-
-    public static Pattern bulletPattern = Pattern.compile("(((LANGUAGE)|(LEMMA)) (COLUMN ))?((LEMMA)( COMMA )?)+");
-    
-    public static Terminals definition = new Terminals(definitionTerminals); 
-    public static Terminals bullet = new Terminals(bulletTerminals); 
-    
-    public String lang;
-    public String sentence;
-    public ArrayList<POE> asPOE;
-
-    public Etymology(String etyString, String etyLang){
-	sentence = etyString;
-	lang = etyLang;
-	asPOE = new ArrayList<POE>();
-    }
-    
-    public void cleanUpString(){
-	sentence = sentence.trim();
-
-	//REMOVE TEXT WITHIN HTML REFERENCE TAG
-	sentence = WikiTool.removeReferencesIn(sentence);
-
-	//REMOVE TEXT WITHIN TABLES
-	for (Pair p : WikiTool.locateEnclosedString(sentence, "{|", "|}")){
-	    sentence = sentence.substring(0, p.start) + sentence.substring(p.end, sentence.length());
-	}
-
-	//REMOVE TEXT WITHIN PARENTHESES UNLESS PARENTHESES FALL INSIDE A WIKI LINK OR A WIKI TEMPLATE
-	//locate templates {{}} and links [[]]
-	ArrayList<Pair> templatesAndLinksLocations = WikiTool.locateEnclosedString(sentence, "{{", "}}");
-	templatesAndLinksLocations.addAll(WikiTool.locateEnclosedString(sentence, "[[", "]]"));
-	//locate parentheses ()
-	ArrayList<Pair> parenthesesLocations = WikiTool.locateEnclosedString(sentence, "(", ")");
-	//ignore location of parentheses if they fall inside a link or a template
-	int parenthesesLocationsLength = parenthesesLocations.size();
-	for (int i = 0; i < parenthesesLocationsLength; i++) {
-	    Pair p = parenthesesLocations.get(parenthesesLocationsLength - i - 1);
-	    //check if parentheses are inside links [[  ()  ]]
-	    if (! p.containedIn(templatesAndLinksLocations)){
-		log.debug("Removing string {} in Etymology section of word {}", sentence.substring(p.start, p.end));
-		sentence = sentence.substring(0, p.start) + sentence.substring(p.end, sentence.length());
+    //used by toOrPattern
+    private static String eitherString(List<String> l){
+	StringBuilder toreturn = new StringBuilder();
+	for (int i = 0; i < l.size(); i ++){
+	    toreturn.append(l.get(i));
+	    if (i < l.size() - 1){
+		toreturn.append("|");
 	    }
 	}
+	return toreturn.toString();
+    }
 
-	//ADD FINAL DOT
-	if (sentence != null && ! sentence.trim().isEmpty() && !sentence.trim().endsWith(".")){
-	    //add final dot if etymology string doesn't end with a dot
-	    sentence += ".";
+    private static String eitherSymbol(List<String> l){
+	StringBuilder toreturn = new StringBuilder();
+	toreturn.append("(");
+	for (int i = 0; i < l.size(); i ++){
+	    toreturn.append(eitherString(mappings.get(l.get(i))));
+	    if (i < l.size() - 1){
+		toreturn.append(")|(");
+	    }
 	}
+	toreturn.append(")");
+	return toreturn.toString();
     }
     
-    public void toPOE(Terminals t){
-	if (sentence == null || sentence.trim().isEmpty()){
-	    return; //return null
-	}
-	String etylLang = null;
-	int etylIndex = - 1;
-	ArrayList<Pair> templatesLocations = WikiTool.locateEnclosedString(sentence, "{{", "}}");
-	ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(sentence, "[[", "]]");
+    private static final HashMap<String, List<String> > mappings;
+    static {
+	HashMap<String, List<String> > tmp = new HashMap<String, List<String> >();
+	tmp.put("FROM", Arrays.asList("[Ff]rom", "[Bb]ack-formation (?:from)?", "[Aa]bbreviat(?:ion|ed)? (?:of|from)?", "[Cc]oined from", "[Bb]orrow(?:ing|ed)? (?:of|from)?", "[Cc]ontracted from", "[Aa]dopted from", "[Cc]alque(?: of)?", "[Ii]terative of", "[Ss]hort(?:hening|hen|hened)? (?:form )?(?:of|from)?", "[Tt]hrough", "[Pp]articiple of", "[Aa]lteration of", "[Vv]ia", "[Dd]iminutive (?:form )?of", "[Uu]ltimately of", "[Vv]ariant of", "[Pp]lural of", "[Ff]orm of", "[Aa]phetic variation of", "\\<"));
+	tmp.put("TEMPLATE", Arrays.asList("\\{\\{"));
+	tmp.put("LINK", Arrays.asList("\\[\\["));//removed (?:'') as this causes an error in WiktinaryExtractor and function containedIn
+	tmp.put("ABOVE", Arrays.asList("[Ss]ee above"));//this should precede cognateWith which matches against "[Ss]ee"
+	tmp.put("COGNATE_WITH", Arrays.asList("[Rr]elated(?: also)? to", "[Cc]ognate(?:s)? (?:include |with |to |including )?", "[Cc]ompare (?:also )?", "[Ww]hence (?:also )?", "(?:[Bb]elongs to the )?[Ss]ame family as ", "[Mm]ore at ", "[Aa]kin to ", "[Ss]ee(?:n)? (?:also )?"));//this should follow abovePatternString which matches against "[Ss]ee above"
+	tmp.put("COMPOUND_OF", Arrays.asList("[Cc]ompound(?:ed)? (?:of|from) ", "[Mm]erg(?:ing |er )(?:of |with )?(?: earlier )?", "[Uu]niverbation of "));
+	tmp.put("UNCERTAIN", Arrays.asList("[Oo]rigin uncertain"));
+	tmp.put("COMMA", Arrays.asList(","));
+	tmp.put("YEAR", Arrays.asList("(?:[Aa].\\s*?[Cc].?|[Bb].?\\s*[Cc].?)?\\s*\\d++\\s*(?:[Aa].?\\s*[Cc].?|[Bb].?\\s*[Cc].?|th century|\\{\\{C\\.E\\.\\}\\})?"));
+	tmp.put("AND", Arrays.asList("\\s+and\\s+", "with suffix "));
+	tmp.put("PLUS", Arrays.asList("\\+"));
+	tmp.put("DOT", Arrays.asList("\\.", ";"));
+	tmp.put("OR", Arrays.asList("[^a-zA-Z0-9]or[^a-zA-Z0-9]"));
+	tmp.put("WITH", Arrays.asList("[^a-zA-Z0-9]with[^a-zA-Z0-9]"));
+	tmp.put("STOP", Arrays.asList("[Ss]uperseded", "[Dd]isplaced( native)?", "[Rr]eplaced", "[Mm]ode(?:l)?led on", "[Rr]eplacing", "equivalent to\\s*\\{\\{[^\\}]+\\}\\}"));//this are two types of patterns: superseded and equivalent to
+	tmp.put("COLUMN", Arrays.asList(":"));
+	mappings = new HashMap(tmp);
+    }	    
+    
+    public static List<String> bulletSymbolsList = Arrays.asList("COMMA", "TEMPLATE", "LINK", "COLUMN");
+    public static List<String> definitionSymbolsList = Arrays.asList("FROM", "TEMPLATE", "LINK", "ABOVE", "COGNATE_WITH", "COMPOUND_OF", "UNCERTAIN", "COMMA", "YEAR", "AND", "PLUS", "DOT", "OR", "WITH", "STOP");
 
-	//match against regex
-	Matcher m = t.pattern.matcher(sentence);
+    public static Pattern bulletSymbolsListPattern = Pattern.compile(eitherSymbol(bulletSymbolsList));
+    public static Pattern definitionSymbolsListPattern = Pattern.compile(eitherSymbol(definitionSymbolsList));
+    
+    public static Pattern definitionSymbolsPattern = Pattern.compile("(FROM )?(LANGUAGE LEMMA |LEMMA )(COMMA |DOT |OR )");
+    public static Pattern compoundSymbolsPattern = Pattern.compile("((COMPOUND_OF |FROM )(LANGUAGE )?(LEMMA )(PLUS |AND |WITH )(LANGUAGE )?(LEMMA ))|((LANGUAGE )?(LEMMA )(PLUS )(LANGUAGE )?(LEMMA ))");
+    public static Pattern bulletSymbolsPattern = Pattern.compile("(((LANGUAGE)|(LEMMA)) (COLUMN ))?((LEMMA)( COMMA )?)+");
+    
+    public String lang;
+    public String string;
+    public ArrayList<Symbols> symbols;
+
+    public Etymology(String s, String l){
+	string = s;
+	lang = l;
+	symbols = new ArrayList<Symbols>();
+	System.out.format("etymology = %s\n", s);
+    }
+    
+    public void toDefinitionSymbols(){
+	//REMOVE TEXT WITHIN HTML REFERENCE TAG
+	string = WikiTool.removeReferencesIn(string);
+
+	//REMOVE TEXT WITHIN TABLES
+	string = WikiTool.removeTablesIn(string);
+
+	//REMOVE TEXT WITHIN PARENTHESES UNLESS PARENTHESES FALL INSIDE A WIKI LINK OR A WIKI TEMPLATE
+	string = WikiTool.removeTextWithinParenthesesIn(string);
+
+	string = string.trim();
+
+	if (string != null && ! string.isEmpty() && ! string.endsWith(".")){
+	    //add final dot if etymology string doesn't end with a dot
+	    string += ".";
+	}
+
+	System.out.format("parsed etymology = \n%s\n", string); 
+
+	toSymbols(definitionSymbolsList, definitionSymbolsListPattern);
+
+	parseEtyl();
+
+	replaceCompound();
+
+	//find where list of cognates or OR statements start
+        //e.g, if toString(symbols) == "FROM LEMMA COMMA FROM LEMMA COMMA COGNATE_WITH LEMMA COMMA" registers 6, the index of "COGNATE_WITH" or
+	//e.g., if toString(symbols) == "FROM LEMMA OR LEMMA" it registers 2, the index of "OR",
+	//remove any element of the input ArrayList<Symbols> after that index.
+	for (int j = 0; j < symbols.size(); j ++) {
+		if (symbols.get(j).values.size() > 0) {
+		    if (symbols.get(j).values.get(0).equals("COGNATE_WITH") || symbols.get(j).values.get(0).equals("OR")) {
+			symbols.subList(j, symbols.size()).clear();
+			break;
+		    }
+		}
+	}
+
+	ArrayList<Pair> m = findMatch(symbols, definitionSymbolsPattern);
+	if (m.size() == 0) {
+	    return;//there is no match to the definitionSymbolsPattern
+	}
+	
+	//remove any Symbols after "DOT" or "AND" that follow a definitionSymbolsPattern
+	for (int j = m.get(0).end + 1; j < symbols.size(); j ++){
+	    for (String b : symbols.get(j).values){
+	        if (b.equals("DOT") || b.equals("AND")) {
+	      	    symbols.subList(j, symbols.size()).clear();
+		    j = symbols.size();//break j loop
+		    break;//break symbols loop
+		}
+	    }
+	}
+	//remove any Symbols that preceeds the first match to the definitionSymbolsPattern
+        symbols.subList(0, m.get(0).start).clear();
+    }
+    
+    //TODO: handle * [[crisismanager]] {{g|m}}    
+    public void toBulletSymbols(){
+	//REPLACE LANGUAGE STRING WITH LANGUAGE _ETYL TEMPLATE
+	replaceLanguage();
+	
+	toSymbols(bulletSymbolsList, bulletSymbolsListPattern);
+
+	parseEtyl();
+
+	//REPLACE SENSE TEMPLATE
+	//case "{{sense|kill}} {{l|en|top oneself}}"
+	replaceSense();
+
+	ArrayList<Symbols> equivalentLemmas = new ArrayList<>();
+	Matcher m = bulletSymbolsPattern.matcher(toString(symbols));
 	while (m.find()) {
-	    //System.out.format("group = %s\n", m.group());
+	    //case LANGUAGE COLUMN LEMMA COMMA LEMMA, e.g.:
+	    //case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
+	    //and case "[[Asturian]]: {{l|ast|águila}}"
+	    if (m.group(2) != null && m.group(5) != null){
+		if (m.group(2).equals("LANGUAGE") && m.group(5).equals("COLUMN ")){
+		    String language = null;
+		    for (Symbols p : symbols){
+			if (p.values.get(0).equals("LANGUAGE")){
+			    language = p.args.get("lang");
+			}
+			if (language != null && p.values.get(0).equals("LEMMA")){
+			    p.args.put("lang", language);
+			    equivalentLemmas.add(p);
+			}
+		    }
+		} else if (m.group(2).equals("LEMMA")){//case "{{ja-r|武威|ぶい}}: [[military]] [[power]]"
+		    for (Symbols p : symbols){
+			if (p.values.get(0).equals("LEMMA")){
+			    equivalentLemmas.add(p);
+			    break;
+			}
+		    }
+		    //case "[[color]], [[colour]]"
+		}
+	    } else if (m.group(2) == null && m.group(5) == null){//case "[[color]], [[colour]]"
+		if (m.group(7).equals("LEMMA")){
+		    for (Symbols p : symbols){
+			if (p.values.get(0).equals("LEMMA")){
+			    equivalentLemmas.add(p);
+			}
+		    }
+		}
+	    }
+	}
+	if (equivalentLemmas.size() > 1) {
+	    log.debug("Warning: more than one word found in bulletlist, registering them as etymologically equivalent: {}", string);
+	}
+	symbols = equivalentLemmas;
+    }
+
+    public void toSymbols(List<String> l, Pattern p){
+	if (string == null || string.trim().isEmpty()){
+	    return; 
+	}
+	ArrayList<Pair> templatesLocations = WikiTool.locateEnclosedString(string, "{{", "}}");
+	ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(string, "[[", "]]");
+
+	//match against regex pattern of symbols p
+	Matcher m = p.matcher(string);
+	while (m.find()) {
 	    for (int i = 0; i < m.groupCount(); i ++) {
-		//System.out.format("group %s = %s\n", i, m.group(i + 1));
 		if (m.group(i + 1) != null) {
 		    //check if match is contained in template or link
 		    boolean check = false;
@@ -99,26 +220,13 @@ public class Etymology{
 		    for (Pair template : templatesLocations) {
 			if (match.containedIn(template)) {//match is contained in a template
 			    check = true;
-			    if (i == 1) {//match is a template
-				POE poe = new POE(sentence.substring(template.start + 2, template.end - 2), lang, t.list.get(i));
-				//System.out.format("template=%s, element=%s, part=%s\n", sentence.substring(template.start + 2, template.end - 2), sentence.terminals.get(i), poe.part);
-				if (poe.part != null && poe.args != null) {
-				    if (poe.args.get("1").equals("etyl") || poe.args.get("1").equals("_etyl")){
-					etylLang = poe.args.get("lang");
-					etylIndex = asPOE.size();
+			    if (l.get(i).equals("TEMPLATE")) {//match is a template
+				Symbols b = new Symbols(string.substring(template.start + 2, template.end - 2), lang, l.get(i));
+				if (b.values != null && b.args != null) {
+				    if (b.values.get(0).equals("STOP")){
+				        return;
 				    }
-				    //when a LEMMA is preceded by a LANGUAGE etyl template
-				    //set language of LEMMA to language of etyl template
-				    if (etylIndex != -1 && asPOE.size() == etylIndex + 1){
-					poe.args.put("lang", etylLang);
-				    }
-				    //System.out.format("poe.part=%s, poe.string=%s\n", poe.part, poe.string);
-				    if (poe.part.get(0).equals("STOP")){
-					return;
-				    } else {
-					asPOE.add(poe);
-					//System.out.format("poe part of template =%s\n", poe.part);
-				    }
+				    symbols.add(b);
 				}
 				break;
 			    }//else ignore match
@@ -133,13 +241,10 @@ public class Etymology{
 			for (Pair link : linksLocations) {
 			    if (match.containedIn(link)) {
 				check = true;
-				if (i == 2) {//match is a link
-				    POE poe = new POE(sentence.substring(link.start + 2, link.end - 2), lang, t.list.get(i));
-				    if (poe.part != null && poe.args != null) {
-					if (etylIndex != -1 && asPOE.size() == etylIndex + 1){
-					    poe.args.put("lang", etylLang);
-					}
-					asPOE.add(poe);
+				if (l.get(i).equals("LINK")) {//match is a link
+				    Symbols b = new Symbols(string.substring(link.start + 2, link.end - 2), lang, l.get(i));
+				    if (b.values != null && b.args != null) {
+				        symbols.add(b);
 				    }
 				    break;
 				}//else ignore match
@@ -147,38 +252,74 @@ public class Etymology{
 			}
 		    }
 		    if (check == false) {//if match is neither contained in a template nor in a link
-			POE poe = new POE(m.group(i + 1), lang, t.list.get(i));
-			if (poe.part != null) {
-			    if (poe.part.get(0).equals("STOP")){
-				return;
-			    } else {
-				asPOE.add(poe);
-			    }
+		        Symbols b = new Symbols(m.group(i + 1), lang, l.get(i));
+			if (b.values != null) {
+			    symbols.add(b);
 			}
-		    }
+		    }		    
 		}
 	    }
 	}
     }
 
+    //when a LEMMA is preceded by a LANGUAGE etyl template
+    //set language of LEMMA to language of etyl template
+    private void parseEtyl(){
+	String etylLang = null;
+	int etylIndex = - 1;
+	for (int i = 0; i < symbols.size(); i ++){
+	    if (symbols.get(i).values != null && symbols.get(i).args != null) {
+		if (symbols.get(i).args.get("1").equals("etyl") || symbols.get(i).args.get("1").equals("_etyl")){
+		    etylLang = symbols.get(i).args.get("lang");
+		    etylIndex = i;
+		}
+		if (etylIndex != -1 && i == etylIndex + 1){
+		    symbols.get(i).args.put("lang", etylLang);
+		}
+	    }
+	}
+    }
+    
+    private void replaceLanguage(){
+	String[] subs = string.split(":");
+
+	if (subs.length == 2) {
+	    ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(subs[0], "[[", "]]");
+	    if (linksLocations.size() == 0){//PARSE case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
+		String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].trim());
+		if (bulletLang != null){
+		    string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
+		}
+	    } else if (linksLocations.size() == 1){//PARSE case "[[Asturian]]: {{l|ast|águila}}"
+		String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].substring(2, subs[0].length() - 2));
+		if (bulletLang != null){
+		    string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
+		}
+	    }
+	} else if (subs.length > 2){
+	    log.debug("Ignoring bullet {}", string);
+	    string = "";
+	}
+    }
+    
     public void replaceSense(){
-	int aSize = asPOE.size();
+	int aSize = symbols.size();
 
 	if (aSize > 1){
 	    for (int i = 0; i < aSize; i ++){
-		if (asPOE.get(i).part.get(0).equals("SENSE")){
-		    String sense = asPOE.get(i).args.get("2");
-		    if (i + 1 < aSize && asPOE.get(i + 1).part.get(0).equals("LEMMA")){
-			POE tmp = asPOE.get(i + 1);
+		if (symbols.get(i).values.get(0).equals("SENSE")){
+		    String sense = symbols.get(i).args.get("2");
+		    if (i + 1 < aSize && symbols.get(i + 1).values.get(0).equals("LEMMA")){
+		        Symbols tmp = symbols.get(i + 1);
 			tmp.args.put("sense", sense);
-			asPOE.set(i, tmp);
-			asPOE.remove(i + 1);
+			symbols.set(i, tmp);
+			symbols.remove(i + 1);
 			aSize --;
-		    } else if (i - 1 >= 0 && asPOE.get(i - 1).part.get(0).equals("LEMMA")){
-			POE tmp = asPOE.get(i - 1);
+		    } else if (i - 1 >= 0 && symbols.get(i - 1).values.get(0).equals("LEMMA")){
+			Symbols tmp = symbols.get(i - 1);
 			tmp.args.put("sense", sense);
-			asPOE.set(i, tmp);
-			asPOE.remove(i - 1);
+			symbols.set(i, tmp);
+		        symbols.remove(i - 1);
 			aSize --;
 			i --;
 		    }
@@ -188,46 +329,21 @@ public class Etymology{
 	return;
     }
 
-    public void replaceLanguage(){
-	//REPLACE LANGUAGE STRING WITH LANGUAGE _ETYL TEMPLATE
-	//case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
-	//case "[[Asturian]]: {{l|ast|águila}}"
-	String[] subs = sentence.split(":");
-	if (subs.length == 2) {
-	    ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(subs[0], "[[", "]]");
-
-	    if (linksLocations.size() == 0){//PARSE case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
-		String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].trim());
-		if (bulletLang != null){
-		    sentence = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
-		}
-	    } else if (linksLocations.size() == 1){//PARSE case "[[Asturian]]: {{l|ast|águila}}"
-		String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].substring(2, subs[0].length() - 2));
-		if (bulletLang != null){
-		    sentence = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
-		}
-	    }
-	} else if (subs.length > 2){
-	    log.debug("Ignoring bullet {}", sentence);
-	    sentence = "";
-	}
-    }
-
     /** 
-     * @return a String (e.g., "FROM LEMMA OR LEMMA") concatenating the property "part" of each element of ArrayListPOE
+     * @return a String (e.g., "FROM LEMMA OR LEMMA") concatenating the property "symbols" of each element of ArrayList<Symbols>
      */
-    public static String toString(ArrayList<POE> a){
+    public static String toString(ArrayList<Symbols> a){
 	StringBuilder s = new StringBuilder();
-	for (POE poe : a){
-	    for (String part : poe.part){
-		s.append(part);
+	for (Symbols b : a){
+	    for (String values : b.values){
+		s.append(values);
 		s.append(" ");
 	    }
 	}
 	return s.toString();
     }
     
-    public ArrayList<Pair> findMatch(ArrayList<POE> a, Pattern p) {
+    public ArrayList<Pair> findMatch(ArrayList<Symbols> a, Pattern p) {
 	ArrayList<Pair> toreturn = new ArrayList<Pair>();
 	if (a == null || a.size() == 0){
 	    return toreturn;
@@ -237,10 +353,10 @@ public class Etymology{
 	int c = 0;
 	arrayListPosition.add(c);
 	for (int i = 0; i < a.size(); i ++) {
-	    POE poe = a.get(i);
-	    for (int j = 0; j < poe.part.size(); j ++) {
+	    Symbols b = a.get(i);
+	    for (int j = 0; j < b.values.size(); j ++) {
 		arrayListInteger.add(i);
-		c += poe.part.get(j).length() + 1;
+		c += b.values.get(j).length() + 1;
 		arrayListPosition.add(c);
 	    }
 	}
@@ -264,86 +380,46 @@ public class Etymology{
 
     /** 
      * This function is used to replace "COMPOUND_OF LEMMA AND LEMMA" and equivalents 
-     * with a single "LEMMA" POE of type compound|lang|word1|word2 
+     * with a single "LEMMA" Symbol of type compound|lang|word1|word2 
      */
     public void replaceCompound(){
 	//iterate over all matches to a compound pattern
 	//starting from the last
-	ArrayList<Pair> match = findMatch(asPOE, compoundPattern);
+	ArrayList<Pair> match = findMatch(symbols, compoundSymbolsPattern);
 	if (match == null || match.size() == 0){
 	    return;
 	}
 	for (int i = match.size() - 1; i >= 0; i --) {
 	    Pair m = match.get(i);
-	    ArrayList<POE> p = new ArrayList<POE>();
+	    ArrayList<Symbols> a = new ArrayList<Symbols>();
 	    for (int k = m.start; k < m.end + 1; k ++) {
-		POE poe = asPOE.get(k);
-		for (String part : poe.part){
-		    if (part.equals("LEMMA") && poe.args != null) {
-			p.add(poe);
+		Symbols b = symbols.get(k);
+		for (String values : b.values){
+		    if (values.equals("LEMMA") && b.args != null) {
+			a.add(b);
 			break;
 		    }
 		}
 	    }
-	    asPOE.set(m.start, mergePOE(p)); 
-	    asPOE.subList(m.start + 1, m.end + 1).clear();
+	    symbols.set(m.start, compoundOf(a)); 
+	    symbols.subList(m.start + 1, m.end + 1).clear();
 	}
     }
 
-    private POE mergePOE(ArrayList<POE> p){
-	if (p.size() == 2){ 
+    private Symbols compoundOf(ArrayList<Symbols> a){
+	if (a.size() == 2){ 
             StringBuilder compound = new StringBuilder();
 	    compound.setLength(0);//clear StringBuilder
-	    if (p.get(0).args.get("lang") == null || p.get(1).args.get("lang") == null){
-	        log.debug("no lang in templates {} and {}", p.get(0).string, p.get(1).string);
+	    if (a.get(0).args.get("lang") == null || a.get(1).args.get("lang") == null){
+	        log.debug("no lang in templates {} and {}", a.get(0).string, a.get(1).string);
 	        return null;
 	    }
-	    compound.append("_compound|" + p.get(0).args.get("lang") + "|" + p.get(0).args.get("word1") + "|");
-	    compound.append(p.get(1).args.get("word1"));
-	    return new POE(compound.toString(), lang, "");
+	    compound.append("_compound|" + a.get(0).args.get("lang") + "|" + a.get(0).args.get("word1") + "|");
+	    compound.append(a.get(1).args.get("word1"));
+	    return new Symbols(compound.toString(), lang, "TEMPLATE");
 	} else {
-	    log.debug("compound can only be created from two POEs; skipping templates");
+	    log.debug("compound can only be created from two Symbols; skipping templates");
 	    return null;
 	}
-    }
-    
-    /** 
-     * This function finds where list of cognates or OR statements start,
-     * e.g, if toString(asPOE) == "FROM LEMMA COMMA FROM LEMMA COMMA COGNATE_WITH LEMMA COMMA"
-     * it registers 6, the index of "COGNATE_WITH" or e.g., 
-     * if toString(asPOE) == "FROM LEMMA OR LEMMA" it registers 2, the index of "OR",
-     * and removes any element of the input ArrayList<POE> after that index.
-     * also it removes any POE that preceeds the first match to the etymologyPattern
-     */
-    public void cleanUpPOE(){
-	//remove any POE that follows "COGNATE_WITH" or "OR"
-	for (int j = 0; j < asPOE.size(); j ++) {
-	    if (asPOE.get(j).part.size() > 0) {
-		//System.out.format("string=%s, part = %s\n", asPOE.get(j).string, asPOE.get(j).part.get(0));
-		if (asPOE.get(j).part.get(0).equals("COGNATE_WITH") || asPOE.get(j).part.get(0).equals("OR")) {
-		    asPOE.subList(j, asPOE.size()).clear();
-		    break;
-		}
-	    }
-	}
-
-	ArrayList<Pair> match = findMatch(asPOE, definitionPattern);
-	if (match.size() == 0) {
-	    return;//there is no match to the definitionPattern
-	}
-	//System.out.format("match=%s\n", match.get(0).start); 		
-	//remove any POE after "DOT" or "AND" that follow a definitionPattern
-	for (int j = match.get(0).end + 1; j < asPOE.size(); j ++){
-	    for (String part : asPOE.get(j).part){
-		if (part.equals("DOT") || part.equals("AND")) {
-		    asPOE.subList(j, asPOE.size()).clear();
-		    j = asPOE.size();//break j loop
-		    break;//break part loop
-		}
-	    }
-	}
-	//remove any POE that preceeds the first match to the definitionPattern
-	asPOE.subList(0, match.get(0).start).clear();
-	return;
     }
 }

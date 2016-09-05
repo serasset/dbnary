@@ -40,6 +40,33 @@ public class WikiTool {
 		return def.toString();
     }
 
+    public static String removeTablesIn(String s){
+	for (Pair p : WikiTool.locateEnclosedString(s, "{|", "|}")){
+	    s = s.substring(0, p.start) + s.substring(p.end, s.length());
+	}
+	return s;
+    }
+
+    //REMOVE TEXT WITHIN PARENTHESES UNLESS PARENTHESES FALL INSIDE A WIKI LINK OR A WIKI TEMPLATE
+    public static String removeTextWithinParenthesesIn(String s){
+	//locate templates {{}} and links [[]]
+	ArrayList<Pair> templatesAndLinksLocations = locateEnclosedString(s, "{{", "}}");
+	templatesAndLinksLocations.addAll(locateEnclosedString(s, "[[", "]]"));
+	//locate parentheses ()
+	ArrayList<Pair> parenthesesLocations = locateEnclosedString(s, "(", ")");
+	//ignore location of parentheses if they fall inside a link or a template
+	int parenthesesLocationsLength = parenthesesLocations.size();
+	for (int i = 0; i < parenthesesLocationsLength; i++) {
+	    Pair p = parenthesesLocations.get(parenthesesLocationsLength - i - 1);
+	    //check if parentheses are inside links [[  ()  ]]
+	    if (! p.containedIn(templatesAndLinksLocations)){
+		log.debug("Removing string {} in Etymology section of word {}", s.substring(p.start, p.end));
+		s = s.substring(0, p.start) + s.substring(p.end, s.length());
+	    }
+	}
+	return s;
+    }
+    
     /**
      * This function locates the start and end position of two symbols (enclosingStringStart and enclosingStringEnd)
      * in input String s.
@@ -78,23 +105,6 @@ public class WikiTool {
             }
         }
         return toreturn;
-    }
-
-    /**
-     * This function removes text between the positions specified in each of the Pair-s in ArrayList l in String s
-     *
-     * @param s the input String
-     * @param l an ArrayList of Pairs, each Pair specifies a start and an end position
-     * @return a substring of s without the text contained between each of the positions specified in l
-     */
-    public static String removeTextWithin(String s, ArrayList<Pair> l) {
-        int lsize = l.size();
-        for (int i = 0; i < lsize; i++) {
-	    Pair p = l.get(lsize - i - 1);
-            log.debug("Removing text {}", s.substring(p.start, p.end));
-            s = s.substring(0, p.start) + s.substring(p.end, s.length());
-        }
-        return s;
     }
 
     /**

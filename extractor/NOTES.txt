@@ -1,0 +1,18 @@
+java -Xmx1G -Dfile.encoding=UTF-8 -cp target/wiktionary-support-1.5-SNAPSHOT-jar-with-dependencies.jar \
+org.getalp.blexisma.wiktionary.cli.GetExtractedSemnet XML_DUMP_FILE pagename "page name"
+
+java -Xmx1G -Dfile.encoding=UTF-8 -cp target/wiktionary-support-1.5-SNAPSHOT-jar-with-dependencies.jar \
+org.getalp.blexisma.wiktionary.cli.GetRawEntry XML_DUMP_FILE pagename "page name"
+
+# Enable logging for japanese extractor...
+java -Dorg.slf4j.simpleLogger.log.org.getalp.dbnary.jpn.JapaneseRelatedWordsExtractorWikiModel=debug \
+-Dorg.slf4j.simpleLogger.showShortLogName=true \
+-cp /Users/serasset/.m2/repository/org/getalp/dbnary/1.5-SNAPSHOT/dbnary-1.5-SNAPSHOT-jar-with-dependencies.jar \
+-Xmx4G -Dfile.encoding=UTF-8 org.getalp.dbnary.cli.ExtractWiktionary \
+-l ja -m lemon -f turtle -o jpn-extract.ttl dumps/ja/20130901/jawkt-20130901.xml 2> jpn-stderr
+
+# Enable logging of the extraction process
+-Dorg.slf4j.simpleLogger.log.org.getalp.dbnary=trace
+
+#Enable logging for LuaScript
+-Dorg.slf4j.simpleLogger.log.info.bliki.extensions.scribunto.engine.lua=trace

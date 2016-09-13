@@ -69,15 +69,21 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
     private DefinitionsWikiModel expander;
     Set<String> templates = null;
 
-    public BulgarianWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
-        this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+    public BulgarianWikiModel(IWiktionaryDataHandler wdh, Locale locale, String imageBaseURL, String linkBaseURL) {
+        this(wdh, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
     }
 
-    public BulgarianWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+    public BulgarianWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
         super(wi, locale, imageBaseURL, linkBaseURL);
-        this.delegate = we;
+        this.delegate = wdh;
         if (log.isDebugEnabled()) templates = new HashSet<String>();
         this.expander = new DefinitionsWikiModel(wi, this.fLocale, this.getImageBaseURL(), this.getWikiBaseURL(), templates);
+    }
+
+    @Override
+    public void setPageName(String pageTitle) {
+        super.setPageName(pageTitle);
+        this.expander.setPageName(pageTitle);
     }
 
     public boolean parseBulgarianBlock(String block) {

@@ -30,18 +30,62 @@ public class Symbols {
     static Logger log = LoggerFactory.getLogger(Symbols.class);
 
     public Symbols(String group, String lang, String s){
-	string = group;
-	values = new ArrayList<String>();   
 	if (s.equals("TEMPLATE")){
-	    parseTemplate(lang);
+	    parseTemplate(group, lang);
 	} else if (s.equals("LINK")){
-	    parseLink(lang);
+	    parseLink(group, lang);
 	} else {
-	    values.add(s);
+	    parseOther(group, s);
 	}
     }
+
+    public void parseOther(String group, String value){
+	string = group;
+	args = null;
+	values = new ArrayList<String>();
+	values.add(value);
+    }
     
-    public void parseTemplate(String lang){
+    public Symbols(ArrayList<Symbols> a){
+	for (Symbols b : a){
+	    if (b.args.get("lang") == null){
+		log.debug("no lang in template {}", b);
+		string = null;
+		args = null;
+		values = null;
+		return;
+	    }
+	}
+	StringBuilder compound = new StringBuilder();
+	compound.append("_compound");
+	for (int i = 0; i < a.size(); i ++){
+	    if (a.get(i).args.get("lang") == null){
+		log.debug("no lang in template {}", a.get(i).string);
+		string = null;
+		args = null;
+		values = null;
+		return;
+	    }
+	    if (a.get(i).args.get("word1") == null){
+		log.debug("no lemma in template {}", a.get(i).string);
+		string = null;
+		args = null;
+		values = null;
+		return;
+	    }
+	    compound.append("|lang" + Integer.toString(i + 1) + "=" + a.get(i).args.get("lang"));
+	    compound.append("|word" + Integer.toString(i + 1) + "=" + a.get(i).args.get("word1"));
+	}
+	string = compound.toString();
+	values = new ArrayList<String>();
+					     
+	values.add("LEMMA");
+	args = WikiTool.parseArgs(string);
+    }
+    
+    public void parseTemplate(String group, String lang){
+	string = group;
+	values = new ArrayList<String>();
             args = WikiTool.parseArgs(string);
 	    if (args.get("1").equals("rel-top") && args.get("2").equals("cognates")){
 		values.add("STOP");
@@ -52,7 +96,7 @@ public class Symbols {
 		args.put("word1", args.get("2"));
 		values.add("LEMMA");
 	    } else if (args.get("1").equals("Han compound")){
-		for (int kk = 2; kk < 10; kk++) {
+		for (int kk = 2; kk < 12; kk++) {
 		    if (args.get(Integer.toString(kk)) != null) {
 			args.put("word" + Integer.toString(kk - 2), args.get(Integer.toString(kk)));
 			args.remove(Integer.toString(kk));
@@ -123,10 +167,15 @@ public class Symbols {
 		values.add("FROM"); 
 		values.add("LEMMA"); 
 	    } else if (args.get("1").equals("cog") || args.get("1").equals("cognate")) {//e.g.:       {{cog|fr|orgue}}
-                values.add("COGNATE_WITH");
-                if (args.get("3") != null) {
-                    values.add("LEMMA");
-                }
+		if (args.get("2") != null && args.get("3") != null && ! args.get("3").equals("-")) {
+		    values.add("LANGUAGE");
+		    values.add("LEMMA"); 
+		    args.put("lang", args.get("2"));
+		    args.put("word1", cleanUp(args.get("3")));
+                } else {
+		    args.clear();
+		    values = null;
+		}
             } else if (args.get("1").equals("etymtwin")) {//e.g.:    {{etymtwin|lang=en}} {{m|en|foo}}
                 values.add("COGNATE_WITH");
             } else if (args.get("1").equals("bor") || args.get("1").equals("borrowing")){
@@ -191,19 +240,29 @@ public class Symbols {
 	        values.add("LEMMA");
 		args.put("gloss1", args.get("etyl t"));
 		args.remove("etyl t");
-	    } else if (args.get("1").equals("compound") || args.get("1").equals("blend") || args.get("1").equals("_compound")) {
+	    } else if (args.get("1").equals("compound") || args.get("1").equals("blend")) {
+		if (args.get("1").equals("compound")){
+		    args.put("1", "_compound");
+		} else if (args.get("1").equals("blend")){
+		    args.put("1", "_blend");
+		}
                 if (args.get("lang") == null) {
-                    args.put("lang", args.get("2"));
-                    args.remove("2");
                     if (args.get("3") != null) {//(1=language - can be empty) 2=first word 3=third word
                         values.add("LEMMA");
                         args.put("word1", cleanUp(args.get("3")));
                         args.remove("3");
-                    }
-                    for (int kk = 4; kk < 10; kk++) {
+		    }    
+		    if (args.get("2") != null){
+			args.put("lang1", args.get("2"));
+			args.remove("2");
+                    } else {
+			args.put("lang1", lang);
+		    }
+                    for (int kk = 4; kk < 12; kk++) {
                         if (args.get(Integer.toString(kk)) != null) {
                             args.put("word" + Integer.toString(kk - 2), cleanUp(args.get(Integer.toString(kk))));
                             args.remove(Integer.toString(kk));
+			    args.put("lang" + Integer.toString(kk - 2), args.get("lang1"));
                         } else {
                             break;
                         }
@@ -213,11 +272,14 @@ public class Symbols {
                         values.add("LEMMA");
                         args.put("word1", cleanUp(args.get("2")));
                         args.remove("2");
+			args.put("lang1", args.get("lang"));
+			args.remove("lang");
                     }
-                    for (int kk = 3; kk < 10; kk++) {
+                    for (int kk = 3; kk < 12; kk++) {
                         if (args.get(Integer.toString(kk)) != null) {
                             args.put("word" + Integer.toString(kk - 1), cleanUp(args.get(Integer.toString(kk))));
                             args.remove(Integer.toString(kk));
+			    args.put("lang" + Integer.toString(kk - 1), args.get("lang1"));
                         } else {
                             break;
                         }
@@ -226,7 +288,7 @@ public class Symbols {
             } else if (args.get("1").equals("etycomp")) { //e.g.: {{etycomp|lang1=de|inf1=|case1=|word1=dumm|trans1=dumb|lang2=|inf2=|case2=|word2=Kopf|trans2=head}} All parameters except word1= can be omitted.
                 args.put("1", "compound");
                 values.add("LEMMA");
-                for (int kk = 1; kk < 10; kk++) {
+                for (int kk = 1; kk < 12; kk++) {
                     if (args.get("word" + Integer.toString(kk)) != null) {
                         args.put("word" + Integer.toString(kk), cleanUp(args.get("word" + Integer.toString(kk))));
                     }
@@ -244,12 +306,25 @@ public class Symbols {
 		    args.remove("3"); 
 		}
 		values.add("LEMMA");
+	    } else if (args.get("1").equals("zh-l")){
+	        args.put("lang", "zh");
+		if (args.get("2") != null){
+		    args.put("word1", args.get("2"));
+		    values.add("LEMMA");
+		    args.remove("2");
+		} else {
+		    args.clear();
+		    values = null;
+		}
 	    } else if (args.get("1").equals("vi-etym-sino")) {
 		args.put("lang", "zh");//check this
-                if (args.get("2") != null) {
-		    args.put("word1", cleanUp(args.get("2")));
+		if (args.get("2") != null){
+                    args.put("word1", cleanUp(args.get("2")));
                     args.remove("2");
 		    values.add("LEMMA");
+		} else {
+		    values = null;
+		    args.clear();
 		}
                 if (args.get("3") != null) {
                     args.put("gloss1", args.get("3"));
@@ -310,6 +385,9 @@ public class Symbols {
 		if (args.get("3")!= null){
 		    args.put("word1", cleanUp(args.get("3")));
 		    values.add("LEMMA");  
+		} else {
+		    args.put("1", "_etyl");
+		    values.add("LANGUAGE");
 		}
 	    } else if (args.get("1").equals("fi-form of")){
 		values.add("FROM");
@@ -343,7 +421,7 @@ public class Symbols {
                 if (args.get("lang") == null) {
                     args.put("lang", args.get("2"));
                     args.remove("2");
-                    for (int kk = 3; kk < 10; kk++) {
+                    for (int kk = 3; kk < 12; kk++) {
                         if (args.get(Integer.toString(kk)) != null) {
                             args.put("word" + Integer.toString(kk - 2), cleanUp(args.get(Integer.toString(kk))));
                             args.remove(Integer.toString(kk));
@@ -413,8 +491,10 @@ public class Symbols {
             }        
 	this.normalizeLang();
     }
-
-    public void parseLink(String lang){
+    
+    public void parseLink(String group, String lang){
+	string = group;
+	values = new ArrayList<String>();
             if (string.startsWith("Kanien'keh")) {
 	        string = "Kanienkehaka";
             }
@@ -461,15 +541,16 @@ public class Symbols {
     
     private void normalizeLang(){
 	if (this.args != null) {
-	    if (this.args.containsKey("lang")) {
-		String languageCode = this.args.get("lang");
-		languageCode = EnglishLangToCode.threeLettersCode(this.args.get("lang"));
-		if (languageCode != null) {
-		    this.args.put("lang", languageCode);
+	    for (String key : this.args.keySet()){
+		if (key.startsWith("lang")){
+		    String languageCode = EnglishLangToCode.threeLettersCode(this.args.get(key));
+		    if (languageCode != null) {
+			this.args.put(key, languageCode);
+		    }
 		}//else leave it as it is
 	    }
 	}
-    }
+    }	
 
     /**                                                                
      * Given a String, this function replaces some symbols                                                        
@@ -485,4 +566,4 @@ public class Symbols {
 	word = word.replaceAll("\\[", "").replaceAll("\\]", "").trim().replaceAll("'", "__").replaceAll("\\*", "_").replaceAll("^-", "__-");
 	return word;
     }    
-}
+    }

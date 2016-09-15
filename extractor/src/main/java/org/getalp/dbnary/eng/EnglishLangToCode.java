@@ -465,8 +465,8 @@ public class EnglishLangToCode extends LangTools {
         add("Mumbai Hindi", "hi-mum");
         add("Bambai Hindi", "hi-mum");
         add("British English", "en-GB");
-        add("Byzantine Greek", "gkm Medieval Greek");
-        add("Medieval Greek", "gkm Medieval Greek");
+        add("Byzantine Greek", "gkm");
+        add("Medieval Greek", "gkm");
         add("Cajun French", "frc");
         add("Louisiana French", "frc");
         add("Canadian French", "fr-CA");
@@ -510,12 +510,13 @@ public class EnglishLangToCode extends LangTools {
         add("Kathiyawadi", "gu-kat");
         add("Kathiyawadi Gujarati", "gu-kat");
         add("Kathiawadi", "gu-kat");
-        add("Koine Greek", "grc-koi Koine");
+        add("Koine Greek", "grc-koi");
+	add("Koine", "grc-koi"); 
         add("Kromanti", "alv-kro");
         add("Late Latin", "la-lat");
         add("LL", "la-lat");
         add("LL.", "la-lat");
-        add("Lunfardo", "es-lun Lunfardo");
+        add("Lunfardo", "es-lun");
         add("Medieval Latin", "la-med");
         add("ML", "la-med");
         add("ML.", "la-med");
@@ -533,7 +534,7 @@ public class EnglishLangToCode extends LangTools {
         add("Middle Scots", "sco-smi");
         add("Mid.Sc.", "sco-smi");
         add("Middle Tamil", "ta-mid");
-        add("Modern Greek", "el-GR ell");
+        add("Modern Greek", "el-GR");
         add("Modern Israeli Hebrew", "he-IL");
         add("Mulaku Dhivehi", "mlk-dv");
         add("Mulaku Divehi", "mlk-dv");

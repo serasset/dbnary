@@ -41,10 +41,15 @@ public class WikiTool {
     }
 
     public static String removeTablesIn(String s){
+	String toreturn = "";
 	for (Pair p : WikiTool.locateEnclosedString(s, "{|", "|}")){
-	    s = s.substring(0, p.start) + s.substring(p.end, s.length());
+	    toreturn = toreturn + s.substring(0, p.start) + s.substring(p.end, s.length());
 	}
-	return s;
+	if (toreturn.equals("")){
+	    return s;
+	} else {
+	    return toreturn;
+	}
     }
 
     //REMOVE TEXT WITHIN PARENTHESES UNLESS PARENTHESES FALL INSIDE A WIKI LINK OR A WIKI TEMPLATE

@@ -48,12 +48,12 @@ public class Etymology{
     private static final HashMap<String, List<String> > mappings;
     static {
 	HashMap<String, List<String> > tmp = new HashMap<String, List<String> >();
-	tmp.put("FROM", Arrays.asList("[Ff]rom", "[Bb]ack-formation (?:from)?", "[Aa]bbreviat(?:ion|ed)? (?:of|from)?", "[Cc]oined from", "[Bb]orrow(?:ing|ed)? (?:of|from)?", "[Cc]ontracted from", "[Aa]dopted from", "[Cc]alque(?: of)?", "[Ii]terative of", "[Ss]hort(?:hening|hen|hened)? (?:form )?(?:of|from)?", "[Tt]hrough", "[Pp]articiple of", "[Aa]lteration of", "[Vv]ia", "[Dd]iminutive (?:form )?of", "[Uu]ltimately of", "[Vv]ariant of", "[Pp]lural of", "[Ff]orm of", "[Aa]phetic variation of", "\\<"));
+	tmp.put("FROM", Arrays.asList("[Ff]rom", "[Bb]ack-formation (?:from)?", "[Aa]bbreviat(?:ion|ed)? (?:of|from)?", "[Cc]oined from", "[Bb]orrow(?:ing|ed)? (?:of|from)?", "[Cc]ontracted from", "[Aa]dopted from", "[Cc]alque(?: of)?", "[Ii]terative of", "[Ss]hort(?:hening|hen|hened)? (?:form )?(?:of|from)?", "[Tt]hrough", "[Pp]articiple of", "[Aa]lteration of", "[Vv]ia", "[Dd]iminutive (?:form )?of", "[Uu]ltimately of", "[Vv]ariant of", "[Pp]lural of", "[Ff]orm of", "[Aa]phetic variation of", "\\<", "[Aa] \\[\\[calque\\]\\] of"));
 	tmp.put("TEMPLATE", Arrays.asList("\\{\\{"));
 	tmp.put("LINK", Arrays.asList("\\[\\["));//removed (?:'') as this causes an error in WiktinaryExtractor and function containedIn
 	tmp.put("ABOVE", Arrays.asList("[Ss]ee above"));//this should precede cognateWith which matches against "[Ss]ee"
 	tmp.put("COGNATE_WITH", Arrays.asList("[Rr]elated(?: also)? to", "[Cc]ognate(?:s)? (?:include |with |to |including )?", "[Cc]ompare (?:also )?", "[Ww]hence (?:also )?", "(?:[Bb]elongs to the )?[Ss]ame family as ", "[Mm]ore at ", "[Aa]kin to ", "[Ss]ee(?:n)? (?:also )?"));//this should follow abovePatternString which matches against "[Ss]ee above"
-	tmp.put("COMPOUND_OF", Arrays.asList("[Cc]ompound(?:ed)? (?:of|from) ", "[Mm]erg(?:ing |er )(?:of |with )?(?: earlier )?", "[Uu]niverbation of "));
+	tmp.put("COMPOUND_OF", Arrays.asList("[Cc]ompound(?:ed)? (?:of|from) ", "[Mm]erg(?:ing |er )(?:of |with )?(?: earlier )?", "[Uu]niverbation of ", "[Ff]usion of ", "[Cc]orruption of "));
 	tmp.put("UNCERTAIN", Arrays.asList("[Oo]rigin uncertain"));
 	tmp.put("COMMA", Arrays.asList(","));
 	tmp.put("YEAR", Arrays.asList("(?:[Aa].\\s*?[Cc].?|[Bb].?\\s*[Cc].?)?\\s*\\d++\\s*(?:[Aa].?\\s*[Cc].?|[Bb].?\\s*[Cc].?|th century|\\{\\{C\\.E\\.\\}\\})?"));
@@ -62,20 +62,20 @@ public class Etymology{
 	tmp.put("DOT", Arrays.asList("\\.", ";"));
 	tmp.put("OR", Arrays.asList("[^a-zA-Z0-9]or[^a-zA-Z0-9]"));
 	tmp.put("WITH", Arrays.asList("[^a-zA-Z0-9]with[^a-zA-Z0-9]"));
-	tmp.put("STOP", Arrays.asList("[Ss]uperseded", "[Dd]isplaced( native)?", "[Rr]eplaced", "[Mm]ode(?:l)?led on", "[Rr]eplacing", "equivalent to\\s*\\{\\{[^\\}]+\\}\\}"));//this are two types of patterns: superseded and equivalent to
-	tmp.put("COLUMN", Arrays.asList(":"));
+	tmp.put("STOP", Arrays.asList("[Ss]uperseded", "[Dd]isplaced(?: native)?", "[Rr]eplaced", "[Mm]ode(?:l)?led on", "[Rr]eplacing", "equivalent to\\s*\\{\\{[^\\}]+\\}\\}"));//this icludes two types of patterns: superseded and equivalent to
+	tmp.put("SEMICOLON", Arrays.asList(":"));
 	mappings = new HashMap(tmp);
     }	    
     
-    public static List<String> bulletSymbolsList = Arrays.asList("COMMA", "TEMPLATE", "LINK", "COLUMN");
+    public static List<String> bulletSymbolsList = Arrays.asList("COMMA", "TEMPLATE", "LINK", "SEMICOLON");
     public static List<String> definitionSymbolsList = Arrays.asList("FROM", "TEMPLATE", "LINK", "ABOVE", "COGNATE_WITH", "COMPOUND_OF", "UNCERTAIN", "COMMA", "YEAR", "AND", "PLUS", "DOT", "OR", "WITH", "STOP");
 
     public static Pattern bulletSymbolsListPattern = Pattern.compile(eitherSymbol(bulletSymbolsList));
     public static Pattern definitionSymbolsListPattern = Pattern.compile(eitherSymbol(definitionSymbolsList));
     
     public static Pattern definitionSymbolsPattern = Pattern.compile("(FROM )?(LANGUAGE LEMMA |LEMMA )(COMMA |DOT |OR )");
-    public static Pattern compoundSymbolsPattern = Pattern.compile("((COMPOUND_OF |FROM )(LANGUAGE )?(LEMMA )(PLUS |AND |WITH )(LANGUAGE )?(LEMMA ))|((LANGUAGE )?(LEMMA )(PLUS )(LANGUAGE )?(LEMMA ))");
-    public static Pattern bulletSymbolsPattern = Pattern.compile("(((LANGUAGE)|(LEMMA)) (COLUMN ))?((LEMMA)( COMMA )?)+");
+    public static Pattern compoundSymbolsPattern = Pattern.compile("((COMPOUND_OF |FROM )(LANGUAGE )?(LEMMA )(?:(PLUS |AND |WITH )(LANGUAGE )?(LEMMA ))+)|((LANGUAGE )?(LEMMA )(?:(PLUS )(LANGUAGE )?(LEMMA ))+)");
+    public static Pattern bulletSymbolsPattern = Pattern.compile("(((LANGUAGE)|(LEMMA)) (SEMICOLON ))?((LEMMA)( COMMA )?)+");
     
     public String lang;
     public String string;
@@ -85,24 +85,26 @@ public class Etymology{
 	string = s;
 	lang = l;
 	symbols = new ArrayList<Symbols>();
-	System.out.format("etymology = %s\n", s);
+	//System.out.format("etymology = %s\n", s);
     }
     
     public void toDefinitionSymbols(){
 	//REMOVE TEXT WITHIN HTML REFERENCE TAG
 	string = WikiTool.removeReferencesIn(string);
-
 	//REMOVE TEXT WITHIN TABLES
 	string = WikiTool.removeTablesIn(string);
 
 	//REMOVE TEXT WITHIN PARENTHESES UNLESS PARENTHESES FALL INSIDE A WIKI LINK OR A WIKI TEMPLATE
 	string = WikiTool.removeTextWithinParenthesesIn(string);
-
 	string = string.trim();
 
-	if (string != null && ! string.isEmpty() && ! string.endsWith(".")){
-	    //add final dot if etymology string doesn't end with a dot
-	    string += ".";
+	if (string == null || string.isEmpty()){
+	    return;
+	} else {
+	    if (! string.endsWith(".")){
+	        //add final dot if etymology string doesn't end with a dot
+	        string += ".";
+	    }
 	}
 
 	System.out.format("parsed etymology = \n%s\n", string); 
@@ -110,22 +112,22 @@ public class Etymology{
 	toSymbols(definitionSymbolsList, definitionSymbolsListPattern);
 
 	parseEtyl();
-
-	replaceCompound();
+	
+	replaceCompound();	
 
 	//find where list of cognates or OR statements start
         //e.g, if toString(symbols) == "FROM LEMMA COMMA FROM LEMMA COMMA COGNATE_WITH LEMMA COMMA" registers 6, the index of "COGNATE_WITH" or
 	//e.g., if toString(symbols) == "FROM LEMMA OR LEMMA" it registers 2, the index of "OR",
 	//remove any element of the input ArrayList<Symbols> after that index.
 	for (int j = 0; j < symbols.size(); j ++) {
-		if (symbols.get(j).values.size() > 0) {
-		    if (symbols.get(j).values.get(0).equals("COGNATE_WITH") || symbols.get(j).values.get(0).equals("OR")) {
-			symbols.subList(j, symbols.size()).clear();
-			break;
-		    }
+	    if (symbols.get(j).values.size() > 0) {
+		if (symbols.get(j).values.get(0).equals("COGNATE_WITH") || symbols.get(j).values.get(0).equals("OR")) {
+		    symbols.subList(j, symbols.size()).clear();
+		    break;
 		}
+	    }
 	}
-
+	
 	ArrayList<Pair> m = findMatch(symbols, definitionSymbolsPattern);
 	if (m.size() == 0) {
 	    return;//there is no match to the definitionSymbolsPattern
@@ -158,14 +160,14 @@ public class Etymology{
 	//case "{{sense|kill}} {{l|en|top oneself}}"
 	replaceSense();
 
-	ArrayList<Symbols> equivalentLemmas = new ArrayList<>();
+	ArrayList<Symbols> lemmas = new ArrayList<>();
 	Matcher m = bulletSymbolsPattern.matcher(toString(symbols));
 	while (m.find()) {
-	    //case LANGUAGE COLUMN LEMMA COMMA LEMMA, e.g.:
+	    //case LANGUAGE SEMICOLON LEMMA COMMA LEMMA, e.g.:
 	    //case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
 	    //and case "[[Asturian]]: {{l|ast|águila}}"
 	    if (m.group(2) != null && m.group(5) != null){
-		if (m.group(2).equals("LANGUAGE") && m.group(5).equals("COLUMN ")){
+		if (m.group(2).equals("LANGUAGE") && m.group(5).equals("SEMICOLON ")){
 		    String language = null;
 		    for (Symbols p : symbols){
 			if (p.values.get(0).equals("LANGUAGE")){
@@ -173,13 +175,13 @@ public class Etymology{
 			}
 			if (language != null && p.values.get(0).equals("LEMMA")){
 			    p.args.put("lang", language);
-			    equivalentLemmas.add(p);
+			    lemmas.add(p);
 			}
 		    }
 		} else if (m.group(2).equals("LEMMA")){//case "{{ja-r|武威|ぶい}}: [[military]] [[power]]"
 		    for (Symbols p : symbols){
 			if (p.values.get(0).equals("LEMMA")){
-			    equivalentLemmas.add(p);
+			    lemmas.add(p);
 			    break;
 			}
 		    }
@@ -189,16 +191,13 @@ public class Etymology{
 		if (m.group(7).equals("LEMMA")){
 		    for (Symbols p : symbols){
 			if (p.values.get(0).equals("LEMMA")){
-			    equivalentLemmas.add(p);
+			   lemmas.add(p);
 			}
 		    }
 		}
 	    }
 	}
-	if (equivalentLemmas.size() > 1) {
-	    log.debug("Warning: more than one word found in bulletlist, registering them as etymologically equivalent: {}", string);
-	}
-	symbols = equivalentLemmas;
+	symbols = lemmas;
     }
 
     public void toSymbols(List<String> l, Pattern p){
@@ -254,6 +253,9 @@ public class Etymology{
 		    if (check == false) {//if match is neither contained in a template nor in a link
 		        Symbols b = new Symbols(m.group(i + 1), lang, l.get(i));
 			if (b.values != null) {
+			    if (b.values.get(0).equals("STOP")){
+				return;
+			    }
 			    symbols.add(b);
 			}
 		    }		    
@@ -287,11 +289,13 @@ public class Etymology{
 	    ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(subs[0], "[[", "]]");
 	    if (linksLocations.size() == 0){//PARSE case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
 		String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].trim());
+		
 		if (bulletLang != null){
 		    string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
 		}
 	    } else if (linksLocations.size() == 1){//PARSE case "[[Asturian]]: {{l|ast|águila}}"
 		String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].substring(2, subs[0].length() - 2));
+		
 		if (bulletLang != null){
 		    string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
 		}
@@ -380,7 +384,7 @@ public class Etymology{
 
     /** 
      * This function is used to replace "COMPOUND_OF LEMMA AND LEMMA" and equivalents 
-     * with a single "LEMMA" Symbol of type compound|lang|word1|word2 
+     * with a single "LEMMA" Symbol of type compound|lang1|word1|lang2|word2 
      */
     public void replaceCompound(){
 	//iterate over all matches to a compound pattern
@@ -391,6 +395,8 @@ public class Etymology{
 	}
 	for (int i = match.size() - 1; i >= 0; i --) {
 	    Pair m = match.get(i);
+	    Symbols f = new Symbols("from", lang, "FROM");
+	    symbols.set(m.start, f);    
 	    ArrayList<Symbols> a = new ArrayList<Symbols>();
 	    for (int k = m.start; k < m.end + 1; k ++) {
 		Symbols b = symbols.get(k);
@@ -401,25 +407,14 @@ public class Etymology{
 		    }
 		}
 	    }
-	    symbols.set(m.start, compoundOf(a)); 
-	    symbols.subList(m.start + 1, m.end + 1).clear();
-	}
-    }
-
-    private Symbols compoundOf(ArrayList<Symbols> a){
-	if (a.size() == 2){ 
-            StringBuilder compound = new StringBuilder();
-	    compound.setLength(0);//clear StringBuilder
-	    if (a.get(0).args.get("lang") == null || a.get(1).args.get("lang") == null){
-	        log.debug("no lang in templates {} and {}", a.get(0).string, a.get(1).string);
-	        return null;
+	    Symbols b = new Symbols(a);
+	    if (b.string != null){
+	        symbols.set(m.start + 1, b); 
+	        symbols.subList(m.start + 2, m.end + 1).clear();
+	    } else {
+		symbols.subList(m.start, m.end + 1).clear();
+		break;
 	    }
-	    compound.append("_compound|" + a.get(0).args.get("lang") + "|" + a.get(0).args.get("word1") + "|");
-	    compound.append(a.get(1).args.get("word1"));
-	    return new Symbols(compound.toString(), lang, "TEMPLATE");
-	} else {
-	    log.debug("compound can only be created from two Symbols; skipping templates");
-	    return null;
 	}
     }
 }

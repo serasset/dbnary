@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 //TODO: deal with onomatopoietic in etymology
 //TODO: deal with equivalent to compound in etymology
 //TODO: register alternative forms section
-//TDO: PARSE * and lemmas like bheh2ǵos
+//TODO: PARSE * and lemmas like bheh2ǵos
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     //TODO: Handle Wikisaurus entries.
@@ -305,25 +305,31 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	for (Pair l : tableLocations){
 	    String t = s.substring(l.start + 2, l.start + 6);
 	    if (t.equals("der2") || t.equals("der3") || t.equals("der4")){
-		Map<String, String> args = WikiTool.parseArgs(t.substring(l.start + 8, l.end));
-		for (int j = 1; j < args.size(); j ++){
-		    if (args.get(Integer.toString(j)) != null){
-			Etymology etymology = new Etymology(args.get(Integer.toString(j)), lang); 
-			ArrayList<String> lemmas = split(etymology.string);
-			for (String lemma : lemmas){
-			    if (lemma != null){
-				//System.out.format("lemma=%s\n", l.trim());
-				Symbols b = new Symbols("_m|" + lang + "|" + lemma.replaceAll("\\[", "").replaceAll("\\]", "").trim(), lang, "TEMPLATE");
-				etymology.symbols.add(b);
-			    }
-			}
-			ewdh.registerDerived(etymology);
-		    }
-		}
+		Map<String, String> args = WikiTool.parseArgs(s.substring(l.start + 8, l.end));
+		processDerArgs(args, lang);  
+	    } else if (t.equals("der-zh")){
+		Map<String, String> args = WikiTool.parseArgs(s.substring(l.start + 10, l.end));
+		processDerArgs(args, lang);
 	    }
 	}
     }
 
+    private void processDerArgs(Map<String, String> args, String lang){
+	for (int j = 1; j < args.size(); j ++){
+	    if (args.get(Integer.toString(j)) != null){
+		Etymology etymology = new Etymology(args.get(Integer.toString(j)), lang);
+		ArrayList<String> lemmas = split(etymology.string);
+		for (String lemma : lemmas){
+		    if (lemma != null){
+			Symbols b = new Symbols("_m|" + lang + "|" + lemma.replaceAll("\\[", "").replaceAll("\\]", "").trim(), lang, "TEMPLATE");
+			etymology.symbols.add(b);
+		    }
+		}
+		ewdh.registerDerived(etymology);
+	    }
+	}
+    }
+    
     private ArrayList<String> split(String s){
 	ArrayList<String> toreturn = new ArrayList<String>();
 
@@ -349,10 +355,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	}
 	int nStars = 0;
 	while (multipleBulletListMatcher.find()) {
+	    //System.out.format("descendants=%s\n", multipleBulletListMatcher.group());
 	    nStars = multipleBulletListMatcher.group(1).length();
-	    ewdh.ancestors.subList(nStars + 1, ewdh.ancestors.size()).clear();  
-	    //ewdh.trimToSize();//necessary?
-
+	    if (nStars + 1 < ewdh.ancestors.size()){
+	        ewdh.ancestors.subList(nStars + 1, ewdh.ancestors.size()).clear();
+	    }
+	    
 	    String bulletString = multipleBulletListMatcher.group(2);
 	    Etymology etymology = new Etymology(bulletString, lang);
 	    etymology.toBulletSymbols();

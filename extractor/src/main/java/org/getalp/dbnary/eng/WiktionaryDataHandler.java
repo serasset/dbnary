@@ -176,7 +176,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         
     public void registerEtymology(Etymology etymology){
 	currentEtymologyEntry = null;	
-
+	
 	if (etymology.symbols == null || etymology.symbols.size() == 0){
 	    return;
 	}
@@ -192,7 +192,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 		    lang = b.args.get("lang");
 		    //handle etymologically equivalent words (i.e., isEquivalent = true)
 		    if (lang != null && lang0 != null){
-			if (lang0.equals(lang)){
+                        if (lang0.equals(lang)){
 			    if (j > 1){
 				if (etymology.symbols.get(j - 1).values.get(0).equals("COMMA")){
 				    isEquivalent = true;
@@ -201,20 +201,28 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 			}
 		    }
 	            if (isEquivalent){//etymologically equivalent words
-			vocable = createEtymologyEntryResource(b.args.get("word1"), lang);
+			vocable = createEtymologyEntryResource(b.args.get("word1"), lang0);
 	                aBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable);
 	            } else {
-			int counter = 0;//used to check if it's a compound
-       		        for (String key : b.args.keySet()) {
-       		            if (key.startsWith("word")) {
-       			        vocable = createEtymologyEntryResource(b.args.get(key), lang);
-				aBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, vocable);
-				counter ++;
-       		            }
-       		        }
-			if (counter > 1){//it's a compound
+			if (b.args.get("1").equals("_blend") || b.args.get("1").equals("_compound")){
+			    for (int kk = 1; kk < 12; kk ++){
+				String word = b.args.get("word" + Integer.toString(kk));
+				lang = b.args.get("lang" + Integer.toString(kk));
+				if (word != null && lang != null){
+				    vocable = createEtymologyEntryResource(word, lang);
+				    aBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, vocable);
+				} else {
+				    return;
+				}   
+			    }
 			    return;
-     	       	        }
+			} else {
+			    lang = b.args.get("lang");
+			    if (lang != null){
+			        vocable = createEtymologyEntryResource(b.args.get("word1"), lang);
+				aBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, vocable);
+			    }
+			}
 	       	    }
 		    vocable0 = vocable;
 		    lang0 = lang; 
@@ -235,24 +243,22 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 	if (etymology.symbols == null || etymology.symbols.size() == 0){
 	    return;
 	}
-	int counter = 0; //number of etymology.symbols
-	String lang = null; //language of etymology.symbols
-	Resource vocable = null;
+	int counter = 0; //number of etymology.symbols	
 	for (Symbols b : etymology.symbols) {
 	    if (b.values != null) {
 	        if (b.values.get(0).equals("LEMMA")) {
-	     	    if (counter == 0){
-			lang = b.args.get("lang");
-			vocable = aBox.createResource(getPrefixe(lang) + "__ee_" + uriEncode(b.args.get("word1").split(",")[0].trim()), DBnaryEtymologyOnt.EtymologyEntry); 
-		        if (ancestors.size() > 0){
-			    aBox.add(vocable, DBnaryEtymologyOnt.descendsFrom, ancestors.get(ancestors.size()-1));
+		    Resource vocable = aBox.createResource(getPrefixe(b.args.get("lang")) + "__ee_" + uriEncode(b.args.get("word1").split(",")[0].trim()), DBnaryEtymologyOnt.EtymologyEntry);
+		    if (counter == 0){
+			if (ancestors.size() > 0){
+			    aBox.add(vocable, DBnaryEtymologyOnt.descendsFrom, ancestors.get(ancestors.size() - 1));
 			}
 			ancestors.add(vocable);
-			counter ++;
 		    } else {
-			Resource vocable1 = aBox.createResource(getPrefixe(lang) + "__ee_" + uriEncode(b.args.get("word1").split(",")[0].trim()), DBnaryEtymologyOnt.EtymologyEntry);
-			aBox.add(vocable1, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable);
+			if (ancestors.size() > 1){
+			    aBox.add(vocable, DBnaryEtymologyOnt.descendsFrom, ancestors.get(ancestors.size() - 2));
+			}
 		    }
+		    counter ++;
 		}
 	    }
 	}

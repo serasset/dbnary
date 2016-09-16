@@ -99,7 +99,7 @@ fi
 )
 
 ## create the .graph files for all files in datasetdir
-## TODO: detect the graph (dbnary or dilaf ?)
+## DONE: detect the graph (dbnary or dilaf ?)
 langRegex2='(..)_([^_]*)_(.*)'
 langRegex3='(...)_([^_]*)_(.*)'
 for f in $DATASETDIR/*.ttl

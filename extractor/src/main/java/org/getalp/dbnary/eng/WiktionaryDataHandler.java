@@ -148,14 +148,18 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 	Resource vocable0 = null;
 	int counter = 0;
 	for (Symbols b : etymology.symbols){
+	    String word = uriEncode(b.args.get("word1").split(",")[0].trim());
 	    if (counter == 0){
 	       	lang = b.args.get("lang");
+		if (word.equals("")){
+		    log.debug("Error: empty lemma found while processing derived words of {}, language {}", currentWiktionaryPageName, lang);
+		}
 		//register derives_from
-	        vocable0 = aBox.createResource(getPrefixe(lang) + "__ee_" + uriEncode(b.args.get("word1").split(",")[0].trim()), DBnaryEtymologyOnt.EtymologyEntry);
+	        vocable0 = aBox.createResource(getPrefixe(lang) + "__ee_" + word, DBnaryEtymologyOnt.EtymologyEntry);
 	        aBox.add(vocable0, DBnaryEtymologyOnt.derivesFrom, currentEtymologyEntry);
 	    } else {
 	        //register etymologically_equivalent_to
-     	        Resource vocable2 = aBox.createResource(getPrefixe(lang) + "__ee_" + uriEncode(b.args.get("word1").split(",")[0].trim()), DBnaryEtymologyOnt.EtymologyEntry);
+     	        Resource vocable2 = aBox.createResource(getPrefixe(lang) + "__ee_" + word, DBnaryEtymologyOnt.EtymologyEntry);
 		aBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable0);
 	    }
 	    counter ++;
@@ -171,6 +175,9 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     }
 
     public Resource createEtymologyEntryResource(String e, String lang){
+	if (e.equals("")){
+	    log.debug("Error: empty lemma found while processing word {}, language {}", currentWiktionaryPageName, lang);
+	}
 	return aBox.createResource(getPrefixe(lang) + "__ee_" + uriEncode(e).split(",")[0].trim(), DBnaryEtymologyOnt.EtymologyEntry);
     }
         
@@ -187,8 +194,8 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 	for (int j = 0; j < etymology.symbols.size(); j ++){
 	    Symbols b = etymology.symbols.get(j);
 	    for (String values : b.values) {
-		boolean isEquivalent = false;
 	    	if (values.equals("LEMMA")){
+		    boolean isEquivalent = false;
 		    lang = b.args.get("lang");
 		    //handle etymologically equivalent words (i.e., isEquivalent = true)
 		    if (lang != null && lang0 != null){
@@ -204,24 +211,23 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 			vocable = createEtymologyEntryResource(b.args.get("word1"), lang0);
 	                aBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable);
 	            } else {
-			if (b.args.get("1").equals("_blend") || b.args.get("1").equals("_compound")){
-			    for (int kk = 1; kk < 12; kk ++){
-				String word = b.args.get("word" + Integer.toString(kk));
+			boolean compound = false;
+			for (int kk = 1; kk < 12; kk ++){
+		      	    String word = b.args.get("word" + Integer.toString(kk));
+			    lang = b.args.get("lang");//reset lang
+			    if (lang == null){
 				lang = b.args.get("lang" + Integer.toString(kk));
-				if (word != null && lang != null){
-				    vocable = createEtymologyEntryResource(word, lang);
-				    aBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, vocable);
-				} else {
-				    return;
-				}   
 			    }
+			    if (word != null && lang != null){
+				if (kk > 1){//it's some kind of compound
+				    compound = true;
+				}
+				vocable = createEtymologyEntryResource(word, lang);
+			        aBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, vocable);
+			    }   
+			}
+			if (compound){
 			    return;
-			} else {
-			    lang = b.args.get("lang");
-			    if (lang != null){
-			        vocable = createEtymologyEntryResource(b.args.get("word1"), lang);
-				aBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, vocable);
-			    }
 			}
 	       	    }
 		    vocable0 = vocable;

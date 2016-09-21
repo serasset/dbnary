@@ -48,7 +48,7 @@ public class Etymology{
     private static final HashMap<String, List<String> > mappings;
     static {
 	HashMap<String, List<String> > tmp = new HashMap<String, List<String> >();
-	tmp.put("FROM", Arrays.asList("[Ff]rom", "[Bb]ack-formation (?:from)?", "[Aa]bbreviat(?:ion|ed)? (?:of|from)?", "[Cc]oined from", "[Bb]orrow(?:ing|ed)? (?:of|from)?", "[Cc]ontracted from", "[Aa]dopted from", "[Cc]alque(?: of)?", "[Ii]terative of", "[Ss]hort(?:hening|hen|hened)? (?:form )?(?:of|from)?", "[Tt]hrough", "[Pp]articiple of", "[Aa]lteration of", "[Vv]ia", "[Dd]iminutive (?:form )?of", "[Uu]ltimately of", "[Vv]ariant of", "[Pp]lural of", "[Ff]orm of", "[Aa]phetic variation of", "\\<", "[Aa] \\[\\[calque\\]\\] of"));
+	tmp.put("FROM", Arrays.asList("[Ff]rom", "[Bb]ack-formation (?:from)?", "[Aa]bbreviat(?:ion|ed)? (?:of|from)?", "[Cc]oined from", "[Bb]orrow(?:ing|ed)? (?:of|from)?", "[Cc]ontracted from", "[Aa]dopted from", "[Cc]alque(?: of)?", "[Ii]terative of", "[Ss]hort(?:hening|hen|hened)? (?:form )?(?:of|from)?", "[Tt]hrough", "[Pp]articiple of", "[Aa]lteration of", "[Vv]ia", "[Dd]iminutive (?:form )?of", "[Uu]ltimately of", "[Vv]ariant of", "[Pp]lural of", "[Ff]orm of", "[Aa]phetic variation of", "\\<", "[Aa] \\[\\[calque\\]\\] of", "[Ff]ormed as"));
 	tmp.put("TEMPLATE", Arrays.asList("\\{\\{"));
 	tmp.put("LINK", Arrays.asList("\\[\\["));//removed (?:'') as this causes an error in WiktinaryExtractor and function containedIn
 	tmp.put("ABOVE", Arrays.asList("[Ss]ee above"));//this should precede cognateWith which matches against "[Ss]ee"
@@ -76,6 +76,7 @@ public class Etymology{
     public static Pattern definitionSymbolsPattern = Pattern.compile("(FROM )?(LANGUAGE LEMMA |LEMMA )(COMMA |DOT |OR )");
     public static Pattern compoundSymbolsPattern = Pattern.compile("((COMPOUND_OF |FROM )(LANGUAGE )?(LEMMA )(?:(PLUS |AND |WITH )(LANGUAGE )?(LEMMA ))+)|((LANGUAGE )?(LEMMA )(?:(PLUS )(LANGUAGE )?(LEMMA ))+)");
     public static Pattern bulletSymbolsPattern = Pattern.compile("(((LANGUAGE)|(LEMMA)) (SEMICOLON ))?((LEMMA)( COMMA )?)+");
+    public static Pattern tableDerivedLemmaPattern = Pattern.compile("(LEMMA)(?: COMMA (LEMMA))*");
     
     public String lang;
     public String string;
@@ -87,7 +88,28 @@ public class Etymology{
 	symbols = new ArrayList<Symbols>();
 	//System.out.format("etymology = %s\n", s);
     }
-    
+
+    public void toTableDerivedSymbols(){
+	string = WikiTool.removeReferencesIn(string);
+
+	string = WikiTool.removeTextWithinParenthesesIn(string);
+	string = string.trim();
+
+	toSymbols(bulletSymbolsList, bulletSymbolsListPattern);
+
+	ArrayList<Symbols> lemmas = new ArrayList<>();
+	Matcher m = tableDerivedLemmaPattern.matcher(toString(symbols));
+	while (m.find()) {
+	    for (Symbols p : symbols){
+		if (p.values.get(0).equals("LEMMA")){
+		    lemmas.add(p);
+		}
+	    }
+	    break;
+	}
+	symbols = lemmas;
+    }
+
     public void toDefinitionSymbols(){
 	//REMOVE TEXT WITHIN HTML REFERENCE TAG
 	string = WikiTool.removeReferencesIn(string);
@@ -113,7 +135,7 @@ public class Etymology{
 
 	parseEtyl();
 	
-	replaceCompound();	
+	replaceCompound();
 
 	//find where list of cognates or OR statements start
         //e.g, if toString(symbols) == "FROM LEMMA COMMA FROM LEMMA COMMA COGNATE_WITH LEMMA COMMA" registers 6, the index of "COGNATE_WITH" or
@@ -364,6 +386,7 @@ public class Etymology{
 		arrayListPosition.add(c);
 	    }
 	}
+	
 	Matcher m = p.matcher(toString(a));
 	while (m.find()) {
 	    int start = -1, end = -1;
@@ -395,8 +418,6 @@ public class Etymology{
 	}
 	for (int i = match.size() - 1; i >= 0; i --) {
 	    Pair m = match.get(i);
-	    Symbols f = new Symbols("from", lang, "FROM");
-	    symbols.set(m.start, f);    
 	    ArrayList<Symbols> a = new ArrayList<Symbols>();
 	    for (int k = m.start; k < m.end + 1; k ++) {
 		Symbols b = symbols.get(k);
@@ -409,6 +430,8 @@ public class Etymology{
 	    }
 	    Symbols b = new Symbols(a);
 	    if (b.string != null){
+		Symbols f = new Symbols("from", lang, "FROM");
+		symbols.set(m.start, f);
 	        symbols.set(m.start + 1, b); 
 	        symbols.subList(m.start + 2, m.end + 1).clear();
 	    } else {

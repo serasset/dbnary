@@ -223,7 +223,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 extractDefinitions(blockStart, end);
                 break;
             case TRADBLOCK:
-                //extractTranslations(blockStart, end);
+                extractTranslations(blockStart, end);
                 break;
             case ORTHOALTBLOCK:
                 extractOrthoAlt(blockStart, end);
@@ -318,13 +318,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	for (int j = 1; j < args.size(); j ++){
 	    if (args.get(Integer.toString(j)) != null){
 		Etymology etymology = new Etymology(args.get(Integer.toString(j)), lang);
-		ArrayList<String> lemmas = split(etymology.string);
-		for (String lemma : lemmas){
-		    if (lemma != null){
-			Symbols b = new Symbols("_m|" + lang + "|" + lemma.replaceAll("\\[", "").replaceAll("\\]", "").trim(), lang, "TEMPLATE");
-			etymology.symbols.add(b);
+
+		etymology.toTableDerivedSymbols();
+		if (etymology.symbols.size() == 0){
+		    ArrayList<String> lemmas = split(etymology.string);
+		    for (String lemma : lemmas){
+		        if (lemma != null){
+			    Symbols b = new Symbols("_m|" + lang + "|" + lemma, lang, "TEMPLATE");
+			    etymology.symbols.add(b);
+		        }
 		    }
 		}
+		
 		ewdh.registerDerived(etymology);
 	    }
 	}

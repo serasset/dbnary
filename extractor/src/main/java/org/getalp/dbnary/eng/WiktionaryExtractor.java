@@ -28,8 +28,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     //DONE: extract pronunciation
     //TODO: attach multiple pronounciation correctly
     static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
-    
-    private final static String etymtreePagePrefix = "Template:etymtree"; 
     protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
     protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
     protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
@@ -353,8 +351,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private boolean extractMultipleBulletList(String s, String lang, boolean setRoot){
 	Matcher multipleBulletListMatcher = WikiPatterns.multipleBulletListPattern.matcher(s);
 
+	int offset = 0;
 	ewdh.initializeAncestors();
 	if (setRoot){
+	    offset = 1;
 	    ewdh.registerCurrentEtymologyEntry(lang);
 	    ewdh.ancestors.add(ewdh.currentEtymologyEntry);
 	}
@@ -362,14 +362,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	while (multipleBulletListMatcher.find()) {
 	    //System.out.format("descendants=%s\n", multipleBulletListMatcher.group());
 	    nStars = multipleBulletListMatcher.group(1).length();
-	    if (nStars + 1 < ewdh.ancestors.size()){
-	        ewdh.ancestors.subList(nStars + 1, ewdh.ancestors.size()).clear();
+	    if (nStars + offset - 1 < ewdh.ancestors.size()){
+	        ewdh.ancestors.subList(nStars + offset - 1, ewdh.ancestors.size()).clear();
 	    }
-	    
 	    String bulletString = multipleBulletListMatcher.group(2);
 	    Etymology etymology = new Etymology(bulletString, lang);
 	    etymology.toBulletSymbols();
-	    ewdh.addAncestorsAndRegisterDescendants(etymology);      
+	    ewdh.addAncestorsAndRegisterDescendants(etymology);
 	}
 	ewdh.finalizeAncestors();
 	
@@ -399,31 +398,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 	ArrayList<Pair> templateLocations = WikiTool.locateEnclosedString(s, "{{", "}}");
 	for (Pair template : templateLocations){
 	    Symbols b = new Symbols(s.substring(template.start + 2, template.end - 2), lang, "TEMPLATE");
-	    if (b.values != null && b.values.get(0).equals("ETYMTREE")){
-		extractEtymtreeItem(b.args.get("word1"), b.args.get("lang"));
+	    if (b.values != null && b.values.get(0).equals("ETYMTREE") && b.args.get("lang") != null){
+		String page = b.args.get("page");
+		if (b.args.get("word1") == null){
+		    page = page + this.wiktionaryPageName;
+		}
+		if (ewdh.etymtreeHashSet.add(page)){//if etymtree hasn't been saved already
+		    String etymtreePageContent = wi.getTextOfPage(page);
+		    if (etymtreePageContent != null){
+			log.debug("Extracting etymtree page {}", page);
+			extractMultipleBulletList(etymtreePageContent, lang, false);
+		    } else {
+			log.debug("Warning: cannot get etymtree page {}", page);
+		    }
+		}
 		return;
-	    }
-	}
-    }
-    
-    private void extractEtymtreeItem(String lemma, String lang){
-	if (lemma == null){
-	    lemma = this.wiktionaryPageName;
-	}
-
-	if (lang == null){
-	    log.debug("Skipping etymtree template of word {}", lemma);
-	    return;
-	}
-	
-	if (ewdh.etymtreeHashSet.add(lang + "_" + lemma)){//if etymtree hasn't been saved already
-	    String etymtreePage = etymtreePagePrefix + "/" + lang + "/" + lemma;
-	    String etymtreePageContent = wi.getTextOfPage(etymtreePage);
-	    if (etymtreePageContent != null){
-		log.debug("Extracting etymtree page {}", etymtreePage);
-		extractMultipleBulletList(etymtreePageContent, lang, false);
-	    } else {
-		log.debug("Warning: cannot get etymtree page {}", etymtreePage);
 	    }
 	}
     }

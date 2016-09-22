@@ -113,13 +113,17 @@ public class Symbols {
 		    args.put("lang", args.get("3"));
 		    args.remove("3");
 		    args.put("word1", args.get("4"));
-		    args.remove("4"); 
-		    values.add("ETYMTREE");
+		    args.remove("4");
 		} else if (args.get("2")!= null){
 		    args.put("lang", args.get("2"));
 		    args.remove("2");
-		    values.add("ETYMTREE");     
 		}
+		values.add("ETYMTREE");
+		String word = args.get("word1");
+		if (word == null){
+		    word = "";
+		}
+		args.put("page", "Template:etymtree/" + args.get("lang") + "/" + word);
 	    } else if (args.get("1").equals("Han simp")){
 		if (args.get("2") != null){
 		    args.put("lang", "hni");

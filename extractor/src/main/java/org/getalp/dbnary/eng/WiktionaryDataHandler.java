@@ -247,22 +247,32 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     
     public void addAncestorsAndRegisterDescendants(Etymology etymology){
 	if (etymology.symbols == null || etymology.symbols.size() == 0){
+	    Resource vocable = aBox.createResource("");
+	    ancestors.add(vocable);//add an empty vocable and don't register it
 	    return;
 	}
+	Resource ancestor = null;
+	for (int i = 0; i < ancestors.size(); i ++) {
+	    String a = ancestors.get(ancestors.size() - 1 - i).toString();
+	    if (! a.equals("")){
+                ancestor = ancestors.get(ancestors.size() - 1 - i);
+		break;
+	    }
+	}
+	
 	int counter = 0; //number of etymology.symbols	
 	for (Symbols b : etymology.symbols) {
 	    if (b.values != null) {
 	        if (b.values.get(0).equals("LEMMA")) {
-		    Resource vocable = aBox.createResource(getPrefixe(b.args.get("lang")) + "__ee_" + uriEncode(b.args.get("word1").split(",")[0].trim()), DBnaryEtymologyOnt.EtymologyEntry);
+		    String word = b.args.get("word1").split(",")[0].trim();
+		    Resource vocable = aBox.createResource(getPrefixe(b.args.get("lang")) + "__ee_" + uriEncode(word), DBnaryEtymologyOnt.EtymologyEntry);
 		    if (counter == 0){
-			if (ancestors.size() > 0){
-			    aBox.add(vocable, DBnaryEtymologyOnt.descendsFrom, ancestors.get(ancestors.size() - 1));
-			}
+		        if (ancestor != null){
+			    aBox.add(vocable, DBnaryEtymologyOnt.descendsFrom, ancestor);
+		        }
 			ancestors.add(vocable);
 		    } else {
-			if (ancestors.size() > 1){
-			    aBox.add(vocable, DBnaryEtymologyOnt.descendsFrom, ancestors.get(ancestors.size() - 2));
-			}
+			aBox.add(vocable, DBnaryEtymologyOnt.etymologicallyEquivalentTo, ancestors.get(ancestors.size() - 1));
 		    }
 		    counter ++;
 		}

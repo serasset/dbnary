@@ -239,10 +239,12 @@ public class ExtractWiktionary {
                     if (!title.equals("")) {
                         nbPages++;
                         int nbnodes = wdh.nbEntries();
+			if (nbPages>=2000000 && nbPages>=3000000){
 			try {
                             we.extractData(title, page);
 			} catch (RuntimeException ex) {
 			    System.err.println(ex.getMessage());
+			}
 			}
                         if (nbnodes != wdh.nbEntries()) {
                             totalRelevantTime += (System.currentTimeMillis() - relevantStartTime);

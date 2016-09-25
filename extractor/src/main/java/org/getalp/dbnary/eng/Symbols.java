@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * TerminalSymbols is a part of etymology
  * it has properties
- * .asTerminalSymbols an ArrayList&lt;String&gt;, e.g., {"LANGUAGE", "LEMMA"}
+ * .values an ArrayList&lt;String&gt;, e.g., {"LANGUAGE", "LEMMA"}
  * .args a Map&lt;String, String&gt;, e.g., {("1", "m"), ("lang", "eng"), ("word1", "door")}
  * .string, e.g., "m|en|door"
  */
@@ -103,7 +103,9 @@ public class Symbols {
 		}
 		args.put("lang", "hni");
 		values.add("FROM");
-		values.add("LEMMA");    
+		values.add("LEMMA");
+	    //} else if (args.get("1").startsWith("Han ety"){//Han etyl, Han etym
+		//ignore	    
 	    } else if (args.get("1").equals("SI link")){
 		args.put("lang", lang);
 		args.put("word1", args.get("2"));
@@ -112,18 +114,15 @@ public class Symbols {
 		if (args.get("3") != null && args.get("4") != null){
 		    args.put("lang", args.get("3"));
 		    args.remove("3");
-		    args.put("word1", args.get("4"));
+		    args.put("word1", cleanUp(args.get("4")));
 		    args.remove("4");
 		} else if (args.get("2")!= null){
 		    args.put("lang", args.get("2"));
 		    args.remove("2");
+		    args.put("word1", "");
 		}
-		values.add("ETYMTREE");
-		String word = args.get("word1");
-		if (word == null){
-		    word = "";
-		}
-		args.put("page", "Template:etymtree/" + args.get("lang") + "/" + word);
+		values.add("ETYMTREE");		    
+		args.put("page", "Template:etymtree/" + args.get("lang") + "/" + args.get("word1"));
 	    } else if (args.get("1").equals("Han simp")){
 		if (args.get("2") != null){
 		    args.put("lang", "hni");
@@ -136,35 +135,42 @@ public class Symbols {
 		    values = null;
 		    log.debug("Skipping Han simp template {}", string);
 		}
-	    } else if (args.get("1").equals("sense")){
+	    } else if (args.get("1").equals("eye dalect")){
+		if (args.get("2") == null){
+		    values.add("FROM");
+		} else {
+		    args.put("word1", cleanUp(args.get("2")));
+		    args.remove("2");
+		    values.add("LEMMA");
+		}
+	    }else if (args.get("1").equals("sense")){
 		log.debug("Found sense template {}", string);
 	        values.add("SENSE");
 	    } else if (args.get("1").equals("jbo-etym")){//TODO: this is incorrect!!! 
-		int counter = 1;
+		//make a copy of args.keySet()
 		ArrayList<String> tt = new ArrayList<>();
 		for (String kk : args.keySet()){
 		    tt.add(kk);
 		}
-		args.put("lang", "jbo");
+		int counter = 1;
 		for (String k : tt){		    
 		   if (args.get(k) != null){
 		      if (k.endsWith("_t")){
 			  k = k.substring(0, k.length() - 2);
 			  args.put("lang" + Integer.toString(counter), "k");
-			  args.put("word" + counter, args.get(k + "_t"));
+			  args.put("word" + Integer.toString(counter), args.get(k + "_t"));
 			  args.remove(k + "_t");
 		    	  String tr = args.get(k + "_tr");
 		    	  if (tr != null){
 			      args.put("tr" + counter, tr);
 			      args.remove(k + "_tr");
 		    	  }
-		    	  if (args.get(k) != null){
-			      args.remove(k);
-		    	  }
+			  args.remove(k);
 		          counter ++;
 		      }
 		   }
 		}
+		args.put("lang", "jbo");
 		values.add("FROM"); 
 		values.add("LEMMA"); 
 	    } else if (args.get("1").equals("cog") || args.get("1").equals("cognate")) {//e.g.:       {{cog|fr|orgue}}
@@ -187,11 +193,37 @@ public class Symbols {
 		    args.put("lang", args.get("3"));
 		    args.remove("3");
 		}
-		if (args.get(Integer.toString(3 + offset)) != null && ! args.get(Integer.toString(3 + offset)).equals("-")) {//if lemma is not specified Wiktionary prints borrowing from Language.
-		    values.add("LEMMA");
-		    args.put("word1", cleanUp(args.get(Integer.toString(3 + offset))));
-		    args.remove(Integer.toString(3 + offset));
+		values.add("FROM");
+		String word = args.get(Integer.toString(3 + offset));
+		if (word != null){
+		    if (! word.equals("")){
+			if (! word.equals("-")) {//if lemma is not specified Wiktionary prints borrowing from Language.
+		            values.add("LEMMA");
+		            args.put("word1", cleanUp(word));
+		            args.remove(Integer.toString(3 + offset));
+			}
+		    } else {
+		        word = args.get(Integer.toString(4 + offset));
+			values.add("LEMMA");
+			args.put("word1", cleanUp(word));
+			args.remove(Integer.toString(4 + offset));
+		    }
 		}
+	    }else if (args.get("1").equals("lbor") || args.get("1").equals("learned borrowing")){
+		//The parameter "1" is required. The parameter "2" is required.
+		String language = args.get("lang");
+		int offset = 0;
+		if (language == null){
+		    args.put("lang", args.get("3"));
+		    args.remove("3");
+		    offset = 1;
+		}
+		values.add("FROM");
+		String word = args.get(Integer.toString(4 + offset));
+		if (word != null && ! word.equals("-")){
+		    args.put("word1", cleanUp(word));
+		    values.add("LEMMA");
+		} 
 	    } else if (args.get("1").startsWith("inh") || args.get("1").startsWith("der")) {//inherited, derived
                 //e.g.:
 		//from a {{inh|ro|VL.|-}} root
@@ -235,7 +267,7 @@ public class Symbols {
             } else if (args.get("1").equals("calque")){
 		args.put("lang", args.get("etyl lang"));
 		args.remove("etyl lang");
-		args.put("word1", args.get("etyl term"));
+		args.put("word1", cleanUp(args.get("etyl term")));
 		args.remove("etyl term");
 		values.add("FROM");
 	        values.add("LEMMA");
@@ -254,7 +286,7 @@ public class Symbols {
 		    args.remove("3"); 
 		}
 		values.add("LEMMA");
-	    } else if (args.get("1").equals("zh-l")){
+	    } else if (args.get("1").equals("zh-l") || args.get("1").equals("zh-m")){
 	        args.put("lang", "zh");
 		if (args.get("2") != null){
 		    args.put("word1", args.get("2"));
@@ -340,7 +372,7 @@ public class Symbols {
 	    } else if (args.get("1").equals("fi-form of")){
 		values.add("FROM");
 		values.add("LEMMA");
-		args.put("word1", args.get("2"));
+		args.put("word1", cleanUp(args.get("2")));
 		args.put("lang", "fin");
 		args.remove("2");
 	    } else if (args.get("1").equals("m") || args.get("1").equals("mention") || args.get("1").equals("l") || args.get("1").equals("link") || args.get("1").equals("_m")) {
@@ -486,7 +518,7 @@ public class Symbols {
 		    }
 		}
 		values.add("LEMMA");
-	    } else if (args.get("1").equals("con")) {//confix
+	    } else if (args.get("1").startsWith("con")) {//confix
 		//You must specify a prefix part, an optional base term and a suffix part. 
 		//e.g.:
 		//{{confix|atmo|sphere|lang=en}}
@@ -639,10 +671,16 @@ public class Symbols {
 		values.add("LEMMA");
             } else if (args.get("1").equals("term")){//e.g.: {{term|de-|di-|away}}
 		if (args.get("lang") == null){
-		    args.put("lang", "en");
+		    args.put("lang", lang);
 		}
-                args.put("word1", cleanUp(args.get("2")));
-                args.remove("2");
+		if (args.get("2").equals("")){
+		    args.remove("2");
+		    args.put("word1", cleanUp(args.get("3")));
+		    args.remove("3");
+		} else {
+                    args.put("word1", cleanUp(args.get("2")));
+		    args.remove("2");
+		}
                 values.add("LEMMA");
             } else if (args.get("1").equals("etyl") || args.get("1").equals("_etyl")) {
                 values.add("LANGUAGE");
@@ -738,17 +776,16 @@ public class Symbols {
     }	
 
     /**                                                                
-     * Given a String, this function replaces some symbols                                                        
+     * Given a String, this function replaces some symbols                   
      * e.g., cleanUp("[[door]],[[dur]]") returns "door,dur"                                   
      * e.g., cleanUp("o'hare") returns "o__hare"
      * e.g., cleanUp("*duhr") returns "_duhr" 
-     * e.g., cleanUp ("anti-particle") returns "anti__-particle"                             
      *                                                                           
      * @param word an input String 
      * @return a String where some characters have been replaced
      */
     public String cleanUp(String word) {
-	word = word.replaceAll("\\[", "").replaceAll("\\]", "").trim().replaceAll("'", "__").replaceAll("\\*", "_").replaceAll("^-", "__-");
+	word = word.replaceAll("\\[", "").replaceAll("\\]", "").trim().replaceAll("'", "__").replaceAll("\\*", "_");
 	return word;
     }    
     }

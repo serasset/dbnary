@@ -95,6 +95,10 @@ public class Etymology{
 	string = WikiTool.removeTextWithinParenthesesIn(string);
 	string = string.trim();
 
+	if (string == null || string.equals("")){
+	    return;
+	}
+
 	toSymbols(bulletSymbolsList, bulletSymbolsListPattern);
 
 	ArrayList<Symbols> lemmas = new ArrayList<>();
@@ -111,6 +115,10 @@ public class Etymology{
     }
 
     public void toDefinitionSymbols(){
+	if (string == null || string.equals("")) {
+	    return;
+	}
+	
 	//REMOVE TEXT WITHIN HTML REFERENCE TAG
 	string = WikiTool.removeReferencesIn(string);
 	//REMOVE TEXT WITHIN TABLES
@@ -120,7 +128,7 @@ public class Etymology{
 	string = WikiTool.removeTextWithinParenthesesIn(string);
 	string = string.trim();
 
-	if (string == null || string.isEmpty()){
+	if (string == null || string.equals("")){
 	    return;
 	} else {
 	    if (! string.endsWith(".")){
@@ -129,7 +137,7 @@ public class Etymology{
 	    }
 	}
 
-	System.out.format("parsed etymology = \n%s\n", string); 
+	//System.out.format("parsed etymology = %s\n", string); 
 
 	toSymbols(definitionSymbolsList, definitionSymbolsListPattern);
 
@@ -191,19 +199,19 @@ public class Etymology{
 	    if (m.group(2) != null && m.group(5) != null){
 		if (m.group(2).equals("LANGUAGE") && m.group(5).equals("SEMICOLON ")){
 		    String language = null;
-		    for (Symbols p : symbols){
-			if (p.values.get(0).equals("LANGUAGE")){
-			    language = p.args.get("lang");
+		    for (Symbols b : symbols){
+			if (b.values.get(0).equals("LANGUAGE")){
+			    language = b.args.get("lang");
 			}
-			if (language != null && p.values.get(0).equals("LEMMA")){
-			    p.args.put("lang", language);
-			    lemmas.add(p);
+			if (language != null && b.values.get(0).equals("LEMMA")){
+			    b.args.put("lang", language);
+			    lemmas.add(b);
 			}
 		    }
 		} else if (m.group(2).equals("LEMMA")){//case "{{ja-r|武威|ぶい}}: [[military]] [[power]]"
-		    for (Symbols p : symbols){
-			if (p.values.get(0).equals("LEMMA")){
-			    lemmas.add(p);
+		    for (Symbols b : symbols){
+			if (b.values.get(0).equals("LEMMA")){
+			    lemmas.add(b);
 			    break;
 			}
 		    }
@@ -211,9 +219,9 @@ public class Etymology{
 		}
 	    } else if (m.group(2) == null && m.group(5) == null){//case "[[color]], [[colour]]"
 		if (m.group(7).equals("LEMMA")){
-		    for (Symbols p : symbols){
-			if (p.values.get(0).equals("LEMMA")){
-			   lemmas.add(p);
+		    for (Symbols b : symbols){
+			if (b.values.get(0).equals("LEMMA")){
+			   lemmas.add(b);
 			}
 		    }
 		}
@@ -226,6 +234,7 @@ public class Etymology{
 	if (string == null || string.trim().isEmpty()){
 	    return; 
 	}
+	
 	ArrayList<Pair> templatesLocations = WikiTool.locateEnclosedString(string, "{{", "}}");
 	ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(string, "[[", "]]");
 

@@ -15,7 +15,6 @@ import java.util.Date;
 import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
 
 public class ExtractWiktionary {
-
     private static Options options = null; // Command line options
 
     private static final String LANGUAGE_OPTION = "l";
@@ -101,6 +100,8 @@ public class ExtractWiktionary {
      * @throws WiktionaryIndexerException ...
      */
     public static void main(String[] args) throws WiktionaryIndexerException, IOException {
+	
+	
         ExtractWiktionary cliProg = new ExtractWiktionary();
         cliProg.loadArgs(args);
         cliProg.extract();
@@ -239,12 +240,10 @@ public class ExtractWiktionary {
                     if (!title.equals("")) {
                         nbPages++;
                         int nbnodes = wdh.nbEntries();
-			if (nbPages>=2000000 && nbPages>=3000000){
 			try {
                             we.extractData(title, page);
 			} catch (RuntimeException ex) {
 			    System.err.println(ex.getMessage());
-			}
 			}
                         if (nbnodes != wdh.nbEntries()) {
                             totalRelevantTime += (System.currentTimeMillis() - relevantStartTime);

@@ -13,7 +13,6 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
 
     static {
         level2HeaderPattern = Pattern.compile(level2HeaderPatternString, Pattern.MULTILINE);
-
     }
 
     private ForeignLanguagesWiktionaryDataHandler flwdh; // English specific version of the data handler.
@@ -58,7 +57,7 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
             return null;
         else {
             String c = EnglishLangToCode.threeLettersCode(t);
-            if (null == c) log.debug("Unknown language : {} in {}", t, this.wiktionaryPageName);
+            if (null == c) log.debug("Unknown language: {} in {}", t, this.wiktionaryPageName);
 
             return c;
         }

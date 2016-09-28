@@ -2,17 +2,20 @@ package org.getalp.dbnary;
 
 import org.getalp.iso639.ISO639_3;
 import org.getalp.iso639.ISO639_3.Lang;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LangTools {
+    static Logger log = LoggerFactory.getLogger(LangTools.class);
+
     public static String threeLettersCode(java.util.HashMap<String, String> h, String s) {
         if (s == null || s.equals("")) {
+            log.debug("Null or empty input language");
             return s;
         }
-
         s = s.trim();
         s = s.toLowerCase();
         String res = getCode(s);
-
         if (res == null && h != null && h.containsKey(s)) {
             s = h.get(s);
             res = getCode(s);
@@ -40,7 +43,6 @@ public class LangTools {
 
     public static String getPart1OrId(String lang) {
         Lang l = ISO639_3.sharedInstance.getLang(lang);
-
         if (l == null) {
             return null;
         }

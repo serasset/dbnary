@@ -88,11 +88,6 @@ public class UpdateAndExtractDumps {
 
     }
 
-    /**
-     * @param args
-     * @throws IOException
-     * @throws WiktionaryIndexerException
-     */
     public static void main(String[] args) throws WiktionaryIndexerException, IOException {
         UpdateAndExtractDumps cliProg = new UpdateAndExtractDumps();
         cliProg.loadArgs(args);

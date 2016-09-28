@@ -210,7 +210,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     // DONE: Extract lemma AND OCCURENCE of links in non human readable form
 
     /**
-     * cleans up the wiktionary markup from a string in the following maner: <br/>
+     * cleans up the wiktionary markup from a string in the following manner: <br>
      * str is the string to be cleaned up.
      * the result depends on the value of humanReadable.
      * Wiktionary macros are always discarded.
@@ -222,9 +222,9 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
      * if humanReadable is false, it will produce:
      * "will be #{discard|discarded}# and #{feed|fed}# to the #{void|void}#."
      *
-     * @param str
-     * @param humanReadable
-     * @return
+     * @param str           is the String to be cleaned up
+     * @param humanReadable a boolean
+     * @return a String
      */
     public static String cleanUpMarkup(String str, boolean humanReadable) {
         Matcher m = WikiPatterns.macroOrLinkPattern.matcher(str);
@@ -390,6 +390,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     }
 
     // FIXME this doesn't handle nested parentheses. Is it correct?
+    // Should be fixed now    --pantaleo  
     public static String stripParentheses(String s) {
         final int A = 0;
         final int B = 1;
@@ -399,11 +400,13 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         int debut = 0;
         int fin = 0;    // la fin de partie qui nous inter
         int i = 0;
+        int numberOfParentheses = 0;
 
         while (i != s.length()) {
             switch (ET) {
                 case A:
                     if (s.charAt(i) == '(') {
+                        numberOfParentheses++;
                         // On a trouvé un debut de parenthese
 
                         //On place la fin de la partie qui nous interesse
@@ -415,12 +418,17 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
                     break;
                 case B:
                     if (s.charAt(i) == ')') {
-                        // On a trouvé la fin du commentaire
+                        numberOfParentheses = numberOfParentheses - 1;
+                        if (numberOfParentheses == 0) {
+                            // On a trouvé la fin du commentaire
 
-                        // on place le debut se le partie qui nous interesse
-                        debut = i + 1;
-                        // on change d'etat
-                        ET = A;
+                            // on place le debut se le partie qui nous interesse
+                            debut = i + 1;
+                            // on change d'etat
+                            ET = A;
+                        }
+                    } else if (s.charAt(i) == '(') {
+                        numberOfParentheses++;
                     }
                     break;
 

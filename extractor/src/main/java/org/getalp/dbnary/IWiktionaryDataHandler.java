@@ -16,6 +16,8 @@ public interface IWiktionaryDataHandler {
 
     /**
      * Enable the extraction of morphological data in a second Model if available.
+     *
+     * @param f Feature
      */
     void enableFeature(Feature f);
 
@@ -47,7 +49,7 @@ public interface IWiktionaryDataHandler {
      * <p>
      * It is equivalent to registerNewDefinition(def, 1);
      *
-     * @param def
+     * @param def a string
      */
     void registerNewDefinition(String def);
 
@@ -67,6 +69,7 @@ public interface IWiktionaryDataHandler {
      *
      * @param ex      the example string
      * @param context map of property + object that are to be attached to the example object.
+     * @return a Resource
      */
     Resource registerExample(String ex, Map<Property, String> context);
 
@@ -105,8 +108,9 @@ public interface IWiktionaryDataHandler {
      * Predefined values are "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3".
      * The default value, represented by null, is "RDF/XML".
      *
-     * @param out
-     * @param format
+     * @param f      a Feature
+     * @param out    an OutputStream
+     * @param format a String
      */
     void dump(Feature f, OutputStream out, String format);
 

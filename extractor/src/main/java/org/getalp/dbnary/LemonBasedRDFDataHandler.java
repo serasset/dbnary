@@ -121,7 +121,6 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         NS = DBNARY_NS_PREFIX + "/" + lang + "/";
 
         extractedLang = LangTools.getPart1OrId(lang);
-
         lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
 
         // Create aBox

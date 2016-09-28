@@ -15,11 +15,10 @@ import java.util.Date;
 import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
 
 public class ExtractWiktionary {
-
     private static Options options = null; // Command line options
 
     private static final String LANGUAGE_OPTION = "l";
-    private static final String DEFAULT_LANGUAGE = "fra";
+    private static final String DEFAULT_LANGUAGE = "en";
 
     private static final String OUTPUT_FORMAT_OPTION = "f";
     private static final String DEFAULT_OUTPUT_FORMAT = "ttl";
@@ -96,9 +95,9 @@ public class ExtractWiktionary {
 
 
     /**
-     * @param args
-     * @throws IOException
-     * @throws WiktionaryIndexerException
+     * @param args arguments
+     * @throws IOException                ...
+     * @throws WiktionaryIndexerException ...
      */
     public static void main(String[] args) throws WiktionaryIndexerException, IOException {
         ExtractWiktionary cliProg = new ExtractWiktionary();
@@ -111,7 +110,7 @@ public class ExtractWiktionary {
      * Exit after printing usage if anything is astray
      *
      * @param args String[] args as featured in public static void main()
-     * @throws WiktionaryIndexerException
+     * @throws WiktionaryIndexerException ..
      */
     private void loadArgs(String[] args) throws WiktionaryIndexerException {
         CommandLineParser parser = new PosixParser();

@@ -5,7 +5,6 @@ import org.getalp.dbnary.IWiktionaryDataHandler
 
 import scala.util.matching.Regex
 import scala.util.matching.Regex.Match
-
 import scala.util.parsing.combinator._
 
 class TranslationsParser extends RegexParsers {
@@ -45,7 +44,7 @@ class TranslationsParser extends RegexParsers {
   def link: Parser[String] = matching(Link) ^^ {
     case Link(null, interwikilink, _) => ""
     case Link(target, null, null) => target.trim()
-    case Link(target, null , value) => value.trim()
+    case Link(target, null, value) => value.trim()
     case m => {
       logger.debug("Unhandled link structure in \"" + currentEntry + "\": " + m)
       ""
@@ -133,16 +132,18 @@ class TranslationsParser extends RegexParsers {
   }
 
   /**
-   * Fallback parser for translations values. Allows ill-formed translations to be suppressed.
-   * @return
-   */
-  def garbageTranslationValues: Parser[List[Translation]] = """[^\#\*]*""".r ^^ {
-    case "" => Nil // Simply ignore empty values.
-    case s => {
-      logger.debug("Parse error in language translation for \"" + currentEntry + "\": " + s)
-      Nil
+    * Fallback parser for translations values. Allows ill-formed translations to be suppressed.
+    *
+    * @return
+    */
+  def garbageTranslationValues: Parser[List[Translation]] =
+    """[^\#\*]*""".r ^^ {
+      case "" => Nil // Simply ignore empty values.
+      case s => {
+        logger.debug("Parse error in language translation for \"" + currentEntry + "\": " + s)
+        Nil
+      }
     }
-  }
 
   def translationValues: Parser[List[Translation]] = numberedTranslationValues | simpleTranslationValues | garbageTranslationValues
 
@@ -183,6 +184,7 @@ class TranslationsParser extends RegexParsers {
   }
 
   val TBracket = """\[([^\]]*)\]""".r
+
   def extractTranslations(input: String, delegate: IWiktionaryDataHandler): Unit =
     parseTranslations(input, delegate.currentLexEntry()).foreach {
       t => {

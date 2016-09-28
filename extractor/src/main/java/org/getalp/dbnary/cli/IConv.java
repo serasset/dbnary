@@ -52,9 +52,6 @@ public class IConv {
         w.close();
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         String from = null, to = null;
         String infile = null, outfile = null;

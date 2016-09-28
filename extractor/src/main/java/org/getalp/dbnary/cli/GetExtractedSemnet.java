@@ -13,7 +13,7 @@ public class GetExtractedSemnet {
     private static Options options = null; // Command line options
 
     private static final String LANGUAGE_OPTION = "l";
-    private static final String DEFAULT_LANGUAGE = "fra";
+    private static final String DEFAULT_LANGUAGE = "en";
 
     private static final String OUTPUT_FORMAT_OPTION = "f";
     private static final String DEFAULT_OUTPUT_FORMAT = "ttl";

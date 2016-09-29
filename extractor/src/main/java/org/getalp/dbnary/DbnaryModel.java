@@ -53,6 +53,8 @@ public class DbnaryModel {
                 ; // nop
             else if (c == '\u200e' || c == '\u200f') {
                 ; // ignore rRLM and LRM.
+            } else if (c == '/') {
+                res.append("!slash!"); // ignore rRLM and LRM.
             } else
                 res.append(c);
             i++;
@@ -80,6 +82,8 @@ public class DbnaryModel {
                 ; // nop
             else if (c == '\u200e' || c == '\u200f') {
                 ; // ignore rRLM and LRM.
+            } if (c == '/') {
+                res.append("!slash!"); // ignore rRLM and LRM.
             } else
                 res.append(c);
             i++;

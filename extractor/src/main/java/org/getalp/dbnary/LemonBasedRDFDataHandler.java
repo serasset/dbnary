@@ -42,16 +42,18 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
     protected int currentSubSenseNumber;
     protected CounterSet translationCount = new CounterSet();
     private CounterSet reifiedNymCount = new CounterSet();
-    public String extractedLang;
+    protected String wktLanguageEdition;
+
+    protected Resource lexvoLanguageEdition;
     protected Resource lexvoExtractedLanguage;
 
     private Set<Statement> heldBackStatements = new HashSet<Statement>();
 
     protected int nbEntries = 0;
-    protected String NS;
+    private String NS;
     protected String currentEncodedPageName;
     protected String currentWiktionaryPageName;
-    public CounterSet currentLexieCount = new CounterSet();
+    protected CounterSet currentLexieCount = new CounterSet();
     protected Resource currentMainLexEntry;
     protected Resource currentCanonicalForm;
 
@@ -120,7 +122,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         NS = DBNARY_NS_PREFIX + "/" + lang + "/";
 
-        extractedLang = LangTools.getPart1OrId(lang);
+        wktLanguageEdition = LangTools.getPart1OrId(lang);
         lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
 
         // Create aBox
@@ -138,6 +140,15 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         featureBoxes = new HashMap<>();
         featureBoxes.put(Feature.MAIN, aBox);
+    }
+
+    /**
+     * returns the language of the current Entry
+     * @return a language code
+     */
+    @Override
+    public String getCurrentEntryLanguage() {
+        return wktLanguageEdition;
     }
 
     @Override
@@ -271,12 +282,12 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         }
 
         aBox.add(currentLexEntry, LemonOnt.canonicalForm, currentCanonicalForm);
-        aBox.add(currentCanonicalForm, LemonOnt.writtenRep, currentWiktionaryPageName, extractedLang);
+        aBox.add(currentCanonicalForm, LemonOnt.writtenRep, currentWiktionaryPageName, wktLanguageEdition);
         aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
         if (null != currentLexinfoPos)
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);
 
-        aBox.add(currentLexEntry, LemonOnt.language, extractedLang);
+        aBox.add(currentLexEntry, LemonOnt.language, wktLanguageEdition);
         aBox.add(currentLexEntry, DCTerms.language, lexvoExtractedLanguage);
 
         // Register the pending statements.
@@ -348,7 +359,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         Resource altlemma = aBox.createResource();
         aBox.add(currentLexEntry, LemonOnt.lexicalVariant, altlemma);
-        aBox.add(altlemma, LemonOnt.writtenRep, alt, extractedLang);
+        aBox.add(altlemma, LemonOnt.writtenRep, alt, wktLanguageEdition);
     }
 
     @Override
@@ -389,7 +400,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         Resource defNode = aBox.createResource();
         aBox.add(currentSense, LemonOnt.definition, defNode);
         // Keep a human readable version of the definition, removing all links annotations.
-        aBox.add(defNode, LemonOnt.value, AbstractWiktionaryExtractor.cleanUpMarkup(def, true), extractedLang);
+        aBox.add(defNode, LemonOnt.value, AbstractWiktionaryExtractor.cleanUpMarkup(def, true), wktLanguageEdition);
 
         // TODO: Extract domain/usage field from the original definition.
 
@@ -428,7 +439,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         }
 
         if (currentGlose != null && !currentGlose.equals("")) {
-            aBox.add(trans, DBnaryOnt.gloss, currentGlose, extractedLang);
+            aBox.add(trans, DBnaryOnt.gloss, currentGlose, wktLanguageEdition);
         }
 
         if (usage != null && !usage.equals("")) {
@@ -559,7 +570,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         Resource posResource = posResource(pos);
 
-        PropertyObjectPair p = PropertyObjectPair.get(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+        PropertyObjectPair p = PropertyObjectPair.get(LemonOnt.writtenRep, aBox.createLiteral(inflection, wktLanguageEdition));
 
         props.add(p);
 
@@ -813,10 +824,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         // Create new word sense + a definition element
         Resource example = aBox.createResource();
-        aBox.add(aBox.createStatement(example, LemonOnt.value, ex, extractedLang));
+        aBox.add(aBox.createStatement(example, LemonOnt.value, ex, wktLanguageEdition));
         if (null != context) {
             for (Map.Entry<Property, String> c : context.entrySet()) {
-                aBox.add(aBox.createStatement(example, c.getKey(), c.getValue(), extractedLang));
+                aBox.add(aBox.createStatement(example, c.getKey(), c.getValue(), wktLanguageEdition));
             }
         }
         aBox.add(aBox.createStatement(currentSense, LemonOnt.example, example));

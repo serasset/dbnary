@@ -3,7 +3,7 @@
 
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3e-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <reporting>
@@ -219,7 +219,12 @@
             <artifactId>grizzled-slf4j_2.11</artifactId>
             <version>1.0.2</version>
         </dependency>
-
+        <!-- parboiled2 a scala PEG parser -->
+        <dependency>
+            <groupId>org.parboiled</groupId>
+            <artifactId>parboiled_2.11</artifactId>
+            <version>2.1.3</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -420,10 +425,6 @@
 
     <repositories>
         <repository>
-	    <id>sonatype-snapshots</id>
-	    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-        <repository>
             <!-- Getalp third party stuff -->
             <id>getalp.repository</id>
             <url>http://getalp.imag.fr/m2/</url>
@@ -479,6 +480,10 @@
             <id>osr-public-snapshots</id>
             <name>OSR Public snapshots</name>
             <url>http://mojo-maven.cs.fau.de/content/repositories/public-snapshots/</url>
+        </repository>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
     </repositories>
 </project>

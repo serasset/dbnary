@@ -152,7 +152,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                             }
                             i++;
                             if (cirilica != null) {
-                                aBox.add(currentLexEntry, LemonOnt.writtenRep, cirilica, extractedLang);
+                                aBox.add(currentLexEntry, LemonOnt.writtenRep, cirilica, wktLanguageEdition);
                             } else {
                                 log.debug("r (Cirilica) unused in {} --in-- {}", infos[0], this.currentLexEntry());
                             }

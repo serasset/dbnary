@@ -30,9 +30,9 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
     public void extractData() {
         Matcher l1 = level2HeaderPattern.matcher(pageContent);
         int nonEnglishSectionStart = -1;
-        wdh.initializePageExtraction(wiktionaryPageName);
         String lang = null;
         while (l1.find()) {
+            wdh.initializePageExtraction(wiktionaryPageName);
             // System.err.println(l1.group());
             if (-1 != nonEnglishSectionStart) {
                 // Parsing a previous non english section;
@@ -42,13 +42,14 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
             if (null != (lang = getNonEnglishLanguageCode(l1))) {
                 nonEnglishSectionStart = l1.end();
             }
-            flwdh.currentLexieCount.resetAll();
+            wdh.finalizePageExtraction();
         }
         if (-1 != nonEnglishSectionStart) {
-            //System.err.println("Parsing previous italian entry");
+            //System.err.println("Parsing previous non English entry");
+            wdh.initializePageExtraction(wiktionaryPageName);
             extractNonEnglishData(lang, nonEnglishSectionStart, pageContent.length());
+            wdh.finalizePageExtraction();
         }
-        wdh.finalizePageExtraction();
     }
 
     private String getNonEnglishLanguageCode(Matcher l1) {
@@ -62,21 +63,6 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
 
             return c;
         }
-    }
-
-    @Override
-    protected void extractEtymology(int blockStart, int end) {
-        extractEtymology(blockStart, end, flwdh.extractedLang);
-    }
-
-    @Override
-    protected void extractDerived(int blockStart, int end) {
-        extractDerived(blockStart, end, flwdh.extractedLang);
-    }
-
-    @Override
-    protected void extractDescendants(int blockStart, int end) {
-        extractDescendants(blockStart, end, flwdh.extractedLang);
     }
 
     protected void extractNonEnglishData(String lang, int startOffset, int endOffset) {

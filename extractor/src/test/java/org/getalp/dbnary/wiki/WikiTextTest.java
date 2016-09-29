@@ -14,7 +14,7 @@ public class WikiTextTest {
         String test = "text {{f1|x=ccc|z={{toto}}}} text <!-- [[un lien caché]] {{ --> encore [[lien]] [[Category:English|text]] [http://kaiko.getalp.org/about-dbnary about DBnary]   [[lien|]]";
         WikiText text = new WikiText(test);
 
-        assert ! text.tokens().isEmpty();
+        assert !text.tokens().isEmpty();
         assertEquals(6, text.tokens().size());
         assertTrue(text.tokens().get(0) instanceof WikiText.Template);
         assertTrue(text.tokens().get(1) instanceof WikiText.HTMLComment);
@@ -57,7 +57,7 @@ public class WikiTextTest {
         WikiText text = new WikiText(test, 17, 90);
 
 
-        assert ! text.tokens().isEmpty();
+        assert !text.tokens().isEmpty();
         // 1 HTMLComment, 1 Internal Link, 1 InternalLink (as Template should be ignored as it remains unclosed in the offset.
         assertEquals(3, text.tokens().size());
         assertTrue(text.tokens().get(0) instanceof WikiText.HTMLComment);
@@ -67,6 +67,7 @@ public class WikiTextTest {
         assertEquals("text", l.target.toString());
 
     }
+
     @Test
     public void testParseWithUnclosedTemplate() throws Exception {
         String test = "{{en-noun|head=[[araneomorph]] {{vern|funnel-web spider|pedia=1}}";
@@ -166,7 +167,6 @@ public class WikiTextTest {
         assertTrue(it.hasNext());
         assertTrue(it.next() instanceof WikiText.ListItem);
         assertFalse(it.hasNext());
-
 
 
     }

@@ -33,6 +33,8 @@ public interface IWiktionaryDataHandler {
 
     void finalizeEntryExtraction();
 
+    String getCurrentEntryLanguage();
+
     void addPartOfSpeech(String pos);
 
     /**
@@ -115,8 +117,6 @@ public interface IWiktionaryDataHandler {
     void dump(Feature f, OutputStream out, String format);
 
     void registerNymRelationOnCurrentSense(String target, String synRelation);
-
-    // boolean registerEtymology(Map<String, String> args1, Map<String, String> args2, int type);
 
     void registerPropertyOnLexicalEntry(Property p, RDFNode r);
 

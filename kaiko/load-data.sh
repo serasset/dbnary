@@ -15,21 +15,9 @@ then
     PREFIX=$1
 fi
 
-VIRTUOSOINITMPL=./virtuoso.ini.tmpl
-BOOTSTRAPSQL=./bootstrap.sql
-
-DBFOLDER=$PREFIX/virtuoso/db.bootstrap
-DATASETDIR=$PREFIX/virtuoso/dataset
-SERVERPORT=1112
-SSLSERVERPORT=2112
-WEBSERVERPORT=8899
+source config.sh
 
 DBNARYLATEST=/home/serasset/dev/wiktionary/extracts/lemon/latest
-
-# Virtuoso installation variables
-PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
-DAEMON=/opt/virtuoso-opensource/bin/virtuoso-t
-NAME=virtuoso
 
 test -x $DAEMON || (echo "Could not find virtuoso-t bin" && exit 0)
 
@@ -59,28 +47,42 @@ iso3Lang[no]=nor
 iso3Lang[bm]=bam
 
 
-if [ ! -d $DBNARYLATEST ]
-then
-	echo "Latest turtle data not available."
-	exit -1
+if [ ! -d "$EMPTYDBFOLDER" ] ; then
+    echo "No Bootstrap DB folder, cannot load data."
+    exit -1
+elif [[ ! -f $EMPTYDBFOLDER/virtuoso.db ]]; then
+    echo "Bootstrap database file does not exists, cannot load data."
+    exit -1
 fi
 
 if [ ! -d "$DBFOLDER" ] ; then
-	mkdir -p "$DBFOLDER"
-	sed "s|@@DBFOLDER@@|$DBFOLDER|g" < $VIRTUOSOINITMPL | \
-	sed "s|@@DATASETDIR@@|$DATASETDIR|g" | \
-	sed "s|@@SERVERPORT@@|$SERVERPORT|g" | \
-	sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" | \
-	sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" > "$DBFOLDER"/virtuoso.ini
-    cp $BOOTSTRAPSQL "$DBFOLDER"
-elif [[ -f virtuoso.db ]]; then
-    echo "Virtuoso database file already exists, please clean up the db.bootstrap dir."
+    cp -r $EMPTYDBFOLDER $DBFOLDER
+    sed "s|@@DBFOLDER@@|$DBFOLDER|g" < $VIRTUOSOINITMPL | \
+    sed "s|@@DATASETDIR@@|$DATASETDIR|g" | \
+    sed "s|@@SERVERPORT@@|$SERVERPORT|g" | \
+    sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" | \
+    sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" > "$DBFOLDER"/virtuoso.ini
+elif [[ ! -f $EMPTYDBFOLDER/virtuoso.db ]]; then
+    exit -1
+else
+    echo "Already existing database folder in bootstrap folder, should I load the data in the existing DB? (y/N):"
+    read answer
+    if [ z$answer != zy ]; then
+        echo "delete existing bootstrap DB and restart the loading script."
+        exit -1
+    fi
+fi
+
+
+if [ ! -d $DBNARYLATEST ]
+then
+    echo "Latest turtle data not available."
     exit -1
 fi
 
 if [ ! -d "$DATASETDIR" ]
 then
-	mkdir -p "$DATASETDIR"
+    mkdir -p "$DATASETDIR"
 fi
 
 
@@ -92,14 +94,14 @@ fi
     echo "Dataset already exists and is not empty, assuming its content is up to date."
   else
     echo "Copying and expanding latest extracts."
-	cp $DBNARYLATEST/*.ttl.bz2 "$DATASETDIR"
-	pushd "$DATASETDIR"
-	bunzip2 ./*.ttl.bz2
+    cp $DBNARYLATEST/*.ttl.bz2 "$DATASETDIR"
+    pushd "$DATASETDIR"
+    bunzip2 ./*.ttl.bz2
   fi
 )
 
 ## create the .graph files for all files in datasetdir
-## TODO: detect the graph (dbnary or dilaf ?)
+## DONE: detect the graph (dbnary or dilaf ?)
 langRegex2='(..)_([^_]*)_(.*)'
 langRegex3='(...)_([^_]*)_(.*)'
 for f in $DATASETDIR/*.ttl
@@ -118,25 +120,17 @@ do
     fi
 done
 
-## Launch virtuoso to create the new DB
+## Launch virtuoso to load the data into DB
 echo "Launching daemon."
 pushd "$DBFOLDER" || exit -1
 $DAEMON -c $NAME +wait &
-daemon_pid=$!
 wait
-### RECUPERER LE BON PID...
-
-# exit 0
-
-## connect to isql to load the different configurations
-isql $SERVERPORT dba dba $BOOTSTRAPSQL
-
-
-## This would be a good time to stop server and backup the empty database
 
 ## connect to isql and load all the data
+echo "Enter your bootstrap database password : "
+IFS= read -s  -p Password: pwd
 
-isql $SERVERPORT dba dba <<END
+isql $SERVERPORT dba "$pwd" <<END
 ld_dir ('$DATASETDIR', '*.ttl', 'http://kaiko.getalp.org/dbnary');
 
 -- do the following to see which files were registered to be added:
@@ -154,7 +148,7 @@ END
 ## (TODO: create the virtlabels for correct facetted browsing)
 
 ## index facetted browsing
-isql $SERVERPORT dba dba <<END
+isql $SERVERPORT dba "$pwd" <<END
 sparql SELECT COUNT(*) WHERE { ?s ?p ?o } ;
 sparql SELECT ?g COUNT(*) { GRAPH ?g {?s ?p ?o.} } GROUP BY ?g ORDER BY DESC 2;
 
@@ -165,22 +159,6 @@ VT_INC_INDEX_DB_DBA_RDF_OBJ ();
 urilbl_ac_init_db();
 -- Run the following procedure using the Virtuoso isql program to calculate the IRI ranks. Note this should be run periodically as the data grows to re-rank the IRIs.
 s_rank();
+shutdown();
 END
 
-echo "Now would be a good time to connect to http://localhost:$WEBSERVERPORT/ to change dav and dba passwords."
-
-## Change the dba and sparql password
-
-## Kill bootstrap server
-
-echo -n "Waiting for daemon process to terminate: "
-while kill -0 "$daemon_pid"
-do
-    echo -n "."
-    sleep 1
-done
-echo 'Done.'
-
-## change .ini file to production settings
-
-## kill production server, move old db folder and substitute by new one, relaunch...

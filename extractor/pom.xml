@@ -481,5 +481,9 @@
             <name>OSR Public snapshots</name>
             <url>http://mojo-maven.cs.fau.de/content/repositories/public-snapshots/</url>
         </repository>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
     </repositories>
 </project>

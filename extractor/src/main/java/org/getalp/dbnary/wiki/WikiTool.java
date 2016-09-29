@@ -15,63 +15,63 @@ public class WikiTool {
 
     static Pattern htmlRefElement = Pattern.compile("(<ref(?:\\s[^>]*|\\s*)>)|(</ref>)");
 
-	// WARN: not synchronized !
-	public static String removeReferencesIn(String definition) {
-		StringBuffer def = new StringBuffer();
-		Matcher m = htmlRefElement.matcher(definition);
+    // WARN: not synchronized !
+    public static String removeReferencesIn(String definition) {
+        StringBuffer def = new StringBuffer();
+        Matcher m = htmlRefElement.matcher(definition);
         boolean mute = false;
         int previousPos = 0;
-		while (m.find()) {
-			if (null != m.group(1) && m.group().endsWith("/>")) {
-				// A opening/closing element
-				if (! mute) def.append(definition.substring(previousPos, m.start()));
-			} else if (null != m.group(1)) {
+        while (m.find()) {
+            if (null != m.group(1) && m.group().endsWith("/>")) {
+                // A opening/closing element
+                if (!mute) def.append(definition.substring(previousPos, m.start()));
+            } else if (null != m.group(1)) {
                 // An opening element
-				if (! mute) def.append(definition.substring(previousPos, m.start()));
-				mute = true;
-			} else if (null != m.group(2)) {
+                if (!mute) def.append(definition.substring(previousPos, m.start()));
+                mute = true;
+            } else if (null != m.group(2)) {
                 // a closing element
-                if (! mute) def.append(definition.substring(previousPos, m.start()));
+                if (!mute) def.append(definition.substring(previousPos, m.start()));
                 mute = false;
             }
             previousPos = m.end();
         }
-        if (! mute) def.append(definition.substring(previousPos, definition.length()));
-		return def.toString();
+        if (!mute) def.append(definition.substring(previousPos, definition.length()));
+        return def.toString();
     }
 
-    public static String removeTablesIn(String s){
-	String toreturn = "";
-	for (Pair p : WikiTool.locateEnclosedString(s, "{|", "|}")){
-	    toreturn = toreturn + s.substring(0, p.start) + s.substring(p.end, s.length());
-	}
-	if (toreturn.equals("")){
-	    return s;
-	} else {
-	    return toreturn;
-	}
+    public static String removeTablesIn(String s) {
+        String toreturn = "";
+        for (Pair p : WikiTool.locateEnclosedString(s, "{|", "|}")) {
+            toreturn = toreturn + s.substring(0, p.start) + s.substring(p.end, s.length());
+        }
+        if (toreturn.equals("")) {
+            return s;
+        } else {
+            return toreturn;
+        }
     }
 
     //REMOVE TEXT WITHIN PARENTHESES UNLESS PARENTHESES FALL INSIDE A WIKI LINK OR A WIKI TEMPLATE
-    public static String removeTextWithinParenthesesIn(String s){
-	//locate templates {{}} and links [[]]
-	ArrayList<Pair> templatesAndLinksLocations = locateEnclosedString(s, "{{", "}}");
-	templatesAndLinksLocations.addAll(locateEnclosedString(s, "[[", "]]"));
-	//locate parentheses ()
-	ArrayList<Pair> parenthesesLocations = locateEnclosedString(s, "(", ")");
-	//ignore location of parentheses if they fall inside a link or a template
-	int parenthesesLocationsLength = parenthesesLocations.size();
-	for (int i = 0; i < parenthesesLocationsLength; i++) {
-	    Pair p = parenthesesLocations.get(parenthesesLocationsLength - i - 1);
-	    //check if parentheses are inside links [[  ()  ]]
-	    if (! p.containedIn(templatesAndLinksLocations)){
-		log.debug("Removing string {} in Etymology section of word {}", s.substring(p.start, p.end));
-		s = s.substring(0, p.start) + s.substring(p.end, s.length());
-	    }
-	}
-	return s;
+    public static String removeTextWithinParenthesesIn(String s) {
+        //locate templates {{}} and links [[]]
+        ArrayList<Pair> templatesAndLinksLocations = locateEnclosedString(s, "{{", "}}");
+        templatesAndLinksLocations.addAll(locateEnclosedString(s, "[[", "]]"));
+        //locate parentheses ()
+        ArrayList<Pair> parenthesesLocations = locateEnclosedString(s, "(", ")");
+        //ignore location of parentheses if they fall inside a link or a template
+        int parenthesesLocationsLength = parenthesesLocations.size();
+        for (int i = 0; i < parenthesesLocationsLength; i++) {
+            Pair p = parenthesesLocations.get(parenthesesLocationsLength - i - 1);
+            //check if parentheses are inside links [[  ()  ]]
+            if (!p.containedIn(templatesAndLinksLocations)) {
+                log.debug("Removing string {} in Etymology section of word {}", s.substring(p.start, p.end));
+                s = s.substring(0, p.start) + s.substring(p.end, s.length());
+            }
+        }
+        return s;
     }
-    
+
     /**
      * This function locates the start and end position of two symbols (enclosingStringStart and enclosingStringEnd)
      * in input String s.
@@ -92,7 +92,7 @@ public class WikiTool {
         for (int i = 0; i + eSE <= s.length(); i++) {
             if (i + eSS + eSE <= s.length()) {
                 if (s.substring(i, i + eSS).equals(enclosingStringStart)) {
-		    numberOfEnclosings ++;
+                    numberOfEnclosings++;
                     if (start == -1) {
                         start = i;
                     }
@@ -100,13 +100,13 @@ public class WikiTool {
                 }
             }
             if (s.substring(i, i + eSE).equals(enclosingStringEnd)) {
-                numberOfEnclosings --;
+                numberOfEnclosings--;
                 if (numberOfEnclosings == 0 && start != -1) {
                     end = i + eSE;
                     toreturn.add(new Pair(start, end));
                     start = -1;//initialize start
                 }
-		i += eSE - 1;
+                i += eSE - 1;
             }
         }
         return toreturn;

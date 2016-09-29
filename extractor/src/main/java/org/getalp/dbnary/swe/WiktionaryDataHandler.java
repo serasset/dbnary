@@ -8,14 +8,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author malick
- *
  */
-public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
     static {
-    	/*  Les lignes avec comme commentaire "fait" indique ce part of speech à été trouver dans certain mots du swedois  */
+        /*  Les lignes avec comme commentaire "fait" indique ce part of speech à été trouver dans certain mots du swedois  */
         // swedois
         posAndTypeValueMap.put("Substantiv", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry)); // fait
         posAndTypeValueMap.put("Proper noun", new PosAndType(LexinfoOnt.properNoun, LemonOnt.LexicalEntry));
@@ -53,10 +52,10 @@ public class WiktionaryDataHandler  extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("Interjektion", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection)); //fait
         posAndTypeValueMap.put("Phrase", new PosAndType(LexinfoOnt.phraseologicalUnit, LemonOnt.Phrase));
         posAndTypeValueMap.put("Idiom", new PosAndType(LexinfoOnt.idiom, LemonOnt.Phrase));
-        
+
         // ajouter
         posAndTypeValueMap.put("pronom-pers", new PosAndType(LexinfoOnt.personalPronoun, LexinfoOnt.Pronoun));
-        
+
         // Initialism ?
     }
 

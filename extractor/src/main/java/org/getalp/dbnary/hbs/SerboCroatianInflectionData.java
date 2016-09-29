@@ -12,15 +12,23 @@ import java.util.HashSet;
 public class SerboCroatianInflectionData {
     private Logger log = LoggerFactory.getLogger(SerboCroatianInflectionData.class);
 
-    public enum Genre {MASCULIN,FEMININE,NEUTER,NOTHING}
-    public enum Cas {NOMINATIF,GENITIF,DATIF,ACCUSATIF,VOCATIF,INSTRUMENTAL,LOCATIVE,NOTHING}
-    public enum GNumber {SINGULAR,PLURAL,NOTHING}
-    public enum Animate {ANIMATE,INANIMATE,NOTHING}
-    public enum Degree {POSITIV,KOMPARTIV,SUPERLATIVE,NOTHING}
-    public enum Tense {PREZENT,BUDUCNOST,PROSLOST,KONDICIONAL1,KONDICIONAL2,IMPERATIV,NOTHING}
-    public enum SubTense {PREZENT,FUTUR1,FUTUR2,PERFEKT,PLUSKVAMPERFEKT,AORIST,IMPERFEKT,NOTHING}
-    public enum Person {FIRST,SECOND,THIRD,NOTHING}
-    public enum Mode {NEODREDENI,ODREDENI,NOTHING}
+    public enum Genre {MASCULIN, FEMININE, NEUTER, NOTHING}
+
+    public enum Cas {NOMINATIF, GENITIF, DATIF, ACCUSATIF, VOCATIF, INSTRUMENTAL, LOCATIVE, NOTHING}
+
+    public enum GNumber {SINGULAR, PLURAL, NOTHING}
+
+    public enum Animate {ANIMATE, INANIMATE, NOTHING}
+
+    public enum Degree {POSITIV, KOMPARTIV, SUPERLATIVE, NOTHING}
+
+    public enum Tense {PREZENT, BUDUCNOST, PROSLOST, KONDICIONAL1, KONDICIONAL2, IMPERATIV, NOTHING}
+
+    public enum SubTense {PREZENT, FUTUR1, FUTUR2, PERFEKT, PLUSKVAMPERFEKT, AORIST, IMPERFEKT, NOTHING}
+
+    public enum Person {FIRST, SECOND, THIRD, NOTHING}
+
+    public enum Mode {NEODREDENI, ODREDENI, NOTHING}
 
     public Genre genre;
     public Cas cas;
@@ -32,11 +40,11 @@ public class SerboCroatianInflectionData {
     public Person person;
     public Mode mode;
 
-    public SerboCroatianInflectionData(){
+    public SerboCroatianInflectionData() {
         init();
     }
 
-    public void init(){
+    public void init() {
         genre = Genre.NOTHING;
         cas = Cas.NOTHING;
         number = GNumber.NOTHING;
@@ -51,7 +59,7 @@ public class SerboCroatianInflectionData {
     public HashSet<PropertyObjectPair> toPropertyObjectMap() {
         HashSet<PropertyObjectPair> inflections = new HashSet<>();
 
-        switch(cas){
+        switch (cas) {
             case NOMINATIF:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasCase, OliaOnt.Nominative));
                 break;
@@ -79,7 +87,7 @@ public class SerboCroatianInflectionData {
                 log.debug("Unexpected value {} for case", cas);
                 break;
         }
-        switch(genre){
+        switch (genre) {
             case MASCULIN:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasGender, OliaOnt.Masculine));
                 break;
@@ -91,11 +99,11 @@ public class SerboCroatianInflectionData {
                 break;
             case NOTHING:
                 break;
-            default :
+            default:
                 log.debug("Unexpected value {} for genre", genre);
                 break;
         }
-        switch(number){
+        switch (number) {
             case SINGULAR:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasNumber, OliaOnt.Singular));
                 break;
@@ -108,7 +116,7 @@ public class SerboCroatianInflectionData {
                 log.debug("Unexpected value {} for number", number);
                 break;
         }
-        switch(anim){
+        switch (anim) {
             case ANIMATE:
                 inflections.add(PropertyObjectPair.get(LexinfoOnt.animacy, OliaOnt.Animate));
                 break;
@@ -121,7 +129,7 @@ public class SerboCroatianInflectionData {
                 log.debug("Unexpected value {} for animacy", anim);
                 break;
         }
-        switch (tense){
+        switch (tense) {
             case PREZENT:
                 inflections.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
                 break;
@@ -144,7 +152,7 @@ public class SerboCroatianInflectionData {
                 log.debug("Unexpected value {} for tense", tense);
                 break;
         }
-        switch(subTense){
+        switch (subTense) {
             case PREZENT:
                 inflections.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
             case FUTUR1:
@@ -169,7 +177,7 @@ public class SerboCroatianInflectionData {
                 log.debug("Unexpected value {} for person", person);
                 break;
         }
-        switch(person){
+        switch (person) {
             case FIRST:
                 inflections.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.firstPerson));
                 break;
@@ -185,7 +193,7 @@ public class SerboCroatianInflectionData {
                 log.debug("Unexpected value {} for person", person);
                 break;
         }
-        switch(deg){
+        switch (deg) {
             case POSITIV:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasDegree, OliaOnt.Positive));
                 break;
@@ -201,7 +209,7 @@ public class SerboCroatianInflectionData {
                 log.debug("Unexpected value {} for person", person);
                 break;
         }
-        switch (mode){
+        switch (mode) {
             case NEODREDENI:
                 inflections.add(PropertyObjectPair.get(OliaOnt.hasDefiniteness, LexinfoOnt.indefinite));
                 break;

@@ -5,7 +5,7 @@ import org.getalp.dbnary.WiktionaryIndexerException;
 
 public class GetRawEntry {
 
-        public static void main(String[] args) throws WiktionaryIndexerException {
+    public static void main(String[] args) throws WiktionaryIndexerException {
         if (args.length == 0) {
             printUsage();
             System.exit(1);

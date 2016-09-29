@@ -44,14 +44,14 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, posResource(pat));
     }
 
-    public void addExtraPOSInfo(String blockS){
+    public void addExtraPOSInfo(String blockS) {
         blockS = getBlockS(blockS);
         addExtraPartOfSpeech(blockS);
     }
 
-    protected String getBlockS(String s){
+    protected String getBlockS(String s) {
         String res = s;
-        switch(s){
+        switch (s) {
             case "a":
             case "k_s":
             case "k s":
@@ -120,24 +120,24 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
             case "pron": // pronoun
                 res = s;
                 break;
-            default :
+            default:
                 log.debug("Unknown blocName value {} --in-- {}", s, this.currentLexEntry());
         }
         return res;
     }
 
-    public void addTranslation(String lang, String gloss, String usage, String word){
-        if(currentLexEntry == null){
-           addPartOfSpeech("none");
+    public void addTranslation(String lang, String gloss, String usage, String word) {
+        if (currentLexEntry == null) {
+            addPartOfSpeech("none");
         }
         registerTranslation(lang, gloss, usage, word);
     }
 
-    public void addNewDefinition(String def, String sense){
-        if(currentLexEntry == null){
+    public void addNewDefinition(String def, String sense) {
+        if (currentLexEntry == null) {
             addPartOfSpeech("none");
         }
-        registerNewDefinition(def,sense);
+        registerNewDefinition(def, sense);
     }
 
 }

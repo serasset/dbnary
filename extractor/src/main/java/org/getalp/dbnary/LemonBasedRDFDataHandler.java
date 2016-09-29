@@ -259,7 +259,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         translationCount.resetAll();
         reifiedNymCount.resetAll();
 
-        currentCanonicalForm = aBox.createResource(getPrefix() + "__cf_" + currentLexEntry.getLocalName(), LemonOnt.Form);
+        currentCanonicalForm = aBox.createResource(getPrefix() + "__cf_" + currentEncodedPageName, LemonOnt.Form);
 
         // If a pronunciation was given before the first part of speech, it means that it is shared amoung pos/etymologies
         for (PronunciationPair p : currentSharedPronunciations) {
@@ -527,7 +527,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
     }
 
     protected String computeOtherFormResourceName(Resource lexEntry, HashSet<PropertyObjectPair> properties) {
-        String lexEntryLocalName = lexEntry.getLocalName();
+        String lexEntryLocalName = currentEncodedPageName;
         String compactProperties = DatatypeConverter.printBase64Binary(BigInteger.valueOf(properties.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
 
         return "__wf_" + compactProperties + "_" + lexEntryLocalName;

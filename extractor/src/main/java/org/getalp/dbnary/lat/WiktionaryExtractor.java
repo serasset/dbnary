@@ -1,11 +1,13 @@
 /**
- * 
+ *
  */
 package org.getalp.dbnary.lat;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import org.getalp.dbnary.*;
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.fra.ExampleExpanderWikiModel;
 import org.getalp.dbnary.fra.FrenchDefinitionExtractorWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
@@ -19,7 +21,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author serasset
- *
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
@@ -45,9 +46,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private static HashMap<String, String> posMarkers;
     private static HashSet<String> ignorablePosMarkers;
     private static HashSet<String> ignorableSectionMarkers;
-    
+
     private final static HashMap<String, String> nymMarkerToNymName;
-    
+
     private static HashSet<String> unsupportedMarkers = new HashSet<String>();
 
     public static final Locale frLocale = new Locale("fr");
@@ -68,7 +69,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // ==={{int:wikt-nomen-subst}}===
         entrySectionPatternString = "===?\\s*\\{\\{int:([^}]*)\\}\\}\\s*=?==";
 
-        posMarkers = new HashMap<String,String>(130);
+        posMarkers = new HashMap<String, String>(130);
         ignorablePosMarkers = new HashSet<String>(130);
 
         addPos("wikt-nomen-subst", "nomen-subst");
@@ -95,7 +96,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         nymMarkerToNymName.put("-syn-", "syn");
         nymMarkerToNymName.put("-q-syn-", "qsyn");
         nymMarkerToNymName.put("-ant-", "ant");
-        
+
 
         nymMarkerToNymName.put("méronymes", "mero");
         nymMarkerToNymName.put("méro", "mero");
@@ -141,13 +142,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         ignorableSectionMarkers.add("-compos-");
         // DONE: prendre en compte la variante orthographique (différences avec -ortho-alt- ?)
         ignorableSectionMarkers.add("-var-ortho-");
-        
-       // TODO trouver tous les modèles de section...
-        
+
+        // TODO trouver tous les modèles de section...
+
         // affixesToDiscardFromLinks = new HashSet<String>();
         // affixesToDiscardFromLinks.add("s");
     }
-    
+
     public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
     }
@@ -220,7 +221,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
 
-
     protected void extractData(int startOffset, int endOffset, String lang, boolean extractForeignData) {
         if (lang == null) {
             return;
@@ -231,8 +231,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 return;
 
             wdh.initializeEntryExtraction(wiktionaryPageName, lang);
-        } else
-        {
+        } else {
             if (!"la".equals(lang))
                 return;
 
@@ -249,15 +248,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         // Iterate on entry sections
         while (m.find()) {
-                // We are in a new block
-                HashMap<String, Object> context = new HashMap<String, Object>();
-                Block nextBlock = computeNextBlock(m, context);
+            // We are in a new block
+            HashMap<String, Object> context = new HashMap<String, Object>();
+            Block nextBlock = computeNextBlock(m, context);
 
-                // If current block is IGNOREPOS, we should ignore everything but a new DEFBLOCK/INFLECTIONBLOCK
-                if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
-                    leaveCurrentBlock(m);
-                    gotoNextBlock(nextBlock, context);
-                }
+            // If current block is IGNOREPOS, we should ignore everything but a new DEFBLOCK/INFLECTIONBLOCK
+            if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
+                leaveCurrentBlock(m);
+                gotoNextBlock(nextBlock, context);
+            }
 
         }
 
@@ -361,8 +360,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
 
-
-
     private static Set<String> variantSections = new HashSet<String>();
 
     static {
@@ -443,14 +440,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else if (g1.equals("=ima=")) {
                 // Forget the current glose
                 currentGlose = null;
-            } else if ((g1.length() == 2 || g1.length() ==3) && LatinLangtoCode.threeLettersCode(g1) != null) {
+            } else if ((g1.length() == 2 || g1.length() == 3) && LatinLangtoCode.threeLettersCode(g1) != null) {
                 // this a a language identifier, just ignore it as we get the language id from the trad macro parameter.
             } else {
                 log.debug("Unexpected template {} in translations for {}", g1, wiktionaryPageName);
             }
         }
     }
-
 
 
     public void extractExample(String example) {

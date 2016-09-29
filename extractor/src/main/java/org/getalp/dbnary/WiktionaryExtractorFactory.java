@@ -39,7 +39,7 @@ public class WiktionaryExtractorFactory {
             e.printStackTrace(System.err);
         } catch (NoSuchMethodException e) {
             System.err.println("No appropriate constructor when instanciating wiktionary extractor for " + language);
-	}
+        }
         return we;
     }
 

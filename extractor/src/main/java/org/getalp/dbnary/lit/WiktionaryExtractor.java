@@ -4,26 +4,18 @@
 package org.getalp.dbnary.lit;
 
 import com.hp.hpl.jena.rdf.model.Property;
-import info.bliki.wiki.filter.HTMLConverter;
-import info.bliki.wiki.filter.ITextConverter;
-import info.bliki.wiki.filter.PlainTextConverter;
-import info.bliki.wiki.filter.WikiTextReader;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.fra.FrenchExtractorWikiModel;
-import org.getalp.dbnary.hbs.SerboCroatianMorphoExtractorWikiModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 /**
  * @author roques
- *
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
@@ -74,7 +66,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
         int startSection = -1;
 
-        String nextLang , lang = null;
+        String nextLang, lang = null;
 
         while (languageFilter.find()) {
             nextLang = languageFilter.group(1);
@@ -84,110 +76,111 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
 
         if (languageFilter.hitEnd()) {
-           extractDataLang(startSection, pageContent.length(), lang);
+            extractDataLang(startSection, pageContent.length(), lang);
         }
         wdh.finalizePageExtraction();
     }
 
-    private enum Block {NOBLOCK, IGNOREPOS, DEFBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK,
-        RELATEDTERMBLOCK, EXAMPLEBLOCK}
-
-    protected static HashMap<String,Block> blockValue = new HashMap<>();
-
-    static{
-        blockValue.put("",Block.NOBLOCK);
-
-        blockValue.put("Daiktavardis",Block.DEFBLOCK);    // Noun
-        blockValue.put("Daikto vardis",Block.DEFBLOCK);   // Name of a thing
-        blockValue.put("Veiksmažodis",Block.DEFBLOCK);    // verb
-        blockValue.put("Būdvardis",Block.DEFBLOCK);       // adj
-        blockValue.put("Prieveiksmis",Block.DEFBLOCK);    // adv
-        blockValue.put("prieveiksmis",Block.DEFBLOCK);
-        blockValue.put("Dalyvis",Block.DEFBLOCK);         // participle
-        blockValue.put("Pusdalyvis",Block.DEFBLOCK);      // participle
-        blockValue.put("Padalyvis",Block.DEFBLOCK);       // preposition ?
-        blockValue.put("Prielinksnis",Block.DEFBLOCK);    // preposition
-        blockValue.put("Žodžių junginys",Block.DEFBLOCK); // phrase
-        blockValue.put("Jungtukas",Block.DEFBLOCK);       // conjunction
-        blockValue.put("Įvardis",Block.DEFBLOCK);         // Pronoun
-        blockValue.put("Skaitvardis",Block.DEFBLOCK);     // numeral
-        blockValue.put("Raidė",Block.DEFBLOCK);           // letter
-        blockValue.put("Santrumpa",Block.DEFBLOCK);       // abbreviation
-        blockValue.put("Dalelytė",Block.DEFBLOCK);        // element
-        blockValue.put("Priešdėlis",Block.DEFBLOCK);      // Prefix
-        blockValue.put("Priesaga",Block.DEFBLOCK);        // Suffix
-        blockValue.put("Jaustukas",Block.DEFBLOCK);       // interjection
-        blockValue.put("Ištiktukas",Block.DEFBLOCK);      // interjection
-        blockValue.put("Kiekinis skaitvardis",Block.DEFBLOCK); // cardinal
-        blockValue.put("\"Kiekinis skaitvardis\"",Block.DEFBLOCK); // cardinal
-        blockValue.put("Kelintinis skaitvardis",Block.DEFBLOCK); // ordinal number
-        blockValue.put("Simbolis",Block.DEFBLOCK);         // symbol
-
-        blockValue.put("Tarimas",Block.PRONBLOCK);
-
-        blockValue.put("Sinonimai",Block.NYMBLOCK);     // syn
-        blockValue.put("Hipersąvokos",Block.NYMBLOCK);  // syn
-        blockValue.put("Subsąvokos",Block.NYMBLOCK);    // syn
-        blockValue.put("Supersąvokos",Block.NYMBLOCK);  // syn
-        blockValue.put("Antonimai",Block.NYMBLOCK);     // ant
-
-        blockValue.put("Susiję terminai",Block.RELATEDTERMBLOCK);
-
-        blockValue.put("Pavyzdžiai",Block.EXAMPLEBLOCK);
-
-        blockValue.put("Vertimai",Block.TRADBLOCK);
-
-        blockValue.put("Etimologija",Block.IGNOREPOS); // etimology
-        blockValue.put("Dar žiūrėk",Block.IGNOREPOS); // = see also
-        blockValue.put("Taip pat žiūrėkite",Block.IGNOREPOS); // = see also
-        blockValue.put("Dar žiūrėti",Block.IGNOREPOS); // = see also
-        blockValue.put("Dar žiūrekite",Block.IGNOREPOS); // = see also
-        blockValue.put("Dar žiūrėkite",Block.IGNOREPOS); // = see also
-        blockValue.put("!Taip pat žiūrėkite!",Block.IGNOREPOS); // = see also
-        blockValue.put("Taip pat žiūrėk",Block.IGNOREPOS); // = see also
-        blockValue.put("Žiūrėkite taip pat",Block.IGNOREPOS); // = see also
-        blockValue.put("Susiję žodžiai",Block.IGNOREPOS); // = related word
-        blockValue.put("Šaltiniai",Block.IGNOREPOS); // = references
-        blockValue.put("Nuorodos",Block.IGNOREPOS); // = references
-        blockValue.put("Išvestiniai žodžiai",Block.IGNOREPOS); // derivative
-        blockValue.put("Išraiškos ir posakiai",Block.IGNOREPOS); // Expressions et énonciations
-        blockValue.put("Išraiškos arba posakiai",Block.IGNOREPOS); // Expressions or sayings
-        blockValue.put("Lietuvių kalbos kiekinių skaitvardžių kaitymas",Block.IGNOREPOS); // inflexion
-        blockValue.put("Bendra kaitymo lentelė",Block.IGNOREPOS); // inflexion
-        blockValue.put("Išvestiniai  žodžiai",Block.IGNOREPOS); // inflexion
-        blockValue.put("Kiti rašymo būdai",Block.IGNOREPOS); // Other ways of writing
-        blockValue.put("Išnašos",Block.IGNOREPOS); // notes
-        blockValue.put("Frazeologizmai",Block.IGNOREPOS); // idiom ?
-        blockValue.put("Vartosena",Block.IGNOREPOS); // usage
-        blockValue.put("Būdinys",Block.IGNOREPOS); // describe and syllable
-        blockValue.put("Pastabos",Block.IGNOREPOS); // comments
-        blockValue.put("Siekinys",Block.IGNOREPOS);
+    private enum Block {
+        NOBLOCK, IGNOREPOS, DEFBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK,
+        RELATEDTERMBLOCK, EXAMPLEBLOCK
     }
 
-    private Block getBlock(String blockString){
+    protected static HashMap<String, Block> blockValue = new HashMap<>();
+
+    static {
+        blockValue.put("", Block.NOBLOCK);
+
+        blockValue.put("Daiktavardis", Block.DEFBLOCK);    // Noun
+        blockValue.put("Daikto vardis", Block.DEFBLOCK);   // Name of a thing
+        blockValue.put("Veiksmažodis", Block.DEFBLOCK);    // verb
+        blockValue.put("Būdvardis", Block.DEFBLOCK);       // adj
+        blockValue.put("Prieveiksmis", Block.DEFBLOCK);    // adv
+        blockValue.put("prieveiksmis", Block.DEFBLOCK);
+        blockValue.put("Dalyvis", Block.DEFBLOCK);         // participle
+        blockValue.put("Pusdalyvis", Block.DEFBLOCK);      // participle
+        blockValue.put("Padalyvis", Block.DEFBLOCK);       // preposition ?
+        blockValue.put("Prielinksnis", Block.DEFBLOCK);    // preposition
+        blockValue.put("Žodžių junginys", Block.DEFBLOCK); // phrase
+        blockValue.put("Jungtukas", Block.DEFBLOCK);       // conjunction
+        blockValue.put("Įvardis", Block.DEFBLOCK);         // Pronoun
+        blockValue.put("Skaitvardis", Block.DEFBLOCK);     // numeral
+        blockValue.put("Raidė", Block.DEFBLOCK);           // letter
+        blockValue.put("Santrumpa", Block.DEFBLOCK);       // abbreviation
+        blockValue.put("Dalelytė", Block.DEFBLOCK);        // element
+        blockValue.put("Priešdėlis", Block.DEFBLOCK);      // Prefix
+        blockValue.put("Priesaga", Block.DEFBLOCK);        // Suffix
+        blockValue.put("Jaustukas", Block.DEFBLOCK);       // interjection
+        blockValue.put("Ištiktukas", Block.DEFBLOCK);      // interjection
+        blockValue.put("Kiekinis skaitvardis", Block.DEFBLOCK); // cardinal
+        blockValue.put("\"Kiekinis skaitvardis\"", Block.DEFBLOCK); // cardinal
+        blockValue.put("Kelintinis skaitvardis", Block.DEFBLOCK); // ordinal number
+        blockValue.put("Simbolis", Block.DEFBLOCK);         // symbol
+
+        blockValue.put("Tarimas", Block.PRONBLOCK);
+
+        blockValue.put("Sinonimai", Block.NYMBLOCK);     // syn
+        blockValue.put("Hipersąvokos", Block.NYMBLOCK);  // syn
+        blockValue.put("Subsąvokos", Block.NYMBLOCK);    // syn
+        blockValue.put("Supersąvokos", Block.NYMBLOCK);  // syn
+        blockValue.put("Antonimai", Block.NYMBLOCK);     // ant
+
+        blockValue.put("Susiję terminai", Block.RELATEDTERMBLOCK);
+
+        blockValue.put("Pavyzdžiai", Block.EXAMPLEBLOCK);
+
+        blockValue.put("Vertimai", Block.TRADBLOCK);
+
+        blockValue.put("Etimologija", Block.IGNOREPOS); // etimology
+        blockValue.put("Dar žiūrėk", Block.IGNOREPOS); // = see also
+        blockValue.put("Taip pat žiūrėkite", Block.IGNOREPOS); // = see also
+        blockValue.put("Dar žiūrėti", Block.IGNOREPOS); // = see also
+        blockValue.put("Dar žiūrekite", Block.IGNOREPOS); // = see also
+        blockValue.put("Dar žiūrėkite", Block.IGNOREPOS); // = see also
+        blockValue.put("!Taip pat žiūrėkite!", Block.IGNOREPOS); // = see also
+        blockValue.put("Taip pat žiūrėk", Block.IGNOREPOS); // = see also
+        blockValue.put("Žiūrėkite taip pat", Block.IGNOREPOS); // = see also
+        blockValue.put("Susiję žodžiai", Block.IGNOREPOS); // = related word
+        blockValue.put("Šaltiniai", Block.IGNOREPOS); // = references
+        blockValue.put("Nuorodos", Block.IGNOREPOS); // = references
+        blockValue.put("Išvestiniai žodžiai", Block.IGNOREPOS); // derivative
+        blockValue.put("Išraiškos ir posakiai", Block.IGNOREPOS); // Expressions et énonciations
+        blockValue.put("Išraiškos arba posakiai", Block.IGNOREPOS); // Expressions or sayings
+        blockValue.put("Lietuvių kalbos kiekinių skaitvardžių kaitymas", Block.IGNOREPOS); // inflexion
+        blockValue.put("Bendra kaitymo lentelė", Block.IGNOREPOS); // inflexion
+        blockValue.put("Išvestiniai  žodžiai", Block.IGNOREPOS); // inflexion
+        blockValue.put("Kiti rašymo būdai", Block.IGNOREPOS); // Other ways of writing
+        blockValue.put("Išnašos", Block.IGNOREPOS); // notes
+        blockValue.put("Frazeologizmai", Block.IGNOREPOS); // idiom ?
+        blockValue.put("Vartosena", Block.IGNOREPOS); // usage
+        blockValue.put("Būdinys", Block.IGNOREPOS); // describe and syllable
+        blockValue.put("Pastabos", Block.IGNOREPOS); // comments
+        blockValue.put("Siekinys", Block.IGNOREPOS);
+    }
+
+    private Block getBlock(String blockString) {
         Block res = Block.IGNOREPOS;
-        if(blockString.contains("Skaitvardžio")){
+        if (blockString.contains("Skaitvardžio")) {
             return res;
         }
-        if(blockString.contains("[[")){
-            int index = blockString.indexOf("]]")+2;
-            blockString  = blockString.substring(index,blockString.length()).trim();
+        if (blockString.contains("[[")) {
+            int index = blockString.indexOf("]]") + 2;
+            blockString = blockString.substring(index, blockString.length()).trim();
         }
-        if((res = blockValue.get(blockString)) == null) {
+        if ((res = blockValue.get(blockString)) == null) {
             log.debug("Unknown block {} --in-- {}", blockString, this.wiktionaryPageName);
             res = Block.NOBLOCK;
         }
         return res;
     }
 
-    protected void extractDataLang(int startOffset, int endOffset, String lang){
+    protected void extractDataLang(int startOffset, int endOffset, String lang) {
         if (lang == null) {
             return;
         }
-        if (lang.equals("ltv")){
+        if (lang.equals("ltv")) {
             wdh.initializeEntryExtraction(wiktionaryPageName);
-        }
-        else {
+        } else {
             //log.debug("Unused lang {} --in-- {}", lang, this.wiktionaryPageName);
             return;
             // wdh.initializeEntryExtraction(wiktionaryPageName, lang);
@@ -199,19 +192,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Block block = Block.IGNOREPOS;
         int start = startOffset;
 
-        if(m.find()){
+        if (m.find()) {
             start = m.start();
-            if(m.group(1) != null)
+            if (m.group(1) != null)
                 blockString = m.group(1).trim();
             if (blockString != null) {
-                blockString = blockString.replaceAll("\'", "").replaceAll(":","");
+                blockString = blockString.replaceAll("\'", "").replaceAll(":", "");
             }
             block = getBlock(blockString);
         }
         while (m.find()) {
             extractDataBlock(start, m.start(), block, blockString);
             start = m.end();
-            if(m.group(1) != null)
+            if (m.group(1) != null)
                 blockString = m.group(1).trim();
             if (blockString != null) {
                 blockString = blockString.replaceAll("\'", "").replaceAll(":", "");
@@ -238,10 +231,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 extractNyms(startOffset, endOffset, blockString);
                 break;
             case RELATEDTERMBLOCK:
-                extractRelatedTerm(startOffset,endOffset);
+                extractRelatedTerm(startOffset, endOffset);
                 break;
             case EXAMPLEBLOCK:
-                extractExample(startOffset,endOffset);
+                extractExample(startOffset, endOffset);
                 break;
             case TRADBLOCK:
                 extractTranslations(startOffset, endOffset);
@@ -259,15 +252,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
         dwdh.addPartOfSpeech(blockString);
-        if(m.find()){
-            if(m.group(1).contains("vikipedija")){
-                if(m.find()){
+        if (m.find()) {
+            if (m.group(1).contains("vikipedija")) {
+                if (m.find()) {
                     if (m.group(1).length() > 1 && m.group(1).contains("Kategorija")) {
                         dwdh.addPOSinfo(m.group(1));
                     }
                 }
-            }
-            else {
+            } else {
                 if (m.group(1).length() > 1 && !m.group(1).contains("Kategorija")) {
                     dwdh.addPOSinfo(m.group(1));
                 }
@@ -277,26 +269,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         m = defPattern.matcher(pageContent);
         m.region(start, end);
         int senseNum = 1;
-        while(m.find()) {
+        while (m.find()) {
             String tmp;
-            if(m.group(1) != null) {
+            if (m.group(1) != null) {
                 tmp = m.group(1).trim();
-            }else if(m.group(2) != null){
+            } else if (m.group(2) != null) {
                 tmp = m.group(2).trim();
-            }
-            else{
+            } else {
                 return;
             }
-            if(!tmp.equals("")) {
-                if(tmp.contains("Pvz.")){
-                    String def = tmp.substring(0,tmp.indexOf("Pvz.")).replaceAll("\'", "").trim();
+            if (!tmp.equals("")) {
+                if (tmp.contains("Pvz.")) {
+                    String def = tmp.substring(0, tmp.indexOf("Pvz.")).replaceAll("\'", "").trim();
                     String ex = tmp.substring(tmp.indexOf("Pvz.") + 4, tmp.length() - 1).replaceAll("\'", "").trim();
-                    wdh.registerNewDefinition(cleanUpMarkup(def), ""+senseNum);
+                    wdh.registerNewDefinition(cleanUpMarkup(def), "" + senseNum);
                     wdh.registerExample(ex, new HashMap<Property, String>());
                     senseNum++;
-                }
-                else{
-                    wdh.registerNewDefinition(cleanUpMarkup(tmp), ""+senseNum);
+                } else {
+                    wdh.registerNewDefinition(cleanUpMarkup(tmp), "" + senseNum);
                     senseNum++;
                 }
 
@@ -316,15 +306,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         parseTrans(pageContent.substring(start, end));
     }
 
-    protected void parseTrans(String content){
+    protected void parseTrans(String content) {
         Matcher trad = tradPattern.matcher(content);
         String usage = null;
         String currentGloss = wiktionaryPageName;
-        while(trad.find()){
+        while (trad.find()) {
             String[] tTrad = trad.group(1).split("\\|");
-            switch(tTrad[0]){
+            switch (tTrad[0]) {
                 case "t+":
-                    if(tTrad.length > 2)
+                    if (tTrad.length > 2)
                         wdh.registerTranslation(tTrad[1], currentGloss, usage, tTrad[2]);
                     break;
                 case "trans-top":
@@ -333,12 +323,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 case "ltrans-top":
                 case "ltrans-mid":
                 case "ltrans-bottom":
-                    if(tTrad.length > 1){
+                    if (tTrad.length > 1) {
                         String[] tmp = tTrad[1].split("=");
-                        if(tmp.length == 2) {
+                        if (tmp.length == 2) {
                             currentGloss = tmp[1];
-                        }
-                        else{
+                        } else {
                             currentGloss = tmp[0];
                         }
                     }
@@ -347,25 +336,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 case "versk":
                     break;
                 default:
-                    if(tTrad[0].startsWith("Sąrašas:Vertimai/lt/")){
+                    if (tTrad[0].startsWith("Sąrašas:Vertimai/lt/")) {
                         // search and extract Vertimai block in url tTrad[0]
                         String c = getTradContent(tTrad[0]);
-                        if( c!= null)
+                        if (c != null)
                             parseTrans(c);
-                    }
-                    else if(!tTrad[0].contains("1") &&
+                    } else if (!tTrad[0].contains("1") &&
                             !tTrad[0].contains("2") &&
-                            !tTrad[0].contains("3")){
+                            !tTrad[0].contains("3")) {
                         log.debug("Unknown Trad value {} --in-- {}", tTrad[0], wdh.currentLexEntry());
                     }
             }
         }
     }
 
-    protected String getTradContent(String template){
+    protected String getTradContent(String template) {
         String res = null;
         String c = wi.getTextOfPage(template);
-        if(c != null && c.startsWith("#PERADRESAVIMAS")) {
+        if (c != null && c.startsWith("#PERADRESAVIMAS")) {
             Matcher content = tradContentPattern.matcher(c);
             if (content.find()) {
                 if (content.group(1) != null) {
@@ -373,9 +361,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 } else
                     res = c;
             }
-        }
-        else{
-            if(c == null){
+        } else {
+            if (c == null) {
                 log.debug("Content null : {} --in-- {}", template, wdh.currentLexEntry());
             }
             res = c;
@@ -387,14 +374,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         parseNyms(pageContent.substring(start, end), blockString);
     }
 
-    protected void parseNyms(String content, String blockString){
+    protected void parseNyms(String content, String blockString) {
         WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
         String nymRel = "";
         String gloss = wdh.currentLexEntry();
         Matcher m = nymPattern.matcher(content);
-        while(m.find()){
+        while (m.find()) {
             String[] tNyms = m.group(1).split("\\|");
-            switch(tNyms[0]){
+            switch (tNyms[0]) {
                 case "t+":
                 case "versk":
                     dwdh.addNymInfo(nymRel, tNyms, gloss);
@@ -406,12 +393,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 case "lsin-mid":
                 case "lsin-bottom":
                     nymRel = "syn";
-                    if(tNyms.length > 1){
+                    if (tNyms.length > 1) {
                         String[] tmp = tNyms[1].split("=");
-                        if(tmp.length == 2) {
+                        if (tmp.length == 2) {
                             gloss = tmp[1];
-                        }
-                        else{
+                        } else {
                             gloss = tmp[0];
                         }
                     }
@@ -420,12 +406,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 case "ant-mid":
                 case "ant-bottom":
                     nymRel = "ant";
-                    if(tNyms.length > 1){
+                    if (tNyms.length > 1) {
                         String[] tmp = tNyms[1].split("=");
-                        if(tmp.length == 2) {
+                        if (tmp.length == 2) {
                             gloss = tmp[1];
-                        }
-                        else{
+                        } else {
                             gloss = tmp[0];
                         }
                     }
@@ -436,7 +421,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 case "trans-top":
                 case "trans-mid":
                 case "trans-bottom":
-                    switch(blockString){
+                    switch (blockString) {
                         case "Sinonimai":
                         case "Hipersąvokos":
                         case "Subsąvokos":
@@ -450,12 +435,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                             log.debug("Unknown Nyms level {} --in-- {}", tNyms[0], wdh.currentLexEntry());
                             return;
                     }
-                    if(tNyms.length > 1){
+                    if (tNyms.length > 1) {
                         String[] tmp = tNyms[1].split("=");
-                        if(tmp.length == 2) {
+                        if (tmp.length == 2) {
                             gloss = tmp[1];
-                        }
-                        else{
+                        } else {
                             gloss = tmp[0];
                         }
                     }
@@ -475,11 +459,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 case "cleanup":
                     break;
                 default:
-                    if(tNyms[0].startsWith("Sąrašas:Sinonimai/lt/")){
+                    if (tNyms[0].startsWith("Sąrašas:Sinonimai/lt/")) {
                         // search and extract sinoniai block in url tNyms[0]
                         parseNyms(wi.getTextOfPage(tNyms[0]), blockString);
-                    }
-                    else {
+                    } else {
                         log.debug("Unknown Nyms level {} --in-- {}", tNyms[0], wdh.currentLexEntry());
                     }
             }
@@ -492,9 +475,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher m = relPattern.matcher(pageContent);
         m.region(start, end);
         String nymRel = "";
-        while(m.find()){
+        while (m.find()) {
             String[] tRel = m.group(1).split("\\|");
-            switch(tRel[0]){
+            switch (tRel[0]) {
                 case "t+":
                     dwdh.addRelatedTermInfo(tRel);
                     break;
@@ -508,13 +491,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
     }
 
-    protected void extractPron(int start, int end){
+    protected void extractPron(int start, int end) {
         Matcher pron = pronPattern.matcher(this.pageContent);
         pron.region(start, end);
 
-        while(pron.find()){
-            if(!pron.group(2).equals(""))
-                switch(pron.group(1)) {
+        while (pron.find()) {
+            if (!pron.group(2).equals(""))
+                switch (pron.group(1)) {
                     case "rtarimas":
                         wdh.registerPronunciation(pron.group(2), "lt-fonipa");
                         break;

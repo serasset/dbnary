@@ -100,8 +100,6 @@ public class ExtractWiktionary {
      * @throws WiktionaryIndexerException ...
      */
     public static void main(String[] args) throws WiktionaryIndexerException, IOException {
-
-
         ExtractWiktionary cliProg = new ExtractWiktionary();
         cliProg.loadArgs(args);
         cliProg.extract();
@@ -243,6 +241,7 @@ public class ExtractWiktionary {
                         try {
                             we.extractData(title, page);
                         } catch (RuntimeException ex) {
+                            System.err.println("ERROR : Unexpected/uncaught Rutine Exception while extracting page " + title);
                             System.err.println(ex.getMessage());
                         }
                         if (nbnodes != wdh.nbEntries()) {

@@ -185,3 +185,4 @@ DB.DBA.XML_SET_NS_DECL ('jdm', 'http://kaiko.getalp.org/jdm/', 2);
 checkpoint;
 commit WORK;
 checkpoint;
+exit;

@@ -250,46 +250,35 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         blockStart = -1;
     }
 
+    //TODO: check correct parsing of From ''[[semel#Latin|semel]]''  + ''[[pro#Latin|pro]]''  + ''[[semper#Latin|semper]]''
     protected void extractEtymology(int blockStart, int end) {
-        extractEtymology(blockStart, end, "eng");
-    }
-
-    //TODO: check correct parsing of From ''[[semel#Latin|semel]]''  + ''[[pro#Latin|pro]]''  + ''[[semper#Latin|semper]]'' 
-    protected void extractEtymology(int blockStart, int end, String lang) {
-        Etymology etymology = new Etymology(pageContent.substring(blockStart, end), lang);
+        Etymology etymology = new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
 
         etymology.toDefinitionSymbols();
 
         ewdh.registerEtymology(etymology);
     }
 
-    protected void extractDerived(int blockStart, int end) {
-        extractDerived(blockStart, end, "eng");
-    }
-
     //TODO: process * {{l|pt|mundinho}}, {{l|pt|mundozinho}} {{gloss|diminutives}}
     //* {{l|pt|mundão}} {{gloss|augmentative}}
     //DONE: process {{der4|title=Terms derived from ''free'' | [[freeball]], [[free-ball]] | [[freebooter]] }}
-    protected void extractDerived(int blockStart, int end, String lang) {
-        extractBulletList(pageContent.substring(blockStart, end), lang);
+    protected void extractDerived(int blockStart, int end) {
+        extractBulletList(pageContent.substring(blockStart, end));
 
-        extractTableDerived(pageContent.substring(blockStart, end), lang);
+        extractTableDerived(pageContent.substring(blockStart, end));
     }
 
     protected void extractDescendants(int blockStart, int end) {
-        extractDescendants(blockStart, end, "eng");
-    }
-
-    protected void extractDescendants(int blockStart, int end, String lang) {
-        boolean isMatch = extractMultipleBulletList(pageContent.substring(blockStart, end), lang, true);
+        boolean isMatch = extractMultipleBulletList(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage(), true);
 
         //if there is no match to multiple bullet list
         if (!isMatch) {
-            extractEtymtree(pageContent.substring(blockStart, end), lang);
+            extractEtymtree(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
         }
     }
 
-    private void extractTableDerived(String s, String lang) {
+    private void extractTableDerived(String s) {
+        String lang = ewdh.getCurrentEntryLanguage();
         for (Pair l : WikiTool.locateEnclosedString(s, "{{", "}}")) {
             String t = s.substring(l.start + 2, l.start + 6);
             int start = l.start;
@@ -362,10 +351,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         ewdh.finalizeAncestors();
 
-        return nStars > 0 ? true : false;
+        return nStars > 0;
     }
 
-    private void extractBulletList(String s, String lang) {
+    private void extractBulletList(String s) {
+        String lang = ewdh.getCurrentEntryLanguage();
         ewdh.registerCurrentEtymologyEntry(lang);
 
         Matcher bulletListMatcher = WikiPatterns.bulletListPattern.matcher(s);

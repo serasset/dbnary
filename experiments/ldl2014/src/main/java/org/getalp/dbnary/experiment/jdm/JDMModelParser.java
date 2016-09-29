@@ -5,7 +5,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import org.apache.commons.cli.*;
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.iso639.ISO639_3;
 import org.getalp.dbnary.experiment.jdm.model.JDMModel;
 
 import java.io.*;

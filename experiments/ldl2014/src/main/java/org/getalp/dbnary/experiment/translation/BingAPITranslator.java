@@ -2,7 +2,7 @@ package org.getalp.dbnary.experiment.translation;
 
 import com.memetix.mst.language.Language;
 import com.memetix.mst.translate.Translate;
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.iso639.ISO639_3;
 
 public class BingAPITranslator implements Translator {
 

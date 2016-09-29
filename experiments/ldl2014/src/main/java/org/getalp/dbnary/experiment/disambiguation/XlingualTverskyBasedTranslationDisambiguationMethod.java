@@ -3,7 +3,7 @@ package org.getalp.dbnary.experiment.disambiguation;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.wcohen.ss.ScaledLevenstein;
-import org.getalp.blexisma.api.ISO639_3;
+import org.getalp.iso639.ISO639_3;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.LemonOnt;

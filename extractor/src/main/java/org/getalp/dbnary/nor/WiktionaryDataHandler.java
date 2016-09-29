@@ -297,7 +297,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
     public void addWrittenRep(String word) {
         if (currentLexEntry != null)
-            aBox.add(currentLexEntry, LemonOnt.writtenRep, word, extractedLang);
+            aBox.add(currentLexEntry, LemonOnt.writtenRep, word, wktLanguageEdition);
     }
 
     public void addAbbrev(String word) {

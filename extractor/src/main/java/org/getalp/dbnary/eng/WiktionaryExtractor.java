@@ -3,16 +3,14 @@
  */
 package org.getalp.dbnary.eng;
 
-import java.util.*;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.HashSet;
-    
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.wiki.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author serasset, pantaleo
@@ -93,13 +91,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // TODO: adapt extractor to allow extraction of foreign data.
         wdh.initializePageExtraction(wiktionaryPageName);
         Matcher languageFilter = sectionPattern.matcher(pageContent);
-        while (languageFilter.find() && ! languageFilter.group(1).equals("English")) {
+        while (languageFilter.find() && !languageFilter.group(1).equals("English")) {
             // NOP
         }
         // Either the filter is at end of sequence or on English language header.
         if (languageFilter.hitEnd()) {
             // There is no english data in this page.
-            return ;
+            return;
         }
         int englishSectionStartOffset = languageFilter.end();
         // Advance till end of sequence or new language section
@@ -116,12 +114,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected void extractEnglishData(int startOffset, int endOffset) {
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
-	wdh.initializeEntryExtraction(wiktionaryPageName);
+        wdh.initializeEntryExtraction(wiktionaryPageName);
         wikiExpander.setPageName(wiktionaryPageName);
         currentBlock = Block.NOBLOCK;
 
         HashMap<String, Object> previousContext = new HashMap<String, Object>();
-        while(m.find()) {
+        while (m.find()) {
             HashMap<String, Object> context = new HashMap<String, Object>();
             Block nextBlock = computeNextBlock(m, context);
 
@@ -216,8 +214,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case DEFBLOCK:
                 String pos = (String) context.get("pos");
                 wdh.addPartOfSpeech(pos);
-		ewdh.registerEtymologyPos();
-                extractMorphology(blockStart,end);
+                ewdh.registerEtymologyPos();
+                extractMorphology(blockStart, end);
                 extractDefinitions(blockStart, end);
                 break;
             case TRADBLOCK:
@@ -253,163 +251,163 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     protected void extractEtymology(int blockStart, int end) {
-	extractEtymology(blockStart, end, "eng"); 
+        extractEtymology(blockStart, end, "eng");
     }
 
     //TODO: check correct parsing of From ''[[semel#Latin|semel]]''  + ''[[pro#Latin|pro]]''  + ''[[semper#Latin|semper]]'' 
     protected void extractEtymology(int blockStart, int end, String lang) {
-	Etymology etymology = new Etymology(pageContent.substring(blockStart, end), lang);
+        Etymology etymology = new Etymology(pageContent.substring(blockStart, end), lang);
 
-	etymology.toDefinitionSymbols();
-	
-	ewdh.registerEtymology(etymology);
+        etymology.toDefinitionSymbols();
+
+        ewdh.registerEtymology(etymology);
     }
 
     protected void extractDerived(int blockStart, int end) {
-	extractDerived(blockStart, end, "eng");
+        extractDerived(blockStart, end, "eng");
     }
 
     //TODO: process * {{l|pt|mundinho}}, {{l|pt|mundozinho}} {{gloss|diminutives}}
     //* {{l|pt|mundão}} {{gloss|augmentative}}
     //DONE: process {{der4|title=Terms derived from ''free'' | [[freeball]], [[free-ball]] | [[freebooter]] }}
     protected void extractDerived(int blockStart, int end, String lang) {
-	extractBulletList(pageContent.substring(blockStart, end), lang);
-	
-	extractTableDerived(pageContent.substring(blockStart, end), lang); 
-    }
-    
-    protected void extractDescendants(int blockStart, int end){
-	extractDescendants(blockStart, end, "eng");
+        extractBulletList(pageContent.substring(blockStart, end), lang);
+
+        extractTableDerived(pageContent.substring(blockStart, end), lang);
     }
 
-    protected void extractDescendants(int blockStart, int end, String lang){
-	boolean isMatch = extractMultipleBulletList(pageContent.substring(blockStart, end), lang, true);
-
-	//if there is no match to multiple bullet list
-	if (! isMatch){
-	    extractEtymtree(pageContent.substring(blockStart, end), lang);
-	}
-    } 
-
-    private void extractTableDerived(String s, String lang){
-	for (Pair l : WikiTool.locateEnclosedString(s, "{{", "}}")){
-	    String t = s.substring(l.start + 2, l.start + 6);
-	    int start = l.start;
-	    if (t.equals("der2") || t.equals("der3") || t.equals("der4")){
-		start += 7;
-	    } else if (t.equals("der-zh")){
-		start += 9;
-	    } else {
-		return;
-	    }
-	    Map<String, String> args = WikiTool.parseArgs(s.substring(start, l.end));
-	    
-	    for (String key : args.keySet()){
-		Etymology etymology = new Etymology(args.get(key), lang);
-
-		etymology.toTableDerivedSymbols();
-		
-		if (etymology.symbols.size() == 0){
-		    if (WikiTool.locateEnclosedString(etymology.string, "{{", "}}").size() + WikiTool.locateEnclosedString(etymology.string, "[[", "]]").size() == 0){
-		        for (String lemma : split(etymology.string)){
-			    etymology.symbols.add(new Symbols("_m|" + lang + "|" + lemma, lang, "TEMPLATE"));
-		        }
-		    }
-		}
-		
-		ewdh.registerDerived(etymology);
-	    }
-	}
-    }
-    
-    private ArrayList<String> split(String s){
-	ArrayList<String> toreturn = new ArrayList<String>();
-
-	String[] tmp = s.split(",");
-	for (String t : tmp){
-	    String [] tmp2 = t.split("/");
-	    for (String t2 : tmp2){
-		if (t2 != null && ! t2.equals("")){
-		    toreturn.add(t2.trim());
-		}
-	    }
-	}
-	return toreturn;
-    }
-    
-    private boolean extractMultipleBulletList(String s, String lang, boolean setRoot){
-	int offset = 0;
-	ewdh.initializeAncestors();
-	if (setRoot){
-	    offset = 1;
-	    ewdh.registerCurrentEtymologyEntry(lang);
-	    ewdh.ancestors.add(ewdh.currentEtymologyEntry);
-	}
-
-	Matcher multipleBulletListMatcher = WikiPatterns.multipleBulletListPattern.matcher(s);
-	int nStars = 0;
-	while (multipleBulletListMatcher.find()) {
-	    //System.out.format("descendants=%s\n", multipleBulletListMatcher.group());
-	    nStars = multipleBulletListMatcher.group(1).length();
-	    if (nStars + offset - 1 < ewdh.ancestors.size()){
-	        ewdh.ancestors.subList(nStars + offset - 1, ewdh.ancestors.size()).clear();
-	    }
-	    
-	    Etymology etymology = new Etymology(multipleBulletListMatcher.group(2), lang);
-
-	    etymology.toBulletSymbols();
-
-	    ewdh.addAncestorsAndRegisterDescendants(etymology);
-	}
-	
-	ewdh.finalizeAncestors();
-	
-	return nStars > 0 ? true : false; 
+    protected void extractDescendants(int blockStart, int end) {
+        extractDescendants(blockStart, end, "eng");
     }
 
-    private void extractBulletList(String s, String lang){
-	ewdh.registerCurrentEtymologyEntry(lang);
+    protected void extractDescendants(int blockStart, int end, String lang) {
+        boolean isMatch = extractMultipleBulletList(pageContent.substring(blockStart, end), lang, true);
+
+        //if there is no match to multiple bullet list
+        if (!isMatch) {
+            extractEtymtree(pageContent.substring(blockStart, end), lang);
+        }
+    }
+
+    private void extractTableDerived(String s, String lang) {
+        for (Pair l : WikiTool.locateEnclosedString(s, "{{", "}}")) {
+            String t = s.substring(l.start + 2, l.start + 6);
+            int start = l.start;
+            if (t.equals("der2") || t.equals("der3") || t.equals("der4")) {
+                start += 7;
+            } else if (t.equals("der-zh")) {
+                start += 9;
+            } else {
+                return;
+            }
+            Map<String, String> args = WikiTool.parseArgs(s.substring(start, l.end));
+
+            for (String key : args.keySet()) {
+                Etymology etymology = new Etymology(args.get(key), lang);
+
+                etymology.toTableDerivedSymbols();
+
+                if (etymology.symbols.size() == 0) {
+                    if (WikiTool.locateEnclosedString(etymology.string, "{{", "}}").size() + WikiTool.locateEnclosedString(etymology.string, "[[", "]]").size() == 0) {
+                        for (String lemma : split(etymology.string)) {
+                            etymology.symbols.add(new Symbols("_m|" + lang + "|" + lemma, lang, "TEMPLATE"));
+                        }
+                    }
+                }
+
+                ewdh.registerDerived(etymology);
+            }
+        }
+    }
+
+    private ArrayList<String> split(String s) {
+        ArrayList<String> toreturn = new ArrayList<String>();
+
+        String[] tmp = s.split(",");
+        for (String t : tmp) {
+            String[] tmp2 = t.split("/");
+            for (String t2 : tmp2) {
+                if (t2 != null && !t2.equals("")) {
+                    toreturn.add(t2.trim());
+                }
+            }
+        }
+        return toreturn;
+    }
+
+    private boolean extractMultipleBulletList(String s, String lang, boolean setRoot) {
+        int offset = 0;
+        ewdh.initializeAncestors();
+        if (setRoot) {
+            offset = 1;
+            ewdh.registerCurrentEtymologyEntry(lang);
+            ewdh.ancestors.add(ewdh.currentEtymologyEntry);
+        }
+
+        Matcher multipleBulletListMatcher = WikiPatterns.multipleBulletListPattern.matcher(s);
+        int nStars = 0;
+        while (multipleBulletListMatcher.find()) {
+            //System.out.format("descendants=%s\n", multipleBulletListMatcher.group());
+            nStars = multipleBulletListMatcher.group(1).length();
+            if (nStars + offset - 1 < ewdh.ancestors.size()) {
+                ewdh.ancestors.subList(nStars + offset - 1, ewdh.ancestors.size()).clear();
+            }
+
+            Etymology etymology = new Etymology(multipleBulletListMatcher.group(2), lang);
+
+            etymology.toBulletSymbols();
+
+            ewdh.addAncestorsAndRegisterDescendants(etymology);
+        }
+
+        ewdh.finalizeAncestors();
+
+        return nStars > 0 ? true : false;
+    }
+
+    private void extractBulletList(String s, String lang) {
+        ewdh.registerCurrentEtymologyEntry(lang);
 
         Matcher bulletListMatcher = WikiPatterns.bulletListPattern.matcher(s);
         while (bulletListMatcher.find()) {
-	    Etymology etymology = new Etymology(bulletListMatcher.group(1), lang);
-	    
-	    etymology.toBulletSymbols();
+            Etymology etymology = new Etymology(bulletListMatcher.group(1), lang);
 
-	    //check that all lemmas share the same language
-	    for (Symbols b : etymology.symbols){
-	        if (! b.args.get("lang").equals(lang)){
-		    log.debug("Ignoring derived words {}", bulletListMatcher.group());
-		    return;
-	        }
-	    }
+            etymology.toBulletSymbols();
 
-	    ewdh.registerDerived(etymology);
+            //check that all lemmas share the same language
+            for (Symbols b : etymology.symbols) {
+                if (!b.args.get("lang").equals(lang)) {
+                    log.debug("Ignoring derived words {}", bulletListMatcher.group());
+                    return;
+                }
+            }
+
+            ewdh.registerDerived(etymology);
         }
-    }    
-
-    private void extractEtymtree(String s, String lang){
-	for (Pair template : WikiTool.locateEnclosedString(s, "{{", "}}")){
-	    Symbols b = new Symbols(s.substring(template.start + 2, template.end - 2), lang, "TEMPLATE");
-	    if (b.values != null && b.values.get(0).equals("ETYMTREE") && b.args.get("lang") != null){
-		String page = b.args.get("page");
-		if (b.args.get("word1") == null){
-		    page = page + this.wiktionaryPageName;
-		}
-		if (ewdh.etymtreeHashSet.add(page)){//if etymtree hasn't been saved already
-		    String etymtreePageContent = wi.getTextOfPage(page);
-		    if (etymtreePageContent != null){
-			log.debug("Extracting etymtree page {}", page);
-			extractMultipleBulletList(etymtreePageContent, lang, false);
-		    } else {
-			log.debug("Warning: cannot extract etymtree page {}", page);
-		    }
-		}
-		return;
-	    }
-	}
     }
-            
+
+    private void extractEtymtree(String s, String lang) {
+        for (Pair template : WikiTool.locateEnclosedString(s, "{{", "}}")) {
+            Symbols b = new Symbols(s.substring(template.start + 2, template.end - 2), lang, "TEMPLATE");
+            if (b.values != null && b.values.get(0).equals("ETYMTREE") && b.args.get("lang") != null) {
+                String page = b.args.get("page");
+                if (b.args.get("word1") == null) {
+                    page = page + this.wiktionaryPageName;
+                }
+                if (ewdh.etymtreeHashSet.add(page)) {//if etymtree hasn't been saved already
+                    String etymtreePageContent = wi.getTextOfPage(page);
+                    if (etymtreePageContent != null) {
+                        log.debug("Extracting etymtree page {}", page);
+                        extractMultipleBulletList(etymtreePageContent, lang, false);
+                    } else {
+                        log.debug("Warning: cannot extract etymtree page {}", page);
+                    }
+                }
+                return;
+            }
+        }
+    }
+
     private void extractConjugation(int startOffset, int endOffset) {
         log.debug("Conjugation extraction not yet implemented in:\t{}", wiktionaryPageName);
     }
@@ -426,7 +424,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void extractMorphology(int startOffset, int endOffset) {
         // TODO: For some entries, there are several morphology information covering different word senses
         // TODO: Handle such cases (by creating another lexical entry ?) // Similar to reflexiveness in French wiktionary
-        if (! ewdh.isEnabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) return;
+        if (!ewdh.isEnabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) return;
 
         WikiText text = new WikiText(pageContent, startOffset, endOffset);
 
@@ -462,7 +460,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     addForm(singular.toPropertyObjectMap(), singularForm);
                     args.remove("sg");
                 }
-                if (! args.isEmpty()) {
+                if (!args.isEmpty()) {
                     log.debug("en-plural noun macro: Non handled parameters : \t{}\tin\t{}", args, this.wiktionaryPageName);
                 }
 
@@ -508,7 +506,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 // nothing to extract ??
                 Map<String, String> args = tmpl.getParsedArgs();
                 args.remove("sort");
-                if (! args.isEmpty()) {
+                if (!args.isEmpty()) {
                     log.debug("other args in en-suffix template\t{}\tin\t{}", args, wiktionaryPageName);
                 }
             } else if (g1.equals("en-prep")) {
@@ -522,7 +520,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     log.debug("desc argument in en-pron template in\t{}", wiktionaryPageName);
                     args.remove("desc");
                 }
-                if (! args.isEmpty()) {
+                if (!args.isEmpty()) {
                     log.debug("other args in en-pron template\t{}\tin\t{}", args, wiktionaryPageName);
                 }
             } else if (g1.equals("en-proverb")) {
@@ -533,7 +531,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 // TODO: cat2 and cat3 sontains some additional categories...
                 Map<String, String> args = tmpl.getParsedArgs();
                 args.remove("sort");
-                if (! args.isEmpty()) {
+                if (!args.isEmpty()) {
                     log.debug("other args in en-suffix template\t{}\tin\t{}", args, wiktionaryPageName);
                 }
             } else if (g1.equals("en-symbol")) {
@@ -566,9 +564,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // TODO: head is used to point to constituants of MWE, extract them and make parts explicit.
         String head = args.get("head");
         String headword;
-        if (head != null && ! head.trim().equals("")) {
+        if (head != null && !head.trim().equals("")) {
             // TODO: evaluate the runtime impact of systematic expansion (Should I expand only if a template is present in the argument value ?)
-            headword = wikiExpander.expandAll(head,null); // Expand everything in the head value and provide a text only version.
+            headword = wikiExpander.expandAll(head, null); // Expand everything in the head value and provide a text only version.
         } else {
             headword = wiktionaryPageName;
         }
@@ -577,7 +575,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String arg = args.get(Integer.toString(argnum));
         args.remove(Integer.toString(argnum));
         boolean uncountable = false;
-        if (arg == null && ! properNoun) {
+        if (arg == null && !properNoun) {
             // There are no positional arg, meaning that the plural uses a s suffix
             arg = "s";
         }
@@ -618,7 +616,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             args.remove(Integer.toString(argnum));
         }
 
-        if (! args.isEmpty()) {
+        if (!args.isEmpty()) {
             log.debug("en-noun macro: Non handled parameters : \t{}\tin\t{}", args, this.wiktionaryPageName);
         }
     }
@@ -627,9 +625,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // TODO: head is used to point to constituants of MWE, extract them and make parts explicit.
         String h = args.get("head");
         String headword;
-        if (h != null && ! h.trim().equals("")) {
+        if (h != null && !h.trim().equals("")) {
             // TODO: evaluate the runtime impact of systematic expansion (Should I expand only if a template is present in the argument value ?)
-            headword = wikiExpander.expandAll(h,null); // Expand everything in the head value and provide a text only version.
+            headword = wikiExpander.expandAll(h, null); // Expand everything in the head value and provide a text only version.
         } else {
             headword = wiktionaryPageName;
         }
@@ -648,15 +646,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             arg = "more";
         }
         while (arg != null) {
-            if (arg.equals("more") && ! "many".equals(wiktionaryPageName) && ! "much".equals(wiktionaryPageName)) {
+            if (arg.equals("more") && !"many".equals(wiktionaryPageName) && !"much".equals(wiktionaryPageName)) {
                 if (!notComparable) ewdh.comparable();
                 addForm(comparative.toPropertyObjectMap(), "more " + headword);
-                if (null != args.get("sup" + argnum)) log.debug("Irregular superlative with comparative with more in\t{}", wiktionaryPageName);
+                if (null != args.get("sup" + argnum))
+                    log.debug("Irregular superlative with comparative with more in\t{}", wiktionaryPageName);
                 addForm(superlative.toPropertyObjectMap(), "most " + headword);
-            } else if (arg.equals("further") && ! "far".equals(wiktionaryPageName)) {
+            } else if (arg.equals("further") && !"far".equals(wiktionaryPageName)) {
                 if (!notComparable) ewdh.comparable();
                 addForm(comparative.toPropertyObjectMap(), "further " + headword);
-                if (null != args.get("sup" + argnum)) log.debug("Irregular superlative with comparative with further in\t{}", wiktionaryPageName);
+                if (null != args.get("sup" + argnum))
+                    log.debug("Irregular superlative with comparative with further in\t{}", wiktionaryPageName);
                 addForm(superlative.toPropertyObjectMap(), "furthest " + headword);
             } else if (arg.equals("er")) {
                 if (!notComparable) ewdh.comparable();
@@ -694,7 +694,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             args.remove("sup" + argnum);
         }
 
-        if (! args.isEmpty()) {
+        if (!args.isEmpty()) {
             log.debug("en-adj macro: Non handled parameters : \t{}\tin\t{}", args, this.wiktionaryPageName);
         }
     }
@@ -717,10 +717,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if ("es".equals(par1)) {
                 pres3sgForm = this.wiktionaryPageName + "es";
             } else if ("ies".equals(par1)) {
-                if (! this.wiktionaryPageName.endsWith("y")) {
-                    log.debug("VERBMORPH : Incorrect en-verb parameter \"ies\" on non y ending verb\t{}",this.wiktionaryPageName);
+                if (!this.wiktionaryPageName.endsWith("y")) {
+                    log.debug("VERBMORPH : Incorrect en-verb parameter \"ies\" on non y ending verb\t{}", this.wiktionaryPageName);
                 }
-                String stem = this.wiktionaryPageName.substring(0,this.wiktionaryPageName.length()-1);
+                String stem = this.wiktionaryPageName.substring(0, this.wiktionaryPageName.length() - 1);
                 pres3sgForm = stem + "ies";
                 presPtcForm = stem + "ying";
                 pastForm = stem + "ied";
@@ -809,8 +809,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String pastQual = args.get("past_qual");
         String pastPtcQual = args.get("past_ptc_qual");
 
-        Map<String,String> pastForms = new HashMap<>();
-        Map<String,String> pastPtcForms = new HashMap<>();
+        Map<String, String> pastForms = new HashMap<>();
+        Map<String, String> pastPtcForms = new HashMap<>();
 
         addForm(pres3Sg.toPropertyObjectMap(), pres3sgForm, pres3SgQual);
         addForm(presPtc.toPropertyObjectMap(), presPtcForm, presPtcQual);
@@ -873,7 +873,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         } else {
             if (comp.endsWith("er")) {
                 sup = comp.replaceAll("er$", "est");
-            } else if (! "-".equals(sup)) {
+            } else if (!"-".equals(sup)) {
                 log.debug("Missing superlative for irregular comparative in\t{}", wiktionaryPageName);
             }
         }
@@ -894,9 +894,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     private void extractTranslations(int startOffset, int endOffset) {
-       Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
-       macroMatcher.region(startOffset, endOffset);
-       String currentGloss = null;
+        Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
+        macroMatcher.region(startOffset, endOffset);
+        String currentGloss = null;
         // TODO: there are templates called "qualifier" used to further qualify the translation check and evaluate if extracting its data is useful.
         while (macroMatcher.find()) {
             String g1 = macroMatcher.group(1);
@@ -910,14 +910,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     lang = LangTools.normalize(g2.substring(0, i1));
 
                     String usage = null;
-                    if ((i2 = g2.indexOf('|', i1+1)) == -1) {
-                        word = g2.substring(i1+1);
+                    if ((i2 = g2.indexOf('|', i1 + 1)) == -1) {
+                        word = g2.substring(i1 + 1);
                     } else {
-                        word = g2.substring(i1+1, i2);
-                        usage = g2.substring(i2+1);
+                        word = g2.substring(i1 + 1, i2);
+                        usage = g2.substring(i2 + 1);
                     }
-                    lang=EnglishLangToCode.threeLettersCode(lang);
-                    if(lang!=null){
+                    lang = EnglishLangToCode.threeLettersCode(lang);
+                    if (lang != null) {
                         wdh.registerTranslation(lang, currentGloss, usage, word);
                     }
 
@@ -926,7 +926,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 // Get the glose that should help disambiguate the source acception
                 String g2 = macroMatcher.group(2);
                 // Ignore glose if it is a macro
-                if (g2 != null && ! g2.startsWith("{{")) {
+                if (g2 != null && !g2.startsWith("{{")) {
                     currentGloss = g2;
                 }
             } else if (g1.equals("checktrans-top")) {
@@ -986,8 +986,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     Map<String, String> args = tmpl.getParsedArgs();
                     if ("en".equals(args.get("1"))) {
                         String target = args.get("2");
-                        args.remove("2"); args.remove("1");
-                        if (! args.isEmpty()) {
+                        args.remove("2");
+                        args.remove("1");
+                        if (!args.isEmpty()) {
                             log.debug("Unhandled remaining args {} in {}", args.entrySet().toString(), this.wiktionaryPageName);
                         }
                         wdh.registerNymRelation(target, synRelation, currentGloss);
@@ -1035,8 +1036,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     Map<String, String> args = tmpl.getParsedArgs();
                     if ("en".equals(args.get("1"))) {
                         String target = args.get("2");
-                        args.remove("2"); args.remove("1");
-                        if (! args.isEmpty()) {
+                        args.remove("2");
+                        args.remove("1");
+                        if (!args.isEmpty()) {
                             log.debug("Unhandled remaining args {} in {}", args.entrySet().toString(), this.wiktionaryPageName);
                         }
                         wdh.registerNymRelation(target, synRelation, currentGloss);
@@ -1067,13 +1069,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     protected void extractPron(int startOffset, int endOffset) {
         Matcher pronMatcher = pronPattern.matcher(pageContent);
-        pronMatcher.region(startOffset,endOffset);
+        pronMatcher.region(startOffset, endOffset);
         while (pronMatcher.find()) {
             String pron = pronMatcher.group(1);
 
             if (null == pron || pron.equals("")) return;
 
-            if (! pron.equals("")) wdh.registerPronunciation(pron, "en-fonipa");
+            if (!pron.equals("")) wdh.registerPronunciation(pron, "en-fonipa");
         }
     }
 

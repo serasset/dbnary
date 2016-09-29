@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author roques
- *
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
@@ -63,7 +62,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
         int startSection = -1;
 
-        String nextLang , lang = null;
+        String nextLang, lang = null;
 
         while (languageFilter.find()) {
             nextLang = languageFilter.group(1);
@@ -78,82 +77,84 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         wdh.finalizePageExtraction();
     }
 
-    private enum Block {NOBLOCK, IGNOREPOS, DEFBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK,
-        ABBREVIATIONBLOCK, MORPHOBLOCK, WRITTENREP, EXAMPLEBLOCK}
-
-    protected static HashMap<String,Block> blockValue = new HashMap<>();
-
-    static{
-        blockValue.put("Egennavn",Block.DEFBLOCK);        // Noun
-        blockValue.put("ubstant",Block.DEFBLOCK);         // Noun
-        blockValue.put("ubtant",Block.DEFBLOCK);         // Noun
-        blockValue.put("Fellesnavn",Block.DEFBLOCK);      // Common noun
-        blockValue.put("Verb",Block.DEFBLOCK);            // Verb
-        blockValue.put("Gjerningsord",Block.DEFBLOCK);    // Verb
-        blockValue.put("djektiv",Block.DEFBLOCK);         // Adj
-        blockValue.put("djeltiv",Block.DEFBLOCK);         // Adj
-        blockValue.put("dverb",Block.DEFBLOCK);           // Adv
-        blockValue.put("Tallord",Block.DEFBLOCK);         // Numeral
-        blockValue.put("Pronomen",Block.DEFBLOCK);        // Pronouns
-        blockValue.put("Preposisjon",Block.DEFBLOCK);     // Preposition
-        blockValue.put("Konjunksjon",Block.DEFBLOCK);     // conjunction
-        blockValue.put("Interjeksjon",Block.DEFBLOCK);    // interjection
-        blockValue.put("Suffiks",Block.DEFBLOCK);         // suffix
-        blockValue.put("Prefiks",Block.DEFBLOCK);         // preffix
-        blockValue.put("rtikkel",Block.DEFBLOCK);         // article
-        blockValue.put("Lydord",Block.DEFBLOCK);          //  Onomatopoeia
-        blockValue.put("Determinativ",Block.DEFBLOCK);    //  Determiner
-        blockValue.put("Ordtak",Block.DEFBLOCK);          //  Proverb
-        blockValue.put("Ordspråk",Block.DEFBLOCK);        //  Proverb
-        blockValue.put("Idiom",Block.DEFBLOCK);           //  Idiom
-        blockValue.put("ttrykk",Block.DEFBLOCK); // expression
-
-        blockValue.put("Eksemp",Block.EXAMPLEBLOCK);
-        blockValue.put("Brukseksempler",Block.EXAMPLEBLOCK);
-        blockValue.put("Døme",Block.EXAMPLEBLOCK);
-        blockValue.put("Forklaring",Block.EXAMPLEBLOCK);
-
-        blockValue.put("versettelse",Block.TRADBLOCK);
-
-        blockValue.put("ttale",Block.PRONBLOCK);
-
-        blockValue.put("Synonym",Block.NYMBLOCK);
-        blockValue.put("Hyponym",Block.NYMBLOCK);
-        blockValue.put("Hyperonym",Block.NYMBLOCK);
-        blockValue.put("Antonym",Block.NYMBLOCK);
-
-        blockValue.put("Andre skrivemåter",Block.WRITTENREP);
-
-        blockValue.put("Forkortelse",Block.ABBREVIATIONBLOCK);
-
-        blockValue.put("Grammatikk",Block.MORPHOBLOCK);      // grammar
-        blockValue.put("Bøyning",Block.MORPHOBLOCK);      // conjugation
-        blockValue.put("Avledede",Block.MORPHOBLOCK); // derived term
-        blockValue.put("Andre former",Block.MORPHOBLOCK); // other term
-        blockValue.put("Avløserord",Block.MORPHOBLOCK); // other term
-
-        blockValue.put("Se også",Block.IGNOREPOS); // see also
-        blockValue.put("Beslektede termer",Block.IGNOREPOS); // related term
-        blockValue.put("Område",Block.IGNOREPOS); // area
-        blockValue.put("Etymologi",Block.IGNOREPOS);
-        blockValue.put("Anagrammer",Block.IGNOREPOS); // anagrams
-        blockValue.put("Sitat",Block.IGNOREPOS); // citation
-        blockValue.put("mangler",Block.IGNOREPOS); // trad missing
+    private enum Block {
+        NOBLOCK, IGNOREPOS, DEFBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK,
+        ABBREVIATIONBLOCK, MORPHOBLOCK, WRITTENREP, EXAMPLEBLOCK
     }
 
-    protected static HashMap<String,String> blockName = new HashMap<>();
+    protected static HashMap<String, Block> blockValue = new HashMap<>();
 
-    static{
-        blockName.put("adj","djektiv");
-        blockName.put("idiom","Idiom");
-        blockName.put("ordtak","Ordtak");
-        blockName.put("ordspråk","Ordtak");
+    static {
+        blockValue.put("Egennavn", Block.DEFBLOCK);        // Noun
+        blockValue.put("ubstant", Block.DEFBLOCK);         // Noun
+        blockValue.put("ubtant", Block.DEFBLOCK);         // Noun
+        blockValue.put("Fellesnavn", Block.DEFBLOCK);      // Common noun
+        blockValue.put("Verb", Block.DEFBLOCK);            // Verb
+        blockValue.put("Gjerningsord", Block.DEFBLOCK);    // Verb
+        blockValue.put("djektiv", Block.DEFBLOCK);         // Adj
+        blockValue.put("djeltiv", Block.DEFBLOCK);         // Adj
+        blockValue.put("dverb", Block.DEFBLOCK);           // Adv
+        blockValue.put("Tallord", Block.DEFBLOCK);         // Numeral
+        blockValue.put("Pronomen", Block.DEFBLOCK);        // Pronouns
+        blockValue.put("Preposisjon", Block.DEFBLOCK);     // Preposition
+        blockValue.put("Konjunksjon", Block.DEFBLOCK);     // conjunction
+        blockValue.put("Interjeksjon", Block.DEFBLOCK);    // interjection
+        blockValue.put("Suffiks", Block.DEFBLOCK);         // suffix
+        blockValue.put("Prefiks", Block.DEFBLOCK);         // preffix
+        blockValue.put("rtikkel", Block.DEFBLOCK);         // article
+        blockValue.put("Lydord", Block.DEFBLOCK);          //  Onomatopoeia
+        blockValue.put("Determinativ", Block.DEFBLOCK);    //  Determiner
+        blockValue.put("Ordtak", Block.DEFBLOCK);          //  Proverb
+        blockValue.put("Ordspråk", Block.DEFBLOCK);        //  Proverb
+        blockValue.put("Idiom", Block.DEFBLOCK);           //  Idiom
+        blockValue.put("ttrykk", Block.DEFBLOCK); // expression
+
+        blockValue.put("Eksemp", Block.EXAMPLEBLOCK);
+        blockValue.put("Brukseksempler", Block.EXAMPLEBLOCK);
+        blockValue.put("Døme", Block.EXAMPLEBLOCK);
+        blockValue.put("Forklaring", Block.EXAMPLEBLOCK);
+
+        blockValue.put("versettelse", Block.TRADBLOCK);
+
+        blockValue.put("ttale", Block.PRONBLOCK);
+
+        blockValue.put("Synonym", Block.NYMBLOCK);
+        blockValue.put("Hyponym", Block.NYMBLOCK);
+        blockValue.put("Hyperonym", Block.NYMBLOCK);
+        blockValue.put("Antonym", Block.NYMBLOCK);
+
+        blockValue.put("Andre skrivemåter", Block.WRITTENREP);
+
+        blockValue.put("Forkortelse", Block.ABBREVIATIONBLOCK);
+
+        blockValue.put("Grammatikk", Block.MORPHOBLOCK);      // grammar
+        blockValue.put("Bøyning", Block.MORPHOBLOCK);      // conjugation
+        blockValue.put("Avledede", Block.MORPHOBLOCK); // derived term
+        blockValue.put("Andre former", Block.MORPHOBLOCK); // other term
+        blockValue.put("Avløserord", Block.MORPHOBLOCK); // other term
+
+        blockValue.put("Se også", Block.IGNOREPOS); // see also
+        blockValue.put("Beslektede termer", Block.IGNOREPOS); // related term
+        blockValue.put("Område", Block.IGNOREPOS); // area
+        blockValue.put("Etymologi", Block.IGNOREPOS);
+        blockValue.put("Anagrammer", Block.IGNOREPOS); // anagrams
+        blockValue.put("Sitat", Block.IGNOREPOS); // citation
+        blockValue.put("mangler", Block.IGNOREPOS); // trad missing
     }
 
-    private Block getBlock(String blockString){
+    protected static HashMap<String, String> blockName = new HashMap<>();
+
+    static {
+        blockName.put("adj", "djektiv");
+        blockName.put("idiom", "Idiom");
+        blockName.put("ordtak", "Ordtak");
+        blockName.put("ordspråk", "Ordtak");
+    }
+
+    private Block getBlock(String blockString) {
         Set<String> set = blockValue.keySet();
-        for(String t : set){
-            if(blockString.contains(t)){
+        for (String t : set) {
+            if (blockString.contains(t)) {
                 return blockValue.get(t);
             }
         }
@@ -166,9 +167,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
 
 
-        if(lang.equals("Norsk"))
+        if (lang.equals("Norsk"))
             wdh.initializeEntryExtraction(wiktionaryPageName);
-        else{ // unused lang
+        else { // unused lang
             return;
         }
 
@@ -178,17 +179,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Block block = Block.IGNOREPOS;
         int start = startOffset;
 
-        if(m.find()){
+        if (m.find()) {
             start = m.start();
-            if(m.group(1) != null)
+            if (m.group(1) != null)
                 blockString = m.group(1).trim();
             block = getBlock(blockString);
-            extractDefinitions(startOffset,start);
+            extractDefinitions(startOffset, start);
         }
         while (m.find()) {
             extractDataBlock(start, m.start(), block, blockString);
             start = m.end();
-            if(m.group(1) != null)
+            if (m.group(1) != null)
                 blockString = m.group(1).trim();
             block = getBlock(blockString);
         }
@@ -202,15 +203,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case NOBLOCK:
                 break;
             case IGNOREPOS:
-                if(blockString != null && blockString.contains("tymol")){
-                    extractDefinitions(startOffset,endOffset);
+                if (blockString != null && blockString.contains("tymol")) {
+                    extractDefinitions(startOffset, endOffset);
                 }
                 break;
             case DEFBLOCK:
                 extractDefinitions(startOffset, endOffset, blockString);
                 break;
             case EXAMPLEBLOCK:
-                extractExample(startOffset,endOffset);
+                extractExample(startOffset, endOffset);
                 break;
             case NYMBLOCK:
                 extractNyms(startOffset, endOffset, blockString);
@@ -250,14 +251,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher m = pronPattern.matcher(pageContent);
         m.region(start, end);
 
-        while(m.find()){
+        while (m.find()) {
             String[] tmp = m.group(1).split("\\|");
-            if(tmp[0].contains("Verb")){
+            if (tmp[0].contains("Verb")) {
                 continue;
             }
-            switch(tmp[0]){
+            switch (tmp[0]) {
                 case "IPA":
-                    if(tmp.length > 1)
+                    if (tmp.length > 1)
                         wdh.registerPronunciation(tmp[1], "no-fonipa");
                     break;
                 case "lyd":            // audio file
@@ -292,9 +293,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         m.region(start, end);
         WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
 
-        while(m.find()){
-            String written = m.group(1).replaceAll("\\*","").trim();
-            if(!written.equals("")) {
+        while (m.find()) {
+            String written = m.group(1).replaceAll("\\*", "").trim();
+            if (!written.equals("")) {
                 dwdh.addWrittenRep(written);
             }
         }
@@ -305,23 +306,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         m.region(start, end);
         String nymRel = "";
         String nym = "";
-        while(m.find()){
-            if(blockString.contains("Synonym")){
+        while (m.find()) {
+            if (blockString.contains("Synonym")) {
                 nymRel = "syn";
-            }
-            else if(blockString.contains("Hyperonym")){
+            } else if (blockString.contains("Hyperonym")) {
                 nymRel = "hyper";
-            }
-            else if(blockString.contains("Hyponym")){
+            } else if (blockString.contains("Hyponym")) {
                 nymRel = "hypo";
-            }
-            else if(blockString.contains("Antonym")){
+            } else if (blockString.contains("Antonym")) {
                 nymRel = "ant";
             }
-            if(m.group(1) != null){
+            if (m.group(1) != null) {
                 nym = m.group(1).replaceAll("\\*", "").trim();
             }
-            if(!nym.equals(""))
+            if (!nym.equals(""))
                 wdh.registerNymRelation(nym, nymRel);
         }
     }
@@ -331,17 +329,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         m.region(start, end);
 
         String blockString = null;
-        while(m.find()){
+        while (m.find()) {
             String[] tmps = m.group(1).split("\\|");
-            String tmp = tmps[0].replaceAll("\\{","").trim();
-            if(tmp.contains("overs") || tmp.contains("topp") || tmp.equals("o")){
+            String tmp = tmps[0].replaceAll("\\{", "").trim();
+            if (tmp.contains("overs") || tmp.contains("topp") || tmp.equals("o")) {
                 extractTranslations(start, end);
                 return;
             }
-            if(tmp.contains("mangler")){
+            if (tmp.contains("mangler")) {
                 continue;
             }
-            switch(tmp){
+            switch (tmp) {
                 case "-sub-": // noun
                 case "no-sub": // noun
                 case "nb-sub": // noun
@@ -428,8 +426,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     blockString = "Sitat";
                     break;
                 case "infl":
-                    for(String t : tmps){
-                        if(blockName.containsKey(t.trim())){
+                    for (String t : tmps) {
+                        if (blockName.containsKey(t.trim())) {
                             blockString = blockName.get(t.trim());
                             break;
                         }
@@ -442,9 +440,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 case "verb-no": // morpho
                     return;
                 default:
-                   // log.debug("Unknown blockPos {} --in-- {}", tmp, this.wiktionaryPageName);
+                    // log.debug("Unknown blockPos {} --in-- {}", tmp, this.wiktionaryPageName);
             }
-            if(blockString != null){
+            if (blockString != null) {
                 extractDefinitions(start, end, blockString);
             }
         }
@@ -459,26 +457,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         dwdh.addPartOfSpeech(blockString);
 
         int startSample = start;
-        if(m.find()){
-            dwdh.addPOSinfo(m.group(1).replaceAll("\\{\\}",""));
+        if (m.find()) {
+            dwdh.addPOSinfo(m.group(1).replaceAll("\\{\\}", ""));
         }
 
         m = defPattern.matcher(pageContent);
         m.region(start, end);
         int senseNum = 1;
-        while(m.find()) {
+        while (m.find()) {
             extractExample(startSample, m.start());
             String def = cleanUpMarkup(m.group(1).trim());
             int index = def.indexOf("\n[[");
-            if(index > 0)
+            if (index > 0)
                 def = def.substring(0, def.indexOf("\n[["));
-            wdh.registerNewDefinition(def, ""+senseNum);
+            wdh.registerNewDefinition(def, "" + senseNum);
             senseNum++;
             startSample = m.end();
         }
 
-        if(m.hitEnd()){
-            if(startSample < end) {
+        if (m.hitEnd()) {
+            if (startSample < end) {
                 extractExample(startSample, end);
             }
         }
@@ -490,18 +488,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher exampleMatcher = examplePattern.matcher(this.pageContent);
         exampleMatcher.region(start, end);
         String ex = null;
-        while(exampleMatcher.find()){
-            if(exampleMatcher.group(1)!=null) {
+        while (exampleMatcher.find()) {
+            if (exampleMatcher.group(1) != null) {
                 ex = exampleMatcher.group(1).trim();
                 ex = ex.substring(2, ex.length());
                 ex = ex.replaceAll("\'", "");
-            }
-            else if(exampleMatcher.group(2)!=null){
+            } else if (exampleMatcher.group(2) != null) {
                 ex = exampleMatcher.group(2).trim();
                 ex = ex.replaceAll("\'", "");
             }
-            if(ex != null) {
-                if(ex.contains("Se også")){
+            if (ex != null) {
+                if (ex.contains("Se også")) {
                     return;
                 }
                 dwdh.registerExample(ex);
@@ -509,26 +506,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
     }
 
-    protected void extractTranslations(int start, int end){
+    protected void extractTranslations(int start, int end) {
         Matcher trad = tradPattern.matcher(pageContent);
         trad.region(start, end);
         String currentGloss = wiktionaryPageName;
 
-        while(trad.find()) {
+        while (trad.find()) {
             if (trad.group(1) != null) {
                 String lang = trad.group(1);
-                if(lang.length() > 2){
+                if (lang.length() > 2) {
                     lang = NorskLangToCode.threeLettersCode(trad.group(1));
                 }
                 String tmp[] = trad.group(2).split("\\|");
                 String word;
-                if(tmp.length == 2){
+                if (tmp.length == 2) {
                     word = tmp[0];
-                }
-                else{
+                } else {
                     word = trad.group(2);
                 }
-                if(lang != null && word != null)
+                if (lang != null && word != null)
                     wdh.registerTranslation(lang, currentGloss, null, word);
             } else if (trad.group(3) != null) {
                 String[] tTrad = trad.group(3).split("\\|");

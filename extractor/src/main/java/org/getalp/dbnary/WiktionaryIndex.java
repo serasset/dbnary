@@ -319,7 +319,7 @@ public class WiktionaryIndex implements Map<String, String> {
     public String getTextOfPage(Object key) {
         String skey = (String) key;
         boolean notMainSpace = skey.contains(":");
-	Element element = cache.get(skey);
+        Element element = cache.get(skey);
         if (element != null && notMainSpace) {
             return (String) element.getObjectValue();
         }

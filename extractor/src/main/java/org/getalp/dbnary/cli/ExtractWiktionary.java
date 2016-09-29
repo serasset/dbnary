@@ -100,8 +100,8 @@ public class ExtractWiktionary {
      * @throws WiktionaryIndexerException ...
      */
     public static void main(String[] args) throws WiktionaryIndexerException, IOException {
-	
-	
+
+
         ExtractWiktionary cliProg = new ExtractWiktionary();
         cliProg.loadArgs(args);
         cliProg.extract();
@@ -240,11 +240,11 @@ public class ExtractWiktionary {
                     if (!title.equals("")) {
                         nbPages++;
                         int nbnodes = wdh.nbEntries();
-			try {
+                        try {
                             we.extractData(title, page);
-			} catch (RuntimeException ex) {
-			    System.err.println(ex.getMessage());
-			}
+                        } catch (RuntimeException ex) {
+                            System.err.println(ex.getMessage());
+                        }
                         if (nbnodes != wdh.nbEntries()) {
                             totalRelevantTime += (System.currentTimeMillis() - relevantStartTime);
                             nbRelevantPages++;

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class GrepInWiktionary {
 
-        public static void main(String[] args) throws WiktionaryIndexerException {
+    public static void main(String[] args) throws WiktionaryIndexerException {
         if (args.length < 2) {
             printUsage();
             System.exit(1);

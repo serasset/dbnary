@@ -39,9 +39,9 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, posResource(pat));
     }
 
-    public void addTranslation(String lang, String gloss, String usage, String word){
-        if(currentLexEntry == null){
-           addPartOfSpeech("none");
+    public void addTranslation(String lang, String gloss, String usage, String word) {
+        if (currentLexEntry == null) {
+            addPartOfSpeech("none");
         }
         registerTranslation(lang, gloss, usage, word);
     }

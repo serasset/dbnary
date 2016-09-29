@@ -43,8 +43,8 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     }
 
     public void addExtraPartOfSpeech(String pos) {
-        if(pos.equals("PAGENAME") ||
-                pos.startsWith("wikipedia")||
+        if (pos.equals("PAGENAME") ||
+                pos.startsWith("wikipedia") ||
                 pos.startsWith("Wikipedia")) {
             return;
         }
@@ -56,10 +56,10 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, posResource(pat));
     }
 
-    protected void addSpecificExtraPOS(String[] tab){
-        for(String t : tab){
+    protected void addSpecificExtraPOS(String[] tab) {
+        for (String t : tab) {
             String tmp[] = t.split("=");
-            if(tmp.length ==2){
+            if (tmp.length == 2) {
                 switch (tmp[0]) {
                     case "k":
                         addGender(tmp[1]);
@@ -78,8 +78,8 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
     public void addPOSinfo(String s) {
         String[] infos = s.split("\\|");
-        if(infos.length > 0){
-            if(infos[0].equals("se også") ||
+        if (infos.length > 0) {
+            if (infos[0].equals("se også") ||
                     infos[0].contains("wikipedia") ||
                     infos[0].equalsIgnoreCase("grunnstoffer") ||
                     infos[0].equalsIgnoreCase("andre former") ||
@@ -87,27 +87,26 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                     infos[0].contains("feilstaving") ||
                     infos[0].contains("bøyningsform") ||
                     infos[0].contains("-et")
-                    ){
+                    ) {
                 return;
             }
-            if(infos[0].equals("infl")){
+            if (infos[0].equals("infl")) {
                 addSpecificExtraPOS(infos);
-            }
-            else {
+            } else {
                 Set<String> set = posAndTypeValueMap.keySet();
-                for(String t : set) {
+                for (String t : set) {
                     if (infos[0].contains(t)) {
                         addExtraPartOfSpeech(t);
                         break;
                     }
                 }
             }
-            if(infos.length > 1) {
+            if (infos.length > 1) {
                 String pair[] = infos[1].split("=");
-                if(pair.length == 2){
-                    switch (pair[0].trim()){
+                if (pair.length == 2) {
+                    switch (pair[0].trim()) {
                         case "ref":
-                            switch(pair[1].trim()){
+                            switch (pair[1].trim()) {
                                 case "x":
                                 case "y":
                                     // log.debug("Unused reflexive info {} --in-- {}", infos[1], this.currentLexEntry());
@@ -150,9 +149,8 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                         default:
                             log.debug("Unknown POS Info {} --in-- {}", infos[1], this.currentLexEntry());
                     }
-                }
-                else {
-                    if(infos[1].replaceAll("\\d","").equals("")){
+                } else {
+                    if (infos[1].replaceAll("\\d", "").equals("")) {
                         return;
                     }
                     addInfo(infos[1]);
@@ -161,8 +159,8 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         }
     }
 
-    protected void addInfo(String s){
-        switch (s.trim()){
+    protected void addInfo(String s) {
+        switch (s.trim()) {
             case "tall":
             case "tallord":
                 addExtraPartOfSpeech("tall");
@@ -249,8 +247,8 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         }
     }
 
-    protected void addGender(String s){
-        s = s.replaceAll("\'","");
+    protected void addGender(String s) {
+        s = s.replaceAll("\'", "");
         switch (s) {
             case "m":
                 aBox.add(aBox.createStatement(currentLexEntry, LexinfoOnt.gender, LexinfoOnt.masculine));
@@ -297,18 +295,18 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         }
     }
 
-    public void addWrittenRep(String word){
-        if(currentLexEntry != null)
-           aBox.add(currentLexEntry, LemonOnt.writtenRep, word, extractedLang);
+    public void addWrittenRep(String word) {
+        if (currentLexEntry != null)
+            aBox.add(currentLexEntry, LemonOnt.writtenRep, word, extractedLang);
     }
 
-    public void addAbbrev(String word){
-        if(currentLexEntry != null)
+    public void addAbbrev(String word) {
+        if (currentLexEntry != null)
             aBox.add(currentLexEntry, LexinfoOnt.abbreviationFor, word);
     }
 
-    public void registerExample(String ex){
-        if(currentSense != null)
+    public void registerExample(String ex) {
+        if (currentSense != null)
             registerExample(ex, new HashMap<Property, String>());
     }
 }

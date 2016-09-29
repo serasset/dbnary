@@ -78,13 +78,11 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("suffix", new PosAndType(LexinfoOnt.suffix, LemonOnt.LexicalEntry));
 
 
-
         posAndTypeValueMap.put("acron", new PosAndType(null, LemonOnt.LexicalEntry));
         posAndTypeValueMap.put("acronim", new PosAndType(null, LemonOnt.LexicalEntry));
         posAndTypeValueMap.put("acronym", new PosAndType(null, LemonOnt.LexicalEntry));
         posAndTypeValueMap.put("espr", new PosAndType(null, LemonOnt.LexicalEntry));
         posAndTypeValueMap.put("espress", new PosAndType(null, LemonOnt.LexicalEntry));
-
 
 
         // For translation glosses

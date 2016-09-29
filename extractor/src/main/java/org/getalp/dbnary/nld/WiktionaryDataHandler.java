@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author malick
- *
  */
 public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
@@ -52,10 +51,10 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("Interjection", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
         posAndTypeValueMap.put("Phrase", new PosAndType(LexinfoOnt.phraseologicalUnit, LemonOnt.Phrase));
         posAndTypeValueMap.put("Idiom", new PosAndType(LexinfoOnt.idiom, LemonOnt.Phrase));
-        
+
         // ajouter
         posAndTypeValueMap.put("pronom-pers", new PosAndType(LexinfoOnt.personalPronoun, LexinfoOnt.Pronoun));
-        
+
         // Initialism ?
     }
 

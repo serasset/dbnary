@@ -1,30 +1,22 @@
 /**
- * 
+ *
  */
 package org.getalp.dbnary.fra;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.getalp.dbnary.*;
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.wiki.WikiPatterns;
-import org.getalp.dbnary.wiki.WikiTool;
-
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import org.getalp.dbnary.*;
+import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author serasset
- *
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
@@ -51,9 +43,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private static HashMap<String, String> posMarkers;
     private static HashSet<String> ignorablePosMarkers;
     private static HashSet<String> sectionMarkers;
-    
+
     private final static HashMap<String, String> nymMarkerToNymName;
-    
+
     private static HashSet<String> unsupportedMarkers = new HashSet<String>();
 
     public static final Locale frLocale = new Locale("fr");
@@ -68,14 +60,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     static {
-    	languageSectionPatternString = new StringBuilder()
-        .append("(?:")
-        .append(languageSectionPatternString1)
-        .append(")|(?:")
-        .append(languageSectionPatternString2)
-        .append(")").toString();
-        
-        posMarkers = new HashMap<String,String>(130);
+        languageSectionPatternString = new StringBuilder()
+                .append("(?:")
+                .append(languageSectionPatternString1)
+                .append(")|(?:")
+                .append(languageSectionPatternString2)
+                .append(")").toString();
+
+        posMarkers = new HashMap<String, String>(130);
         ignorablePosMarkers = new HashSet<String>(130);
 
         addPos("-déf-");
@@ -199,8 +191,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addPos("adjectif", "-adj-");
         addPos("adj", "-adj-");
         addPos("adjectif qualificatif", "-adj-");
- 
-    // ADVERBES
+
+        // ADVERBES
         addPos("adverbe", "-adv-");
         addPos("adv", "-adv-");
         addPos("adverbe interrogatif");
@@ -212,17 +204,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addPos("adverbe relatif");
         addPos("adv-rel");
         addPos("adverbe rel");
- 
-    // CONJONCTIONS
+
+        // CONJONCTIONS
         addPos("conjonction");
         // addPos("conj");
         addPos("conjonction de coordination");
         addPos("conj-coord");
         addPos("conjonction coo");
- 
+
         addPos("copule");
- 
-    // DÉTERMINANTS
+
+        // DÉTERMINANTS
         addPos("adjectif démonstratif");
         addPos("adj-dém");
         addPos("adjectif dém");
@@ -243,7 +235,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addPos("adjectif possessif");
         addPos("adj-pos");
         addPos("adjectif pos");
- 
+
         addPos("article");
         addPos("art");
         addPos("article défini");
@@ -255,8 +247,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addPos("article partitif");
         addPos("art-part");
         addPos("article par");
- 
-    // NOMS
+
+        // NOMS
         addPos("nom", "-nom-");
         addPos("substantif", "-nom-");
         addPos("nom commun", "-nom-");
@@ -271,11 +263,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addPos("nom scient");
         addPos("prénom");
 
-    // PRÉPOSITION
+        // PRÉPOSITION
         addPos("préposition");
         addPos("prép");
- 
-    // PRONOMS
+
+        // PRONOMS
         addPos("pronom");
         addPos("pronom-adjectif");
         addPos("pronom démonstratif");
@@ -299,22 +291,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addPos("pronom relatif");
         addPos("pronom-rel");
         addPos("pronom rel");
- 
-    // VERBES
+
+        // VERBES
         addPos("verbe", "-verb-");
         addPos("verb", "-verb-");
         addPos("verbe pronominal");
         addPos("verb-pr");
         addPos("verbe pr");
- 
-    // EXCLAMATIONS
+
+        // EXCLAMATIONS
         addPos("interjection");
         addPos("interj");
         addPos("onomatopée");
         addPos("onoma");
         addPos("onom");
- 
-    // PARTIES   TODO: Extract affixes in French
+
+        // PARTIES   TODO: Extract affixes in French
 //        addPos("affixe");
 //        addPos("aff");
 //        addPos("circonfixe");
@@ -343,7 +335,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 //        addPos("pré-verbe");
 //        addPos("pré-nom");
 
-    // PHRASES
+        // PHRASES
         addPos("locution");
         addPos("loc");
         addPos("locution-phrase");
@@ -352,18 +344,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addPos("locution phrase");
         addPos("proverbe");
         addPos("prov");
- 
-    // DIVERS
+
+        // DIVERS
         addPos("quantificateur");
         addPos("quantif");
         addPos("variante typographique");
         addPos("var-typo");
         addPos("variante typo");
         addPos("variante par contrainte typographique");
- 
-    // CARACTÈRES
+
+        // CARACTÈRES
         ignorablePosMarkers.add("lettre");
- 
+
         ignorablePosMarkers.add("symbole");
         ignorablePosMarkers.add("symb");
         addPos("classificateur");
@@ -375,12 +367,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addPos("sinogramme");
         addPos("sinog");
         addPos("sino");
- 
+
         addPos("erreur");
         addPos("faute");
-        addPos("faute d'orthographe"); 
+        addPos("faute d'orthographe");
         addPos("faute d’orthographe");
- 
+
         // Spéciaux
         addPos("gismu");
         addPos("rafsi");
@@ -394,7 +386,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         nymMarkerToNymName.put("-syn-", "syn");
         nymMarkerToNymName.put("-q-syn-", "qsyn");
         nymMarkerToNymName.put("-ant-", "ant");
-        
+
 
         nymMarkerToNymName.put("méronymes", "mero");
         nymMarkerToNymName.put("méro", "mero");
@@ -440,13 +432,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         sectionMarkers.add("-compos-");
         // DONE: prendre en compte la variante orthographique (différences avec -ortho-alt- ?)
         sectionMarkers.add("-var-ortho-");
-        
-       // TODO trouver tous les modèles de section...
-        
+
+        // TODO trouver tous les modèles de section...
+
         // affixesToDiscardFromLinks = new HashSet<String>();
         // affixesToDiscardFromLinks.add("s");
     }
-    
+
     public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
     }
@@ -680,8 +672,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 return;
 
             wdh.initializeEntryExtraction(wiktionaryPageName, lang);
-        } else
-        {
+        } else {
             if (!"fr".equals(lang))
                 return;
 
@@ -867,12 +858,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         do {
             if (page.charAt(curPos) == '}') {
-                if (page.charAt(curPos+1) == '}') {
+                if (page.charAt(curPos + 1) == '}') {
                     openedBrackets--;
                     curPos++;
                 }
             } else if (page.charAt(curPos) == '{') {
-                if (page.charAt(curPos+1) == '{') {
+                if (page.charAt(curPos + 1) == '{') {
                     openedBrackets++;
                     curPos++;
                 }
@@ -1096,7 +1087,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void protectedUnion(HashSet<PropertyObjectPair> union, HashSet<PropertyObjectPair> inflection) {
         // Check if common inflections are compatible with extracted infos
         for (PropertyObjectPair pair : inflection) {
-            if (union.contains(pair))  {
+            if (union.contains(pair)) {
                 continue; // Data is already available
             } else if (containsProperty(union, pair.getKey())) {
                 // Data does not contain the pair, but contains another... ==> incoherent ?

@@ -10,9 +10,11 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
 
-public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
+public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
 
     private Logger log = LoggerFactory.getLogger(SerboCroatianMorphoExtractorWikiModel.class);
 
@@ -20,7 +22,7 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
 
     SerboCroatianInflectionData inflectionData;
 
-    public SerboCroatianMorphoExtractorWikiModel(IWiktionaryDataHandler wdh,WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+    public SerboCroatianMorphoExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
         super(wi, locale, imageBaseURL, linkBaseURL);
         this.wdh = wdh;
         inflectionData = new SerboCroatianInflectionData();
@@ -37,14 +39,13 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
         for (Element elt : elts) {
             Elements tables = elt.select("table");
             String context;
-            if(tables != null){
-                if(tables.size() == 0) {
+            if (tables != null) {
+                if (tables.size() == 0) {
                     context = elt.text().trim();
-                }
-                else{
+                } else {
                     context = null;
                 }
-                for(Element eltT : tables) {
+                for (Element eltT : tables) {
                     parseTable(eltT, context);
                 }
             }
@@ -53,29 +54,29 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
         WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
 
         String pageName = getPageName();
-        if(dwdh.toBeRegisterFlexion.containsKey(pageName)){
+        if (dwdh.toBeRegisterFlexion.containsKey(pageName)) {
             HashMap<String, String> tmp = dwdh.toBeRegisterFlexion.get(pageName);
-            for(String key : tmp.keySet()){
+            for (String key : tmp.keySet()) {
                 add(pageName, key, tmp.get(key));
                 dwdh.toBeRegisterFlexion.remove(pageName);
             }
         }
     }
 
-    public void add(String canonicalForm, String flexionForm, String flexionProperties){
+    public void add(String canonicalForm, String flexionForm, String flexionProperties) {
         WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
-        if(dwdh.alreadyRegisteredFlexion.containsKey(canonicalForm)){
+        if (dwdh.alreadyRegisteredFlexion.containsKey(canonicalForm)) {
             ArrayList<String> tmp = dwdh.alreadyRegisteredFlexion.get(canonicalForm);
-            if(!tmp.contains(flexionForm)){
-                registerInflexion(canonicalForm,flexionForm,flexionProperties);
+            if (!tmp.contains(flexionForm)) {
+                registerInflexion(canonicalForm, flexionForm, flexionProperties);
                 tmp.add(flexionForm);
-                dwdh.alreadyRegisteredFlexion.put(canonicalForm,tmp);
+                dwdh.alreadyRegisteredFlexion.put(canonicalForm, tmp);
             }
-        }else{
+        } else {
             ArrayList<String> tmp = new ArrayList<>();
-            registerInflexion(canonicalForm,flexionForm,flexionProperties);
+            registerInflexion(canonicalForm, flexionForm, flexionProperties);
             tmp.add(flexionForm);
-            dwdh.alreadyRegisteredFlexion.put(canonicalForm,tmp);
+            dwdh.alreadyRegisteredFlexion.put(canonicalForm, tmp);
         }
     }
 
@@ -85,8 +86,8 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
         String pos = "";
 
         String[] tmp = flexionProperties.split(" ");
-        for(String t : tmp){
-            switch(t){
+        for (String t : tmp) {
+            switch (t) {
                 case "imenice":
                     pos = "Imenica";
                     break;
@@ -211,7 +212,7 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
             }
         }
 
-       dwdh.registerInflection("hbs", pos, flexionForm,
+        dwdh.registerInflection("hbs", pos, flexionForm,
                 canonicalForm, 1, inflectionData.toPropertyObjectMap());
     }
 
@@ -225,28 +226,27 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
         int size;
         boolean hasContextTop = false;
         String prevContext = null;
-        for(Element cells : rows){
-            if(isHeader(cells)){
+        for (Element cells : rows) {
+            if (isHeader(cells)) {
                 ArrayList<String> ctxtTmp = new ArrayList<>();
                 for (Element cell : cells.children()) {
                     ctxtTmp.add(cell.text());
                 }
                 contextTop.add(ctxtTmp);
                 hasContextTop = true;
-            }
-            else {
-                if(!hasContextTop){
+            } else {
+                if (!hasContextTop) {
                     ArrayList<String> ctxtTmp = new ArrayList<>();
                     boolean allHeader = true;
                     for (Element cell : cells.children()) {
-                        if(isHeader(cell))
+                        if (isHeader(cell))
                             ctxtTmp.add(cell.text());
                         else
                             allHeader = false;
-                        if(!allHeader)
+                        if (!allHeader)
                             break;
                     }
-                    if(allHeader) {
+                    if (allHeader) {
                         contextTop = new ArrayList<>();
                         contextTop.add(ctxtTmp);
                     }
@@ -255,20 +255,20 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
                 Elements cellsL = cells.children();
                 size = cellsL.size();
                 for (Element cell : cellsL) {
-                    if(isHeader(cell)) {
-                        if(!toogleHeader){
+                    if (isHeader(cell)) {
+                        if (!toogleHeader) {
                             contextLeft = new ArrayList<>();
                             int r = getRawspan(cell);
-                            if(r != 1){
+                            if (r != 1) {
                                 prevContext = cell.text();
                                 rawspan = r;
                             }
                             toogleHeader = true;
                         }
-                        if(prevContext != null && contextLeft.size() == 0 && rawCurr != 1){
+                        if (prevContext != null && contextLeft.size() == 0 && rawCurr != 1) {
                             contextLeft.add(prevContext);
                         }
-                        if(rawCurr == rawspan+1){
+                        if (rawCurr == rawspan + 1) {
                             rawspan = 1;
                             rawCurr = 0;
                             prevContext = null;
@@ -276,9 +276,8 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
                         rawCurr++;
                         contextLeft.add(cell.text());
                         size--;
-                    }
-                    else{
-                        if(toogleHeader) {
+                    } else {
+                        if (toogleHeader) {
                             curr = 0;
                             toogleHeader = false;
                         }
@@ -293,13 +292,13 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
     protected void checkOtherForm(String word, int curr, int size,
                                   ArrayList<ArrayList<String>> contextTop,
                                   ArrayList<String> contextLeft,
-                                  String contextDiv){
+                                  String contextDiv) {
         inflectionData.init();
         addContextDiv(contextDiv);
         addContextLeft(contextLeft);
-        for(ArrayList<String> contextTopCurr : contextTop){
-            int sizeContextCurr = contextTopCurr.size()-1;
-            if(sizeContextCurr > 0) {
+        for (ArrayList<String> contextTopCurr : contextTop) {
+            int sizeContextCurr = contextTopCurr.size() - 1;
+            if (sizeContextCurr > 0) {
                 int sizeSubDiv = size / sizeContextCurr;
                 int col = 1;
                 int j = curr;
@@ -307,30 +306,28 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
                     col++;
                     j -= sizeSubDiv;
                 }
-                if(contextLeft.contains("neživo živo")){
+                if (contextLeft.contains("neživo živo")) {
                     String[] tmp = word.split(" ");
-                    if(tmp.length == 2){
+                    if (tmp.length == 2) {
                         inflectionData.anim = SerboCroatianInflectionData.Animate.INANIMATE;
                         addOtherForm(tmp[0], contextTopCurr.get(0), contextTopCurr.get(col));
                         inflectionData.anim = SerboCroatianInflectionData.Animate.ANIMATE;
                         addOtherForm(tmp[1], contextTopCurr.get(0), contextTopCurr.get(col));
                         inflectionData.anim = SerboCroatianInflectionData.Animate.NOTHING;
-                    }
-                    else{
+                    } else {
                         addOtherForm(word, contextTopCurr.get(0), contextTopCurr.get(col));
                     }
-                }
-                else
+                } else
                     addOtherForm(word, contextTopCurr.get(0), contextTopCurr.get(col));
             }
         }
     }
 
-    protected void addOtherForm(String word, String contextHeader, String contextTop){
-        if(contextHeader.startsWith("Infinitiv")){
+    protected void addOtherForm(String word, String contextHeader, String contextTop) {
+        if (contextHeader.startsWith("Infinitiv")) {
             return;
         }
-        switch(contextHeader){
+        switch (contextHeader) {
             case "jednina":
             case "Jednina":
                 inflectionData.number = SerboCroatianInflectionData.GNumber.SINGULAR;
@@ -354,7 +351,7 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
                 log.debug("Unknown contextHeader {} --in-- {}", contextHeader, wdh.currentLexEntry());
         }
 
-        switch (contextTop){
+        switch (contextTop) {
             case "jednina":
             case "Jednina":
                 inflectionData.number = SerboCroatianInflectionData.GNumber.SINGULAR;
@@ -396,22 +393,22 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
                 log.debug("Unknown contextTop {} --in-- {}", contextTop, wdh.currentLexEntry());
         }
 
-        if(word != null &&
+        if (word != null &&
                 !word.equals(("")) &&
                 !word.contains("1   Standardni hrvatski zapis;") &&
-                !word.contains("2   Za muški rod; u slučaju vršitelja radnje")){
-            word = word.replaceAll("\\d","");
+                !word.contains("2   Za muški rod; u slučaju vršitelja radnje")) {
+            word = word.replaceAll("\\d", "");
             wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), word,
                     wdh.currentLexEntry(), 1, inflectionData.toPropertyObjectMap());
         }
     }
 
-    protected void addContextDiv(String contextDiv){
-        if(contextDiv == null){
+    protected void addContextDiv(String contextDiv) {
+        if (contextDiv == null) {
             return;
         }
 
-        switch (contextDiv){
+        switch (contextDiv) {
             case "oblici pozitiva, neodređeni vid":
                 inflectionData.deg = SerboCroatianInflectionData.Degree.POSITIV;
                 inflectionData.mode = SerboCroatianInflectionData.Mode.NEODREDENI;
@@ -431,12 +428,12 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
         }
     }
 
-    protected void addContextLeft(ArrayList<String> contextLeft){
-        for(String ctxtLeft : contextLeft){
-            if(ctxtLeft.startsWith("Glagolski")){
+    protected void addContextLeft(ArrayList<String> contextLeft) {
+        for (String ctxtLeft : contextLeft) {
+            if (ctxtLeft.startsWith("Glagolski")) {
                 continue;
             }
-            switch(ctxtLeft){
+            switch (ctxtLeft) {
                 case "nominativ":
                 case "Nominativ":
                     inflectionData.cas = SerboCroatianInflectionData.Cas.NOMINATIF;
@@ -486,10 +483,9 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
                     inflectionData.tense = SerboCroatianInflectionData.Tense.IMPERATIV;
                     break;
                 case "Prezent": // first or second
-                    if(contextLeft.size() == 2){
+                    if (contextLeft.size() == 2) {
                         inflectionData.subTense = SerboCroatianInflectionData.SubTense.PREZENT;
-                    }
-                    else{
+                    } else {
                         inflectionData.tense = SerboCroatianInflectionData.Tense.PREZENT;
                     }
                     break;
@@ -521,15 +517,14 @@ public class SerboCroatianMorphoExtractorWikiModel  extends DbnaryWikiModel{
         }
     }
 
-    protected boolean isHeader(Element cell){
+    protected boolean isHeader(Element cell) {
         return !cell.attr("bgcolor").trim().equals("") || cell.attr("style").startsWith("background");
     }
 
-    protected int getRawspan(Element cell){
+    protected int getRawspan(Element cell) {
         String rspan = cell.attr("rowspan");
-        if(rspan != null && !rspan.equals("")){
+        if (rspan != null && !rspan.equals("")) {
             return Integer.parseInt(rspan);
-        }
-        else return 1;
+        } else return 1;
     }
 }

@@ -1,7 +1,14 @@
 /**
- * 
+ *
  */
 package org.getalp.dbnary.ita;
+
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.LangTools;
+import org.getalp.dbnary.wiki.WikiPatterns;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -9,42 +16,34 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.LangTools;
-import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.wiki.WikiPatterns;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * @author serasset
- *
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-	protected final static String level2HeaderPatternString = "^==([^=].*[^=])==$";
-		   
-	protected final static String entrySectionPatternString ;	
-	 
-	static {
-		 
-		entrySectionPatternString = 
-		            new StringBuilder().append("\\{\\{\\s*-")
-		            .append("([^\\}\\|\n\r]*)-\\s*(?:\\|([^\\}\n\r]*))?")
-		            .append("\\}\\}")
-		            .toString();
-		
-	}
+    protected final static String level2HeaderPatternString = "^==([^=].*[^=])==$";
 
-	protected final static String wikiSectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
+    protected final static String entrySectionPatternString;
+
+    static {
+
+        entrySectionPatternString =
+                new StringBuilder().append("\\{\\{\\s*-")
+                        .append("([^\\}\\|\n\r]*)-\\s*(?:\\|([^\\}\n\r]*))?")
+                        .append("\\}\\}")
+                        .toString();
+
+    }
+
+    protected final static String wikiSectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
 
     private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK}
 
-	    // TODO: handle pronounciation
-	    protected final static String pronounciationPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
-	    
+    // TODO: handle pronounciation
+    protected final static String pronounciationPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
+
     public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
     }
@@ -52,30 +51,30 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // protected final static Pattern languageSectionPattern;
     //protected final static HashSet<String> nymMarkers;
     protected final static HashMap<String, String> nymMarkerToNymName;
-    		
+
     static {
 
-         // TODO: -acron-, -acronim-, -acronym-, -espr-, -espress- mark locution as phrases
-                  
-         nymMarkerToNymName = new HashMap<String,String>(20);
-         nymMarkerToNymName.put("syn", "syn");
-         nymMarkerToNymName.put("sin", "syn");
-         nymMarkerToNymName.put("ant", "ant");
-         nymMarkerToNymName.put("ipon", "hypo");
-         nymMarkerToNymName.put("iperon", "hypo");
-         nymMarkerToNymName.put("Hipônimos", "hypo");
-         nymMarkerToNymName.put("Hiperônimos", "hyper");
-         nymMarkerToNymName.put("Sinónimos", "syn");
-         nymMarkerToNymName.put("Antónimos", "ant");
-         nymMarkerToNymName.put("Hipónimos", "hypo");
-         nymMarkerToNymName.put("Hiperónimos", "hyper");
-       
+        // TODO: -acron-, -acronim-, -acronym-, -espr-, -espress- mark locution as phrases
+
+        nymMarkerToNymName = new HashMap<String, String>(20);
+        nymMarkerToNymName.put("syn", "syn");
+        nymMarkerToNymName.put("sin", "syn");
+        nymMarkerToNymName.put("ant", "ant");
+        nymMarkerToNymName.put("ipon", "hypo");
+        nymMarkerToNymName.put("iperon", "hypo");
+        nymMarkerToNymName.put("Hipônimos", "hypo");
+        nymMarkerToNymName.put("Hiperônimos", "hyper");
+        nymMarkerToNymName.put("Sinónimos", "syn");
+        nymMarkerToNymName.put("Antónimos", "ant");
+        nymMarkerToNymName.put("Hipónimos", "hypo");
+        nymMarkerToNymName.put("Hiperónimos", "hyper");
+
     }
 
     protected final static Pattern sectionPattern;
 
     // TODO: handle pronunciation in italian
-	private final static Pattern pronunciationPattern;
+    private final static Pattern pronunciationPattern;
     protected final static Pattern level2HeaderPattern;
 
     static {
@@ -90,39 +89,39 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private String currentNym = null;
 
-	private boolean isCorrectPOS;
+    private boolean isCorrectPOS;
 
     /* (non-Javadoc)
      * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
      */
     @Override
     public void extractData() {
-    	Matcher l1 = level2HeaderPattern.matcher(pageContent);
-    	int itaStart = -1;
+        Matcher l1 = level2HeaderPattern.matcher(pageContent);
+        int itaStart = -1;
         wdh.initializePageExtraction(wiktionaryPageName);
-    	while (l1.find()) {
-    		// System.err.println(l1.group());
-    		if (-1 != itaStart) {
-    			// System.err.println("Parsing previous italian entry");
-    			extractItalianData(itaStart, l1.start());
-    			itaStart = -1;
-    		}
-    		if (isItalian(l1)) {
-    			itaStart = l1.end();
-    		}
-    	}
-    	if (-1 != itaStart) {
-			//System.err.println("Parsing previous italian entry");
-			extractItalianData(itaStart, pageContent.length());
-		}
-    	wdh.finalizePageExtraction();
+        while (l1.find()) {
+            // System.err.println(l1.group());
+            if (-1 != itaStart) {
+                // System.err.println("Parsing previous italian entry");
+                extractItalianData(itaStart, l1.start());
+                itaStart = -1;
+            }
+            if (isItalian(l1)) {
+                itaStart = l1.end();
+            }
+        }
+        if (-1 != itaStart) {
+            //System.err.println("Parsing previous italian entry");
+            extractItalianData(itaStart, pageContent.length());
+        }
+        wdh.finalizePageExtraction();
     }
-    
+
     private boolean isItalian(Matcher l1) {
         // log.debug("Considering header == {}",l1.group(1));
         String t = l1.group(1).trim();
-		return (t.startsWith("{{-it-") || t.startsWith("{{it"));
-	}
+        return (t.startsWith("{{-it-") || t.startsWith("{{it"));
+    }
 
     // TODO: variants, pronunciations and other elements are common to the different entries in the page.
     protected void extractItalianData(int startOffset, int endOffset) {
@@ -130,7 +129,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         m.region(startOffset, endOffset);
         wdh.initializeEntryExtraction(wiktionaryPageName);
         currentBlock = Block.NOBLOCK;
-        while(m.find()) {
+        while (m.find()) {
             HashMap<String, Object> context = new HashMap<String, Object>();
             Block nextBlock = computeNextBlock(m, context);
 
@@ -233,206 +232,223 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         blockStart = -1;
     }
-	
-	
+
+
     protected final static String carPatternString;
-	protected final static String macroOrLinkOrcarPatternString;
-	
-   
+    protected final static String macroOrLinkOrcarPatternString;
+
+
     static {
-		// les caractères visible 
-		carPatternString=
-				new StringBuilder().append("(.)")
-				.toString();
+        // les caractères visible
+        carPatternString =
+                new StringBuilder().append("(.)")
+                        .toString();
 
-		// TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
-		macroOrLinkOrcarPatternString = new StringBuilder()
-		.append("(?:")
-		.append(WikiPatterns.macroPatternString)
-		.append(")|(?:")
-		.append(WikiPatterns.linkPatternString)
-		.append(")|(?:")
-		.append("(:*\\*)")
-		.append(")|(?:")
-		.append(carPatternString)
-		.append(")").toString();
+        // TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
+        macroOrLinkOrcarPatternString = new StringBuilder()
+                .append("(?:")
+                .append(WikiPatterns.macroPatternString)
+                .append(")|(?:")
+                .append(WikiPatterns.linkPatternString)
+                .append(")|(?:")
+                .append("(:*\\*)")
+                .append(")|(?:")
+                .append(carPatternString)
+                .append(")").toString();
     }
+
     protected final static Pattern macroOrLinkOrcarPattern;
-	protected final static Pattern carPattern;
-	static {
-		carPattern = Pattern.compile(carPatternString);
-		macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL);
-	}
+    protected final static Pattern carPattern;
 
-	protected final int INIT = 1;
-	protected final int LANGUE = 2;
-	protected final int TRAD = 3;  
+    static {
+        carPattern = Pattern.compile(carPatternString);
+        macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL);
+    }
 
-	// TODO: delegate translation extraction to the appropriate wiki model
+    protected final int INIT = 1;
+    protected final int LANGUE = 2;
+    protected final int TRAD = 3;
+
+    // TODO: delegate translation extraction to the appropriate wiki model
     private void extractTranslations(int startOffset, int endOffset) {
-	    Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(pageContent);
-		macroOrLinkOrcarMatcher.region(startOffset, endOffset);
-		int ETAT = INIT;
+        Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(pageContent);
+        macroOrLinkOrcarMatcher.region(startOffset, endOffset);
+        int ETAT = INIT;
 
-		String currentGlose = null;
-		String lang=null, word= ""; 
-		String usage = "";       
-		String langname = "";
+        String currentGlose = null;
+        String lang = null, word = "";
+        String usage = "";
+        String langname = "";
 
         while (macroOrLinkOrcarMatcher.find()) {
 
-			String g1 = macroOrLinkOrcarMatcher.group(1);
-			String g3 = macroOrLinkOrcarMatcher.group(3);
-			String g5 = macroOrLinkOrcarMatcher.group(5);
-			String g6 = macroOrLinkOrcarMatcher.group(6);
+            String g1 = macroOrLinkOrcarMatcher.group(1);
+            String g3 = macroOrLinkOrcarMatcher.group(3);
+            String g5 = macroOrLinkOrcarMatcher.group(5);
+            String g6 = macroOrLinkOrcarMatcher.group(6);
 
-			switch (ETAT) {
+            switch (ETAT) {
 
-			case INIT:
-				if (g1!=null) {
-					if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("("))  {
-						if (macroOrLinkOrcarMatcher.group(2) != null) {
-							currentGlose = macroOrLinkOrcarMatcher.group(2);
-						} else {
-							currentGlose = null;
-						}
+                case INIT:
+                    if (g1 != null) {
+                        if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
+                            if (macroOrLinkOrcarMatcher.group(2) != null) {
+                                currentGlose = macroOrLinkOrcarMatcher.group(2);
+                            } else {
+                                currentGlose = null;
+                            }
 
-					} else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
-						currentGlose = null;
-					} else if (g1.equalsIgnoreCase("mid")) {
-						//ignore
-					}
-				} else if(g3!=null) {
-					//System.err.println("Unexpected link while in INIT state.");
-				} else if (g5 != null) {
-					ETAT = LANGUE;
-				} else if (g6 != null) {
-					if (g6.equals(":")) {
-						//System.err.println("Skipping ':' while in INIT state.");
-					} else if (g6.equals("\n") || g6.equals("\r")) {
+                        } else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
+                            currentGlose = null;
+                        } else if (g1.equalsIgnoreCase("mid")) {
+                            //ignore
+                        }
+                    } else if (g3 != null) {
+                        //System.err.println("Unexpected link while in INIT state.");
+                    } else if (g5 != null) {
+                        ETAT = LANGUE;
+                    } else if (g6 != null) {
+                        if (g6.equals(":")) {
+                            //System.err.println("Skipping ':' while in INIT state.");
+                        } else if (g6.equals("\n") || g6.equals("\r")) {
 
-					} else if (g6.equals(",")) {
-						//System.err.println("Skipping ',' while in INIT state.");
-					} else {
-						//System.err.println("Skipping " + g5 + " while in INIT state.");
-					}
-				}
+                        } else if (g6.equals(",")) {
+                            //System.err.println("Skipping ',' while in INIT state.");
+                        } else {
+                            //System.err.println("Skipping " + g5 + " while in INIT state.");
+                        }
+                    }
 
-				break;
+                    break;
 
-			case LANGUE:
+                case LANGUE:
 
-				if (g1!=null) {
-					if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("("))  {
-						if (macroOrLinkOrcarMatcher.group(2) != null) {
-							currentGlose = macroOrLinkOrcarMatcher.group(2);
-						} else {
-							currentGlose = null;
-						}
-						langname = ""; word = ""; usage = "";
-						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
-						currentGlose = null;
-						langname = ""; word = ""; usage = "";
-						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("mid")) {
-						langname = ""; word = ""; usage = "";
-						ETAT = INIT;
-					} else {
-						langname = LangTools.normalize(g1);
-					}
-				} else if(g3!=null) {
-					//System.err.println("Unexpected link while in LANGUE state.");
-				} else if (g5 != null) {
-					//System.err.println("Skipping '*' while in LANGUE state.");
-				} else if (g6 != null) {
-					if (g6.equals(":")) {
-						lang = langname.trim();
-						lang=stripParentheses(lang);
-						lang =ItalianLangToCode.threeLettersCode(lang);
-						langname = "";
-						ETAT = TRAD;
-					} else if (g6.equals("\n") || g6.equals("\r")) {
-						//System.err.println("Skipping newline while in LANGUE state.");
-					} else if (g6.equals(",")) {
-						//System.err.println("Skipping ',' while in LANGUE state.");
-					} else {
-						langname = langname + g6;
-					}
-				} 
+                    if (g1 != null) {
+                        if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
+                            if (macroOrLinkOrcarMatcher.group(2) != null) {
+                                currentGlose = macroOrLinkOrcarMatcher.group(2);
+                            } else {
+                                currentGlose = null;
+                            }
+                            langname = "";
+                            word = "";
+                            usage = "";
+                            ETAT = INIT;
+                        } else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
+                            currentGlose = null;
+                            langname = "";
+                            word = "";
+                            usage = "";
+                            ETAT = INIT;
+                        } else if (g1.equalsIgnoreCase("mid")) {
+                            langname = "";
+                            word = "";
+                            usage = "";
+                            ETAT = INIT;
+                        } else {
+                            langname = LangTools.normalize(g1);
+                        }
+                    } else if (g3 != null) {
+                        //System.err.println("Unexpected link while in LANGUE state.");
+                    } else if (g5 != null) {
+                        //System.err.println("Skipping '*' while in LANGUE state.");
+                    } else if (g6 != null) {
+                        if (g6.equals(":")) {
+                            lang = langname.trim();
+                            lang = stripParentheses(lang);
+                            lang = ItalianLangToCode.threeLettersCode(lang);
+                            langname = "";
+                            ETAT = TRAD;
+                        } else if (g6.equals("\n") || g6.equals("\r")) {
+                            //System.err.println("Skipping newline while in LANGUE state.");
+                        } else if (g6.equals(",")) {
+                            //System.err.println("Skipping ',' while in LANGUE state.");
+                        } else {
+                            langname = langname + g6;
+                        }
+                    }
 
-				break ;
-			case TRAD:
-				if (g1!=null) {
-					if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("("))  {
-						if (macroOrLinkOrcarMatcher.group(2) != null) {
-							currentGlose = macroOrLinkOrcarMatcher.group(2);
-						} else {
-							currentGlose = null;
-						}
-						//if (word != null && word.length() != 0) {
-							//lang=stripParentheses(lang);
-							//wdh.registerTranslation(lang, currentGlose, usage, word);
-						//}
-						langname = ""; word = ""; usage = ""; lang=null;
-						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
-						if (word != null && word.length() != 0) {
-							if(lang!=null) {
-								wdh.registerTranslation(lang, currentGlose, usage, word);
-							}
-						}
-						currentGlose = null;
-						langname = ""; word = ""; usage = ""; lang=null;
-						ETAT = INIT;
-					} else if (g1.equalsIgnoreCase("mid")) {
-						if (word != null && word.length() != 0) {
-							if(lang!=null){
-							wdh.registerTranslation(lang, currentGlose, usage, word);
-							}
-						}
-						langname = ""; word = ""; usage = ""; lang = null;
-						ETAT = INIT;
-					} else {
-						usage = usage + "{{" + g1 + "}}";
-					}
-				} else if (g3!=null) {
-					word =word+" " + removeAnchor(g3);
-				} else if (g5 != null) {
-					//System.err.println("Skipping '*' while in LANGUE state.");
-				} else if (g6 != null) {
-					if (g6.equals("\n") || g6.equals("\r")) {
-						usage = usage.trim();
-						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
-						if (word != null && word.length() != 0) {
-							if(lang!=null){
-							wdh.registerTranslation(lang, currentGlose, usage, word);
-							}
-						}
-						lang = null; 
-						usage = "";
-						word="";
-						ETAT = INIT;
-					} else if (g6.equals(",") || g6.equals(";")|| g6.equals("/")) {
-						usage = usage.trim();
-						// System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
-						if (word != null && word.length() != 0) {
-							if (lang!=null){
-							wdh.registerTranslation(lang, currentGlose, usage, word);
-							}
-						}
-						usage = "";
-						word = "";
-					} else {
-						usage = usage + g6;
-					}
-				}
-				break;
-			default: 
-				System.err.println("Unexpected state number:" + ETAT);
-				break; 
-			}
-        	
+                    break;
+                case TRAD:
+                    if (g1 != null) {
+                        if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
+                            if (macroOrLinkOrcarMatcher.group(2) != null) {
+                                currentGlose = macroOrLinkOrcarMatcher.group(2);
+                            } else {
+                                currentGlose = null;
+                            }
+                            //if (word != null && word.length() != 0) {
+                            //lang=stripParentheses(lang);
+                            //wdh.registerTranslation(lang, currentGlose, usage, word);
+                            //}
+                            langname = "";
+                            word = "";
+                            usage = "";
+                            lang = null;
+                            ETAT = INIT;
+                        } else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
+                            if (word != null && word.length() != 0) {
+                                if (lang != null) {
+                                    wdh.registerTranslation(lang, currentGlose, usage, word);
+                                }
+                            }
+                            currentGlose = null;
+                            langname = "";
+                            word = "";
+                            usage = "";
+                            lang = null;
+                            ETAT = INIT;
+                        } else if (g1.equalsIgnoreCase("mid")) {
+                            if (word != null && word.length() != 0) {
+                                if (lang != null) {
+                                    wdh.registerTranslation(lang, currentGlose, usage, word);
+                                }
+                            }
+                            langname = "";
+                            word = "";
+                            usage = "";
+                            lang = null;
+                            ETAT = INIT;
+                        } else {
+                            usage = usage + "{{" + g1 + "}}";
+                        }
+                    } else if (g3 != null) {
+                        word = word + " " + removeAnchor(g3);
+                    } else if (g5 != null) {
+                        //System.err.println("Skipping '*' while in LANGUE state.");
+                    } else if (g6 != null) {
+                        if (g6.equals("\n") || g6.equals("\r")) {
+                            usage = usage.trim();
+                            // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+                            if (word != null && word.length() != 0) {
+                                if (lang != null) {
+                                    wdh.registerTranslation(lang, currentGlose, usage, word);
+                                }
+                            }
+                            lang = null;
+                            usage = "";
+                            word = "";
+                            ETAT = INIT;
+                        } else if (g6.equals(",") || g6.equals(";") || g6.equals("/")) {
+                            usage = usage.trim();
+                            // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+                            if (word != null && word.length() != 0) {
+                                if (lang != null) {
+                                    wdh.registerTranslation(lang, currentGlose, usage, word);
+                                }
+                            }
+                            usage = "";
+                            word = "";
+                        } else {
+                            usage = usage + g6;
+                        }
+                    }
+                    break;
+                default:
+                    System.err.println("Unexpected state number:" + ETAT);
+                    break;
+            }
+
 
         }
     }
@@ -443,7 +459,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (-1 == hash) {
             return g3;
         } else {
-            return g3. substring(0, hash);
+            return g3.substring(0, hash);
         }
     }
 
@@ -453,19 +469,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 //       ItalianTranslationExtractorWikiModel dbnmodel = new ItalianTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}/"+wiktionaryPageName, "/${title}");
 //       dbnmodel.parseTranslationBlock(transCode);
 //   }
-    
+
     private void extractPron(int startOffset, int endOffset) {
         String pronCode = pageContent.substring(startOffset, endOffset);
-    	ItalianPronunciationExtractorWikiModel dbnmodel = new ItalianPronunciationExtractorWikiModel(this.wdh, this.wi, new Locale("it"), "/${image}", "/${title}");
+        ItalianPronunciationExtractorWikiModel dbnmodel = new ItalianPronunciationExtractorWikiModel(this.wdh, this.wi, new Locale("it"), "/${image}", "/${title}");
         dbnmodel.parsePronunciation(pronCode);
-	}
-    
+    }
+
     @Override
-	public void extractDefinition(String definition, int defLevel) {
-		// TODO: properly handle macros in definitions.
+    public void extractDefinition(String definition, int defLevel) {
+        // TODO: properly handle macros in definitions.
         ItalianDefinitionExtractorWikiModel dbnmodel = new ItalianDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("it"), "/${image}", "/${title}");
         dbnmodel.parseDefinition(definition, defLevel);
-	}
+    }
 
     @Override
     public void extractExample(String example) {

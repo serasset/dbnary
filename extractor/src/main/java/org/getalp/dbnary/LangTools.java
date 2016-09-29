@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 
 public class LangTools {
     static Logger log = LoggerFactory.getLogger(LangTools.class);
-    
+
     public static String threeLettersCode(java.util.HashMap<String, String> h, String s) {
         if (s == null || s.equals("")) {
-	    log.debug("Null or empty input language");
+            log.debug("Null or empty input language");
             return s;
         }
         s = s.trim();
@@ -18,7 +18,7 @@ public class LangTools {
         String res = getCode(s);
         if (res == null && h != null && h.containsKey(s)) {
             res = h.get(s);
-	    //res = getCode(s);//check this change!!!
+            //res = getCode(s);//check this change!!!
         }
 
         return res;

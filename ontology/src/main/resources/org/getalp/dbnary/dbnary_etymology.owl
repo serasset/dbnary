@@ -2,59 +2,108 @@
 
 
 <!DOCTYPE rdf:RDF [
+    <!ENTITY dcterms "http://purl.org/dc/terms/" >
+    <!ENTITY lemon "http://lemon-model.net/lemon#" >
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY dbnary "http://kaiko.getalp.org/dbnary#" >
+    <!ENTITY dbetym "http://kaiko.getalp.org/dbnaryetymology#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
 ]>
 
 
-<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
-     xml:base="http://www.w3.org/2002/07/owl"
+<rdf:RDF xmlns="http://kaiko.getalp.org/dbnaryetymology#"
+     xml:base="http://kaiko.getalp.org/dbnaryetymology"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:dbnary="http://kaiko.getalp.org/dbnary#"
+     xmlns:dbetym="http://kaiko.getalp.org/dbnaryetymology#"
+     xmlns:lemon="http://lemon-model.net/lemon#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <Ontology rdf:about="http://kaiko.getalp.org/dbnary_etymology">
+    <owl:Ontology rdf:about="http://kaiko.getalp.org/dbnaryetymology">
         <rdfs:label xml:lang="en">DBnary etymology ontology</rdfs:label>
         <rdfs:comment xml:lang="en">A DBnary ontology extension used to represent etymological data extracted from Wiktionary.</rdfs:comment>
         <imports rdf:resource="http://kaiko.getalp.org/dbnary"/>
-    </Ontology>
-    <owl:Class rdf:ID="EtymologyEntry">
-    <rdfs:comment xml:lang="en">An EtymologyEntry corresponds to a set of Lexical Entries that share the same etymology but that do not necessarily share the same Part Of Speech. E.g. eng:link_n_1 and eng:link_v_1 are distinct lexical entries and the etymology entry link_ety_1 refers to both of them because link_n_1 and link_v_1 share the same etymology from Old English ang:linke.</rdfs:comment>
-    <rdfs:subClassOf rdf:resource="http://lemon-model.net/lemon#LexicalEntry"/>
-  </owl:Class>
-  <owl:ObjectProperty rdf:ID="derivesFrom">
-    <rdfs:subPropertyOf>
-      <owl:ObjectProperty rdf:ID="etymologicallyRelatedTo"/>
-    </rdfs:subPropertyOf>
-    <rdfs:domain rdf:resource="#LexicalEntry"/>
-    <rdfs:comment xml:lang="en">The target LexicalEntry is a term derived from the source LexicalEntry. E.g.:eng:link_up derivesFrom eng:link_ety_1. </rdfs:comment>
-    <rdfs:range rdf:resource="#LexicalEntry"/>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:about="#etymologicallyRelatedTo">
-    <rdfs:range rdf:resource="#LexicalEntry"/>
-    <rdfs:comment xml:lang="en">An underspecified etymological relationship betwen two LexicalEntries. </rdfs:comment>
-    <rdfs:domain rdf:resource="#LexicalEntry"/>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="descendsFrom">
-    <rdfs:domain rdf:resource="#LexicalEntry"/>
-    <rdfs:subPropertyOf rdf:resource="#etymologicallyRelatedTo"/>
-    <rdfs:range rdf:resource="#LexicalEntry"/>
-    <rdfs:comment xml:lang="en">The target LexicalEntry is a descendant of the source LexicalEntry. </rdfs:comment>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="etymologicallyDerivesFrom">
-    <rdfs:range rdf:resource="#LexicalEntry"/>
-    <rdfs:subPropertyOf rdf:resource="#etymologicallyRelatedTo"/>
-    <rdfs:comment xml:lang="en">The target LexicalEntry etymologically derives from the source LexicalEntry. </rdfs:comment>
-    <rdfs:domain rdf:resource="#LexicalEntry"/>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="etymologicallyEquivalentTo">
-    <rdfs:comment xml:lang="en">The target and the source LexicalEntries share the same etymological origin. </rdfs:comment>
-    <rdfs:domain rdf:resource="#LexicalEntry"/>
-    <rdfs:subPropertyOf rdf:resource="#etymologicallyRelatedTo"/>
-    <rdfs:range rdf:resource="#LexicalEntry"/>
-  </owl:ObjectProperty>
+    </owl:Ontology>
+    
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnaryetymology#derivesFrom -->
+
+    <owl:ObjectProperty rdf:about="&dbetym;derivesFrom">
+        <rdfs:comment xml:lang="en">The target LexicalEntry is a term derived from the source LexicalEntry. E.g.:eng:link_up derivesFrom eng:link_ety_1. </rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&dbetym;etymologicallyRelatedTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnaryetymology#descendsFrom -->
+
+    <owl:ObjectProperty rdf:about="&dbetym;descendsFrom">
+        <rdfs:comment xml:lang="en">The target LexicalEntry is a descendant of the source LexicalEntry. </rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&dbetym;etymologicallyRelatedTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnaryetymology#etymologicallyDerivesFrom -->
+
+    <owl:ObjectProperty rdf:about="&dbetym;etymologicallyDerivesFrom">
+        <rdfs:comment xml:lang="en">The target LexicalEntry etymologically derives from the source LexicalEntry. </rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&dbetym;etymologicallyRelatedTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnaryetymology#etymologicallyEquivalentTo -->
+
+    <owl:ObjectProperty rdf:about="&dbetym;etymologicallyEquivalentTo">
+        <rdfs:comment xml:lang="en">The target and the source LexicalEntries share the same etymological origin. </rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&dbetym;etymologicallyRelatedTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnaryetymology#etymologicallyRelatedTo -->
+
+    <owl:ObjectProperty rdf:about="&dbetym;etymologicallyRelatedTo">
+        <rdfs:comment xml:lang="en">An underspecified etymological relationship betwen two LexicalEntries. </rdfs:comment>
+        <rdfs:range rdf:resource="&lemon;LexicalEntry"/>
+        <rdfs:domain rdf:resource="&lemon;LexicalEntry"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnaryetymology#EtymologyEntry -->
+
+    <owl:Class rdf:about="&dbetym;EtymologyEntry">
+        <rdfs:subClassOf rdf:resource="&lemon;LexicalEntry"/>
+        <rdfs:comment xml:lang="en">An EtymologyEntry corresponds to a set of Lexical Entries that share the same etymology but that do not necessarily share the same Part Of Speech. E.g. eng:link_n_1 and eng:link_v_1 are distinct lexical entries and the etymology entry link_ety_1 refers to both of them because link_n_1 and link_v_1 share the same etymology from Old English ang:linke.</rdfs:comment>
+    </owl:Class>
+
 </rdf:RDF>
 
 

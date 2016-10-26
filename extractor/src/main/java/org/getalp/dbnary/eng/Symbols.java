@@ -16,8 +16,9 @@ import java.util.Map;
  */
 
 /**
- * TerminalSymbols is a part of etymology
- * it has properties
+ * Symbols is an object that contains data about a Wiktionary template (e.g.: {{m|en|door}}) or 
+ * a Wiktionary link (e.g.: [[door]]).
+ * It has properties
  * .values an ArrayList&lt;String&gt;, e.g., {"LANGUAGE", "LEMMA"}
  * .args a Map&lt;String, String&gt;, e.g., {("1", "m"), ("lang", "eng"), ("word1", "door")}
  * .string, e.g., "m|en|door"
@@ -722,16 +723,36 @@ public class Symbols {
         }
         String[] subs = string.split("\\|");
         String[] substring = subs[0].split(":");
-        String[] subsubs = subs[0].split("\\#");
 
-        if (substring[0].length() == 0 || substring[0].equals("w") || substring[0].equals("Image") || substring[0].equals("Category") || substring[0].equals("File") || substring[0].equals("Wikisaurus")) { //it's not a Wiktionary link eg:  [[:Category:English words derived from: load (noun)]]
+        if (substring[0].length() == 0 || substring[0].equals("Image") || substring[0].equals("image") || substring[0].equals("Category") || substring[0].equals("category") || substring[0].equals("File") || substring[0].equals("file") || substring[0].equals("Wikisaurus") || substring[0].equals("wikisaurus") || substring[0].equals("D") || substring[0].equals("d") || substring[0].equals("Wikisource") || substring[0].equals("wikisource") || substring[0].equals("Index") || substring[0].equals("index") || substring[0].equals("Appendix") || substring[0].equals("appendix")) { //it's not a Wiktionary link eg:  [[:Category:English words derived from: load (noun)]]
             log.debug("Ignoring unexpected argument {} in wiki link", string);
             args = null;
             string = null;
             values = null;
-        } else {
+        } else if (substring[0].equals("wikipedia") || substring[0].equals("wiktionary") || substring[0].equals("w")){
+	    String[] subsubs = subs[1].split("\\#"); 
+	    if (subsubs.length > 1) {
+		lang = EnglishLangToCode.threeLettersCode(subsubs[1].trim());
+		if (lang != null) {
+		    args.put("word1", cleanUp(subsubs[0]));   
+		    args.put("lang", lang);
+		    values.add("LEMMA");
+		    string = "l|" + lang + "|" + cleanUp(args.get("word1"));
+		} else {
+		    log.debug("Ignoring unexpected argument {} in wiki link", string);
+		    args = null;
+		    values = null;
+		    string = null;
+		}
+	    } else {
+	        args.put("lang", lang); 
+		args.put("word1", cleanUp(substring[1]));
+		values.add("LEMMA");
+	    }
+	} else {
             args = new HashMap<String, String>();
             args.put("1", "l");
+	    String[] subsubs = subs[0].split("\\#"); 
             if (subsubs.length > 1) {
                 lang = EnglishLangToCode.threeLettersCode(subsubs[1].trim());
                 if (lang != null) {

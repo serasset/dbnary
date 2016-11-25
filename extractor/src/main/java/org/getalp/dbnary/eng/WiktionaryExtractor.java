@@ -254,7 +254,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected void extractEtymology(int blockStart, int end) {
         Etymology etymology = new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
 
-        etymology.toDefinitionSymbols();
+        etymology.fromDefinitionToSymbols();
 
         ewdh.registerEtymology(etymology);
     }
@@ -265,7 +265,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected void extractDerived(int blockStart, int end) {
         extractBulletList(pageContent.substring(blockStart, end));
 
-        extractTableDerived(pageContent.substring(blockStart, end));
+        extractTable(pageContent.substring(blockStart, end));
     }
 
     protected void extractDescendants(int blockStart, int end) {
@@ -277,7 +277,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
     }
 
-    private void extractTableDerived(String s) {
+    private void extractTable(String s) {
         String lang = ewdh.getCurrentEntryLanguage();
         for (Pair l : WikiTool.locateEnclosedString(s, "{{", "}}")) {
             String t = s.substring(l.start + 2, l.start + 6);
@@ -294,7 +294,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             for (String key : args.keySet()) {
                 Etymology etymology = new Etymology(args.get(key), lang);
 
-                etymology.toTableDerivedSymbols();
+                etymology.fromTableToSymbols();
 
                 if (etymology.symbols.size() == 0) {
                     if (WikiTool.locateEnclosedString(etymology.string, "{{", "}}").size() + WikiTool.locateEnclosedString(etymology.string, "[[", "]]").size() == 0) {
@@ -336,7 +336,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher multipleBulletListMatcher = WikiPatterns.multipleBulletListPattern.matcher(s);
         int nStars = 0;
         while (multipleBulletListMatcher.find()) {
-            //System.out.format("descendants=%s\n", multipleBulletListMatcher.group());
             nStars = multipleBulletListMatcher.group(1).length();
             if (nStars + offset - 1 < ewdh.ancestors.size()) {
                 ewdh.ancestors.subList(nStars + offset - 1, ewdh.ancestors.size()).clear();
@@ -344,7 +343,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
             Etymology etymology = new Etymology(multipleBulletListMatcher.group(2), lang);
 
-            etymology.toBulletSymbols();
+            etymology.fromBulletToSymbols();
 
             ewdh.addAncestorsAndRegisterDescendants(etymology);
         }
@@ -362,7 +361,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         while (bulletListMatcher.find()) {
             Etymology etymology = new Etymology(bulletListMatcher.group(1), lang);
 
-            etymology.toBulletSymbols();
+            etymology.fromBulletToSymbols();
 
             //check that all lemmas share the same language
             for (Symbols b : etymology.symbols) {

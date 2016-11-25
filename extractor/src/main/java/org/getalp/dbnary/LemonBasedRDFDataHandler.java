@@ -287,6 +287,9 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         if (null != currentLexinfoPos)
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);
 
+	System.out.format("currentLexEntry=%s\n", currentLexEntry);
+	System.out.format("LemonOnt.language=%s\n", LemonOnt.language);
+	System.out.format("wktLanguageEdition=%s\n", wktLanguageEdition);
         aBox.add(currentLexEntry, LemonOnt.language, wktLanguageEdition);
         aBox.add(currentLexEntry, DCTerms.language, lexvoExtractedLanguage);
 

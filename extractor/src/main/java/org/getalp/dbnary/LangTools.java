@@ -8,6 +8,10 @@ import org.slf4j.LoggerFactory;
 public class LangTools {
     static Logger log = LoggerFactory.getLogger(LangTools.class);
 
+    //e.g.: threeLettersCode(null, "Arabic")
+    //returns "ara"
+    //e.g.: threeLettersCode(null, "en")
+    //returns "eng"
     public static String threeLettersCode(java.util.HashMap<String, String> h, String s) {
         if (s == null || s.equals("")) {
             log.debug("Null or empty input language");
@@ -16,11 +20,14 @@ public class LangTools {
         s = s.trim();
         s = s.toLowerCase();
         String res = getCode(s);
-        if (res == null && h != null && h.containsKey(s)) {
-            res = h.get(s);
+        if (res == null) {
+	    if (h != null && h.containsKey(s)) {
+                res = h.get(s);
             //res = getCode(s);//check this change!!!
+	    } else {//e.g.: s.equals("image"), s.equals("w")
+		log.debug("Warning: language {} is not present in input hashmap and getCode returns null.", s);
+	    }
         }
-
         return res;
     }
 

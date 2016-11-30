@@ -215,11 +215,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 String pos = (String) context.get("pos");
                 wdh.addPartOfSpeech(pos);
                 ewdh.registerEtymologyPos();
-                extractMorphology(blockStart, end);
+                //extractMorphology(blockStart, end);
                 extractDefinitions(blockStart, end);
                 break;
             case TRADBLOCK:
-                extractTranslations(blockStart, end);
+                //extractTranslations(blockStart, end);
                 break;
             case ORTHOALTBLOCK:
                 extractOrthoAlt(blockStart, end);
@@ -232,7 +232,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 extractPron(blockStart, end);
                 break;
             case CONJUGATIONBLOCK:
-                extractConjugation(blockStart, end);
+                //extractConjugation(blockStart, end);
                 break;
             case ETYMOLOGYBLOCK:
                 extractEtymology(blockStart, end);
@@ -263,22 +263,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     //* {{l|pt|mundão}} {{gloss|augmentative}}
     //DONE: process {{der4|title=Terms derived from ''free'' | [[freeball]], [[free-ball]] | [[freebooter]] }}
     protected void extractDerived(int blockStart, int end) {
-        extractBulletList(pageContent.substring(blockStart, end));
+	String lang = ewdh.getCurrentEntryLanguage();
+	lang = EnglishLangToCode.threeLettersCode(lang);
+        extractBulletList(pageContent.substring(blockStart, end), lang);
 
-        extractTable(pageContent.substring(blockStart, end));
+        extractTable(pageContent.substring(blockStart, end), lang);
     }
 
     protected void extractDescendants(int blockStart, int end) {
-        boolean isMatch = extractMultipleBulletList(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage(), true);
+	String lang = ewdh.getCurrentEntryLanguage();
+	lang = EnglishLangToCode.threeLettersCode(lang);
+        boolean isMatch = extractMultipleBulletList(pageContent.substring(blockStart, end), lang, true);
 
         //if there is no match to multiple bullet list
         if (!isMatch) {
-            extractEtymtree(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
+            extractEtymtree(pageContent.substring(blockStart, end), lang);
         }
     }
 
-    private void extractTable(String s) {
-        String lang = ewdh.getCurrentEntryLanguage();
+    private void extractTable(String s, String lang) {
         for (Pair l : WikiTool.locateEnclosedString(s, "{{", "}}")) {
             String t = s.substring(l.start + 2, l.start + 6);
             int start = l.start;
@@ -353,8 +356,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return nStars > 0;
     }
 
-    private void extractBulletList(String s) {
-        String lang = ewdh.getCurrentEntryLanguage();
+    private void extractBulletList(String s, String lang) {
         ewdh.registerCurrentEtymologyEntry(lang);
 
         Matcher bulletListMatcher = WikiPatterns.bulletListPattern.matcher(s);

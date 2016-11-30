@@ -86,7 +86,6 @@ public class Etymology {
         string = s;
         lang = l;
         symbols = new ArrayList<Symbols>();
-        //System.out.format("etymology = %s\n", s);
     }
 
     public void fromTableToSymbols() {
@@ -137,7 +136,6 @@ public class Etymology {
             }
         }
 
-        //System.out.format("parsed etymology = %s\n", string);
 
         toSymbols(definitionSymbolsList, definitionSymbolsListPattern);
 
@@ -175,12 +173,6 @@ public class Etymology {
         }
         //remove any Symbols that preceeds the first match to the definitionSymbolsPattern
         symbols.subList(0, m.get(0).start).clear();
-
-	//print
-	for (int i = 0; i < symbols.size(); i++) {
-	    System.out.format("%s ,", symbols.get(i).values);
-	}
-	System.out.format("\n");
     }
 
     //TODO: handle * [[crisismanager]] {{g|m}}    

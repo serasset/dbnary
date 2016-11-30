@@ -26,7 +26,7 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
     }
 
     public boolean setCurrentLanguage(String lang) {
-	currentEntryLanguage = lang;
+	currentEntryLanguage = EnglishLangToCode.threeLettersCode(lang);
 	if (currentEntryLanguage == null){
 	    log.debug("Null input language");
 	    return false;

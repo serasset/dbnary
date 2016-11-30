@@ -756,11 +756,7 @@ public class Symbols {
 	args = new HashMap<String, String>();
 	string = group;
         values = new ArrayList<String>();
-	
-        if (string.startsWith("Kanien'keh")) {
-            string = "Kanienkehaka";
-        }
-	
+		
         String[] splitArgs = string.split("\\|");
         String[] splitColumn = splitArgs[0].split(":");
 	int nCol = splitColumn.length;
@@ -793,8 +789,8 @@ public class Symbols {
 		language = EnglishLangToCode.threeLettersCode(splitColumn[0].trim());
 		System.out.format("parsing Symbol, language=%s\n", language);
 		if (language == null){
-		    System.out.format("link=%s \n", splitColumn[0].trim());
 		    link = splitColumn[0].trim();
+		    System.out.format("Symbol is a %s link", link);
 		    language = "en";
 		}
 		word = splitColumn[1].split("\\#")[0].trim();

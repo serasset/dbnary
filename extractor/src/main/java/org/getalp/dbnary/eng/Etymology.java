@@ -62,12 +62,12 @@ public class Etymology {
         tmp.put("DOT", Arrays.asList("\\.", ";"));
         tmp.put("OR", Arrays.asList("[^a-zA-Z0-9]or[^a-zA-Z0-9]"));
         tmp.put("WITH", Arrays.asList("[^a-zA-Z0-9]with[^a-zA-Z0-9]"));
-        tmp.put("STOP", Arrays.asList("[Ss]uperseded", "[Dd]isplaced(?: native)?", "[Rr]eplaced", "[Mm]ode(?:l)?led on", "[Rr]eplacing", "equivalent to\\s*\\{\\{[^\\}]+\\}\\}"));//this icludes two types of patterns: superseded and equivalent to
-        tmp.put("SEMICOLON", Arrays.asList(":"));
+        tmp.put("STOP", Arrays.asList("[Ss]uperseded", "[Dd]isplaced(?: native)?", "[Rr]eplaced", "[Mm]ode(?:l)?led on", "[Rr]eplacing", "[Cc]oined by", "equivalent to\\s*\\{\\{[^\\}]+\\}\\}"));//this icludes two types of patterns: superseded and equivalent to
+        tmp.put("COLON", Arrays.asList(":"));
         mappings = new HashMap(tmp);
     }
 
-    public static List<String> bulletSymbolsList = Arrays.asList("COMMA", "TEMPLATE", "LINK", "SEMICOLON");
+    public static List<String> bulletSymbolsList = Arrays.asList("COMMA", "TEMPLATE", "LINK", "COLON");
     public static List<String> definitionSymbolsList = Arrays.asList("FROM", "TEMPLATE", "LINK", "ABOVE", "COGNATE_WITH", "COMPOUND_OF", "UNCERTAIN", "COMMA", "YEAR", "AND", "PLUS", "DOT", "OR", "WITH", "STOP");
 
     public static Pattern bulletSymbolsListPattern = Pattern.compile(eitherSymbol(bulletSymbolsList));
@@ -75,8 +75,8 @@ public class Etymology {
 
     public static Pattern definitionSymbolsPattern = Pattern.compile("(FROM )?(LANGUAGE LEMMA |LEMMA )(COMMA |DOT |OR )");
     public static Pattern compoundSymbolsPattern = Pattern.compile("((COMPOUND_OF |FROM )(LANGUAGE )?(LEMMA )(?:(PLUS |AND |WITH )(LANGUAGE )?(LEMMA ))+)|((LANGUAGE )?(LEMMA )(?:(PLUS )(LANGUAGE )?(LEMMA ))+)");
-    public static Pattern bulletSymbolsPattern = Pattern.compile("(((LANGUAGE)|(LEMMA)) (SEMICOLON ))?((LEMMA)( COMMA )?)+");
-    public static Pattern tableDerivedLemmaPattern = Pattern.compile("(LEMMA)(?: COMMA (LEMMA))*");
+    public static Pattern bulletSymbolsPattern = Pattern.compile("(((LANGUAGE)|(LEMMA)) (COLON ))?((LEMMA)( COMMA )?)+");
+    public static Pattern tableDerivedLemmasPattern = Pattern.compile("(LEMMA)(?: COMMA (LEMMA))*");
 
     public String lang;
     public String string;
@@ -86,10 +86,9 @@ public class Etymology {
         string = s;
         lang = l;
         symbols = new ArrayList<Symbols>();
-        //System.out.format("etymology = %s\n", s);
     }
 
-    public void toTableDerivedSymbols() {
+    public void fromTableToSymbols() {
         string = WikiTool.removeReferencesIn(string);
 
         string = WikiTool.removeTextWithinParenthesesIn(string);
@@ -102,7 +101,7 @@ public class Etymology {
         toSymbols(bulletSymbolsList, bulletSymbolsListPattern);
 
         ArrayList<Symbols> lemmas = new ArrayList<>();
-        Matcher m = tableDerivedLemmaPattern.matcher(toString(symbols));
+        Matcher m = tableDerivedLemmasPattern.matcher(toString(symbols));
         while (m.find()) {
             for (Symbols p : symbols) {
                 if (p.values.get(0).equals("LEMMA")) {
@@ -114,7 +113,7 @@ public class Etymology {
         symbols = lemmas;
     }
 
-    public void toDefinitionSymbols() {
+    public void fromDefinitionToSymbols() {
         if (string == null || string.equals("")) {
             return;
         }
@@ -137,13 +136,12 @@ public class Etymology {
             }
         }
 
-        //System.out.format("parsed etymology = %s\n", string);
 
         toSymbols(definitionSymbolsList, definitionSymbolsListPattern);
 
         parseEtyl();
 
-        replaceCompound();
+        parseCompound();
 
         //find where list of cognates or OR statements start
         //e.g, if toString(symbols) == "FROM LEMMA COMMA FROM LEMMA COMMA COGNATE_WITH LEMMA COMMA" registers 6, the index of "COGNATE_WITH" or
@@ -178,26 +176,27 @@ public class Etymology {
     }
 
     //TODO: handle * [[crisismanager]] {{g|m}}    
-    public void toBulletSymbols() {
+    public void fromBulletToSymbols() {
         //REPLACE LANGUAGE STRING WITH LANGUAGE _ETYL TEMPLATE
-        replaceLanguage();
+        parseLanguage();  //"Sardinian: [[pobulu]], [[poburu]], [[populu]]" -> {{_etyl|en|sc}}: [[pobulu]], [[poburu]], [[populu]]  
 
+	//{{_etyl|eng|sc}}: [[pobulu]], [[poburu]], [[populu]]-> LANGUAGE COLON LEMMA COMMA LEMMA COMMA LEMMA
         toSymbols(bulletSymbolsList, bulletSymbolsListPattern);
 
-        parseEtyl();
+        parseEtyl();//[[pobulu]] -> {{m|lang=sc|word1=pobulu}}
 
         //REPLACE SENSE TEMPLATE
-        //case "{{sense|kill}} {{l|en|top oneself}}"
-        replaceSense();
+        //case "{{sense|kill}} {{l|en|top oneself}}" -> {{l|en|top oneself|sense=kill}}
+        parseSense();
 
         ArrayList<Symbols> lemmas = new ArrayList<>();
         Matcher m = bulletSymbolsPattern.matcher(toString(symbols));
         while (m.find()) {
-            //case LANGUAGE SEMICOLON LEMMA COMMA LEMMA, e.g.:
+            //case LANGUAGE COLON LEMMA COMMA LEMMA, e.g.:
             //case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
             //and case "[[Asturian]]: {{l|ast|águila}}"
             if (m.group(2) != null && m.group(5) != null) {
-                if (m.group(2).equals("LANGUAGE") && m.group(5).equals("SEMICOLON ")) {
+                if (m.group(2).equals("LANGUAGE") && m.group(5).equals("COLON ")) {
                     String language = null;
                     for (Symbols b : symbols) {
                         if (b.values.get(0).equals("LANGUAGE")) {
@@ -313,13 +312,14 @@ public class Etymology {
         }
     }
 
-    private void replaceLanguage() {
+    private void parseLanguage() {
         String[] subs = string.split(":");
 
         if (subs.length == 2) {
             ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(subs[0], "[[", "]]");
             if (linksLocations.size() == 0) {//PARSE case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
-                String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].trim());
+		//also PARSE case "→ Georgian: {{l|ka|ყავა|gloss=coffee}}"
+                String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].replace("→","").trim());
 
                 if (bulletLang != null) {
                     string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
@@ -337,7 +337,7 @@ public class Etymology {
         }
     }
 
-    public void replaceSense() {
+    public void parseSense() {
         int aSize = symbols.size();
 
         if (aSize > 1) {
@@ -418,7 +418,7 @@ public class Etymology {
      * This function is used to replace "COMPOUND_OF LEMMA AND LEMMA" and equivalents
      * with a single "LEMMA" Symbol of type compound|lang1|word1|lang2|word2
      */
-    public void replaceCompound() {
+    public void parseCompound() {
         //iterate over all matches to a compound pattern
         //starting from the last
         ArrayList<Pair> match = findMatch(symbols, compoundSymbolsPattern);

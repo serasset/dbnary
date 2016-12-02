@@ -258,7 +258,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         Etymology etymology = new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
 
-        etymology.toDefinitionSymbols();
+        etymology.fromDefinitionToSymbols();
 
         ewdh.registerEtymology(etymology);
     }
@@ -267,22 +267,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     //* {{l|pt|mundão}} {{gloss|augmentative}}
     //DONE: process {{der4|title=Terms derived from ''free'' | [[freeball]], [[free-ball]] | [[freebooter]] }}
     protected void extractDerived(int blockStart, int end) {
-        extractBulletList(pageContent.substring(blockStart, end));
+	String lang = ewdh.getCurrentEntryLanguage();
+	lang = EnglishLangToCode.threeLettersCode(lang);
+        extractBulletList(pageContent.substring(blockStart, end), lang);
 
-        extractTableDerived(pageContent.substring(blockStart, end));
+        extractTable(pageContent.substring(blockStart, end), lang);
     }
 
     protected void extractDescendants(int blockStart, int end) {
-        boolean isMatch = extractMultipleBulletList(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage(), true);
+	String lang = ewdh.getCurrentEntryLanguage();
+	lang = EnglishLangToCode.threeLettersCode(lang);
+        boolean isMatch = extractMultipleBulletList(pageContent.substring(blockStart, end), lang, true);
 
         //if there is no match to multiple bullet list
         if (!isMatch) {
-            extractEtymtree(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
+            extractEtymtree(pageContent.substring(blockStart, end), lang);
         }
     }
 
-    private void extractTableDerived(String s) {
-        String lang = ewdh.getCurrentEntryLanguage();
+    private void extractTable(String s, String lang) {
         for (Pair l : WikiTool.locateEnclosedString(s, "{{", "}}")) {
             String t = s.substring(l.start + 2, l.start + 6);
             int start = l.start;
@@ -298,7 +301,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             for (String key : args.keySet()) {
                 Etymology etymology = new Etymology(args.get(key), lang);
 
-                etymology.toTableDerivedSymbols();
+                etymology.fromTableToSymbols();
 
                 if (etymology.symbols.size() == 0) {
                     if (WikiTool.locateEnclosedString(etymology.string, "{{", "}}").size() + WikiTool.locateEnclosedString(etymology.string, "[[", "]]").size() == 0) {
@@ -340,7 +343,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher multipleBulletListMatcher = WikiPatterns.multipleBulletListPattern.matcher(s);
         int nStars = 0;
         while (multipleBulletListMatcher.find()) {
-            //System.out.format("descendants=%s\n", multipleBulletListMatcher.group());
             nStars = multipleBulletListMatcher.group(1).length();
             if (nStars + offset - 1 < ewdh.ancestors.size()) {
                 ewdh.ancestors.subList(nStars + offset - 1, ewdh.ancestors.size()).clear();
@@ -348,7 +350,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
             Etymology etymology = new Etymology(multipleBulletListMatcher.group(2), lang);
 
-            etymology.toBulletSymbols();
+            etymology.fromBulletToSymbols();
 
             ewdh.addAncestorsAndRegisterDescendants(etymology);
         }
@@ -358,15 +360,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return nStars > 0;
     }
 
-    private void extractBulletList(String s) {
-        String lang = ewdh.getCurrentEntryLanguage();
+    private void extractBulletList(String s, String lang) {
         ewdh.registerCurrentEtymologyEntry(lang);
 
         Matcher bulletListMatcher = WikiPatterns.bulletListPattern.matcher(s);
         while (bulletListMatcher.find()) {
             Etymology etymology = new Etymology(bulletListMatcher.group(1), lang);
 
-            etymology.toBulletSymbols();
+            etymology.fromBulletToSymbols();
 
             //check that all lemmas share the same language
             for (Symbols b : etymology.symbols) {

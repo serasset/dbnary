@@ -17,7 +17,7 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
     private String currentEntryLanguage = null;
 
     public ForeignLanguagesWiktionaryDataHandler(String lang) {
-        super(lang);
+	super(lang);
     }
 
     public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
@@ -30,53 +30,53 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
         //wktLanguageEdition = LangTools.getPart1OrId(lang);
 
         lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
-        currentPrefix = getPrefix(lang);
+	    currentPrefix = getPrefix(lang);
     }
 
-    @Override
-    public String getCurrentEntryLanguage() {
-        return currentEntryLanguage;
-    }
+        @Override
+	public String getCurrentEntryLanguage() {
+	    return currentEntryLanguage;
+	}
 
-    @Override
-    public void finalizeEntryExtraction() {
-        currentPrefix = null;
-    }
+        @Override
+	public void finalizeEntryExtraction() {
+	    currentPrefix = null;
+	}
 
-    @Override
-    public String currentLexEntry() {
-        return currentWiktionaryPageName;
-    }
-
+        @Override
+	public String currentLexEntry() {
+	    return currentWiktionaryPageName;
+	}
+    
     @Override
     public String getPrefix() {
-        return currentPrefix;
+	    return currentPrefix;
     }
 
     public String getPrefix(String lang) {
         if (this.prefixes.containsKey(lang))
             return this.prefixes.get(lang);
 
-        lang = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
+	    lang = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
         String prefix = DBNARY_NS_PREFIX + "/eng/" + lang + "/";
         prefixes.put(lang, prefix);
-        aBox.setNsPrefix(lang + "-eng", prefix);
-        return prefix;
+	    aBox.setNsPrefix(lang + "-eng", prefix);
+	    return prefix;
     }
+    
+        @Override
+	public void registerEtymologyPos() {
+	    registerEtymologyPos(wktLanguageEdition);
+	}
 
-    @Override
-    public void registerEtymologyPos() {
-        registerEtymologyPos(wktLanguageEdition);
-    }
-
-    @Override
-    public void registerPronunciation(String pron, String lang) {
-        // Catch the call for foreign languages and disregard passed language
-        lang = wktLanguageEdition + "-fonipa";
-        if (null == currentCanonicalForm) {
-            currentSharedPronunciations.add(new PronunciationPair(pron, lang));
-        } else {
-            registerPronunciation(currentCanonicalForm, pron, lang);
-        }
-    }
+        @Override
+	public void registerPronunciation(String pron, String lang) {
+	    // Catch the call for foreign languages and disregard passed language
+	    lang = wktLanguageEdition + "-fonipa";
+	    if (null == currentCanonicalForm) {
+		    currentSharedPronunciations.add(new PronunciationPair(pron, lang));
+	    } else {
+		    registerPronunciation(currentCanonicalForm, pron, lang);
+	    }
+	}
 }

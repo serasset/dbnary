@@ -84,10 +84,10 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
     @Override
     public void initializeEntryExtraction(String wiktionaryPageName) {
-        initializeEntryExtraction(wiktionaryPageName, "eng");
+	initializeEntryExtraction(wiktionaryPageName, "eng");
     }
 
-    public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
+    public void initializeEntryExtraction(String wiktionaryPageName, String lang){
         currentEtymologyNumber = 0;
         currentEtymologyEntry = null;
         currentGlobalEtyEntry = createGlobalEtymologyResource(wiktionaryPageName, lang);
@@ -97,6 +97,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     private Resource createGlobalEtymologyResource(String wiktionaryPageName, String lang) {
         Model eBox = null;
         if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) != null) {
+            // TODO : should I check that getPrefix returns null ?
             return eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(wiktionaryPageName), DBnaryEtymologyOnt.EtymologyEntry);
         }
         return null;
@@ -131,7 +132,14 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     }
 
     // TODO : check if we should create the prefixes in the aBox or in the eBox
+    // TODO: getPrefix should never return null. It should return "unknown" if there is no language
     public String getPrefix(Model box, String lang) {
+        // TODO : lang may be null ?
+        // TODO : what if the
+        if (lang == null){
+            log.debug("Null input language to function getPrefix.");
+            lang = "unknown";
+        }
         lang = lang.trim();
         if (lang.equals("eng")) {
             return getPrefix();

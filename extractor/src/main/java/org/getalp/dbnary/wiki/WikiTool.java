@@ -65,7 +65,7 @@ public class WikiTool {
             Pair p = parenthesesLocations.get(parenthesesLocationsLength - i - 1);
             //check if parentheses are inside links [[  ()  ]]
             if (!p.containedIn(templatesAndLinksLocations)) {
-                log.debug("Removing string {} in Etymology section of word {}", s.substring(p.start, p.end));
+                log.debug("Removing string {} in Etymology section", s.substring(p.start, p.end));
                 s = s.substring(0, p.start) + s.substring(p.end, s.length());
             }
         }

@@ -53,7 +53,6 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
     }
 
     private String getNonEnglishLanguageCode(Matcher l1) {
-        // log.debug("Considering header == {}",l1.group(1));
         String t = l1.group(1).trim();
         if (t.equals("English"))
             return null;
@@ -67,6 +66,6 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
 
     protected void extractNonEnglishData(String lang, int startOffset, int endOffset) {
         flwdh.setCurrentLanguage(lang);
-        super.extractEnglishData(startOffset, endOffset);
-    }
+            super.extractEnglishData(startOffset, endOffset);
+	}
 }

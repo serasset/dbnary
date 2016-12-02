@@ -22,14 +22,12 @@ public class WikiPatterns {
     static {
         // DONE: Validate the fact that links and macro should be on one line or may be on several...
         // DONE: for this, evaluate the difference in extraction !
-        linkPatternString =
-                new StringBuilder()
+        linkPatternString = new StringBuilder()
                         .append("\\[\\[")
                         .append("([^\\]\\|\n\r]*)(?:\\|([^\\]\n\r]*))?")
                         .append("\\]\\]")
                         .toString();
-        macroPatternString =
-                new StringBuilder().append("\\{\\{")
+        macroPatternString = new StringBuilder().append("\\{\\{")
                         .append("([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?")
                         .append("\\}\\}")
                         .toString();

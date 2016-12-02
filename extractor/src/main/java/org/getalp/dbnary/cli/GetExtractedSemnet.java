@@ -27,12 +27,16 @@ public class GetExtractedSemnet {
     private String language = DEFAULT_LANGUAGE;
     private String model = DEFAULT_MODEL;
     private boolean extractsMorpho = false;
+    private boolean extractsEtymology = false;
 
 
     private static final String FOREIGN_EXTRACTION_OPTION = "x";
 
     private static final String MORPHOLOGY_OUTPUT_FILE_LONG_OPTION = "morpho";
     private static final String MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION = "M";
+
+    private static final String ETYMOLOGY_OUTPUT_FILE_LONG_OPTION = "etymology";
+    private static final String ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION = "E";
 
 
     static {
@@ -48,6 +52,9 @@ public class GetExtractedSemnet {
         options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
                 .withDescription("extract morphology data.")
                 .create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
+        options.addOption(OptionBuilder.withLongOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)
+                .withDescription("extract etymology data.")
+                .create(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION));
     }
 
     WiktionaryIndex wi;
@@ -94,6 +101,7 @@ public class GetExtractedSemnet {
         }
 
         extractsMorpho = cmd.hasOption(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION);
+        extractsEtymology = cmd.hasOption(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION);
 
         remainingArgs = cmd.getArgs();
         if (remainingArgs.length <= 1) {
@@ -115,6 +123,7 @@ public class GetExtractedSemnet {
                     wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
                 }
                 if (extractsMorpho) wdh.enableFeature(Feature.MORPHOLOGY);
+                if (extractsEtymology) wdh.enableFeature(Feature.ETYMOLOGY);
             } else {
                 System.err.println("LMF format not supported anymore.");
                 System.exit(1);
@@ -157,6 +166,10 @@ public class GetExtractedSemnet {
         if (extractsMorpho) {
             System.out.println("----------- MORPHOLOGY ----------");
             dumpBox(Feature.MORPHOLOGY);
+        }
+        if (extractsEtymology) {
+            System.out.println("----------- ETYMOLOGY ----------");
+            dumpBox(Feature.ETYMOLOGY);
         }
     }
 

@@ -75,6 +75,7 @@ public class Etymology {
 
     public static Pattern definitionSymbolsPattern = Pattern.compile("(FROM )?(LANGUAGE LEMMA |LEMMA )(COMMA |DOT |OR )");
     public static Pattern compoundSymbolsPattern = Pattern.compile("((COMPOUND_OF |FROM )(LANGUAGE )?(LEMMA )(?:(PLUS |AND |WITH )(LANGUAGE )?(LEMMA ))+)|((LANGUAGE )?(LEMMA )(?:(PLUS )(LANGUAGE )?(LEMMA ))+)");
+    //TODO: add ARROW and allow for situations like Italian: LEMMA LEMMA COMMA LEMMA
     public static Pattern bulletSymbolsPattern = Pattern.compile("(((LANGUAGE)|(LEMMA)) (COLON ))?((LEMMA)( COMMA )?)+");
     public static Pattern tableDerivedLemmasPattern = Pattern.compile("(LEMMA)(?: COMMA (LEMMA))*");
 
@@ -178,8 +179,9 @@ public class Etymology {
     //TODO: handle * [[crisismanager]] {{g|m}}    
     public void fromBulletToSymbols() {
         //REPLACE LANGUAGE STRING WITH LANGUAGE _ETYL TEMPLATE
-        parseLanguage();  //"Sardinian: [[pobulu]], [[poburu]], [[populu]]" -> {{_etyl|en|sc}}: [[pobulu]], [[poburu]], [[populu]]  
-
+        parseLanguage();
+	//* &rarr; Italian: {{l|it|baruffare}}
+	//Sardinian: [[pobulu]], [[poburu]], [[populu]] -> {{_etyl|en|sc}}: [[pobulu]], [[poburu]], [[populu]]  
 	//{{_etyl|eng|sc}}: [[pobulu]], [[poburu]], [[populu]]-> LANGUAGE COLON LEMMA COMMA LEMMA COMMA LEMMA
         toSymbols(bulletSymbolsList, bulletSymbolsListPattern);
 
@@ -208,6 +210,7 @@ public class Etymology {
                         }
                     }
                 } else if (m.group(2).equals("LEMMA")) {//case "{{ja-r|武威|ぶい}}: [[military]] [[power]]"
+		    //TODO: distinguish "[[color]], [[colour]]" and "[[military]] [[power]]" 
                     for (Symbols b : symbols) {
                         if (b.values.get(0).equals("LEMMA")) {
                             lemmas.add(b);
@@ -218,6 +221,7 @@ public class Etymology {
                 }
             } else if (m.group(2) == null && m.group(5) == null) {//case "[[color]], [[colour]]"
                 if (m.group(7).equals("LEMMA")) {
+		    //TODO: distinguish "[[color]], [[colour]]" and "[[military]] [[power]]"
                     for (Symbols b : symbols) {
                         if (b.values.get(0).equals("LEMMA")) {
                             lemmas.add(b);
@@ -250,6 +254,7 @@ public class Etymology {
                         if (match.containedIn(template)) {//match is contained in a template
                             check = true;
                             if (l.get(i).equals("TEMPLATE")) {//match is a template
+				System.out.format("temp: %s\n", string.substring(template.start + 2, template.end - 2));
                                 Symbols b = new Symbols(string.substring(template.start + 2, template.end - 2), lang, l.get(i));
                                 if (b.values != null && b.args != null) {
                                     if (b.values.get(0).equals("STOP")) {
@@ -271,6 +276,7 @@ public class Etymology {
                             if (match.containedIn(link)) {
                                 check = true;
                                 if (l.get(i).equals("LINK")) {//match is a link
+				    System.out.format("link: %s\n", string.substring(link.start + 2, link.end - 2));
                                     Symbols b = new Symbols(string.substring(link.start + 2, link.end - 2), lang, l.get(i));
                                     if (b.values != null && b.args != null) {
                                         symbols.add(b);
@@ -312,6 +318,9 @@ public class Etymology {
         }
     }
 
+    //TODO: this cannot parse correctly
+    //{{ja-r|宮古島|^みやこじま|[[w:Miyako Island|Miyako Island]]; [[w:Miyakojima, Okinawa|Miyakojima, Okinawa]]}}
+    //{{ja-r|宮古諸島|^みやこしょとう|[[w:Miyako Islands|Miyako Islands]]}}
     private void parseLanguage() {
         String[] subs = string.split(":");
 

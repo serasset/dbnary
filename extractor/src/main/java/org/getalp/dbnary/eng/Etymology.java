@@ -254,7 +254,6 @@ public class Etymology {
                         if (match.containedIn(template)) {//match is contained in a template
                             check = true;
                             if (l.get(i).equals("TEMPLATE")) {//match is a template
-				System.out.format("temp: %s\n", string.substring(template.start + 2, template.end - 2));
                                 Symbols b = new Symbols(string.substring(template.start + 2, template.end - 2), lang, l.get(i));
                                 if (b.values != null && b.args != null) {
                                     if (b.values.get(0).equals("STOP")) {
@@ -276,7 +275,6 @@ public class Etymology {
                             if (match.containedIn(link)) {
                                 check = true;
                                 if (l.get(i).equals("LINK")) {//match is a link
-				    System.out.format("link: %s\n", string.substring(link.start + 2, link.end - 2));
                                     Symbols b = new Symbols(string.substring(link.start + 2, link.end - 2), lang, l.get(i));
                                     if (b.values != null && b.args != null) {
                                         symbols.add(b);

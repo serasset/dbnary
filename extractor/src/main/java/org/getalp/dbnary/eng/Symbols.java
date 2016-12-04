@@ -274,7 +274,7 @@ public class Symbols {
             args.remove("etyl term");
             values.add("FROM");
             values.add("LEMMA");
-            args.put("gloss1", args.get("etyl t").replaceAll("\\[", "").replaceAll("\\]", ""));
+            args.put("gloss1", cleanUp(args.get("etyl t")));
             args.remove("etyl t");
         } else if (args.get("1").startsWith("vi-l") || args.get("1").equals("zh-l") || args.get("1").equals("zh-m") || args.get("1").equals("ko-l")) {
 	    if (args.get("1").startsWith("vi-l")){
@@ -764,7 +764,8 @@ public class Symbols {
 	String link = "wiktionary";
 	String language = "en";
 	String word = "";
-	
+	// TODO: some links points t pages with colon (e.g. [[w:Zelda II: The Adventure of Link|Zelda II]])
+        // Currently, such link is taken with Zelda II as a language.
 	if (nCol > 4) {
 	    log.debug("Ignoring unexpected argument {} in wiki link", string);
 	} else if (nCol == 4) {
@@ -773,45 +774,45 @@ public class Symbols {
 	        language = splitColumn[2].trim();
 	        word = splitColumn[3].split("\\#")[0].trim();
 	    }
-        } else if (nCol == 3) {
+    } else if (nCol == 3) {
 	    if (splitColumn[0].length() == 0){
 	        language = splitColumn[1].trim();
-		word = splitColumn[2].split("\\#")[0].trim();
+		    word = splitColumn[2].split("\\#")[0].trim();
 	    } else {
-		link = splitColumn[0].trim();
-		language = splitColumn[1].trim();
-		word = splitColumn[2].split("\\#")[0].trim();
+            link = splitColumn[0].trim();
+		    language = splitColumn[1].trim();
+		    word = splitColumn[2].split("\\#")[0].trim();
 	    }
 	} else if (nCol == 2) {
 	    if (splitColumn[0].length() == 0){//e.g. [[:door#verb]]
 		word = splitColumn[1].split("\\#")[0].trim();
 	    } else {//e.g. [[en:door#verb]] or [[w:Doors|Doors]]
 		language = EnglishLangToCode.threeLettersCode(splitColumn[0].trim());
-		System.out.format("parsing Symbol, language=%s\n", language);
+		log.debug("parsing Symbol, language={}\n", language);
 		if (language == null){
 		    link = splitColumn[0].trim();
-		    System.out.format("Symbol is a %s link", link);
+		    log.debug("Symbol is a {} link", link);
 		    language = "en";
 		}
 		word = splitColumn[1].split("\\#")[0].trim();
-		System.out.format("word=%s\n", word);
+		log.debug("word={}\n", word);
 	    }
-	} else if (nCol == 1) {
-	    String[] splitPound = splitColumn[0].split("\\#");
-	    if (splitPound.length == 2){//e.g. [[door#portuguese]]
-		language = EnglishLangToCode.threeLettersCode(splitPound[1].trim());
-		word = splitPound[0].trim();
-		if (language == null){
-		    log.debug("Ignoring unexpected argument {} in wiki link", string);
-		    args = null;
-		    string = null;
-		    values = null;
-		    return;
-		}
-	    } else {//e.g. [[door]]
-	        word = splitColumn[0].trim();
-	    }
-	} else {
+    } else if (nCol == 1) {
+        String[] splitPound = splitColumn[0].split("\\#");
+        if (splitPound.length == 2) {//e.g. [[door#portuguese]]
+            language = EnglishLangToCode.threeLettersCode(splitPound[1].trim());
+            word = splitPound[0].trim();
+            if (language == null) {
+                log.debug("Ignoring unexpected argument {} in wiki link", string);
+                args = null;
+                string = null;
+                values = null;
+                return;
+            }
+        } else {//e.g. [[door]]
+            word = splitColumn[0].trim();
+        }
+    } else {
 	    log.debug("Ignoring unexpected argument {} in wiki link", string);
 	    args = null;
 	    string = null;
@@ -875,7 +876,12 @@ public class Symbols {
      * @return a String where some characters have been replaced
      */
     public String cleanUp(String word) {
+        if (null == word) return null;
         word = word.replaceAll("\\[", "").replaceAll("\\]", "").trim().replaceAll("'", "__").replaceAll("\\*", "_");
         return word;
+    }
+
+    public String toString() {
+        return "[" + (null==values ? "[]" : values.toString()) + "|" + string + "]";
     }
 }

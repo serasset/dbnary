@@ -250,6 +250,8 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                             if (lang == null) {
                                 lang = b.args.get("lang" + Integer.toString(kk));
                             }
+                            // TODO: When word is empty (but not null), it means same string as current entry
+                            if ("".equals(word)) word = currentWiktionaryPageName;
                             if (word != null && !word.equals("") && lang != null) {
                                 if (kk > 1) {//it's some kind of compound
                                     compound = true;

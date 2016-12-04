@@ -20,33 +20,17 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
 	super(lang);
     }
 
-    @Override
-    public void initializeEntryExtraction(String wiktionaryPageName) {
-	initializeEntryExtraction(wiktionaryPageName, currentEntryLanguage);
+    public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
+        setCurrentLanguage(lang);
+        super.initializeEntryExtraction(wiktionaryPageName);
     }
 
-    public boolean setCurrentLanguage(String lang) {
-	currentEntryLanguage = EnglishLangToCode.threeLettersCode(lang);
-	if (currentEntryLanguage == null){
-	    log.debug("Null input language");
-	    return false;
-	}
+    public void setCurrentLanguage(String lang) {
+        currentEntryLanguage = lang;//!!!! check this change
+        //wktLanguageEdition = LangTools.getPart1OrId(lang);
 
-	wktLanguageEdition = LangTools.getPart1OrId(lang);
-	if (wktLanguageEdition == null){
-	    log.debug("Function getPart1OrId returns null for language {}.");
-	    return false;
-	}
-	
-	currentPrefix = getPrefix(lang);
-	if (currentPrefix == null){
-	    log.debug("Null prefix: ignoring etymology entry");
-	    return false;
-	}
-
-	
-	lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
-	return true;
+        lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
+	    currentPrefix = getPrefix(lang);
     }
 
         @Override
@@ -66,24 +50,19 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
     
     @Override
     public String getPrefix() {
-	return currentPrefix;
+	    return currentPrefix;
     }
-    /*
-    public String getPrefix(String lang) {
-	String prefix = DBNARY_NS_PREFIX + "/eng/";
-	lang = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
-       	if (this.prefixes.containsKey(lang)){
-	    return this.prefixes.get(lang);
-	}
 
-	if (! lang.equals("eng")){
-	    prefix = prefix + lang + "/";
+    public String getPrefix(String lang) {
+        if (this.prefixes.containsKey(lang))
+            return this.prefixes.get(lang);
+
+	    lang = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
+        String prefix = DBNARY_NS_PREFIX + "/eng/" + lang + "/";
+        prefixes.put(lang, prefix);
 	    aBox.setNsPrefix(lang + "-eng", prefix);
-	}//else prefix = DBNARY_NS_PREFIX + "/eng/";
-         
-	prefixes.put(lang, prefix);
-	return prefix;
-	}*/
+	    return prefix;
+    }
     
         @Override
 	public void registerEtymologyPos() {
@@ -95,9 +74,9 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
 	    // Catch the call for foreign languages and disregard passed language
 	    lang = wktLanguageEdition + "-fonipa";
 	    if (null == currentCanonicalForm) {
-		currentSharedPronunciations.add(new PronunciationPair(pron, lang));
+		    currentSharedPronunciations.add(new PronunciationPair(pron, lang));
 	    } else {
-		registerPronunciation(currentCanonicalForm, pron, lang);
+		    registerPronunciation(currentCanonicalForm, pron, lang);
 	    }
 	}
 }

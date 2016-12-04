@@ -39,6 +39,9 @@ public class ExtractWiktionary {
     private static final String MORPHOLOGY_OUTPUT_FILE_LONG_OPTION = "morpho";
     private static final String MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION = "M";
 
+    private static final String ETYMOLOGY_OUTPUT_FILE_LONG_OPTION = "etymology";
+    private static final String ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION = "E";
+
 
     public static final XMLInputFactory2 xmlif;
 
@@ -47,6 +50,7 @@ public class ExtractWiktionary {
 
     private String outputFile = DEFAULT_OUTPUT_FILE;
     private String morphoOutputFile = null;
+    private String etymologyOutputFile = null;
     private String outputFormat = DEFAULT_OUTPUT_FORMAT;
     private String model = DEFAULT_MODEL;
     private boolean compress;
@@ -73,6 +77,11 @@ public class ExtractWiktionary {
         options.addOption(MODEL_OPTION, true,
                 "Ontology Model used  (lmf or lemon). Only useful with rdf base formats." + DEFAULT_MODEL + " by default.");
         options.addOption(OUTPUT_FILE_OPTION, true, "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");
+        options.addOption(OptionBuilder.withLongOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)
+                .withDescription("Output file for etymology data. Undefined by default.")
+                .hasArg()
+                .withArgName("file")
+                .create(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION));
         options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
                 .withDescription("Output file for morphology data. Undefined by default.")
                 .hasArg()
@@ -154,6 +163,10 @@ public class ExtractWiktionary {
             morphoOutputFile = cmd.getOptionValue(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION);
         }
 
+        if (cmd.hasOption(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)) {
+            etymologyOutputFile = cmd.getOptionValue(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION);
+        }
+
         if (cmd.hasOption(LANGUAGE_OPTION)) {
             language = cmd.getOptionValue(LANGUAGE_OPTION);
             language = LangTools.getCode(language);
@@ -183,6 +196,7 @@ public class ExtractWiktionary {
                 System.exit(1);
             }
             if (morphoOutputFile != null) wdh.enableFeature(Feature.MORPHOLOGY);
+            if (etymologyOutputFile != null) wdh.enableFeature(Feature.ETYMOLOGY);
         } else {
             System.err.println("unsupported format :" + outputFormat);
             System.exit(1);
@@ -243,6 +257,7 @@ public class ExtractWiktionary {
                         } catch (RuntimeException ex) {
                             System.err.println("ERROR : Unexpected/uncaught Rutine Exception while extracting page " + title);
                             System.err.println(ex.getMessage());
+                            ex.printStackTrace();
                         }
                         if (nbnodes != wdh.nbEntries()) {
                             totalRelevantTime += (System.currentTimeMillis() - relevantStartTime);
@@ -265,6 +280,9 @@ public class ExtractWiktionary {
             System.err.println("Semnet contains: " + wdh.nbEntries() + " nodes.");
             if (null != morphoOutputFile) {
                 saveBox(Feature.MORPHOLOGY, morphoOutputFile);
+            }
+            if (null != etymologyOutputFile) {
+                saveBox(Feature.ETYMOLOGY, etymologyOutputFile);
             }
 
         } catch (XMLStreamException ex) {

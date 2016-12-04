@@ -1,7 +1,10 @@
 package org.getalp.dbnary.rus;
 
 import com.hp.hpl.jena.rdf.model.Property;
+import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.filter.PlainTextConverter;
+import info.bliki.wiki.model.WikiModelContentException;
+import info.bliki.wiki.namespaces.INamespace;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
@@ -119,4 +122,14 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
         return b.toString();
     }
 
+    @Override
+    public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
+            throws WikiModelContentException {
+        ParsedPageName fixedPageName = parsedPagename;
+        if (parsedPagename.namespace.isType(INamespace.NamespaceCode.MODULE_NAMESPACE_KEY) &&
+                parsedPagename.pagename.startsWith("Module:")) {
+            fixedPageName = new ParsedPageName(parsedPagename.namespace, parsedPagename.pagename.substring(7), parsedPagename.valid);
+        }
+        return super.getRawWikiContent(fixedPageName, map);
+    }
 }

@@ -16,13 +16,14 @@ public class LangTools {
         s = s.trim();
         s = s.toLowerCase();
         String res = getCode(s);
-        if (res == null) {//if the code or the language cannot be found in ISO, look into wiktionary language codes and language canonical names
-	    if (h != null && h.containsKey(s)) {
+        if (res == null )
+            if (h != null && h.containsKey(s)) {
                 res = h.get(s);
 	    } else {//e.g.: s.equals("image"), s.equals("w")
-		log.debug("Warning: language {} is not present in input hashmap and in iso639, getCode returns null.", s);
+		    log.debug("Warning: language {} is not present in input hashmap and in iso639, getCode returns null.", s);
 	    }
-        }
+
+
         return res;
     }
 

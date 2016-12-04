@@ -129,6 +129,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         aBox = ModelFactory.createDefaultModel();
         aBox.setNsPrefix(lang, NS);
         aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
+        aBox.setNsPrefix("dbetym", DBnaryEtymologyOnt.getURI());
         aBox.setNsPrefix("lemon", LemonOnt.getURI());
         aBox.setNsPrefix("lexinfo", LexinfoOnt.getURI());
         aBox.setNsPrefix("rdfs", RDFS.getURI());
@@ -287,7 +288,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         if (null != currentLexinfoPos)
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);
 
-	System.out.format("currentLexEntry=%s\n", currentLexEntry);
+	    // System.out.format("currentLexEntry=%s\n", currentLexEntry);
         aBox.add(currentLexEntry, LemonOnt.language, wktLanguageEdition);
         aBox.add(currentLexEntry, DCTerms.language, lexvoExtractedLanguage);
 

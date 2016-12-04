@@ -12,6 +12,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.getalp.dbnary.IWiktionaryDataHandler.Feature.ETYMOLOGY;
+
 /**
  * @author serasset, pantaleo
  */
@@ -215,11 +217,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 String pos = (String) context.get("pos");
                 wdh.addPartOfSpeech(pos);
                 ewdh.registerEtymologyPos();
-                //extractMorphology(blockStart, end);
+                extractMorphology(blockStart, end);
                 extractDefinitions(blockStart, end);
                 break;
             case TRADBLOCK:
-                //extractTranslations(blockStart, end);
+                extractTranslations(blockStart, end);
                 break;
             case ORTHOALTBLOCK:
                 extractOrthoAlt(blockStart, end);
@@ -232,7 +234,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 extractPron(blockStart, end);
                 break;
             case CONJUGATIONBLOCK:
-                //extractConjugation(blockStart, end);
+                extractConjugation(blockStart, end);
                 break;
             case ETYMOLOGYBLOCK:
                 extractEtymology(blockStart, end);
@@ -252,6 +254,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     //TODO: check correct parsing of From ''[[semel#Latin|semel]]''  + ''[[pro#Latin|pro]]''  + ''[[semper#Latin|semper]]''
     protected void extractEtymology(int blockStart, int end) {
+        if (! wdh.isEnabled(ETYMOLOGY)) return;
+
         Etymology etymology = new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
 
         etymology.fromDefinitionToSymbols();

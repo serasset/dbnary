@@ -634,9 +634,11 @@ public class UpdateAndExtractDumps {
         // TODO: correctly test for compressed file if compress is enabled
         String extractFile = odir + "/" + lang + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
         String morphoFile = odir + "/" + lang + "_dbnary_morpho_" + dir + ".ttl";
+        String etymologyFile = odir + "/" + lang + "_dbnary_etymology_" + dir + ".ttl";
         if (compress) {
             extractFile = extractFile + ".bz2";
             morphoFile = morphoFile + ".bz2";
+            etymologyFile = etymologyFile + ".bz2";
         }
 
         File file = new File(extractFile);
@@ -660,6 +662,10 @@ public class UpdateAndExtractDumps {
         if (features.contains("morpho")) {
             a.add("--morpho");
             a.add(morphoFile);
+        }
+        if (features.contains("etymology")) {
+            a.add("--etymology");
+            a.add(etymologyFile);
         }
         a.add(uncompressDumpFileName(lang, dir));
 

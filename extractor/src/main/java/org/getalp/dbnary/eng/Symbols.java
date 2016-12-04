@@ -808,7 +808,8 @@ public class Symbols {
 	String link = "wiktionary";
 	String language = "en";
 	String word = "";
-	
+	// TODO: some links points t pages with colon (e.g. [[w:Zelda II: The Adventure of Link|Zelda II]])
+        // Currently, such link is taken with Zelda II as a language.
 	if (nCol > 4) {
 	    log.debug("Ignoring unexpected argument {} in wiki link", string);
 	} else if (nCol == 4) {
@@ -817,7 +818,7 @@ public class Symbols {
 	        language = splitColumn[2].trim();
 	        word = splitColumn[3].split("\\#")[0].trim();
 	    }
-        } else if (nCol == 3) {
+	} else if (nCol == 3) {
 	    if (splitColumn[0].length() == 0){
 	        language = splitColumn[1].trim();
 		word = splitColumn[2].split("\\#")[0].trim();
@@ -918,5 +919,9 @@ public class Symbols {
     public String cleanUp(String word) {
         word = word.replaceAll("\\[", "").replaceAll("\\]", "").trim().replaceAll("'", "__").replaceAll("\\*", "_");
         return word;
+    }
+
+    public String toString() {
+        return "[" + (null==values ? "[]" : values.toString()) + "|" + string + "]";
     }
 }

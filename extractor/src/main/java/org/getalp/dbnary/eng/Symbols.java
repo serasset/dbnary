@@ -831,14 +831,11 @@ public class Symbols {
 		word = splitColumn[1].split("\\#")[0].trim();
 	    } else {//e.g. [[en:door#verb]] or [[w:Doors|Doors]]
 		language = EnglishLangToCode.threeLettersCode(splitColumn[0].trim());
-		System.out.format("parsing Symbol, language=%s\n", language);
 		if (language == null){
 		    link = splitColumn[0].trim();
-		    System.out.format("Symbol is a %s link", link);
 		    language = "en";
 		}
 		word = splitColumn[1].split("\\#")[0].trim();
-		System.out.format("word=%s\n", word);
 	    }
 	} else if (nCol == 1) {
 	    String[] splitPound = splitColumn[0].split("\\#");
@@ -919,7 +916,6 @@ public class Symbols {
      * @return a String where some characters have been replaced
      */
     public String cleanUp(String word) {
-	System.out.format("clean %s\n", word);
         word = word.replaceAll("\\[", "").replaceAll("\\]", "").trim().replaceAll("'", "__").replaceAll("\\*", "_");
         return word;
     }

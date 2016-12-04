@@ -238,13 +238,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         int l = getHeaderLevel(m);
         if (l != 3 && l != 4) return null; // Only keep lvl 3 or 4 headings...
         String head = h.trim().toLowerCase();
-        String pos = null;
         if ((head.startsWith("forma")) || head.startsWith("{{forma")) return "";
         for (String p : posMarkers) {
-            if (head.contains(p)) return p;
+            if (head.contains(p)) return head;
         }
 
-        return pos;
+        return null;
     }
 
     void gotoDefBlock(Matcher m, String pos) {

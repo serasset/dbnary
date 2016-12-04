@@ -138,7 +138,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.0</version>
+            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>info.bliki.wiki</groupId>
@@ -159,7 +159,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.0</version>
+            <version>3.5</version>
         </dependency>
         <!-- WARN: this dependency is also used by JENA, check that the required version has not evolved since. -->
         <dependency>

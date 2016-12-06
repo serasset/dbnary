@@ -66,8 +66,8 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
     
         @Override
 	public void registerEtymologyPos() {
-	    registerEtymologyPos(wktLanguageEdition);
-	}
+            registerEtymologyPos(getCurrentEntryLanguage());
+        }
 
         @Override
 	public void registerPronunciation(String pron, String lang) {

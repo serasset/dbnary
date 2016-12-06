@@ -30,7 +30,7 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
         //wktLanguageEdition = LangTools.getPart1OrId(lang);
 
         lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
-	    currentPrefix = getPrefix(lang);
+	currentPrefix = getPrefix(lang);
     }
 
         @Override

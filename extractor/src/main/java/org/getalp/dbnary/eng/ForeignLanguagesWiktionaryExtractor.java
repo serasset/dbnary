@@ -66,6 +66,6 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
 
     protected void extractNonEnglishData(String lang, int startOffset, int endOffset) {
         flwdh.setCurrentLanguage(lang);
-            super.extractEnglishData(startOffset, endOffset);
-	}
+        super.extractEnglishData(startOffset, endOffset);
+    }
 }

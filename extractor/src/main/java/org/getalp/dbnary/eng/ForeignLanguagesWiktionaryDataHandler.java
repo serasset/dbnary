@@ -20,26 +20,27 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
 	super(lang);
     }
 
-    public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
-        setCurrentLanguage(lang);
-        super.initializeEntryExtraction(wiktionaryPageName);
+    @Override
+    public void initializeEntryExtraction(String wiktionaryPageName) {
+        super.initializeEntryExtraction(wiktionaryPageName, currentEntryLanguage);
     }
+
 
     public void setCurrentLanguage(String lang) {
         currentEntryLanguage = lang;//!!!! check this change
         //wktLanguageEdition = LangTools.getPart1OrId(lang);
 
         lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
-	currentPrefix = getPrefix(lang);
+        currentPrefix = getPrefix(lang);
     }
 
-        @Override
-	public String getCurrentEntryLanguage() {
+    @Override
+    public String getCurrentEntryLanguage() {
 	    return currentEntryLanguage;
 	}
 
-        @Override
-	public void finalizeEntryExtraction() {
+    @Override
+    public void finalizeEntryExtraction() {
 	    currentPrefix = null;
 	}
 
@@ -54,10 +55,9 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
     }
 
     public String getPrefix(String lang) {
+        lang = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
         if (this.prefixes.containsKey(lang))
             return this.prefixes.get(lang);
-
-	    lang = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
         String prefix = DBNARY_NS_PREFIX + "/eng/" + lang + "/";
         prefixes.put(lang, prefix);
 	    aBox.setNsPrefix(lang + "-eng", prefix);

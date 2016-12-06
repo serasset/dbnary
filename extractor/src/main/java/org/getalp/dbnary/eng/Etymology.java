@@ -320,25 +320,25 @@ public class Etymology {
     //{{ja-r|宮古島|^みやこじま|[[w:Miyako Island|Miyako Island]]; [[w:Miyakojima, Okinawa|Miyakojima, Okinawa]]}}
     //{{ja-r|宮古諸島|^みやこしょとう|[[w:Miyako Islands|Miyako Islands]]}}
     private void parseLanguage() {
-        String[] subs = string.split(":");
-
-        if (subs.length == 2) {
-            ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(subs[0], "[[", "]]");
+	ArrayList<String> subs = WikiTool.splitUnlessInTemplateOrLink(string, ':');
+			
+        if (subs.size() == 2) {
+            ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(subs.get(0), "[[", "]]");
             if (linksLocations.size() == 0) {//PARSE case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
 		//also PARSE case "→ Georgian: {{l|ka|ყავა|gloss=coffee}}"
-                String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].replace("→","").trim());
+                String bulletLang = EnglishLangToCode.threeLettersCode(subs.get(0).replace("→", "").replace("&rarr;", "").trim());
 
                 if (bulletLang != null) {
-                    string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
-                }
+                    string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs.get(1).trim();
+                }		//}
             } else if (linksLocations.size() == 1) {//PARSE case "[[Asturian]]: {{l|ast|águila}}"
-                String bulletLang = EnglishLangToCode.threeLettersCode(subs[0].substring(2, subs[0].length() - 2));
+                String bulletLang = EnglishLangToCode.threeLettersCode(subs.get(0).substring(2, subs.get(0).length() - 2));
 
                 if (bulletLang != null) {
-                    string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs[1].trim();
+                    string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs.get(1).trim();
                 }
             }
-        } else if (subs.length > 2) {
+        } else if (subs.size() > 2) {
             log.debug("Ignoring bullet {}", string);
             string = "";
         }

@@ -808,29 +808,31 @@ public class Symbols {
 	String link = "wiktionary";
 	String language = "en";
 	String word = "";
+	//TODO: {{ja-r|宮古島|^みやこじま|[[w:Miyako Island|Miyako Island]]; [[w:Miyakojima, Okinawa|Miyakojima, Okinawa]]}}
+	//processes {{ja-r|宮古諸島|^みやこしょとう|[[w as a language
 	// TODO: some links points t pages with colon (e.g. [[w:Zelda II: The Adventure of Link|Zelda II]])
         // Currently, such link is taken with Zelda II as a language.
 	if (nCol > 4) {
 	    log.debug("Ignoring unexpected argument {} in wiki link", string);
-	} else if (nCol == 4) {
+	} else if (nCol == 4) {//e.g.:     [[:w:en:door#verb:?]] -> link=w, language=en, word=door
 	    if (splitColumn[0].length() == 0){
 	        link = splitColumn[1].trim();
 	        language = splitColumn[2].trim();
 	        word = splitColumn[3].split("\\#")[0].trim();
 	    }
-	} else if (nCol == 3) {
-	    if (splitColumn[0].length() == 0){
-	        language = splitColumn[1].trim();
+	} else if (nCol == 3) { 
+	    if (splitColumn[0].length() == 0){ //e.g.:     [[:en:door#verb]] -> language=en, word=door
+	        language = splitColumn[1].trim();     
 		word = splitColumn[2].split("\\#")[0].trim();
 	    } else {
-		link = splitColumn[0].trim();
+		link = splitColumn[0].trim(); //e.g.:     [[w:en:door#verb]] -> link=w, language=end, word=door
 		language = splitColumn[1].trim();
 		word = splitColumn[2].split("\\#")[0].trim();
 	    }
 	} else if (nCol == 2) {
-	    if (splitColumn[0].length() == 0){//e.g. [[:door#verb]]
+	    if (splitColumn[0].length() == 0){//e.g.       [[:door#verb]]
 		word = splitColumn[1].split("\\#")[0].trim();
-	    } else {//e.g. [[en:door#verb]] or [[w:Doors|Doors]]
+	    } else {//e.g.                                 [[en:door#verb]] or [[w:door|door]]
 		language = EnglishLangToCode.threeLettersCode(splitColumn[0].trim());
 		if (language == null){
 		    link = splitColumn[0].trim();
@@ -838,9 +840,9 @@ public class Symbols {
 		}
 		word = splitColumn[1].split("\\#")[0].trim();
 	    }
-	} else if (nCol == 1) {
+	} else if (nCol == 1) {                     
 	    String[] splitPound = splitColumn[0].split("\\#");
-	    if (splitPound.length == 2){//e.g. [[door#portuguese]]
+	    if (splitPound.length == 2){//e.g.            [[door#portuguese]]
 		language = EnglishLangToCode.threeLettersCode(splitPound[1].trim());
 		word = splitPound[0].trim();
 		if (language == null){
@@ -850,7 +852,7 @@ public class Symbols {
 		    values = null;
 		    return;
 		}
-	    } else {//e.g. [[door]]
+	    } else {//e.g.                                [[door]]
 	        word = splitColumn[0].trim();
 	    }
 	} else {

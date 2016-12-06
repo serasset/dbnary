@@ -53,6 +53,7 @@ public class WikiTool {
     }
 
     //REMOVE TEXT WITHIN PARENTHESES UNLESS PARENTHESES FALL INSIDE A WIKI LINK OR A WIKI TEMPLATE
+    //This function is only used by /eng/Etymology.java
     public static String removeTextWithinParenthesesIn(String s) {
         //locate templates {{}} and links [[]]
         ArrayList<Pair> templatesAndLinksLocations = locateEnclosedString(s, "{{", "}}");
@@ -113,6 +114,41 @@ public class WikiTool {
     }
 
     /**
+     * @param a String
+     * @param a character
+     * @return an ArrayList of String
+     * This function takes as input a String s and a character or separator c, and splits
+     * s into an ArrayList of Strings using separator c, unless character c falls inside a 
+     * wiki link or a wiki template
+     */
+    public static ArrayList<String> splitUnlessInTemplateOrLink(String s, char c){
+	//locate wiki templates and links in input string  
+	ArrayList<Pair> templatesAndLinksLocation = locateEnclosedString(s, "{{", "}}");
+	templatesAndLinksLocation.addAll(locateEnclosedString(s, "[[", "]]"));
+
+	ArrayList<String> a = new ArrayList<String>();
+	int i = 0, j = 0;//iterate over characters in string s
+	while (j < s.length() - 1) {
+	    if (s.charAt(j) == c) {
+		Pair p = new Pair(j, j + 1);
+		if (templatesAndLinksLocation.size() == 0 || (!(p.containedIn(templatesAndLinksLocation)))) {
+		    a.add(s.substring(i, j).trim());
+		    i = j + 1;
+		}
+	    }
+	    j ++;
+	}
+        if (j == s.length() - 1) {
+	    if (s.charAt(j) == c) {
+		a.add(s.substring(i, j).trim());
+	    } else { //includes case: argsString is a single character
+		a.add(s.substring(i, j + 1).trim());
+	    }
+	}
+	return a;
+    }
+    
+    /**
      * @param argsString the String containing all the args (the part of a template contained after the first pipe).
      * @return a Map associating each argument name with its value.
      * @deprecated Parse the args of a Template, e.g., parses a string like xxx=yyy|zzz=ttt
@@ -123,51 +159,22 @@ public class WikiTool {
         HashMap<String, String> argsMap = new HashMap<String, String>();
         if (null == argsString || "" == argsString) return argsMap;
 
-        //locate wiki templates in argsString
-        ArrayList<Pair> templatesLocation = locateEnclosedString(argsString, "{{", "}}");
-        //locate wiki links in argsString
-        ArrayList<Pair> linksLocation = locateEnclosedString(argsString, "[[", "]]");
-
-        //split argsString by character "|" (unless character "|" is contained in a wiki template)
-        //into argsArray
-        ArrayList<String> argsArray = new ArrayList<String>();
-        int i = 0, j = 0;//iterate over characters in string argsString
-        while (j < argsString.length() - 1) {
-            if (argsString.charAt(j) == '|') {
-                if (j == argsString.length() - 1) {
-                    argsArray.add(argsString.substring(i, j).trim());
-                } else {
-                    Pair p = new Pair(j, j + 1);
-                    if (templatesLocation.size() == 0 || (!(p.containedIn(templatesLocation)) && !(p.containedIn(linksLocation)))) {
-                        argsArray.add(argsString.substring(i, j).trim());
-                        i = j + 1;
-                    }
-                }
-            }
-            j++;
-
-        }
-        if (j == argsString.length() - 1) {
-            if (argsString.charAt(j) == '|') {
-                argsArray.add(argsString.substring(i, j).trim());
-            } else { //includes case: argsString is a single character
-                argsArray.add(argsString.substring(i, j + 1).trim());
-            }
-        }
+	ArrayList<String> argsArray = splitUnlessInTemplateOrLink(argsString, '|');
 
         //then consider each argument argString
-        //split each element of argsArray (i.e. each argument arg) by "=" (unless "=" is contained in a wiki template)
+        //split each element of argsArray (i.e. each argument arg) by "=" (unless "=" is contained in a wiki template or link)
         //into argsMap, the returned map
         int n = 1; // number for positional args.
         String argString;
         for (int h = 0; h < argsArray.size(); h++) {//iterate over all arguments in argsArray
             argString = argsArray.get(h); //an argument in argsArray
-            templatesLocation = locateEnclosedString(argString, "{{", "}}");
-            j = 0;
+            ArrayList<Pair> templatesAndLinksLocation = locateEnclosedString(argString, "{{", "}}");
+	    templatesAndLinksLocation.addAll(locateEnclosedString(argString, "[[", "]]"));
+            int j = 0;
             while (j < argString.length()) {//iterate over characters in string argString
                 if (argString.charAt(j) == '=') {
                     Pair p = new Pair(j, j + 1);
-                    if (templatesLocation.size() == 0 || !(p.containedIn(templatesLocation))) {
+                    if (templatesAndLinksLocation.size() == 0 || !(p.containedIn(templatesAndLinksLocation))) {
                         if (j == argString.length() - 1) {
                             argsMap.put(argString.substring(0, j).trim(), "");
                         } else {

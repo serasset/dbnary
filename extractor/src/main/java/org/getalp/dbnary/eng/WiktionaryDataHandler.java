@@ -139,6 +139,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
             log.debug("Null input language to function getPrefix.");
             lang = "unknown";
         }
+        lang = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
         lang = lang.trim();
         if (lang.equals("eng")) {
             return getPrefix();

@@ -3,9 +3,9 @@
     <uri id="Imports Wizard Entry" name="http://kaiko.getalp.org/dbnary" uri="dbnary.owl"/>
     <uri id="Imports Wizard Entry" name="http://lemon-model.net/lemon" uri="lemon.ttl"/>
     <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
-        <uri id="Automatically generated entry, Timestamp=1475608347515" name="http://kaiko.getalp.org/dbnary" uri="dbnary.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1475608347515" name="http://purl.org/olia/olia.owl" uri="olia.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1475608347515" name="http://www.lexinfo.net/ontology/2.0/lexinfo" uri="lexinfo.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1475608347515" name="http://www.w3.org/2002/07/owl" uri="dbnary_etymology.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1480841668676" name="http://kaiko.getalp.org/dbnary" uri="dbnary.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1480841668676" name="http://kaiko.getalp.org/dbnaryetymology" uri="dbnary_etymology.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1480841668676" name="http://purl.org/olia/olia.owl" uri="olia.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1480841668676" name="http://www.lexinfo.net/ontology/2.0/lexinfo" uri="lexinfo.owl"/>
     </group>
 </catalog>

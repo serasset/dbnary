@@ -307,7 +307,7 @@ public class Symbols {
 		args.put("lang", "zh");
 	    } else if (args.get("1").equals("ko-l")){// {{ko-l|대문||[[gate]]|大門}}
 		args.put("lang", "ko");
-	    } else if (args.get("1").equals("ochl-l")){// och-l|圈|circle
+	    } else if (args.get("1").equals("och-l")){// och-l|圈|circle
 		args.put("lang", "och");
 	    } else if (args.get("1").equals("th-l")){
 		args.put("lang", "th");

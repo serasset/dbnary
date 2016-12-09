@@ -801,67 +801,60 @@ public class Symbols {
 	string = group;
         values = new ArrayList<String>();
 		
-        String[] splitArgs = string.split("\\|");
-        String[] splitColumn = splitArgs[0].split(":");
-	int nCol = splitColumn.length;
+        ArrayList<String> splitArgs = WikiTool.splitUnlessInTemplateOrLink(string, '|');
+        ArrayList<String> splitColumn = WikiTool.splitUnlessInTemplateOrLink(splitArgs.get(0),':');
+	int nCol = splitColumn.size();
 	
 	String link = "wiktionary";
 	String language = "en";
 	String word = "";
-	//TODO: {{ja-r|宮古島|^みやこじま|[[w:Miyako Island|Miyako Island]]; [[w:Miyakojima, Okinawa|Miyakojima, Okinawa]]}}
-	//processes {{ja-r|宮古諸島|^みやこしょとう|[[w as a language
 	// TODO: some links points t pages with colon (e.g. [[w:Zelda II: The Adventure of Link|Zelda II]])
         // Currently, such link is taken with Zelda II as a language.
-	if (nCol > 4) {
-	    log.debug("Ignoring unexpected argument {} in wiki link", string);
-	} else if (nCol == 4) {//e.g.:     [[:w:en:door#verb:?]] -> link=w, language=en, word=door
-	    if (splitColumn[0].length() == 0){
-	        link = splitColumn[1].trim();
-	        language = splitColumn[2].trim();
-	        word = splitColumn[3].split("\\#")[0].trim();
-	    }
-	} else if (nCol == 3) { 
-	    if (splitColumn[0].length() == 0){ //e.g.:     [[:en:door#verb]] -> language=en, word=door
-	        language = splitColumn[1].trim();     
-		word = splitColumn[2].split("\\#")[0].trim();
-	    } else {
-		link = splitColumn[0].trim(); //e.g.:     [[w:en:door#verb]] -> link=w, language=end, word=door
-		language = splitColumn[1].trim();
-		word = splitColumn[2].split("\\#")[0].trim();
-	    }
-	} else if (nCol == 2) {
-	    if (splitColumn[0].length() == 0){//e.g.       [[:door#verb]]
-		word = splitColumn[1].split("\\#")[0].trim();
-	    } else {//e.g.                                 [[en:door#verb]] or [[w:door|door]]
-		language = EnglishLangToCode.threeLettersCode(splitColumn[0].trim());
+	int offset = 0;
+	if (splitColumn.get(0).length() == 0){//e.g. [[:door]], [[:door#portuguese]], [[:door#verb]]
+	    offset = 1;
+	}
+	
+	if (nCol == 1 + offset){//e.g. [[door]], [[door#portuguese]], [[door#verb]], [[:door]], [[:door#portuguese]], [[:door#verb]]  
+	    ArrayList<String> splitPound = WikiTool.splitUnlessInTemplateOrLink(splitColumn.get(0 + offset),'#');
+	    word = splitPound.get(0).trim();
+	    if (splitPound.size() == 2){//e.g.            [[door#portuguese]], [[door#verb]]
+		language = EnglishLangToCode.threeLettersCode(splitPound.get(1).trim());
 		if (language == null){
-		    link = splitColumn[0].trim();
 		    language = "en";
-		}
-		word = splitColumn[1].split("\\#")[0].trim();
+		} 
+	    } 
+	} else if (nCol == 2 + offset) {//e.g. [[en:door]], [[en:door#portuguese]], [[en:door#verb]], [[:en:door]], [[:en:door#portuguese]], [[:en:door#verb]]
+	    ArrayList<String> splitPound = WikiTool.splitUnlessInTemplateOrLink(splitColumn.get(1 + offset),'#');
+	    word = splitPound.get(0).trim();
+	    language = EnglishLangToCode.threeLettersCode(splitColumn.get(0 + offset).trim());
+	    if (language == null){
+		link = splitColumn.get(0 + offset).trim();
+		log.debug("Parsing link {} as {} link to word {}", string, link, word);
+	    } else {
+		log.debug("Parsing link {} as link to {} in {}", string, word, language);
 	    }
-	} else if (nCol == 1) {                     
-	    String[] splitPound = splitColumn[0].split("\\#");
-	    if (splitPound.length == 2){//e.g.            [[door#portuguese]]
-		language = EnglishLangToCode.threeLettersCode(splitPound[1].trim());
-		word = splitPound[0].trim();
-		if (language == null){
-		    log.debug("Ignoring unexpected argument {} in wiki link", string);
-		    args = null;
-		    string = null;
-		    values = null;
-		    return;
-		}
-	    } else {//e.g.                                [[door]]
-	        word = splitColumn[0].trim();
+	} else if (nCol == 3 + offset) {//e.g. [[q:en:door]], [[:q:en:door]] 
+	    ArrayList<String> splitPound = WikiTool.splitUnlessInTemplateOrLink(splitColumn.get(2 + offset),'#');
+	    word = splitPound.get(0).trim();
+	    language = EnglishLangToCode.threeLettersCode(splitColumn.get(1 + offset).trim());
+	    if (language == null){
+		log.debug("Ignoring link {}", string);
+		args = null;
+		string = null;
+		values = null;
+		return;
+	    } else {
+		link = splitColumn.get(0 + offset).trim();
 	    }
 	} else {
-	    log.debug("Ignoring unexpected argument {} in wiki link", string);
+	    log.debug("Ignoring link {}", string);
 	    args = null;
 	    string = null;
 	    values = null;
 	    return;
 	}
+	
 	//parse link
 	if (link.equals("Wikipedia") || link.equals("wikipedia") //e.g.:  [[wikipedia: Doors| Doors]]
 	    || link.equals("W") || link.equals("w")){
@@ -871,21 +864,13 @@ public class Symbols {
 	} else if (link.equals("meta") || link.equals("m")){//e.g.: [[m:My novel| My novel]]
 	    args.put("link", "meta");
 	} else {
-	    log.debug("Ignoring unexpected argument {} in wiki link", string);
+	    log.debug("Ignoring link {}", string);
 	    args = null;
 	    string = null;
 	    values = null;
 	    return;
 	}
 	
-	//parse language
-	if (language == null){
-	    log.debug("Ignoring unexpected argument {} in wiki link", string);
-	    args = null;
-	    string = null;
-	    values = null;
-	    return;
-	}
 	//parse word
 	args.put("word1", cleanUp(word));
 	

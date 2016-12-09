@@ -135,11 +135,13 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     public String getPrefix(Model box, String lang) {
         // TODO : lang may be null ?
         // TODO : what if the
-        if (lang == null){
+        if (lang == null) {
             log.debug("Null input language to function getPrefix.");
             lang = "unknown";
         }
-        lang = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
+        String code = EnglishLangToCode.threeLettersCode(lang);
+        if (code == null) code = "unknown";
+        lang = LangTools.normalize(code);
         lang = lang.trim();
         if (lang.equals("eng")) {
             return getPrefix();

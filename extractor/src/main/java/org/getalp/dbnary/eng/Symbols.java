@@ -827,13 +827,31 @@ public class Symbols {
 	} else if (nCol == 2 + offset) {//e.g. [[en:door]], [[en:door#portuguese]], [[en:door#verb]], [[:en:door]], [[:en:door#portuguese]], [[:en:door#verb]]
 	    ArrayList<String> splitPound = WikiTool.splitUnlessInTemplateOrLink(splitColumn.get(1 + offset),'#');
 	    word = splitPound.get(0).trim();
-	    language = EnglishLangToCode.threeLettersCode(splitColumn.get(0 + offset).trim());
-	    if (language == null){
-		link = splitColumn.get(0 + offset).trim();
-		log.debug("Parsing link {} as {} link to word {}", string, link, word);
+	    link = splitColumn.get(0 + offset).trim().toLowerCase();
+	    if (link.equals("wikipedia") || link.equals("w")){//e.g.:  [[wikipedia: Doors| Doors]]
+		args.put("link", "wikipedia");
+	    } else if (link.equals("wiktionary")){
+		//do nothing
+	    } else if (link.equals("meta") || link.equals("m")){//e.g.: [[m:My novel| My novel]]
+		args.put("link", "meta");
+	    } else if (link.equals("image") || link.equals("category") || link.equals("file") || link.equals("wikisource") || link.equals("s") || link.equals("appendix") || link.equals("citations") || link.equals("special") || link.equals("image")){
+		log.debug("Ignoring link {}", string);
+		args = null;
+		string = null;
+		values = null;
+		return;
 	    } else {
-		log.debug("Parsing link {} as link to {} in {}", string, word, language);
-	    }
+	        language = EnglishLangToCode.threeLettersCode(splitColumn.get(0 + offset).trim());
+		if (language == null){
+		    log.debug("Ignoring link {}", string);
+		    args = null;
+		    string = null;
+		    values = null;
+		    return;
+		} else {
+		    log.debug("Parsing link {} as link to {} in {}", string, word, language);
+		}
+	    } 
 	} else if (nCol == 3 + offset) {//e.g. [[q:en:door]], [[:q:en:door]] 
 	    ArrayList<String> splitPound = WikiTool.splitUnlessInTemplateOrLink(splitColumn.get(2 + offset),'#');
 	    word = splitPound.get(0).trim();
@@ -854,23 +872,7 @@ public class Symbols {
 	    values = null;
 	    return;
 	}
-	
-	//parse link
-	if (link.equals("Wikipedia") || link.equals("wikipedia") //e.g.:  [[wikipedia: Doors| Doors]]
-	    || link.equals("W") || link.equals("w")){
-	    args.put("link", "wikipedia");
-	} else if (link.equals("Wiktionary") || link.equals("wiktionary")){
-	    //do nothing
-	} else if (link.equals("meta") || link.equals("m")){//e.g.: [[m:My novel| My novel]]
-	    args.put("link", "meta");
-	} else {
-	    log.debug("Ignoring link {}", string);
-	    args = null;
-	    string = null;
-	    values = null;
-	    return;
-	}
-	
+		
 	//parse word
 	args.put("word1", cleanUp(word));
 	

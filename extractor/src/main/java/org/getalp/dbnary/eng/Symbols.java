@@ -805,9 +805,9 @@ public class Symbols {
         ArrayList<String> splitColumn = WikiTool.splitUnlessInTemplateOrLink(splitArgs.get(0),':');
 	int nCol = splitColumn.size();
 	
-	String link = "wiktionary";
-	String language = "en";
-	String word = "";
+	String link = null,
+	    language = null,
+	    word = null;
 	// TODO: some links points t pages with colon (e.g. [[w:Zelda II: The Adventure of Link|Zelda II]])
         // Currently, such link is taken with Zelda II as a language.
 	int offset = 0;
@@ -816,25 +816,28 @@ public class Symbols {
 	}
 	
 	if (nCol == 1 + offset){//e.g. [[door]], [[door#portuguese]], [[door#verb]], [[:door]], [[:door#portuguese]], [[:door#verb]]  
+            args.put("link", "wiktionary");
 	    ArrayList<String> splitPound = WikiTool.splitUnlessInTemplateOrLink(splitColumn.get(0 + offset),'#');
 	    word = splitPound.get(0).trim();
 	    if (splitPound.size() == 2){//e.g.            [[door#portuguese]], [[door#verb]]
 		language = EnglishLangToCode.threeLettersCode(splitPound.get(1).trim());
 		if (language == null){
-		    language = "en";
+		    language = lang;
 		} 
-	    } 
+	    } else {
+		language = lang;
+	    }
 	} else if (nCol == 2 + offset) {//e.g. [[en:door]], [[en:door#portuguese]], [[en:door#verb]], [[:en:door]], [[:en:door#portuguese]], [[:en:door#verb]]
 	    ArrayList<String> splitPound = WikiTool.splitUnlessInTemplateOrLink(splitColumn.get(1 + offset),'#');
 	    word = splitPound.get(0).trim();
 	    link = splitColumn.get(0 + offset).trim().toLowerCase();
 	    if (link.equals("wikipedia") || link.equals("w")){//e.g.:  [[wikipedia: Doors| Doors]]
 		args.put("link", "wikipedia");
+		language = "en";
 	    } else if (link.equals("wiktionary")){
-		//do nothing
-	    } else if (link.equals("meta") || link.equals("m")){//e.g.: [[m:My novel| My novel]]
-		args.put("link", "meta");
-	    } else if (link.equals("image") || link.equals("category") || link.equals("file") || link.equals("wikisource") || link.equals("s") || link.equals("appendix") || link.equals("citations") || link.equals("special") || link.equals("image")){
+		args.put("link", "wiktionary");
+		language = lang;
+	    } else if (link.equals("image") || link.equals("category") || link.equals("file") || link.equals("wikisource") || link.equals("s") || link.equals("appendix") || link.equals("citations") || link.equals("special") || link.equals("image") || link.equals("meta") || link.equals("m")){
 		log.debug("Ignoring link {}", string);
 		args = null;
 		string = null;
@@ -849,6 +852,7 @@ public class Symbols {
 		    values = null;
 		    return;
 		} else {
+		    args.put("link", "wiktionary");
 		    log.debug("Parsing link {} as link to {} in {}", string, word, language);
 		}
 	    } 

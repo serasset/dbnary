@@ -42,6 +42,11 @@ public class ExtractWiktionary {
     private static final String ETYMOLOGY_OUTPUT_FILE_LONG_OPTION = "etymology";
     private static final String ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION = "E";
 
+    private static final String FROM_PAGE_LONG_OPTION = "frompage";
+    private static final String FROM_PAGE_SHORT_OPTION = "F";
+
+    private static final String TO_PAGE_LONG_OPTION = "topage";
+    private static final String TO_PAGE_SHORT_OPTION = "T";
 
     public static final XMLInputFactory2 xmlif;
 
@@ -57,6 +62,8 @@ public class ExtractWiktionary {
     private String language = DEFAULT_LANGUAGE;
     private File dumpFile;
     private String outputFileSuffix = "";
+    private int fromPage = 0;
+    private int toPage = Integer.MAX_VALUE;
 
     WiktionaryIndex wi;
     IWiktionaryExtractor we;
@@ -87,6 +94,16 @@ public class ExtractWiktionary {
                 .hasArg()
                 .withArgName("file")
                 .create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
+        options.addOption(OptionBuilder.withLongOpt(FROM_PAGE_LONG_OPTION)
+                .withDescription("Do not process pages before the nth one. 0 by default.")
+                .hasArg()
+                .withArgName("num")
+                .create(FROM_PAGE_SHORT_OPTION));
+        options.addOption(OptionBuilder.withLongOpt(TO_PAGE_LONG_OPTION)
+                .withDescription("Do not process pages after the nth one. MAXINT by default.")
+                .hasArg()
+                .withArgName("num")
+                .create(TO_PAGE_SHORT_OPTION));
         options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign Languages");
     }
 
@@ -165,6 +182,14 @@ public class ExtractWiktionary {
 
         if (cmd.hasOption(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)) {
             etymologyOutputFile = cmd.getOptionValue(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION);
+        }
+
+        if (cmd.hasOption(FROM_PAGE_LONG_OPTION)) {
+            fromPage = Integer.valueOf(cmd.getOptionValue(FROM_PAGE_LONG_OPTION));
+        }
+
+        if (cmd.hasOption(TO_PAGE_LONG_OPTION)) {
+            toPage = Integer.valueOf(cmd.getOptionValue(TO_PAGE_LONG_OPTION));
         }
 
         if (cmd.hasOption(LANGUAGE_OPTION)) {
@@ -252,6 +277,8 @@ public class ExtractWiktionary {
                     if (!title.equals("")) {
                         nbPages++;
                         int nbnodes = wdh.nbEntries();
+                        if (nbPages < fromPage) continue;
+                        if (nbPages > toPage) break;
                         try {
                             we.extractData(title, page);
                         } catch (RuntimeException ex) {

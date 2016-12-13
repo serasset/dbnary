@@ -47,6 +47,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected final static HashMap<String, String> nymMarkerToNymName;
 
     protected SpanishDefinitionExtractorWikiModel definitionExpander;
+    protected SpanishHeaderExtractorWikiModel headerExtractor;
+    protected SpanishTranslationExtractorWikiModel translationExtractor;
 
     static {
 
@@ -158,6 +160,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     public void setWiktionaryIndex(WiktionaryIndex wi) {
         super.setWiktionaryIndex(wi);
         definitionExpander = new SpanishDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}", "/${title}");
+        headerExtractor = new SpanishHeaderExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}", "/${title}");
+        translationExtractor = new SpanishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}", "/${title}");
     }
 
     @Override
@@ -231,15 +235,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private String getValidPOS(Matcher m) {
         String h = getHeaderLabel(m);
         if (null == h) return null;
-        if (getHeaderLevel(m) != 3) return null; // Only keep lvl 3 headings...
+        int l = getHeaderLevel(m);
+        if (l != 3 && l != 4) return null; // Only keep lvl 3 or 4 headings...
         String head = h.trim().toLowerCase();
-        String pos = null;
         if ((head.startsWith("forma")) || head.startsWith("{{forma")) return "";
         for (String p : posMarkers) {
-            if (head.contains(p)) return p;
+            if (head.contains(p)) return head;
         }
 
-        return pos;
+        return null;
     }
 
     void gotoDefBlock(Matcher m, String pos) {
@@ -259,7 +263,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String head = getHeaderLabel(m);
         if (null == head) return false;
         int lvl = getHeaderLevel(m);
-        if (lvl != 2 && lvl != 3) return false; // Only keep lvl 2 headings...
+        if (lvl != 2 && lvl != 3 && lvl != 4) return false; // Only keep lvl 2 headings...
         head = head.trim().toLowerCase();
         return "traducciones".equals(head) || "traducción".equals(head);
     }
@@ -405,10 +409,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private void extractTranslations(int startOffset, int endOffset) {
         String transCode = pageContent.substring(startOffset, endOffset);
-        SpanishTranslationExtractorWikiModel dbnmodel = new SpanishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}/" + wiktionaryPageName, "/${title}");
-        dbnmodel.parseTranslationBlock(transCode);
+        translationExtractor.setPageName(wiktionaryPageName);
+        translationExtractor.parseTranslationBlock(transCode);
     }
-
 
     Pattern senseNumPattern = Pattern.compile("(\\d+)");
     Pattern nonMacroRelationPattern = Pattern.compile("\\*\\s*'''([^']*)'''(.*)$");
@@ -511,8 +514,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private void extractHeaderInfo(int startOffset, int endOffset) {
         String transCode = pageContent.substring(startOffset, endOffset);
-        SpanishHeaderExtractorWikiModel dbnmodel = new SpanishHeaderExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}/" + wiktionaryPageName, "/${title}");
-        dbnmodel.parseHeaderBlock(transCode);
+        headerExtractor.setPageName(wiktionaryPageName);
+        headerExtractor.parseHeaderBlock(transCode);
     }
 
 }

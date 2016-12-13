@@ -22,7 +22,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected final static String senseNumberOrRangeRegExp = "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d|-|–|–|,| |&nbsp;)*\\.?[abcdefghij]?)";
     protected static final String simpleNumListFilter = "^\\s*(" + senseNumberRegExp + "(?:\\s*[\\,\\-–]\\s*" + senseNumberRegExp + ")*)\\s*$";
 
-    protected final static String languageSectionPatternString = "={2}\\s*([^\\(]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
+    protected final static String languageSectionPatternString = "={2}\\s*([^\\(\r\n]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
     protected final static String partOfSpeechPatternString = "={3}[^\\{]*\\{\\{Wortart\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
     protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
     protected final static String germanDefinitionPatternString = "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
@@ -54,7 +54,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected final static String multilineMacroPatternString;
     protected final static Pattern macroOrPOSPattern; // Combine macro pattern and pos pattern.
     protected final static Pattern posHeaderElementsPattern;
-    protected final static HashSet<String> posMarkers;
+    // protected final static HashSet<String> posMarkers;
     protected final static HashSet<String> ignorableSectionMarkers;
     protected final static HashSet<String> nymMarkers;
     protected final static HashMap<String, String> nymMarkerToNymName;
@@ -94,16 +94,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         germanDefinitionPattern = Pattern.compile(germanDefinitionPatternString, Pattern.MULTILINE);
         germanNymLinePattern = Pattern.compile(germanNymLinePatternString, Pattern.MULTILINE);
 
-        posMarkers = new HashSet<String>(20);
-        posMarkers.add("Substantiv"); // Should I get the
-        // Toponym/Vorname/Nachname additional
-        // info ?
-        posMarkers.add("Adjektiv");
-        posMarkers.add("Absolutadjektiv");
-        posMarkers.add("Partizip");
-        posMarkers.add("Adverb");
-        posMarkers.add("Wortverbindung");
-        posMarkers.add("Verb");
+//        posMarkers = new HashSet<String>(20);
+//        posMarkers.add("Substantiv"); // Should I get the
+//        // Toponym/Vorname/Nachname additional
+//        // info ?
+//        posMarkers.add("Adjektiv");
+//        posMarkers.add("Absolutadjektiv");
+//        posMarkers.add("Partizip");
+//        posMarkers.add("Adverb");
+//        posMarkers.add("Wortverbindung");
+//        posMarkers.add("Verb");
 
         ignorableSectionMarkers = new HashSet<String>(20);
         ignorableSectionMarkers.add("Silbentrennung");
@@ -279,7 +279,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
         } else if (null != m.group(3)) {
             String fullHeader = m.group().trim();
-            if (fullHeader.contains("{{Wortart|Deklinierte Form")) {
+            if (fullHeader.contains("{{Wortart|Deklinierte Form") || fullHeader.contains("{{Wortart|Konjugierte Form")) {
                 //TODO: Should I extract morphological data from deklinierte formen ?
                 return Block.IGNOREPOS;
             }

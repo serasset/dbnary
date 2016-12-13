@@ -42,21 +42,22 @@ public class DbnaryModel {
                     (c == ']') || (c == '\\') || (c == '^') ||
                     (c == '`') || (c == '{') || (c == '|') ||
                     (c == '}') || (c == '\u00D7') || (c == '\u00F7')
-                    )
+                    ) {
                 try {
                     res.append(URLEncoder.encode("" + c, "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
                     // Should never happen
                     e.printStackTrace();
                 }
-            else if (Character.isISOControl(c))
+            }else if (Character.isISOControl(c)) {
                 ; // nop
-            else if (c == '\u200e' || c == '\u200f') {
+            } else if (c == '\u200e' || c == '\u200f') {
                 ; // ignore rRLM and LRM.
             } else if (c == '/') {
                 res.append("!slash!"); // ignore rRLM and LRM.
-            } else
+            } else {
                 res.append(c);
+            }
             i++;
         }
     }
@@ -78,14 +79,15 @@ public class DbnaryModel {
                     (c == '`') || (c == '{') || (c == '|') ||
                     (c == '}') || (c == '\u00D7') || (c == '\u00F7') ||
                     (c == '-') || (c == '_') ||
-                    Character.isISOControl(c))
+                    Character.isISOControl(c)) {
                 ; // nop
-            else if (c == '\u200e' || c == '\u200f') {
+            } else if (c == '\u200e' || c == '\u200f') {
                 ; // ignore rRLM and LRM.
             } else if (c == '/') {
                 res.append("!slash!"); // ignore rRLM and LRM.
-            } else
+            } else {
                 res.append(c);
+            }
             i++;
         }
         return res.toString();

@@ -176,7 +176,7 @@ public class Symbols {
             args.put("lang", "jbo");
             values.add("FROM");
             values.add("LEMMA");
-        } else if (args.get("1").startsWith("cog")) {//e.g.:       {{cog|fr|orgue}}
+        } else if (args.get("1").equals("cog") || args.get("1").equals("cognate")) {//e.g.:       {{cog|fr|orgue}}
             if (args.get("2") != null && args.get("3") != null && !args.get("3").equals("-")) {
                 values.add("LANGUAGE");
                 values.add("LEMMA");
@@ -188,7 +188,7 @@ public class Symbols {
             }
         } else if (args.get("1").equals("etymtwin")) {//e.g.:    {{etymtwin|lang=en}} {{m|en|foo}}
             values.add("COGNATE_WITH");
-        } else if (args.get("1").startsWith("bor") || args.get("1").equals("loan")) {//borrowing
+        } else if (args.get("1").equals("bor") || args.get("1").equals("borrowing") || args.get("1").equals("loan")) {//borrowing
             values.add("FROM");
             int offset = 0;
             if (args.get("lang") == null) {
@@ -196,7 +196,6 @@ public class Symbols {
                 args.put("lang", args.get("3"));
                 args.remove("3");
             }
-            values.add("FROM");
             String word = args.get(Integer.toString(3 + offset));
             if (word != null) {
                 if (!word.equals("")) {
@@ -206,10 +205,12 @@ public class Symbols {
                         args.remove(Integer.toString(3 + offset));
                     }
                 } else {
-                    word = args.get(Integer.toString(4 + offset));
-                    values.add("LEMMA");
-                    args.put("word1", cleanUp(word));
-                    args.remove(Integer.toString(4 + offset));
+		    if (args.get(Integer.toString(4 + offset)) != null){
+			word = args.get(Integer.toString(4 + offset));
+			values.add("LEMMA");
+			args.put("word1", cleanUp(word));
+			args.remove(Integer.toString(4 + offset));
+		    }
                 }
             }
         } else if (args.get("1").equals("lbor") || args.get("1").equals("learned borrowing")) {
@@ -227,7 +228,7 @@ public class Symbols {
                 args.put("word1", cleanUp(word));
                 values.add("LEMMA");
             }
-        } else if (args.get("1").startsWith("inh") || args.get("1").startsWith("der")) {//inherited, derived
+        } else if (args.get("1").equals("inh") || args.get("1").equals("inherited") || args.get("1").equals("der") || args.get("1").equals("derived")) {
             //e.g.:
             //from a {{inh|ro|VL.|-}} root
             //{{der|la|ett||tr=HERCLE}}
@@ -267,7 +268,7 @@ public class Symbols {
                     }
                 }
             }
-        } else if (args.get("1").startsWith("cal")) {
+        } else if (args.get("1").equals("cal") || args.get("1").equals("calque")) {
 	    //TODO: would like to extract more info from:
 	    //From {{calque|el|φως|t1=light|βολίδα|t2=missile, projectile|etyl lang=de|etyl term=Leuchtkugel}} -> From φως ‎(fos, “light”) +‎ βολίδα ‎(volída, “missile, projectile”), calque of German Leuchtkugel.
 	    //{{calque|he|en|Halloween|nocap=1}}
@@ -295,11 +296,16 @@ public class Symbols {
 		}
 	    }
         } else if (args.get("1").equals("ko-etym-native")){
-	    args.put("lang", "ko");
-	    args.put("word1", args.get("3"));
-	    args.remove("3");
-	    values.add("FROM");
-	    values.add("LEMMA");
+	    if (args.get("3") != null){
+		args.put("lang", "ko");
+		args.put("word1", args.get("3"));
+		args.remove("3");
+		values.add("FROM");
+		values.add("LEMMA");
+	    } else {
+		args.clear();
+		values = null;
+	    }
 	} else if (args.get("1").startsWith("vi-l") || args.get("1").equals("zh-l") || args.get("1").equals("zh-m") || args.get("1").equals("ko-l") || args.get("1").equals("och-l") || args.get("1").equals("th-l") || args.get("1").equals("ltc-l")) {
 	    if (args.get("1").startsWith("vi-l")){
 	        args.put("lang", "vi");
@@ -311,8 +317,8 @@ public class Symbols {
 		args.put("lang", "och");
 	    } else if (args.get("1").equals("th-l")){
 		args.put("lang", "th");
-	    } else if (args.get("1").equals("th-l")){
-		args.put("lang", "ltc");
+	    } else if (args.get("1").equals("ltc-l")){ //{{ltc-l|覺|to awake, get insight}}
+		args.put("lang", "zh");
 	    }
 	    if (args.get("2") != null) {
 		args.put("word1", args.get("2"));
@@ -456,7 +462,7 @@ public class Symbols {
                 args.clear();
                 values = null;
             }
-        } else if (args.get("1").equals("blend") || args.get("1").startsWith("com")) {
+        } else if (args.get("1").equals("blend") || args.get("1").equals("com") || args.get("1").equals("compound")) {
             //examples:
             //{{blend|digital|literati|lang=en}},
             //{{blend|he|תַּשְׁבֵּץ|tr1=tashbéts|t1=crossword puzzle|חֵץ|t2=arrow|tr2=chets}}
@@ -533,7 +539,7 @@ public class Symbols {
             args.remove(Integer.toString(3 + offset));
             values.add("LEMMA");
 	    values.add("STOP");
-        } else if (args.get("1").startsWith("af")) {//affix
+        } else if (args.get("1").equals("af") || args.get("1").equals("affix")) {//affix
             //You must provide at least one part and an affix.
             //e.g.:
             //From {{affix|en|non-|sense}}
@@ -564,7 +570,7 @@ public class Symbols {
 	    }
             values.add("LEMMA");
 	    values.add("STOP");
-        } else if (args.get("1").startsWith("pre")) {//prefix
+        } else if (args.get("1").equals("pre") || args.get("1").equals("prefix")) {//prefix
 	    //{{prefix|poly|lang=en}}  -> poly- +
 	    //{{prefix|poly|theism|lang=en}}  -> poly- + theism
             //"You must provide at least one prefix."
@@ -588,7 +594,7 @@ public class Symbols {
                 }
             }
             values.add("LEMMA");
-        } else if (args.get("1").startsWith("con")) {//confix
+	    } else if (args.get("1").equals("con") || args.get("1").equals("confix")) {//confix
             //You must specify a prefix part, an optional base term and a suffix part.
             //e.g.:
             //{{confix|atmo|sphere|lang=en}}
@@ -619,7 +625,7 @@ public class Symbols {
             }
             values.add("LEMMA");
 	    values.add("STOP");
-        } else if (args.get("1").startsWith("suf")) {//suffix
+	    } else if (args.get("1").equals("suf") || args.get("1").equals("suffix")) {//suffix
 	    //suf: You must provide at least one suffix.
             //examples:
             //{{bor|eo|en|boycott}} {{suffix||i|lang=eo}} -> Borrowing from English boycott + -i.

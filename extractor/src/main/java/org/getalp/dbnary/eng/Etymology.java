@@ -326,11 +326,17 @@ public class Etymology {
             ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(subs.get(0), "[[", "]]");
             if (linksLocations.size() == 0) {//PARSE case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
 		//also PARSE case "→ Georgian: {{l|ka|ყავა|gloss=coffee}}"
-                String bulletLang = EnglishLangToCode.threeLettersCode(subs.get(0).replace("→", "").replace("&rarr;", "").trim());
-
-                if (bulletLang != null) {
-                    string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs.get(1).trim();
-                }		//}
+		//parse case ": {{l|el|λακωνικός|gloss=laconic, laconian}}" (i.e. the ":" only signals an indentation)
+		String bulletLang = subs.get(0).replace("→", "").replace("&rarr;", "").trim();
+		if (bulletLang.equals("")){
+		    log.debug("Ignoring bullet {}", string);
+		    string = "";
+		} else {
+                    bulletLang = EnglishLangToCode.threeLettersCode(bulletLang);
+		    if (bulletLang != null) {
+			string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs.get(1).trim();
+		    }
+		}
             } else if (linksLocations.size() == 1) {//PARSE case "[[Asturian]]: {{l|ast|águila}}"
                 String bulletLang = EnglishLangToCode.threeLettersCode(subs.get(0).substring(2, subs.get(0).length() - 2));
 

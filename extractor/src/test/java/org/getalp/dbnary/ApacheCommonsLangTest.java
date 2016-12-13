@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ApacheCommonsLangTest {
 
+    // Fails in commons lang v. 3.0
     @Test
     public void testUnescap() {
         String s = "\uD840\uDD0C#Chinese|\uD840\uDD0C";

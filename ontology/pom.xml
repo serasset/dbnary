@@ -23,11 +23,6 @@
         </license>
     </licenses>
 
-    <issueManagement>
-        <system>gforge</system>
-        <url>https://forge.imag.fr/tracker/?group_id=362</url>
-    </issueManagement>
-
     <developers>
         <developer>
             <name>Gilles Sérasset</name>
@@ -36,7 +31,7 @@
 
     <organization>
         <name>GETALP</name>
-        <url>http://getalp.imag.fr/</url>
+        <url>http://www.getalp.org/</url>
     </organization>
 
     <distributionManagement>
@@ -47,9 +42,9 @@
         </repository>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:svn://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/trunk</developerConnection>
-        <url>https://forge.imag.fr/scm/browser.php?group_id=362</url>
+        <connection>scm:git:ssh://git@bitbucket.org/serasset/dbnary.git</connection>
+        <developerConnection>scm:git:ssh://git@bitbucket.org/serasset/dbnary.git</developerConnection>
+        <url>https://bitbucket.org/serasset/dbnary.git</url>
     </scm>
 
     <dependencies>

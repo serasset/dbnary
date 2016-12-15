@@ -1,5 +1,6 @@
 package org.getalp.dbnary.cli;
 
+import com.sun.istack.NotNull;
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.net.ftp.FTP;
@@ -29,6 +30,7 @@ import java.util.regex.Pattern;
 
 public class UpdateAndExtractDumps {
 
+    private static final String FOREIGN_PREFIX = "_x";
     private static Options options = null; // Command line options
 
     private static final String SERVER_URL_OPTION = "s";
@@ -81,7 +83,7 @@ public class UpdateAndExtractDumps {
         options.addOption(COMPRESS_OPTION, false, "compress the output file using bzip2." + DEFAULT_COMPRESS + " by default ");
         options.addOption(NETWORK_OFF_OPTION, false, "Do not use the ftp network, but decompress and extract.");
         options.addOption(OptionBuilder.withLongOpt(ENABLE_FEATURE_OPTION)
-                .withDescription("Enable additional extraction features.")
+                .withDescription("Enable additional extraction features (e.g. morpho,etymology,foreign).")
                 .hasArg()
                 .withArgName("feature")
                 .create());
@@ -620,10 +622,16 @@ public class UpdateAndExtractDumps {
     private void extractDumpFiles(String[] langs, String[] dirs) {
         for (int i = 0; i < langs.length; i++) {
             extractDumpFile(langs[i], dirs[i]);
+            if (features.contains("foreign"))
+                extractDumpFile(FOREIGN_PREFIX, langs[i], dirs[i]);
         }
     }
 
     private boolean extractDumpFile(String lang, String dir) {
+        return extractDumpFile("", lang, dir);
+    }
+
+    private boolean extractDumpFile(String prefix, String lang, String dir) {
         boolean status = true;
         if (null == dir || dir.equals("")) return false;
 
@@ -632,9 +640,9 @@ public class UpdateAndExtractDumps {
         d.mkdirs();
 
         // TODO: correctly test for compressed file if compress is enabled
-        String extractFile = odir + "/" + lang + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
-        String morphoFile = odir + "/" + lang + "_dbnary_morpho_" + dir + ".ttl";
-        String etymologyFile = odir + "/" + lang + "_dbnary_etymology_" + dir + ".ttl";
+        String extractFile = odir + "/" + lang + prefix + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
+        String morphoFile = odir + "/" + lang + prefix + "_dbnary_morpho_" + dir + ".ttl";
+        String etymologyFile = odir + "/" + lang + prefix + "_dbnary_etymology_" + dir + ".ttl";
         if (compress) {
             extractFile = extractFile + ".bz2";
             morphoFile = morphoFile + ".bz2";
@@ -666,6 +674,9 @@ public class UpdateAndExtractDumps {
         if (features.contains("etymology")) {
             a.add("--etymology");
             a.add(etymologyFile);
+        }
+        if (prefix.equals(FOREIGN_PREFIX)) {
+            a.add("-x");
         }
         a.add(uncompressDumpFileName(lang, dir));
 

@@ -44,8 +44,8 @@
     </licenses>
 
     <issueManagement>
-        <system>gforge</system>
-        <url>https://forge.imag.fr/tracker/?group_id=362</url>
+        <system>bitbucket</system>
+        <url>https://bitbucket.org/serasset/dbnary/issues</url>
     </issueManagement>
 
     <developers>
@@ -56,14 +56,10 @@
 
     <organization>
         <name>GETALP</name>
-        <url>http://getalp.imag.fr/</url>
+        <url>http://www.getalp.org/</url>
     </organization>
 
     <distributionManagement>
-        <site>
-            <id>dbnary.website</id>
-            <url>scpexe://forge.imag.fr/home/groups/dbnary/htdocs/</url>
-        </site>
         <repository>
             <id>getalp.repository</id>
             <name>Getalp Projects and third party repository</name>
@@ -71,11 +67,16 @@
         </repository>
     </distributionManagement>
     <scm>
+        <connection>scm:git:ssh://git@bitbucket.org/serasset/dbnary.git</connection>
+        <developerConnection>scm:git:ssh://git@bitbucket.org/serasset/dbnary.git</developerConnection>
+        <url>https://bitbucket.org/serasset/dbnary.git</url>
+    </scm>
+    <!--scm>
         <connection>scm:svn:svn://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/trunk</connection>
         <developerConnection>scm:svn:svn+ssh://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/trunk
         </developerConnection>
         <url>https://forge.imag.fr/scm/browser.php?group_id=362</url>
-    </scm>
+    </scm-->
 
     <dependencies>
         <dependency>

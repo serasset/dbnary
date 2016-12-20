@@ -5,6 +5,7 @@ import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.Configuration;
 import info.bliki.wiki.model.WikiModel;
 import info.bliki.wiki.model.WikiModelContentException;
+import info.bliki.wiki.namespaces.INamespace;
 import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import org.getalp.dbnary.tools.CounterSet;
 import org.slf4j.Logger;
@@ -154,6 +155,14 @@ public class DbnaryWikiModel extends WikiModel {
             // found magic word template
             return result;
         }
+
+        // Fix a bug in some wiktionary where a lua script import "Module:page" by specifying
+        // the namepace, while the wiktionary edition uses a localized namespace.
+        if (parsedPagename.namespace.isType(INamespace.NamespaceCode.MODULE_NAMESPACE_KEY) &&
+                (parsedPagename.pagename.startsWith("Module:") || parsedPagename.pagename.startsWith("module:"))) {
+            parsedPagename = new ParsedPageName(parsedPagename.namespace, parsedPagename.pagename.substring(7), parsedPagename.valid);
+        }
+
         trace.incr(parsedPagename.fullPagename());
 
         if (null != wi) {

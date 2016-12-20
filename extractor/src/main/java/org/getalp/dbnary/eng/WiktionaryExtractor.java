@@ -117,6 +117,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         wdh.initializeEntryExtraction(wiktionaryPageName);
+	log.debug("extracting {}", wiktionaryPageName);
         wikiExpander.setPageName(wiktionaryPageName);
         currentBlock = Block.NOBLOCK;
 
@@ -217,11 +218,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 String pos = (String) context.get("pos");
                 wdh.addPartOfSpeech(pos);
                 ewdh.registerEtymologyPos();
-                extractMorphology(blockStart, end);
+                //extractMorphology(blockStart, end);
                 extractDefinitions(blockStart, end);
                 break;
             case TRADBLOCK:
-                extractTranslations(blockStart, end);
+                //extractTranslations(blockStart, end);
                 break;
             case ORTHOALTBLOCK:
                 extractOrthoAlt(blockStart, end);

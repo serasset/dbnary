@@ -72,6 +72,7 @@
     <owl:ObjectProperty rdf:about="&dbetym;etymologicallyEquivalentTo">
         <rdfs:comment xml:lang="en">The target and the source LexicalEntries share the same etymological origin. </rdfs:comment>
         <rdfs:subPropertyOf rdf:resource="&dbetym;etymologicallyRelatedTo"/>
+	<rdfs:subPropertyOf rdf:resource="&owl;sameAs"/>
     </owl:ObjectProperty>
     
 
@@ -80,7 +81,8 @@
 
     <owl:ObjectProperty rdf:about="&dbetym;etymologicallyRelatedTo">
         <rdfs:comment xml:lang="en">An underspecified etymological relationship betwen two LexicalEntries. </rdfs:comment>
-        <rdfs:range rdf:resource="&lemon;LexicalEntry"/>
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+	<rdfs:range rdf:resource="&lemon;LexicalEntry"/>
         <rdfs:domain rdf:resource="&lemon;LexicalEntry"/>
     </owl:ObjectProperty>
     

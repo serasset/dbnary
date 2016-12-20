@@ -316,34 +316,30 @@ public class Etymology {
         }
     }
 
-    //TODO: this cannot parse correctly
-    //{{ja-r|宮古島|^みやこじま|[[w:Miyako Island|Miyako Island]]; [[w:Miyakojima, Okinawa|Miyakojima, Okinawa]]}}
-    //{{ja-r|宮古諸島|^みやこしょとう|[[w:Miyako Islands|Miyako Islands]]}}
     private void parseLanguage() {
 	ArrayList<String> subs = WikiTool.splitUnlessInTemplateOrLink(string, ':');
 			
         if (subs.size() == 2) {
+	    String bulletLang = null;
             ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(subs.get(0), "[[", "]]");
             if (linksLocations.size() == 0) {//PARSE case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
 		//also PARSE case "→ Georgian: {{l|ka|ყავა|gloss=coffee}}"
 		//parse case ": {{l|el|λακωνικός|gloss=laconic, laconian}}" (i.e. the ":" only signals an indentation)
-		String bulletLang = subs.get(0).replace("→", "").replace("&rarr;", "").trim();
+		bulletLang = subs.get(0).replace("→", "").replace("&rarr;", "").trim();
 		if (bulletLang.equals("")){
 		    log.debug("Ignoring bullet {}", string);
 		    string = "";
-		} else {
-                    bulletLang = EnglishLangToCode.threeLettersCode(bulletLang);
-		    if (bulletLang != null) {
-			string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs.get(1).trim();
-		    }
-		}
+		    return;
+		} 
             } else if (linksLocations.size() == 1) {//PARSE case "[[Asturian]]: {{l|ast|águila}}"
-                String bulletLang = EnglishLangToCode.threeLettersCode(subs.get(0).substring(2, subs.get(0).length() - 2));
-
-                if (bulletLang != null) {
-                    string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs.get(1).trim();
-                }
+	        bulletLang = subs.get(0).substring(2, subs.get(0).length() - 2).trim();
             }
+	    if (!bulletLang.startsWith("{{") && !bulletLang.startsWith("adjective") && !bulletLang.startsWith("noun") && !bulletLang.startsWith("verb") && !bulletLang.startsWith("prefix") && !bulletLang.startsWith("phrase") && !bulletLang.startsWith("idiom") && !bulletLang.startsWith("antonym") && !bulletLang.startsWith("adverb") && !bulletLang.startsWith("proverb") && !bulletLang.startsWith("given") && !bulletLang.startsWith("interjection")&& !bulletLang.startsWith("postposition") && !bulletLang.startsWith("surname") && !bulletLang.startsWith("index") && !bulletLang.startsWith("condition") && !bulletLang.startsWith("saying") && !bulletLang.startsWith("suffix") && !bulletLang.startsWith("pronoun") && !bulletLang.startsWith("substantive") && !bulletLang.startsWith("determiner")){
+		bulletLang = EnglishLangToCode.threeLettersCode(bulletLang);
+		if (bulletLang != null) {
+		    string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs.get(1).trim();
+		}
+	    }
         } else if (subs.size() > 2) {
             log.debug("Ignoring bullet {}", string);
             string = "";

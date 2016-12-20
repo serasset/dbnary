@@ -160,7 +160,7 @@ public class Symbols {
                 if (args.get(k) != null) {
                     if (k.endsWith("_t")) {
                         k = k.substring(0, k.length() - 2);
-                        args.put("lang" + Integer.toString(counter), "k");
+                        args.put("lang" + Integer.toString(counter), k);
                         args.put("word" + Integer.toString(counter), args.get(k + "_t"));
                         args.remove(k + "_t");
                         String tr = args.get(k + "_tr");
@@ -228,7 +228,7 @@ public class Symbols {
                 args.put("word1", cleanUp(word));
                 values.add("LEMMA");
             }
-        } else if (args.get("1").equals("inh") || args.get("1").equals("inherited") || args.get("1").equals("der") || args.get("1").equals("derived")) {
+        } else if (args.get("1").equals("inh") || args.get("1").equals("inherited") || args.get("1").equals("der") || args.get("1").equals("derived")) {//TO DO: maybe add values.add("FROM") by default;
             //e.g.:
             //from a {{inh|ro|VL.|-}} root
             //{{der|la|ett||tr=HERCLE}}

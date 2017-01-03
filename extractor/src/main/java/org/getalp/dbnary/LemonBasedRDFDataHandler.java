@@ -51,12 +51,13 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
     protected int nbEntries = 0;
     private String NS;
+    protected String WIKT;
     protected String currentEncodedPageName;
     protected String currentWiktionaryPageName;
     protected CounterSet currentLexieCount = new CounterSet();
     protected Resource currentMainLexEntry;
     protected Resource currentCanonicalForm;
-
+    
     protected Set<PronunciationPair> currentSharedPronunciations;
 //	private String currentSharedPronunciation;
 //	private String currentSharedPronunciationLang;
@@ -121,8 +122,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         super();
 
         NS = DBNARY_NS_PREFIX + "/" + lang + "/";
-
         wktLanguageEdition = LangTools.getPart1OrId(lang);
+	WIKT = "https://" + wktLanguageEdition + ".wiktionary.org/wiki/";
         lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
 
         // Create aBox
@@ -137,7 +138,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         aBox.setNsPrefix("lexvo", LEXVO);
         aBox.setNsPrefix("rdf", RDF.getURI());
         aBox.setNsPrefix("olia", OliaOnt.getURI());
-
+        aBox.setNsPrefix("wikt", WIKT);
 
         featureBoxes = new HashMap<>();
         featureBoxes.put(Feature.MAIN, aBox);
@@ -283,12 +284,11 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         }
 
         aBox.add(currentLexEntry, LemonOnt.canonicalForm, currentCanonicalForm);
-        aBox.add(currentCanonicalForm, LemonOnt.writtenRep, currentWiktionaryPageName, wktLanguageEdition);
+	aBox.add(currentCanonicalForm, LemonOnt.writtenRep, currentWiktionaryPageName, wktLanguageEdition);
+	aBox.add(currentCanonicalForm, RDFS.label, currentWiktionaryPageName, getCurrentEntryLanguage());
         aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
         if (null != currentLexinfoPos)
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);
-
-	    // System.out.format("currentLexEntry=%s\n", currentLexEntry);
         aBox.add(currentLexEntry, LemonOnt.language, getCurrentEntryLanguage());
         aBox.add(currentLexEntry, DCTerms.language, lexvoExtractedLanguage);
 
@@ -361,7 +361,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         Resource altlemma = aBox.createResource();
         aBox.add(currentLexEntry, LemonOnt.lexicalVariant, altlemma);
-        aBox.add(altlemma, LemonOnt.writtenRep, alt, wktLanguageEdition);
+	aBox.add(altlemma, LemonOnt.writtenRep, alt, wktLanguageEdition);
+	aBox.add(altlemma, RDFS.label, alt, getCurrentEntryLanguage());
     }
 
     @Override
@@ -572,8 +573,9 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         Resource posResource = posResource(pos);
 
-        PropertyObjectPair p = PropertyObjectPair.get(LemonOnt.writtenRep, aBox.createLiteral(inflection, wktLanguageEdition));
-
+	PropertyObjectPair p = PropertyObjectPair.get(LemonOnt.writtenRep, aBox.createLiteral(inflection, getCurrentEntryLanguage()));
+        //PropertyObjectPair p = PropertyObjectPair.get(LemonOnt.writtenRep, aBox.createLiteral(inflection, wktLanguageEdition));
+	
         props.add(p);
 
         if (defNumber == 0) {

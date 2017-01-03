@@ -89,7 +89,7 @@ public class Symbols {
 		values = null;
 	    }
         } else if (args.get("1").equals("ja-r")) {// {{ja-r|宮古島|^みやこじま|[[w:Miyako Island|Miyako Island]]; [[w:Miyakojima, Okinawa|Miyakojima, Okinawa]]}}
-            args.put("lang", "jpn");//Japanese
+            args.put("lang", "ja");//Japanese
             args.put("word1", args.get("2"));
             values.add("LEMMA");
         } else if (args.get("1").equals("Han compound")) {
@@ -432,7 +432,7 @@ public class Symbols {
             values.add("FROM");
             values.add("LEMMA");
             args.put("word1", cleanUp(args.get("2")));
-            args.put("lang", "fin");
+            args.put("lang", "fi");
             args.remove("2");
         } else if (args.get("1").equals("m") || args.get("1").equals("mention") || args.get("1").equals("l") || args.get("1").equals("link") || args.get("1").equals("_m") || args.get("1").equals("he-m") || args.get("1").equals("m/he") ) {
             //The parameter "1" is required.
@@ -735,7 +735,7 @@ public class Symbols {
             } else {
                 values.add("PLUS");
             }
-            args.put("lang", "hun");
+            args.put("lang", "hu");
             values.add("LEMMA");
         } else if (args.get("1").equals("hu-suffix")) {
 	    //e.g.: {{hu-suffix|barát|t1=friend|ság|pos=n}}  -> barát (“friend”) + -ság
@@ -752,7 +752,7 @@ public class Symbols {
                 args.put("word2", "-" + cleanUp(args.get("3")) + "-");//-suffix
                 args.remove("3");
             }
-            args.put("lang", "hun");
+            args.put("lang", "hu");
             values.add("LEMMA");
 	    values.add("STOP");
         } else if (args.get("1").equals("term")) {//e.g.: {{term|de-|di-|away}}

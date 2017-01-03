@@ -98,7 +98,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
         // Either the filter is at end of sequence or on English language header.
         if (languageFilter.hitEnd()) {
-            // There is no english data in this page.
+            // There is no English data in this page.
             return;
         }
         int englishSectionStartOffset = languageFilter.end();
@@ -108,7 +108,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
         // languageFilter.find();
         int englishSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
-
         extractEnglishData(englishSectionStartOffset, englishSectionEndOffset);
         wdh.finalizePageExtraction();
     }
@@ -217,7 +216,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case DEFBLOCK:
                 String pos = (String) context.get("pos");
                 wdh.addPartOfSpeech(pos);
-                ewdh.registerEtymologyPos();
+                ewdh.registerEtymologyPos(wiktionaryPageName);
                 //extractMorphology(blockStart, end);
                 extractDefinitions(blockStart, end);
                 break;
@@ -297,22 +296,23 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
                 return;
             }
-            Map<String, String> args = WikiTool.parseArgs(s.substring(start, l.end));
+            Map<String, String> args = WikiTool.parseArgs(s.substring(start, l.end - 2));
 
             for (String key : args.keySet()) {
-                Etymology etymology = new Etymology(args.get(key), lang);
-
-                etymology.fromTableToSymbols();
-
-                if (etymology.symbols.size() == 0) {
-                    if (WikiTool.locateEnclosedString(etymology.string, "{{", "}}").size() + WikiTool.locateEnclosedString(etymology.string, "[[", "]]").size() == 0) {
-                        for (String lemma : split(etymology.string)) {
-                            etymology.symbols.add(new Symbols("_m|" + lang + "|" + lemma, lang, "TEMPLATE"));
-                        }
-                    }
-                }
-
-                ewdh.registerDerived(etymology);
+		if (key.matches("\\d+$")){//if key is an integer
+		    Etymology etymology = new Etymology(args.get(key), lang);
+		    
+		    etymology.fromTableToSymbols();
+		    
+		    if (etymology.symbols.size() == 0) {
+			if (WikiTool.locateEnclosedString(etymology.string, "{{", "}}").size() + WikiTool.locateEnclosedString(etymology.string, "[[", "]]").size() == 0) {
+			    for (String lemma : split(etymology.string)) {
+				etymology.symbols.add(new Symbols("_m|" + lang + "|" + lemma, lang, "TEMPLATE"));
+			    }
+			}
+		    }    
+		    ewdh.registerDerived(etymology);
+		}
             }
         }
     }

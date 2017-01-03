@@ -31,15 +31,17 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
         Matcher l1 = level2HeaderPattern.matcher(pageContent);
         int nonEnglishSectionStart = -1;
         String lang = null;
+	String languageName = null;
         while (l1.find()) {
             wdh.initializePageExtraction(wiktionaryPageName);
             // System.err.println(l1.group());
             if (-1 != nonEnglishSectionStart) {
                 // Parsing a previous non english section;
-                extractNonEnglishData(lang, nonEnglishSectionStart, l1.start());
+                extractNonEnglishData(lang, languageName, nonEnglishSectionStart, l1.start());
                 nonEnglishSectionStart = -1;
             }
-            if (null != (lang = getNonEnglishLanguageCode(l1))) {
+	    languageName = l1.group(1).trim();
+            if (null != (lang = getNonEnglishLanguageCode(languageName))) {
                 nonEnglishSectionStart = l1.end();
             }
             wdh.finalizePageExtraction();
@@ -47,13 +49,12 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
         if (-1 != nonEnglishSectionStart) {
             //System.err.println("Parsing previous non English entry");
             wdh.initializePageExtraction(wiktionaryPageName);
-            extractNonEnglishData(lang, nonEnglishSectionStart, pageContent.length());
+            extractNonEnglishData(lang, languageName, nonEnglishSectionStart, pageContent.length());
             wdh.finalizePageExtraction();
         }
     }
 
-    private String getNonEnglishLanguageCode(Matcher l1) {
-        String t = l1.group(1).trim();
+    private String getNonEnglishLanguageCode(String t) {
         if (t.equals("English"))
             return null;
         else {
@@ -64,8 +65,8 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
         }
     }
 
-    protected void extractNonEnglishData(String lang, int startOffset, int endOffset) {
-        flwdh.setCurrentLanguage(lang);
+    protected void extractNonEnglishData(String lang, String languageName, int startOffset, int endOffset) {
+        flwdh.setCurrentLanguage(lang, languageName);
         super.extractEnglishData(startOffset, endOffset);
     }
 }

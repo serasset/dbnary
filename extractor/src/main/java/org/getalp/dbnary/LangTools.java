@@ -20,7 +20,7 @@ public class LangTools {
             if (h != null && h.containsKey(s)) {
                 res = h.get(s);
 	    } else {//e.g.: s.equals("image"), s.equals("w")
-		    log.debug("Warning: language {} is not present in input hashmap and in iso639, getCode returns null.", s);
+		log.debug("Warning: language {} is not present in input hashmap and in iso639, getCode returns null.", s);
 	    }
 
 

@@ -2,6 +2,9 @@ package org.getalp.dbnary.eng;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import org.getalp.dbnary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,19 +25,21 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
      */
     static HashSet etymtreeHashSet = new HashSet();
 
-    public ArrayList<Resource> ancestors;
     /**
-     * A Resource containing the current Etymology Entry.
+     * Resources containing Etymology Entries.
      */
+    public ArrayList<Resource> ancestors;
     public Resource currentEtymologyEntry;
-
-    public Resource currentGlobalEtyEntry;
-
+    public Resource currentGlobalEtymologyEntry;
     /**
      * An integer counting the number of alternative etymologies for the same entry.
      */
     protected int currentEtymologyNumber;
 
+
+    protected String currentEntryLanguage = null;
+    protected String currentEntryLanguageName = null;
+    
     static {
         // English
         posAndTypeValueMap.put("Noun", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
@@ -83,21 +88,28 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
     @Override
     public void initializeEntryExtraction(String wiktionaryPageName) {
-        initializeEntryExtraction(wiktionaryPageName, "eng");
+	currentEntryLanguage = "en";
+	currentEntryLanguageName = "English";
+        initializeEntryExtraction(wiktionaryPageName, currentEntryLanguage, currentEntryLanguageName);
     }
 
-    public void initializeEntryExtraction(String wiktionaryPageName, String lang){
+    public void initializeEntryExtraction(String wiktionaryPageName, String lang, String languageName){
         currentEtymologyNumber = 0;
         currentEtymologyEntry = null;
-        currentGlobalEtyEntry = createGlobalEtymologyResource(wiktionaryPageName, lang);
+        currentGlobalEtymologyEntry = createGlobalEtymologyResource(wiktionaryPageName, lang);
         super.initializeEntryExtraction(wiktionaryPageName);
     }
-
+    
     private Resource createGlobalEtymologyResource(String wiktionaryPageName, String lang) {
         Model eBox = null;
         if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) != null) {
             // TODO : should I check that getPrefix returns null ?
-            return eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(wiktionaryPageName), DBnaryEtymologyOnt.EtymologyEntry);
+	    Resource r = eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(wiktionaryPageName), DBnaryEtymologyOnt.EtymologyEntry);
+	    Resource w = ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+	    eBox.add(r, RDFS.seeAlso, w);
+	    eBox.add(r, RDFS.label, wiktionaryPageName, lang);
+	    
+            return r;
         }
         return null;
     }
@@ -106,18 +118,20 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         return posAndTypeValueMap.containsKey(pos);
     }
 
-    public void registerEtymologyPos() {
-        registerEtymologyPos("eng");
+    public void registerEtymologyPos(String wiktionaryPageName) {
+        registerEtymologyPos("eng", "English", wiktionaryPageName);
     }
 
-    public void registerEtymologyPos(String lang) {
+    public void registerEtymologyPos(String lang, String languageName, String wiktionaryPageName) {
         Model eBox = null;
         if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) == null) return;
-
         if (currentEtymologyEntry == null) {//there is no etymology section
             currentEtymologyEntry = eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(currentWiktionaryPageName), DBnaryEtymologyOnt.EtymologyEntry);
-        }
-        eBox.add(currentEtymologyEntry, DBnaryOnt.refersTo, currentLexEntry);
+	    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+	    eBox.add(currentEtymologyEntry, RDFS.seeAlso, w);
+	    eBox.add(currentEtymologyEntry, RDFS.label, currentWiktionaryPageName, lang);
+	}
+	eBox.add(currentEtymologyEntry, DBnaryOnt.refersTo, currentLexEntry);
     }
 
     @Override
@@ -181,11 +195,17 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                     //register derives_from
                     vocable0 = eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(word), DBnaryEtymologyOnt.EtymologyEntry);
                     eBox.add(vocable0, DBnaryEtymologyOnt.derivesFrom, currentEtymologyEntry);
+		    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+		    eBox.add(vocable0, RDFS.seeAlso, w);
+		    eBox.add(vocable0, RDFS.label, word, lang);
                 } else {
                     //register etymologically_equivalent_to
                     Resource vocable2 = eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(word), DBnaryEtymologyOnt.EtymologyEntry);
                     eBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable0);
-                }
+		    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+		    eBox.add(vocable2, RDFS.seeAlso, w);
+		    eBox.add(vocable2, RDFS.label, word, lang);
+                }		
                 counter++;
             }
         }
@@ -200,7 +220,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         }
         currentEtymologyNumber++;
         currentEtymologyEntry = eBox.createResource(computeEtymologyId(eBox, currentEtymologyNumber, lang), DBnaryEtymologyOnt.EtymologyEntry);
-        eBox.add(currentGlobalEtyEntry, DBnaryOnt.refersTo, currentEtymologyEntry);
+        eBox.add(currentGlobalEtymologyEntry, DBnaryOnt.refersTo, currentEtymologyEntry);
     }
 
     public Resource createEtymologyEntryResource(Model eBox, String e, String lang) {
@@ -238,9 +258,13 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                         }
                     }
                     if (isEquivalent) {//etymologically equivalent words
-                        if (b.args.get("word1") != null && !b.args.get("word1").equals("")) {
-                            vocable = createEtymologyEntryResource(eBox, b.args.get("word1"), lang0);
+			String word1 = b.args.get("word1");
+                        if (word1 != null && !word1.equals("")) {
+                            vocable = createEtymologyEntryResource(eBox, word1, lang0);
                             eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable);
+			    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+			    eBox.add(vocable, RDFS.seeAlso, w);
+			    eBox.add(vocable, RDFS.label, word1, lang0);
                         } else {
                             log.debug("empty word in symbol %s\n", b.string);
                         }
@@ -260,6 +284,9 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                                 }
                                 vocable = createEtymologyEntryResource(eBox, word, lang);
                                 eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, vocable);
+				Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+				eBox.add(vocable, RDFS.seeAlso, w);
+				eBox.add(vocable, RDFS.label, word, lang);				
                             }
                         }
                         if (compound) {
@@ -304,14 +331,21 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
             if (b.values != null) {
                 if (b.values.get(0).equals("LEMMA")) {
                     String word = b.args.get("word1").split(",")[0].trim();
-                    Resource vocable = eBox.createResource(getPrefix(eBox, b.args.get("lang")) + "__ee_" + uriEncode(word), DBnaryEtymologyOnt.EtymologyEntry);
+		    String lang = b.args.get("lang");
+                    Resource vocable = eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(word), DBnaryEtymologyOnt.EtymologyEntry);
                     if (counter == 0) {
                         if (ancestor != null) {
                             eBox.add(vocable, DBnaryEtymologyOnt.descendsFrom, ancestor);
+			    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+			    eBox.add(vocable, RDFS.seeAlso, w);
+			    eBox.add(vocable, RDFS.label, word, lang);
                         }
                         ancestors.add(vocable);
                     } else {
                         eBox.add(vocable, DBnaryEtymologyOnt.etymologicallyEquivalentTo, ancestors.get(ancestors.size() - 1));
+			Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+			eBox.add(vocable, RDFS.seeAlso, w);
+			eBox.add(vocable, RDFS.label, word, lang);
                     }
                     counter++;
                 }

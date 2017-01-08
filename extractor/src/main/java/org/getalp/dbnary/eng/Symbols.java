@@ -433,8 +433,18 @@ public class Symbols {
             values.add("LEMMA");
             args.put("word1", cleanUp(args.get("2")));
             args.put("lang", "fi");
-            args.remove("2");
-        } else if (args.get("1").equals("m") || args.get("1").equals("mention") || args.get("1").equals("l") || args.get("1").equals("link") || args.get("1").equals("_m") || args.get("1").equals("he-m") || args.get("1").equals("m/he") ) {
+            args.remove("2"); //{{m/he|אוכל|dwv=אֹכֶל||food}}
+	} else if (args.get("1").equals("he-m") || args.get("1").equals("m/he") ) {
+	    args.put("lang", "he");
+	    if (args.get("2") != null && !args.get("2").equals("")) {
+		values.add("LEMMA");
+		args.put("word1", cleanUp(args.get("2")));
+		args.remove("2");
+	    } else {
+		args.clear();
+		values = null;
+	    }
+        } else if (args.get("1").equals("m") || args.get("1").equals("mention") || args.get("1").equals("l") || args.get("1").equals("link") || args.get("1").equals("_m")) {
             //The parameter "1" is required.
             args.put("lang", args.get("2"));
 

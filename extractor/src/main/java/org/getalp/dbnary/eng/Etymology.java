@@ -76,7 +76,7 @@ public class Etymology {
     public static Pattern definitionSymbolsPattern = Pattern.compile("(FROM )?(LANGUAGE LEMMA |LEMMA )(COMMA |DOT |OR )");
     public static Pattern compoundSymbolsPattern = Pattern.compile("((COMPOUND_OF |FROM )(LANGUAGE )?(LEMMA )(?:(PLUS |AND |WITH )(LANGUAGE )?(LEMMA ))+)|((LANGUAGE )?(LEMMA )(?:(PLUS )(LANGUAGE )?(LEMMA ))+)");
     //TODO: add ARROW and allow for situations like Italian: LEMMA LEMMA COMMA LEMMA
-    public static Pattern bulletSymbolsPattern = Pattern.compile("(((LANGUAGE)|(LEMMA)) (COLON ))?((LEMMA)( COMMA )?)+");
+    public static Pattern bulletSymbolsPattern = Pattern.compile("((((LEMMA )(COMMA )?)+)|(LANGUAGE ))(COLON ((LEMMA)( COMMA )?)+)?");
     public static Pattern tableDerivedLemmasPattern = Pattern.compile("(LEMMA)(?: COMMA (LEMMA))*");
 
     public String lang;
@@ -183,6 +183,7 @@ public class Etymology {
 	//* &rarr; Italian: {{l|it|baruffare}}
 	//Sardinian: [[pobulu]], [[poburu]], [[populu]] -> {{_etyl|en|sc}}: [[pobulu]], [[poburu]], [[populu]]  
 	//{{_etyl|eng|sc}}: [[pobulu]], [[poburu]], [[populu]]-> LANGUAGE COLON LEMMA COMMA LEMMA COMMA LEMMA
+	//case "{{ja-r|武威|ぶい}}: [[military]] [[power]]"
         toSymbols(bulletSymbolsList, bulletSymbolsListPattern);
 
         parseEtyl();//[[pobulu]] -> {{m|lang=sc|word1=pobulu}}
@@ -197,8 +198,8 @@ public class Etymology {
             //case LANGUAGE COLON LEMMA COMMA LEMMA, e.g.:
             //case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
             //and case "[[Asturian]]: {{l|ast|águila}}"
-            if (m.group(2) != null && m.group(5) != null) {
-                if (m.group(2).equals("LANGUAGE") && m.group(5).equals("COLON ")) {
+            if (m.group(6) != null && m.group(7) != null) {
+                
                     String language = null;
                     for (Symbols b : symbols) {
                         if (b.values.get(0).equals("LANGUAGE")) {
@@ -208,28 +209,28 @@ public class Etymology {
                             b.args.put("lang", language);
                             lemmas.add(b);
                         }
-                    }
-                } else if (m.group(2).equals("LEMMA")) {//case "{{ja-r|武威|ぶい}}: [[military]] [[power]]"
-		    //TODO: distinguish "[[color]], [[colour]]" and "[[military]] [[power]]" 
-                    for (Symbols b : symbols) {
-                        if (b.values.get(0).equals("LEMMA")) {
-                            lemmas.add(b);
-                            break;
-                        }
-                    }
-                    //case "[[color]], [[colour]]"
-                }
-            } else if (m.group(2) == null && m.group(5) == null) {//case "[[color]], [[colour]]"
-                if (m.group(7).equals("LEMMA")) {
-		    //TODO: distinguish "[[color]], [[colour]]" and "[[military]] [[power]]"
-                    for (Symbols b : symbols) {
-                        if (b.values.get(0).equals("LEMMA")) {
-                            lemmas.add(b);
-                        }
-                    }
-                }
-            }
-        }
+                    
+		    }
+	    } else if (m.group(2) != null  && m.group(7) != null) { //case "{{ja-r|武威|ぶい}}: [[military]] [[power]]" 
+		   
+			for (Symbols b : symbols) {
+			    if (b.values.get(0).equals("COLON")) {
+				break;
+			    } else if (b.values.get(0).equals("LEMMA")) {
+				lemmas.add(b);
+			    }
+			}
+	    } else if (m.group(2) != null  && m.group(7) == null && m.group(6) == null) {
+			for (Symbols b : symbols) {
+			    if (b.values.get(0).equals("LEMMA")) {
+				lemmas.add(b);
+				break;
+			    }
+			}
+		    
+                
+            } 
+	}
         symbols = lemmas;
     }
 

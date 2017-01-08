@@ -120,7 +120,6 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
     public LemonBasedRDFDataHandler(String lang) {
         super();
-
         NS = DBNARY_NS_PREFIX + "/" + lang + "/";
         wktLanguageEdition = LangTools.getPart1OrId(lang);
 	WIKT = "https://" + wktLanguageEdition + ".wiktionary.org/wiki/";
@@ -285,7 +284,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         aBox.add(currentLexEntry, LemonOnt.canonicalForm, currentCanonicalForm);
 	aBox.add(currentCanonicalForm, LemonOnt.writtenRep, currentWiktionaryPageName, wktLanguageEdition);
-	aBox.add(currentCanonicalForm, RDFS.label, currentWiktionaryPageName, getCurrentEntryLanguage());
+	aBox.add(currentCanonicalForm, RDFS.label, currentWiktionaryPageName, LangTools.threeLettersCode(getCurrentEntryLanguage()));
         aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
         if (null != currentLexinfoPos)
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);
@@ -362,7 +361,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         Resource altlemma = aBox.createResource();
         aBox.add(currentLexEntry, LemonOnt.lexicalVariant, altlemma);
 	aBox.add(altlemma, LemonOnt.writtenRep, alt, wktLanguageEdition);
-	aBox.add(altlemma, RDFS.label, alt, getCurrentEntryLanguage());
+	aBox.add(altlemma, RDFS.label, alt, LangTools.threeLettersCode(getCurrentEntryLanguage()));
     }
 
     @Override

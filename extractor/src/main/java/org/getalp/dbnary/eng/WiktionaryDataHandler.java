@@ -104,6 +104,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         Model eBox = null;
         if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) != null) {
             // TODO : should I check that getPrefix returns null ?
+	    lang = EnglishLangToCode.threeLettersCode(lang);
 	    Resource r = eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(wiktionaryPageName), DBnaryEtymologyOnt.EtymologyEntry);
 	    Resource w = ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
 	    eBox.add(r, RDFS.seeAlso, w);
@@ -158,7 +159,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         lang = LangTools.normalize(code);
         lang = lang.trim();
         if (lang.equals("eng")) {
-            return getPrefix();
+            return super.getPrefix();
         }
         Map<String, String> pMap = box.getNsPrefixMap();
         String pName = lang + "-eng";
@@ -263,7 +264,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                             vocable = createEtymologyEntryResource(eBox, word1, lang0);
                             eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable);
 			    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
-			    eBox.add(vocable, RDFS.seeAlso, w);
+			    eBox.add(vocable, RDFS.seeAlso, w);			    
 			    eBox.add(vocable, RDFS.label, word1, lang0);
                         } else {
                             log.debug("empty word in symbol %s\n", b.string);
@@ -273,6 +274,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                         for (int kk = 1; kk < 12; kk++) {
                             String word = b.args.get("word" + Integer.toString(kk));
                             lang = b.args.get("lang");//reset lang
+			    
                             if (lang == null) {
                                 lang = b.args.get("lang" + Integer.toString(kk));
                             }
@@ -282,6 +284,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                                 if (kk > 1) {//it's some kind of compound
                                     compound = true;
                                 }
+				
                                 vocable = createEtymologyEntryResource(eBox, word, lang);
                                 eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, vocable);
 				Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
@@ -337,14 +340,14 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                         if (ancestor != null) {
                             eBox.add(vocable, DBnaryEtymologyOnt.descendsFrom, ancestor);
 			    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
-			    eBox.add(vocable, RDFS.seeAlso, w);
+			    eBox.add(vocable, RDFS.seeAlso, w);			    
 			    eBox.add(vocable, RDFS.label, word, lang);
                         }
                         ancestors.add(vocable);
                     } else {
                         eBox.add(vocable, DBnaryEtymologyOnt.etymologicallyEquivalentTo, ancestors.get(ancestors.size() - 1));
 			Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
-			eBox.add(vocable, RDFS.seeAlso, w);
+			eBox.add(vocable, RDFS.seeAlso, w);			
 			eBox.add(vocable, RDFS.label, word, lang);
                     }
                     counter++;

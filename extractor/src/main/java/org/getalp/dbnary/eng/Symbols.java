@@ -203,7 +203,10 @@ public class Symbols {
                         values.add("LEMMA");
                         args.put("word1", cleanUp(word));
                         args.remove(Integer.toString(3 + offset));
-                    }
+                    } else {
+			values.add("LANGUAGE");
+			args.remove(Integer.toString(3 + offset));
+		    }
                 } else {
 		    if (args.get(Integer.toString(4 + offset)) != null){
 			word = args.get(Integer.toString(4 + offset));

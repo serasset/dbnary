@@ -436,8 +436,8 @@ public class Symbols {
             values.add("LEMMA");
             args.put("word1", cleanUp(args.get("2")));
             args.put("lang", "fi");
-            args.remove("2"); //{{m/he|אוכל|dwv=אֹכֶל||food}}
-	} else if (args.get("1").equals("he-m") || args.get("1").equals("m/he") ) {
+            args.remove("2");
+	} else if (args.get("1").equals("he-m") || args.get("1").equals("m/he") ) {//{{m/he|לכוא|dwv=לכֶאֹ||food}} 
 	    args.put("lang", "he");
 	    if (args.get("2") != null && !args.get("2").equals("")) {
 		values.add("LEMMA");

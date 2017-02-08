@@ -592,10 +592,10 @@ public class Symbols {
                 offset = 1;
                 if (!args.get("2").equals("")) {
                     args.put("lang", args.get("2"));
+		    args.remove("2");  
                 } else {
                     args.put("lang", lang);
                 }
-                args.remove("2");
             }
             args.put("word1", cleanUp(args.get(Integer.toString(2 + offset))) + "-");//prefix
             args.remove(Integer.toString(2 + offset));
@@ -607,7 +607,7 @@ public class Symbols {
                 }
             }
             values.add("LEMMA");
-	    } else if (args.get("1").equals("con") || args.get("1").equals("confix")) {//confix
+	} else if (args.get("1").equals("con") || args.get("1").equals("confix")) {//confix
             //You must specify a prefix part, an optional base term and a suffix part.
             //e.g.:
             //{{confix|atmo|sphere|lang=en}}
@@ -616,10 +616,10 @@ public class Symbols {
                 offset = 1;
                 if (!args.get("2").equals("")) {
                     args.put("lang", args.get("2"));
+		    args.remove("2");
                 } else {
                     args.put("lang", lang);
                 }
-                args.remove("2");
             }
             if (args.get(Integer.toString(2 + offset)) != null && !args.get(Integer.toString(2 + offset)).equals("")) {
                 args.put("word1", cleanUp(args.get(Integer.toString(2 + offset))) + "-");//prefix-
@@ -638,21 +638,23 @@ public class Symbols {
             }
             values.add("LEMMA");
 	    values.add("STOP");
-	    } else if (args.get("1").equals("suf") || args.get("1").equals("suffix")) {//suffix
+	} else if (args.get("1").equals("suf") || args.get("1").equals("suffix")) {//suffix
 	    //suf: You must provide at least one suffix.
             //examples:
             //{{bor|eo|en|boycott}} {{suffix||i|lang=eo}} -> Borrowing from English boycott + -i.
             //{{suffix|Graham|ite|lang=en}}
+	    //{{suffix|tessere|tura|lang=it}}.
             int offset = 0;
             if (args.get("lang") == null) {
                 offset = 1;
                 if (!args.get("2").equals("")) {
                     args.put("lang", args.get("2"));
+		    args.remove("2");   
                 } else {
                     args.put("lang", lang);
                 }
-                args.remove("2");
             }
+	    
             boolean base = false;
             String key = Integer.toString(2 + offset);
             if (args.get(key) != null && !args.get(key).equals("")) {
@@ -697,12 +699,10 @@ public class Symbols {
             if (args.get("lang") == null) {
                 offset = 1;
                 if (!args.get("2").equals("")) {
-                    args.put("lang", args.get("2"));
-                } else {
-                    args.put("lang", lang);
-                }
-                args.remove("2");
-            }
+		    args.put("lang", args.get("2"));
+		    args.remove("2");
+                } 
+            } 
             if (args.get(Integer.toString(2 + offset)) != null && !args.get(Integer.toString(2 + offset)).equals("")) {
                 args.put("word1", cleanUp(args.get(Integer.toString(2 + offset))) + "-");//prefix
                 args.remove(Integer.toString(2 + offset));
@@ -712,7 +712,7 @@ public class Symbols {
                 args.remove(Integer.toString(3 + offset));
             }
             if (args.get(Integer.toString(4 + offset)) != null && !args.get(Integer.toString(4 + offset)).equals("")) {
-                args.put("word2", cleanUp("-" + args.get(Integer.toString(4 + offset))));//suffix
+                args.put("word3", cleanUp("-" + args.get(Integer.toString(4 + offset))));//suffix
                 args.remove(Integer.toString(4 + offset));
             }
             values.add("LEMMA");
@@ -897,6 +897,9 @@ public class Symbols {
 	}
 		
 	//parse word
+	if (word.equals("")){ //[[#English|tule]]
+	    word = splitArgs.get(1).trim();
+	}
 	args.put("word1", cleanUp(word));
 	
 	args.put("1", "l");

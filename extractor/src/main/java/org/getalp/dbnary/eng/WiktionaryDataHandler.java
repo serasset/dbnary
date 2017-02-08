@@ -273,10 +273,9 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                         boolean compound = false;
                         for (int kk = 1; kk < 12; kk++) {
                             String word = b.args.get("word" + Integer.toString(kk));
-                            lang = b.args.get("lang");//reset lang
-			    
-                            if (lang == null) {
-                                lang = b.args.get("lang" + Integer.toString(kk));
+			    lang = b.args.get("lang" + Integer.toString(kk));
+			    if (lang == null) {
+                                lang = b.args.get("lang");
                             }
                             // TODO: When word is empty (but not null), it means same string as current entry
                             if ("".equals(word)) word = currentWiktionaryPageName;
@@ -289,7 +288,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                                 eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, vocable);
 				Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
 				eBox.add(vocable, RDFS.seeAlso, w);
-				eBox.add(vocable, RDFS.label, word, lang);				
+				eBox.add(vocable, RDFS.label, word, lang);	   
                             }
                         }
                         if (compound) {

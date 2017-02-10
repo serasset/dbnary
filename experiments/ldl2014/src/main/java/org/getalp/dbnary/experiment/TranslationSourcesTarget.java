@@ -5,16 +5,15 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-import org.getalp.iso639.ISO639_3;
-import org.getalp.iso639.ISO639_3.Lang;
 import org.getalp.dbnary.DBnaryOnt;
-// import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.experiment.disambiguation.*;
 import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
 import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
 import org.getalp.dbnary.experiment.preprocessing.StatsModule;
 import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
+import org.getalp.iso639.ISO639_3;
+import org.getalp.iso639.ISO639_3.Lang;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -24,8 +23,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+// import org.getalp.dbnary.DbnaryModel;
 
-public class DisambiguateTranslationSources {
+
+public class TranslationSourcesTarget {
 
 	private static final String LANGUAGES_OPTION = "l";
 	private static final String USE_GLOSSES_OPTION = "g";
@@ -99,12 +100,12 @@ public class DisambiguateTranslationSources {
 	private String translatorPass;
 	private String translationCache;
 
-	private DisambiguateTranslationSources() {
+	private TranslationSourcesTarget() {
 	}
 
 	public static void main(String[] args) throws IOException {
 
-		DisambiguateTranslationSources lld = new DisambiguateTranslationSources();
+		TranslationSourcesTarget lld = new TranslationSourcesTarget();
 		lld.loadArgs(args);
 
 		lld.doit();
@@ -409,6 +410,8 @@ public class DisambiguateTranslationSources {
 		Model inputModel = modelMap.get(lang);
 		StmtIterator translations = inputModel.listStatements(null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 
+		Model tmpModel = ModelFactory.createDefaultModel();
+
 		while (translations.hasNext()) {
 			Statement next = translations.next();
 			
@@ -448,23 +451,79 @@ public class DisambiguateTranslationSources {
 						}
 					}
 
-					// Register results in output Model
-					Resource translation = outputModel.createResource(trans.getURI());
+					// Register results in temporary Model
+					Resource translation = tmpModel.createResource(trans.getURI());
 
 					Set<Resource> res = (resSenseNum.isEmpty()) ? resSim : resSenseNum;
 
 					if (res != null && !res.isEmpty()) {
 						for (Resource ws : res) {
-							outputModel.add(outputModel.createStatement(translation, DBnaryOnt.isTranslationOf, outputModel.createResource(ws.getURI())));
+							tmpModel.add(tmpModel.createStatement(translation, DBnaryOnt.isTranslationOf, tmpModel.createResource(ws.getURI())));
 						}
 					}
-
 				} catch (InvalidContextException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InvalidEntryException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				}
+			}
+		}
+
+		// add relation to writtenForm
+		StmtIterator writtenforms = inputModel.listStatements(null, DBnaryOnt.writtenForm, (RDFNode) null);
+		while (writtenforms.hasNext()) {
+			Statement next = writtenforms.next();
+			Resource trans = next.getSubject();
+			RDFNode wf = next.getObject();
+			tmpModel.add(tmpModel.createStatement(tmpModel.createResource(trans.getURI()), DBnaryOnt.writtenForm, wf));
+		}
+
+		// add relation to targetLanguage
+		StmtIterator targetlanguages = inputModel.listStatements(null, DBnaryOnt.targetLanguage, (RDFNode) null);
+		while (targetlanguages.hasNext()) {
+			Statement next = targetlanguages.next();
+			Resource trans = next.getSubject();
+			Resource tl = next.getResource();
+			tmpModel.add(tmpModel.createStatement(tmpModel.createResource(trans.getURI()), DBnaryOnt.targetLanguage, tmpModel.createResource(tl.getURI())));
+		}
+
+		// add relation to usage
+		StmtIterator usages = inputModel.listStatements(null, DBnaryOnt.usage, (RDFNode) null);
+		while (usages.hasNext()) {
+			Statement next = usages.next();
+			Resource trans = next.getSubject();
+			RDFNode use = next.getObject();
+			tmpModel.add(tmpModel.createStatement(tmpModel.createResource(trans.getURI()), DBnaryOnt.usage, use));
+		}
+
+
+		StmtIterator stmt = tmpModel.listStatements() ;
+		while(stmt.hasNext()){
+			Statement next = stmt.next() ;
+			Resource e = next.getSubject();
+
+			StmtIterator stmtws = e.listProperties(DBnaryOnt.isTranslationOf);
+			if(stmtws != null){
+				while(stmtws.hasNext()){
+					Statement statement = stmtws.next() ;
+					Resource ws = statement.getResource();
+					Statement stmtwf = e.getProperty(DBnaryOnt.writtenForm);
+					if(stmtwf != null){
+						RDFNode wf = stmtwf.getObject();
+						outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.writtenForm, wf));
+					}
+					/*Statement stmttl = e.getProperty(DBnaryOnt.targetLanguage);
+					if(stmttl != null){
+						Resource tl = stmttl.getResource();
+						outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.targetLanguage, outputModel.createResource(tl.getURI())));
+					}
+					Statement stmtuse = e.getProperty(DBnaryOnt.usage);
+					if(stmtuse != null) {
+						RDFNode use = stmtuse.getObject();
+						outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.writtenForm, use));
+					}*/
 				}
 			}
 		}

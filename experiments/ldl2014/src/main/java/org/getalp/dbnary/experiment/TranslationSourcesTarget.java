@@ -2,11 +2,14 @@ package org.getalp.dbnary.experiment;
 
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.tdb.*;
+import com.hp.hpl.jena.query.*;
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.experiment.disambiguation.*;
 import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
 import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
@@ -99,6 +102,7 @@ public class TranslationSourcesTarget {
 	private String translatorId;
 	private String translatorPass;
 	private String translationCache;
+	private Dataset dataset ;
 
 	private TranslationSourcesTarget() {
 	}
@@ -166,6 +170,7 @@ public class TranslationSourcesTarget {
 			evaluator.printConfidenceStats(confidenceOutput);
 			confidenceOutput.close();
 		}
+		//dataset.end() ;
 	}
 
 	public static void printUsage() {
@@ -263,6 +268,13 @@ public class TranslationSourcesTarget {
 		modelMap = new HashMap<String,Model>();
 
 		for (String arg: remainingArgs) {
+			/*String directory = "/Users/vernemat/Documents/TER/tdb/"+guessLanguage(arg) ; // TODO give it as an argument
+			dataset = TDBFactory.createDataset(directory) ;
+			dataset.begin(ReadWrite.WRITE) ;
+			// Get model inside the transaction
+			Model m = dataset.getDefaultModel() ;
+			//dataset.end() ;*/
+
 			Model m = ModelFactory.createDefaultModel();
 			String lang = guessLanguage(arg);
 			modelMap.put(lang, m);
@@ -365,7 +377,6 @@ public class TranslationSourcesTarget {
 		// TODO: adapt stats module for current language
 		if (null != stats) stats.reset(lang);
 		Model m = modelMap.get(lang);
-
 		StmtIterator translations = m.listStatements((Resource) null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 		while (translations.hasNext()) {
 			Resource e = translations.next().getSubject();
@@ -393,7 +404,6 @@ public class TranslationSourcesTarget {
 					}
 				}
 			}
-
 		}
 	}
 
@@ -510,9 +520,54 @@ public class TranslationSourcesTarget {
 					Statement statement = stmtws.next() ;
 					Resource ws = statement.getResource();
 					Statement stmtwf = e.getProperty(DBnaryOnt.writtenForm);
-					if(stmtwf != null){
+					Statement stmttl = e.getProperty(DBnaryOnt.targetLanguage);
+					if(stmtwf != null && stmttl != null){
 						RDFNode wf = stmtwf.getObject();
-						outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.writtenForm, wf));
+						// TODO chercher wf dans les cf (lemon:writtenRep) du model de la targetLanguage
+						RDFNode tl = stmttl.getObject();
+						String l = guessLanguage(""+tl);
+						String directory = "/Users/vernemat/Documents/TER/tdb/"+l ;
+
+						Dataset dataset = TDBFactory.createDataset(directory) ;
+						dataset.begin(ReadWrite.READ) ;
+						// Get model inside the transaction
+						Model model = dataset.getDefaultModel() ;
+						StmtIterator stmtcf = model.listStatements(null, LemonOnt.writtenRep, wf);
+
+						while(stmtcf.hasNext()){
+							Statement stm = stmtcf.next();
+							Resource cf = stm.getSubject();
+							// get LexicalEntry
+							StmtIterator stmtle = model.listStatements(null,LemonOnt.canonicalForm,cf);
+							while(stmtle.hasNext()){
+								Statement statementLexEntry = stmtle.next() ;
+								Resource le = statementLexEntry.getSubject();
+								// check the part of speech
+								Statement st = le.getProperty(LexinfoOnt.partOfSpeech) ;
+								if(st != null){
+									Resource posLE =  st.getResource();
+									Model source = modelMap.get(lang);
+									StmtIterator stmtwsPoS = source.listStatements(null,LemonOnt.sense,ws);
+									while(stmtwsPoS.hasNext()){
+										Statement stmtpos = stmtwsPoS.next();
+										Resource r = stmtpos.getSubject();
+										Statement pos = r.getProperty(LexinfoOnt.partOfSpeech);
+										if(pos != null) {
+											Resource posWS = pos.getResource();
+											if (posLE.equals(posWS)) {
+												outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI())));
+											}
+										}
+									}
+								}
+							}
+						}
+						/*dataset.begin(ReadWrite.WRITE) ;
+						model = dataset.getDefaultModel() ;
+						dataset.end() ;
+						*/
+						//outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.writtenForm, wf));
+						dataset.end() ;
 					}
 					/*Statement stmttl = e.getProperty(DBnaryOnt.targetLanguage);
 					if(stmttl != null){

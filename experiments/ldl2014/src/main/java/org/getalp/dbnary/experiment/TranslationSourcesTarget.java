@@ -103,6 +103,7 @@ public class TranslationSourcesTarget {
 	private String translatorPass;
 	private String translationCache;
 	private Dataset dataset ;
+	private String dir ;
 
 	private TranslationSourcesTarget() {
 	}
@@ -268,7 +269,7 @@ public class TranslationSourcesTarget {
 		modelMap = new HashMap<String,Model>();
 
 		for (String arg: remainingArgs) {
-			/*String directory = "/Users/vernemat/Documents/TER/tdb/"+guessLanguage(arg) ; // TODO give it as an argument
+			/*String directory = dir+guessLanguage(arg) ; // TODO give it as an argument
 			dataset = TDBFactory.createDataset(directory) ;
 			dataset.begin(ReadWrite.WRITE) ;
 			// Get model inside the transaction
@@ -523,14 +524,15 @@ public class TranslationSourcesTarget {
 					Statement stmttl = e.getProperty(DBnaryOnt.targetLanguage);
 					if(stmtwf != null && stmttl != null){
 						RDFNode wf = stmtwf.getObject();
-						// TODO chercher wf dans les cf (lemon:writtenRep) du model de la targetLanguage
+						int nbLexicalEntries = 0 ;
+						int nbLexEntriesPoS = 0 ;
+						// get canonical form
 						RDFNode tl = stmttl.getObject();
 						String l = guessLanguage(""+tl);
-						String directory = "/Users/vernemat/Documents/TER/tdb/"+l ;
+						String directory = dir+l ;
 
 						Dataset dataset = TDBFactory.createDataset(directory) ;
 						dataset.begin(ReadWrite.READ) ;
-						// Get model inside the transaction
 						Model model = dataset.getDefaultModel() ;
 						StmtIterator stmtcf = model.listStatements(null, LemonOnt.writtenRep, wf);
 
@@ -539,9 +541,11 @@ public class TranslationSourcesTarget {
 							Resource cf = stm.getSubject();
 							// get LexicalEntry
 							StmtIterator stmtle = model.listStatements(null,LemonOnt.canonicalForm,cf);
+
 							while(stmtle.hasNext()){
 								Statement statementLexEntry = stmtle.next() ;
 								Resource le = statementLexEntry.getSubject();
+								nbLexicalEntries = nbLexicalEntries+1 ;
 								// check the part of speech
 								Statement st = le.getProperty(LexinfoOnt.partOfSpeech) ;
 								if(st != null){
@@ -555,19 +559,17 @@ public class TranslationSourcesTarget {
 										if(pos != null) {
 											Resource posWS = pos.getResource();
 											if (posLE.equals(posWS)) {
-												outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI())));
+												nbLexEntriesPoS = nbLexEntriesPoS+1 ;
+												//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
+												outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); //ws to lexical entry
 											}
 										}
 									}
 								}
 							}
 						}
-						/*dataset.begin(ReadWrite.WRITE) ;
-						model = dataset.getDefaultModel() ;
 						dataset.end() ;
-						*/
-						//outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.writtenForm, wf));
-						dataset.end() ;
+						System.out.println(wf+"\n\t"+nbLexicalEntries+" LexicalEntries\n\t"+nbLexEntriesPoS+" LexicalEntries with correct part of speech") ;
 					}
 					/*Statement stmttl = e.getProperty(DBnaryOnt.targetLanguage);
 					if(stmttl != null){

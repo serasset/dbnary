@@ -17,6 +17,8 @@ import org.getalp.dbnary.experiment.preprocessing.StatsModule;
 import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
 import org.getalp.iso639.ISO639_3;
 import org.getalp.iso639.ISO639_3.Lang;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -30,6 +32,7 @@ import java.util.Set;
 
 
 public class TranslationSourcesTarget {
+    private Logger log = LoggerFactory.getLogger(TranslationSourcesTarget.class);
 
 	private static final String LANGUAGES_OPTION = "l";
 	private static final String USE_GLOSSES_OPTION = "g";
@@ -55,6 +58,7 @@ public class TranslationSourcesTarget {
 	private static final String DEFAULT_OUTPUT_FILE_SUFFIX = "_disambiguated_translations.ttl";
 	private static final String CONFIDENCE_FILE_OPTION = "c";
 	private static final String COMPRESS_OPTION = "z";
+	private static final String TARGET_TDB_FOLDER_OPTION = "t";
 
 	private static Options options = null; // Command line op
 
@@ -78,6 +82,7 @@ public class TranslationSourcesTarget {
 		options.addOption(PARAM_BETA_OPTION,true,"Beta parameter for the Tversky index (default="+DEFAULT_BETA_VALUE+")");
 		options.addOption(PARAM_DELTA_OPTION,true,"Delta parameter for the choice of disambiguations to keep as a solution (default="+DEFAULT_DELTA_VALUE+")");
 		options.addOption(PARAM_DEGREE_OPTION,true,"Degree of the transitive closure (default="+DEFAULT_DEGREE_VALUE+")");
+		options.addOption(TARGET_TDB_FOLDER_OPTION, true, "Path to the folder containing the TDB version of DBnary data used to query target languages.");
 	}
 
 	private CommandLine cmd = null; // Command Line arguments
@@ -103,7 +108,7 @@ public class TranslationSourcesTarget {
 	private String translatorPass;
 	private String translationCache;
 	private Dataset dataset ;
-	private String dir ;
+	private String tdbFolder;
 
 	private TranslationSourcesTarget() {
 	}
@@ -184,7 +189,6 @@ public class TranslationSourcesTarget {
 	}
 
 	private void loadArgs(String[] args) {
-		dir = "/Users/vernemat/Documents/TER/tdb/";
 		CommandLineParser parser = new PosixParser();
 		try {
 			cmd = parser.parse(options, args);
@@ -215,7 +219,7 @@ public class TranslationSourcesTarget {
 		translatorPass = cmd.getOptionValue(TRANSLATIONAPI_PASS_OPTION);
 		
 		if (useTranslator && (translatorPass == null || translatorPass.length() == 0)) {
-			System.err.println("Translation API secret is mandatory when translkation API is requested.");
+			System.err.println("Translation API secret is mandatory when translation API is requested.");
 			printUsage();
 			System.exit(0);
 		}
@@ -265,12 +269,18 @@ public class TranslationSourcesTarget {
 			evaluator = new EvaluationStats();
 		}
 
+        if (cmd.hasOption(TARGET_TDB_FOLDER_OPTION)) {
+            tdbFolder = cmd.getOptionValue(TARGET_TDB_FOLDER_OPTION);
+        } else {
+		    tdbFolder = ".";
+        }
+
 		outputFileSuffix = cmd.getOptionValue(OUTPUT_FILE_SUFFIX_OPTION, DEFAULT_OUTPUT_FILE_SUFFIX);
 
 		modelMap = new HashMap<String,Model>();
 
 		for (String arg: remainingArgs) {
-			/*String directory = dir+guessLanguage(arg) ; // TODO give it as an argument
+			/*String directory = tdbFolder+guessLanguage(arg) ; // TODO give it as an argument
 			dataset = TDBFactory.createDataset(directory) ;
 			dataset.begin(ReadWrite.WRITE) ;
 			// Get model inside the transaction
@@ -501,6 +511,18 @@ public class TranslationSourcesTarget {
 			}
 		}
 
+        // add isTranslationOf links to Lexicalentries
+        StmtIterator isTranslationOf = inputModel.listStatements(null, DBnaryOnt.isTranslationOf, (RDFNode) null);
+        while (isTranslationOf.hasNext()) {
+            Statement next = isTranslationOf.next();
+            tmpModel.add(next);
+        }
+        StmtIterator translationTypes = inputModel.listStatements(null, RDF.type, DBnaryOnt.Translation);
+        while (translationTypes.hasNext()) {
+            Statement next = translationTypes.next();
+            tmpModel.add(next);
+        }
+
 		// add relation to writtenForm
 		StmtIterator writtenforms = inputModel.listStatements(null, DBnaryOnt.writtenForm, (RDFNode) null);
 		while (writtenforms.hasNext()) {
@@ -529,8 +551,8 @@ public class TranslationSourcesTarget {
 		}
 
 
-		// processthe temporary model
-		StmtIterator stmt = tmpModel.listStatements() ;
+		// process the temporary model
+		StmtIterator stmt = tmpModel.listStatements(null, RDF.type, DBnaryOnt.Translation) ;
 		while(stmt.hasNext()){
 			Statement next = stmt.next() ;
 			Resource e = next.getSubject();
@@ -550,11 +572,11 @@ public class TranslationSourcesTarget {
 						// get canonical form
 						RDFNode tl = stmttl.getObject();
 						String l = guessLanguage(""+tl);
-						String directory = dir+l ;
+						String directory = tdbFolder + File.separator + l ;
 
 						if(!(new File(directory).exists())){ // no extraction is available for this language
 							nbwslost2 = nbwslost2 + 1 ;
-						}else{
+						} else {
 							nbwskept = nbwskept + 1 ;
 							Dataset dataset = TDBFactory.createDataset(directory) ;
 							dataset.begin(ReadWrite.READ) ;
@@ -586,34 +608,57 @@ public class TranslationSourcesTarget {
 										//nbLexicalEntries = nbLexicalEntries+1 ;
 										// check the part of speech
 										Statement st = le.getProperty(LexinfoOnt.partOfSpeech) ;
-										if(st != null){
+										if(st != null) {
 											Resource posLE =  st.getResource();
 											Model source = modelMap.get(lang);
-											StmtIterator stmtwsPoS = source.listStatements(null,LemonOnt.sense,ws);
-											int nbsense = 0 ;
-											while(stmtwsPoS.hasNext()){
-												nbsense = nbsense+1 ;
-												Statement stmtpos = stmtwsPoS.next();
-												Resource r = stmtpos.getSubject();
-												Statement pos = r.getProperty(LexinfoOnt.partOfSpeech);
-												if(pos != null) {
-													Resource posWS = pos.getResource();
-													if (posLE.equals(posWS)) {
-														//nbLexEntriesPoS = nbLexEntriesPoS+1 ;
-														//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
-														outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); //ws to lexical entry
-														nblepos = nblepos + 1 ;
-													}else{
-														nblewrongpos = nblewrongpos + 1 ;
-													}
-												}else{
-													nbleposmisssle = nbleposmisssle + 1 ;
-												}
-											}
-											if(nbsense!=1){
-												System.out.println("(Looking for the part of speech) nb of lexical entries with the sense we're looking for : "+nbsense) ;
-											}
-										}else{
+											if (ws.hasProperty(RDF.type, LemonOnt.LexicalEntry)||
+                                                    ws.hasProperty(RDF.type, LemonOnt.Word) ||
+                                                    ws.hasProperty(RDF.type, LemonOnt.Phrase)) {
+                                                Statement pos = ws.getProperty(LexinfoOnt.partOfSpeech);
+                                                if(pos != null) {
+                                                    Resource posWS = pos.getResource();
+                                                    if (posLE.equals(posWS)) {
+                                                        //nbLexEntriesPoS = nbLexEntriesPoS+1 ;
+                                                        //outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
+                                                        outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
+                                                        nblepos = nblepos + 1 ;
+                                                        log.debug("Linked Lexical Entry {} to {} with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
+                                                    } else {
+                                                        log.debug("Different POS between {} and {} // {} is not {}", ws.getLocalName(), le.getLocalName(), posWS, posLE);
+                                                        nblewrongpos = nblewrongpos + 1 ;
+                                                    }
+                                                } else {
+                                                    nbleposmisssle = nbleposmisssle + 1 ;
+                                                }
+                                            } else {
+                                                // We have a word sense
+
+                                                StmtIterator stmtwsPoS = source.listStatements(null, LemonOnt.sense, ws);
+                                                int nbsense = 0;
+                                                while (stmtwsPoS.hasNext()) {
+                                                    nbsense = nbsense + 1;
+                                                    Statement stmtpos = stmtwsPoS.next();
+                                                    Resource r = stmtpos.getSubject();
+                                                    Statement pos = r.getProperty(LexinfoOnt.partOfSpeech);
+                                                    if (pos != null) {
+                                                        Resource posWS = pos.getResource();
+                                                        if (posLE.equals(posWS)) {
+                                                            //nbLexEntriesPoS = nbLexEntriesPoS+1 ;
+                                                            //outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
+                                                            outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
+                                                            nblepos = nblepos + 1;
+                                                        } else {
+                                                            nblewrongpos = nblewrongpos + 1;
+                                                        }
+                                                    } else {
+                                                        nbleposmisssle = nbleposmisssle + 1;
+                                                    }
+                                                }
+                                                if (nbsense != 1) {
+                                                    log.debug("(Looking for the part of speech) nb of lexical entries with the sense we're looking for : " + nbsense);
+                                                }
+                                            }
+										} else {
 											nbleposmisstle = nbleposmisstle + 1 ;
 										}
 									}

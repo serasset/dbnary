@@ -440,6 +440,8 @@ public class TranslationSourcesTarget {
 		int nbleposmisssle = 0 ;
 		int nblepos = 0 ;
 		int nblewrongpos = 0 ;
+		int nblelewrongpos = 0 ;
+		int nblelepos = 0 ;
 
 		while (translations.hasNext()) {
 			Statement next = translations.next();
@@ -640,9 +642,9 @@ public class TranslationSourcesTarget {
 													//nbLexEntriesPoS = nbLexEntriesPoS+1 ;
 													//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
 													outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); //ws to lexical entry
-													nblepos = nblepos + 1 ;
+													nblelepos = nblelepos + 1 ;
 												}else{
-													nblewrongpos = nblewrongpos + 1 ;
+													nblelewrongpos = nblelewrongpos + 1 ;
 												}
 											}else{
 												nbleposmisssle = nbleposmisssle + 1 ;
@@ -680,22 +682,32 @@ public class TranslationSourcesTarget {
 				}
 			}
 		}
-		System.out.println(nbwsadd+" translations to a word sense added") ;
-		System.out.println(nbws+" translations to a word sense in the model") ;
-		System.out.println(nbwslost1+" translations to a word sense lost because written form or target language missing") ;
-		System.out.println(nbwslost2+" translations to a word sense lost because model unavailable in this language") ;
-		System.out.println(nbwskept+" translations to a word sense kept") ;
-		System.out.println(nbcfmiss+" times where canonical form or lexical entry was not found") ;
-		System.out.println(nbcf+" times where canonical form or lexical entry was found") ;
-		System.out.println(nbcfcf+" times where it was indeed a canonical form");
-		System.out.println(nbcfle+" times where it was a lexical entry");
-		System.out.println(nbcfelse+" times where it was neither a canonical form nor a lexical entry");
-		System.out.println(nblemiss+" times where no lexical entry corresponding to this canonical form was found") ;
-		System.out.println(nble+" times where a lexical entry corresponding to this canonical form was found") ;
-		System.out.println(nblepos+" times where a lexical entry corresponding to this canonical form with the right part of speech was found") ;
-		System.out.println(nblewrongpos+" times where a lexical entry corresponding to this canonical form with the wrong part of speech was found") ;
-		System.out.println(nbleposmisstle+" times where part of speech was missing from the target") ;
-		System.out.println(nbleposmisssle+" times where part of speech was missing from the source") ;
+		System.out.println(nbwsadd+"\ttranslations to a word sense added") ;
+		System.out.println();
+		System.out.println(nbws+"\ttranslations to a word sense in the model") ;
+		System.out.println();
+		System.out.println(nbwslost1+"\ttranslations to a word sense lost because written form or target language missing") ;
+		System.out.println(nbwslost2+"\ttranslations to a word sense lost because model unavailable in this language") ;
+		System.out.println(nbwskept+"\ttranslations to a word sense kept") ;
+		System.out.println();
+		System.out.println(nbcfmiss+"\ttimes where canonical form or lexical entry corresponding to the written form was not found") ;
+		System.out.println(nbcf+"\ttimes where canonical form or lexical entry corresponding to the written form was found") ;
+		System.out.println();
+		System.out.println(nbcfcf+"\ttimes where it was indeed a canonical form");
+		System.out.println(nbcfle+"\ttimes where it was a lexical entry");
+		System.out.println(nbcfelse+"\ttimes where it was neither a canonical form nor a lexical entry");
+		System.out.println();
+		System.out.println(nblemiss+"\ttimes where no lexical entry corresponding to this canonical form was found") ;
+		System.out.println(nble+"\ttimes where a lexical entry corresponding to this canonical form was found") ;
+		System.out.println();
+		System.out.println(nblepos+"\ttimes where a lexical entry corresponding to this canonical form with the right part of speech was found") ;
+		System.out.println(nblelepos+"\ttimes where a lexical entry with the right part of speech was found directly (not through canonical form)") ;
+		System.out.println();
+		System.out.println(nblewrongpos+"\ttimes where a lexical entry corresponding to this canonical form with the wrong part of speech was found") ;
+		System.out.println(nblelewrongpos+"\ttimes where a lexical entry with the wrong part of speech was found directly (not through canonical form)") ;
+		System.out.println();
+		System.out.println(nbleposmisstle+"\ttimes where part of speech was missing from the target") ;
+		System.out.println(nbleposmisssle+"\ttimes where part of speech was missing from the source") ;
 	}
 
 	private int getNumberOfSenses(Resource lexicalEntry) {

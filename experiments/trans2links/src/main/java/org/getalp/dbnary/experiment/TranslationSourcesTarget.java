@@ -435,7 +435,8 @@ public class TranslationSourcesTarget {
 		Model tmpModel = ModelFactory.createDefaultModel();
 
 		int nbwsadd = 0 ;
-		int nbws = 0 ;
+		int nbleadd = 0 ;
+		int nbtrans = 0 ;
 		int nbwslost1 = 0 ;
 		int nbwslost2 = 0 ;
 		int nbwskept = 0 ;
@@ -450,6 +451,8 @@ public class TranslationSourcesTarget {
 		int nbleposmisssle = 0 ;
 		int nblepos = 0 ;
 		int nblewrongpos = 0 ;
+		int nblelewrongpos = 0 ;
+		int nblelepos = 0 ;
 
 		while (translations.hasNext()) {
 			Statement next = translations.next();
@@ -514,6 +517,7 @@ public class TranslationSourcesTarget {
         // add isTranslationOf links to Lexicalentries
         StmtIterator isTranslationOf = inputModel.listStatements(null, DBnaryOnt.isTranslationOf, (RDFNode) null);
         while (isTranslationOf.hasNext()) {
+        	nbleadd = nbleadd+1 ;
             Statement next = isTranslationOf.next();
             tmpModel.add(next);
         }
@@ -561,8 +565,8 @@ public class TranslationSourcesTarget {
 			if(stmtws != null){
 				while(stmtws.hasNext()){
 					Statement statement = stmtws.next() ;
-					Resource ws = statement.getResource();
-					nbws = nbws + 1 ;
+					Resource ws = statement.getResource().inModel(inputModel);
+					nbtrans = nbtrans + 1 ;
 					Statement stmtwf = e.getProperty(DBnaryOnt.writtenForm);
 					Statement stmttl = e.getProperty(DBnaryOnt.targetLanguage);
 					if(stmtwf != null && stmttl != null){
@@ -647,7 +651,9 @@ public class TranslationSourcesTarget {
                                                             //outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
                                                             outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
                                                             nblepos = nblepos + 1;
+															log.debug("Linked Lexical Entry {} to {} with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
                                                         } else {
+															log.debug("Different POS between {} and {} // {} is not {}", ws.getLocalName(), le.getLocalName(), posWS, posLE);
                                                             nblewrongpos = nblewrongpos + 1;
                                                         }
                                                     } else {
@@ -655,6 +661,7 @@ public class TranslationSourcesTarget {
                                                     }
                                                 }
                                                 if (nbsense != 1) {
+                                                	// Not supposed to happen
                                                     log.debug("(Looking for the part of speech) nb of lexical entries with the sense we're looking for : " + nbsense);
                                                 }
                                             }
@@ -672,29 +679,56 @@ public class TranslationSourcesTarget {
 									if(st != null){
 										Resource posLE =  st.getResource();
 										Model source = modelMap.get(lang);
-										StmtIterator stmtwsPoS = source.listStatements(null,LemonOnt.sense,ws);
-										int nbsense = 0 ;
-										while(stmtwsPoS.hasNext()){
-											nbsense = nbsense+1 ;
-											Statement stmtpos = stmtwsPoS.next();
-											Resource r = stmtpos.getSubject();
-											Statement pos = r.getProperty(LexinfoOnt.partOfSpeech);
+
+										if (ws.hasProperty(RDF.type, LemonOnt.LexicalEntry)||
+												ws.hasProperty(RDF.type, LemonOnt.Word) ||
+												ws.hasProperty(RDF.type, LemonOnt.Phrase)) {
+											Statement pos = ws.getProperty(LexinfoOnt.partOfSpeech);
 											if(pos != null) {
 												Resource posWS = pos.getResource();
 												if (posLE.equals(posWS)) {
 													//nbLexEntriesPoS = nbLexEntriesPoS+1 ;
 													//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
-													outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); //ws to lexical entry
-													nblepos = nblepos + 1 ;
-												}else{
-													nblewrongpos = nblewrongpos + 1 ;
+													outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
+													nblelepos = nblelepos + 1 ;
+													log.debug("Linked Lexical Entry {} to {} with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
+												} else {
+													log.debug("Different POS between {} and {} // {} is not {}", ws.getLocalName(), le.getLocalName(), posWS, posLE);
+													nblelewrongpos = nblelewrongpos + 1 ;
 												}
-											}else{
+											} else {
 												nbleposmisssle = nbleposmisssle + 1 ;
 											}
-										}
-										if(nbsense!=1){
-											System.out.println("(Looking for the part of speech) nb of lexical entries with the sense we're looking for : "+nbsense) ;
+										} else {
+											// We have a word sense
+
+											StmtIterator stmtwsPoS = source.listStatements(null, LemonOnt.sense, ws);
+											int nbsense = 0;
+											while (stmtwsPoS.hasNext()) {
+												nbsense = nbsense + 1;
+												Statement stmtpos = stmtwsPoS.next();
+												Resource r = stmtpos.getSubject();
+												Statement pos = r.getProperty(LexinfoOnt.partOfSpeech);
+												if (pos != null) {
+													Resource posWS = pos.getResource();
+													if (posLE.equals(posWS)) {
+														//nbLexEntriesPoS = nbLexEntriesPoS+1 ;
+														//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
+														outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
+														nblelepos = nblelepos + 1;
+														log.debug("Linked Lexical Entry {} to {} with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
+													} else {
+														log.debug("Different POS between {} and {} // {} is not {}", ws.getLocalName(), le.getLocalName(), posWS, posLE);
+														nblelewrongpos = nblelewrongpos + 1;
+													}
+												} else {
+													nbleposmisssle = nbleposmisssle + 1;
+												}
+											}
+											if (nbsense != 1) {
+												// Not supposed to happen
+												log.debug("(Looking for the part of speech) nb of lexical entries with the sense we're looking for : " + nbsense);
+											}
 										}
 									}else{
 										nbleposmisstle = nbleposmisstle + 1 ;
@@ -725,22 +759,33 @@ public class TranslationSourcesTarget {
 				}
 			}
 		}
-		System.out.println(nbwsadd+" translations to a word sense added") ;
-		System.out.println(nbws+" translations to a word sense in the model") ;
-		System.out.println(nbwslost1+" translations to a word sense lost because written form or target language missing") ;
-		System.out.println(nbwslost2+" translations to a word sense lost because model unavailable in this language") ;
-		System.out.println(nbwskept+" translations to a word sense kept") ;
-		System.out.println(nbcfmiss+" times where canonical form or lexical entry was not found") ;
-		System.out.println(nbcf+" times where canonical form or lexical entry was found") ;
-		System.out.println(nbcfcf+" times where it was indeed a canonical form");
-		System.out.println(nbcfle+" times where it was a lexical entry");
-		System.out.println(nbcfelse+" times where it was neither a canonical form nor a lexical entry");
-		System.out.println(nblemiss+" times where no lexical entry corresponding to this canonical form was found") ;
-		System.out.println(nble+" times where a lexical entry corresponding to this canonical form was found") ;
-		System.out.println(nblepos+" times where a lexical entry corresponding to this canonical form with the right part of speech was found") ;
-		System.out.println(nblewrongpos+" times where a lexical entry corresponding to this canonical form with the wrong part of speech was found") ;
-		System.out.println(nbleposmisstle+" times where part of speech was missing from the target") ;
-		System.out.println(nbleposmisssle+" times where part of speech was missing from the source") ;
+		System.out.println(nbwsadd+"\ttranslations from a word sense added") ;
+		System.out.println(nbleadd+"\ttranslations from a lexical entry added") ;
+		System.out.println();
+		System.out.println(nbtrans+"\ttranslations from a word sense or lexical entry in the model") ;
+		System.out.println();
+		System.out.println(nbwslost1+"\ttranslations to a word sense lost because written form or target language missing") ;
+		System.out.println(nbwslost2+"\ttranslations to a word sense lost because model unavailable in this language") ;
+		System.out.println(nbwskept+"\ttranslations to a word sense kept") ;
+		System.out.println();
+		System.out.println(nbcfmiss+"\ttimes where canonical form or lexical entry corresponding to the written form was not found") ;
+		System.out.println(nbcf+"\ttimes where canonical form or lexical entry corresponding to the written form was found") ;
+		System.out.println();
+		System.out.println(nbcfcf+"\ttimes where it was indeed a canonical form");
+		System.out.println(nbcfle+"\ttimes where it was a lexical entry");
+		System.out.println(nbcfelse+"\ttimes where it was neither a canonical form nor a lexical entry");
+		System.out.println();
+		System.out.println(nblemiss+"\ttimes where no lexical entry corresponding to this canonical form was found") ;
+		System.out.println(nble+"\ttimes where a lexical entry corresponding to this canonical form was found") ;
+		System.out.println();
+		System.out.println(nblepos+"\ttimes where a lexical entry corresponding to this canonical form with the right part of speech was found") ;
+		System.out.println(nblelepos+"\ttimes where a lexical entry with the right part of speech was found directly (not through canonical form)") ;
+		System.out.println();
+		System.out.println(nblewrongpos+"\ttimes where a lexical entry corresponding to this canonical form with the wrong part of speech was found") ;
+		System.out.println(nblelewrongpos+"\ttimes where a lexical entry with the wrong part of speech was found directly (not through canonical form)") ;
+		System.out.println();
+		System.out.println(nbleposmisstle+"\ttimes where part of speech was missing from the target") ;
+		System.out.println(nbleposmisssle+"\ttimes where part of speech was missing from the source") ;
 	}
 
 	private int getNumberOfSenses(Resource lexicalEntry) {

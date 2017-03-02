@@ -15,6 +15,7 @@ import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
 import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
 import org.getalp.dbnary.experiment.preprocessing.StatsModule;
 import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
+import org.getalp.dbnary.tools.CounterSet;
 import org.getalp.iso639.ISO639_3;
 import org.getalp.iso639.ISO639_3.Lang;
 import org.slf4j.Logger;
@@ -434,10 +435,7 @@ public class TranslationSourcesTarget {
 
 		Model tmpModel = ModelFactory.createDefaultModel();
 
-		int nbwsadd = 0 ;
-		int nbleadd = 0 ;
-		int nbtrans = 0 ;
-		int nbwslost1 = 0 ;
+		/*
 		int nbwslost2 = 0 ;
 		int nbwskept = 0 ;
 		int nbcfmiss = 0 ;
@@ -453,6 +451,26 @@ public class TranslationSourcesTarget {
 		int nblewrongpos = 0 ;
 		int nblelewrongpos = 0 ;
 		int nblelepos = 0 ;
+		*/
+		int nbwsadd = 0 ;
+		int nbleadd = 0 ;
+		int nbtrans = 0 ;
+		int nbwslost1 = 0 ;
+		CounterSet nbwslost2 = new CounterSet() ;
+		CounterSet nbwskept = new CounterSet() ;
+		CounterSet nbcfmiss = new CounterSet() ;
+		CounterSet nbcf = new CounterSet() ;
+		CounterSet nbcfcf = new CounterSet() ;
+		CounterSet nbcfelse = new CounterSet() ;
+		CounterSet nbcfle = new CounterSet() ;
+		CounterSet nblemiss = new CounterSet() ;
+		CounterSet nble = new CounterSet() ;
+		CounterSet nbleposmisstle = new CounterSet() ;
+		CounterSet nbleposmisssle = new CounterSet() ;
+		CounterSet nblepos = new CounterSet() ;
+		CounterSet nblewrongpos = new CounterSet() ;
+		CounterSet nblelewrongpos = new CounterSet() ;
+		CounterSet nblelepos = new CounterSet() ;
 
 		while (translations.hasNext()) {
 			Statement next = translations.next();
@@ -579,9 +597,9 @@ public class TranslationSourcesTarget {
 						String directory = tdbFolder + File.separator + l ;
 
 						if(!(new File(directory).exists())){ // no extraction is available for this language
-							nbwslost2 = nbwslost2 + 1 ;
+							nbwslost2.incr(l) ;// = nbwslost2 + 1 ;
 						} else {
-							nbwskept = nbwskept + 1 ;
+							nbwskept.incr(l) ;// = nbwskept + 1 ;
 							Dataset dataset = TDBFactory.createDataset(directory) ;
 							dataset.begin(ReadWrite.READ) ;
 							Model model = dataset.getDefaultModel() ;
@@ -593,20 +611,20 @@ public class TranslationSourcesTarget {
 							// si vide nbcfmiss+1
 							while(stmtcf.hasNext()){
 								stmtcfIsEmpty=false;
-								nbcf = nbcf + 1 ;
+								nbcf.incr(l);// = nbcf + 1 ;
 								Statement stm = stmtcf.next();
 								Resource cf = stm.getSubject(); // not necessarily a canonical form, it  can be a lexical entry
 								// check whether we have a lexical entry or a canonical form
 								Statement s = cf.getProperty(RDF.type) ;
 								if(s!=null && s.getResource().equals(LemonOnt.Form)){
-									nbcfcf = nbcfcf + 1 ;
+									nbcfcf.incr(l);// = nbcfcf + 1 ;
 									// get LexicalEntry
 									StmtIterator stmtle = model.listStatements(null,LemonOnt.canonicalForm,cf);
 									// si vide nblemiss+1
 									boolean stmtleIsEmpty = true ;
 									while(stmtle.hasNext()){
 										stmtleIsEmpty = false ;
-										nble = nble + 1 ;
+										nble.incr(l);// = nble + 1 ;
 										Statement statementLexEntry = stmtle.next() ;
 										Resource le = statementLexEntry.getSubject();
 										//nbLexicalEntries = nbLexicalEntries+1 ;
@@ -625,14 +643,14 @@ public class TranslationSourcesTarget {
                                                         //nbLexEntriesPoS = nbLexEntriesPoS+1 ;
                                                         //outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
                                                         outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
-                                                        nblepos = nblepos + 1 ;
-                                                        log.debug("Linked Lexical Entry {} to {} with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
+                                                        nblepos.incr(l);// = nblepos + 1 ;
+														log.debug("Linked Lexical Entry {} {} to {} {} with POS {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS);
                                                     } else {
-                                                        log.debug("Different POS between {} and {} // {} is not {}", ws.getLocalName(), le.getLocalName(), posWS, posLE);
-                                                        nblewrongpos = nblewrongpos + 1 ;
+														log.debug("Different POS between {} {} and {} {} // {} is not {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS, posLE);
+                                                        nblewrongpos.incr(l);// = nblewrongpos + 1 ;
                                                     }
                                                 } else {
-                                                    nbleposmisssle = nbleposmisssle + 1 ;
+                                                    nbleposmisssle.incr(l);// = nbleposmisssle + 1 ;
                                                 }
                                             } else {
                                                 // We have a word sense
@@ -650,14 +668,14 @@ public class TranslationSourcesTarget {
                                                             //nbLexEntriesPoS = nbLexEntriesPoS+1 ;
                                                             //outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
                                                             outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
-                                                            nblepos = nblepos + 1;
-															log.debug("Linked Lexical Entry {} to {} with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
+                                                            nblepos.incr(l);// = nblepos + 1;
+															log.debug("Linked Lexical Entry {} {} to {} {} with POS {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS);
                                                         } else {
-															log.debug("Different POS between {} and {} // {} is not {}", ws.getLocalName(), le.getLocalName(), posWS, posLE);
-                                                            nblewrongpos = nblewrongpos + 1;
+															log.debug("Different POS between {} {} and {} {} // {} is not {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS, posLE);
+                                                            nblewrongpos.incr(l);// = nblewrongpos + 1;
                                                         }
                                                     } else {
-                                                        nbleposmisssle = nbleposmisssle + 1;
+                                                        nbleposmisssle.incr(l);// = nbleposmisssle + 1;
                                                     }
                                                 }
                                                 if (nbsense != 1) {
@@ -666,14 +684,14 @@ public class TranslationSourcesTarget {
                                                 }
                                             }
 										} else {
-											nbleposmisstle = nbleposmisstle + 1 ;
+											nbleposmisstle.incr(l);// = nbleposmisstle + 1 ;
 										}
 									}
 									if(stmtleIsEmpty){
-										nblemiss = nblemiss+1 ;
+										nblemiss.incr(l);// = nblemiss+1 ;
 									}
 								}else if(s!=null && s.getResource().equals(LemonOnt.LexicalEntry)){
-									nbcfle = nbcfle + 1 ;
+									nbcfle.incr(l);// = nbcfle + 1 ;
 									Resource le = stm.getSubject();
 									Statement st = le.getProperty(LexinfoOnt.partOfSpeech) ;
 									if(st != null){
@@ -690,14 +708,14 @@ public class TranslationSourcesTarget {
 													//nbLexEntriesPoS = nbLexEntriesPoS+1 ;
 													//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
 													outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
-													nblelepos = nblelepos + 1 ;
-													log.debug("Linked Lexical Entry {} to {} with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
+													nblelepos.incr(l);// = nblelepos + 1 ;
+													log.debug("Linked Lexical Entry {} {} to {} {} with POS {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS);
 												} else {
-													log.debug("Different POS between {} and {} // {} is not {}", ws.getLocalName(), le.getLocalName(), posWS, posLE);
-													nblelewrongpos = nblelewrongpos + 1 ;
+													log.debug("Different POS between {} {} and {} {} // {} is not {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS, posLE);
+													nblelewrongpos.incr(l);// = nblelewrongpos + 1 ;
 												}
 											} else {
-												nbleposmisssle = nbleposmisssle + 1 ;
+												nbleposmisssle.incr(l);// = nbleposmisssle + 1 ;
 											}
 										} else {
 											// We have a word sense
@@ -715,14 +733,14 @@ public class TranslationSourcesTarget {
 														//nbLexEntriesPoS = nbLexEntriesPoS+1 ;
 														//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
 														outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
-														nblelepos = nblelepos + 1;
-														log.debug("Linked Lexical Entry {} to {} with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
+														nblelepos.incr(l);// = nblelepos + 1;
+														log.debug("Linked Lexical Entry {} {} to {} {} with POS {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS);
 													} else {
-														log.debug("Different POS between {} and {} // {} is not {}", ws.getLocalName(), le.getLocalName(), posWS, posLE);
-														nblelewrongpos = nblelewrongpos + 1;
+														log.debug("Different POS between {} {} and {} {} // {} is not {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS, posLE);
+														nblelewrongpos.incr(l);// = nblelewrongpos + 1;
 													}
 												} else {
-													nbleposmisssle = nbleposmisssle + 1;
+													nbleposmisssle.incr(l);// = nbleposmisssle + 1;
 												}
 											}
 											if (nbsense != 1) {
@@ -731,14 +749,14 @@ public class TranslationSourcesTarget {
 											}
 										}
 									}else{
-										nbleposmisstle = nbleposmisstle + 1 ;
+										nbleposmisstle.incr(l);// = nbleposmisstle + 1 ;
 									}
 								}else{
-									nbcfelse = nbcfelse + 1 ;
+									nbcfelse.incr(l);// = nbcfelse + 1 ;
 								}
 							}
 							if(stmtcfIsEmpty){
-								nbcfmiss = nbcfmiss+1 ;
+								nbcfmiss.incr(l);// = nbcfmiss+1 ;
 							}
 							dataset.end() ;
 							//System.out.println(ws+" "+wf+"\n\t"+nbLexicalEntries+" LexicalEntries\n\t"+nbLexEntriesPoS+" LexicalEntries with correct part of speech") ;
@@ -759,6 +777,7 @@ public class TranslationSourcesTarget {
 				}
 			}
 		}
+		/*
 		System.out.println(nbwsadd+"\ttranslations from a word sense added") ;
 		System.out.println(nbleadd+"\ttranslations from a lexical entry added") ;
 		System.out.println();
@@ -786,6 +805,49 @@ public class TranslationSourcesTarget {
 		System.out.println();
 		System.out.println(nbleposmisstle+"\ttimes where part of speech was missing from the target") ;
 		System.out.println(nbleposmisssle+"\ttimes where part of speech was missing from the source") ;
+		*/
+		log.debug(nbwsadd+"\ttranslations from a word sense added") ;
+		log.debug(nbleadd+"\ttranslations from a lexical entry added") ;
+		log.debug("\n");
+		log.debug(nbtrans+"\ttranslations from a word sense or lexical entry in the model") ;
+		log.debug("\n");
+		log.debug(nbwslost1+"\ttranslations to a word sense lost because written form or target language missing") ;
+		log.debug("translations to a word sense lost because model unavailable in this language") ;
+		nbwslost2.logCounters(log);
+		log.debug("translations to a word sense kept") ;
+		nbwskept.logCounters(log);
+		log.debug("\n");
+		log.debug("times where canonical form or lexical entry corresponding to the written form was not found") ;
+		nbcfmiss.logCounters(log);
+		log.debug("times where canonical form or lexical entry corresponding to the written form was found") ;
+		nbcf.logCounters(log);
+		log.debug("\n");
+		log.debug("times where it was indeed a canonical form");
+		nbcfcf.logCounters(log);
+		log.debug("times where it was a lexical entry");
+		nbcfle.logCounters(log);
+		log.debug("times where it was neither a canonical form nor a lexical entry");
+		nbcfelse.logCounters(log);
+		log.debug("\n");
+		log.debug("times where no lexical entry corresponding to this canonical form was found") ;
+		nblemiss.logCounters(log);
+		log.debug("times where a lexical entry corresponding to this canonical form was found") ;
+		nble.logCounters(log);
+		log.debug("\n");
+		log.debug("times where a lexical entry corresponding to this canonical form with the right part of speech was found") ;
+		nblepos.logCounters(log);
+		log.debug("times where a lexical entry with the right part of speech was found directly (not through canonical form)") ;
+		nblelepos.logCounters(log);
+		log.debug("\n");
+		log.debug("times where a lexical entry corresponding to this canonical form with the wrong part of speech was found") ;
+		nblewrongpos.logCounters(log);
+		log.debug("times where a lexical entry with the wrong part of speech was found directly (not through canonical form)") ;
+		nblelewrongpos.logCounters(log);
+		log.debug("\n");
+		log.debug("times where part of speech was missing from the target") ;
+		nbleposmisstle.logCounters(log);
+		log.debug("times where part of speech was missing from the source") ;
+		nbleposmisssle.logCounters(log);
 	}
 
 	private int getNumberOfSenses(Resource lexicalEntry) {

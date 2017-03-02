@@ -644,9 +644,9 @@ public class TranslationSourcesTarget {
                                                         //outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
                                                         outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
                                                         nblepos.incr(l);// = nblepos + 1 ;
-														log.debug("Linked Lexical Entry {} {} to {} {} with POS {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS);
+                                                        log.debug("Linked Lexical Entry {} "+lang+" to {} "+l+" with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
                                                     } else {
-														log.debug("Different POS between {} {} and {} {} // {} is not {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS, posLE);
+                                                        log.debug("Different POS between {} "+lang+" and {} "+l+" // {} is not {}", ws.getLocalName(), le.getLocalName(), posWS, posLE);
                                                         nblewrongpos.incr(l);// = nblewrongpos + 1 ;
                                                     }
                                                 } else {
@@ -669,9 +669,9 @@ public class TranslationSourcesTarget {
                                                             //outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
                                                             outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
                                                             nblepos.incr(l);// = nblepos + 1;
-															log.debug("Linked Lexical Entry {} {} to {} {} with POS {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS);
+                                                            log.debug("Linked Lexical Entry {} "+lang+" to {} "+l+" with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
                                                         } else {
-															log.debug("Different POS between {} {} and {} {} // {} is not {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS, posLE);
+                                                            log.debug("Different POS between {} "+lang+" and {} "+l+" // {} is not {}", ws.getLocalName(), le.getLocalName(), posWS, posLE);
                                                             nblewrongpos.incr(l);// = nblewrongpos + 1;
                                                         }
                                                     } else {
@@ -709,9 +709,9 @@ public class TranslationSourcesTarget {
 													//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
 													outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
 													nblelepos.incr(l);// = nblelepos + 1 ;
-													log.debug("Linked Lexical Entry {} {} to {} {} with POS {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS);
+                                                    log.debug("Linked Lexical Entry {} "+lang+" to {} "+l+" with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
 												} else {
-													log.debug("Different POS between {} {} and {} {} // {} is not {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS, posLE);
+                                                    log.debug("Different POS between {} "+lang+" and {} "+l+" // {} is not {}", ws.getLocalName(), le.getLocalName(), posWS, posLE);
 													nblelewrongpos.incr(l);// = nblelewrongpos + 1 ;
 												}
 											} else {
@@ -734,9 +734,9 @@ public class TranslationSourcesTarget {
 														//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
 														outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
 														nblelepos.incr(l);// = nblelepos + 1;
-														log.debug("Linked Lexical Entry {} {} to {} {} with POS {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS);
+														log.debug("Linked Lexical Entry {} "+lang+" to {} "+l+" with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
 													} else {
-														log.debug("Different POS between {} {} and {} {} // {} is not {}", lang, ws.getLocalName(), l, le.getLocalName(), posWS, posLE);
+														log.debug("Different POS between {} "+lang+" and {} "+l+" // {} is not {}", ws.getLocalName(), le.getLocalName(), posWS, posLE);
 														nblelewrongpos.incr(l);// = nblelewrongpos + 1;
 													}
 												} else {

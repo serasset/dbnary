@@ -175,7 +175,7 @@
         <dependency>
             <groupId>org.getalp.dbnary</groupId>
             <artifactId>ontology</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>

@@ -257,7 +257,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // TODO: Handle such cases (by creating another lexical entry ?) // Similar to reflexiveness in French wiktionary
         if (!ewdh.isEnabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) return;
 
-        WikiText text = new WikiText(pageContent, startOffset, endOffset);
+        WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
 
         WikiEventsSequence wikiTemplates = text.templates();
 
@@ -775,7 +775,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     @Override
     protected void extractNyms(String synRelation, int startOffset, int endOffset) {
-        WikiText text = new WikiText(pageContent, startOffset, endOffset);
+        WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
         ClassBasedFilter filter = new ClassBasedFilter();
         filter.allowListItem();
 
@@ -840,7 +840,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     protected void extractNymsOld(String synRelation, int startOffset, int endOffset) {
 
-        WikiText text = new WikiText(pageContent, startOffset, endOffset);
+        WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
         ClassBasedFilter filter = new ClassBasedFilter();
         filter.allowInternalLink().allowTemplates();
 

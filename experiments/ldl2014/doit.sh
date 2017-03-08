@@ -1,13 +1,23 @@
 #!/bin/sh
 
-DIR=/home/serasset/dev/wiktionary/extracts/lemon/latest
+DIR=$HOME/dev/wiktionary/tmp/extracts/lemon/latest
 LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la"
-JAVA=/usr/java/jdk7/bin/java
+#JAVA=/usr/java/jdk7/bin/java
+if [[ -z $JAVA ]]
+then
+    JAVA=java
+fi
+
 VERS=1.0-SNAPSHOT
+
+if [[ $# -gt 0 ]]
+then
+    LANGS=$*
+fi
 
 for lg in $LANGS
 do
-    $JAVA  -cp /home/serasset/.m2/repository/org/getalp/dbnary/experiment/lld2014-experiment/$VERS/lld2014-experiment-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.experiment.DisambiguateTranslationSources -g -c conf-${lg}.csv -s stats-${lg}.csv -l ${lg} ${DIR}/${lg}_dbnary_lemon.ttl.bz2
+    $JAVA  -cp $HOME/.m2/repository/org/getalp/dbnary/experiment/lld2014-experiment/$VERS/lld2014-experiment-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.experiment.DisambiguateTranslationSources -g -c conf-${lg}.csv -s stats-${lg}.csv -l ${lg} ${DIR}/${lg}_dbnary_lemon.ttl.bz2
 done
 
 # Updating latest extractions stats

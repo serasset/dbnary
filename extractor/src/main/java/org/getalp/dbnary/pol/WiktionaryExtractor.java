@@ -2,6 +2,7 @@ package org.getalp.dbnary.pol;
 
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
@@ -47,6 +48,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
         this.wdh = (org.getalp.dbnary.pol.WiktionaryDataHandler) wdh;
+
+    }
+
+    @Override
+    public void setWiktionaryIndex(WiktionaryIndex wi) {
+        super.setWiktionaryIndex(wi);
+        definitionExpander = new DefinitionExpanderWikiModel(wi, new Locale("pl"), "", "");
     }
 
     protected final static Pattern languageSectionPattern;
@@ -54,10 +62,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected final static Pattern polishNymLinePattern;
     protected final static Pattern sectionPattern; // Combine macro pattern
     // and pos pattern.
-    protected final static HashSet<String> posMarkers;
     protected final static HashMap<String, SectionType> validSectionTemplates;
 
-    protected final static HashSet<String> nymMarkers;
     protected final static HashMap<String, String> nymMarkerToNymName;
 
     static {
@@ -83,17 +89,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         polishDefinitionPattern = Pattern.compile(defPattern, Pattern.MULTILINE);
 
-        posMarkers = new HashSet<String>(20);
-        posMarkers.add("Substantiv"); // Should I get the
-        // Toponym/Vorname/Nachname additional
-        // info ?
-        posMarkers.add("Adjektiv");
-        posMarkers.add("Absolutadjektiv");
-        posMarkers.add("Partizip");
-        posMarkers.add("Adverb");
-        posMarkers.add("Wortverbindung");
-        posMarkers.add("Verb");
-
         validSectionTemplates = new HashMap<String, SectionType>(20);
         validSectionTemplates.put("wymowa", SectionType.PRON);
         validSectionTemplates.put("znaczenia", SectionType.DEFS);
@@ -113,16 +108,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         validSectionTemplates.put("uwagi", SectionType.IGNORE); // COMMENTS
         validSectionTemplates.put("tłumaczenia", SectionType.TRANS);
         validSectionTemplates.put("źródła", SectionType.IGNORE); // SOURCES
-
-
-        nymMarkers = new HashSet<String>(20);
-        nymMarkers.add("Synonyme");
-        nymMarkers.add("Gegenwörter");
-        nymMarkers.add("Gegenworte");
-        nymMarkers.add("Oberbegriffe");
-        nymMarkers.add("Unterbegriffe");
-        nymMarkers.add("Meronyms"); // TODO: Any meronym/metonym info in German
-        // ?
 
         nymMarkerToNymName = new HashMap<String, String>(20);
         nymMarkerToNymName.put("synonimy", "syn");
@@ -144,10 +129,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     @Override
     public void extractData() {
         wdh.initializePageExtraction(wiktionaryPageName);
+        definitionExpander.setPageName(wiktionaryPageName);
         // System.out.println(pageContent);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-
-        definitionExpander = new DefinitionExpanderWikiModel(wi, new Locale("pl"), this.wiktionaryPageName, "");
 
         // Either the filter is at end of sequence or on Polish language header.
         while (languageFilter.find() && !languageFilter.group(2).contains("polski")) {

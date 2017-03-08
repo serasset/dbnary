@@ -47,6 +47,9 @@ public class DetectHomonym {
     }
 
     public void iterateAndCount(){
+        int[] nbEntity = new int[126406] ;
+        int sum = 0 ;
+        int i = 0 ;
         int nbHomonym = 0 ;
         int nbTotal = 0 ;
         ResIterator resIter = model.listSubjects() ;
@@ -66,9 +69,14 @@ public class DetectHomonym {
             Set<String> set = ch.keySet();
             int nh = 0 ;
             int nt = 0 ;
+            int nbH = 0 ;
             for(String targetEntry : set){
                 if(ch.get(targetEntry)>1){
                     nh = nh+1 ;
+                    nbH = ch.get(targetEntry);
+                    nbEntity[i] = nbH;
+                    sum = sum + nbH;
+                    i = i + 1;
                     nbHomonym = nbHomonym+1 ;
                 }
                 nt = nt+1 ;
@@ -77,6 +85,11 @@ public class DetectHomonym {
             System.out.println(source.toString()+"\t"+nt+"\tdont\t"+nh+"\thomonyms") ;
         }
         System.out.println(nbTotal+"\tlinks to words\t"+nbHomonym+"\thomonyms") ;
+        for(int j =0 ; j<nbEntity.length ; j++){
+            System.out.print(nbEntity[j]+" ") ;
+        }
+        System.out.println();
+        System.out.println(sum+"/"+nbHomonym) ;
     }
 
     public static void main(String[] args){

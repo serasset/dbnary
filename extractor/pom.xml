@@ -297,8 +297,8 @@
                 </executions><!-- TODO: Change plugins versions to current stable versions -->
                 <configuration>
                     <fork>true</fork>
-                    <source>7</source>
-                    <target>7</target>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
             <plugin>

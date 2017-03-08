@@ -1,6 +1,6 @@
 package org.getalp.dbnary.wiki;
 
-import org.apache.commons.lang.CharRange;
+import org.getalp.dbnary.tools.CharRange;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -161,6 +161,7 @@ public class RDFDiff {
                 }
                 System.err.print("" + nbdiffs + "/" + nbprocessed + "\r");
             }
+            System.err.print("" + nbdiffs + "/" + nbprocessed + "\n");
         } finally {
             iter.close();
         }

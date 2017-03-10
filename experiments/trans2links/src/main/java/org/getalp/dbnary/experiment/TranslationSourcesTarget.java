@@ -10,6 +10,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.VarTransOnt;
 import org.getalp.dbnary.experiment.disambiguation.*;
 import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
 import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
@@ -647,7 +648,7 @@ public class TranslationSourcesTarget {
                                                     if (posLE.equals(posWS)) {
                                                         //nbLexEntriesPoS = nbLexEntriesPoS+1 ;
                                                         //outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
-                                                        outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
+                                                        outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), VarTransOnt.translatableAs, outputModel.createResource(le.getURI()))); //ws to lexical entry
                                                         nblepos.incr(l);// = nblepos + 1 ;
 														transLinked = true ;
                                                         log.debug("Linked Lexical Entry {} "+lang+" to {} "+l+" with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
@@ -673,7 +674,7 @@ public class TranslationSourcesTarget {
                                                         if (posLE.equals(posWS)) {
                                                             //nbLexEntriesPoS = nbLexEntriesPoS+1 ;
                                                             //outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
-                                                            outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
+                                                            outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), VarTransOnt.translatableAs, outputModel.createResource(le.getURI()))); //ws to lexical entry
                                                             nblepos.incr(l);// = nblepos + 1;
 															transLinked = true ;
                                                             log.debug("Linked Lexical Entry {} "+lang+" to {} "+l+" with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
@@ -715,7 +716,7 @@ public class TranslationSourcesTarget {
 												if (posLE.equals(posWS)) {
 													//nbLexEntriesPoS = nbLexEntriesPoS+1 ;
 													//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
-													outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
+													outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), VarTransOnt.translatableAs, outputModel.createResource(le.getURI()))); //ws to lexical entry
 													nblelepos.incr(l);// = nblelepos + 1 ;
 													transLinked = true ;
                                                     log.debug("Linked Lexical Entry {} "+lang+" to {} "+l+" with POS {}", ws.getLocalName(), le.getLocalName(), posWS);
@@ -741,7 +742,7 @@ public class TranslationSourcesTarget {
 													if (posLE.equals(posWS)) {
 														//nbLexEntriesPoS = nbLexEntriesPoS+1 ;
 														//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
-														outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.isTranslationOf, outputModel.createResource(le.getURI()))); //ws to lexical entry
+														outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), VarTransOnt.translatableAs, outputModel.createResource(le.getURI()))); //ws to lexical entry
 														nblelepos.incr(l);// = nblelepos + 1;
 														transLinked = true ;
 														log.debug("Linked Lexical Entry {} "+lang+" to {} "+l+" with POS {}", ws.getLocalName(), le.getLocalName(), posWS);

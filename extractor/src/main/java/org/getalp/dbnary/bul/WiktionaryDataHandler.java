@@ -1,17 +1,14 @@
 package org.getalp.dbnary.bul;
 
-import com.hp.hpl.jena.vocabulary.RDF;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.OliaOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Created by serasset on 17/09/14.
  */
-public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 

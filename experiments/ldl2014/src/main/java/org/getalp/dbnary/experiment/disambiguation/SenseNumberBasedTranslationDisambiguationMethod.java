@@ -5,7 +5,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexOnt;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,9 +24,9 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements
 	public Set<Resource> selectWordSenses(Resource lexicalEntry,
 			Object context) throws InvalidContextException,
 			InvalidEntryException {
-		if (! lexicalEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry) &&
-				!lexicalEntry.hasProperty(RDF.type, LemonOnt.Word) &&
-				!lexicalEntry.hasProperty(RDF.type, LemonOnt.Phrase))
+		if (! lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) &&
+				!lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word) &&
+				!lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression))
 			throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
 		if (context instanceof Resource) {
 			Resource trans = (Resource) context;
@@ -60,7 +60,7 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements
 
 	private void addNumberedWordSenseToResult(Set<Resource> res,
 			Resource lexicalEntry, String n) {
-		StmtIterator senses = lexicalEntry.listProperties(LemonOnt.sense);
+		StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
 		while (senses.hasNext()) {
 			Resource sense = senses.next().getResource();
 			Statement senseNumStatement = sense.getProperty(DBnaryOnt.senseNumber);

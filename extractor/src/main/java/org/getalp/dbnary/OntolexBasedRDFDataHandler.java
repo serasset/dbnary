@@ -15,7 +15,7 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionaryDataHandler {
+public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktionaryDataHandler {
 
     protected static class PosAndType {
         protected Resource pos;
@@ -27,7 +27,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         }
     }
 
-    private Logger log = LoggerFactory.getLogger(LemonBasedRDFDataHandler.class);
+    private Logger log = LoggerFactory.getLogger(OntolexBasedRDFDataHandler.class);
 
     protected Model aBox;
     protected Map<Feature, Model> featureBoxes;
@@ -75,39 +75,6 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         nymPropertyMap.put("qsyn", DBnaryOnt.approximateSynonym);
         nymPropertyMap.put("tropo", DBnaryOnt.troponym);
 
-        // Portuguese
-        posAndTypeValueMap.put("Substantivo", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Adjetivo", new PosAndType(LexinfoOnt.adjective, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Verbo", new PosAndType(LexinfoOnt.verb, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Advérbio", new PosAndType(LexinfoOnt.adverb, LemonOnt.LexicalEntry));
-
-        // Italian
-        posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("sost", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
-
-        posAndTypeValueMap.put("adjc", new PosAndType(LexinfoOnt.adjective, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("agg", new PosAndType(LexinfoOnt.adjective, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, LemonOnt.LexicalEntry));
-
-        // Finnish
-        posAndTypeValueMap.put("Substantiivi", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Adjektiivi", new PosAndType(LexinfoOnt.adjective, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Verbi", new PosAndType(LexinfoOnt.verb, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Adverbi", new PosAndType(LexinfoOnt.adverb, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Erisnimi", new PosAndType(LexinfoOnt.properNoun, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("subs", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("verbi", new PosAndType(LexinfoOnt.verb, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, LemonOnt.LexicalEntry));
-
-        // Greek
-        posAndTypeValueMap.put("επίθετο", new PosAndType(LexinfoOnt.adjective, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("επίρρημα", new PosAndType(LexinfoOnt.adverb, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("ουσιαστικό", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("ρήμα", new PosAndType(LexinfoOnt.verb, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("κύριο όνομα", new PosAndType(LexinfoOnt.properNoun, LemonOnt.LexicalEntry));
-
         //	posAndTypeValueMap.put("", new PosAndType(null, LemonOnt.LexicalEntry)); // other Part of Speech
 
     }
@@ -115,7 +82,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
     // Map of the String to lexvo language entity
     private HashMap<String, Resource> languages = new HashMap<String, Resource>();
 
-    public LemonBasedRDFDataHandler(String lang) {
+    public OntolexBasedRDFDataHandler(String lang) {
         super();
 
         NS = DBNARY_NS_PREFIX + "/" + lang + "/";
@@ -127,13 +94,19 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         aBox = ModelFactory.createDefaultModel();
         aBox.setNsPrefix(lang, NS);
         aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
-        aBox.setNsPrefix("lemon", LemonOnt.getURI());
+        // aBox.setNsPrefix("lemon", LemonOnt.getURI());
         aBox.setNsPrefix("lexinfo", LexinfoOnt.getURI());
         aBox.setNsPrefix("rdfs", RDFS.getURI());
         aBox.setNsPrefix("dcterms", DCTerms.getURI());
         aBox.setNsPrefix("lexvo", LEXVO);
         aBox.setNsPrefix("rdf", RDF.getURI());
         aBox.setNsPrefix("olia", OliaOnt.getURI());
+        aBox.setNsPrefix("ontolex", OntolexOnt.getURI());
+        aBox.setNsPrefix("vartrans", VarTransOnt.getURI());
+        aBox.setNsPrefix("synsem", SynSemOnt.getURI());
+        aBox.setNsPrefix("lime", LimeOnt.getURI());
+        aBox.setNsPrefix("decomp", DecompOnt.getURI());
+        aBox.setNsPrefix("skos", SkosOnt.getURI());
 
 
         featureBoxes = new HashMap<>();
@@ -239,9 +212,9 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         currentEncodedPageName = getEncodedPageName(currentWiktionaryPageName, originalPOS, currentLexieCount.incr(currentWiktionaryPos));
         currentLexEntry = getLexEntry(currentEncodedPageName, normalizedType);
 
-        if (!normalizedType.equals(LemonOnt.LexicalEntry)) {
+        if (!normalizedType.equals(OntolexOnt.LexicalEntry)) {
             // Add the Lexical Entry type so that users may refer to all entries using the top hierarchy without any reasoner.
-            aBox.add(aBox.createStatement(currentLexEntry, RDF.type, LemonOnt.LexicalEntry));
+            aBox.add(aBox.createStatement(currentLexEntry, RDF.type, OntolexOnt.LexicalEntry));
         }
 
         // import other forms
@@ -259,24 +232,24 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         translationCount.resetAll();
         reifiedNymCount.resetAll();
 
-        currentCanonicalForm = aBox.createResource(getPrefix() + "__cf_" + currentEncodedPageName, LemonOnt.Form);
+        currentCanonicalForm = aBox.createResource(getPrefix() + "__cf_" + currentEncodedPageName, OntolexOnt.Form);
 
         // If a pronunciation was given before the first part of speech, it means that it is shared amoung pos/etymologies
         for (PronunciationPair p : currentSharedPronunciations) {
             if (null != p.lang && p.lang.length() > 0) {
-                aBox.add(currentCanonicalForm, LexinfoOnt.pronunciation, p.pron, p.lang);
+                aBox.add(currentCanonicalForm, OntolexOnt.phoneticRep, p.pron, p.lang);
             } else {
-                aBox.add(currentCanonicalForm, LexinfoOnt.pronunciation, p.pron);
+                aBox.add(currentCanonicalForm, OntolexOnt.phoneticRep, p.pron);
             }
         }
 
-        aBox.add(currentLexEntry, LemonOnt.canonicalForm, currentCanonicalForm);
-        aBox.add(currentCanonicalForm, LemonOnt.writtenRep, currentWiktionaryPageName, extractedLang);
+        aBox.add(currentLexEntry, OntolexOnt.canonicalForm, currentCanonicalForm);
+        aBox.add(currentCanonicalForm, OntolexOnt.writtenRep, currentWiktionaryPageName, extractedLang);
         aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
         if (null != currentLexinfoPos)
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);
 
-        aBox.add(currentLexEntry, LemonOnt.language, extractedLang);
+        aBox.add(currentLexEntry, LimeOnt.language, extractedLang);
         aBox.add(currentLexEntry, DCTerms.language, lexvoExtractedLanguage);
 
         // Register the pending statements.
@@ -293,7 +266,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
     }
 
     public Resource typeResource(PosAndType pat) {
-        return (pat == null) ? LemonOnt.LexicalEntry : pat.type;
+        return (pat == null) ? OntolexOnt.LexicalEntry : pat.type;
     }
 
     public Resource posResource(String pos) {
@@ -317,7 +290,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
             return; // Don't register anything if current lex entry is not known.
         }
 
-        Resource canonicalForm = currentLexEntry.getPropertyResourceValue(LemonOnt.canonicalForm);
+        Resource canonicalForm = currentLexEntry.getPropertyResourceValue(OntolexOnt.canonicalForm);
 
         if (canonicalForm == null) {
             log.debug("Registering property when lex entry's canonicalForm is null in \"{}\".", this.currentMainLexEntry);
@@ -339,6 +312,9 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
     }
 
 
+    // TODO : Alternate spelling or lexical Variant ?
+    // In Ontolex, orthographic variants are supposed to be given as a second writtenRep in the same Form
+    // lexicalVariant should link 2 Lexical entries, same with varTrans lexicalRel
     @Override
     public void registerAlternateSpelling(String alt) {
         if (null == currentLexEntry) {
@@ -346,9 +322,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
             return; // Don't register anything if current lex entry is not known.
         }
 
+        log.debug("Registering lexical Variant: {} for entry: {}", alt, currentEncodedPageName);
         Resource altlemma = aBox.createResource();
-        aBox.add(currentLexEntry, LemonOnt.lexicalVariant, altlemma);
-        aBox.add(altlemma, LemonOnt.writtenRep, alt, extractedLang);
+        aBox.add(currentLexEntry, VarTransOnt.lexicalRel, altlemma);
+        aBox.add(altlemma, OntolexOnt.writtenRep, alt, extractedLang);
     }
 
     @Override
@@ -378,8 +355,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         }
 
         // Create new word sense + a definition element
-        currentSense = aBox.createResource(computeSenseId(senseNumber), LemonOnt.LexicalSense);
-        aBox.add(currentLexEntry, LemonOnt.sense, currentSense);
+        currentSense = aBox.createResource(computeSenseId(senseNumber), OntolexOnt.LexicalSense);
+        aBox.add(currentLexEntry, OntolexOnt.sense, currentSense);
         aBox.add(aBox.createLiteralStatement(currentSense, DBnaryOnt.senseNumber, aBox.createTypedLiteral(senseNumber)));
         // pos is not usefull anymore for word sense as they should be correctly linked to an entry with only one pos.
         // if (currentPos != null && ! currentPos.equals("")) {
@@ -387,9 +364,10 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         //}
 
         Resource defNode = aBox.createResource();
-        aBox.add(currentSense, LemonOnt.definition, defNode);
+        // TODO: no definition relation in Ontolex, Lexical Concepts use skos:definition, but not lexical senses, or do they ?
+        aBox.add(currentSense, SkosOnt.definition, defNode);
         // Keep a human readable version of the definition, removing all links annotations.
-        aBox.add(defNode, LemonOnt.value, AbstractWiktionaryExtractor.cleanUpMarkup(def, true), extractedLang);
+        aBox.add(defNode, RDF.value, AbstractWiktionaryExtractor.cleanUpMarkup(def, true), extractedLang);
 
         // TODO: Extract domain/usage field from the original definition.
 
@@ -508,7 +486,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         lexEntry = lexEntry.inModel(morphoBox);
 
         // DONE: Add other forms to a morphology dedicated model.
-        StmtIterator otherForms = lexEntry.listProperties(LemonOnt.otherForm);
+        StmtIterator otherForms = lexEntry.listProperties(OntolexOnt.otherForm);
 
         while (otherForms.hasNext() && !foundCompatible) {
             Resource otherForm = otherForms.next().getResource();
@@ -520,8 +498,8 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         if (!foundCompatible) {
             String otherFormNodeName = computeOtherFormResourceName(lexEntry, properties);
-            Resource otherForm = morphoBox.createResource(getPrefix() + otherFormNodeName, LemonOnt.Form);
-            morphoBox.add(lexEntry, LemonOnt.otherForm, otherForm);
+            Resource otherForm = morphoBox.createResource(getPrefix() + otherFormNodeName, OntolexOnt.Form);
+            morphoBox.add(lexEntry, OntolexOnt.otherForm, otherForm);
             mergePropertiesIntoResource(properties, otherForm);
         }
     }
@@ -559,7 +537,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         Resource posResource = posResource(pos);
 
-        PropertyObjectPair p = PropertyObjectPair.get(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+        PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
 
         props.add(p);
 
@@ -754,7 +732,7 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         HashSet<Statement> toBeRemoved = new HashSet<Statement>();
         while (entries.hasNext()) {
             Resource lu = entries.next().getResource();
-            List<Statement> senses = lu.listProperties(LemonOnt.sense).toList();
+            List<Statement> senses = lu.listProperties(OntolexOnt.sense).toList();
             if (senses.size() == 1) {
                 Resource s = senses.get(0).getResource();
                 HashSet<Property> alreadyProcessedNyms = new HashSet<Property>();
@@ -813,13 +791,13 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
 
         // Create new word sense + a definition element
         Resource example = aBox.createResource();
-        aBox.add(aBox.createStatement(example, LemonOnt.value, ex, extractedLang));
+        aBox.add(aBox.createStatement(example, RDF.value, ex, extractedLang));
         if (null != context) {
             for (Map.Entry<Property, String> c : context.entrySet()) {
                 aBox.add(aBox.createStatement(example, c.getKey(), c.getValue(), extractedLang));
             }
         }
-        aBox.add(aBox.createStatement(currentSense, LemonOnt.example, example));
+        aBox.add(aBox.createStatement(currentSense, SkosOnt.example, example));
         return example;
 
     }

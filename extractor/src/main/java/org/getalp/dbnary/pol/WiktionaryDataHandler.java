@@ -1,10 +1,7 @@
 package org.getalp.dbnary.pol;
 
 import com.hp.hpl.jena.rdf.model.Resource;
-import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.LemonOnt;
-import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +10,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
@@ -162,12 +159,12 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
             }
 
             if (group.contains("nieprzechodnia") || group.contains("nieprzechodni")) {
-                dpos.addAnnotation(LemonOnt.synBehavior, LexinfoOnt.IntransitiveFrame);
+                dpos.addAnnotation(SynSemOnt.synBehavior, LexinfoOnt.IntransitiveFrame);
                 group = group.replace("nieprzechodnia", "");
                 group = group.replace("nieprzechodni", "");
             }
             if (group.contains("przechodnia") || group.contains("przechodni")) {
-                dpos.addAnnotation(LemonOnt.synBehavior, LexinfoOnt.TransitiveFrame);
+                dpos.addAnnotation(SynSemOnt.synBehavior, LexinfoOnt.TransitiveFrame);
                 group = group.replace("przechodnia", "");
                 group = group.replace("przechodni", "");
             }
@@ -183,7 +180,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
                 group = group.replace("dokonana", "");
             }
             if (group.contains("zwrotny")) {
-                dpos.addAnnotation(LemonOnt.synBehavior, LexinfoOnt.ReflexiveFrame);
+                dpos.addAnnotation(SynSemOnt.synBehavior, LexinfoOnt.ReflexiveFrame);
                 group = group.replace("zwrotny", "");
             }
             if (group.contains("liczba mnoga")) {
@@ -267,7 +264,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         } else if (group.contains("forma")) {
             return null;
         } else {
-            return new DecodedPOS(group, null, LemonOnt.LexicalEntry);
+            return new DecodedPOS(group, null, OntolexOnt.LexicalEntry);
         }
 
         return dpos;
@@ -278,50 +275,50 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         if (group.startsWith("rzeczownik")) {
             if (group.contains("nazwa własna"))
                 //TODO: remove dependency to DBnaryModel
-                return new DecodedPOS("rzeczownik_nazwa_własna", LexinfoOnt.properNoun, LemonOnt.Word);
+                return new DecodedPOS("rzeczownik_nazwa_własna", LexinfoOnt.properNoun, OntolexOnt.Word);
             else
-                return new DecodedPOS("rzeczownik", LexinfoOnt.noun, LemonOnt.Word);
+                return new DecodedPOS("rzeczownik", LexinfoOnt.noun, OntolexOnt.Word);
         } else if (group.startsWith("przymiotnik dzierżawczy")) {
-            DecodedPOS res = new DecodedPOS("przymiotnik_dzierżawczy", LexinfoOnt.possessiveAdjective, LemonOnt.Word);
+            DecodedPOS res = new DecodedPOS("przymiotnik_dzierżawczy", LexinfoOnt.possessiveAdjective, OntolexOnt.Word);
             res.addAnnotation(LexinfoOnt.partOfSpeech, LexinfoOnt.adjective);
             return res;
         } else if (group.startsWith("przymiotnik")) {
-            return new DecodedPOS("przymiotnik", LexinfoOnt.adjective, LemonOnt.Word);
+            return new DecodedPOS("przymiotnik", LexinfoOnt.adjective, OntolexOnt.Word);
         } else if (group.startsWith("czasownik modalny")) {
-            DecodedPOS res = new DecodedPOS("czasownik_modalny", LexinfoOnt.modal, LemonOnt.Word);
+            DecodedPOS res = new DecodedPOS("czasownik_modalny", LexinfoOnt.modal, OntolexOnt.Word);
             res.addAnnotation(LexinfoOnt.partOfSpeech, LexinfoOnt.verb);
             return res;
         } else if (group.startsWith("czasownik ułomny")) {
-            DecodedPOS res = new DecodedPOS("czasownik_modalny", LexinfoOnt.modal, LemonOnt.Word);
+            DecodedPOS res = new DecodedPOS("czasownik_modalny", LexinfoOnt.modal, OntolexOnt.Word);
             res.addAnnotation(LexinfoOnt.partOfSpeech, LexinfoOnt.deficientVerb);
             return res;
         } else if (group.startsWith("czasownik")) {
-            return new DecodedPOS("czasownik", LexinfoOnt.verb, LemonOnt.Word);
+            return new DecodedPOS("czasownik", LexinfoOnt.verb, OntolexOnt.Word);
         } else if (group.startsWith("przysłówek")) {
-            return new DecodedPOS("przysłówek", LexinfoOnt.adverb, LemonOnt.Word);
+            return new DecodedPOS("przysłówek", LexinfoOnt.adverb, OntolexOnt.Word);
         } else if (group.startsWith("fraza")) {
             if (group.contains("rzeczownikowa")) {
                 if (group.contains("nazwa własna"))
-                    return new DecodedPOS("rzeczownik_nazwa_własna", LexinfoOnt.properNoun, LemonOnt.Phrase);
+                    return new DecodedPOS("rzeczownik_nazwa_własna", LexinfoOnt.properNoun, OntolexOnt.MultiWordExpression);
                 else
-                    return new DecodedPOS("rzeczownik", LexinfoOnt.noun, LemonOnt.Phrase);
+                    return new DecodedPOS("rzeczownik", LexinfoOnt.noun, OntolexOnt.MultiWordExpression);
             } else if (group.contains("przymiotnikowa")) {
-                return new DecodedPOS("przymiotnik", LexinfoOnt.adjective, LemonOnt.Phrase);
+                return new DecodedPOS("przymiotnik", LexinfoOnt.adjective, OntolexOnt.MultiWordExpression);
             } else if (group.contains("czasownikowa")) {
-                return new DecodedPOS("czasownik", LexinfoOnt.verb, LemonOnt.Phrase);
+                return new DecodedPOS("czasownik", LexinfoOnt.verb, OntolexOnt.MultiWordExpression);
             } else if (group.contains("przysłówekowa") || group.contains("przysłówkowa")) {
-                return new DecodedPOS("przysłówek", LexinfoOnt.adverb, LemonOnt.Phrase);
+                return new DecodedPOS("przysłówek", LexinfoOnt.adverb, OntolexOnt.MultiWordExpression);
             } else if (group.contains("wykrzyknikowa") || group.contains("wykrzyknkowa")) {
-                return new DecodedPOS("wykrzyknik", LexinfoOnt.interjection, LemonOnt.Phrase);
+                return new DecodedPOS("wykrzyknik", LexinfoOnt.interjection, OntolexOnt.MultiWordExpression);
             }
         } else if (group.startsWith("związek frazeologiczny")) {
-            return new DecodedPOS("związek frazeologiczny", LexinfoOnt.idiom, LemonOnt.Phrase);
+            return new DecodedPOS("związek frazeologiczny", LexinfoOnt.idiom, OntolexOnt.MultiWordExpression);
         } else if (group.startsWith("{{przysłowie polskie")) {
-            return new DecodedPOS("przysłowie", LexinfoOnt.proverb, LemonOnt.Phrase);
+            return new DecodedPOS("przysłowie", LexinfoOnt.proverb, OntolexOnt.MultiWordExpression);
         } else if (group.startsWith("skrótowiec")) {
-            return new DecodedPOS("skrótowiec", LexinfoOnt.acronym, LemonOnt.Word);
+            return new DecodedPOS("skrótowiec", LexinfoOnt.acronym, OntolexOnt.Word);
         } else if (group.startsWith("skrót")) {
-            return new DecodedPOS("skrót", LexinfoOnt.abbreviation, LemonOnt.Word);
+            return new DecodedPOS("skrót", LexinfoOnt.abbreviation, OntolexOnt.Word);
         } else if (group.startsWith("zaimek")) {
             if (group.contains("pytajny")) {
                 return new DecodedPOS("zaimek_pytajny", LexinfoOnt.interrogativePronoun, LexinfoOnt.Pronoun);
@@ -343,7 +340,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
             return new DecodedPOS("przyimek", LexinfoOnt.preposition, LexinfoOnt.Preposition);
         } else if (group.startsWith("liczebnik")) {
             if (group.contains("porządkowy")) {
-                return new DecodedPOS("liczebnik_porządkowy", LexinfoOnt.ordinalAdjective, LemonOnt.Word);
+                return new DecodedPOS("liczebnik_porządkowy", LexinfoOnt.ordinalAdjective, OntolexOnt.Word);
             } else if (group.contains("mnożny")) {
                 return new DecodedPOS("liczebnik_mnożny", LexinfoOnt.multiplicativeNumeral, LexinfoOnt.Numeral);
             } else if (group.contains("główny")) {
@@ -361,9 +358,9 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         } else if (group.startsWith("symbol")) {
             return new DecodedPOS("symbol", LexinfoOnt.symbol, LexinfoOnt.Symbol);
         } else if (group.startsWith("zwrot")) {
-            return new DecodedPOS("zwrot", null, LemonOnt.LexicalEntry);
+            return new DecodedPOS("zwrot", null, OntolexOnt.LexicalEntry);
         } else if (group.startsWith("temat słowotwórczy")) {
-            return new DecodedPOS("temat słowotwórczy", null, LemonOnt.Part);
+            return new DecodedPOS("temat słowotwórczy", null, OntolexOnt.Affix);
         } else if (group.startsWith("przyrostek")) {
             return new DecodedPOS("przyrostek", LexinfoOnt.suffix, LexinfoOnt.Suffix);
         } else if (group.startsWith("przedrostek")) {

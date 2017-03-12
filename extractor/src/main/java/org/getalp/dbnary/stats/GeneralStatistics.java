@@ -5,7 +5,7 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexOnt;
 
 import java.io.PrintWriter;
 
@@ -30,14 +30,14 @@ public class GeneralStatistics {
 
         // Number of Lexical Entries
 
-        int nble = countResourcesOfType(LemonOnt.LexicalEntry, m1);
+        int nble = countResourcesOfType(OntolexOnt.LexicalEntry, m1);
         int nblv = countResourcesOfType(DBnaryOnt.Vocable, m1);
         // int nblw = countResourcesOfType(LemonOnt.Word, m1);
         // int nblp = countResourcesOfType(LemonOnt.Phrase, m1);
 
 
         int nbEquiv = countResourcesOfType(DBnaryOnt.Translation, m1);
-        int nbsense = countResourcesOfType(LemonOnt.LexicalSense, m1);
+        int nbsense = countResourcesOfType(OntolexOnt.LexicalSense, m1);
 
         if (verbose) {
             out.println(getHeaders());

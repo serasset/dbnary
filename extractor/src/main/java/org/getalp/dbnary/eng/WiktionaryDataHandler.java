@@ -11,19 +11,19 @@ import java.util.HashSet;
 /**
  * Created by serasset on 17/09/14.
  */
-public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
     static {
         // English
-        posAndTypeValueMap.put("Noun", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Proper noun", new PosAndType(LexinfoOnt.properNoun, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Proper Noun", new PosAndType(LexinfoOnt.properNoun, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("Noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("Proper noun", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("Proper Noun", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
 
-        posAndTypeValueMap.put("Adjective", new PosAndType(LexinfoOnt.adjective, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("Adjective", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("Article", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
         posAndTypeValueMap.put("Conjunction", new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
         posAndTypeValueMap.put("Determiner", new PosAndType(LexinfoOnt.determiner, LexinfoOnt.Determiner));
@@ -37,7 +37,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("Preposition", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
         posAndTypeValueMap.put("Postposition", new PosAndType(LexinfoOnt.postposition, LexinfoOnt.Postposition));
 
-        posAndTypeValueMap.put("Prepositional phrase", new PosAndType(null, LemonOnt.Phrase));
+        posAndTypeValueMap.put("Prepositional phrase", new PosAndType(null, OntolexOnt.MultiWordExpression));
 
         posAndTypeValueMap.put("Pronoun", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
         posAndTypeValueMap.put("Symbol", new PosAndType(LexinfoOnt.symbol, LexinfoOnt.Symbol));
@@ -49,10 +49,10 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("Interfix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
         posAndTypeValueMap.put("Circumfix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
 
-        posAndTypeValueMap.put("Proverb", new PosAndType(LexinfoOnt.proverb, LemonOnt.Phrase));
+        posAndTypeValueMap.put("Proverb", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
         posAndTypeValueMap.put("Interjection", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
-        posAndTypeValueMap.put("Phrase", new PosAndType(LexinfoOnt.phraseologicalUnit, LemonOnt.Phrase));
-        posAndTypeValueMap.put("Idiom", new PosAndType(LexinfoOnt.idiom, LemonOnt.Phrase));
+        posAndTypeValueMap.put("Phrase", new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("Idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
 
         // Initialism ?
     }
@@ -94,8 +94,8 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         lexEntry = lexEntry.inModel(morphoBox);
 
         String otherFormNodeName = computeOtherFormResourceName(lexEntry, properties);
-        Resource otherForm = morphoBox.createResource(getPrefix() + otherFormNodeName, LemonOnt.Form);
-        morphoBox.add(lexEntry, LemonOnt.otherForm, otherForm);
+        Resource otherForm = morphoBox.createResource(getPrefix() + otherFormNodeName, OntolexOnt.Form);
+        morphoBox.add(lexEntry, OntolexOnt.otherForm, otherForm);
         mergePropertiesIntoResource(properties, otherForm);
 
     }
@@ -109,7 +109,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
             PropertyObjectPair p = PropertyObjectPair.get(DBnaryOnt.note, aBox.createLiteral(note, extractedLang));
             props.add(p);
         }
-        PropertyObjectPair p = PropertyObjectPair.get(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+        PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
         props.add(p);
 
         addOtherFormPropertiesToLexicalEntry(currentLexEntry, props);
@@ -127,7 +127,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         // Keep it simple for english: register forms on the current lexical entry
         // FIXME: check what is provided when we have different lex entries with the same pos and morph.
 
-        PropertyObjectPair p = PropertyObjectPair.get(LemonOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+        PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
 
         props.add(p);
 

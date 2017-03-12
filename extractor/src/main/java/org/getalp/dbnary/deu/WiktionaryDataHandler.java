@@ -1,8 +1,8 @@
 package org.getalp.dbnary.deu;
 
 import com.hp.hpl.jena.vocabulary.RDF;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
+import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OliaOnt;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by serasset on 17/09/14.
  */
-public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
@@ -31,12 +31,12 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("Modaladverb", new PosAndType(LexinfoOnt.Adverb, LexinfoOnt.Adverb));
         posAndTypeValueMap.put("Lokaladverb", new PosAndType(LexinfoOnt.Adverb, LexinfoOnt.Adverb));
 
-        posAndTypeValueMap.put("Partizip I", new PosAndType(LexinfoOnt.participle, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Partizip II", new PosAndType(LexinfoOnt.participle, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("Partizip I", new PosAndType(LexinfoOnt.participle, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("Partizip II", new PosAndType(LexinfoOnt.participle, OntolexOnt.LexicalEntry));
 
 
-        posAndTypeValueMap.put("Abkürzung", new PosAndType(LexinfoOnt.abbreviation, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Toponym", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("Abkürzung", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("Toponym", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
 
         posAndTypeValueMap.put("Hilfsverb", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
 
@@ -58,7 +58,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("Präposition", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
         posAndTypeValueMap.put("Postposition", new PosAndType(LexinfoOnt.postposition, LexinfoOnt.Postposition));
 
-        posAndTypeValueMap.put("Prepositional phrase", new PosAndType(null, LemonOnt.Phrase));
+        posAndTypeValueMap.put("Prepositional phrase", new PosAndType(null, OntolexOnt.MultiWordExpression));
 
         posAndTypeValueMap.put("Pronoun", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
         posAndTypeValueMap.put("Indefinitpronomen", new PosAndType(LexinfoOnt.indefinitePronoun, LexinfoOnt.Pronoun));
@@ -70,25 +70,25 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("Präfix", new PosAndType(LexinfoOnt.prefix, LexinfoOnt.Prefix));
 
         posAndTypeValueMap.put("Suffix", new PosAndType(LexinfoOnt.suffix, LexinfoOnt.Suffix));
-        posAndTypeValueMap.put("Affix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
+        posAndTypeValueMap.put("Affix", new PosAndType(LexinfoOnt.affix, OntolexOnt.Affix));
         posAndTypeValueMap.put("Infix", new PosAndType(LexinfoOnt.infix, LexinfoOnt.Infix));
-        posAndTypeValueMap.put("Interfix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
-        posAndTypeValueMap.put("Circumfix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
+        posAndTypeValueMap.put("Interfix", new PosAndType(LexinfoOnt.affix, OntolexOnt.Affix));
+        posAndTypeValueMap.put("Circumfix", new PosAndType(LexinfoOnt.affix, OntolexOnt.Affix));
 
-        posAndTypeValueMap.put("Proverb", new PosAndType(LexinfoOnt.proverb, LemonOnt.Phrase));
+        posAndTypeValueMap.put("Proverb", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
         posAndTypeValueMap.put("Interjection", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
         posAndTypeValueMap.put("Interjektion", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
 
-        posAndTypeValueMap.put("Phrase", new PosAndType(LexinfoOnt.phraseologicalUnit, LemonOnt.Phrase));
-        posAndTypeValueMap.put("Idiom", new PosAndType(LexinfoOnt.idiom, LemonOnt.Phrase));
+        posAndTypeValueMap.put("Phrase", new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("Idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
 
-        posAndTypeValueMap.put("Wortverbindung", new PosAndType(null, LemonOnt.Phrase));
-        posAndTypeValueMap.put("Redewendung", new PosAndType(null, LemonOnt.Phrase));
+        posAndTypeValueMap.put("Wortverbindung", new PosAndType(null, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("Redewendung", new PosAndType(null, OntolexOnt.MultiWordExpression));
         posAndTypeValueMap.put("Numerale", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
 
 
-        posAndTypeValueMap.put("Toponym", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Grußformel", new PosAndType(null, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("Toponym", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("Grußformel", new PosAndType(null, OntolexOnt.LexicalEntry));
 
         // Fokuspartikel
         // Interrogativadverb

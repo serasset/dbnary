@@ -103,23 +103,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>lemon</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>jena.schemagen</mainClass>
-                            <commandlineArgs>
-                                -i ${basedir}/src/main/resources/org/getalp/dbnary/lemon.ttl \
-                                --package org.getalp.dbnary \
-                                -o ${project.build.directory}/generated-sources/java \
-                                -n LemonOnt \
-                                --owl
-                            </commandlineArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>lexinfo</id>
                         <phase>generate-sources</phase>
                         <goals>
@@ -251,6 +234,23 @@
                                 --package org.getalp.dbnary \
                                 -o ${project.build.directory}/generated-sources/java \
                                 -n SynSemOnt \
+                                --owl
+                            </commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>skos</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>jena.schemagen</mainClass>
+                            <commandlineArgs>
+                                -i ${basedir}/src/main/resources/org/getalp/dbnary/skos.rdf \
+                                --package org.getalp.dbnary \
+                                -o ${project.build.directory}/generated-sources/java \
+                                -n SkosOnt \
                                 --owl
                             </commandlineArgs>
                         </configuration>

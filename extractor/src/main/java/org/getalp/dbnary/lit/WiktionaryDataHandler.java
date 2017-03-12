@@ -2,13 +2,13 @@ package org.getalp.dbnary.lit;
 
 
 import com.hp.hpl.jena.vocabulary.RDF;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
+import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.LexinfoOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
@@ -21,17 +21,17 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("ltprv", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
         posAndTypeValueMap.put("ltpdlv", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
         posAndTypeValueMap.put("ltprl", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
-        posAndTypeValueMap.put("ltjung", new PosAndType(LexinfoOnt.phraseologicalUnit, LemonOnt.Phrase));
+        posAndTypeValueMap.put("ltjung", new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
         posAndTypeValueMap.put("ltjng", new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
         posAndTypeValueMap.put("ltįvrd", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
         posAndTypeValueMap.put("ltskt", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
         posAndTypeValueMap.put("ltrad", new PosAndType(LexinfoOnt.letter, LexinfoOnt.Symbol));
-        posAndTypeValueMap.put("ltsant", new PosAndType(LexinfoOnt.abbreviation, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("ltdll", new PosAndType(LexinfoOnt.baseElement, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("ltprd", new PosAndType(LexinfoOnt.prefix, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("ltprs", new PosAndType(LexinfoOnt.suffix, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("ltjst", new PosAndType(LexinfoOnt.interjection, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("ltišt", new PosAndType(LexinfoOnt.interjection, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("ltsant", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("ltdll", new PosAndType(LexinfoOnt.baseElement, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("ltprd", new PosAndType(LexinfoOnt.prefix, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("ltprs", new PosAndType(LexinfoOnt.suffix, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("ltjst", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("ltišt", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("ltskt-kiek", new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
         posAndTypeValueMap.put("ltskt-kelint", new PosAndType(LexinfoOnt.indefiniteOrdinalNumeral, LexinfoOnt.Numeral));
         posAndTypeValueMap.put("ltskt-kelint-laips", new PosAndType(LexinfoOnt.indefiniteOrdinalNumeral, LexinfoOnt.Numeral));

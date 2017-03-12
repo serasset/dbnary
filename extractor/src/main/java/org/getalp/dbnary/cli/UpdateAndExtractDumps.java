@@ -43,7 +43,7 @@ public class UpdateAndExtractDumps {
     private static final String DEFAULT_PREFIX_DIR = ".";
 
     private static final String MODEL_OPTION = "m";
-    private static final String DEFAULT_MODEL = "lemon";
+    private static final String DEFAULT_MODEL = "ontolex";
 
     private static final String HISTORY_SIZE_OPTION = "k";
     private static final String DEFAULT_HISTORY_SIZE = "5";
@@ -77,7 +77,7 @@ public class UpdateAndExtractDumps {
                 "force the updating even if a file with the same name already exists in the output directory. " + DEFAULT_FORCE + " by default.");
         options.addOption(HISTORY_SIZE_OPTION, true, "number of dumps to be kept in output directory. " + DEFAULT_HISTORY_SIZE + " by default ");
         options.addOption(PREFIX_DIR_OPTION, true, "directory containing the wiktionary dumps and extracts. " + DEFAULT_PREFIX_DIR + " by default ");
-        options.addOption(MODEL_OPTION, true, "model of the extracts (LMF or LEMON) extracts. " + DEFAULT_MODEL + " by default ");
+        options.addOption(MODEL_OPTION, true, "model of the extracts (LEMON or ONTOLEX) extracts. " + DEFAULT_MODEL + " by default ");
         options.addOption(COMPRESS_OPTION, false, "compress the output file using bzip2." + DEFAULT_COMPRESS + " by default ");
         options.addOption(NETWORK_OFF_OPTION, false, "Do not use the ftp network, but decompress and extract.");
         options.addOption(OptionBuilder.withLongOpt(ENABLE_FEATURE_OPTION)

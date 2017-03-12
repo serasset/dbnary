@@ -2,8 +2,8 @@ package org.getalp.dbnary.nor;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.vocabulary.RDF;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
+import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OliaOnt;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Set;
 
-public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
@@ -25,21 +25,21 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("sub", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
         posAndTypeValueMap.put("egen", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
         posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
-        posAndTypeValueMap.put("fork", new PosAndType(LexinfoOnt.abbreviation, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("fork", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
         posAndTypeValueMap.put("prep", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
         posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
-        posAndTypeValueMap.put("inter", new PosAndType(LexinfoOnt.interjection, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("inter", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("kon", new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
-        posAndTypeValueMap.put("pref", new PosAndType(LexinfoOnt.prefix, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("suff", new PosAndType(LexinfoOnt.suffix, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("pref", new PosAndType(LexinfoOnt.prefix, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("suff", new PosAndType(LexinfoOnt.suffix, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("pron", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
         posAndTypeValueMap.put("tall", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
         posAndTypeValueMap.put("art", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
         posAndTypeValueMap.put("det", new PosAndType(LexinfoOnt.determiner, LexinfoOnt.Determiner));
-        posAndTypeValueMap.put("ordtak", new PosAndType(LexinfoOnt.proverb, LemonOnt.Phrase));
-        posAndTypeValueMap.put("uttrykk", new PosAndType(LexinfoOnt.expression, LemonOnt.Phrase));
-        posAndTypeValueMap.put("idiom", new PosAndType(LexinfoOnt.idiom, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("ordtak", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("uttrykk", new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.LexicalEntry));
     }
 
     public void addExtraPartOfSpeech(String pos) {
@@ -297,7 +297,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 
     public void addWrittenRep(String word) {
         if (currentLexEntry != null)
-            aBox.add(currentLexEntry, LemonOnt.writtenRep, word, extractedLang);
+            aBox.add(currentLexEntry, OntolexOnt.writtenRep, word, extractedLang);
     }
 
     public void addAbbrev(String word) {

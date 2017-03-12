@@ -24,7 +24,7 @@ public class ExtractWiktionary {
     private static final String DEFAULT_OUTPUT_FORMAT = "ttl";
 
     private static final String MODEL_OPTION = "m";
-    private static final String DEFAULT_MODEL = "lemon";
+    private static final String DEFAULT_MODEL = "ontolex";
 
     private static final String OUTPUT_FILE_OPTION = "o";
     private static final String DEFAULT_OUTPUT_FILE = "extract";
@@ -71,7 +71,7 @@ public class ExtractWiktionary {
         options.addOption(COMPRESS_OPTION, true,
                 "Compress the output using bzip2 (value: yes/no or true/false). " + DEFAULT_COMPRESS + " by default.");
         options.addOption(MODEL_OPTION, true,
-                "Ontology Model used  (lmf or lemon). Only useful with rdf base formats." + DEFAULT_MODEL + " by default.");
+                "Ontology Model used  (lemon or ontolex). Only useful with rdf base formats." + DEFAULT_MODEL + " by default.");
         options.addOption(OUTPUT_FILE_OPTION, true, "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");
         options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
                 .withDescription("Output file for morphology data. Undefined by default.")

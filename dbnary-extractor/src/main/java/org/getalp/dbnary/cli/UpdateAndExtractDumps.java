@@ -143,7 +143,8 @@ public class UpdateAndExtractDumps {
         }
 
         if (cmd.hasOption(MODEL_OPTION)) {
-            model = cmd.getOptionValue(MODEL_OPTION);
+            System.err.println("WARN: the " + MODEL_OPTION + " is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
+            // model = cmd.getOptionValue(MODEL_OPTION);
         }
 
         String prefixDir = DEFAULT_PREFIX_DIR;

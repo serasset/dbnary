@@ -71,7 +71,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
         if (cmd.hasOption(PREFIX_DIR_OPTION)) {
             prefixDir = cmd.getOptionValue(PREFIX_DIR_OPTION);
         }
-        extractsDir = prefixDir + File.separator + "lemon" + File.separator + "latest";
+        extractsDir = prefixDir + File.separator + "ontolex" + File.separator + "latest";
         statsDir = prefixDir + File.separator + "stats";
 
     }
@@ -108,7 +108,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
 
             @Override
             public boolean accept(File dir, String name) {
-                return name.matches(".._dbnary_lemon\\..*");
+                return name.matches(".._dbnary_ontolex\\..*");
             }
         })) {
             String l2 = e.getName().substring(0, 2);

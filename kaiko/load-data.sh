@@ -17,7 +17,7 @@ fi
 
 source config.sh
 
-DBNARYLATEST=/home/serasset/dev/wiktionary/extracts/lemon/latest
+DBNARYLATEST=/home/serasset/dev/wiktionary/extracts/ontolex/latest
 
 test -x $DAEMON || (echo "Could not find virtuoso-t bin" && exit 0)
 
@@ -146,6 +146,12 @@ checkpoint;
 END
 
 ## (TODO: create the virtlabels for correct facetted browsing)
+
+## (TODO: load the owl files that will be used for reasoning)
+## ld_dir ('/opt/datasets/dbnary/', '*.owl','http://kaiko.getalp.org/dbnaryetymology');
+## rdfs_rule_set('etymology_ontology','http://kaiko.getalp.org/dbnaryetymology');
+## And then in queries I use
+## define input:inference "etymology_ontology";
 
 ## index facetted browsing
 isql $SERVERPORT dba "$pwd" <<END

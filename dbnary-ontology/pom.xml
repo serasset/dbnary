@@ -1,9 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>org.getalp.dbnary</groupId>
-    <artifactId>ontology</artifactId>
-    <version>1.7-SNAPSHOT</version>
+    <parent>
+        <groupId>org.getalp</groupId>
+        <artifactId>dbnary</artifactId>
+        <version>2.0-SNAPSHOT</version>
+    </parent>
+    <groupId>org.getalp</groupId>
+    <artifactId>dbnary-ontology</artifactId>
+    <!--version>1.7-SNAPSHOT</version-->
     <packaging>jar</packaging>
 
     <properties>
@@ -23,30 +27,6 @@
         </license>
     </licenses>
 
-    <developers>
-        <developer>
-            <name>Gilles Sérasset</name>
-        </developer>
-    </developers>
-
-    <organization>
-        <name>GETALP</name>
-        <url>http://www.getalp.org/</url>
-    </organization>
-
-    <distributionManagement>
-        <repository>
-            <id>getalp.repository</id>
-            <name>Getalp Projects and third party repository</name>
-            <url>scpexe://getalp.imag.fr/opt/www/m2</url>
-        </repository>
-    </distributionManagement>
-    <scm>
-        <connection>scm:git:ssh://git@bitbucket.org/serasset/dbnary.git</connection>
-        <developerConnection>scm:git:ssh://git@bitbucket.org/serasset/dbnary.git</developerConnection>
-        <url>https://bitbucket.org/serasset/dbnary.git</url>
-    </scm>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.jena</groupId>
@@ -56,30 +36,7 @@
         </dependency>
     </dependencies>
     <build>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>2.6</version>
-            </extension>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-                <version>2.6</version>
-            </extension>
-        </extensions>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <!-- TODO: Change plugins versions to current stable versions -->
-                <version>3.1</version>
-                <configuration>
-                    <fork>true</fork>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
+         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -274,15 +231,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>external.atlassian.jgitflow</groupId>
-                <artifactId>jgitflow-maven-plugin</artifactId>
-                <version>1.0-m5.1</version>
-                <configuration>
-                   <!-- For specific plugin configuration options,
-                    see the Goals documentation page -->
-                </configuration>
             </plugin>
         </plugins>
         <pluginManagement>

@@ -17,43 +17,23 @@ public class EnglishInflectionData {
 
     public enum Genre {MASCULINE, FEMININE, NEUTRUM, NOTHING}
 
-    ;
-
     public enum Cas {NOMINATIF, GENITIF, DATIF, ACCUSATIF, NOTHING}
-
-    ;
 
     public enum Mode {INFINITIVE, ZU_INFINITIV, PATICIPLE, GERUNDIVUM, IMPERATIV, INDICATIV, KONJUNKTIV2, KONJUNKTIV1, NOTHING}
 
-    ;
-
     public enum Voice {AKTIV, VORGANGSPASSIV, ZUSTANDSPASSIV, PASSIV, ZUSTANDSREFLEXIVEPASSIV, REFLEXIV, NOTHING}
-
-    ;
 
     public enum Tense {PRESENT, PAST, NOTHING}
 
-    ;
-
     public enum Degree {POSITIVE, COMPARATIVE, SUPERLATIVE, NOTHING}
-
-    ;
 
     public enum GNumber {SINGULAR, PLURAL, NOTHING}
 
-    ;
-
     public enum Person {FIRST, SECOND, THIRD, HÖFLICHKEITSFORM, NOTHING}
-
-    ;
 
     public enum InflectionType {STRONG, WEAK, MIXED, NOTHING}
 
-    ;
-
     public enum Valency {TRANSITIVE, INTRANSITIVE, NOTHING}
-
-    ;
 
 
     public Degree degree = Degree.NOTHING;

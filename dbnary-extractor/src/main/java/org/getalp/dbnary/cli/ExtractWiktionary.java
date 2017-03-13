@@ -139,7 +139,7 @@ public class ExtractWiktionary {
         outputFormat = outputFormat.toUpperCase();
 
         if (cmd.hasOption(MODEL_OPTION)) {
-            System.err.println("WARN: the " + MODEL_OPTION + " is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
+            System.err.println("WARN: the " + MODEL_OPTION + " option is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
             // model = cmd.getOptionValue(MODEL_OPTION);
         }
         model = model.toUpperCase();

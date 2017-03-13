@@ -143,7 +143,7 @@ public class UpdateAndExtractDumps {
         }
 
         if (cmd.hasOption(MODEL_OPTION)) {
-            System.err.println("WARN: the " + MODEL_OPTION + " is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
+            System.err.println("WARN: the " + MODEL_OPTION + " option is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
             // model = cmd.getOptionValue(MODEL_OPTION);
         }
 
@@ -654,8 +654,8 @@ public class UpdateAndExtractDumps {
         a.add(lang);
         a.add("-o");
         a.add(extractFile);
-        a.add("-m");
-        a.add(model);
+        // a.add("-m");
+        // a.add(model);
         a.add("-z");
         a.add(compress ? "yes" : "no");
         if (features.contains("morpho")) {

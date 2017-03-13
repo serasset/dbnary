@@ -16,7 +16,7 @@ This repository hosts the programs that extracted the data from Wiktionary. It d
 
 ### How do I compile the extractor? ###
 
-First, you do not have to compile this extractor if your only purpose is to use the extracted data. As stated in the previous section, the extracted is made available in sync with wiktionary dumps.
+First, you do not have to compile this extractor if your only purpose is to use the extracted data. As stated in the previous section, the extracted data is made available in sync with wiktionary dumps.
 
 However, you are free (and encouraged) to compile and enhance the extractors.
 

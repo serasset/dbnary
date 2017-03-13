@@ -85,9 +85,8 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
         String lang = remainingArgs[0];
         lg2 = LangTools.getTerm2Code(lang);
         if (null == lg2) lg2 = lang;
-        extractsDir = prefixDir + File.separator + "lemon" + File.separator + lg2;
+        extractsDir = prefixDir + File.separator + "ontolex" + File.separator + lg2;
         statsDir = prefixDir + File.separator + "stats" + File.separator + lg2;
-
     }
 
     public static void main(String args[]) throws Exception {
@@ -109,7 +108,7 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
             ds.mkdirs();
         }
 
-        Pattern dumpFilenamePattern = Pattern.compile(lg2 + "_dbnary_lemon_(\\d{8})\\..*");
+        Pattern dumpFilenamePattern = Pattern.compile(lg2 + "_dbnary_ontolex_(\\d{8})\\..*");
 
         String gstatFile = statsDir + File.separator + "general_stats.csv";
         Map<String, String> gstats = readAndParseStats(gstatFile);

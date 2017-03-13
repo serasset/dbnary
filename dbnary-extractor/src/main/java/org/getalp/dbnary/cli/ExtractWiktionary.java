@@ -71,7 +71,7 @@ public class ExtractWiktionary {
         options.addOption(COMPRESS_OPTION, true,
                 "Compress the output using bzip2 (value: yes/no or true/false). " + DEFAULT_COMPRESS + " by default.");
         options.addOption(MODEL_OPTION, true,
-                "Ontology Model used  (lemon or ontolex). Only useful with rdf base formats." + DEFAULT_MODEL + " by default.");
+                "(Deprecated) the model will always be " + DEFAULT_MODEL);
         options.addOption(OUTPUT_FILE_OPTION, true, "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");
         options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
                 .withDescription("Output file for morphology data. Undefined by default.")
@@ -139,7 +139,8 @@ public class ExtractWiktionary {
         outputFormat = outputFormat.toUpperCase();
 
         if (cmd.hasOption(MODEL_OPTION)) {
-            model = cmd.getOptionValue(MODEL_OPTION);
+            System.err.println("WARN: the " + MODEL_OPTION + " is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
+            // model = cmd.getOptionValue(MODEL_OPTION);
         }
         model = model.toUpperCase();
 
@@ -172,15 +173,10 @@ public class ExtractWiktionary {
                 outputFormat.equals("N3") ||
                 outputFormat.equals("TTL") ||
                 outputFormat.equals("RDFABBREV")) {
-            if (model.equals("LEMON")) {
-                if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
+            if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
                     wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language);
-                } else {
-                    wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
-                }
             } else {
-                System.err.println("LMF format not supported anymore.");
-                System.exit(1);
+                    wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
             }
             if (morphoOutputFile != null) wdh.enableFeature(Feature.MORPHOLOGY);
         } else {

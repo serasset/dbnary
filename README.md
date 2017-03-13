@@ -16,6 +16,10 @@ This repository hosts the programs that extracted the data from Wiktionary. It d
 
 ### How do I compile the extractor? ###
 
+First, you do not have to compile this extractor if your only purpose is to use the extracted data. As stated in the previous section, the extracted is made available in sync with wiktionary dumps.
+
+However, you are free (and encouraged) to compile and enhance the extractors.
+
 * DBnary extractor uses maven and is written in Java (with small parts in scala)
 * Dependencies should be taken care of by maven
 * There is no database to configure, the extractor directly uses the dump files

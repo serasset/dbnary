@@ -1,7 +1,8 @@
+#!/usr/bin/env bash
 
 for i in `ls $1_$2/*.res`; do
 
-res=`~/Downloads/trec_eval.9.0/trec_eval -m set $1_ref_gold.out $i`
+res=`~/Downloads/trec_eval.9.0/trec_eval -m set $1_ref_gold.gold $i`
 filt_i=`echo "$i" | sed 's/french_results_//g'|sed 's/.res$//g'`
 if [ -z "$3" ]; then
 	fres=`echo "$res" | egrep "^(set_F.*|num_r.*|set_P.*|set_recall.*)\s+"| awk '{print $3}'`

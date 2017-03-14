@@ -204,10 +204,10 @@ public class DetectHomonym {
                 for (String targetVocable : set) {
                     List<Resource> targets = mve.get(targetVocable);
                     if (targets.size() > 1) {
+                        boolean gotCorrectLink = false ;
+                        int nbCorrectLinks = 0 ;
                         for (int i = 0; i < targets.size(); i++) {
                             Resource target = targets.get(i);
-                            boolean gotCorrectLink = false ;
-                            int nbCorrectLinks = 0 ;
                             if (target.hasProperty(VarTransOnt.translatableAs, source)) {
                                 System.out.println("Correct link : " + source.getLocalName() + "\t->\t" + target.getLocalName());
                                 gotCorrectLink = true ;
@@ -219,10 +219,11 @@ public class DetectHomonym {
                                     System.out.println("Questionable link : " + source.getLocalName() + "\t->\t" + target.getLocalName());
                                 }
                             }
-                            System.out.println("From "+source.getLocalName()+" to vocable "+targetVocable+" got a correct link :\t"+gotCorrectLink+" ("+nbCorrectLinks+")") ;
                         }
+                        System.out.println("From "+source.getLocalName()+" to vocable "+targetVocable+" got a correct link :\t"+gotCorrectLink+" ("+nbCorrectLinks+")") ;
+                    }else {
+                        System.out.println("No homonym from " + source.getLocalName() + " to vocable " + targetVocable);
                     }
-                    System.out.println("No homonym from "+source.getLocalName()+" to vocable "+targetVocable) ;
                 }
             }
         }

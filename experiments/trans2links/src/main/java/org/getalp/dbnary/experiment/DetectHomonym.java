@@ -80,7 +80,7 @@ public class DetectHomonym {
 
         String[] directories = new File(directory2).list();
         for(int i = 0 ; i<directories.length ; i++){
-            if(directories[i].length()>3) {
+            if(directories[i].length()==3) {
                 Dataset dat = TDBFactory.createDataset(directory2 + "/" + directories[i]);
                 dat.begin(ReadWrite.READ);
                 Model m = dat.getDefaultModel();

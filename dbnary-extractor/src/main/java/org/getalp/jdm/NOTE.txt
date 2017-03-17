@@ -1,0 +1,9 @@
+Pour le fichier TDB :
+
+La requ�te SPARQL est � compl�ter :
+
+son but est de cr�er un fichier (ici nomm� modifs.ttl) contenant des triplets de la forme :
+
+(id du noeud) a lemon:LexicalEntry (pour les noeuds de type = 1 )
+Pour le moment le programme ne compile pas car m�lange de variables/non varaibles dans l'INSERT DATA , m�me en rempla�ant par un
+INSERT la requ�te n'est pas permise. 

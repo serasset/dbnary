@@ -113,7 +113,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     }
 
 
-    /**
+    /*
      * @return the wiktionaryIndex
      */
     // public WiktionaryIndex getWiktionaryIndex() {

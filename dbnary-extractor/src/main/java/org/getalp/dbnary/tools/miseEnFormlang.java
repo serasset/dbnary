@@ -10,10 +10,9 @@ public class miseEnFormlang {
 
 
     /**
-     * @param args
-     * @throws IOException
+     * @param args nothing
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         // TODO Auto-generated method stub
 
         String[] t = afficherLang();

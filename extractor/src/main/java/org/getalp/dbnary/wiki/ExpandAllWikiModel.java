@@ -26,7 +26,7 @@ public class ExpandAllWikiModel extends DbnaryWikiModel {
      *
      * @param definition the wiki code
      * @param templates  if not null, the method will add all called templates to the set.
-     * @return
+     * @return the expanding resulting string
      */
     public String expandAll(String definition, Set<String> templates) {
         this.templates = templates;

@@ -133,7 +133,7 @@ public class WikiText {
         /**
          * returns an List of wikiTokens ignoring Text tokens that may be intertwined.
          *
-         * @return
+         * @return a List of wikiTokens (any wiki token but texts
          */
         public ArrayList<Token> wikiTokens() {
             return tokens;
@@ -142,7 +142,7 @@ public class WikiText {
         /**
          * returns an List of wikiTokens including Text tokens that may be intertwined.
          *
-         * @return
+         * @return a list of tokens (either text or wikiTokens)
          */
         public ArrayList<Token> tokens() {
             return tokens(this.offset.start);

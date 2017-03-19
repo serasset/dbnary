@@ -159,30 +159,41 @@ NULL,
 
 -- Create namespaces for dbnary
 
+DB.DBA.XML_SET_NS_DECL ('skos', 'http://www.w3.org/2004/02/skos/core#', 2);
+
 DB.DBA.XML_SET_NS_DECL ('lexinfo', 'http://www.lexinfo.net/ontology/2.0/lexinfo#', 2);
 DB.DBA.XML_SET_NS_DECL ('lexvo', 'http://lexvo.org/id/iso639-3/', 2);
 DB.DBA.XML_SET_NS_DECL ('dcterms', 'http://purl.org/dc/terms/', 2);
 DB.DBA.XML_SET_NS_DECL ('lemon', 'http://lemon-model.net/lemon#', 2);
+DB.DBA.XML_SET_NS_DECL ('ontolex', 'http://www.w3.org/ns/lemon/ontolex#', 2);
+DB.DBA.XML_SET_NS_DECL ('vartrans', 'http://www.w3.org/ns/lemon/vartrans#', 2);
+DB.DBA.XML_SET_NS_DECL ('lime', 'http://www.w3.org/ns/lemon/lime#', 2);
+DB.DBA.XML_SET_NS_DECL ('synsem', 'http://www.w3.org/ns/lemon/synsem#', 2);
+DB.DBA.XML_SET_NS_DECL ('decomp', 'http://www.w3.org/ns/lemon/decomp#', 2);
+
 DB.DBA.XML_SET_NS_DECL ('dbnary', 'http://kaiko.getalp.org/dbnary#', 2);
 DB.DBA.XML_SET_NS_DECL ('olia', 'http://purl.org/olia/olia.owl#', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-fra', 'http://kaiko.getalp.org/dbnary/fra/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-eng', 'http://kaiko.getalp.org/dbnary/eng/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-ita', 'http://kaiko.getalp.org/dbnary/ita/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-rus', 'http://kaiko.getalp.org/dbnary/rus/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-deu', 'http://kaiko.getalp.org/dbnary/deu/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-por', 'http://kaiko.getalp.org/dbnary/por/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-fin', 'http://kaiko.getalp.org/dbnary/fin/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-ell', 'http://kaiko.getalp.org/dbnary/ell/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-tur', 'http://kaiko.getalp.org/dbnary/tur/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-jpn', 'http://kaiko.getalp.org/dbnary/jpn/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-spa', 'http://kaiko.getalp.org/dbnary/spa/', 2);
 DB.DBA.XML_SET_NS_DECL ('dbnary-bul', 'http://kaiko.getalp.org/dbnary/bul/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-pol', 'http://kaiko.getalp.org/dbnary/pol/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-swe', 'http://kaiko.getalp.org/dbnary/swe/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-nld', 'http://kaiko.getalp.org/dbnary/nld/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-deu', 'http://kaiko.getalp.org/dbnary/deu/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-ell', 'http://kaiko.getalp.org/dbnary/ell/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-eng', 'http://kaiko.getalp.org/dbnary/eng/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-fin', 'http://kaiko.getalp.org/dbnary/fin/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-fra', 'http://kaiko.getalp.org/dbnary/fra/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-ind', 'http://kaiko.getalp.org/dbnary/ind/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-ita', 'http://kaiko.getalp.org/dbnary/ita/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-jpn', 'http://kaiko.getalp.org/dbnary/jpn/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-lat', 'http://kaiko.getalp.org/dbnary/lat/', 2);
 DB.DBA.XML_SET_NS_DECL ('dbnary-lit', 'http://kaiko.getalp.org/dbnary/lit/', 2);
-DB.DBA.XML_SET_NS_DECL ('dbnary-shr', 'http://kaiko.getalp.org/dbnary/shr/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-mlg', 'http://kaiko.getalp.org/dbnary/mlg/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-nld', 'http://kaiko.getalp.org/dbnary/nld/', 2);
 DB.DBA.XML_SET_NS_DECL ('dbnary-nor', 'http://kaiko.getalp.org/dbnary/nor/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-pol', 'http://kaiko.getalp.org/dbnary/pol/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-por', 'http://kaiko.getalp.org/dbnary/por/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-rus', 'http://kaiko.getalp.org/dbnary/rus/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-shr', 'http://kaiko.getalp.org/dbnary/shr/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-spa', 'http://kaiko.getalp.org/dbnary/spa/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-swe', 'http://kaiko.getalp.org/dbnary/swe/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnary-tur', 'http://kaiko.getalp.org/dbnary/tur/', 2);
 DB.DBA.XML_SET_NS_DECL ('dilaf-bam', 'http://kaiko.getalp.org/dilaf/bam/', 2);
 DB.DBA.XML_SET_NS_DECL ('jdm-ont', 'http://kaiko.getalp.org/jdm#', 2);
 DB.DBA.XML_SET_NS_DECL ('jdm', 'http://kaiko.getalp.org/jdm/', 2);

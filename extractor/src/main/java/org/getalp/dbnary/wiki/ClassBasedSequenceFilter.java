@@ -14,9 +14,11 @@ public class ClassBasedSequenceFilter implements Function<WikiText.Token, WikiSe
 
     /**
      * Creates a default Class baed filter that :
+     * <ul>
      * <li>atomizes all, but</li>
      * <li>keep textual content</li>
      * <li>void HTML Comments and no wiki</li>
+     * </ul>
      */
     public ClassBasedSequenceFilter() {
         super();

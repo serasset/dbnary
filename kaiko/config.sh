@@ -1,3 +1,4 @@
+#@IgnoreInspection BashAddShebang
 ## Virtuoso and data configuration variables
 ## this file will be sourced by bootstrapping scripts,
 ## where the PREFIX variable should be set.

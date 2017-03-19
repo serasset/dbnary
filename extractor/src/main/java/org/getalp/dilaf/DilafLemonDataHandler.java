@@ -155,8 +155,8 @@ public class DilafLemonDataHandler extends DbnaryModel {
      * Predefined values are "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3".
      * The default value, represented by null, is "RDF/XML".
      *
-     * @param out
-     * @param format
+     * @param out the output stream in which the dump will be written
+     * @param format the RDF format in which the data will be written
      */
     public void dump(OutputStream out, String format) {
         aBox.write(out, format);

@@ -3,7 +3,7 @@
 
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3</version>
     <packaging>jar</packaging>
 
     <reporting>
@@ -162,7 +162,7 @@
             <artifactId>de.tudarmstadt.ukp.omegawikiapi-asl</artifactId>
             <version>0.2.0</version>
         </dependency-->
-        <dependency>
+        <!--dependency>
             <groupId>org.sweble.wikitext</groupId>
             <artifactId>swc-engine</artifactId>
             <version>2.0.1-SNAPSHOT</version>
@@ -171,11 +171,11 @@
             <groupId>org.sweble.wikitext</groupId>
             <artifactId>swc-example-xpath</artifactId>
             <version>2.0.1-SNAPSHOT</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.getalp.dbnary</groupId>
             <artifactId>ontology</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
@@ -297,8 +297,8 @@
                 </executions><!-- TODO: Change plugins versions to current stable versions -->
                 <configuration>
                     <fork>true</fork>
-                    <source>7</source>
-                    <target>7</target>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -324,15 +324,13 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5</version>
+                <groupId>external.atlassian.jgitflow</groupId>
+                <artifactId>jgitflow-maven-plugin</artifactId>
+                <version>1.0-m5.1</version>
                 <configuration>
-                    <tagBase>svn+ssh://scm.forge.imag.fr/var/lib/gforge/chroot/scmrepos/svn/dbnary/tags</tagBase>
-                    <useReleaseProfile>false</useReleaseProfile>
-                    <preparationGoals>clean install</preparationGoals>
-                    <goals>deploy</goals>
-                    <arguments>-Prelease</arguments>
+                    <allowSnapshots>true</allowSnapshots>
+                    <!-- For specific plugin configuration options,
+                     see the Goals documentation page -->
                 </configuration>
             </plugin>
             <plugin>

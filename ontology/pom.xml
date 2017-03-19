@@ -3,7 +3,7 @@
 
     <groupId>org.getalp.dbnary</groupId>
     <artifactId>ontology</artifactId>
-    <version>1.6</version>
+    <version>1.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -166,6 +166,91 @@
                                 --package org.getalp.dbnary \
                                 -o ${project.build.directory}/generated-sources/java \
                                 -n DBnaryEtymologyOnt \
+                                --owl
+                            </commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>ontolex</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>jena.schemagen</mainClass>
+                            <commandlineArgs>
+                                -i ${basedir}/src/main/resources/org/getalp/dbnary/ontolex.owl \
+                                --package org.getalp.dbnary \
+                                -o ${project.build.directory}/generated-sources/java \
+                                -n OntolexOnt \
+                                --owl
+                            </commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>ontolex-vartrans</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>jena.schemagen</mainClass>
+                            <commandlineArgs>
+                                -i ${basedir}/src/main/resources/org/getalp/dbnary/vartrans.owl \
+                                --package org.getalp.dbnary \
+                                -o ${project.build.directory}/generated-sources/java \
+                                -n VarTransOnt \
+                                --owl
+                            </commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>ontolex-lime</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>jena.schemagen</mainClass>
+                            <commandlineArgs>
+                                -i ${basedir}/src/main/resources/org/getalp/dbnary/lime.owl \
+                                --package org.getalp.dbnary \
+                                -o ${project.build.directory}/generated-sources/java \
+                                -n LimeOnt \
+                                --owl
+                            </commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>ontolex-decomp</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>jena.schemagen</mainClass>
+                            <commandlineArgs>
+                                -i ${basedir}/src/main/resources/org/getalp/dbnary/decomp.owl \
+                                --package org.getalp.dbnary \
+                                -o ${project.build.directory}/generated-sources/java \
+                                -n DecompOnt \
+                                --owl
+                            </commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>ontolex-synsem</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>jena.schemagen</mainClass>
+                            <commandlineArgs>
+                                -i ${basedir}/src/main/resources/org/getalp/dbnary/synsem.owl \
+                                --package org.getalp.dbnary \
+                                -o ${project.build.directory}/generated-sources/java \
+                                -n SynSemOnt \
                                 --owl
                             </commandlineArgs>
                         </configuration>

@@ -107,15 +107,20 @@ public class DisambiguateTargets {
                     score.put(s,d) ;
                 }
             }
-            Resource bestr = null ;
-            Double bests = Double.valueOf(-1) ;
-            for(Resource r : score.keySet()){
-                if(Double.compare(score.get(r),bests)>0){
-                    bestr = r ;
-                    bests = score.get(r) ;
+            if(!score.isEmpty()){
+                Resource bestr = null ;
+                Double bests = Double.valueOf(-1) ;
+                for(Resource r : score.keySet()){
+                    if(Double.compare(score.get(r),bests)>0){
+                        bestr = r ;
+                        bests = score.get(r) ;
+                    }
                 }
+                mu.put(bestr,bests);
+            }else{
+                System.err.println("SCORE EMPTY") ;
             }
-            mu.put(bestr,bests);
+
         }
         return mu ;
     }

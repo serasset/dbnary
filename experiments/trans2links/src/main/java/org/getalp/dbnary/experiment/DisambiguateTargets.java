@@ -186,7 +186,7 @@ public class DisambiguateTargets {
     private List<List<Statement>> recDFS(Resource potentialTarget, Resource source, List<Statement> path, Stack visited){
         List<List<Statement>> res = new ArrayList<>() ;
         if(visited.contains(potentialTarget) || path.size()>delta){
-            return null ;
+            return new ArrayList<>() ;
         }
         if(potentialTarget.equals(source)){
             List<List<Statement>> p = new ArrayList<>() ;

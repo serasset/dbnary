@@ -68,9 +68,6 @@ public class DisambiguateTargets {
         Model res = ModelFactory.createDefaultModel() ;
         Map<Resource,Double> mu = disambiguateTarget(sense) ;
         for(Resource r : mu.keySet()){
-            System.err.println("res size : "+res.size()) ;
-            System.err.println("sense : "+sense.getLocalName()) ;
-            System.err.println("r : "+r.getLocalName()) ;
             res.add(res.createStatement(sense,VarTransOnt.translatableAs,r)) ;
         }
         return res ;
@@ -117,10 +114,7 @@ public class DisambiguateTargets {
                     }
                 }
                 mu.put(bestr,bests);
-            }else{
-                System.err.println("SCORE EMPTY") ;
             }
-
         }
         return mu ;
     }

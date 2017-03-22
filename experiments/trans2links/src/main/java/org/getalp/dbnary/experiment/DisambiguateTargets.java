@@ -228,59 +228,62 @@ public class DisambiguateTargets {
         boolean forward = true ;
         boolean backwards = true ;
         // NORMAL
-        Statement s = copy.remove(0) ;
-        Resource first = s.getResource() ;
-        normal.add(s) ;
-        Resource r = s.getResource() ;
-        while(forward){
-            s = lookForward(copy,r) ;
-            if(s!= null){
-                normal.add(s) ;
-                r = s.getResource() ;
-            }else{
-                forward = false ;
+        if(!copy.isEmpty()) {
+            Statement s = copy.remove(0);
+            Resource first = s.getResource();
+            normal.add(s);
+            Resource r = s.getResource();
+            while (forward) {
+                s = lookForward(copy, r);
+                if (s != null) {
+                    normal.add(s);
+                    r = s.getResource();
+                } else {
+                    forward = false;
+                }
+            }
+            r = first;
+            while (backwards) {
+                s = lookBackwards(copy, r);
+                if (s != null) {
+                    normal.add(s);
+                    r = s.getSubject();
+                } else {
+                    backwards = false;
+                }
+            }
+            // REVERSE
+            if (!copy.isEmpty()) {
+                forward = true;
+                backwards = true;
+                s = copy.remove(0);
+                first = s.getResource();
+                reverse.add(s);
+                r = s.getResource();
+                while (forward) {
+                    s = lookForward(copy, r);
+                    if (s != null) {
+                        reverse.add(s);
+                        r = s.getResource();
+                    } else {
+                        forward = false;
+                    }
+                }
+                r = first;
+                while (backwards) {
+                    s = lookBackwards(copy, r);
+                    if (s != null) {
+                        reverse.add(s);
+                        r = s.getSubject();
+                    } else {
+                        backwards = false;
+                    }
+                }
             }
         }
-        r = first ;
-        while(backwards){
-            s = lookBackwards(copy,r) ;
-            if(s!= null){
-                normal.add(s) ;
-                r = s.getSubject() ;
-            }else{
-                backwards = false ;
-            }
-        }
-        // REVERSE
-        forward = true ;
-        backwards = true ;
-        s = copy.remove(0) ;
-        first = s.getResource() ;
-        reverse.add(s) ;
-        r = s.getResource() ;
-        while(forward){
-            s = lookForward(copy,r) ;
-            if(s!= null){
-                reverse.add(s) ;
-                r = s.getResource() ;
-            }else{
-                forward = false ;
-            }
-        }
-        r = first ;
-        while(backwards){
-            s = lookBackwards(copy,r) ;
-            if(s!= null){
-                reverse.add(s) ;
-                r = s.getSubject() ;
-            }else{
-                backwards = false ;
-            }
-        }
-
-        if(normal.isEmpty() || reverse.isEmpty()){
-            return normal.size() + reverse.size() == path.size() ;
-        }else {
+        if (normal.isEmpty() || reverse.isEmpty()) {
+            return normal.size() + reverse.size() == path.size();
+        } else {
             return normal.size() + reverse.size() == path.size()
                     && normal.get(0) == reverse.get(0)
                     && normal.get(normal.size() - 1) == reverse.get(reverse.size() - 1);

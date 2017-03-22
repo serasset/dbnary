@@ -281,13 +281,7 @@ public class DisambiguateTargets {
                 }
             }
         }
-        if (normal.isEmpty() || reverse.isEmpty()) {
-            return normal.size() + reverse.size() == path.size();
-        } else {
-            return normal.size() + reverse.size() == path.size()
-                    && normal.get(0) == reverse.get(0)
-                    && normal.get(normal.size() - 1) == reverse.get(reverse.size() - 1);
-        }
+        return normal.size() + reverse.size() == path.size();
     }
 
     private static Statement lookForward(List<Statement> list, Resource r){

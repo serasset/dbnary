@@ -186,6 +186,7 @@ public class DisambiguateTargets {
     private List<List<Statement>> recDFS(Resource potentialTarget, Resource source, List<Statement> path, Stack visited){
         List<List<Statement>> res = new ArrayList<>() ;
         if(visited.contains(potentialTarget) || path.size()>delta){
+            System.err.println("return empty list") ;
             return new ArrayList<>() ;
         }
         if(potentialTarget.equals(source)){
@@ -211,6 +212,7 @@ public class DisambiguateTargets {
             path2.add(stmt) ;
             Resource sense2 = stmt.getSubject() ;
             if(reversedEdgesConsecutive(path2)) {
+                System.err.println("sense2 : "+sense2.getLocalName()+" source "+source.getLocalName()+" paths2 size "+path2.size()+"visited size "+visited.size()) ;
                 res.addAll(recDFS(sense2, source, path2, visited));
             }
         }

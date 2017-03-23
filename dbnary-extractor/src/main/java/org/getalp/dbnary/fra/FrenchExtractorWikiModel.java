@@ -564,6 +564,22 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
             String langCode = parameterMap.get("1").trim();
             String lang = ISO639_3.sharedInstance.getLanguageNameInFrench(langCode);
             if (null != lang) writer.append(lang);
+        } else if ("sans balise".equals(templateName) || "sans_balise".equals(templateName)) {
+            String t = parameterMap.get("1");
+            if (null != t)
+                writer.append(t.replaceAll("<[^\\]]*>", "").replaceAll("'''?", ""));
+        } else if ("gsub".equals(templateName)) {
+            String s = parameterMap.get("1");
+            String pattern = parameterMap.get("2");
+            String repl = parameterMap.get("3");
+            if ("’".equals(pattern) && "'".equals(repl)) {
+                writer.append(s.replaceAll(pattern, repl));
+            } else if ("s$".equals(pattern) && null == repl) {
+                writer.append(s.replaceAll(pattern, ""));
+            } else {
+                log.debug("gsub {} | {} | {}", parameterMap.get("1"), parameterMap.get("2"), parameterMap.get("3"));
+                super.substituteTemplateCall(templateName, parameterMap, writer);
+            }
         } else if (templateName.equals("pron")) {
             // catch this template call as it resolves in a non useful very heavy Lua processing.
             writer.append("\\").append(parameterMap.get("1")).append("\\");

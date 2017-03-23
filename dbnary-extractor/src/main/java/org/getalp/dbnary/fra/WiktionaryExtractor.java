@@ -6,8 +6,7 @@ package org.getalp.dbnary.fra;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.*;
-import org.getalp.dbnary.wiki.WikiPatterns;
-import org.getalp.dbnary.wiki.WikiTool;
+import org.getalp.dbnary.wiki.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -464,6 +463,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected ExampleExpanderWikiModel exampleExpander;
     protected FrenchDefinitionExtractorWikiModel definitionExpander;
     protected FrenchExtractorWikiModel conjugationExtractor;
+    protected ExpandAllWikiModel glossExtractor;
 
     @Override
     public void setWiktionaryIndex(WiktionaryIndex wi) {
@@ -471,7 +471,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("fr"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
         definitionExpander = new FrenchDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
         conjugationExtractor = new FrenchExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
-
+        glossExtractor = new ExpandAllWikiModel(this.wi, new Locale("fr"), "/${image}", "/${title}");
     }
 
     private Set<String> defTemplates = null;
@@ -1173,7 +1173,98 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
 
+    private static String translationTokenizer =
+            "(?<ITALICS>'{2,3}.*?'{2,3})|" +
+            "(?<PARENS>\\(\\P{Reserved}*?\\))|" +
+            "(?<SPECIALPARENS>\\(.*?\\))|" +
+            "(?<TMPL>\\p{Template})|" +
+            "(?<LINK>\\p{InternalLink})";
+
     private void extractTranslations(int startOffset, int endOffset) {
+        // log.debug("Translation section: " + pageContent.substring(startOffset, endOffset));
+
+        WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
+        WikiCharSequence line = new WikiCharSequence(text);
+        Pattern pattern = WikiPattern.compile(translationTokenizer); // match all templates
+
+        Matcher lexer = pattern.matcher(line);
+        String currentGloss = null;
+
+        while (lexer.find()) {
+
+            String g;
+            if (null != (g = lexer.group("ITALICS"))) {
+                // TODO: keep as usage and add current translation object when finding a comma
+                log.debug("Found italics | {} | in translation for {}", g, wiktionaryPageName);
+            } else if (null != (g = lexer.group("PARENS"))) {
+                // TODO: keep as usage and add current translation object when finding a comma
+                log.debug("Found parenthesis | {} | in translation for {}", g, wiktionaryPageName);
+            } else if (null != (g = lexer.group("SPECIALPARENS"))) {
+                log.debug("Template or link inside parens: | {} | for [ {} ]", line.getSourceContent(lexer.group("SPECIALPARENS")), wiktionaryPageName);
+                // TODO: some are only additional usage notes, other are alternate translation, decide between them and handle the translation cases.
+            } else if (null != (g = lexer.group("LINK"))) {
+                log.debug("Translation as link : {}", line.getToken(lexer.group("LINK")));
+            } else if (null != (g = lexer.group("TMPL"))) {
+                WikiText.Template t = (WikiText.Template) line.getToken(g);
+                String tname = t.getName();
+                Map<String, String> args = t.getParsedArgs();
+
+                switch (tname) {
+                    case "trad+":
+                    case "trad-":
+                    case "trad":
+                    case "t+":
+                    case "t-":
+                    case "trad--":
+                        String lang = LangTools.normalize(args.remove("1"));
+                        String word = args.remove("2");
+                        args.remove("nocat");
+                        String usage = null;
+                        if (args.size() > 0) {
+                            usage = args.toString(); // get all remaining arguments as usages
+                            usage = usage.substring(1, usage.length()-1);
+                        }
+                        lang = FrenchLangtoCode.threeLettersCode(lang);
+
+                        if (lang != null && word != null) {
+                            wdh.registerTranslation(lang, currentGloss, usage, word);
+                        }
+
+                        break;
+                    case "boîte début":
+                    case "trad-début":
+                    case "(":
+                        // Get the glose that should help disambiguate the source acception
+                        String g1 = args.get("1");
+                        String g2 = args.get("2");
+                        args.remove("1");
+                        args.remove("2");
+                        if (args.size() > 0) {
+                            log.debug("unused args in translation gloss : {}", args);
+                        }
+
+                        if (g1 != null || g2 != null) {
+                            currentGloss = (g1 == null || g1.equals("") ? "" : g1) +
+                                    (g2 == null || g2.equals("") ? "" : "|" + g2);
+                        }
+                        glossExtractor.setPageName(wiktionaryPageName);
+                        currentGloss = glossExtractor.expandAll(currentGloss, null);
+                        break;
+                    case "trad-fin":
+                    case ")":
+                        currentGloss = null;
+                        break;
+
+                    case "-":
+                    case "T":
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    private void extractTranslationsOld(int startOffset, int endOffset) {
         Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
         macroMatcher.region(startOffset, endOffset);
         String currentGlose = null;

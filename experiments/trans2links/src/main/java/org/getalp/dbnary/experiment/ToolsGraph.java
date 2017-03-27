@@ -6,6 +6,7 @@ import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import org.getalp.dbnary.VarTransOnt;
 import org.jgrapht.Graph;
+import org.jgrapht.WeightedGraph;
 import org.jgrapht.alg.BronKerboschCliqueFinder;
 import org.jgrapht.ext.*;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -36,12 +37,16 @@ public class ToolsGraph {
         for(String s : resourcesString){
             resources.add(graph.getResource(s)) ;
         }
+        log.debug("Creating subgraph...") ;
         Model newGraph = getsubGraph(graph,resources,3) ;
         Graph<String,DefaultWeightedEdge> g = getGraph(newGraph) ;
         Set<String> vertices = g.vertexSet() ;
         Set<DefaultWeightedEdge> edges = g.edgeSet() ;
         log.debug("In the subgraph : "+vertices.size()+" vertices and "+edges.size()+" edges.") ;
-        doGraphAlgoInfo(g) ;
+        log.debug("Getting probas...") ;
+        Map<String,Map<String,Double>> probas = getProbas(g) ;
+        System.out.println(seeProbas(probas)) ;
+        WeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph(probas) ;
         //writeDot(g,args[1],args[2]);
     }
 
@@ -180,30 +185,62 @@ public class ToolsGraph {
         g.addEdge(source, target);
     }
 
-    public static void doGraphAlgoInfo(Graph<String,DefaultWeightedEdge> g)throws IOException{
+    public static Map<String,Map<String,Double>> getProbas(Graph<String,DefaultWeightedEdge> g)throws IOException{
         //Graph<String,DefaultWeightedEdge> g  = getGraphFromDot(fileName, nbVertices, nbEdges);
+        Map<String,Map<String,Double>> resProba = new HashMap<>() ;
         Collection<Set<String>> cliques = getCliques(g);
         Collection<Set<String>> ambigSets = getAmbiguitySets(cliques);
-        System.out.println("\nAmbiguity Sets : "+seeSets(ambigSets)+"\n");
-        System.out.println(getAmbiguityInfos(ambigSets));
+        //System.out.println("\nAmbiguity Sets : "+seeSets(ambigSets)+"\n");
+        //System.out.println(getAmbiguityInfos(ambigSets));
         int ng = 2000; // TODO ng a definir
         int nr = 2000; // TODO  nr a definir
         double pe = 0.9; // TODO pe a definir
         int maxCircuitLength = 7; // TODO maxCircuitLength a definir
+        int remaining = 880 ;
         for(String v : g.vertexSet()){
             Map<String, Double> prob = senseUniformPaths(g,v,ambigSets,ng,nr,pe,maxCircuitLength);
             for(String v2 : prob.keySet()){
                 Double d = prob.get(v2);
+                Map<String,Double> subRes = new HashMap<>() ;
                 if(d>0.0){
-                    System.out.println(v+"-"+v2+":"+d+"\t("+existingLink(g,v,v2)+")") ;
+                    subRes.put(v2,d) ;
+                    //System.out.println(v+"-"+v2+":"+d+"\t("+existingLink(g,v,v2)+")") ;
                 }else{
                     if(existingLink(g,v,v2)){
-                        System.out.println("LINK:"+v+"-"+v2+":"+d) ;
+                        subRes.put(v2,d) ;
+                        //System.out.println("LINK:"+v+"-"+v2+":"+d) ;
                     }
                 }
+                resProba.put(v,subRes) ;
             }
-            System.out.println() ;
+            //System.out.println() ;
+            remaining = remaining-1 ;
+            log.debug("Remaining = "+remaining) ;
         }
+        return resProba ;
+    }
+
+    public static WeightedGraph<String,DefaultWeightedEdge> getWeightedGraph(Map<String,Map<String,Double>> probas){
+        WeightedGraph<String,DefaultWeightedEdge> weightedGraph = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class) ;
+        for(String source : probas.keySet()){
+            weightedGraph.addVertex(source) ;
+            for(String target : probas.get(source).keySet()){
+                weightedGraph.addVertex(target) ;
+                DefaultWeightedEdge e = weightedGraph.addEdge(source,target) ;
+                weightedGraph.setEdgeWeight(e,probas.get(source).get(target)) ;
+            }
+        }
+        return weightedGraph ;
+    }
+
+    public static String seeProbas(Map<String,Map<String,Double>> probas){
+        String disp = "" ;
+        for(String source : probas.keySet()){
+            for(String target : probas.get(source).keySet()){
+                disp=disp+source+" - "+target+" : "+probas.get(source).get(target)+"\n" ;
+            }
+        }
+        return disp ;
     }
 
     private static boolean existingLink(Graph<String,DefaultWeightedEdge> g, String v1, String v2){

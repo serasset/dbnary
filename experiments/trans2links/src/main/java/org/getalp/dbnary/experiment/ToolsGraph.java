@@ -6,8 +6,10 @@ import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import org.getalp.dbnary.VarTransOnt;
 import org.jgrapht.Graph;
+import org.jgrapht.UndirectedGraph;
 import org.jgrapht.WeightedGraph;
 import org.jgrapht.alg.BronKerboschCliqueFinder;
+import org.jgrapht.alg.StoerWagnerMinimumCut;
 import org.jgrapht.ext.*;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -23,13 +25,9 @@ public class ToolsGraph {
     private static Logger log = LoggerFactory.getLogger(ToolsGraph.class);
 
     public static void main(String args[])throws FileNotFoundException,IOException{
-        Dataset dataset = TDBFactory.createDataset(args[0]) ;
+        /*Dataset dataset = TDBFactory.createDataset(args[0]) ;
         dataset.begin(ReadWrite.READ) ;
         Model graph = dataset.getDefaultModel() ;
-        /*Graph<String,DefaultWeightedEdge> g1 = getGraph(graph) ;
-        Set<String> vertices1 = g1.vertexSet() ;
-        Set<DefaultWeightedEdge> edges1 = g1.edgeSet() ;
-        log.debug("In the translation graph : "+vertices1.size()+" vertices and "+edges1.size()+" edges.") ;*/
 
         List<String> resourcesString = new ArrayList<>() ;
         resourcesString.add("http://kaiko.getalp.org/dbnary/eng/spring__Noun__1") ;
@@ -47,7 +45,148 @@ public class ToolsGraph {
         Map<String,Map<String,Double>> probas = getProbas(g) ;
         System.out.println(seeProbas(probas)) ;
         WeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph(probas) ;
-        //writeDot(g,args[1],args[2]);
+        //writeDot(g,args[1],args[2]);*/
+
+        testMinCutClustering(1000,0.3,6);
+    }
+
+    public static void testMinCutClustering(int size,double probGetEdge, int depth){
+        //int size = 1000 ;
+        //double probGetEdge = 0.3 ;
+
+        Random r = new Random() ;
+
+        SimpleWeightedGraph<String,DefaultWeightedEdge> g = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class) ;
+        for(int i = 0 ; i<size ; i++){
+            g.addVertex("V"+i) ;
+        }
+        for(int i = 0 ; i<size ; i++){
+            for(int j = i+1 ; j<size ; j++){
+                double d = Math.random() ;
+                if(d<=probGetEdge){
+                    DefaultWeightedEdge e = g.addEdge("V"+i,"V"+j) ;
+                    double p = (r.nextGaussian()/2)+0.5 ;
+                    while(p<0.0 || p>1.0){
+                        p = (r.nextGaussian()/2)+0.5 ;
+                    }
+                    p = roundProba(p) ;
+                    g.setEdgeWeight(e,p);
+                }
+            }
+        }
+
+        /*g.addVertex("v1") ;
+        g.addVertex("v2") ;
+        g.addVertex("v3") ;
+        g.addVertex("v4") ;
+        g.addVertex("v5") ;
+        g.addVertex("v6") ;
+        g.addVertex("v7") ;
+        DefaultWeightedEdge ew = g.addEdge("v1","v2");
+        g.setEdgeWeight(ew,0.1);
+        ew = g.addEdge("v1","v3");
+        g.setEdgeWeight(ew,0.1);
+        ew = g.addEdge("v1","v6");
+        g.setEdgeWeight(ew,0.1);
+        ew = g.addEdge("v1","v7");
+        g.setEdgeWeight(ew,0.7);
+        ew = g.addEdge("v2","v3");
+        g.setEdgeWeight(ew,0.3);
+        ew = g.addEdge("v2","v4");
+        g.setEdgeWeight(ew,0.2);
+        ew = g.addEdge("v3","v4");
+        g.setEdgeWeight(ew,0.2);
+        ew = g.addEdge("v3","v6");
+        g.setEdgeWeight(ew,0.1);
+        ew = g.addEdge("v4","v5");
+        g.setEdgeWeight(ew,0.1);
+        ew = g.addEdge("v5","v6");
+        g.setEdgeWeight(ew,0.7);
+        ew = g.addEdge("v6","v7");
+        g.setEdgeWeight(ew,0.3);*/
+
+
+        //int depth = 5 ;
+
+        for(DefaultWeightedEdge e : g.edgeSet()){
+            System.out.println(g.getEdgeSource(e)+" - "+g.getEdgeTarget(e)+" : "+g.getEdgeWeight(e)) ;
+        }
+        System.out.println() ;
+
+        Set<Set<String>> minCut = minCutClustering(g,depth) ;
+        for(Set<String> cluster : minCut){
+            System.out.print("{ ") ;
+            for(String v : cluster){
+                System.out.print(v+" ") ;
+            }
+            System.out.println("}") ;
+        }
+    }
+
+    private static double roundProba(double p){
+        if(p<0.1){
+            return 0.0 ;
+        }else if(p<0.2){
+            return 0.1 ;
+        }else if(p<0.3){
+            return 0.2 ;
+        }else if(p<0.4){
+            return 0.3 ;
+        }else if(p<0.5){
+            return 0.4 ;
+        }else if(p<0.6){
+            return 0.5 ;
+        }else if(p<0.7){
+            return 0.6 ;
+        }else if(p<0.8){
+            return 0.7 ;
+        }else if(p<0.9){
+            return 0.8 ;
+        }else{
+            return 0.9 ;
+        }
+    }
+
+    public static Set<Set<String>> minCutClustering(SimpleWeightedGraph<String,DefaultWeightedEdge> g, int depth){
+        Set<Set<String>> res = new HashSet<>() ;
+        if(depth==0 || g.vertexSet().size()<=1){
+            res.add(g.vertexSet()) ;
+            return res ;
+        }
+        StoerWagnerMinimumCut mc = new StoerWagnerMinimumCut(g) ;
+        Set<String> oneSideVertices = mc.minCut() ;
+        SimpleWeightedGraph<String,DefaultWeightedEdge> g1 = getCutGraph(g,oneSideVertices) ;
+        SimpleWeightedGraph<String,DefaultWeightedEdge> g2 = getSecondCutGraph(g,oneSideVertices) ;
+        res.addAll(minCutClustering(g1,depth-1)) ;
+        res.addAll(minCutClustering(g2,depth-1)) ;
+        return res ;
+    }
+
+    private static SimpleWeightedGraph<String,DefaultWeightedEdge> getCutGraph(SimpleWeightedGraph<String,DefaultWeightedEdge> g, Set<String> oneSideVertices){
+        // TODO simplify so we do not compute twice the edges
+        SimpleWeightedGraph<String,DefaultWeightedEdge> subGraph = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class) ;
+        for(String v1 : oneSideVertices){
+            subGraph.addVertex(v1) ;
+            for(String v2 : oneSideVertices){
+                subGraph.addVertex(v2) ;
+                if(g.containsEdge(v1,v2) && !subGraph.containsEdge(v1,v2)){
+                    Double d = g.getEdgeWeight(g.getEdge(v1,v2)) ;
+                    DefaultWeightedEdge e = subGraph.addEdge(v1,v2) ;
+                    subGraph.setEdgeWeight(e, d);
+                }
+            }
+        }
+        return subGraph ;
+    }
+
+    private static SimpleWeightedGraph<String,DefaultWeightedEdge> getSecondCutGraph(SimpleWeightedGraph<String,DefaultWeightedEdge> g, Set<String> oneSideVertices){
+        Set<String> otherSideVertices = new HashSet<>() ;
+        for(String v : g.vertexSet()){
+            if(!oneSideVertices.contains(v)){
+                otherSideVertices.add(v) ;
+            }
+        }
+        return getCutGraph(g,otherSideVertices) ;
     }
 
     public static Graph<String,DefaultWeightedEdge> getGraph(Model m){ // m is a translation graph with only translatableAs statements

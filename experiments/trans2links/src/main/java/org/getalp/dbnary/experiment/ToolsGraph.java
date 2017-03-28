@@ -344,7 +344,7 @@ public class ToolsGraph {
         int nr = 2000; // TODO  nr a definir
         double pe = 0.9; // TODO pe a definir
         int maxCircuitLength = 7; // TODO maxCircuitLength a definir
-        int remaining = 880 ;
+        int nbdone = 0 ;
         for(String v : g.vertexSet()){
             Map<String, Double> prob = senseUniformPaths(g,v,ambigSets,ng,nr,pe,maxCircuitLength);
             for(String v2 : prob.keySet()){
@@ -362,8 +362,8 @@ public class ToolsGraph {
                 resProba.put(v,subRes) ;
             }
             //System.out.println() ;
-            remaining = remaining-1 ;
-            log.debug("Remaining = "+remaining) ;
+            nbdone = nbdone+1 ;
+            log.debug(nbdone+" vertices done") ;
         }
         return resProba ;
     }

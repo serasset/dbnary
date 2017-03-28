@@ -347,9 +347,9 @@ public class ToolsGraph {
         int nbdone = 0 ;
         for(String v : g.vertexSet()){
             Map<String, Double> prob = senseUniformPaths(g,v,ambigSets,ng,nr,pe,maxCircuitLength);
+            Map<String,Double> subRes = new HashMap<>() ;
             for(String v2 : prob.keySet()){
                 Double d = prob.get(v2);
-                Map<String,Double> subRes = new HashMap<>() ;
                 if(d>0.0){
                     subRes.put(v2,d) ;
                     //System.out.println(v+"-"+v2+":"+d+"\t("+existingLink(g,v,v2)+")") ;
@@ -359,8 +359,8 @@ public class ToolsGraph {
                         //System.out.println("LINK:"+v+"-"+v2+":"+d) ;
                     }
                 }
-                resProba.put(v,subRes) ;
             }
+            resProba.put(v,subRes) ;
             //System.out.println() ;
             nbdone = nbdone+1 ;
             log.debug(nbdone+" vertices done") ;

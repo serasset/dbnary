@@ -44,9 +44,12 @@ public class ToolsGraph {
         log.debug("Getting probas...") ;
         Map<String,Map<String,Double>> probas = getProbas(g) ;
         System.out.println(seeProbas(probas)) ;
+        log.debug("Getting weighted graph...") ;
         SimpleWeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph(probas) ;
+        System.out.println(seeWeightedGraph(wg)) ;
 
-        Set<Set<String>> minCut = minCutClustering(wg,4) ;
+        log.debug("Getting clusters...") ;
+        Set<Set<String>> minCut = minCutClustering(wg,2) ;
         for(Set<String> cluster : minCut){
             System.out.print("{ ") ;
             for(String v : cluster){
@@ -57,6 +60,14 @@ public class ToolsGraph {
         //writeDot(g,args[1],args[2]);
 
         //testMinCutClustering(1000,0.3,6);
+    }
+
+    public static String seeWeightedGraph(SimpleWeightedGraph<String,DefaultWeightedEdge> g){
+        String res = "" ;
+        for(DefaultWeightedEdge e : g.edgeSet()){
+            res = res+g.getEdgeSource(e)+" - "+g.getEdgeTarget(e)+" : "+g.getEdgeWeight(e)+"\n" ;
+        }
+        return res ;
     }
 
     public static void testMinCutClustering(int size,double probGetEdge, int depth){

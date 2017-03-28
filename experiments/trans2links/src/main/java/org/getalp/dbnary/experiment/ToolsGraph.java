@@ -386,7 +386,13 @@ public class ToolsGraph {
             for(String target : probas.get(source).keySet()){
                 weightedGraph.addVertex(target) ;
                 DefaultWeightedEdge e = weightedGraph.addEdge(source,target) ;
-                weightedGraph.setEdgeWeight(e,probas.get(source).get(target)) ;
+                if(e!=null){
+                    double d1 = probas.get(source).get(target) ;
+                    double d2 = probas.get(target).get(source) ;
+                    double d = (d1+d2)/2 ;
+                    weightedGraph.setEdgeWeight(e,d) ;
+                }
+
             }
         }
         return weightedGraph ;

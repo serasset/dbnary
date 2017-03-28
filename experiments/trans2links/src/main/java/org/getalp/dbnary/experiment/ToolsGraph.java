@@ -70,6 +70,37 @@ public class ToolsGraph {
         return res ;
     }
 
+    public static SimpleWeightedGraph<String,DefaultWeightedEdge> getWeightedGraph() throws IOException {
+        Map<String,Map<String,Double>> probas = new HashMap<>() ;
+        BufferedReader buf = new BufferedReader(new InputStreamReader(System.in));
+        String s = buf.readLine() ;
+        while(s!=null){
+            String source = "" ;
+            String target = "" ;
+            String p = "" ;
+            int i = 0 ;
+            while(s.charAt(i)!=' '){
+                source = source+s.charAt(i) ;
+                i = i+1 ;
+            }
+            i = i+3 ;
+            while(s.charAt(i)!=' '){
+                target = target+s.charAt(i) ;
+                i = i+1 ;
+            }
+            i = i+3 ;
+            while(i<s.length()){
+                p = p+s.charAt(i) ;
+                i = i+1 ;
+            }
+            Double d = new Double(p) ;
+
+
+        }
+
+        return getWeightedGraph(probas) ;
+    }
+
     public static void testMinCutClustering(int size,double probGetEdge, int depth){
         //int size = 1000 ;
         //double probGetEdge = 0.3 ;
@@ -384,15 +415,16 @@ public class ToolsGraph {
         for(String source : probas.keySet()){
             weightedGraph.addVertex(source) ;
             for(String target : probas.get(source).keySet()){
-                weightedGraph.addVertex(target) ;
-                DefaultWeightedEdge e = weightedGraph.addEdge(source,target) ;
-                if(e!=null){
-                    double d1 = probas.get(source).get(target) ;
-                    double d2 = probas.get(target).get(source) ;
-                    double d = (d1+d2)/2 ;
-                    weightedGraph.setEdgeWeight(e,d) ;
+                if(!source.equals(target)) {
+                    weightedGraph.addVertex(target);
+                    DefaultWeightedEdge e = weightedGraph.addEdge(source, target);
+                    if (e != null) {
+                        double d1 = probas.get(source).get(target);
+                        double d2 = probas.get(target).get(source);
+                        double d = (d1 + d2) / 2;
+                        weightedGraph.setEdgeWeight(e, d);
+                    }
                 }
-
             }
         }
         return weightedGraph ;

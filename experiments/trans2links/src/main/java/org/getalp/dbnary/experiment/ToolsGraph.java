@@ -9,6 +9,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.WeightedGraph;
 import org.jgrapht.alg.BronKerboschCliqueFinder;
+import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.alg.StoerWagnerMinimumCut;
 import org.jgrapht.ext.*;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -25,7 +26,7 @@ public class ToolsGraph {
     private static Logger log = LoggerFactory.getLogger(ToolsGraph.class);
 
     public static void main(String args[])throws FileNotFoundException,IOException{
-        Dataset dataset = TDBFactory.createDataset(args[0]) ;
+        /*Dataset dataset = TDBFactory.createDataset(args[0]) ;
         dataset.begin(ReadWrite.READ) ;
         Model graph = dataset.getDefaultModel() ;
 
@@ -47,16 +48,30 @@ public class ToolsGraph {
         log.debug("Getting weighted graph...") ;
         SimpleWeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph(probas) ;
         System.out.println(seeWeightedGraph(wg)) ;
+        */
+
+        log.debug("Getting weighted graph from file...") ;
+        SimpleWeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph() ;
+        System.out.println(seeWeightedGraph(wg)) ;
+
+        log.debug("Getting connected components...");
+        ConnectivityInspector<String,DefaultWeightedEdge> ci = new ConnectivityInspector<String, DefaultWeightedEdge>(wg) ;
+        List<Set<String>> components = ci.connectedSets() ;
+        log.debug(components.size()+" connected components");
+
+        exportGraph(wg,args[1],args[2]) ;
 
         log.debug("Getting clusters...") ;
-        Set<Set<String>> minCut = minCutClustering(wg,2) ;
+        Set<Set<String>> minCut = minCutClustering(wg,2) ; //minCutClustering(wg,20) ;
+        String clusters = "" ;
         for(Set<String> cluster : minCut){
-            System.out.print("{ ") ;
+            clusters = clusters+"{ " ;
             for(String v : cluster){
-                System.out.print(v+" ") ;
+                clusters = clusters+v+" " ;
             }
-            System.out.println("}") ;
+            clusters = clusters+"}\n" ;
         }
+        log.debug("Clusters : "+clusters);
         //writeDot(g,args[1],args[2]);
 
         //testMinCutClustering(1000,0.3,6);
@@ -70,9 +85,9 @@ public class ToolsGraph {
         return res ;
     }
 
-    public static SimpleWeightedGraph<String,DefaultWeightedEdge> getWeightedGraph() throws IOException {
-        Map<String,Map<String,Double>> probas = new HashMap<>() ;
-        BufferedReader buf = new BufferedReader(new InputStreamReader(System.in));
+    public static SimpleWeightedGraph<String,DefaultWeightedEdge> getWeightedGraph() throws IOException { // no edge with weight 0
+        SimpleWeightedGraph<String,DefaultWeightedEdge> g = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class) ;
+        BufferedReader buf = new BufferedReader(new FileReader("/Users/vernemat/Documents/TER/wiktionary/weightedGraph_1"));
         String s = buf.readLine() ;
         while(s!=null){
             String source = "" ;
@@ -94,11 +109,19 @@ public class ToolsGraph {
                 i = i+1 ;
             }
             Double d = new Double(p) ;
-
+            if(d>0.0){
+                g.addVertex(source) ;
+                g.addVertex(target) ;
+                DefaultWeightedEdge e = g.addEdge(source,target) ;
+                if(e!=null){
+                    g.setEdgeWeight(e,d);
+                }
+            }
+            s = buf.readLine() ;
 
         }
 
-        return getWeightedGraph(probas) ;
+        return g ;
     }
 
     public static void testMinCutClustering(int size,double probGetEdge, int depth){
@@ -198,6 +221,26 @@ public class ToolsGraph {
         }
     }
 
+    public static Set<Set<String>> minCutClustering(SimpleWeightedGraph<String,DefaultWeightedEdge> g){
+        Set<Set<String>> res = new HashSet<>() ;
+        if(g.vertexSet().size()<=1){
+            res.add(g.vertexSet()) ;
+            return res ;
+        }
+        StoerWagnerMinimumCut mc = new StoerWagnerMinimumCut(g) ;
+        Set<String> oneSideVertices = mc.minCut() ;
+        double cut = mc.minCutWeight() ;
+        log.debug("Value of the cut : "+cut);
+        if(cut == 0.0) {
+            SimpleWeightedGraph<String, DefaultWeightedEdge> g1 = getCutGraph(g, oneSideVertices);
+            SimpleWeightedGraph<String, DefaultWeightedEdge> g2 = getSecondCutGraph(g, oneSideVertices);
+            res.addAll(minCutClustering(g1));
+            res.addAll(minCutClustering(g2));
+        }
+        return res ;
+
+    }
+
     public static Set<Set<String>> minCutClustering(SimpleWeightedGraph<String,DefaultWeightedEdge> g, int depth){
         Set<Set<String>> res = new HashSet<>() ;
         if(depth==0 || g.vertexSet().size()<=1){
@@ -206,6 +249,7 @@ public class ToolsGraph {
         }
         StoerWagnerMinimumCut mc = new StoerWagnerMinimumCut(g) ;
         Set<String> oneSideVertices = mc.minCut() ;
+        log.debug("Depth "+depth+" Value of the cut : "+mc.minCutWeight());
         SimpleWeightedGraph<String,DefaultWeightedEdge> g1 = getCutGraph(g,oneSideVertices) ;
         SimpleWeightedGraph<String,DefaultWeightedEdge> g2 = getSecondCutGraph(g,oneSideVertices) ;
         res.addAll(minCutClustering(g1,depth-1)) ;
@@ -294,6 +338,26 @@ public class ToolsGraph {
             }
             return res ;
         }
+    }
+
+    public static void exportGraph(Graph<String,DefaultWeightedEdge> translationGraph, String targetDirectory, String file) throws FileNotFoundException {
+        //try {
+        if (translationGraph != null) {
+            File dir = new File(targetDirectory) ;
+            if(!dir.exists()){
+                dir.mkdirs() ;
+            }
+            String path = targetDirectory+file ;
+            Writer translationGraphWriter = new PrintWriter(path);
+            VertexNameProvider vertIdProv = new StringNameProvider<>();
+            VisioExporter visioExp = new VisioExporter(vertIdProv) ;
+            visioExp.exportGraph(translationGraph,translationGraphWriter);
+        } else {
+            log.error("The graph is empty... Aborting.");
+        }
+        //}catch(FileNotFoundException e){
+        //    System.out.println("FileNotFoundExcetion") ;
+        //}
     }
 
     public static void writeDot(Graph<String,DefaultWeightedEdge> translationGraph, String targetDirectory, String file) throws FileNotFoundException {

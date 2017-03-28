@@ -25,7 +25,7 @@ public class ToolsGraph {
     private static Logger log = LoggerFactory.getLogger(ToolsGraph.class);
 
     public static void main(String args[])throws FileNotFoundException,IOException{
-        /*Dataset dataset = TDBFactory.createDataset(args[0]) ;
+        Dataset dataset = TDBFactory.createDataset(args[0]) ;
         dataset.begin(ReadWrite.READ) ;
         Model graph = dataset.getDefaultModel() ;
 
@@ -36,7 +36,7 @@ public class ToolsGraph {
             resources.add(graph.getResource(s)) ;
         }
         log.debug("Creating subgraph...") ;
-        Model newGraph = getsubGraph(graph,resources,3) ;
+        Model newGraph = getsubGraph(graph,resources,1) ;
         Graph<String,DefaultWeightedEdge> g = getGraph(newGraph) ;
         Set<String> vertices = g.vertexSet() ;
         Set<DefaultWeightedEdge> edges = g.edgeSet() ;
@@ -44,10 +44,19 @@ public class ToolsGraph {
         log.debug("Getting probas...") ;
         Map<String,Map<String,Double>> probas = getProbas(g) ;
         System.out.println(seeProbas(probas)) ;
-        WeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph(probas) ;
-        //writeDot(g,args[1],args[2]);*/
+        SimpleWeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph(probas) ;
 
-        testMinCutClustering(1000,0.3,6);
+        Set<Set<String>> minCut = minCutClustering(wg,4) ;
+        for(Set<String> cluster : minCut){
+            System.out.print("{ ") ;
+            for(String v : cluster){
+                System.out.print(v+" ") ;
+            }
+            System.out.println("}") ;
+        }
+        //writeDot(g,args[1],args[2]);
+
+        //testMinCutClustering(1000,0.3,6);
     }
 
     public static void testMinCutClustering(int size,double probGetEdge, int depth){
@@ -359,8 +368,8 @@ public class ToolsGraph {
         return resProba ;
     }
 
-    public static WeightedGraph<String,DefaultWeightedEdge> getWeightedGraph(Map<String,Map<String,Double>> probas){
-        WeightedGraph<String,DefaultWeightedEdge> weightedGraph = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class) ;
+    public static SimpleWeightedGraph<String,DefaultWeightedEdge> getWeightedGraph(Map<String,Map<String,Double>> probas){
+        SimpleWeightedGraph<String,DefaultWeightedEdge> weightedGraph = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class) ;
         for(String source : probas.keySet()){
             weightedGraph.addVertex(source) ;
             for(String target : probas.get(source).keySet()){

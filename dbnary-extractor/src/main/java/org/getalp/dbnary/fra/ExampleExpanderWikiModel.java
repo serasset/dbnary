@@ -47,7 +47,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
      * @return the converted wiki code
      */
     public String expandExample(String definition, Set<String> templates, Map<Property, String> context) {
-        log.trace("extracting examples in {}", this.getPageName());
+        // log.trace("extracting examples in {}", this.getPageName());
         this.context = context;
         return expandAll(definition, templates);
     }
@@ -85,6 +85,13 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
             } else {
                 log.debug("gsub {} | {} | {}", parameterMap.get("1"), parameterMap.get("2"), parameterMap.get("3"));
                 super.substituteTemplateCall(templateName, parameterMap, writer);
+            }
+        } else if ("str find".equals(templateName) || "str_find".equals(templateName)) {
+            String s = parameterMap.get("1");
+            String pattern = parameterMap.get("2");
+            int i = s.trim().indexOf(pattern);
+            if (-1 != i) {
+                writer.append("" + (i+1));
             }
         } else {
             log.debug("Caught template call: {} --in-- {}", templateName, this.getPageName());

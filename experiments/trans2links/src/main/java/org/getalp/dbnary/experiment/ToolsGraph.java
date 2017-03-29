@@ -26,7 +26,7 @@ public class ToolsGraph {
     private static Logger log = LoggerFactory.getLogger(ToolsGraph.class);
 
     public static void main(String args[])throws FileNotFoundException,IOException{
-        /*Dataset dataset = TDBFactory.createDataset(args[0]) ;
+        Dataset dataset = TDBFactory.createDataset(args[0]) ;
         dataset.begin(ReadWrite.READ) ;
         Model graph = dataset.getDefaultModel() ;
 
@@ -37,7 +37,7 @@ public class ToolsGraph {
             resources.add(graph.getResource(s)) ;
         }
         log.debug("Creating subgraph...") ;
-        Model newGraph = getsubGraph(graph,resources,1) ;
+        Model newGraph = getsubGraph(graph,resources,2) ;
         Graph<String,DefaultWeightedEdge> g = getGraph(newGraph) ;
         Set<String> vertices = g.vertexSet() ;
         Set<DefaultWeightedEdge> edges = g.edgeSet() ;
@@ -48,21 +48,21 @@ public class ToolsGraph {
         log.debug("Getting weighted graph...") ;
         SimpleWeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph(probas) ;
         System.out.println(seeWeightedGraph(wg)) ;
-        */
 
-        log.debug("Getting weighted graph from file...") ;
+
+        /*log.debug("Getting weighted graph from file...") ;
         SimpleWeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph() ;
-        System.out.println(seeWeightedGraph(wg)) ;
+        System.out.println(seeWeightedGraph(wg)) ;*/
 
         log.debug("Getting connected components...");
         ConnectivityInspector<String,DefaultWeightedEdge> ci = new ConnectivityInspector<String, DefaultWeightedEdge>(wg) ;
         List<Set<String>> components = ci.connectedSets() ;
-        log.debug(components.size()+" connected components");
+        log.debug(components.size()+" connected component(s)");
 
         exportGraph(wg,args[1],args[2]) ;
 
         log.debug("Getting clusters...") ;
-        Set<Set<String>> minCut = minCutClustering(wg,2) ; //minCutClustering(wg,20) ;
+        Set<Set<String>> minCut = minCutClustering(wg,3) ; //minCutClustering(wg,20) ;
         String clusters = "" ;
         for(Set<String> cluster : minCut){
             clusters = clusters+"{ " ;
@@ -456,15 +456,15 @@ public class ToolsGraph {
             Map<String,Double> subRes = new HashMap<>() ;
             for(String v2 : prob.keySet()){
                 Double d = prob.get(v2);
-                if(d>0.0){
+                if(d>0.0 && !v.equals(v2)){
                     subRes.put(v2,d) ;
                     //System.out.println(v+"-"+v2+":"+d+"\t("+existingLink(g,v,v2)+")") ;
-                }else{
+                }/*else{
                     if(existingLink(g,v,v2)){
                         subRes.put(v2,d) ;
                         //System.out.println("LINK:"+v+"-"+v2+":"+d) ;
                     }
-                }
+                }*/
             }
             resProba.put(v,subRes) ;
             //System.out.println() ;

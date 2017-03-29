@@ -891,130 +891,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
 
-    private static ArrayList<String> explode(char sep, String str) {
-        int lastI = 0;
-        ArrayList<String> res = new ArrayList<String>();
-        int pos = str.indexOf(sep, lastI);
-
-        while (pos != -1) {
-            res.add(str.substring(lastI, pos));
-            lastI = pos + 1;
-            pos = str.indexOf(sep, lastI);
-        }
-
-        res.add(str.substring(lastI, str.length()));
-        return res;
-    }
-
-    static void addAtomicMorphologicalInfo(Set<PropertyObjectPair> infos, String word) {
-        switch (word) {
-            case "singulier":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-                break;
-            case "pluriel":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-                break;
-            case "masculin":
-            case "masculinet": // happens when we should have "masculin et féminin", the "et" gets sticked to the "masculin".
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-                break;
-            case "féminin":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-                break;
-            case "présent":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
-                break;
-            case "imparfait":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.imperfect));
-                break;
-            case "passé":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-                break;
-            case "futur":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.future));
-                break;
-            case "indicatif":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
-                break;
-            case "subjonctif":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.subjunctive));
-                break;
-            case "conditionnel":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.conditional));
-                break;
-            case "impératif":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
-                break;
-            case "participe":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-                break;
-            case "première personne":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.firstPerson));
-                break;
-            case "deuxième personne":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.secondPerson));
-                break;
-            case "troisième personne":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.thirdPerson));
-                break;
-            case "futur simple":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.future));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
-                break;
-            case "passé simple":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
-                break;
-            case "masculin singulier":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-                break;
-            case "féminin singulier":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-                break;
-            case "masculin pluriel":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-                break;
-            case "féminin pluriel":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-                break;
-            case "participe passé masculin singulier":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-                break;
-            case "participe passé féminin singulier":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-                break;
-            case "participe passé masculin pluriel":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-                break;
-            case "participe passé féminin pluriel":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-                break;
-            case "participe présent":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
-                break;
-            default:
-                ArrayList<String> multiwords = explode(' ', word);
-                if (multiwords.size() > 1) {
-                    for (String w : multiwords) {
-                        addAtomicMorphologicalInfo(infos, w);
-                    }
-                }
-        }
-    }
-
     private void extractInflections(int blockStart, int end) {
         log.trace("extracting inflections in {}", this.wiktionaryPageName);
         Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
@@ -1026,6 +902,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 for (int i = 3; i <= m.groupCount(); i++) {
                     // CHECK: do we ever go into this loop ?
                     // an infection macro can have several morphological information parameter
+                    log.trace("Having more than 3 args in inflection template for {} in {}", m.group(), this.wiktionaryPageName);
                     addInflectionMorphologicalSet(wdh.currentWiktionaryPos(), m.group(2), m.group(i).substring(0, m.group(i).indexOf('=')));
                 }
             }
@@ -1059,7 +936,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 // 			infos.add(PropertyObjectPair.get(FrenchExtractorWikiModel.extractedFromFrenchSentence, FrenchExtractorWikiModel.trueLiteral));
             for (String info : m.group(1).split("de l’|du|de")) {
-                addAtomicMorphologicalInfo(infos, info.trim().toLowerCase(frLocale));
+                FrenchExtractorWikiModel.addAtomicMorphologicalInfo(infos, info.trim().toLowerCase(frLocale));
             }
 
             if (commonInflectionInformations.inflections.size() == 0) {
@@ -1410,6 +1287,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     private void extractOtherForms(int start, int end) {
+        // TODO: only when we are extracting morphology ?
+        if (! wdh.isEnabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) return;
+
         Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
         otherFormMatcher.region(start, end);
 

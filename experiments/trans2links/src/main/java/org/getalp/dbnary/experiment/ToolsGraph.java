@@ -26,7 +26,7 @@ public class ToolsGraph {
     private static Logger log = LoggerFactory.getLogger(ToolsGraph.class);
 
     public static void main(String args[])throws FileNotFoundException,IOException{
-        Dataset dataset = TDBFactory.createDataset(args[0]) ;
+        /*Dataset dataset = TDBFactory.createDataset(args[0]) ;
         dataset.begin(ReadWrite.READ) ;
         Model graph = dataset.getDefaultModel() ;
 
@@ -47,19 +47,19 @@ public class ToolsGraph {
         System.out.println(seeProbas(probas)) ;
         log.debug("Getting weighted graph...") ;
         SimpleWeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph(probas) ;
-        System.out.println(seeWeightedGraph(wg)) ;
-
-
-        /*log.debug("Getting weighted graph from file...") ;
-        SimpleWeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph() ;
         System.out.println(seeWeightedGraph(wg)) ;*/
+
+
+        log.debug("Getting weighted graph from file...") ;
+        SimpleWeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph() ;
+        System.out.println(seeWeightedGraph(wg)) ;
 
         log.debug("Getting connected components...");
         ConnectivityInspector<String,DefaultWeightedEdge> ci = new ConnectivityInspector<String, DefaultWeightedEdge>(wg) ;
         List<Set<String>> components = ci.connectedSets() ;
         log.debug(components.size()+" connected component(s)");
 
-        exportGraph(wg,args[1],args[2]) ;
+        Visualization.exportGraph(wg,args[1],args[2]) ;
 
         log.debug("Getting clusters...") ;
         Set<Set<String>> minCut = minCutClustering(wg,3) ; //minCutClustering(wg,20) ;
@@ -87,7 +87,7 @@ public class ToolsGraph {
 
     public static SimpleWeightedGraph<String,DefaultWeightedEdge> getWeightedGraph() throws IOException { // no edge with weight 0
         SimpleWeightedGraph<String,DefaultWeightedEdge> g = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class) ;
-        BufferedReader buf = new BufferedReader(new FileReader("/Users/vernemat/Documents/TER/wiktionary/weightedGraph_1"));
+        BufferedReader buf = new BufferedReader(new FileReader("/Users/vernemat/Documents/TER/wiktionary/weightedGraph_2"));
         String s = buf.readLine() ;
         while(s!=null){
             String source = "" ;
@@ -340,46 +340,7 @@ public class ToolsGraph {
         }
     }
 
-    public static void exportGraph(Graph<String,DefaultWeightedEdge> translationGraph, String targetDirectory, String file) throws FileNotFoundException {
-        //try {
-        if (translationGraph != null) {
-            File dir = new File(targetDirectory) ;
-            if(!dir.exists()){
-                dir.mkdirs() ;
-            }
-            String path = targetDirectory+file ;
-            Writer translationGraphWriter = new PrintWriter(path);
-            VertexNameProvider vertIdProv = new StringNameProvider<>();
-            VisioExporter visioExp = new VisioExporter(vertIdProv) ;
-            visioExp.exportGraph(translationGraph,translationGraphWriter);
-        } else {
-            log.error("The graph is empty... Aborting.");
-        }
-        //}catch(FileNotFoundException e){
-        //    System.out.println("FileNotFoundExcetion") ;
-        //}
-    }
 
-    public static void writeDot(Graph<String,DefaultWeightedEdge> translationGraph, String targetDirectory, String file) throws FileNotFoundException {
-        //try {
-            if (translationGraph != null) {
-                File dir = new File(targetDirectory) ;
-                if(!dir.exists()){
-                    dir.mkdirs() ;
-                }
-                String path = targetDirectory+file ;
-                Writer translationGraphWriter = new PrintWriter(path);
-                VertexNameProvider vertIdProv = new StringNameProvider<>();
-                ComponentNameProvider edgeProv = new StringEdgeNameProvider<>() ;
-                DOTExporter dotExp = new DOTExporter(vertIdProv,null,edgeProv) ;
-                dotExp.exportGraph(translationGraph,translationGraphWriter) ;
-            } else {
-                log.error("The graph is empty... Aborting.");
-            }
-        //}catch(FileNotFoundException e){
-        //    System.out.println("FileNotFoundExcetion") ;
-        //}
-    }
 
 
 

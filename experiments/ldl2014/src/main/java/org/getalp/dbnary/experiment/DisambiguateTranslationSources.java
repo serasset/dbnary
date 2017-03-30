@@ -207,7 +207,7 @@ public class DisambiguateTranslationSources {
 		translatorPass = cmd.getOptionValue(TRANSLATIONAPI_PASS_OPTION);
 		
 		if (useTranslator && (translatorPass == null || translatorPass.length() == 0)) {
-			System.err.println("Translation API secret is mandatory when translkation API is requested.");
+			System.err.println("Translation API secret is mandatory when translation API is requested.");
 			printUsage();
 			System.exit(0);
 		}

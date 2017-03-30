@@ -46,7 +46,7 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
         String writtenForm = translation.getProperty(DBnaryOnt.writtenForm).getObject().toString();
         String uri = DbnaryModel.DBNARY_NS_PREFIX + "/" + currentLang + "/" + DbnaryModel.uriEncode(writtenForm).split("@")[0];
         Resource r = models.get(currentLang).getResource(uri);
-        return models.get(currentLang).listStatements(r, DBnaryOnt.refersTo, (RDFNode) null);
+        return models.get(currentLang).listStatements(r, DBnaryOnt.describes, (RDFNode) null);
     }
 
     private List<String> computeTranslationClosure(Resource translation, String pos, int degree) {

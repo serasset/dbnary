@@ -1,6 +1,7 @@
 package org.getalp.dbnary.fra;
 
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.ExpandAllWikiModel;
@@ -61,7 +62,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
         } else if ("source".equals(templateName)) {
             if (context != null) {
                 String source = simpleExpander.expandAll(parameterMap.get("1"), this.templates);
-                context.put(DBnaryOnt.exampleSource, source);
+                context.put(DCTerms.bibliographicCitation, source);
                 parameterMap.remove("1");
                 if (!parameterMap.isEmpty()) {
                     log.debug("Non empty parameter map {} in {}", parameterMap, this.getPageName());

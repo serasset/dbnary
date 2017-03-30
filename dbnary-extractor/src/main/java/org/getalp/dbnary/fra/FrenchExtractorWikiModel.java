@@ -671,7 +671,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
             Node a = links.item(i);
             Node className = a.getAttributes().getNamedItem("class");
             if (className != null && "selflink".equals(className.getTextContent())) {
-                registerInflectionFromCellChild(a, a.getTextContent());
+                registerInflectionFromCellChild(a, sansBalises(a.getTextContent()));
             }
         }
     }
@@ -689,7 +689,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
         } else if ("sans balise".equals(templateName) || "sans_balise".equals(templateName)) {
             String t = parameterMap.get("1");
             if (null != t)
-                writer.append(t.replaceAll("<[^\\]]*>", "").replaceAll("'''?", ""));
+                writer.append(sansBalises(t));
         } else if ("gsub".equals(templateName)) {
             String s = parameterMap.get("1");
             String pattern = parameterMap.get("2");
@@ -717,4 +717,10 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
         }
     }
 
+    public static String sansBalises(String t) {
+        if (null != t)
+            return t.replaceAll("<[^\\>]*>", "").replaceAll("'''?", "");
+        else
+            return "";
+    }
 }

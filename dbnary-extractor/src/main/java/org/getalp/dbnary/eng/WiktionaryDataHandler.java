@@ -106,7 +106,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
         // Keep it simple for english: register forms on the current lexical entry
         if (null != note) {
-            PropertyObjectPair p = PropertyObjectPair.get(DBnaryOnt.note, aBox.createLiteral(note, extractedLang));
+            PropertyObjectPair p = PropertyObjectPair.get(SkosOnt.note, aBox.createLiteral(note, extractedLang));
             props.add(p);
         }
         PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));

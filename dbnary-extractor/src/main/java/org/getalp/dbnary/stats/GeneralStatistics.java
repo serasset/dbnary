@@ -31,7 +31,7 @@ public class GeneralStatistics {
         // Number of Lexical Entries
 
         int nble = countResourcesOfType(OntolexOnt.LexicalEntry, m1);
-        int nblv = countResourcesOfType(DBnaryOnt.Vocable, m1);
+        int nblv = countResourcesOfType(DBnaryOnt.Page, m1);
         // int nblw = countResourcesOfType(LemonOnt.Word, m1);
         // int nblp = countResourcesOfType(LemonOnt.Phrase, m1);
 

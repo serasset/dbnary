@@ -9,7 +9,7 @@ fi
 
 ## Bootstrapping a virtuoso db.
 
-PREFIX=/home/serasset/dev
+PREFIX=$HOME/develop
 if [[ ! $# -eq 0 ]]
 then
     PREFIX=$1
@@ -17,7 +17,7 @@ fi
 
 source config.sh
 
-DBNARYLATEST=/home/serasset/dev/wiktionary/extracts/ontolex/latest
+DBNARYLATEST=$HOME/dev/wiktionary/extracts/ontolex/latest
 
 test -x $DAEMON || (echo "Could not find virtuoso-t bin" && exit 0)
 

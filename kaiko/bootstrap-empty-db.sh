@@ -9,7 +9,7 @@ fi
 
 ## Bootstrapping a virtuoso db.
 
-PREFIX=/home/serasset/dev
+PREFIX=$HOME/develop
 if [[ ! $# -eq 0 ]]
 then
     PREFIX=$1

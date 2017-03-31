@@ -5,6 +5,7 @@ import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import org.getalp.dbnary.VarTransOnt;
+import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.WeightedGraph;
@@ -12,6 +13,7 @@ import org.jgrapht.alg.BronKerboschCliqueFinder;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.alg.StoerWagnerMinimumCut;
 import org.jgrapht.ext.*;
+import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 import org.slf4j.Logger;
@@ -26,11 +28,37 @@ public class ToolsGraph {
     private static Logger log = LoggerFactory.getLogger(ToolsGraph.class);
 
     public static void main(String args[])throws FileNotFoundException,IOException{
-        /*Dataset dataset = TDBFactory.createDataset(args[0]) ;
+        Dataset dataset = TDBFactory.createDataset(args[0]) ;
         dataset.begin(ReadWrite.READ) ;
-        Model graph = dataset.getDefaultModel() ;
+        Model graph1 = dataset.getDefaultModel() ;
+        UndirectedGraph<String,DefaultWeightedEdge> g1 = getGraph(graph1) ;
+        int[] degrees = getDegrees(g1) ;
+        String d = "" ;
+        for(int i=0 ; i<degrees.length;i++){
+            d = d+degrees[i]+" " ;
+        }
+        log.debug("Degrees : "+d) ;
 
-        List<String> resourcesString = new ArrayList<>() ;
+        Dataset dataset2 = TDBFactory.createDataset(args[1]) ;
+        dataset2.begin(ReadWrite.READ) ;
+        Model graph2 = dataset2.getDefaultModel() ;
+        DirectedGraph<String,DefaultEdge> g2 = ProcessGraph.getJGraph(graph2) ;
+        int[] inDegrees = getInDegrees(g2) ;
+        String d1 = "" ;
+        for(int i=0 ; i<inDegrees.length;i++){
+            d1 = d1+inDegrees[i]+" " ;
+        }
+        log.debug("In degrees : "+d1) ;
+        int[] outDegrees = getOutDegrees(g2) ;
+        String d2 = "" ;
+        for(int i=0 ; i<outDegrees.length;i++){
+            d2 = d2+outDegrees[i]+" " ;
+        }
+        log.debug("Out degrees : "+d2) ;
+
+
+
+        /*List<String> resourcesString = new ArrayList<>() ;
         resourcesString.add("http://kaiko.getalp.org/dbnary/eng/spring__Noun__1") ;
         List<Resource> resources = new ArrayList<>() ;
         for(String s : resourcesString){
@@ -38,11 +66,14 @@ public class ToolsGraph {
         }
         log.debug("Creating subgraph...") ;
         Model newGraph = getsubGraph(graph,resources,2) ;
-        Graph<String,DefaultWeightedEdge> g = getGraph(newGraph) ;
+        SimpleWeightedGraph<String,DefaultWeightedEdge> g = getGraph(newGraph) ;
         Set<String> vertices = g.vertexSet() ;
         Set<DefaultWeightedEdge> edges = g.edgeSet() ;
-        log.debug("In the subgraph : "+vertices.size()+" vertices and "+edges.size()+" edges.") ;
-        log.debug("Getting probas...") ;
+        log.debug("In the subgraph : "+vertices.size()+" vertices and "+edges.size()+" edges.") ;*/
+
+
+
+        /*log.debug("Getting probas...") ;
         Map<String,Map<String,Double>> probas = getProbas(g) ;
         System.out.println(seeProbas(probas)) ;
         log.debug("Getting weighted graph...") ;
@@ -50,7 +81,7 @@ public class ToolsGraph {
         System.out.println(seeWeightedGraph(wg)) ;*/
 
 
-        log.debug("Getting weighted graph from file...") ;
+        /*log.debug("Getting weighted graph from file...") ;
         SimpleWeightedGraph<String,DefaultWeightedEdge> wg = getWeightedGraph() ;
         System.out.println(seeWeightedGraph(wg)) ;
 
@@ -74,7 +105,7 @@ public class ToolsGraph {
         log.debug("Clusters : "+clusters);
         //writeDot(g,args[1],args[2]);
 
-        //testMinCutClustering(1000,0.3,6);
+        //testMinCutClustering(1000,0.3,6);*/
     }
 
     public static String seeWeightedGraph(SimpleWeightedGraph<String,DefaultWeightedEdge> g){
@@ -284,8 +315,8 @@ public class ToolsGraph {
         return getCutGraph(g,otherSideVertices) ;
     }
 
-    public static Graph<String,DefaultWeightedEdge> getGraph(Model m){ // m is a translation graph with only translatableAs statements
-        Graph<String,DefaultWeightedEdge> res = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class) ;
+    public static SimpleWeightedGraph<String,DefaultWeightedEdge> getGraph(Model m){ // m is a translation graph with only translatableAs statements
+        SimpleWeightedGraph<String,DefaultWeightedEdge> res = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class) ;
         StmtIterator stmtIter = m.listStatements() ;
         while(stmtIter.hasNext()){
             Statement stm = stmtIter.next() ;
@@ -341,7 +372,35 @@ public class ToolsGraph {
     }
 
 
+     public static int[] getDegrees(UndirectedGraph<String,DefaultWeightedEdge> g){
+         int[] degrees = new int[g.vertexSet().size()] ;
+         int i = 0 ;
+         for(String v : g.vertexSet()){
+             degrees[i] = g.degreeOf(v) ;
+             i = i+1 ;
+         }
+         return degrees ;
+     }
 
+     public static int[] getOutDegrees(DirectedGraph<String,DefaultEdge> g){
+         int[] degrees = new int[g.vertexSet().size()] ;
+         int i = 0 ;
+         for(String v : g.vertexSet()){
+             degrees[i] = g.outDegreeOf(v) ;
+             i = i+1 ;
+         }
+         return degrees ;
+     }
+
+    public static int[] getInDegrees(DirectedGraph<String,DefaultEdge> g){
+        int[] degrees = new int[g.vertexSet().size()] ;
+        int i = 0 ;
+        for(String v : g.vertexSet()){
+            degrees[i] = g.inDegreeOf(v) ;
+            i = i+1 ;
+        }
+        return degrees ;
+    }
 
 
     // methods for senseUniformPath use

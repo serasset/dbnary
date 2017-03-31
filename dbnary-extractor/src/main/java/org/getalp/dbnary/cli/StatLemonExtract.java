@@ -183,7 +183,7 @@ public class StatLemonExtract extends DbnaryModel {
         // Number of Lexical Entries
 
         int nble = countResourcesOfType(OntolexOnt.LexicalEntry);
-        int nblv = countResourcesOfType(DBnaryOnt.Vocable);
+        int nblv = countResourcesOfType(DBnaryOnt.Page);
         int nblw = countResourcesOfType(OntolexOnt.Word);
         int nblp = countResourcesOfType(OntolexOnt.MultiWordExpression);
 
@@ -194,7 +194,7 @@ public class StatLemonExtract extends DbnaryModel {
         nl = ("LATEX".equals(statsFormat)) ? "\\\\" : "";
 
         if (verbose) {
-            System.out.print("Language Edition" + comma + "Entries" + comma + "Vocables" + comma + "Senses" + comma + "Translations");
+            System.out.print("Language Edition" + comma + "Entries" + comma + "Pages" + comma + "Senses" + comma + "Translations");
             System.out.println(nl);
         }
 

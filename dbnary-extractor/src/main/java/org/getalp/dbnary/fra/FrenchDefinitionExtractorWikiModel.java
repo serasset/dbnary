@@ -57,6 +57,27 @@ public class FrenchDefinitionExtractorWikiModel extends DbnaryWikiModel {
             String langCode = parameterMap.get("1").trim();
             String lang = ISO639_3.sharedInstance.getLanguageNameInFrench(langCode);
             if (null != lang) writer.append(lang);
+        } else if ("sans balise".equals(templateName) || "sans_balise".equals(templateName)) {
+            String t = parameterMap.get("1");
+            if (null != t)
+                writer.append(t.replaceAll("<[^\\]]*>", "").replaceAll("'''?", ""));
+        } else if ("gsub".equals(templateName)) {
+            String s = parameterMap.get("1");
+            String pattern = parameterMap.get("2");
+            String repl = parameterMap.get("3");
+            if ("’".equals(pattern) && "'".equals(repl)) {
+                writer.append(s.replaceAll(pattern, repl));
+            } else {
+                log.debug("gsub {} | {} | {}", parameterMap.get("1"), parameterMap.get("2"), parameterMap.get("3"));
+                super.substituteTemplateCall(templateName, parameterMap, writer);
+            }
+        } else if ("str find".equals(templateName) || "str_find".equals(templateName)) {
+            String s = parameterMap.get("1");
+            String pattern = parameterMap.get("2");
+            int i = s.trim().indexOf(pattern);
+            if (-1 != i) {
+                writer.append("" + (i+1));
+            }
         } else if (templateName.contains("langues")) {
             log.debug("Got template {}\tin\t{}", templateName, this.getPageName());
         } else if ("pron".equals(templateName)) {

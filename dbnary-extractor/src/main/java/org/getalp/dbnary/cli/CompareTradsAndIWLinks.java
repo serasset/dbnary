@@ -224,7 +224,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
     private HashSet<Resource> getTranslationsFor(String name) {
         HashSet<Resource> res = new HashSet<Resource>();
         Resource voc = m1.getResource(NS + name);
-        StmtIterator entries = m1.listStatements(voc, DBnaryOnt.refersTo, (RDFNode) null);
+        StmtIterator entries = m1.listStatements(voc, DBnaryOnt.describes, (RDFNode) null);
 
         while (entries.hasNext()) {
             Resource e = entries.next().getResource();
@@ -301,14 +301,14 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
         int total = countResourcesOfType(OntolexOnt.LexicalEntry);
         int stepWidth = total / n;
 
-        ResIterator vocables = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Vocable);
+        ResIterator vocables = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Page);
 
         // Only keep vocable that are valid pages.
         ExtendedIterator<Resource> vocs = vocables.filterKeep(new Filter<Resource>() {
 
             @Override
             public boolean accept(Resource o) {
-                return o.hasProperty(DBnaryOnt.refersTo);
+                return o.hasProperty(DBnaryOnt.describes);
             }
         });
         int i = 0;

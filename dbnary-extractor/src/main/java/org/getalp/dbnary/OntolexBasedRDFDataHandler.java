@@ -159,7 +159,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
 
         // Retain these statements to be inserted in the model when we know that the entry corresponds to a proper part of speech
-        heldBackStatements.add(aBox.createStatement(currentMainLexEntry, RDF.type, DBnaryOnt.Vocable));
+        heldBackStatements.add(aBox.createStatement(currentMainLexEntry, RDF.type, DBnaryOnt.Page));
 
         currentEncodedPageName = null;
         currentLexEntry = null;
@@ -257,7 +257,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
             aBox.add(s);
         }
         heldBackStatements.clear();
-        aBox.add(currentMainLexEntry, DBnaryOnt.refersTo, currentLexEntry);
+        aBox.add(currentMainLexEntry, DBnaryOnt.describes, currentLexEntry);
         return currentLexEntry;
     }
 
@@ -428,7 +428,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         if (dontLinkWithType) {
             return aBox.createResource(getVocableResourceName(vocable));
         }
-        return aBox.createResource(getVocableResourceName(vocable), DBnaryOnt.Vocable);
+        return aBox.createResource(getVocableResourceName(vocable), DBnaryOnt.Page);
     }
 
     public Resource getVocableResource(String vocable) {
@@ -548,7 +548,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
             // First, we store the other form for all the existing entries
             Resource vocable = getVocableResource(canonicalForm, true);
 
-            StmtIterator entries = vocable.listProperties(DBnaryOnt.refersTo);
+            StmtIterator entries = vocable.listProperties(DBnaryOnt.describes);
 
             while (entries.hasNext()) {
                 Resource lexEntry = entries.next().getResource();
@@ -728,7 +728,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
 
     private void promoteNymProperties() {
-        StmtIterator entries = currentMainLexEntry.listProperties(DBnaryOnt.refersTo);
+        StmtIterator entries = currentMainLexEntry.listProperties(DBnaryOnt.describes);
         HashSet<Statement> toBeRemoved = new HashSet<Statement>();
         while (entries.hasNext()) {
             Resource lu = entries.next().getResource();

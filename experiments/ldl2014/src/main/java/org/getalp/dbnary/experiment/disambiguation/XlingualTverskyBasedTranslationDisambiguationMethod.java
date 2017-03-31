@@ -119,7 +119,7 @@ public class XlingualTverskyBasedTranslationDisambiguationMethod implements
         String writtenForm = translation.getProperty(DBnaryOnt.writtenForm).getString();
         String uri = DbnaryModel.DBNARY_NS_PREFIX + "/" + targetLang + "/" + DbnaryModel.uriEncode(writtenForm);
         Resource r = models.get(targetLang).getResource(uri);
-        return models.get(targetLang).listStatements(r, DBnaryOnt.refersTo, (RDFNode) null);
+        return models.get(targetLang).listStatements(r, DBnaryOnt.describes, (RDFNode) null);
     }
 
     private List<Resource> getTargetSenses(Resource trans, String pos) {

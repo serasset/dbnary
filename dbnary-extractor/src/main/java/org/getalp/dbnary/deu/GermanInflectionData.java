@@ -5,6 +5,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.PropertyObjectPair;
+import org.getalp.dbnary.SkosOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -269,7 +270,7 @@ public class GermanInflectionData {
                 notes.append(s).append("|");
             }
             String tval = notes.toString().substring(0, notes.length() - 1);
-            inflections.add(PropertyObjectPair.get(DBnaryOnt.note, model.createTypedLiteral(tval)));
+            inflections.add(PropertyObjectPair.get(SkosOnt.note, model.createTypedLiteral(tval)));
         }
         return inflections;
     }

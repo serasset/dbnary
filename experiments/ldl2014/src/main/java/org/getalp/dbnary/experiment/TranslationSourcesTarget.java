@@ -2,19 +2,21 @@ package org.getalp.dbnary.experiment;
 
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.tdb.*;
+import com.hp.hpl.jena.query.*;
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-import org.getalp.iso639.ISO639_3;
-import org.getalp.iso639.ISO639_3.Lang;
 import org.getalp.dbnary.DBnaryOnt;
-// import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.OntolexOnt;
+import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.experiment.disambiguation.*;
 import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
 import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
 import org.getalp.dbnary.experiment.preprocessing.StatsModule;
 import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
+import org.getalp.iso639.ISO639_3;
+import org.getalp.iso639.ISO639_3.Lang;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -24,8 +26,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+// import org.getalp.dbnary.DbnaryModel;
 
-public class DisambiguateTranslationSources {
+
+public class TranslationSourcesTarget {
 
 	private static final String LANGUAGES_OPTION = "l";
 	private static final String USE_GLOSSES_OPTION = "g";
@@ -98,13 +102,15 @@ public class DisambiguateTranslationSources {
 	private String translatorId;
 	private String translatorPass;
 	private String translationCache;
+	private Dataset dataset ;
+	private String dir ;
 
-	private DisambiguateTranslationSources() {
+	private TranslationSourcesTarget() {
 	}
 
 	public static void main(String[] args) throws IOException {
 
-		DisambiguateTranslationSources lld = new DisambiguateTranslationSources();
+		TranslationSourcesTarget lld = new TranslationSourcesTarget();
 		lld.loadArgs(args);
 
 		lld.doit();
@@ -165,6 +171,7 @@ public class DisambiguateTranslationSources {
 			evaluator.printConfidenceStats(confidenceOutput);
 			confidenceOutput.close();
 		}
+		//dataset.end() ;
 	}
 
 	public static void printUsage() {
@@ -177,6 +184,7 @@ public class DisambiguateTranslationSources {
 	}
 
 	private void loadArgs(String[] args) {
+		dir = "/Users/vernemat/Documents/TER/tdb/";
 		CommandLineParser parser = new PosixParser();
 		try {
 			cmd = parser.parse(options, args);
@@ -207,7 +215,7 @@ public class DisambiguateTranslationSources {
 		translatorPass = cmd.getOptionValue(TRANSLATIONAPI_PASS_OPTION);
 		
 		if (useTranslator && (translatorPass == null || translatorPass.length() == 0)) {
-			System.err.println("Translation API secret is mandatory when translation API is requested.");
+			System.err.println("Translation API secret is mandatory when translkation API is requested.");
 			printUsage();
 			System.exit(0);
 		}
@@ -262,6 +270,13 @@ public class DisambiguateTranslationSources {
 		modelMap = new HashMap<String,Model>();
 
 		for (String arg: remainingArgs) {
+			/*String directory = dir+guessLanguage(arg) ; // TODO give it as an argument
+			dataset = TDBFactory.createDataset(directory) ;
+			dataset.begin(ReadWrite.WRITE) ;
+			// Get model inside the transaction
+			Model m = dataset.getDefaultModel() ;
+			//dataset.end() ;*/
+
 			Model m = ModelFactory.createDefaultModel();
 			String lang = guessLanguage(arg);
 			modelMap.put(lang, m);
@@ -364,7 +379,6 @@ public class DisambiguateTranslationSources {
 		// TODO: adapt stats module for current language
 		if (null != stats) stats.reset(lang);
 		Model m = modelMap.get(lang);
-
 		StmtIterator translations = m.listStatements((Resource) null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 		while (translations.hasNext()) {
 			Resource e = translations.next().getSubject();
@@ -392,7 +406,6 @@ public class DisambiguateTranslationSources {
 					}
 				}
 			}
-
 		}
 	}
 
@@ -409,15 +422,36 @@ public class DisambiguateTranslationSources {
 		Model inputModel = modelMap.get(lang);
 		StmtIterator translations = inputModel.listStatements(null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 
+		Model tmpModel = ModelFactory.createDefaultModel();
+
+		int nbwsadd = 0 ;
+		int nbws = 0 ;
+		int nbwslost1 = 0 ;
+		int nbwslost2 = 0 ;
+		int nbwskept = 0 ;
+		int nbcfmiss = 0 ;
+		int nbcf = 0 ;
+		int nbcfcf = 0 ;
+		int nbcfelse = 0 ;
+		int nbcfle = 0 ;
+		int nblemiss = 0 ;
+		int nble = 0 ;
+		int nbleposmisstle = 0 ;
+		int nbleposmisssle = 0 ;
+		int nblepos = 0 ;
+		int nblewrongpos = 0 ;
+		int nblelewrongpos = 0 ;
+		int nblelepos = 0 ;
+
 		while (translations.hasNext()) {
 			Statement next = translations.next();
 			
 			Resource trans = next.getSubject();
 
 			Resource lexicalEntry = next.getResource();
-			if (lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) ||
-					lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word) ||
-					lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
+			if (lexicalEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry) ||
+					lexicalEntry.hasProperty(RDF.type, LemonOnt.Word) ||
+					lexicalEntry.hasProperty(RDF.type, LemonOnt.Phrase)) {
 				try {
 					Set<Resource> resSenseNum = snumDisamb.selectWordSenses(lexicalEntry, trans);
 					
@@ -448,17 +482,17 @@ public class DisambiguateTranslationSources {
 						}
 					}
 
-					// Register results in output Model
-					Resource translation = outputModel.createResource(trans.getURI());
+					// Register results in temporary Model
+					Resource translation = tmpModel.createResource(trans.getURI());
 
 					Set<Resource> res = (resSenseNum.isEmpty()) ? resSim : resSenseNum;
 
 					if (res != null && !res.isEmpty()) {
 						for (Resource ws : res) {
-							outputModel.add(outputModel.createStatement(translation, DBnaryOnt.isTranslationOf, outputModel.createResource(ws.getURI())));
+							tmpModel.add(tmpModel.createStatement(translation, DBnaryOnt.isTranslationOf, tmpModel.createResource(ws.getURI())));
+							nbwsadd = nbwsadd+1 ;
 						}
 					}
-
 				} catch (InvalidContextException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -468,10 +502,216 @@ public class DisambiguateTranslationSources {
 				}
 			}
 		}
+
+		// add relation to writtenForm
+		StmtIterator writtenforms = inputModel.listStatements(null, DBnaryOnt.writtenForm, (RDFNode) null);
+		while (writtenforms.hasNext()) {
+			Statement next = writtenforms.next();
+			Resource trans = next.getSubject();
+			RDFNode wf = next.getObject();
+			tmpModel.add(tmpModel.createStatement(tmpModel.createResource(trans.getURI()), DBnaryOnt.writtenForm, wf));
+		}
+
+		// add relation to targetLanguage
+		StmtIterator targetlanguages = inputModel.listStatements(null, DBnaryOnt.targetLanguage, (RDFNode) null);
+		while (targetlanguages.hasNext()) {
+			Statement next = targetlanguages.next();
+			Resource trans = next.getSubject();
+			Resource tl = next.getResource();
+			tmpModel.add(tmpModel.createStatement(tmpModel.createResource(trans.getURI()), DBnaryOnt.targetLanguage, tmpModel.createResource(tl.getURI())));
+		}
+
+		// add relation to usage
+		StmtIterator usages = inputModel.listStatements(null, DBnaryOnt.usage, (RDFNode) null);
+		while (usages.hasNext()) {
+			Statement next = usages.next();
+			Resource trans = next.getSubject();
+			RDFNode use = next.getObject();
+			tmpModel.add(tmpModel.createStatement(tmpModel.createResource(trans.getURI()), DBnaryOnt.usage, use));
+		}
+
+
+		// processthe temporary model
+		StmtIterator stmt = tmpModel.listStatements() ;
+		while(stmt.hasNext()){
+			Statement next = stmt.next() ;
+			Resource e = next.getSubject();
+
+			StmtIterator stmtws = e.listProperties(DBnaryOnt.isTranslationOf);
+			if(stmtws != null){
+				while(stmtws.hasNext()){
+					Statement statement = stmtws.next() ;
+					Resource ws = statement.getResource();
+					nbws = nbws + 1 ;
+					Statement stmtwf = e.getProperty(DBnaryOnt.writtenForm);
+					Statement stmttl = e.getProperty(DBnaryOnt.targetLanguage);
+					if(stmtwf != null && stmttl != null){
+						RDFNode wf = stmtwf.getObject();
+						//int nbLexicalEntries = 0 ;
+						//int nbLexEntriesPoS = 0 ;
+						// get canonical form
+						RDFNode tl = stmttl.getObject();
+						String l = guessLanguage(""+tl);
+						String directory = dir+l ;
+
+						if(!(new File(directory).exists())){ // no extraction is available for this language
+							nbwslost2 = nbwslost2 + 1 ;
+						}else{
+							nbwskept = nbwskept + 1 ;
+							Dataset dataset = TDBFactory.createDataset(directory) ;
+							dataset.begin(ReadWrite.READ) ;
+							Model model = dataset.getDefaultModel() ;
+
+							//nbKept = nbKept+1 ;
+
+							StmtIterator stmtcf = model.listStatements(null, LemonOnt.writtenRep, wf); // can give statement that are lexicalentries and not cf
+							boolean stmtcfIsEmpty = true ;
+							// si vide nbcfmiss+1
+							while(stmtcf.hasNext()){
+								stmtcfIsEmpty=false;
+								nbcf = nbcf + 1 ;
+								Statement stm = stmtcf.next();
+								Resource cf = stm.getSubject(); // not necessarily a canonical form, it  can be a lexical entry
+								// check whether we have a lexical entry or a canonical form
+								Statement s = cf.getProperty(RDF.type) ;
+								if(s!=null && s.getResource().equals(LemonOnt.Form)){
+									nbcfcf = nbcfcf + 1 ;
+									// get LexicalEntry
+									StmtIterator stmtle = model.listStatements(null,LemonOnt.canonicalForm,cf);
+									// si vide nblemiss+1
+									boolean stmtleIsEmpty = true ;
+									while(stmtle.hasNext()){
+										stmtleIsEmpty = false ;
+										nble = nble + 1 ;
+										Statement statementLexEntry = stmtle.next() ;
+										Resource le = statementLexEntry.getSubject();
+										//nbLexicalEntries = nbLexicalEntries+1 ;
+										// check the part of speech
+										Statement st = le.getProperty(LexinfoOnt.partOfSpeech) ;
+										if(st != null){
+											Resource posLE =  st.getResource();
+											Model source = modelMap.get(lang);
+											StmtIterator stmtwsPoS = source.listStatements(null,LemonOnt.sense,ws);
+											int nbsense = 0 ;
+											while(stmtwsPoS.hasNext()){
+												nbsense = nbsense+1 ;
+												Statement stmtpos = stmtwsPoS.next();
+												Resource r = stmtpos.getSubject();
+												Statement pos = r.getProperty(LexinfoOnt.partOfSpeech);
+												if(pos != null) {
+													Resource posWS = pos.getResource();
+													if (posLE.equals(posWS)) {
+														//nbLexEntriesPoS = nbLexEntriesPoS+1 ;
+														//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
+														outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); //ws to lexical entry
+														nblepos = nblepos + 1 ;
+													}else{
+														nblewrongpos = nblewrongpos + 1 ;
+													}
+												}else{
+													nbleposmisssle = nbleposmisssle + 1 ;
+												}
+											}
+											if(nbsense!=1){
+												System.out.println("(Looking for the part of speech) nb of lexical entries with the sense we're looking for : "+nbsense) ;
+											}
+										}else{
+											nbleposmisstle = nbleposmisstle + 1 ;
+										}
+									}
+									if(stmtleIsEmpty){
+										nblemiss = nblemiss+1 ;
+									}
+								}else if(s!=null && s.getResource().equals(LemonOnt.LexicalEntry)){
+									nbcfle = nbcfle + 1 ;
+									Resource le = stm.getSubject();
+									Statement st = le.getProperty(LexinfoOnt.partOfSpeech) ;
+									if(st != null){
+										Resource posLE =  st.getResource();
+										Model source = modelMap.get(lang);
+										StmtIterator stmtwsPoS = source.listStatements(null,LemonOnt.sense,ws);
+										int nbsense = 0 ;
+										while(stmtwsPoS.hasNext()){
+											nbsense = nbsense+1 ;
+											Statement stmtpos = stmtwsPoS.next();
+											Resource r = stmtpos.getSubject();
+											Statement pos = r.getProperty(LexinfoOnt.partOfSpeech);
+											if(pos != null) {
+												Resource posWS = pos.getResource();
+												if (posLE.equals(posWS)) {
+													//nbLexEntriesPoS = nbLexEntriesPoS+1 ;
+													//outputModel.add(outputModel.createStatement(outputModel.createResource(r.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); // lexical entry to lexical entry
+													outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), LemonOnt.canonicalForm, outputModel.createResource(le.getURI()))); //ws to lexical entry
+													nblelepos = nblelepos + 1 ;
+												}else{
+													nblelewrongpos = nblelewrongpos + 1 ;
+												}
+											}else{
+												nbleposmisssle = nbleposmisssle + 1 ;
+											}
+										}
+										if(nbsense!=1){
+											System.out.println("(Looking for the part of speech) nb of lexical entries with the sense we're looking for : "+nbsense) ;
+										}
+									}else{
+										nbleposmisstle = nbleposmisstle + 1 ;
+									}
+								}else{
+									nbcfelse = nbcfelse + 1 ;
+								}
+							}
+							if(stmtcfIsEmpty){
+								nbcfmiss = nbcfmiss+1 ;
+							}
+							dataset.end() ;
+							//System.out.println(ws+" "+wf+"\n\t"+nbLexicalEntries+" LexicalEntries\n\t"+nbLexEntriesPoS+" LexicalEntries with correct part of speech") ;
+						}
+					}else{
+						nbwslost1 = nbwslost1 + 1 ;
+					}
+					/*Statement stmttl = e.getProperty(DBnaryOnt.targetLanguage);
+					if(stmttl != null){
+						Resource tl = stmttl.getResource();
+						outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.targetLanguage, outputModel.createResource(tl.getURI())));
+					}
+					Statement stmtuse = e.getProperty(DBnaryOnt.usage);
+					if(stmtuse != null) {
+						RDFNode use = stmtuse.getObject();
+						outputModel.add(outputModel.createStatement(outputModel.createResource(ws.getURI()), DBnaryOnt.writtenForm, use));
+					}*/
+				}
+			}
+		}
+		System.out.println(nbwsadd+"\ttranslations to a word sense added") ;
+		System.out.println();
+		System.out.println(nbws+"\ttranslations to a word sense in the model") ;
+		System.out.println();
+		System.out.println(nbwslost1+"\ttranslations to a word sense lost because written form or target language missing") ;
+		System.out.println(nbwslost2+"\ttranslations to a word sense lost because model unavailable in this language") ;
+		System.out.println(nbwskept+"\ttranslations to a word sense kept") ;
+		System.out.println();
+		System.out.println(nbcfmiss+"\ttimes where canonical form or lexical entry corresponding to the written form was not found") ;
+		System.out.println(nbcf+"\ttimes where canonical form or lexical entry corresponding to the written form was found") ;
+		System.out.println();
+		System.out.println(nbcfcf+"\ttimes where it was indeed a canonical form");
+		System.out.println(nbcfle+"\ttimes where it was a lexical entry");
+		System.out.println(nbcfelse+"\ttimes where it was neither a canonical form nor a lexical entry");
+		System.out.println();
+		System.out.println(nblemiss+"\ttimes where no lexical entry corresponding to this canonical form was found") ;
+		System.out.println(nble+"\ttimes where a lexical entry corresponding to this canonical form was found") ;
+		System.out.println();
+		System.out.println(nblepos+"\ttimes where a lexical entry corresponding to this canonical form with the right part of speech was found") ;
+		System.out.println(nblelepos+"\ttimes where a lexical entry with the right part of speech was found directly (not through canonical form)") ;
+		System.out.println();
+		System.out.println(nblewrongpos+"\ttimes where a lexical entry corresponding to this canonical form with the wrong part of speech was found") ;
+		System.out.println(nblelewrongpos+"\ttimes where a lexical entry with the wrong part of speech was found directly (not through canonical form)") ;
+		System.out.println();
+		System.out.println(nbleposmisstle+"\ttimes where part of speech was missing from the target") ;
+		System.out.println(nbleposmisssle+"\ttimes where part of speech was missing from the source") ;
 	}
 
 	private int getNumberOfSenses(Resource lexicalEntry) {
-		StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
+		StmtIterator senses = lexicalEntry.listProperties(LemonOnt.sense);
 		int n = 0;
 		while (senses.hasNext()) {
 			n++;

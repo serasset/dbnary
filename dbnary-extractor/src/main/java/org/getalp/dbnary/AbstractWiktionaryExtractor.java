@@ -2,6 +2,7 @@ package org.getalp.dbnary;
 
 import org.getalp.dbnary.wiki.WikiPatterns;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,12 +16,14 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     protected String pageContent;
     protected IWiktionaryDataHandler wdh;
     protected String wiktionaryPageName;
+    protected final AbstractGlossFilter glossFilter;
 
     protected WiktionaryIndex wi = null;
 
     public AbstractWiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super();
         this.wdh = wdh;
+        glossFilter = createGlossFilter();
     }
 
     @Override
@@ -455,6 +458,37 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
             }
         }
         return resultat;
+    }
+
+    private AbstractGlossFilter createGlossFilter() {
+        AbstractGlossFilter f = null;
+        String cname = this.getClass().getCanonicalName();
+        int dpos = cname.lastIndexOf('.');
+        String pack = cname.substring(0, dpos);
+        try {
+            Class<?> wec = Class.forName(pack + ".GlossFilter");
+            f = (AbstractGlossFilter) wec.getConstructor().newInstance();
+        } catch (ClassNotFoundException e) {
+            System.err.println("No gloss filter found for " + cname +" reverting to  DefaultGlossFilter");
+            f = new DefaultGlossFilter();
+        } catch (InstantiationException e) {
+            System.err.println("Could not instanciate gloss filter.");
+        } catch (IllegalAccessException e) {
+            System.err.println("Illegal access to gloss filter.");
+        } catch (IllegalArgumentException e) {
+            System.err.println("Illegal argument passed to gloss filter's constructor.");
+            e.printStackTrace(System.err);
+        } catch (SecurityException e) {
+            System.err.println("Security exception while instanciating gloss filter.");
+            e.printStackTrace(System.err);
+        } catch (InvocationTargetException e) {
+            System.err.println("InvocationTargetException exception while instanciating gloss filter. ");
+            e.printStackTrace(System.err);
+        } catch (NoSuchMethodException e) {
+            System.err.println("No appropriate constructor when instanciating gloss filter.");
+        }
+        System.err.println(f.getClass().getCanonicalName());
+        return f;
     }
 
 }

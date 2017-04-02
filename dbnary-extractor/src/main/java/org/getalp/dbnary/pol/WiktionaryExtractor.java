@@ -1,5 +1,6 @@
 package org.getalp.dbnary.pol;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -540,14 +541,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private void extractTranslationLine(String lang, String translations) {
         Matcher lexer = translationLexer.matcher(translations + ";");
-        String currentGlose = null;
+        String currentGloss = null;
         String currentTranslation = "";
         String currentUsage = "";
 
         while (lexer.find()) {
             if (lexer.group(1) != null) {
                 // Sense number
-                currentGlose = lexer.group(1);
+                currentGloss = lexer.group(1);
             } else if (lexer.group(2) != null) {
                 // A link (group 2 = target; group 3 = form)
                 currentTranslation = currentTranslation + " " + lexer.group(2);
@@ -571,7 +572,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 String character = lexer.group(7);
 
                 if (character.equals(",") || character.equals(";")) {
-                    wdh.registerTranslation(lang, currentGlose, currentUsage.trim(), currentTranslation.trim());
+                    wdh.registerTranslation(lang, currentGloss, currentUsage.trim(), currentTranslation.trim());
                     currentTranslation = "";
                     currentUsage = "";
                 } else {

@@ -3,6 +3,7 @@
  */
 package org.getalp.dbnary.ell;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
@@ -373,7 +374,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void extractTranslations(int startOffset, int endOffset) {
         Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
         macroMatcher.region(startOffset, endOffset);
-        String currentGlose = null;
+        Resource currentGlose = null;
 
         while (macroMatcher.find()) {
             String g1 = macroMatcher.group(1);
@@ -401,7 +402,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 String g2 = macroMatcher.group(2);
                 // Ignore glose if it is a macro
                 if (g2 != null && !g2.startsWith("{{")) {
-                    currentGlose = g2;
+                    currentGlose = wdh.createGlossResource(glossFilter.extractGlossStructure(g2));
                 }
             } else if (g1.equals("μτφ-μέση")) {
                 // just ignore it

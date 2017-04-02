@@ -332,7 +332,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private void extractTranslations(int startOffset, int endOffset) {
         String transCode = pageContent.substring(startOffset, endOffset);
-        FinnishTranslationExtractorWikiModel dbnmodel = new FinnishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), "/${image}", "/${title}");
+        FinnishTranslationExtractorWikiModel dbnmodel = new FinnishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), "/${image}", "/${title}", glossFilter);
         dbnmodel.parseTranslationBlock(transCode);
     }
 

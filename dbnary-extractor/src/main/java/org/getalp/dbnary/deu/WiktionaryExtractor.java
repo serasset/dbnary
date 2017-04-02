@@ -1,5 +1,6 @@
 package org.getalp.dbnary.deu;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
@@ -535,7 +536,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         for(WikiText.Token t : toks) {
             if (t instanceof WikiText.Template && ((WikiText.Template) t).getName().trim().equals("Ü-Tabelle")) {
                 Map<String, WikiText.WikiContent> args = ((WikiText.Template) t).getArgs();
-                // General gloss is in arg G // Meaning number in arg 1
+                // TODO: General gloss is in arg G // Meaning number in arg 1
                 extractTranslationsFromItems(args.get("Ü-links"));
                 extractTranslationsFromItems(args.get("Ü-rechts"));
                 // extractTranslationsFromItems(args.get("Dialekttabelle"));
@@ -583,7 +584,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Pattern pattern = WikiPattern.compile(translationTokenizer);
 
         Matcher lexer = pattern.matcher(line);
-        String currentGloss = null;
+        Resource currentGloss = null;
+
+        int rank = 1;
 
         // TODO: Support usage notes as : {{Ü...}} {{m}}
         while (lexer.find()) {
@@ -602,7 +605,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 log.debug("Template or link inside parens: {}", line.getSourceContent(lexer.group("SPECIALPARENS")));
                 // TODO: some are only additional usage notes, other are alternate translation, decide between them and handle the translation cases.
             } else if (null != (g = lexer.group("GLOSS"))) {
-                currentGloss = g;
+                currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
             } else if (null != (g = lexer.group("LINK"))) {
                 log.debug("Translation as link : {}", line.getToken(lexer.group("LINK")));
             } else if (null != (g = lexer.group("TMPL"))) {
@@ -671,93 +674,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
     }
 
-    private static String decodeLanguageName(String lang) {
-        return lang;
-    }
-
-    // private void extractTranslations(int startOffset, int endOffset) {
-    private void extractTranslationsFromLine(String line) {
-
-        Matcher macroMatcher = glossOrMacroPattern.matcher(line);
-        String currentGloss = null;
-
-        // TODO: The german translation has changed drastically with the introduction of ÜT and new versions of Üxx/Ü
-        while (macroMatcher.find()) {
-            String gloss = macroMatcher.group(1);
-
-            if (gloss != null) {
-
-                currentGloss = gloss;
-
-            } else {
-
-                String g1 = macroMatcher.group(2);
-                String g2 = macroMatcher.group(3);
-                String g3 = macroMatcher.group(4);
-                String g4 = macroMatcher.group(5);
-
-                // TODO : Üxx4 to be handled (example in arabic transmation of Haus)
-                if (g1.equals("Ü") || g1.equals("Üxx") || g1.equals("Üt")) {
-                    String lang;
-                    String word = null;
-                    String trans1 = null;
-                    String trans2 = null;
-                    String transcription = null;
-
-                    lang = LangTools.normalize(g2);
-
-                    // Extract word and transcription
-                    // there are three case with 5 "|" : 1-"{{ .. }}'' or 2-"" [[ .. ]]"" or 3-just "|"
-
-
-                    int i1, i2, i3;
-                    int i4 = 0;
-                    int i5 = 0;
-                    if (g4 != null && (i1 = g4.indexOf('|')) != -1 && (i3 = g4.indexOf('|', i1 + 1)) == -1) { // only 5 "|"
-
-                        if ((i4 = g4.indexOf(']')) != -1 && (i5 = g3.indexOf('[')) != -1) {
-                            i1 = g4.indexOf('|', i4); // the {{..}} can contain more than 1 "|", since the word is after the {{..}}, we ignore the others "|" and match the last one
-                            trans1 = g3.substring(i5 + 1);
-                            trans2 = g4.substring(0, i4 + 1);
-                            transcription = trans1 + "|" + trans2;
-                            word = g4.substring(i1 + 1);
-
-                        } else if (g4 != null && g4.equals("")) {
-                            word = g3;
-
-                        } else {
-                            transcription = g3;
-                            word = g4;
-                        }
-                    }
-
-                    if (g4 != null && g4.equals("")) {
-                        word = g3;
-
-                    } else {
-                        transcription = g3;
-                        word = g4;
-                    }
-
-                    lang = GermanLangToCode.threeLettersCode(lang);
-                    if (lang != null) {
-                        wdh.registerTranslation(lang, currentGloss, transcription, word);
-                    }
-
-                } else if (g1.equals("Ü-links")) {
-                    // German wiktionary does not provide a gloss to disambiguate.
-                    // Just ignore this marker.
-                } else if (g1.equals("Ü-Abstand")) {
-                    // just ignore it
-                } else if (g1.equals("Ü-rechts")) {
-                    // Forget the current gloss
-                    currentGloss = null;
-                }
-
-            }
-        }
-    }
-
     @Override
     protected void extractNyms(String synRelation, int startOffset, int endOffset) {
 
@@ -808,7 +724,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                         if (null == senseNum) {
                             wdh.registerNymRelation(leftGroup, synRelation);
                         } else {
-                            wdh.registerNymRelation(leftGroup, synRelation, senseNum);
+                            wdh.registerNymRelation(leftGroup, synRelation, wdh.createGlossResource(glossFilter.extractGlossStructure(senseNum)));
                         }
                     }
                 }

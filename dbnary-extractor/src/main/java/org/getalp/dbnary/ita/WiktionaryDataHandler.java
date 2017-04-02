@@ -1,6 +1,7 @@
 package org.getalp.dbnary.ita;
 
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OntolexOnt;
@@ -122,12 +123,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     }
 
     @Override
-    public void registerTranslation(String lang, String currentGlose, String usage, String word) {
+    public void registerTranslation(String lang, Resource currentGlose, String usage, String word) {
         if (lexEntries.size() == 0) {
             log.debug("Registering Translation when no lexical entry is defined in {}", currentWiktionaryPageName);
         } else if (lexEntries.size() == 1) {
             super.registerTranslation(lang, currentGlose, usage, word);
-        } else if (null == currentGlose || currentGlose.length() == 0) {
+        } else if (null == currentGlose) {
             log.debug("Attaching translations to Vocable (Null gloss and several lexical entries) in {}", currentWiktionaryPageName);
             super.registerTranslationToEntity(currentMainLexEntry, lang, currentGlose, usage, word);
         } else {
@@ -149,7 +150,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         }
     }
 
-    private List<Resource> getLexicalEntryUsingPartOfSpeech(String gloss) {
+    private List<Resource> getLexicalEntryUsingPartOfSpeech(Resource structuredGloss) {
+        String gloss = structuredGloss.getProperty(RDF.value).getString();
         gloss = gloss.trim();
         ArrayList<Resource> res = new ArrayList<>();
         if (gloss.startsWith("aggettivo numerale")) {

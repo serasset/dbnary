@@ -1,6 +1,7 @@
 package org.getalp.dbnary.ind;
 
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.slf4j.Logger;
@@ -414,18 +415,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected void extractTranslations(int start, int end) {
         Matcher trad = tradPattern.matcher(pageContent);
         trad.region(start, end);
-        String currentGloss = wiktionaryPageName;
 
         WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
 
         while (trad.find()) {
             if (trad.group(1) != null) {
-                dwdh.addTranslation(trad.group(1), currentGloss, null, trad.group(2));
+                dwdh.addTranslation(trad.group(1), null, null, trad.group(2));
             }
             if (trad.group(3) != null) {
                 String[] tmp = trad.group(3).split("\\|");
                 if (tmp.length == 3)
-                    dwdh.addTranslation(tmp[1], currentGloss, null, tmp[2]);
+                    dwdh.addTranslation(tmp[1], null, null, tmp[2]);
             }
         }
     }

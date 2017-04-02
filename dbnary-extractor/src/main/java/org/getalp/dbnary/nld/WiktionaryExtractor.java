@@ -1,5 +1,6 @@
 package org.getalp.dbnary.nld;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
@@ -231,7 +232,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void extractTranslations(int startOffset, int endOffset) {
         Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
         macroMatcher.region(startOffset, endOffset);
-        String currentGloss = null;
+        Resource currentGloss = null;
+        int rank = 1;
         // TODO: there are templates called "qualifier" used to further qualify the translation check and evaluate if extracting its data is useful.
         while (macroMatcher.find()) {
             String g1 = macroMatcher.group(1);
@@ -255,14 +257,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     if (lang != null) {
                         wdh.registerTranslation(lang, currentGloss, usage, word);
                     }
-
                 }
             } else if (g1.equals("trans-top")) {
                 // Get the glose that should help disambiguate the source acception
                 String g2 = macroMatcher.group(2);
                 // Ignore glose if it is a macro
                 if (g2 != null && !g2.startsWith("{{")) {
-                    currentGloss = g2;
+                    currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);
                 }
             } else if (g1.equals("trans-bottom")) {
                 // Forget the current glose

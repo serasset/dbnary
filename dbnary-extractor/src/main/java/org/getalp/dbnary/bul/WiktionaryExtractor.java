@@ -157,7 +157,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         wdh.finalizeEntryExtraction();
     }
 
-    private BulgarianWikiModel dbnmodel = new BulgarianWikiModel(this.wdh, this.wi, new Locale("bg"), "/${image}", "/${title}");
+    private BulgarianWikiModel dbnmodel = new BulgarianWikiModel(this.wdh, this.wi, new Locale("bg"), "/${image}", "/${title}", this.glossFilter);
 
     private void extractMorpho(int startOffset, int endOffset) {
         dbnmodel.setPageName(this.wiktionaryPageName);

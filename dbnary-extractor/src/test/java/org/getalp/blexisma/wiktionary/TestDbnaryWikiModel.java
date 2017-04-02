@@ -1,5 +1,7 @@
 package org.getalp.blexisma.wiktionary;
 
+import org.getalp.dbnary.DefaultGlossFilter;
+import org.getalp.dbnary.rus.GlossFilter;
 import org.getalp.dbnary.rus.RussianTranslationExtractorWikiModel;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +15,7 @@ public class TestDbnaryWikiModel {
     @Before
     public void setUp() throws Exception {
         wikiModel = new RussianTranslationExtractorWikiModel(null, new Locale("fr"), "http://www.mywiki.com/wiki/${image}",
-                "http://www.mywiki.com/wiki/${title}");
+                "http://www.mywiki.com/wiki/${title}", new GlossFilter());
     }
 
     @Test

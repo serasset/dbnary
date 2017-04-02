@@ -161,7 +161,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         super.setWiktionaryIndex(wi);
         definitionExpander = new SpanishDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}", "/${title}");
         headerExtractor = new SpanishHeaderExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}", "/${title}");
-        translationExtractor = new SpanishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}", "/${title}");
+        translationExtractor = new SpanishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}", "/${title}", glossFilter);
     }
 
     @Override

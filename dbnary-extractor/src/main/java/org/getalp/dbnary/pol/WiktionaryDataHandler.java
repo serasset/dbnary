@@ -72,7 +72,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
             Resource[] senseAndEntry = currentWordsenses.get(n);
             if (null == senseAndEntry) {
                 log.debug("Could not fetch sense resource for nym property of {} in {}", n, currentLexEntry());
-                super.registerNymRelation(target, synRelation, n);
+                StructuredGloss sg = new StructuredGloss(n, "");
+                Resource g = super.createGlossResource(sg);
+                super.registerNymRelation(target, synRelation, g);
             } else {
                 Resource ws = senseAndEntry[0];
                 registerNymRelationToEntity(target, synRelation, ws);
@@ -404,21 +406,24 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         return currentWiktionaryPos != null;
     }
 
-    @Override
-    public void registerTranslation(String lang, String currentGlose, String usage, String word) {
+    // TODO : All lex entries precede the translation.
+    // There is a need to attach the correct translations to the correct lex entry (and lex sense).
+    public void registerTranslation(String lang, String currentGloss, String usage, String word) {
 
-        if (null == currentGlose) {
+        if (null == currentGloss) {
             if (currentLexEntries.size() == 1) {
                 // Only one entry, link the translation to it
                 Resource entry = currentLexEntries.iterator().next();
-                registerTranslationToEntity(entry, lang, currentGlose, usage, word);
+                registerTranslationToEntity(entry, lang, null, usage, word);
             } else {
                 // Forget this translation.
                 log.debug("No gloss for a translation in a multi entry page: {}, {} : {} / {}", currentLexEntry(), lang, word, usage);
             }
         } else {
             // parse the gloss to get the sense number(s)
-            ArrayList<String> numlist = getSenseNumbers(currentGlose);
+            ArrayList<String> numlist = getSenseNumbers(currentGloss);
+            StructuredGloss sg = new StructuredGloss(numlist.toString(), "");
+            Resource currentGlossResource = createGlossResource(sg);
             ArrayList<Resource[]> senseAndEntries = new ArrayList<Resource[]>();
             for (String n : numlist) {
                 Resource[] se = currentWordsenses.get(n);
@@ -443,7 +448,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
             }
             for (Entry<Resource, ArrayList<Resource>> es : sensesByEntry.entrySet()) {
                 // register definition to the currentLexEntry
-                Resource trans = registerTranslationToEntity(es.getKey(), lang, currentGlose, usage, word);
+                Resource trans = registerTranslationToEntity(es.getKey(), lang, currentGlossResource, usage, word);
 
                 // add a reference to the correct word sense(s)
                 if (null != trans) {
@@ -455,6 +460,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         }
     }
 
+    // TODO : move into GlossFilter
     static Pattern range1 = Pattern.compile("(\\d+)\\.(\\d+)[\\-,—–]\\s*(\\d+)");
     static Pattern range2 = Pattern.compile("(\\d+)[\\-—–](\\d+)");
 //	static Pattern range3 = Pattern.compile("(\\d+)\\.(\\d+)[\\-—–](\\d+)\\.(\\d+)");
@@ -494,7 +500,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                         ns.add(n1 + "." + i);
                     }
                 } else {
-                    log.debug("Invalide range: {} in {}", nums, currentLexEntry());
+                    log.debug("Invalid range: {} in {}", nums, currentLexEntry());
                     ns.add(nums);
                 }
             } catch (NumberFormatException e) {

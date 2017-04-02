@@ -1,8 +1,10 @@
 package org.getalp.dbnary.swe;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
+import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,8 +238,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void extractTranslations(int startOffset, int endOffset) {
         Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
         macroMatcher.region(startOffset, endOffset);
-        String currentGloss = null;
+        Resource currentGloss = null;
         // {{ö+|en|passport}}
+        int rank = 1;
 
         while (macroMatcher.find()) {
             String g1 = macroMatcher.group(1);
@@ -268,7 +271,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 String g2 = macroMatcher.group(2);
                 // Ignore glose if it is a macro
                 if (g2 != null && !g2.startsWith("{{")) {
-                    currentGloss = g2;
+                    currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);
                 }
             } else if (g1.equals("ö-botten")) {
                 // on remet le gloss à null à la fin du bloc de traduction
@@ -304,12 +307,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         Matcher nymSenseMatcher = nymPattern.matcher(this.pageContent);
         nymSenseMatcher.region(startOffset, endOffset);
-        String gloss = null;
+        Resource gloss = null;
 
         while (nymSenseMatcher.find()) {
             if (nymSenseMatcher.group(1) != null) {
-                gloss = nymSenseMatcher.group(1);
-
+                StructuredGloss g = glossFilter.extractGlossStructure(nymSenseMatcher.group(1));
+                gloss = wdh.createGlossResource(g);
             } else {
                 String leftGroup = nymSenseMatcher.group(2);
                 String usage = (nymSenseMatcher.group(5) != null) ? nymSenseMatcher.group(5) : nymSenseMatcher.group(6);

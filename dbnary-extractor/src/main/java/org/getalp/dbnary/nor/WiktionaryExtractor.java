@@ -1,5 +1,6 @@
 package org.getalp.dbnary.nor;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.slf4j.Logger;
@@ -509,7 +510,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected void extractTranslations(int start, int end) {
         Matcher trad = tradPattern.matcher(pageContent);
         trad.region(start, end);
-        String currentGloss = wiktionaryPageName;
+        Resource currentGloss = null;
+        int rank = 1;
 
         while (trad.find()) {
             if (trad.group(1) != null) {
@@ -549,7 +551,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                         case "toppdrive propaganda":
                         case "trans-top":
                             if (tTrad.length > 1) {
-                                currentGloss = tTrad[1];
+                                currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(tTrad[1]), rank++);
                             }
                             break;
                         case "overs-midt":

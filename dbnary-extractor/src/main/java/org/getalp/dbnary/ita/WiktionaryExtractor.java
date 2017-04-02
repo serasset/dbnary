@@ -3,6 +3,7 @@
  */
 package org.getalp.dbnary.ita;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
@@ -275,10 +276,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         macroOrLinkOrcarMatcher.region(startOffset, endOffset);
         int ETAT = INIT;
 
-        String currentGlose = null;
+        Resource currentGlose = null;
         String lang = null, word = "";
         String usage = "";
         String langname = "";
+        int rank = 1;
 
         while (macroOrLinkOrcarMatcher.find()) {
 
@@ -293,7 +295,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     if (g1 != null) {
                         if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
                             if (macroOrLinkOrcarMatcher.group(2) != null) {
-                                currentGlose = macroOrLinkOrcarMatcher.group(2);
+                                String g = macroOrLinkOrcarMatcher.group(2);
+                                currentGlose = wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
                             } else {
                                 currentGlose = null;
                             }
@@ -326,7 +329,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     if (g1 != null) {
                         if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
                             if (macroOrLinkOrcarMatcher.group(2) != null) {
-                                currentGlose = macroOrLinkOrcarMatcher.group(2);
+                                String g = macroOrLinkOrcarMatcher.group(2);
+                                currentGlose = wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
                             } else {
                                 currentGlose = null;
                             }
@@ -373,7 +377,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     if (g1 != null) {
                         if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
                             if (macroOrLinkOrcarMatcher.group(2) != null) {
-                                currentGlose = macroOrLinkOrcarMatcher.group(2);
+                                String g = macroOrLinkOrcarMatcher.group(2);
+                                currentGlose = wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
                             } else {
                                 currentGlose = null;
                             }

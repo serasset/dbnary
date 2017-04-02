@@ -1,6 +1,7 @@
 package org.getalp.dbnary.mlg;
 
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
@@ -39,7 +40,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, posResource(pat));
     }
 
-    public void addTranslation(String lang, String gloss, String usage, String word) {
+    public void addTranslation(String lang, Resource gloss, String usage, String word) {
         if (currentLexEntry == null) {
             addPartOfSpeech("none");
         }

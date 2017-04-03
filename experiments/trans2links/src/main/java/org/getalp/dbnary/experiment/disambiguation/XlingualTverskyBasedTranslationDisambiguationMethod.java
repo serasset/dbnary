@@ -3,11 +3,8 @@ package org.getalp.dbnary.experiment.disambiguation;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.wcohen.ss.ScaledLevenstein;
+import org.getalp.dbnary.*;
 import org.getalp.iso639.ISO639_3;
-import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.LemonOnt;
-import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
 import org.getalp.dbnary.experiment.translation.BingAPITranslator;
 import org.getalp.dbnary.experiment.translation.CachedTranslator;
@@ -58,9 +55,9 @@ DisambiguationMethod {
 			InvalidEntryException {
 		HashSet<Resource> res = new HashSet<Resource>();
 
-		if (! lexicalEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry) &&
-				!lexicalEntry.hasProperty(RDF.type, LemonOnt.Word) &&
-				!lexicalEntry.hasProperty(RDF.type, LemonOnt.Phrase))
+		if (! lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) &&
+				!lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word) &&
+				!lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression))
 			throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
 		if (context instanceof Resource) {
 			Resource trans = (Resource) context;
@@ -77,16 +74,16 @@ DisambiguationMethod {
 				ArrayList<WeigthedSensePair> weightedList = new ArrayList<WeigthedSensePair>();
 
 				for (Resource sws : swsList) {
-					Statement sdRef = sws.getProperty(LemonOnt.definition);
-					Statement sdVal = sdRef.getProperty(LemonOnt.value);
+					Statement sdRef = sws.getProperty(SkosOnt.definition);
+					Statement sdVal = sdRef.getProperty(RDF.value);
 					String sdef = sdVal.getString();
 					
 					if (! "eng".equals(slang)) 
 						sdef = translator.translate(sdef, slang, "eng");
 							
 					for (Resource tws : targets) {
-						Statement tdRef = tws.getProperty(LemonOnt.definition);
-						Statement tdVal = tdRef.getProperty(LemonOnt.value);
+						Statement tdRef = tws.getProperty(SkosOnt.definition);
+						Statement tdVal = tdRef.getProperty(RDF.value);
 						String tdef = tdVal.getString();
 						
 						if (! "eng".equals(slang)) 
@@ -121,7 +118,7 @@ DisambiguationMethod {
 		String writtenForm = translation.getProperty(DBnaryOnt.writtenForm).getString();
 		String uri = DbnaryModel.DBNARY_NS_PREFIX + "/" + targetLang + "/" + DbnaryModel.uriEncode(writtenForm);
 		Resource r = models.get(targetLang).getResource(uri);
-		return models.get(targetLang).listStatements(r, DBnaryOnt.refersTo, (RDFNode) null);
+		return models.get(targetLang).listStatements(r, DBnaryOnt.describes, (RDFNode) null);
 	}
 
 	private List<Resource> getTargetSenses(Resource trans, String pos) {
@@ -162,12 +159,12 @@ DisambiguationMethod {
 	}
 
 	private String getLanguage(Resource lexEntry) {
-		return ISO639_3.sharedInstance.getIdCode(lexEntry.getProperty(LemonOnt.language).getString());
+		return ISO639_3.sharedInstance.getIdCode(lexEntry.getProperty(LimeOnt.language).getString());
 	}
 
 	private List<Resource> getLexicalSenses(Resource lexEntryNode) {
 		List<Resource> res = new ArrayList<Resource>();
-		StmtIterator ws = lexEntryNode.listProperties(LemonOnt.sense);
+		StmtIterator ws = lexEntryNode.listProperties(OntolexOnt.sense);
 		while (ws.hasNext()) {
 			res.add(ws.next().getResource());
 		}

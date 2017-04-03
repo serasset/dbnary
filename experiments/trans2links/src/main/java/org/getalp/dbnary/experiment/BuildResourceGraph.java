@@ -9,8 +9,8 @@ import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.VarTransOnt;
 import org.getalp.dbnary.experiment.disambiguation.*;
 import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
@@ -483,9 +483,9 @@ public class BuildResourceGraph {
 			Resource trans = next.getSubject();
 
 			Resource lexicalEntry = next.getResource();
-			if (lexicalEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry) ||
-					lexicalEntry.hasProperty(RDF.type, LemonOnt.Word) ||
-					lexicalEntry.hasProperty(RDF.type, LemonOnt.Phrase)) {
+			if (lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) ||
+					lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word) ||
+					lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
 				try {
 					Set<Resource> resSenseNum = snumDisamb.selectWordSenses(lexicalEntry, trans);
 					
@@ -578,12 +578,12 @@ public class BuildResourceGraph {
 		}
 
 		//add relation between lexical entries and their senses to the outputmodel
-		StmtIterator senseIter = inputModel.listStatements(null, LemonOnt.sense, (RDFNode) null);
+		StmtIterator senseIter = inputModel.listStatements(null, OntolexOnt.sense, (RDFNode) null);
 		while (senseIter.hasNext()) {
 			Statement next = senseIter.next();
 			Resource lexEntry = next.getSubject();
 			Resource sense = next.getResource();
-			outputModel.add(outputModel.createStatement(lexEntry,LemonOnt.sense,sense)) ;
+			outputModel.add(outputModel.createStatement(lexEntry, OntolexOnt.sense,sense)) ;
 		}
 
 
@@ -622,7 +622,7 @@ public class BuildResourceGraph {
 
 							//nbKept = nbKept+1 ;
 
-							StmtIterator stmtcf = model.listStatements(null, LemonOnt.writtenRep, wf); // can give statement that are lexicalentries and not cf
+							StmtIterator stmtcf = model.listStatements(null, OntolexOnt.writtenRep, wf); // can give statement that are lexicalentries and not cf
 							boolean stmtcfIsEmpty = true ;
 							// si vide nbcfmiss+1
 							while(stmtcf.hasNext()){
@@ -632,10 +632,10 @@ public class BuildResourceGraph {
 								Resource cf = stm.getSubject(); // not necessarily a canonical form, it  can be a lexical entry
 								// check whether we have a lexical entry or a canonical form
 								//Statement s = cf.getProperty(RDF.type) ;
-								if(cf.hasProperty(RDF.type,LemonOnt.Form)/*s!=null && s.getResource().equals(LemonOnt.Form)*/){
+								if(cf.hasProperty(RDF.type,OntolexOnt.Form)/*s!=null && s.getResource().equals(LemonOnt.Form)*/){
 									nbcfcf.incr(l);// = nbcfcf + 1 ;
 									// get LexicalEntry
-									StmtIterator stmtle = model.listStatements(null,LemonOnt.canonicalForm,cf);
+									StmtIterator stmtle = model.listStatements(null, OntolexOnt.canonicalForm,cf);
 									// si vide nblemiss+1
 									boolean stmtleIsEmpty = true ;
 									while(stmtle.hasNext()){
@@ -649,9 +649,9 @@ public class BuildResourceGraph {
 										if(st != null) {
 											Resource posLE =  st.getResource();
 											Model source = modelMap.get(lang);
-											if (ws.hasProperty(RDF.type, LemonOnt.LexicalEntry)||
-                                                    ws.hasProperty(RDF.type, LemonOnt.Word) ||
-                                                    ws.hasProperty(RDF.type, LemonOnt.Phrase)) {
+											if (ws.hasProperty(RDF.type, OntolexOnt.LexicalEntry)||
+                                                    ws.hasProperty(RDF.type, OntolexOnt.Word) ||
+                                                    ws.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
                                                 Statement pos = ws.getProperty(LexinfoOnt.partOfSpeech);
                                                 if(pos != null) {
                                                     Resource posWS = pos.getResource();
@@ -672,7 +672,7 @@ public class BuildResourceGraph {
                                             } else {
                                                 // We have a word sense
 
-                                                StmtIterator stmtwsPoS = source.listStatements(null, LemonOnt.sense, ws);
+                                                StmtIterator stmtwsPoS = source.listStatements(null, OntolexOnt.sense, ws);
                                                 int nbsense = 0;
                                                 while (stmtwsPoS.hasNext()) {
                                                     nbsense = nbsense + 1;
@@ -708,7 +708,7 @@ public class BuildResourceGraph {
 									if(stmtleIsEmpty){
 										nblemiss.incr(l);// = nblemiss+1 ;
 									}
-								}else if(cf.hasProperty(RDF.type,LemonOnt.LexicalEntry)/*s!=null && s.getResource().equals(LemonOnt.LexicalEntry)*/){
+								}else if(cf.hasProperty(RDF.type,OntolexOnt.LexicalEntry)/*s!=null && s.getResource().equals(LemonOnt.LexicalEntry)*/){
 									nbcfle.incr(l);// = nbcfle + 1 ;
 									Resource le = stm.getSubject();
 									log.debug("Lexical Entry with a lemon:writtenRep : {}",le.getLocalName()) ;
@@ -717,9 +717,9 @@ public class BuildResourceGraph {
 										Resource posLE =  st.getResource();
 										Model source = modelMap.get(lang);
 
-										if (ws.hasProperty(RDF.type, LemonOnt.LexicalEntry)||
-												ws.hasProperty(RDF.type, LemonOnt.Word) ||
-												ws.hasProperty(RDF.type, LemonOnt.Phrase)) {
+										if (ws.hasProperty(RDF.type, OntolexOnt.LexicalEntry)||
+												ws.hasProperty(RDF.type, OntolexOnt.Word) ||
+												ws.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
 											Statement pos = ws.getProperty(LexinfoOnt.partOfSpeech);
 											if(pos != null) {
 												Resource posWS = pos.getResource();
@@ -740,7 +740,7 @@ public class BuildResourceGraph {
 										} else {
 											// We have a word sense
 
-											StmtIterator stmtwsPoS = source.listStatements(null, LemonOnt.sense, ws);
+											StmtIterator stmtwsPoS = source.listStatements(null, OntolexOnt.sense, ws);
 											int nbsense = 0;
 											while (stmtwsPoS.hasNext()) {
 												nbsense = nbsense + 1;
@@ -880,7 +880,7 @@ public class BuildResourceGraph {
 	}
 
 	private int getNumberOfSenses(Resource lexicalEntry) {
-		StmtIterator senses = lexicalEntry.listProperties(LemonOnt.sense);
+		StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
 		int n = 0;
 		while (senses.hasNext()) {
 			n++;

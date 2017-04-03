@@ -100,11 +100,11 @@ public class DetectHomonym {
     public Resource getVocable(Resource le){
         String lang = getLanguage(le) ;
         Model m = initialModels.get(lang) ;
-        StmtIterator stmIter = m.listStatements(null,DBnaryOnt.refersTo,le);
+        StmtIterator stmIter = m.listStatements(null,DBnaryOnt.describes,le);
         while(stmIter.hasNext()){
             Statement stm = stmIter.next() ;
             Resource voc = stm.getSubject() ;
-            if(voc.hasProperty(RDF.type,DBnaryOnt.Vocable)){
+            if(voc.hasProperty(RDF.type,DBnaryOnt.Page)){
                 return voc ;
             }
         }
@@ -114,11 +114,11 @@ public class DetectHomonym {
     public String getVocable(String le){
         String lang = getLanguage(le) ;
         Model m = initialModels.get(lang) ;
-        StmtIterator stmIter = m.listStatements(null,DBnaryOnt.refersTo,le);
+        StmtIterator stmIter = m.listStatements(null,DBnaryOnt.describes,le);
         while(stmIter.hasNext()){
             Statement stm = stmIter.next() ;
             Resource voc = stm.getSubject() ;
-            if(voc.hasProperty(RDF.type,DBnaryOnt.Vocable)){
+            if(voc.hasProperty(RDF.type,DBnaryOnt.Page)){
                 return voc.toString() ;
             }
         }

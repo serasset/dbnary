@@ -4,11 +4,12 @@ import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.wcohen.ss.Level2Levenstein;
 import org.apache.commons.cli.*;
+import org.getalp.dbnary.OntolexOnt;
+import org.getalp.dbnary.SkosOnt;
 import org.getalp.iso639.ISO639_3;
 import org.getalp.iso639.ISO639_3.Lang;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguator;
@@ -193,15 +194,15 @@ public final class LLD2014Main {
                 String uri = g.getSubject().toString();
                 Ambiguity mfcAmbiguity = new TranslationAmbiguity(gloss, n.getObject().toString().split("\\^\\^")[0]);
                 Resource lexicalEntry = next.getObject().asResource();
-                StmtIterator senses = m1.listStatements(lexicalEntry, LemonOnt.sense, (RDFNode) null);
+                StmtIterator senses = m1.listStatements(lexicalEntry, OntolexOnt.sense, (RDFNode) null);
                 List<Disambiguable> choices = new ArrayList<>();
                 int senseCounter = 1;
                 while (senses.hasNext()) {
                     Statement nextSense = senses.next();
                     String sstr = nextSense.getObject().toString();
                     sstr = sstr.substring(sstr.indexOf("__ws_"));
-                    Statement dRef = nextSense.getProperty(LemonOnt.definition);
-                    Statement dVal = dRef.getProperty(LemonOnt.value);
+                    Statement dRef = nextSense.getProperty(SkosOnt.definition);
+                    Statement dVal = dRef.getProperty(RDF.value);
                     String deftext = dVal.getObject().toString();
                     //choices.add(new DisambiguableSense(deftext, sstr,senseCounter));
                     senseCounter++;
@@ -238,7 +239,7 @@ public final class LLD2014Main {
 		Resource lexEntry = translation.getPropertyResourceValue(DBnaryOnt.isTranslationOf);
 		String nums = s.getString();
 		
-		if (lexEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry)) {
+		if (lexEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)) {
 			ArrayList<String> ns = getSenseNumbers(nums);
 			for (String n : ns) {
 				connected = connected || attachTranslationToNumberedSense(translation, lexEntry, n, outModel);
@@ -250,7 +251,7 @@ public final class LLD2014Main {
 	private boolean attachTranslationToNumberedSense(Resource translation, Resource lexEntry, String n,
 			Model outModel) {
 		boolean connected = false;
-		StmtIterator senses = lexEntry.listProperties(LemonOnt.sense);
+		StmtIterator senses = lexEntry.listProperties(OntolexOnt.sense);
 		while (senses.hasNext()) {
 			Resource sense = senses.next().getResource();
 			Statement senseNumStatement = sense.getProperty(DBnaryOnt.senseNumber);

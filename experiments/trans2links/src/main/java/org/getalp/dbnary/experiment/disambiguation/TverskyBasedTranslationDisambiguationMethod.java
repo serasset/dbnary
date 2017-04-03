@@ -6,8 +6,8 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.wcohen.ss.ScaledLevenstein;
 import org.getalp.dbnary.DBnaryOnt;
-// import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexOnt;
+import org.getalp.dbnary.SkosOnt;
 import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
 
 import java.util.ArrayList;
@@ -46,9 +46,9 @@ public class TverskyBasedTranslationDisambiguationMethod implements
 			InvalidEntryException {
 		HashSet<Resource> res = new HashSet<Resource>();
       
-		if (! lexicalEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry) &&
-				!lexicalEntry.hasProperty(RDF.type, LemonOnt.Word) &&
-				!lexicalEntry.hasProperty(RDF.type, LemonOnt.Phrase))
+		if (! lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) &&
+				!lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word) &&
+				!lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression))
 			throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
 		if (context instanceof Resource) {
 			Resource trans = (Resource) context;
@@ -61,12 +61,12 @@ public class TverskyBasedTranslationDisambiguationMethod implements
 				ArrayList<WeigthedSense> weightedList = new ArrayList<WeigthedSense>();
 
 				// get a list of wordsenses, sorted by decreasing similarity.
-				StmtIterator senses = lexicalEntry.listProperties(LemonOnt.sense);
+				StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
 				while (senses.hasNext()) {
 					Statement nextSense = senses.next();
 					Resource wordsense = nextSense.getResource();
-					Statement dRef = wordsense.getProperty(LemonOnt.definition);
-					Statement dVal = dRef.getProperty(LemonOnt.value);
+					Statement dRef = wordsense.getProperty(SkosOnt.definition);
+					Statement dVal = dRef.getProperty(RDF.value);
 					String deftext = dVal.getObject().toString();
 
 					double sim = tversky.compute(deftext, gloss);

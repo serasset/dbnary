@@ -5,7 +5,7 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.tdb.TDBFactory;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.VarTransOnt;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
@@ -160,7 +160,7 @@ public class ProcessGraph {
         }
         Set<Resource> tmp = new HashSet<>() ;
         for(Resource r : vertices){
-            StmtIterator stmt = m.listStatements(r,LemonOnt.sense, (RDFNode) null);
+            StmtIterator stmt = m.listStatements(r, OntolexOnt.sense, (RDFNode) null);
             while(stmt.hasNext()){
                 Statement next = stmt.next() ;
                 Resource sense = next.getResource() ;
@@ -175,7 +175,7 @@ public class ProcessGraph {
                     Statement stm = stmtIter.next() ;
                     res.add(stm) ;
                 }
-                stmtIter = m.listStatements(r1,LemonOnt.sense,r2) ;
+                stmtIter = m.listStatements(r1,OntolexOnt.sense,r2) ;
                 while(stmtIter.hasNext()){
                     Statement stm = stmtIter.next() ;
                     res.add(stm) ;
@@ -197,7 +197,7 @@ public class ProcessGraph {
                 Resource newSource = stm.getResource() ; // get the new source
                 res.addAll(getSubGraphVertices(m,newSource,depth-1)) ;
             }
-            stmtIter = m.listStatements(source, LemonOnt.sense, (RDFNode) null) ;
+            stmtIter = m.listStatements(source, OntolexOnt.sense, (RDFNode) null) ;
             while(stmtIter.hasNext()){
                 Statement stm = stmtIter.next() ;
                 Resource newSource = stm.getResource() ; // get the new source

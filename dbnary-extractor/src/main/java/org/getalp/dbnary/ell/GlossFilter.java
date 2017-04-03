@@ -18,6 +18,7 @@ public class GlossFilter extends AbstractGlossFilter {
 	private static Matcher senseNumOnlyMatcher = senseNumOnlyPattern.matcher("");
 
 	public StructuredGloss extractGlossStructure(String rawGloss) {
+		if (null == rawGloss) return null;
 
 		rawGloss = normalize(rawGloss);
 		if (rawGloss.length() == 0) return null;

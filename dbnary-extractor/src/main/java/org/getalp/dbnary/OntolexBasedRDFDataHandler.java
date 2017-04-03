@@ -4,6 +4,7 @@ import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.hp.hpl.jena.vocabulary.XSD;
 import org.getalp.dbnary.tools.CounterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +108,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         aBox.setNsPrefix("lime", LimeOnt.getURI());
         aBox.setNsPrefix("decomp", DecompOnt.getURI());
         aBox.setNsPrefix("skos", SkosOnt.getURI());
+        aBox.setNsPrefix("xs", XSD.getURI());
 
 
         featureBoxes = new HashMap<>();
@@ -661,7 +663,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     private String getGlossResourceName(StructuredGloss gloss) {
         String key = gloss.getGloss() + gloss.getSenseNumber();
         key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
-        return "__" + extractedLang + "_gloss_" + key ;
+        return getPrefix() + "__" + extractedLang + "_gloss_" + key + "_" + currentEncodedPageName ;
     }
 
     @Override

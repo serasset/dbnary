@@ -487,7 +487,6 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         } catch (NoSuchMethodException e) {
             System.err.println("No appropriate constructor when instanciating gloss filter.");
         }
-        System.err.println(f.getClass().getCanonicalName());
         return f;
     }
 

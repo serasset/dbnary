@@ -29,6 +29,7 @@ public class GlossFilter extends AbstractGlossFilter {
 		
 	
 	public StructuredGloss extractGlossStructure(String rawGloss) {
+		if (null == rawGloss) return null;
 		aTrierMatcher.reset(rawGloss);
 		if (aTrierMatcher.find()) return null; // non relevant gloss should be discarded
 		

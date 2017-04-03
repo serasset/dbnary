@@ -6,6 +6,8 @@ package org.getalp.dbnary;
 public class DefaultGlossFilter extends AbstractGlossFilter{
     @Override
     public StructuredGloss extractGlossStructure(String rawGloss) {
+        if (null == rawGloss) return null;
+
         return new StructuredGloss(null,rawGloss);
     }
 }

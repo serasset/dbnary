@@ -19,7 +19,8 @@ public class GlossFilter extends AbstractGlossFilter {
 	public static final Matcher glossNumMatcher = glossNumPattern.matcher("");
 
 	public StructuredGloss extractGlossStructure(String rawGloss) {
-		
+		if (null == rawGloss) return null;
+
 		simpleNumListMatcher.reset(rawGloss);
 		if (simpleNumListMatcher.matches()) {
 			String g = simpleNumListMatcher.group(2);

@@ -5,11 +5,10 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.getalp.dbnary.OntolexOnt;
 import org.getalp.iso639.ISO639_3;
 import org.getalp.iso639.ISO639_3.Lang;
 import org.getalp.dbnary.DBnaryOnt;
-// import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.experiment.disambiguation.*;
 import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
 import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
@@ -415,9 +414,9 @@ public class DisambiguateTranslationSources {
 			Resource trans = next.getSubject();
 
 			Resource lexicalEntry = next.getResource();
-			if (lexicalEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry) ||
-					lexicalEntry.hasProperty(RDF.type, LemonOnt.Word) ||
-					lexicalEntry.hasProperty(RDF.type, LemonOnt.Phrase)) {
+			if (lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) ||
+					lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word) ||
+					lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
 				try {
 					Set<Resource> resSenseNum = snumDisamb.selectWordSenses(lexicalEntry, trans);
 					
@@ -471,7 +470,7 @@ public class DisambiguateTranslationSources {
 	}
 
 	private int getNumberOfSenses(Resource lexicalEntry) {
-		StmtIterator senses = lexicalEntry.listProperties(LemonOnt.sense);
+		StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
 		int n = 0;
 		while (senses.hasNext()) {
 			n++;

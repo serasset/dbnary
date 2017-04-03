@@ -8,7 +8,7 @@ import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.VarTransOnt;
 
 import javax.swing.plaf.nimbus.State;
@@ -81,7 +81,7 @@ public class DisambiguateTargets {
             Map<Resource,List<List<Statement>>> paths = new HashMap<>() ;
             Statement stmt = stmtIter.next() ;
             Resource transLE = stmt.getResource() ;
-            StmtIterator stmtIterInitial = initialModels.get(getLanguage(transLE)).listStatements(transLE,LemonOnt.sense, (RDFNode) null);
+            StmtIterator stmtIterInitial = initialModels.get(getLanguage(transLE)).listStatements(transLE, OntolexOnt.sense, (RDFNode) null);
             while(stmtIterInitial.hasNext()){
                 Statement stmtInit = stmtIterInitial.next() ;
                 Resource s = stmtInit.getResource();
@@ -91,7 +91,7 @@ public class DisambiguateTargets {
             }
 
             Map<Resource,Double> score = new HashMap<>() ;
-            stmtIterInitial = initialModels.get(getLanguage(transLE)).listStatements(transLE,LemonOnt.sense, (RDFNode) null);
+            stmtIterInitial = initialModels.get(getLanguage(transLE)).listStatements(transLE, OntolexOnt.sense, (RDFNode) null);
             while(stmtIterInitial.hasNext()){
                 Statement stmtInit = stmtIterInitial.next() ;
                 Resource s = stmtInit.getResource();
@@ -151,11 +151,11 @@ public class DisambiguateTargets {
     private List<Resource> getSenses(Resource le){
         List<Resource> res = new ArrayList<>() ;
         Model modelLE = initialModels.get(getLanguage(le)) ;
-        StmtIterator stmtIter = modelLE.listStatements(le, RDF.type, LemonOnt.LexicalEntry) ;
+        StmtIterator stmtIter = modelLE.listStatements(le, RDF.type, OntolexOnt.LexicalEntry) ;
         while(stmtIter.hasNext()){
             Statement stmt = stmtIter.next() ;
             Resource r = stmt.getSubject();
-            StmtIterator stmtIter2 = modelLE.listStatements(r,LemonOnt.sense, (RDFNode) null) ;
+            StmtIterator stmtIter2 = modelLE.listStatements(r, OntolexOnt.sense, (RDFNode) null) ;
             while(stmtIter2.hasNext()){
                 Statement stmt2 = stmtIter2.next() ;
                 Resource sense = stmt2.getResource() ;

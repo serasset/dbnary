@@ -3,10 +3,7 @@ package org.getalp.dbnary.experiment.disambiguation;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.wcohen.ss.ScaledLevenstein;
-import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.LemonOnt;
-import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.*;
 import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
 
 import java.util.*;
@@ -49,7 +46,7 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
         String writtenForm = translation.getProperty(DBnaryOnt.writtenForm).getObject().toString();
         String uri = DbnaryModel.DBNARY_NS_PREFIX + "/" + currentLang + "/" + DbnaryModel.uriEncode(writtenForm).split("@")[0];
         Resource r = models.get(currentLang).getResource(uri);
-        return models.get(currentLang).listStatements(r, DBnaryOnt.refersTo, (RDFNode) null);
+        return models.get(currentLang).listStatements(r, DBnaryOnt.describes, (RDFNode) null);
     }
 
     private List<String> computeTranslationClosure(Resource translation, String pos, int degree) {
@@ -78,10 +75,10 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
                             StmtIterator backLex = getTranslationLexicalEntryStmtIterator(ctrans, l);
                             while (backLex.hasNext()) {
                                 Statement backLexnext = backLex.next();
-                                Statement lexcfp = backLexnext.getProperty(LemonOnt.canonicalForm);
+                                Statement lexcfp = backLexnext.getProperty(OntolexOnt.canonicalForm);
                                 String writtenRep = "";
                                 if (lexcfp != null) {
-                                    Statement wrepstmt = lexcfp.getProperty(LemonOnt.writtenRep);
+                                    Statement wrepstmt = lexcfp.getProperty(OntolexOnt.writtenRep);
                                     writtenRep = wrepstmt.getObject().toString();
                                 }
                                 if (writtenRep.contains("@")) {
@@ -90,12 +87,12 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
                                     output.add(writtenRep);
                                 }
                                 //Iterating senses
-                                StmtIterator senses = backLexnext.getObject().asResource().listProperties(LemonOnt.sense);
+                                StmtIterator senses = backLexnext.getObject().asResource().listProperties(OntolexOnt.sense);
                                 while (senses.hasNext()) {
                                     Statement nextSense = senses.next();
                                     Resource wordsense = nextSense.getResource();
-                                    Statement dRef = wordsense.getProperty(LemonOnt.definition);
-                                    Statement dVal = dRef.getProperty(LemonOnt.value);
+                                    Statement dRef = wordsense.getProperty(SkosOnt.definition);
+                                    Statement dVal = dRef.getProperty(RDF.value);
                                     String deftext = dVal.getObject().toString();
                                     if (deftext.contains("@")) {
                                         output.add(deftext.split("@")[0]);
@@ -132,9 +129,9 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
             InvalidEntryException {
         HashSet<Resource> res = new HashSet<Resource>();
 
-        if (!lexicalEntry.hasProperty(RDF.type, LemonOnt.LexicalEntry) &&
-                !lexicalEntry.hasProperty(RDF.type, LemonOnt.Word) &&
-                !lexicalEntry.hasProperty(RDF.type, LemonOnt.Phrase))
+        if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) &&
+                !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word) &&
+                !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression))
             throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
         if (context instanceof Resource) {
             Resource trans = (Resource) context;
@@ -154,12 +151,12 @@ public class TransitiveTranslationClosureDisambiguationMethod implements
 
             ArrayList<WeigthedSense> weightedList = new ArrayList<WeigthedSense>();
 
-            StmtIterator senses = lexicalEntry.listProperties(LemonOnt.sense);
+            StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
             while (senses.hasNext()) {
                 Statement nextSense = senses.next();
                 Resource wordsense = nextSense.getResource();
-                Statement dRef = wordsense.getProperty(LemonOnt.definition);
-                Statement dVal = dRef.getProperty(LemonOnt.value);
+                Statement dRef = wordsense.getProperty(SkosOnt.definition);
+                Statement dVal = dRef.getProperty(RDF.value);
                 String deftext = dVal.getObject().toString();
                 double sim = tversky.compute(deftext, concatAll.toString());
                 insert(weightedList, wordsense, sim);

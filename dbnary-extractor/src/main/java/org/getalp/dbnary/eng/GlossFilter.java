@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class GlossFilter extends AbstractGlossFilter {
 	
-	private static String aTrierRegExp = "(?:to be checked)|\\p{Whitespace}+";
+	private static String aTrierRegExp = "(?:to be checked)|[\\s\\u0085\\p{Z}]+";
 	private static Pattern aTrierPattern = Pattern.compile(aTrierRegExp);
 	private static Matcher aTrierMatcher = aTrierPattern.matcher("");
 

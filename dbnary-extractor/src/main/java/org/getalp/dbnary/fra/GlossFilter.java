@@ -23,9 +23,8 @@ public class GlossFilter extends AbstractGlossFilter {
 		        .append("à classer")
 		        .append(")|(?:")
 		        .append("À classer")
-		        .append(")")
-                .append(")|(?:")
-                .append("\\p{Whitespace}+") // non breaking spaces
+		        .append(")|(?:")
+                .append("[\\s\\u0085\\p{Z}]+") // all unicode white spaces
                 .append(")").toString();
 	}
 	private static Pattern aTrierPattern = Pattern.compile(aTrierRegExp);

@@ -21,7 +21,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
     static Logger log = LoggerFactory.getLogger(ExampleExpanderWikiModel.class);
 
     static {
-        // ignoredTemplates.add("wikipedia");
+        ignoredTemplates.add("ébauche-exe");
     }
 
     private Map<Property, String> context;

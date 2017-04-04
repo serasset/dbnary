@@ -28,7 +28,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     protected final static String partOfSpeechPatternString = "''(.*)''";
     protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
-    protected final static String polishDefinitionPatternString = "^:{1,3}\\s*(?:\\((" + senseNumberRegExp + ")\\))?([^\n\r]*)$";
+    protected final static String polishDefinitionPatternString = "^:{1,3}\\s*(?:\\((" + senseNumberRegExp + ")\\))?\\s*([^\n\r]*)$";
 
     protected org.getalp.dbnary.pol.WiktionaryDataHandler wdh;
 
@@ -591,11 +591,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (definitionMatcher.group(2) != null && wdh.posIsValid()) {
                 // It's a definition
                 HashSet<String> defTemplates = null;
-                if (log.isDebugEnabled()) defTemplates = new HashSet<String>();
+                if (log.isTraceEnabled()) defTemplates = new HashSet<String>();
                 String def = definitionExpander.expandAll(definitionMatcher.group(2), defTemplates);
-                if (log.isDebugEnabled()) {
+                if (log.isTraceEnabled()) {
                     for (String t : defTemplates) {
-                        log.debug("Encountered template in definition : {}", t);
+                        log.trace("Encountered template in definition : {}", t);
                     }
                 }
                 // Cleanup remaining html flags from definition expansion...

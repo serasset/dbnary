@@ -652,7 +652,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
                 ) return null;
 
         Resource glossResource = aBox.createResource(getGlossResourceName(gloss), DBnaryOnt.Gloss);
-        if (null != gloss.getGloss())
+        if (null != gloss.getGloss() && gloss.getGloss().trim().length() == 0)
             aBox.add(aBox.createStatement(glossResource, RDF.value, gloss.getGloss(), extractedLang));
         if (gloss.getSenseNumber() != null)
             aBox.add(aBox.createStatement(glossResource, DBnaryOnt.senseNumber, gloss.getSenseNumber()));

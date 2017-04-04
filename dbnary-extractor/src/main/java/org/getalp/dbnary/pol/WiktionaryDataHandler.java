@@ -422,7 +422,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         } else {
             // parse the gloss to get the sense number(s)
             ArrayList<String> numlist = getSenseNumbers(currentGloss);
-            StructuredGloss sg = new StructuredGloss(numlist.toString(), "");
+            StructuredGloss sg = new StructuredGloss(numlist.toString(), null);
             Resource currentGlossResource = createGlossResource(sg);
             ArrayList<Resource[]> senseAndEntries = new ArrayList<Resource[]>();
             for (String n : numlist) {

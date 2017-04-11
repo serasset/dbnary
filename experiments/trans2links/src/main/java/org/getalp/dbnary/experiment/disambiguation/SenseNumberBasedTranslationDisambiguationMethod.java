@@ -27,19 +27,22 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements
 		if (! lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) &&
 				!lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word) &&
 				!lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression))
-			throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
+			throw new InvalidEntryException("Expecting an ontolex Lexical Entry.");
 		if (context instanceof Resource) {
 			Resource trans = (Resource) context;
 			if (! trans.hasProperty(RDF.type, DBnaryOnt.Translation)) throw new InvalidContextException("Expecting a DBnary Translation Resource.");
             // TODO: the sense number property is not defined for translations... However, it is added by the preprocessing.
-			Statement s = trans.getProperty(DBnaryOnt.senseNumber);
-			if (null != s) {
-				// Process sense number
-				// System.out.println("Avoiding treating " + s.toString());
-				return selectNumberedSenses(lexicalEntry, s);
-			} else 
-				return new HashSet<Resource>();
-			
+			Statement gloss = trans.getProperty(DBnaryOnt.gloss);
+			if (null != gloss) {
+				Statement s = gloss.getObject().asResource().getProperty(DBnaryOnt.senseNumber);
+				if (null != s) {
+					// Process sense number
+					// System.out.println("Avoiding treating " + s.toString());
+					return selectNumberedSenses(lexicalEntry, s);
+				}
+			}
+			// Returns empty set if other processing did not return valid result
+			return new HashSet<Resource>();
 		} else {
 			throw new InvalidContextException("Expecting a JENA Resource.");
 		}

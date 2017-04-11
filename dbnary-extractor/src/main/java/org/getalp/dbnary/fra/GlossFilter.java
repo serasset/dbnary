@@ -2,29 +2,27 @@ package org.getalp.dbnary.fra;
 
 import org.getalp.dbnary.AbstractGlossFilter;
 import org.getalp.dbnary.StructuredGloss;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GlossFilter extends AbstractGlossFilter {
 
-	private static String aTrierRegExp;
+    private Logger log = LoggerFactory.getLogger(AbstractGlossFilter.class);
+
+    private static String aTrierRegExp;
 	static {
 		aTrierRegExp = (new StringBuffer())
 				.append("(?:")
-		        .append("à trier")
+		        .append("^\\s*[ÀAaà] trier")
 		        .append(")|(?:")
-		        .append("À trier")
+		        .append("^\\s*[Tt]raductions? à (?:trier|classer|vérifier)")
+                .append(")|(?:")
+		        .append("^\\s*[àaÀA] classer")
 		        .append(")|(?:")
-		        .append("Traduction")
-		        .append(")|(?:")
-		        .append("traduction")
-		        .append(")|(?:")
-		        .append("à classer")
-		        .append(")|(?:")
-		        .append("À classer")
-		        .append(")|(?:")
-                .append("[\\s\\u0085\\p{Z}]+") // all unicode white spaces
+                .append("^\\s*[àaÀA] vérifier et (?:trier|classer)")
                 .append(")").toString();
 	}
 	private static Pattern aTrierPattern = Pattern.compile(aTrierRegExp);
@@ -55,7 +53,13 @@ public class GlossFilter extends AbstractGlossFilter {
 		if (null == rawGloss) return null;
 
 		aTrierMatcher.reset(rawGloss);
-		if (aTrierMatcher.find()) return null; // non relevant gloss should be discarded
+		if (aTrierMatcher.find()) {
+		    log.trace("Discarding gloss : {} ", rawGloss);
+		    return null; // non relevant glosses should be discarded
+        }
+        if (rawGloss.matches("[\\s\\u0085\\p{Z}]*")) {
+            log.trace("Discarding empty gloss : {} ", rawGloss);
+        }
 		rawGloss = normalize(rawGloss);
 		if (rawGloss.length() == 0) return null;
 		simpleSenseNumberingMatcher.reset(rawGloss);

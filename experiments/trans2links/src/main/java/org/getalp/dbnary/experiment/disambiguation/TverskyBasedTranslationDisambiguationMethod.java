@@ -57,31 +57,34 @@ public class TverskyBasedTranslationDisambiguationMethod implements
 			Statement glossStmt = trans.getProperty(DBnaryOnt.gloss);
 			
 			if (null != glossStmt) {
-				String gloss = glossStmt.getString();
-				ArrayList<WeigthedSense> weightedList = new ArrayList<WeigthedSense>();
+				Statement glossValueStmt = glossStmt.getObject().asResource().getProperty(RDF.value);
+				if (null != glossValueStmt) {
+				    String gloss = glossValueStmt.getString();
+                    ArrayList<WeigthedSense> weightedList = new ArrayList<WeigthedSense>();
 
-				// get a list of wordsenses, sorted by decreasing similarity.
-				StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
-				while (senses.hasNext()) {
-					Statement nextSense = senses.next();
-					Resource wordsense = nextSense.getResource();
-					Statement dRef = wordsense.getProperty(SkosOnt.definition);
-					Statement dVal = dRef.getProperty(RDF.value);
-					String deftext = dVal.getObject().toString();
+                    // get a list of wordsenses, sorted by decreasing similarity.
+                    StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
+                    while (senses.hasNext()) {
+                        Statement nextSense = senses.next();
+                        Resource wordsense = nextSense.getResource();
+                        Statement dRef = wordsense.getProperty(SkosOnt.definition);
+                        Statement dVal = dRef.getProperty(RDF.value);
+                        String deftext = dVal.getObject().toString();
 
-					double sim = tversky.compute(deftext, gloss);
+                        double sim = tversky.compute(deftext, gloss);
 
-					insert(weightedList, wordsense, sim);
-				}
-				
-				if (weightedList.size() == 0) return res;
-				
-				int i = 0;
-				double worstScore = weightedList.get(0).weight - delta;
-				while(i != weightedList.size() && weightedList.get(i).weight >= worstScore) {
-					res.add(weightedList.get(i).sense);
-					i++;
-				}
+                        insert(weightedList, wordsense, sim);
+                    }
+
+                    if (weightedList.size() == 0) return res;
+
+                    int i = 0;
+                    double worstScore = weightedList.get(0).weight - delta;
+                    while (i != weightedList.size() && weightedList.get(i).weight >= worstScore) {
+                        res.add(weightedList.get(i).sense);
+                        i++;
+                    }
+                }
 			}
 		} else {
 			throw new InvalidContextException("Expecting a JENA Resource.");

@@ -13,7 +13,6 @@ import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.VarTransOnt;
 import org.getalp.dbnary.experiment.disambiguation.*;
 import org.getalp.dbnary.experiment.evaluation.EvaluationStats;
-import org.getalp.dbnary.experiment.preprocessing.AbstractGlossFilter;
 import org.getalp.dbnary.experiment.preprocessing.StatsModule;
 import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
 import org.getalp.dbnary.tools.CounterSet;
@@ -153,8 +152,7 @@ public class TranslationSourcesTarget {
 		System.err.println("Pre-processing translations.");
 
 		for(String lang: languages) {
-			AbstractGlossFilter filter = createGlossFilter(lang);
-			this.preprocessTranslations(filter, lang);
+			this.computeStatsOnGlosses(lang);
 		}
 
 		if (null!= statsOutput) {
@@ -340,58 +338,13 @@ public class TranslationSourcesTarget {
 		return null;
 	}
 
-
-	private AbstractGlossFilter
-	createGlossFilter(String lang) {
-		AbstractGlossFilter f = null;
-		String cname = AbstractGlossFilter.class.getCanonicalName();
-		int dpos = cname.lastIndexOf('.');
-		String pack = cname.substring(0, dpos);
-		Class<?> wec = null;
-		try {
-			wec = Class.forName(pack + "." + lang + ".GlossFilter");
-			f = (AbstractGlossFilter) wec.getConstructor().newInstance();
-		} catch (ClassNotFoundException e) {
-			System.err.println("No gloss filter found for " + lang+" reverting to default "+pack + ".DefaultGlossFilter");
-			try {
-				wec = Class.forName(pack + ".DefaultGlossFilter");
-				f = (AbstractGlossFilter) wec.getConstructor().newInstance();
-			} catch (ClassNotFoundException e1) {
-				System.err.println("Default gloss filter not found");
-			} catch (InvocationTargetException e1) {
-				System.err.println("Default gloss filter failed to be instanciated");
-			} catch (NoSuchMethodException e1) {
-				System.err.println("Default gloss filter failed to be instanciated");
-			} catch (InstantiationException e1) {
-				System.err.println("Default gloss filter failed to be instanciated");
-			} catch (IllegalAccessException e1) {
-				System.err.println("Default gloss filter failed to be instanciated");
-			}
-		} catch (InstantiationException e) {
-			System.err.println("Could not instanciate wiktionary extractor for " + lang);
-		} catch (IllegalAccessException e) {
-			System.err.println("Illegal access to wiktionary extractor for " + lang);
-		} catch (IllegalArgumentException e) {
-			System.err.println("Illegal argument passed to wiktionary extractor's constructor for " + lang);
-			e.printStackTrace(System.err);
-		} catch (SecurityException e) {
-			System.err.println("Security exception while instanciating wiktionary extractor for " + lang);
-			e.printStackTrace(System.err);
-		} catch (InvocationTargetException e) {
-			System.err.println("InvocationTargetException exception while instanciating wiktionary extractor for " + lang);
-			e.printStackTrace(System.err);
-		} catch (NoSuchMethodException e) {
-			System.err.println("No appropriate constructor when instanciating wiktionary extractor for " + lang);
-		}
-		return f;
-	}
-
-	private void preprocessTranslations(AbstractGlossFilter filter, String lang) {
+	private void computeStatsOnGlosses(String lang) {
 		// Iterate over all translations
 		// TODO: adapt stats module for current language
 		if (null != stats) stats.reset(lang);
 		Model m = modelMap.get(lang);
-		StmtIterator translations = m.listStatements((Resource) null, DBnaryOnt.isTranslationOf, (RDFNode) null);
+
+		StmtIterator translations = m.listStatements(null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 		while (translations.hasNext()) {
 			Resource e = translations.next().getSubject();
 
@@ -400,26 +353,36 @@ public class TranslationSourcesTarget {
 			if (null == g) {
 				if (null != stats) stats.registerTranslation(e.getURI(), null);
 			} else {
-				StructuredGloss sg = filter.extractGlossStructure(g.getString());
+				StructuredGloss sg = extractGlossStructure(g);
 				if (null != stats) stats.registerTranslation(e.getURI(), sg);
 
 				if (null == sg) {
 					// remove gloss from model
 					g.remove();
-				} else {
-					if (null != sg.getSenseNumber()) {
-						g.getModel().add(g.getModel().createLiteralStatement(g.getSubject(), DBnaryOnt.senseNumber, sg.getSenseNumber()));
-					}
-					if (null == sg.getGloss()) {
-						// remove gloss from model
-						g.remove();
-					} else {
-						g.changeObject(sg.getGloss());
-					}
 				}
 			}
 		}
 	}
+
+	private StructuredGloss extractGlossStructure(Statement g) {
+		if (null == g) return null;
+		RDFNode gloss = g.getObject();
+		if (gloss.isLiteral()) return new StructuredGloss(null, gloss.asLiteral().getString());
+		if (gloss.isResource()) {
+			Resource glossResource = gloss.asResource();
+			Statement sn = glossResource.getProperty(DBnaryOnt.senseNumber);
+			String senseNumber = null;
+			if (sn != null)
+				senseNumber = sn.getString();
+			Statement glossValue = glossResource.getProperty(RDF.value);
+			String glossString = null;
+			if (glossValue != null)
+				glossString= glossValue.getString();
+			return new StructuredGloss(senseNumber, glossString);
+		}
+		return null;
+	}
+
 
 	private void processTranslations(Model outputModel, String lang) throws FileNotFoundException {
 

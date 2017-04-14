@@ -182,7 +182,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         //FIXME this doesn't use its languageCode parameter
         return getLexEntry(
                 getEncodedPageName(pageName, pos, defNumber),
-                typeResource(pos)
+                OntolexOnt.LexicalEntry
         );
     }
 

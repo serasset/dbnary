@@ -51,6 +51,7 @@ public class GlossFilter extends AbstractGlossFilter {
 	
 	public StructuredGloss extractGlossStructure(String rawGloss) {
 		if (null == rawGloss) return null;
+		if (rawGloss.startsWith("|")) rawGloss = rawGloss.substring(1);
 
 		aTrierMatcher.reset(rawGloss);
 		if (aTrierMatcher.find()) {

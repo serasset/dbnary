@@ -20,7 +20,6 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
     private Logger log = LoggerFactory.getLogger(SpanishTranslationExtractorWikiModel.class);
     private AbstractGlossFilter glossFilter;
-    int rank;
 
     public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
         this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL, glossFilter);
@@ -34,7 +33,6 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
     public void parseTranslationBlock(String block) {
         initialize();
-        rank = 1;
         if (block == null) {
             return;
         }
@@ -86,6 +84,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
                                        Map<String, String> parameterMap, Appendable writer)
             throws IOException {
         if ("t+".equals(templateName)) {
+            // TODO : rank each translation by language
             String lang = LangTools.normalize(parameterMap.get("1"));
             int i = 2;
             String s = null;
@@ -97,7 +96,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
                 senseNumberOrRangeMatcher.reset(s);
                 if ("".equals(s)) {
                     // Just ignore empty parameters
-                } else if (",".equals(s)) {
+                } else if (s.matches("[,;]")) {
                     if (usage.length() == 0) {
                         usage = null;
                     } else {
@@ -119,7 +118,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
                         trans = null;
                         usage = "";
                     }
-                    currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(s), rank++);
+                    currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(s));
                 } else if (gender.contains(s)) {
                     usage = usage + "|" + s;
                 } else if ("p".equals(s)) {

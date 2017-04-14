@@ -207,20 +207,20 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#glossRank -->
-
-    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#glossRank">
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- http://kaiko.getalp.org/dbnary#partOfSpeech -->
 
     <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#partOfSpeech">
         <rdfs:domain rdf:resource="http://www.w3.org/ns/lemon/ontolex#LexicalEntry"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment xml:lang="en">The original part of speech as it was defined in the Wiktionary page. This property takes a String litteral as object.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnary#rank -->
+
+    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#rank">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
     
 

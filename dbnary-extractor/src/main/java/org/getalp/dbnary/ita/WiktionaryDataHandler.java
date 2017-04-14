@@ -136,9 +136,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
             // TODO: guess which translation is to be attached to which entry/sense
             List<Resource> entries = getLexicalEntryUsingPartOfSpeech(currentGlose);
             if (entries.size() != 0) {
-                log.warn("Attaching translations using part of speech in gloss : {}", currentWiktionaryPageName);
+                log.trace("Attaching translations using part of speech in gloss : {}", currentWiktionaryPageName);
                 if (entries.size() > 1) {
-                    log.warn("Attaching translations to several entries in {}", currentWiktionaryPageName);
+                    log.trace("Attaching translations to several entries in {}", currentWiktionaryPageName);
                 }
                 for (Resource entry : entries) {
                     super.registerTranslationToEntity(entry, lang, currentGlose, usage, word);

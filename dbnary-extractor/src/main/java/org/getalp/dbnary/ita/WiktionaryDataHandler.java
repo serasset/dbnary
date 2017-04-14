@@ -1,6 +1,7 @@
 package org.getalp.dbnary.ita;
 
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
@@ -151,9 +152,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     }
 
     private List<Resource> getLexicalEntryUsingPartOfSpeech(Resource structuredGloss) {
-        String gloss = structuredGloss.getProperty(RDF.value).getString();
-        gloss = gloss.trim();
         ArrayList<Resource> res = new ArrayList<>();
+        Statement s = structuredGloss.getProperty(RDF.value);
+        if (null == s) return res;
+        String gloss = s.getString();
+        if (null == gloss) return res;
+        gloss = gloss.trim();
         if (gloss.startsWith("aggettivo numerale")) {
             addAllResourceOfPoS(res, LexinfoOnt.numeral);
         } else if (gloss.startsWith("aggettivo")) {

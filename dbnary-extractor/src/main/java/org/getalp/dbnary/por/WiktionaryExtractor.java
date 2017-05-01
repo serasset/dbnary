@@ -401,7 +401,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private void extractTranslations(int startOffset, int endOffset) {
         String transCode = pageContent.substring(startOffset, endOffset);
-        PortugueseTranslationExtractorWikiModel dbnmodel = new PortugueseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}/" + wiktionaryPageName, "/${title}");
+        PortugueseTranslationExtractorWikiModel dbnmodel = new PortugueseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}/" + wiktionaryPageName, "/${title}", glossFilter);
         dbnmodel.parseTranslationBlock(transCode);
     }
 

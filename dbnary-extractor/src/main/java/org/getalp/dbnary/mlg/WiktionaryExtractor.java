@@ -1,6 +1,7 @@
 package org.getalp.dbnary.mlg;
 
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.slf4j.Logger;
@@ -286,16 +287,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected void extractTranslations(int start, int end) {
         Matcher trad = tradPattern.matcher(pageContent);
         trad.region(start, end);
-        String currentGloss = wiktionaryPageName;
+        Resource currentGloss = null;
 
-        WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
+        WiktionaryDataHandler mlgwdh = (WiktionaryDataHandler) wdh;
 
         while (trad.find()) {
 
             if (trad.group(1) != null) {
                 String[] tmp = trad.group(1).split("\\|");
                 if (tmp.length == 3) {
-                    dwdh.addTranslation(tmp[2], currentGloss, null, tmp[1]);
+                    mlgwdh.addTranslation(tmp[2], currentGloss, null, tmp[1]);
                 } else {
                     if (trad.group(1).startsWith("ébauche-trad") || // missing
                             trad.group(1).startsWith("...") ||
@@ -324,7 +325,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     lang3 = MalagasyLangToCode.threeLettersCode(lang);
                 }
                 if (lang3 != null) {
-                    dwdh.addTranslation(lang3, currentGloss, null, trad.group(3));
+                    mlgwdh.addTranslation(lang3, currentGloss, null, trad.group(3));
                 } else {
                     if (trad.group(2).contains("...")) {
                         continue;
@@ -332,7 +333,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     log.debug("Unknown Trad2 lang value {} --in-- {}", lang, wdh.currentLexEntry());
                 }
             } else if (trad.group(4) != null) {
-                dwdh.addTranslation(trad.group(4), currentGloss, null, trad.group(5));
+                mlgwdh.addTranslation(trad.group(4), currentGloss, null, trad.group(5));
             }
         }
     }

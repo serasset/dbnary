@@ -1,5 +1,6 @@
 package org.getalp.dbnary.pol;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -27,7 +28,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     protected final static String partOfSpeechPatternString = "''(.*)''";
     protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
-    protected final static String polishDefinitionPatternString = "^:{1,3}\\s*(?:\\((" + senseNumberRegExp + ")\\))?([^\n\r]*)$";
+    protected final static String polishDefinitionPatternString = "^:{1,3}\\s*(?:\\((" + senseNumberRegExp + ")\\))?\\s*([^\n\r]*)$";
 
     protected org.getalp.dbnary.pol.WiktionaryDataHandler wdh;
 
@@ -540,14 +541,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private void extractTranslationLine(String lang, String translations) {
         Matcher lexer = translationLexer.matcher(translations + ";");
-        String currentGlose = null;
+        String currentGloss = null;
         String currentTranslation = "";
         String currentUsage = "";
 
         while (lexer.find()) {
             if (lexer.group(1) != null) {
                 // Sense number
-                currentGlose = lexer.group(1);
+                currentGloss = lexer.group(1);
             } else if (lexer.group(2) != null) {
                 // A link (group 2 = target; group 3 = form)
                 currentTranslation = currentTranslation + " " + lexer.group(2);
@@ -571,7 +572,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 String character = lexer.group(7);
 
                 if (character.equals(",") || character.equals(";")) {
-                    wdh.registerTranslation(lang, currentGlose, currentUsage.trim(), currentTranslation.trim());
+                    wdh.registerTranslation(lang, currentGloss, currentUsage.trim(), currentTranslation.trim());
                     currentTranslation = "";
                     currentUsage = "";
                 } else {
@@ -590,11 +591,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (definitionMatcher.group(2) != null && wdh.posIsValid()) {
                 // It's a definition
                 HashSet<String> defTemplates = null;
-                if (log.isDebugEnabled()) defTemplates = new HashSet<String>();
+                if (log.isTraceEnabled()) defTemplates = new HashSet<String>();
                 String def = definitionExpander.expandAll(definitionMatcher.group(2), defTemplates);
-                if (log.isDebugEnabled()) {
+                if (log.isTraceEnabled()) {
                     for (String t : defTemplates) {
-                        log.debug("Encountered template in definition : {}", t);
+                        log.trace("Encountered template in definition : {}", t);
                     }
                 }
                 // Cleanup remaining html flags from definition expansion...

@@ -1,10 +1,8 @@
 package org.getalp.dbnary.rus;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import info.bliki.wiki.filter.WikipediaParser;
-import org.getalp.dbnary.DbnaryWikiModel;
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.LangTools;
-import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
+    private int rank;
 
     // static Set<String> ignoredTemplates = new TreeSet<String>();
     // static {
@@ -26,18 +25,22 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
     private IWiktionaryDataHandler delegate;
 
     private Logger log = LoggerFactory.getLogger(RussianTranslationExtractorWikiModel.class);
+    private AbstractGlossFilter glossFilter;
 
-    public RussianTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
-        this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+    public RussianTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+        this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL, glossFilter);
     }
 
-    public RussianTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+    public RussianTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
         super(wi, locale, imageBaseURL, linkBaseURL);
         this.delegate = we;
+        this.glossFilter = glossFilter;
+        this.rank = 1;
     }
 
     public void parseTranslationBlock(String block) {
         initialize();
+        this.rank = 1;
         if (block == null) {
             return;
         }
@@ -54,8 +57,12 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
             // This is a translation block
             // System.err.println("Template call to translation block");
             // System.err.println("Map is: " + parameterMap.toString());
-            String gloss = parameterMap.get("1");
-            if (null != gloss) gloss = gloss.trim();
+            String g = parameterMap.get("1");
+            Resource gloss = null;
+            if (null != g) {
+                g = g.trim();
+                gloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+            }
             for (Entry<String, String> kv : parameterMap.entrySet()) {
                 if ("1".equals(kv.getKey())) continue;
                 extractTranslations(gloss, LangTools.normalize(kv.getKey()), kv.getValue());
@@ -75,7 +82,7 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
     static Pattern parens = Pattern.compile("\\(([^\\)]*)\\)");
     static Pattern scripts = Pattern.compile("[^\\[\\]:,;]*:\\s*");
 
-    private void extractTranslations(String gloss, String lang, String value) {
+    private void extractTranslations(Resource gloss, String lang, String value) {
         // First black out commas that appear inside a pair of parenthesis
         // TODO: Keep usage information that may be found as a prefix: e.g. "de=несов.: [[verwenden]], [[anwenden]], [[einsetzen]]; сов.: [[aufbrauchen]]"
         Matcher scriptMatcher = scripts.matcher(value);
@@ -111,7 +118,7 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
     static Pattern linkWithTargetPattern = Pattern.compile("\\[\\[[^\\|]+\\|([^\\]]*)\\]\\]");
     static Pattern macroPattern = Pattern.compile("\\{\\{([^\\}]*)\\}\\}");
 
-    private void extractTranslation(String gloss, String lang, String trans) {
+    private void extractTranslation(Resource gloss, String lang, String trans) {
         trans = restoreCommas(trans);
         Matcher macros = macroPattern.matcher(trans);
         String word = macros.replaceAll(""); // TODO: usages are now in macros

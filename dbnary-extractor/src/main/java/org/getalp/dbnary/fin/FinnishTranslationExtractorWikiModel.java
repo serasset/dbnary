@@ -1,5 +1,6 @@
 package org.getalp.dbnary.fin;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import info.bliki.wiki.filter.WikipediaParser;
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.wiki.WikiPatterns;
@@ -17,22 +18,27 @@ import java.util.regex.Pattern;
 
 public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
+    private final AbstractGlossFilter glossFilter;
     private IWiktionaryDataHandler delegate;
     private Logger log = LoggerFactory.getLogger(FinnishTranslationExtractorWikiModel.class);
+    private int rank = 1;
 
-    public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
-        this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+    public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+        this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL, glossFilter);
     }
 
-    public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+    public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
         super(wi, locale, imageBaseURL, linkBaseURL);
         this.delegate = we;
+        this.rank = 1;
+        this.glossFilter = glossFilter;
     }
 
 
     // TODO: handle entries where translations refer to the translations of another term (form: Kts. [[other entry]]).
     public void parseTranslationBlock(String block) {
         // Heuristics: if the translation block uses kohta macro, we assume that ALL translation data is available in the macro.
+        this.rank = 1;
         if (block.contains("{{kohta")) {
             parseTranslationBlockWithBliki(block);
         } else {
@@ -68,7 +74,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
             int translationPositionalArg = findTranslations(parameterMap);
             String xans = parameterMap.get(Integer.toString(translationPositionalArg));
             String gloss = computeGlossValue(parameterMap, translationPositionalArg);
-            extractTranslations(xans, gloss);
+            extractTranslations(xans, gloss, rank++);
 
         } else if ("käännökset/korjattava".equalsIgnoreCase(templateName) || "kään/korj".equals(templateName) || "korjattava/käännökset".equals(templateName)) {
             // Missing translation message, just ignore it
@@ -173,7 +179,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
     }
 
     public void extractTranslations(String block) {
-        extractTranslations(block, null);
+        extractTranslations(block, null, -1);
     }
 
     public static Set<String> knownTranslationTemplates = new HashSet<String>();
@@ -207,7 +213,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
     }
 
-    public void extractTranslations(String block, String gloss) {
+    public void extractTranslations(String block, String gloss, int r) {
         Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(block);
         final int INIT = 1;
         final int LANGUE = 2;
@@ -216,7 +222,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
         int ETAT = INIT;
 
-        String currentGlose = gloss;
+        Resource currentGlose = delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
         String lang = null, word = "";
         String usage = "";
         String langname = "";
@@ -237,9 +243,11 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
                     if (macro != null) {
                         if (macro.equalsIgnoreCase("ylä")) {
                             if (macroOrLinkOrcarMatcher.group(2) != null) {
-                                currentGlose = macroOrLinkOrcarMatcher.group(2);
+                                gloss = macroOrLinkOrcarMatcher.group(2);
+                                currentGlose = delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
                             } else if (macroOrLinkOrcarMatcher.group(4) != null) {
-                                currentGlose = macroOrLinkOrcarMatcher.group(4);
+                                gloss = macroOrLinkOrcarMatcher.group(4);
+                                currentGlose = delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
                             } else {
                                 currentGlose = null;
                             }
@@ -274,7 +282,8 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
                     if (macro != null) {
                         if (macro.equalsIgnoreCase("ylä")) {
                             if (macroOrLinkOrcarMatcher.group(2) != null) {
-                                currentGlose = macroOrLinkOrcarMatcher.group(2);
+                                gloss = macroOrLinkOrcarMatcher.group(2);
+                                currentGlose = delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
                             } else {
                                 currentGlose = null;
                             }
@@ -325,7 +334,8 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
                     if (macro != null) {
                         if (macro.equalsIgnoreCase("ylä")) {
                             if (macroOrLinkOrcarMatcher.group(2) != null) {
-                                currentGlose = macroOrLinkOrcarMatcher.group(2);
+                                gloss = macroOrLinkOrcarMatcher.group(2);
+                                currentGlose = delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
                             } else {
                                 currentGlose = null;
                             }

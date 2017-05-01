@@ -314,7 +314,8 @@ public class DisambiguateTranslationSources {
 	}
 
 
-	private AbstractGlossFilter createGlossFilter(String lang) {
+	private AbstractGlossFilter
+	createGlossFilter(String lang) {
 		AbstractGlossFilter f = null;
 		String cname = AbstractGlossFilter.class.getCanonicalName();
 		int dpos = cname.lastIndexOf('.');

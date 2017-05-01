@@ -1,6 +1,8 @@
 package org.getalp.dbnary.zho;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import info.bliki.wiki.filter.WikipediaParser;
+import org.getalp.dbnary.AbstractGlossFilter;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -13,19 +15,23 @@ import java.util.Map.Entry;
 
 public class ChineseTranslationExtractorWikiModel extends DbnaryWikiModel {
 
+    private final AbstractGlossFilter glossFilter;
     private IWiktionaryDataHandler delegate;
+    private int rank = 1;
 
-    public ChineseTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
-        this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+    public ChineseTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+        this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL, glossFilter);
     }
 
-    public ChineseTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+    public ChineseTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
         super(wi, locale, imageBaseURL, linkBaseURL);
         this.delegate = we;
+        this.glossFilter = glossFilter;
     }
 
     public void parseTranslationBlock(String block) {
         initialize();
+        this.rank = 1;
         if (block == null) {
             return;
         }
@@ -33,7 +39,7 @@ public class ChineseTranslationExtractorWikiModel extends DbnaryWikiModel {
         initialize();
     }
 
-    private String currentGloss = null;
+    private Resource currentGloss = null;
 
     @Override
     public void substituteTemplateCall(String templateName,
@@ -64,8 +70,13 @@ public class ChineseTranslationExtractorWikiModel extends DbnaryWikiModel {
             }
             delegate.registerTranslation(lang, currentGloss, usage, parameterMap.get("2"));
         } else if ("tradini".equals(templateName)) {
-            currentGloss = parameterMap.get("1");
-            if (null != currentGloss) currentGloss = currentGloss.trim();
+            String g = parameterMap.get("1");
+            if (null != g) {
+                g = g.trim();
+                currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+            } else {
+                currentGloss = null;
+            }
         } else if ("tradini-checar".equals(templateName)) {
             currentGloss = null;
         } else if ("tradmeio".equals(templateName)) {

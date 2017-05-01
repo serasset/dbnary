@@ -1,10 +1,8 @@
 package org.getalp.dbnary.spa;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import info.bliki.wiki.filter.WikipediaParser;
-import org.getalp.dbnary.DbnaryWikiModel;
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.LangTools;
-import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,14 +19,16 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
     private IWiktionaryDataHandler delegate;
 
     private Logger log = LoggerFactory.getLogger(SpanishTranslationExtractorWikiModel.class);
+    private AbstractGlossFilter glossFilter;
 
-    public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
-        this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+    public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+        this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL, glossFilter);
     }
 
-    public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+    public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
         super(wi, locale, imageBaseURL, linkBaseURL);
         this.delegate = we;
+        this.glossFilter = glossFilter;
     }
 
     public void parseTranslationBlock(String block) {
@@ -84,17 +84,19 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
                                        Map<String, String> parameterMap, Appendable writer)
             throws IOException {
         if ("t+".equals(templateName)) {
+            // TODO : rank each translation by language
             String lang = LangTools.normalize(parameterMap.get("1"));
             int i = 2;
             String s = null;
-            String usage = "", trans = null, currentGloss = null;
+            String usage = "", trans = null;
+            Resource currentGloss = null;
             if (parameterMap.get("tr") != null) usage = usage + "|tr=" + parameterMap.get("tr");
             while (i != 31 && (s = parameterMap.get("" + i)) != null) {
                 s = s.trim();
                 senseNumberOrRangeMatcher.reset(s);
                 if ("".equals(s)) {
                     // Just ignore empty parameters
-                } else if (",".equals(s)) {
+                } else if (s.matches("[,;]")) {
                     if (usage.length() == 0) {
                         usage = null;
                     } else {
@@ -116,7 +118,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
                         trans = null;
                         usage = "";
                     }
-                    currentGloss = s;
+                    currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(s));
                 } else if (gender.contains(s)) {
                     usage = usage + "|" + s;
                 } else if ("p".equals(s)) {

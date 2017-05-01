@@ -578,7 +578,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     public void extractTranslations(int startOffset, int endOffset) {
         String transCode = pageContent.substring(startOffset, endOffset);
-        JapaneseTranslationsExtractorWikiModel dbnmodel = new JapaneseTranslationsExtractorWikiModel(this.wdh, this.wi);
+        JapaneseTranslationsExtractor dbnmodel = new JapaneseTranslationsExtractor(this.wdh, this.wi, glossFilter);
         dbnmodel.parseTranslations(transCode);
     }
 

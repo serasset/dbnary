@@ -396,7 +396,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void extractTranslations(int startOffset, int endOffset) {
         Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
         macroMatcher.region(startOffset, endOffset);
-        String currentGlose = null;
+        Resource currentGloss = null;
 
         while (macroMatcher.find()) {
             String g1 = macroMatcher.group(1);
@@ -413,7 +413,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     usage = args.toString();
                 }
                 if (lang != null) {
-                    wdh.registerTranslation(lang, currentGlose, usage, word);
+                    wdh.registerTranslation(lang, currentGloss, usage, word);
                 }
             } else if (g1.equals("xlatio-var")) {
                 String g2 = macroMatcher.group(2);
@@ -430,7 +430,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     usage = args.toString();
                 }
                 if (lang != null) {
-                    wdh.registerTranslation(lang, currentGlose, usage, word);
+                    wdh.registerTranslation(lang, currentGloss, usage, word);
                 }
             } else if (g1.equals("=sum=")) {
                 // The current latin macro does not allow glosses...
@@ -439,7 +439,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 // just ignore it
             } else if (g1.equals("=ima=")) {
                 // Forget the current glose
-                currentGlose = null;
+                currentGloss = null;
             } else if ((g1.length() == 2 || g1.length() == 3) && LatinLangtoCode.threeLettersCode(g1) != null) {
                 // this a a language identifier, just ignore it as we get the language id from the trad macro parameter.
             } else {

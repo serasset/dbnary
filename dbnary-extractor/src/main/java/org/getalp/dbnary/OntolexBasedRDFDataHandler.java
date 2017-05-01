@@ -4,6 +4,7 @@ import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.hp.hpl.jena.vocabulary.XSD;
 import org.getalp.dbnary.tools.CounterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +108,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         aBox.setNsPrefix("lime", LimeOnt.getURI());
         aBox.setNsPrefix("decomp", DecompOnt.getURI());
         aBox.setNsPrefix("skos", SkosOnt.getURI());
+        aBox.setNsPrefix("xs", XSD.getURI());
 
 
         featureBoxes = new HashMap<>();
@@ -180,7 +182,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         //FIXME this doesn't use its languageCode parameter
         return getLexEntry(
                 getEncodedPageName(pageName, pos, defNumber),
-                typeResource(pos)
+                OntolexOnt.LexicalEntry
         );
     }
 
@@ -340,6 +342,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
             return; // Don't register anything if current lex entry is not known.
         }
         if (lvl > 1) {
+            log.trace("registering sub sense for {}", currentEncodedPageName);
             currentSubSenseNumber++;
         } else {
             currentSenseNumber++;
@@ -349,6 +352,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
 
     public void registerNewDefinition(String def, String senseNumber) {
+        if (def == null || def.length() == 0) return;
         if (null == currentLexEntry) {
             log.debug("Registering Word Sense when lex entry is null in \"{}\".", this.currentMainLexEntry);
             return; // Don't register anything if current lex entry is not known.
@@ -377,11 +381,11 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         return getPrefix() + "__ws_" + senseNumber + "_" + currentEncodedPageName;
     }
 
-    private String computeSenseNum() {
-        return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? "" : (char) ('a' + currentSubSenseNumber - 1));
+    protected String computeSenseNum() {
+        return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? "" : ("." + currentSubSenseNumber));
     }
 
-    protected Resource registerTranslationToEntity(Resource entity, String lang, String currentGlose, String usage, String word) {
+    protected Resource registerTranslationToEntity(Resource entity, String lang, Resource currentGlose, String usage, String word) {
         if (null == entity) {
             log.debug("Registering Translation when lex entry is null in \"{}\".", this.currentMainLexEntry);
             return null; // Don't register anything if current lex entry is not known.
@@ -406,7 +410,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         }
 
         if (currentGlose != null && !currentGlose.equals("")) {
-            aBox.add(trans, DBnaryOnt.gloss, currentGlose, extractedLang);
+            aBox.add(trans, DBnaryOnt.gloss, currentGlose);
         }
 
         if (usage != null && !usage.equals("")) {
@@ -416,7 +420,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
 
     @Override
-    public void registerTranslation(String lang, String currentGlose, String usage, String word) {
+    public void registerTranslation(String lang, Resource currentGlose, String usage, String word) {
         registerTranslationToEntity(currentLexEntry, lang, currentGlose, usage, word);
     }
 
@@ -638,12 +642,40 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
 
     @Override
-    public void registerNymRelation(String target, String synRelation, String gloss) {
+    public Resource createGlossResource(StructuredGloss gloss) {
+        return createGlossResource(gloss, -1);
+    }
+
+    @Override
+    public Resource createGlossResource(StructuredGloss gloss, int rank) {
+        if (gloss == null || (
+                        (gloss.getGloss() == null || gloss.getGloss().length() == 0) &&
+                        (gloss.getSenseNumber() == null || gloss.getSenseNumber().length() == 0))
+                ) return null;
+
+        Resource glossResource = aBox.createResource(getGlossResourceName(gloss), DBnaryOnt.Gloss);
+        if (null != gloss.getGloss() && gloss.getGloss().trim().length() > 0)
+            aBox.add(aBox.createStatement(glossResource, RDF.value, gloss.getGloss(), extractedLang));
+        if (gloss.getSenseNumber() != null)
+            aBox.add(aBox.createStatement(glossResource, DBnaryOnt.senseNumber, gloss.getSenseNumber()));
+        if (rank > 0)
+            aBox.add(aBox.createLiteralStatement(glossResource, DBnaryOnt.rank, rank));
+        return glossResource;
+    }
+
+    protected String getGlossResourceName(StructuredGloss gloss) {
+        String key = gloss.getGloss() + gloss.getSenseNumber();
+        key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
+        return getPrefix() + "__" + extractedLang + "_gloss_" + key + "_" + currentEncodedPageName ;
+    }
+
+    @Override
+    public void registerNymRelation(String target, String synRelation, Resource gloss) {
         registerNymRelation(target, synRelation, gloss, null);
     }
 
     @Override
-    public void registerNymRelation(String target, String synRelation, String gloss, String usage) {
+    public void registerNymRelation(String target, String synRelation, Resource gloss, String usage) {
         if (null == currentLexEntry) {
             log.debug("Registering Lexical Relation when lex entry is null in \"{}\".", this.currentMainLexEntry);
             return; // Don't register anything if current lex entry is not known.

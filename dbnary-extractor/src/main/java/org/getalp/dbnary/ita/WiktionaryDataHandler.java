@@ -1,12 +1,14 @@
 package org.getalp.dbnary.ita;
 
 import com.hp.hpl.jena.rdf.model.Resource;
-import org.getalp.dbnary.OntolexBasedRDFDataHandler;
-import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.OntolexOnt;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.RDF;
+import org.getalp.dbnary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.DatatypeConverter;
+import java.math.BigInteger;
 import java.util.*;
 
 
@@ -122,21 +124,21 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     }
 
     @Override
-    public void registerTranslation(String lang, String currentGlose, String usage, String word) {
+    public void registerTranslation(String lang, Resource currentGlose, String usage, String word) {
         if (lexEntries.size() == 0) {
             log.debug("Registering Translation when no lexical entry is defined in {}", currentWiktionaryPageName);
         } else if (lexEntries.size() == 1) {
             super.registerTranslation(lang, currentGlose, usage, word);
-        } else if (null == currentGlose || currentGlose.length() == 0) {
+        } else if (null == currentGlose) {
             log.debug("Attaching translations to Vocable (Null gloss and several lexical entries) in {}", currentWiktionaryPageName);
             super.registerTranslationToEntity(currentMainLexEntry, lang, currentGlose, usage, word);
         } else {
             // TODO: guess which translation is to be attached to which entry/sense
             List<Resource> entries = getLexicalEntryUsingPartOfSpeech(currentGlose);
             if (entries.size() != 0) {
-                log.warn("Attaching translations using part of speech in gloss : {}", currentWiktionaryPageName);
+                log.trace("Attaching translations using part of speech in gloss : {}", currentWiktionaryPageName);
                 if (entries.size() > 1) {
-                    log.warn("Attaching translations to several entries in {}", currentWiktionaryPageName);
+                    log.trace("Attaching translations to several entries in {}", currentWiktionaryPageName);
                 }
                 for (Resource entry : entries) {
                     super.registerTranslationToEntity(entry, lang, currentGlose, usage, word);
@@ -149,9 +151,19 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         }
     }
 
-    private List<Resource> getLexicalEntryUsingPartOfSpeech(String gloss) {
-        gloss = gloss.trim();
+    protected String getGlossResourceName(StructuredGloss gloss) {
+        String key = gloss.getGloss() + gloss.getSenseNumber();
+        key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
+        return getPrefix() + "__" + extractedLang + "_gloss_" + key + "_" + currentWiktionaryPageName ;
+    }
+
+    private List<Resource> getLexicalEntryUsingPartOfSpeech(Resource structuredGloss) {
         ArrayList<Resource> res = new ArrayList<>();
+        Statement s = structuredGloss.getProperty(RDF.value);
+        if (null == s) return res;
+        String gloss = s.getString();
+        if (null == gloss) return res;
+        gloss = gloss.trim();
         if (gloss.startsWith("aggettivo numerale")) {
             addAllResourceOfPoS(res, LexinfoOnt.numeral);
         } else if (gloss.startsWith("aggettivo")) {

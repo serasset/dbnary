@@ -1,6 +1,7 @@
 package org.getalp.dbnary.lit;
 
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
@@ -177,7 +178,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         }
     }
 
-    public void addNymInfo(String nymRel, String[] tNyms, String gloss) {
+    public void addNymInfo(String nymRel, String[] tNyms, Resource gloss) {
         if (!nymRel.equals("") && tNyms.length > 2) {
             if (tNyms[1].equals("lt")) {
                 registerNymRelation(tNyms[2], nymRel, gloss);

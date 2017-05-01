@@ -23,21 +23,27 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     static {
         posAndTypeValueMap.put("sub", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
+        posAndTypeValueMap.put("Substantiv", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
         posAndTypeValueMap.put("egen", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
         posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
+        posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
         posAndTypeValueMap.put("fork", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
+        posAndTypeValueMap.put("Adjektiv", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
         posAndTypeValueMap.put("prep", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
         posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
+        posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
         posAndTypeValueMap.put("inter", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("kon", new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
         posAndTypeValueMap.put("pref", new PosAndType(LexinfoOnt.prefix, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("suff", new PosAndType(LexinfoOnt.suffix, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("pron", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
+        posAndTypeValueMap.put("Pronomen", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
         posAndTypeValueMap.put("tall", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
         posAndTypeValueMap.put("art", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
         posAndTypeValueMap.put("det", new PosAndType(LexinfoOnt.determiner, LexinfoOnt.Determiner));
         posAndTypeValueMap.put("ordtak", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("Ordspråk", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
         posAndTypeValueMap.put("uttrykk", new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression));
         posAndTypeValueMap.put("idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.LexicalEntry));
     }

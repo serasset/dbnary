@@ -1,6 +1,7 @@
 package org.getalp.dbnary.bul;
 
 import info.bliki.wiki.filter.WikipediaParser;
+import org.getalp.dbnary.AbstractGlossFilter;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -68,15 +69,17 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
 
     private DefinitionsWikiModel expander;
     Set<String> templates = null;
+    private AbstractGlossFilter glossFilter;
 
-    public BulgarianWikiModel(IWiktionaryDataHandler wdh, Locale locale, String imageBaseURL, String linkBaseURL) {
-        this(wdh, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+    public BulgarianWikiModel(IWiktionaryDataHandler wdh, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+        this(wdh, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL, glossFilter);
     }
 
-    public BulgarianWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+    public BulgarianWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
         super(wi, locale, imageBaseURL, linkBaseURL);
         this.delegate = wdh;
         if (log.isDebugEnabled()) templates = new HashSet<String>();
+        this.glossFilter = glossFilter;
         this.expander = new DefinitionsWikiModel(wi, this.fLocale, this.getImageBaseURL(), this.getWikiBaseURL(), templates);
     }
 
@@ -116,7 +119,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
                     // if (sectionContent.contains("\n# ")) log.debug("Translation with sens number in {}", this.getPageName());
                     // TODO: use a shared instance of the translation parser.
                     TranslationsParser tp = new TranslationsParser();
-                    tp.extractTranslations(sectionContent, delegate);
+                    tp.extractTranslations(sectionContent, delegate, glossFilter);
 
                     // extractTranslationsFromRawWikiCode(sectionContent)
                     //delegate.registerTranslation();
@@ -151,28 +154,6 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
         }
     }
 
-    private void extractTranslationsFromRawWikiCode(String sectionContent) {
-        Matcher langTranslations = translationPattern.matcher(sectionContent);
-        while (langTranslations.find()) {
-            String trans = langTranslations.group();
-            String lang = "";
-            String body = "";
-            String gloss = "";
-            if (!trans.isEmpty()) {
-                Matcher translationLangMatcher = translationLangPattern.matcher(trans);
-                if (translationLangMatcher.find()) {
-                    lang = BulgarianLangtoCode.threeLettersCode(translationLangMatcher.group().replace("*", "").replace("{", "").replace("}", ""));
-
-                    Matcher translationBodyMatcher = translationBodyPattern.matcher(trans);
-                    if (translationBodyMatcher.find()) {
-                        body = translationBodyMatcher.group();
-                        body = body.replaceAll("\\[\\[([^\\]\\[]*)\\s*,\\s*([^\\]\\[]*)\\]\\]", "\\[\\[$1\\]\\],\\[\\[$2\\]\\]");
-                    }
-                    extractTranslations(lang, body);
-                }
-            }
-        }
-    }
 
     private void appendTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) {
         try {
@@ -212,71 +193,6 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
         return null;
     }
 
-    private void extractTranslations(String lang, String value) {
-        // First black out commas that appear inside a pair of parenthesis
-        value = blackoutCommas(value);
-        String translations[] = value.split("[,;]");
-        for (int i = 0; i < translations.length; i++) {
-            String gloss = "";
-            Matcher glossMatcher = glossPattern.matcher(translations[i]);
-            if (glossMatcher.find()) {
-                gloss = glossMatcher.group();
-                gloss = gloss.replaceAll("[\\[\\]\\{\\}]", "").replaceAll("''", "").replaceAll("\\.,", ".");
-            }
-            extractTranslation(gloss, lang, translations[i]);
-        }
-    }
-
-    private String blackoutCommas(String value) {
-        Matcher m = parens.matcher(value);
-        StringBuffer sb = new StringBuffer((int) (value.length() * 1.4));
-        String inParens;
-        while (m.find()) {
-            inParens = m.group(1);
-            inParens = inParens.replaceAll(";", "@@SEMICOLON@@");
-            inParens = inParens.replaceAll(",", "@@COMMA@@");
-            m.appendReplacement(sb, "(" + inParens + ")");
-        }
-        m.appendTail(sb);
-        return sb.toString();
-    }
-
-    private String restoreCommas(String value) {
-        value = value.replaceAll("@@SEMICOLON@@", ";");
-        value = value.replaceAll("@@COMMA@@", ",");
-        return value;
-    }
-
-    private void extractTranslation(String gloss, String lang, String trans) {
-        trans = restoreCommas(trans);
-        Matcher macros = macroPattern.matcher(trans);
-        String word = macros.replaceAll("");
-        Matcher links = linkPattern.matcher(word);
-        word = links.replaceAll("$1").trim();
-        StringBuffer usage = new StringBuffer();
-        StringBuffer w = new StringBuffer();
-        Matcher m = glossPattern.matcher(word);
-        while (m.find()) {
-            usage.append(m.group(0));
-            usage.append(" ");
-            m.appendReplacement(w, " ");
-        }
-        m.appendTail(w);
-        word = w.toString().trim().replaceAll("''", "").replace(gloss.trim(), "").trim();
-        Matcher m2 = parens.matcher(word);
-        StringBuffer w2 = new StringBuffer();
-        while (m2.find()) {
-            usage.append(m2.group(0));
-            usage.append(" ");
-            m2.appendReplacement(w2, " ");
-        }
-        m2.appendTail(w2);
-        word = w2.toString().trim();
-        if (usage.length() > 0) usage.deleteCharAt(usage.length() - 1);
-        if (word != null && !word.equals("") && lang != null && !lang.isEmpty()) {
-            delegate.registerTranslation(lang, gloss, usage.toString(), word);
-        }
-    }
 
     public void displayUsedTemplates() {
         if (templates != null && templates.size() > 0)

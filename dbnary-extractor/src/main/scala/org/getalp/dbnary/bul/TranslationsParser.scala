@@ -1,7 +1,9 @@
 package org.getalp.dbnary.bul
 
+import com.hp.hpl.jena.rdf.model.Resource
 import grizzled.slf4j.Logger
-import org.getalp.dbnary.IWiktionaryDataHandler
+import org.getalp.dbnary.{AbstractGlossFilter, IWiktionaryDataHandler}
+import sun.awt.EventQueueDelegate.Delegate
 
 import scala.util.matching.Regex
 import scala.util.matching.Regex.Match
@@ -183,15 +185,18 @@ class TranslationsParser extends RegexParsers with PackratParsers {
 
   val TBracket = """\[([^\]]*)\]""".r
 
-  def extractTranslations(input: String, delegate: IWiktionaryDataHandler): Unit =
+  def extractTranslations(input: String, delegate: IWiktionaryDataHandler, filter: AbstractGlossFilter): Unit =
     parseTranslations(input, delegate.currentLexEntry()).foreach {
       t => {
         t.writtenRep match {
-          case TBracket(v) => delegate.registerTranslation(t.language, t.gloss, t.usage, v)
-          case _ => delegate.registerTranslation(t.language, t.gloss, t.usage, t.writtenRep)
+          case TBracket(v) => delegate.registerTranslation(t.language, createGloss(t.gloss, delegate, filter), t.usage, v)
+          case _ => delegate.registerTranslation(t.language, createGloss(t.gloss, delegate, filter), t.usage, t.writtenRep)
         }
       }
     }
+
+  def createGloss(g: String, delegate: IWiktionaryDataHandler, filter: AbstractGlossFilter): Resource =
+    delegate.createGlossResource(filter.extractGlossStructure(g))
 
 }
 

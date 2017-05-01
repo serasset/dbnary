@@ -1065,7 +1065,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Pattern pattern = WikiPattern.compile(translationTokenizer); // match all templates
 
         Matcher lexer = pattern.matcher(line);
-        String currentGloss = null;
+        Resource currentGloss = null;
+        int rank = 1;
 
         while (lexer.find()) {
 
@@ -1119,13 +1120,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                         if (args.size() > 0) {
                             log.debug("unused args in translation gloss : {}", args);
                         }
-
+                        String gloss = null;
                         if (g1 != null || g2 != null) {
-                            currentGloss = (g1 == null || g1.equals("") ? "" : g1) +
+                            gloss = (g1 == null || g1.equals("") ? "" : g1) +
                                     (g2 == null || g2.equals("") ? "" : "|" + g2);
                         }
                         glossExtractor.setPageName(wiktionaryPageName);
-                        currentGloss = glossExtractor.expandAll(currentGloss, null);
+                        if (null != gloss)
+                            gloss = glossExtractor.expandAll(gloss, null);
+                        currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(gloss), rank++);
+
                         break;
                     case "trad-fin":
                     case ")":
@@ -1137,53 +1141,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     default:
                         break;
                 }
-            }
-        }
-    }
-
-    private void extractTranslationsOld(int startOffset, int endOffset) {
-        Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
-        macroMatcher.region(startOffset, endOffset);
-        String currentGlose = null;
-
-        while (macroMatcher.find()) {
-            String g1 = macroMatcher.group(1);
-
-            if (g1.equals("trad+") || g1.equals("trad-") || g1.equals("trad") || g1.equals("t+") || g1.equals("t-") || g1.equals("trad--")) {
-                // DONE: Sometimes translation links have a remaining info after the word, keep it.
-                String g2 = macroMatcher.group(2);
-                int i1, i2;
-                String lang, word;
-                if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
-                    lang = LangTools.normalize(g2.substring(0, i1));
-                    String usage = null;
-                    if ((i2 = g2.indexOf('|', i1 + 1)) == -1) {
-                        word = g2.substring(i1 + 1);
-                    } else {
-                        word = g2.substring(i1 + 1, i2);
-                        usage = g2.substring(i2 + 1);
-                    }
-
-                    lang = FrenchLangtoCode.threeLettersCode(lang);
-
-                    if (lang != null) {
-                        wdh.registerTranslation(lang, currentGlose, usage, word);
-                    }
-                }
-            } else if (g1.equals("boîte début") || g1.equals("trad-début") || g1.equals("(")) {
-                // Get the glose that should help disambiguate the source acception
-                String g2 = macroMatcher.group(2);
-                // Ignore glose if it is a macro
-                if (g2 != null && !g2.startsWith("{{")) {
-                    currentGlose = g2;
-                }
-            } else if (g1.equals("-")) {
-                // just ignore it
-            } else if (g1.equals("trad-fin") || g1.equals(")")) {
-                // Forget the current glose
-                currentGlose = null;
-            } else if (g1.equals("T")) {
-                // this a a language identifier, just ignore it as we get the language id from the trad macro parameter.
             }
         }
     }

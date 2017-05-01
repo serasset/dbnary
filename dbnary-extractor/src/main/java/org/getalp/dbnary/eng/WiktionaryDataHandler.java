@@ -173,4 +173,5 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     public void addInflectionOnCanonicalForm(EnglishInflectionData infl) {
         this.mergePropertiesIntoResource(infl.toPropertyObjectMap(), currentCanonicalForm);
     }
+
 }

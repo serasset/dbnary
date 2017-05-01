@@ -48,5 +48,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         addPartOfSpeech(pos, posResource(pat), typeR);
     }
 
-
+    protected String computeSenseNum() {
+        char s;
+        if (currentSubSenseNumber > 26) {
+            log.error("Subsense (alphabetical) number above z in {}", currentEncodedPageName);
+            s =  (char) ('A' + currentSubSenseNumber - 1);
+        } else {
+            s = (char) ('a' + currentSubSenseNumber - 1);
+        }
+        return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? "" : s);
+    }
 }

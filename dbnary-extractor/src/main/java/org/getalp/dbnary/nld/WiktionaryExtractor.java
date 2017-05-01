@@ -4,11 +4,14 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
+import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.wiki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,12 +29,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
     protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
+    private ExpandAllWikiModel defOrExampleExpander;
 
 
     private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK}
 
     public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
         super(wdh);
+    }
+
+    @Override
+    public void setWiktionaryIndex(WiktionaryIndex wi) {
+        super.setWiktionaryIndex(wi);
+        defOrExampleExpander = new ExpandAllWikiModel(wi, new Locale("nl"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
     }
 
     protected final static Pattern languageSectionPattern;
@@ -154,6 +164,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (title.equals("pron")) {
             return Block.PRONBLOCK;
         } else if (WiktionaryDataHandler.isValidPOS(title)) {
+            // TODO: sometimes, -verb- indicates a verb form (usually with first arg = 0)
             context.put("pos", title);
             return Block.DEFBLOCK;
         } else if (title.equals("trans")) {
@@ -301,11 +312,29 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     }
 
+    // TODO : should be the default behavour for all languages.
+    @Override
+    public void extractDefinition(String definition, int defLevel) {
+        defOrExampleExpander.setPageName(wiktionaryPageName);
+        String def = defOrExampleExpander.expandAll(definition, null);
+        if (def != null && !def.equals("")) {
+            wdh.registerNewDefinition(def, defLevel);
+        }
+    }
+
     @Override
     public void extractExample(Matcher definitionMatcher) {
         String example = definitionMatcher.group(3);
         extractExample(example);
     }
 
-
+    // TODO : should be the default behavour for all languages.
+    @Override
+    public void extractExample(String example) {
+        defOrExampleExpander.setPageName(wiktionaryPageName);
+        String ex = defOrExampleExpander.expandAll(example, null);
+        if (ex != null && !ex.equals("")) {
+            wdh.registerExample(ex, null);
+        }
+    }
 }

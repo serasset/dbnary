@@ -42,7 +42,7 @@ public class GlossFilter extends AbstractGlossFilter {
 			if (null != g && g.trim().length() == 0) {
 				g = null;
 			}
-			return new StructuredGloss(numSenseGlossMatcher.group(1), g);
+			return new StructuredGloss(numSenseGlossMatcher.group(1).trim(), g);
 		}
 		
 		return new StructuredGloss(null, rawGloss);

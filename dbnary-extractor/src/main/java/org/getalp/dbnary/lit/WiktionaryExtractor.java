@@ -267,6 +267,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
         }
 
+        // TODO: Example and definition section has changed. Adapt and rewrite lituanian extractor.
         m = defPattern.matcher(pageContent);
         m.region(start, end);
         int senseNum = 1;
@@ -326,6 +327,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 case "ltrans-mid":
                 case "ltrans-bottom":
                     if (tTrad.length > 1) {
+                        // TODO: glosses are now structured differently. Extract the correct gloss.
                         String[] tmp = tTrad[1].split("=");
                         String g = null;
                         if (tmp.length == 2) {

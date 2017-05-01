@@ -517,6 +517,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                             lang = AbstractWiktionaryExtractor.stripParentheses(lang);
                             lang = TurkishLangtoCode.threeLettersCode(lang);
                             langname = "";
+                            rank = 1;
                             ETAT = TRAD;
                         } else if (character.equals("\n") || character.equals("\r")) {
                             //System.err.println("Skipping newline while in LANGUE state.");

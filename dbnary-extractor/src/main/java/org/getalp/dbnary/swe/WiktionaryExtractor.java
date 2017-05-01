@@ -286,6 +286,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String pron;
         Matcher defOrExampleMatcher = defOrExamplePattern.matcher(pageContent);
         defOrExampleMatcher.region(startOffset, endOffset);
+        // TODO : Swedish definition that contain ordered sublists are indeed mathematical definitions where
+        // sublists are part of the definition
         while (defOrExampleMatcher.find()) {
             if (null != defOrExampleMatcher.group(1)) { // extraire les definitions
                 extractDefinition(defOrExampleMatcher);

@@ -6,7 +6,6 @@ import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.filter.PlainTextConverter;
 import info.bliki.wiki.model.WikiModelContentException;
 import info.bliki.wiki.namespaces.INamespace;
-import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -69,12 +68,10 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (null != def && !def.equals("")) {
-            delegate.registerNewDefinition(def, defLevel);
-            if (!currentExamples.isEmpty()) {
-                for (Example example : currentExamples) {
-                    delegate.registerExample(example.value, example.context);
-                }
+        delegate.registerNewDefinition(def, defLevel);
+        if (!currentExamples.isEmpty()) {
+            for (Example example : currentExamples) {
+                delegate.registerExample(example.value, example.context);
             }
         }
     }

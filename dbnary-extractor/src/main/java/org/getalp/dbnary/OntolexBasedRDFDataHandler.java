@@ -342,6 +342,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
             return; // Don't register anything if current lex entry is not known.
         }
         if (lvl > 1) {
+            log.trace("registering sub sense for {}", currentEncodedPageName);
             currentSubSenseNumber++;
         } else {
             currentSenseNumber++;
@@ -351,6 +352,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
 
     public void registerNewDefinition(String def, String senseNumber) {
+        if (def == null || def.length() == 0) return;
         if (null == currentLexEntry) {
             log.debug("Registering Word Sense when lex entry is null in \"{}\".", this.currentMainLexEntry);
             return; // Don't register anything if current lex entry is not known.
@@ -379,8 +381,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         return getPrefix() + "__ws_" + senseNumber + "_" + currentEncodedPageName;
     }
 
-    private String computeSenseNum() {
-        return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? "" : (char) ('a' + currentSubSenseNumber - 1));
+    protected String computeSenseNum() {
+        return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? "" : ("." + currentSubSenseNumber));
     }
 
     protected Resource registerTranslationToEntity(Resource entity, String lang, Resource currentGlose, String usage, String word) {
@@ -661,7 +663,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         return glossResource;
     }
 
-    private String getGlossResourceName(StructuredGloss gloss) {
+    protected String getGlossResourceName(StructuredGloss gloss) {
         String key = gloss.getGloss() + gloss.getSenseNumber();
         key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
         return getPrefix() + "__" + extractedLang + "_gloss_" + key + "_" + currentEncodedPageName ;

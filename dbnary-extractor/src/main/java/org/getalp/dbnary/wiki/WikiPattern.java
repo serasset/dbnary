@@ -49,7 +49,7 @@ public class WikiPattern {
      * @return a Pattern matching the given extended regex.
      */
     public static Pattern compile(String regex) {
-        String correctedRegex = correctRegex(regex);
+        String correctedRegex = toStandardPattern(regex);
         return Pattern.compile(correctedRegex);
     }
 
@@ -92,7 +92,7 @@ public class WikiPattern {
     private static final String RESERVED = TEMPLATES + LINKS + HEADERS + LIST_ITEMS ;
 
 
-    private static String correctRegex(String regex) {
+    public static String toStandardPattern(String regex) {
         StringBuffer correctedRegex = new StringBuffer(regex.length());
 
         Matcher lexer = lexerPatern.matcher(regex);

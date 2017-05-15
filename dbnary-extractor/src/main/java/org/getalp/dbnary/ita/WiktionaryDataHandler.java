@@ -36,9 +36,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         posAndTypeValueMap.put("loc verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
 
         posAndTypeValueMap.put("agg num", new PosAndType(LexinfoOnt.numeral, OntolexOnt.Word));
-        posAndTypeValueMap.put("ord", new PosAndType(LexinfoOnt.ordinalAdjective, OntolexOnt.Word));
         posAndTypeValueMap.put("agg poss", new PosAndType(LexinfoOnt.possessiveAdjective, OntolexOnt.Word));
-        posAndTypeValueMap.put("card", new PosAndType(LexinfoOnt.cardinalNumeral, OntolexOnt.Word));
+        // card/ord is not a Part of speech, but an information added to aggetivi numerali
+        //        posAndTypeValueMap.put("card", new PosAndType(LexinfoOnt.cardinalNumeral, OntolexOnt.Word));
+        //        posAndTypeValueMap.put("ord", new PosAndType(LexinfoOnt.ordinalAdjective, OntolexOnt.Word));
         posAndTypeValueMap.put("agg nom", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
 
         posAndTypeValueMap.put("art", new PosAndType(LexinfoOnt.article, OntolexOnt.Word));
@@ -56,6 +57,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         posAndTypeValueMap.put("pron poss", new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word));
         posAndTypeValueMap.put("pronome poss", new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word));
         posAndTypeValueMap.put("pronome", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("pron dim", new PosAndType(LexinfoOnt.demonstrativePronoun, OntolexOnt.Word));
 
         // TODO: -acron-, -acronim-, -acronym-, -espr-, -espress- mark locution as phrases
 
@@ -91,6 +93,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     }
 
+    private String encodedWiktionaryPageName;
+
     public static boolean isValidPOS(String pos) {
         return posAndTypeValueMap.containsKey(pos);
     }
@@ -111,6 +115,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     public void initializeEntryExtraction(String wiktionaryPageName) {
         super.initializeEntryExtraction(wiktionaryPageName);
         lexEntries.clear();
+        encodedWiktionaryPageName = uriEncode(currentWiktionaryPageName);
     }
 
     @Override
@@ -121,32 +126,35 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     @Override
     public void finalizeEntryExtraction() {
         super.finalizeEntryExtraction();
+        encodedWiktionaryPageName = null;
     }
 
     @Override
-    public void registerTranslation(String lang, Resource currentGlose, String usage, String word) {
+    public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {
         if (lexEntries.size() == 0) {
             log.debug("Registering Translation when no lexical entry is defined in {}", currentWiktionaryPageName);
         } else if (lexEntries.size() == 1) {
-            super.registerTranslation(lang, currentGlose, usage, word);
-        } else if (null == currentGlose) {
+            super.registerTranslation(lang, currentGloss, usage, word);
+        } else if (null == currentGloss) {
             log.debug("Attaching translations to Vocable (Null gloss and several lexical entries) in {}", currentWiktionaryPageName);
-            super.registerTranslationToEntity(currentMainLexEntry, lang, currentGlose, usage, word);
+            super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
         } else {
             // TODO: guess which translation is to be attached to which entry/sense
-            List<Resource> entries = getLexicalEntryUsingPartOfSpeech(currentGlose);
+            List<Resource> entries = getLexicalEntryUsingPartOfSpeech(currentGloss);
             if (entries.size() != 0) {
                 log.trace("Attaching translations using part of speech in gloss : {}", currentWiktionaryPageName);
                 if (entries.size() > 1) {
                     log.trace("Attaching translations to several entries in {}", currentWiktionaryPageName);
                 }
                 for (Resource entry : entries) {
-                    super.registerTranslationToEntity(entry, lang, currentGlose, usage, word);
+                    super.registerTranslationToEntity(entry, lang, currentGloss, usage, word);
                 }
             } else {
-                log.debug("Several entries are defined in {} // {}", currentWiktionaryPageName, currentGlose);
+                Statement s = currentGloss.getProperty(RDF.value);
+                String g = (null == s) ? "" : s.getString();
+                log.debug("Several entries are defined in {} // {}", currentWiktionaryPageName, g);
                 // TODO: disambiguate and attach to the correct entry.
-                super.registerTranslationToEntity(currentMainLexEntry, lang, currentGlose, usage, word);
+                super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
             }
         }
     }
@@ -154,7 +162,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     protected String getGlossResourceName(StructuredGloss gloss) {
         String key = gloss.getGloss() + gloss.getSenseNumber();
         key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
-        return getPrefix() + "__" + extractedLang + "_gloss_" + key + "_" + currentWiktionaryPageName ;
+        return getPrefix() + "__" + extractedLang + "_gloss_" + key + "_" + encodedWiktionaryPageName ;
     }
 
     private List<Resource> getLexicalEntryUsingPartOfSpeech(Resource structuredGloss) {

@@ -211,7 +211,7 @@ public class WikiCharSequence implements CharSequence {
         return new WikiCharSequence(this, realStart, realEnd);
     }
 
-    public String getSourceContent(String s) {
+    public String getSourceContent(CharSequence s) {
         StringBuffer res = new StringBuffer();
 
         for (int i = 0; i < s.length(); i++) {
@@ -223,6 +223,10 @@ public class WikiCharSequence implements CharSequence {
             }
         }
         return res.toString();
+    }
+
+    public String getSourceContent() {
+        return this.getSourceContent(this);
     }
 
     public WikiText.Token getToken(String c) {

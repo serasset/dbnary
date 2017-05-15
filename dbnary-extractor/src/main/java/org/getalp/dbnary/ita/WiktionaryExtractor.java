@@ -7,10 +7,14 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
+import org.getalp.dbnary.wiki.WikiCharSequence;
+import org.getalp.dbnary.wiki.WikiPattern;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -149,6 +153,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private Block computeNextBlock(Matcher m, Map<String, Object> context) {
         String title = m.group(1).trim();
         String nym;
+
+        // -card- and -ord- are not section delimiters.
+        if (title.startsWith("card") || title.startsWith("ord")) return null;
+
         context.put("start", m.end());
 
         if (title.startsWith("trad1")) {
@@ -235,6 +243,96 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
 
+    private void extractTranslations(int startOffset, int endOffset) {
+        WikiText wt = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
+        ArrayList<? extends WikiText.Token> toks = wt.wikiTokens();
+
+        String currentGloss = null;
+        int ti = 0;
+        while(ti < toks.size()) {
+            WikiText.Token t = toks.get(ti);
+            if (t instanceof WikiText.Template) {
+                WikiText.Template tmpl = (WikiText.Template) t;
+                String tmplName = tmpl.getName().trim();
+                if (tmplName.equalsIgnoreCase("trad1") || tmplName.equals("(")) {
+                    Map<String, WikiText.WikiContent> args = ((WikiText.Template) t).getArgs();
+                    currentGloss = (args.get("1") == null) ? null : args.get("1").toString().trim();
+                    if (isIgnorable(currentGloss)) {
+                        // Ignore the full translation block
+                        ti++;
+                        while(ti != toks.size() && ! isClosingTranslationBlock(toks.get(ti))) {
+                            ti++;
+                        }
+                    }
+                } else if (tmplName.equalsIgnoreCase("trad2") || tmplName.equals(")")) {
+                    currentGloss = null;
+                } else if (tmplName.equalsIgnoreCase("Noetim")) {
+                    // Noetim comes in place of an etymology section and ends the translation section.
+                    ti = toks.size();
+                }
+            } else if (t instanceof WikiText.Indentation) {
+                // line of translations
+                processTranslationLine(currentGloss, (WikiText.Indentation) t);
+            } else if (t instanceof WikiText.Heading) {
+                // Headings indicate the unexpected end of the translation section (error in the page or specific headings)
+                // Ignore the remaining data
+                ti = toks.size();
+            } else if (t instanceof WikiText.Link) {
+                // This only captures the links that are outside of an indentation
+                WikiText.Link l = (WikiText.Link) t;
+                String target = l.getTargetText();
+                if (target.startsWith("Categoria:") || target.startsWith("File:") || target.startsWith("Image:")) {
+                    // Beginning of links to categories means end of translation section
+                    ti = toks.size();
+                } else {
+                    // Links outside indentation are simply ignored
+                    log.trace("Unexpected link {} in {}", t, wiktionaryPageName);
+                }
+            } else {
+                log.debug("Unexpected token {} in {}", t, wiktionaryPageName);
+            }
+            // TODO : check if entries are using other arguments
+            ti++;
+        }
+    }
+
+    private void processTranslationLine(String gloss, WikiText.Indentation t) {
+        log.debug("Translation line: {} ||| {}", t.toString(), wiktionaryPageName);
+        WikiCharSequence line = new WikiCharSequence(t.getContent());
+        TranslationLineParser tp = new TranslationLineParser();
+        tp.extractTranslationLine(line, gloss, wdh, glossFilter);
+    }
+
+    static String ignorableGlossPatternText = new StringBuffer()
+            .append("\\s*(?:")
+            .append("(?:(?:\\dª|prima|seconda|terza)\\s+pers(?:ona|\\.)?)\\s+")
+            .append("|(?:femminile|participio passato|plurale)\\s+")
+            .append("|voce verbale")
+            .append(")")
+            .toString();
+    static Pattern ignorableGlossPattern = Pattern.compile(ignorableGlossPatternText);
+    Matcher ignorableGloss = ignorableGlossPattern.matcher("");
+
+    private boolean isIgnorable(String gloss) {
+        if (gloss == null) return false;
+        ignorableGloss.reset(gloss);
+        if (ignorableGloss.lookingAt()) {
+            log.debug("Ignoring gloss {} in {}", gloss, wiktionaryPageName);
+            return true;
+        } else {
+            log.debug("Considering gloss {} in {}", gloss, wiktionaryPageName);
+            return false;
+        }
+    }
+
+    private boolean isClosingTranslationBlock(WikiText.Token token) {
+        if (token instanceof WikiText.Template) {
+            String n = ((WikiText.Template) token).getName().trim();
+            return n.equalsIgnoreCase("trad2") || n.equals(")");
+        }
+        return false;
+    }
+
     protected final static String carPatternString;
     protected final static String macroOrLinkOrcarPatternString;
 
@@ -271,7 +369,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected final int TRAD = 3;
 
     // TODO: delegate translation extraction to the appropriate wiki model
-    private void extractTranslations(int startOffset, int endOffset) {
+    private void extractTranslationsOld(int startOffset, int endOffset) {
         Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(pageContent);
         macroOrLinkOrcarMatcher.region(startOffset, endOffset);
         int ETAT = INIT;

@@ -261,14 +261,15 @@ public class Symbols {
                         args.remove(key);
                     }
                 } else {
-                    key = Integer.toString(4 + offset); //third case
-                    if (args.get(key) != null && !args.get(key).equals("")) {
-                        values.add("LEMMA");
-                        args.put("word1", cleanUp(args.get(key)));
-                        args.remove(key);
-                    } else {
+		    //I'm commenting this case as it is wrong for template  from {{der|gl|oty|tr=iṅci|5=ginger}}
+                    //key = Integer.toString(4 + offset); //third case
+                    //if (args.get(key) != null && !args.get(key).equals("")) {
+                    //    values.add("LEMMA");
+                    //    args.put("word1", cleanUp(args.get(key)));
+                    //    args.remove(key);
+                    //} else {
                         values.add("LANGUAGE");
-                    }
+			//}
                 }
             }
         } else if (args.get("1").equals("cal") || args.get("1").equals("calque")) {
@@ -463,14 +464,15 @@ public class Symbols {
                     args.put("gloss1", args.get("5").replaceAll("\\[", "").replaceAll("\\]", ""));
                     args.remove("5");
                 }
-            } else if (args.get("4") != null && !args.get("4").equals("")) {
-                values.add("LEMMA");
-                args.put("word1", cleanUp(args.get("4")));
-                args.remove("4");
-                if (args.get("5") != null && !args.get("5").equals("")) {
-                    args.put("gloss1", args.get("5").replaceAll("\\[", "").replaceAll("\\]", ""));
-                    args.remove("5");
-                }
+		//I'm commenting what follows as it is wrong for {{m|oty|tr=vēr|4=root}} 
+		//} else if (args.get("4") != null && !args.get("4").equals("")) {
+                //values.add("LEMMA");
+                //args.put("word1", cleanUp(args.get("4")));
+                //args.remove("4");
+                //if (args.get("5") != null && !args.get("5").equals("")) {
+                //    args.put("gloss1", args.get("5").replaceAll("\\[", "").replaceAll("\\]", ""));
+                //    args.remove("5");
+                //}
             } else {
                 args.clear();
                 values = null;

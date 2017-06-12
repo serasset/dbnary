@@ -5,27 +5,27 @@
     <!ENTITY dcterms "http://purl.org/dc/terms/" >
     <!ENTITY lemon "http://lemon-model.net/lemon#" >
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
-    <!ENTITY dbnary "http://kaiko.getalp.org/dbnary#" >
-    <!ENTITY dbetym "http://kaiko.getalp.org/dbnaryetymology#" >
+    <!ENTITY dbnary "http://etytree-virtuoso.wmflabs.org/dbnary#" >
+    <!ENTITY dbetym "http://etytree-virtuoso.wmflabs.org//dbnaryetymology#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
 ]>
 
 
-<rdf:RDF xmlns="http://kaiko.getalp.org/dbnaryetymology#"
-     xml:base="http://kaiko.getalp.org/dbnaryetymology"
+<rdf:RDF xmlns="http://etytree-virtuoso.wmflabs.org//dbnaryetymology#"
+     xml:base="http://etytree-virtuoso.wmflabs.org//dbnaryetymology"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:dbnary="http://kaiko.getalp.org/dbnary#"
-     xmlns:dbetym="http://kaiko.getalp.org/dbnaryetymology#"
+     xmlns:dbnary="http://etytree-virtuoso.wmflabs.org//dbnary#"
+     xmlns:dbetym="http://etytree-virtuoso.wmflabs.org//dbnaryetymology#"
      xmlns:lemon="http://lemon-model.net/lemon#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <owl:Ontology rdf:about="http://kaiko.getalp.org/dbnaryetymology">
+    <owl:Ontology rdf:about="http://etytree-virtuoso.wmflabs.org//dbnaryetymology">
         <rdfs:label xml:lang="en">DBnary etymology ontology</rdfs:label>
         <rdfs:comment xml:lang="en">A DBnary ontology extension used to represent etymological data extracted from Wiktionary.</rdfs:comment>
-        <imports rdf:resource="http://kaiko.getalp.org/dbnary"/>
+        <imports rdf:resource="http://etytree-virtuoso.wmflabs.org/"/>
     </owl:Ontology>
     
 
@@ -39,8 +39,7 @@
 
     
 
-
-    <!-- http://kaiko.getalp.org/dbnaryetymology#derivesFrom -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#derivesFrom -->
 
     <owl:ObjectProperty rdf:about="&dbetym;derivesFrom">
         <rdfs:comment xml:lang="en">The target LexicalEntry is a term derived from the source LexicalEntry. E.g.:eng:link_up derivesFrom eng:link_ety_1. </rdfs:comment>
@@ -49,7 +48,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnaryetymology#descendsFrom -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#descendsFrom -->
 
     <owl:ObjectProperty rdf:about="&dbetym;descendsFrom">
         <rdfs:comment xml:lang="en">The target LexicalEntry is a descendant of the source LexicalEntry. </rdfs:comment>
@@ -58,7 +57,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnaryetymology#etymologicallyDerivesFrom -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#etymologicallyDerivesFrom -->
 
     <owl:ObjectProperty rdf:about="&dbetym;etymologicallyDerivesFrom">
         <rdfs:comment xml:lang="en">The target LexicalEntry etymologically derives from the source LexicalEntry. </rdfs:comment>
@@ -67,7 +66,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnaryetymology#etymologicallyEquivalentTo -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#etymologicallyEquivalentTo -->
 
     <owl:ObjectProperty rdf:about="&dbetym;etymologicallyEquivalentTo">
         <rdfs:comment xml:lang="en">The target and the source LexicalEntries share the same etymological origin. </rdfs:comment>
@@ -77,7 +76,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnaryetymology#etymologicallyRelatedTo -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#etymologicallyRelatedTo -->
 
     <owl:ObjectProperty rdf:about="&dbetym;etymologicallyRelatedTo">
         <rdfs:comment xml:lang="en">An underspecified etymological relationship betwen two LexicalEntries. </rdfs:comment>
@@ -99,7 +98,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnaryetymology#EtymologyEntry -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#EtymologyEntry -->
 
     <owl:Class rdf:about="&dbetym;EtymologyEntry">
         <rdfs:subClassOf rdf:resource="&lemon;LexicalEntry"/>

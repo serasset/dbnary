@@ -5,25 +5,25 @@
     <!ENTITY dcterms "http://purl.org/dc/terms/" >
     <!ENTITY lemon "http://lemon-model.net/lemon#" >
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
-    <!ENTITY dbnary "http://kaiko.getalp.org/dbnary#" >
+    <!ENTITY dbnary "http://etytree-virtuoso.wmflabs.org/dbnary#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
 ]>
 
 
-<rdf:RDF xmlns="http://kaiko.getalp.org/dbnary#"
-     xml:base="http://kaiko.getalp.org/dbnary"
+<rdf:RDF xmlns="http://etytree-virtuoso.wmflabs.org/dbnary#"
+     xml:base="http://etytree-virtuoso.wmflabs.org/dbnary"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:dbnary="http://kaiko.getalp.org/dbnary#"
+     xmlns:dbnary="http://etytree-virtuoso.wmflabs.org/dbnary#"
      xmlns:lemon="http://lemon-model.net/lemon#"
      xmlns:dcterms="http://purl.org/dc/terms/">
-    <owl:Ontology rdf:about="http://kaiko.getalp.org/dbnary">
+    <owl:Ontology rdf:about="http://etytree-virtuoso.wmflabs.org/dbnary">
         <rdfs:label>dbnary</rdfs:label>
-        <rdfs:seeAlso>http://kaiko.getalp.org/about-dbnary/</rdfs:seeAlso>
+        <rdfs:seeAlso>http://etytree-virtuoso.wmflabs.org/about-dbnary/</rdfs:seeAlso>
         <rdfs:comment xml:lang="en">DBnary: A lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the lemon model (http://lemon-model.net/lemon).</rdfs:comment>
         <owl:imports rdf:resource="http://lemon-model.net/lemon"/>
     </owl:Ontology>
@@ -41,7 +41,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#exampleSource -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#exampleSource -->
 
     <owl:AnnotationProperty rdf:about="&dbnary;exampleSource">
         <rdfs:domain rdf:resource="&lemon;UsageExample"/>
@@ -60,7 +60,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#antonym -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#antonym -->
 
     <owl:ObjectProperty rdf:about="&dbnary;antonym">
         <rdfs:comment xml:lang="en">An underspecified antonymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. </rdfs:comment>
@@ -69,7 +69,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#approximateSynonym -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#approximateSynonym -->
 
     <owl:ObjectProperty rdf:about="&dbnary;approximateSynonym">
         <rdfs:comment xml:lang="en">An underspecified approximate synonymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. </rdfs:comment>
@@ -78,7 +78,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#holonym -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#holonym -->
 
     <owl:ObjectProperty rdf:about="&dbnary;holonym">
         <rdfs:comment xml:lang="en">An underspecified holonymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. </rdfs:comment>
@@ -87,7 +87,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#hypernym -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#hypernym -->
 
     <owl:ObjectProperty rdf:about="&dbnary;hypernym">
         <rdfs:comment xml:lang="en">An underspecified hypernymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. </rdfs:comment>
@@ -96,7 +96,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#hyponym -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#hyponym -->
 
     <owl:ObjectProperty rdf:about="&dbnary;hyponym">
         <rdfs:comment xml:lang="en">An underspecified hyponymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. </rdfs:comment>
@@ -105,7 +105,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#isTranslationOf -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#isTranslationOf -->
 
     <owl:ObjectProperty rdf:about="&dbnary;isTranslationOf">
         <rdfs:comment xml:lang="en">links the translation information to the Lexical Entity it belongs to.</rdfs:comment>
@@ -115,7 +115,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#meronym -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#meronym -->
 
     <owl:ObjectProperty rdf:about="&dbnary;meronym">
         <rdfs:comment xml:lang="en">An underspecified meronymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. </rdfs:comment>
@@ -124,7 +124,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#refersTo -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#refersTo -->
 
     <owl:ObjectProperty rdf:about="&dbnary;refersTo">
         <rdfs:comment xml:lang="en">links a vocable to any lexical entry that share the same written form. </rdfs:comment>
@@ -134,7 +134,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#synonym -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#synonym -->
 
     <owl:ObjectProperty rdf:about="&dbnary;synonym">
         <rdfs:comment xml:lang="en">An underspecified synonymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. </rdfs:comment>
@@ -143,7 +143,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#targetLanguage -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#targetLanguage -->
 
     <owl:ObjectProperty rdf:about="&dbnary;targetLanguage">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -154,7 +154,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#topNymProperty -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#topNymProperty -->
 
     <owl:ObjectProperty rdf:about="&dbnary;topNymProperty">
         <rdfs:comment xml:lang="en">An underspecified lexico semantic relation between LexicalEntities (Lexical entry OR Lexical Sense). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. </rdfs:comment>
@@ -164,7 +164,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#troponym -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#troponym -->
 
     <owl:ObjectProperty rdf:about="&dbnary;troponym">
         <rdfs:comment xml:lang="en">A verb that indicates more precisely the manner of doing something by replacing a verb of a more generalized meaning. E.g.: &quot;Stroll&quot; is a troponym of &quot;walk&quot;, since it involves a slow and relaxed sort of walking.</rdfs:comment>
@@ -184,13 +184,13 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#exampleSource -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#exampleSource -->
 
     <owl:DatatypeProperty rdf:about="&dbnary;exampleSource"/>
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#gloss -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#gloss -->
 
     <owl:DatatypeProperty rdf:about="&dbnary;gloss">
         <rdfs:comment xml:lang="en">A textual gloss that may be used to disambiguate the translation&apos;s source sense. </rdfs:comment>
@@ -200,7 +200,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#note -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#note -->
 
     <owl:DatatypeProperty rdf:about="&dbnary;note">
         <rdfs:comment xml:lang="en">Textual note that may be used to add information to a LemonElement when no standard vocabularies exists to explicit it.</rdfs:comment>
@@ -210,7 +210,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#partOfSpeech -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#partOfSpeech -->
 
     <owl:DatatypeProperty rdf:about="&dbnary;partOfSpeech">
         <rdfs:comment xml:lang="en">The original part of speech as it was defined in the Wiktionary page. This property takes a String litteral as object.</rdfs:comment>
@@ -229,7 +229,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#targetLanguageCode -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#targetLanguageCode -->
 
     <owl:DatatypeProperty rdf:about="&dbnary;targetLanguageCode">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -240,7 +240,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#usage -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#usage -->
 
     <owl:DatatypeProperty rdf:about="&dbnary;usage">
         <rdfs:comment xml:lang="en">Usage note that is used to further annotate the target of the translation.</rdfs:comment>
@@ -250,7 +250,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#writtenForm -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#writtenForm -->
 
     <owl:DatatypeProperty rdf:about="&dbnary;writtenForm">
         <rdfs:comment xml:lang="en">The written form of a translation equivalent.</rdfs:comment>
@@ -271,7 +271,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#LexicalEntity -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#LexicalEntity -->
 
     <owl:Class rdf:about="&dbnary;LexicalEntity">
         <rdfs:subClassOf rdf:resource="&lemon;LemonElement"/>
@@ -283,7 +283,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#Translation -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#Translation -->
 
     <owl:Class rdf:about="&dbnary;Translation">
         <rdfs:subClassOf rdf:resource="&owl;Thing"/>
@@ -292,7 +292,7 @@
     
 
 
-    <!-- http://kaiko.getalp.org/dbnary#Vocable -->
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnary#Vocable -->
 
     <owl:Class rdf:about="&dbnary;Vocable">
         <rdfs:subClassOf rdf:resource="&lemon;LexicalEntry"/>

@@ -137,7 +137,6 @@ public class Etymology {
             }
         }
 
-
         toSymbols(definitionSymbolsList, definitionSymbolsListPattern);
 
         parseEtyl();
@@ -163,11 +162,11 @@ public class Etymology {
         }
 
         //remove any Symbols after "DOT" or "AND" that follow a definitionSymbolsPattern
-        for (int j = m.get(0).end + 1; j < symbols.size(); j++) {
+        for (int j = m.get(0).start + 1; j < symbols.size(); j++) {
             for (String b : symbols.get(j).values) {
-                if (b.equals("DOT") || b.equals("AND")) {
+                if (b.equals("DOT")){// || b.equals("AND")) {
                     symbols.subList(j, symbols.size()).clear();
-                    j = symbols.size();//break j loop
+                    //j = symbols.size();//break j loop
                     break;//break symbols loop
                 }
             }
@@ -257,9 +256,12 @@ public class Etymology {
                             if (l.get(i).equals("TEMPLATE")) {//match is a template
                                 Symbols b = new Symbols(string.substring(template.start + 2, template.end - 2), lang, l.get(i));
                                 if (b.values != null && b.args != null) {
-                                    if (b.values.get(0).equals("STOP")) {
-                                        return;
-                                    }
+				    for (String values : b.values) {
+					if (values.equals("STOP")) {
+					    symbols.add(b);
+					    return;
+					}
+				    }
                                     symbols.add(b);
                                 }
                                 break;
@@ -288,9 +290,12 @@ public class Etymology {
                     if (check == false) {//if match is neither contained in a template nor in a link
                         Symbols b = new Symbols(m.group(i + 1), lang, l.get(i));
                         if (b.values != null) {
-                            if (b.values.get(0).equals("STOP")) {
-                                return;
-                            }
+			    for (String values : b.values) {
+				if (values.equals("STOP")) {
+				    symbols.add(b);
+				    return;
+				}
+			    }
                             symbols.add(b);
                         }
                     }

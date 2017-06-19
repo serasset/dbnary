@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 /**
  * @author pantaleo
  */
@@ -807,6 +811,26 @@ public class Symbols {
             args.put("lang", "en");
             values.add("LEMMA");
 	    values.add("STOP");
+	} else if (args.get("1").equals("ar-root")){
+	    args.put("lang", "ar");
+	    StringBuilder word = new StringBuilder();
+	    for (int kk = 2; kk < 12; kk++) {
+		if (args.get(kk) != null && !args.get(kk).equals("")) {
+		    if (kk > 2){
+			word.append(" ");
+		    }
+		    word.append(args.get(kk));
+		}
+	    }
+	    log.debug("word {}", word.toString());
+	    if (word != null && !word.equals("")) {
+		args.put("word1", word.toString());
+		values.add("FROM");
+		values.add("LEMMA");
+	    } else {
+		args.clear();
+		values = null;
+	    }
         } else {
             log.debug("Ignoring template {} in either Etymology or Derived terms or Descendants section", string);
             args.clear();

@@ -35,43 +35,16 @@
     // Object Properties
     //
     ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-    <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#derivesFrom -->
-
-    <owl:ObjectProperty rdf:about="&dbetym;derivesFrom">
-        <rdfs:comment xml:lang="en">The target LexicalEntry is a term derived from the source LexicalEntry. E.g.:eng:link_up derivesFrom eng:link_ety_1. </rdfs:comment>
-        <rdfs:subPropertyOf rdf:resource="&dbetym;etymologicallyRelatedTo"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#descendsFrom -->
-
-    <owl:ObjectProperty rdf:about="&dbetym;descendsFrom">
-        <rdfs:comment xml:lang="en">The target LexicalEntry is a descendant of the source LexicalEntry. </rdfs:comment>
-        <rdfs:subPropertyOf rdf:resource="&dbetym;etymologicallyRelatedTo"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#etymologicallyDerivesFrom -->
-
-    <owl:ObjectProperty rdf:about="&dbetym;etymologicallyDerivesFrom">
-        <rdfs:comment xml:lang="en">The target LexicalEntry etymologically derives from the source LexicalEntry. </rdfs:comment>
-        <rdfs:subPropertyOf rdf:resource="&dbetym;etymologicallyRelatedTo"/>
-    </owl:ObjectProperty>
-    
+     -->    
 
 
     <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#etymologicallyEquivalentTo -->
 
     <owl:ObjectProperty rdf:about="&dbetym;etymologicallyEquivalentTo">
-        <rdfs:comment xml:lang="en">The target and the source LexicalEntries share the same etymological origin. </rdfs:comment>
-        <rdfs:subPropertyOf rdf:resource="&dbetym;etymologicallyRelatedTo"/>
-	<rdfs:subPropertyOf rdf:resource="&owl;sameAs"/>
+        <rdfs:comment xml:lang="en">The target and the source EtymologyEntries share the same etymological origin. </rdfs:comment>
+        <rdfs:range rdf:resource="&lemon;EtymologyEntry"/>
+        <rdfs:domain rdf:resource="&lemon;EtymologyEntry"/>
+	<!--rdfs:subPropertyOf rdf:resource="&owl;sameAs"/-->
     </owl:ObjectProperty>
     
 
@@ -79,10 +52,9 @@
     <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#etymologicallyRelatedTo -->
 
     <owl:ObjectProperty rdf:about="&dbetym;etymologicallyRelatedTo">
-        <rdfs:comment xml:lang="en">An underspecified etymological relationship betwen two LexicalEntries. </rdfs:comment>
-        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
-	<rdfs:range rdf:resource="&lemon;LexicalEntry"/>
-        <rdfs:domain rdf:resource="&lemon;LexicalEntry"/>
+        <rdfs:comment xml:lang="en">An underspecified etymological relationship between two EtymologyEntries of type: descendant or etymologically equivalent to. </rdfs:comment>
+	<rdfs:range rdf:resource="&lemon;EtymologyEntry"/>
+        <rdfs:domain rdf:resource="&lemon;EtymologyEntry"/>
     </owl:ObjectProperty>
     
 
@@ -102,7 +74,7 @@
 
     <owl:Class rdf:about="&dbetym;EtymologyEntry">
         <rdfs:subClassOf rdf:resource="&lemon;LexicalEntry"/>
-        <rdfs:comment xml:lang="en">An EtymologyEntry corresponds to a set of Lexical Entries that share the same etymology but that do not necessarily share the same Part Of Speech. E.g. eng:link_n_1 and eng:link_v_1 are distinct lexical entries and the etymology entry link_ety_1 refers to both of them because link_n_1 and link_v_1 share the same etymology from Old English ang:linke.</rdfs:comment>
+        <rdfs:comment xml:lang="en">An EtymologyEntry corresponds to a set of Lexical Entries that share the same etymology but that do not necessarily share the same Part Of Speech. E.g. eng:link_n_1 and eng:link_v_1 are distinct lexical entries and the etymology entry eng:link_ety_1 refers to both of them because eng:link_n_1 and eng:link_v_1 share the same etymology from Old English ang:linke.</rdfs:comment>
     </owl:Class>
 
 </rdf:RDF>

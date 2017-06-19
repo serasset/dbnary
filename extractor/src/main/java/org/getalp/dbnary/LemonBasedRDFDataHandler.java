@@ -129,7 +129,6 @@ public class LemonBasedRDFDataHandler extends DbnaryModel implements IWiktionary
         aBox = ModelFactory.createDefaultModel();
         aBox.setNsPrefix(lang, NS);
         aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
-	System.out.format("URI=%s\n",DBnaryEtymologyOnt.getURI());
         aBox.setNsPrefix("dbetym", DBnaryEtymologyOnt.getURI());
         aBox.setNsPrefix("lemon", LemonOnt.getURI());
         aBox.setNsPrefix("lexinfo", LexinfoOnt.getURI());

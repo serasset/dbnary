@@ -4,6 +4,7 @@ import info.bliki.wiki.filter.PlainTextConverter;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.iso639.ISO639_3;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -46,7 +47,12 @@ public class ItalianDefinitionExtractorWikiModel extends DbnaryWikiModel {
                                        Map<String, String> parameterMap, Appendable writer)
             throws IOException {
         // Currently just expand the definition to get the full text.
-        super.substituteTemplateCall(templateName, parameterMap, writer);
+        if (templateName.equals("Nodef")) {
+            // No definition given, simply ignore.
+
+        } else {
+            super.substituteTemplateCall(templateName, parameterMap, writer);
+        }
     }
 
 }

@@ -63,6 +63,15 @@ public final class CharRange {
         return this.end;
     }
 
+    /**
+     * <p>Gets the end character for this character range.</p>
+     *
+     * @return the end char (inclusive)
+     */
+    public boolean contains(char c) {
+        return (c >= this.start && c <= this.end);
+    }
+
 
     /**
      * <p>Gets a string representation of the character range.</p>

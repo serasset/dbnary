@@ -211,6 +211,10 @@ public class WikiCharSequence implements CharSequence {
         return new WikiCharSequence(this, realStart, realEnd);
     }
 
+    public CharSequence subSequence(int beginIndex) {
+        return this.subSequence(beginIndex, this.length());
+    }
+
     public String getSourceContent(CharSequence s) {
         StringBuffer res = new StringBuffer();
 

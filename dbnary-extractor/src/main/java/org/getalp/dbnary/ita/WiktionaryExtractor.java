@@ -8,7 +8,6 @@ import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.wiki.WikiCharSequence;
-import org.getalp.dbnary.wiki.WikiPattern;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
 import org.slf4j.Logger;
@@ -243,11 +242,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
 
+    // TODO: do not create the gloss resource in the model if no translation is conatined in the group
+    // (some kind of lazy construction ?)
     private void extractTranslations(int startOffset, int endOffset) {
         WikiText wt = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
         ArrayList<? extends WikiText.Token> toks = wt.wikiTokens();
 
         String currentGloss = null;
+        Resource currentStructuredGloss = null;
+        int glossRank = 1;
         int ti = 0;
         while(ti < toks.size()) {
             WikiText.Token t = toks.get(ti);
@@ -259,20 +262,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     currentGloss = (args.get("1") == null) ? null : args.get("1").toString().trim();
                     if (isIgnorable(currentGloss)) {
                         // Ignore the full translation block
+                        currentGloss = null;
                         ti++;
                         while(ti != toks.size() && ! isClosingTranslationBlock(toks.get(ti))) {
                             ti++;
                         }
+                    } else {
+                        currentStructuredGloss = glossResource(currentGloss, glossRank++);
                     }
                 } else if (tmplName.equalsIgnoreCase("trad2") || tmplName.equals(")")) {
                     currentGloss = null;
+                    currentStructuredGloss = null;
                 } else if (tmplName.equalsIgnoreCase("Noetim")) {
                     // Noetim comes in place of an etymology section and ends the translation section.
                     ti = toks.size();
                 }
-            } else if (t instanceof WikiText.Indentation) {
+            } else if (t instanceof WikiText.Indentation || t instanceof WikiText.ListItem) {
                 // line of translations
-                processTranslationLine(currentGloss, (WikiText.Indentation) t);
+                processTranslationLine(currentStructuredGloss, (WikiText.ListItem) t);
             } else if (t instanceof WikiText.Heading) {
                 // Headings indicate the unexpected end of the translation section (error in the page or specific headings)
                 // Ignore the remaining data
@@ -280,7 +287,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else if (t instanceof WikiText.Link) {
                 // This only captures the links that are outside of an indentation
                 WikiText.Link l = (WikiText.Link) t;
-                String target = l.getTargetText();
+                String target = l.getFullTargetText();
                 if (target.startsWith("Categoria:") || target.startsWith("File:") || target.startsWith("Image:")) {
                     // Beginning of links to categories means end of translation section
                     ti = toks.size();
@@ -296,10 +303,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
     }
 
-    private void processTranslationLine(String gloss, WikiText.Indentation t) {
-        log.debug("Translation line: {} ||| {}", t.toString(), wiktionaryPageName);
+    private Resource glossResource(String currentGloss, int i) {
+        return wdh.createGlossResource(glossFilter.extractGlossStructure(currentGloss), i);
+    }
+
+    private void processTranslationLine(Resource gloss, WikiText.ListItem t) {
+        log.trace("Translation line: {} ||| {}", t.toString(), wiktionaryPageName);
         WikiCharSequence line = new WikiCharSequence(t.getContent());
-        TranslationLineParser tp = new TranslationLineParser();
+        TranslationLineParser tp = new TranslationLineParser(wiktionaryPageName);
         tp.extractTranslationLine(line, gloss, wdh, glossFilter);
     }
 

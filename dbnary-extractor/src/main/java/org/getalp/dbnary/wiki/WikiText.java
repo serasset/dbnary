@@ -330,12 +330,29 @@ public class WikiText {
             }
         }
 
-        public String getTargetText() {
+        // TODO: handle links with anchors
+        public String getFullTargetText() {
             return target.toString();
         }
 
         public WikiContent getTarget() {
             return target;
+        }
+
+        public boolean hasAnchor() {
+            return target.toString().contains("#");
+        }
+
+        public String getAnchorText() {
+            String t = target.toString();
+            int p = t.indexOf('#');
+            return (p == -1) ? null : t.substring(p+1);
+        }
+
+        public String getTargetText() {
+            String t = target.toString();
+            int p = t.indexOf('#');
+            return (p == -1) ? t : t.substring(0,p);
         }
 
         public String getLinkText() {

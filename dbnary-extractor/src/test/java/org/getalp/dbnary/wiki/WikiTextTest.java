@@ -12,7 +12,7 @@ public class WikiTextTest {
 
     @Test
     public void testParse() throws Exception {
-        String test = "text {{f1|x=ccc|z={{toto}}}} text <!-- [[un lien caché]] {{ --> encore [[lien]] [[Category:English|text]] [http://kaiko.getalp.org/about-dbnary about DBnary]   [[lien|]]";
+        String test = "text {{f1|x=ccc|z={{toto}}}} text <!-- [[un lien caché]] {{ --> encore [[lien#bidule]] [[Category:English|text]] [http://kaiko.getalp.org/about-dbnary about DBnary]   [[lien|]]";
         WikiText text = new WikiText(test);
 
         assert !text.wikiTokens().isEmpty();
@@ -25,11 +25,14 @@ public class WikiTextTest {
         assertEquals("Category:English", l.target.toString());
         assertEquals("text", l.text.toString());
         assertEquals("text", l.getLinkText());
-        assertEquals("Category:English", l.getTargetText());
+        assertEquals("Category:English", l.getFullTargetText());
 
         WikiText.InternalLink l1 = (WikiText.InternalLink) text.wikiTokens().get(2);
-        assertEquals("lien", l1.getLinkText());
+        assertEquals("lien#bidule", l1.getLinkText());
+        assertEquals("lien#bidule", l1.getFullTargetText());
         assertEquals("lien", l1.getTargetText());
+        assertTrue(l1.hasAnchor());
+        assertEquals("bidule", l1.getAnchorText());
 
         assertTrue(text.wikiTokens().get(4) instanceof WikiText.ExternalLink);
         WikiText.ExternalLink l2 = (WikiText.ExternalLink) text.wikiTokens().get(4);
@@ -62,11 +65,11 @@ public class WikiTextTest {
         assertEquals("Category:English", l.target.toString());
         assertEquals("text", l.text.toString());
         assertEquals("text", l.getLinkText());
-        assertEquals("Category:English", l.getTargetText());
+        assertEquals("Category:English", l.getFullTargetText());
 
         WikiText.InternalLink l1 = (WikiText.InternalLink) toks.get(5);
         assertEquals("lien", l1.getLinkText());
-        assertEquals("lien", l1.getTargetText());
+        assertEquals("lien", l1.getFullTargetText());
 
         assertTrue(toks.get(9) instanceof WikiText.ExternalLink);
         WikiText.ExternalLink l2 = (WikiText.ExternalLink) toks.get(9);
@@ -288,22 +291,22 @@ public class WikiTextTest {
         assertFalse(text.wikiTokens().isEmpty());
         assertTrue(text.wikiTokens().get(0) instanceof WikiText.InternalLink);
         WikiText.InternalLink el = (WikiText.InternalLink) text.wikiTokens().get(0);
-        assertEquals("Help", el.getTargetText().toString());
+        assertEquals("Help", el.getFullTargetText().toString());
         assertEquals("Help", el.getLinkText().toString());
 
         assertTrue(text.wikiTokens().get(1) instanceof WikiText.InternalLink);
         el = (WikiText.InternalLink) text.wikiTokens().get(1);
-        assertEquals("Help", el.getTargetText().toString());
+        assertEquals("Help", el.getFullTargetText().toString());
         assertEquals("text", el.getLinkText().toString());
 
         assertTrue(text.wikiTokens().get(2) instanceof WikiText.InternalLink);
         el = (WikiText.InternalLink) text.wikiTokens().get(2);
-        assertEquals("Help", el.getTargetText().toString());
+        assertEquals("Help", el.getFullTargetText().toString());
         assertEquals("Helps", el.getLinkText().toString());
 
         assertTrue(text.wikiTokens().get(3) instanceof WikiText.InternalLink);
         el = (WikiText.InternalLink) text.wikiTokens().get(3);
-        assertEquals("Help", el.getTargetText().toString());
+        assertEquals("Help", el.getFullTargetText().toString());
         assertEquals("texts", el.getLinkText().toString());
 
     }

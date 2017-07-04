@@ -20,29 +20,32 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
         super(lang);
     }
 
-    public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
-        setCurrentLanguage(lang);
-        super.initializeEntryExtraction(wiktionaryPageName);
+    @Override
+    public void initializeEntryExtraction(String wiktionaryPageName) {
+        super.initializeEntryExtraction(wiktionaryPageName, currentEntryLanguage, currentEntryLanguageName);
     }
 
-    public void setCurrentLanguage(String lang) {
-        extractedLang = LangTools.getPart1OrId(lang);
 
+    public void setCurrentLanguage(String lang, String languageName) {
         lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
-        currentEntryLanguage = lang;
-        currentPrefix = getPrefixe(lang);
+        currentEntryLanguage = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
+        //currentEntryLanguage = lang;
+        currentEntryLanguageName = languageName;
+        //wktLanguageEdition = LangTools.getPart1OrId(lang);
+        currentPrefix = getPrefix(currentEntryLanguage);
     }
 
     @Override
+    public String getCurrentEntryLanguage() {
+        return currentEntryLanguage;
+    }
+
     public void finalizeEntryExtraction() {
-        currentEntryLanguage = null;
         currentPrefix = null;
     }
 
-
     @Override
     public String currentLexEntry() {
-        // TODO Auto-generated method stub
         return currentWiktionaryPageName;
     }
 
@@ -51,11 +54,9 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
         return currentPrefix;
     }
 
-    public String getPrefixe(String lang) {
+    private String getPrefix(String lang) {
         if (this.prefixes.containsKey(lang))
             return this.prefixes.get(lang);
-
-        lang = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
         String prefix = DBNARY_NS_PREFIX + "/eng/" + lang + "/";
         prefixes.put(lang, prefix);
         aBox.setNsPrefix(lang + "-eng", prefix);
@@ -65,7 +66,7 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
     @Override
     public void registerPronunciation(String pron, String lang) {
         // Catch the call for foreign languages and disregard passed language
-        lang = extractedLang + "-fonipa";
+        lang = getCurrentEntryLanguage() + "-fonipa";
         if (null == currentCanonicalForm) {
             currentSharedPronunciations.add(new PronunciationPair(pron, lang));
         } else {

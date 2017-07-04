@@ -7,14 +7,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
+import java.util.Map;
 
 /**
- * Created by serasset on 17/09/14.
+ * Created by serasset on 17/09/14, pantaleo
  */
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
+    protected String currentEntryLanguage = null;
+    protected String currentEntryLanguageName = null;
+    
     static {
         // English
         posAndTypeValueMap.put("Noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
@@ -61,9 +65,51 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         super(lang);
     }
 
+    @Override
+    public void initializeEntryExtraction(String wiktionaryPageName) {
+	    currentEntryLanguage = "en";
+	    currentEntryLanguageName = "English";
+        initializeEntryExtraction(wiktionaryPageName, currentEntryLanguage, currentEntryLanguageName);
+    }
+
+    public void initializeEntryExtraction(String wiktionaryPageName, String lang, String languageName){
+        super.initializeEntryExtraction(wiktionaryPageName);
+    }
+    
     public static boolean isValidPOS(String pos) {
         return posAndTypeValueMap.containsKey(pos);
     }
+
+    // TODO : check if we should create the prefixes in the aBox or in the eBox
+    // TODO: getPrefix should never return null. It should return "unknown" if there is no language
+    public String getPrefix(Model box, String lang) {
+        // TODO : lang may be null ?
+        // TODO : what if the
+        if (lang == null) {
+            log.debug("Null input language to function getPrefix.");
+            lang = "unknown";
+        }
+        String code = EnglishLangToCode.threeLettersCode(lang);
+        if (code == null) code = "unknown";
+        lang = LangTools.normalize(code);
+        lang = lang.trim();
+        if (lang.equals("eng")) {
+            return super.getPrefix();
+        }
+        Map<String, String> pMap = box.getNsPrefixMap();
+        String pName = lang + "-eng";
+        if (pMap.containsKey(pName)) {
+            return pMap.get(pName);
+        }
+        String tmp = LangTools.normalize(lang);
+        if (tmp != null) {
+            lang = tmp;
+        }
+        String prefix = DBNARY_NS_PREFIX + "/eng/" + lang + "/";
+        box.setNsPrefix(pName, prefix);
+        return prefix;
+    }
+
 
     @Override
     public void registerInflection(String languageCode,
@@ -106,10 +152,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
         // Keep it simple for english: register forms on the current lexical entry
         if (null != note) {
-            PropertyObjectPair p = PropertyObjectPair.get(SkosOnt.note, aBox.createLiteral(note, extractedLang));
+            PropertyObjectPair p = PropertyObjectPair.get(SkosOnt.note, aBox.createLiteral(note, wktLanguageEdition));
             props.add(p);
         }
-        PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+        PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, getCurrentEntryLanguage()));
         props.add(p);
 
         addOtherFormPropertiesToLexicalEntry(currentLexEntry, props);
@@ -127,7 +173,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         // Keep it simple for english: register forms on the current lexical entry
         // FIXME: check what is provided when we have different lex entries with the same pos and morph.
 
-        PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+        PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, getCurrentEntryLanguage()));
 
         props.add(p);
 

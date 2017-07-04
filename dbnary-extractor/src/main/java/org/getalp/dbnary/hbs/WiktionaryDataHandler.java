@@ -152,7 +152,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                             }
                             i++;
                             if (cirilica != null) {
-                                aBox.add(currentLexEntry, OntolexOnt.writtenRep, cirilica, extractedLang);
+                                aBox.add(currentLexEntry, OntolexOnt.writtenRep, cirilica, getCurrentEntryLanguage());
                             } else {
                                 log.debug("r (Cirilica) unused in {} --in-- {}", infos[0], this.currentLexEntry());
                             }

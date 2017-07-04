@@ -303,7 +303,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     public void addWrittenRep(String word) {
         if (currentLexEntry != null)
-            aBox.add(currentLexEntry, OntolexOnt.writtenRep, word, extractedLang);
+            aBox.add(currentLexEntry, OntolexOnt.writtenRep, word, getCurrentEntryLanguage());
     }
 
     public void addAbbrev(String word) {

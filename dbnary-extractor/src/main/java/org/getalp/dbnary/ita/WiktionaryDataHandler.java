@@ -162,7 +162,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     protected String getGlossResourceName(StructuredGloss gloss) {
         String key = gloss.getGloss() + gloss.getSenseNumber();
         key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
-        return getPrefix() + "__" + extractedLang + "_gloss_" + key + "_" + encodedWiktionaryPageName ;
+        return getPrefix() + "__" + wktLanguageEdition + "_gloss_" + key + "_" + encodedWiktionaryPageName ;
     }
 
     private List<Resource> getLexicalEntryUsingPartOfSpeech(Resource structuredGloss) {

@@ -33,6 +33,8 @@ public interface IWiktionaryDataHandler {
 
     void finalizeEntryExtraction();
 
+    String getCurrentEntryLanguage();
+
     void addPartOfSpeech(String pos);
 
     /**

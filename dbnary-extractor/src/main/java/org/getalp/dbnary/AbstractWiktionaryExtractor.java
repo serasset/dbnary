@@ -116,7 +116,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     }
 
 
-    /*
+    /**
      * @return the wiktionaryIndex
      */
     // public WiktionaryIndex getWiktionaryIndex() {
@@ -130,7 +130,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     public void extractData(String wiktionaryPageName, String pageContent) {
         // Entries containing the special char ":" are pages belonging to specific namespaces.(Wiktionary:, Categories:, ...).
         // Such pages are simply ignored.
-        if (wiktionaryPageName.contains(":")) {
+        if (filterOutPage(wiktionaryPageName)) {
             return;
         }
         this.wiktionaryPageName = wiktionaryPageName;
@@ -144,6 +144,10 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
             System.err.println("Caught RuntimeException while parsing entry [" + this.wiktionaryPageName + "]");
             throw e;
         }
+    }
+
+    public boolean filterOutPage(String pagename) {
+        return pagename.contains(":");
     }
 
     public abstract void extractData();

@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author serasset
+ * @author serasset, pantaleo
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
@@ -96,7 +96,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
         // Either the filter is at end of sequence or on English language header.
         if (languageFilter.hitEnd()) {
-            // There is no english data in this page.
+            // There is no English data in this page.
             return;
         }
         int englishSectionStartOffset = languageFilter.end();
@@ -697,7 +697,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
     }
 
-
     private String getSuperlative(Map<String, String> args, int argnum, String comp) {
         String k = "sup" + argnum;
         String sup = null;
@@ -858,7 +857,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     protected void extractPron(int startOffset, int endOffset) {
-
         Matcher pronMatcher = pronPattern.matcher(pageContent);
         pronMatcher.region(startOffset, endOffset);
         while (pronMatcher.find()) {

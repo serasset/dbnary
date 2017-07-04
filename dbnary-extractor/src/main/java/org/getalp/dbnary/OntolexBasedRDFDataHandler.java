@@ -43,7 +43,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     protected int currentSubSenseNumber;
     protected CounterSet translationCount = new CounterSet();
     private CounterSet reifiedNymCount = new CounterSet();
-    protected String extractedLang;
+    protected String wktLanguageEdition;
+
+    protected Resource lexvoLanguageEdition;
     protected Resource lexvoExtractedLanguage;
 
     private Set<Statement> heldBackStatements = new HashSet<Statement>();
@@ -88,7 +90,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
         NS = DBNARY_NS_PREFIX + "/" + lang + "/";
 
-        extractedLang = LangTools.getPart1OrId(lang);
+        wktLanguageEdition = LangTools.getPart1OrId(lang);
         lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
 
         // Create aBox
@@ -110,9 +112,17 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         aBox.setNsPrefix("skos", SkosOnt.getURI());
         aBox.setNsPrefix("xs", XSD.getURI());
 
-
         featureBoxes = new HashMap<>();
         featureBoxes.put(Feature.MAIN, aBox);
+    }
+
+    /**
+     * returns the language of the current Entry
+     * @return a language code
+     */
+    @Override
+    public String getCurrentEntryLanguage() {
+        return wktLanguageEdition;
     }
 
     @Override
@@ -182,7 +192,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         //FIXME this doesn't use its languageCode parameter
         return getLexEntry(
                 getEncodedPageName(pageName, pos, defNumber),
-                OntolexOnt.LexicalEntry
+                typeResource(pos)
         );
     }
 
@@ -246,12 +256,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         }
 
         aBox.add(currentLexEntry, OntolexOnt.canonicalForm, currentCanonicalForm);
-        aBox.add(currentCanonicalForm, OntolexOnt.writtenRep, currentWiktionaryPageName, extractedLang);
+        aBox.add(currentCanonicalForm, OntolexOnt.writtenRep, currentWiktionaryPageName, wktLanguageEdition);
         aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
         if (null != currentLexinfoPos)
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);
 
-        aBox.add(currentLexEntry, LimeOnt.language, extractedLang);
+        aBox.add(currentLexEntry, LimeOnt.language, getCurrentEntryLanguage());
         aBox.add(currentLexEntry, DCTerms.language, lexvoExtractedLanguage);
 
         // Register the pending statements.
@@ -327,7 +337,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         log.debug("Registering lexical Variant: {} for entry: {}", alt, currentEncodedPageName);
         Resource altlemma = aBox.createResource();
         aBox.add(currentLexEntry, VarTransOnt.lexicalRel, altlemma);
-        aBox.add(altlemma, OntolexOnt.writtenRep, alt, extractedLang);
+        aBox.add(altlemma, OntolexOnt.writtenRep, alt, wktLanguageEdition);
     }
 
     @Override
@@ -371,7 +381,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         // TODO: no definition relation in Ontolex, Lexical Concepts use skos:definition, but not lexical senses, or do they ?
         aBox.add(currentSense, SkosOnt.definition, defNode);
         // Keep a human readable version of the definition, removing all links annotations.
-        aBox.add(defNode, RDF.value, AbstractWiktionaryExtractor.cleanUpMarkup(def, true), extractedLang);
+        aBox.add(defNode, RDF.value, AbstractWiktionaryExtractor.cleanUpMarkup(def, true), wktLanguageEdition);
 
         // TODO: Extract domain/usage field from the original definition.
 
@@ -541,7 +551,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
         Resource posResource = posResource(pos);
 
-        PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, extractedLang));
+        PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, getCurrentEntryLanguage()));
 
         props.add(p);
 
@@ -655,7 +665,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
         Resource glossResource = aBox.createResource(getGlossResourceName(gloss), DBnaryOnt.Gloss);
         if (null != gloss.getGloss() && gloss.getGloss().trim().length() > 0)
-            aBox.add(aBox.createStatement(glossResource, RDF.value, gloss.getGloss(), extractedLang));
+            aBox.add(aBox.createStatement(glossResource, RDF.value, gloss.getGloss(), wktLanguageEdition));
         if (gloss.getSenseNumber() != null)
             aBox.add(aBox.createStatement(glossResource, DBnaryOnt.senseNumber, gloss.getSenseNumber()));
         if (rank > 0)
@@ -666,7 +676,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     protected String getGlossResourceName(StructuredGloss gloss) {
         String key = gloss.getGloss() + gloss.getSenseNumber();
         key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
-        return getPrefix() + "__" + extractedLang + "_gloss_" + key + "_" + currentEncodedPageName ;
+        return getPrefix() + "__" + wktLanguageEdition + "_gloss_" + key + "_" + currentEncodedPageName ;
     }
 
     @Override
@@ -823,10 +833,10 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
         // Create new word sense + a definition element
         Resource example = aBox.createResource();
-        aBox.add(aBox.createStatement(example, RDF.value, ex, extractedLang));
+        aBox.add(aBox.createStatement(example, RDF.value, ex, getCurrentEntryLanguage()));
         if (null != context) {
             for (Map.Entry<Property, String> c : context.entrySet()) {
-                aBox.add(aBox.createStatement(example, c.getKey(), c.getValue(), extractedLang));
+                aBox.add(aBox.createStatement(example, c.getKey(), c.getValue(), wktLanguageEdition));
             }
         }
         aBox.add(aBox.createStatement(currentSense, SkosOnt.example, example));

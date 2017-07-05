@@ -264,6 +264,7 @@ public class ExtractWiktionary {
             if (ex.getNestedException() != null) {
                 ex.getNestedException().printStackTrace();
             }
+            throw new IOException("XML Stream Exception while reading dump", ex);
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {

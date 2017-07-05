@@ -86,6 +86,10 @@ public class ISO639_3 {
     private Set<Lang> langSet = new HashSet<Lang>();
 
     private ISO639_3() {
+	//an element of langMap has key "ita"
+	//and value {id: "ita", part2b: "ita", part2t: "ita", part1: "it", en: "Italian"}
+	//another element of langMap has key "it"
+	//and value {id: "ita", part2b: "ita", part2t: "ita", part1: "it", en: "Italian"}
         InputStream fis = null;
         try {
             fis = this.getClass().getResourceAsStream("iso-639-3.tab");
@@ -99,7 +103,8 @@ public class ISO639_3 {
                 if (matcher.find()) {
                     Lang l = new Lang();
                     // Id   Part2B  Part2T  Part1   Scope   Language_Type   Ref_Name    Comment
-                    l.id = matcher.group(1);
+		            // ita  ita     ita     it      I       L               Italian  
+		            l.id = matcher.group(1);
                     l.part2b = matcher.group(2);
                     l.part2t = matcher.group(3);
                     l.part1 = matcher.group(4);
@@ -131,6 +136,7 @@ public class ISO639_3 {
                     // nop
                 }
         }
+	
         // Get eponym language names
         // TODO: do it lazily.
         fis = null;

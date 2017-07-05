@@ -3,7 +3,6 @@ package org.getalp.dbnary.bul
 import com.hp.hpl.jena.rdf.model.Resource
 import grizzled.slf4j.Logger
 import org.getalp.dbnary.{AbstractGlossFilter, IWiktionaryDataHandler}
-import sun.awt.EventQueueDelegate.Delegate
 
 import scala.util.matching.Regex
 import scala.util.matching.Regex.Match

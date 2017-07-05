@@ -1,7 +1,7 @@
 package org.getalp.dbnary.jpn;
 
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
+import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;
@@ -13,41 +13,41 @@ import java.util.regex.Matcher;
 /**
  * Created by serasset on 17/09/14.
  */
-public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
     static {
 
         posAndTypeValueMap = new HashMap<>(20);
-        posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, LemonOnt.Word));
-        posAndTypeValueMap.put("名詞", new PosAndType(LexinfoOnt.noun, LemonOnt.Word));
-        posAndTypeValueMap.put("idiom", new PosAndType(LexinfoOnt.idiom, LemonOnt.Phrase));
-        posAndTypeValueMap.put("成句", new PosAndType(LexinfoOnt.idiom, LemonOnt.Phrase));
-        posAndTypeValueMap.put("四字熟語", new PosAndType(LexinfoOnt.idiom, LemonOnt.Phrase));
-        posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, LemonOnt.Word));
-        posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, LemonOnt.Word));
-        posAndTypeValueMap.put("adjective", new PosAndType(LexinfoOnt.adjective, LemonOnt.Word));
-        posAndTypeValueMap.put("形容詞", new PosAndType(LexinfoOnt.adjective, LemonOnt.Word));
-        posAndTypeValueMap.put("name", new PosAndType(LexinfoOnt.properNoun, LemonOnt.Word));
-        posAndTypeValueMap.put("固有名詞", new PosAndType(LexinfoOnt.properNoun, LemonOnt.Word));
-        posAndTypeValueMap.put("人名", new PosAndType(LexinfoOnt.properNoun, LemonOnt.Word));
-        posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, LemonOnt.Word));
-        posAndTypeValueMap.put("adverb", new PosAndType(LexinfoOnt.adverb, LemonOnt.Word));
-        posAndTypeValueMap.put("副詞", new PosAndType(LexinfoOnt.adverb, LemonOnt.Word));
-        posAndTypeValueMap.put("abbr", new PosAndType(LexinfoOnt.abbreviation, LemonOnt.Word));
-        posAndTypeValueMap.put("略語", new PosAndType(LexinfoOnt.abbreviation, LemonOnt.Word));
+        posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
+        posAndTypeValueMap.put("名詞", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
+        posAndTypeValueMap.put("idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("成句", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("四字熟語", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
+        posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
+        posAndTypeValueMap.put("adjective", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
+        posAndTypeValueMap.put("形容詞", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
+        posAndTypeValueMap.put("name", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("固有名詞", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("人名", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
+        posAndTypeValueMap.put("adverb", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
+        posAndTypeValueMap.put("副詞", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
+        posAndTypeValueMap.put("abbr", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.Word));
+        posAndTypeValueMap.put("略語", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.Word));
         //        posAndTypeValueMap.put("prov", "Proverb");
         //        posAndTypeValueMap.put("熟語", "Proverb");
         //        posAndTypeValueMap.put("ことわざ", "Proverb");
-        posAndTypeValueMap.put("形容動詞", new PosAndType(LexinfoOnt.adjective, LemonOnt.Word)); // TODO: Find a better mapping; this is rather an "adjectival noun..."
-        posAndTypeValueMap.put("adjectivenoun", new PosAndType(LexinfoOnt.adjective, LemonOnt.Word));
-        posAndTypeValueMap.put("感動詞", new PosAndType(LexinfoOnt.interjection, LemonOnt.Word));
+        posAndTypeValueMap.put("形容動詞", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word)); // TODO: Find a better mapping; this is rather an "adjectival noun..."
+        posAndTypeValueMap.put("adjectivenoun", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
+        posAndTypeValueMap.put("感動詞", new PosAndType(LexinfoOnt.interjection, OntolexOnt.Word));
         // Ignorable part of speech
-        posAndTypeValueMap.put("助詞", new PosAndType(LexinfoOnt.particle, LemonOnt.Word)); // particle
-        posAndTypeValueMap.put("conj", new PosAndType(LexinfoOnt.conjunction, LemonOnt.Word)); // conj
-        posAndTypeValueMap.put("接続詞", new PosAndType(LexinfoOnt.conjunction, LemonOnt.Word)); // conj
-        posAndTypeValueMap.put("代名詞", new PosAndType(LexinfoOnt.pronoun, LemonOnt.Word)); // pronoun
+        posAndTypeValueMap.put("助詞", new PosAndType(LexinfoOnt.particle, OntolexOnt.Word)); // particle
+        posAndTypeValueMap.put("conj", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.Word)); // conj
+        posAndTypeValueMap.put("接続詞", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.Word)); // conj
+        posAndTypeValueMap.put("代名詞", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.Word)); // pronoun
 
 
         // adjectivenoun, 形容動詞

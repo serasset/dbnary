@@ -1,32 +1,32 @@
 package org.getalp.dbnary.fra;
 
 import com.hp.hpl.jena.rdf.model.Resource;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.OntolexOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Created by serasset on 17/09/14.
  */
-public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
     static {
 
         // French
-        posAndTypeValueMap.put("-nom-", new PosAndType(LexinfoOnt.noun, LemonOnt.Word));
-        posAndTypeValueMap.put("-nom-pr-", new PosAndType(LexinfoOnt.properNoun, LemonOnt.Word));
-        posAndTypeValueMap.put("-prénom-", new PosAndType(LexinfoOnt.properNoun, LemonOnt.Word));
-        posAndTypeValueMap.put("-adj-", new PosAndType(LexinfoOnt.adjective, LemonOnt.Word));
-        posAndTypeValueMap.put("-verb-", new PosAndType(LexinfoOnt.verb, LemonOnt.Word));
-        posAndTypeValueMap.put("-adv-", new PosAndType(LexinfoOnt.adverb, LemonOnt.Word));
-        posAndTypeValueMap.put("-loc-adv-", new PosAndType(LexinfoOnt.adverb, LemonOnt.Phrase));
-        posAndTypeValueMap.put("-loc-adj-", new PosAndType(LexinfoOnt.adjective, LemonOnt.Phrase));
-        posAndTypeValueMap.put("-loc-nom-", new PosAndType(LexinfoOnt.noun, LemonOnt.Phrase));
-        posAndTypeValueMap.put("-loc-verb-", new PosAndType(LexinfoOnt.verb, LemonOnt.Phrase));
+        posAndTypeValueMap.put("-nom-", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
+        posAndTypeValueMap.put("-nom-pr-", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("-prénom-", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("-adj-", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
+        posAndTypeValueMap.put("-verb-", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
+        posAndTypeValueMap.put("-adv-", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
+        posAndTypeValueMap.put("-loc-adv-", new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("-loc-adj-", new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("-loc-nom-", new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("-loc-verb-", new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
     }
 
     public WiktionaryDataHandler(String lang) {
@@ -40,13 +40,22 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         Resource typeR = typeResource(pat);
         if (currentWiktionaryPageName.startsWith("se ")) {
             if (currentWiktionaryPageName.substring(2).trim().contains(" ")) {
-                typeR = LemonOnt.Phrase;
+                typeR = OntolexOnt.MultiWordExpression;
             }
         } else if (currentWiktionaryPageName.contains(" ")) {
-            typeR = LemonOnt.Phrase;
+            typeR = OntolexOnt.MultiWordExpression;
         }
         addPartOfSpeech(pos, posResource(pat), typeR);
     }
 
-
+    protected String computeSenseNum() {
+        char s;
+        if (currentSubSenseNumber > 26) {
+            log.error("Subsense (alphabetical) number above z in {}", currentEncodedPageName);
+            s =  (char) ('A' + currentSubSenseNumber - 1);
+        } else {
+            s = (char) ('a' + currentSubSenseNumber - 1);
+        }
+        return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? "" : s);
+    }
 }

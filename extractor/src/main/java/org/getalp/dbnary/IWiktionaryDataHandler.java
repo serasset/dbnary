@@ -91,12 +91,15 @@ public interface IWiktionaryDataHandler {
 
     void registerNymRelation(String target, String synRelation);
 
-    void registerNymRelation(String target, String synRelation, String gloss);
+    Resource createGlossResource(StructuredGloss gloss, int rank);
 
-    void registerNymRelation(String target, String synRelation, String gloss, String usage);
+    Resource createGlossResource(StructuredGloss gloss);
 
+    void registerNymRelation(String target, String synRelation, Resource gloss);
 
-    void registerTranslation(String lang, String currentGlose, String usage, String word);
+    void registerNymRelation(String target, String synRelation, Resource gloss, String usage);
+
+    void registerTranslation(String lang, Resource currentGlose, String usage, String word);
 
     void registerPronunciation(String pron, String lang);
 

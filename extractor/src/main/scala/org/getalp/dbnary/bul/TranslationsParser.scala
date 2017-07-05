@@ -1,30 +1,29 @@
 package org.getalp.dbnary.bul
 
+import com.hp.hpl.jena.rdf.model.Resource
 import grizzled.slf4j.Logger
-import org.getalp.dbnary.IWiktionaryDataHandler
+import org.getalp.dbnary.{AbstractGlossFilter, IWiktionaryDataHandler}
 
 import scala.util.matching.Regex
 import scala.util.matching.Regex.Match
 import scala.util.parsing.combinator._
 
-class TranslationsParser extends RegexParsers {
+class TranslationsParser extends RegexParsers with PackratParsers {
 
   /*
   Redefine the handling of patterns so that they return the match instead of the matched string
    */
-  def matching(r: Regex): Parser[Match] = new Parser[Match] {
-    def apply(in: Input) = {
-      val source = in.source
-      val offset = in.offset
-      val start = handleWhiteSpace(source, offset)
-      (r findPrefixMatchOf (source.subSequence(start, source.length))) match {
-        case Some(matched) =>
-          Success(matched,
-            in.drop(start + matched.end - offset))
-        case None =>
-          val found = if (start == source.length()) "end of source" else "`" + source.charAt(start) + "'"
-          Failure("string matching regex `" + r + "' expected but " + found + " found", in.drop(start - offset))
-      }
+  def matching(r: Regex): Parser[Match] = (in: Input) => {
+    val source = in.source
+    val offset = in.offset
+    val start = handleWhiteSpace(source, offset)
+    (r findPrefixMatchOf (source.subSequence(start, source.length))) match {
+      case Some(matched) =>
+        Success(matched,
+          in.drop(start + matched.end - offset))
+      case None =>
+        val found = if (start == source.length()) "end of source" else "`" + source.charAt(start) + "'"
+        Failure("string matching regex `" + r + "' expected but " + found + " found", in.drop(start - offset))
     }
   }
 
@@ -37,7 +36,7 @@ class TranslationsParser extends RegexParsers {
 
   def languageName = """[ _\p{L}]+""".r
 
-  def languageTemplate = matching(TemplateWithoutArgs) ^^ {
+  def languageTemplate: Parser[String] = matching(TemplateWithoutArgs) ^^ {
     case TemplateWithoutArgs(lc) => lc
   }
 
@@ -85,7 +84,7 @@ class TranslationsParser extends RegexParsers {
     } mkString ("")
   }
 
-  def simpleTranslationValue: Parser[Translation] = links ~ opt(usageValue) ^^ {
+  lazy val simpleTranslationValue: PackratParser[Translation] = links ~ opt(usageValue) ^^ {
     case "" ~ u => null
     case l ~ Some(u) => Translation("", l, u, "")
     case l ~ None => Translation("", l, "", "")
@@ -104,7 +103,7 @@ class TranslationsParser extends RegexParsers {
   /*
   * испански: [[ciudad]]
    */
-  def simpleTranslationValues: Parser[List[Translation]] = simpleTranslationValue ~ rep( """,|;""".r ~> simpleTranslationValue) ^^ {
+  lazy val simpleTranslationValues: PackratParser[List[Translation]] = simpleTranslationValue ~ rep( """,|;""".r ~> simpleTranslationValue) ^^ {
     case trans ~ moreTrans => {
       trans :: moreTrans filter {
         _ != null
@@ -117,7 +116,7 @@ class TranslationsParser extends RegexParsers {
   # [[city]],[[town]]
   # [[hail]]
    */
-  def numberedTranslationValues: Parser[List[Translation]] = ("""#|\*:""".r ~> simpleTranslationValues).+ ^^ {
+  lazy val numberedTranslationValues: PackratParser[List[Translation]] = ("""#|\*:""".r ~> simpleTranslationValues).+ ^^ {
     // TODO: keep sense number in gloss part...
     case listoflist =>
       var res: List[Translation] = Nil
@@ -145,7 +144,7 @@ class TranslationsParser extends RegexParsers {
       }
     }
 
-  def translationValues: Parser[List[Translation]] = numberedTranslationValues | simpleTranslationValues | garbageTranslationValues
+  lazy val translationValues: PackratParser[List[Translation]] = numberedTranslationValues | simpleTranslationValues | garbageTranslationValues
 
   def translationsForALanguage: Parser[List[Translation]] = language ~ translationValues ^^ {
     case Language(name, null) ~ list => {
@@ -185,19 +184,22 @@ class TranslationsParser extends RegexParsers {
 
   val TBracket = """\[([^\]]*)\]""".r
 
-  def extractTranslations(input: String, delegate: IWiktionaryDataHandler): Unit =
+  def extractTranslations(input: String, delegate: IWiktionaryDataHandler, filter: AbstractGlossFilter): Unit =
     parseTranslations(input, delegate.currentLexEntry()).foreach {
       t => {
         t.writtenRep match {
-          case TBracket(v) => delegate.registerTranslation(t.language, t.gloss, t.usage, v)
-          case _ => delegate.registerTranslation(t.language, t.gloss, t.usage, t.writtenRep)
+          case TBracket(v) => delegate.registerTranslation(t.language, createGloss(t.gloss, delegate, filter), t.usage, v)
+          case _ => delegate.registerTranslation(t.language, createGloss(t.gloss, delegate, filter), t.usage, t.writtenRep)
         }
       }
     }
 
+  def createGloss(g: String, delegate: IWiktionaryDataHandler, filter: AbstractGlossFilter): Resource =
+    delegate.createGlossResource(filter.extractGlossStructure(g))
+
 }
 
-case class Translations(trans: List[Translation])
+// case class Translations(trans: List[Translation])
 
 case class Translation(var language: String, writtenRep: String, var usage: String, var gloss: String)
 

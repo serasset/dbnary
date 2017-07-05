@@ -1,10 +1,8 @@
 package org.getalp.dbnary.por;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import info.bliki.wiki.filter.WikipediaParser;
-import org.getalp.dbnary.DbnaryWikiModel;
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.LangTools;
-import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.*;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -14,19 +12,23 @@ import java.util.Map.Entry;
 
 public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
 
+    private final AbstractGlossFilter glossFilter;
     private IWiktionaryDataHandler delegate;
+    private int rank;
 
-    public PortugueseTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
-        this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+    public PortugueseTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+        this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL, glossFilter);
     }
 
-    public PortugueseTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+    public PortugueseTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
         super(wi, locale, imageBaseURL, linkBaseURL);
         this.delegate = we;
+        this.glossFilter = glossFilter;
     }
 
     public void parseTranslationBlock(String block) {
         initialize();
+        rank = 1;
         if (block == null) {
             return;
         }
@@ -42,7 +44,7 @@ public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
 
     }
 
-    private String currentGloss = null;
+    private Resource currentGloss = null;
 
     @Override
     public void substituteTemplateCall(String templateName,
@@ -74,8 +76,11 @@ public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
             }
             delegate.registerTranslation(lang, currentGloss, usage, parameterMap.get("2"));
         } else if ("tradini".equals(templateName)) {
-            currentGloss = parameterMap.get("1");
-            if (null != currentGloss) currentGloss = currentGloss.trim();
+            String g = parameterMap.get("1");
+            if (null != g) {
+                g = g.trim();
+                currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+            }
         } else if ("tradini-checar".equals(templateName)) {
             currentGloss = null;
         } else if ("tradmeio".equals(templateName)) {

@@ -45,7 +45,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     public void setWiktionaryIndex(WiktionaryIndex wi) {
         super.setWiktionaryIndex(wi);
         definitionExtractor = new RussianDefinitionExtractorWikiModel(wdh, wi, new Locale("ru"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
-        translationExtractor = new RussianTranslationExtractorWikiModel(wdh, wi, new Locale("ru"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+        translationExtractor = new RussianTranslationExtractorWikiModel(wdh, wi, new Locale("ru"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "", glossFilter);
     }
 
     // protected final static Pattern languageSectionPattern;

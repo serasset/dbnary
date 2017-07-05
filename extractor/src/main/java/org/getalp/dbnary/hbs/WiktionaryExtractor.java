@@ -4,6 +4,7 @@
 package org.getalp.dbnary.hbs;
 
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.slf4j.Logger;
@@ -357,12 +358,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
     }
 
+    // TODO: are there any glosses ?
     private void extractTranslations(int startOffset, int endOffset) {
         Matcher trad = tradPattern.matcher(pageContent);
         trad.region(startOffset, endOffset);
 
         String lang = null;
-        String currentGloss = wdh.currentLexEntry();
+        Resource currentGloss = null;
         String word = "";
 
         while (trad.find()) {

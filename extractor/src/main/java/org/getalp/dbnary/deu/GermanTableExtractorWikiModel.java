@@ -34,7 +34,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
             // Just display the link name and drop the link...
             writer.append(parameterMap.get("1"));
         } else {
-            log.debug("Caught template call: {} --in-- {}", templateName, this.getPageName());
+            //  log.debug("Caught template call: {} --in-- {}", templateName, this.getPageName());
             super.substituteTemplateCall(templateName, parameterMap, writer);
         }
     }

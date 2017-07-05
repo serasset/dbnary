@@ -4,6 +4,7 @@
 package org.getalp.dbnary.lit;
 
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.slf4j.Logger;
@@ -266,6 +267,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
         }
 
+        // TODO: Example and definition section has changed. Adapt and rewrite lituanian extractor.
         m = defPattern.matcher(pageContent);
         m.region(start, end);
         int senseNum = 1;
@@ -309,7 +311,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected void parseTrans(String content) {
         Matcher trad = tradPattern.matcher(content);
         String usage = null;
-        String currentGloss = wiktionaryPageName;
+        Resource currentGloss = null;
+        int gRank = 1;
         while (trad.find()) {
             String[] tTrad = trad.group(1).split("\\|");
             switch (tTrad[0]) {
@@ -324,12 +327,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 case "ltrans-mid":
                 case "ltrans-bottom":
                     if (tTrad.length > 1) {
+                        // TODO: glosses are now structured differently. Extract the correct gloss.
                         String[] tmp = tTrad[1].split("=");
+                        String g = null;
                         if (tmp.length == 2) {
-                            currentGloss = tmp[1];
+                            g = tmp[1];
                         } else {
-                            currentGloss = tmp[0];
+                            g = tmp[0];
                         }
+                        currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g), gRank++);
                     }
                     break;
                 case "f":
@@ -377,8 +383,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected void parseNyms(String content, String blockString) {
         WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
         String nymRel = "";
-        String gloss = wdh.currentLexEntry();
+        Resource gloss = null;
         Matcher m = nymPattern.matcher(content);
+        int rank = 1;
         while (m.find()) {
             String[] tNyms = m.group(1).split("\\|");
             switch (tNyms[0]) {
@@ -393,27 +400,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 case "lsin-mid":
                 case "lsin-bottom":
                     nymRel = "syn";
-                    if (tNyms.length > 1) {
-                        String[] tmp = tNyms[1].split("=");
-                        if (tmp.length == 2) {
-                            gloss = tmp[1];
-                        } else {
-                            gloss = tmp[0];
-                        }
-                    }
+                    gloss = createGloss(tNyms, rank++);
                     break;
                 case "ant-top":
                 case "ant-mid":
                 case "ant-bottom":
                     nymRel = "ant";
-                    if (tNyms.length > 1) {
-                        String[] tmp = tNyms[1].split("=");
-                        if (tmp.length == 2) {
-                            gloss = tmp[1];
-                        } else {
-                            gloss = tmp[0];
-                        }
-                    }
+                    gloss = createGloss(tNyms, rank++);
                     break;
                 case "rel-top":
                 case "rel-mid":
@@ -435,14 +428,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                             log.debug("Unknown Nyms level {} --in-- {}", tNyms[0], wdh.currentLexEntry());
                             return;
                     }
-                    if (tNyms.length > 1) {
-                        String[] tmp = tNyms[1].split("=");
-                        if (tmp.length == 2) {
-                            gloss = tmp[1];
-                        } else {
-                            gloss = tmp[0];
-                        }
-                    }
+                    gloss = createGloss(tNyms, rank++);
                     break;
                 case "p":
                 case "š":
@@ -467,6 +453,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     }
             }
         }
+    }
+
+    private Resource createGloss(String[] tNyms, int rank) {
+        if (tNyms.length > 1) {
+            String[] tmp = tNyms[1].split("=");
+            String g;
+            if (tmp.length == 2) {
+                g = tmp[1];
+            } else {
+                g = tmp[0];
+            }
+            return wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank);
+        }
+        return null;
     }
 
     protected void extractRelatedTerm(int start, int end) {

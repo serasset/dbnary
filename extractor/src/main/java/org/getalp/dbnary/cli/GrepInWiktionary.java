@@ -10,6 +10,10 @@ import java.util.regex.Pattern;
 
 public class GrepInWiktionary {
 
+    /**
+     * @param args Command line arguments
+     * @throws WiktionaryIndexerException if any error occurs with indexer.
+     */
     public static void main(String[] args) throws WiktionaryIndexerException {
         if (args.length < 2) {
             printUsage();

@@ -27,11 +27,19 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
     }
 
     @Override
+    public boolean filterOutPage(String pagename) {
+        return pagename.contains(":") && ! pagename.startsWith("Reconstruction");
+    }
+
+    @Override
     public void extractData() {
+        if (wiktionaryPageName.startsWith("Reconstruction:")) {
+            wiktionaryPageName = wiktionaryPageName.split("/", 2)[1];
+        }
         Matcher l1 = level2HeaderPattern.matcher(pageContent);
         int nonEnglishSectionStart = -1;
         String lang = null;
-	String languageName = null;
+		String languageName = null;
         while (l1.find()) {
             wdh.initializePageExtraction(wiktionaryPageName);
             // System.err.println(l1.group());
@@ -40,7 +48,7 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
                 extractNonEnglishData(lang, languageName, nonEnglishSectionStart, l1.start());
                 nonEnglishSectionStart = -1;
             }
-	    languageName = l1.group(1).trim();
+	    	languageName = l1.group(1).trim();
             if (null != (lang = getNonEnglishLanguageCode(languageName))) {
                 nonEnglishSectionStart = l1.end();
             }

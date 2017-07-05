@@ -1,14 +1,15 @@
 package org.getalp.dbnary.mlg;
 
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
+import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.LexinfoOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
@@ -18,12 +19,12 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
         posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
         posAndTypeValueMap.put("prep", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
-        posAndTypeValueMap.put("prefix", new PosAndType(LexinfoOnt.prefix, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("infix", new PosAndType(LexinfoOnt.infix, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("prefix", new PosAndType(LexinfoOnt.prefix, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("infix", new PosAndType(LexinfoOnt.infix, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("article", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
-        posAndTypeValueMap.put("none", new PosAndType(LemonOnt.LexicalEntry, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("root", new PosAndType(LexinfoOnt.radical, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("expr", new PosAndType(LexinfoOnt.expression, LemonOnt.Phrase));
+        posAndTypeValueMap.put("none", new PosAndType(OntolexOnt.LexicalEntry, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("root", new PosAndType(LexinfoOnt.radical, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("expr", new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression));
     }
 
     public WiktionaryDataHandler(String lang) {
@@ -39,7 +40,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, posResource(pat));
     }
 
-    public void addTranslation(String lang, String gloss, String usage, String word) {
+    public void addTranslation(String lang, Resource gloss, String usage, String word) {
         if (currentLexEntry == null) {
             addPartOfSpeech("none");
         }

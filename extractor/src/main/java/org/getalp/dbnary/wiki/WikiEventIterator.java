@@ -15,7 +15,7 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
     public WikiEventIterator(WikiText.WikiContent content, WikiEventFilter filter) {
         this.content = content;
         this.filter = filter;
-        this.baseIterator = content.tokens.iterator();
+        this.baseIterator = content.tokens().iterator();
         advance();
     }
 

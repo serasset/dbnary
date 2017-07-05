@@ -47,7 +47,7 @@ public class WiktionaryDataHandlerFactory {
 
         if (null == wdh) {
             log.debug("Using default data handler.", language);
-            wdh = new LemonBasedRDFDataHandler(language);
+            wdh = new OntolexBasedRDFDataHandler(language);
         }
         return wdh;
     }

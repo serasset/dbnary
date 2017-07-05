@@ -11,7 +11,32 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WikiTool {
-    static Logger log = LoggerFactory.getLogger(WikiTool.class);
+
+    // Parse a string of args, like: xxx=yyy|zzz=ttt
+
+    /**
+     * @param args the String containing all the args (the part of a templae contained after the first pipe).
+     * @return a Map associating each argument name with its value.
+     * @deprecated Parse the args of a Template.
+     */
+    public static Map<String, String> parseArgs(String args) {
+        HashMap<String, String> res = new HashMap<String, String>();
+        if (null == args) return res;
+        int n = 1; // number for positional args.
+        String[] pairs = args.split("\\|");
+        for (int i = 0; i < pairs.length; i++) {
+            if (null == pairs[i]) continue;
+            String[] s = pairs[i].trim().split("\\=");
+            if (s.length < 2) {
+                // There is no argument name.
+                res.put("" + n, s[0]);
+                n++;
+            } else {
+                res.put(s[0], s[1]);
+            }
+        }
+        return res;
+    }
 
     static Pattern htmlRefElement = Pattern.compile("(<ref(?:\\s[^>]*|\\s*)>)|(</ref>)");
 

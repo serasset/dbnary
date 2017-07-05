@@ -68,10 +68,12 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        delegate.registerNewDefinition(def, defLevel);
-        if (!currentExamples.isEmpty()) {
-            for (Example example : currentExamples) {
-                delegate.registerExample(example.value, example.context);
+        if (null != def && !def.equals("")) {
+            delegate.registerNewDefinition(def, defLevel);
+            if (!currentExamples.isEmpty()) {
+                for (Example example : currentExamples) {
+                    delegate.registerExample(example.value, example.context);
+                }
             }
         }
     }

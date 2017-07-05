@@ -5,6 +5,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.PropertyObjectPair;
+import org.getalp.dbnary.SkosOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,43 +18,23 @@ public class EnglishInflectionData {
 
     public enum Genre {MASCULINE, FEMININE, NEUTRUM, NOTHING}
 
-    ;
-
     public enum Cas {NOMINATIF, GENITIF, DATIF, ACCUSATIF, NOTHING}
-
-    ;
 
     public enum Mode {INFINITIVE, ZU_INFINITIV, PATICIPLE, GERUNDIVUM, IMPERATIV, INDICATIV, KONJUNKTIV2, KONJUNKTIV1, NOTHING}
 
-    ;
-
     public enum Voice {AKTIV, VORGANGSPASSIV, ZUSTANDSPASSIV, PASSIV, ZUSTANDSREFLEXIVEPASSIV, REFLEXIV, NOTHING}
-
-    ;
 
     public enum Tense {PRESENT, PAST, NOTHING}
 
-    ;
-
     public enum Degree {POSITIVE, COMPARATIVE, SUPERLATIVE, NOTHING}
-
-    ;
 
     public enum GNumber {SINGULAR, PLURAL, NOTHING}
 
-    ;
-
     public enum Person {FIRST, SECOND, THIRD, HÖFLICHKEITSFORM, NOTHING}
-
-    ;
 
     public enum InflectionType {STRONG, WEAK, MIXED, NOTHING}
 
-    ;
-
     public enum Valency {TRANSITIVE, INTRANSITIVE, NOTHING}
-
-    ;
 
 
     public Degree degree = Degree.NOTHING;
@@ -257,7 +238,7 @@ public class EnglishInflectionData {
                 notes.append(s).append("|");
             }
             String tval = notes.toString().substring(0, notes.length() - 1);
-            inflections.add(PropertyObjectPair.get(DBnaryOnt.note, model.createTypedLiteral(tval)));
+            inflections.add(PropertyObjectPair.get(SkosOnt.note, model.createTypedLiteral(tval)));
         }
         return inflections;
     }

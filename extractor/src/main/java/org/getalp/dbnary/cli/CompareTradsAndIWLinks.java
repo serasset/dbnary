@@ -10,10 +10,7 @@ import org.apache.commons.cli.*;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.LangTools;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -227,7 +224,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
     private HashSet<Resource> getTranslationsFor(String name) {
         HashSet<Resource> res = new HashSet<Resource>();
         Resource voc = m1.getResource(NS + name);
-        StmtIterator entries = m1.listStatements(voc, DBnaryOnt.refersTo, (RDFNode) null);
+        StmtIterator entries = m1.listStatements(voc, DBnaryOnt.describes, (RDFNode) null);
 
         while (entries.hasNext()) {
             Resource e = entries.next().getResource();
@@ -239,7 +236,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
                 res.add(t);
             }
 
-            StmtIterator senses = m1.listStatements(e, LemonOnt.sense, (RDFNode) null);
+            StmtIterator senses = m1.listStatements(e, OntolexOnt.sense, (RDFNode) null);
             while (senses.hasNext()) {
                 Resource s = senses.next().getObject().asResource();
                 StmtIterator senseTranslations = m1.listStatements(null, DBnaryOnt.isTranslationOf, s);
@@ -301,17 +298,17 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 
     private HashSet<String> getRandomEntries(int n) {
         HashSet<String> res = new HashSet<String>();
-        int total = countResourcesOfType(LemonOnt.LexicalEntry);
+        int total = countResourcesOfType(OntolexOnt.LexicalEntry);
         int stepWidth = total / n;
 
-        ResIterator vocables = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Vocable);
+        ResIterator vocables = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Page);
 
         // Only keep vocable that are valid pages.
         ExtendedIterator<Resource> vocs = vocables.filterKeep(new Filter<Resource>() {
 
             @Override
             public boolean accept(Resource o) {
-                return o.hasProperty(DBnaryOnt.refersTo);
+                return o.hasProperty(DBnaryOnt.describes);
             }
         });
         int i = 0;

@@ -13,10 +13,11 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
 
     private HashMap<String, String> prefixes = new HashMap<String, String>();
 
+    private String currentEntryLanguage = null;
     private String currentPrefix = null;
 
     public ForeignLanguagesWiktionaryDataHandler(String lang) {
-	super(lang);
+        super(lang);
     }
 
     @Override
@@ -77,4 +78,5 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
 	    registerPronunciation(currentCanonicalForm, pron, lang);
 	}
     }
+
 }

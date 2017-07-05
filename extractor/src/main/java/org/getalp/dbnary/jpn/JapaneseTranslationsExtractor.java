@@ -1,9 +1,7 @@
 package org.getalp.dbnary.jpn;
 
-import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.LangTools;
-import org.getalp.dbnary.WiktionaryIndex;
+import com.hp.hpl.jena.rdf.model.Resource;
+import org.getalp.dbnary.*;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
@@ -14,7 +12,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class JapaneseTranslationsExtractorWikiModel {
+public class JapaneseTranslationsExtractor {
 
     // static Set<String> ignoredTemplates = new TreeSet<String>();
     // static {
@@ -23,15 +21,17 @@ public class JapaneseTranslationsExtractorWikiModel {
     // }
 
     private IWiktionaryDataHandler delegate;
+    private AbstractGlossFilter glossFilter;
 
-    private Logger log = LoggerFactory.getLogger(JapaneseTranslationsExtractorWikiModel.class);
+    private Logger log = LoggerFactory.getLogger(JapaneseTranslationsExtractor.class);
 
-    public JapaneseTranslationsExtractorWikiModel(IWiktionaryDataHandler we) {
-        this(we, (WiktionaryIndex) null);
+    public JapaneseTranslationsExtractor(IWiktionaryDataHandler we, AbstractGlossFilter glossFilter) {
+        this(we, (WiktionaryIndex) null, glossFilter);
     }
 
-    public JapaneseTranslationsExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi) {
+    public JapaneseTranslationsExtractor(IWiktionaryDataHandler we, WiktionaryIndex wi, AbstractGlossFilter glossFilter) {
         this.delegate = we;
+        this.glossFilter = glossFilter;
     }
 
 
@@ -116,8 +116,9 @@ public class JapaneseTranslationsExtractorWikiModel {
     private void extractTranslations(String translations) {
         Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(translations);
         int ETAT = INIT;
+        int rank = 1;
 
-        String currentGlose = null;
+        Resource currentGloss = null;
         String lang = null, word = "";
         String usage = "";
         String langname = "";
@@ -136,13 +137,14 @@ public class JapaneseTranslationsExtractorWikiModel {
                     if (macro != null) {
                         if (macro.equalsIgnoreCase("trans-top") || macro.equalsIgnoreCase("top")) {
                             if (macroOrLinkOrcarMatcher.group(2) != null) {
-                                currentGlose = macroOrLinkOrcarMatcher.group(2);
+                                String g = macroOrLinkOrcarMatcher.group(2);
+                                currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
                             } else {
-                                currentGlose = null;
+                                currentGloss = null;
                             }
 
                         } else if (macro.equalsIgnoreCase("trans-bottom") || macro.equalsIgnoreCase("bottom")) {
-                            currentGlose = null;
+                            currentGloss = null;
                         } else if (macro.equalsIgnoreCase("trans-mid") || macro.equalsIgnoreCase("mid")) {
                             //ignore
                         } else {
@@ -153,7 +155,7 @@ public class JapaneseTranslationsExtractorWikiModel {
                     } else if (star != null) {
                         ETAT = LANGUE;
                     } else if (term != null) {
-                        currentGlose = term;
+                        currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
                     } else if (car != null) {
                         if (car.equals(":")) {
                             //System.err.println("Skipping ':' while in INIT state.");
@@ -173,16 +175,17 @@ public class JapaneseTranslationsExtractorWikiModel {
                     if (macro != null) {
                         if (macro.equalsIgnoreCase("trans-top") || macro.equalsIgnoreCase("top")) {
                             if (macroOrLinkOrcarMatcher.group(2) != null) {
-                                currentGlose = macroOrLinkOrcarMatcher.group(2);
+                                String g = macroOrLinkOrcarMatcher.group(2);
+                                currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
                             } else {
-                                currentGlose = null;
+                                currentGloss = null;
                             }
                             langname = "";
                             word = "";
                             usage = "";
                             ETAT = INIT;
                         } else if (macro.equalsIgnoreCase("trans-bottom") || macro.equalsIgnoreCase("bottom")) {
-                            currentGlose = null;
+                            currentGloss = null;
                             langname = "";
                             word = "";
                             usage = "";
@@ -202,7 +205,7 @@ public class JapaneseTranslationsExtractorWikiModel {
                     } else if (star != null) {
                         //System.err.println("Skipping '*' while in LANGUE state.");
                     } else if (term != null) {
-                        currentGlose = term;
+                        currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
                         langname = "";
                         word = "";
                         usage = "";
@@ -230,13 +233,14 @@ public class JapaneseTranslationsExtractorWikiModel {
                     if (macro != null) {
                         if (macro.equalsIgnoreCase("trans-top") || macro.equalsIgnoreCase("top")) {
                             if (macroOrLinkOrcarMatcher.group(2) != null) {
-                                currentGlose = macroOrLinkOrcarMatcher.group(2);
+                                String g = macroOrLinkOrcarMatcher.group(2);
+                                currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
                             } else {
-                                currentGlose = null;
+                                currentGloss = null;
                             }
                             //if (word != null && word.length() != 0) {
                             //lang=stripParentheses(lang);
-                            //wdh.registerTranslation(lang, currentGlose, usage, word);
+                            //wdh.registerTranslation(lang, currentGloss, usage, word);
                             //}
                             langname = "";
                             word = "";
@@ -246,10 +250,10 @@ public class JapaneseTranslationsExtractorWikiModel {
                         } else if (macro.equalsIgnoreCase("trans-bottom") || macro.equalsIgnoreCase("bottom")) {
                             if (word != null && word.length() != 0) {
                                 if (lang != null) {
-                                    this.delegate.registerTranslation(lang, currentGlose, usage, word);
+                                    this.delegate.registerTranslation(lang, currentGloss, usage, word);
                                 }
                             }
-                            currentGlose = null;
+                            currentGloss = null;
                             langname = "";
                             word = "";
                             usage = "";
@@ -258,7 +262,7 @@ public class JapaneseTranslationsExtractorWikiModel {
                         } else if (macro.equalsIgnoreCase("trans-mid") || macro.equalsIgnoreCase("mid")) {
                             if (word != null && word.length() != 0) {
                                 if (lang != null) {
-                                    this.delegate.registerTranslation(lang, currentGlose, usage, word);
+                                    this.delegate.registerTranslation(lang, currentGloss, usage, word);
                                 }
                             }
                             langname = "";
@@ -273,7 +277,7 @@ public class JapaneseTranslationsExtractorWikiModel {
                             argmap.remove("word");
                             usage = argmap.toString();
                             if (lang != null) {
-                                this.delegate.registerTranslation(lang, currentGlose, usage, word);
+                                this.delegate.registerTranslation(lang, currentGloss, usage, word);
                             }
                             word = "";
                             usage = "";
@@ -349,7 +353,7 @@ public class JapaneseTranslationsExtractorWikiModel {
                     } else if (star != null) {
                         //System.err.println("Skipping '*' while in LANGUE state.");
                     } else if (term != null) {
-                        currentGlose = term;
+                        currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
                         langname = "";
                         word = "";
                         usage = "";
@@ -358,10 +362,10 @@ public class JapaneseTranslationsExtractorWikiModel {
                     } else if (car != null) {
                         if (car.equals("\n") || car.equals("\r")) {
                             usage = usage.trim();
-                            // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+                            // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGloss);
                             if (word != null && word.length() != 0) {
                                 if (lang != null) {
-                                    this.delegate.registerTranslation(lang, currentGlose, usage, word);
+                                    this.delegate.registerTranslation(lang, currentGloss, usage, word);
                                 }
                             }
                             lang = null;
@@ -370,10 +374,10 @@ public class JapaneseTranslationsExtractorWikiModel {
                             ETAT = INIT;
                         } else if (car.equals(",") || car.equals("、")) {
                             usage = usage.trim();
-                            // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+                            // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGloss);
                             if (word != null && word.length() != 0) {
                                 if (lang != null) {
-                                    this.delegate.registerTranslation(lang, currentGlose, usage, word);
+                                    this.delegate.registerTranslation(lang, currentGloss, usage, word);
                                 }
                             }
                             usage = "";

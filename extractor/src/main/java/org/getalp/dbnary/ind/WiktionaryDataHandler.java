@@ -1,14 +1,15 @@
 package org.getalp.dbnary.ind;
 
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.OntolexOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
@@ -21,14 +22,14 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("prep", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
         posAndTypeValueMap.put("pron", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
         posAndTypeValueMap.put("inter", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
-        posAndTypeValueMap.put("abbrev", new PosAndType(LexinfoOnt.abbreviation, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("abbrev", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
-        posAndTypeValueMap.put("contraction", new PosAndType(LexinfoOnt.contraction, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("contraction", new PosAndType(LexinfoOnt.contraction, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("conj", new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
         posAndTypeValueMap.put("num", new PosAndType(LexinfoOnt.number, LexinfoOnt.Number));
         posAndTypeValueMap.put("particle", new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));
         posAndTypeValueMap.put("art", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
-        posAndTypeValueMap.put("akronim", new PosAndType(LexinfoOnt.acronym, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("akronim", new PosAndType(LexinfoOnt.acronym, OntolexOnt.LexicalEntry));
     }
 
     public WiktionaryDataHandler(String lang) {
@@ -126,7 +127,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         return res;
     }
 
-    public void addTranslation(String lang, String gloss, String usage, String word) {
+    public void addTranslation(String lang, Resource gloss, String usage, String word) {
         if (currentLexEntry == null) {
             addPartOfSpeech("none");
         }

@@ -161,6 +161,7 @@ public class RDFDiff {
                 }
                 System.err.print("" + nbdiffs + "/" + nbprocessed + "\r");
             }
+            System.err.print("" + nbdiffs + "/" + nbprocessed + "\n");
         } finally {
             iter.close();
         }
@@ -178,6 +179,6 @@ public class RDFDiff {
     }
 
     private static void usage() {
-        System.out.println("Usage: java -Xmx8G " + RDFDiff.class.getCanonicalName() + " url1 url2");
+        System.err.println("Usage: java -Xmx8G " + RDFDiff.class.getCanonicalName() + " url1 url2");
     }
 }

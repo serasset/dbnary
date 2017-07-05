@@ -11,9 +11,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,6 +55,130 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
         return ele != null;
     }
 
+    private static ArrayList<String> explode(char sep, String str) {
+        int lastI = 0;
+        ArrayList<String> res = new ArrayList<String>();
+        int pos = str.indexOf(sep, lastI);
+
+        while (pos != -1) {
+            res.add(str.substring(lastI, pos));
+            lastI = pos + 1;
+            pos = str.indexOf(sep, lastI);
+        }
+
+        res.add(str.substring(lastI, str.length()));
+        return res;
+    }
+
+    static void addAtomicMorphologicalInfo(Set<PropertyObjectPair> infos, String word) {
+        switch (word) {
+            case "singulier":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
+                break;
+            case "pluriel":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
+                break;
+            case "masculin":
+            case "masculinet": // happens when we should have "masculin et féminin", the "et" gets sticked to the "masculin".
+                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
+                break;
+            case "féminin":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
+                break;
+            case "présent":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
+                break;
+            case "imparfait":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.imperfect));
+                break;
+            case "passé":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
+                break;
+            case "futur":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.future));
+                break;
+            case "indicatif":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
+                break;
+            case "subjonctif":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.subjunctive));
+                break;
+            case "conditionnel":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.conditional));
+                break;
+            case "impératif":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
+                break;
+            case "participe":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+                break;
+            case "première personne":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.firstPerson));
+                break;
+            case "deuxième personne":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.secondPerson));
+                break;
+            case "troisième personne":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.thirdPerson));
+                break;
+            case "futur simple":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.future));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
+                break;
+            case "passé simple":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
+                break;
+            case "masculin singulier":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
+                break;
+            case "féminin singulier":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
+                break;
+            case "masculin pluriel":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
+                break;
+            case "féminin pluriel":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
+                break;
+            case "participe passé masculin singulier":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
+                break;
+            case "participe passé féminin singulier":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
+                break;
+            case "participe passé masculin pluriel":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
+                break;
+            case "participe passé féminin pluriel":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
+                break;
+            case "participe présent":
+                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
+                break;
+            default:
+                ArrayList<String> multiwords = explode(' ', word);
+                if (multiwords.size() > 1) {
+                    for (String w : multiwords) {
+                        addAtomicMorphologicalInfo(infos, w);
+                    }
+                }
+        }
+    }
+
     private boolean getMoodTense(Element table, HashSet<PropertyObjectPair> infos, NodeList lines) {
         if (lines.getLength() < 1) {
             log.debug("Missing lines in the conjugation table for '" + delegate.currentLexEntry() + "'");
@@ -94,7 +216,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
         }
 
         // tense
-        WiktionaryExtractor.addAtomicMorphologicalInfo(
+        addAtomicMorphologicalInfo(
                 infos,
                 tense
         );
@@ -137,11 +259,11 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
             mood = title.getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale);
         }
 
-        if (mood.indexOf("(défectif)") != -1) {
+        if (mood.contains("(défectif)")) {
             return false;
         }
 
-        WiktionaryExtractor.addAtomicMorphologicalInfo(
+        addAtomicMorphologicalInfo(
                 infos,
                 mood
         );
@@ -430,7 +552,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
     private void addAtomicMorphologicalInfo(HashSet<PropertyObjectPair> properties, NodeList list) {
         for (int i = 0; i < list.getLength(); i++) {
-            WiktionaryExtractor.addAtomicMorphologicalInfo(
+            addAtomicMorphologicalInfo(
                     properties,
                     list.item(i).getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale)
             );
@@ -492,7 +614,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
             Node th = ths.item(colNumber);
             String text = th.getTextContent();
-            WiktionaryExtractor.addAtomicMorphologicalInfo(properties, text.trim().toLowerCase(WiktionaryExtractor.frLocale));
+            addAtomicMorphologicalInfo(properties, text.trim().toLowerCase(WiktionaryExtractor.frLocale));
         }
 
         if (word.equals(delegate.currentLexEntry())) {
@@ -524,12 +646,12 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
         }
 
         NodeList links = doc.getElementsByTagName("a");
-        Locale fr = new Locale("fr");
 
         for (int i = 0; i < links.getLength(); i++) {
             Node a = links.item(i);
 
             String word = a.getTextContent().trim();
+            // TODO: why do we convert to lower cases ? Is it usefull ? Is it relevant ?
             String wordLower = word.toLowerCase(WiktionaryExtractor.frLocale);
             Node title = a.getAttributes().getNamedItem("title");
             String t = null;
@@ -549,7 +671,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
             Node a = links.item(i);
             Node className = a.getAttributes().getNamedItem("class");
             if (className != null && "selflink".equals(className.getTextContent())) {
-                registerInflectionFromCellChild(a, a.getTextContent());
+                registerInflectionFromCellChild(a, sansBalises(a.getTextContent()));
             }
         }
     }
@@ -564,6 +686,29 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
             String langCode = parameterMap.get("1").trim();
             String lang = ISO639_3.sharedInstance.getLanguageNameInFrench(langCode);
             if (null != lang) writer.append(lang);
+        } else if ("sans balise".equals(templateName) || "sans_balise".equals(templateName)) {
+            String t = parameterMap.get("1");
+            if (null != t)
+                writer.append(sansBalises(t));
+        } else if ("gsub".equals(templateName)) {
+            String s = parameterMap.get("1");
+            String pattern = parameterMap.get("2");
+            String repl = parameterMap.get("3");
+            if ("’".equals(pattern) && "'".equals(repl)) {
+                writer.append(s.replaceAll(pattern, repl));
+            } else if ("s$".equals(pattern) && null == repl) {
+                writer.append(s.replaceAll(pattern, ""));
+            } else {
+                log.debug("gsub {} | {} | {}", parameterMap.get("1"), parameterMap.get("2"), parameterMap.get("3"));
+                super.substituteTemplateCall(templateName, parameterMap, writer);
+            }
+        } else if ("str find".equals(templateName) || "str_find".equals(templateName)) {
+            String s = parameterMap.get("1");
+            String pattern = parameterMap.get("2");
+            int i = s.trim().indexOf(pattern);
+            if (-1 != i) {
+                writer.append("" + (i+1));
+            }
         } else if (templateName.equals("pron")) {
             // catch this template call as it resolves in a non useful very heavy Lua processing.
             writer.append("\\").append(parameterMap.get("1")).append("\\");
@@ -572,4 +717,10 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
         }
     }
 
+    public static String sansBalises(String t) {
+        if (null != t)
+            return t.replaceAll("<[^\\>]*>", "").replaceAll("'''?", "");
+        else
+            return "";
+    }
 }

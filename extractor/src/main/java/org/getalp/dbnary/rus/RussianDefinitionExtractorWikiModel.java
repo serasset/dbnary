@@ -1,11 +1,11 @@
 package org.getalp.dbnary.rus;
 
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.filter.PlainTextConverter;
 import info.bliki.wiki.model.WikiModelContentException;
 import info.bliki.wiki.namespaces.INamespace;
-import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -92,7 +92,7 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
                 if (null != ex && ex.length() != 0) {
                     Example example = new Example(ex);
                     parameterMap.remove("текст");
-                    example.put(DBnaryOnt.exampleSource, formatMap(parameterMap));
+                    example.put(DCTerms.bibliographicCitation, formatMap(parameterMap));
                     currentExamples.add(example);
                 }
             } else if (parameterMap.containsKey("1")) {
@@ -102,7 +102,7 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
                 if (null != ex && ex.length() != 0) {
                     Example example = new Example(ex);
                     parameterMap.remove("1");
-                    example.put(DBnaryOnt.exampleSource, formatMap(parameterMap));
+                    example.put(DCTerms.bibliographicCitation, formatMap(parameterMap));
                     currentExamples.add(example);
                 }
             }

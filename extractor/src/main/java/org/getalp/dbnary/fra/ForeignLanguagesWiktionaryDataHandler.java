@@ -1,13 +1,13 @@
 package org.getalp.dbnary.fra;
 
 import org.getalp.dbnary.LangTools;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
-public class ForeignLanguagesWiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class ForeignLanguagesWiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
 
     private Logger log = LoggerFactory.getLogger(ForeignLanguagesWiktionaryDataHandler.class);

@@ -3,6 +3,7 @@
  */
 package org.getalp.dbnary.tur;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
@@ -413,12 +414,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         int ETAT = INIT;
 
+        Resource inlineGlossResource = null;
         String currentInlineGloss = "";
+        Resource globalGlossResource = null;
         String globalGloss = "";
         String lang = null, word = "";
         String usage = "";
         String langname = "";
         String previousLang = null;
+        int rank = 1;
 
         while (macroOrLinkOrCarMatcher.find()) {
 
@@ -436,8 +440,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                         if (macro.equalsIgnoreCase("Üst")) {
                             if (macroOrLinkOrCarMatcher.group(2) != null) {
                                 globalGloss = macroOrLinkOrCarMatcher.group(2);
+                                globalGlossResource = wdh.createGlossResource(glossFilter.extractGlossStructure(globalGloss), rank++);
                             } else {
                                 globalGloss = "";
+                                globalGlossResource = null;
                             }
 
                         } else if (macro.equalsIgnoreCase("Alt")) {
@@ -473,8 +479,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                         if (macro.equalsIgnoreCase("Üst")) {
                             if (macroOrLinkOrCarMatcher.group(2) != null) {
                                 globalGloss = macroOrLinkOrCarMatcher.group(2);
+                                globalGlossResource = wdh.createGlossResource(glossFilter.extractGlossStructure(globalGloss), rank++);
                             } else {
                                 globalGloss = "";
+                                globalGlossResource = null;
                             }
                             langname = "";
                             word = "";
@@ -509,6 +517,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                             lang = AbstractWiktionaryExtractor.stripParentheses(lang);
                             lang = TurkishLangtoCode.threeLettersCode(lang);
                             langname = "";
+                            rank = 1;
                             ETAT = TRAD;
                         } else if (character.equals("\n") || character.equals("\r")) {
                             //System.err.println("Skipping newline while in LANGUE state.");
@@ -526,8 +535,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                         if (macro.equalsIgnoreCase("Üst")) {
                             if (macroOrLinkOrCarMatcher.group(2) != null) {
                                 globalGloss = macroOrLinkOrCarMatcher.group(2);
+                                globalGlossResource = wdh.createGlossResource(glossFilter.extractGlossStructure(globalGloss), rank++);
                             } else {
                                 globalGloss = "";
+                                globalGlossResource = null;
                             }
                             //if (word != null && word.length() != 0) {
                             //	if(lang!=null){
@@ -538,34 +549,34 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                             word = "";
                             usage = "";
                             lang = null;
-                            currentInlineGloss = "";
+                            inlineGlossResource = null;
+
                             ETAT = INIT;
                         } else if (macro.equalsIgnoreCase("Alt")) {
                             if (word != null && word.length() != 0) {
                                 if (lang != null) {
-                                    String gloss = (globalGloss.length() == 0) ? currentInlineGloss : globalGloss + "|" + currentInlineGloss;
-                                    wdh.registerTranslation(lang, gloss, usage, word);
+                                    wdh.registerTranslation(lang, (inlineGlossResource == null) ? globalGlossResource : inlineGlossResource, usage, word);
                                 }
                             }
                             globalGloss = "";
+                            globalGlossResource = null;
                             langname = "";
                             word = "";
                             usage = "";
                             lang = null;
-                            currentInlineGloss = "";
+                            inlineGlossResource = null;
                             ETAT = INIT;
                         } else if (macro.equalsIgnoreCase("Orta")) {
                             if (word != null && word.length() != 0) {
                                 if (lang != null) {
-                                    String gloss = (globalGloss.length() == 0) ? currentInlineGloss : globalGloss + "|" + currentInlineGloss;
-                                    wdh.registerTranslation(lang, gloss, usage, word);
+                                    wdh.registerTranslation(lang, (inlineGlossResource == null) ? globalGlossResource : inlineGlossResource, usage, word);
                                 }
                             }
                             langname = "";
                             word = "";
                             usage = "";
                             lang = null;
-                            currentInlineGloss = "";
+                            inlineGlossResource = null;
                             ETAT = INIT;
                         } else if (macro.equalsIgnoreCase("çeviri")) {
                             Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrCarMatcher.group(2));
@@ -591,14 +602,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     } else if (null != inlineGloss) {
                         currentInlineGloss = "[" + inlineGloss + "]";  // an inlinegloss invalidates the previous gloss (see if there
                         // are cases where several glosses are specified...
+                        String gloss = (globalGloss.length() == 0) ? currentInlineGloss : globalGloss + "|" + currentInlineGloss;
+                        inlineGlossResource = wdh.createGlossResource(glossFilter.extractGlossStructure(gloss), rank++);
                     } else if (character != null) {
                         if (character.equals("\n") || character.equals("\r")) {
                             usage = usage.trim();
                             // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
                             if (word != null && word.length() != 0) {
                                 if (lang != null) {
-                                    String gloss = (globalGloss.length() == 0) ? currentInlineGloss : globalGloss + "|" + currentInlineGloss;
-                                    wdh.registerTranslation(lang, gloss, usage, word);
+                                    wdh.registerTranslation(lang, inlineGlossResource, usage, word);
                                 }
                             } else if (usage.length() != 0) {
                                 log.debug("Non empty usage ({}) while word is null in: {}", usage, wdh.currentLexEntry());
@@ -607,14 +619,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                             lang = null;
                             usage = "";
                             word = "";
-                            currentInlineGloss = "";
+                            inlineGlossResource = null;
                             ETAT = INIT;
                         } else if (character.equals(",") || character.equals(";")) {
                             usage = usage.trim();
                             // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
                             if (word != null && word.length() != 0) {
                                 if (lang != null) {
-                                    wdh.registerTranslation(lang, currentInlineGloss, usage, word);
+                                    wdh.registerTranslation(lang, inlineGlossResource, usage, word);
                                 }
                             }
                             usage = "";

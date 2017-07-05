@@ -28,6 +28,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     //DONE: extract pronunciation
     //TODO: attach multiple pronounciation correctly
     static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+
     protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
     protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
     protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
@@ -108,6 +109,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
         // languageFilter.find();
         int englishSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+
         extractEnglishData(englishSectionStartOffset, englishSectionEndOffset);
         wdh.finalizePageExtraction();
     }
@@ -422,7 +424,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // TODO: Handle such cases (by creating another lexical entry ?) // Similar to reflexiveness in French wiktionary
         if (!ewdh.isEnabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) return;
 
-        WikiText text = new WikiText(pageContent, startOffset, endOffset);
+        WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
 
         WikiEventsSequence wikiTemplates = text.templates();
 
@@ -892,7 +894,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void extractTranslations(int startOffset, int endOffset) {
         Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
         macroMatcher.region(startOffset, endOffset);
-        String currentGloss = null;
+        Resource currentGloss = null;
+        int rank = 1;
         // TODO: there are templates called "qualifier" used to further qualify the translation check and evaluate if extracting its data is useful.
         while (macroMatcher.find()) {
             String g1 = macroMatcher.group(1);
@@ -923,7 +926,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 String g2 = macroMatcher.group(2);
                 // Ignore glose if it is a macro
                 if (g2 != null && !g2.startsWith("{{")) {
-                    currentGloss = g2;
+                    currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);;
+                } else {
+                    currentGloss = null;
                 }
             } else if (g1.equals("checktrans-top")) {
                 // forget glose.
@@ -939,7 +944,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     @Override
     protected void extractNyms(String synRelation, int startOffset, int endOffset) {
-        WikiText text = new WikiText(pageContent, startOffset, endOffset);
+        WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
         ClassBasedFilter filter = new ClassBasedFilter();
         filter.allowListItem();
 
@@ -960,7 +965,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         WikiEventsSequence wikiEvents = content.filteredTokens(filter);
 
-        String currentGloss = null;
+        Resource currentGloss = null;
+        int rank = 1;
+
         // TODO: extract glosses as present in wiktionary pages
         for (WikiText.Token tok : wikiEvents) {
             if (tok instanceof WikiText.InternalLink) {
@@ -990,67 +997,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                         wdh.registerNymRelation(target, synRelation, currentGloss);
                     }
                 } else if ("sense".equals(tmpl.getName())) {
-                    currentGloss = tmpl.getParsedArgs().get("1");
+                    String g = tmpl.getParsedArgs().get("1");
                     for (int i = 2; i < 9; i++) {
                         String p = tmpl.getParsedArgs().get(Integer.toString(i));
                         if (null != p) {
-                            currentGloss += ", " + p;
+                            g += ", " + p;
                         }
                     }
+                    currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
                 }
             }
         }
     }
 
-    protected void extractNymsOld(String synRelation, int startOffset, int endOffset) {
-
-        WikiText text = new WikiText(pageContent, startOffset, endOffset);
-        ClassBasedFilter filter = new ClassBasedFilter();
-        filter.allowInternalLink().allowTemplates();
-
-        WikiEventsSequence wikiEvents = text.filteredTokens(filter);
-
-        String currentGloss = null;
-        // TODO: extract glosses as present in wiktionary pages
-        for (WikiText.Token tok : wikiEvents) {
-            if (tok instanceof WikiText.InternalLink) {
-                // It's a link, only keep the alternate string if present.
-                WikiText.InternalLink link = (WikiText.InternalLink) tok;
-                String linkText = link.getLinkText();
-                if (linkText != null && !linkText.equals("") &&
-                        !linkText.startsWith("Catégorie:") &&
-                        !linkText.startsWith("#")) {
-                    if (linkText.startsWith("Wikisaurus:")) {
-                        handleWikisaurus(linkText, currentNym);
-                    } else {
-                        wdh.registerNymRelation(linkText, synRelation);
-                    }
-                }
-            } else if (tok instanceof WikiText.Template) {
-                WikiText.Template tmpl = (WikiText.Template) tok;
-                if ("l".equals(tmpl.getName()) || "link".equals(tmpl.getName())) {
-                    Map<String, String> args = tmpl.getParsedArgs();
-                    if ("en".equals(args.get("1"))) {
-                        String target = args.get("2");
-                        args.remove("2");
-                        args.remove("1");
-                        if (!args.isEmpty()) {
-                            log.debug("Unhandled remaining args {} in {}", args.entrySet().toString(), this.wiktionaryPageName);
-                        }
-                        wdh.registerNymRelation(target, synRelation, currentGloss);
-                    }
-                } else if ("sense".equals(tmpl.getName())) {
-                    currentGloss = tmpl.getParsedArgs().get("1");
-                    for (int i = 1; i < 9; i++) {
-                        String p = tmpl.getParsedArgs().get(Integer.toString(i));
-                        if (null != p) {
-                            currentGloss += ", " + p;
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     // TODO: handle Wikisaurus pages
     private void handleWikisaurus(String linkText, String currentNym) {

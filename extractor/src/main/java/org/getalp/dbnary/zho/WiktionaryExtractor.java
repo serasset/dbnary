@@ -604,7 +604,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private void extractTranslations(int startOffset, int endOffset) {
         String transCode = pageContent.substring(startOffset, endOffset);
-        ChineseTranslationExtractorWikiModel dbnmodel = new ChineseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}/" + wiktionaryPageName, "/${title}");
+        ChineseTranslationExtractorWikiModel dbnmodel = new ChineseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}/" + wiktionaryPageName, "/${title}", glossFilter);
         dbnmodel.parseTranslationBlock(transCode);
     }
 

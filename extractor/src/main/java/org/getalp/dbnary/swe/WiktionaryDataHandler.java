@@ -1,6 +1,6 @@
 package org.getalp.dbnary.swe;
 
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.LemonOnt;
 import org.getalp.dbnary.LexinfoOnt;
 import org.slf4j.Logger;
@@ -9,20 +9,20 @@ import org.slf4j.LoggerFactory;
 /**
  * @author malick
  */
-public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
     static {
         /*  Les lignes avec comme commentaire "fait" indique ce part of speech à été trouver dans certain mots du swedois  */
         // swedois
-        posAndTypeValueMap.put("Substantiv", new PosAndType(LexinfoOnt.noun, LemonOnt.LexicalEntry)); // fait
-        posAndTypeValueMap.put("Proper noun", new PosAndType(LexinfoOnt.properNoun, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("Proper Noun", new PosAndType(LexinfoOnt.properNoun, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("Substantiv", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry)); // fait
+        posAndTypeValueMap.put("Proper noun", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("Proper Noun", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
 
-        posAndTypeValueMap.put("Adjektiv", new PosAndType(LexinfoOnt.adjective, LemonOnt.LexicalEntry));  //fait
-        posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, LemonOnt.LexicalEntry));   // fait
-        posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, LemonOnt.LexicalEntry));  // fait
+        posAndTypeValueMap.put("Adjektiv", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));  //fait
+        posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));   // fait
+        posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));  // fait
         posAndTypeValueMap.put("Artikel", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));  //fait
         posAndTypeValueMap.put("Konjunktion", new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));  // fait
         posAndTypeValueMap.put("Determiner", new PosAndType(LexinfoOnt.determiner, LexinfoOnt.Determiner));
@@ -36,7 +36,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("Preposition", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition)); //fait
         posAndTypeValueMap.put("Postposition", new PosAndType(LexinfoOnt.postposition, LexinfoOnt.Postposition));
 
-        posAndTypeValueMap.put("Prepositional phrase", new PosAndType(null, LemonOnt.Phrase));
+        posAndTypeValueMap.put("Prepositional phrase", new PosAndType(null, OntolexOnt.MultiWordExpression));
 
         posAndTypeValueMap.put("Pronomen", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun)); //fait
         posAndTypeValueMap.put("Symbol", new PosAndType(LexinfoOnt.symbol, LexinfoOnt.Symbol));
@@ -48,10 +48,10 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
         posAndTypeValueMap.put("Interfix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
         posAndTypeValueMap.put("Circumfix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
 
-        posAndTypeValueMap.put("Ordspråk", new PosAndType(LexinfoOnt.proverb, LemonOnt.Phrase)); //fait
+        posAndTypeValueMap.put("Ordspråk", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression)); //fait
         posAndTypeValueMap.put("Interjektion", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection)); //fait
-        posAndTypeValueMap.put("Phrase", new PosAndType(LexinfoOnt.phraseologicalUnit, LemonOnt.Phrase));
-        posAndTypeValueMap.put("Idiom", new PosAndType(LexinfoOnt.idiom, LemonOnt.Phrase));
+        posAndTypeValueMap.put("Phrase", new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("Idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
 
         // ajouter
         posAndTypeValueMap.put("pronom-pers", new PosAndType(LexinfoOnt.personalPronoun, LexinfoOnt.Pronoun));

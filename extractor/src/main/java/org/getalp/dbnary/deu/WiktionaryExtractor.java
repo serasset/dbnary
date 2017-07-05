@@ -1,17 +1,19 @@
 package org.getalp.dbnary.deu;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LangTools;
 import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.dbnary.wiki.WikiPatterns;
-import org.getalp.dbnary.wiki.WikiTool;
+import org.getalp.dbnary.wiki.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.getalp.dbnary.IWiktionaryDataHandler.*;
 
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
@@ -358,7 +360,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (blockStart == -1) {
             return;
         }
-        log.trace("Leaving block {} while parsing entry {}", currentBlock.name(), this.wiktionaryPageName);
+        // log.trace("Leaving block {} while parsing entry {}", currentBlock.name(), this.wiktionaryPageName);
 
         int end = computeRegionEnd(blockStart, m);
         switch (currentBlock) {
@@ -454,6 +456,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
     private void extractInflections(int startOffset, int endOffset) {
+        if (! wdh.isEnabled(Feature.MORPHOLOGY)) return;
         parseInflectionTables(startOffset, endOffset);
 
         // parseConjugationAndDeclinationPages(startOffset, endOffset);
@@ -527,83 +530,146 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     private void extractTranslations(int startOffset, int endOffset) {
-        Matcher macroMatcher = glossOrMacroPattern.matcher(pageContent);
-        macroMatcher.region(startOffset, endOffset);
-        String currentGloss = null;
+        WikiText wt = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
+        ArrayList<? extends WikiText.Token> toks = wt.wikiTokens();
 
-        // TODO: The german translation has changed drastically with the introduction of ÜT and new versions of Üxx/Ü
-        while (macroMatcher.find()) {
-            String gloss = macroMatcher.group(1);
+        for(WikiText.Token t : toks) {
+            if (t instanceof WikiText.Template && ((WikiText.Template) t).getName().trim().equals("Ü-Tabelle")) {
+                Map<String, WikiText.WikiContent> args = ((WikiText.Template) t).getArgs();
+                // TODO: General gloss is in arg G // Meaning number in arg 1
+                extractTranslationsFromItems(args.get("Ü-links"));
+                extractTranslationsFromItems(args.get("Ü-rechts"));
+                // extractTranslationsFromItems(args.get("Dialekttabelle"));
+                // extractTranslationsFromItems(args.get("D-rechts"));
+            }
+            // TODO : check if entries are using other arguments
+        }
+    }
 
-            if (gloss != null) {
+    private void extractTranslationsFromItems(WikiText.WikiContent wc) {
+        if (null == wc) return;
+        ArrayList<? extends WikiText.Token> toks = wc.wikiTokens();
 
-                currentGloss = gloss;
+        // TODO : faire une analyse plus poussée des traduction, car il y a des entrées comme cela :
+        // se {{Ü|fr|mettre}} {{Ü|fr|à}} {{Ü|fr|couler}} qui est extrait en 3 traductions différentes
+        for(WikiText.Token li : toks) {
+            if (li instanceof WikiText.ListItem) {
+                WikiText.ListItem lit = (WikiText.ListItem) li;
+                extractTranslationFromItem(lit);
+            }
+        }
+    }
 
-            } else {
+    private void extractTranslationFromItem(WikiText.ListItem li) {
+        // GermanTranslationLineExtractor extractor = new GermanTranslationLineExtractor();
+        // extractor.extractTranslations(li.getContent(), wdh);
+        extractTranslationsFromListContent(li.getContent());
+    }
 
-                String g1 = macroMatcher.group(2);
-                String g2 = macroMatcher.group(3);
-                String g3 = macroMatcher.group(4);
-                String g4 = macroMatcher.group(5);
+    // TODO: handle dialekts and translations as links
+    private static String translationTokenizer = "(?<TMPLLANG>^\\p{Template}\\s*:\\s*)|" +
+            "(?<CTLANG>^(?<LANG>.*)\\s*:\\s*)|" +
+            "(?<ITALICS>'{2,3}.*?'{2,3})|" +
+            "(?<PARENS>\\(\\P{Reserved}*?\\))|" +
+            "(?<SPECIALPARENS>\\(.*?\\))|" +
+            "\\[(?<GLOSS>\\P{Reserved}*?)\\]|" +
+            "(?<TMPL>\\p{Template})|" +
+            "(?<LINK>\\p{InternalLink})";
 
+    private void extractTranslationsFromListContent(WikiText.WikiContent content) {
 
-                if (g1.equals("Ü") || g1.equals("Üxx") || g1.equals("Üt")) {
-                    String lang;
-                    String word = null;
-                    String trans1 = null;
-                    String trans2 = null;
-                    String transcription = null;
+        log.debug("Translation line = {}", content.toString());
 
-                    lang = LangTools.normalize(g2);
+        WikiCharSequence line = new WikiCharSequence(content);
+        Pattern pattern = WikiPattern.compile(translationTokenizer);
 
-                    // Extract word and transcription
-                    // there are three case with 5 "|" : 1-"{{ .. }}'' or 2-"" [[ .. ]]"" or 3-just "|"
+        Matcher lexer = pattern.matcher(line);
+        Resource currentGloss = null;
 
+        int rank = 1;
 
-                    int i1, i2, i3;
-                    int i4 = 0;
-                    int i5 = 0;
-                    if (g4 != null && (i1 = g4.indexOf('|')) != -1 && (i3 = g4.indexOf('|', i1 + 1)) == -1) { // only 5 "|"
-
-                        if ((i4 = g4.indexOf(']')) != -1 && (i5 = g3.indexOf('[')) != -1) {
-                            i1 = g4.indexOf('|', i4); // the {{..}} can contain more than 1 "|", since the word is after the {{..}}, we ignore the others "|" and match the last one
-                            trans1 = g3.substring(i5 + 1);
-                            trans2 = g4.substring(0, i4 + 1);
-                            transcription = trans1 + "|" + trans2;
-                            word = g4.substring(i1 + 1);
-
-                        } else if (g4 != null && g4.equals("")) {
-                            word = g3;
-
-                        } else {
-                            transcription = g3;
-                            word = g4;
-                        }
-                    }
-
-                    if (g4 != null && g4.equals("")) {
-                        word = g3;
-
-                    } else {
-                        transcription = g3;
-                        word = g4;
-                    }
-
-                    lang = GermanLangToCode.threeLettersCode(lang);
-                    if (lang != null) {
-                        wdh.registerTranslation(lang, currentGloss, transcription, word);
-                    }
-
-                } else if (g1.equals("Ü-links")) {
-                    // German wiktionary does not provide a gloss to disambiguate.
-                    // Just ignore this marker.
-                } else if (g1.equals("Ü-Abstand")) {
-                    // just ignore it
-                } else if (g1.equals("Ü-rechts")) {
-                    // Forget the current gloss
-                    currentGloss = null;
+        // TODO: Support usage notes as : {{Ü...}} {{m}}
+        while (lexer.find()) {
+            String g;
+            String lang;
+            if (null != (g = lexer.group("TMPLLANG"))) {
+                // Ignoring languages as a template as translations will be given
+            } else if (null != (g = lexer.group("CTLANG"))) {
+                // Clear Text language -- ignore it for the moment. To be processed when dialekts will be added.
+                lang = lexer.group("LANG");
+            } else if (null != (g = lexer.group("ITALICS"))) {
+                // ignore ?
+            } else if (null != (g = lexer.group("PARENS"))) {
+                // ignore ?
+            } else if (null != (g = lexer.group("SPECIALPARENS"))) {
+                log.debug("Template or link inside parens: {}", line.getSourceContent(lexer.group("SPECIALPARENS")));
+                // TODO: some are only additional usage notes, other are alternate translation, decide between them and handle the translation cases.
+            } else if (null != (g = lexer.group("GLOSS"))) {
+                currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+            } else if (null != (g = lexer.group("LINK"))) {
+                log.debug("Translation as link : {}", line.getToken(lexer.group("LINK")));
+            } else if (null != (g = lexer.group("TMPL"))) {
+                WikiText.Template t = (WikiText.Template) line.getToken(g);
+                switch (t.getName()) {
+                    case "Ü":
+                    case "Ü?":
+                        String lg = GermanLangToCode.threeLettersCode(LangTools.normalize(t.getParsedArgs().get("1")));
+                        String lemma = t.getParsedArgs().get("2");
+                        String linkText = t.getParsedArgs().get("3");
+                        String usage = null;
+                        if (null != linkText)
+                            usage = "alt=" + linkText + "|";
+                        if (null != lg && null != lemma && !"".equals(lemma))
+                            wdh.registerTranslation(lg, currentGloss, usage, lemma);
+                        break;
+                    case "Üt":
+                    case "Üt?":
+                        lg = GermanLangToCode.threeLettersCode(LangTools.normalize(t.getParsedArgs().get("1")));
+                        lemma = t.getParsedArgs().get("2");
+                        String transcript = t.getParsedArgs().get("3");
+                        linkText = t.getParsedArgs().get("4");
+                        usage = null;
+                        if (null != transcript && transcript.trim().length() > 0)
+                            usage = "t=" + transcript + "|";
+                        if (null != linkText)
+                            usage = "alt=" + linkText + "|";
+                        if (null != lg && null != lemma && !"".equals(lemma))
+                            wdh.registerTranslation(lg, currentGloss, usage, lemma);
+                        break;
+                    case "Üxx4":
+                    case "Üxx4?":
+                        lg = GermanLangToCode.threeLettersCode(LangTools.normalize(t.getParsedArgs().get("1")));
+                        lemma = t.getParsedArgs().get("2");
+                        linkText = t.getParsedArgs().get("3");
+                        String vocalization = t.getParsedArgs().get("v");
+                        transcript = t.getParsedArgs().get("d");
+                        String bedeutung = t.getParsedArgs().get("b");
+                        usage = null;
+                        if (null != transcript)
+                            usage = "t=" + transcript + "|";
+                        if (null != linkText)
+                            usage = "alt=" + linkText + "|";
+                        if (null != vocalization)
+                            usage = "v=" + vocalization + "|";
+                        if (null != bedeutung)
+                            usage = "b=" + bedeutung + "|";
+                        if (null != lg && null != lemma && !"".equals(lemma))
+                            wdh.registerTranslation(lg, currentGloss, usage, lemma);
+                        break;
+                    case "Üxx5":
+                    case "Üxx5?":
+                        lg = GermanLangToCode.threeLettersCode(LangTools.normalize(t.getParsedArgs().get("1")));
+                        lemma = t.getParsedArgs().get("3");
+                        vocalization = t.getParsedArgs().get("4");
+                        transcript = t.getParsedArgs().get("2");
+                        usage = null;
+                        if (null != transcript)
+                            usage = "t=" + transcript + "|";
+                         if (null != vocalization)
+                            usage = "v=" + vocalization + "|";
+                        if (null != lg && null != lemma && !"".equals(lemma))
+                            wdh.registerTranslation(lg, currentGloss, usage, lemma);
                 }
-
             }
         }
     }
@@ -658,7 +724,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                         if (null == senseNum) {
                             wdh.registerNymRelation(leftGroup, synRelation);
                         } else {
-                            wdh.registerNymRelation(leftGroup, synRelation, senseNum);
+                            wdh.registerNymRelation(leftGroup, synRelation, wdh.createGlossResource(glossFilter.extractGlossStructure(senseNum)));
                         }
                     }
                 }

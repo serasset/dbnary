@@ -103,8 +103,8 @@ public class ISO639_3 {
                 if (matcher.find()) {
                     Lang l = new Lang();
                     // Id   Part2B  Part2T  Part1   Scope   Language_Type   Ref_Name    Comment
-		    // ita  ita     ita     it      I       L               Italian  
-		    l.id = matcher.group(1);
+		            // ita  ita     ita     it      I       L               Italian  
+		            l.id = matcher.group(1);
                     l.part2b = matcher.group(2);
                     l.part2t = matcher.group(3);
                     l.part1 = matcher.group(4);

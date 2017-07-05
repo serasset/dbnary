@@ -38,19 +38,25 @@ public class DilafLemonDataHandler extends DbnaryModel {
         // aBox.setNsPrefix("dlf_" + lang, NS);
         aBox.setNsPrefix(lang, NS);
         aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
-        aBox.setNsPrefix("lemon", LemonOnt.getURI());
+        // aBox.setNsPrefix("lemon", LemonOnt.getURI());
         aBox.setNsPrefix("lexinfo", LexinfoOnt.getURI());
         aBox.setNsPrefix("olia", OliaOnt.getURI());
         aBox.setNsPrefix("rdfs", RDFS.getURI());
         aBox.setNsPrefix("dcterms", DCTerms.getURI());
         aBox.setNsPrefix("lexvo", LEXVO);
         aBox.setNsPrefix("rdf", RDF.getURI());
+        aBox.setNsPrefix("ontolex", OntolexOnt.getURI());
+        aBox.setNsPrefix("vartrans", VarTransOnt.getURI());
+        aBox.setNsPrefix("synsem", SynSemOnt.getURI());
+        aBox.setNsPrefix("lime", LimeOnt.getURI());
+        aBox.setNsPrefix("decomp", DecompOnt.getURI());
+        aBox.setNsPrefix("skos", SkosOnt.getURI());
     }
 
     public Resource registerLexicalEntry(String id, String pos) {
         pos = normalizePartOfSpeech(pos);
         String encodedLexEntryURI = uriEncode(id, pos);
-        Resource lexEntry = aBox.createResource(NS + encodedLexEntryURI, LemonOnt.LexicalEntry);
+        Resource lexEntry = aBox.createResource(NS + encodedLexEntryURI, OntolexOnt.LexicalEntry);
         aBox.add(aBox.createStatement(lexEntry, DBnaryOnt.partOfSpeech, pos));
         attacheLexInfoPOS(lexEntry, pos);
         return lexEntry;
@@ -99,7 +105,7 @@ public class DilafLemonDataHandler extends DbnaryModel {
         if (null == lexEntry) {
             int count = lexEntryCount.incr(encodedLemma);
             lexEntry = aBox.createResource(NS + encodedLemma + "__" + count);
-            aBox.add(aBox.createStatement(lexEntry, RDF.type, LemonOnt.LexicalEntry));
+            aBox.add(aBox.createStatement(lexEntry, RDF.type, OntolexOnt.LexicalEntry));
             lexicalEntries.put(encodedLemma + "__" + pron, lexEntry);
             aBox.add(aBox.createStatement(lexEntry, DBnaryOnt.partOfSpeech, pos));
         }
@@ -108,10 +114,10 @@ public class DilafLemonDataHandler extends DbnaryModel {
 
         // Validate / eventually create a lexical form element
         // Check if the lexical form already exists before creating it...
-        Statement alreadyRegisteredCanonicalForm = aBox.getProperty(lexEntry, LemonOnt.canonicalForm);
+        Statement alreadyRegisteredCanonicalForm = aBox.getProperty(lexEntry, OntolexOnt.canonicalForm);
         if (null != alreadyRegisteredCanonicalForm) {
             // Check that it is the same form/pronounciation
-            Statement oldWrittenRep = aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), LemonOnt.writtenRep);
+            Statement oldWrittenRep = aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), OntolexOnt.writtenRep);
             if (oldWrittenRep == null || !oldWrittenRep.getString().equals(lemma)) {
                 System.err.println("Old written representation is null or different from current representation.");
             }
@@ -121,14 +127,14 @@ public class DilafLemonDataHandler extends DbnaryModel {
             }
         } else {
             Resource lexForm = aBox.createResource();
-            aBox.add(aBox.createStatement(lexForm, LemonOnt.writtenRep, lemma, twoLetterLanguageCode));
+            aBox.add(aBox.createStatement(lexForm, OntolexOnt.writtenRep, lemma, twoLetterLanguageCode));
             aBox.add(aBox.createStatement(lexForm, LexinfoOnt.pronunciation, pron));
-            aBox.add(aBox.createStatement(lexEntry, LemonOnt.canonicalForm, lexForm));
+            aBox.add(aBox.createStatement(lexEntry, OntolexOnt.canonicalForm, lexForm));
         }
         // Create and register the lexical sense itself.
         Resource lexicalSense = aBox.createResource(createSenseId(lexEntryId, senseNumber));
-        aBox.add(aBox.createStatement(lexEntry, RDF.type, LemonOnt.LexicalSense));
-        aBox.add(aBox.createStatement(lexEntry, LemonOnt.sense, lexicalSense));
+        aBox.add(aBox.createStatement(lexEntry, RDF.type, OntolexOnt.LexicalSense));
+        aBox.add(aBox.createStatement(lexEntry, OntolexOnt.sense, lexicalSense));
         aBox.add(aBox.createLiteralStatement(lexicalSense, DBnaryOnt.senseNumber, aBox.createTypedLiteral(Integer.parseInt(senseNumber))));
 
 
@@ -155,8 +161,8 @@ public class DilafLemonDataHandler extends DbnaryModel {
      * Predefined values are "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3".
      * The default value, represented by null, is "RDF/XML".
      *
-     * @param out
-     * @param format
+     * @param out the output stream in which the dump will be written
+     * @param format the RDF format in which the data will be written
      */
     public void dump(OutputStream out, String format) {
         aBox.write(out, format);
@@ -168,35 +174,35 @@ public class DilafLemonDataHandler extends DbnaryModel {
     }
 
     public void setCanonicalForm(Resource lexicalEntry, String lemma) {
-        Resource canonicalForm = aBox.createResource(lexicalEntry.getURI() + "__cf", LemonOnt.Form);
-        aBox.add(aBox.createStatement(canonicalForm, LemonOnt.writtenRep, lemma, twoLetterLanguageCode));
-        aBox.add(aBox.createStatement(lexicalEntry, LemonOnt.canonicalForm, canonicalForm));
+        Resource canonicalForm = aBox.createResource(lexicalEntry.getURI() + "__cf", OntolexOnt.Form);
+        aBox.add(aBox.createStatement(canonicalForm, OntolexOnt.writtenRep, lemma, twoLetterLanguageCode));
+        aBox.add(aBox.createStatement(lexicalEntry, OntolexOnt.canonicalForm, canonicalForm));
     }
 
     public Resource registerLexicalSense(Resource lexicalEntry, String senseId, String terme, String usage, String nonUsage, String status, String emploi) {
-        Resource lexicalSense = aBox.createResource(NS + senseId, LemonOnt.LexicalSense);
-        aBox.add(aBox.createStatement(lexicalSense, RDF.type, LemonOnt.LexicalSense));
-        aBox.add(aBox.createStatement(lexicalEntry, LemonOnt.sense, lexicalSense));
+        Resource lexicalSense = aBox.createResource(NS + senseId, OntolexOnt.LexicalSense);
+        aBox.add(aBox.createStatement(lexicalSense, RDF.type, OntolexOnt.LexicalSense));
+        aBox.add(aBox.createStatement(lexicalEntry, OntolexOnt.sense, lexicalSense));
         // TODO: handle other attributes
         return lexicalSense;
     }
 
     public void registerDefinition(Resource sense, String text, String lang) {
-        aBox.add(aBox.createStatement(sense, LemonOnt.definition, text, lang));
+        aBox.add(aBox.createStatement(sense, SkosOnt.definition, text, lang));
     }
 
     public Resource registerExample(Resource sense, String ba, String baTons, String fr, String usage) {
         // Create new word sense + a definition element
         Resource example = aBox.createResource();
         if (null != ba)
-            aBox.add(aBox.createStatement(example, LemonOnt.value, ba, "bm"));
+            aBox.add(aBox.createStatement(example, RDF.value, ba, "bm"));
         if (null != fr)
-            aBox.add(aBox.createStatement(example, LemonOnt.value, fr, "fr"));
+            aBox.add(aBox.createStatement(example, RDF.value, fr, "fr"));
         // TODO: how to represent bambara with tones ?
         if (null != usage)
             aBox.add(aBox.createStatement(example, DBnaryOnt.usage, usage, "bm"));
 
-        aBox.add(aBox.createStatement(sense, LemonOnt.example, example));
+        aBox.add(aBox.createStatement(sense, SkosOnt.example, example));
         return example;
     }
 }

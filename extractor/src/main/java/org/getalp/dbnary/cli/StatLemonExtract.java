@@ -3,10 +3,7 @@ package org.getalp.dbnary.cli;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.apache.commons.cli.*;
-import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.LangTools;
-import org.getalp.dbnary.LemonOnt;
+import org.getalp.dbnary.*;
 
 import java.util.HashSet;
 import java.util.Map.Entry;
@@ -185,19 +182,19 @@ public class StatLemonExtract extends DbnaryModel {
 
         // Number of Lexical Entries
 
-        int nble = countResourcesOfType(LemonOnt.LexicalEntry);
-        int nblv = countResourcesOfType(DBnaryOnt.Vocable);
-        int nblw = countResourcesOfType(LemonOnt.Word);
-        int nblp = countResourcesOfType(LemonOnt.Phrase);
+        int nble = countResourcesOfType(OntolexOnt.LexicalEntry);
+        int nblv = countResourcesOfType(DBnaryOnt.Page);
+        int nblw = countResourcesOfType(OntolexOnt.Word);
+        int nblp = countResourcesOfType(OntolexOnt.MultiWordExpression);
 
 
         int nbEquiv = countResourcesOfType(DBnaryOnt.Translation);
-        int nbsense = countResourcesOfType(LemonOnt.LexicalSense);
+        int nbsense = countResourcesOfType(OntolexOnt.LexicalSense);
         comma = ("LATEX".equals(statsFormat)) ? " & " : ",";
         nl = ("LATEX".equals(statsFormat)) ? "\\\\" : "";
 
         if (verbose) {
-            System.out.print("Language Edition" + comma + "Entries" + comma + "Vocables" + comma + "Senses" + comma + "Translations");
+            System.out.print("Language Edition" + comma + "Entries" + comma + "Pages" + comma + "Senses" + comma + "Translations");
             System.out.println(nl);
         }
 

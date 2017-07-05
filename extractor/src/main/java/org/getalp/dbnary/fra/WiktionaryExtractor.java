@@ -6,8 +6,7 @@ package org.getalp.dbnary.fra;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import org.getalp.dbnary.*;
-import org.getalp.dbnary.wiki.WikiPatterns;
-import org.getalp.dbnary.wiki.WikiTool;
+import org.getalp.dbnary.wiki.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -464,6 +463,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected ExampleExpanderWikiModel exampleExpander;
     protected FrenchDefinitionExtractorWikiModel definitionExpander;
     protected FrenchExtractorWikiModel conjugationExtractor;
+    protected ExpandAllWikiModel glossExtractor;
 
     @Override
     public void setWiktionaryIndex(WiktionaryIndex wi) {
@@ -471,7 +471,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("fr"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
         definitionExpander = new FrenchDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
         conjugationExtractor = new FrenchExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
-
+        glossExtractor = new ExpandAllWikiModel(this.wi, new Locale("fr"), "/${image}", "/${title}");
     }
 
     private Set<String> defTemplates = null;
@@ -891,130 +891,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
 
-    private static ArrayList<String> explode(char sep, String str) {
-        int lastI = 0;
-        ArrayList<String> res = new ArrayList<String>();
-        int pos = str.indexOf(sep, lastI);
-
-        while (pos != -1) {
-            res.add(str.substring(lastI, pos));
-            lastI = pos + 1;
-            pos = str.indexOf(sep, lastI);
-        }
-
-        res.add(str.substring(lastI, str.length()));
-        return res;
-    }
-
-    static void addAtomicMorphologicalInfo(Set<PropertyObjectPair> infos, String word) {
-        switch (word) {
-            case "singulier":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-                break;
-            case "pluriel":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-                break;
-            case "masculin":
-            case "masculinet": // happens when we should have "masculin et féminin", the "et" gets sticked to the "masculin".
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-                break;
-            case "féminin":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-                break;
-            case "présent":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
-                break;
-            case "imparfait":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.imperfect));
-                break;
-            case "passé":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-                break;
-            case "futur":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.future));
-                break;
-            case "indicatif":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
-                break;
-            case "subjonctif":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.subjunctive));
-                break;
-            case "conditionnel":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.conditional));
-                break;
-            case "impératif":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
-                break;
-            case "participe":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-                break;
-            case "première personne":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.firstPerson));
-                break;
-            case "deuxième personne":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.secondPerson));
-                break;
-            case "troisième personne":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.thirdPerson));
-                break;
-            case "futur simple":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.future));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
-                break;
-            case "passé simple":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
-                break;
-            case "masculin singulier":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-                break;
-            case "féminin singulier":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-                break;
-            case "masculin pluriel":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-                break;
-            case "féminin pluriel":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-                break;
-            case "participe passé masculin singulier":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-                break;
-            case "participe passé féminin singulier":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-                break;
-            case "participe passé masculin pluriel":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-                break;
-            case "participe passé féminin pluriel":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-                break;
-            case "participe présent":
-                infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-                infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
-                break;
-            default:
-                ArrayList<String> multiwords = explode(' ', word);
-                if (multiwords.size() > 1) {
-                    for (String w : multiwords) {
-                        addAtomicMorphologicalInfo(infos, w);
-                    }
-                }
-        }
-    }
-
     private void extractInflections(int blockStart, int end) {
         log.trace("extracting inflections in {}", this.wiktionaryPageName);
         Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
@@ -1026,6 +902,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 for (int i = 3; i <= m.groupCount(); i++) {
                     // CHECK: do we ever go into this loop ?
                     // an infection macro can have several morphological information parameter
+                    log.trace("Having more than 3 args in inflection template for {} in {}", m.group(), this.wiktionaryPageName);
                     addInflectionMorphologicalSet(wdh.currentWiktionaryPos(), m.group(2), m.group(i).substring(0, m.group(i).indexOf('=')));
                 }
             }
@@ -1059,7 +936,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 // 			infos.add(PropertyObjectPair.get(FrenchExtractorWikiModel.extractedFromFrenchSentence, FrenchExtractorWikiModel.trueLiteral));
             for (String info : m.group(1).split("de l’|du|de")) {
-                addAtomicMorphologicalInfo(infos, info.trim().toLowerCase(frLocale));
+                FrenchExtractorWikiModel.addAtomicMorphologicalInfo(infos, info.trim().toLowerCase(frLocale));
             }
 
             if (commonInflectionInformations.inflections.size() == 0) {
@@ -1173,49 +1050,97 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
 
+    private static String translationTokenizer =
+            "(?<ITALICS>'{2,3}.*?'{2,3})|" +
+            "(?<PARENS>\\(\\P{Reserved}*?\\))|" +
+            "(?<SPECIALPARENS>\\(.*?\\))|" +
+            "(?<TMPL>\\p{Template})|" +
+            "(?<LINK>\\p{InternalLink})";
+
     private void extractTranslations(int startOffset, int endOffset) {
-        Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
-        macroMatcher.region(startOffset, endOffset);
-        String currentGlose = null;
+        // log.debug("Translation section: " + pageContent.substring(startOffset, endOffset));
 
-        while (macroMatcher.find()) {
-            String g1 = macroMatcher.group(1);
+        WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
+        WikiCharSequence line = new WikiCharSequence(text);
+        Pattern pattern = WikiPattern.compile(translationTokenizer); // match all templates
 
-            if (g1.equals("trad+") || g1.equals("trad-") || g1.equals("trad") || g1.equals("t+") || g1.equals("t-") || g1.equals("trad--")) {
-                // DONE: Sometimes translation links have a remaining info after the word, keep it.
-                String g2 = macroMatcher.group(2);
-                int i1, i2;
-                String lang, word;
-                if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
-                    lang = LangTools.normalize(g2.substring(0, i1));
-                    String usage = null;
-                    if ((i2 = g2.indexOf('|', i1 + 1)) == -1) {
-                        word = g2.substring(i1 + 1);
-                    } else {
-                        word = g2.substring(i1 + 1, i2);
-                        usage = g2.substring(i2 + 1);
-                    }
+        Matcher lexer = pattern.matcher(line);
+        Resource currentGloss = null;
+        int rank = 1;
 
-                    lang = FrenchLangtoCode.threeLettersCode(lang);
+        while (lexer.find()) {
 
-                    if (lang != null) {
-                        wdh.registerTranslation(lang, currentGlose, usage, word);
-                    }
+            String g;
+            if (null != (g = lexer.group("ITALICS"))) {
+                // TODO: keep as usage and add current translation object when finding a comma
+                log.debug("Found italics | {} | in translation for {}", g, wiktionaryPageName);
+            } else if (null != (g = lexer.group("PARENS"))) {
+                // TODO: keep as usage and add current translation object when finding a comma
+                log.debug("Found parenthesis | {} | in translation for {}", g, wiktionaryPageName);
+            } else if (null != (g = lexer.group("SPECIALPARENS"))) {
+                log.debug("Template or link inside parens: | {} | for [ {} ]", line.getSourceContent(lexer.group("SPECIALPARENS")), wiktionaryPageName);
+                // TODO: some are only additional usage notes, other are alternate translation, decide between them and handle the translation cases.
+            } else if (null != (g = lexer.group("LINK"))) {
+                log.debug("Translation as link : {}", line.getToken(lexer.group("LINK")));
+            } else if (null != (g = lexer.group("TMPL"))) {
+                WikiText.Template t = (WikiText.Template) line.getToken(g);
+                String tname = t.getName();
+                Map<String, String> args = t.getParsedArgs();
+
+                switch (tname) {
+                    case "trad+":
+                    case "trad-":
+                    case "trad":
+                    case "t+":
+                    case "t-":
+                    case "trad--":
+                        String lang = LangTools.normalize(args.remove("1"));
+                        String word = args.remove("2");
+                        args.remove("nocat");
+                        String usage = null;
+                        if (args.size() > 0) {
+                            usage = args.toString(); // get all remaining arguments as usages
+                            usage = usage.substring(1, usage.length()-1);
+                        }
+                        lang = FrenchLangtoCode.threeLettersCode(lang);
+
+                        if (lang != null && word != null) {
+                            wdh.registerTranslation(lang, currentGloss, usage, word);
+                        }
+
+                        break;
+                    case "boîte début":
+                    case "trad-début":
+                    case "(":
+                        // Get the glose that should help disambiguate the source acception
+                        String g1 = args.get("1");
+                        String g2 = args.get("2");
+                        args.remove("1");
+                        args.remove("2");
+                        if (args.size() > 0) {
+                            log.debug("unused args in translation gloss : {}", args);
+                        }
+                        String gloss = null;
+                        if (g1 != null || g2 != null) {
+                            gloss = (g1 == null || g1.equals("") ? "" : g1) +
+                                    (g2 == null || g2.equals("") ? "" : "|" + g2);
+                        }
+                        glossExtractor.setPageName(wiktionaryPageName);
+                        if (null != gloss)
+                            gloss = glossExtractor.expandAll(gloss, null);
+                        currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(gloss), rank++);
+
+                        break;
+                    case "trad-fin":
+                    case ")":
+                        currentGloss = null;
+                        break;
+
+                    case "-":
+                    case "T":
+                    default:
+                        break;
                 }
-            } else if (g1.equals("boîte début") || g1.equals("trad-début") || g1.equals("(")) {
-                // Get the glose that should help disambiguate the source acception
-                String g2 = macroMatcher.group(2);
-                // Ignore glose if it is a macro
-                if (g2 != null && !g2.startsWith("{{")) {
-                    currentGlose = g2;
-                }
-            } else if (g1.equals("-")) {
-                // just ignore it
-            } else if (g1.equals("trad-fin") || g1.equals(")")) {
-                // Forget the current glose
-                currentGlose = null;
-            } else if (g1.equals("T")) {
-                // this a a language identifier, just ignore it as we get the language id from the trad macro parameter.
             }
         }
     }
@@ -1319,6 +1244,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     private void extractOtherForms(int start, int end) {
+        // TODO: only when we are extracting morphology ?
+        if (! wdh.isEnabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) return;
+
         Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
         otherFormMatcher.region(start, end);
 

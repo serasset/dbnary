@@ -1,59 +1,63 @@
 package org.getalp.dbnary.ita;
 
 import com.hp.hpl.jena.rdf.model.Resource;
-import org.getalp.dbnary.LemonBasedRDFDataHandler;
-import org.getalp.dbnary.LemonOnt;
-import org.getalp.dbnary.LexinfoOnt;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.RDF;
+import org.getalp.dbnary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.DatatypeConverter;
+import java.math.BigInteger;
 import java.util.*;
 
 
-public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
     static {
 
-        posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, LemonOnt.Word));
-        posAndTypeValueMap.put("sost", new PosAndType(LexinfoOnt.noun, LemonOnt.Word));
-        posAndTypeValueMap.put("loc noun", new PosAndType(LexinfoOnt.noun, LemonOnt.Phrase));
-        posAndTypeValueMap.put("loc nom", new PosAndType(LexinfoOnt.noun, LemonOnt.Phrase));
-        posAndTypeValueMap.put("nome", new PosAndType(LexinfoOnt.properNoun, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("name", new PosAndType(LexinfoOnt.properNoun, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, LemonOnt.Word));
-        posAndTypeValueMap.put("adjc", new PosAndType(LexinfoOnt.adjective, LemonOnt.Word));
-        posAndTypeValueMap.put("agg", new PosAndType(LexinfoOnt.adjective, LemonOnt.Word));
-        posAndTypeValueMap.put("loc adjc", new PosAndType(LexinfoOnt.adjective, LemonOnt.Phrase));
-        posAndTypeValueMap.put("loc agg", new PosAndType(LexinfoOnt.adjective, LemonOnt.Phrase));
-        posAndTypeValueMap.put("avv", new PosAndType(LexinfoOnt.adverb, LemonOnt.Word));
-        posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, LemonOnt.Word));
-        posAndTypeValueMap.put("loc avv", new PosAndType(LexinfoOnt.adverb, LemonOnt.Phrase));
-        posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, LemonOnt.Word));
-        posAndTypeValueMap.put("loc verb", new PosAndType(LexinfoOnt.verb, LemonOnt.Phrase));
+        posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
+        posAndTypeValueMap.put("sost", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
+        posAndTypeValueMap.put("loc noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("loc nom", new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("nome", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("name", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
+        posAndTypeValueMap.put("adjc", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
+        posAndTypeValueMap.put("agg", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
+        posAndTypeValueMap.put("loc adjc", new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("loc agg", new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("avv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
+        posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
+        posAndTypeValueMap.put("loc avv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
+        posAndTypeValueMap.put("loc verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
 
-        posAndTypeValueMap.put("agg num", new PosAndType(LexinfoOnt.numeral, LemonOnt.Word));
-        posAndTypeValueMap.put("ord", new PosAndType(LexinfoOnt.ordinalAdjective, LemonOnt.Word));
-        posAndTypeValueMap.put("agg poss", new PosAndType(LexinfoOnt.possessiveAdjective, LemonOnt.Word));
-        posAndTypeValueMap.put("card", new PosAndType(LexinfoOnt.cardinalNumeral, LemonOnt.Word));
-        posAndTypeValueMap.put("agg nom", new PosAndType(LexinfoOnt.adjective, LemonOnt.Word));
+        posAndTypeValueMap.put("agg num", new PosAndType(LexinfoOnt.numeral, OntolexOnt.Word));
+        posAndTypeValueMap.put("agg poss", new PosAndType(LexinfoOnt.possessiveAdjective, OntolexOnt.Word));
+        // card/ord is not a Part of speech, but an information added to aggetivi numerali
+        //        posAndTypeValueMap.put("card", new PosAndType(LexinfoOnt.cardinalNumeral, OntolexOnt.Word));
+        //        posAndTypeValueMap.put("ord", new PosAndType(LexinfoOnt.ordinalAdjective, OntolexOnt.Word));
+        posAndTypeValueMap.put("agg nom", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
 
-        posAndTypeValueMap.put("art", new PosAndType(LexinfoOnt.article, LemonOnt.Word));
-        posAndTypeValueMap.put("cong", new PosAndType(LexinfoOnt.conjunction, LemonOnt.Word));
-        posAndTypeValueMap.put("conj", new PosAndType(LexinfoOnt.conjunction, LemonOnt.Word));
-        posAndTypeValueMap.put("inter", new PosAndType(LexinfoOnt.interjection, LemonOnt.Word));
-        posAndTypeValueMap.put("interj", new PosAndType(LexinfoOnt.interjection, LemonOnt.Word));
-        posAndTypeValueMap.put("loc cong", new PosAndType(LexinfoOnt.conjunction, LemonOnt.Phrase));
-        posAndTypeValueMap.put("loc conj", new PosAndType(LexinfoOnt.conjunction, LemonOnt.Phrase));
-        posAndTypeValueMap.put("loc inter", new PosAndType(LexinfoOnt.interjection, LemonOnt.Phrase));
-        posAndTypeValueMap.put("loc interj", new PosAndType(LexinfoOnt.interjection, LemonOnt.Phrase));
-        posAndTypeValueMap.put("loc prep", new PosAndType(LexinfoOnt.preposition, LemonOnt.Phrase));
-        posAndTypeValueMap.put("posp", new PosAndType(LexinfoOnt.postposition, LemonOnt.Word));
-        posAndTypeValueMap.put("prep", new PosAndType(LexinfoOnt.preposition, LemonOnt.Word));
-        posAndTypeValueMap.put("pron poss", new PosAndType(LexinfoOnt.possessivePronoun, LemonOnt.Word));
-        posAndTypeValueMap.put("pronome poss", new PosAndType(LexinfoOnt.possessivePronoun, LemonOnt.Word));
-        posAndTypeValueMap.put("pronome", new PosAndType(LexinfoOnt.pronoun, LemonOnt.Word));
+        posAndTypeValueMap.put("art", new PosAndType(LexinfoOnt.article, OntolexOnt.Word));
+        posAndTypeValueMap.put("cong", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.Word));
+        posAndTypeValueMap.put("conj", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.Word));
+        posAndTypeValueMap.put("inter", new PosAndType(LexinfoOnt.interjection, OntolexOnt.Word));
+        posAndTypeValueMap.put("interj", new PosAndType(LexinfoOnt.interjection, OntolexOnt.Word));
+        posAndTypeValueMap.put("loc cong", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("loc conj", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("loc inter", new PosAndType(LexinfoOnt.interjection, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("loc interj", new PosAndType(LexinfoOnt.interjection, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("loc prep", new PosAndType(LexinfoOnt.preposition, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("posp", new PosAndType(LexinfoOnt.postposition, OntolexOnt.Word));
+        posAndTypeValueMap.put("prep", new PosAndType(LexinfoOnt.preposition, OntolexOnt.Word));
+        posAndTypeValueMap.put("pron poss", new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("pronome poss", new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("pronome", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("pron dim", new PosAndType(LexinfoOnt.demonstrativePronoun, OntolexOnt.Word));
 
         // TODO: -acron-, -acronim-, -acronym-, -espr-, -espress- mark locution as phrases
 
@@ -72,22 +76,24 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
 //                Template:-prefix-
 //                Template:-pronome form-
 //                Template:-pronoun form-
-        posAndTypeValueMap.put("pref", new PosAndType(LexinfoOnt.prefix, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("prefix", new PosAndType(LexinfoOnt.prefix, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("suff", new PosAndType(LexinfoOnt.suffix, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("suffix", new PosAndType(LexinfoOnt.suffix, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("pref", new PosAndType(LexinfoOnt.prefix, OntolexOnt.Affix));
+        posAndTypeValueMap.put("prefix", new PosAndType(LexinfoOnt.prefix, OntolexOnt.Affix));
+        posAndTypeValueMap.put("suff", new PosAndType(LexinfoOnt.suffix, OntolexOnt.Affix));
+        posAndTypeValueMap.put("suffix", new PosAndType(LexinfoOnt.suffix, OntolexOnt.Affix));
 
 
-        posAndTypeValueMap.put("acron", new PosAndType(null, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("acronim", new PosAndType(null, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("acronym", new PosAndType(null, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("espr", new PosAndType(null, LemonOnt.LexicalEntry));
-        posAndTypeValueMap.put("espress", new PosAndType(null, LemonOnt.LexicalEntry));
+        posAndTypeValueMap.put("acron", new PosAndType(null, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("acronim", new PosAndType(null, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("acronym", new PosAndType(null, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("espr", new PosAndType(null, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("espress", new PosAndType(null, OntolexOnt.MultiWordExpression));
 
 
         // For translation glosses
 
     }
+
+    private String encodedWiktionaryPageName;
 
     public static boolean isValidPOS(String pos) {
         return posAndTypeValueMap.containsKey(pos);
@@ -109,6 +115,7 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     public void initializeEntryExtraction(String wiktionaryPageName) {
         super.initializeEntryExtraction(wiktionaryPageName);
         lexEntries.clear();
+        encodedWiktionaryPageName = uriEncode(currentWiktionaryPageName);
     }
 
     @Override
@@ -119,39 +126,52 @@ public class WiktionaryDataHandler extends LemonBasedRDFDataHandler {
     @Override
     public void finalizeEntryExtraction() {
         super.finalizeEntryExtraction();
+        encodedWiktionaryPageName = null;
     }
 
     @Override
-    public void registerTranslation(String lang, String currentGlose, String usage, String word) {
+    public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {
         if (lexEntries.size() == 0) {
             log.debug("Registering Translation when no lexical entry is defined in {}", currentWiktionaryPageName);
         } else if (lexEntries.size() == 1) {
-            super.registerTranslation(lang, currentGlose, usage, word);
-        } else if (null == currentGlose || currentGlose.length() == 0) {
+            super.registerTranslation(lang, currentGloss, usage, word);
+        } else if (null == currentGloss) {
             log.debug("Attaching translations to Vocable (Null gloss and several lexical entries) in {}", currentWiktionaryPageName);
-            super.registerTranslationToEntity(currentMainLexEntry, lang, currentGlose, usage, word);
+            super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
         } else {
             // TODO: guess which translation is to be attached to which entry/sense
-            List<Resource> entries = getLexicalEntryUsingPartOfSpeech(currentGlose);
+            List<Resource> entries = getLexicalEntryUsingPartOfSpeech(currentGloss);
             if (entries.size() != 0) {
-                log.warn("Attaching translations using part of speech in gloss : {}", currentWiktionaryPageName);
+                log.trace("Attaching translations using part of speech in gloss : {}", currentWiktionaryPageName);
                 if (entries.size() > 1) {
-                    log.warn("Attaching translations to several entries in {}", currentWiktionaryPageName);
+                    log.trace("Attaching translations to several entries in {}", currentWiktionaryPageName);
                 }
                 for (Resource entry : entries) {
-                    super.registerTranslationToEntity(entry, lang, currentGlose, usage, word);
+                    super.registerTranslationToEntity(entry, lang, currentGloss, usage, word);
                 }
             } else {
-                log.debug("Several entries are defined in {} // {}", currentWiktionaryPageName, currentGlose);
+                Statement s = currentGloss.getProperty(RDF.value);
+                String g = (null == s) ? "" : s.getString();
+                log.debug("Several entries are defined in {} // {}", currentWiktionaryPageName, g);
                 // TODO: disambiguate and attach to the correct entry.
-                super.registerTranslationToEntity(currentMainLexEntry, lang, currentGlose, usage, word);
+                super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
             }
         }
     }
 
-    private List<Resource> getLexicalEntryUsingPartOfSpeech(String gloss) {
-        gloss = gloss.trim();
+    protected String getGlossResourceName(StructuredGloss gloss) {
+        String key = gloss.getGloss() + gloss.getSenseNumber();
+        key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
+        return getPrefix() + "__" + wktLanguageEdition + "_gloss_" + key + "_" + encodedWiktionaryPageName ;
+    }
+
+    private List<Resource> getLexicalEntryUsingPartOfSpeech(Resource structuredGloss) {
         ArrayList<Resource> res = new ArrayList<>();
+        Statement s = structuredGloss.getProperty(RDF.value);
+        if (null == s) return res;
+        String gloss = s.getString();
+        if (null == gloss) return res;
+        gloss = gloss.trim();
         if (gloss.startsWith("aggettivo numerale")) {
             addAllResourceOfPoS(res, LexinfoOnt.numeral);
         } else if (gloss.startsWith("aggettivo")) {

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+<style>
+@font-face{
+    font-family : "Raleway";
+    src : url('/Users/agathe/Library/Fonts/HelveticaNeueLT-LightCond.otf');
+}
+  text:hover { opacity: 1 !important; }
+
+</style>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="./d3.layout.cloud.js"></script>
+<script>(function() {
+
+var translationsScale =d3.scale.linear().range([10,60]);
+var fill = d3.scale.category20();
+
+d3.json("wc.json", function(error, json) {
+  if (error) return console.warn(error);
+
+
+  var translations = json
+  		.map(function(d){return {text: d.name.substring(9), size: +d.size, color: d.name.substring(6,7),imports:[d.imports]};});
+
+
+
+	translationsScale.domain([d3.min(translations,function (d){return d.size}),d3.max(translations,function (d){return d.size})]);
+
+var layout = d3.layout.cloud()
+    .size([750, 500])
+    .words(translations)
+    .padding(8)
+    .rotate(function() { return ~~(Math.random() * 2) * 90; })
+    .font("Raleway")
+    .text(function(d) { return d.text; })
+    .fontSize(function(d) { return translationsScale(d.size); })
+    .on("end", draw);
+
+layout.start();
+});
+var width=750;
+var height=500;
+
+
+function draw(words) {
+  d3.select("body").append("svg")
+      .attr("width", width /*layout.size()[0]*/)
+      .attr("height", height /*layout.size()[1]*/)
+    .append("g")
+      .attr("transform", "translate(" + width/*layout.size()[0]*/ / 2 + "," + height/*layout.size()[1]*/ / 2 + ")")
+    .selectAll("text")
+      .data(words)
+    .enter().append("text")
+      .attr('opacity', .4)
+      .style("font-size", function(d) { return d.size  + "px"; })
+      .style("font-family","Raleway")
+      .style("fill", function(d) { return fill((d.color)); })
+      .attr("text-anchor", "middle")
+      .attr("transform", function(d) {
+        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+      })
+      .text(function(d) { return d.text; });
+      //.onmouseover = function(d){d.style('opacity', 1); map.each(i){if (map.get(d).contains(i)){d.style('opacity', 1);}};},
+      //.onmouseover = function(d){d.style('opacity', 0.4); map.each(i){if (map.get(d).contains(i)){d.style('opacity', 0.4);}};};
+}
+
+
+
+})();</script>

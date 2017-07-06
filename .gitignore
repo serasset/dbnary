@@ -25,14 +25,12 @@ buildNumber.properties
 ehthumbs.db
 Thumbs.db
 *.class
-*.log
 
 # sbt specific
 .cache
 .history
 .lib/
 dist/*
-target/
 lib_managed/
 src_managed/
 project/boot/
@@ -137,7 +135,6 @@ acs-*.bib
 *.gtex
 
 # hyperref
-*.brf
 
 # knitr
 *-concordance.tex
@@ -170,7 +167,6 @@ _minted*
 *.mw
 
 # mylatexformat
-*.fmt
 
 # nomencl
 *.nlo

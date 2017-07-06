@@ -9,7 +9,7 @@ fi
 
 ## Bootstrapping a virtuoso db.
 
-PREFIX=/home/serasset/dev
+PREFIX=$HOME/develop
 if [[ ! $# -eq 0 ]]
 then
     PREFIX=$1
@@ -17,7 +17,7 @@ fi
 
 source config.sh
 
-DBNARYLATEST=/home/serasset/dev/wiktionary/extracts/lemon/latest
+DBNARYLATEST=$HOME/dev/wiktionary/extracts/ontolex/latest
 
 test -x $DAEMON || (echo "Could not find virtuoso-t bin" && exit 0)
 
@@ -94,11 +94,15 @@ fi
     echo "Dataset already exists and is not empty, assuming its content is up to date."
   else
     echo "Copying and expanding latest extracts."
+    ## Ontolex normal dumps
     cp $DBNARYLATEST/*.ttl.bz2 "$DATASETDIR"
+    ## TODO: expand Disambiguated translations + foreign data ? + etymology
     pushd "$DATASETDIR"
     bunzip2 ./*.ttl.bz2
   fi
 )
+
+
 
 ## create the .graph files for all files in datasetdir
 ## DONE: detect the graph (dbnary or dilaf ?)
@@ -147,12 +151,19 @@ END
 
 ## (TODO: create the virtlabels for correct facetted browsing)
 
+## (TODO: load the owl files that will be used for reasoning)
+## ld_dir ('/opt/datasets/dbnary/', '*.owl','http://kaiko.getalp.org/dbnaryetymology');
+## rdfs_rule_set('etymology_ontology','http://kaiko.getalp.org/dbnaryetymology');
+## And then in queries I use
+## define input:inference "etymology_ontology";
+
 ## index facetted browsing
 isql $SERVERPORT dba "$pwd" <<END
 sparql SELECT COUNT(*) WHERE { ?s ?p ?o } ;
 sparql SELECT ?g COUNT(*) { GRAPH ?g {?s ?p ?o.} } GROUP BY ?g ORDER BY DESC 2;
 
 -- Build Full Text Indexes by running the following commands using the Virtuoso isql program
+-- With this rule added, all text in all graphs will be indexed...
 RDF_OBJ_FT_RULE_ADD (null, null, 'All');
 VT_INC_INDEX_DB_DBA_RDF_OBJ ();
 -- Run the following procedure using the Virtuoso isql program to populate label lookup tables periodically and activate the Label text box of the Entity Label Lookup tab:

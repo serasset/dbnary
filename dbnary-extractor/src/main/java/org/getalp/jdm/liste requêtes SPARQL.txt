@@ -1,0 +1,40 @@
+
+
+BASE DBNARY
+
+//donne les synonymes du mot (chat dans l'exemple)
+select distinct ?s ?o where {?s lemon:canonicalForm ?c. ?c lemon:writtenRep "chat"@fr. ?s dbnary:synonym ?o} LIMIT 100 
+
+// donne, en faisant la distinction, les synonymes et synonymes approximatifs du mot (porte-voix dans l'exemple)
+select distinct ?s ?synonyme ?approx where {
+    ?s lemon:canonicalForm ?c.
+    ?c lemon:writtenRep "porte-voix"@fr
+    {?s dbnary:synonym ?synonyme} union {?s dbnary:approximateSynonym ?approx}
+} LIMIT 100
+
+
+BASE JDM
+
+//donne l'iep et l'expression des synonymes du mot rentrer 
+PREFIX jdm_property: <http://kaiko.getalp.org/jdm#>
+select ?sujet ?valeur ?expr where{?sujet jdm_property:chaine "chanter"@fr . ?sujet jdm_property:r_syn ?valeur . ?valeur jdm_property:chaine ?expr} 
+
+
+DEUX BASES
+
+//retrouve les synonymes contenus dans JDM et DBNARY et les synonymes approx de Dbnary (non existants dans JDM)
+PREFIX jdm_property: <http://kaiko.getalp.org/jdm#>
+select ?sujet ?expr ?synonyme ?approx 
+where{
+{
+ ?sujet jdm_property:chaine "porte-voix"@fr .
+ ?sujet jdm_property:r_syn ?valeur .
+ ?valeur jdm_property:chaine ?expr
+}
+UNION
+{
+      ?sujet lemon:canonicalForm ?c.
+      ?c lemon:writtenRep "porte-voix"@fr 
+      {?sujet dbnary:synonym ?synonyme}UNION{?sujet dbnary:approximateSynonym ?approx}
+}
+}

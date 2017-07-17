@@ -260,7 +260,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         }
 
         aBox.add(currentLexEntry, OntolexOnt.canonicalForm, currentCanonicalForm);
-        aBox.add(currentCanonicalForm, OntolexOnt.writtenRep, currentWiktionaryPageName, wktLanguageEdition);
+        aBox.add(currentCanonicalForm, OntolexOnt.writtenRep, currentWiktionaryPageName, LangTools.threeLettersCode(getCurrentEntryLanguage()));
         aBox.add(currentCanonicalForm, RDFS.label, currentWiktionaryPageName, LangTools.threeLettersCode(getCurrentEntryLanguage()));
         aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
         if (null != currentLexinfoPos)

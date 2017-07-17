@@ -74,9 +74,19 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
             log.debug("Ignoring template {} in definition of {}", templateName, this.getPageName());
         } else if (templateName.equals("categorize") || templateName.equals("catlangname") || templateName.equals("catlangcode")) {
             // ignore
+        } else if (templateName.equals("given name")) {
+            writer.append(givenName(parameterMap));
         } else {
             super.substituteTemplateCall(templateName, parameterMap, writer);
         }
+    }
+
+    private String givenName(Map<String, String> parameterMap) {
+        String gender = parameterMap.get("1");
+        if (null == gender) gender = parameterMap.get("gender");
+        if (null == gender) gender = "";
+        String or = parameterMap.get("or");
+        return "A " + gender + " " + ((or == null) ? "" : or + " ") + "given name.";
     }
 
 }

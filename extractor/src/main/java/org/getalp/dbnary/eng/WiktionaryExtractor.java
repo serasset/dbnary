@@ -216,7 +216,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case DEFBLOCK:
                 String pos = (String) context.get("pos");
                 wdh.addPartOfSpeech(pos);
-                ewdh.registerEtymologyPos(wiktionaryPageName);
+		if (wiktionaryPageName.trim().split("\\s+").length<3){
+		    ewdh.registerEtymologyPos(wiktionaryPageName);
+		} 
                 //extractMorphology(blockStart, end);
                 extractDefinitions(blockStart, end);
                 break;
@@ -237,13 +239,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 extractConjugation(blockStart, end);
                 break;
             case ETYMOLOGYBLOCK:
-                extractEtymology(blockStart, end);
+		if (wiktionaryPageName.trim().split("\\s+").length<3){
+		    extractEtymology(blockStart, end);
+		} 
                 break;
             case DERIVEDBLOCK:
-                extractDerived(blockStart, end);
+		if (wiktionaryPageName.trim().split("\\s+").length<3){
+		    extractDerived(blockStart, end);
+		}
                 break;
             case DESCENDANTSBLOCK:
-                extractDescendants(blockStart, end);
+		if (wiktionaryPageName.trim().split("\\s+").length<3){
+		    extractDescendants(blockStart, end);
+		}
                 break;
             default:
                 assert false : "Unexpected block while parsing: " + wiktionaryPageName;

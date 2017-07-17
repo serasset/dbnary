@@ -37,14 +37,20 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
             // System.err.println(l1.group());
             if (-1 != nonEnglishSectionStart) {
                 // Parsing a previous non english section;
-                extractNonEnglishData(lang, languageName, nonEnglishSectionStart, l1.start());
+		//if (!languageName.toLowerCase.contains("sign language")){
+		    extractNonEnglishData(lang, languageName, nonEnglishSectionStart, l1.start());
+		    //}//else ignore Sign Language
                 nonEnglishSectionStart = -1;
             }
 	    languageName = l1.group(1).trim();
-            if (null != (lang = getNonEnglishLanguageCode(languageName))) {
-                nonEnglishSectionStart = l1.end();
-            }
-            wdh.finalizePageExtraction();
+	    log.debug("{} {}", lang, languageName);
+	    //if (!languageName.toLowerCase.contains("sign language")){
+		
+		if (null != (lang = getNonEnglishLanguageCode(languageName))) {
+		    nonEnglishSectionStart = l1.end();
+		}
+		//}//else ignore Sign Language
+ 	    wdh.finalizePageExtraction();
         }
         if (-1 != nonEnglishSectionStart) {
             //System.err.println("Parsing previous non English entry");

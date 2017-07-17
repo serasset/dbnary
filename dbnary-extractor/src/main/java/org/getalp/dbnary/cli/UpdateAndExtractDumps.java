@@ -137,10 +137,12 @@ public class UpdateAndExtractDumps {
 
         networkIsOff = cmd.hasOption(NETWORK_OFF_OPTION);
 
+        features = new ArrayList<>();
         if (cmd.hasOption(ENABLE_FEATURE_OPTION)) {
-            features = Arrays.asList(cmd.getOptionValue(ENABLE_FEATURE_OPTION).split("[,;]"));
-        } else {
-            features = new ArrayList<>();
+            String[] vs = cmd.getOptionValues(ENABLE_FEATURE_OPTION);
+            for (String v: vs) {
+                features.addAll(Arrays.asList(v.split("[,;]")));
+            }
         }
 
         if (cmd.hasOption(MODEL_OPTION)) {
@@ -622,22 +624,21 @@ public class UpdateAndExtractDumps {
     private void extractDumpFiles(String[] langs, String[] dirs) {
         for (int i = 0; i < langs.length; i++) {
             extractDumpFile(langs[i], dirs[i]);
-            if (features.contains("foreign"))
-                extractDumpFile(FOREIGN_PREFIX, langs[i], dirs[i]);
         }
     }
 
     private boolean extractDumpFile(String lang, String dir) {
-        return extractDumpFile("", lang, dir);
-    }
-
-    private boolean extractDumpFile(String prefix, String lang, String dir) {
         boolean status = true;
         if (null == dir || dir.equals("")) return false;
 
         String odir = extractDir + "/" + model.toLowerCase() + "/" + lang;
         File d = new File(odir);
         d.mkdirs();
+
+        String prefix = "";
+        if (features.contains("foreign")) {
+            prefix = FOREIGN_PREFIX;
+        }
 
         // TODO: correctly test for compressed file if compress is enabled
         String extractFile = odir + "/" + lang + prefix + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
@@ -675,7 +676,7 @@ public class UpdateAndExtractDumps {
             a.add("--etymology");
             a.add(etymologyFile);
         }
-        if (prefix.equals(FOREIGN_PREFIX)) {
+        if (features.contains("foreign")) {
             a.add("-x");
         }
         a.add(uncompressDumpFileName(lang, dir));

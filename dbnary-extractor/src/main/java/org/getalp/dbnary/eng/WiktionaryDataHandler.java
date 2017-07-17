@@ -3,7 +3,6 @@ package org.getalp.dbnary.eng;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import org.getalp.dbnary.*;
 import org.slf4j.Logger;
@@ -104,12 +103,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         Model eBox = null;
         if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) != null) {
             // TODO : should I check that getPrefix returns null ?
-	    lang = EnglishLangToCode.threeLettersCode(lang);
-	    Resource r = eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(wiktionaryPageName), DBnaryEtymologyOnt.EtymologyEntry);
-	    Resource w = ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
-	    eBox.add(r, RDFS.seeAlso, w);
-	    eBox.add(r, RDFS.label, wiktionaryPageName, lang);
-	    
+            lang = EnglishLangToCode.threeLettersCode(lang);
+            Resource r = eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(wiktionaryPageName), DBnaryEtymologyOnt.EtymologyEntry);
+            Resource w = ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+            eBox.add(r, RDFS.seeAlso, w);
+            eBox.add(r, RDFS.label, wiktionaryPageName, lang);
+
             return r;
         }
         return null;

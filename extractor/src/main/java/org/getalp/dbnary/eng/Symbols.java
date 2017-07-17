@@ -27,7 +27,7 @@ import java.io.IOException;
 public class Symbols {
     public ArrayList<String> values;
     public Map<String, String> args;
-    public String string;//needed only for debugging purposes
+    public String string;//needed for debugging purposes only
     static Logger log = LoggerFactory.getLogger(Symbols.class);
 
     public Symbols(String group, String lang, String s) {
@@ -38,6 +38,7 @@ public class Symbols {
         } else {
             parseOther(group, s);
         }
+	args = parseDiacritics(args);
     }
 
     public void parseOther(String group, String value) {
@@ -47,36 +48,89 @@ public class Symbols {
         values.add(value);
     }
 
+    public Map<String, String> parseDiacritics(Map<String, String> a){
+        if (a != null){
+	    for (String key : a.keySet()){
+		if (key.startsWith("lang")){
+		    //parse Latin
+		    String lang = a.get(key);
+		    if (lang.equals("la") || lang.equals("lat")){
+			String k = key.replace("lang", "word");
+			if (k.equals("word")){
+			    for (int h = 1; h < 12; h ++) {
+				k = "word" + Integer.toString(h);
+				String word = a.get(k);
+				if (word != null){
+				    String[] macrons = {"ā", "ē", "ī", "ō", "ū", "ȳ"};
+				    String[] breves = {"ă", "ĕ", "ĭ", "ŏ", "ŭ", "y̆"};
+				    String[] vocals = {"a", "e", "i", "o", "u", "y"};
+				    for (int i = 0; i < 6; i ++){
+					word = word.replace(macrons[i], vocals[i]);
+					word = word.replace(breves[i], vocals[i]);
+				    }
+				    a.put(k, word);
+				}
+			    }
+			}
+			log.debug("args {}", args);
+			return a;	
+		    }
+		}
+	    }
+	}
+	return a;
+    }
+    
     //create a new Symbol that is a compound of all Symbols in input a
-    public Symbols(ArrayList<Symbols> a) {
-        int counter = 1;
-        StringBuilder compound = new StringBuilder();
-        compound.append("_etycomp");
-        for (int i = 0; i < a.size(); i++) {
-            for (String key : a.get(i).args.keySet()) {
-                if (key.equals("lang")) {
-                    for (String key2 : a.get(i).args.keySet()) {
-                        if (key2.startsWith("word")) {
-                            compound.append("|lang" + counter + "=" + a.get(i).args.get(key));
-                            compound.append("|word" + counter + "=" + a.get(i).args.get(key2));
-                            counter++;
-                        }
-                    }
-                } else if (key.startsWith("lang")) {
-                    String word = a.get(i).args.get("word" + key.substring(4, key.length()));
-                    if (word == null || word.equals("")) {
-                        log.debug("Error: invalid compund {}", a.get(i).string);
-                    }
-                    compound.append("|lang" + counter + "=" + a.get(i).args.get(key));
-                    compound.append("|word" + counter + "=" + word);
-                    counter++;
-                }
-            }
-        }
-        string = compound.toString();
-        values = new ArrayList<String>();
-        values.add("LEMMA");
-        args = WikiTool.parseArgs(string);
+    public Symbols(String type, String lang, ArrayList<Symbols> a) {
+	if (type.equals("comp")){
+	    int counter = 1;
+	    StringBuilder compound = new StringBuilder();
+	    compound.append("_etycomp|" + lang);
+	    for (int i = 0; i < a.size(); i++) {
+		for (String key : a.get(i).args.keySet()) {
+		    if (key.equals("lang")) {
+			for (String key2 : a.get(i).args.keySet()) {
+			    if (key2.startsWith("word")) {
+				compound.append("|lang" + counter + "=" + a.get(i).args.get(key));
+				compound.append("|word" + counter + "=" + a.get(i).args.get(key2));
+				counter++;
+			    }
+			}
+		    } else if (key.startsWith("lang")) {
+			String word = a.get(i).args.get("word" + key.substring(4, key.length()));
+			if (word == null || word.equals("")) {
+			    log.debug("Error: invalid compound {}", a.get(i).string);
+			}
+			compound.append("|lang" + counter + "=" + a.get(i).args.get(key));
+			compound.append("|word" + counter + "=" + word);
+			counter++;
+		    }
+		}
+	    }
+	    string = compound.toString();
+	    values = new ArrayList<String>();
+	    values.add("LEMMA");
+	    args = WikiTool.parseArgs(string);
+	} else if (type.equals("mult")){
+	    int counter = 1;
+	    StringBuilder mult = new StringBuilder();
+	    mult.append("mult|lang="+lang);
+	    for (int i = 0; i < a.size(); i++) {
+		log.debug("template mult {}", a.get(i).string);
+		Symbols sss = new Symbols("TEMPLATE", lang, a.get(i).string);
+		if (a.get(i).args.get("lang") != null && a.get(i).args.get("word1") != null){
+		    mult.append("|lang" + counter + "=" + a.get(i).args.get("lang"));
+		    mult.append("|word" + counter + "=" + a.get(i).args.get("word1"));
+		    counter++;
+		}
+	    }
+	    log.debug("multistring {}", mult.toString());
+	    string = mult.toString();
+	    values = new ArrayList<String>();
+	    values.add("LEMMA");
+	    args = WikiTool.parseArgs(string);
+	}
     }
 
     public void parseTemplate(String group, String lang) {
@@ -541,6 +595,10 @@ public class Symbols {
             values.add("FROM");
             values.add("LEMMA");
 	    values.add("STOP");
+	} else if (args.get("1").equals("mult")) {
+	    values.add("FROM");
+	    values.add("LEMMA");
+	    values.add("STOP");
         } else if (args.get("1").equals("infix")) {//no shortening
             //You must provide a base term and an infix.
             //e.g.:
@@ -648,6 +706,7 @@ public class Symbols {
 	    //suf: You must provide at least one suffix.
             //examples:
             //{{bor|eo|en|boycott}} {{suffix||i|lang=eo}} -> Borrowing from English boycott + -i.
+	    //from {{etyl|grc|mul}} {{m|grc|χλωρός||pale green}} {{suffix||ophyta|lang=mul}}
             //{{suffix|Graham|ite|lang=en}}
 	    //{{suffix|tessere|tura|lang=it}}.
             int offset = 0;
@@ -686,16 +745,12 @@ public class Symbols {
                     args.put("word" + Integer.toString(kk - 1 - offset), "-" + cleanUp(args.get(key)));//suffixes
                     args.remove(key);
                 }
-                if (!base) {
-                    values.add("PLUS");
-                    values.add("LEMMA");
-                    values.add("STOP");
-                }
             }
-            if (base) {
-                values.add("LEMMA");
-		values.add("STOP");
-            }
+	    if (!base){
+		values.add("PLUS");
+	    }
+	    values.add("LEMMA");
+	    values.add("STOP");
         } else if (args.get("1").equals("circumfix")) {//no shortening for circumfix
             //You must specify a prefix part, a base term and a suffix part.
             //e.g.:

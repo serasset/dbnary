@@ -49,7 +49,7 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
     @Override
     public void substituteTemplateCall(String templateName,
                                        Map<String, String> parameterMap, Appendable writer)
-            throws IOException {
+	throws IOException {
         // Currently just expand the definition to get the full text.
         if (templateName.equals("label") || templateName.equals("lb") || templateName.equals("lbl")) {
             // intercept this template as it leads to a very inefficient Lua Script.

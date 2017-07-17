@@ -1,6 +1,5 @@
 package org.getalp.dbnary.cli;
 
-import com.sun.istack.NotNull;
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.net.ftp.FTP;

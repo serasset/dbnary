@@ -1,8 +1,8 @@
 package org.getalp.dbnary.stats;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.ResIterator;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.ResIterator;
 import org.getalp.dbnary.DBnaryOnt;
 
 import java.io.PrintWriter;

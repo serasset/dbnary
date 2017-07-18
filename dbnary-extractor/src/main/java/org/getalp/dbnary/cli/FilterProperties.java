@@ -1,6 +1,6 @@
 package org.getalp.dbnary.cli;
 
-import com.hp.hpl.jena.rdf.model.*;
+import org.apache.jena.rdf.model.*;
 import org.apache.commons.cli.*;
 
 import java.util.HashSet;

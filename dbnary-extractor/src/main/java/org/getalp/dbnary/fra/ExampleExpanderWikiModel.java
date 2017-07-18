@@ -1,8 +1,7 @@
 package org.getalp.dbnary.fra;
 
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.vocabulary.DCTerms;
-import org.getalp.dbnary.DBnaryOnt;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.vocabulary.DCTerms;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.ExpandAllWikiModel;
 import org.getalp.iso639.ISO639_3;

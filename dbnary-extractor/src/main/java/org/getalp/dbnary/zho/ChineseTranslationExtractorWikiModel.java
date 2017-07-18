@@ -1,6 +1,6 @@
 package org.getalp.dbnary.zho;
 
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Resource;
 import info.bliki.wiki.filter.WikipediaParser;
 import org.getalp.dbnary.AbstractGlossFilter;
 import org.getalp.dbnary.DbnaryWikiModel;

@@ -1,6 +1,6 @@
 package org.getalp.dbnary.fra;
 
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OntolexOnt;

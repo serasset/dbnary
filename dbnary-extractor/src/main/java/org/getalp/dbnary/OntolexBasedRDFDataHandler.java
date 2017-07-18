@@ -1,10 +1,10 @@
 package org.getalp.dbnary;
 
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.vocabulary.DCTerms;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
-import com.hp.hpl.jena.vocabulary.XSD;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.XSD;
 import org.getalp.dbnary.tools.CounterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

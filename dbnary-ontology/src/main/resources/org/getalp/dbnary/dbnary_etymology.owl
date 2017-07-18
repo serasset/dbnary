@@ -6,23 +6,23 @@
     <!ENTITY lemon "http://lemon-model.net/lemon#" >
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY dbnary "http://etytree-virtuoso.wmflabs.org/dbnary#" >
-    <!ENTITY dbetym "http://etytree-virtuoso.wmflabs.org//dbnaryetymology#" >
+    <!ENTITY dbetym "http://etytree-virtuoso.wmflabs.org/dbnaryetymology#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
 ]>
 
 
-<rdf:RDF xmlns="http://etytree-virtuoso.wmflabs.org//dbnaryetymology#"
-     xml:base="http://etytree-virtuoso.wmflabs.org//dbnaryetymology"
+<rdf:RDF xmlns="http://etytree-virtuoso.wmflabs.org/dbnaryetymology#"
+     xml:base="http://etytree-virtuoso.wmflabs.org/dbnaryetymology"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:dbnary="http://etytree-virtuoso.wmflabs.org//dbnary#"
-     xmlns:dbetym="http://etytree-virtuoso.wmflabs.org//dbnaryetymology#"
+     xmlns:dbnary="http://etytree-virtuoso.wmflabs.org/dbnary#"
+     xmlns:dbetym="http://etytree-virtuoso.wmflabs.org/dbnaryetymology#"
      xmlns:lemon="http://lemon-model.net/lemon#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <owl:Ontology rdf:about="http://etytree-virtuoso.wmflabs.org//dbnaryetymology">
+    <owl:Ontology rdf:about="http://etytree-virtuoso.wmflabs.org/dbnaryetymology">
         <rdfs:label xml:lang="en">DBnary etymology ontology</rdfs:label>
         <rdfs:comment xml:lang="en">A DBnary ontology extension used to represent etymological data extracted from Wiktionary.</rdfs:comment>
         <imports rdf:resource="http://etytree-virtuoso.wmflabs.org/"/>
@@ -47,8 +47,14 @@
 	<!--rdfs:subPropertyOf rdf:resource="&owl;sameAs"/-->
     </owl:ObjectProperty>
     
+    <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#etymologicallyDerivesFrom -->
 
-
+    <owl:ObjectProperty rdf:about="&dbetym;etymologicallyDerivesFrom">
+        <rdfs:comment xml:lang="en">The target EtymologyEntry has been extracted from section Derived Terms in Wiktionary. </rdfs:comment>
+        <rdfs:range rdf:resource="&lemon;EtymologyEntry"/>
+	<rdfs:domain rdf:resource="&lemon;EtymologyEntry"/>
+    </owl:ObjectProperty>
+    
     <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#etymologicallyRelatedTo -->
 
     <owl:ObjectProperty rdf:about="&dbetym;etymologicallyRelatedTo">

@@ -48,7 +48,8 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
                 extractNonEnglishData(lang, languageName, nonEnglishSectionStart, l1.start());
                 nonEnglishSectionStart = -1;
             }
-	    	languageName = l1.group(1).trim();
+            languageName = l1.group(1).trim();
+            log.debug("{} {}", lang, languageName);
             if (null != (lang = getNonEnglishLanguageCode(languageName))) {
                 nonEnglishSectionStart = l1.end();
             }

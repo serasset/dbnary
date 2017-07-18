@@ -258,6 +258,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     //TODO: check correct parsing of From ''[[semel#Latin|semel]]''  + ''[[pro#Latin|pro]]''  + ''[[semper#Latin|semper]]''
     protected void extractEtymology(int blockStart, int end) {
         if (! wdh.isEnabled(ETYMOLOGY)) return;
+        if (wiktionaryPageName.trim().split("\\s+").length >= 3) return;
 
         Etymology etymology = new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
 
@@ -270,16 +271,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     //* {{l|pt|mundão}} {{gloss|augmentative}}
     //DONE: process {{der4|title=Terms derived from ''free'' | [[freeball]], [[free-ball]] | [[freebooter]] }}
     protected void extractDerived(int blockStart, int end) {
-	String lang = ewdh.getCurrentEntryLanguage();
-	lang = EnglishLangToCode.threeLettersCode(lang);
+        if (wiktionaryPageName.trim().split("\\s+").length >= 3) return;
+
+        String lang = ewdh.getCurrentEntryLanguage();
+	    lang = EnglishLangToCode.threeLettersCode(lang);
         extractBulletList(pageContent.substring(blockStart, end), lang);
 
         extractTable(pageContent.substring(blockStart, end), lang);
     }
 
     protected void extractDescendants(int blockStart, int end) {
-	String lang = ewdh.getCurrentEntryLanguage();
-	lang = EnglishLangToCode.threeLettersCode(lang);
+        if (wiktionaryPageName.trim().split("\\s+").length >= 3) return;
+
+        String lang = ewdh.getCurrentEntryLanguage();
+	    lang = EnglishLangToCode.threeLettersCode(lang);
         boolean isMatch = extractMultipleBulletList(pageContent.substring(blockStart, end), lang, true);
 
         //if there is no match to multiple bullet list

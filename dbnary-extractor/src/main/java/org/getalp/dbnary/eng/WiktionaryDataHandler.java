@@ -100,6 +100,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     }
     
     private Resource createGlobalEtymologyResource(String wiktionaryPageName, String lang) {
+        if (wiktionaryPageName.trim().split("\\s+").length >= 3) return;
         Model eBox = null;
         if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) != null) {
             // TODO : should I check that getPrefix returns null ?
@@ -123,14 +124,15 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     }
 
     public void registerEtymologyPos(String lang, String languageName, String wiktionaryPageName) {
+        if (wiktionaryPageName.trim().split("\\s+").length >= 3) return;
         Model eBox = null;
         if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) == null) return;
-        if (currentEtymologyEntry == null) {//there is no etymology section
+        if (currentEtymologyEntry == null) {   //there is no etymology section
             currentEtymologyEntry = eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(currentWiktionaryPageName), DBnaryEtymologyOnt.EtymologyEntry);
-	    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
-	    eBox.add(currentEtymologyEntry, RDFS.seeAlso, w);
-	    eBox.add(currentEtymologyEntry, RDFS.label, currentWiktionaryPageName, lang);
-	}
+	        Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+	        eBox.add(currentEtymologyEntry, RDFS.seeAlso, w);
+	        eBox.add(currentEtymologyEntry, RDFS.label, currentWiktionaryPageName, lang);
+	    }
 	    eBox.add(currentEtymologyEntry, DBnaryOnt.describes, currentLexEntry);
     }
 
@@ -195,17 +197,18 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                     //register derives_from
                     vocable0 = eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(word), DBnaryEtymologyOnt.EtymologyEntry);
                     eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyRelatedTo, currentEtymologyEntry);
-		    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
-		    eBox.add(vocable0, RDFS.seeAlso, w);
-		    eBox.add(vocable0, RDFS.label, word, lang);
+		            eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, currentEtymologyEntry);
+		            Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+		            eBox.add(vocable0, RDFS.seeAlso, w);
+		            eBox.add(vocable0, RDFS.label, word, lang);
                 } else {
                     //register etymologically_equivalent_to
                     Resource vocable2 = eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(word), DBnaryEtymologyOnt.EtymologyEntry);
-		    eBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyRelatedTo, vocable0);
-		    eBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable0);
-		    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
-		    eBox.add(vocable2, RDFS.seeAlso, w);
-		    eBox.add(vocable2, RDFS.label, word, lang);
+		            eBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyRelatedTo, vocable0);
+		            eBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable0);
+		            Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+		            eBox.add(vocable2, RDFS.seeAlso, w);
+		            eBox.add(vocable2, RDFS.label, word, lang);
                 }		
                 counter++;
             }
@@ -222,6 +225,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         currentEtymologyNumber++;
         currentEtymologyEntry = eBox.createResource(computeEtymologyId(eBox, currentEtymologyNumber, lang), DBnaryEtymologyOnt.EtymologyEntry);
         eBox.add(currentGlobalEtymologyEntry, DBnaryOnt.describes, currentEtymologyEntry);
+    	Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+    	eBox.add(currentEtymologyEntry, RDFS.seeAlso, w);
     }
 
     public Resource createEtymologyEntryResource(Model eBox, String e, String lang) {
@@ -252,30 +257,33 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                     if (lang != null && lang0 != null) {
                         if (lang0.equals(lang)) {
                             if (j > 1) {
-                                if (etymology.symbols.get(j - 1).values.get(0).equals("COMMA")) {
-                                    isEquivalent = true;
+				                String tmp = etymology.symbols.get(j - 1).values.get(0);
+				                if (tmp.equals("COMMA") || tmp.equals("SLASH")) {
+				                    isEquivalent = true;
                                 }
-                            }
+			                }
                         }
                     }
                     if (isEquivalent) {//etymologically equivalent words
-			String word1 = b.args.get("word1");
+			            String word1 = b.args.get("word1");
                         if (word1 != null && !word1.equals("")) {
                             vocable = createEtymologyEntryResource(eBox, word1, lang0);
                             eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable);
-			    eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyRelatedTo, vocable);
-			    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
-			    eBox.add(vocable, RDFS.seeAlso, w);			    
-			    eBox.add(vocable, RDFS.label, word1, lang0);
+			                eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyRelatedTo, vocable);
+			                Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+			                eBox.add(vocable, RDFS.seeAlso, w);
+			                eBox.add(vocable, RDFS.label, word1, lang0);
                         } else {
                             log.debug("empty word in symbol %s\n", b.string);
                         }
                     } else {
+			//parse template with multiple words (word1 word2 etc., and possibly lang1, lang2 etc.)
                         boolean compound = false;
+			            Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
                         for (int kk = 1; kk < 12; kk++) {
                             String word = b.args.get("word" + Integer.toString(kk));
-			    lang = b.args.get("lang" + Integer.toString(kk));
-			    if (lang == null) {
+			                lang = b.args.get("lang" + Integer.toString(kk));
+			                if (lang == null) {
                                 lang = b.args.get("lang");
                             }
                             // TODO: When word is empty (but not null), it means same string as current entry
@@ -284,12 +292,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                                 if (kk > 1) {//it's some kind of compound
                                     compound = true;
                                 }
-				
                                 vocable = createEtymologyEntryResource(eBox, word, lang);
                                 eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyRelatedTo, vocable);
-				Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
-				eBox.add(vocable, RDFS.seeAlso, w);
-				eBox.add(vocable, RDFS.label, word, lang);	   
+				                eBox.add(vocable, RDFS.seeAlso, w);
+				                eBox.add(vocable, RDFS.label, word, lang);
                             }
                         }
                         if (compound) {

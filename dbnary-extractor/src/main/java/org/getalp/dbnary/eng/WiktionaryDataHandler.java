@@ -100,7 +100,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     }
     
     private Resource createGlobalEtymologyResource(String wiktionaryPageName, String lang) {
-        if (wiktionaryPageName.trim().split("\\s+").length >= 3) return;
+        if (wiktionaryPageName.trim().split("\\s+").length >= 3) return null;
         Model eBox = null;
         if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) != null) {
             // TODO : should I check that getPrefix returns null ?

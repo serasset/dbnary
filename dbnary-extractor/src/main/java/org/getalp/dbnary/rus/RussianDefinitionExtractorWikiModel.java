@@ -1,7 +1,7 @@
 package org.getalp.dbnary.rus;
 
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.vocabulary.DCTerms;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.vocabulary.DCTerms;
 import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.filter.PlainTextConverter;
 import info.bliki.wiki.model.WikiModelContentException;

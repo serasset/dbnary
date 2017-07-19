@@ -1,6 +1,6 @@
 package org.getalp.jdm;
 
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Resource;
 
 public class Noeud {
 	

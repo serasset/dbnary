@@ -2,9 +2,6 @@ package org.getalp.dbnary.cli;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -316,74 +313,7 @@ public class UpdateAndExtractDumps {
         try {
             URL url = new URL(server);
 
-            if (url.getProtocol().equals("ftp")) {
-
-                FTPClient client = new FTPClient();
-
-                try {
-                    System.err.println("Updating " + lang);
-
-                    if (url.getPort() != -1) {
-                        client.connect(url.getHost(), url.getPort());
-                    } else {
-                        client.connect(url.getHost());
-                    }
-                    client.login("anonymous", "");
-                    // System.err.println("Logged in...");
-                    client.enterLocalPassiveMode();
-                    client.changeWorkingDirectory(url.getPath());
-
-                    client.changeWorkingDirectory(lang + "wiktionary");
-
-                    SortedSet<String> dirs = new TreeSet<String>();
-                    // System.err.println("Retrieving directory list.");
-                    FTPFile[] ftpFiles = client.listFiles();
-                    // System.err.println("Retrieved: " + ftpFiles);
-                    for (FTPFile ftpFile : ftpFiles) {
-                        if (ftpFile.getType() == FTPFile.DIRECTORY_TYPE && !ftpFile.getName().startsWith(".")) {
-                            dirs.add(ftpFile.getName());
-                        }
-                    }
-                    String lastDir = getLastVersionDir(dirs);
-                    // System.err.println("Last version of dump is " + lastDir);
-
-                    client.changeWorkingDirectory(lastDir);
-
-                    try {
-                        String dumpdir = outputDir + "/" + lang + "/" + lastDir;
-                        String filename = dumpdir + "/" + dumpFileName(lang, lastDir);
-                        File file = new File(filename);
-                        if (file.exists() && !force) {
-                            // System.err.println("Dump file " + filename + " already retrieved.");
-                            return lastDir;
-                        }
-                        File dumpFile = new File(dumpdir);
-                        dumpFile.mkdirs();
-                        client.setFileType(FTP.BINARY_FILE_TYPE);
-                        FileOutputStream dfile = new FileOutputStream(file);
-                        System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
-                        long s = System.currentTimeMillis();
-                        client.retrieveFile(dumpFileName(lang, lastDir), dfile);
-                        System.err.println("Retrieved " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
-
-
-                    } catch (IOException e) {
-                        System.err.println(e.getLocalizedMessage());
-                        e.printStackTrace(System.err);
-                    }
-                    client.logout();
-                    return lastDir;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
-                } finally {
-                    try {
-                        client.disconnect();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else if (url.getProtocol().equals("http")) {
+            if (url.getProtocol().equals("http")) {
                 HttpClient client = new DefaultHttpClient();
 
                 String languageDumpFolder = server + lang + "wiktionary";
@@ -456,7 +386,7 @@ public class UpdateAndExtractDumps {
                     client.getConnectionManager().shutdown();
                 }
                 return lastDir;
-            } else { // URL protocol is not ftp
+            } else { // URL protocol is not http
                 System.err.format("Unsupported protocol: %s", url.getProtocol());
                 return defaultRes;
             }

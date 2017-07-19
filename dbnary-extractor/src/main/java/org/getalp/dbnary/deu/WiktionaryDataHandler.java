@@ -1,6 +1,6 @@
 package org.getalp.dbnary.deu;
 
-import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.LexinfoOnt;

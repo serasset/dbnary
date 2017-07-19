@@ -1,7 +1,7 @@
 package org.getalp.dbnary;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -20,7 +20,6 @@ public class DbnaryModel {
     static {
         // Create T-Box and read rdf schema associated to it.
         tBox = ModelFactory.createDefaultModel();
-
     }
 
     public static String uriEncode(String s) {

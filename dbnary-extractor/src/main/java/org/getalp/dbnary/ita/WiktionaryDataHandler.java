@@ -1,8 +1,8 @@
 package org.getalp.dbnary.ita;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

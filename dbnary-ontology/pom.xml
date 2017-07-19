@@ -32,17 +32,8 @@
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-cmds</artifactId>
             <version>3.3.0</version>
+            <scope>compile</scope>
         </dependency>
-        <!--dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-maven-tools</artifactId>
-            <version>3.1.0</version>
-            <!++groupId>org.apache.jena</groupId>
-            <artifactId>apache-jena-libs</artifactId>
-            <type>pom</type>
-            <version>3.3.0</version>
-            <!++ was 2.11.1 ++>
-        </dependency-->
     </dependencies>
     <build>
          <plugins>

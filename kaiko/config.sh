@@ -1,3 +1,4 @@
+#@IgnoreInspection BashAddShebang
 ## Virtuoso and data configuration variables
 ## this file will be sourced by bootstrapping scripts,
 ## where the PREFIX variable should be set.
@@ -22,7 +23,7 @@ WEBSERVERPORT=8899
 
 # Virtuoso installation variables
 #PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
-PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource7/bin
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource724/bin
 #DAEMON=/opt/virtuoso-opensource/bin/virtuoso-t
-DAEMON=/opt/virtuoso-opensource7/bin/virtuoso-t
+DAEMON=/opt/virtuoso-opensource724/bin/virtuoso-t
 NAME=virtuoso

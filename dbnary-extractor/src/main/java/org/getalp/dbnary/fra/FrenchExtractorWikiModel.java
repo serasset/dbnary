@@ -1,6 +1,6 @@
 package org.getalp.dbnary.fra;
 
-import com.hp.hpl.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Literal;
 import org.getalp.dbnary.*;
 import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;

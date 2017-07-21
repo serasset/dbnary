@@ -1,7 +1,5 @@
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDF;
-import org.apache.commons.cli.*;
 import org.getalp.lexsema.ontolex.LexicalEntry;
 import org.getalp.lexsema.ontolex.LexicalSense;
 import org.getalp.lexsema.ontolex.dbnary.DBNary;
@@ -10,7 +8,6 @@ import org.getalp.lexsema.ontolex.dbnary.exceptions.NoSuchVocableException;
 import org.getalp.lexsema.ontolex.factories.resource.LexicalResourceFactory;
 import org.getalp.lexsema.ontolex.graph.OWLTBoxModel;
 import org.getalp.lexsema.ontolex.graph.OntologyModel;
-import org.getalp.lexsema.ontolex.graph.storage.JenaRemoteSPARQLStore;
 import org.getalp.lexsema.ontolex.graph.storage.JenaTDBStore;
 import org.getalp.lexsema.ontolex.graph.storage.StoreHandler;
 import org.getalp.lexsema.ontolex.graph.store.Store;

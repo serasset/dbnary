@@ -1,15 +1,13 @@
 package org.getalp.dbnary.experiment;
 
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.tdb.*;
 import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.tdb.*;
+import com.hp.hpl.jena.vocabulary.RDF;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.VarTransOnt;
 
 import java.io.File;
-import java.util.*;
 
 public class DetectHomonym {
     Model model ;

@@ -119,7 +119,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
         wdh.initializeEntryExtraction(wiktionaryPageName);
-	log.debug("extracting {}", wiktionaryPageName);
+	    log.trace("extracting {}", wiktionaryPageName);
         wikiExpander.setPageName(wiktionaryPageName);
         currentBlock = Block.NOBLOCK;
 
@@ -325,7 +325,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
     }
 
-    private ArrayList<String> split(String s) {
+    static private ArrayList<String> split(String s) {
         ArrayList<String> toreturn = new ArrayList<String>();
 
         String[] tmp = s.split(",");

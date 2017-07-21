@@ -3,8 +3,6 @@ package org.getalp.dbnary.cli;
 import org.apache.commons.cli.*;
 import org.getalp.dbnary.*;
 
-import java.io.IOException;
-
 /**
  * An abstract class gathering all common arguments of the main extraction command lines.
  * Created by serasset on 17/07/17.

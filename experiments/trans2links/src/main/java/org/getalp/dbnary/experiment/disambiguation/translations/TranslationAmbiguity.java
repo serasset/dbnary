@@ -4,8 +4,6 @@ package org.getalp.dbnary.experiment.disambiguation.translations;
 import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
 
-import java.util.*;
-
 public class TranslationAmbiguity implements Ambiguity {
 
     private String gloss;

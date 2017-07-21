@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.getalp.dbnary.IWiktionaryDataHandler.*;
+import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
 
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 

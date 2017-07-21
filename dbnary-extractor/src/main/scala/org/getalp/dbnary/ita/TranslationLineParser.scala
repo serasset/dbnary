@@ -1,9 +1,9 @@
 package org.getalp.dbnary.ita
 
+import grizzled.slf4j.Logger
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.RDF
-import grizzled.slf4j.Logger
-import org.getalp.dbnary.wiki.{WikiCharSequence, WikiPattern, WikiRegexParsers, WikiText}
+import org.getalp.dbnary.wiki.{WikiCharSequence, WikiRegexParsers, WikiText}
 import org.getalp.dbnary.{AbstractGlossFilter, IWiktionaryDataHandler}
 
 class TranslationLineParser(page: String) extends WikiRegexParsers {

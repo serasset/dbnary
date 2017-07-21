@@ -1,7 +1,8 @@
 package org.getalp.dbnary.cli;
 
-import org.getalp.dbnary.*;
+import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.IWiktionaryDataHandler.Feature;
+import org.getalp.dbnary.WiktionaryIndexerException;
 
 import java.io.IOException;
 import java.io.OutputStream;

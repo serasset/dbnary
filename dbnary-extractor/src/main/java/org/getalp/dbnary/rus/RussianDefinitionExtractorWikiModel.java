@@ -1,11 +1,11 @@
 package org.getalp.dbnary.rus;
 
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.vocabulary.DCTerms;
 import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.filter.PlainTextConverter;
 import info.bliki.wiki.model.WikiModelContentException;
 import info.bliki.wiki.namespaces.INamespace;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.vocabulary.DCTerms;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;

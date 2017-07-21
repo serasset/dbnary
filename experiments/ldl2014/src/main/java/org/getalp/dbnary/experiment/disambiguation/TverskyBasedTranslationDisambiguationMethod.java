@@ -6,7 +6,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.wcohen.ss.ScaledLevenstein;
 import org.getalp.dbnary.DBnaryOnt;
-// import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.SkosOnt;
 import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
@@ -14,6 +13,8 @@ import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+// import org.getalp.dbnary.DbnaryModel;
 
 public class TverskyBasedTranslationDisambiguationMethod implements
 		DisambiguationMethod {

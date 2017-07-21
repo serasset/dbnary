@@ -1,7 +1,7 @@
 package org.getalp.dbnary.fin;
 
-import org.apache.jena.rdf.model.Resource;
 import info.bliki.wiki.filter.WikipediaParser;
+import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;

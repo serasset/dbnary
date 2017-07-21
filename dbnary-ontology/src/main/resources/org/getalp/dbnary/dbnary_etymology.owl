@@ -3,7 +3,7 @@
 
 <!DOCTYPE rdf:RDF [
     <!ENTITY dcterms "http://purl.org/dc/terms/" >
-    <!ENTITY lemon "http://lemon-model.net/lemon#" >
+    <!ENTITY ontolex "http://www.w3.org/ns/lemon/ontolex#" >
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY dbnary "http://kaiko.getalp.org/dbnary#" >
     <!ENTITY dbetym "http://etytree-virtuoso.wmflabs.org/dbnaryetymology#" >
@@ -20,12 +20,12 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:dbnary="http://kaiko.getalp.org/dbnary#"
      xmlns:dbetym="http://etytree-virtuoso.wmflabs.org/dbnaryetymology#"
-     xmlns:lemon="http://lemon-model.net/lemon#"
+     xmlns:ontolex="http://www.w3.org/ns/lemon/ontolex#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
     <owl:Ontology rdf:about="http://etytree-virtuoso.wmflabs.org/dbnaryetymology">
         <rdfs:label xml:lang="en">DBnary etymology ontology</rdfs:label>
         <rdfs:comment xml:lang="en">A DBnary ontology extension used to represent etymological data extracted from Wiktionary.</rdfs:comment>
-        <imports rdf:resource="http://etytree-virtuoso.wmflabs.org/"/>
+        <imports rdf:resource="http://kaiko.getalp.org/dbnary"/>
     </owl:Ontology>
     
 
@@ -42,8 +42,8 @@
 
     <owl:ObjectProperty rdf:about="&dbetym;etymologicallyEquivalentTo">
         <rdfs:comment xml:lang="en">The target and the source EtymologyEntries share the same etymological origin. </rdfs:comment>
-        <rdfs:range rdf:resource="&lemon;EtymologyEntry"/>
-        <rdfs:domain rdf:resource="&lemon;EtymologyEntry"/>
+        <rdfs:range rdf:resource="&dbetym;EtymologyEntry"/>
+        <rdfs:domain rdf:resource="&dbetym;EtymologyEntry"/>
 	<!--rdfs:subPropertyOf rdf:resource="&owl;sameAs"/-->
     </owl:ObjectProperty>
     
@@ -51,16 +51,16 @@
 
     <owl:ObjectProperty rdf:about="&dbetym;etymologicallyDerivesFrom">
         <rdfs:comment xml:lang="en">The target EtymologyEntry has been extracted from section Derived Terms in Wiktionary. </rdfs:comment>
-        <rdfs:range rdf:resource="&lemon;EtymologyEntry"/>
-	<rdfs:domain rdf:resource="&lemon;EtymologyEntry"/>
+        <rdfs:range rdf:resource="&dbetym;EtymologyEntry"/>
+	<rdfs:domain rdf:resource="&dbetym;EtymologyEntry"/>
     </owl:ObjectProperty>
     
     <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#etymologicallyRelatedTo -->
 
     <owl:ObjectProperty rdf:about="&dbetym;etymologicallyRelatedTo">
         <rdfs:comment xml:lang="en">An underspecified etymological relationship between two EtymologyEntries of type: descendant or etymologically equivalent to. </rdfs:comment>
-	<rdfs:range rdf:resource="&lemon;EtymologyEntry"/>
-        <rdfs:domain rdf:resource="&lemon;EtymologyEntry"/>
+	<rdfs:range rdf:resource="&dbetym;EtymologyEntry"/>
+        <rdfs:domain rdf:resource="&dbetym;EtymologyEntry"/>
     </owl:ObjectProperty>
     
 
@@ -79,7 +79,7 @@
     <!-- http://etytree-virtuoso.wmflabs.org/dbnaryetymology#EtymologyEntry -->
 
     <owl:Class rdf:about="&dbetym;EtymologyEntry">
-        <rdfs:subClassOf rdf:resource="&lemon;LexicalEntry"/>
+        <rdfs:subClassOf rdf:resource="&ontolex;LexicalEntry"/>
         <rdfs:comment xml:lang="en">An EtymologyEntry corresponds to a set of Lexical Entries that share the same etymology but that do not necessarily share the same Part Of Speech. E.g. eng:link_n_1 and eng:link_v_1 are distinct lexical entries and the etymology entry eng:link_ety_1 refers to both of them because eng:link_n_1 and eng:link_v_1 share the same etymology from Old English ang:linke.</rdfs:comment>
     </owl:Class>
 

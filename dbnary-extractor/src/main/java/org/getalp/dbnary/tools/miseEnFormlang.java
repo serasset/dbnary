@@ -3,7 +3,6 @@ package org.getalp.dbnary.tools;
 import org.getalp.iso639.ISO639_3;
 import org.getalp.iso639.ISO639_3.Lang;
 
-import java.io.IOException;
 import java.util.Iterator;
 
 public class miseEnFormlang {

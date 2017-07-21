@@ -1,9 +1,9 @@
 package org.getalp.dbnary.hbs;
 
 import org.apache.jena.vocabulary.RDF;
-import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OliaOnt;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

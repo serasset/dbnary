@@ -1,16 +1,19 @@
 package org.getalp.dbnary.cli;
 
+import info.bliki.api.Connector;
+import info.bliki.api.User;
+import org.apache.commons.cli.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.util.iterator.Filter;
 import org.apache.jena.vocabulary.RDF;
-import info.bliki.api.Connector;
-import info.bliki.api.User;
-import org.apache.commons.cli.*;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.getalp.dbnary.*;
+import org.getalp.dbnary.DBnaryOnt;
+import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.LangTools;
+import org.getalp.dbnary.OntolexOnt;
 
 import java.io.IOException;
 import java.util.*;

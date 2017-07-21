@@ -4,7 +4,6 @@ import info.bliki.wiki.filter.PlainTextConverter;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.iso639.ISO639_3;
 
 import java.io.IOException;
 import java.util.Locale;

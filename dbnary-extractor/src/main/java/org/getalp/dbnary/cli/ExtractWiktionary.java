@@ -14,17 +14,7 @@ import java.util.Date;
 
 import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
 
-public class ExtractWiktionary {
-    private static Options options = null; // Command line options
-
-    private static final String LANGUAGE_OPTION = "l";
-    private static final String DEFAULT_LANGUAGE = "en";
-
-    private static final String OUTPUT_FORMAT_OPTION = "f";
-    private static final String DEFAULT_OUTPUT_FORMAT = "ttl";
-
-    private static final String MODEL_OPTION = "m";
-    private static final String DEFAULT_MODEL = "ontolex";
+public class ExtractWiktionary extends DbnaryCommandLine {
 
     private static final String OUTPUT_FILE_OPTION = "o";
     private static final String DEFAULT_OUTPUT_FILE = "extract";
@@ -34,51 +24,38 @@ public class ExtractWiktionary {
     private static final String COMPRESS_OPTION = "z";
     private static final String DEFAULT_COMPRESS = "no";
 
-    private static final String FOREIGN_EXTRACTION_OPTION = "x";
+    private static final String FROM_PAGE_LONG_OPTION = "frompage";
+    private static final String FROM_PAGE_SHORT_OPTION = "F";
 
-    private static final String MORPHOLOGY_OUTPUT_FILE_LONG_OPTION = "morpho";
-    private static final String MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION = "M";
-
+    private static final String TO_PAGE_LONG_OPTION = "topage";
+    private static final String TO_PAGE_SHORT_OPTION = "T";
 
     public static final XMLInputFactory2 xmlif;
 
 
-    private CommandLine cmd = null; // Command Line arguments
-
     private String outputFile = DEFAULT_OUTPUT_FILE;
-    private String morphoOutputFile = null;
     private String outputFormat = DEFAULT_OUTPUT_FORMAT;
-    private String model = DEFAULT_MODEL;
     private boolean compress;
-    private String language = DEFAULT_LANGUAGE;
     private File dumpFile;
     private String outputFileSuffix = "";
-
-    WiktionaryIndex wi;
-    IWiktionaryExtractor we;
-
-    private IWiktionaryDataHandler wdh;
-
+    private int fromPage = 0;
+    private int toPage = Integer.MAX_VALUE;
 
     static {
-        options = new Options();
-        options.addOption("h", "help", false, "Prints usage and exits. ");
         options.addOption(SUFFIX_OUTPUT_FILE_OPTION, false, "Add a unique suffix to output file. ");
-        options.addOption(LANGUAGE_OPTION, true,
-                "Language (fra, eng, deu or por). " + DEFAULT_LANGUAGE + " by default.");
-        options.addOption(OUTPUT_FORMAT_OPTION, true,
-                "Output format  (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). " + DEFAULT_OUTPUT_FORMAT + " by default.");
         options.addOption(COMPRESS_OPTION, true,
                 "Compress the output using bzip2 (value: yes/no or true/false). " + DEFAULT_COMPRESS + " by default.");
-        options.addOption(MODEL_OPTION, true,
-                "(Deprecated) the model will always be " + DEFAULT_MODEL);
         options.addOption(OUTPUT_FILE_OPTION, true, "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");
-        options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
-                .withDescription("Output file for morphology data. Undefined by default.")
+        options.addOption(OptionBuilder.withLongOpt(FROM_PAGE_LONG_OPTION)
+                .withDescription("Do not process pages before the nth one. 0 by default.")
                 .hasArg()
-                .withArgName("file")
-                .create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
-        options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign Languages");
+                .withArgName("num")
+                .create(FROM_PAGE_SHORT_OPTION));
+        options.addOption(OptionBuilder.withLongOpt(TO_PAGE_LONG_OPTION)
+                .withDescription("Do not process pages after the nth one. MAXINT by default.")
+                .hasArg()
+                .withArgName("num")
+                .create(TO_PAGE_SHORT_OPTION));
     }
 
     static {
@@ -112,37 +89,16 @@ public class ExtractWiktionary {
      * @param args String[] args as featured in public static void main()
      * @throws WiktionaryIndexerException ..
      */
-    private void loadArgs(String[] args) throws WiktionaryIndexerException {
-        CommandLineParser parser = new PosixParser();
-        try {
-            cmd = parser.parse(options, args);
-        } catch (ParseException e) {
-            System.err.println("Error parsing arguments: " + e.getLocalizedMessage());
-            printUsage();
-            System.exit(1);
-        }
-
-        // Check for args
-        if (cmd.hasOption("h")) {
-            printUsage();
-            System.exit(0);
-        }
+    protected void loadArgs(String[] args) throws WiktionaryIndexerException {
+        super.loadArgs(args);
 
         if (cmd.hasOption(SUFFIX_OUTPUT_FILE_OPTION)) {
             SimpleDateFormat df = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
             outputFileSuffix = df.format(new Date());
         }
 
-        if (cmd.hasOption(OUTPUT_FORMAT_OPTION)) {
-            outputFormat = cmd.getOptionValue(OUTPUT_FORMAT_OPTION);
-        }
         outputFormat = outputFormat.toUpperCase();
 
-        if (cmd.hasOption(MODEL_OPTION)) {
-            System.err.println("WARN: the " + MODEL_OPTION + " option is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
-            // model = cmd.getOptionValue(MODEL_OPTION);
-        }
-        model = model.toUpperCase();
 
         String compress_value = cmd.getOptionValue(COMPRESS_OPTION, DEFAULT_COMPRESS);
         compress = "true".startsWith(compress_value) || "yes".startsWith(compress_value);
@@ -151,52 +107,13 @@ public class ExtractWiktionary {
             outputFile = cmd.getOptionValue(OUTPUT_FILE_OPTION);
         }
 
-        if (cmd.hasOption(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)) {
-            morphoOutputFile = cmd.getOptionValue(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION);
+        if (cmd.hasOption(FROM_PAGE_LONG_OPTION)) {
+            fromPage = Integer.valueOf(cmd.getOptionValue(FROM_PAGE_LONG_OPTION));
         }
 
-        if (cmd.hasOption(LANGUAGE_OPTION)) {
-            language = cmd.getOptionValue(LANGUAGE_OPTION);
-            language = LangTools.getCode(language);
+        if (cmd.hasOption(TO_PAGE_LONG_OPTION)) {
+            toPage = Integer.valueOf(cmd.getOptionValue(TO_PAGE_LONG_OPTION));
         }
-
-        String[] remainingArgs = cmd.getArgs();
-        if (remainingArgs.length != 1) {
-            printUsage();
-            System.exit(1);
-        }
-
-        we = null;
-        if (outputFormat.equals("RDF") ||
-                outputFormat.equals("TURTLE") ||
-                outputFormat.equals("NTRIPLE") ||
-                outputFormat.equals("N3") ||
-                outputFormat.equals("TTL") ||
-                outputFormat.equals("RDFABBREV")) {
-            if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
-                    wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language);
-            } else {
-                    wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
-            }
-            if (morphoOutputFile != null) wdh.enableFeature(Feature.MORPHOLOGY);
-        } else {
-            System.err.println("unsupported format :" + outputFormat);
-            System.exit(1);
-        }
-
-        if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
-            we = WiktionaryExtractorFactory.getForeignExtractor(language, wdh);
-        } else {
-            we = WiktionaryExtractorFactory.getExtractor(language, wdh);
-        }
-
-        if (null == we) {
-            System.err.println("Wiktionary Extraction not yet available for " + LangTools.inEnglish(language));
-            System.exit(1);
-        }
-
-        wi = new WiktionaryIndex(remainingArgs[0]);
-        we.setWiktionaryIndex(wi);
 
         outputFile = outputFile + outputFileSuffix;
 
@@ -234,7 +151,15 @@ public class ExtractWiktionary {
                     if (!title.equals("")) {
                         nbPages++;
                         int nbnodes = wdh.nbEntries();
-                        we.extractData(title, page);
+                        if (nbPages < fromPage) continue;
+                        if (nbPages > toPage) break;
+                        try {
+                            we.extractData(title, page);
+                        } catch (RuntimeException ex) {
+                            System.err.println("ERROR : Unexpected/uncaught Rutine Exception while extracting page " + title);
+                            System.err.println(ex.getMessage());
+                            ex.printStackTrace();
+                        }
                         if (nbnodes != wdh.nbEntries()) {
                             totalRelevantTime += (System.currentTimeMillis() - relevantStartTime);
                             nbRelevantPages++;
@@ -256,6 +181,9 @@ public class ExtractWiktionary {
             System.err.println("Semnet contains: " + wdh.nbEntries() + " nodes.");
             if (null != morphoOutputFile) {
                 saveBox(Feature.MORPHOLOGY, morphoOutputFile);
+            }
+            if (null != etymologyOutputFile) {
+                saveBox(Feature.ETYMOLOGY, etymologyOutputFile);
             }
 
         } catch (XMLStreamException ex) {
@@ -306,11 +234,11 @@ public class ExtractWiktionary {
         }
     }
 
-    public static void printUsage() {
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("java -cp /path/to/dbnary.jar org.getalp.dbnary.cli.ExtractWiktionary [OPTIONS] dumpFile",
-                "With OPTIONS in:", options,
-                "dumpFile must be a Wiktionary dump file in UTF-16 encoding. dumpFile directory must be writable to store the index.", false);
+    @Override
+    protected String getHelpText() {
+        return "dumpFile must be a Wiktionary dump file in UTF-16 encoding. dumpFile directory must be writable to store the index." +
+                System.getProperty("line.separator", "\n") +
+                "Extracts the full wiktionary dump and store the resulting dataset in the specified file.";
     }
 
 }

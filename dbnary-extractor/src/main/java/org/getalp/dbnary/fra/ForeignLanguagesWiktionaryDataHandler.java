@@ -48,7 +48,7 @@ public class ForeignLanguagesWiktionaryDataHandler extends OntolexBasedRDFDataHa
             return this.prefixes.get(lang);
         else {
             lang = LangTools.normalize(lang);
-            String prefix = DBNARY_NS_PREFIX + "/" + lang + "/fra/";
+            String prefix = DBNARY_NS_PREFIX + "/fra/" + lang +"/";
             prefixes.put(lang, prefix);
             aBox.setNsPrefix(lang + "-fra", prefix);
             return prefix;

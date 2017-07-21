@@ -52,6 +52,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     protected int nbEntries = 0;
     private String NS;
+    protected String WIKT;
     protected String currentEncodedPageName;
     protected String currentWiktionaryPageName;
     protected CounterSet currentLexieCount = new CounterSet();
@@ -91,12 +92,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         NS = DBNARY_NS_PREFIX + "/" + lang + "/";
 
         wktLanguageEdition = LangTools.getPart1OrId(lang);
+	    WIKT = "https://" + wktLanguageEdition + ".wiktionary.org/wiki/";
         lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
 
         // Create aBox
         aBox = ModelFactory.createDefaultModel();
         aBox.setNsPrefix(lang, NS);
         aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
+        aBox.setNsPrefix("dbetym", DBnaryEtymologyOnt.getURI());
         // aBox.setNsPrefix("lemon", LemonOnt.getURI());
         aBox.setNsPrefix("lexinfo", LexinfoOnt.getURI());
         aBox.setNsPrefix("rdfs", RDFS.getURI());
@@ -111,6 +114,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         aBox.setNsPrefix("decomp", DecompOnt.getURI());
         aBox.setNsPrefix("skos", SkosOnt.getURI());
         aBox.setNsPrefix("xs", XSD.getURI());
+        aBox.setNsPrefix("wikt", WIKT);
 
         featureBoxes = new HashMap<>();
         featureBoxes.put(Feature.MAIN, aBox);
@@ -256,7 +260,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         }
 
         aBox.add(currentLexEntry, OntolexOnt.canonicalForm, currentCanonicalForm);
-        aBox.add(currentCanonicalForm, OntolexOnt.writtenRep, currentWiktionaryPageName, wktLanguageEdition);
+        aBox.add(currentCanonicalForm, OntolexOnt.writtenRep, currentWiktionaryPageName, LangTools.threeLettersCode(getCurrentEntryLanguage()));
+        aBox.add(currentCanonicalForm, RDFS.label, currentWiktionaryPageName, LangTools.threeLettersCode(getCurrentEntryLanguage()));
         aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
         if (null != currentLexinfoPos)
             aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);

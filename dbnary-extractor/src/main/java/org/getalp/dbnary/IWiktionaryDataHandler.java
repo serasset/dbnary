@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface IWiktionaryDataHandler {
 
-    enum Feature {MAIN, MORPHOLOGY}
+    enum Feature {MAIN, MORPHOLOGY, ETYMOLOGY}
 
     ;
 

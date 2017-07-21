@@ -49,7 +49,7 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
     @Override
     public void substituteTemplateCall(String templateName,
                                        Map<String, String> parameterMap, Appendable writer)
-            throws IOException {
+	throws IOException {
         // Currently just expand the definition to get the full text.
         if (templateName.equals("label") || templateName.equals("lb") || templateName.equals("lbl")) {
             // intercept this template as it leads to a very inefficient Lua Script.
@@ -74,9 +74,19 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
             log.debug("Ignoring template {} in definition of {}", templateName, this.getPageName());
         } else if (templateName.equals("categorize") || templateName.equals("catlangname") || templateName.equals("catlangcode")) {
             // ignore
+        } else if (templateName.equals("given name")) {
+            writer.append(givenName(parameterMap));
         } else {
             super.substituteTemplateCall(templateName, parameterMap, writer);
         }
+    }
+
+    private String givenName(Map<String, String> parameterMap) {
+        String gender = parameterMap.get("1");
+        if (null == gender) gender = parameterMap.get("gender");
+        if (null == gender) gender = "";
+        String or = parameterMap.get("or");
+        return "A " + gender + " " + ((or == null) ? "" : or + " ") + "given name.";
     }
 
 }

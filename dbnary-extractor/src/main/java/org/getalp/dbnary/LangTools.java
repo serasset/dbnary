@@ -16,10 +16,13 @@ public class LangTools {
         s = s.trim();
         s = s.toLowerCase();
         String res = getCode(s);
-        if (res == null && h != null && h.containsKey(s)) {
-            s = h.get(s);
-            res = getCode(s);
-        }
+        if (res == null )
+            if (h != null && h.containsKey(s)) {
+                res = h.get(s);
+	    } else {//e.g.: s.equals("image"), s.equals("w")
+		log.debug("Warning: language {} is not present in input hashmap and in iso639, getCode returns null.", s);
+	    }
+
 
         return res;
     }
@@ -28,6 +31,8 @@ public class LangTools {
         return threeLettersCode(null, s);
     }
 
+    //E.g.: getCode("ita") returns "ita"
+    //E.g.: getCode("it") returns "ita"
     public static String getCode(String lang) {
         return ISO639_3.sharedInstance.getIdCode(lang);
     }
@@ -71,6 +76,4 @@ public class LangTools {
     public static String getTerm2Code(String l) {
         return ISO639_3.sharedInstance.getTerm2Code(l);
     }
-
-
 }

@@ -58,13 +58,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     protected final static Pattern pron2Pattern;
     protected final static Pattern pron3Pattern;
 
-    protected final static Pattern macroPattern;
+    // protected final static Pattern macroPattern;
 
     protected final static HashMap<String, String> nymMarkerToNymName;
 
     static {
 
-        macroPattern = Pattern.compile(macroPatternString);
+        // macroPattern = Pattern.compile(macroPatternString);
         definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
         languageSectionPattern = Pattern.compile(languageSectionPatternString);        
         
@@ -117,7 +117,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // System.out.println(pageContent);
         Matcher languageFilter = languageSectionPattern.matcher(pageContent);
         while (languageFilter.find() && !languageFilter.group(1).equals("Türkçe")) {
-            ;
         }
         // Either the filter is at end of sequence or on German language header.
         if (languageFilter.hitEnd()) {
@@ -136,7 +135,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     int state = NODATA;
-    int partOfSpeechBlockStart = -1;
     int translationBlockStart = -1;
     private int nymBlockStart = -1;
     int pronBlockStart = -1;
@@ -394,12 +392,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 //		glossOrMacroPattern = Pattern.compile(glossOrMacroPatternString);
     }
 
-    protected final static Pattern carPattern;
+    //protected final static Pattern carPattern;
     protected final static Pattern macroOrLinkOrCarPattern;
 
 
     static {
-        carPattern = Pattern.compile(carPatternString);
+        //carPattern = Pattern.compile(carPatternString);
         macroOrLinkOrCarPattern = Pattern.compile(macroOrLinkOrCarPatternString, Pattern.MULTILINE | Pattern.DOTALL);
     }
 

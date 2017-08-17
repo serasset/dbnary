@@ -291,7 +291,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             // TODO: filter out ignorable part of speech;
             return Block.POSBLOCK;
         } else if (null != m.group(5)) {
-            if (m.group(5).trim().equals("Übersetzungen")) {
+            if (m.group(5).trim().equals("Übersetzungen") || m.group(5).trim().equals("{{Übersetzungen}}")) {
                 return Block.TRADBLOCK;
             } else {
                 return null;

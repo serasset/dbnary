@@ -20,10 +20,11 @@ public class EvaluationStats {
 	}
 
 	public void printConfidenceStats(PrintStream out) {
+		out.println("lang,Precision,Recall,F1");
 		for (String lang : confidenceMap.keySet()) {
 			Stat lstat = confidenceMap.get(lang);
 			System.err.println(lstat);
-			out.format("%s,%.4f,%.4f,%.4f", lang, lstat.getPrecision(), lstat.getRecall(), lstat.getF1Score());
+			out.format("%s,%.4f,%.4f,%.4f\n", lang, lstat.getPrecision(), lstat.getRecall(), lstat.getF1Score());
 		}
 	}
 

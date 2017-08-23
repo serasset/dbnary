@@ -44,11 +44,11 @@ public class StatsModule {
         }
 
 		public void displayStats(String lang, PrintStream w) {
-				w.format("%s & $%d$ & $%d$ & $%d$ & $%d$ & $%d$ \\\\\n", lang, nbTranslations, translationsWithoutGlosses, nbGlossesWithTextOnly, nbGlossesWithSenseNumberOnly, nbGlossesWithSensNumberAndText);
+				w.format("%s,%d,%d,%d,%d,%d \n", lang, nbTranslations, translationsWithoutGlosses, nbGlossesWithTextOnly, nbGlossesWithSenseNumberOnly, nbGlossesWithSensNumberAndText);
 		}
 	}
 
-	public static void displayHeader(String lang, PrintStream w) {
+	public static void displayHeader(PrintStream w) {
         w.println("Language & Translations & noGlosses & textOnlyGlosses & senseNumberOnlyGlosses & textAndSenseNumberGlosses");
     }
 
@@ -89,6 +89,7 @@ public class StatsModule {
 
 
 	public void displayStats(PrintStream w) {
+	    displayHeader(w);
 		for (Entry<String, Stat> e : stats.entrySet()) {
 			e.getValue().displayStats(e.getKey(), w);
 		}

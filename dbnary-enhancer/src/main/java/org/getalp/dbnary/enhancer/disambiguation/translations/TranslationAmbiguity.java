@@ -1,8 +1,8 @@
-package org.getalp.dbnary.experiment.disambiguation.translations;
+package org.getalp.dbnary.enhancer.disambiguation.translations;
 
 
-import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
-import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
+import org.getalp.dbnary.enhancer.disambiguation.Ambiguity;
+import org.getalp.dbnary.enhancer.disambiguation.Disambiguable;
 
 import java.util.*;
 

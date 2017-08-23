@@ -1,4 +1,4 @@
-package org.getalp.dbnary.experiment.segmentation;
+package org.getalp.dbnary.enhancer.segmentation;
 
 import java.util.ArrayList;
 import java.util.List;

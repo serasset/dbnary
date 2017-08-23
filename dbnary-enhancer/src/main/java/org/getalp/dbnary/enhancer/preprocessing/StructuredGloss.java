@@ -1,4 +1,4 @@
-package org.getalp.dbnary.experiment.preprocessing;
+package org.getalp.dbnary.enhancer.preprocessing;
 
 public class StructuredGloss {
 	protected String senseNumber = null;

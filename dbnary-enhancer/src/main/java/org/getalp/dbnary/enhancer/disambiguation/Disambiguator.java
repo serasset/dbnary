@@ -1,6 +1,6 @@
-package org.getalp.dbnary.experiment.disambiguation;
+package org.getalp.dbnary.enhancer.disambiguation;
 
-import org.getalp.dbnary.experiment.similarity.SimilarityMeasure;
+import org.getalp.dbnary.enhancer.similarity.SimilarityMeasure;
 
 import java.util.List;
 import java.util.Set;

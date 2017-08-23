@@ -1,4 +1,4 @@
-package org.getalp.dbnary.experiment.translation;
+package org.getalp.dbnary.enhancer.translation;
 
 public interface Translator {
 

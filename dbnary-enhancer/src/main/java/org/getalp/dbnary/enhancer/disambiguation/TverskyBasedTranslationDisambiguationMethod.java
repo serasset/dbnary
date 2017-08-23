@@ -1,4 +1,4 @@
-package org.getalp.dbnary.experiment.disambiguation;
+package org.getalp.dbnary.enhancer.disambiguation;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -8,7 +8,7 @@ import com.wcohen.ss.ScaledLevenstein;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.SkosOnt;
-import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
+import org.getalp.dbnary.enhancer.similarity.string.TverskiIndex;
 
 import java.util.ArrayList;
 import java.util.HashSet;

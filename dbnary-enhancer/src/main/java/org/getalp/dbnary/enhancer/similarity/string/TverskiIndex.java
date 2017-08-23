@@ -1,10 +1,10 @@
-package org.getalp.dbnary.experiment.similarity.string;
+package org.getalp.dbnary.enhancer.similarity.string;
 
 import com.wcohen.ss.AbstractStringDistance;
-import org.getalp.dbnary.experiment.encoding.CodePointWrapper;
-import org.getalp.dbnary.experiment.segmentation.Segmenter;
-import org.getalp.dbnary.experiment.segmentation.SpaceSegmenter;
-import org.getalp.dbnary.experiment.similarity.SimilarityMeasure;
+import org.getalp.dbnary.enhancer.encoding.CodePointWrapper;
+import org.getalp.dbnary.enhancer.segmentation.Segmenter;
+import org.getalp.dbnary.enhancer.segmentation.SpaceSegmenter;
+import org.getalp.dbnary.enhancer.similarity.SimilarityMeasure;
 
 import java.util.List;
 

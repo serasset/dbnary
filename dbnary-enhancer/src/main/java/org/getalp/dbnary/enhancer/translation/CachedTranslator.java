@@ -1,4 +1,4 @@
-package org.getalp.dbnary.experiment.translation;
+package org.getalp.dbnary.enhancer.translation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

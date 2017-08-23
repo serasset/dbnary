@@ -1,9 +1,9 @@
-package org.getalp.dbnary.experiment.disambiguation.translations;
+package org.getalp.dbnary.enhancer.disambiguation.translations;
 
-import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
-import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
-import org.getalp.dbnary.experiment.disambiguation.Disambiguator;
-import org.getalp.dbnary.experiment.similarity.SimilarityMeasure;
+import org.getalp.dbnary.enhancer.disambiguation.Ambiguity;
+import org.getalp.dbnary.enhancer.disambiguation.Disambiguable;
+import org.getalp.dbnary.enhancer.disambiguation.Disambiguator;
+import org.getalp.dbnary.enhancer.similarity.SimilarityMeasure;
 
 import java.util.HashMap;
 import java.util.List;

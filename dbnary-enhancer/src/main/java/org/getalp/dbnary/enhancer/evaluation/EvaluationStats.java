@@ -1,4 +1,4 @@
-package org.getalp.dbnary.experiment.evaluation;
+package org.getalp.dbnary.enhancer.evaluation;
 
 import java.io.PrintStream;
 import java.util.Collection;

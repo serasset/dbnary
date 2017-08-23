@@ -1,6 +1,6 @@
-package org.getalp.dbnary.experiment.disambiguation.translations;
+package org.getalp.dbnary.enhancer.disambiguation.translations;
 
-import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
+import org.getalp.dbnary.enhancer.disambiguation.Disambiguable;
 
 public class DisambiguableSense implements Disambiguable {
 

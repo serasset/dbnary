@@ -1,10 +1,10 @@
-package org.getalp.dbnary.experiment.disambiguation;
+package org.getalp.dbnary.enhancer.disambiguation;
 
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
 import com.wcohen.ss.ScaledLevenstein;
 import org.getalp.dbnary.*;
-import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
+import org.getalp.dbnary.enhancer.similarity.string.TverskiIndex;
 
 import java.util.*;
 import java.util.regex.Matcher;

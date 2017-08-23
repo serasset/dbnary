@@ -1,4 +1,4 @@
-package org.getalp.dbnary.experiment.similarity;
+package org.getalp.dbnary.enhancer.similarity;
 
 
 public interface SimilarityMeasure {

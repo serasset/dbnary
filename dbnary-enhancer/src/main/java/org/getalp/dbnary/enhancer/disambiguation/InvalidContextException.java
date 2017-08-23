@@ -1,4 +1,4 @@
-package org.getalp.dbnary.experiment.disambiguation;
+package org.getalp.dbnary.enhancer.disambiguation;
 
 public class InvalidContextException extends Exception {
 

@@ -1,14 +1,14 @@
-package org.getalp.dbnary.experiment.disambiguation;
+package org.getalp.dbnary.enhancer.disambiguation;
 
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
 import com.wcohen.ss.ScaledLevenstein;
 import org.getalp.dbnary.*;
 import org.getalp.iso639.ISO639_3;
-import org.getalp.dbnary.experiment.similarity.string.TverskiIndex;
-import org.getalp.dbnary.experiment.translation.BingAPITranslator;
-import org.getalp.dbnary.experiment.translation.CachedTranslator;
-import org.getalp.dbnary.experiment.translation.Translator;
+import org.getalp.dbnary.enhancer.similarity.string.TverskiIndex;
+import org.getalp.dbnary.enhancer.translation.BingAPITranslator;
+import org.getalp.dbnary.enhancer.translation.CachedTranslator;
+import org.getalp.dbnary.enhancer.translation.Translator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package org.getalp.dbnary.experiment.disambiguation;
+package org.getalp.dbnary.enhancer.disambiguation;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;

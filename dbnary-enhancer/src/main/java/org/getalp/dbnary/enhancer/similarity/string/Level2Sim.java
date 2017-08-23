@@ -1,7 +1,7 @@
-package org.getalp.dbnary.experiment.similarity.string;
+package org.getalp.dbnary.enhancer.similarity.string;
 
 import com.wcohen.ss.AbstractTokenizedStringDistance;
-import org.getalp.dbnary.experiment.similarity.SimilarityMeasure;
+import org.getalp.dbnary.enhancer.similarity.SimilarityMeasure;
 
 import java.util.List;
 

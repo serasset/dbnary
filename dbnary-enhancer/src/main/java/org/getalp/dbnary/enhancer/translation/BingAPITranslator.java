@@ -1,4 +1,4 @@
-package org.getalp.dbnary.experiment.translation;
+package org.getalp.dbnary.enhancer.translation;
 
 import com.memetix.mst.language.Language;
 import com.memetix.mst.translate.Translate;

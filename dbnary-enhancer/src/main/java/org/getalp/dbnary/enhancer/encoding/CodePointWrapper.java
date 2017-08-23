@@ -1,4 +1,4 @@
-package org.getalp.dbnary.experiment.encoding;
+package org.getalp.dbnary.enhancer.encoding;
 
 import java.util.ArrayList;
 import java.util.Iterator;

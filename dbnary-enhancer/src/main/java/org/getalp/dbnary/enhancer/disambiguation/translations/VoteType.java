@@ -1,4 +1,4 @@
-package org.getalp.dbnary.experiment.disambiguation.translations;
+package org.getalp.dbnary.enhancer.disambiguation.translations;
 
 public enum VoteType {
     MAJORITY, MAX_DIV_SCORE;

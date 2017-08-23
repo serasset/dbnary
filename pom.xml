@@ -1,18 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.getalp</groupId>
-  <artifactId>dbnary</artifactId>
-  <version>2.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+    <groupId>org.getalp</groupId>
+    <artifactId>dbnary</artifactId>
+    <version>2.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-  <name>dbnary</name>
-  <url>http://kaiko.getalp.org/about-dbnary</url>
+    <name>dbnary</name>
+    <url>http://kaiko.getalp.org/about-dbnary</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <issueManagement>
         <system>bitbucket</system>
@@ -43,28 +43,29 @@
         <url>https://bitbucket.org/serasset/dbnary.git</url>
     </scm>
 
-  <modules>
-    <module>dbnary-ontology</module>
-    <module>dbnary-extractor</module>
-  </modules>
+    <modules>
+        <module>dbnary-ontology</module>
+        <module>dbnary-extractor</module>
+        <module>dbnary-enhancer</module>
+    </modules>
 
     <reporting>
         <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.4</version>
-            <configuration>
-            <failOnError>false</failOnError>
-                <tags>
-                <tag>
-                    <name>uml.property</name>
-                    <!-- The value X makes javadoc ignoring the tag -->
-                    <placement>X</placement>
-                </tag>
-            </tags>
-            </configuration>
-        </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <tags>
+                        <tag>
+                            <name>uml.property</name>
+                            <!-- The value X makes javadoc ignoring the tag -->
+                            <placement>X</placement>
+                        </tag>
+                    </tags>
+                </configuration>
+            </plugin>
         </plugins>
     </reporting>
 
@@ -90,6 +91,12 @@
                     <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.9</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -209,7 +216,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute />
+                                        <execute/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
@@ -238,9 +245,9 @@
                     <!-- was 1.2.1-->
                 </plugin>
                 <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-shade-plugin</artifactId>
-                  <version>3.0.0</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.0.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -312,4 +319,4 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
     </repositories>
- </project>
+</project>

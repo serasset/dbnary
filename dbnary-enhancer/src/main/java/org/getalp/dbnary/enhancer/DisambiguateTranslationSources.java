@@ -59,8 +59,9 @@ public class DisambiguateTranslationSources extends DBnaryEnhancer {
     public void printUsage() {
         HelpFormatter formatter = new HelpFormatter();
         String help =
-                "urlOrFile must point on an RDF model file extracted from wiktionary by DBnary.";
-        formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.experiment.DisambiguateTranslationSources [OPTIONS] urlOrFile ...",
+                "urlOrFile must point on an RDF model file extracted from wiktionary by DBnary.\n" +
+                        "Alternatively specifying a directory will process all files named ??_dbnary_ontolex.ttl in the given dir";
+        formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.experiment.DisambiguateTranslationSources [OPTIONS] (urlOrFile ...|DIR)",
                 "With OPTIONS in:", options,
                 help, false);
     }

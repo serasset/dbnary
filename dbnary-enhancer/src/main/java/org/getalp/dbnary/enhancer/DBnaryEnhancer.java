@@ -250,7 +250,11 @@ public abstract class DBnaryEnhancer {
         try (DirectoryStream<Path> stream =
                      Files.newDirectoryStream(processPath, "*_dbnary_ontolex*.ttl{.bz2,}")) {
             for (Path entry: stream) {
-                if (Files.isSymbolicLink(entry)) entry = Files.readSymbolicLink(entry);
+                if (Files.isSymbolicLink(entry)) {
+                    Path link = Files.readSymbolicLink(entry);
+                    entry = entry.resolve(link);
+                    entry = entry.toAbsolutePath();
+                }
                 String lang = guessLanguage(entry.toString());
                 ISO639_3.Lang l = ISO639_3.sharedInstance.getLang(lang);
                 languages.put(l.getId(), entry.toString());

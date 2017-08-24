@@ -252,7 +252,7 @@ public abstract class DBnaryEnhancer {
             for (Path entry: stream) {
                 if (Files.isSymbolicLink(entry)) {
                     Path link = Files.readSymbolicLink(entry);
-                    entry = entry.resolve(link);
+                    entry = processPath.resolve(link);
                     entry = entry.toAbsolutePath();
                 }
                 String lang = guessLanguage(entry.toString());

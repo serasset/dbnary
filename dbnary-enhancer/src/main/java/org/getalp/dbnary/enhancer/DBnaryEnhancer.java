@@ -14,6 +14,10 @@ import org.getalp.iso639.ISO639_3;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +27,7 @@ import java.util.Map;
 public abstract class DBnaryEnhancer {
 
     protected static final String RDF_FORMAT_OPTION = "f";
+    protected static final String DIR_OPTION = "d";
     protected static final String DEFAULT_RDF_FORMAT = "turtle";
     protected static final String STATS_FILE_OPTION = "s";
     protected static final String OUTPUT_FILE_SUFFIX_OPTION = "o";
@@ -40,11 +45,13 @@ public abstract class DBnaryEnhancer {
     protected EvaluationStats evaluator = null;
     protected String outputFileSuffix;
     protected boolean doCompress;
+    protected String processDir = null;
 
     static {
         options = new Options();
         options.addOption("h", false, "Prints usage and exits. ");
         options.addOption(RDF_FORMAT_OPTION, true, "RDF file format (xmlrdf, turtle, n3, etc.). " + DEFAULT_RDF_FORMAT + " by default.");
+        options.addOption(DIR_OPTION, true, "Process the given directory (no url should be given if this option is specified.");
         options.addOption(STATS_FILE_OPTION, true, "if present generate a csv file of the specified name containing statistics about available glosses in translations.");
         options.addOption(CONFIDENCE_FILE_OPTION, true, "if present generate a csv file of the specified name containing confidence score of the similarity disambiguation.");
         options.addOption(OUTPUT_FILE_SUFFIX_OPTION, true, "if present, use the specified value as the filename suffix for the output "
@@ -52,9 +59,23 @@ public abstract class DBnaryEnhancer {
         options.addOption(COMPRESS_OPTION, false, "if present, compress the ouput with BZip2.");
     }
 
-    protected void output(String lang, Model m) {
+    protected void output(String lang, String modelFile, Model m) {
         String outputModelFileName = lang + outputFileSuffix;
-        OutputStream outputModelStream;
+
+        if (null != processDir) {
+            // TODO: Compute outputFileName from modelFile ?
+            Path modelPath = Paths.get(modelFile);
+
+            Path dir = modelPath.getParent();
+            if (null != dir) {
+                String filename = modelPath.getFileName().toString();
+                if (filename.endsWith(".bz2"))
+                    filename = filename.substring(0, filename.length() - 4);
+                outputModelFileName = dir.resolve(filename.replaceAll("_ontolex", "_enhancement")).toString();
+            }
+        }
+
+        OutputStream outputModelStream = null;
 
         try {
             if (doCompress) {
@@ -74,6 +95,12 @@ public abstract class DBnaryEnhancer {
             System.err.println("IOException while creating output stream: " + e.getLocalizedMessage());
             e.printStackTrace();
             return;
+        } finally {
+            if (null != outputModelStream) try {
+                outputModelStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -121,7 +148,7 @@ public abstract class DBnaryEnhancer {
             this.processTranslations(inputModel, disambiguatedModel, lang);
 
             System.err.println("Outputting disambiguation links for " + lang);
-            this.output(lang, disambiguatedModel);
+            this.output(lang, modelFile, disambiguatedModel);
         }
 
         if (null != statsOutput) {
@@ -149,12 +176,6 @@ public abstract class DBnaryEnhancer {
             System.exit(1);
         }
         String[] remainingArgs = cmd.getArgs();
-
-        if (remainingArgs.length == 0) {
-            System.err.println("Missing model files or URL.");
-            printUsage();
-            System.exit(1);
-        }
 
         if (cmd.hasOption("h")) {
             printUsage();
@@ -198,11 +219,48 @@ public abstract class DBnaryEnhancer {
 
         outputFileSuffix = cmd.getOptionValue(OUTPUT_FILE_SUFFIX_OPTION, DEFAULT_OUTPUT_FILE_SUFFIX);
 
-        for (String arg: remainingArgs) {
-            String lang = guessLanguage(arg);
-            ISO639_3.Lang l = ISO639_3.sharedInstance.getLang(lang);
-            languages.put(l.getId(), arg);
+        if (cmd.hasOption(DIR_OPTION)) {
+            processDir = cmd.getOptionValue(DIR_OPTION);
+            if (remainingArgs.length > 0) {
+                // no remaining arg should be specified if a directory is to be processed.
+                System.err.println("No urlOrFile should be given if -" + DIR_OPTION + " is specified.");
+                printUsage();
+                System.exit(1);
+            }
+            fillInLanguageModels(processDir);
+        } else {
+            if (remainingArgs.length == 0) {
+                System.err.println("Missing model files or URL or -d option.");
+                printUsage();
+                System.exit(1);
+            }
 
+            // Process all given urls.
+            for (String arg : remainingArgs) {
+                String lang = guessLanguage(arg);
+                ISO639_3.Lang l = ISO639_3.sharedInstance.getLang(lang);
+                languages.put(l.getId(), arg);
+            }
+        }
+    }
+
+    protected void fillInLanguageModels(String processDir) {
+        Path processPath = Paths.get(processDir);
+
+        try (DirectoryStream<Path> stream =
+                     Files.newDirectoryStream(processPath, "*_dbnary_ontolex*.ttl{.bz2,}")) {
+            for (Path entry: stream) {
+                if (Files.isSymbolicLink(entry)) entry = Files.readSymbolicLink(entry);
+                String lang = guessLanguage(entry.toString());
+                ISO639_3.Lang l = ISO639_3.sharedInstance.getLang(lang);
+                languages.put(l.getId(), entry.toString());
+            }
+        } catch (IOException x) {
+            // IOException can never be thrown by the iteration.
+            // In this snippet, it can only be thrown by newDirectoryStream.
+            System.err.println("Could not read given directory.");
+            x.printStackTrace(System.err);
+            System.exit(-1);
         }
 
     }

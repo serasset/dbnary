@@ -1,6 +1,6 @@
 package org.getalp.dbnary.fin;
 
-import org.getalp.dbnary.LangTools;
+import org.getalp.LangTools;
 
 import java.util.HashMap;
 

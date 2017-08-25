@@ -3,7 +3,7 @@ package org.getalp.dbnary.swe;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.LangTools;
+import org.getalp.LangTools;
 import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;

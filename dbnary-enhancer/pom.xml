@@ -40,8 +40,13 @@
         </dependency>
         <dependency>
             <groupId>org.getalp</groupId>
-            <artifactId>dbnary-extractor</artifactId>
-            <version>2.1-SNAPSHOT</version>
+            <artifactId>dbnary-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.getalp</groupId>
+            <artifactId>dbnary-ontology</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <!-- already used by dbnary-extractor dependency>
             <groupId>commons-cli</groupId>
@@ -95,7 +100,7 @@
                     <shadedClassifierName>jar-with-dependencies</shadedClassifierName> <!-- Any name that makes sense -->
                     <transformers>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>org.getalp.dbnary.enhancer.DisambiguateTranslationSources</mainClass>
+                            <mainClass>org.getalp.dbnary.enhancer.TranslationSourcesDisambiguator</mainClass>
                         </transformer>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />

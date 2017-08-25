@@ -7,12 +7,13 @@ import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.DBnaryOnt;
 
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 public class StatsModule {
 
-	private class Stat {
+    private class Stat {
 		private int nbTranslations = 0;
 		private int translationsWithoutGlosses = 0;
 		private int nbGlossesWithSenseNumberOnly = 0;
@@ -43,13 +44,13 @@ public class StatsModule {
             }
         }
 
-		public void displayStats(String lang, PrintStream w) {
+		public void displayStats(String lang, PrintWriter w) {
 				w.format("%s,%d,%d,%d,%d,%d \n", lang, nbTranslations, translationsWithoutGlosses, nbGlossesWithTextOnly, nbGlossesWithSenseNumberOnly, nbGlossesWithSensNumberAndText);
 		}
 	}
 
-	public static void displayHeader(PrintStream w) {
-        w.println("Language & Translations & noGlosses & textOnlyGlosses & senseNumberOnlyGlosses & textAndSenseNumberGlosses");
+    public static String getHeaders() {
+        return "Translations,noGlosses,textOnlyGlosses,senseNumberOnlyGlosses,textAndSenseNumberGlosses";
     }
 
 	HashMap<String,Stat> stats = new HashMap<String,Stat>();
@@ -87,9 +88,17 @@ public class StatsModule {
         return null;
     }
 
+    public void printStat(String lang, PrintWriter out) {
+        Stat lstat = stats.get(lang);
+        lstat.displayStats(lang, out);
+    }
 
-	public void displayStats(PrintStream w) {
-	    displayHeader(w);
+    public void displayStats(PrintStream w) {
+        displayStats(new PrintWriter(w));
+    }
+
+    public void displayStats(PrintWriter w) {
+        w.println("Language," + getHeaders());
 		for (Entry<String, Stat> e : stats.entrySet()) {
 			e.getValue().displayStats(e.getKey(), w);
 		}

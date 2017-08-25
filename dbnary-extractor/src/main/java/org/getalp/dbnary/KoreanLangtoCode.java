@@ -3,6 +3,8 @@
  */
 package org.getalp.dbnary;
 
+import org.getalp.LangTools;
+
 /**
  * @author Mariam
  */

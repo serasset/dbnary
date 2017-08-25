@@ -7,7 +7,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.LangTools;
+import org.getalp.LangTools;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;

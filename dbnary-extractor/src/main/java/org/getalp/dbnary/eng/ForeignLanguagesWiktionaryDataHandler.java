@@ -1,6 +1,6 @@
 package org.getalp.dbnary.eng;
 
-import org.getalp.dbnary.LangTools;
+import org.getalp.LangTools;
 import org.getalp.dbnary.PronunciationPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package org.getalp.dbnary;
+package org.getalp;
 
 import org.getalp.iso639.ISO639_3;
 import org.getalp.iso639.ISO639_3.Lang;

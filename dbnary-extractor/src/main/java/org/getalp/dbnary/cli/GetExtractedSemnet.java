@@ -1,6 +1,7 @@
 package org.getalp.dbnary.cli;
 
 import org.apache.commons.cli.*;
+import org.getalp.LangTools;
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.IWiktionaryDataHandler.Feature;
 

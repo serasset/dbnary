@@ -1,14 +1,19 @@
 package org.getalp.dbnary.enhancer.evaluation;
 
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class EvaluationStats {
 
-	private Map<String, Stat> confidenceMap = new HashMap<String, Stat>();
+	private Map<String, Stat> confidenceMap = new TreeMap<String, Stat>();
 	private Stat currentStat;
+
+	public static String getHeaders() {
+        return "Similarity Precision,Similarity Recall, Similarity F1, Random Precision, Random Recall";
+    }
 
 	public void reset(String lang) {
 		confidenceMap.put(lang, new Stat());
@@ -19,14 +24,22 @@ public class EvaluationStats {
 		currentStat.registerAnswer(expected, provided, nbAlternatives);
 	}
 
+    public void printStat(String lang, PrintStream out) {
+        this.printStat(lang, new PrintWriter(out));
+    }
+
+	public void printStat(String lang, PrintWriter out) {
+        Stat lstat = confidenceMap.get(lang);
+        out.format("%s,%.4f,%.4f,%.4f,%.4f,%.4f\n",
+                lang, lstat.getPrecision(), lstat.getRecall(), lstat.getF1Score(),
+                lstat.getRandomPrec(), lstat.getRandomRecall());
+    }
+
 	public void printConfidenceStats(PrintStream out) {
-		out.println("lang,Similarity Precision,Similarity Recall, Similarity F1, Random Precision, Random Recall");
+		out.println("Language," + getHeaders());
 		for (String lang : confidenceMap.keySet()) {
-			Stat lstat = confidenceMap.get(lang);
-			System.err.println(lstat);
-			out.format("%s,%.4f,%.4f,%.4f,%.4f,%.4f\n",
-                    lang, lstat.getPrecision(), lstat.getRecall(), lstat.getF1Score(),
-                    lstat.getRandomPrec(), lstat.getRandomRecall());
+			// System.err.println(lstat);
+            printStat(lang, out);
 		}
 	}
 

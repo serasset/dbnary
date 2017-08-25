@@ -3,7 +3,7 @@ package org.getalp.dbnary.stats;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.LangTools;
+import org.getalp.LangTools;
 
 import java.io.PrintWriter;
 import java.util.HashSet;

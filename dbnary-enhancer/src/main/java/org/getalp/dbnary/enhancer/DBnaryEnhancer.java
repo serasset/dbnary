@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by serasset on 12/04/17.
@@ -36,8 +37,7 @@ public abstract class DBnaryEnhancer {
     protected static final String COMPRESS_OPTION = "z";
     protected static Options options = null; // Command line op
     protected CommandLine cmd = null; // Command Line arguments
-    protected Map<String,String> languages = new HashMap();
-    // protected String[] languages;
+    protected Map<String,String> languages = new TreeMap<>(); // I want the map to be sorted by language code.
     protected PrintStream statsOutput = null;
     protected StatsModule stats = null;
     protected String rdfFormat;

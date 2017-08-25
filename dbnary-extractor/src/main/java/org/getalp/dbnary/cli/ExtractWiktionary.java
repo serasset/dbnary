@@ -4,6 +4,7 @@ import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
+import org.getalp.LangTools;
 import org.getalp.dbnary.*;
 
 import javax.xml.stream.XMLInputFactory;

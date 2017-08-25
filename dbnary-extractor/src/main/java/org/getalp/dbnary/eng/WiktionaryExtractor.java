@@ -4,6 +4,7 @@
 package org.getalp.dbnary.eng;
 
 import org.apache.jena.rdf.model.Resource;
+import org.getalp.LangTools;
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.wiki.*;
 import org.slf4j.Logger;

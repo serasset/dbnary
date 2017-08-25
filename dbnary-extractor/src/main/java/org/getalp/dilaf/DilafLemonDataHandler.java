@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.getalp.LangTools;
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.tools.CounterSet;
 

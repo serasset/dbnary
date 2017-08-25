@@ -5,6 +5,7 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.XSD;
+import org.getalp.LangTools;
 import org.getalp.dbnary.tools.CounterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

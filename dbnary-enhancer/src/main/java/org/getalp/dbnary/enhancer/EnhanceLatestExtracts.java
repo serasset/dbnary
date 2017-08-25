@@ -1,21 +1,19 @@
-package org.getalp.dbnary.cli;
+package org.getalp.dbnary.enhancer;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.getalp.dbnary.DbnaryModel;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.getalp.LangTools;
-import org.getalp.dbnary.stats.GeneralStatistics;
-import org.getalp.dbnary.stats.NymStatistics;
-import org.getalp.dbnary.stats.TranslationsStatistics;
+import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
+import org.getalp.dbnary.enhancer.preprocessing.StatsModule;
 
 import java.io.*;
 import java.security.MessageDigest;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class UpdateLatestStatistics extends DbnaryModel {
+public class EnhanceLatestExtracts {
 
 
     private static Options options = null; // Command line options
@@ -23,12 +21,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
     private static final String PREFIX_DIR_OPTION = "d";
     private static final String DEFAULT_PREFIX_DIR = ".";
 
-    private static final String COUNT_LANGUAGE_OPTION = "c";
-    private static final String DEFAULT_COUNT_LANGUAGE = "eng,fra,deu,por";
-
     private CommandLine cmd = null; // Command Line arguments
-
-    private String countLanguages = DEFAULT_COUNT_LANGUAGE;
 
     private String extractsDir = null;
     private String statsDir = null;
@@ -38,16 +31,15 @@ public class UpdateLatestStatistics extends DbnaryModel {
         options.addOption("h", false, "Prints usage and exits. ");
         options.addOption(PREFIX_DIR_OPTION, true,
                 "directory containing the extracts and stats. " + DEFAULT_PREFIX_DIR + " by default ");
-        options.addOption(COUNT_LANGUAGE_OPTION, true,
-                "Languages to count (as a comma separated list). " + DEFAULT_COUNT_LANGUAGE + " by default.");
     }
 
     String[] remainingArgs;
-
-    Model m1;
+    private StatsModule stats;
+    private EvaluationStats evaluator;
+    private TranslationSourcesDisambiguator disambiguator;
 
     private void loadArgs(String[] args) {
-        CommandLineParser parser = new PosixParser();
+        CommandLineParser parser = new DefaultParser();
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
@@ -56,15 +48,12 @@ public class UpdateLatestStatistics extends DbnaryModel {
             System.exit(1);
         }
 
+        remainingArgs = cmd.getArgs();
+
         // Check for args
         if (cmd.hasOption("h")) {
             printUsage();
             System.exit(0);
-        }
-
-
-        if (cmd.hasOption(COUNT_LANGUAGE_OPTION)) {
-            countLanguages = cmd.getOptionValue(COUNT_LANGUAGE_OPTION);
         }
 
         String prefixDir = DEFAULT_PREFIX_DIR;
@@ -74,16 +63,21 @@ public class UpdateLatestStatistics extends DbnaryModel {
         extractsDir = prefixDir + File.separator + "ontolex" + File.separator + "latest";
         statsDir = prefixDir + File.separator + "stats";
 
+        stats = new StatsModule();
+        evaluator = new EvaluationStats();
+        disambiguator =
+                new TranslationSourcesDisambiguator(0.1, 0.9, 0.05, true, stats, evaluator);
+
     }
 
     public static void main(String args[]) throws Exception {
-        UpdateLatestStatistics cliProg = new UpdateLatestStatistics();
+        EnhanceLatestExtracts cliProg = new EnhanceLatestExtracts();
         cliProg.loadArgs(args);
-        cliProg.updateStats();
+        cliProg.enhanceExtract();
 
     }
 
-    private void updateStats() throws Exception {
+    private void enhanceExtract() throws Exception {
 
         File d = new File(extractsDir);
         File ds = new File(statsDir);
@@ -95,81 +89,64 @@ public class UpdateLatestStatistics extends DbnaryModel {
             ds.mkdirs();
         }
 
-        String gstatFile = statsDir + File.separator + "latest_general_stats.csv";
-        Map<String, String> gstats = readAndParseStats(gstatFile);
+        String enhConfidenceFile = statsDir + File.separator + "latest_enhancement_confidence.csv";
+        Map<String, String> enhConfidence = readAndParseStats(enhConfidenceFile);
 
-        String nstatFile = statsDir + File.separator + "latest_nym_stats.csv";
-        Map<String, String> nstats = readAndParseStats(nstatFile);
-
-        String tstatFile = statsDir + File.separator + "latest_translations_stats.csv";
-        Map<String, String> tstats = readAndParseStats(tstatFile);
+        String glossStatsFile = statsDir + File.separator + "latest_glosses_stats.csv";
+        Map<String, String> glossStats = readAndParseStats(glossStatsFile);
 
         for (File e : d.listFiles((dir, name) -> name.matches(".._dbnary_ontolex\\..*"))) {
             String l2 = e.getName().substring(0, 2);
             String language = LangTools.getCode(l2);
             String elang = LangTools.inEnglish(language);
 
-            String checksum = getCheckSumColumn(gstats.get(elang));
+            String checksum = getCheckSumColumn(enhConfidence.get(elang));
             String md5 = getMD5Checksum(e);
             if (md5.equals(checksum)) {
-                System.err.println("Ignoring already available stat for: " + e.getName());
+                System.err.println("Ignoring already available enhancements for: " + e.getName());
                 continue;
             }
 
-            System.err.println("Computing stats for: " + e.getName());
+            System.err.println("Enhancing: " + e.getName());
 
             try {
-                m1 = null;
-                System.gc();
-                System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
-
-                m1 = ModelFactory.createDefaultModel();
+                Model inputModel = ModelFactory.createDefaultModel();
                 InputStream in = new FileInputStream(e);
                 if (e.getName().endsWith(".bz2")) {
                     in = new BZip2CompressorInputStream(in);
                 }
-                m1.read(in, DbnaryModel.DBNARY_NS_PREFIX + "/" + language + "/", "TURTLE");
+                inputModel.read(in, null, "TURTLE");
 
-                System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+                Model outputModel = ModelFactory.createDefaultModel();
 
-                // Compute general stats
+                disambiguator.processTranslations(inputModel, outputModel, language);
+
+                // Update disambiguation confidence
                 StringWriter ow = new StringWriter();
 
-                GeneralStatistics.printStats(m1, language, new PrintWriter(ow));
+                evaluator.printStat(language, new PrintWriter(ow));
                 String stat = ow.toString();
                 stat = elang + "," + md5 + "," + stat;
-                gstats.put(elang, stat);
+                enhConfidence.put(elang, stat);
 
-                // Compute nym stats
+                // Update gloss statistics
                 ow = new StringWriter();
-                NymStatistics.printStats(m1, language, new PrintWriter(ow));
+                stats.printStat(language, new PrintWriter(ow));
                 stat = ow.toString();
                 stat = elang + "," + stat;
-                nstats.put(elang, stat);
+                glossStats.put(elang, stat);
 
-                // Compute translations stats
-                ow = new StringWriter();
-                TranslationsStatistics.printStats(m1, language, countLanguages, new PrintWriter(ow));
-                stat = ow.toString();
-                stat = elang + "," + stat;
-                tstats.put(elang, stat);
             } catch (Exception ex) {
-                System.err.println("Exception caught while computing stats for: " + e.getName());
+                System.err.println("Exception caught while computing disambiguations for: " + e.getName());
                 System.err.println(ex.getLocalizedMessage());
                 ex.printStackTrace(System.err);
             }
 
-            m1 = null;
-            System.gc();
-            System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
-
         }
 
-        writeStats(gstats, "Language,MD5," + GeneralStatistics.getHeaders(), gstatFile);
-        writeStats(nstats, "Language," + NymStatistics.getHeaders(), nstatFile);
-        writeStats(tstats, "Language," + TranslationsStatistics.getHeaders(countLanguages), tstatFile);
+        writeStats(enhConfidence, "Language,MD5," + EvaluationStats.getHeaders(), enhConfidenceFile);
+        writeStats(glossStats, "Language," + StatsModule.getHeaders(), glossStatsFile);
 
-        //TranslationsStatistics.printStats(m1, language, countLanguages, System.out, verbose);
     }
 
     private void writeStats(Map<String, String> gstats, String headers, String gstatFile) throws IOException {
@@ -214,7 +191,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
         HelpFormatter formatter = new HelpFormatter();
         String help =
                 "Update Latest statistics based on latest extracts.";
-        formatter.printHelp("java -cp /path/to/dbnary.jar " + UpdateLatestStatistics.class.getCanonicalName() + "[OPTIONS]",
+        formatter.printHelp("java -cp /path/to/dbnary.jar " + EnhanceLatestExtracts.class.getCanonicalName() + "[OPTIONS]",
                 "With OPTIONS in:", options,
                 help, false);
     }

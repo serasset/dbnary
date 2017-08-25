@@ -1,14 +1,11 @@
 package org.getalp.dbnary.enhancer;
 
 import org.apache.jena.rdf.model.*;
-import org.apache.jena.vocabulary.RDF;
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.preprocessing.StatsModule;
-import org.getalp.dbnary.enhancer.preprocessing.StructuredGloss;
 import org.getalp.iso639.ISO639_3;
 
 import java.io.*;
@@ -18,14 +15,13 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
  * Created by serasset on 12/04/17.
  */
-public abstract class DBnaryEnhancer {
+public class DBnaryEnhancer {
 
     protected static final String RDF_FORMAT_OPTION = "f";
     protected static final String DIR_OPTION = "d";
@@ -35,6 +31,14 @@ public abstract class DBnaryEnhancer {
     protected static final String DEFAULT_OUTPUT_FILE_SUFFIX = "_disambiguated_translations.ttl";
     protected static final String CONFIDENCE_FILE_OPTION = "c";
     protected static final String COMPRESS_OPTION = "z";
+    private static final String USE_GLOSSES_OPTION = "g";
+    private static final String PARAM_DELTA_OPTION = "pdl";
+    private static final String DEFAULT_DELTA_VALUE = "0.05";
+    private static final String PARAM_ALPHA_OPTION = "pda";
+    private static final String DEFAULT_ALPHA_VALUE = "0.1";
+    private static final String PARAM_BETA_OPTION = "pdb";
+    private static final String DEFAULT_BETA_VALUE = "0.9";
+
     protected static Options options = null; // Command line op
     protected CommandLine cmd = null; // Command Line arguments
     protected Map<String,String> languages = new TreeMap<>(); // I want the map to be sorted by language code.
@@ -47,6 +51,11 @@ public abstract class DBnaryEnhancer {
     protected boolean doCompress;
     protected String processDir = null;
 
+    private boolean useGlosses = false;
+    private double delta;
+    private double alpha;
+    private double beta;
+
     static {
         options = new Options();
         options.addOption("h", false, "Prints usage and exits. ");
@@ -57,7 +66,14 @@ public abstract class DBnaryEnhancer {
         options.addOption(OUTPUT_FILE_SUFFIX_OPTION, true, "if present, use the specified value as the filename suffix for the output "
                 + "RDF model containing the computed disambiguated relations for each language." + DEFAULT_OUTPUT_FILE_SUFFIX + " by default.");
         options.addOption(COMPRESS_OPTION, false, "if present, compress the ouput with BZip2.");
+        options.addOption(USE_GLOSSES_OPTION, false, "Use translation glosses for disambiguation when available (default=false)");
+        options.addOption(PARAM_ALPHA_OPTION, true, "Alpha parameter for the Tversky index (default=" + DEFAULT_ALPHA_VALUE + ")");
+        options.addOption(PARAM_BETA_OPTION, true, "Beta parameter for the Tversky index (default=" + DEFAULT_BETA_VALUE + ")");
+        options.addOption(PARAM_DELTA_OPTION, true, "Delta parameter for the choice of disambiguations to keep as a solution (default=" + DEFAULT_DELTA_VALUE + ")");
+
     }
+
+    private TranslationSourcesDisambiguator disambiguator;
 
     protected void output(String lang, String modelFile, Model m) {
         String outputModelFileName = lang + outputFileSuffix;
@@ -71,7 +87,7 @@ public abstract class DBnaryEnhancer {
                 String filename = modelPath.getFileName().toString();
                 if (filename.endsWith(".bz2"))
                     filename = filename.substring(0, filename.length() - 4);
-                outputModelFileName = dir.resolve(filename.replaceAll("_ontolex", "_enhancement")).toString();
+                outputModelFileName = dir.resolve(filename.replaceAll("_ontolex", "_enhancement")).normalize().toString();
             }
         }
 
@@ -145,7 +161,7 @@ public abstract class DBnaryEnhancer {
             Model disambiguatedModel = ModelFactory.createDefaultModel();
             disambiguatedModel.setNsPrefixes(inputModel.getNsPrefixMap());
 
-            this.processTranslations(inputModel, disambiguatedModel, lang);
+            disambiguator.processTranslations(inputModel, disambiguatedModel, lang);
 
             System.err.println("Outputting disambiguation links for " + lang);
             this.output(lang, modelFile, disambiguatedModel);
@@ -164,7 +180,15 @@ public abstract class DBnaryEnhancer {
         }
     }
 
-    protected abstract void printUsage();
+    protected void printUsage() {
+        HelpFormatter formatter = new HelpFormatter();
+        String help =
+                "urlOrFile must point on an RDF model file extracted from wiktionary by DBnary.\n" +
+                        "Alternatively specifying a directory will process all files named ??_dbnary_ontolex.ttl in the given dir";
+        formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.experiment.DisambiguateTranslationSources [OPTIONS] (urlOrFile ...|DIR)",
+                "With OPTIONS in:", options,
+                help, false);
+    }
 
     protected void loadArgs(String[] args) {
         CommandLineParser parser = new DefaultParser();
@@ -242,6 +266,14 @@ public abstract class DBnaryEnhancer {
                 languages.put(l.getId(), arg);
             }
         }
+        useGlosses = cmd.hasOption(USE_GLOSSES_OPTION);
+
+        delta = Double.valueOf(cmd.getOptionValue(PARAM_DELTA_OPTION, DEFAULT_DELTA_VALUE));
+        alpha = Double.valueOf(cmd.getOptionValue(PARAM_ALPHA_OPTION, DEFAULT_ALPHA_VALUE));
+        beta = Double.valueOf(cmd.getOptionValue(PARAM_BETA_OPTION, DEFAULT_BETA_VALUE));
+
+        disambiguator =
+                new TranslationSourcesDisambiguator(alpha, beta, delta, useGlosses, stats, evaluator);
     }
 
     protected void fillInLanguageModels(String processDir) {
@@ -257,6 +289,8 @@ public abstract class DBnaryEnhancer {
                 }
                 String lang = guessLanguage(entry.toString());
                 ISO639_3.Lang l = ISO639_3.sharedInstance.getLang(lang);
+
+                // TODO : ignore the file if the "enhanced" version already exists
                 languages.put(l.getId(), entry.toString());
             }
         } catch (IOException x) {
@@ -289,5 +323,11 @@ public abstract class DBnaryEnhancer {
     }
 
 
-    protected abstract void processTranslations(Model inputModel, Model outputModel, String lang) throws FileNotFoundException;
+    public static void main(String[] args) throws IOException {
+
+        DBnaryEnhancer lld = new DBnaryEnhancer();
+        lld.loadArgs(args);
+        lld.doit();
+    }
+
 }

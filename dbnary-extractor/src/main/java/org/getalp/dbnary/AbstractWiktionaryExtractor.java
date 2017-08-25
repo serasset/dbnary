@@ -1,5 +1,6 @@
 package org.getalp.dbnary;
 
+import org.getalp.LangTools;
 import org.getalp.dbnary.wiki.WikiPatterns;
 
 import java.lang.reflect.InvocationTargetException;

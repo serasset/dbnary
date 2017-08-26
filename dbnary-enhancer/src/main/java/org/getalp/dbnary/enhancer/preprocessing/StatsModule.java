@@ -44,8 +44,8 @@ public class StatsModule {
             }
         }
 
-		public void displayStats(String lang, PrintWriter w) {
-				w.format("%s,%d,%d,%d,%d,%d \n", lang, nbTranslations, translationsWithoutGlosses, nbGlossesWithTextOnly, nbGlossesWithSenseNumberOnly, nbGlossesWithSensNumberAndText);
+		public void displayStats(PrintWriter w) {
+				w.format("%d,%d,%d,%d,%d", nbTranslations, translationsWithoutGlosses, nbGlossesWithTextOnly, nbGlossesWithSenseNumberOnly, nbGlossesWithSensNumberAndText);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class StatsModule {
 
     public void printStat(String lang, PrintWriter out) {
         Stat lstat = stats.get(lang);
-        lstat.displayStats(lang, out);
+        lstat.displayStats(out);
     }
 
     public void displayStats(PrintStream w) {
@@ -100,7 +100,9 @@ public class StatsModule {
     public void displayStats(PrintWriter w) {
         w.println("Language," + getHeaders());
 		for (Entry<String, Stat> e : stats.entrySet()) {
-			e.getValue().displayStats(e.getKey(), w);
+		    w.print(e.getKey());
+			e.getValue().displayStats(w);
+			w.println();
 		}
 	}
 

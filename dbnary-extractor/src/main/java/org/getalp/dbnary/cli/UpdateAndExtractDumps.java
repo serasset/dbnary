@@ -212,7 +212,7 @@ public class UpdateAndExtractDumps {
             String[] args = {"ln", "-s", linkTo, linkName};
             Runtime.getRuntime().exec(args, null, d);
         } catch (IOException e) {
-            System.err.println("Eror while trying to link to latest extract: " + latestFile + "->" + extractFile);
+            System.err.println("Error while trying to link to latest extract: " + latestFile + "->" + extractFile);
             e.printStackTrace(System.err);
         }
     }

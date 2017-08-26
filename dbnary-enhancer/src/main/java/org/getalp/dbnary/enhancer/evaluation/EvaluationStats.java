@@ -30,7 +30,7 @@ public class EvaluationStats {
 
 	public void printStat(String lang, PrintWriter out) {
         Stat lstat = confidenceMap.get(lang);
-        out.format("%s,%.4f,%.4f,%.4f,%.4f,%.4f\n",
+        out.format("%s,%.4f,%.4f,%.4f,%.4f,%.4f",
                 lang, lstat.getPrecision(), lstat.getRecall(), lstat.getF1Score(),
                 lstat.getRandomPrec(), lstat.getRandomRecall());
     }
@@ -40,6 +40,7 @@ public class EvaluationStats {
 		for (String lang : confidenceMap.keySet()) {
 			// System.err.println(lstat);
             printStat(lang, out);
+            out.println();
 		}
 	}
 

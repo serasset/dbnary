@@ -134,6 +134,7 @@ public class EnhanceLatestExtracts {
                 inputModel.read(in, null, this.rdfFormat);
 
                 Model outputModel = ModelFactory.createDefaultModel();
+                outputModel.setNsPrefixes(inputModel.getNsPrefixMap());
 
                 disambiguator.processTranslations(inputModel, outputModel, language);
 

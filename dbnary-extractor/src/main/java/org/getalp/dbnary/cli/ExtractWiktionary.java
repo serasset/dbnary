@@ -204,7 +204,7 @@ public class ExtractWiktionary {
         dumpFile = new File(remainingArgs[0]);
     }
 
-    public void extract() throws WiktionaryIndexerException, IOException {
+    public void extract() throws IOException {
 
         // create new XMLStreamReader
 

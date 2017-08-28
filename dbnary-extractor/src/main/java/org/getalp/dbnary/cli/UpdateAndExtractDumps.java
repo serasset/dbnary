@@ -550,7 +550,14 @@ public class UpdateAndExtractDumps {
 
     private void extractDumpFiles(String[] langs, String[] dirs) {
         for (int i = 0; i < langs.length; i++) {
-            extractDumpFile(langs[i], dirs[i]);
+            boolean ok = extractDumpFile(langs[i], dirs[i]);
+            if (! ok) {
+                // Sometimes the dump is incomplete and finishes in the middle of the xml file,
+                // leading to IOException or IndexException from Extractor.
+                deleteDump(langs[i], dirs[i]);
+                deleteUncompressedDump(langs[i], dirs[i]);
+                deleteDumpDir(langs[i], dirs[i]);
+            }
         }
     }
 

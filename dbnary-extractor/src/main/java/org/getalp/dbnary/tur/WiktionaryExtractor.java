@@ -213,7 +213,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                             gotoNymBlock(m);
                         }
                     } else if (m.group(3) != null) {
-                        String def = m.group(3).trim();
+                        String def = m.group(3);
                         wdh.addPartOfSpeech(def);
                     } else {
                     }

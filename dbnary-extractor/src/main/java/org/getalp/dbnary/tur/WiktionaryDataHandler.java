@@ -34,7 +34,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         posAndTypeValueMap.put("Özel Ad", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("Özel ad", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("Sayı", new PosAndType(LexinfoOnt.numeral, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("Son ek\t", new PosAndType(LexinfoOnt.suffix, OntolexOnt.LexicalEntry));
+        posAndTypeValueMap.put("Son ek", new PosAndType(LexinfoOnt.suffix, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("Sözce", new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression));
         posAndTypeValueMap.put("Ünlem", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
 
@@ -47,9 +47,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         posAndTypeValueMap.put("Fiil", posAndTypeValueMap.get("Eylem"));
         posAndTypeValueMap.put("İbare", posAndTypeValueMap.get("Sözce"));
         posAndTypeValueMap.put("İsim", posAndTypeValueMap.get("Ad"));
-        posAndTypeValueMap.put("Iİsim", posAndTypeValueMap.get("Ad"));
+        posAndTypeValueMap.put("Isim", posAndTypeValueMap.get("Ad"));
+        posAndTypeValueMap.put("isim", posAndTypeValueMap.get("Ad"));
         posAndTypeValueMap.put("Kız ismi", posAndTypeValueMap.get("Kız adı"));
         posAndTypeValueMap.put("Özel isim", posAndTypeValueMap.get("Özel ad"));
+        posAndTypeValueMap.put("Özel İsim", posAndTypeValueMap.get("Özel ad"));
+        posAndTypeValueMap.put("Ozel ad", posAndTypeValueMap.get("Özel ad"));
         posAndTypeValueMap.put("Sıfat", posAndTypeValueMap.get("Ön ad"));
         posAndTypeValueMap.put("Soy ismi", posAndTypeValueMap.get("Soyadı"));
         posAndTypeValueMap.put("Zamir", posAndTypeValueMap.get("Adıl"));
@@ -60,7 +63,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         posAndTypeValueMap.put("Eylem (basit)", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("Harf", new PosAndType(LexinfoOnt.letter, OntolexOnt.LexicalEntry));
         posAndTypeValueMap.put("İfade", new PosAndType(LexinfoOnt.expression, OntolexOnt.LexicalEntry));
-
+        posAndTypeValueMap.put("Önek", posAndTypeValueMap.get("Ön ek"));
     }
 
     public WiktionaryDataHandler(String lang) {
@@ -69,6 +72,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     @Override
     public void addPartOfSpeech(String pos) {
+        pos = pos.trim();
         if (pos.contains("çekim") || pos.contains("çekilmiş"))
             return;     // ignore inflected forms
 

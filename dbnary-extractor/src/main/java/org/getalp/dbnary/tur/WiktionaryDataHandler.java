@@ -69,7 +69,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     @Override
     public void addPartOfSpeech(String pos) {
-        if (! pos.contains("çekim") && ! pos.contains("çekilmiş"))
+        if (pos.contains("çekim") || pos.contains("çekilmiş"))
             return;     // ignore inflected forms
 
         PosAndType pat = posAndTypeValueMap.get(pos);

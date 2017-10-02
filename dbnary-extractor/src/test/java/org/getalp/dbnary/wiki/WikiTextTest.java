@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
@@ -312,7 +313,7 @@ public class WikiTextTest {
     }
 
     @Test
-    public void Heading() throws Exception {
+    public void testHeading() throws Exception {
         String test = "=== Simple Heading ===\n" +
                 "=== Heading level 2 ==\n" +
                 "=== Heading level 3 ====\n" +
@@ -320,7 +321,9 @@ public class WikiTextTest {
                 "=== this one neither === \n" +
                 "=== nor this one \n" +
                 "= No Heading 1 =\n" +
-                "===end===";
+                "===end===\n" +
+                "==Heading 2==\n" +
+                "===Heading 2.1===";
         WikiText text = new WikiText(test);
 
         assertNotNull(text.wikiTokens());
@@ -344,6 +347,76 @@ public class WikiTextTest {
         el = (WikiText.Heading) text.wikiTokens().get(3);
         assertEquals("end", el.content.toString());
         assertEquals(3, el.getLevel());
+
+        int nbH = 0;
+        for(WikiText.Token tok : text.headers()) {
+            assertTrue(tok instanceof WikiText.Heading);
+            nbH++;
+        }
+        assertEquals(6, nbH);
+
+        nbH = 0;
+        for(WikiText.Token tok : text.headers(2)) {
+            assertTrue(tok instanceof WikiText.Heading);
+            nbH++;
+        }
+        assertEquals(2, nbH);
+
+        nbH = 0;
+        for(WikiText.Token tok : text.headers(3)) {
+            assertTrue(tok instanceof WikiText.Heading);
+            nbH++;
+        }
+        assertEquals(4, nbH);
+
+        nbH = 0;
+        for(WikiText.Token tok : text.headersMatching(Pattern.compile("\\s*Heading.*"))) {
+            assertTrue(tok instanceof WikiText.Heading);
+            nbH++;
+        }
+        assertEquals(3, nbH); // 3 Headers with title beginning by "Heading", === Heading level 3 ====, ==Heading 2==, ===Heading 2.1===
+        // === Heading level 2 == is a level 2 heading starting with = (hence it does not match...)
+
+        nbH = 0;
+        for(WikiText.Token tok : text.headersMatching(3, Pattern.compile("\\s*Heading.*"))) {
+            assertTrue(tok instanceof WikiText.Heading);
+            nbH++;
+        }
+        assertEquals(2, nbH); // 3 Headers with title beginning by "Heading", === Heading level 3 ====, ==Heading 2==, ===Heading 2.1===
+        // === Heading level 2 == is a level 2 heading starting with = (hence it does not match...)
+
+    }
+
+    @Test
+    public void testSections() {
+        String test =
+                "==H2==\n" +
+                        "===H3.1===\n" +
+                        "{{test}}\n" +
+                        "text\n" +
+                        "===H3.2===\n" +
+                        "[[link]]\n" +
+                        "==H2.2==\n" +
+                        "{{test}}\n" +
+                        "===H3.3===\n" +
+                        "{{test}}\n" +
+                        "[[link]]";
+
+        WikiText t = new WikiText(test);
+
+        for (WikiSection s : t.sections(2)) {
+            assertTrue(s.getHeader().getContent().toString().startsWith("H2"));
+            for (WikiText.Token tok : s.getContent().tokens()) {
+                System.out.println("tok=" + tok.toString());
+            }
+            System.out.println("---------");
+        }
+        System.out.println("+++++++++");
+
+        for (WikiSection s : t.sections(3)) {
+            System.out.println(s.getContent());
+            System.out.println("---------");
+        }
 
     }
 

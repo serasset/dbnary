@@ -6,4 +6,6 @@ public interface IWiktionaryExtractor {
 
     void extractData(String wiktionaryPageName, String pageContent);
 
+    void postProcessData();
+
 }

@@ -20,8 +20,8 @@ import java.util.regex.Pattern;
 public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktionaryDataHandler {
 
     protected static class PosAndType {
-        protected Resource pos;
-        protected Resource type;
+        public Resource pos;
+        public Resource type;
 
         public PosAndType(Resource p, Resource t) {
             this.pos = p;
@@ -53,7 +53,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     protected int nbEntries = 0;
     private String NS;
-    protected String currentEncodedPageName;
+    protected String currentEncodedLexicalEntryName;
     protected String currentWiktionaryPageName;
     protected CounterSet currentLexieCount = new CounterSet();
     protected Resource currentMainLexEntry;
@@ -65,7 +65,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     private HashMap<SimpleImmutableEntry<String, String>, HashSet<HashSet<PropertyObjectPair>>> heldBackOtherForms = new HashMap<SimpleImmutableEntry<String, String>, HashSet<HashSet<PropertyObjectPair>>>();
 
-    private static HashMap<String, Property> nymPropertyMap = new HashMap<String, Property>();
+    protected static HashMap<String, Property> nymPropertyMap = new HashMap<String, Property>();
     protected static HashMap<String, PosAndType> posAndTypeValueMap = new HashMap<String, PosAndType>();
 
     static {
@@ -168,13 +168,13 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         currentSharedPronunciations = new HashSet<PronunciationPair>();
 
         // Create a dummy lexical entry that points to the one that corresponds to a part of speech
-        currentMainLexEntry = getVocableResource(wiktionaryPageName, true);
+        currentMainLexEntry = getPageResource(wiktionaryPageName, true);
 
 
         // Retain these statements to be inserted in the model when we know that the entry corresponds to a proper part of speech
         heldBackStatements.add(aBox.createStatement(currentMainLexEntry, RDF.type, DBnaryOnt.Page));
 
-        currentEncodedPageName = null;
+        currentEncodedLexicalEntryName = null;
         currentLexEntry = null;
     }
 
@@ -222,8 +222,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
         nbEntries++;
 
-        currentEncodedPageName = getEncodedPageName(currentWiktionaryPageName, originalPOS, currentLexieCount.incr(currentWiktionaryPos));
-        currentLexEntry = getLexEntry(currentEncodedPageName, normalizedType);
+        currentEncodedLexicalEntryName = getEncodedPageName(currentWiktionaryPageName, originalPOS, currentLexieCount.incr(currentWiktionaryPos));
+        currentLexEntry = getLexEntry(currentEncodedLexicalEntryName, normalizedType);
 
         if (!normalizedType.equals(OntolexOnt.LexicalEntry)) {
             // Add the Lexical Entry type so that users may refer to all entries using the top hierarchy without any reasoner.
@@ -245,7 +245,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         translationCount.resetAll();
         reifiedNymCount.resetAll();
 
-        currentCanonicalForm = aBox.createResource(getPrefix() + "__cf_" + currentEncodedPageName, OntolexOnt.Form);
+        currentCanonicalForm = aBox.createResource(getPrefix() + "__cf_" + currentEncodedLexicalEntryName, OntolexOnt.Form);
 
         // If a pronunciation was given before the first part of speech, it means that it is shared amoung pos/etymologies
         for (PronunciationPair p : currentSharedPronunciations) {
@@ -335,7 +335,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
             return; // Don't register anything if current lex entry is not known.
         }
 
-        log.debug("Registering lexical Variant: {} for entry: {}", alt, currentEncodedPageName);
+        log.debug("Registering lexical Variant: {} for entry: {}", alt, currentEncodedLexicalEntryName);
         Resource altlemma = aBox.createResource();
         aBox.add(currentLexEntry, VarTransOnt.lexicalRel, altlemma);
         aBox.add(altlemma, OntolexOnt.writtenRep, alt, wktLanguageEdition);
@@ -353,7 +353,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
             return; // Don't register anything if current lex entry is not known.
         }
         if (lvl > 1) {
-            log.trace("registering sub sense for {}", currentEncodedPageName);
+            log.trace("registering sub sense for {}", currentEncodedLexicalEntryName);
             currentSubSenseNumber++;
         } else {
             currentSenseNumber++;
@@ -389,7 +389,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
 
     private String computeSenseId(String senseNumber) {
-        return getPrefix() + "__ws_" + senseNumber + "_" + currentEncodedPageName;
+        return getPrefix() + "__ws_" + senseNumber + "_" + currentEncodedLexicalEntryName;
     }
 
     protected String computeSenseNum() {
@@ -439,15 +439,15 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         return getPrefix() + uriEncode(vocable);
     }
 
-    public Resource getVocableResource(String vocable, boolean dontLinkWithType) {
+    public Resource getPageResource(String vocable, boolean dontLinkWithType) {
         if (dontLinkWithType) {
             return aBox.createResource(getVocableResourceName(vocable));
         }
         return aBox.createResource(getVocableResourceName(vocable), DBnaryOnt.Page);
     }
 
-    public Resource getVocableResource(String vocable) {
-        return getVocableResource(vocable, false);
+    public Resource getPageResource(String vocable) {
+        return getPageResource(vocable, false);
     }
 
     protected void mergePropertiesIntoResource(HashSet<PropertyObjectPair> properties, Resource res) {
@@ -520,7 +520,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
 
     protected String computeOtherFormResourceName(Resource lexEntry, HashSet<PropertyObjectPair> properties) {
-        String lexEntryLocalName = currentEncodedPageName;
+        String lexEntryLocalName = currentEncodedLexicalEntryName;
         String compactProperties = DatatypeConverter.printBase64Binary(BigInteger.valueOf(properties.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
 
         return "__wf_" + compactProperties + "_" + lexEntryLocalName;
@@ -561,7 +561,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
             // inflection for each entry.
 
             // First, we store the other form for all the existing entries
-            Resource vocable = getVocableResource(canonicalForm, true);
+            Resource vocable = getPageResource(canonicalForm, true);
 
             StmtIterator entries = vocable.listProperties(DBnaryOnt.describes);
 
@@ -642,10 +642,47 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
         Property nymProperty = nymPropertyMap.get(synRelation);
 
-        Resource targetResource = getVocableResource(target);
+        Resource targetResource = getPageResource(target);
 
         aBox.add(entity, nymProperty, targetResource);
     }
+
+    public void registerNymRelationToEntity(String target, String synRelation, Resource entity, Resource gloss, String usage) {
+        if (null == entity) {
+            log.debug("Registering Lexical Relation when lex entry is null in \"{}\".", this.currentMainLexEntry);
+            return; // Don't register anything if current lex entry is not known.
+        }
+        // Some links point to Annex pages or Images, just ignore these.
+        int colon = target.indexOf(':');
+        if (colon != -1) {
+            return;
+        }
+        int hash = target.indexOf('#');
+        if (hash != -1) {
+            // The target contains an intra page href. Remove it from the target uri and keep it in the relation.
+            target = target.substring(0, hash);
+            // TODO: keep additional intra-page href
+            // aBox.add(nym, isAnnotatedBy, target.substring(hash));
+        }
+        Property nymProperty = nymPropertyMap.get(synRelation);
+
+        Resource targetResource = getPageResource(target);
+
+        Statement nymR = aBox.createStatement(entity, nymProperty, targetResource);
+        aBox.add(nymR);
+
+        if (gloss == null && usage == null)
+            return;
+
+        ReifiedStatement rnymR = nymR.createReifiedStatement(computeNymId(synRelation));
+        if (gloss != null)
+            rnymR.addProperty(DBnaryOnt.gloss, gloss);
+        if (usage != null)
+            rnymR.addProperty(DBnaryOnt.usage, usage);
+
+
+    }
+
 
     @Override
     public void registerNymRelation(String target, String synRelation) {
@@ -677,7 +714,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     protected String getGlossResourceName(StructuredGloss gloss) {
         String key = gloss.getGloss() + gloss.getSenseNumber();
         key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
-        return getPrefix() + "__" + wktLanguageEdition + "_gloss_" + key + "_" + currentEncodedPageName ;
+        return getPrefix() + "__" + wktLanguageEdition + "_gloss_" + key + "_" + currentEncodedLexicalEntryName;
     }
 
     @Override
@@ -687,43 +724,15 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     @Override
     public void registerNymRelation(String target, String synRelation, Resource gloss, String usage) {
-        if (null == currentLexEntry) {
-            log.debug("Registering Lexical Relation when lex entry is null in \"{}\".", this.currentMainLexEntry);
-            return; // Don't register anything if current lex entry is not known.
-        }
-        // Some links point to Annex pages or Images, just ignore these.
-        int colon = target.indexOf(':');
-        if (colon != -1) {
-            return;
-        }
-        int hash = target.indexOf('#');
-        if (hash != -1) {
-            // The target contains an intra page href. Remove it from the target uri and keep it in the relation.
-            target = target.substring(0, hash);
-            // TODO: keep additional intra-page href
-            // aBox.add(nym, isAnnotatedBy, target.substring(hash));
-        }
-        Property nymProperty = nymPropertyMap.get(synRelation);
-
-        Resource targetResource = getVocableResource(target);
-
-        Statement nymR = aBox.createStatement(currentLexEntry, nymProperty, targetResource);
-        aBox.add(nymR);
-
-        if (gloss == null && usage == null)
-            return;
-
-        ReifiedStatement rnymR = nymR.createReifiedStatement(computeNymId(synRelation));
-        if (gloss != null)
-            rnymR.addProperty(DBnaryOnt.gloss, gloss);
-        if (usage != null)
-            rnymR.addProperty(DBnaryOnt.usage, usage);
-
-
+        registerNymRelationToEntity(target, synRelation, currentLexEntry, gloss, usage);
     }
 
-    private String computeNymId(String nym) {
-        return getPrefix() + "__" + nym + "_" + reifiedNymCount.incr(nym) + "_" + currentEncodedPageName;
+    protected String computeNymId(String nym) {
+        return computeNymId(nym, currentEncodedLexicalEntryName);
+    }
+
+    protected String computeNymId(String nym, String pagename) {
+        return getPrefix() + "__" + nym + "_" + reifiedNymCount.incr(nym) + "_" + pagename;
     }
 
     @Override
@@ -748,7 +757,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
         Property nymProperty = nymPropertyMap.get(synRelation);
 
-        Resource targetResource = getVocableResource(target);
+        Resource targetResource = getPageResource(target);
 
         aBox.add(currentSense, nymProperty, targetResource);
     }

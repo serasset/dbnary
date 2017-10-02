@@ -563,7 +563,7 @@ public class UpdateAndExtractDumps {
 
     private boolean extractDumpFile(String lang, String dir) {
         boolean status = true;
-        if (null == dir || dir.equals("")) return false;
+        if (null == dir || dir.equals("")) return true;
 
         String odir = extractDir + "/" + model.toLowerCase() + "/" + lang;
         File d = new File(odir);

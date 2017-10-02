@@ -256,6 +256,9 @@ public class ExtractWiktionary {
                 }
             }
 
+            // TODO : enable post processing after extraction ?
+            we.postProcessData();
+
             saveBox(Feature.MAIN, outputFile);
             System.err.println(nbPages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
             System.err.println("Semnet contains: " + wdh.nbEntries() + " nodes.");

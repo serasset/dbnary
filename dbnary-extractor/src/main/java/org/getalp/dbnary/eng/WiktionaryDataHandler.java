@@ -1,12 +1,14 @@
 package org.getalp.dbnary.eng;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.vocabulary.RDF;
 import org.getalp.LangTools;
 import org.getalp.dbnary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.DatatypeConverter;
+import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -221,4 +223,41 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         this.mergePropertiesIntoResource(infl.toPropertyObjectMap(), currentCanonicalForm);
     }
 
+    public Resource getGlossForWikisaurus(String id) {
+        return aBox.createResource(getGlossURI(id), DBnaryOnt.Gloss);
+    }
+
+    public String getGlossURI(String id) {
+        return getPrefix() + "__" + wktLanguageEdition + "_gloss_" + id + "_" + uriEncode(currentWiktionaryPageName);
+    }
+
+    public void registerWikisaurusNym(String currentPOS, String currentWS, String currentNym, String s) {
+        if (s.equals(currentWiktionaryPageName))
+            return;
+        if (null == currentNym || "".equals(currentNym.trim())) {
+            log.debug("null nym in Wikisaurus:{}", currentWiktionaryPageName);
+        }
+        Property nymProperty = nymPropertyMap.get(currentNym);
+        if (null == nymProperty) {
+            log.debug("Unknown Nym Property in Wikisaurus:{}", currentNym);
+            return;
+        }
+
+        Statement nymR = aBox.createStatement(currentMainLexEntry, nymProperty, getPageResource(s));
+        aBox.add(nymR);
+
+        if (currentWS == null && currentPOS == null)
+            return;
+        String gloss = currentNym + currentPOS + currentWS;
+        gloss = DatatypeConverter.printBase64Binary(BigInteger.valueOf(gloss.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
+        Resource glossResource = getGlossForWikisaurus(gloss);
+        if (null != currentPOS)
+            aBox.add(aBox.createStatement(glossResource, DBnaryOnt.partOfSpeech, posResource(currentPOS)));
+        if (null != currentWS)
+            aBox.add(glossResource, RDF.value, currentWS, getCurrentEntryLanguage());
+
+        ReifiedStatement rnymR = nymR.createReifiedStatement(computeNymId(currentNym, uriEncode(currentWiktionaryPageName)));
+        if (glossResource != null)
+            rnymR.addProperty(DBnaryOnt.gloss, glossResource);
+    }
 }

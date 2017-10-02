@@ -10,10 +10,7 @@ import org.getalp.dbnary.wiki.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,11 +39,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         } else {
             log.error("English Wiktionary Extractor instanciated with a non english data handler!");
         }
+
     }
 
     protected static Pattern languageSectionPattern;
     protected final static Pattern sectionPattern;
-    protected final static HashMap<String, String> nymMarkerToNymName;
     protected final static Pattern pronPattern;
 
     static {
@@ -54,15 +51,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         sectionPattern = Pattern.compile(sectionPatternString);
         pronPattern = Pattern.compile(pronPatternString);
-
-        nymMarkerToNymName = new HashMap<String, String>(20);
-        nymMarkerToNymName.put("Synonyms", "syn");
-        nymMarkerToNymName.put("Antonyms", "ant");
-        nymMarkerToNymName.put("Hyponyms", "hypo");
-        nymMarkerToNymName.put("Hypernyms", "hyper");
-        nymMarkerToNymName.put("Meronyms", "mero");
-        nymMarkerToNymName.put("Holonyms", "holo");
-        nymMarkerToNymName.put("Troponyms", "tropo");
 
         // TODO: Treat Abbreviations and Acronyms and contractions and Initialisms
         // TODO: Alternative forms
@@ -76,12 +64,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private String currentNym = null;
     private ExpandAllWikiModel wikiExpander;
     protected EnglishDefinitionExtractorWikiModel definitionExpander;
+    private WikisaurusExtractor wikisaurusExtractor;
+
 
     @Override
     public void setWiktionaryIndex(WiktionaryIndex wi) {
         super.setWiktionaryIndex(wi);
         wikiExpander = new ExpandAllWikiModel(wi, Locale.ENGLISH, "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
         definitionExpander = new EnglishDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("en"), "/${image}", "/${title}");
+        wikisaurusExtractor = new WikisaurusExtractor(this.ewdh);
     }
 
     /* (non-Javadoc)
@@ -112,10 +103,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         wdh.finalizePageExtraction();
     }
 
+    @Override
+    public boolean filterOutPage(String pagename) {
+        if (pagename.startsWith("Wikisaurus")) {
+            // Extract Wikisaurus pages...
+            //log.debug("Existing wikisaurus page | {}", pagename);
+            return false;
+        }
+        return super.filterOutPage(pagename);
+    }
+
     protected void extractEnglishData(int startOffset, int endOffset) {
+        if (wiktionaryPageName.startsWith("Wikisaurus:")) {
+            wiktionaryPageName = wiktionaryPageName.substring("Wikisaurus:".length());
+            wdh.initializeEntryExtraction(wiktionaryPageName);
+            wikisaurusExtractor.extractWikisaurusSection(wiktionaryPageName, pageContent.substring(startOffset, endOffset));
+            return;
+        }
+        wdh.initializeEntryExtraction(wiktionaryPageName);
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
-        wdh.initializeEntryExtraction(wiktionaryPageName);
         wikiExpander.setPageName(wiktionaryPageName);
         currentBlock = Block.NOBLOCK;
 
@@ -155,7 +162,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             return Block.CONJUGATIONBLOCK;
         } else if (title.startsWith("Etymology")) {
             return Block.ETYMOLOGYBLOCK;
-        } else if (null != (nym = nymMarkerToNymName.get(title))) {
+        } else if (null != (nym = EnglishGlobals.nymMarkerToNymName.get(title))) {
             context.put("nym", nym);
             return Block.NYMBLOCK;
         } else {
@@ -267,7 +274,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // macroMatcher.region(startOffset, endOffset);
 
         // while (macroMatcher.find()) {
-        // TODO: current code goes through all templates of the defintion block whil it should only process morphology templates.
+        // TODO: current code goes through all templates of the defintion block while it should only process morphology templates.
 
         int nbTempl = 0;
         for (WikiText.Token wikiTemplate : wikiTemplates) {
@@ -761,7 +768,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 String g2 = macroMatcher.group(2);
                 // Ignore glose if it is a macro
                 if (g2 != null && !g2.startsWith("{{")) {
-                    currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);;
+                    currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);
+                    ;
                 } else {
                     currentGloss = null;
                 }
@@ -848,7 +856,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     // TODO: handle Wikisaurus pages
     private void handleWikisaurus(String linkText, String currentNym) {
-
+        log.debug("Pointing to wikisaurus | {}", linkText);
     }
 
     @Override
@@ -875,4 +883,5 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         definitionExpander.setPageName(this.wiktionaryPageName);
         definitionExpander.parseDefinition(definition, defLevel);
     }
+
 }

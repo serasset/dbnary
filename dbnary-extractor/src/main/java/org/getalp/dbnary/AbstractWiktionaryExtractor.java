@@ -117,13 +117,6 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     }
 
 
-    /**
-     * @return the wiktionaryIndex
-     */
-    // public WiktionaryIndex getWiktionaryIndex() {
-    //    return wiktionaryIndex;
-    //}
-
     // DONE: filter out pages that are in specific Namespaces (Wiktionary:, Categories:, ...)
     // TODO: take Redirect page into account as alternate spelling.
     // TODO: take homography into account (ex: mousse) and separate different definitions for the same pos.
@@ -147,6 +140,11 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         }
     }
 
+    /**
+     * returns true iff the pagename should be ignored during extraction.
+     * @param pagename
+     * @return
+     */
     public boolean filterOutPage(String pagename) {
         return pagename.contains(":");
     }
@@ -495,4 +493,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         return f;
     }
 
+    @Override
+    public void postProcessData() {
+        // do nothing
+    }
 }

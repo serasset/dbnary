@@ -86,13 +86,13 @@ public class WikiPattern {
 
     private static final Pattern lexerPatern = Pattern.compile(reserveWikiPatternWords);
 
-    private static final String TEMPLATES = WikiCharSequence.TEMPLATES_RANGE.toString();
-    private static final String INTERNAL_LINKS = WikiCharSequence.INTERNAL_LINKS_RANGE.toString();
-    private static final String EXTERNAL_LINKS = WikiCharSequence.EXTERNAL_LINKS_RANGE.toString();
-    private static final String HEADERS = WikiCharSequence.HEADERS_RANGE.toString();
-    private static final String LIST_ITEMS = WikiCharSequence.LISTS_RANGE.toString();
-    private static final String LINKS = INTERNAL_LINKS + EXTERNAL_LINKS;
-    private static final String RESERVED = TEMPLATES + LINKS + HEADERS + LIST_ITEMS ;
+    public static final String TEMPLATES = WikiCharSequence.TEMPLATES_RANGE.toString();
+    public static final String INTERNAL_LINKS = WikiCharSequence.INTERNAL_LINKS_RANGE.toString();
+    public static final String EXTERNAL_LINKS = WikiCharSequence.EXTERNAL_LINKS_RANGE.toString();
+    public static final String HEADERS = WikiCharSequence.HEADERS_RANGE.toString();
+    public static final String LIST_ITEMS = WikiCharSequence.LISTS_RANGE.toString();
+    public static final String LINKS = INTERNAL_LINKS + EXTERNAL_LINKS;
+    public static final String RESERVED = TEMPLATES + LINKS + HEADERS + LIST_ITEMS ;
 
     private static String whitespace_chars =  ""       /* dummy empty string for homogeneity */
             + "\\u0009" // CHARACTER TABULATION

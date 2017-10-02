@@ -153,6 +153,7 @@ public class GetExtractedSemnet {
             String pageContent = wi.getTextOfPage(remainingArgs[i]);
             we.extractData(remainingArgs[i], pageContent);
         }
+        we.postProcessData();
 
         dumpBox(Feature.MAIN);
         if (extractsMorpho) {

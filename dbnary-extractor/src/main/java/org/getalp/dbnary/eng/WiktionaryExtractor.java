@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-    //TODO: Handle Wikisaurus entries.
+    //DONE: Handle Wikisaurus entries.
     //DONE: extract pronunciation
     //TODO: attach multiple pronounciation correctly
     static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
@@ -105,7 +105,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     @Override
     public boolean filterOutPage(String pagename) {
-        if (pagename.startsWith("Wikisaurus")) {
+        if (isWikisaurus(pagename)) {
             // Extract Wikisaurus pages...
             //log.debug("Existing wikisaurus page | {}", pagename);
             return false;
@@ -113,9 +113,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return super.filterOutPage(pagename);
     }
 
+    private boolean isWikisaurus(String pagename) {
+        return pagename.startsWith("Wikisaurus") || pagename.startsWith("Thesaurus");
+    }
+
+    private String cutNamespace(String pagename) {
+        int p = pagename.indexOf(":");
+        return pagename.substring(p+1);
+    }
+
     protected void extractEnglishData(int startOffset, int endOffset) {
-        if (wiktionaryPageName.startsWith("Wikisaurus:")) {
-            wiktionaryPageName = wiktionaryPageName.substring("Wikisaurus:".length());
+        if (isWikisaurus(wiktionaryPageName)) {
+            wiktionaryPageName = cutNamespace(wiktionaryPageName);
             wdh.initializeEntryExtraction(wiktionaryPageName);
             wikisaurusExtractor.extractWikisaurusSection(wiktionaryPageName, pageContent.substring(startOffset, endOffset));
             return;
@@ -820,8 +829,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 if (linkText != null && !linkText.equals("") &&
                         !linkText.startsWith("Catégorie:") &&
                         !linkText.startsWith("#")) {
-                    if (linkText.startsWith("Wikisaurus:")) {
-                        handleWikisaurus(linkText, currentNym);
+                    if (isWikisaurus(linkText)) {
+                        // NOP: Wikisaurus pages are extracted independently
+                        // TODO : should we note that the current lexical entry points 
+                        // to this particular wikisaurus page
                     } else {
                         wdh.registerNymRelation(linkText, synRelation, currentGloss);
                     }
@@ -852,13 +863,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
         }
     }
-
-
-    // TODO: handle Wikisaurus pages
-    private void handleWikisaurus(String linkText, String currentNym) {
-        log.debug("Pointing to wikisaurus | {}", linkText);
-    }
-
+    
     @Override
     public void extractExample(String example) {
         // TODO: current example extractor cannot handle English data where different lines are used to define the example.

@@ -2,6 +2,7 @@ package org.getalp.dbnary.eng;
 
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.RDF;
 import org.getalp.LangTools;
 import org.getalp.dbnary.*;
 import org.slf4j.Logger;

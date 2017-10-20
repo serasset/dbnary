@@ -6,6 +6,9 @@ import org.apache.jena.vocabulary.RDFS;
 import org.apache.commons.cli.*;
 import org.getalp.LangTools;
 
+/**
+ * @deprecated
+ */
 public class ExtractLanguageNamesFromLexvo {
 
 

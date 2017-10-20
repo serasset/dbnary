@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-// import org.getalp.dbnary.DbnaryModel;
-
 public class TverskyBasedTranslationDisambiguationMethod implements
 		DisambiguationMethod {
 

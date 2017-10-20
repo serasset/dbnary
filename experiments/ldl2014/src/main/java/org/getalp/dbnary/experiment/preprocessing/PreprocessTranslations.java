@@ -1,10 +1,11 @@
 package org.getalp.dbnary.experiment.preprocessing;
 
 import com.hp.hpl.jena.rdf.model.*;
-import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.DbnaryModel;
+import org.apache.commons.cli.*;
 import org.getalp.iso639.ISO639_3;
 import org.getalp.iso639.ISO639_3.Lang;
+import org.getalp.dbnary.DBnaryOnt;
+import org.getalp.dbnary.DbnaryModel;
 
 import java.lang.reflect.InvocationTargetException;
 

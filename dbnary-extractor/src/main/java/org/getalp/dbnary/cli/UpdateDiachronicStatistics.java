@@ -1,9 +1,9 @@
 package org.getalp.dbnary.cli;
 
-import org.apache.commons.cli.*;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.commons.cli.*;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.LangTools;
 import org.getalp.dbnary.stats.GeneralStatistics;

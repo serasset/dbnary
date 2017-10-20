@@ -59,8 +59,8 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
             return this.prefixes.get(lang);
         String prefix = DBNARY_NS_PREFIX + "/eng/" + lang + "/";
         prefixes.put(lang, prefix);
-	    aBox.setNsPrefix(lang + "-eng", prefix);
-	    return prefix;
+        aBox.setNsPrefix(lang + "-eng", prefix);
+        return prefix;
     }
 
     @Override

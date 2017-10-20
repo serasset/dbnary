@@ -28,6 +28,7 @@ public class GetExtractedSemnet {
     private String language = DEFAULT_LANGUAGE;
     private String model = DEFAULT_MODEL;
     private boolean extractsMorpho = false;
+    private boolean extractsEtymology = false;
 
 
     private static final String FOREIGN_EXTRACTION_OPTION = "x";
@@ -35,6 +36,11 @@ public class GetExtractedSemnet {
     private static final String MORPHOLOGY_OUTPUT_FILE_LONG_OPTION = "morpho";
     private static final String MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION = "M";
 
+    protected static final String ETYMOLOGY_OUTPUT_FILE_LONG_OPTION = "etymology";
+    protected static final String ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION = "E";
+
+    protected static final String URI_PREFIX_LONG_OPTION = "prefix";
+    protected static final String URI_PREFIX_SHORT_OPTION = "p";
 
     static {
         options = new Options();
@@ -49,6 +55,14 @@ public class GetExtractedSemnet {
         options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
                 .withDescription("extract morphology data.")
                 .create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
+        options.addOption(OptionBuilder.withLongOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)
+                .withDescription("extract etymology data.")
+                .create(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION));
+        options.addOption(OptionBuilder.withLongOpt(URI_PREFIX_LONG_OPTION)
+                .withDescription("set the URI prefix used in the extracted dataset. Default: " + DbnaryModel.DBNARY_NS_PREFIX)
+                .hasArg()
+                .withArgName("uri")
+                .create(URI_PREFIX_SHORT_OPTION));
     }
 
     WiktionaryIndex wi;
@@ -95,6 +109,11 @@ public class GetExtractedSemnet {
         }
 
         extractsMorpho = cmd.hasOption(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION);
+        extractsEtymology = cmd.hasOption(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION);
+
+        if (cmd.hasOption(URI_PREFIX_LONG_OPTION)) {
+            DbnaryModel.setGlobalDbnaryPrefix(cmd.getOptionValue(URI_PREFIX_SHORT_OPTION));
+        }
 
         remainingArgs = cmd.getArgs();
         if (remainingArgs.length <= 1) {
@@ -116,6 +135,7 @@ public class GetExtractedSemnet {
                     wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
                 }
                 if (extractsMorpho) wdh.enableFeature(Feature.MORPHOLOGY);
+                if (extractsEtymology) wdh.enableFeature(Feature.ETYMOLOGY);
             } else {
                 System.err.println("LMF format not supported anymore.");
                 System.exit(1);
@@ -160,7 +180,7 @@ public class GetExtractedSemnet {
             System.out.println("----------- MORPHOLOGY ----------");
             dumpBox(Feature.MORPHOLOGY);
         }
-        if (null != etymologyOutputFile) {
+        if (extractsEtymology) {
             System.out.println("----------- ETYMOLOGY ----------");
             dumpBox(Feature.ETYMOLOGY);
         }

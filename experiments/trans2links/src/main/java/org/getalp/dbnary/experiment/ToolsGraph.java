@@ -8,7 +8,9 @@ import org.getalp.dbnary.VarTransOnt;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
 import org.jgrapht.UndirectedGraph;
+import org.jgrapht.WeightedGraph;
 import org.jgrapht.alg.BronKerboschCliqueFinder;
+import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.alg.StoerWagnerMinimumCut;
 import org.jgrapht.ext.*;
 import org.jgrapht.graph.DefaultEdge;
@@ -16,6 +18,9 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.*;
 
 public class ToolsGraph {
     // create jgrapht graph object from a rdf graph file

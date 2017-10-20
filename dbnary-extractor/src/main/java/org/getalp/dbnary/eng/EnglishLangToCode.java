@@ -77,16 +77,16 @@ public class EnglishLangToCode extends LangTools {
             BufferedReader br = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
 
             String s = br.readLine();
-	    //skip header
-	    s = br.readLine();
+	        //skip header
+	        s = br.readLine();
             while (s != null) {
                 String[] line = s.split(";");
-		String code = line[1];
-		String canonical_name = line[2];
-		String[] other_names = {};
-		if (line.length > 11){
-		    other_names = line[11].split(",");
-		}
+		        String code = line[1];
+		        String canonical_name = line[2];
+		        String[] other_names = {};
+		        if (line.length > 11){
+		            other_names = line[11].split(",");
+		        }
 
 		//Only add data for languages that are not present in the ISO file
 		String language_names[] = new String[other_names.length + 1];

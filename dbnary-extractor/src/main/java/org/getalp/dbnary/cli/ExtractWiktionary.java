@@ -40,6 +40,12 @@ public class ExtractWiktionary {
     private static final String MORPHOLOGY_OUTPUT_FILE_LONG_OPTION = "morpho";
     private static final String MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION = "M";
 
+    private static final String ETYMOLOGY_OUTPUT_FILE_LONG_OPTION = "etymology";
+    private static final String ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION = "E";
+
+    protected static final String URI_PREFIX_LONG_OPTION = "prefix";
+    protected static final String URI_PREFIX_SHORT_OPTION = "p";
+
     private static final String FROM_PAGE_LONG_OPTION = "frompage";
     private static final String FROM_PAGE_SHORT_OPTION = "F";
 
@@ -53,6 +59,7 @@ public class ExtractWiktionary {
 
     private String outputFile = DEFAULT_OUTPUT_FILE;
     private String morphoOutputFile = null;
+    private String etymologyOutputFile = null;
     private String outputFormat = DEFAULT_OUTPUT_FORMAT;
     private String model = DEFAULT_MODEL;
     private boolean compress;
@@ -85,6 +92,16 @@ public class ExtractWiktionary {
                 .hasArg()
                 .withArgName("file")
                 .create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
+        options.addOption(OptionBuilder.withLongOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)
+                .withDescription("extract etymology data.")
+                .hasArg()
+                .withArgName("file")
+                .create(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION));
+        options.addOption(OptionBuilder.withLongOpt(URI_PREFIX_LONG_OPTION)
+                .withDescription("set the URI prefix used in the extracted dataset. Default: " + DbnaryModel.DBNARY_NS_PREFIX)
+                .hasArg()
+                .withArgName("uri")
+                .create(URI_PREFIX_SHORT_OPTION));
         options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign Languages");
         options.addOption(OptionBuilder.withLongOpt(FROM_PAGE_LONG_OPTION)
                 .withDescription("Do not process pages before the nth one. 0 by default.")
@@ -155,6 +172,10 @@ public class ExtractWiktionary {
         }
         outputFormat = outputFormat.toUpperCase();
 
+        if (cmd.hasOption(URI_PREFIX_LONG_OPTION)) {
+            DbnaryModel.setGlobalDbnaryPrefix(cmd.getOptionValue(URI_PREFIX_SHORT_OPTION));
+        }
+
         if (cmd.hasOption(MODEL_OPTION)) {
             System.err.println("WARN: the " + MODEL_OPTION + " option is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
             // model = cmd.getOptionValue(MODEL_OPTION);
@@ -170,6 +191,10 @@ public class ExtractWiktionary {
 
         if (cmd.hasOption(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)) {
             morphoOutputFile = cmd.getOptionValue(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION);
+        }
+
+        if (cmd.hasOption(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)) {
+            etymologyOutputFile = cmd.getOptionValue(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION);
         }
 
         if (cmd.hasOption(LANGUAGE_OPTION)) {
@@ -205,6 +230,7 @@ public class ExtractWiktionary {
                     wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
             }
             if (morphoOutputFile != null) wdh.enableFeature(Feature.MORPHOLOGY);
+            if (etymologyOutputFile != null) wdh.enableFeature(Feature.ETYMOLOGY);
         } else {
             System.err.println("unsupported format :" + outputFormat);
             System.exit(1);

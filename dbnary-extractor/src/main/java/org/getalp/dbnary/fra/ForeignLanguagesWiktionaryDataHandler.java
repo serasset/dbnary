@@ -14,6 +14,7 @@ public class ForeignLanguagesWiktionaryDataHandler extends OntolexBasedRDFDataHa
 
     private HashMap<String, String> prefixes = new HashMap<String, String>();
 
+    private String currentEntryLanguage = null;
     private String currentPrefix = null;
 
     public ForeignLanguagesWiktionaryDataHandler(String lang) {
@@ -24,6 +25,15 @@ public class ForeignLanguagesWiktionaryDataHandler extends OntolexBasedRDFDataHa
     public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
         currentPrefix = getPrefix(lang);
         super.initializeEntryExtraction(wiktionaryPageName);
+    }
+
+    public void setCurrentLanguage(String lang, String languageName) {
+        lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
+        currentEntryLanguage = LangTools.normalize(LangTools.threeLettersCode(lang));
+        //currentEntryLanguage = lang;
+        //currentEntryLanguageName = languageName;
+        //wktLanguageEdition = LangTools.getPart1OrId(lang);
+        currentPrefix = getPrefix(currentEntryLanguage);
     }
 
     @Override
@@ -38,6 +48,8 @@ public class ForeignLanguagesWiktionaryDataHandler extends OntolexBasedRDFDataHa
         return currentWiktionaryPageName;
     }
 
+    // TODO: Refactor and generalize the prefixes and current entry languages in main ontolex based data handler so that
+    //       the current english implementation is available for all languages.
     @Override
     public String getPrefix() {
         return currentPrefix;

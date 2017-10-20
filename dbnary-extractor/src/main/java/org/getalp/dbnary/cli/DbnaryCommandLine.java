@@ -1,12 +1,13 @@
 package org.getalp.dbnary.cli;
 
 import org.apache.commons.cli.*;
+import org.getalp.LangTools;
 import org.getalp.dbnary.*;
 
 /**
  * An abstract class gathering all common arguments of the main extraction command lines.
  * Created by serasset on 17/07/17.
- *
+ * @deprecated
  */
 public abstract class DbnaryCommandLine {
     protected static final String LANGUAGE_OPTION = "l";

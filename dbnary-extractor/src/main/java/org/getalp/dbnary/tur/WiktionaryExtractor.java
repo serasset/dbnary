@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.LangTools;
+import org.getalp.LangTools;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
     protected final static String languageSectionPatternString = "={2}\\s*\\{\\{Dil\\|([^\\}]*)\\}\\}\\s*={2}";
-    protected final static String partOfSpeechPatternString = "={3}([^\\{]*)\\{\\{Söztürü\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
+    protected final static String partOfSpeechPatternString = "={3}([^\\{]*)\\{\\{Söz ?türü\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
     protected final static String macroPatternString = "\\{\\{([^\\}]*)\\}\\}";
     protected final static String definitionPatternString = "^:{1,3}\\[[^\\]]*]\\s*(.*)$";
     protected final static String pron1PatternString = "\\{\\{Çeviri Yazı\\|([^\\}\\|]*)(.*)\\}\\}";
@@ -211,13 +211,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                             gotoNymBlock(m);
                         }
                     } else if (m.group(3) != null) {
-                        if (partOfSpeechMarkers.contains(m.group(3))) {
-                            String def = m.group(3);
-                            wdh.addPartOfSpeech(def);
-                        }
-
+                        String def = m.group(3);
+                        wdh.addPartOfSpeech(def);
                     } else {
-
                     }
 
                     break;

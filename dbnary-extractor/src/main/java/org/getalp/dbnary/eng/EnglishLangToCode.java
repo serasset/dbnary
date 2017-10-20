@@ -3,7 +3,7 @@
  */
 package org.getalp.dbnary.eng;
 
-import org.getalp.dbnary.LangTools;
+import org.getalp.LangTools;
 import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

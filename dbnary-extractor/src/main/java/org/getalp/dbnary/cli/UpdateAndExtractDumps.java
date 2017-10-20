@@ -215,7 +215,7 @@ public class UpdateAndExtractDumps {
             String[] args = {"ln", "-s", linkTo, linkName};
             Runtime.getRuntime().exec(args, null, d);
         } catch (IOException e) {
-            System.err.println("Eror while trying to link to latest extract: " + latestFile + "->" + extractFile);
+            System.err.println("Error while trying to link to latest extract: " + latestFile + "->" + extractFile);
             e.printStackTrace(System.err);
         }
     }
@@ -553,13 +553,20 @@ public class UpdateAndExtractDumps {
 
     private void extractDumpFiles(String[] langs, String[] dirs) {
         for (int i = 0; i < langs.length; i++) {
-            extractDumpFile(langs[i], dirs[i]);
+            boolean ok = extractDumpFile(langs[i], dirs[i]);
+            if (! ok) {
+                // Sometimes the dump is incomplete and finishes in the middle of the xml file,
+                // leading to IOException or IndexException from Extractor.
+                deleteDump(langs[i], dirs[i]);
+                deleteUncompressedDump(langs[i], dirs[i]);
+                deleteDumpDir(langs[i], dirs[i]);
+            }
         }
     }
 
     private boolean extractDumpFile(String lang, String dir) {
         boolean status = true;
-        if (null == dir || dir.equals("")) return false;
+        if (null == dir || dir.equals("")) return true;
 
         String odir = extractDir + "/" + model.toLowerCase() + "/" + lang;
         File d = new File(odir);

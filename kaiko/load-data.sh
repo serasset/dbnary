@@ -150,6 +150,7 @@ checkpoint;
 END
 
 ## (TODO: create the virtlabels for correct facetted browsing)
+## not really useful as the default configuration indexes all string values
 
 ## (TODO: load the owl files that will be used for reasoning)
 ## ld_dir ('/opt/datasets/dbnary/', '*.owl','http://kaiko.getalp.org/dbnaryetymology');

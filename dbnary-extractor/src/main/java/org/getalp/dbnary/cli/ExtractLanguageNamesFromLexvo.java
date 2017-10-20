@@ -1,10 +1,10 @@
 package org.getalp.dbnary.cli;
 
-import org.apache.commons.cli.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.getalp.dbnary.LangTools;
+import org.apache.commons.cli.*;
+import org.getalp.LangTools;
 
 public class ExtractLanguageNamesFromLexvo {
 

@@ -109,6 +109,10 @@ public class WikiText {
                 this.addFlattenedTokens(l.text);
             }
         }
+
+        public WikiText getWikiText() {
+            return WikiText.this;
+        }
     }
 
     /**
@@ -124,10 +128,6 @@ public class WikiText {
         @Override
         public void addToken(Token t) {
             tokens.add(t);
-        }
-
-        public WikiEventsSequence filteredTokens(WikiEventFilter filter) {
-            return new WikiEventsSequence(this, filter);
         }
 
         /**
@@ -165,9 +165,50 @@ public class WikiText {
             return toks;
         }
 
+        public WikiEventsSequence filteredTokens(WikiEventFilter filter) {
+            return new WikiEventsSequence(this, filter);
+        }
+
+        public WikiSectionsSequence sections(int level) {
+            return new WikiSectionsSequence(this, level);
+        }
+
         public Text endOfContent() {
             return new Text(this.offset.end, this.offset.end);
         }
+
+        // frequent simple access to the wiki text
+        public WikiEventsSequence links() {
+            ClassBasedFilter filter = new ClassBasedFilter();
+            filter.allowLink();
+            return filteredTokens(filter);
+        }
+
+        public WikiEventsSequence templates() {
+            ClassBasedFilter filter = new ClassBasedFilter();
+            filter.allowTemplates();
+            return filteredTokens(filter);
+        }
+
+        public WikiEventsSequence headers() {
+            ClassBasedFilter filter = new ClassBasedFilter();
+            filter.allowHeading();
+            return filteredTokens(filter);
+        }
+
+        public WikiEventsSequence headers(int level) {
+            return headers().and(tok -> ((Heading) tok).getLevel() == level);
+            // return filteredTokens(tok -> (tok instanceof Heading && ((Heading) tok).getLevel() == level));
+        }
+
+        public WikiEventsSequence headersMatching(Pattern pattern) {
+            return headers().and(tok -> (pattern.matcher(((Heading) tok).getContent().toString()).matches()));
+        }
+
+        public WikiEventsSequence headersMatching(int level, Pattern pattern) {
+            return headers(level).and(tok -> (pattern.matcher(((Heading) tok).getContent().toString()).matches()));
+        }
+
     }
 
     public class Text extends Token {
@@ -874,15 +915,31 @@ public class WikiText {
 
     // frequent simple access to the wiki text
     public WikiEventsSequence links() {
-        ClassBasedFilter filter = new ClassBasedFilter();
-        filter.allowLink();
-        return filteredTokens(filter);
+        return content().links();
     }
 
     public WikiEventsSequence templates() {
-        ClassBasedFilter filter = new ClassBasedFilter();
-        filter.allowTemplates();
-        return filteredTokens(filter);
+        return content().templates();
+    }
+
+    public WikiEventsSequence headers() {
+        return content().headers();
+    }
+
+    public WikiEventsSequence headers(int level) {
+        return content().headers(level);
+    }
+
+    public WikiEventsSequence headersMatching(Pattern pattern) {
+        return content().headersMatching(pattern);
+    }
+
+    public WikiEventsSequence headersMatching(int level, Pattern pattern) {
+        return content().headersMatching(level, pattern);
+    }
+
+    public WikiSectionsSequence sections(int level) {
+        return content().sections(level);
     }
 
     private String wikiTextString = null;

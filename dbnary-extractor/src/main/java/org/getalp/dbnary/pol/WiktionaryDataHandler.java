@@ -396,7 +396,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         currentWiktionaryPos = null;
         currentLexinfoPos = null;
 
-        currentEncodedPageName = null;
+        currentEncodedLexicalEntryName = null;
         currentLexEntry = null;
 
         currentSense = null;

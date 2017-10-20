@@ -3,7 +3,7 @@
  */
 package org.getalp.dbnary.lit;
 
-import org.getalp.dbnary.LangTools;
+import org.getalp.LangTools;
 
 import java.util.HashMap;
 

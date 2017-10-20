@@ -51,7 +51,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     protected String computeSenseNum() {
         char s;
         if (currentSubSenseNumber > 26) {
-            log.error("Subsense (alphabetical) number above z in {}", currentEncodedPageName);
+            log.error("Subsense (alphabetical) number above z in {}", currentEncodedLexicalEntryName);
             s =  (char) ('A' + currentSubSenseNumber - 1);
         } else {
             s = (char) ('a' + currentSubSenseNumber - 1);

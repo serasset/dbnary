@@ -1,7 +1,8 @@
 package org.getalp.dbnary.ita;
 
-import info.bliki.wiki.filter.WikipediaParser;
 import org.apache.jena.rdf.model.Resource;
+import info.bliki.wiki.filter.WikipediaParser;
+import org.getalp.LangTools;
 import org.getalp.dbnary.*;
 
 import java.io.IOException;

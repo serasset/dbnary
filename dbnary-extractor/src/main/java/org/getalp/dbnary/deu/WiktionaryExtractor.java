@@ -3,7 +3,7 @@ package org.getalp.dbnary.deu;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.LangTools;
+import org.getalp.LangTools;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.*;
 import org.slf4j.Logger;
@@ -291,7 +291,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             // TODO: filter out ignorable part of speech;
             return Block.POSBLOCK;
         } else if (null != m.group(5)) {
-            if (m.group(5).trim().equals("Übersetzungen")) {
+            if (m.group(5).trim().equals("Übersetzungen") || m.group(5).trim().equals("{{Übersetzungen}}")) {
                 return Block.TRADBLOCK;
             } else {
                 return null;

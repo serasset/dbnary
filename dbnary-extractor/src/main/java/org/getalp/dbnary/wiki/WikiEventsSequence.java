@@ -20,4 +20,14 @@ public class WikiEventsSequence implements Iterable<WikiText.Token> {
         return new WikiEventIterator(content, filter);
     }
 
+    public WikiEventsSequence and(WikiEventFilter filter) {
+        this.filter = new WikiEventFilterConjuction(this.filter, filter);
+        return this;
+    }
+
+    public WikiEventsSequence or(WikiEventFilter filter) {
+        this.filter = new WikiEventFilterDisjunction(this.filter, filter);
+        return this;
+    }
+
 }

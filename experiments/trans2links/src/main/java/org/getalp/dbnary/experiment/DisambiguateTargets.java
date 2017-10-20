@@ -4,10 +4,15 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.rdf.model.impl.StatementImpl;
+import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.VarTransOnt;
+
+import java.io.*;
+import java.util.*;
 
 public class DisambiguateTargets {
     Model graph ;

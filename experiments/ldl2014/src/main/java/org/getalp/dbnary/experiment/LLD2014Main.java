@@ -3,10 +3,13 @@ package org.getalp.dbnary.experiment;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.wcohen.ss.Level2Levenstein;
+import org.apache.commons.cli.*;
+import org.getalp.dbnary.SkosOnt;
+import org.getalp.iso639.ISO639_3;
+import org.getalp.iso639.ISO639_3.Lang;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.OntolexOnt;
-import org.getalp.dbnary.SkosOnt;
 import org.getalp.dbnary.experiment.disambiguation.Ambiguity;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguable;
 import org.getalp.dbnary.experiment.disambiguation.Disambiguator;
@@ -14,8 +17,6 @@ import org.getalp.dbnary.experiment.disambiguation.translations.MFSTranslationDi
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationAmbiguity;
 import org.getalp.dbnary.experiment.disambiguation.translations.TranslationDisambiguator;
 import org.getalp.dbnary.experiment.similarity.string.Level2Sim;
-import org.getalp.iso639.ISO639_3;
-import org.getalp.iso639.ISO639_3.Lang;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

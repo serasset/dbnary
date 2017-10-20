@@ -13,6 +13,52 @@ import java.util.regex.Pattern;
 public class WikiTool {
     static Logger log = LoggerFactory.getLogger(WikiTool.class);
 
+
+    /**
+     * @param argsString the String containing all the args (the part of a template contained after the first pipe).
+     * @return a Map associating each argument name with its value.
+     * @deprecated Parse the args of a Template, e.g., parses a string like xxx=yyy|zzz=ttt
+     * It can handle nested parentheses, e.g., xxx=yyy|zzz={{aaa=bbb|ccc=ddd}}|kkk=hhh
+     * and xxx=yyy|zzz=[[aaa|bbb|ccc]]|kkk=hhh.
+     */
+    public static Map<String, String> parseArgs(String argsString) {
+        HashMap<String, String> argsMap = new HashMap<String, String>();
+        if (null == argsString || "" == argsString) return argsMap;
+
+        ArrayList<String> argsArray = splitUnlessInTemplateOrLink(argsString, '|');
+
+        //then consider each argument argString
+        //split each element of argsArray (i.e. each argument arg) by "=" (unless "=" is contained in a wiki template or link)
+        //into argsMap, the returned map
+        int n = 1; // number for positional args.
+        String argString;
+        for (int h = 0; h < argsArray.size(); h++) {//iterate over all arguments in argsArray
+            argString = argsArray.get(h); //an argument in argsArray
+            ArrayList<Pair> templatesAndLinksLocation = locateEnclosedString(argString, "{{", "}}");
+            templatesAndLinksLocation.addAll(locateEnclosedString(argString, "[[", "]]"));
+            int j = 0;
+            while (j < argString.length()) {//iterate over characters in string argString
+                if (argString.charAt(j) == '=') {
+                    Pair p = new Pair(j, j + 1);
+                    if (templatesAndLinksLocation.size() == 0 || !(p.containedIn(templatesAndLinksLocation))) {
+                        if (j == argString.length() - 1) {
+                            argsMap.put(argString.substring(0, j).trim(), "");
+                        } else {
+                            argsMap.put(argString.substring(0, j).trim(), argString.substring(j + 1, argString.length()).trim());
+                        }
+                        break;
+                    }
+                }
+                j++;
+            }
+            if (j == argString.length()) {//"=" not found in argument argString
+                argsMap.put("" + n, argString);
+                n++;
+            }
+        }
+        return argsMap;
+    }
+
     static Pattern htmlRefElement = Pattern.compile("(<ref(?:\\s[^>]*|\\s*)>)|(</ref>)");
 
     // WARN: not synchronized !
@@ -147,51 +193,7 @@ public class WikiTool {
 	}
 	return a;
     }
-    
-    /**
-     * @param argsString the String containing all the args (the part of a template contained after the first pipe).
-     * @return a Map associating each argument name with its value.
-     * @deprecated Parse the args of a Template, e.g., parses a string like xxx=yyy|zzz=ttt
-     * It can handle nested parentheses, e.g., xxx=yyy|zzz={{aaa=bbb|ccc=ddd}}|kkk=hhh
-     * and xxx=yyy|zzz=[[aaa|bbb|ccc]]|kkk=hhh.
-     */
-    public static Map<String, String> parseArgs(String argsString) {
-        HashMap<String, String> argsMap = new HashMap<String, String>();
-        if (null == argsString || "" == argsString) return argsMap;
 
-	    ArrayList<String> argsArray = splitUnlessInTemplateOrLink(argsString, '|');
-
-        //then consider each argument argString
-        //split each element of argsArray (i.e. each argument arg) by "=" (unless "=" is contained in a wiki template or link)
-        //into argsMap, the returned map
-        int n = 1; // number for positional args.
-        String argString;
-        for (int h = 0; h < argsArray.size(); h++) {//iterate over all arguments in argsArray
-            argString = argsArray.get(h); //an argument in argsArray
-            ArrayList<Pair> templatesAndLinksLocation = locateEnclosedString(argString, "{{", "}}");
-	    templatesAndLinksLocation.addAll(locateEnclosedString(argString, "[[", "]]"));
-            int j = 0;
-            while (j < argString.length()) {//iterate over characters in string argString
-                if (argString.charAt(j) == '=') {
-                    Pair p = new Pair(j, j + 1);
-                    if (templatesAndLinksLocation.size() == 0 || !(p.containedIn(templatesAndLinksLocation))) {
-                        if (j == argString.length() - 1) {
-                            argsMap.put(argString.substring(0, j).trim(), "");
-                        } else {
-                            argsMap.put(argString.substring(0, j).trim(), argString.substring(j + 1, argString.length()).trim());
-                        }
-                        break;
-                    }
-                }
-                j++;
-            }
-            if (j == argString.length()) {//"=" not found in argument argString
-                argsMap.put("" + n, argString);
-                n++;
-            }
-        }
-        return argsMap;
-    }
 
     public static String toParameterString(Map<String, String> parameterMap) {
         StringBuffer buf = new StringBuffer();

@@ -10,10 +10,7 @@ import java.text.Normalizer;
 public class DbnaryModel {
 
 
-    // public static String DBNARY_NS_PREFIX = "http://etytree-virtuoso.wmflabs.org/dbnary";
     public static String DBNARY_NS_PREFIX = "http://kaiko.getalp.org/dbnary";
-
-    // protected static final String LMF = "http://www.lexicalmarkupframework.org/lmf/r14#";
 
     public static final String LEXVO = "http://lexvo.org/id/iso639-3/";
 

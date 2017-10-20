@@ -7,7 +7,7 @@ public class WikiPatterns {
     public final static String macroPatternString;
     public final static String linkPatternString;
     public final static String macroOrLinkPatternString;
-    public final static String definitionPatternString = "^#{1,2}([^\\*#:].*)$";
+    public final static String definitionPatternString = "^#{1,2}(\n|[^\\*#:\n].*$)";
     public final static String bulletListPatternString = "\\*\\s*(.*)";
     /**
      * Pattern used to parse Section Descendants

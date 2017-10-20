@@ -1,9 +1,10 @@
 package org.getalp.dbnary.experiment;
 
-import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.tdb.*;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.tdb.*;
+import com.hp.hpl.jena.query.*;
+import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.getalp.dbnary.DBnaryOnt;
@@ -17,6 +18,7 @@ import org.getalp.dbnary.experiment.preprocessing.StructuredGloss;
 import org.getalp.iso639.ISO639_3;
 import org.getalp.iso639.ISO639_3.Lang;
 
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;

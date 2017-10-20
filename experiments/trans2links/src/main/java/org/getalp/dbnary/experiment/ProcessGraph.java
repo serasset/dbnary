@@ -7,6 +7,7 @@ import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.VarTransOnt;
+import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.flow.*;
 import org.jgrapht.alg.interfaces.MaximumFlowAlgorithm;
@@ -15,10 +16,12 @@ import org.jgrapht.graph.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.plaf.nimbus.State;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.*;
 
 public class ProcessGraph {
     private static Logger log = LoggerFactory.getLogger(ToolsGraph.class);

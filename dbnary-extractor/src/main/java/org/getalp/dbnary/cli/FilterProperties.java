@@ -1,7 +1,7 @@
 package org.getalp.dbnary.cli;
 
-import org.apache.commons.cli.*;
 import org.apache.jena.rdf.model.*;
+import org.apache.commons.cli.*;
 
 import java.util.HashSet;
 import java.util.LinkedList;

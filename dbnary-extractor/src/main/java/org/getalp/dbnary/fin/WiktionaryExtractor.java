@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-    //TODO: Handle Wikisaurus entries.
     protected final static String sectionPatternString1 = "={2,5}\\s*([^=]*)\\s*={2,5}";
     protected final static String sectionPatternString2 = "\\{\\{-([^}]*)-\\}\\}";
     protected final static String sectionPatternString;

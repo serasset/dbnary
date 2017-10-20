@@ -4,6 +4,7 @@
 package org.getalp.dbnary.eng;
 
 import org.apache.jena.rdf.model.Resource;
+import org.getalp.LangTools;
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.wiki.*;
 import org.slf4j.Logger;
@@ -13,7 +14,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.getalp.dbnary.IWiktionaryDataHandler.Feature.ETYMOLOGY;
+import static org.getalp.dbnary.IWiktionaryDataHandler.*;
 
 /**
  * @author serasset, pantaleo
@@ -25,7 +26,7 @@ import static org.getalp.dbnary.IWiktionaryDataHandler.Feature.ETYMOLOGY;
 //TODO: PARSE * and lemmas like bheh2ǵos
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-    //TODO: Handle Wikisaurus entries.
+    //DONE: Handle Wikisaurus entries.
     //DONE: extract pronunciation
     //TODO: attach multiple pronounciation correctly
     static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
@@ -49,7 +50,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     protected static Pattern languageSectionPattern;
     protected final static Pattern sectionPattern;
-    protected final static HashMap<String, String> nymMarkerToNymName;
     protected final static Pattern pronPattern;
 
     static {
@@ -57,15 +57,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         sectionPattern = Pattern.compile(sectionPatternString);
         pronPattern = Pattern.compile(pronPatternString);
-
-        nymMarkerToNymName = new HashMap<String, String>(20);
-        nymMarkerToNymName.put("Synonyms", "syn");
-        nymMarkerToNymName.put("Antonyms", "ant");
-        nymMarkerToNymName.put("Hyponyms", "hypo");
-        nymMarkerToNymName.put("Hypernyms", "hyper");
-        nymMarkerToNymName.put("Meronyms", "mero");
-        nymMarkerToNymName.put("Holonyms", "holo");
-        nymMarkerToNymName.put("Troponyms", "tropo");
 
         // TODO: Treat Abbreviations and Acronyms and contractions and Initialisms
         // TODO: Alternative forms
@@ -79,12 +70,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private String currentNym = null;
     private ExpandAllWikiModel wikiExpander;
     protected EnglishDefinitionExtractorWikiModel definitionExpander;
+    private WikisaurusExtractor wikisaurusExtractor;
+
 
     @Override
     public void setWiktionaryIndex(WiktionaryIndex wi) {
         super.setWiktionaryIndex(wi);
         wikiExpander = new ExpandAllWikiModel(wi, Locale.ENGLISH, "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
         definitionExpander = new EnglishDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("en"), "/${image}", "/${title}");
+        wikisaurusExtractor = new WikisaurusExtractor(this.ewdh);
     }
 
     /* (non-Javadoc)
@@ -115,11 +109,35 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         wdh.finalizePageExtraction();
     }
 
+    @Override
+    public boolean filterOutPage(String pagename) {
+        if (isWikisaurus(pagename)) {
+            // Extract Wikisaurus pages...
+            //log.debug("Existing wikisaurus page | {}", pagename);
+            return false;
+        }
+        return super.filterOutPage(pagename);
+    }
+
+    private boolean isWikisaurus(String pagename) {
+        return pagename.startsWith("Wikisaurus") || pagename.startsWith("Thesaurus");
+    }
+
+    private String cutNamespace(String pagename) {
+        int p = pagename.indexOf(":");
+        return pagename.substring(p+1);
+    }
+
     protected void extractEnglishData(int startOffset, int endOffset) {
+        if (isWikisaurus(wiktionaryPageName)) {
+            wiktionaryPageName = cutNamespace(wiktionaryPageName);
+            wdh.initializeEntryExtraction(wiktionaryPageName);
+            wikisaurusExtractor.extractWikisaurusSection(wiktionaryPageName, pageContent.substring(startOffset, endOffset));
+            return;
+        }
+        wdh.initializeEntryExtraction(wiktionaryPageName);
         Matcher m = sectionPattern.matcher(pageContent);
         m.region(startOffset, endOffset);
-        wdh.initializeEntryExtraction(wiktionaryPageName);
-	    log.trace("extracting {}", wiktionaryPageName);
         wikiExpander.setPageName(wiktionaryPageName);
         currentBlock = Block.NOBLOCK;
 
@@ -163,7 +181,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             return Block.DERIVEDBLOCK;
         } else if (title.equals("Descendants")) {
             return Block.DESCENDANTSBLOCK;
-        } else if (null != (nym = nymMarkerToNymName.get(title))) {
+        } else if (null != (nym = EnglishGlobals.nymMarkerToNymName.get(title))) {
             context.put("nym", nym);
             return Block.NYMBLOCK;
         } else {
@@ -257,7 +275,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     //TODO: check correct parsing of From ''[[semel#Latin|semel]]''  + ''[[pro#Latin|pro]]''  + ''[[semper#Latin|semper]]''
     protected void extractEtymology(int blockStart, int end) {
-        if (! wdh.isEnabled(ETYMOLOGY)) return;
+        if (! wdh.isEnabled(Feature.ETYMOLOGY)) return;
         if (wiktionaryPageName.trim().split("\\s+").length >= 3) return;
 
         Etymology etymology = new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
@@ -309,16 +327,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             for (String key : args.keySet()) {
 		if (key.matches("\\d+$")){//if key is an integer
 		    Etymology etymology = new Etymology(args.get(key), lang);
-		    
+
 		    etymology.fromTableToSymbols();
-		    
+
 		    if (etymology.symbols.size() == 0) {
 			if (WikiTool.locateEnclosedString(etymology.string, "{{", "}}").size() + WikiTool.locateEnclosedString(etymology.string, "[[", "]]").size() == 0) {
 			    for (String lemma : split(etymology.string)) {
 				etymology.symbols.add(new Symbols("_m|" + lang + "|" + lemma, lang, "TEMPLATE"));
 			    }
 			}
-		    }    
+		    }
 		    ewdh.registerDerived(etymology);
 		}
             }
@@ -428,7 +446,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void extractMorphology(int startOffset, int endOffset) {
         // TODO: For some entries, there are several morphology information covering different word senses
         // TODO: Handle such cases (by creating another lexical entry ?) // Similar to reflexiveness in French wiktionary
-        if (!ewdh.isEnabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) return;
+        if (!ewdh.isEnabled(Feature.MORPHOLOGY)) return;
 
         WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
 
@@ -438,7 +456,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // macroMatcher.region(startOffset, endOffset);
 
         // while (macroMatcher.find()) {
-        // TODO: current code goes through all templates of the defintion block whil it should only process morphology templates.
+        // TODO: current code goes through all templates of the defintion block while it should only process morphology templates.
 
         int nbTempl = 0;
         for (WikiText.Token wikiTemplate : wikiTemplates) {
@@ -932,7 +950,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 String g2 = macroMatcher.group(2);
                 // Ignore glose if it is a macro
                 if (g2 != null && !g2.startsWith("{{")) {
-                    currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);;
+                    currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);
                 } else {
                     currentGloss = null;
                 }
@@ -983,8 +1001,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 if (linkText != null && !linkText.equals("") &&
                         !linkText.startsWith("Catégorie:") &&
                         !linkText.startsWith("#")) {
-                    if (linkText.startsWith("Wikisaurus:")) {
-                        handleWikisaurus(linkText, currentNym);
+                    if (isWikisaurus(linkText)) {
+                        // NOP: Wikisaurus pages are extracted independently
+                        // TODO : should we note that the current lexical entry points
+                        // to this particular wikisaurus page
                     } else {
                         wdh.registerNymRelation(linkText, synRelation, currentGloss);
                     }
@@ -1014,12 +1034,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 }
             }
         }
-    }
-
-
-    // TODO: handle Wikisaurus pages
-    private void handleWikisaurus(String linkText, String currentNym) {
-
     }
 
     @Override

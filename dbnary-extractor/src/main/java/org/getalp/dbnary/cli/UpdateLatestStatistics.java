@@ -5,7 +5,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.LangTools;
+import org.getalp.LangTools;
 import org.getalp.dbnary.stats.GeneralStatistics;
 import org.getalp.dbnary.stats.NymStatistics;
 import org.getalp.dbnary.stats.TranslationsStatistics;
@@ -104,13 +104,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
         String tstatFile = statsDir + File.separator + "latest_translations_stats.csv";
         Map<String, String> tstats = readAndParseStats(tstatFile);
 
-        for (File e : d.listFiles(new FilenameFilter() {
-
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.matches(".._dbnary_ontolex\\..*");
-            }
-        })) {
+        for (File e : d.listFiles((dir, name) -> name.matches(".._dbnary_ontolex\\..*"))) {
             String l2 = e.getName().substring(0, 2);
             String language = LangTools.getCode(l2);
             String elang = LangTools.inEnglish(language);

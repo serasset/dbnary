@@ -7,7 +7,7 @@
     </parent>
     <groupId>org.getalp</groupId>
     <artifactId>dbnary-ontology</artifactId>
-    <!--version>1.7-SNAPSHOT</version-->
+
     <packaging>jar</packaging>
 
     <properties>

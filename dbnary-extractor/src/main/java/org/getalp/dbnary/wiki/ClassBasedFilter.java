@@ -49,7 +49,7 @@ public class ClassBasedFilter implements WikiEventFilter {
     }
 
     public ClassBasedFilter allowHeading() {
-        allowedClasses.add(WikiText.ListItem.class);
+        allowedClasses.add(WikiText.Heading.class);
         return this;
     }
 
@@ -80,6 +80,16 @@ public class ClassBasedFilter implements WikiEventFilter {
 
     public ClassBasedFilter denyExternalLink() {
         allowedClasses.remove(WikiText.ExternalLink.class);
+        return this;
+    }
+
+    public ClassBasedFilter denyListItem() {
+        allowedClasses.remove(WikiText.ListItem.class);
+        return this;
+    }
+
+    public ClassBasedFilter denyHeading() {
+        allowedClasses.remove(WikiText.Heading.class);
         return this;
     }
 

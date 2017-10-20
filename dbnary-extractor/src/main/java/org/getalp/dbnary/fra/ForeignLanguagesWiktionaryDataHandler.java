@@ -1,6 +1,6 @@
 package org.getalp.dbnary.fra;
 
-import org.getalp.dbnary.LangTools;
+import org.getalp.LangTools;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

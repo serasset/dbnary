@@ -1,12 +1,10 @@
 package org.getalp.dbnary.cli;
 
-import org.apache.commons.cli.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
-import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.LangTools;
-import org.getalp.dbnary.OntolexOnt;
+import org.apache.commons.cli.*;
+import org.getalp.LangTools;
+import org.getalp.dbnary.*;
 
 import java.util.HashSet;
 import java.util.Map.Entry;

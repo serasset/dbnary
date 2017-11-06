@@ -410,7 +410,7 @@ public class WikiText {
     }
 
     public class InternalLink extends Link {
-        protected String suffix = "";
+        protected WikiContent suffix = null;
 
         public InternalLink(int startOffset) {
             this.offset = new Segment(startOffset);
@@ -424,16 +424,16 @@ public class WikiText {
             }
         }
 
-        public void setSuffix(String suffix) {
+        public void setSuffix(WikiContent suffix) {
             this.suffix = suffix;
         }
 
         @Override
         public String getLinkText() {
-            return super.getLinkText() + suffix;
+            return super.getLinkText() + ((null == suffix) ? "" : suffix);
         }
 
-        public String getSuffix() {
+        public WikiContent getSuffix() {
             return this.suffix;
         }
 
@@ -725,8 +725,11 @@ public class WikiText {
                         pos += 2;
                         int linkEnd = pos;
                         while (pos != end && Character.isLetter(sourceContent.charAt(pos))) pos++;
-                        String suffix = sourceContent.substring(linkEnd,pos);
-                        t.setSuffix(suffix);
+                        if (pos != linkEnd) {
+                            WikiContent suffixContent = new WikiContent(linkEnd);
+                            suffixContent.setEndOffset(pos);
+                            t.setSuffix(suffixContent);
+                        }
                         t.setEndOffset(pos);
                         stack.peek().addToken(t);
                     } else if (stack.peek() instanceof ExternalLink) {

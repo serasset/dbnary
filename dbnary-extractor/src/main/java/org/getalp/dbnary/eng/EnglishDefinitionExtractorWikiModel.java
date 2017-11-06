@@ -86,7 +86,8 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
         if (null == gender) gender = parameterMap.get("gender");
         if (null == gender) gender = "";
         String or = parameterMap.get("or");
-        return "A " + gender + " " + ((or == null) ? "" : or + " ") + "given name.";
+        // TODO: there is sometime the origin of the given name (e.g. a Japanese male given name)
+        return "A " + gender + " " + ((or == null) ? "" : or + " ") + "given name";
     }
 
 }

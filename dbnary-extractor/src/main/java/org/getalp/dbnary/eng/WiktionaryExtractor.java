@@ -239,6 +239,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 wdh.addPartOfSpeech(pos);
                 ewdh.registerEtymologyPos(wiktionaryPageName);
                 extractMorphology(blockStart, end);
+                extractHeadInformation(blockStart, end);
                 extractDefinitions(blockStart, end);
                 break;
             case TRADBLOCK:
@@ -273,11 +274,77 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         blockStart = -1;
     }
 
+    private static final String[] heads = {"head", "head1", "head2"};
+    private static ClassBasedSequenceFilter linkResolver = new ClassBasedSequenceFilter();
+    private static ArrayList<WikiText.Token> getMyTemplateContent(WikiText.Token t) {
+        if (t instanceof WikiText.Template) {
+            WikiText.Template tt = (WikiText.Template) t;
+            if (tt.getName().equals("vern") || tt.getName().equals("w") ||
+                    tt.getName().equals("pedlink") || tt.getName().equals("what someone said")) {
+                return tt.getArgs().get("1").tokens();
+            } else if (tt.getName().equals("l")) {
+                WikiText.WikiContent a3 = tt.getArgs().get("3");
+                if (null == a3)
+                    return tt.getArgs().get("2").tokens();
+                else
+                    return a3.tokens();
+            } else
+                return new ArrayList<>();
+        } else
+            throw new RuntimeException("Cannot collect parameter contents on a non Template token");
+    }
+    static {
+        linkResolver.clearAction().keepContentOfInternalLink().sourceText().keepContentOfTemplates(WiktionaryExtractor::getMyTemplateContent);
+    }
+    private void extractHeadInformation(int start, int end) {
+        WikiText text = new WikiText(wiktionaryPageName, pageContent, start, end);
+        for (WikiText.Token t: text.templates()) {
+            WikiText.Template tmpl = (WikiText.Template) t;
+            if (tmpl.getName().equals("head") || tmpl.getName().startsWith("en-")) {
+                Map<String, WikiText.WikiContent> args = tmpl.getArgs();
+                if (tmpl.getName().equals("head")) {
+                    String pos = args.get("2").toString();
+                    if (pos != null && pos.endsWith(" form")) continue;
+                }
+                for (String h: heads) {
+                    WikiText.WikiContent head = args.get(h);
+                    if (null != head && head.toString().trim().length() != 0) {
+                        WikiCharSequence s = new WikiCharSequence(head, linkResolver);
+                        String headword = s.toString();
+                        if (isSignificantlyDifferent(headword,wiktionaryPageName)) {
+                            log.debug("Found {} template with head {} // '{}' in '{}'", tmpl.getName(), head, headword, wiktionaryPageName);
+                            wdh.registerAlternateSpelling(headword);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isSignificantlyDifferent(String headword, String pageName) {
+        return ! (headword.equals(pageName) ||
+                (headword.startsWith("the ") && pageName.equals(headword.substring(4))) ||
+                (headword.startsWith("The ") && pageName.equals(headword.substring(4))) ||
+                (headword.startsWith("(the) ") && pageName.equals(headword.substring(6))) ||
+                (headword.startsWith("(The) ") && pageName.equals(headword.substring(6))) ||
+                (headword.startsWith("to ") && pageName.equals(headword.substring(3))) ||
+                (headword.startsWith("To ") && pageName.equals(headword.substring(3))) ||
+                (headword.endsWith("!") && pageName.equals(headword.substring(0,headword.length()-1))) ||
+                (headword.endsWith(".") && pageName.equals(headword.substring(0,headword.length()-1))) ||
+                (headword.endsWith("?") && pageName.equals(headword.substring(0,headword.length()-1)))
+        );
+    }
+
+
     //TODO: check correct parsing of From ''[[semel#Latin|semel]]''  + ''[[pro#Latin|pro]]''  + ''[[semper#Latin|semper]]''
     protected void extractEtymology(int blockStart, int end) {
         if (! wdh.isEnabled(Feature.ETYMOLOGY)) return;
-        if (wiktionaryPageName.trim().split("\\s+").length >= 3) return;
+        if (wiktionaryPageName.trim().split("\\s+").length >= 3) {
+            log.trace("Ignoring etymology for: {}", wiktionaryPageName);
+            return;
+        }
 
+        log.trace("ETYM {}: {}", ewdh.getCurrentEntryLanguage(), pageContent.substring(blockStart, end));
         Etymology etymology = new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
 
         etymology.fromDefinitionToSymbols();

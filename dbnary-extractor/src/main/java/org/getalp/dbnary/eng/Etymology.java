@@ -136,7 +136,7 @@ public class Etymology {
                 string += ".";
             }
         }
-	toSymbols(definitionSymbolsList, definitionSymbolsListPattern);
+	    toSymbols(definitionSymbolsList, definitionSymbolsListPattern);
 	
         parseEtyl();
 
@@ -254,12 +254,12 @@ public class Etymology {
                             if (l.get(i).equals("TEMPLATE")) {//match is a template
                                 Symbols b = new Symbols(string.substring(template.start + 2, template.end - 2), lang, l.get(i));
                                 if (b.values != null && b.args != null) {
-				    for (String values : b.values) {
-					if (values.equals("STOP")) {
-					    symbols.add(b);
-					    return;
-					}
-				    }
+                                    for (String values : b.values) {
+                                        if (values.equals("STOP")) {
+                                            symbols.add(b);
+                                            return;
+                                        }
+                                    }
                                     symbols.add(b);
                                 }
                                 break;
@@ -288,12 +288,12 @@ public class Etymology {
                     if (check == false) {//if match is neither contained in a template nor in a link
                         Symbols b = new Symbols(m.group(i + 1), lang, l.get(i));
                         if (b.values != null) {
-			    for (String values : b.values) {
-				if (values.equals("STOP")) {
-				    symbols.add(b);
-				    return;
-				}
-			    }
+                            for (String values : b.values) {
+                                if (values.equals("STOP")) {
+                                    symbols.add(b);
+                                    return;
+                                }
+                            }
                             symbols.add(b);
                         }
                     }

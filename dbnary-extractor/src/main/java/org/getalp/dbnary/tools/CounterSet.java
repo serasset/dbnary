@@ -1,79 +1,79 @@
 package org.getalp.dbnary.tools;
 
 
-import org.slf4j.Logger;
-
 import java.util.HashMap;
+import org.slf4j.Logger;
 
 public class CounterSet {
 
-    class MutableInteger {
-        int _val = 0;
+  class MutableInteger {
 
-        MutableInteger(int v) {
-            super();
-            _val = v;
-        }
+    int _val = 0;
 
-        void set(int v) {
-            _val = v;
-        }
-
-        int incr() {
-            return ++_val;
-        }
-
-        void reset() {
-            _val = 0;
-        }
-
-        public String toString() {
-            return Integer.toString(_val);
-        }
+    MutableInteger(int v) {
+      super();
+      _val = v;
     }
 
-    private HashMap<String, MutableInteger> counters;
-
-    public CounterSet() {
-        super();
-        counters = new HashMap<String, MutableInteger>();
+    void set(int v) {
+      _val = v;
     }
 
-    public void clear() {
-        counters.clear();
+    int incr() {
+      return ++_val;
     }
 
-    public void resetAll() {
-        for (MutableInteger i : counters.values()) {
-            i.reset();
-        }
+    void reset() {
+      _val = 0;
     }
 
-    public void reset(String key) {
-        MutableInteger i = counters.get(key);
-        if (null != i) {
-            i.reset();
-        }
+    public String toString() {
+      return Integer.toString(_val);
     }
+  }
 
-    public int get(String key) {
-        MutableInteger i = counters.get(key);
-        return (null != i) ? i._val : 0;
-    }
+  private HashMap<String, MutableInteger> counters;
 
-    public int incr(String key) {
-        MutableInteger i = counters.get(key);
-        if (null != i) {
-            return i.incr();
-        } else {
-            counters.put(key, new MutableInteger(1));
-            return 1;
-        }
-    }
+  public CounterSet() {
+    super();
+    counters = new HashMap<String, MutableInteger>();
+  }
 
-    public void logCounters(Logger log) {
-        for (String s : counters.keySet()) {
-            log.debug("{}: {}", s, counters.get(s)._val);
-        }
+  public void clear() {
+    counters.clear();
+  }
+
+  public void resetAll() {
+    for (MutableInteger i : counters.values()) {
+      i.reset();
     }
+  }
+
+  public void reset(String key) {
+    MutableInteger i = counters.get(key);
+    if (null != i) {
+      i.reset();
+    }
+  }
+
+  public int get(String key) {
+    MutableInteger i = counters.get(key);
+    return (null != i) ? i._val : 0;
+  }
+
+  public int incr(String key) {
+    MutableInteger i = counters.get(key);
+    if (null != i) {
+      return i.incr();
+    } else {
+      counters.put(key, new MutableInteger(1));
+      return 1;
+    }
+  }
+
+  public void logCounters(Logger log) {
+    for (String s : counters.keySet()) {
+      log.debug("{}: {}", s, counters.get(s)._val);
+    }
+  }
 }

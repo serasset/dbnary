@@ -7,17 +7,17 @@ import java.util.Iterator;
  */
 public class WikiSectionsSequence implements Iterable<WikiSection> {
 
-    private final int level;
-    private WikiText.WikiContent content;
+  private final int level;
+  private WikiText.WikiContent content;
 
-    public WikiSectionsSequence(WikiText.WikiContent content, int level) {
-        this.content = content;
-        this.level = level;
-    }
+  public WikiSectionsSequence(WikiText.WikiContent content, int level) {
+    this.content = content;
+    this.level = level;
+  }
 
-    @Override
-    public Iterator<WikiSection> iterator() {
-        return new WikiSectionsIterator(content, level);
-    }
+  @Override
+  public Iterator<WikiSection> iterator() {
+    return new WikiSectionsIterator(content, level);
+  }
 
 }

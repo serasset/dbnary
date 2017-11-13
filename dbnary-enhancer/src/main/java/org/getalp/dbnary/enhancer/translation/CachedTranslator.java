@@ -19,15 +19,16 @@ public class CachedTranslator implements Translator {
 
   private Logger log = LoggerFactory.getLogger(CachedTranslator.class);
 
-  private static String getTranslationMemory = "SELECT target FROM tm WHERE source = ? AND slang = ? AND tlang = ?";
-  private static String setTranslationMemory = "INSERT INTO tm (SOURCE, SLANG, TARGET, TLANG) VALUES (?, ?, ?, ?)";
+  private static String getTranslationMemory =
+      "SELECT target FROM tm WHERE source = ? AND slang = ? AND tlang = ?";
+  private static String setTranslationMemory =
+      "INSERT INTO tm (SOURCE, SLANG, TARGET, TLANG) VALUES (?, ?, ?, ?)";
 
   public CachedTranslator(String dir, Translator t, boolean update) {
     try {
       if (!dir.startsWith("jdbc:h2:")) {
         dir = "jdbc:h2:" + dir;
-      }
-      ;
+      } ;
       this.dir = dir + ";CACHE_SIZE=4000000";
       Class.forName("org.h2.Driver");
       db = DriverManager.getConnection(dir, "dbnary", "");
@@ -35,7 +36,7 @@ public class CachedTranslator implements Translator {
       // System.err.println("Checking if tm table exists.");
       boolean tmTableExists = false;
       DatabaseMetaData meta = db.getMetaData();
-      ResultSet res = meta.getTables(null, null, null, new String[]{"TABLE"});
+      ResultSet res = meta.getTables(null, null, null, new String[] {"TABLE"});
       while (res.next()) {
         String tn = res.getString("TABLE_NAME");
         if ("TM".equalsIgnoreCase(tn)) {
@@ -47,12 +48,8 @@ public class CachedTranslator implements Translator {
         log.debug("Creating translation Memory table.");
 
         String createString;
-        createString = "create table TM (" +
-            "source VARCHAR(2048), " +
-            "slang VARCHAR(3), " +
-            "target VARCHAR(2048), " +
-            "tlang VARCHAR(3)" +
-            ")";
+        createString = "create table TM (" + "source VARCHAR(2048), " + "slang VARCHAR(3), "
+            + "target VARCHAR(2048), " + "tlang VARCHAR(3)" + ")";
 
         Statement stmt = db.createStatement();
         stmt.executeUpdate(createString);

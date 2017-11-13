@@ -29,8 +29,7 @@ public class TranslationSourcesDisambiguator {
   private EvaluationStats evaluator;
 
   public TranslationSourcesDisambiguator(double alpha, double beta, double delta,
-      boolean useGlosses,
-      StatsModule stats, EvaluationStats evaluator) {
+      boolean useGlosses, StatsModule stats, EvaluationStats evaluator) {
     this.alpha = alpha;
     this.beta = beta;
     this.delta = delta;
@@ -49,12 +48,13 @@ public class TranslationSourcesDisambiguator {
       stats.reset(lang);
     }
 
-    SenseNumberBasedTranslationDisambiguationMethod snumDisamb = new SenseNumberBasedTranslationDisambiguationMethod();
-    TverskyBasedTranslationDisambiguationMethod tverskyDisamb = new TverskyBasedTranslationDisambiguationMethod(
-        alpha, beta, delta);
+    SenseNumberBasedTranslationDisambiguationMethod snumDisamb =
+        new SenseNumberBasedTranslationDisambiguationMethod();
+    TverskyBasedTranslationDisambiguationMethod tverskyDisamb =
+        new TverskyBasedTranslationDisambiguationMethod(alpha, beta, delta);
 
-    StmtIterator translations = inputModel
-        .listStatements(null, DBnaryOnt.isTranslationOf, (RDFNode) null);
+    StmtIterator translations =
+        inputModel.listStatements(null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 
     while (translations.hasNext()) {
       Statement next = translations.next();
@@ -62,9 +62,9 @@ public class TranslationSourcesDisambiguator {
       Resource trans = next.getSubject();
 
       Resource lexicalEntry = next.getResource();
-      if (lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) ||
-          lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word) ||
-          lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
+      if (lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
+          || lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
+          || lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
         try {
           if (null != stats) {
             stats.registerTranslation(trans);

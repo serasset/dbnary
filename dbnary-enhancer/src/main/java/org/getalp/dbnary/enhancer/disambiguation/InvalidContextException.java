@@ -23,8 +23,8 @@ public class InvalidContextException extends Exception {
     super(message, cause);
   }
 
-  public InvalidContextException(String message, Throwable cause,
-      boolean enableSuppression, boolean writableStackTrace) {
+  public InvalidContextException(String message, Throwable cause, boolean enableSuppression,
+      boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 

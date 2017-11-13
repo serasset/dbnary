@@ -96,8 +96,7 @@ public class EnhanceLatestExtracts {
 
     stats = new StatsModule();
     evaluator = new EvaluationStats();
-    disambiguator =
-        new TranslationSourcesDisambiguator(0.1, 0.9, 0.05, true, stats, evaluator);
+    disambiguator = new TranslationSourcesDisambiguator(0.1, 0.9, 0.05, true, stats, evaluator);
 
   }
 
@@ -261,7 +260,8 @@ public class EnhanceLatestExtracts {
 
     Path latestFile = latestFolder.resolve(latestLinkName);
     if (Files.exists(latestFile) && !Files.isSymbolicLink(latestFile)) {
-      // If no symbolic link, then there is a problem (maybe latest file and effective files are the same...
+      // If no symbolic link, then there is a problem (maybe latest file and effective files are the
+      // same...
       System.err.println("I'd like to link " + latestFile + " to " + effectiveEnhancement
           + " but the former exists and is not a link...");
       System.err.println("Symbolic link creation aborted.");
@@ -274,8 +274,8 @@ public class EnhanceLatestExtracts {
       System.err.format("IOException while attempting to delete file '%s'.", latestFile);
     }
 
-    String linkTo = Paths.get("..").resolve(lang).resolve(effectiveEnhancement.getFileName())
-        .toString();
+    String linkTo =
+        Paths.get("..").resolve(lang).resolve(effectiveEnhancement.getFileName()).toString();
     try {
       String[] args = {"ln", "-s", linkTo, latestLinkName};
       Runtime.getRuntime().exec(args, null, new File(extractsDir));
@@ -312,8 +312,8 @@ public class EnhanceLatestExtracts {
     File gs = new File(gstatFile);
 
     if (gs.isFile() && gs.canRead()) {
-      BufferedReader br = new BufferedReader(
-          new InputStreamReader(new FileInputStream(gs), "UTF-8"));
+      BufferedReader br =
+          new BufferedReader(new InputStreamReader(new FileInputStream(gs), "UTF-8"));
       String h = br.readLine(); // reading header
       String s = br.readLine();
       while (s != null) {
@@ -328,12 +328,9 @@ public class EnhanceLatestExtracts {
 
   public static void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
-    String help =
-        "Update Latest statistics based on latest extracts.";
-    formatter.printHelp(
-        "java -cp /path/to/dbnary.jar " + EnhanceLatestExtracts.class.getCanonicalName()
-            + "[OPTIONS]",
-        "With OPTIONS in:", options,
+    String help = "Update Latest statistics based on latest extracts.";
+    formatter.printHelp("java -cp /path/to/dbnary.jar "
+        + EnhanceLatestExtracts.class.getCanonicalName() + "[OPTIONS]", "With OPTIONS in:", options,
         help, false);
   }
 

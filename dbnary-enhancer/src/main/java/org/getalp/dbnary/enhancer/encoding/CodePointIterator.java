@@ -33,11 +33,9 @@ public final class CodePointIterator implements Iterator<Integer> {
   }
 
   public static void main(String[] args) {
-    String sample = "A" + "\uD835\uDD0A"
-        + "B" + "C";
+    String sample = "A" + "\uD835\uDD0A" + "B" + "C";
     int match = 0x1D50A;
-    CodePointIterator pointIterator = new CodePointIterator(
-        sample);
+    CodePointIterator pointIterator = new CodePointIterator(sample);
     while (pointIterator.hasNext()) {
       System.out.println(match == pointIterator.next());
     }

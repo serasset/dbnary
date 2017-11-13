@@ -13,18 +13,17 @@ import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.SkosOnt;
 import org.getalp.dbnary.enhancer.similarity.string.TverskiIndex;
 
-public class TverskyBasedTranslationDisambiguationMethod implements
-    DisambiguationMethod {
+public class TverskyBasedTranslationDisambiguationMethod implements DisambiguationMethod {
 
   private double delta;
-  //    private double alpha;
-//    private double beta;
+  // private double alpha;
+  // private double beta;
   private TverskiIndex tversky;
 
   public TverskyBasedTranslationDisambiguationMethod(double alpha, double beta, double threshold) {
     delta = threshold;
-//        this.alpha = alpha;
-//        this.beta = beta;
+    // this.alpha = alpha;
+    // this.beta = beta;
     tversky = new TverskiIndex(alpha, beta, true, false, new ScaledLevenstein());
   }
 
@@ -41,14 +40,13 @@ public class TverskyBasedTranslationDisambiguationMethod implements
   }
 
   @Override
-  public Set<Resource> selectWordSenses(Resource lexicalEntry,
-      Object context) throws InvalidContextException,
-      InvalidEntryException {
+  public Set<Resource> selectWordSenses(Resource lexicalEntry, Object context)
+      throws InvalidContextException, InvalidEntryException {
     HashSet<Resource> res = new HashSet<Resource>();
 
-    if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) &&
-        !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word) &&
-        !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
+    if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
+        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
+        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
       throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
     }
     if (context instanceof Resource) {
@@ -98,8 +96,7 @@ public class TverskyBasedTranslationDisambiguationMethod implements
     return res;
   }
 
-  private void insert(ArrayList<WeigthedSense> weightedList,
-      Resource wordsense, double sim) {
+  private void insert(ArrayList<WeigthedSense> weightedList, Resource wordsense, double sim) {
     weightedList.add(null);
     int i = weightedList.size() - 1;
     while (i != 0 && weightedList.get(i - 1).weight < sim) {

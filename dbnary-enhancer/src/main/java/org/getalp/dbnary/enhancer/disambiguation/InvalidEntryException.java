@@ -2,25 +2,25 @@ package org.getalp.dbnary.enhancer.disambiguation;
 
 public class InvalidEntryException extends Exception {
 
-	public InvalidEntryException() {
-		super();
-	}
+  public InvalidEntryException() {
+    super();
+  }
 
-	public InvalidEntryException(String message) {
-		super(message);
-	}
+  public InvalidEntryException(String message) {
+    super(message);
+  }
 
-	public InvalidEntryException(Throwable cause) {
-		super(cause);
-	}
+  public InvalidEntryException(Throwable cause) {
+    super(cause);
+  }
 
-	public InvalidEntryException(String message, Throwable cause) {
-		super(message, cause);
-	}
+  public InvalidEntryException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-	public InvalidEntryException(String message, Throwable cause,
-			boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
+  public InvalidEntryException(String message, Throwable cause, boolean enableSuppression,
+      boolean writableStackTrace) {
+    super(message, cause, enableSuppression, writableStackTrace);
+  }
 
 }

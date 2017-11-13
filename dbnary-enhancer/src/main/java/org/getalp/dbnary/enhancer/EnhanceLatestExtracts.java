@@ -330,7 +330,7 @@ public class EnhanceLatestExtracts {
     HelpFormatter formatter = new HelpFormatter();
     String help = "Update Latest statistics based on latest extracts.";
     formatter.printHelp("java -cp /path/to/dbnary.jar "
-            + EnhanceLatestExtracts.class.getCanonicalName() + "[OPTIONS]", "With OPTIONS in:", options,
+        + EnhanceLatestExtracts.class.getCanonicalName() + "[OPTIONS]", "With OPTIONS in:", options,
         help, false);
   }
 

@@ -1,7 +1,7 @@
 package org.getalp.dbnary.bul
 
-import org.apache.jena.rdf.model.Resource
 import grizzled.slf4j.Logger
+import org.apache.jena.rdf.model.Resource
 import org.getalp.dbnary.{AbstractGlossFilter, IWiktionaryDataHandler}
 
 import scala.util.matching.Regex

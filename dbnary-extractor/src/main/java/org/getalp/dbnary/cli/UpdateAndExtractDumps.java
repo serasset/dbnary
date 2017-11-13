@@ -312,7 +312,6 @@ public class UpdateAndExtractDumps {
     String dumpdir = outputDir + "/" + lang + "/" + dir;
     File f = new File(dumpdir);
 
-
     if (f.listFiles().length == 0) {
       System.err.println("Deleting dump directory: " + f.getName());
       f.delete();

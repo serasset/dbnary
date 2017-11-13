@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;

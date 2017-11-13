@@ -87,62 +87,62 @@ trait WikiRegexParsers extends RegexParsers {
       c => WikiCharSequence.EXTERNAL_LINKS_RANGE.contains(c)
     ) ^^ { case l => l.asInstanceOf[WikiText#ExternalLink] }
 
-    /*
-    Redefine the handling of patterns so that they return the match instead of the matched string
-   */
-    def matching(r: Regex): Parser[Match] = (in: Input) => {
+  /*
+  Redefine the handling of patterns so that they return the match instead of the matched string
+ */
+  def matching(r: Regex): Parser[Match] = (in: Input) => {
+    val source = in.source.asInstanceOf[WikiCharSequence]
+    val offset = in.offset
+    val start = handleWhiteSpace(source, offset)
+    (r findPrefixMatchOf (source.subSequence(start, source.length))) match {
+      case Some(matched) =>
+        Success(matched,
+          in.drop(start + matched.end - offset))
+      case None =>
+        val found = if (start == source.length()) "end of source" else "`" + source.charAt(start) + "'"
+        Failure("String matching regex `" + r + "' expected but " + source.getSourceContent(found) + " found", in.drop(start - offset))
+    }
+  }
+
+  /** A parser that matches a literal string */
+  override implicit def literal(s: String): Parser[String]
+  = new Parser[String] {
+    def apply(in: Input) = {
       val source = in.source.asInstanceOf[WikiCharSequence]
       val offset = in.offset
       val start = handleWhiteSpace(source, offset)
-      (r findPrefixMatchOf (source.subSequence(start, source.length))) match {
+      var i = 0
+      var j = start
+      while (i < s.length && j < source.length && s.charAt(i) == source.charAt(j)) {
+        i += 1
+        j += 1
+      }
+      if (i == s.length)
+        Success(source.subSequence(start, j).toString, in.drop(j - offset))
+      else {
+        val found = if (start == source.length()) "end of source" else "`" + source.charAt(start) + "'"
+        Failure("`" + s + "' expected but " + source.getSourceContent(found) + " found", in.drop(start - offset))
+      }
+    }
+  }
+
+  /** A parser that matches a regex string */
+  override implicit def regex(r: Regex): Parser[String]
+  = new Parser[String] {
+    def apply(in: Input) = {
+      val source = in.source.asInstanceOf[WikiCharSequence]
+      val offset = in.offset
+      val start = handleWhiteSpace(source, offset)
+      r findPrefixMatchOf source.subSequence(start) match {
         case Some(matched) =>
-          Success(matched,
+          Success(source.subSequence(start, start + matched.end).toString,
             in.drop(start + matched.end - offset))
         case None =>
           val found = if (start == source.length()) "end of source" else "`" + source.charAt(start) + "'"
-          Failure("String matching regex `" + r + "' expected but " + source.getSourceContent(found) + " found", in.drop(start - offset))
+          Failure("string matching regex `" + r + "' expected but " + source.getSourceContent(found) + " found", in.drop(start - offset))
       }
     }
-
-    /** A parser that matches a literal string */
-    override implicit def literal(s: String): Parser[String]
-    = new Parser[String] {
-      def apply(in: Input) = {
-        val source = in.source.asInstanceOf[WikiCharSequence]
-        val offset = in.offset
-        val start = handleWhiteSpace(source, offset)
-        var i = 0
-        var j = start
-        while (i < s.length && j < source.length && s.charAt(i) == source.charAt(j)) {
-          i += 1
-          j += 1
-        }
-        if (i == s.length)
-          Success(source.subSequence(start, j).toString, in.drop(j - offset))
-        else {
-          val found = if (start == source.length()) "end of source" else "`" + source.charAt(start) + "'"
-          Failure("`" + s + "' expected but " + source.getSourceContent(found) + " found", in.drop(start - offset))
-        }
-      }
-    }
-
-    /** A parser that matches a regex string */
-    override implicit def regex(r: Regex): Parser[String]
-    = new Parser[String] {
-      def apply(in: Input) = {
-        val source = in.source.asInstanceOf[WikiCharSequence]
-        val offset = in.offset
-        val start = handleWhiteSpace(source, offset)
-        r findPrefixMatchOf source.subSequence(start) match {
-          case Some(matched) =>
-            Success(source.subSequence(start, start + matched.end).toString,
-              in.drop(start + matched.end - offset))
-          case None =>
-            val found = if (start == source.length()) "end of source" else "`" + source.charAt(start) + "'"
-            Failure("string matching regex `" + r + "' expected but " + source.getSourceContent(found) + " found", in.drop(start - offset))
-        }
-      }
-    }
-
-
   }
+
+
+}

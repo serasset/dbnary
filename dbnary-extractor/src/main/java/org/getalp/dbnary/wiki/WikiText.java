@@ -850,8 +850,9 @@ public class WikiText {
         continue;
       } else if (stack.get(i) instanceof Template) {
         return i;
-      } else
+      } else {
         return -1;
+      }
     }
     return -1;
   }

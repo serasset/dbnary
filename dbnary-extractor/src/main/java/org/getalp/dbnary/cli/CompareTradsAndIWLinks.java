@@ -28,8 +28,6 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.util.iterator.Filter;
 import org.apache.jena.vocabulary.RDF;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.getalp.LangTools;
 import org.getalp.dbnary.DBnaryOnt;

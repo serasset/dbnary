@@ -1,35 +1,52 @@
 package org.getalp.dbnary.hbs;
 
 
+import java.util.HashSet;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-
 public class SerboCroatianInflectionData {
 
   private Logger log = LoggerFactory.getLogger(SerboCroatianInflectionData.class);
 
-  public enum Genre {MASCULIN, FEMININE, NEUTER, NOTHING}
+  public enum Genre {
+    MASCULIN, FEMININE, NEUTER, NOTHING
+  }
 
-  public enum Cas {NOMINATIF, GENITIF, DATIF, ACCUSATIF, VOCATIF, INSTRUMENTAL, LOCATIVE, NOTHING}
+  public enum Cas {
+    NOMINATIF, GENITIF, DATIF, ACCUSATIF, VOCATIF, INSTRUMENTAL, LOCATIVE, NOTHING
+  }
 
-  public enum GNumber {SINGULAR, PLURAL, NOTHING}
+  public enum GNumber {
+    SINGULAR, PLURAL, NOTHING
+  }
 
-  public enum Animate {ANIMATE, INANIMATE, NOTHING}
+  public enum Animate {
+    ANIMATE, INANIMATE, NOTHING
+  }
 
-  public enum Degree {POSITIV, KOMPARTIV, SUPERLATIVE, NOTHING}
+  public enum Degree {
+    POSITIV, KOMPARTIV, SUPERLATIVE, NOTHING
+  }
 
-  public enum Tense {PREZENT, BUDUCNOST, PROSLOST, KONDICIONAL1, KONDICIONAL2, IMPERATIV, NOTHING}
+  public enum Tense {
+    PREZENT, BUDUCNOST, PROSLOST, KONDICIONAL1, KONDICIONAL2, IMPERATIV, NOTHING
+  }
 
-  public enum SubTense {PREZENT, FUTUR1, FUTUR2, PERFEKT, PLUSKVAMPERFEKT, AORIST, IMPERFEKT, NOTHING}
+  public enum SubTense {
+    PREZENT, FUTUR1, FUTUR2, PERFEKT, PLUSKVAMPERFEKT, AORIST, IMPERFEKT, NOTHING
+  }
 
-  public enum Person {FIRST, SECOND, THIRD, NOTHING}
+  public enum Person {
+    FIRST, SECOND, THIRD, NOTHING
+  }
 
-  public enum Mode {NEODREDENI, ODREDENI, NOTHING}
+  public enum Mode {
+    NEODREDENI, ODREDENI, NOTHING
+  }
 
   public Genre genre;
   public Cas cas;

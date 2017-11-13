@@ -66,17 +66,13 @@ public class GetExtractedSemnet {
             + " by default.");
     options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign languages");
     options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("extract morphology data.")
-        .create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
+        .withDescription("extract morphology data.").create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
     options.addOption(OptionBuilder.withLongOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("extract etymology data.")
-        .create(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION));
+        .withDescription("extract etymology data.").create(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION));
     options.addOption(OptionBuilder.withLongOpt(URI_PREFIX_LONG_OPTION)
         .withDescription("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
-        .hasArg()
-        .withArgName("uri")
-        .create(URI_PREFIX_SHORT_OPTION));
+        .hasArg().withArgName("uri").create(URI_PREFIX_SHORT_OPTION));
   }
 
   WiktionaryIndex wi;
@@ -134,12 +130,9 @@ public class GetExtractedSemnet {
     }
 
     we = null;
-    if (outputFormat.equals("RDF") ||
-        outputFormat.equals("TURTLE") ||
-        outputFormat.equals("NTRIPLE") ||
-        outputFormat.equals("N3") ||
-        outputFormat.equals("TTL") ||
-        outputFormat.equals("RDFABBREV")) {
+    if (outputFormat.equals("RDF") || outputFormat.equals("TURTLE")
+        || outputFormat.equals("NTRIPLE") || outputFormat.equals("N3") || outputFormat.equals("TTL")
+        || outputFormat.equals("RDFABBREV")) {
       if (model.equals("LEMON")) {
         if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
           wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language);
@@ -223,13 +216,11 @@ public class GetExtractedSemnet {
     HelpFormatter formatter = new HelpFormatter();
     String help =
         "dumpFile must be a Wiktionary dump file in UTF-16 encoding. dumpFile directory must be writable to store the index."
-            +
-            System.getProperty("line.separator", "\n") +
-            "Displays the extracted semnet of the wiktionary page(s) named \"entryname\", ...";
+            + System.getProperty("line.separator", "\n")
+            + "Displays the extracted semnet of the wiktionary page(s) named \"entryname\", ...";
     formatter.printHelp(
         "java -cp /path/to/dbnary.jar org.getalp.dbnary.cli.GetExtractedSemnet [OPTIONS] dumpFile entryname ...",
-        "With OPTIONS in:", options,
-        help, false);
+        "With OPTIONS in:", options, help, false);
   }
 
 }

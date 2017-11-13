@@ -38,9 +38,8 @@ public class ChineseDefinitionExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     super.substituteTemplateCall(templateName, parameterMap, writer);
   }

@@ -25,7 +25,7 @@ public class ChineseRelatedWordsExtractorWikiModel {
   }
 
   public ChineseRelatedWordsExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi) {
-    //super(wi, locale, imageBaseURL, linkBaseURL);
+    // super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
   }
 
@@ -41,24 +41,14 @@ public class ChineseRelatedWordsExtractorWikiModel {
 
   static {
     // les caractères visible
-    carPatternString =
-        new StringBuilder().append("(.)")
-            .toString();
+    carPatternString = new StringBuilder().append("(.)").toString();
 
-    //We should suppress multiline xml comments even if macros or line are to be on a single line.
-    macroOrLinkOrcarPatternString = new StringBuilder()
-        .append("(?:")
-        .append(WikiPatterns.macroPatternString)
-        .append(")|(?:")
-        .append(WikiPatterns.linkPatternString)
-        .append(")|(?:")
-        .append("(:*\\*)")   // sub list
-        .append(")|(?:")
-        .append("^;([^:\\n\\r]*)") // Term definition
-        .append(")|(?:")
-        .append(carPatternString)
-        .append(")")
-        .toString();
+    // We should suppress multiline xml comments even if macros or line are to be on a single line.
+    macroOrLinkOrcarPatternString =
+        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
+            .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)") // sub list
+            .append(")|(?:").append("^;([^:\\n\\r]*)") // Term definition
+            .append(")|(?:").append(carPatternString).append(")").toString();
   }
 
 
@@ -67,8 +57,8 @@ public class ChineseRelatedWordsExtractorWikiModel {
 
   static {
     carPattern = Pattern.compile(carPatternString);
-    macroOrLinkOrcarPattern = Pattern
-        .compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
+    macroOrLinkOrcarPattern =
+        Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
   }
 
 
@@ -145,7 +135,8 @@ public class ChineseRelatedWordsExtractorWikiModel {
           if (macro != null) {
             currentRelation = macro;
           } else if (link != null) {
-            // We have a link while we try to get a relation. It means that the link poits to a related word for which the relation is not specified.
+            // We have a link while we try to get a relation. It means that the link poits to a
+            // related word for which the relation is not specified.
             // should we keep these words with an un-specified relation ?
 
           } else if (star != null) {

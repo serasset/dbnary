@@ -1,5 +1,10 @@
 package org.getalp.dbnary.fra;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.vocabulary.DCTerms;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -7,12 +12,6 @@ import org.getalp.dbnary.wiki.ExpandAllWikiModel;
 import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
 
@@ -26,8 +25,8 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
   private Map<Property, String> context;
   private ExpandAllWikiModel simpleExpander;
 
-  public ExampleExpanderWikiModel(WiktionaryIndex wi, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public ExampleExpanderWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL,
+      String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     simpleExpander = new ExpandAllWikiModel(wi, locale, imageBaseURL, linkBaseURL);
   }
@@ -55,9 +54,8 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     if (ignoredTemplates.contains(templateName)) {
       ; // NOP
     } else if ("source".equals(templateName)) {

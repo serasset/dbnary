@@ -12,7 +12,6 @@ import static org.getalp.dbnary.deu.GermanInflectionData.GNumber.SINGULAR;
 import static org.getalp.dbnary.deu.GermanInflectionData.InflectionType.MIXED;
 import static org.getalp.dbnary.deu.GermanInflectionData.InflectionType.STRONG;
 import static org.getalp.dbnary.deu.GermanInflectionData.InflectionType.WEAK;
-
 import info.bliki.wiki.filter.PlainTextConverter;
 import java.io.IOException;
 import java.util.HashSet;
@@ -35,7 +34,7 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
 
   private static HashSet<String> ignoredTemplates;
 
-  //	private boolean reflexiv=false;
+  // private boolean reflexiv=false;
   static {
     ignoredTemplates = new HashSet<String>();
     ignoredTemplates.add("Absatz");
@@ -61,10 +60,10 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
   public GermanMorphologyExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi,
       Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
-    deklinationExtractor = new GermanDeklinationExtractorWikiModel(wdh, wi, new Locale("de"),
-        "/${Bild}", "/${Titel}");
-    konjugationExtractor = new GermanKonjugationExtractorWikiModel(wdh, wi, new Locale("de"),
-        "/${Bild}", "/${Titel}");
+    deklinationExtractor =
+        new GermanDeklinationExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
+    konjugationExtractor =
+        new GermanKonjugationExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
     this.wdh = wdh;
   }
 
@@ -86,9 +85,8 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     try {
       if (templateName.startsWith("Vorlage:")) {
         templateName = templateName.substring(8);
@@ -116,13 +114,14 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
         if (wdh.currentWiktionaryPos().equals("Substantiv")) {
           log.debug("Adjectiv ubersicht in noun : {} ", wdh.currentLexEntry());
         }
-        // DONE: Extract comparative/Superlative from parametermap before fetching the full flexion page.
+        // DONE: Extract comparative/Superlative from parametermap before fetching the full flexion
+        // page.
         if (extractAdjectiveDegree(parameterMap)) {
           String deklinationPageName = this.getPageName() + " (Deklination)";
           extractAdjectiveForms(deklinationPageName);
         }
-      } else if ("Deutsch Verb Übersicht".equals(templateName) || ("Verb-Tabelle"
-          .equals(templateName))) {
+      } else if ("Deutsch Verb Übersicht".equals(templateName)
+          || ("Verb-Tabelle".equals(templateName))) {
         // DONE get the link to the Konjugationnen page and extract data from the expanded tables
         String conjugationPage = this.getPageName() + " (Konjugation)";
         extractVerbForms(conjugationPage);

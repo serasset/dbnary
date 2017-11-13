@@ -132,9 +132,8 @@ public class UpdateLatestStatistics extends DbnaryModel {
       try {
         m1 = null;
         System.gc();
-        System.err.println(
-            "Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime()
-                .freeMemory()));
+        System.err.println("Used memory: "
+            + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 
         m1 = ModelFactory.createDefaultModel();
         InputStream in = new FileInputStream(e);
@@ -143,9 +142,8 @@ public class UpdateLatestStatistics extends DbnaryModel {
         }
         m1.read(in, DbnaryModel.DBNARY_NS_PREFIX + "/" + language + "/", "TURTLE");
 
-        System.err.println(
-            "Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime()
-                .freeMemory()));
+        System.err.println("Used memory: "
+            + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 
         // Compute general stats
         StringWriter ow = new StringWriter();
@@ -176,9 +174,8 @@ public class UpdateLatestStatistics extends DbnaryModel {
 
       m1 = null;
       System.gc();
-      System.err.println(
-          "Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime()
-              .freeMemory()));
+      System.err.println("Used memory: "
+          + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 
     }
 
@@ -186,7 +183,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
     writeStats(nstats, "Language," + NymStatistics.getHeaders(), nstatFile);
     writeStats(tstats, "Language," + TranslationsStatistics.getHeaders(countLanguages), tstatFile);
 
-    //TranslationsStatistics.printStats(m1, language, countLanguages, System.out, verbose);
+    // TranslationsStatistics.printStats(m1, language, countLanguages, System.out, verbose);
   }
 
   private void writeStats(Map<String, String> gstats, String headers, String gstatFile)
@@ -215,8 +212,8 @@ public class UpdateLatestStatistics extends DbnaryModel {
     File gs = new File(gstatFile);
 
     if (gs.isFile() && gs.canRead()) {
-      BufferedReader br = new BufferedReader(
-          new InputStreamReader(new FileInputStream(gs), "UTF-8"));
+      BufferedReader br =
+          new BufferedReader(new InputStreamReader(new FileInputStream(gs), "UTF-8"));
       String h = br.readLine(); // reading header
       String s = br.readLine();
       while (s != null) {
@@ -231,13 +228,10 @@ public class UpdateLatestStatistics extends DbnaryModel {
 
   public static void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
-    String help =
-        "Update Latest statistics based on latest extracts.";
-    formatter.printHelp(
-        "java -cp /path/to/dbnary.jar " + UpdateLatestStatistics.class.getCanonicalName()
-            + "[OPTIONS]",
-        "With OPTIONS in:", options,
-        help, false);
+    String help = "Update Latest statistics based on latest extracts.";
+    formatter.printHelp("java -cp /path/to/dbnary.jar "
+        + UpdateLatestStatistics.class.getCanonicalName() + "[OPTIONS]", "With OPTIONS in:",
+        options, help, false);
   }
 
   public static byte[] createChecksum(File file) throws Exception {

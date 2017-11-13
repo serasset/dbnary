@@ -3,7 +3,6 @@ package org.getalp.dbnary.deu;
 import static org.getalp.dbnary.deu.GermanInflectionData.Degree.COMPARATIVE;
 import static org.getalp.dbnary.deu.GermanInflectionData.Degree.POSITIVE;
 import static org.getalp.dbnary.deu.GermanInflectionData.Degree.SUPERLATIVE;
-
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -28,7 +27,7 @@ public class GermanMorphologyExtractor {
 
   private static HashSet<String> ignoredTemplates;
 
-  //	private boolean reflexiv=false;
+  // private boolean reflexiv=false;
   static {
     ignoredTemplates = new HashSet<String>();
     ignoredTemplates.add("Absatz");
@@ -50,10 +49,10 @@ public class GermanMorphologyExtractor {
   public GermanMorphologyExtractor(IWiktionaryDataHandler wdh, WiktionaryIndex wi) {
     this.wdh = wdh;
     this.wi = wi;
-    deklinationExtractor = new GermanDeklinationExtractorWikiModel(wdh, wi, new Locale("de"),
-        "/${Bild}", "/${Titel}");
-    konjugationExtractor = new GermanKonjugationExtractorWikiModel(wdh, wi, new Locale("de"),
-        "/${Bild}", "/${Titel}");
+    deklinationExtractor =
+        new GermanDeklinationExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
+    konjugationExtractor =
+        new GermanKonjugationExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
     substantivDeklinationExtractor = new GermanSubstantiveDeklinationExtractorWikiModel(wdh, wi,
         new Locale("de"), "/${Bild}", "/${Titel}");
   }
@@ -71,9 +70,9 @@ public class GermanMorphologyExtractor {
         continue;
       }
 
-      if ("Deutsch Substantiv Übersicht".equals(templateName) ||
-          "Deutsch Toponym Übersicht".equals(templateName) ||
-          "Deutsch Nachname Übersicht".equals(templateName)) {
+      if ("Deutsch Substantiv Übersicht".equals(templateName)
+          || "Deutsch Toponym Übersicht".equals(templateName)
+          || "Deutsch Nachname Übersicht".equals(templateName)) {
         // TODO: extract the data from generated table, so that it is less fragile.
         extractFormsWithModel(wt.toString(), pageName, substantivDeklinationExtractor);
       } else if ("Deutsch Adjektiv Übersicht".equals(templateName)) {
@@ -82,13 +81,14 @@ public class GermanMorphologyExtractor {
         if (wdh.currentWiktionaryPos().equals("Substantiv")) {
           log.debug("Adjectiv ubersicht in noun : {} ", wdh.currentLexEntry());
         }
-        // DONE: Extract comparative/Superlative from parametermap before fetching the full flexion page.
+        // DONE: Extract comparative/Superlative from parametermap before fetching the full flexion
+        // page.
         if (extractAdjectiveDegree(wt.getParsedArgs())) {
           String deklinationPageName = pageName + " (Deklination)";
           extractFormsPageWithModel(deklinationPageName, pageName, deklinationExtractor);
         }
-      } else if ("Deutsch Verb Übersicht".equals(templateName) || ("Verb-Tabelle"
-          .equals(templateName))) {
+      } else if ("Deutsch Verb Übersicht".equals(templateName)
+          || ("Verb-Tabelle".equals(templateName))) {
         // DONE get the link to the Konjugationnen page and extract data from the expanded tables
         String conjugationPage = pageName + " (Konjugation)";
         extractFormsPageWithModel(conjugationPage, pageName, konjugationExtractor);

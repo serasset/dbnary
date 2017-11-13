@@ -3,18 +3,17 @@
  */
 package org.getalp.dbnary.hbs;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author roques
@@ -25,33 +24,34 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String languageSectionPatternString;
 
-  protected final static String languageSectionPatternString1 = "={2}\\s*([^=]+)\\s*={2}\\n|\\{{2}=([^=]*)=\\}{2}";
+  protected final static String languageSectionPatternString1 =
+      "={2}\\s*([^=]+)\\s*={2}\\n|\\{{2}=([^=]*)=\\}{2}";
 
   protected final static String blockPatternString;
-  protected final static String blockPatternStringLevel = "={3,5}\\s*([^=]+)\\s*={3,5}|\\{{2}-([^\\}]*)\\}{2}";
+  protected final static String blockPatternStringLevel =
+      "={3,5}\\s*([^=]+)\\s*={3,5}|\\{{2}-([^\\}]*)\\}{2}";
 
-  protected final static String tradPatternString = "\\*\\s*([^:\\{\\}]*):[^\\[,^\\{]*[\\[,\\{]*([^\\],^\\}]*)|\\{{2}pr\\|([^\\|]*)\\|([^\\}]*)";
+  protected final static String tradPatternString =
+      "\\*\\s*([^:\\{\\}]*):[^\\[,^\\{]*[\\[,\\{]*([^\\],^\\}]*)|\\{{2}pr\\|([^\\|]*)\\|([^\\}]*)";
 
-  protected final static String localdefinitionPatternString = "#\\s*([^:][^#]*)|:\\s*\\([^\\)]*\\)\\s*([^:]*)";
+  protected final static String localdefinitionPatternString =
+      "#\\s*([^:][^#]*)|:\\s*\\([^\\)]*\\)\\s*([^:]*)";
   protected final static String examplePatternString = "#:\\s*(.+)";
 
   protected final static String posPatternString = "(\\{{2}([^\\{]+)\\}{2})";
 
   protected final static String pronPatternString = "\\{{2}([^\\{]+)\\}{2}";
 
-  protected final static String nymsPatternString = "#\\s*\\[{2}([^\\]]*)\\]{2}|\\*\\s*\\{{2}([^\\}]*)\\}{2}";
+  protected final static String nymsPatternString =
+      "#\\s*\\[{2}([^\\]]*)\\]{2}|\\*\\s*\\{{2}([^\\}]*)\\}{2}";
 
   protected final static String izvedenicePatternString = "\\{{2}l\\|sh\\|([^\\}]*)\\}{2}";
   protected final static String flektiraniPatternString = "#\\s*([^\\[]*)\\[{2}([^#]*)#";
 
   static {
-    languageSectionPatternString = "("
-        + languageSectionPatternString1
-        + ")";
+    languageSectionPatternString = "(" + languageSectionPatternString1 + ")";
 
-    blockPatternString = "("
-        + blockPatternStringLevel
-        + ")";
+    blockPatternString = "(" + blockPatternStringLevel + ")";
 
   }
 
@@ -116,8 +116,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private enum Block {
-    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, PRONBLOCK,
-    DEKLINBLOCK, NYMSBLOCK, IZVEDENICE, FLEKTIRANI
+    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, PRONBLOCK, DEKLINBLOCK, NYMSBLOCK, IZVEDENICE, FLEKTIRANI
   }
 
   private Block getBlock(String blockString) {
@@ -202,7 +201,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       wdh.initializeEntryExtraction(wiktionaryPageName);
     } else {
       return;
-//            wdh.initializeEntryExtraction(wiktionaryPageName, lang);
+      // wdh.initializeEntryExtraction(wiktionaryPageName, lang);
     }
 
     Matcher m = blockPattern.matcher(pageContent);
@@ -411,8 +410,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       m.region(start, end);
       SerboCroatianInflectionData inf = new SerboCroatianInflectionData();
       while (m.find()) {
-        wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), m.group(1),
-            wdh.currentLexEntry(), 1, inf.toPropertyObjectMap());
+        wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), m.group(1), wdh.currentLexEntry(),
+            1, inf.toPropertyObjectMap());
       }
     } else {
       log.debug("currentWiktionaryPos is null --in-- {}", this.wiktionaryPageName);
@@ -429,9 +428,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (dwdh.alreadyRegisteredFlexion.containsKey(m.group(2))) {
         ArrayList<String> alreadyList = dwdh.alreadyRegisteredFlexion.get(m.group(2));
         if (!alreadyList.contains(wiktionaryPageName)) {
-          SerboCroatianMorphoExtractorWikiModel morpho =
-              new SerboCroatianMorphoExtractorWikiModel(wdh, wi, new Locale("sh"), "/${Bild}",
-                  "/${Titel}");
+          SerboCroatianMorphoExtractorWikiModel morpho = new SerboCroatianMorphoExtractorWikiModel(
+              wdh, wi, new Locale("sh"), "/${Bild}", "/${Titel}");
           morpho.add(m.group(2), wiktionaryPageName, m.group(1));
         }
       } else {

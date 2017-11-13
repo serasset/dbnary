@@ -22,7 +22,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String SectionPatternString; // "={2,5}\\s*\\{\\{([^=]*)([^\\}\\|\n\r]*)\\s*(?:\\|([^\\}\n\r]*))?)\\s*\\}\\}={2,5}"
 
   protected final static String languageSectionPatternString = "==\\s*\\{\\{-([^-]*)-\\}\\}\\s*==";
-  protected final static String definitionPatternString = "(?:^#{1,2}([^\\*#:].*))|(?:^\\*([^\\*#:].*))$";
+  protected final static String definitionPatternString =
+      "(?:^#{1,2}([^\\*#:].*))|(?:^\\*([^\\*#:].*))$";
 
   protected final static String pronPatternString = "\\{\\{ΔΦΑ\\|([^\\|\\}]*)(.*)\\}\\}";
 
@@ -42,28 +43,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
 
-    SectionPatternString = new StringBuilder()
-        .append("={2,5}")
-        .append("\\{\\{\\s*")
-        .append("([^\\}\\|\n\r]*)(?:([^\\}\n\r]*))?")
-        .append("\\s*\\}\\}")
-        .append("={2,5}")
+    SectionPatternString = new StringBuilder().append("={2,5}").append("\\{\\{\\s*")
+        .append("([^\\}\\|\n\r]*)(?:([^\\}\n\r]*))?").append("\\s*\\}\\}").append("={2,5}")
         .toString();
 
     posMacros = new HashSet<String>(20);
-    //        defMarkers.add("ουσιαστικό"); 	// Noun
-    //        defMarkers.add("επίθετο");   		// Adjective
-    //        // defMarkers.add("μορφή επιθέτου");   // Adjective
-    //        defMarkers.add("επίρρημα"); 		//Adverb
-    //        // defMarkers.add("μορφή ρήματος");	// Verb form
-    //        defMarkers.add("ρήμα"); //  Verb
-    //        defMarkers.add("κύριο όνομα");  	//Proper noun
-    //        defMarkers.add("παροιμία"); // Proverb
-    //        defMarkers.add("πολυλεκτικός όρος");// Multi word term
-    //        defMarkers.add("ρηματική έκφραση"); // Verbal Expressions
-    //        defMarkers.add("επιφώνημα");  // interjection
-    //        defMarkers.add("επιρρηματική έκφραση");  // adverbial expression
-    //        defMarkers.add("μετοχή"); // both adjective and verbs
+    // defMarkers.add("ουσιαστικό"); // Noun
+    // defMarkers.add("επίθετο"); // Adjective
+    // // defMarkers.add("μορφή επιθέτου"); // Adjective
+    // defMarkers.add("επίρρημα"); //Adverb
+    // // defMarkers.add("μορφή ρήματος"); // Verb form
+    // defMarkers.add("ρήμα"); // Verb
+    // defMarkers.add("κύριο όνομα"); //Proper noun
+    // defMarkers.add("παροιμία"); // Proverb
+    // defMarkers.add("πολυλεκτικός όρος");// Multi word term
+    // defMarkers.add("ρηματική έκφραση"); // Verbal Expressions
+    // defMarkers.add("επιφώνημα"); // interjection
+    // defMarkers.add("επιρρηματική έκφραση"); // adverbial expression
+    // defMarkers.add("μετοχή"); // both adjective and verbs
 
     posMacros.add("αντωνυμία");
     posMacros.add("απαρέμφατο");

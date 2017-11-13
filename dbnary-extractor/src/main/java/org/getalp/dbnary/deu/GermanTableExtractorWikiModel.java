@@ -34,14 +34,13 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     if ("Flexlink".equals(templateName)) {
       // Just display the link name and drop the link...
       writer.append(parameterMap.get("1"));
     } else {
-      //  log.debug("Caught template call: {} --in-- {}", templateName, this.getPageName());
+      // log.debug("Caught template call: {} --in-- {}", templateName, this.getPageName());
       super.substituteTemplateCall(templateName, parameterMap, writer);
     }
   }
@@ -100,7 +99,8 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
       String rowbgcolor = getBackgroundColor(row);
       int ncol = 0;
       for (Element cell : row.children()) {
-        // transmit row background color to cell as it is usefull to decide if it is an header cell or not.
+        // transmit row background color to cell as it is usefull to decide if it is an header cell
+        // or not.
         if (rowbgcolor != null && cell.attr("bgcolor").length() == 0) {
           cell.attr("bgcolor", rowbgcolor);
         }

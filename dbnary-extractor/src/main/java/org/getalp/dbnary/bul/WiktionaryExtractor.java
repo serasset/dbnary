@@ -24,7 +24,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // TODO: handle pronounciation
   protected final static String pronounciationPatternString = "\\{\\{pron\\|([^\\|\\}]*)(.*)\\}\\}";
-  //protected final static HashSet<String> nymMarkers;
+  // protected final static HashSet<String> nymMarkers;
 
 
   protected final static Pattern languageSectionPattern;
@@ -43,7 +43,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected boolean isCurrentlyExtracting = false;
   private int bulgarianBlockStart = -1;
 
-  //  private boolean isCorrectPOS;
+  // private boolean isCorrectPOS;
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
@@ -54,8 +54,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return isCurrentlyExtracting;
   }
 
-  /* (non-Javadoc)
-   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
+   * org.getalp.blexisma.semnet.SemanticNetwork)
    */
   @Override
   public void extractData() {
@@ -93,17 +96,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
 
-  //    private HashSet<String> unsupportedSections = new HashSet<String>(100);
+  // private HashSet<String> unsupportedSections = new HashSet<String>(100);
   void gotoNoData(Matcher m) {
     state = NODATA;
-//        try {
-//            if (! unsupportedSections.contains(m.group(1))) {
-//                unsupportedSections.add(m.group(1));
-//                System.out.println(m.group(1));
-//            }
-//        } catch (IllegalStateException e) {
-//            // nop
-//        }
+    // try {
+    // if (! unsupportedSections.contains(m.group(1))) {
+    // unsupportedSections.add(m.group(1));
+    // System.out.println(m.group(1));
+    // }
+    // } catch (IllegalStateException e) {
+    // // nop
+    // }
   }
 
 
@@ -126,8 +129,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (m.find()) {
       switch (state) {
         case NODATA:
-          if (m.group(1).startsWith("{{") && !m.group(1).contains("{{Словоформи") && !m.group(1)
-              .contains("{{Уикипедия}}")) {
+          if (m.group(1).startsWith("{{") && !m.group(1).contains("{{Словоформи")
+              && !m.group(1).contains("{{Уикипедия}}")) {
             gotoBulgarianBlock(m);
           }
           break;

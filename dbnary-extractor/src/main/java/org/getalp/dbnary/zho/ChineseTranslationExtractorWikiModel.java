@@ -43,9 +43,8 @@ public class ChineseTranslationExtractorWikiModel extends DbnaryWikiModel {
   private Resource currentGloss = null;
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     if ("trad".equals(templateName)) {
       // Trad macro contains a set of translations with no usage note.
       String lang = normalizeLang(parameterMap.get("1"));
@@ -58,8 +57,8 @@ public class ChineseTranslationExtractorWikiModel extends DbnaryWikiModel {
     } else if ("xlatio".equals(templateName) || "trad-".equals(templateName)) {
       // xlatio and trad- macro contains a translation and a transcription.
       String lang = normalizeLang(parameterMap.get("1"));
-      delegate
-          .registerTranslation(lang, currentGloss, parameterMap.get("3"), parameterMap.get("2"));
+      delegate.registerTranslation(lang, currentGloss, parameterMap.get("3"),
+          parameterMap.get("2"));
     } else if ("t".equals(templateName) || "t+".equals(templateName)) {
       // t macro contains a translation, a transcription and an usage note.
       String lang = normalizeLang(parameterMap.get("1"));

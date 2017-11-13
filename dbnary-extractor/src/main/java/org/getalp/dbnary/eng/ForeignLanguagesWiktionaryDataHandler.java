@@ -29,9 +29,9 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
   public void setCurrentLanguage(String lang, String languageName) {
     lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
     currentEntryLanguage = LangTools.normalize(EnglishLangToCode.threeLettersCode(lang));
-    //currentEntryLanguage = lang;
+    // currentEntryLanguage = lang;
     currentEntryLanguageName = languageName;
-    //wktLanguageEdition = LangTools.getPart1OrId(lang);
+    // wktLanguageEdition = LangTools.getPart1OrId(lang);
     currentPrefix = getPrefix(currentEntryLanguage);
   }
 

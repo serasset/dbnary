@@ -18,29 +18,29 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   static {
     // German
     posAndTypeValueMap.put("Substantiv", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
-    posAndTypeValueMap
-        .put("Nachname", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
+    posAndTypeValueMap.put("Nachname",
+        new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
     posAndTypeValueMap.put("Vorname", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
-    posAndTypeValueMap
-        .put("Eigenname", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
+    posAndTypeValueMap.put("Eigenname",
+        new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
 
     posAndTypeValueMap.put("Buchstabe", new PosAndType(LexinfoOnt.letter, LexinfoOnt.Symbol));
 
     posAndTypeValueMap.put("Adjektiv", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
     posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
     posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
-    posAndTypeValueMap
-        .put("Pronominaladverb", new PosAndType(LexinfoOnt.pronominalAdverb, LexinfoOnt.Adverb));
+    posAndTypeValueMap.put("Pronominaladverb",
+        new PosAndType(LexinfoOnt.pronominalAdverb, LexinfoOnt.Adverb));
     posAndTypeValueMap.put("Modaladverb", new PosAndType(LexinfoOnt.Adverb, LexinfoOnt.Adverb));
     posAndTypeValueMap.put("Lokaladverb", new PosAndType(LexinfoOnt.Adverb, LexinfoOnt.Adverb));
 
-    posAndTypeValueMap
-        .put("Partizip I", new PosAndType(LexinfoOnt.participle, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap
-        .put("Partizip II", new PosAndType(LexinfoOnt.participle, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Partizip I",
+        new PosAndType(LexinfoOnt.participle, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Partizip II",
+        new PosAndType(LexinfoOnt.participle, OntolexOnt.LexicalEntry));
 
-    posAndTypeValueMap
-        .put("Abkürzung", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Abkürzung",
+        new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Toponym", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
 
     posAndTypeValueMap.put("Hilfsverb", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
@@ -48,34 +48,34 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // TODO: check following POS in German...
     posAndTypeValueMap.put("Artikle", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
     posAndTypeValueMap.put("Artikel", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
-    posAndTypeValueMap
-        .put("Conjunction", new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
-    posAndTypeValueMap
-        .put("Determiner", new PosAndType(LexinfoOnt.determiner, LexinfoOnt.Determiner));
+    posAndTypeValueMap.put("Conjunction",
+        new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
+    posAndTypeValueMap.put("Determiner",
+        new PosAndType(LexinfoOnt.determiner, LexinfoOnt.Determiner));
 
     posAndTypeValueMap.put("Numeral", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
-    posAndTypeValueMap
-        .put("Cardinal numeral", new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
-    posAndTypeValueMap
-        .put("Cardinal number", new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
+    posAndTypeValueMap.put("Cardinal numeral",
+        new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
+    posAndTypeValueMap.put("Cardinal number",
+        new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
 
     posAndTypeValueMap.put("Numeral", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
     posAndTypeValueMap.put("Particle", new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));
     posAndTypeValueMap.put("Partikel", new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));
 
-    posAndTypeValueMap
-        .put("Preposition", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
-    posAndTypeValueMap
-        .put("Präposition", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
-    posAndTypeValueMap
-        .put("Postposition", new PosAndType(LexinfoOnt.postposition, LexinfoOnt.Postposition));
+    posAndTypeValueMap.put("Preposition",
+        new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
+    posAndTypeValueMap.put("Präposition",
+        new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
+    posAndTypeValueMap.put("Postposition",
+        new PosAndType(LexinfoOnt.postposition, LexinfoOnt.Postposition));
 
-    posAndTypeValueMap
-        .put("Prepositional phrase", new PosAndType(null, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Prepositional phrase",
+        new PosAndType(null, OntolexOnt.MultiWordExpression));
 
     posAndTypeValueMap.put("Pronoun", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
-    posAndTypeValueMap
-        .put("Indefinitpronomen", new PosAndType(LexinfoOnt.indefinitePronoun, LexinfoOnt.Pronoun));
+    posAndTypeValueMap.put("Indefinitpronomen",
+        new PosAndType(LexinfoOnt.indefinitePronoun, LexinfoOnt.Pronoun));
     posAndTypeValueMap.put("Demonstrativpronomen",
         new PosAndType(LexinfoOnt.demonstrativePronoun, LexinfoOnt.Pronoun));
 
@@ -90,17 +90,17 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Interfix", new PosAndType(LexinfoOnt.affix, OntolexOnt.Affix));
     posAndTypeValueMap.put("Circumfix", new PosAndType(LexinfoOnt.affix, OntolexOnt.Affix));
 
-    posAndTypeValueMap
-        .put("Proverb", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("Interjection", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
-    posAndTypeValueMap
-        .put("Interjektion", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
+    posAndTypeValueMap.put("Proverb",
+        new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Interjection",
+        new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
+    posAndTypeValueMap.put("Interjektion",
+        new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
 
     posAndTypeValueMap.put("Phrase",
         new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("Idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Idiom",
+        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
 
     posAndTypeValueMap.put("Wortverbindung", new PosAndType(null, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("Redewendung", new PosAndType(null, OntolexOnt.MultiWordExpression));
@@ -117,19 +117,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // Sprichwort
     // Antwortpartikel
     // Klitikon
-        /*
-        Enklitikon
-        Konjunktionaladverb
-        Gradpartikel
-        Konjunktion
-        Ortsnamengrundwort
-        Subjunktion
-        Zahlklassifikator
-        Geflügeltes Wort
-        Onomatopoetikum
-
-        Gebundenes Lexem
-         */
+    /*
+     * Enklitikon Konjunktionaladverb Gradpartikel Konjunktion Ortsnamengrundwort Subjunktion
+     * Zahlklassifikator Geflügeltes Wort Onomatopoetikum
+     * 
+     * Gebundenes Lexem
+     */
 
   }
 

@@ -19,8 +19,8 @@ public class JapaneseTranslationsExtractor {
 
   // static Set<String> ignoredTemplates = new TreeSet<String>();
   // static {
-  // 	ignoredTemplates.add("Wikipedia");
-  // 	ignoredTemplates.add("Incorrect");
+  // ignoredTemplates.add("Wikipedia");
+  // ignoredTemplates.add("Incorrect");
   // }
 
   private IWiktionaryDataHandler delegate;
@@ -51,24 +51,15 @@ public class JapaneseTranslationsExtractor {
 
   static {
     // les caractères visible
-    carPatternString =
-        new StringBuilder().append("(.)")
-            .toString();
+    carPatternString = new StringBuilder().append("(.)").toString();
 
-    // TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
-    macroOrLinkOrcarPatternString = new StringBuilder()
-        .append("(?:")
-        .append(WikiPatterns.macroPatternString)
-        .append(")|(?:")
-        .append(WikiPatterns.linkPatternString)
-        .append(")|(?:")
-        .append("(:*\\*)")
-        .append(")|(?:")
-        .append("^;([^:\\n\\r]*)") // Term definition
-        .append(")|(?:")
-        .append(carPatternString)
-        .append(")")
-        .toString();
+    // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
+    // line.
+    macroOrLinkOrcarPatternString =
+        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
+            .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)")
+            .append(")|(?:").append("^;([^:\\n\\r]*)") // Term definition
+            .append(")|(?:").append(carPatternString).append(")").toString();
   }
 
   protected final static Pattern macroOrLinkOrcarPattern;
@@ -76,8 +67,8 @@ public class JapaneseTranslationsExtractor {
 
   static {
     carPattern = Pattern.compile(carPatternString);
-    macroOrLinkOrcarPattern = Pattern
-        .compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
+    macroOrLinkOrcarPattern =
+        Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
   }
 
   static HashSet<String> commonUsageMacros = new HashSet<String>();
@@ -143,8 +134,8 @@ public class JapaneseTranslationsExtractor {
             if (macro.equalsIgnoreCase("trans-top") || macro.equalsIgnoreCase("top")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGloss = delegate
-                    .createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGloss =
+                    delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
               } else {
                 currentGloss = null;
               }
@@ -152,7 +143,7 @@ public class JapaneseTranslationsExtractor {
             } else if (macro.equalsIgnoreCase("trans-bottom") || macro.equalsIgnoreCase("bottom")) {
               currentGloss = null;
             } else if (macro.equalsIgnoreCase("trans-mid") || macro.equalsIgnoreCase("mid")) {
-              //ignore
+              // ignore
             } else {
               log.debug("Got {} macro while in INIT state. for page: {}", macro,
                   this.delegate.currentLexEntry());
@@ -163,17 +154,17 @@ public class JapaneseTranslationsExtractor {
           } else if (star != null) {
             ETAT = LANGUE;
           } else if (term != null) {
-            currentGloss = delegate
-                .createGlossResource(glossFilter.extractGlossStructure(term), rank++);
+            currentGloss =
+                delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
           } else if (car != null) {
             if (car.equals(":")) {
-              //System.err.println("Skipping ':' while in INIT state.");
+              // System.err.println("Skipping ':' while in INIT state.");
             } else if (car.equals("\n") || car.equals("\r")) {
 
             } else if (car.equals(",")) {
-              //System.err.println("Skipping ',' while in INIT state.");
+              // System.err.println("Skipping ',' while in INIT state.");
             } else {
-              //System.err.println("Skipping " + g5 + " while in INIT state.");
+              // System.err.println("Skipping " + g5 + " while in INIT state.");
             }
           }
 
@@ -185,8 +176,8 @@ public class JapaneseTranslationsExtractor {
             if (macro.equalsIgnoreCase("trans-top") || macro.equalsIgnoreCase("top")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGloss = delegate
-                    .createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGloss =
+                    delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
               } else {
                 currentGloss = null;
               }
@@ -213,10 +204,10 @@ public class JapaneseTranslationsExtractor {
             // TODO: some links come from *# bullet list used in a language.
             langname = extractLanguage(link);
           } else if (star != null) {
-            //System.err.println("Skipping '*' while in LANGUE state.");
+            // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (term != null) {
-            currentGloss = delegate
-                .createGlossResource(glossFilter.extractGlossStructure(term), rank++);
+            currentGloss =
+                delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
             langname = "";
             word = "";
             usage = "";
@@ -232,9 +223,9 @@ public class JapaneseTranslationsExtractor {
               langname = "";
               ETAT = TRAD;
             } else if (car.equals("\n") || car.equals("\r")) {
-              //System.err.println("Skipping newline while in LANGUE state.");
+              // System.err.println("Skipping newline while in LANGUE state.");
             } else if (car.equals(",")) {
-              //System.err.println("Skipping ',' while in LANGUE state.");
+              // System.err.println("Skipping ',' while in LANGUE state.");
             } else {
               langname = langname + car;
             }
@@ -246,15 +237,15 @@ public class JapaneseTranslationsExtractor {
             if (macro.equalsIgnoreCase("trans-top") || macro.equalsIgnoreCase("top")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGloss = delegate
-                    .createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGloss =
+                    delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
               } else {
                 currentGloss = null;
               }
-              //if (word != null && word.length() != 0) {
-              //lang=stripParentheses(lang);
-              //wdh.registerTranslation(lang, currentGloss, usage, word);
-              //}
+              // if (word != null && word.length() != 0) {
+              // lang=stripParentheses(lang);
+              // wdh.registerTranslation(lang, currentGloss, usage, word);
+              // }
               langname = "";
               word = "";
               usage = "";
@@ -299,10 +290,12 @@ public class JapaneseTranslationsExtractor {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               // Check if previous word has not been registered. TODO: Check when this arises.
               if (word != null && word.length() != 0) {
-                // System.err.println("Word is not null when handling ZHfont macro in " + this.delegate.currentLexEntry());
+                // System.err.println("Word is not null when handling ZHfont macro in " +
+                // this.delegate.currentLexEntry());
               }
               word = argmap.get("1");
-              // TODO: split [[ ]] / [[ ]] translations where the second seems to be a japanese usage note (equivalent in japanese chars ?)
+              // TODO: split [[ ]] / [[ ]] translations where the second seems to be a japanese
+              // usage note (equivalent in japanese chars ?)
               argmap.remove("1");
               if (!argmap.isEmpty()) {
                 usage = argmap.toString();
@@ -311,7 +304,8 @@ public class JapaneseTranslationsExtractor {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               // Check if previous word has not been registered. TODO: Check when this arises.
               if (word != null && word.length() != 0) {
-                // System.err.println("Word is not null when handling zh-ts macro in " + this.delegate.currentLexEntry());
+                // System.err.println("Word is not null when handling zh-ts macro in " +
+                // this.delegate.currentLexEntry());
               }
               word = argmap.get("1");
               // TODO: Arg2 is the simplified chinese version
@@ -321,10 +315,11 @@ public class JapaneseTranslationsExtractor {
               }
             } else if (macro.equals("trans_link")) {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
-              // if (null != word && word.length() != 0) System.err.println("Word is not null when handling trans_link macro in " + this.delegate.currentLexEntry());
+              // if (null != word && word.length() != 0) System.err.println("Word is not null when
+              // handling trans_link macro in " + this.delegate.currentLexEntry());
               word = argmap.get("2");
-            } else if (macro.equals("t+") || macro.equals("t-") || macro.equals("t") || macro
-                .equals("tø") || macro.equals("trad")) {
+            } else if (macro.equals("t+") || macro.equals("t-") || macro.equals("t")
+                || macro.equals("tø") || macro.equals("trad")) {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               if (null != word && word.length() != 0) {
                 log.debug("Word is not null ({}) when handling t+- macro in {}", word,
@@ -332,7 +327,8 @@ public class JapaneseTranslationsExtractor {
               }
               String l = argmap.get("1");
               if (null != l && (null != lang) && !lang.equals(LangTools.getCode(l))) {
-                // System.err.println("Language in t+ macro does not map language in list in ");// + this.delegate.currentLexEntry());
+                // System.err.println("Language in t+ macro does not map language in list in ");// +
+                // this.delegate.currentLexEntry());
               }
               word = argmap.get("2");
               argmap.remove("1");
@@ -348,7 +344,8 @@ public class JapaneseTranslationsExtractor {
               }
               String l = argmap.get("1");
               if (null != l && (null != lang) && !lang.equals(LangTools.getCode(l))) {
-                // System.err.println("Language in lang macro does not map language in list in ");// + this.delegate.currentLexEntry());
+                // System.err.println("Language in lang macro does not map language in list in ");//
+                // + this.delegate.currentLexEntry());
               }
               word = AbstractWiktionaryExtractor.cleanUpMarkup(argmap.get("2"), true);
               argmap.remove("1");
@@ -358,18 +355,21 @@ public class JapaneseTranslationsExtractor {
               }
             } else if (fontMacros.contains(macro)) {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
-              // if (null != word && word.length() != 0) System.err.println("Word is not null when handling a font macro in " + this.delegate.currentLexEntry());
+              // if (null != word && word.length() != 0) System.err.println("Word is not null when
+              // handling a font macro in " + this.delegate.currentLexEntry());
               word = argmap.get("1");
             } else if (commonUsageMacros.contains(macro)) {
               usage = usage + "{{" + macro + "}}";
             } else if (macro.equals("sr-Latn") || macro.equals("sr-Cyrl")) {
               if (null != lang) {
-                // System.err.println("Lang is " + lang + " while getting sr-Latn macro." + this.delegate.currentLexEntry());
+                // System.err.println("Lang is " + lang + " while getting sr-Latn macro." +
+                // this.delegate.currentLexEntry());
               }
               lang = "srp";
               usage = usage + " sc=" + macro;
             } else {
-              // System.err.println("Got " + macro + " macro in usage. for page: "); // + this.delegate.currentLexEntry());
+              // System.err.println("Got " + macro + " macro in usage. for page: "); // +
+              // this.delegate.currentLexEntry());
               usage = usage + "{{" + macro + "}}";
             }
           } else if (link != null) {
@@ -378,10 +378,10 @@ public class JapaneseTranslationsExtractor {
                   : macroOrLinkOrcarMatcher.group(4));
             }
           } else if (star != null) {
-            //System.err.println("Skipping '*' while in LANGUE state.");
+            // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (term != null) {
-            currentGloss = delegate
-                .createGlossResource(glossFilter.extractGlossStructure(term), rank++);
+            currentGloss =
+                delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
             langname = "";
             word = "";
             usage = "";
@@ -390,7 +390,8 @@ public class JapaneseTranslationsExtractor {
           } else if (car != null) {
             if (car.equals("\n") || car.equals("\r")) {
               usage = usage.trim();
-              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGloss);
+              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
+              // currentGloss);
               if (word != null && word.length() != 0) {
                 if (lang != null) {
                   this.delegate.registerTranslation(lang, currentGloss, usage, word);
@@ -402,7 +403,8 @@ public class JapaneseTranslationsExtractor {
               ETAT = INIT;
             } else if (car.equals(",") || car.equals("、")) {
               usage = usage.trim();
-              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGloss);
+              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
+              // currentGloss);
               if (word != null && word.length() != 0) {
                 if (lang != null) {
                   this.delegate.registerTranslation(lang, currentGloss, usage, word);
@@ -424,7 +426,8 @@ public class JapaneseTranslationsExtractor {
     }
   }
   // NOTE: trans-top is sometimes used.
-  // Sometimes something is given after the {{trans}} macro to represent the entry of the translation, however, it seems to be redundant with the position.
+  // Sometimes something is given after the {{trans}} macro to represent the entry of the
+  // translation, however, it seems to be redundant with the position.
 
 
   private String extractLanguage(String link) {

@@ -15,26 +15,28 @@ public class DilafBambaraExtractor extends DilafExtractor {
     String lexId = xmlr.getAttributeValue(null, "id");
     String lemma = null, senseNumber = null, pronounciation = null, partOfSpeech = null;
     Resource lexicalEntry = null;
-    // <!ELEMENT item (forme, forme_tons*, phon*, morphologie?, (cf|(variante, variante_tons*))*, compo_ba?,compo_fr*, cat?, syntaxe?, bloc*)>
+    // <!ELEMENT item (forme, forme_tons*, phon*, morphologie?, (cf|(variante, variante_tons*))*,
+    // compo_ba?,compo_fr*, cat?, syntaxe?, bloc*)>
     while (xmlr.hasNext()) {
       xmlr.next();
       if (xmlr.isStartElement() && xmlr.getLocalName().equals("forme")) { // entrée
         // attributs: usage, non_usage, orthographe, emplois
         lemma = xmlr.getElementText();
-      } else if (xmlr.isStartElement() && xmlr.getLocalName()
-          .equals("forme_tons")) { // transcription phonétique
+      } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("forme_tons")) { // transcription
+        // phonétique
         // ignore for now
-      } else if (xmlr.isStartElement() && xmlr.getLocalName()
-          .equals("phon")) { // transcription phonétique
-        // Sometimes a pronunciation, sometime a french explanation on the pronunciation, sometimes a codde ("gw", "fl", etc...)
+      } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("phon")) { // transcription
+        // phonétique
+        // Sometimes a pronunciation, sometime a french explanation on the pronunciation, sometimes
+        // a codde ("gw", "fl", etc...)
         // Ignore for now
         // pronounciation = xmlr.getElementText();
       } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("cat")) { // part of speech
         partOfSpeech = xmlr.getElementText();
         lexicalEntry = wdh.registerLexicalEntry(lexId, partOfSpeech);
         wdh.setCanonicalForm(lexicalEntry, lemma);
-      } else if (xmlr.isStartElement() && xmlr.getLocalName()
-          .equals("bloc")) { // French translation
+      } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("bloc")) { // French
+        // translation
         if (null == lexicalEntry) {
           System.err.format("Null lexical Entry while processing bloc in %s\n", lexId);
           lexicalEntry = wdh.registerLexicalEntry(lexId, "");
@@ -70,8 +72,8 @@ public class DilafBambaraExtractor extends DilafExtractor {
     String nonUsage = xmlr.getAttributeValue(null, "non_usage");
     String status = xmlr.getAttributeValue(null, "status");
     String emploi = xmlr.getAttributeValue(null, "emploi");
-    Resource sense = wdh
-        .registerLexicalSense(lexicalEntry, senseId, terme, usage, nonUsage, status, emploi);
+    Resource sense =
+        wdh.registerLexicalSense(lexicalEntry, senseId, terme, usage, nonUsage, status, emploi);
     while (xmlr.hasNext()) {
       xmlr.next();
       if (xmlr.isStartElement()) {
@@ -102,7 +104,7 @@ public class DilafBambaraExtractor extends DilafExtractor {
     String elementType = xmlr.getLocalName();
     String forme = null, formeTons = null, francais = null;
     String expId = xmlr.getAttributeValue(null, "id");
-    //     <!ELEMENT expression (forme, forme_tons*, francais?, exemple*)>
+    // <!ELEMENT expression (forme, forme_tons*, francais?, exemple*)>
     while (xmlr.hasNext()) {
       xmlr.next();
       if (xmlr.isStartElement()) {
@@ -115,8 +117,8 @@ public class DilafBambaraExtractor extends DilafExtractor {
         } else if (xmlr.getLocalName().equals("exemple")) {
           // Create the new lexical entry + its sense and attach the example to the sense
           Resource lexicalEntry = wdh.registerLexicalEntry(expId, elementType);
-          Resource expSense = wdh
-              .registerLexicalSense(lexicalEntry, expId + "__ws", forme, null, null, null, null);
+          Resource expSense =
+              wdh.registerLexicalSense(lexicalEntry, expId + "__ws", forme, null, null, null, null);
           processExample(xmlr, expSense);
         }
       } else if (xmlr.isEndElement() && elementType.equals(xmlr.getLocalName())) {

@@ -5,7 +5,6 @@ import static org.getalp.dbnary.deu.GermanInflectionData.Degree;
 import static org.getalp.dbnary.deu.GermanInflectionData.GNumber;
 import static org.getalp.dbnary.deu.GermanInflectionData.Genre;
 import static org.getalp.dbnary.deu.GermanInflectionData.InflectionType;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -119,7 +118,7 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
     wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 1, infl);
   }
 
-  //extract a String in s between start and end
+  // extract a String in s between start and end
   private String extractString(String s, String start, String end) {
     String res;
     int startIndex, endIndex;
@@ -129,7 +128,7 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
     return res;
   }
 
-  //return the index of pattern in s after start
+  // return the index of pattern in s after start
   private int getIndexOf(String s, String pattern, int start) {
     int ind = s.indexOf(pattern, start);
     if (ind <= start || ind > s.length()) {
@@ -138,7 +137,7 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
     return ind;
   }
 
-  //for the phrasal verb, extract the part without spaces : example extractPart("ich komme an")->an
+  // for the phrasal verb, extract the part without spaces : example extractPart("ich komme an")->an
   private String extractPart(String form) {
     String res = "";
     int i = form.length() - 1;
@@ -151,11 +150,11 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
     return res;
   }
 
-  //remove spaces before the first form's character and after the last form's character
-  //and the unsecable spaces
+  // remove spaces before the first form's character and after the last form's character
+  // and the unsecable spaces
   private String removeUselessSpaces(String form) {
-    form = form.replace(" ", " ").replace("&nbsp;", " ")
-        .replace("\t", " ");//replace unsecable spaces
+    form = form.replace(" ", " ").replace("&nbsp;", " ").replace("\t", " ");// replace unsecable
+    // spaces
     String res = form.replace("  ", " ");
     if (!res.isEmpty()) {
       int debut = 0, fin = res.length() - 1;
@@ -175,10 +174,10 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
     return res;
   }
 
-  //return if the form given in parameter is a phrasal verb
+  // return if the form given in parameter is a phrasal verb
   private boolean isPhrasalVerb(String form) {
     int nbsp = nbSpaceForm(form);
-//		return ((!reflexiv && nbsp>=2) || (reflexiv && nbsp>=3));
+    // return ((!reflexiv && nbsp>=2) || (reflexiv && nbsp>=3));
     return 2 <= nbsp;
   }
 
@@ -192,10 +191,10 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
     return nbsp;
   }
 
-  //otherway some phrasal verb don't have any inflected form
-//	public String prepareForTransclusion(String rawWikiText) {
-//		return rawWikiText;
-//	}
+  // otherway some phrasal verb don't have any inflected form
+  // public String prepareForTransclusion(String rawWikiText) {
+  // return rawWikiText;
+  // }
 
 
 }

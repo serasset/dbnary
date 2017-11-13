@@ -9,7 +9,9 @@ import org.apache.jena.rdf.model.Resource;
 
 public interface IWiktionaryDataHandler {
 
-  enum Feature {MAIN, MORPHOLOGY, ETYMOLOGY}
+  enum Feature {
+    MAIN, MORPHOLOGY, ETYMOLOGY
+  }
 
   ;
 
@@ -38,23 +40,28 @@ public interface IWiktionaryDataHandler {
 
   /**
    *
-   * @param def the not cleaned up version of the definition. This version contains macros (that may represent subject fields) and links.
+   * @param def the not cleaned up version of the definition. This version contains macros (that may
+   *        represent subject fields) and links.
    */
-  // TODO: maybe pass the cleaned up and the original def, so that the extractor takes what fits its requirements.
+  // TODO: maybe pass the cleaned up and the original def, so that the extractor takes what fits its
+  // requirements.
 
   /**
-   * Register definition def for the current lexical entry. <p> This method will compute a sense
-   * number based on the rank of the definition in the entry. <p> It is equivalent to
-   * registerNewDefinition(def, 1);
+   * Register definition def for the current lexical entry.
+   * <p>
+   * This method will compute a sense number based on the rank of the definition in the entry.
+   * <p>
+   * It is equivalent to registerNewDefinition(def, 1);
    *
    * @param def a string
    */
   void registerNewDefinition(String def);
 
   /**
-   * Register definition def for the current lexical entry. <p> This method will compute a sense
-   * number based on the rank of the definition in the entry, taking into account the level of the
-   * definition. 1, 1a, 1b, 1c, 2, etc.
+   * Register definition def for the current lexical entry.
+   * <p>
+   * This method will compute a sense number based on the rank of the definition in the entry,
+   * taking into account the level of the definition. 1, 1a, 1b, 1c, 2, etc.
    *
    * @param def the definition string
    * @param lvl an integer giving the level of the definition (1 or 2).
@@ -72,8 +79,9 @@ public interface IWiktionaryDataHandler {
 
 
   /**
-   * Register definition def for the current lexical entry. <p> This method will use senseNumber as
-   * a sense number for this definition.
+   * Register definition def for the current lexical entry.
+   * <p>
+   * This method will use senseNumber as a sense number for this definition.
    *
    * @param def the definition string
    * @param senseNumber a string giving the sense number of the definition.
@@ -119,20 +127,12 @@ public interface IWiktionaryDataHandler {
 
   void registerPropertyOnCanonicalForm(Property p, RDFNode r);
 
-  void registerInflection(String languageCode,
-      String pos,
-      String inflection,
-      String canonicalForm,
-      int defNumber,
-      HashSet<PropertyObjectPair> properties,
+  void registerInflection(String languageCode, String pos, String inflection, String canonicalForm,
+      int defNumber, HashSet<PropertyObjectPair> properties,
       HashSet<PronunciationPair> pronunciations);
 
-  void registerInflection(String languageCode,
-      String pos,
-      String inflection,
-      String canonicalForm,
-      int defNumber,
-      HashSet<PropertyObjectPair> properties);
+  void registerInflection(String languageCode, String pos, String inflection, String canonicalForm,
+      int defNumber, HashSet<PropertyObjectPair> properties);
 
   int currentDefinitionNumber();
 

@@ -1,7 +1,20 @@
 package org.getalp.dbnary.fra;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Literal;
-import org.getalp.dbnary.*;
+import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.DbnaryWikiModel;
+import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.PropertyObjectPair;
+import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,11 +22,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author jakse
@@ -27,9 +35,12 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
   public static final Literal trueLiteral = DbnaryModel.tBox.createTypedLiteral(true);
 
-// 	public static final Property extractedFromConjTable       = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromConjTable");
-// 	public static final Property extractedFromFrenchSentence  = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromFrenchSentence");
-// 	public static final Property extractedFromInflectionTable = DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromInflectionTable");
+  // public static final Property extractedFromConjTable =
+  // DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromConjTable");
+  // public static final Property extractedFromFrenchSentence =
+  // DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromFrenchSentence");
+  // public static final Property extractedFromInflectionTable =
+  // DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromInflectionTable");
 
   private static Pattern frAccordPattern = Pattern.compile("^\\{\\{(?:fr-accord|fr-rég)");
 
@@ -81,7 +92,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
         infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
         break;
       case "masculin":
-      case "masculinet": // happens when we should have "masculin et féminin", the "et" gets sticked to the "masculin".
+      case "masculinet": // happens when we should have "masculin et féminin", the "et" gets sticked
+        // to the "masculin".
         infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
         break;
       case "féminin":
@@ -191,40 +203,28 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
     String tense = lines.item(0).getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale);
 
-    if (tense.startsWith("indicatif") || tense.startsWith("subjonctif") || tense
-        .startsWith("conditionnel") || tense.startsWith("impératif")) {
+    if (tense.startsWith("indicatif") || tense.startsWith("subjonctif")
+        || tense.startsWith("conditionnel") || tense.startsWith("impératif")) {
       int sep = tense.indexOf(' ');
       mood = tense.substring(0, sep).trim();
       tense = tense.substring(sep + 1).trim();
     }
 
-    if (tense.startsWith("passé composé")
-        || tense.startsWith("plus-que-parfait")
-        || tense.startsWith("passé antérieur")
-        || tense.startsWith("futur antérieur")
-        || tense.startsWith("passé 1e forme")
-        || tense.startsWith("passé 1re forme")
-        || tense.startsWith("passé 2e forme")
-        || tense.startsWith("conjugaison en français")
+    if (tense.startsWith("passé composé") || tense.startsWith("plus-que-parfait")
+        || tense.startsWith("passé antérieur") || tense.startsWith("futur antérieur")
+        || tense.startsWith("passé 1e forme") || tense.startsWith("passé 1re forme")
+        || tense.startsWith("passé 2e forme") || tense.startsWith("conjugaison en français")
         || tense.startsWith("passé")) {
       return false;
-    } else if (!(
-        tense.startsWith("futur simple")
-            || tense.startsWith("passé simple")
-            || tense.startsWith("présent")
-            || tense.startsWith("imparfait")
-    )) {
-      log.debug(
-          "Unexpected tense '" + tense + "' while parsing table for '" + delegate.currentLexEntry()
-              + "'");
+    } else if (!(tense.startsWith("futur simple") || tense.startsWith("passé simple")
+        || tense.startsWith("présent") || tense.startsWith("imparfait"))) {
+      log.debug("Unexpected tense '" + tense + "' while parsing table for '"
+          + delegate.currentLexEntry() + "'");
       return false;
     }
 
     // tense
-    addAtomicMorphologicalInfo(
-        infos,
-        tense
-    );
+    addAtomicMorphologicalInfo(infos, tense);
 
     if (mood == null) {
       Node parent = table.getParentNode();
@@ -239,7 +239,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
       } else if (parent.getParentNode() != null
           && parent.getParentNode().getNodeName().toLowerCase() == "td") {
         parent = parent.getParentNode();
-        for (int i = 0; i < 3 && parent != null; i++) { //tr, table, div
+        for (int i = 0; i < 3 && parent != null; i++) { // tr, table, div
           parent = parent.getParentNode();
         }
       }
@@ -258,9 +258,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
         }
 
         if (title == null) {
-          log.debug(
-              "Cannot find mood title in the conjugation table for '" + delegate.currentLexEntry()
-                  + "'");
+          log.debug("Cannot find mood title in the conjugation table for '"
+              + delegate.currentLexEntry() + "'");
           return false;
         }
       }
@@ -272,10 +271,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
       return false;
     }
 
-    addAtomicMorphologicalInfo(
-        infos,
-        mood
-    );
+    addAtomicMorphologicalInfo(infos, mood);
 
     return true;
   }
@@ -385,7 +381,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
     HashSet<PropertyObjectPair> infos = new HashSet<PropertyObjectPair>();
 
-// 		infos.add(PropertyObjectPair.get(extractedFromConjTable, trueLiteral));
+    // infos.add(PropertyObjectPair.get(extractedFromConjTable, trueLiteral));
 
     NodeList lines = table.getElementsByTagName("tr");
 
@@ -413,15 +409,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
           }
 
           if (!"—".equals(form)) {
-            delegate.registerInflection(
-                "fr",
-                "-verb-",
-                form,
-                delegate.currentLexEntry(),
-                0,
-                infl,
-                null
-            );
+            delegate.registerInflection("fr", "-verb-", form, delegate.currentLexEntry(), 0, infl,
+                null);
           }
         }
       }
@@ -462,39 +451,25 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
       } else {
         infos = new HashSet<PropertyObjectPair>();
         String presentParticiple = interestingTDs.item(2).getTextContent().trim();
-// 				infos.add(PropertyObjectPair.get(extractedFromConjTable, trueLiteral));
+        // infos.add(PropertyObjectPair.get(extractedFromConjTable, trueLiteral));
         infos = new HashSet<PropertyObjectPair>();
         infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
         infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
-        delegate.registerInflection(
-            "fr",
-            "-verb-",
-            presentParticiple,
-            delegate.currentLexEntry(),
-            0,
-            infos,
-            null
-        );
+        delegate.registerInflection("fr", "-verb-", presentParticiple, delegate.currentLexEntry(),
+            0, infos, null);
 
         if (interestingTDs.getLength() < 6) {
           log.error("Cannot get past participle of '" + delegate.currentLexEntry() + "'");
         } else {
           String pastParticiple = interestingTDs.item(5).getTextContent();
           infos = new HashSet<PropertyObjectPair>();
-// 					infos.add(PropertyObjectPair.get(extractedFromConjTable, trueLiteral));
+          // infos.add(PropertyObjectPair.get(extractedFromConjTable, trueLiteral));
           infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
           infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
           infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
           infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-          delegate.registerInflection(
-              "fr",
-              "-verb-",
-              pastParticiple,
-              delegate.currentLexEntry(),
-              0,
-              infos,
-              null
-          );
+          delegate.registerInflection("fr", "-verb-", pastParticiple, delegate.currentLexEntry(), 0,
+              infos, null);
         }
       }
     }
@@ -502,8 +477,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
   public void handleConjugationDocument(Element parent) {
     if (parent == null) {
-      log.error("Cannot get the element containing the conjugation tables of '" + delegate
-          .currentLexEntry() + "'");
+      log.error("Cannot get the element containing the conjugation tables of '"
+          + delegate.currentLexEntry() + "'");
     }
 
     NodeList tables = parent.getElementsByTagName("table");
@@ -530,16 +505,16 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
   public void parseConjugation(String conjugationTemplateCall) {
     try {
       // Render the conjugation to html, while ignoring the example template
-      if (conjugationTemplateCall.indexOf("}|") != -1 && notMatchingBrackets(
-          conjugationTemplateCall)) {
+      if (conjugationTemplateCall.indexOf("}|") != -1
+          && notMatchingBrackets(conjugationTemplateCall)) {
         log.warn("Suspicious '}|' in conjugation template call for '" + delegate.currentLexEntry()
             + "'. Surely a wikicode error. Trying to fix it. Call: '" + conjugationTemplateCall
             + "'");
         conjugationTemplateCall = conjugationTemplateCall.replace("}|", "|");
       }
 
-      if (conjugationTemplateCall.indexOf("|}") != -1 && notMatchingBrackets(
-          conjugationTemplateCall)) {
+      if (conjugationTemplateCall.indexOf("|}") != -1
+          && notMatchingBrackets(conjugationTemplateCall)) {
         log.warn("Suspicious '|}' in conjugation template call for '" + delegate.currentLexEntry()
             + "'. Surely a wikicode error. Trying to fix it. Call: '" + conjugationTemplateCall
             + "'");
@@ -573,16 +548,14 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
   private void addAtomicMorphologicalInfo(HashSet<PropertyObjectPair> properties, NodeList list) {
     for (int i = 0; i < list.getLength(); i++) {
-      addAtomicMorphologicalInfo(
-          properties,
-          list.item(i).getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale)
-      );
+      addAtomicMorphologicalInfo(properties,
+          list.item(i).getTextContent().trim().toLowerCase(WiktionaryExtractor.frLocale));
     }
   }
 
   private void registerInflectionFromCellChild(Node c, String word) {
     HashSet<PropertyObjectPair> properties = new HashSet<PropertyObjectPair>();
-// 		properties.add(PropertyObjectPair.get(extractedFromInflectionTable, trueLiteral));
+    // properties.add(PropertyObjectPair.get(extractedFromInflectionTable, trueLiteral));
 
     Node cell = c;
     while (cell != null && !cell.getNodeName().toLowerCase().equals("td")) {
@@ -593,8 +566,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
       if (c.getParentNode().getNodeName().toLowerCase().equals("tr")) {
         // horrible but seen in wiktionary in the last version of Jully 2014
         cell = c;
-        log.debug("[HORRIBLE] link is not in a TD, but in a TR element! Page: " + delegate
-            .currentLexEntry() + ", form: " + word);
+        log.debug("[HORRIBLE] link is not in a TD, but in a TR element! Page: "
+            + delegate.currentLexEntry() + ", form: " + word);
       } else {
         log.debug("Could not find the parent cell while extracting other form's template. Page: "
             + delegate.currentLexEntry() + ", form: " + word);
@@ -623,18 +596,16 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
       NodeList trs = table.getElementsByTagName("tr");
 
       if (trs.getLength() == 0) {
-        log.error(
-            "BUG: no lines found in the table. Page: " + delegate.currentLexEntry() + ", form: "
-                + word);
+        log.error("BUG: no lines found in the table. Page: " + delegate.currentLexEntry()
+            + ", form: " + word);
         return;
       }
 
       NodeList ths = ((Element) trs.item(0)).getElementsByTagName("th");
 
       if (ths.getLength() <= colNumber) {
-        log.error(
-            "BUG: not enough cols in the row of the table. Page: " + delegate.currentLexEntry()
-                + ", form: " + word);
+        log.error("BUG: not enough cols in the row of the table. Page: "
+            + delegate.currentLexEntry() + ", form: " + word);
         return;
       }
 
@@ -644,19 +615,14 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
     }
 
     if (word.equals(delegate.currentLexEntry())) {
-      // TODO [UNDERSTAND]: what about invariable elements, are all properties registered to the canonicalForm ?
+      // TODO [UNDERSTAND]: what about invariable elements, are all properties registered to the
+      // canonicalForm ?
       for (PropertyObjectPair p : properties) {
         delegate.registerPropertyOnCanonicalForm(p.getKey(), p.getValue());
       }
     } else {
-      delegate.registerInflection(
-          "",
-          delegate.currentWiktionaryPos(),
-          word,
-          delegate.currentLexEntry(),
-          delegate.currentDefinitionNumber(),
-          properties
-      );
+      delegate.registerInflection("", delegate.currentWiktionaryPos(), word,
+          delegate.currentLexEntry(), delegate.currentDefinitionNumber(), properties);
     }
   }
 
@@ -686,8 +652,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
         t = title.getTextContent().toLowerCase(WiktionaryExtractor.frLocale);
       }
 
-      if (t != null && !word.startsWith("Modèle:") && (t.equals(wordLower) || t
-          .equals(wordLower + " (page inexistante)"))) {
+      if (t != null && !word.startsWith("Modèle:")
+          && (t.equals(wordLower) || t.equals(wordLower + " (page inexistante)"))) {
         registerInflectionFromCellChild(a, word);
       }
     }
@@ -704,9 +670,8 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     if (templateName.equals("nom langue") || templateName.endsWith(":nom langue")) {
       // intercept this template as it leeds to a very inefficient Lua Script.

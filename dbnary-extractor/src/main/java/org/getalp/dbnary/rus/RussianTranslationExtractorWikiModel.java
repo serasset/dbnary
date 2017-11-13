@@ -22,8 +22,8 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 
   // static Set<String> ignoredTemplates = new TreeSet<String>();
   // static {
-  // 	ignoredTemplates.add("Wikipedia");
-  // 	ignoredTemplates.add("Incorrect");
+  // ignoredTemplates.add("Wikipedia");
+  // ignoredTemplates.add("Incorrect");
   // }
 
   private IWiktionaryDataHandler delegate;
@@ -56,9 +56,8 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     if ("перев-блок".equals(templateName)) {
       // This is a translation block
       // System.err.println("Template call to translation block");
@@ -84,8 +83,8 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
       // we now expand by the source code to restore previous behaviour
       log.debug("Called macro: {} when expanding translation block in {}.", templateName,
           this.getPageName());
-      writer.append("{{").append(templateName)
-          .append("}}"); // TODO: reconstruct template with all args
+      writer.append("{{").append(templateName).append("}}"); // TODO: reconstruct template with all
+      // args
     }
   }
 
@@ -94,7 +93,8 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 
   private void extractTranslations(Resource gloss, String lang, String value) {
     // First black out commas that appear inside a pair of parenthesis
-    // TODO: Keep usage information that may be found as a prefix: e.g. "de=несов.: [[verwenden]], [[anwenden]], [[einsetzen]]; сов.: [[aufbrauchen]]"
+    // TODO: Keep usage information that may be found as a prefix: e.g. "de=несов.: [[verwenden]],
+    // [[anwenden]], [[einsetzen]]; сов.: [[aufbrauchen]]"
     Matcher scriptMatcher = scripts.matcher(value);
     value = scriptMatcher.replaceAll("");
     value = blackoutCommas(value);

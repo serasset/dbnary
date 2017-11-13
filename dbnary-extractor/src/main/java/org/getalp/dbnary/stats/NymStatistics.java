@@ -27,7 +27,7 @@ public class NymStatistics {
       out.println(getHeaders());
     }
 
-    //out.print(ISO639_3.sharedInstance.inEnglish(language));
+    // out.print(ISO639_3.sharedInstance.inEnglish(language));
     out.print(countRelations(DBnaryOnt.synonym, m1));
     out.print("," + countRelations(DBnaryOnt.approximateSynonym, m1));
     out.print("," + countRelations(DBnaryOnt.antonym, m1));

@@ -1,7 +1,6 @@
 package org.getalp.dbnary.deu;
 
 import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,13 +27,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String senseNumberRegExp = "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d)*\\.?[abcdefghijklmn]?)";
-  protected final static String senseNumberOrRangeRegExp = "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d|-|–|–|,| |&nbsp;)*\\.?[abcdefghij]?)";
+  protected final static String senseNumberRegExp =
+      "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d)*\\.?[abcdefghijklmn]?)";
+  protected final static String senseNumberOrRangeRegExp =
+      "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d|-|–|–|,| |&nbsp;)*\\.?[abcdefghij]?)";
   protected static final String simpleNumListFilter =
       "^\\s*(" + senseNumberRegExp + "(?:\\s*[\\,\\-–]\\s*" + senseNumberRegExp + ")*)\\s*$";
 
-  protected final static String languageSectionPatternString = "={2}\\s*([^\\(\r\n]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
-  protected final static String partOfSpeechPatternString = "={3}[^\\{]*\\{\\{Wortart\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
+  protected final static String languageSectionPatternString =
+      "={2}\\s*([^\\(\r\n]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
+  protected final static String partOfSpeechPatternString =
+      "={3}[^\\{]*\\{\\{Wortart\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
   protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
   protected final static String germanDefinitionPatternString =
       "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
@@ -52,8 +55,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryIndex wi) {
     super.setWiktionaryIndex(wi);
-    morphologyExtractorWikiModel = new GermanMorphologyExtractorWikiModel(wdh, wi, new Locale("de"),
-        "/${Bild}", "/${Titel}");
+    morphologyExtractorWikiModel =
+        new GermanMorphologyExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
     morphologyExtractor = new GermanMorphologyExtractor(wdh, wi);
   }
 
@@ -72,7 +75,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static HashSet<String> ignorableSectionMarkers;
   protected final static HashSet<String> nymMarkers;
   protected final static HashMap<String, String> nymMarkerToNymName;
-//	protected final static HashSet<String> inflectionMarkers;
+  // protected final static HashSet<String> inflectionMarkers;
 
   static {
 
@@ -80,42 +83,35 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // Pattern.compile(languageSectionPatternString);
 
     languageSectionPattern = Pattern.compile(languageSectionPatternString);
-    multilineMacroPatternString =
-        new StringBuilder().append("\\{\\{")
-            .append("([^\\}\\|]*)(?:\\|([^\\}]*))?")
-            .append("\\}\\}")
-            .toString();
+    multilineMacroPatternString = new StringBuilder().append("\\{\\{")
+        .append("([^\\}\\|]*)(?:\\|([^\\}]*))?").append("\\}\\}").toString();
 
-    macroOrPOSPatternString = new StringBuilder()
-        .append("(?:").append(WikiPatterns.macroPatternString)
-        .append(")|(?:").append(partOfSpeechPatternString)
-        .append(")|(?:").append(subSection4PatternString)
-        .append(")|(?:").append(multilineMacroPatternString)
-        .append(")").toString();
+    macroOrPOSPatternString =
+        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
+            .append(partOfSpeechPatternString).append(")|(?:").append(subSection4PatternString)
+            .append(")|(?:").append(multilineMacroPatternString).append(")").toString();
 
     macroOrPOSPattern = Pattern.compile(macroOrPOSPatternString);
 
-    posHeaderElementsPatternString = new StringBuilder()
-        .append("(?:").append(WikiPatterns.macroPatternString)
-        .append(")|(?:").append("''(.*)''")
-        .append(")|(?:").append("[,/\\(\\)]\\s*")
-        .append(")|(?:").append("((?:ohne\\s+)?[^\\s,/\\(\\)]+)")
-        .append(")").toString();
+    posHeaderElementsPatternString =
+        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
+            .append("''(.*)''").append(")|(?:").append("[,/\\(\\)]\\s*").append(")|(?:")
+            .append("((?:ohne\\s+)?[^\\s,/\\(\\)]+)").append(")").toString();
     posHeaderElementsPattern = Pattern.compile(posHeaderElementsPatternString);
 
     germanDefinitionPattern = Pattern.compile(germanDefinitionPatternString, Pattern.MULTILINE);
     germanNymLinePattern = Pattern.compile(germanNymLinePatternString, Pattern.MULTILINE);
 
-//        posMarkers = new HashSet<String>(20);
-//        posMarkers.add("Substantiv"); // Should I get the
-//        // Toponym/Vorname/Nachname additional
-//        // info ?
-//        posMarkers.add("Adjektiv");
-//        posMarkers.add("Absolutadjektiv");
-//        posMarkers.add("Partizip");
-//        posMarkers.add("Adverb");
-//        posMarkers.add("Wortverbindung");
-//        posMarkers.add("Verb");
+    // posMarkers = new HashSet<String>(20);
+    // posMarkers.add("Substantiv"); // Should I get the
+    // // Toponym/Vorname/Nachname additional
+    // // info ?
+    // posMarkers.add("Adjektiv");
+    // posMarkers.add("Absolutadjektiv");
+    // posMarkers.add("Partizip");
+    // posMarkers.add("Adverb");
+    // posMarkers.add("Wortverbindung");
+    // posMarkers.add("Verb");
 
     ignorableSectionMarkers = new HashSet<String>(20);
     ignorableSectionMarkers.add("Silbentrennung");
@@ -165,8 +161,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignorableSectionMarkers.add("Anmerkung");
     ignorableSectionMarkers.add("Anmerkung Küpper");
     ignorableSectionMarkers.add("Anmerkung Steigerung");
-    ignorableSectionMarkers
-        .add("Lemmaverweis"); // TODO: Refers to another entry... Should keep the info.
+    ignorableSectionMarkers.add("Lemmaverweis"); // TODO: Refers to another entry... Should keep the
+    // info.
     ignorableSectionMarkers.add("Veraltete Schreibweisen");
     ignorableSectionMarkers.add("Steigerbarkeit Adjektiv");
     ignorableSectionMarkers.add("Wortbildungen");
@@ -194,9 +190,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang
-   * .String, org.getalp.blexisma.semnet.SemanticNetwork)
+   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang .String,
+   * org.getalp.blexisma.semnet.SemanticNetwork)
    */
   @Override
   public void extractData() {
@@ -212,7 +207,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     int germanSectionStartOffset = languageFilter.end();
     // Advance till end of sequence or new language section
-    // WHY filter on section level ?: while (languageFilter.find() && (languageFilter.start(1) - languageFilter.start()) != 2) {
+    // WHY filter on section level ?: while (languageFilter.find() && (languageFilter.start(1) -
+    // languageFilter.start()) != 2) {
     languageFilter.find();
     // languageFilter.find();
     int germanSectionEndOffset =
@@ -230,7 +226,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: Prise en compte des "concepts dérivés" ? (Abgeleitete Begriffe)
   // TODO: supprimer les "Deklinierte Form" des catégories extraites.
 
-  private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, POSBLOCK, NYMBLOCK}
+  private enum Block {
+    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, POSBLOCK, NYMBLOCK
+  }
 
   ;
 
@@ -253,7 +251,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (nextBlock == null) {
         continue;
       }
-      // If current block is IGNOREPOS, we should ignore everything but a new DEFBLOCK/INFLECTIONBLOCK
+      // If current block is IGNOREPOS, we should ignore everything but a new
+      // DEFBLOCK/INFLECTIONBLOCK
       if (Block.IGNOREPOS != currentBlock || (Block.POSBLOCK == nextBlock)) {
         leaveCurrentBlock(m);
         gotoNextBlock(nextBlock, context);
@@ -270,7 +269,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     context.put("start", m.end());
 
     if (null != m.group(1)) {
-      //go to the good block
+      // go to the good block
       String template = m.group(1).trim();
       if (template.equals("Bedeutungen")) {
         return Block.DEFBLOCK;
@@ -284,19 +283,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (isInflexionMacro(template)) {
         context.put("start", m.start());
         return Block.INFLECTIONBLOCK;
-        //the followed comentary permit the recognition of page which are containing inflected form
-//				}else if(m.group(1).equals("Lemmaverweis") || m.group(1).equals("Grundformverweis")){
-//					if(inflectedform && null!=m.group(2)){
-        //TODO : adding a parser for this kind of page
-//					}
+        // the followed comentary permit the recognition of page which are containing inflected form
+        // }else if(m.group(1).equals("Lemmaverweis") || m.group(1).equals("Grundformverweis")){
+        // if(inflectedform && null!=m.group(2)){
+        // TODO : adding a parser for this kind of page
+        // }
       } else {
         return null;
       }
     } else if (null != m.group(3)) {
       String fullHeader = m.group().trim();
-      if (fullHeader.contains("{{Wortart|Deklinierte Form") || fullHeader
-          .contains("{{Wortart|Konjugierte Form")) {
-        //TODO: Should I extract morphological data from deklinierte formen ?
+      if (fullHeader.contains("{{Wortart|Deklinierte Form")
+          || fullHeader.contains("{{Wortart|Konjugierte Form")) {
+        // TODO: Should I extract morphological data from deklinierte formen ?
         return Block.IGNOREPOS;
       }
       context.put("posHeader", m.group());
@@ -305,13 +304,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       // TODO: filter out ignorable part of speech;
       return Block.POSBLOCK;
     } else if (null != m.group(5)) {
-      if (m.group(5).trim().equals("Übersetzungen") || m.group(5).trim()
-          .equals("{{Übersetzungen}}")) {
+      if (m.group(5).trim().equals("Übersetzungen")
+          || m.group(5).trim().equals("{{Übersetzungen}}")) {
         return Block.TRADBLOCK;
       } else {
         return null;
       }
-      //inflection block
+      // inflection block
     } else if (null != m.group(6)) {
       // TODO: this condition captures more than the expected macros.
       if (isInflexionMacro(m.group(6))) {
@@ -329,8 +328,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     macro = macro.trim();
     if (macro.startsWith("Lit-")) {
       return false;
-    } else if (macro.contains("(Deutsch)") || macro.contains("Deutschland") || macro
-        .contains("Deutsche")) {
+    } else if (macro.contains("(Deutsch)") || macro.contains("Deutschland")
+        || macro.contains("Deutsche")) {
       return false;
     } else if (macro.startsWith("Ü-")) {
       return false;
@@ -377,7 +376,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (blockStart == -1) {
       return;
     }
-    // log.trace("Leaving block {} while parsing entry {}", currentBlock.name(), this.wiktionaryPageName);
+    // log.trace("Leaving block {} while parsing entry {}", currentBlock.name(),
+    // this.wiktionaryPageName);
 
     int end = computeRegionEnd(blockStart, m);
     switch (currentBlock) {
@@ -488,16 +488,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void parseConjugationAndDeclinationPages(int startOffset, int endOffset) {
 
-    //TODO : next step : for each page with more than one conjugation use all the table
+    // TODO : next step : for each page with more than one conjugation use all the table
     // TODO: check and refactor
     String page = lexEntryToPage(wiktionaryPageName);
     String normalizedPOS = wdh.currentWiktionaryPos();
     // deklinationExtractor.setPageName(wiktionaryPageName);
-    //if the currentEntry has a page of conjugation or declination
+    // if the currentEntry has a page of conjugation or declination
     if (null != page && -1 != page.indexOf(normalizedPOS)) {
-//			if(inflectedFormMarker.contains(normalizedPOS)){
-//				deklinationExtractor.parseInflectedForms(page, normalizedPOS);
-//			}
+      // if(inflectedFormMarker.contains(normalizedPOS)){
+      // deklinationExtractor.parseInflectedForms(page, normalizedPOS);
+      // }
       if (verbMarker.contains(normalizedPOS)) {
         // deklinationExtractor.parseConjugation(page, normalizedPOS);
       } else {
@@ -544,8 +544,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
 
-    // glossOrMacroPatternString = "(?:\\[([^\\]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\|?([^\\}]*)\\}\\})";
-    glossOrMacroPatternString = "(?:\\[([^\\]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\|?([^\\}]*)\\}\\})";
+    // glossOrMacroPatternString =
+    // "(?:\\[([^\\]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\|?([^\\}]*)\\}\\})";
+    glossOrMacroPatternString =
+        "(?:\\[([^\\]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\|?([^\\}]*)\\}\\})";
 
     glossOrMacroPattern = Pattern.compile(glossOrMacroPatternString);
   }
@@ -555,8 +557,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ArrayList<? extends WikiText.Token> toks = wt.wikiTokens();
 
     for (WikiText.Token t : toks) {
-      if (t instanceof WikiText.Template && ((WikiText.Template) t).getName().trim()
-          .equals("Ü-Tabelle")) {
+      if (t instanceof WikiText.Template
+          && ((WikiText.Template) t).getName().trim().equals("Ü-Tabelle")) {
         Map<String, WikiText.WikiContent> args = ((WikiText.Template) t).getArgs();
         // TODO: General gloss is in arg G // Meaning number in arg 1
         extractTranslationsFromItems(args.get("Ü-links"));
@@ -591,14 +593,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   // TODO: handle dialekts and translations as links
-  private static String translationTokenizer = "(?<TMPLLANG>^\\p{Template}\\s*:\\s*)|" +
-      "(?<CTLANG>^(?<LANG>.*)\\s*:\\s*)|" +
-      "(?<ITALICS>'{2,3}.*?'{2,3})|" +
-      "(?<PARENS>\\(\\P{Reserved}*?\\))|" +
-      "(?<SPECIALPARENS>\\(.*?\\))|" +
-      "\\[(?<GLOSS>\\P{Reserved}*?)\\]|" +
-      "(?<TMPL>\\p{Template})|" +
-      "(?<LINK>\\p{InternalLink})";
+  private static String translationTokenizer =
+      "(?<TMPLLANG>^\\p{Template}\\s*:\\s*)|" + "(?<CTLANG>^(?<LANG>.*)\\s*:\\s*)|"
+          + "(?<ITALICS>'{2,3}.*?'{2,3})|" + "(?<PARENS>\\(\\P{Reserved}*?\\))|"
+          + "(?<SPECIALPARENS>\\(.*?\\))|" + "\\[(?<GLOSS>\\P{Reserved}*?)\\]|"
+          + "(?<TMPL>\\p{Template})|" + "(?<LINK>\\p{InternalLink})";
 
   private void extractTranslationsFromListContent(WikiText.WikiContent content) {
 
@@ -619,7 +618,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (null != (g = lexer.group("TMPLLANG"))) {
         // Ignoring languages as a template as translations will be given
       } else if (null != (g = lexer.group("CTLANG"))) {
-        // Clear Text language -- ignore it for the moment. To be processed when dialekts will be added.
+        // Clear Text language -- ignore it for the moment. To be processed when dialekts will be
+        // added.
         lang = lexer.group("LANG");
       } else if (null != (g = lexer.group("ITALICS"))) {
         // ignore ?
@@ -628,7 +628,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (null != (g = lexer.group("SPECIALPARENS"))) {
         log.debug("Template or link inside parens: {}",
             line.getSourceContent(lexer.group("SPECIALPARENS")));
-        // TODO: some are only additional usage notes, other are alternate translation, decide between them and handle the translation cases.
+        // TODO: some are only additional usage notes, other are alternate translation, decide
+        // between them and handle the translation cases.
       } else if (null != (g = lexer.group("GLOSS"))) {
         currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
       } else if (null != (g = lexer.group("LINK"))) {
@@ -638,8 +639,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         switch (t.getName()) {
           case "Ü":
           case "Ü?":
-            String lg = GermanLangToCode
-                .threeLettersCode(LangTools.normalize(t.getParsedArgs().get("1")));
+            String lg =
+                GermanLangToCode.threeLettersCode(LangTools.normalize(t.getParsedArgs().get("1")));
             String lemma = t.getParsedArgs().get("2");
             String linkText = t.getParsedArgs().get("3");
             String usage = null;
@@ -738,7 +739,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             log.debug("Sense number is: {}", senseNum);
           } else {
             // Level 2
-            // log.debug("Level 2 definition: \"{}\" in entry {}", definitionMatcher.group(), this.wiktionaryPageName);
+            // log.debug("Level 2 definition: \"{}\" in entry {}", definitionMatcher.group(),
+            // this.wiktionaryPageName);
             if (!senseNum.startsWith(currentLevel1SenseNumber)) {
               senseNum = currentLevel1SenseNumber + senseNum;
             }
@@ -757,10 +759,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         while (linkMatcher.find()) {
           // It's a link, only keep the alternate string if present.
           String leftGroup = linkMatcher.group(1);
-          if (leftGroup != null && !leftGroup.equals("") &&
-              !leftGroup.startsWith("Wikisaurus:") &&
-              !leftGroup.startsWith("Catégorie:") &&
-              !leftGroup.startsWith("#")) {
+          if (leftGroup != null && !leftGroup.equals("") && !leftGroup.startsWith("Wikisaurus:")
+              && !leftGroup.startsWith("Catégorie:") && !leftGroup.startsWith("#")) {
             if (null == senseNum) {
               wdh.registerNymRelation(leftGroup, synRelation);
             } else {
@@ -779,7 +779,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   protected void extractDefinitions(int startOffset, int endOffset) {
-    // TODO: The definition pattern is the only one that changes. Hence, we should normalize this processing and put the macro in language specific parameters.
+    // TODO: The definition pattern is the only one that changes. Hence, we should normalize this
+    // processing and put the macro in language specific parameters.
     Matcher definitionMatcher = germanDefinitionPattern.matcher(this.pageContent);
     definitionMatcher.region(startOffset, endOffset);
 
@@ -806,7 +807,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             log.debug("Sense number is: {}", senseNum);
           } else {
             // Level 2
-            // log.debug("Level 2 definition: \"{}\" in entry {}", definitionMatcher.group(), this.wiktionaryPageName);
+            // log.debug("Level 2 definition: \"{}\" in entry {}", definitionMatcher.group(),
+            // this.wiktionaryPageName);
             if (!senseNum.startsWith(currentLevel1SenseNumber)) {
               senseNum = currentLevel1SenseNumber + senseNum;
             }

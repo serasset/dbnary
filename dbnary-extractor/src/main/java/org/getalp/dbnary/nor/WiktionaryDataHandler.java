@@ -26,15 +26,15 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("egen", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
     posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
     posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
-    posAndTypeValueMap
-        .put("fork", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("fork",
+        new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
     posAndTypeValueMap.put("Adjektiv", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
     posAndTypeValueMap.put("prep", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
     posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
     posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
-    posAndTypeValueMap
-        .put("inter", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("inter",
+        new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("kon", new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
     posAndTypeValueMap.put("pref", new PosAndType(LexinfoOnt.prefix, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("suff", new PosAndType(LexinfoOnt.suffix, OntolexOnt.LexicalEntry));
@@ -43,19 +43,17 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("tall", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
     posAndTypeValueMap.put("art", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
     posAndTypeValueMap.put("det", new PosAndType(LexinfoOnt.determiner, LexinfoOnt.Determiner));
-    posAndTypeValueMap
-        .put("ordtak", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("Ordspråk", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("uttrykk", new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("ordtak",
+        new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Ordspråk",
+        new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("uttrykk",
+        new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.LexicalEntry));
   }
 
   public void addExtraPartOfSpeech(String pos) {
-    if (pos.equals("PAGENAME") ||
-        pos.startsWith("wikipedia") ||
-        pos.startsWith("Wikipedia")) {
+    if (pos.equals("PAGENAME") || pos.startsWith("wikipedia") || pos.startsWith("Wikipedia")) {
       return;
     }
     PosAndType pat = posAndTypeValueMap.get(pos);
@@ -93,15 +91,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public void addPOSinfo(String s) {
     String[] infos = s.split("\\|");
     if (infos.length > 0) {
-      if (infos[0].equals("se også") ||
-          infos[0].contains("wikipedia") ||
-          infos[0].equalsIgnoreCase("grunnstoffer") ||
-          infos[0].equalsIgnoreCase("andre former") ||
-          infos[0].equalsIgnoreCase("verb-no") ||
-          infos[0].contains("feilstaving") ||
-          infos[0].contains("bøyningsform") ||
-          infos[0].contains("-et")
-          ) {
+      if (infos[0].equals("se også") || infos[0].contains("wikipedia")
+          || infos[0].equalsIgnoreCase("grunnstoffer") || infos[0].equalsIgnoreCase("andre former")
+          || infos[0].equalsIgnoreCase("verb-no") || infos[0].contains("feilstaving")
+          || infos[0].contains("bøyningsform") || infos[0].contains("-et")) {
         return;
       }
       if (infos[0].equals("infl")) {
@@ -123,7 +116,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               switch (pair[1].trim()) {
                 case "x":
                 case "y":
-                  // log.debug("Unused reflexive info {} --in-- {}", infos[1], this.currentLexEntry());
+                  // log.debug("Unused reflexive info {} --in-- {}", infos[1],
+                  // this.currentLexEntry());
                   break;
                 case "ja":
                   break;

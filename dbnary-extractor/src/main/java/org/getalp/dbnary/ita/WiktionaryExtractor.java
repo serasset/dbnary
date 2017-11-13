@@ -3,22 +3,21 @@
  */
 package org.getalp.dbnary.ita;
 
-import org.apache.jena.rdf.model.Resource;
-import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.LangTools;
-import org.getalp.dbnary.wiki.WikiCharSequence;
-import org.getalp.dbnary.wiki.WikiPatterns;
-import org.getalp.dbnary.wiki.WikiText;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.jena.rdf.model.Resource;
+import org.getalp.LangTools;
+import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.wiki.WikiCharSequence;
+import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiText;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author serasset
@@ -33,17 +32,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
 
-    entrySectionPatternString =
-        new StringBuilder().append("\\{\\{\\s*-")
-            .append("([^\\}\\|\n\r]*)-\\s*(?:\\|([^\\}\n\r]*))?")
-            .append("\\}\\}")
-            .toString();
+    entrySectionPatternString = new StringBuilder().append("\\{\\{\\s*-")
+        .append("([^\\}\\|\n\r]*)-\\s*(?:\\|([^\\}\n\r]*))?").append("\\}\\}").toString();
 
   }
 
   protected final static String wikiSectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
 
-  private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK}
+  private enum Block {
+    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK
+  }
 
   // TODO: handle pronounciation
   protected final static String pronounciationPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
@@ -53,7 +51,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   // protected final static Pattern languageSectionPattern;
-  //protected final static HashSet<String> nymMarkers;
+  // protected final static HashSet<String> nymMarkers;
   protected final static HashMap<String, String> nymMarkerToNymName;
 
   static {
@@ -95,8 +93,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private boolean isCorrectPOS;
 
-  /* (non-Javadoc)
-   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
+   * org.getalp.blexisma.semnet.SemanticNetwork)
    */
   @Override
   public void extractData() {
@@ -115,7 +116,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
     }
     if (-1 != itaStart) {
-      //System.err.println("Parsing previous italian entry");
+      // System.err.println("Parsing previous italian entry");
       extractItalianData(itaStart, pageContent.length());
     }
     wdh.finalizePageExtraction();
@@ -127,7 +128,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return (t.startsWith("{{-it-") || t.startsWith("{{it"));
   }
 
-  // TODO: variants, pronunciations and other elements are common to the different entries in the page.
+  // TODO: variants, pronunciations and other elements are common to the different entries in the
+  // page.
   protected void extractItalianData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
@@ -140,9 +142,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (nextBlock == null) {
         continue;
       }
-      // If current block is IGNOREPOS, we should ignore everything but a new DEFBLOCK/INFLECTIONBLOCK
-      if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock
-          || Block.INFLECTIONBLOCK == nextBlock)) {
+      // If current block is IGNOREPOS, we should ignore everything but a new
+      // DEFBLOCK/INFLECTIONBLOCK
+      if (Block.IGNOREPOS != currentBlock
+          || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
         leaveCurrentBlock(m);
         gotoNextBlock(nextBlock, context);
       }
@@ -286,15 +289,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // line of translations
         processTranslationLine(currentStructuredGloss, (WikiText.ListItem) t);
       } else if (t instanceof WikiText.Heading) {
-        // Headings indicate the unexpected end of the translation section (error in the page or specific headings)
+        // Headings indicate the unexpected end of the translation section (error in the page or
+        // specific headings)
         // Ignore the remaining data
         ti = toks.size();
       } else if (t instanceof WikiText.Link) {
         // This only captures the links that are outside of an indentation
         WikiText.Link l = (WikiText.Link) t;
         String target = l.getFullTargetText();
-        if (target.startsWith("Categoria:") || target.startsWith("File:") || target
-            .startsWith("Image:")) {
+        if (target.startsWith("Categoria:") || target.startsWith("File:")
+            || target.startsWith("Image:")) {
           // Beginning of links to categories means end of translation section
           ti = toks.size();
         } else {
@@ -320,12 +324,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     tp.extractTranslationLine(line, gloss, wdh, glossFilter);
   }
 
-  static String ignorableGlossPatternText = new StringBuffer()
-      .append("\\s*(?:")
+  static String ignorableGlossPatternText = new StringBuffer().append("\\s*(?:")
       .append("(?:(?:\\dª|prima|seconda|terza)\\s+pers(?:ona|\\.)?)\\s+")
-      .append("|(?:femminile|participio passato|plurale)\\s+")
-      .append("|voce verbale")
-      .append(")")
+      .append("|(?:femminile|participio passato|plurale)\\s+").append("|voce verbale").append(")")
       .toString();
   static Pattern ignorableGlossPattern = Pattern.compile(ignorableGlossPatternText);
   Matcher ignorableGloss = ignorableGlossPattern.matcher("");
@@ -358,21 +359,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
     // les caractères visible
-    carPatternString =
-        new StringBuilder().append("(.)")
-            .toString();
+    carPatternString = new StringBuilder().append("(.)").toString();
 
-    // TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
-    macroOrLinkOrcarPatternString = new StringBuilder()
-        .append("(?:")
-        .append(WikiPatterns.macroPatternString)
-        .append(")|(?:")
-        .append(WikiPatterns.linkPatternString)
-        .append(")|(?:")
-        .append("(:*\\*)")
-        .append(")|(?:")
-        .append(carPatternString)
-        .append(")").toString();
+    // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
+    // line.
+    macroOrLinkOrcarPatternString =
+        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
+            .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)")
+            .append(")|(?:").append(carPatternString).append(")").toString();
   }
 
   protected final static Pattern macroOrLinkOrcarPattern;
@@ -413,8 +407,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGlose = wdh
-                    .createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGlose =
+                    wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
               } else {
                 currentGlose = null;
               }
@@ -422,21 +416,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
               currentGlose = null;
             } else if (g1.equalsIgnoreCase("mid")) {
-              //ignore
+              // ignore
             }
           } else if (g3 != null) {
-            //System.err.println("Unexpected link while in INIT state.");
+            // System.err.println("Unexpected link while in INIT state.");
           } else if (g5 != null) {
             ETAT = LANGUE;
           } else if (g6 != null) {
             if (g6.equals(":")) {
-              //System.err.println("Skipping ':' while in INIT state.");
+              // System.err.println("Skipping ':' while in INIT state.");
             } else if (g6.equals("\n") || g6.equals("\r")) {
 
             } else if (g6.equals(",")) {
-              //System.err.println("Skipping ',' while in INIT state.");
+              // System.err.println("Skipping ',' while in INIT state.");
             } else {
-              //System.err.println("Skipping " + g5 + " while in INIT state.");
+              // System.err.println("Skipping " + g5 + " while in INIT state.");
             }
           }
 
@@ -448,8 +442,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGlose = wdh
-                    .createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGlose =
+                    wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
               } else {
                 currentGlose = null;
               }
@@ -472,9 +466,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               langname = LangTools.normalize(g1);
             }
           } else if (g3 != null) {
-            //System.err.println("Unexpected link while in LANGUE state.");
+            // System.err.println("Unexpected link while in LANGUE state.");
           } else if (g5 != null) {
-            //System.err.println("Skipping '*' while in LANGUE state.");
+            // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (g6 != null) {
             if (g6.equals(":")) {
               lang = langname.trim();
@@ -483,9 +477,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               langname = "";
               ETAT = TRAD;
             } else if (g6.equals("\n") || g6.equals("\r")) {
-              //System.err.println("Skipping newline while in LANGUE state.");
+              // System.err.println("Skipping newline while in LANGUE state.");
             } else if (g6.equals(",")) {
-              //System.err.println("Skipping ',' while in LANGUE state.");
+              // System.err.println("Skipping ',' while in LANGUE state.");
             } else {
               langname = langname + g6;
             }
@@ -497,15 +491,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGlose = wdh
-                    .createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGlose =
+                    wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
               } else {
                 currentGlose = null;
               }
-              //if (word != null && word.length() != 0) {
-              //lang=stripParentheses(lang);
-              //wdh.registerTranslation(lang, currentGlose, usage, word);
-              //}
+              // if (word != null && word.length() != 0) {
+              // lang=stripParentheses(lang);
+              // wdh.registerTranslation(lang, currentGlose, usage, word);
+              // }
               langname = "";
               word = "";
               usage = "";
@@ -540,11 +534,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           } else if (g3 != null) {
             word = word + " " + removeAnchor(g3);
           } else if (g5 != null) {
-            //System.err.println("Skipping '*' while in LANGUE state.");
+            // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (g6 != null) {
             if (g6.equals("\n") || g6.equals("\r")) {
               usage = usage.trim();
-              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
+              // currentGlose);
               if (word != null && word.length() != 0) {
                 if (lang != null) {
                   wdh.registerTranslation(lang, currentGlose, usage, word);
@@ -556,7 +551,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               ETAT = INIT;
             } else if (g6.equals(",") || g6.equals(";") || g6.equals("/")) {
               usage = usage.trim();
-              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
+              // currentGlose);
               if (word != null && word.length() != 0) {
                 if (lang != null) {
                   wdh.registerTranslation(lang, currentGlose, usage, word);
@@ -591,11 +587,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   // TODO: try to use gwtwiki to extract translations
-//	private void extractTranslations(int startOffset, int endOffset) {
-//       String transCode = pageContent.substring(startOffset, endOffset);
-//       ItalianTranslationExtractorWikiModel dbnmodel = new ItalianTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}/"+wiktionaryPageName, "/${title}");
-//       dbnmodel.parseTranslationBlock(transCode);
-//   }
+  // private void extractTranslations(int startOffset, int endOffset) {
+  // String transCode = pageContent.substring(startOffset, endOffset);
+  // ItalianTranslationExtractorWikiModel dbnmodel = new
+  // ItalianTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"),
+  // "/${image}/"+wiktionaryPageName, "/${title}");
+  // dbnmodel.parseTranslationBlock(transCode);
+  // }
 
   private void extractPron(int startOffset, int endOffset) {
     String pronCode = pageContent.substring(startOffset, endOffset);

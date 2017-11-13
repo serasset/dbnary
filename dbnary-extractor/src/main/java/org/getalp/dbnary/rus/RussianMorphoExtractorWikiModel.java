@@ -50,9 +50,8 @@ public class RussianMorphoExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     String pos = getPOS(templateName);
     if (null != pos) {
       // This is a macro specifying the part Of Speech

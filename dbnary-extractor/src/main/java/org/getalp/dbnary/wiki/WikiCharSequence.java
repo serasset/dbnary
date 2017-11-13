@@ -17,10 +17,11 @@ import org.getalp.dbnary.tools.CharRange;
 public class WikiCharSequence implements CharSequence {
 
 
-  public static final CharRange LISTS_RANGE = new CharRange('\uE000',
-      '\uE3FF'); // templates from U+E000 - U+E4FF
-  public static final CharRange TEMPLATES_RANGE = new CharRange('\uE400',
-      '\uE7FF'); // templates from U+E000 - U+E4FF
+  public static final CharRange LISTS_RANGE = new CharRange('\uE000', '\uE3FF'); // templates from
+  // U+E000 - U+E4FF
+  public static final CharRange TEMPLATES_RANGE = new CharRange('\uE400', '\uE7FF'); // templates
+  // from U+E000
+  // - U+E4FF
   public static final CharRange EXTERNAL_LINKS_RANGE = new CharRange('\uE800', '\uEBFF');
   public static final CharRange INTERNAL_LINKS_RANGE = new CharRange('\uEC00', '\uEFFF');
   public static final CharRange HEADERS_RANGE = new CharRange('\uF000', '\uF3FF');
@@ -62,22 +63,15 @@ public class WikiCharSequence implements CharSequence {
   }
 
   public WikiCharSequence(WikiText.WikiContent content) {
-    this(content,
-        new StringBuffer(),
-        new HashMap<>(),
-        new ClassBasedSequenceFilter());
+    this(content, new StringBuffer(), new HashMap<>(), new ClassBasedSequenceFilter());
   }
 
   public WikiCharSequence(WikiText.WikiContent content,
       Function<WikiText.Token, WikiSequenceFiltering.Action> filter) {
-    this(content,
-        new StringBuffer(),
-        new HashMap<>(),
-        filter);
+    this(content, new StringBuffer(), new HashMap<>(), filter);
   }
 
-  private WikiCharSequence(WikiText.WikiContent content,
-      StringBuffer chars,
+  private WikiCharSequence(WikiText.WikiContent content, StringBuffer chars,
       Map<Character, WikiText.Token> characterTokenMap,
       Function<WikiText.Token, WikiSequenceFiltering.Action> filter) {
     this.content = content;
@@ -90,10 +84,9 @@ public class WikiCharSequence implements CharSequence {
   }
 
   // Only used for sub sequences construction
-  // Subsequences share the full sequence data but change their offset relative to subsequence bounds
-  private WikiCharSequence(WikiCharSequence superSeq,
-      int subSequenceStart,
-      int subSequenceEnd) {
+  // Subsequences share the full sequence data but change their offset relative to subsequence
+  // bounds
+  private WikiCharSequence(WikiCharSequence superSeq, int subSequenceStart, int subSequenceEnd) {
     this.content = superSeq.content;
     this.chars = superSeq.chars;
     this.characterTokenMap = superSeq.characterTokenMap;
@@ -166,7 +159,8 @@ public class WikiCharSequence implements CharSequence {
     WikiSequenceFiltering.Action a = filter.apply(token);
 
     if (a instanceof WikiSequenceFiltering.OpenContentClose) {
-      Function<WikiText.Token, ArrayList<WikiText.Token>> contentSelector = ((WikiSequenceFiltering.Content) a).getter;
+      Function<WikiText.Token, ArrayList<WikiText.Token>> contentSelector =
+          ((WikiSequenceFiltering.Content) a).getter;
 
       char o = allocateCharacterFor(token);
       fillChars("〔" + o); // LEFT TORTOISE SHELL BRACKET (\u3014)
@@ -174,7 +168,8 @@ public class WikiCharSequence implements CharSequence {
       fillChars(o + "〕"); // RIGHT TORTOISE SHELL BRACKET (\u3015)
 
     } else if (a instanceof WikiSequenceFiltering.Content) {
-      Function<WikiText.Token, ArrayList<WikiText.Token>> contentSelector = ((WikiSequenceFiltering.Content) a).getter;
+      Function<WikiText.Token, ArrayList<WikiText.Token>> contentSelector =
+          ((WikiSequenceFiltering.Content) a).getter;
       fillChars(contentSelector.apply(token));
     } else if (a instanceof WikiSequenceFiltering.KeepAsis) {
       chars.append(token.getFullContent(), token.offset.start, token.offset.end);

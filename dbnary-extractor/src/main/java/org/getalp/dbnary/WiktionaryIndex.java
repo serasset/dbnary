@@ -27,7 +27,8 @@ public class WiktionaryIndex implements Map<String, String> {
   private static final CacheManager cacheManager = CacheManager.newInstance();
   private static final Ehcache cache = cacheManager.getEhcache("wiktcache");
 
-  // TODO: Create a static map to hold shared instances (1 per dump file) and avoid allocating more than one
+  // TODO: Create a static map to hold shared instances (1 per dump file) and avoid allocating more
+  // than one
   // WiktionaryIndexer per wiktionary language.
 
   /**
@@ -112,8 +113,8 @@ public class WiktionaryIndex implements Map<String, String> {
 
         fc.read(buf);
         buf.flip();
-        byte[] signature = INDEX_SIGNATURE
-            .getBytes(UTF_8); // Hence the byte array has the exact expected size;
+        byte[] signature = INDEX_SIGNATURE.getBytes(UTF_8); // Hence the byte array has the exact
+        // expected size;
         buf.get(signature, 0, signature.length);
         String signatureString = new String(signature, UTF_8);
         if (signatureString.equals(INDEX_SIGNATURE)) {
@@ -180,8 +181,8 @@ public class WiktionaryIndex implements Map<String, String> {
 
       fc.read(buf);
       buf.flip();
-      byte[] signature = INDEX_SIGNATURE
-          .getBytes(UTF_8); // Hence the byte array has the exact expected size;
+      byte[] signature = INDEX_SIGNATURE.getBytes(UTF_8); // Hence the byte array has the exact
+      // expected size;
       buf.get(signature, 0, signature.length);
       String signatureString = new String(signature, UTF_8);
       if (!signatureString.equals(INDEX_SIGNATURE)) {
@@ -260,7 +261,9 @@ public class WiktionaryIndex implements Map<String, String> {
     throw new RuntimeException("entrySet: unsupported method.");
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.util.Map#get(java.lang.Object)
    */
   public String get(Object key) {
@@ -308,8 +311,8 @@ public class WiktionaryIndex implements Map<String, String> {
     throw new RuntimeException("values: unsupported method.");
   }
 
-  private static List<String> redirects = Arrays
-      .asList("#REDIRECT", "#WEITERLEITUNG", "#REDIRECCIÓN");
+  private static List<String> redirects =
+      Arrays.asList("#REDIRECT", "#WEITERLEITUNG", "#REDIRECCIÓN");
 
   public String getTextOfPageWithRedirects(Object key) {
     String text = getTextOfPage(key);

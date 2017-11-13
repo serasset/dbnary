@@ -37,7 +37,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     throw new RuntimeException("Chinese extractor is currently not functional.");
   }
 
-  //protected final static HashSet<String> sectionMarkers;
+  // protected final static HashSet<String> sectionMarkers;
 
   protected final static HashMap<String, String> posMarkers;
   protected final static HashMap<String, String> nymMarkerToNymName;
@@ -173,7 +173,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     String wiktionaryPageName = null;
     if (null != pos && pos.equals("idiom"))
-    // When idiom is found on a 1 or 2 char entry, it is assumed to be a section giving the idioms build from the entry.
+    // When idiom is found on a 1 or 2 char entry, it is assumed to be a section giving the idioms
+    // build from the entry.
     // Other idiom it is believed to be a Part Of Speech.
     {
       if (wiktionaryPageName.length() <= 2) {
@@ -358,7 +359,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           } else if (m.group(1).equals("{{pronunciation}}")) {
             gotoPronBlock(m);
           } else if (isChineseHeader(m)) {
-            //not a correct POS, or Etimology or Pronunciation are considered as ignorable POS.
+            // not a correct POS, or Etimology or Pronunciation are considered as ignorable POS.
             gotoIgnorePos();
           }
           break;
@@ -610,8 +611,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // extract translations
   private void extractRelatedWords(int startOffset, int endOffset) {
     String relCode = pageContent.substring(startOffset, endOffset);
-    ChineseRelatedWordsExtractorWikiModel dbnmodel = new ChineseRelatedWordsExtractorWikiModel(
-        this.wdh, this.wi);
+    ChineseRelatedWordsExtractorWikiModel dbnmodel =
+        new ChineseRelatedWordsExtractorWikiModel(this.wdh, this.wi);
     dbnmodel.parseRelatedWords(relCode);
   }
 
@@ -628,9 +629,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    ChineseTranslationExtractorWikiModel dbnmodel = new ChineseTranslationExtractorWikiModel(
-        this.wdh, this.wi, new Locale("pt"), "/${image}/" + wiktionaryPageName, "/${title}",
-        glossFilter);
+    ChineseTranslationExtractorWikiModel dbnmodel =
+        new ChineseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"),
+            "/${image}/" + wiktionaryPageName, "/${title}", glossFilter);
     dbnmodel.parseTranslationBlock(transCode);
   }
 

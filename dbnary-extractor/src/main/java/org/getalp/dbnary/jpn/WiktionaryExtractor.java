@@ -43,7 +43,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   // protected final static Pattern languageSectionPattern;
-  //protected final static HashSet<String> nymMarkers;
+  // protected final static HashSet<String> nymMarkers;
 
 
   protected final static Pattern sectionPattern;
@@ -86,8 +86,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return isCurrentlyExtracting;
   }
 
-  /* (non-Javadoc)
-   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
+   * org.getalp.blexisma.semnet.SemanticNetwork)
    */
   @Override
   public void extractData() {
@@ -130,12 +133,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return false;
   }
 
-  //	private static String posPatternString = "\\s*(\\{\\{([^\\}\\|\n\r]*)(\\|[^\\}\n\r]*)?\\}\\}(.*)|[^=]*)\\s*";
-  //	private static Pattern posPattern = Pattern.compile(posPatternString);
-  //	private static String macroPatternString = "\\s*\\{\\{([^\\}\\|\n\r]*)(\\|[^\\}\n\r]*)?\\}\\}\\s*";
-  //	private static Pattern macroPattern = Pattern.compile(macroPatternString);
+  // private static String posPatternString =
+  // "\\s*(\\{\\{([^\\}\\|\n\r]*)(\\|[^\\}\n\r]*)?\\}\\}(.*)|[^=]*)\\s*";
+  // private static Pattern posPattern = Pattern.compile(posPatternString);
+  // private static String macroPatternString =
+  // "\\s*\\{\\{([^\\}\\|\n\r]*)(\\|[^\\}\n\r]*)?\\}\\}\\s*";
+  // private static Pattern macroPattern = Pattern.compile(macroPatternString);
 
-  //    private HashSet<String> unsupportedSections = new HashSet<String>(100);
+  // private HashSet<String> unsupportedSections = new HashSet<String>(100);
   void gotoNoData(Matcher m) {
     state = NODATA;
   }
@@ -156,7 +161,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // TODO Check what is meant by the words that are given after the POS.
     // TODO: check if the POS macros are given some args.
     // TODO: treat: ==={{noun}}?{{adverb}}===
-    // DONE: some pos (like idiom) may be used as a POS or as a sub section in the entry. => Check the header level.
+    // DONE: some pos (like idiom) may be used as a POS or as a sub section in the entry. => Check
+    // the header level.
     // Only keep level 3 headers ? --> No.
     // Heuristic is used: if entry length <= 2 then idiom is not a POS.
     String head = m.group(1).trim();
@@ -171,7 +177,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   void leaveDefBlock(Matcher m) {
-    // TODO: computeRegionEnd does have errors when category links are put in the middle of some entries...
+    // TODO: computeRegionEnd does have errors when category links are put in the middle of some
+    // entries...
     int end = computeRegionEnd(definitionBlockStart, m);
     extractDefinitions(definitionBlockStart, end);
     definitionBlockStart = -1;
@@ -290,7 +297,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     state = IGNOREPOS;
   }
 
-  // TODO: variants, pronunciations and other elements are common to the different entries in the page.
+  // TODO: variants, pronunciations and other elements are common to the different entries in the
+  // page.
   private void extractJapaneseData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
@@ -316,7 +324,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           } else if (isRelatedHeader(m)) {
             gotoRelBlock(m);
           } else if (isLevel3Header(m)) {
-            // Level 2 header that are not a correct POS, or Etimology or Pronunciation are considered as ignorable POS.
+            // Level 2 header that are not a correct POS, or Etimology or Pronunciation are
+            // considered as ignorable POS.
             unknownHeaders.add(m.group(0));
             gotoNoData(m);
           } else {
@@ -570,24 +579,29 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   // TODO: try to use gwtwiki to extract translations
-  //	private void extractTranslations(int startOffset, int endOffset) {
-  //       String transCode = pageContent.substring(startOffset, endOffset);
-  //       ItalianTranslationExtractorWikiModel dbnmodel = new ItalianTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}/"+wiktionaryPageName, "/${title}");
-  //       dbnmodel.parseTranslationBlock(transCode);
-  //   }
+  // private void extractTranslations(int startOffset, int endOffset) {
+  // String transCode = pageContent.substring(startOffset, endOffset);
+  // ItalianTranslationExtractorWikiModel dbnmodel = new
+  // ItalianTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"),
+  // "/${image}/"+wiktionaryPageName, "/${title}");
+  // dbnmodel.parseTranslationBlock(transCode);
+  // }
 
   private void extractRelatedWords(int startOffset, int endOffset) {
     String relCode = pageContent.substring(startOffset, endOffset);
-    JapaneseRelatedWordsExtractorWikiModel dbnmodel = new JapaneseRelatedWordsExtractorWikiModel(
-        this.wdh, this.wi);
+    JapaneseRelatedWordsExtractorWikiModel dbnmodel =
+        new JapaneseRelatedWordsExtractorWikiModel(this.wdh, this.wi);
     dbnmodel.parseRelatedWords(relCode);
   }
 
   private void extractPron(int startOffset, int endOffset) {
     String pronCode = pageContent.substring(startOffset, endOffset);
-    // TODO: Attention, certaines prononciations sont complexes (Kanjis...), d'autres sont globales (avant la catégorie) et d'autres sont à l'intérieur des entrées.
-    //    	JapanesePronunciationExtractorWikiModel dbnmodel = new JapanesePronunciationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}", "/${title}");
-    //        dbnmodel.parsePronunciation(pronCode);
+    // TODO: Attention, certaines prononciations sont complexes (Kanjis...), d'autres sont globales
+    // (avant la catégorie) et d'autres sont à l'intérieur des entrées.
+    // JapanesePronunciationExtractorWikiModel dbnmodel = new
+    // JapanesePronunciationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}",
+    // "/${title}");
+    // dbnmodel.parsePronunciation(pronCode);
   }
 
   @Override
@@ -599,8 +613,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    JapaneseTranslationsExtractor dbnmodel = new JapaneseTranslationsExtractor(this.wdh, this.wi,
-        glossFilter);
+    JapaneseTranslationsExtractor dbnmodel =
+        new JapaneseTranslationsExtractor(this.wdh, this.wi, glossFilter);
     dbnmodel.parseTranslations(transCode);
   }
 

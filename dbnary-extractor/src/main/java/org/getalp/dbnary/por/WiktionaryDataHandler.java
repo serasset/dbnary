@@ -17,8 +17,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     // Portuguese
     posAndTypeValueMap.put("Substantivo", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap
-        .put("Adjetivo", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Adjetivo",
+        new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Verbo", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Advérbio", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
 

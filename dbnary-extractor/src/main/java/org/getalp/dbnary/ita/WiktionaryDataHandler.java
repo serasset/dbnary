@@ -1,5 +1,13 @@
 package org.getalp.dbnary.ita;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.xml.bind.DatatypeConverter;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
@@ -10,10 +18,6 @@ import org.getalp.dbnary.StructuredGloss;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.DatatypeConverter;
-import java.math.BigInteger;
-import java.util.*;
-
 
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
@@ -23,33 +27,33 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
     posAndTypeValueMap.put("sost", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
-    posAndTypeValueMap
-        .put("loc noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("loc nom", new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc noun",
+        new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc nom",
+        new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("nome", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("name", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
     posAndTypeValueMap.put("adjc", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
     posAndTypeValueMap.put("agg", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
-    posAndTypeValueMap
-        .put("loc adjc", new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("loc agg", new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc adjc",
+        new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc agg",
+        new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("avv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
     posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
-    posAndTypeValueMap
-        .put("loc avv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc avv",
+        new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
-    posAndTypeValueMap
-        .put("loc verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc verb",
+        new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
 
     posAndTypeValueMap.put("agg num", new PosAndType(LexinfoOnt.numeral, OntolexOnt.Word));
-    posAndTypeValueMap
-        .put("agg poss", new PosAndType(LexinfoOnt.possessiveAdjective, OntolexOnt.Word));
+    posAndTypeValueMap.put("agg poss",
+        new PosAndType(LexinfoOnt.possessiveAdjective, OntolexOnt.Word));
     // card/ord is not a Part of speech, but an information added to aggetivi numerali
-    //        posAndTypeValueMap.put("card", new PosAndType(LexinfoOnt.cardinalNumeral, OntolexOnt.Word));
-    //        posAndTypeValueMap.put("ord", new PosAndType(LexinfoOnt.ordinalAdjective, OntolexOnt.Word));
+    // posAndTypeValueMap.put("card", new PosAndType(LexinfoOnt.cardinalNumeral, OntolexOnt.Word));
+    // posAndTypeValueMap.put("ord", new PosAndType(LexinfoOnt.ordinalAdjective, OntolexOnt.Word));
     posAndTypeValueMap.put("agg nom", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
 
     posAndTypeValueMap.put("art", new PosAndType(LexinfoOnt.article, OntolexOnt.Word));
@@ -57,43 +61,43 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("conj", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.Word));
     posAndTypeValueMap.put("inter", new PosAndType(LexinfoOnt.interjection, OntolexOnt.Word));
     posAndTypeValueMap.put("interj", new PosAndType(LexinfoOnt.interjection, OntolexOnt.Word));
-    posAndTypeValueMap
-        .put("loc cong", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("loc conj", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("loc inter", new PosAndType(LexinfoOnt.interjection, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("loc interj", new PosAndType(LexinfoOnt.interjection, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("loc prep", new PosAndType(LexinfoOnt.preposition, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc cong",
+        new PosAndType(LexinfoOnt.conjunction, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc conj",
+        new PosAndType(LexinfoOnt.conjunction, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc inter",
+        new PosAndType(LexinfoOnt.interjection, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc interj",
+        new PosAndType(LexinfoOnt.interjection, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc prep",
+        new PosAndType(LexinfoOnt.preposition, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("posp", new PosAndType(LexinfoOnt.postposition, OntolexOnt.Word));
     posAndTypeValueMap.put("prep", new PosAndType(LexinfoOnt.preposition, OntolexOnt.Word));
-    posAndTypeValueMap
-        .put("pron poss", new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word));
-    posAndTypeValueMap
-        .put("pronome poss", new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word));
+    posAndTypeValueMap.put("pron poss",
+        new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word));
+    posAndTypeValueMap.put("pronome poss",
+        new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word));
     posAndTypeValueMap.put("pronome", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.Word));
-    posAndTypeValueMap
-        .put("pron dim", new PosAndType(LexinfoOnt.demonstrativePronoun, OntolexOnt.Word));
+    posAndTypeValueMap.put("pron dim",
+        new PosAndType(LexinfoOnt.demonstrativePronoun, OntolexOnt.Word));
 
     // TODO: -acron-, -acronim-, -acronym-, -espr-, -espress- mark locution as phrases
 
     // Template:-abbr-
 
     // Template redirects
-//        Template:-abbr-
-//                Template:-acronim-
-//                Template:-acronym-
-//                Template:-esclam-
-//                Template:-espress-
-//                Template:-let-
-//                Template:-loc noun form-
-//                Template:-name form-
-//                Template:-noun form-
-//                Template:-prefix-
-//                Template:-pronome form-
-//                Template:-pronoun form-
+    // Template:-abbr-
+    // Template:-acronim-
+    // Template:-acronym-
+    // Template:-esclam-
+    // Template:-espress-
+    // Template:-let-
+    // Template:-loc noun form-
+    // Template:-name form-
+    // Template:-noun form-
+    // Template:-prefix-
+    // Template:-pronome form-
+    // Template:-pronoun form-
     posAndTypeValueMap.put("pref", new PosAndType(LexinfoOnt.prefix, OntolexOnt.Affix));
     posAndTypeValueMap.put("prefix", new PosAndType(LexinfoOnt.prefix, OntolexOnt.Affix));
     posAndTypeValueMap.put("suff", new PosAndType(LexinfoOnt.suffix, OntolexOnt.Affix));

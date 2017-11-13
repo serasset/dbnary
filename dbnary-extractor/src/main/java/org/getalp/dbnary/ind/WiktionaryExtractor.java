@@ -1,14 +1,13 @@
 package org.getalp.dbnary.ind;
 
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Property;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -18,11 +17,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String languageSectionPatternString = "={2}\\s*\\{{2}=*([^\\}=]+)=*\\}{2}\\s*={2}|\\{{2}\\s*-([^-]+)-\\s*\\}{2}|={2}\\s*([^=]+)={2}\n";
-  protected final static String blockPatternString = "\n\\{{2}([^\\}]+)\\}{2}|={3}\\s*([^=]+)={3}\n";
-  protected final static String tradPatternString = "\\{{2}([^\\\\}]+)\\}{2}\\s*:\\s*\\[{2}([^\\]]+)\\]{2}|\\{{2}(t[^\\|][^\\}]+)\\}{2}";
+  protected final static String languageSectionPatternString =
+      "={2}\\s*\\{{2}=*([^\\}=]+)=*\\}{2}\\s*={2}|\\{{2}\\s*-([^-]+)-\\s*\\}{2}|={2}\\s*([^=]+)={2}\n";
+  protected final static String blockPatternString =
+      "\n\\{{2}([^\\}]+)\\}{2}|={3}\\s*([^=]+)={3}\n";
+  protected final static String tradPatternString =
+      "\\{{2}([^\\\\}]+)\\}{2}\\s*:\\s*\\[{2}([^\\]]+)\\]{2}|\\{{2}(t[^\\|][^\\}]+)\\}{2}";
   protected final static String nymsPatternString = "\\{{2}([^\\}]+)\\}{2}";
-  protected final static String defPatternString = "#\\s*([^\\n]+)|\\'{5}Definisi\\'{5}\\s*:\\s*([^\\n]+)";
+  protected final static String defPatternString =
+      "#\\s*([^\\n]+)|\\'{5}Definisi\\'{5}\\s*:\\s*([^\\n]+)";
   protected final static String examplePatternString = "\\*\\s*([^\n]+)\n";
 
   protected final static Pattern languageSectionPattern;
@@ -76,7 +79,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizePageExtraction();
   }
 
-  private enum Block {NOBLOCK, IGNOREPOS, POSBLOCK, EXAMPLEBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK}
+  private enum Block {
+    NOBLOCK, IGNOREPOS, POSBLOCK, EXAMPLEBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK
+  }
 
   protected static HashMap<String, Block> blockValue = new HashMap<>();
 
@@ -110,8 +115,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     blockValue.put("kontraksi", Block.POSBLOCK); // contraction
     blockValue.put("akronim", Block.POSBLOCK);
 
-    blockValue.put("Singkatan", Block.POSBLOCK); //abbrev
-    blockValue.put("singkatan", Block.POSBLOCK); //abbrev
+    blockValue.put("Singkatan", Block.POSBLOCK); // abbrev
+    blockValue.put("singkatan", Block.POSBLOCK); // abbrev
     blockValue.put("huruf", Block.POSBLOCK); // letter
     blockValue.put("prep", Block.POSBLOCK); // preposition
     blockValue.put("k_d", Block.POSBLOCK);
@@ -131,21 +136,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     blockValue.put("k bl", Block.POSBLOCK);
 
     blockValue.put("art", Block.POSBLOCK); // article
-    blockValue.put("p", Block.POSBLOCK);   // particle
-    blockValue.put("part", Block.POSBLOCK);   // particle
+    blockValue.put("p", Block.POSBLOCK); // particle
+    blockValue.put("part", Block.POSBLOCK); // particle
 
     blockValue.put("syn", Block.NYMBLOCK);
     blockValue.put("ant", Block.NYMBLOCK);
 
     blockValue.put("terjemahan", Block.TRADBLOCK);
-    blockValue.put("kotak mulai", Block.TRADBLOCK);    // top
-    blockValue.put("transtop", Block.TRADBLOCK);    // top
-    blockValue.put("kotak tengah", Block.TRADBLOCK);   // mid
-    blockValue.put("terjemah", Block.TRADBLOCK);       // mid
-    blockValue.put("transmid", Block.TRADBLOCK);       // mid
-    blockValue.put("kotak akhir", Block.IGNOREPOS);    // bottom
-    blockValue.put("kotak selesai", Block.IGNOREPOS);  // bottom
-    blockValue.put("transbottom", Block.IGNOREPOS);  // bottom
+    blockValue.put("kotak mulai", Block.TRADBLOCK); // top
+    blockValue.put("transtop", Block.TRADBLOCK); // top
+    blockValue.put("kotak tengah", Block.TRADBLOCK); // mid
+    blockValue.put("terjemah", Block.TRADBLOCK); // mid
+    blockValue.put("transmid", Block.TRADBLOCK); // mid
+    blockValue.put("kotak akhir", Block.IGNOREPOS); // bottom
+    blockValue.put("kotak selesai", Block.IGNOREPOS); // bottom
+    blockValue.put("transbottom", Block.IGNOREPOS); // bottom
 
     blockValue.put("pengejaan", Block.PRONBLOCK);
     blockValue.put("ejaan", Block.PRONBLOCK);
@@ -226,13 +231,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected String cleanBlockName(String blockS, String blockString) {
     blockS = blockS.replaceAll("[-=]", "").trim();
-    if (blockS.contains("kan") ||
-        blockS.contains("ber") ||
-        blockS.contains("di") ||
-        blockS.endsWith("mei") ||
-        blockS.endsWith("me") ||
-        blockS.startsWith("lihat v") ||
-        blockS.startsWith("lihat2 v")) {
+    if (blockS.contains("kan") || blockS.contains("ber") || blockS.contains("di")
+        || blockS.endsWith("mei") || blockS.endsWith("me") || blockS.startsWith("lihat v")
+        || blockS.startsWith("lihat2 v")) {
       blockS = "verb";
     } else if (blockS.equals("lihat 2")) {
       blockS = "";
@@ -298,22 +299,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       blockS = "KBBI";
     } else if (blockS.endsWith("se")) { // num
       blockS = "num";
-    } else if (!blockS.equalsIgnoreCase("singkatan") && (blockS.contains("syn") || blockS
-        .contains("sin"))) {
+    } else if (!blockS.equalsIgnoreCase("singkatan")
+        && (blockS.contains("syn") || blockS.contains("sin"))) {
       blockS = "syn";
-    } else if (blockS.endsWith("em") ||
-        blockS.equals("Kata sifat") ||
-        blockS.startsWith("lihat2 a")) { // adj
+    } else if (blockS.endsWith("em") || blockS.equals("Kata sifat")
+        || blockS.startsWith("lihat2 a")) { // adj
       blockS = "adj";
-    } else if (blockS.startsWith("lihat2 adv") ||
-        blockS.startsWith("lihat adv")) {
+    } else if (blockS.startsWith("lihat2 adv") || blockS.startsWith("lihat adv")) {
       blockS = "adv";
     } else if (blockS.endsWith("ke")) { // particle
       blockS = "p";
-    } else if (blockS.contains("nya") ||
-        blockS.contains("pe") ||
-        blockS.contains("nomina") ||
-        blockS.startsWith("lihat n")) {
+    } else if (blockS.contains("nya") || blockS.contains("pe") || blockS.contains("nomina")
+        || blockS.startsWith("lihat n")) {
       blockS = "Nomina";
     } else if (blockS.contains("etym")) {
       blockS = "etym";

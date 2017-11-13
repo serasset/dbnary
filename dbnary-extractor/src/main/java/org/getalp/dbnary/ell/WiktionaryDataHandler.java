@@ -16,13 +16,13 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   static {
 
     // Greek
-    posAndTypeValueMap
-        .put("επίθετο", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("επίθετο",
+        new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("επίρρημα", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("ουσιαστικό", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("ρήμα", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap
-        .put("κύριο όνομα", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("κύριο όνομα",
+        new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
 
 
   }

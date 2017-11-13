@@ -6,7 +6,6 @@ import static org.getalp.dbnary.deu.GermanInflectionData.Person;
 import static org.getalp.dbnary.deu.GermanInflectionData.Tense;
 import static org.getalp.dbnary.deu.GermanInflectionData.Valency;
 import static org.getalp.dbnary.deu.GermanInflectionData.Voice;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -48,13 +47,13 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
           || color.equalsIgnoreCase("#C1C1C1"))) {
         return true;
       }
-      // Test special cases when no gender/number metadata is given, but pronouns (ich, du, etc. are given)
+      // Test special cases when no gender/number metadata is given, but pronouns (ich, du, etc. are
+      // given)
       if (!cell.select("i").isEmpty()) {
         String text = cell.text();
-        return text.equalsIgnoreCase("ich") || text.equalsIgnoreCase("du") || text
-            .equalsIgnoreCase("er") ||
-            text.equalsIgnoreCase("wir") || text.equalsIgnoreCase("ihr") || text
-            .equalsIgnoreCase("sie");
+        return text.equalsIgnoreCase("ich") || text.equalsIgnoreCase("du")
+            || text.equalsIgnoreCase("er") || text.equalsIgnoreCase("wir")
+            || text.equalsIgnoreCase("ihr") || text.equalsIgnoreCase("sie");
       } else {
         return false;
       }
@@ -289,7 +288,7 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
   }
 
 
-  //extract a String in s between start and end
+  // extract a String in s between start and end
   private String extractString(String s, String start, String end) {
     String res;
     int startIndex, endIndex;
@@ -299,7 +298,7 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
     return res;
   }
 
-  //return the index of pattern in s after start
+  // return the index of pattern in s after start
   private int getIndexOf(String s, String pattern, int start) {
     int ind = s.indexOf(pattern, start);
     if (ind <= start || ind > s.length()) {
@@ -308,7 +307,7 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
     return ind;
   }
 
-  //for the phrasal verb, extract the part without spaces : example extractPart("ich komme an")->an
+  // for the phrasal verb, extract the part without spaces : example extractPart("ich komme an")->an
   private String extractPart(String form) {
     String res = "";
     int i = form.length() - 1;
@@ -321,11 +320,11 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
     return res;
   }
 
-  //remove spaces before the first form's character and after the last form's character
-  //and the unsecable spaces
+  // remove spaces before the first form's character and after the last form's character
+  // and the unsecable spaces
   private String removeUselessSpaces(String form) {
-    form = form.replace(" ", " ").replace("&nbsp;", " ")
-        .replace("\t", " ");//replace unsecable spaces
+    form = form.replace(" ", " ").replace("&nbsp;", " ").replace("\t", " ");// replace unsecable
+    // spaces
     String res = form.replace("  ", " ");
     if (!res.isEmpty()) {
       int debut = 0, fin = res.length() - 1;
@@ -345,10 +344,10 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
     return res;
   }
 
-  //return if the form given in parameter is a phrasal verb
+  // return if the form given in parameter is a phrasal verb
   private boolean isPhrasalVerb(String form) {
     int nbsp = nbSpaceForm(form);
-//		return ((!reflexiv && nbsp>=2) || (reflexiv && nbsp>=3));
+    // return ((!reflexiv && nbsp>=2) || (reflexiv && nbsp>=3));
     return 2 <= nbsp;
   }
 
@@ -362,16 +361,15 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
     return nbsp;
   }
 
-  //otherway some phrasal verb don't have any inflected form
-//	public String prepareForTransclusion(String rawWikiText) {
-//		return rawWikiText;
-//	}
+  // otherway some phrasal verb don't have any inflected form
+  // public String prepareForTransclusion(String rawWikiText) {
+  // return rawWikiText;
+  // }
 
   // Catch non German verb templates to avoid expanding them.
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     if (templateName.contains("Niederländisch")) {
       log.debug("German Verb Conjugation Extraction: Ignoring template call: {}", templateName);
     } else {

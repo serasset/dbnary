@@ -20,8 +20,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("ltpsdlv", new PosAndType(LexinfoOnt.participle, LexinfoOnt.Particle));
     posAndTypeValueMap.put("ltbdv", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
     posAndTypeValueMap.put("ltprv", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
-    posAndTypeValueMap
-        .put("ltpdlv", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
+    posAndTypeValueMap.put("ltpdlv",
+        new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
     posAndTypeValueMap.put("ltprl", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
     posAndTypeValueMap.put("ltjung",
         new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
@@ -29,18 +29,18 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("ltįvrd", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
     posAndTypeValueMap.put("ltskt", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
     posAndTypeValueMap.put("ltrad", new PosAndType(LexinfoOnt.letter, LexinfoOnt.Symbol));
-    posAndTypeValueMap
-        .put("ltsant", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap
-        .put("ltdll", new PosAndType(LexinfoOnt.baseElement, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("ltsant",
+        new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("ltdll",
+        new PosAndType(LexinfoOnt.baseElement, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("ltprd", new PosAndType(LexinfoOnt.prefix, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("ltprs", new PosAndType(LexinfoOnt.suffix, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap
-        .put("ltjst", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap
-        .put("ltišt", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap
-        .put("ltskt-kiek", new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
+    posAndTypeValueMap.put("ltjst",
+        new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("ltišt",
+        new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("ltskt-kiek",
+        new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
     posAndTypeValueMap.put("ltskt-kelint",
         new PosAndType(LexinfoOnt.indefiniteOrdinalNumeral, LexinfoOnt.Numeral));
     posAndTypeValueMap.put("ltskt-kelint-laips",
@@ -73,7 +73,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                     case "f": // forma
                       break;
                     default:
-                      // log.debug("Unused forma info {} in {} --in-- {}", tmp, infos[0], this.currentLexEntry());
+                      // log.debug("Unused forma info {} in {} --in-- {}", tmp, infos[0],
+                      // this.currentLexEntry());
                   }
                 }
                 break;
@@ -85,7 +86,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                 }
                 break;
               case "vnsdgst": // Gnumber : singular or plural
-                //  log.debug("Unused Gnumber info {} in {} --in-- {}", pair[1], infos[0], this.currentLexEntry());
+                // log.debug("Unused Gnumber info {} in {} --in-- {}", pair[1], infos[0],
+                // this.currentLexEntry());
                 break;
               case "šakn": // root
               case "šakn2":
@@ -93,11 +95,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               case "šakn4":
                 aBox.add(LexinfoOnt.radical, LexinfoOnt.root, pair[1].trim());
                 break;
-              case "bšakn":    // alt root ?
-              case "eslšakn":  // alt root ?
+              case "bšakn": // alt root ?
+              case "eslšakn": // alt root ?
               case "btklšakn": // alt root ?
               case "liepšakn": // alt root ?
-                //  log.debug("Unknown root info {} in {} --in-- {}", pair[1], infos[0], this.currentLexEntry());
+                // log.debug("Unknown root info {} in {} --in-- {}", pair[1], infos[0],
+                // this.currentLexEntry());
                 break;
               case "žodis": // word
               case "tikr": // check
@@ -110,31 +113,38 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               case "pformv":
               case "pfrom":
               case "ppform":
-                //  log.debug("Unused pform {} in {} --in-- {}", pair[1], infos[0], this.currentLexEntry());
+                // log.debug("Unused pform {} in {} --in-- {}", pair[1], infos[0],
+                // this.currentLexEntry());
                 break;
               case "skiem": // syllable
-                //   log.debug("Unused syllable info {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                // log.debug("Unused syllable info {} in {} --in-- {}", infos[i], infos[0],
+                // this.currentLexEntry());
                 break;
-              case "el":  // present tense
+              case "el": // present tense
               case "bkl": // past simple tense
               case "bdl": // frequency past time
-              case "bl":  // future tense
-                // log.debug("Unused inflection {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+              case "bl": // future tense
+                // log.debug("Unused inflection {} in {} --in-- {}", infos[i], infos[0],
+                // this.currentLexEntry());
                 break;
               case "nl": // not comparable degree
-                //  log.debug("Unused comparable info {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                // log.debug("Unused comparable info {} in {} --in-- {}", infos[i], infos[0],
+                // this.currentLexEntry());
                 break;
               case "vm":
               case "vf":
               case "dm":
               case "df":
-                //  log.debug("Unused inflexion {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                // log.debug("Unused inflexion {} in {} --in-- {}", infos[i], infos[0],
+                // this.currentLexEntry());
                 break;
               case "dalyviai":
-                //  log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                // log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0],
+                // this.currentLexEntry());
                 break;
               case "tipas": // type
-                //  log.debug("Unused type form {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+                // log.debug("Unused type form {} in {} --in-- {}", infos[i], infos[0],
+                // this.currentLexEntry());
                 break;
               case "dkirt":
               case "dkirt-typ":

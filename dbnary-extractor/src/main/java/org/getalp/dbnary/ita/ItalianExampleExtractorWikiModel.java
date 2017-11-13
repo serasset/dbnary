@@ -1,20 +1,19 @@
 package org.getalp.dbnary.ita;
 
 import info.bliki.wiki.filter.PlainTextConverter;
-import org.getalp.dbnary.DbnaryWikiModel;
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.WiktionaryIndex;
-
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
+import org.getalp.dbnary.DbnaryWikiModel;
+import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
 
 public class ItalianExampleExtractorWikiModel extends DbnaryWikiModel {
 
   // static Set<String> ignoredTemplates = new TreeSet<String>();
   // static {
-  // 	ignoredTemplates.add("Wikipedia");
-  // 	ignoredTemplates.add("Incorrect");
+  // ignoredTemplates.add("Wikipedia");
+  // ignoredTemplates.add("Incorrect");
   // }
 
   private IWiktionaryDataHandler delegate;
@@ -40,9 +39,8 @@ public class ItalianExampleExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     super.substituteTemplateCall(templateName, parameterMap, writer);
   }

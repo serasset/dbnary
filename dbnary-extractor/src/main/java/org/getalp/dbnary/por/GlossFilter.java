@@ -11,12 +11,8 @@ public class GlossFilter extends AbstractGlossFilter {
   private static String aTrierRegExp;
 
   static {
-    aTrierRegExp = (new StringBuffer())
-        .append("(?:")
-        .append("Traduções")
-        .append(")|(?:")
-        .append("(?:A|a)\\s+ser(?:em)\\s+classificado")
-        .append(")").toString();
+    aTrierRegExp = (new StringBuffer()).append("(?:").append("Traduções").append(")|(?:")
+        .append("(?:A|a)\\s+ser(?:em)\\s+classificado").append(")").toString();
   }
 
   private static Pattern aTrierPattern = Pattern.compile(aTrierRegExp);

@@ -14,9 +14,8 @@ public class GlossFilter extends AbstractGlossFilter {
   public static final Pattern simpleNumListPattern = Pattern.compile(simpleNumListFilter);
   public static final Matcher simpleNumListMatcher = simpleNumListPattern.matcher("");
 
-  public static final String glossNumFilter =
-      "^(.*)[\\[\\|](" + senseNumRegExp + "(?:\\s*[\\,\\-–]\\s*" + senseNumRegExp
-          + ")*)[\\]\\|]\\s*$";
+  public static final String glossNumFilter = "^(.*)[\\[\\|](" + senseNumRegExp
+      + "(?:\\s*[\\,\\-–]\\s*" + senseNumRegExp + ")*)[\\]\\|]\\s*$";
   public static final Pattern glossNumPattern = Pattern.compile(glossNumFilter);
   public static final Matcher glossNumMatcher = glossNumPattern.matcher("");
 

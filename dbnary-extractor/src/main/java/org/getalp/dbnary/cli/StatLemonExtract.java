@@ -160,12 +160,9 @@ public class StatLemonExtract extends DbnaryModel {
     initializeTBox(language);
     m1 = ModelFactory.createDefaultModel();
 
-    if (outputFormat.equals("RDF") ||
-        outputFormat.equals("TURTLE") ||
-        outputFormat.equals("NTRIPLE") ||
-        outputFormat.equals("N3") ||
-        outputFormat.equals("TTL") ||
-        outputFormat.equals("RDFABBREV")) {
+    if (outputFormat.equals("RDF") || outputFormat.equals("TURTLE")
+        || outputFormat.equals("NTRIPLE") || outputFormat.equals("N3") || outputFormat.equals("TTL")
+        || outputFormat.equals("RDFABBREV")) {
       if ("-".equals(remainingArgs[0])) {
         System.err.println("Reading extract from stdin.");
         m1.read(System.in, "file:///dev/stdin", outputFormat);
@@ -211,9 +208,8 @@ public class StatLemonExtract extends DbnaryModel {
     nl = ("LATEX".equals(statsFormat)) ? "\\\\" : "";
 
     if (verbose) {
-      System.out.print(
-          "Language Edition" + comma + "Entries" + comma + "Pages" + comma + "Senses" + comma
-              + "Translations");
+      System.out.print("Language Edition" + comma + "Entries" + comma + "Pages" + comma + "Senses"
+          + comma + "Translations");
       System.out.println(nl);
     }
 
@@ -235,9 +231,8 @@ public class StatLemonExtract extends DbnaryModel {
     System.out.println("");
 
     if (verbose) {
-      System.out.print(
-          "Language Edition" + comma + "syn" + comma + "qsyn" + comma + "ant" + comma + "hyper"
-              + comma + "hypo" + comma + "mero" + comma + "holo");
+      System.out.print("Language Edition" + comma + "syn" + comma + "qsyn" + comma + "ant" + comma
+          + "hyper" + comma + "hypo" + comma + "mero" + comma + "holo");
       System.out.println(nl);
     }
 
@@ -348,14 +343,11 @@ public class StatLemonExtract extends DbnaryModel {
 
   public static void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
-    String help =
-        "url must point on an RDF model file extracted from wiktionary." +
-            System.getProperty("line.separator", "\n") +
-            "Displays stats on the LMF based RDF dump.";
+    String help = "url must point on an RDF model file extracted from wiktionary."
+        + System.getProperty("line.separator", "\n") + "Displays stats on the LMF based RDF dump.";
     formatter.printHelp(
         "java -cp /path/to/dbnary.jar org.getalp.dbnary.cli.StatRDFExtract [OPTIONS] url",
-        "With OPTIONS in:", options,
-        help, false);
+        "With OPTIONS in:", options, help, false);
   }
 
 }

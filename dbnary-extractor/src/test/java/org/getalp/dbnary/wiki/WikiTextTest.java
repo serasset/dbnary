@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,7 +15,8 @@ public class WikiTextTest {
 
   @Test
   public void testParse() throws Exception {
-    String test = "text {{f1|x=ccc|z={{toto}}}} text <!-- [[un lien caché]] {{ --> encore [[lien#bidule]] [[Category:English|text]] [http://kaiko.getalp.org/about-dbnary about DBnary]   [[lien|]]";
+    String test =
+        "text {{f1|x=ccc|z={{toto}}}} text <!-- [[un lien caché]] {{ --> encore [[lien#bidule]] [[Category:English|text]] [http://kaiko.getalp.org/about-dbnary about DBnary]   [[lien|]]";
     WikiText text = new WikiText(test);
 
     assert !text.wikiTokens().isEmpty();
@@ -49,7 +49,8 @@ public class WikiTextTest {
 
   @Test
   public void testParseWithTextTokens() throws Exception {
-    String test = "text {{f1|x=ccc|z={{toto}}}} text <!-- [[un lien caché]] {{ --> encore [[lien]] [[Category:English|text]] [http://kaiko.getalp.org/about-dbnary about DBnary]   [[lien|]]";
+    String test =
+        "text {{f1|x=ccc|z={{toto}}}} text <!-- [[un lien caché]] {{ --> encore [[lien]] [[Category:English|text]] [http://kaiko.getalp.org/about-dbnary about DBnary]   [[lien|]]";
     WikiText text = new WikiText(test);
 
     ArrayList<? extends WikiText.Token> toks = text.tokens();
@@ -104,11 +105,13 @@ public class WikiTextTest {
 
   @Test
   public void testParseWithBoundaries() throws Exception {
-    String test = "{{f1|x=[[ccc]]}} text <!-- [[un lien caché]] {{ --> encore [[lien]] {{f2|[[text]]|]   [[lien|}}";
+    String test =
+        "{{f1|x=[[ccc]]}} text <!-- [[un lien caché]] {{ --> encore [[lien]] {{f2|[[text]]|]   [[lien|}}";
     WikiText text = new WikiText(null, test, 17, 90);
 
     assert !text.wikiTokens().isEmpty();
-    // 1 HTMLComment, 1 Internal Link, 1 InternalLink (as Template should be ignored as it remains unclosed in the offset.
+    // 1 HTMLComment, 1 Internal Link, 1 InternalLink (as Template should be ignored as it remains
+    // unclosed in the offset.
     assertEquals(3, text.wikiTokens().size());
     assertTrue(text.wikiTokens().get(0) instanceof WikiText.HTMLComment);
     assertTrue(text.wikiTokens().get(1) instanceof WikiText.InternalLink);
@@ -125,7 +128,8 @@ public class WikiTextTest {
 
     assertNotNull(text.wikiTokens());
     assertFalse(text.wikiTokens().isEmpty());
-    // The template is not closed, hence it is considered as a text and the first valid token in a link.
+    // The template is not closed, hence it is considered as a text and the first valid token in a
+    // link.
     assertTrue(text.wikiTokens().get(0) instanceof WikiText.InternalLink);
     assertEquals(2, text.wikiTokens().size());
 
@@ -200,11 +204,8 @@ public class WikiTextTest {
 
   @Test
   public void testList() throws Exception {
-    String test = "* {{l|en|thalamus}}\n" +
-        "* {{l|en|hypothalamus}} * toto\n" +
-        "* {{l|en|prethalamus}}\n" +
-        ": toto\n" +
-        ": titi";
+    String test = "* {{l|en|thalamus}}\n" + "* {{l|en|hypothalamus}} * toto\n"
+        + "* {{l|en|prethalamus}}\n" + ": toto\n" + ": titi";
     WikiText text = new WikiText(test);
 
     ClassBasedFilter filter = new ClassBasedFilter();
@@ -230,7 +231,8 @@ public class WikiTextTest {
 
   @Test
   public void testParseTemplateArgs() throws Exception {
-    String test = "{{en-noun|head=[[araneomorph]] {{vern|funnel-web spider|pedia=1}}|v1|xx=vxx|v2}}";
+    String test =
+        "{{en-noun|head=[[araneomorph]] {{vern|funnel-web spider|pedia=1}}|v1|xx=vxx|v2}}";
     WikiText text = new WikiText(test);
 
     assertNotNull(text.wikiTokens());
@@ -316,16 +318,10 @@ public class WikiTextTest {
 
   @Test
   public void testHeading() throws Exception {
-    String test = "=== Simple Heading ===\n" +
-        "=== Heading level 2 ==\n" +
-        "=== Heading level 3 ====\n" +
-        " === not an heading ===\n" +
-        "=== this one neither === \n" +
-        "=== nor this one \n" +
-        "= No Heading 1 =\n" +
-        "===end===\n" +
-        "==Heading 2==\n" +
-        "===Heading 2.1===";
+    String test =
+        "=== Simple Heading ===\n" + "=== Heading level 2 ==\n" + "=== Heading level 3 ====\n"
+            + " === not an heading ===\n" + "=== this one neither === \n" + "=== nor this one \n"
+            + "= No Heading 1 =\n" + "===end===\n" + "==Heading 2==\n" + "===Heading 2.1===";
     WikiText text = new WikiText(test);
 
     assertNotNull(text.wikiTokens());
@@ -376,8 +372,8 @@ public class WikiTextTest {
       assertTrue(tok instanceof WikiText.Heading);
       nbH++;
     }
-    assertEquals(3,
-        nbH); // 3 Headers with title beginning by "Heading", === Heading level 3 ====, ==Heading 2==, ===Heading 2.1===
+    assertEquals(3, nbH); // 3 Headers with title beginning by "Heading", === Heading level 3 ====,
+    // ==Heading 2==, ===Heading 2.1===
     // === Heading level 2 == is a level 2 heading starting with = (hence it does not match...)
 
     nbH = 0;
@@ -385,26 +381,16 @@ public class WikiTextTest {
       assertTrue(tok instanceof WikiText.Heading);
       nbH++;
     }
-    assertEquals(2,
-        nbH); // 3 Headers with title beginning by "Heading", === Heading level 3 ====, ==Heading 2==, ===Heading 2.1===
+    assertEquals(2, nbH); // 3 Headers with title beginning by "Heading", === Heading level 3 ====,
+    // ==Heading 2==, ===Heading 2.1===
     // === Heading level 2 == is a level 2 heading starting with = (hence it does not match...)
 
   }
 
   @Test
   public void testSections() {
-    String test =
-        "==H2==\n" +
-            "===H3.1===\n" +
-            "{{test}}\n" +
-            "text\n" +
-            "===H3.2===\n" +
-            "[[link]]\n" +
-            "==H2.2==\n" +
-            "{{test}}\n" +
-            "===H3.3===\n" +
-            "{{test}}\n" +
-            "[[link]]";
+    String test = "==H2==\n" + "===H3.1===\n" + "{{test}}\n" + "text\n" + "===H3.2===\n"
+        + "[[link]]\n" + "==H2.2==\n" + "{{test}}\n" + "===H3.3===\n" + "{{test}}\n" + "[[link]]";
 
     WikiText t = new WikiText(test);
 
@@ -424,34 +410,26 @@ public class WikiTextTest {
 
   }
 
-/*    @Test
-    public void testRegex() {
-        Matcher m = Pattern.compile("(?<CH>={2,6}$)|(?<OH>^={2,6})", Pattern.MULTILINE).matcher("=== toto ===\nr === titi ===");
+  /*
+   * @Test public void testRegex() { Matcher m = Pattern.compile("(?<CH>={2,6}$)|(?<OH>^={2,6})",
+   * Pattern.MULTILINE).matcher("=== toto ===\nr === titi ===");
+   * 
+   * assertTrue(m.find()); assertEquals("===", m.group("OH")); assertTrue(m.find());
+   * assertEquals("===", m.group("CH"));
+   * 
+   * 
+   * assertTrue(m.find(0)); assertEquals("===", m.group("OH")); System.out.println("[" + m.start() +
+   * "," + m.end() + "] " + m.group());
+   * 
+   * assertTrue(m.find(3)); System.out.println("[" + m.start() + "," + m.end() + "] " + m.group());
+   * }
+   */
 
-        assertTrue(m.find());
-        assertEquals("===", m.group("OH"));
-        assertTrue(m.find());
-        assertEquals("===", m.group("CH"));
-
-
-        assertTrue(m.find(0));
-        assertEquals("===", m.group("OH"));
-        System.out.println("[" + m.start() + "," + m.end() + "] " + m.group());
-
-        assertTrue(m.find(3));
-        System.out.println("[" + m.start() + "," + m.end() + "] " + m.group());
-    }*/
-
-    /*    @Test
-    public void testLookup() throws Exception {
-        String test = "bonjour <!-- -->";
-        WikiText text = new WikiText(test);
-        assertNotNull(text.peekString(0, "bon"));
-        assertNotNull(text.peekString(0, "b"));
-        assertNotNull(text.peekString(0, ""));
-        assertNotNull(text.peekString(0, "bonjour <!--"));
-        assertNotNull(text.peekString(1, "onjour <!--"));
-        assertNotNull(text.peekString(8, "<!--"));
-    }
-*/
+  /*
+   * @Test public void testLookup() throws Exception { String test = "bonjour <!-- -->"; WikiText
+   * text = new WikiText(test); assertNotNull(text.peekString(0, "bon"));
+   * assertNotNull(text.peekString(0, "b")); assertNotNull(text.peekString(0, ""));
+   * assertNotNull(text.peekString(0, "bonjour <!--")); assertNotNull(text.peekString(1,
+   * "onjour <!--")); assertNotNull(text.peekString(8, "<!--")); }
+   */
 }

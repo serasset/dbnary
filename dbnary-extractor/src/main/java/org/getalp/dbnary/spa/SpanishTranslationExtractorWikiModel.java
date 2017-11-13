@@ -47,8 +47,8 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
 
   private final static String senseNumberOrRangeRegExp = "(?:[\\s\\d\\,\\-—–\\?]|&ndash;)+";
-  private final static Pattern senseNumberOrRangePattern = Pattern
-      .compile(senseNumberOrRangeRegExp);
+  private final static Pattern senseNumberOrRangePattern =
+      Pattern.compile(senseNumberOrRangeRegExp);
   private final Matcher senseNumberOrRangeMatcher = senseNumberOrRangePattern.matcher("");
   private static Set<String> gender = new HashSet<String>();
 
@@ -86,9 +86,8 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     if ("t+".equals(templateName)) {
       // TODO : rank each translation by language
       String lang = LangTools.normalize(parameterMap.get("1"));

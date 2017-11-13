@@ -25,7 +25,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String sectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
 
-  protected final static String pronPatternString = "\\*\\{\\{\\s*([^\\}\\|\n\r]*)\\s*\\|ipa=([^\\}\\|]*)\\|?";    // detecte le bloc de prononciation
+  protected final static String pronPatternString =
+      "\\*\\{\\{\\s*([^\\}\\|\n\r]*)\\s*\\|ipa=([^\\}\\|]*)\\|?"; // detecte le bloc de
+  // prononciation
 
   public final static String examplePatternString = "^#:\\s*(.*)$";
 
@@ -38,7 +40,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String nymAndUsagePatternString;
 
 
-  private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK}
+  private enum Block {
+    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK
+  }
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
@@ -55,27 +59,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   static {
 
     nymAndUsagePatternString =
-        new StringBuilder()
-            .append("\\[\\[")
-            .append("([^\\]\\|\n\r]*)(?:\\|([^\\]\n\r]*))?")
-            .append("\\]\\]\\s*(''\\(([^\\)]*)\\)'')?(?:\\(''([^\\)]*)''\\))?")
-            .toString();
+        new StringBuilder().append("\\[\\[").append("([^\\]\\|\n\r]*)(?:\\|([^\\]\n\r]*))?")
+            .append("\\]\\]\\s*(''\\(([^\\)]*)\\)'')?(?:\\(''([^\\)]*)''\\))?").toString();
 
-    defOrExamplePatternString = new StringBuilder()
-        .append("(?:")
-        .append(WikiPatterns.definitionPatternString)
-        .append(")|(?:")
-        .append(examplePatternString)
-        .append(")|(?:")
-        .append(pronPatternString)
-        .append(")").toString();
+    defOrExamplePatternString = new StringBuilder().append("(?:")
+        .append(WikiPatterns.definitionPatternString).append(")|(?:").append(examplePatternString)
+        .append(")|(?:").append(pronPatternString).append(")").toString();
 
-    nymPatternString = new StringBuilder()
-        .append("(?:")
-        .append(nymSensePatternString)
-        .append(")|(?:")
-        .append(nymAndUsagePatternString)
-        .append(")").toString();
+    nymPatternString = new StringBuilder().append("(?:").append(nymSensePatternString)
+        .append(")|(?:").append(nymAndUsagePatternString).append(")").toString();
 
     defOrExamplePattern = Pattern.compile(defOrExamplePatternString, Pattern.MULTILINE);
 
@@ -98,8 +90,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private String currentNym = null;
 
-  /* (non-Javadoc)
-   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
+   * org.getalp.blexisma.semnet.SemanticNetwork)
    */
   @Override
   public void extractData() {
@@ -144,9 +139,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (nextBlock == null) {
         continue;
       }
-      // If current block is IGNOREPOS, we should ignore everything but a new DEFBLOCK/INFLECTIONBLOCK
-      if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock
-          || Block.INFLECTIONBLOCK == nextBlock)) {
+      // If current block is IGNOREPOS, we should ignore everything but a new
+      // DEFBLOCK/INFLECTIONBLOCK
+      if (Block.IGNOREPOS != currentBlock
+          || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
         leaveCurrentBlock(m);
         gotoNextBlock(nextBlock, context);
       }
@@ -287,7 +283,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String pron;
     Matcher defOrExampleMatcher = defOrExamplePattern.matcher(pageContent);
     defOrExampleMatcher.region(startOffset, endOffset);
-    // TODO : Swedish definition that contain ordered sublists are indeed mathematical definitions where
+    // TODO : Swedish definition that contain ordered sublists are indeed mathematical definitions
+    // where
     // sublists are part of the definition
     while (defOrExampleMatcher.find()) {
       if (null != defOrExampleMatcher.group(1)) { // extraire les definitions
@@ -296,8 +293,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractExample(defOrExampleMatcher);
       } else if ((null != defOrExampleMatcher.group(4))) { // extraire les pronontiations
         pron = defOrExampleMatcher.group(4);
-        if (defOrExampleMatcher.group(3).equals("uttal") && !pron
-            .equals(" ")) // les prononciations commencent toujours par uttal
+        if (defOrExampleMatcher.group(3).equals("uttal") && !pron.equals(" ")) // les prononciations
+        // commencent
+        // toujours par uttal
         {
           wdh.registerPronunciation(pron, "sv-fonipa");
         }
@@ -322,10 +320,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String leftGroup = nymSenseMatcher.group(2);
         String usage = (nymSenseMatcher.group(5) != null) ? nymSenseMatcher.group(5)
             : nymSenseMatcher.group(6);
-        if (leftGroup != null && !leftGroup.equals("") &&
-            !leftGroup.startsWith("Wikisaurus:") &&
-            !leftGroup.startsWith("Catégorie:") &&
-            !leftGroup.startsWith("#")) {
+        if (leftGroup != null && !leftGroup.equals("") && !leftGroup.startsWith("Wikisaurus:")
+            && !leftGroup.startsWith("Catégorie:") && !leftGroup.startsWith("#")) {
 
           wdh.registerNymRelation(leftGroup, synRelation, gloss, usage);
           usage = null;

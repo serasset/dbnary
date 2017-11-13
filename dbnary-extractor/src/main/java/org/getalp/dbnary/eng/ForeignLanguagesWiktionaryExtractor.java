@@ -14,7 +14,8 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
     level2HeaderPattern = Pattern.compile(level2HeaderPatternString, Pattern.MULTILINE);
   }
 
-  private ForeignLanguagesWiktionaryDataHandler flwdh; // English specific version of the data handler.
+  private ForeignLanguagesWiktionaryDataHandler flwdh; // English specific version of the data
+  // handler.
 
   public ForeignLanguagesWiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
@@ -55,7 +56,7 @@ public class ForeignLanguagesWiktionaryExtractor extends WiktionaryExtractor {
       wdh.finalizePageExtraction();
     }
     if (-1 != nonEnglishSectionStart) {
-      //System.err.println("Parsing previous non English entry");
+      // System.err.println("Parsing previous non English entry");
       wdh.initializePageExtraction(wiktionaryPageName);
       extractNonEnglishData(lang, languageName, nonEnglishSectionStart, pageContent.length());
       wdh.finalizePageExtraction();

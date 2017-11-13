@@ -1,7 +1,6 @@
 package org.getalp.dbnary.cli;
 
 import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -103,37 +102,26 @@ public class ExtractWiktionary {
     options.addOption(COMPRESS_OPTION, true,
         "Compress the output using bzip2 (value: yes/no or true/false). " + DEFAULT_COMPRESS
             + " by default.");
-    options.addOption(MODEL_OPTION, true,
-        "(Deprecated) the model will always be " + DEFAULT_MODEL);
+    options.addOption(MODEL_OPTION, true, "(Deprecated) the model will always be " + DEFAULT_MODEL);
     options.addOption(OUTPUT_FILE_OPTION, true,
         "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");
     options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("Output file for morphology data. Undefined by default.")
-        .hasArg()
-        .withArgName("file")
-        .create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
+        .withDescription("Output file for morphology data. Undefined by default.").hasArg()
+        .withArgName("file").create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
     options.addOption(OptionBuilder.withLongOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("extract etymology data.")
-        .hasArg()
-        .withArgName("file")
+        .withDescription("extract etymology data.").hasArg().withArgName("file")
         .create(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION));
     options.addOption(OptionBuilder.withLongOpt(URI_PREFIX_LONG_OPTION)
         .withDescription("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
-        .hasArg()
-        .withArgName("uri")
-        .create(URI_PREFIX_SHORT_OPTION));
+        .hasArg().withArgName("uri").create(URI_PREFIX_SHORT_OPTION));
     options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign Languages");
     options.addOption(OptionBuilder.withLongOpt(FROM_PAGE_LONG_OPTION)
-        .withDescription("Do not process pages before the nth one. 0 by default.")
-        .hasArg()
-        .withArgName("num")
-        .create(FROM_PAGE_SHORT_OPTION));
+        .withDescription("Do not process pages before the nth one. 0 by default.").hasArg()
+        .withArgName("num").create(FROM_PAGE_SHORT_OPTION));
     options.addOption(OptionBuilder.withLongOpt(TO_PAGE_LONG_OPTION)
-        .withDescription("Do not process pages after the nth one. MAXINT by default.")
-        .hasArg()
-        .withArgName("num")
-        .create(TO_PAGE_SHORT_OPTION));
+        .withDescription("Do not process pages after the nth one. MAXINT by default.").hasArg()
+        .withArgName("num").create(TO_PAGE_SHORT_OPTION));
   }
 
   static {
@@ -197,9 +185,8 @@ public class ExtractWiktionary {
     }
 
     if (cmd.hasOption(MODEL_OPTION)) {
-      System.err.println(
-          "WARN: the " + MODEL_OPTION + " option is now deprecated. Forcibly using model: "
-              + DEFAULT_MODEL);
+      System.err.println("WARN: the " + MODEL_OPTION
+          + " option is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
       // model = cmd.getOptionValue(MODEL_OPTION);
     }
     model = model.toUpperCase();
@@ -239,12 +226,9 @@ public class ExtractWiktionary {
     }
 
     we = null;
-    if (outputFormat.equals("RDF") ||
-        outputFormat.equals("TURTLE") ||
-        outputFormat.equals("NTRIPLE") ||
-        outputFormat.equals("N3") ||
-        outputFormat.equals("TTL") ||
-        outputFormat.equals("RDFABBREV")) {
+    if (outputFormat.equals("RDF") || outputFormat.equals("TURTLE")
+        || outputFormat.equals("NTRIPLE") || outputFormat.equals("N3") || outputFormat.equals("TTL")
+        || outputFormat.equals("RDFABBREV")) {
       if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
         wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language);
       } else {
@@ -304,8 +288,8 @@ public class ExtractWiktionary {
         if (xmlr.isStartElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
           title = "";
           page = "";
-        } else if (xmlr.isStartElement() && xmlr.getLocalName()
-            .equals(WiktionaryIndexer.titleTag)) {
+        } else if (xmlr.isStartElement()
+            && xmlr.getLocalName().equals(WiktionaryIndexer.titleTag)) {
           title = xmlr.getElementText();
         } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("text")) {
           page = xmlr.getElementText();
@@ -331,16 +315,14 @@ public class ExtractWiktionary {
               totalRelevantTime += (System.currentTimeMillis() - relevantStartTime);
               nbRelevantPages++;
               if (nbRelevantPages % 1000 == 0) {
-                System.err.println(
-                    "Extracted: " + nbRelevantPages + " pages in: " + totalRelevantTime
-                        + " / Average = "
-                        + (totalRelevantTime / nbRelevantPages) + " ms/extracted page ("
-                        + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000
-                        + " ms) (" + nbPages
-                        + " processed Pages in " + (System.currentTimeMillis() - startTime)
-                        + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbPages
-                        + ")");
-                // System.err.println("      NbNodes = " + s.getNbNodes());
+                System.err.println("Extracted: " + nbRelevantPages + " pages in: "
+                    + totalRelevantTime + " / Average = " + (totalRelevantTime / nbRelevantPages)
+                    + " ms/extracted page ("
+                    + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) ("
+                    + nbPages + " processed Pages in " + (System.currentTimeMillis() - startTime)
+                    + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbPages
+                    + ")");
+                // System.err.println(" NbNodes = " + s.getNbNodes());
                 relevantTimeOfLastThousands = System.currentTimeMillis();
               }
               // if (nbRelevantPages == 1100) break;

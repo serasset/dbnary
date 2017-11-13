@@ -3,7 +3,6 @@ package org.getalp.dbnary.wiki;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.Test;
@@ -68,16 +67,16 @@ public class WikiCharSequenceTest {
 
     assertEquals(20, seq.length());
     Pattern pattern = Pattern.compile("^\\p{Co}.*$");
-    assertFalse(
-        pattern.matcher(seq).matches());  // no template chars as first character in char sequence
+    assertFalse(pattern.matcher(seq).matches()); // no template chars as first character in char
+    // sequence
     pattern = Pattern.compile("^\\p{Alpha}.*$");
-    assertFalse(pattern.matcher(seq).matches());  // the first char is a space, not an alpha
+    assertFalse(pattern.matcher(seq).matches()); // the first char is a space, not an alpha
     assertEquals(' ', seq.charAt(0));
     pattern = Pattern.compile("[" + WikiCharSequence.INTERNAL_LINKS_RANGE.toString() + "]");
     Matcher m = pattern.matcher(seq);
     assertTrue(m.find());
-    assertEquals(' ',
-        seq.charAt(m.end())); // the s is art of the link, hence it has been atomised with it
+    assertEquals(' ', seq.charAt(m.end())); // the s is art of the link, hence it has been atomised
+    // with it
     assertEquals(Character.getType(seq.charAt(seq.length() - 1)), Character.PRIVATE_USE);
 
     pattern = Pattern.compile("[\uE200-\uE7FF]"); // matches a template char
@@ -98,7 +97,7 @@ public class WikiCharSequenceTest {
 
     assertEquals(29, seq.length());
     Pattern pattern = Pattern.compile("^\\p{Co}.*$");
-    assertTrue(pattern.matcher(seq).matches());  // first character is template char
+    assertTrue(pattern.matcher(seq).matches()); // first character is template char
     pattern = Pattern.compile("\\blinks\\b");
     Matcher m = pattern.matcher(seq);
     assertTrue(m.find());

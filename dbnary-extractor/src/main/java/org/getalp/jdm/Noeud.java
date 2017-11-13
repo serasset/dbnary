@@ -4,7 +4,7 @@ import org.apache.jena.rdf.model.Resource;
 
 public class Noeud {
 
-  //COMPOSANTS
+  // COMPOSANTS
 
   private String Id;
   private String chaine;
@@ -13,7 +13,7 @@ public class Noeud {
   private int type;
   private Resource ressource;
 
-  //CONSTRUCTEUR
+  // CONSTRUCTEUR
 
   public Noeud(String Idp, String chainep, int poidsp, String nfp, int typep) {
     Id = Idp;
@@ -23,7 +23,7 @@ public class Noeud {
     type = typep;
   }
 
-  //SET inutile ?
+  // SET inutile ?
   public void setRessource(Resource ressourcep) {
     ressource = ressourcep;
   }
@@ -48,7 +48,7 @@ public class Noeud {
     type = t;
   }
 
-  //GET
+  // GET
   public Resource getressource() {
     return ressource;
   }

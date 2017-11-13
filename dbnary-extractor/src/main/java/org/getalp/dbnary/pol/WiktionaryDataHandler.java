@@ -70,7 +70,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public void registerNewDefinition(String def, String senseNumber) {
     super.registerNewDefinition(def, senseNumber);
     if (null != this.currentLexEntry) {
-      currentWordsenses.put(senseNumber, new Resource[]{this.currentSense, this.currentLexEntry});
+      currentWordsenses.put(senseNumber, new Resource[] {this.currentSense, this.currentLexEntry});
       currentLexEntries.add(this.currentLexEntry);
     }
   }
@@ -97,12 +97,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   private DecodedPOS decodePOS(String group) {
     String orig = group;
 
-    if (group.startsWith("rzeczownik")
-        || group.startsWith("przymiotnik")
-        || group.startsWith("czasownik")
-        || group.startsWith("przysłówek")
-        || group.startsWith("fraza")
-        || group.startsWith("związek frazeologiczny")) {
+    if (group.startsWith("rzeczownik") || group.startsWith("przymiotnik")
+        || group.startsWith("czasownik") || group.startsWith("przysłówek")
+        || group.startsWith("fraza") || group.startsWith("związek frazeologiczny")) {
       group = group.split("''|\\(|<")[0];
     }
 
@@ -115,23 +112,23 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         group = group.replace("rodzaj żeński/męski", "");
         group = group.replace("rodzaj męski/żeński", "");
       }
-      if (group.contains("rodzaj żeński") || group.contains("rodzaju żeńskiego") || group
-          .contains("lub żeński") || group.contains("i żeński")) {
+      if (group.contains("rodzaj żeński") || group.contains("rodzaju żeńskiego")
+          || group.contains("lub żeński") || group.contains("i żeński")) {
         dpos.addAnnotation(LexinfoOnt.gender, LexinfoOnt.feminine);
         group = group.replace("rodzaj żeński", "");
         group = group.replace("rodzaju żeńskiego", "");
         group = group.replace("lub żeński", "");
         group = group.replace("i żeński", "");
       }
-      if (group.contains("rodzaj nijaki") || group.contains("rodzaju nijakiego") || group
-          .contains("lub nijaki")) {
+      if (group.contains("rodzaj nijaki") || group.contains("rodzaju nijakiego")
+          || group.contains("lub nijaki")) {
         dpos.addAnnotation(LexinfoOnt.gender, LexinfoOnt.neuter);
         group = group.replace("rodzaj nijaki", "");
         group = group.replace("rodzaju nijakiego", "");
         group = group.replace("lub nijaki", "");
       }
-      if (group.contains("rodzaj męski") || group.contains("rodzaju męskiego") || group
-          .contains("lub męski") || group.contains(", męski")) {
+      if (group.contains("rodzaj męski") || group.contains("rodzaju męskiego")
+          || group.contains("lub męski") || group.contains(", męski")) {
         dpos.addAnnotation(LexinfoOnt.gender, LexinfoOnt.masculine);
         group = group.replace("rodzaj męski", "");
         group = group.replace("rodzaju męskiego", "");
@@ -294,7 +291,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   private DecodedPOS computeDecodedPOS(String group) {
     if (group.startsWith("rzeczownik")) {
       if (group.contains("nazwa własna"))
-      //TODO: remove dependency to DBnaryModel
+      // TODO: remove dependency to DBnaryModel
       {
         return new DecodedPOS("rzeczownik_nazwa_własna", LexinfoOnt.properNoun, OntolexOnt.Word);
       } else {
@@ -465,7 +462,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           senseAndEntries.add(se);
         }
       }
-      Map<Resource, ArrayList<Resource>> sensesByEntry = new HashMap<Resource, ArrayList<Resource>>();
+      Map<Resource, ArrayList<Resource>> sensesByEntry =
+          new HashMap<Resource, ArrayList<Resource>>();
       for (Resource[] se : senseAndEntries) {
         Resource sense = se[0];
         Resource entry = se[1];
@@ -480,8 +478,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       }
       for (Entry<Resource, ArrayList<Resource>> es : sensesByEntry.entrySet()) {
         // register definition to the currentLexEntry
-        Resource trans = registerTranslationToEntity(es.getKey(), lang, currentGlossResource, usage,
-            word);
+        Resource trans =
+            registerTranslationToEntity(es.getKey(), lang, currentGlossResource, usage, word);
 
         // add a reference to the correct word sense(s)
         if (null != trans) {
@@ -496,14 +494,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   // TODO : move into GlossFilter
   static Pattern range1 = Pattern.compile("(\\d+)\\.(\\d+)[\\-,—–]\\s*(\\d+)");
   static Pattern range2 = Pattern.compile("(\\d+)[\\-—–](\\d+)");
-//	static Pattern range3 = Pattern.compile("(\\d+)\\.(\\d+)[\\-—–](\\d+)\\.(\\d+)");
+  // static Pattern range3 = Pattern.compile("(\\d+)\\.(\\d+)[\\-—–](\\d+)\\.(\\d+)");
 
   public ArrayList<String> getSenseNumbers(String nums) {
     ArrayList<String> ns = new ArrayList<String>();
     nums = nums.trim();
     Matcher mRange1 = range1.matcher(nums);
     Matcher mRange2 = range2.matcher(nums);
-//		Matcher mRange3 = range3.matcher(nums);
+    // Matcher mRange3 = range3.matcher(nums);
 
     if (nums.matches("\\d+")) {
       // When there is only one number, we attach to all wordsense whose prefix is the given number
@@ -550,7 +548,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
         if (i1 < i2) {
           for (int i = i1; i <= i2; i++) {
-            // When there is only one number, we attach to all wordsense whose prefix is the given number
+            // When there is only one number, we attach to all wordsense whose prefix is the given
+            // number
             for (String n : currentWordsenses.keySet()) {
               if (n.startsWith(nums + ".")) {
                 ns.add(n);
@@ -565,35 +564,36 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         log.debug(e.getLocalizedMessage());
         ns.add(nums);
       }
-//		} else if (mRange3.matches()) {
-//			String n1 = mRange3.group(1);
-//			String n11 = mRange3.group(2);
-//			String n2 = mRange3.group(3);
-//			String n22 = mRange3.group(4);
-//
-//			try {
-//				int i1 = Integer.parseInt(n1);
-//				int i11 = Integer.parseInt(n11);
-//				int i2 = Integer.parseInt(n2);
-//				int i22 = Integer.parseInt(n22);
-//				
-//				if (i1 < i2) {
-//					for (int i = i1; i <= i2; i++) {
-//						// When there is only one number, we attach to all wordsense whose prefix is the given number
-//						for (String n : currentWordsenses.keySet()) {
-//							if (n.startsWith(nums + ".")) {
-//								ns.add(n);
-//							}
-//						}
-//					}
-//				} else {
-//					log.debug("Invalide range: {} in {}", nums, currentLexEntry());
-//					ns.add(nums);
-//				}
-//			} catch (NumberFormatException e) {
-//				log.debug(e.getLocalizedMessage());
-//				ns.add(nums);
-//			}
+      // } else if (mRange3.matches()) {
+      // String n1 = mRange3.group(1);
+      // String n11 = mRange3.group(2);
+      // String n2 = mRange3.group(3);
+      // String n22 = mRange3.group(4);
+      //
+      // try {
+      // int i1 = Integer.parseInt(n1);
+      // int i11 = Integer.parseInt(n11);
+      // int i2 = Integer.parseInt(n2);
+      // int i22 = Integer.parseInt(n22);
+      //
+      // if (i1 < i2) {
+      // for (int i = i1; i <= i2; i++) {
+      // // When there is only one number, we attach to all wordsense whose prefix is the given
+      // number
+      // for (String n : currentWordsenses.keySet()) {
+      // if (n.startsWith(nums + ".")) {
+      // ns.add(n);
+      // }
+      // }
+      // }
+      // } else {
+      // log.debug("Invalide range: {} in {}", nums, currentLexEntry());
+      // ns.add(nums);
+      // }
+      // } catch (NumberFormatException e) {
+      // log.debug(e.getLocalizedMessage());
+      // ns.add(nums);
+      // }
     } else if (nums.contains(",")) {
       String[] list = nums.split(",");
       for (String n : list) {

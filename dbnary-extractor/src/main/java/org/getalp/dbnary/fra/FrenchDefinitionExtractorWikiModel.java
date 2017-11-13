@@ -1,6 +1,9 @@
 package org.getalp.dbnary.fra;
 
 import info.bliki.wiki.filter.PlainTextConverter;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.Map;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -8,18 +11,14 @@ import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.Locale;
-import java.util.Map;
-
 public class FrenchDefinitionExtractorWikiModel extends DbnaryWikiModel {
 
   private Logger log = LoggerFactory.getLogger(FrenchDefinitionExtractorWikiModel.class);
 
   // static Set<String> ignoredTemplates = new TreeSet<String>();
   // static {
-  // 	ignoredTemplates.add("Wikipedia");
-  // 	ignoredTemplates.add("Incorrect");
+  // ignoredTemplates.add("Wikipedia");
+  // ignoredTemplates.add("Incorrect");
   // }
 
   private IWiktionaryDataHandler delegate;
@@ -51,9 +50,8 @@ public class FrenchDefinitionExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     if (templateName.equals("nom langue") || templateName.endsWith(":nom langue")) {
       // intercept this template as it leads to a very inefficient Lua Script.

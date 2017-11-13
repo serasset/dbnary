@@ -23,8 +23,8 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
 
   // static Set<String> ignoredTemplates = new TreeSet<String>();
   // static {
-  // 	ignoredTemplates.add("Wikipedia");
-  // 	ignoredTemplates.add("Incorrect");
+  // ignoredTemplates.add("Wikipedia");
+  // ignoredTemplates.add("Incorrect");
   // }
 
   protected class Example {
@@ -85,9 +85,8 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     if ("пример".equals(templateName)) {
       // This is an example of usage of the definition.
       // DONE: add this example in the extracted data.
@@ -114,7 +113,8 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
       }
     } else {
       // Do not ignore the other template calls.
-      // log.debug("Called macro: {} when expanding definition block in {}.", templateName, this.getPageName());
+      // log.debug("Called macro: {} when expanding definition block in {}.", templateName,
+      // this.getPageName());
       super.substituteTemplateCall(templateName, parameterMap, writer);
     }
   }
@@ -132,8 +132,8 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
   public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
       throws WikiModelContentException {
     ParsedPageName fixedPageName = parsedPagename;
-    if (parsedPagename.namespace.isType(INamespace.NamespaceCode.MODULE_NAMESPACE_KEY) &&
-        parsedPagename.pagename.startsWith("Module:")) {
+    if (parsedPagename.namespace.isType(INamespace.NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.startsWith("Module:")) {
       fixedPageName = new ParsedPageName(parsedPagename.namespace,
           parsedPagename.pagename.substring(7), parsedPagename.valid);
     }

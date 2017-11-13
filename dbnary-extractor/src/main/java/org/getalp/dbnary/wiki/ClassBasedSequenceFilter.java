@@ -7,14 +7,18 @@ import java.util.function.Function;
 /**
  * Created by serasset on 27/02/17.
  */
-public class ClassBasedSequenceFilter implements
-    Function<WikiText.Token, WikiSequenceFiltering.Action> {
+public class ClassBasedSequenceFilter
+    implements Function<WikiText.Token, WikiSequenceFiltering.Action> {
 
   private HashMap<Class, WikiSequenceFiltering.Action> actions = new HashMap<>();
 
   /**
-   * Creates a default Class baed filter that : <ul> <li>atomizes all, but</li> <li>keep textual
-   * content</li> <li>void HTML Comments and no wiki</li> </ul>
+   * Creates a default Class baed filter that :
+   * <ul>
+   * <li>atomizes all, but</li>
+   * <li>keep textual content</li>
+   * <li>void HTML Comments and no wiki</li>
+   * </ul>
    */
   public ClassBasedSequenceFilter() {
     super();
@@ -78,8 +82,7 @@ public class ClassBasedSequenceFilter implements
 
   public ClassBasedSequenceFilter atomizeAll() {
     this.atomizeExternalLink().atomizeHTMLComment().atomizeInternalLink().atomizeNowiki()
-        .atomizeTemplates().
-        atomizeListItem().atomizeHeading().atomizeText();
+        .atomizeTemplates().atomizeListItem().atomizeHeading().atomizeText();
     return this;
   }
 
@@ -133,8 +136,8 @@ public class ClassBasedSequenceFilter implements
   }
 
   public ClassBasedSequenceFilter voidAll() {
-    this.voidExternalLink().voidHTMLComment().voidInternalLink().voidNowiki().voidTemplates().
-        voidListItem().voidHeading().voidText();
+    this.voidExternalLink().voidHTMLComment().voidInternalLink().voidNowiki().voidTemplates()
+        .voidListItem().voidHeading().voidText();
     return this;
   }
 
@@ -183,7 +186,7 @@ public class ClassBasedSequenceFilter implements
   }
 
   // ======================
-  //  Keeping content only
+  // Keeping content only
   // ======================
 
   public ClassBasedSequenceFilter keepContentOfTemplates() {
@@ -234,10 +237,10 @@ public class ClassBasedSequenceFilter implements
     return this;
   }
 
-//    public ClassBasedSequenceFilter keepContentOfHTMLComment() {
-//        actions.put(WikiText.HTMLComment.class, new WikiSequenceFiltering.Content());
-//        return this;
-//    }
+  // public ClassBasedSequenceFilter keepContentOfHTMLComment() {
+  // actions.put(WikiText.HTMLComment.class, new WikiSequenceFiltering.Content());
+  // return this;
+  // }
 
   public ClassBasedSequenceFilter keepContentOfListItem() {
     actions.put(WikiText.ListItem.class,
@@ -256,15 +259,14 @@ public class ClassBasedSequenceFilter implements
     return this;
   }
 
-//    public ClassBasedSequenceFilter keepContentOfText() {
-//        actions.put(WikiText.Text.class, new WikiSequenceFiltering.Content());
-//        return this;
-//    }
+  // public ClassBasedSequenceFilter keepContentOfText() {
+  // actions.put(WikiText.Text.class, new WikiSequenceFiltering.Content());
+  // return this;
+  // }
 
   public ClassBasedSequenceFilter keepContentOfAll() {
     this.keepTargetOfExternalLink().keepTargetOfInternalLink().keepContentOfNowiki()
-        .keepContentOfTemplates().
-        keepContentOfListItem().keepContentOfHeading().sourceText();
+        .keepContentOfTemplates().keepContentOfListItem().keepContentOfHeading().sourceText();
     return this;
   }
 
@@ -296,10 +298,10 @@ public class ClassBasedSequenceFilter implements
     return this;
   }
 
-//    public ClassBasedSequenceFilter openCloseHTMLComment() {
-//        actions.put(WikiText.HTMLComment.class, new WikiSequenceFiltering.OpenContentClose());
-//        return this;
-//    }
+  // public ClassBasedSequenceFilter openCloseHTMLComment() {
+  // actions.put(WikiText.HTMLComment.class, new WikiSequenceFiltering.OpenContentClose());
+  // return this;
+  // }
 
   public ClassBasedSequenceFilter openCloseListItem() {
     actions.put(WikiText.ListItem.class,
@@ -318,14 +320,15 @@ public class ClassBasedSequenceFilter implements
     return this;
   }
 
-//    public ClassBasedSequenceFilter openCloseText() {
-//        actions.put(WikiText.Text.class, new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
-//        return this;
-//    }
+  // public ClassBasedSequenceFilter openCloseText() {
+  // actions.put(WikiText.Text.class, new
+  // WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
+  // return this;
+  // }
 
   public ClassBasedSequenceFilter openCloseAll() {
-    this.openCloseExternalLink().openCloseInternalLink().openCloseNowiki().openCloseTemplates().
-        openCloseListItem().openCloseHeading().sourceText();
+    this.openCloseExternalLink().openCloseInternalLink().openCloseNowiki().openCloseTemplates()
+        .openCloseListItem().openCloseHeading().sourceText();
     return this;
   }
 
@@ -380,8 +383,7 @@ public class ClassBasedSequenceFilter implements
 
   public ClassBasedSequenceFilter sourceAll() {
     this.sourceExternalLink().sourceHTMLComment().sourceInternalLink().sourceNowiki()
-        .sourceTemplates().
-        sourceListItem().sourceHeading().sourceText();
+        .sourceTemplates().sourceListItem().sourceHeading().sourceText();
     return this;
   }
 

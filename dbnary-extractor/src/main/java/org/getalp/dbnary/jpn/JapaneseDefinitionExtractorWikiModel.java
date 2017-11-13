@@ -15,8 +15,8 @@ public class JapaneseDefinitionExtractorWikiModel extends DbnaryWikiModel {
 
   // static Set<String> ignoredTemplates = new TreeSet<String>();
   // static {
-  // 	ignoredTemplates.add("Wikipedia");
-  // 	ignoredTemplates.add("Incorrect");
+  // ignoredTemplates.add("Wikipedia");
+  // ignoredTemplates.add("Incorrect");
   // }
 
   private IWiktionaryDataHandler delegate;
@@ -50,19 +50,17 @@ public class JapaneseDefinitionExtractorWikiModel extends DbnaryWikiModel {
   public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
       throws WikiModelContentException {
     // BUGFIX for incorrect gwtwiki invocation of module User:Codecat/isValidPagename
-    if (parsedPagename.namespace.toString().equals("User") && parsedPagename.pagename
-        .equals("CodeCat/isValidPageName")) {
-      return getRawWikiContent(
-          new ParsedPageName(this.getNamespace().getModule(), "User:" + parsedPagename.pagename,
-              true), map);
+    if (parsedPagename.namespace.toString().equals("User")
+        && parsedPagename.pagename.equals("CodeCat/isValidPageName")) {
+      return getRawWikiContent(new ParsedPageName(this.getNamespace().getModule(),
+          "User:" + parsedPagename.pagename, true), map);
     }
     return super.getRawWikiContent(parsedPagename, map);
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     super.substituteTemplateCall(templateName, parameterMap, writer);
   }

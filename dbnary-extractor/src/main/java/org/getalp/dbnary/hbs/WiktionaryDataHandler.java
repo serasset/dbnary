@@ -1,5 +1,7 @@
 package org.getalp.dbnary.hbs;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OliaOnt;
@@ -8,9 +10,6 @@ import org.getalp.dbnary.OntolexOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
@@ -18,8 +17,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   static {
 
-    posAndTypeValueMap
-        .put("sh-pridjev", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
+    posAndTypeValueMap.put("sh-pridjev",
+        new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
 
     posAndTypeValueMap.put("sh-prilog", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
 
@@ -29,8 +28,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("-znači-država-", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
     posAndTypeValueMap.put("-znači-grad-", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
     posAndTypeValueMap.put("sh-noun", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
-    posAndTypeValueMap
-        .put("sh-vlastito ime", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
+    posAndTypeValueMap.put("sh-vlastito ime",
+        new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
 
     posAndTypeValueMap.put("sh-glagol", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
   }
@@ -100,10 +99,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         if (!pair[1].equals("")) {
           switch (pair[0]) {
             case "head":
-              //  log.debug("Head unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+              // log.debug("Head unused : {} in {} --in-- {}", infos[i], infos[0],
+              // this.currentLexEntry());
               break;
             case "m":
-              // log.debug("Plural form unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+              // log.debug("Plural form unused : {} in {} --in-- {}", infos[i], infos[0],
+              // this.currentLexEntry());
               break;
             case "r":
               addGender(pair[1]);
@@ -136,7 +137,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               break;
             case "v":
               // TODO Geographic parameter
-              //  log.debug("Version/Variant unused : {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+              // log.debug("Version/Variant unused : {} in {} --in-- {}", infos[i], infos[0],
+              // this.currentLexEntry());
               break;
             case "p":
               log.debug("Paradigme unused : {} in {} --in-- {}", infos[i], infos[0],
@@ -147,7 +149,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
             case "comp":
             case "comp_a":
               // TODO
-              // log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0], this.currentLexEntry());
+              // log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0],
+              // this.currentLexEntry());
               break;
             default:
               log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0],

@@ -33,9 +33,8 @@ public class ItalianPronunciationExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     if ("IPA".equals(templateName)) {
       if (isValidPronunciation(parameterMap.get("4"))) {
         delegate.registerPronunciation(parameterMap.get("4"), "it-fonipa");
@@ -53,7 +52,8 @@ public class ItalianPronunciationExtractorWikiModel extends DbnaryWikiModel {
     if ("SAMPA".equals(templateName)) {
       // TODO !
     } else {
-      // System.err.println("Called template: " + templateName + " while parsing translations of: " + this.getImageBaseURL());
+      // System.err.println("Called template: " + templateName + " while parsing translations of: "
+      // + this.getImageBaseURL());
       // Just ignore the other template calls (uncomment to expand the template calls).
       // super.substituteTemplateCall(templateName, parameterMap, writer);
     }

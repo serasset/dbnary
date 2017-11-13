@@ -80,7 +80,7 @@ public class TranslationsStatistics {
     }
     total = total + others;
 
-    //out.print(ISO639_3.sharedInstance.inEnglish(language));
+    // out.print(ISO639_3.sharedInstance.inEnglish(language));
     for (Entry<String, IncrementableInt> j : counts.entrySet()) {
       out.print(j.getValue().val + ",");
     }
@@ -120,8 +120,7 @@ public class TranslationsStatistics {
   }
 
 
-  public static void printStats(Model m1, String language,
-      String targets, PrintWriter out) {
+  public static void printStats(Model m1, String language, String targets, PrintWriter out) {
     printStats(m1, language, targets, out, false);
 
   }

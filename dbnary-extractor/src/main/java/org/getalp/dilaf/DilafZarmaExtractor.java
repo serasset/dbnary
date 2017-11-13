@@ -19,15 +19,15 @@ public class DilafZarmaExtractor extends DilafExtractor {
         int sni = xmlr.getAttributeIndex(null, "lamba");
         senseNumber = (sni == -1) ? "1" : xmlr.getAttributeValue(sni);
         lemma = xmlr.getElementText();
-      } else if (xmlr.isStartElement() && xmlr.getLocalName()
-          .equals("ciiyaŋ")) { // transcription phonétique
+      } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("ciiyaŋ")) { // transcription
+        // phonétique
         pronounciation = xmlr.getElementText();
       } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("kanandi")) { // part of speech
         partOfSpeech = xmlr.getElementText();
-        lexicalSense = wdh
-            .registerNewLexicalSense(lemma, partOfSpeech, pronounciation, senseNumber);
-      } else if (xmlr.isStartElement() && xmlr.getLocalName()
-          .equals("bareyaŋ")) { // French translation
+        lexicalSense =
+            wdh.registerNewLexicalSense(lemma, partOfSpeech, pronounciation, senseNumber);
+      } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("bareyaŋ")) { // French
+        // translation
         String translations = xmlr.getElementText();
         wdh.registerTranslations(lexicalSense, translations);
       } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("feeriji")) { // Definition

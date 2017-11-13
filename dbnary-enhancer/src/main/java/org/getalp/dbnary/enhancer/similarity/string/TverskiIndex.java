@@ -1,13 +1,14 @@
 package org.getalp.dbnary.enhancer.similarity.string;
 
 import com.wcohen.ss.AbstractStringDistance;
+import java.util.List;
 import org.getalp.dbnary.enhancer.encoding.CodePointWrapper;
 import org.getalp.dbnary.enhancer.segmentation.Segmenter;
 import org.getalp.dbnary.enhancer.segmentation.SpaceSegmenter;
 import org.getalp.dbnary.enhancer.similarity.SimilarityMeasure;
-import java.util.List;
 
 public class TverskiIndex implements SimilarityMeasure {
+
   private Segmenter segmenter;
 
   private double alpha;

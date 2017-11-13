@@ -1,17 +1,17 @@
 package org.getalp.dbnary.enhancer.disambiguation;
 
+import com.wcohen.ss.ScaledLevenstein;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
-import com.wcohen.ss.ScaledLevenstein;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.SkosOnt;
 import org.getalp.dbnary.enhancer.similarity.string.TverskiIndex;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class TverskyBasedTranslationDisambiguationMethod implements DisambiguationMethod {
 
@@ -28,6 +28,7 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
   }
 
   private class WeigthedSense {
+
     protected double weight;
     protected Resource sense;
 
@@ -45,12 +46,14 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
 
     if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
         && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
-        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression))
+        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
       throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
+    }
     if (context instanceof Resource) {
       Resource trans = (Resource) context;
-      if (!trans.hasProperty(RDF.type, DBnaryOnt.Translation))
+      if (!trans.hasProperty(RDF.type, DBnaryOnt.Translation)) {
         throw new InvalidContextException("Expecting a DBnary Translation Resource.");
+      }
 
       Statement glossStmt = trans.getProperty(DBnaryOnt.gloss);
 
@@ -74,8 +77,9 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
             insert(weightedList, wordsense, sim);
           }
 
-          if (weightedList.size() == 0)
+          if (weightedList.size() == 0) {
             return res;
+          }
 
           int i = 0;
           double worstScore = weightedList.get(0).weight - delta;

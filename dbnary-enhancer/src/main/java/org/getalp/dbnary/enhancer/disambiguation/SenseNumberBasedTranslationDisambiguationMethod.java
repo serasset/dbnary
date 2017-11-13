@@ -1,14 +1,14 @@
 package org.getalp.dbnary.enhancer.disambiguation;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.OntolexOnt;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class SenseNumberBasedTranslationDisambiguationMethod implements DisambiguationMethod {
 
@@ -23,12 +23,14 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements Disambig
       throws InvalidContextException, InvalidEntryException {
     if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
         && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
-        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression))
+        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
       throw new InvalidEntryException("Expecting an ontolex Lexical Entry.");
+    }
     if (context instanceof Resource) {
       Resource trans = (Resource) context;
-      if (!trans.hasProperty(RDF.type, DBnaryOnt.Translation))
+      if (!trans.hasProperty(RDF.type, DBnaryOnt.Translation)) {
         throw new InvalidContextException("Expecting a DBnary Translation Resource.");
+      }
       // TODO: the sense number property is not defined for translations... However, it is added by
       // the preprocessing.
       Statement gloss = trans.getProperty(DBnaryOnt.gloss);

@@ -1,18 +1,19 @@
 package org.getalp.dbnary.enhancer.preprocessing;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.DBnaryOnt;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map.Entry;
 
 public class StatsModule {
 
   private class Stat {
+
     private int nbTranslations = 0;
     private int translationsWithoutGlosses = 0;
     private int nbGlossesWithSenseNumberOnly = 0;
@@ -31,12 +32,13 @@ public class StatsModule {
           String senseNumbers = sg.getSenseNumber();
           String descr = sg.getGloss();
 
-          if (null != senseNumbers && null != descr)
+          if (null != senseNumbers && null != descr) {
             nbGlossesWithSensNumberAndText++;
-          else if (null != senseNumbers)
+          } else if (null != senseNumbers) {
             nbGlossesWithSenseNumberOnly++;
-          else if (null != descr)
+          } else if (null != descr) {
             nbGlossesWithTextOnly++;
+          }
         } else {
           translationsWithoutGlosses++;
         }
@@ -70,21 +72,25 @@ public class StatsModule {
   }
 
   private static StructuredGloss extractGlossStructure(Statement g) {
-    if (null == g)
+    if (null == g) {
       return null;
+    }
     RDFNode gloss = g.getObject();
-    if (gloss.isLiteral())
+    if (gloss.isLiteral()) {
       return new StructuredGloss(null, gloss.asLiteral().getString());
+    }
     if (gloss.isResource()) {
       Resource glossResource = gloss.asResource();
       Statement sn = glossResource.getProperty(DBnaryOnt.senseNumber);
       String senseNumber = null;
-      if (sn != null)
+      if (sn != null) {
         senseNumber = sn.getString();
+      }
       Statement glossValue = glossResource.getProperty(RDF.value);
       String glossString = null;
-      if (glossValue != null)
+      if (glossValue != null) {
         glossString = glossValue.getString();
+      }
       return new StructuredGloss(senseNumber, glossString);
     }
     return null;

@@ -1,8 +1,14 @@
 package org.getalp.dbnary.enhancer.translation;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.sql.*;
 
 public class CachedTranslator implements Translator {
 
@@ -22,7 +28,8 @@ public class CachedTranslator implements Translator {
     try {
       if (!dir.startsWith("jdbc:h2:")) {
         dir = "jdbc:h2:" + dir;
-      } ;
+      }
+      ;
       this.dir = dir + ";CACHE_SIZE=4000000";
       Class.forName("org.h2.Driver");
       db = DriverManager.getConnection(dir, "dbnary", "");
@@ -30,7 +37,7 @@ public class CachedTranslator implements Translator {
       // System.err.println("Checking if tm table exists.");
       boolean tmTableExists = false;
       DatabaseMetaData meta = db.getMetaData();
-      ResultSet res = meta.getTables(null, null, null, new String[] {"TABLE"});
+      ResultSet res = meta.getTables(null, null, null, new String[]{"TABLE"});
       while (res.next()) {
         String tn = res.getString("TABLE_NAME");
         if ("TM".equalsIgnoreCase(tn)) {

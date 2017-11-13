@@ -1,13 +1,14 @@
 package org.getalp.dbnary.enhancer;
 
-import org.apache.jena.rdf.model.*;
-import org.apache.commons.cli.*;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
-import org.getalp.dbnary.enhancer.preprocessing.StatsModule;
-import org.getalp.iso639.ISO639_3;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
@@ -16,6 +17,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.TreeMap;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
+import org.getalp.dbnary.enhancer.preprocessing.StatsModule;
+import org.getalp.iso639.ISO639_3;
 
 /**
  * Created by serasset on 12/04/17.
@@ -41,7 +55,7 @@ public class DBnaryEnhancer {
   protected static Options options = null; // Command line op
   protected CommandLine cmd = null; // Command Line arguments
   protected Map<String, String> languages = new TreeMap<>(); // I want the map to be sorted by
-                                                             // language code.
+  // language code.
   protected PrintStream statsOutput = null;
   protected StatsModule stats = null;
   protected String rdfFormat;
@@ -96,8 +110,9 @@ public class DBnaryEnhancer {
       Path dir = modelPath.getParent();
       if (null != dir) {
         String filename = modelPath.getFileName().toString();
-        if (filename.endsWith(".bz2"))
+        if (filename.endsWith(".bz2")) {
           filename = filename.substring(0, filename.length() - 4);
+        }
         outputModelFileName =
             dir.resolve(filename.replaceAll("_ontolex", "_enhancement")).normalize().toString();
       }
@@ -125,12 +140,13 @@ public class DBnaryEnhancer {
       e.printStackTrace();
       return;
     } finally {
-      if (null != outputModelStream)
+      if (null != outputModelStream) {
         try {
           outputModelStream.close();
         } catch (IOException e) {
           e.printStackTrace();
         }
+      }
     }
   }
 
@@ -138,7 +154,6 @@ public class DBnaryEnhancer {
     // for(String lang: languages) {
     // this.computeStatsOnGlosses(lang);
     // }
-
 
     for (Map.Entry<String, String> langAndFile : languages.entrySet()) {
       String lang = langAndFile.getKey();
@@ -170,7 +185,6 @@ public class DBnaryEnhancer {
         System.err.println("Ignoring " + modelFile);
         continue;
       }
-
 
       System.err.println("Disambiguating " + lang);
       Model disambiguatedModel = ModelFactory.createDefaultModel();

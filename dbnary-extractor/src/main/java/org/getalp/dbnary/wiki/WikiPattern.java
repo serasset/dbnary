@@ -16,29 +16,55 @@ public class WikiPattern {
    * <table border="0" cellpadding="1" cellspacing="0" summary="Regular expression constructs, and
    * what they match">
    *
-   * <tr align="left"> <th align="left" id="construct">Construct</th> <th align="left"
-   * id="matches">Matches</th> </tr>
-   *
-   * <tr> <th>&nbsp;</th> </tr> <tr align="left"> <th colspan="2" id="classes">Character
-   * classes</th> </tr>
-   *
-   * <tr> <td valign="top">{@code \p{Template}}</td> <td headers="matches">a full wiki
-   * template.</td> </tr> <tr> <td valign="top">{@code \p{Link}}</td> <td headers="matches">either
-   * an Internal or an External Link.</td> </tr> <tr> <td valign="top">{@code \p{ExternalLink}}</td>
-   * <td headers="matches">an External Link.</td> </tr> <tr> <td valign="top">{@code
-   * \p{InternalLink}}</td> <td headers="matches">an Internal Link (complete with its eventual
-   * suffix).</td> </tr>
-   *
-   *
-   * <tr> <th>&nbsp;</th> </tr> <tr align="left"> <th colspan="2" id="events">Open/Close events</th>
+   * <tr align="left">
+   * <th align="left" id="construct">Construct</th>
+   * <th align="left" id="matches">Matches</th>
    * </tr>
    *
-   * <tr> <td valign="top"><tt>(_</tt><i>xxx</i><tt>_</tt></td> <td headers="matches">the opening of
-   * an event, where <i>xxx</i> is identifies the event (xxx is a sequence of characters, possibly
-   * empty). If present, xxx will represent a group name (take it into account when playing with
-   * group count.</td> </tr> <tr> <td valign="top"><tt>_</tt><i>xxx</i><tt>_)</tt></td> <td
-   * headers="matches">the closing of an event which was given name <i>xxx</i> on opening. If
-   * <i>xxx</i> is empty, matches any closing event.</td> </tr> </table>
+   * <tr>
+   * <th>&nbsp;</th>
+   * </tr>
+   * <tr align="left">
+   * <th colspan="2" id="classes">Character classes</th>
+   * </tr>
+   *
+   * <tr>
+   * <td valign="top">{@code \p{Template}}</td>
+   * <td headers="matches">a full wiki template.</td>
+   * </tr>
+   * <tr>
+   * <td valign="top">{@code \p{Link}}</td>
+   * <td headers="matches">either an Internal or an External Link.</td>
+   * </tr>
+   * <tr>
+   * <td valign="top">{@code \p{ExternalLink}}</td>
+   * <td headers="matches">an External Link.</td>
+   * </tr>
+   * <tr>
+   * <td valign="top">{@code \p{InternalLink}}</td>
+   * <td headers="matches">an Internal Link (complete with its eventual suffix).</td>
+   * </tr>
+   *
+   *
+   * <tr>
+   * <th>&nbsp;</th>
+   * </tr>
+   * <tr align="left">
+   * <th colspan="2" id="events">Open/Close events</th>
+   * </tr>
+   *
+   * <tr>
+   * <td valign="top"><tt>(_</tt><i>xxx</i><tt>_</tt></td>
+   * <td headers="matches">the opening of an event, where <i>xxx</i> is identifies the event (xxx is
+   * a sequence of characters, possibly empty). If present, xxx will represent a group name (take it
+   * into account when playing with group count.</td>
+   * </tr>
+   * <tr>
+   * <td valign="top"><tt>_</tt><i>xxx</i><tt>_)</tt></td>
+   * <td headers="matches">the closing of an event which was given name <i>xxx</i> on opening. If
+   * <i>xxx</i> is empty, matches any closing event.</td>
+   * </tr>
+   * </table>
    *
    * @param regex The extended regular expression
    * @return a Pattern matching the given extended regex.
@@ -99,7 +125,7 @@ public class WikiPattern {
       + "\\u202F" // NARROW NO-BREAK SPACE
       + "\\u205F" // MEDIUM MATHEMATICAL SPACE
       + "\\u3000" // IDEOGRAPHIC SPACE
-      ;
+  ;
 
   public static String toStandardPattern(String regex) {
     StringBuffer correctedRegex = new StringBuffer(regex.length());

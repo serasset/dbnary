@@ -254,8 +254,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
                 String name = itemsList.item(e).getNodeName();
                 if (name.equals("#text")) {
                   String form = itemsList.item(e).getTextContent();
-                  form = removeUselessSpaces(
-                      form.replaceAll("\\<.*\\>", "").replace("—", ""));// remove
+                  form = removeUselessSpaces(form.replaceAll("\\<.*\\>", "").replace("—", ""));// remove
                   // insecable
                   // spaces
                   // and

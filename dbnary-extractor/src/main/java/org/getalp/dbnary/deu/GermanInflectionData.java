@@ -152,8 +152,7 @@ public class GermanInflectionData {
         inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Future));
         break;
       case FUTURE2:
-        inflections
-            .add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.FuturePerfect)); // Confirmed
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.FuturePerfect)); // Confirmed
         // by Ch.
         // Chiarcos...
         break;
@@ -193,8 +192,7 @@ public class GermanInflectionData {
         // mood...
         break;
       case GERUNDIVUM:
-        inflections
-            .add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.AdverbialParticiple)); // TODO:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.AdverbialParticiple)); // TODO:
         // AdverbialParticiple
         // is
         // a

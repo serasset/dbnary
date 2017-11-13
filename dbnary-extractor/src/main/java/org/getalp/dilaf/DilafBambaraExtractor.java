@@ -22,8 +22,7 @@ public class DilafBambaraExtractor extends DilafExtractor {
       if (xmlr.isStartElement() && xmlr.getLocalName().equals("forme")) { // entrée
         // attributs: usage, non_usage, orthographe, emplois
         lemma = xmlr.getElementText();
-      } else if (xmlr.isStartElement() && xmlr.getLocalName()
-          .equals("forme_tons")) { // transcription
+      } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("forme_tons")) { // transcription
         // phonétique
         // ignore for now
       } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("phon")) { // transcription

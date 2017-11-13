@@ -136,7 +136,7 @@ public class DbnaryWikiModel extends WikiModel {
     // the namepace, while the wiktionary edition uses a localized namespace.
     if (parsedPagename.namespace.isType(INamespace.NamespaceCode.MODULE_NAMESPACE_KEY)
         && (parsedPagename.pagename.startsWith("Module:")
-        || parsedPagename.pagename.startsWith("module:"))) {
+            || parsedPagename.pagename.startsWith("module:"))) {
       parsedPagename = new ParsedPageName(parsedPagename.namespace,
           parsedPagename.pagename.substring(7), parsedPagename.valid);
     }

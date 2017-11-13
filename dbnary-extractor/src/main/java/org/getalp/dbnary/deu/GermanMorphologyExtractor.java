@@ -3,7 +3,6 @@ package org.getalp.dbnary.deu;
 import static org.getalp.dbnary.deu.GermanInflectionData.Degree.COMPARATIVE;
 import static org.getalp.dbnary.deu.GermanInflectionData.Degree.POSITIVE;
 import static org.getalp.dbnary.deu.GermanInflectionData.Degree.SUPERLATIVE;
-
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;

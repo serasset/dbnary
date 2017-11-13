@@ -70,7 +70,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public void registerNewDefinition(String def, String senseNumber) {
     super.registerNewDefinition(def, senseNumber);
     if (null != this.currentLexEntry) {
-      currentWordsenses.put(senseNumber, new Resource[]{this.currentSense, this.currentLexEntry});
+      currentWordsenses.put(senseNumber, new Resource[] {this.currentSense, this.currentLexEntry});
       currentLexEntries.add(this.currentLexEntry);
     }
   }
@@ -462,8 +462,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           senseAndEntries.add(se);
         }
       }
-      Map<Resource, ArrayList<Resource>> sensesByEntry =
-          new HashMap<>();
+      Map<Resource, ArrayList<Resource>> sensesByEntry = new HashMap<>();
       for (Resource[] se : senseAndEntries) {
         Resource sense = se[0];
         Resource entry = se[1];

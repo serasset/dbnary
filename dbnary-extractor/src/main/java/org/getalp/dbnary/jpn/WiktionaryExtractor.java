@@ -223,8 +223,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private boolean isNymHeader(Matcher m) {
     Matcher nym = WikiPatterns.macroPattern.matcher(m.group(1).trim());
 
-    return nym.matches() && JapaneseRelatedWordsExtractorWikiModel.relMarkerToRelName
-        .containsKey(nym.group(1));
+    return nym.matches()
+        && JapaneseRelatedWordsExtractorWikiModel.relMarkerToRelName.containsKey(nym.group(1));
   }
 
   private void gotoNymBlock(Matcher m) {

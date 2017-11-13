@@ -11,7 +11,7 @@ public class WikiTool {
 
   /**
    * @param args the String containing all the args (the part of a templae contained after the first
-   * pipe).
+   *        pipe).
    * @return a Map associating each argument name with its value.
    * @deprecated Parse the args of a Template.
    */

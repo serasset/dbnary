@@ -12,7 +12,6 @@ import static org.getalp.dbnary.deu.GermanInflectionData.GNumber.SINGULAR;
 import static org.getalp.dbnary.deu.GermanInflectionData.InflectionType.MIXED;
 import static org.getalp.dbnary.deu.GermanInflectionData.InflectionType.STRONG;
 import static org.getalp.dbnary.deu.GermanInflectionData.InflectionType.WEAK;
-
 import info.bliki.wiki.filter.PlainTextConverter;
 import java.io.IOException;
 import java.util.HashSet;

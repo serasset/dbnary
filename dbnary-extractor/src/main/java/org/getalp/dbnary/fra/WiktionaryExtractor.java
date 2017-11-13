@@ -1213,8 +1213,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     lastExtractedPronunciationLang = null;
 
     // TODO [URGENT]: what is this registerPronounciation boolean ?
-    HashSet<PronunciationPair> res =
-        registerPronunciation ? null : new HashSet<>();
+    HashSet<PronunciationPair> res = registerPronunciation ? null : new HashSet<>();
 
     while (pronMatcher.find()) {
       String pron = pronMatcher.group(1);

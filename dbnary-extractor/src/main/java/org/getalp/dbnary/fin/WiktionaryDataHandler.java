@@ -11,25 +11,28 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
-    private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
-    static {
+  static {
 
-        // Finnish
-        posAndTypeValueMap.put("Substantiivi", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("Adjektiivi", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("Verbi", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("Adverbi", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("Erisnimi", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("subs", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("verbi", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
+    // Finnish
+    posAndTypeValueMap
+        .put("Substantiivi", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap
+        .put("Adjektiivi", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Verbi", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Adverbi", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap
+        .put("Erisnimi", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("subs", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("verbi", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
 
-    }
+  }
 
-    public WiktionaryDataHandler(String lang) {
-        super(lang);
-    }
+  public WiktionaryDataHandler(String lang) {
+    super(lang);
+  }
 
 }

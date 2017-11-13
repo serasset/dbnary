@@ -1,7 +1,6 @@
 package org.getalp.dbnary;
 
 import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
 

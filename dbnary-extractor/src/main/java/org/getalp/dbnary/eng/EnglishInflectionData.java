@@ -178,8 +178,7 @@ public class EnglishInflectionData {
         // mood...
         break;
       case GERUNDIVUM:
-        inflections
-            .add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.AdverbialParticiple)); // TODO:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.AdverbialParticiple)); // TODO:
         // AdverbialParticiple
         // is
         // a

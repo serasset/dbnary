@@ -23,7 +23,9 @@ public final class CharRange {
   // -----------------------------------------------------------------------
 
   /**
-   * <p> Constructs a <code>CharRange</code> over a single character. </p>
+   * <p>
+   * Constructs a <code>CharRange</code> over a single character.
+   * </p>
    *
    * @param ch only character in this range
    */
@@ -32,7 +34,9 @@ public final class CharRange {
   }
 
   /**
-   * <p> Constructs a <code>CharRange</code> over a set of characters. </p>
+   * <p>
+   * Constructs a <code>CharRange</code> over a set of characters.
+   * </p>
    *
    * @param start first character, inclusive, in this range
    * @param end last character, inclusive, in this range
@@ -53,7 +57,9 @@ public final class CharRange {
   // -----------------------------------------------------------------------
 
   /**
-   * <p> Gets the start character for this character range. </p>
+   * <p>
+   * Gets the start character for this character range.
+   * </p>
    *
    * @return the start char (inclusive)
    */
@@ -62,7 +68,9 @@ public final class CharRange {
   }
 
   /**
-   * <p> Gets the end character for this character range. </p>
+   * <p>
+   * Gets the end character for this character range.
+   * </p>
    *
    * @return the end char (inclusive)
    */
@@ -71,7 +79,9 @@ public final class CharRange {
   }
 
   /**
-   * <p> Gets the end character for this character range. </p>
+   * <p>
+   * Gets the end character for this character range.
+   * </p>
    *
    * @return the end char (inclusive)
    */
@@ -81,7 +91,9 @@ public final class CharRange {
 
 
   /**
-   * <p> Gets a string representation of the character range. </p>
+   * <p>
+   * Gets a string representation of the character range.
+   * </p>
    *
    * @return string representation of this range
    */

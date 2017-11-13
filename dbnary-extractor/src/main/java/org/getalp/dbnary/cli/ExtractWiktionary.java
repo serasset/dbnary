@@ -1,7 +1,6 @@
 package org.getalp.dbnary.cli;
 
 import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

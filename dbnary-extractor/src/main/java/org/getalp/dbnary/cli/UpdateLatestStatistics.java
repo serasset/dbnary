@@ -230,7 +230,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
     HelpFormatter formatter = new HelpFormatter();
     String help = "Update Latest statistics based on latest extracts.";
     formatter.printHelp("java -cp /path/to/dbnary.jar "
-            + UpdateLatestStatistics.class.getCanonicalName() + "[OPTIONS]", "With OPTIONS in:",
+        + UpdateLatestStatistics.class.getCanonicalName() + "[OPTIONS]", "With OPTIONS in:",
         options, help, false);
   }
 

@@ -71,8 +71,7 @@ public class WikiText {
 
     Segment offset;
 
-    public void addToken(Token t) {
-    }
+    public void addToken(Token t) {}
 
     public void setEndOffset(int endOffset) {
       this.offset.setEnd(endOffset);
@@ -482,8 +481,7 @@ public class WikiText {
     }
 
     /**
-     * sets the end offset to the given position (should point to the first char of the closing
-     * "]")
+     * sets the end offset to the given position (should point to the first char of the closing "]")
      *
      * @param position the position of the first character of the enclosing "]"
      */
@@ -561,8 +559,7 @@ public class WikiText {
     }
 
     /**
-     * sets the end offset to the given position (should point to the first char of the closing
-     * "]")
+     * sets the end offset to the given position (should point to the first char of the closing "]")
      *
      * @param position the position of the first character of the enclosing "]"
      */
@@ -845,8 +842,7 @@ public class WikiText {
   }
 
   /**
-   * Return the height of the highest template that may be closed (other tokens may be closed
-   * before
+   * Return the height of the highest template that may be closed (other tokens may be closed before
    */
   private int findHighestClosableTemplate(Stack<Token> stack) {
     for (int i = stack.size() - 1; i > 0; i--) {

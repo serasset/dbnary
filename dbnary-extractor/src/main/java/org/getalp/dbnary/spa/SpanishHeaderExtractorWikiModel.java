@@ -37,7 +37,7 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
   }
 
 
-  String[] pronunciationVariants = new String[]{"s", "c", "ll", "y", "yc", "ys", "lls", "llc"};
+  String[] pronunciationVariants = new String[] {"s", "c", "ll", "y", "yc", "ys", "lls", "llc"};
 
 
   private boolean isApi(String s) {

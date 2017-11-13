@@ -19,8 +19,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
      * mots du swedois
      */
     // swedois
-    posAndTypeValueMap
-        .put("Substantiv", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry)); // fait
+    posAndTypeValueMap.put("Substantiv", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry)); // fait
     posAndTypeValueMap.put("Proper noun",
         new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Proper Noun",
@@ -28,12 +27,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     posAndTypeValueMap.put("Adjektiv",
         new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry)); // fait
-    posAndTypeValueMap
-        .put("Verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry)); // fait
-    posAndTypeValueMap
-        .put("Adverb", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry)); // fait
-    posAndTypeValueMap
-        .put("Artikel", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article)); // fait
+    posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry)); // fait
+    posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry)); // fait
+    posAndTypeValueMap.put("Artikel", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article)); // fait
     posAndTypeValueMap.put("Konjunktion",
         new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction)); // fait
     posAndTypeValueMap.put("Determiner",
@@ -55,8 +51,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Prepositional phrase",
         new PosAndType(null, OntolexOnt.MultiWordExpression));
 
-    posAndTypeValueMap
-        .put("Pronomen", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun)); // fait
+    posAndTypeValueMap.put("Pronomen", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun)); // fait
     posAndTypeValueMap.put("Symbol", new PosAndType(LexinfoOnt.symbol, LexinfoOnt.Symbol));
 
     posAndTypeValueMap.put("Prefix", new PosAndType(LexinfoOnt.prefix, LexinfoOnt.Prefix));

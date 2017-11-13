@@ -230,14 +230,14 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
       Node title = parent;
 
-      while (title != null && ! "h3".equals(title.getNodeName().toLowerCase())) {
+      while (title != null && !"h3".equals(title.getNodeName().toLowerCase())) {
         title = title.getPreviousSibling();
       }
 
       if (title == null) {
         title = parent.getParentNode();
 
-        while (title != null && ! "h3".equals(title.getNodeName().toLowerCase())) {
+        while (title != null && !"h3".equals(title.getNodeName().toLowerCase())) {
           title = title.getPreviousSibling();
         }
 

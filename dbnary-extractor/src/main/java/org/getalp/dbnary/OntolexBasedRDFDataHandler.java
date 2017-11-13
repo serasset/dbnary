@@ -208,7 +208,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   public Resource getLexEntry(String languageCode, String pageName, String pos, int defNumber) {
     // FIXME this doesn't use its languageCode parameter
     return getLexEntry(getEncodedPageName(pageName, pos, defNumber), OntolexOnt.LexicalEntry
-        // typeResource(pos)
+    // typeResource(pos)
     );
   }
 
@@ -614,8 +614,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       SimpleImmutableEntry<String, String> key =
           new SimpleImmutableEntry<String, String>(canonicalForm, pos);
 
-      HashSet<HashSet<PropertyObjectPair>> otherForms = heldBackOtherForms
-          .computeIfAbsent(key, k -> new HashSet<HashSet<PropertyObjectPair>>());
+      HashSet<HashSet<PropertyObjectPair>> otherForms =
+          heldBackOtherForms.computeIfAbsent(key, k -> new HashSet<HashSet<PropertyObjectPair>>());
 
       otherForms.add(props);
     } else {

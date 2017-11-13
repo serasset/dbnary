@@ -45,18 +45,21 @@ public interface IWiktionaryDataHandler {
   // requirements.
 
   /**
-   * Register definition def for the current lexical entry. <p> This method will compute a sense
-   * number based on the rank of the definition in the entry. <p> It is equivalent to
-   * registerNewDefinition(def, 1);
+   * Register definition def for the current lexical entry.
+   * <p>
+   * This method will compute a sense number based on the rank of the definition in the entry.
+   * <p>
+   * It is equivalent to registerNewDefinition(def, 1);
    *
    * @param def a string
    */
   void registerNewDefinition(String def);
 
   /**
-   * Register definition def for the current lexical entry. <p> This method will compute a sense
-   * number based on the rank of the definition in the entry, taking into account the level of the
-   * definition. 1, 1a, 1b, 1c, 2, etc.
+   * Register definition def for the current lexical entry.
+   * <p>
+   * This method will compute a sense number based on the rank of the definition in the entry,
+   * taking into account the level of the definition. 1, 1a, 1b, 1c, 2, etc.
    *
    * @param def the definition string
    * @param lvl an integer giving the level of the definition (1 or 2).
@@ -74,8 +77,9 @@ public interface IWiktionaryDataHandler {
 
 
   /**
-   * Register definition def for the current lexical entry. <p> This method will use senseNumber as
-   * a sense number for this definition.
+   * Register definition def for the current lexical entry.
+   * <p>
+   * This method will use senseNumber as a sense number for this definition.
    *
    * @param def the definition string
    * @param senseNumber a string giving the sense number of the definition.

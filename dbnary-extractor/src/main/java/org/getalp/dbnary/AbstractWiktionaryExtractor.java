@@ -215,12 +215,12 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   // DONE: Extract lemma AND OCCURENCE of links in non human readable form
 
   /**
-   * cleans up the wiktionary markup from a string in the following manner: <br> str is the string
-   * to be cleaned up. the result depends on the value of humanReadable. Wiktionary macros are
-   * always discarded. xml/xhtml comments are always discarded. Wiktionary links are modified
-   * depending on the value of humanReadable. e.g. str = "{{a Macro}} will be [[discard]]ed and
-   * [[feed|fed]] to the [[void]]." if humanReadable is true, it will produce: "will be discarded
-   * and fed to the void." if humanReadable is false, it will produce: "will be
+   * cleans up the wiktionary markup from a string in the following manner: <br>
+   * str is the string to be cleaned up. the result depends on the value of humanReadable.
+   * Wiktionary macros are always discarded. xml/xhtml comments are always discarded. Wiktionary
+   * links are modified depending on the value of humanReadable. e.g. str = "{{a Macro}} will be
+   * [[discard]]ed and [[feed|fed]] to the [[void]]." if humanReadable is true, it will produce:
+   * "will be discarded and fed to the void." if humanReadable is false, it will produce: "will be
    * #{discard|discarded}# and #{feed|fed}# to the #{void|void}#."
    *
    * @param str is the String to be cleaned up

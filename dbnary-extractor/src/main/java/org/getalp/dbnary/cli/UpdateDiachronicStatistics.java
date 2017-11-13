@@ -243,7 +243,7 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
     String help = "Update diachronic statistics based on archived extracts."
         + "lang is the language of the archived extracts.";
     formatter.printHelp("java -cp /path/to/dbnary.jar "
-            + UpdateDiachronicStatistics.class.getCanonicalName() + "[OPTIONS] lang",
+        + UpdateDiachronicStatistics.class.getCanonicalName() + "[OPTIONS] lang",
         "With OPTIONS in:", options, help, false);
   }
 

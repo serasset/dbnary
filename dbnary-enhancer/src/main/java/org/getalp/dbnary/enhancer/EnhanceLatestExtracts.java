@@ -1,6 +1,28 @@
 package org.getalp.dbnary.enhancer;
 
-import org.apache.commons.cli.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.util.Map;
+import java.util.TreeMap;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.jena.rdf.model.Model;
@@ -8,13 +30,6 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.getalp.LangTools;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.preprocessing.StatsModule;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class EnhanceLatestExtracts {
 
@@ -190,8 +205,9 @@ public class EnhanceLatestExtracts {
     Path effectiveDir = modelPath.getParent();
 
     String filename = modelPath.getFileName().toString();
-    if (filename.endsWith(".bz2"))
+    if (filename.endsWith(".bz2")) {
       filename = filename.substring(0, filename.length() - 4);
+    }
     outputModelFileName = effectiveDir.resolve(filename.replaceAll("_ontolex", "_enhancement"))
         .normalize().toString();
 
@@ -219,17 +235,17 @@ public class EnhanceLatestExtracts {
       e.printStackTrace();
       return;
     } finally {
-      if (null != outputModelStream)
+      if (null != outputModelStream) {
         try {
           outputModelStream.close();
         } catch (IOException e) {
           e.printStackTrace();
         }
+      }
     }
   }
 
   private void linkToLatest(String lang, Path latestFolder, Path effectiveEnhancement) {
-
 
     if (!effectiveEnhancement.toFile().exists()) {
       System.err.println("Enhanced file " + effectiveEnhancement
@@ -238,8 +254,9 @@ public class EnhanceLatestExtracts {
     }
 
     String latestLinkName = lang + "_dbnary_enhancement.ttl";
-    if (doCompress)
+    if (doCompress) {
       latestLinkName = latestLinkName + ".bz2";
+    }
 
     Path latestFile = latestFolder.resolve(latestLinkName);
     if (Files.exists(latestFile) && !Files.isSymbolicLink(latestFile)) {
@@ -313,7 +330,7 @@ public class EnhanceLatestExtracts {
     HelpFormatter formatter = new HelpFormatter();
     String help = "Update Latest statistics based on latest extracts.";
     formatter.printHelp("java -cp /path/to/dbnary.jar "
-        + EnhanceLatestExtracts.class.getCanonicalName() + "[OPTIONS]", "With OPTIONS in:", options,
+            + EnhanceLatestExtracts.class.getCanonicalName() + "[OPTIONS]", "With OPTIONS in:", options,
         help, false);
   }
 

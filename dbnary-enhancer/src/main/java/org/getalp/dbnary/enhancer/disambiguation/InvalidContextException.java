@@ -3,7 +3,7 @@ package org.getalp.dbnary.enhancer.disambiguation;
 public class InvalidContextException extends Exception {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 6781528336910789591L;
 

@@ -9,6 +9,7 @@ import java.util.List;
  * string using the foreach syntax
  */
 public class CodePointWrapper implements Iterable<Integer> {
+
   CodePointIterator it;
 
   public CodePointWrapper(String str) {

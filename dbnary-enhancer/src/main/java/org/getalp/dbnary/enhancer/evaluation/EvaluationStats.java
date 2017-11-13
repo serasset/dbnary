@@ -45,6 +45,7 @@ public class EvaluationStats {
   }
 
   private class Stat {
+
     private double sumPrec;
     private double sumRecall;
     private int nbReq;
@@ -89,10 +90,10 @@ public class EvaluationStats {
       double numRet = provided.size();
       double numRel = 0;
       for (T c : provided) {
-        if (expected.contains(c))
+        if (expected.contains(c)) {
           numRel++;
+        }
       }
-
 
       if (numExp > 0) {
         sumRecall += numRel / numExp;

@@ -21,8 +21,9 @@ public class BingAPITranslator implements Translator {
       Language s = get2LetterCode(slang);
       Language t = get2LetterCode(tlang);
 
-      if (s != null && t != null)
+      if (s != null && t != null) {
         translatedText = Translate.execute(source, s, t);
+      }
     } catch (Exception e) {
       e.printStackTrace(System.err);
     }

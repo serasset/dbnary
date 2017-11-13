@@ -1,6 +1,7 @@
 package org.getalp.dbnary.enhancer.preprocessing;
 
 public class StructuredGloss {
+
   protected String senseNumber = null;
   protected String gloss = null;
 

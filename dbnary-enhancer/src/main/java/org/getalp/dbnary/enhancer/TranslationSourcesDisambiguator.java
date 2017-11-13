@@ -1,6 +1,13 @@
 package org.getalp.dbnary.enhancer;
 
-import org.apache.jena.rdf.model.*;
+import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.OntolexOnt;
@@ -10,9 +17,6 @@ import org.getalp.dbnary.enhancer.disambiguation.SenseNumberBasedTranslationDisa
 import org.getalp.dbnary.enhancer.disambiguation.TverskyBasedTranslationDisambiguationMethod;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.preprocessing.StatsModule;
-import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.Set;
 
 
 public class TranslationSourcesDisambiguator {
@@ -37,10 +41,12 @@ public class TranslationSourcesDisambiguator {
   protected void processTranslations(Model inputModel, Model outputModel, String lang)
       throws FileNotFoundException {
 
-    if (null != evaluator)
+    if (null != evaluator) {
       evaluator.reset(lang);
-    if (null != stats)
+    }
+    if (null != stats) {
       stats.reset(lang);
+    }
 
     SenseNumberBasedTranslationDisambiguationMethod snumDisamb =
         new SenseNumberBasedTranslationDisambiguationMethod();
@@ -60,8 +66,9 @@ public class TranslationSourcesDisambiguator {
           || lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
           || lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
         try {
-          if (null != stats)
+          if (null != stats) {
             stats.registerTranslation(trans);
+          }
 
           Set<Resource> resSenseNum = snumDisamb.selectWordSenses(lexicalEntry, trans);
 
@@ -70,8 +77,9 @@ public class TranslationSourcesDisambiguator {
           if (null != evaluator || resSenseNum.size() == 0) {
             // disambiguate by similarity
 
-            if (useGlosses)
+            if (useGlosses) {
               resSim = tverskyDisamb.selectWordSenses(lexicalEntry, trans);
+            }
 
             // compute confidence if snumdisamb is not empty and confidence is required
             if (null != evaluator && resSenseNum.size() != 0) {

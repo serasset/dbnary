@@ -1,8 +1,8 @@
 package org.getalp.dbnary.enhancer.similarity.string;
 
 import com.wcohen.ss.AbstractTokenizedStringDistance;
-import org.getalp.dbnary.enhancer.similarity.SimilarityMeasure;
 import java.util.List;
+import org.getalp.dbnary.enhancer.similarity.SimilarityMeasure;
 
 
 public class Level2Sim implements SimilarityMeasure {

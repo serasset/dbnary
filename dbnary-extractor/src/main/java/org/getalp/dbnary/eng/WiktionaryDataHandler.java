@@ -1,263 +1,303 @@
 package org.getalp.dbnary.eng;
 
-import org.apache.jena.rdf.model.*;
-import org.apache.jena.vocabulary.RDF;
-import org.getalp.LangTools;
-import org.getalp.dbnary.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.DatatypeConverter;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Map;
+import javax.xml.bind.DatatypeConverter;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.ReifiedStatement;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
+import org.getalp.LangTools;
+import org.getalp.dbnary.DBnaryOnt;
+import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.OliaOnt;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
+import org.getalp.dbnary.OntolexOnt;
+import org.getalp.dbnary.PronunciationPair;
+import org.getalp.dbnary.PropertyObjectPair;
+import org.getalp.dbnary.SkosOnt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by serasset on 17/09/14, pantaleo
  */
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
-    private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
-    protected String currentEntryLanguage = null;
-    protected String currentEntryLanguageName = null;
-    
-    static {
-        // English
-        posAndTypeValueMap.put("Noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("Proper noun", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("Proper Noun", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+  protected String currentEntryLanguage = null;
+  protected String currentEntryLanguageName = null;
 
-        posAndTypeValueMap.put("Adjective", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
-        posAndTypeValueMap.put("Article", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
-        posAndTypeValueMap.put("Conjunction", new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
-        posAndTypeValueMap.put("Determiner", new PosAndType(LexinfoOnt.determiner, LexinfoOnt.Determiner));
+  static {
+    // English
+    posAndTypeValueMap.put("Noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Proper noun",
+        new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Proper Noun",
+        new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
 
-        posAndTypeValueMap.put("Numeral", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
-        posAndTypeValueMap.put("Cardinal numeral", new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
-        posAndTypeValueMap.put("Cardinal number", new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
+    posAndTypeValueMap.put("Adjective",
+        new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Article", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
+    posAndTypeValueMap.put("Conjunction",
+        new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
+    posAndTypeValueMap.put("Determiner",
+        new PosAndType(LexinfoOnt.determiner, LexinfoOnt.Determiner));
 
-        posAndTypeValueMap.put("Number", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Number));
-        posAndTypeValueMap.put("Particle", new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));
-        posAndTypeValueMap.put("Preposition", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
-        posAndTypeValueMap.put("Postposition", new PosAndType(LexinfoOnt.postposition, LexinfoOnt.Postposition));
+    posAndTypeValueMap.put("Numeral", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
+    posAndTypeValueMap.put("Cardinal numeral",
+        new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
+    posAndTypeValueMap.put("Cardinal number",
+        new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
 
-        posAndTypeValueMap.put("Prepositional phrase", new PosAndType(null, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Number", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Number));
+    posAndTypeValueMap.put("Particle", new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));
+    posAndTypeValueMap.put("Preposition",
+        new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
+    posAndTypeValueMap.put("Postposition",
+        new PosAndType(LexinfoOnt.postposition, LexinfoOnt.Postposition));
 
-        posAndTypeValueMap.put("Pronoun", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
-        posAndTypeValueMap.put("Symbol", new PosAndType(LexinfoOnt.symbol, LexinfoOnt.Symbol));
+    posAndTypeValueMap.put("Prepositional phrase",
+        new PosAndType(null, OntolexOnt.MultiWordExpression));
 
-        posAndTypeValueMap.put("Prefix", new PosAndType(LexinfoOnt.prefix, LexinfoOnt.Prefix));
-        posAndTypeValueMap.put("Suffix", new PosAndType(LexinfoOnt.suffix, LexinfoOnt.Suffix));
-        posAndTypeValueMap.put("Affix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
-        posAndTypeValueMap.put("Infix", new PosAndType(LexinfoOnt.infix, LexinfoOnt.Infix));
-        posAndTypeValueMap.put("Interfix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
-        posAndTypeValueMap.put("Circumfix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
+    posAndTypeValueMap.put("Pronoun", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
+    posAndTypeValueMap.put("Symbol", new PosAndType(LexinfoOnt.symbol, LexinfoOnt.Symbol));
 
-        posAndTypeValueMap.put("Proverb", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
-        posAndTypeValueMap.put("Interjection", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
-        posAndTypeValueMap.put("Phrase", new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
-        posAndTypeValueMap.put("Idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Prefix", new PosAndType(LexinfoOnt.prefix, LexinfoOnt.Prefix));
+    posAndTypeValueMap.put("Suffix", new PosAndType(LexinfoOnt.suffix, LexinfoOnt.Suffix));
+    posAndTypeValueMap.put("Affix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
+    posAndTypeValueMap.put("Infix", new PosAndType(LexinfoOnt.infix, LexinfoOnt.Infix));
+    posAndTypeValueMap.put("Interfix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
+    posAndTypeValueMap.put("Circumfix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
 
-        // Initialism ?
+    posAndTypeValueMap.put("Proverb",
+        new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Interjection",
+        new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
+    posAndTypeValueMap.put("Phrase",
+        new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Idiom",
+        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+
+    // Initialism ?
+  }
+
+  public WiktionaryDataHandler(String lang) {
+    super(lang);
+  }
+
+  @Override
+  public void initializeEntryExtraction(String wiktionaryPageName) {
+    currentEntryLanguage = "en";
+    currentEntryLanguageName = "English";
+    initializeEntryExtraction(wiktionaryPageName, currentEntryLanguage, currentEntryLanguageName);
+  }
+
+  public void initializeEntryExtraction(String wiktionaryPageName, String lang,
+      String languageName) {
+    super.initializeEntryExtraction(wiktionaryPageName);
+  }
+
+  public static boolean isValidPOS(String pos) {
+    return posAndTypeValueMap.containsKey(pos);
+  }
+
+  // TODO : check if we should create the prefixes in the aBox or in the eBox
+  // TODO: getPrefix should never return null. It should return "unknown" if there is no language
+  public String getPrefix(Model box, String lang) {
+    // TODO : lang may be null ?
+    // TODO : what if the
+    if (lang == null) {
+      log.debug("Null input language to function getPrefix.");
+      lang = "unknown";
+    }
+    String code = EnglishLangToCode.threeLettersCode(lang);
+    if (code == null) {
+      code = "unknown";
+    }
+    lang = LangTools.normalize(code);
+    lang = lang.trim();
+    if (lang.equals("eng")) {
+      return super.getPrefix();
+    }
+    Map<String, String> pMap = box.getNsPrefixMap();
+    String pName = lang + "-eng";
+    if (pMap.containsKey(pName)) {
+      return pMap.get(pName);
+    }
+    String tmp = LangTools.normalize(lang);
+    if (tmp != null) {
+      lang = tmp;
+    }
+    String prefix = DBNARY_NS_PREFIX + "/eng/" + lang + "/";
+    box.setNsPrefix(pName, prefix);
+    return prefix;
+  }
+
+
+  @Override
+  public void registerInflection(String languageCode, String pos, String inflection,
+      String canonicalForm, int defNumber, HashSet<PropertyObjectPair> props,
+      HashSet<PronunciationPair> pronunciations) {
+
+    if (pronunciations != null) {
+      for (PronunciationPair pronunciation : pronunciations) {
+        props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation,
+            aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+      }
     }
 
-    public WiktionaryDataHandler(String lang) {
-        super(lang);
+    registerInflection(languageCode, pos, inflection, canonicalForm, defNumber, props);
+  }
+
+  @Override
+  protected void addOtherFormPropertiesToLexicalEntry(Resource lexEntry,
+      HashSet<PropertyObjectPair> properties) {
+    // Do not try to merge new form with an existing compatible one in English.
+    // This would lead to a Past becoming a PastParticiple when registering the past participle
+    // form.
+    Model morphoBox = featureBoxes.get(Feature.MORPHOLOGY);
+
+    if (null == morphoBox) {
+      return;
     }
 
-    @Override
-    public void initializeEntryExtraction(String wiktionaryPageName) {
-	    currentEntryLanguage = "en";
-	    currentEntryLanguageName = "English";
-        initializeEntryExtraction(wiktionaryPageName, currentEntryLanguage, currentEntryLanguageName);
+    lexEntry = lexEntry.inModel(morphoBox);
+
+    String otherFormNodeName = computeOtherFormResourceName(lexEntry, properties);
+    Resource otherForm = morphoBox.createResource(getPrefix() + otherFormNodeName, OntolexOnt.Form);
+    morphoBox.add(lexEntry, OntolexOnt.otherForm, otherForm);
+    mergePropertiesIntoResource(properties, otherForm);
+
+  }
+
+  public void registerInflection(String inflection, String note,
+      HashSet<PropertyObjectPair> props) {
+
+    // Keep it simple for english: register forms on the current lexical entry
+    if (null != note) {
+      PropertyObjectPair p =
+          PropertyObjectPair.get(SkosOnt.note, aBox.createLiteral(note, wktLanguageEdition));
+      props.add(p);
+    }
+    PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep,
+        aBox.createLiteral(inflection, getCurrentEntryLanguage()));
+    props.add(p);
+
+    addOtherFormPropertiesToLexicalEntry(currentLexEntry, props);
+
+  }
+
+  @Override
+  public void registerInflection(String languageCode, String pos, String inflection,
+      String canonicalForm, int defNumber, HashSet<PropertyObjectPair> props) {
+
+    // Keep it simple for english: register forms on the current lexical entry
+    // FIXME: check what is provided when we have different lex entries with the same pos and morph.
+
+    PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep,
+        aBox.createLiteral(inflection, getCurrentEntryLanguage()));
+
+    props.add(p);
+
+    addOtherFormPropertiesToLexicalEntry(currentLexEntry, props);
+
+  }
+
+
+  public void uncountable() {
+    if (currentLexEntry == null) {
+      log.debug("Registering countability on non existant lex entry in  {}",
+          currentWiktionaryPageName);
+      return;
+    }
+    aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasCountability, OliaOnt.Uncountable));
+  }
+
+  public void countable() {
+    if (currentLexEntry == null) {
+      log.debug("Registering countability on non existant lex entry in  {}",
+          currentWiktionaryPageName);
+      return;
+    }
+    aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasCountability, OliaOnt.Countable));
+  }
+
+  public void comparable() {
+    if (currentLexEntry == null) {
+      log.debug("Registering comparativity on non existant lex entry in  {}",
+          currentWiktionaryPageName);
+      return;
+    }
+    // TODO: do we have a mean to say that an adjective is comparable ?
+    // aBox.add(aBox.createStatement(currentLexEntry, OliaOnt., OliaOnt.Uncountable));
+  }
+
+  public void notComparable() {
+    if (currentLexEntry == null) {
+      log.debug("Registering comparativity on non existant lex entry in  {}",
+          currentWiktionaryPageName);
+      return;
+    }
+    // TODO: do we have a mean to say that an adjective is not comparable ?
+    // aBox.add(aBox.createStatement(currentLexEntry, OliaOnt., OliaOnt.Uncountable));
+  }
+
+  public void addInflectionOnCanonicalForm(EnglishInflectionData infl) {
+    this.mergePropertiesIntoResource(infl.toPropertyObjectMap(), currentCanonicalForm);
+  }
+
+  public Resource getGlossForWikisaurus(String id) {
+    return aBox.createResource(getGlossURI(id), DBnaryOnt.Gloss);
+  }
+
+  public String getGlossURI(String id) {
+    return getPrefix() + "__" + wktLanguageEdition + "_gloss_" + id + "_"
+        + uriEncode(currentWiktionaryPageName);
+  }
+
+  public void registerWikisaurusNym(String currentPOS, String currentWS, String currentNym,
+      String s) {
+    if (s.equals(currentWiktionaryPageName)) {
+      return;
+    }
+    if (null == currentNym || "".equals(currentNym.trim())) {
+      log.debug("null nym in Wikisaurus:{}", currentWiktionaryPageName);
+    }
+    Property nymProperty = nymPropertyMap.get(currentNym);
+    if (null == nymProperty) {
+      log.debug("Unknown Nym Property in Wikisaurus:{}", currentNym);
+      return;
     }
 
-    public void initializeEntryExtraction(String wiktionaryPageName, String lang, String languageName){
-        super.initializeEntryExtraction(wiktionaryPageName);
-    }
-    
-    public static boolean isValidPOS(String pos) {
-        return posAndTypeValueMap.containsKey(pos);
-    }
+    Statement nymR = aBox.createStatement(currentMainLexEntry, nymProperty, getPageResource(s));
+    aBox.add(nymR);
 
-    // TODO : check if we should create the prefixes in the aBox or in the eBox
-    // TODO: getPrefix should never return null. It should return "unknown" if there is no language
-    public String getPrefix(Model box, String lang) {
-        // TODO : lang may be null ?
-        // TODO : what if the
-        if (lang == null) {
-            log.debug("Null input language to function getPrefix.");
-            lang = "unknown";
-        }
-        String code = EnglishLangToCode.threeLettersCode(lang);
-        if (code == null) code = "unknown";
-        lang = LangTools.normalize(code);
-        lang = lang.trim();
-        if (lang.equals("eng")) {
-            return super.getPrefix();
-        }
-        Map<String, String> pMap = box.getNsPrefixMap();
-        String pName = lang + "-eng";
-        if (pMap.containsKey(pName)) {
-            return pMap.get(pName);
-        }
-        String tmp = LangTools.normalize(lang);
-        if (tmp != null) {
-            lang = tmp;
-        }
-        String prefix = DBNARY_NS_PREFIX + "/eng/" + lang + "/";
-        box.setNsPrefix(pName, prefix);
-        return prefix;
+    if (currentWS == null && currentPOS == null) {
+      return;
+    }
+    String gloss = currentNym + currentPOS + currentWS;
+    gloss = DatatypeConverter.printBase64Binary(BigInteger.valueOf(gloss.hashCode()).toByteArray())
+        .replaceAll("[/=\\+]", "-");
+    Resource glossResource = getGlossForWikisaurus(gloss);
+    if (null != currentPOS) {
+      aBox.add(
+          aBox.createStatement(glossResource, DBnaryOnt.partOfSpeech, posResource(currentPOS)));
+    }
+    if (null != currentWS) {
+      aBox.add(glossResource, RDF.value, currentWS, getCurrentEntryLanguage());
     }
 
-
-    @Override
-    public void registerInflection(String languageCode,
-                                   String pos,
-                                   String inflection,
-                                   String canonicalForm,
-                                   int defNumber,
-                                   HashSet<PropertyObjectPair> props,
-                                   HashSet<PronunciationPair> pronunciations) {
-
-        if (pronunciations != null) {
-            for (PronunciationPair pronunciation : pronunciations) {
-                props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
-            }
-        }
-
-        registerInflection(languageCode, pos, inflection, canonicalForm, defNumber, props);
+    ReifiedStatement rnymR =
+        nymR.createReifiedStatement(computeNymId(currentNym, uriEncode(currentWiktionaryPageName)));
+    if (glossResource != null) {
+      rnymR.addProperty(DBnaryOnt.gloss, glossResource);
     }
-
-    @Override
-    protected void addOtherFormPropertiesToLexicalEntry(Resource lexEntry, HashSet<PropertyObjectPair> properties) {
-        // Do not try to merge new form with an existing compatible one in English.
-        // This would lead to a Past becoming a PastParticiple when registering the past participle form.
-        Model morphoBox = featureBoxes.get(Feature.MORPHOLOGY);
-
-        if (null == morphoBox) return;
-
-        lexEntry = lexEntry.inModel(morphoBox);
-
-        String otherFormNodeName = computeOtherFormResourceName(lexEntry, properties);
-        Resource otherForm = morphoBox.createResource(getPrefix() + otherFormNodeName, OntolexOnt.Form);
-        morphoBox.add(lexEntry, OntolexOnt.otherForm, otherForm);
-        mergePropertiesIntoResource(properties, otherForm);
-
-    }
-
-    public void registerInflection(String inflection,
-                                   String note,
-                                   HashSet<PropertyObjectPair> props) {
-
-        // Keep it simple for english: register forms on the current lexical entry
-        if (null != note) {
-            PropertyObjectPair p = PropertyObjectPair.get(SkosOnt.note, aBox.createLiteral(note, wktLanguageEdition));
-            props.add(p);
-        }
-        PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, getCurrentEntryLanguage()));
-        props.add(p);
-
-        addOtherFormPropertiesToLexicalEntry(currentLexEntry, props);
-
-    }
-
-    @Override
-    public void registerInflection(String languageCode,
-                                   String pos,
-                                   String inflection,
-                                   String canonicalForm,
-                                   int defNumber,
-                                   HashSet<PropertyObjectPair> props) {
-
-        // Keep it simple for english: register forms on the current lexical entry
-        // FIXME: check what is provided when we have different lex entries with the same pos and morph.
-
-        PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, getCurrentEntryLanguage()));
-
-        props.add(p);
-
-        addOtherFormPropertiesToLexicalEntry(currentLexEntry, props);
-
-    }
-
-
-    public void uncountable() {
-        if (currentLexEntry == null) {
-            log.debug("Registering countability on non existant lex entry in  {}", currentWiktionaryPageName);
-            return;
-        }
-        aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasCountability, OliaOnt.Uncountable));
-    }
-
-    public void countable() {
-        if (currentLexEntry == null) {
-            log.debug("Registering countability on non existant lex entry in  {}", currentWiktionaryPageName);
-            return;
-        }
-        aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasCountability, OliaOnt.Countable));
-    }
-
-    public void comparable() {
-        if (currentLexEntry == null) {
-            log.debug("Registering comparativity on non existant lex entry in  {}", currentWiktionaryPageName);
-            return;
-        }
-        // TODO: do we have a mean to say that an adjective is comparable ?
-        // aBox.add(aBox.createStatement(currentLexEntry, OliaOnt., OliaOnt.Uncountable));
-    }
-
-    public void notComparable() {
-        if (currentLexEntry == null) {
-            log.debug("Registering comparativity on non existant lex entry in  {}", currentWiktionaryPageName);
-            return;
-        }
-        // TODO: do we have a mean to say that an adjective is not comparable ?
-        // aBox.add(aBox.createStatement(currentLexEntry, OliaOnt., OliaOnt.Uncountable));
-    }
-
-    public void addInflectionOnCanonicalForm(EnglishInflectionData infl) {
-        this.mergePropertiesIntoResource(infl.toPropertyObjectMap(), currentCanonicalForm);
-    }
-
-    public Resource getGlossForWikisaurus(String id) {
-        return aBox.createResource(getGlossURI(id), DBnaryOnt.Gloss);
-    }
-
-    public String getGlossURI(String id) {
-        return getPrefix() + "__" + wktLanguageEdition + "_gloss_" + id + "_" + uriEncode(currentWiktionaryPageName);
-    }
-
-    public void registerWikisaurusNym(String currentPOS, String currentWS, String currentNym, String s) {
-        if (s.equals(currentWiktionaryPageName))
-            return;
-        if (null == currentNym || "".equals(currentNym.trim())) {
-            log.debug("null nym in Wikisaurus:{}", currentWiktionaryPageName);
-        }
-        Property nymProperty = nymPropertyMap.get(currentNym);
-        if (null == nymProperty) {
-            log.debug("Unknown Nym Property in Wikisaurus:{}", currentNym);
-            return;
-        }
-
-        Statement nymR = aBox.createStatement(currentMainLexEntry, nymProperty, getPageResource(s));
-        aBox.add(nymR);
-
-        if (currentWS == null && currentPOS == null)
-            return;
-        String gloss = currentNym + currentPOS + currentWS;
-        gloss = DatatypeConverter.printBase64Binary(BigInteger.valueOf(gloss.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
-        Resource glossResource = getGlossForWikisaurus(gloss);
-        if (null != currentPOS)
-            aBox.add(aBox.createStatement(glossResource, DBnaryOnt.partOfSpeech, posResource(currentPOS)));
-        if (null != currentWS)
-            aBox.add(glossResource, RDF.value, currentWS, getCurrentEntryLanguage());
-
-        ReifiedStatement rnymR = nymR.createReifiedStatement(computeNymId(currentNym, uriEncode(currentWiktionaryPageName)));
-        if (glossResource != null)
-            rnymR.addProperty(DBnaryOnt.gloss, glossResource);
-    }
+  }
 }

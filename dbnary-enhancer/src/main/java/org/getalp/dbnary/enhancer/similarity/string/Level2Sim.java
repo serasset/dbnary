@@ -16,8 +16,8 @@ public class Level2Sim implements SimilarityMeasure {
   @Override
   public double compute(String a, String b) {
 
-    //Level2Levenstein me = new Level2Levenstein();
-    //com.wcohen.ss.Level2Sim me = new com.wcohen.ss.Level2Sim();
+    // Level2Levenstein me = new Level2Levenstein();
+    // com.wcohen.ss.Level2Sim me = new com.wcohen.ss.Level2Sim();
     return distance.score(a, b);
   }
 

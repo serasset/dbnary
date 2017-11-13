@@ -31,9 +31,8 @@ public class EvaluationStats {
 
   public void printStat(String lang, PrintWriter out) {
     Stat lstat = confidenceMap.get(lang);
-    out.format("%s,%.4f,%.4f,%.4f,%.4f,%.4f",
-        lang, lstat.getPrecision(), lstat.getRecall(), lstat.getF1Score(),
-        lstat.getRandomPrec(), lstat.getRandomRecall());
+    out.format("%s,%.4f,%.4f,%.4f,%.4f,%.4f", lang, lstat.getPrecision(), lstat.getRecall(),
+        lstat.getF1Score(), lstat.getRandomPrec(), lstat.getRandomRecall());
   }
 
   public void printConfidenceStats(PrintStream out) {
@@ -114,15 +113,9 @@ public class EvaluationStats {
 
     @Override
     public String toString() {
-      return "Stat{" +
-          "sumPrec=" + sumPrec +
-          ", sumRecall=" + sumRecall +
-          ", nbReq=" + nbReq +
-          ", P=" + getPrecision() +
-          ", R=" + getRecall() +
-          ", randPrec=" + getRandomPrec() +
-          ", randRecall=" + getRandomRecall() +
-          '}';
+      return "Stat{" + "sumPrec=" + sumPrec + ", sumRecall=" + sumRecall + ", nbReq=" + nbReq
+          + ", P=" + getPrecision() + ", R=" + getRecall() + ", randPrec=" + getRandomPrec()
+          + ", randRecall=" + getRandomRecall() + '}';
     }
 
     private double getRandomRecall() {

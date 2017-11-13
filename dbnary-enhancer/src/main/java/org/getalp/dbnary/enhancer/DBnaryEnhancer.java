@@ -54,7 +54,8 @@ public class DBnaryEnhancer {
 
   protected static Options options = null; // Command line op
   protected CommandLine cmd = null; // Command Line arguments
-  protected Map<String, String> languages = new TreeMap<>(); // I want the map to be sorted by language code.
+  protected Map<String, String> languages = new TreeMap<>(); // I want the map to be sorted by
+                                                             // language code.
   protected PrintStream statsOutput = null;
   protected StatsModule stats = null;
   protected String rdfFormat;
@@ -112,8 +113,8 @@ public class DBnaryEnhancer {
         if (filename.endsWith(".bz2")) {
           filename = filename.substring(0, filename.length() - 4);
         }
-        outputModelFileName = dir.resolve(filename.replaceAll("_ontolex", "_enhancement"))
-            .normalize().toString();
+        outputModelFileName =
+            dir.resolve(filename.replaceAll("_ontolex", "_enhancement")).normalize().toString();
       }
     }
 
@@ -122,8 +123,8 @@ public class DBnaryEnhancer {
     try {
       if (doCompress) {
         outputModelFileName = outputModelFileName + ".bz2";
-        outputModelStream = new BZip2CompressorOutputStream(
-            new FileOutputStream(outputModelFileName));
+        outputModelStream =
+            new BZip2CompressorOutputStream(new FileOutputStream(outputModelFileName));
       } else {
         outputModelStream = new FileOutputStream(outputModelFileName);
       }
@@ -151,8 +152,8 @@ public class DBnaryEnhancer {
 
   protected void doit() throws FileNotFoundException {
     // for(String lang: languages) {
-    //    this.computeStatsOnGlosses(lang);
-    //}
+    // this.computeStatsOnGlosses(lang);
+    // }
 
     for (Map.Entry<String, String> langAndFile : languages.entrySet()) {
       String lang = langAndFile.getKey();
@@ -210,13 +211,11 @@ public class DBnaryEnhancer {
 
   protected void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
-    String help =
-        "urlOrFile must point on an RDF model file extracted from wiktionary by DBnary.\n" +
-            "Alternatively specifying a directory will process all files named ??_dbnary_ontolex.ttl in the given dir";
+    String help = "urlOrFile must point on an RDF model file extracted from wiktionary by DBnary.\n"
+        + "Alternatively specifying a directory will process all files named ??_dbnary_ontolex.ttl in the given dir";
     formatter.printHelp(
         "java -cp /path/to/wiktionary.jar org.getalp.dbnary.experiment.DisambiguateTranslationSources [OPTIONS] (urlOrFile ...|DIR)",
-        "With OPTIONS in:", options,
-        help, false);
+        "With OPTIONS in:", options, help, false);
   }
 
   protected void loadArgs(String[] args) {

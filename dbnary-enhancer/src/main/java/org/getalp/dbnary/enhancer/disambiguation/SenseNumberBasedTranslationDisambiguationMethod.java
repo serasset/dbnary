@@ -10,8 +10,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.OntolexOnt;
 
-public class SenseNumberBasedTranslationDisambiguationMethod implements
-    DisambiguationMethod {
+public class SenseNumberBasedTranslationDisambiguationMethod implements DisambiguationMethod {
 
   public static int NUMSN = 0;
 
@@ -20,12 +19,11 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements
   }
 
   @Override
-  public Set<Resource> selectWordSenses(Resource lexicalEntry,
-      Object context) throws InvalidContextException,
-      InvalidEntryException {
-    if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) &&
-        !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word) &&
-        !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
+  public Set<Resource> selectWordSenses(Resource lexicalEntry, Object context)
+      throws InvalidContextException, InvalidEntryException {
+    if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
+        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
+        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
       throw new InvalidEntryException("Expecting an ontolex Lexical Entry.");
     }
     if (context instanceof Resource) {
@@ -33,7 +31,8 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements
       if (!trans.hasProperty(RDF.type, DBnaryOnt.Translation)) {
         throw new InvalidContextException("Expecting a DBnary Translation Resource.");
       }
-      // TODO: the sense number property is not defined for translations... However, it is added by the preprocessing.
+      // TODO: the sense number property is not defined for translations... However, it is added by
+      // the preprocessing.
       Statement gloss = trans.getProperty(DBnaryOnt.gloss);
       if (null != gloss) {
         Statement s = gloss.getObject().asResource().getProperty(DBnaryOnt.senseNumber);
@@ -63,14 +62,13 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements
     return res;
   }
 
-  private void addNumberedWordSenseToResult(Set<Resource> res,
-      Resource lexicalEntry, String n) {
+  private void addNumberedWordSenseToResult(Set<Resource> res, Resource lexicalEntry, String n) {
     StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
     while (senses.hasNext()) {
       Resource sense = senses.next().getResource();
       Statement senseNumStatement = sense.getProperty(DBnaryOnt.senseNumber);
       if (n.equalsIgnoreCase(senseNumStatement.getString())) {
-        //System.err.println(n+" | "+senseNumStatement.getString());
+        // System.err.println(n+" | "+senseNumStatement.getString());
         res.add(sense);
       }
     }

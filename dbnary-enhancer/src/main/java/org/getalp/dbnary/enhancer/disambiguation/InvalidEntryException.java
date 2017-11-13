@@ -18,8 +18,8 @@ public class InvalidEntryException extends Exception {
     super(message, cause);
   }
 
-  public InvalidEntryException(String message, Throwable cause,
-      boolean enableSuppression, boolean writableStackTrace) {
+  public InvalidEntryException(String message, Throwable cause, boolean enableSuppression,
+      boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 

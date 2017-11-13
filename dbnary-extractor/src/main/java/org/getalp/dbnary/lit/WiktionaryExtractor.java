@@ -21,7 +21,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String languageSectionPatternString = "={2}\\s*\\{{2}([^\\}\\|]*)\\}{2}\\s*={2}";
+  protected final static String languageSectionPatternString =
+      "={2}\\s*\\{{2}([^\\}\\|]*)\\}{2}\\s*={2}";
   protected final static String blockPatternString = "={2,4}([^=]*)={2,4}";
   protected final static String posPatternString = "\\{{2}([^\\}]*)\\}{2}";
   protected final static String defPatternString = "#\\s*([^#<]*)\\s*|\\*\\s*([^\\*<]*)\\s*";
@@ -82,8 +83,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private enum Block {
-    NOBLOCK, IGNOREPOS, DEFBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK,
-    RELATEDTERMBLOCK, EXAMPLEBLOCK
+    NOBLOCK, IGNOREPOS, DEFBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK, RELATEDTERMBLOCK, EXAMPLEBLOCK
   }
 
   protected static HashMap<String, Block> blockValue = new HashMap<>();
@@ -91,39 +91,39 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   static {
     blockValue.put("", Block.NOBLOCK);
 
-    blockValue.put("Daiktavardis", Block.DEFBLOCK);    // Noun
-    blockValue.put("Daikto vardis", Block.DEFBLOCK);   // Name of a thing
-    blockValue.put("Veiksmažodis", Block.DEFBLOCK);    // verb
-    blockValue.put("Būdvardis", Block.DEFBLOCK);       // adj
-    blockValue.put("Prieveiksmis", Block.DEFBLOCK);    // adv
+    blockValue.put("Daiktavardis", Block.DEFBLOCK); // Noun
+    blockValue.put("Daikto vardis", Block.DEFBLOCK); // Name of a thing
+    blockValue.put("Veiksmažodis", Block.DEFBLOCK); // verb
+    blockValue.put("Būdvardis", Block.DEFBLOCK); // adj
+    blockValue.put("Prieveiksmis", Block.DEFBLOCK); // adv
     blockValue.put("prieveiksmis", Block.DEFBLOCK);
-    blockValue.put("Dalyvis", Block.DEFBLOCK);         // participle
-    blockValue.put("Pusdalyvis", Block.DEFBLOCK);      // participle
-    blockValue.put("Padalyvis", Block.DEFBLOCK);       // preposition ?
-    blockValue.put("Prielinksnis", Block.DEFBLOCK);    // preposition
+    blockValue.put("Dalyvis", Block.DEFBLOCK); // participle
+    blockValue.put("Pusdalyvis", Block.DEFBLOCK); // participle
+    blockValue.put("Padalyvis", Block.DEFBLOCK); // preposition ?
+    blockValue.put("Prielinksnis", Block.DEFBLOCK); // preposition
     blockValue.put("Žodžių junginys", Block.DEFBLOCK); // phrase
-    blockValue.put("Jungtukas", Block.DEFBLOCK);       // conjunction
-    blockValue.put("Įvardis", Block.DEFBLOCK);         // Pronoun
-    blockValue.put("Skaitvardis", Block.DEFBLOCK);     // numeral
-    blockValue.put("Raidė", Block.DEFBLOCK);           // letter
-    blockValue.put("Santrumpa", Block.DEFBLOCK);       // abbreviation
-    blockValue.put("Dalelytė", Block.DEFBLOCK);        // element
-    blockValue.put("Priešdėlis", Block.DEFBLOCK);      // Prefix
-    blockValue.put("Priesaga", Block.DEFBLOCK);        // Suffix
-    blockValue.put("Jaustukas", Block.DEFBLOCK);       // interjection
-    blockValue.put("Ištiktukas", Block.DEFBLOCK);      // interjection
+    blockValue.put("Jungtukas", Block.DEFBLOCK); // conjunction
+    blockValue.put("Įvardis", Block.DEFBLOCK); // Pronoun
+    blockValue.put("Skaitvardis", Block.DEFBLOCK); // numeral
+    blockValue.put("Raidė", Block.DEFBLOCK); // letter
+    blockValue.put("Santrumpa", Block.DEFBLOCK); // abbreviation
+    blockValue.put("Dalelytė", Block.DEFBLOCK); // element
+    blockValue.put("Priešdėlis", Block.DEFBLOCK); // Prefix
+    blockValue.put("Priesaga", Block.DEFBLOCK); // Suffix
+    blockValue.put("Jaustukas", Block.DEFBLOCK); // interjection
+    blockValue.put("Ištiktukas", Block.DEFBLOCK); // interjection
     blockValue.put("Kiekinis skaitvardis", Block.DEFBLOCK); // cardinal
     blockValue.put("\"Kiekinis skaitvardis\"", Block.DEFBLOCK); // cardinal
     blockValue.put("Kelintinis skaitvardis", Block.DEFBLOCK); // ordinal number
-    blockValue.put("Simbolis", Block.DEFBLOCK);         // symbol
+    blockValue.put("Simbolis", Block.DEFBLOCK); // symbol
 
     blockValue.put("Tarimas", Block.PRONBLOCK);
 
-    blockValue.put("Sinonimai", Block.NYMBLOCK);     // syn
-    blockValue.put("Hipersąvokos", Block.NYMBLOCK);  // syn
-    blockValue.put("Subsąvokos", Block.NYMBLOCK);    // syn
-    blockValue.put("Supersąvokos", Block.NYMBLOCK);  // syn
-    blockValue.put("Antonimai", Block.NYMBLOCK);     // ant
+    blockValue.put("Sinonimai", Block.NYMBLOCK); // syn
+    blockValue.put("Hipersąvokos", Block.NYMBLOCK); // syn
+    blockValue.put("Subsąvokos", Block.NYMBLOCK); // syn
+    blockValue.put("Supersąvokos", Block.NYMBLOCK); // syn
+    blockValue.put("Antonimai", Block.NYMBLOCK); // ant
 
     blockValue.put("Susiję terminai", Block.RELATEDTERMBLOCK);
 
@@ -181,7 +181,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (lang.equals("ltv")) {
       wdh.initializeEntryExtraction(wiktionaryPageName);
     } else {
-      //log.debug("Unused lang {} --in-- {}", lang, this.wiktionaryPageName);
+      // log.debug("Unused lang {} --in-- {}", lang, this.wiktionaryPageName);
       return;
       // wdh.initializeEntryExtraction(wiktionaryPageName, lang);
     }
@@ -284,8 +284,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (!tmp.equals("")) {
         if (tmp.contains("Pvz.")) {
           String def = tmp.substring(0, tmp.indexOf("Pvz.")).replaceAll("\'", "").trim();
-          String ex = tmp.substring(tmp.indexOf("Pvz.") + 4, tmp.length() - 1).replaceAll("\'", "")
-              .trim();
+          String ex =
+              tmp.substring(tmp.indexOf("Pvz.") + 4, tmp.length() - 1).replaceAll("\'", "").trim();
           wdh.registerNewDefinition(cleanUpMarkup(def), "" + senseNum);
           wdh.registerExample(ex, new HashMap<Property, String>());
           senseNum++;
@@ -351,9 +351,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (c != null) {
               parseTrans(c);
             }
-          } else if (!tTrad[0].contains("1") &&
-              !tTrad[0].contains("2") &&
-              !tTrad[0].contains("3")) {
+          } else if (!tTrad[0].contains("1") && !tTrad[0].contains("2")
+              && !tTrad[0].contains("3")) {
             log.debug("Unknown Trad value {} --in-- {}", tTrad[0], wdh.currentLexEntry());
           }
       }

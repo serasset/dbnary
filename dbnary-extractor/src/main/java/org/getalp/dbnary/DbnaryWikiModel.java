@@ -41,65 +41,41 @@ public class DbnaryWikiModel extends WikiModel {
   private static DocumentBuilder docBuilder = null;
   private static InputSource docSource = null;
 
-	
-	/* @Override
-    public void addCategory(String categoryName, String sortKey) {
-		System.err.println("Called addCategory : " + categoryName);
-		super.addCategory(categoryName, sortKey);
-	}
 
-	@Override
-	public void addLink(String topicName) {
-		System.err.println("Called addLink: " + topicName);
-		super.addLink(topicName);
-	}
-
-	@Override
-	public boolean addSemanticAttribute(String attribute, String attributeValue) {
-		System.err.println("Called addSemanticAttribute : " + attribute);
-		return super.addSemanticAttribute(attribute, attributeValue);
-	}
-
-	@Override
-	public boolean addSemanticRelation(String relation, String relationValue) {
-		System.err.println("Called addSemanticRelation");
-		return super.addSemanticRelation(relation, relationValue);
-	}
-
-	@Override
-	public void addTemplate(String template) {
-		System.err.println("Called addTemplate: " + template);
-		super.addTemplate(template);
-	}
-
-	@Override
-	public void appendInternalLink(String topic, String hashSection,
-			String topicDescription, String cssClass, boolean parseRecursive) {
-		System.err.println("Called appendInternalLink: " + topic + "#" + hashSection);
-		super.appendInternalLink(topic, hashSection, topicDescription, cssClass,
-				parseRecursive);
-	}
-
-
-	@Override
-	public void parseInternalImageLink(String imageNamespace,
-			String rawImageLink) {
-		System.err.println("Called parseInternalImageLink");
-		super.parseInternalImageLink(imageNamespace, rawImageLink);
-	}
-
-	@Override
-	public boolean replaceColon() {
-		System.err.println("Called replaceColon");
-		return super.replaceColon();
-	}
-
-	@Override
-	public void setUp() {
-		System.err.println("Called setUp");
-		super.setUp();
-	}
-*/
+  /*
+   * @Override public void addCategory(String categoryName, String sortKey) {
+   * System.err.println("Called addCategory : " + categoryName); super.addCategory(categoryName,
+   * sortKey); }
+   * 
+   * @Override public void addLink(String topicName) { System.err.println("Called addLink: " +
+   * topicName); super.addLink(topicName); }
+   * 
+   * @Override public boolean addSemanticAttribute(String attribute, String attributeValue) {
+   * System.err.println("Called addSemanticAttribute : " + attribute); return
+   * super.addSemanticAttribute(attribute, attributeValue); }
+   * 
+   * @Override public boolean addSemanticRelation(String relation, String relationValue) {
+   * System.err.println("Called addSemanticRelation"); return super.addSemanticRelation(relation,
+   * relationValue); }
+   * 
+   * @Override public void addTemplate(String template) { System.err.println("Called addTemplate: "
+   * + template); super.addTemplate(template); }
+   * 
+   * @Override public void appendInternalLink(String topic, String hashSection, String
+   * topicDescription, String cssClass, boolean parseRecursive) {
+   * System.err.println("Called appendInternalLink: " + topic + "#" + hashSection);
+   * super.appendInternalLink(topic, hashSection, topicDescription, cssClass, parseRecursive); }
+   * 
+   * 
+   * @Override public void parseInternalImageLink(String imageNamespace, String rawImageLink) {
+   * System.err.println("Called parseInternalImageLink");
+   * super.parseInternalImageLink(imageNamespace, rawImageLink); }
+   * 
+   * @Override public boolean replaceColon() { System.err.println("Called replaceColon"); return
+   * super.replaceColon(); }
+   * 
+   * @Override public void setUp() { System.err.println("Called setUp"); super.setUp(); }
+   */
 
   // get the DOM representation of the HTML code corresponding
   // to the wikicode given in arguments
@@ -158,9 +134,9 @@ public class DbnaryWikiModel extends WikiModel {
 
     // Fix a bug in some wiktionary where a lua script import "Module:page" by specifying
     // the namepace, while the wiktionary edition uses a localized namespace.
-    if (parsedPagename.namespace.isType(INamespace.NamespaceCode.MODULE_NAMESPACE_KEY) &&
-        (parsedPagename.pagename.startsWith("Module:") || parsedPagename.pagename
-            .startsWith("module:"))) {
+    if (parsedPagename.namespace.isType(INamespace.NamespaceCode.MODULE_NAMESPACE_KEY)
+        && (parsedPagename.pagename.startsWith("Module:")
+            || parsedPagename.pagename.startsWith("module:"))) {
       parsedPagename = new ParsedPageName(parsedPagename.namespace,
           parsedPagename.pagename.substring(7), parsedPagename.valid);
     }
@@ -173,8 +149,8 @@ public class DbnaryWikiModel extends WikiModel {
         rawText = prepareForTransclusion(rawText);
       }
       String name;
-      if (null == rawText && !(name = parsedPagename.pagename.trim())
-          .equals(parsedPagename.pagename)) {
+      if (null == rawText
+          && !(name = parsedPagename.pagename.trim()).equals(parsedPagename.pagename)) {
         rawText = wi.getTextOfPageWithRedirects(parsedPagename.namespace + ":" + name);
         if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)) {
           rawText = prepareForTransclusion(rawText);
@@ -208,18 +184,17 @@ public class DbnaryWikiModel extends WikiModel {
     if (-1 != onlyIncludeOffset) {
       int onlyIncludeEndOffset = rawWikiText.indexOf("</onlyinclude>", onlyIncludeOffset);
       if (-1 != onlyIncludeEndOffset) {
-        return rawWikiText
-            .substring(onlyIncludeOffset + "<onlyinclude>".length(), onlyIncludeEndOffset);
+        return rawWikiText.substring(onlyIncludeOffset + "<onlyinclude>".length(),
+            onlyIncludeEndOffset);
       }
     }
     int includeOnlyOffset = rawWikiText.indexOf("<includeonly>");
     if (-1 != includeOnlyOffset) {
       int includeOnlyEndOffset = rawWikiText.indexOf("</includeonly>", noIncludeOffset);
       if (-1 != includeOnlyEndOffset) {
-        String removeTags = new StringBuffer()
-            .append(rawWikiText.substring(0, includeOnlyOffset))
-            .append(rawWikiText
-                .substring(includeOnlyOffset + "<includeonly>".length(), includeOnlyEndOffset))
+        String removeTags = new StringBuffer().append(rawWikiText.substring(0, includeOnlyOffset))
+            .append(rawWikiText.substring(includeOnlyOffset + "<includeonly>".length(),
+                includeOnlyEndOffset))
             .append(rawWikiText.substring(includeOnlyEndOffset + "</includeonly>".length()))
             .toString();
         return prepareForTransclusion(removeTags);

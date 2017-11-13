@@ -32,7 +32,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
 
   private HashSet<PropertyObjectPair> inflections;
 
-  //	private boolean reflexiv=false;
+  // private boolean reflexiv=false;
   static {
     germanRegularVerbPattern = Pattern.compile(germanRegularVerbString);
     germanNonRegularVerbPattern = Pattern.compile(germanNonRegularVerbString);
@@ -50,33 +50,48 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
   }
 
 
-  private enum Genre {MASCULIN, FEMININ, NEUTRUM, NOTHING}
+  private enum Genre {
+    MASCULIN, FEMININ, NEUTRUM, NOTHING
+  }
 
   ;
 
-  private enum Cas {NOMINATIF, GENITIF, DATIF, ACCUSATIF, NOTHING}
+  private enum Cas {
+    NOMINATIF, GENITIF, DATIF, ACCUSATIF, NOTHING
+  }
 
   ;
 
-  private enum Mode {PARTICIPS, IMPERATIV, INDICATIV, SUBJONCTIVE, NOTHING}
+  private enum Mode {
+    PARTICIPS, IMPERATIV, INDICATIV, SUBJONCTIVE, NOTHING
+  }
 
   ;
 
-  private enum Tense {PRESENT, PAST, NOTHING}
+  private enum Tense {
+    PRESENT, PAST, NOTHING
+  }
 
   ;
 
-  private enum Degree {POSITIVE, COMPARATIVE, SUPERLATIVE, NOTHING}
+  private enum Degree {
+    POSITIVE, COMPARATIVE, SUPERLATIVE, NOTHING
+  }
 
   ;
 
-  private enum Number {SINGULAR, PLURAL, NOTHING}
+  private enum Number {
+    SINGULAR, PLURAL, NOTHING
+  }
 
   ;
 
-  private enum Person {FIRST, SECOND, THIRD, NOTHING}
+  private enum Person {
+    FIRST, SECOND, THIRD, NOTHING
+  }
 
   ;
+
   private Degree degree = Degree.NOTHING;
   private Mode mode = Mode.NOTHING;
   private Tense tense = Tense.NOTHING;
@@ -105,7 +120,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
     // Render the conjugation to html, while ignoring the example template
     Matcher mr = germanRegularVerbPattern.matcher(conjugationTemplateCall);
     Matcher mu = germanNonRegularVerbPattern.matcher(conjugationTemplateCall);
-    //FIXME : check for reflexiv Verbs and adapt ConjTable
+    // FIXME : check for reflexiv Verbs and adapt ConjTable
 
     if (conjugationTemplateCall.indexOf("reflexiv") != -1) {
       conjugationTemplateCall.replace("reflexiv", "");
@@ -122,19 +137,19 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
     Element tablesItem = (Element) tables.item(3);
     mode = Mode.NOTHING;
     if (mr.find()) {
-//			System.out.println("regelmäßig");
+      // System.out.println("regelmäßig");
       tense = Tense.PRESENT;
       getTablesConj(tablesItem, 2, 1);
       tense = Tense.PAST;
       getTablesConj(tablesItem, 11, 1);
     } else if (mu.find()) {
-//			System.out.println("unregelmäßig");			
+      // System.out.println("unregelmäßig");
       tense = Tense.PRESENT;
       getTablesConj(tablesItem, 3, 2);
       tense = Tense.PAST;
       getTablesConj(tablesItem, 13, 2);
     } else {
-//			System.out.println("anderen Type");
+      // System.out.println("anderen Type");
       tense = Tense.PRESENT;
       getTablesConj(tablesItem, 3, 2);
       tense = Tense.PAST;
@@ -148,7 +163,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
     mode = Mode.IMPERATIV;
     tablesItem = (Element) tables.item(2);
     getTablesConj(tablesItem, 2, 1);
-//		getTablesConj(tablesItem,2,1,5,2);
+    // getTablesConj(tablesItem,2,1,5,2);
 
   }
 
@@ -161,8 +176,9 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
     for (int i = 0; i < tables.getLength(); i++) {
       degree = Degree.values()[i % 3];
       Element tablesItem = (Element) tables.item(i);
-      int iEnd = (tablesItem.getElementsByTagName("tr") != null) ?
-          tablesItem.getElementsByTagName("tr").getLength() - 4 : 0;
+      int iEnd = (tablesItem.getElementsByTagName("tr") != null)
+          ? tablesItem.getElementsByTagName("tr").getLength() - 4
+          : 0;
       getTablesDeclination(tablesItem, iEnd);
     }
   }
@@ -222,7 +238,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
           }
         }
       }
-      //			}
+      // }
     }
   }
 
@@ -236,7 +252,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
   private String part = "";
 
   private void getTablesConj(Element tablesItem, int iBegin, int jBegin, int iEnd, int jEnd) {
-    boolean change = false;    //this bool changes if the current verb is a phrasal verb
+    boolean change = false; // this bool changes if the current verb is a phrasal verb
     if (null != tablesItem) {
       NodeList someTRs = tablesItem.getElementsByTagName("tr");
       for (int i = iBegin; i < iEnd; i++) {
@@ -252,14 +268,18 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
                 String name = itemsList.item(e).getNodeName();
                 if (name.equals("#text")) {
                   String form = itemsList.item(e).getTextContent();
-                  form = removeUselessSpaces(form.replaceAll("\\<.*\\>", "")
-                      .replace("—", ""));//remove insecable spaces and </noinclude> markup
+                  form = removeUselessSpaces(form.replaceAll("\\<.*\\>", "").replace("—", ""));// remove
+                  // insecable
+                  // spaces
+                  // and
+                  // </noinclude>
+                  // markup
                   if (!form.isEmpty() && !form.contains("Pers.")) {
                     // for verbs like ankommen : ich komme an
                     if (!change && isPhrasalVerb(form)) {
                       part = extractPart(form);
                       if (!part.isEmpty()) {
-//												System.out.println("phrasal");
+                        // System.out.println("phrasal");
                         change = true;
                         isPhrasal = true;
                         iBegin = iBegin + 1;
@@ -296,11 +316,11 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
                       }
                     }
 
-//										System.out.println("i : "+i+" j : "+j+"  form : "+form);
+                    // System.out.println("i : "+i+" j : "+j+" form : "+form);
                     form = (form.replace("\n", "")).replace(",", "");
                     if (!form.replace(" ", "").isEmpty()) {
                       addInflectionsInfo();
-//											System.out.println(form);
+                      // System.out.println(form);
                       addVerbForm(form);
                     }
                   }
@@ -314,9 +334,9 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
   }
 
   private void getTablesDeclination(Element tablesItem) {
-    int iEnd =
-        (tablesItem.getElementsByTagName("tr") != null) ? tablesItem.getElementsByTagName("tr")
-            .getLength() : 0;
+    int iEnd = (tablesItem.getElementsByTagName("tr") != null)
+        ? tablesItem.getElementsByTagName("tr").getLength()
+        : 0;
     getTablesDeclination(tablesItem, iEnd);
   }
 
@@ -324,12 +344,12 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
   private void getTablesDeclination(Element tablesItem, int iEnd) {
     int nb = 0;
     if (null != tablesItem) {
-      NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
+      NodeList someTRs = tablesItem.getElementsByTagName("tr");// list of line Elements
       if (null != someTRs) {
         for (int i = 0; i < iEnd; i++) {
           Element trItem = (Element) someTRs.item(i);
           if (null != trItem) {
-            NodeList someTD = trItem.getElementsByTagName("td");//list of cols Elements
+            NodeList someTD = trItem.getElementsByTagName("td");// list of cols Elements
             for (int j = 0; j < someTD.getLength(); j++) {
               if (1 == (j % 2)) {
                 Element tdItem = (Element) someTD.item(j);
@@ -342,8 +362,10 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
                     String form = tdContent.item(k).getTextContent();
                     if (!form.isEmpty()) {
                       int nbsp = nbSpaceForm(form);
-//											System.out.println("i : "+i+" j : "+j+" k : "+k+" form : "+form+" i%4 : "+i%4+" j/2 : "+j/2);
-//											form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*", ""));
+                      // System.out.println("i : "+i+" j : "+j+" k : "+k+" form : "+form+" i%4 :
+                      // "+i%4+" j/2 : "+j/2);
+                      // form=removeUselessSpaces(form.replaceAll("(\\<.*\\>|(\\(.*\\)))*(—|-|\\}|\\{)*",
+                      // ""));
                       form = removeUselessSpaces(
                           form.replaceAll("(\\<.*\\>|\\».*\\«|(—|-|\\}|\\{))*", ""));
                       if (3 > nbsp) {
@@ -380,12 +402,12 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
 
   private void getTablesOtherForm(Element tablesItem) {
     if (null != tablesItem) {
-      NodeList someTRs = tablesItem.getElementsByTagName("tr");//list of line Elements
+      NodeList someTRs = tablesItem.getElementsByTagName("tr");// list of line Elements
       if (null != someTRs) {
         for (int i = 0; i < someTRs.getLength(); i++) {
           Element trItem = (Element) someTRs.item(i);
           if (null != trItem) {
-            NodeList someTD = trItem.getElementsByTagName("td");//list of cols Elements
+            NodeList someTD = trItem.getElementsByTagName("td");// list of cols Elements
             for (int j = 0; j < someTD.getLength(); j++) {
               initializeExclusiveInflectionInfo();
               Element tdItem = (Element) someTD.item(j);
@@ -401,9 +423,9 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
                       if (0 != nbsp) {
                         form = form.substring(form.lastIndexOf(" ") + 1);
                       }
-                      //TODO change condition i-isOtherForm for Unbekannter word
-                      if ((someTD.getLength() - 1) != j && (form.equals(wdh.currentLexEntry())
-                          || (i - isOtherForm) <= 0)) {
+                      // TODO change condition i-isOtherForm for Unbekannter word
+                      if ((someTD.getLength() - 1) != j
+                          && (form.equals(wdh.currentLexEntry()) || (i - isOtherForm) <= 0)) {
                         isOtherForm = i;
                       }
                       if (j % 2 == 0) {
@@ -434,13 +456,13 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
 
   private void addForm(String s) {
     s = s.replace("]", "").replace("[", "").replaceAll(".*\\) *", "").replace("(", "");
-//		System.out.println("form : "+s);
+    // System.out.println("form : "+s);
     wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 1,
         inflections);
-//		wdh.registerOtherForm(s);
+    // wdh.registerOtherForm(s);
   }
 
-  //comp Verb
+  // comp Verb
   private void addVerbForm(String s) {
     if (!s.isEmpty()) {
       int nbsp = nbSpaceForm(s);
@@ -449,7 +471,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
 
       if (!imp) {
         if (!isPhrasal) {
-          //System.out.println("non phrasal");
+          // System.out.println("non phrasal");
           if (1 == nbsp) {
             res = s.substring(s.indexOf(" ") + 1);
 
@@ -457,12 +479,12 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
             res = s;
           }
         } else {
-          //System.out.println("phrasal");
-          //three words subject verb part
+          // System.out.println("phrasal");
+          // three words subject verb part
           if (2 == nbsp && part.equals(s.substring(s.lastIndexOf(" ") + 1))) {
             res = s.substring(s.indexOf(" ") + 1);
           }
-          //two words subject verb or verb + part
+          // two words subject verb or verb + part
           else if (1 == nbsp) {
 
             if (s.substring(s.lastIndexOf(" ") + 1).equals(part)) {
@@ -473,7 +495,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
             }
 
           }
-          //only one word
+          // only one word
           else if (0 == nbsp && !s.equals(part)) {
             res = s;
           }
@@ -481,7 +503,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
       } else {
         if (0 == nbsp || isPhrasal) {
           res = s.replace("!", "");
-//					System.out.println(res);
+          // System.out.println(res);
         } else {
           res = s.substring(0, s.lastIndexOf(" "));
         }
@@ -490,12 +512,12 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
 
         wdh.registerInflection("deu", wdh.currentWiktionaryPos(), res, wdh.currentLexEntry(), 1,
             inflections);
-//				System.out.println("otherForm : "+res);
+        // System.out.println("otherForm : "+res);
       }
     }
   }
 
-  //extract a String in s between start and end
+  // extract a String in s between start and end
   private String extractString(String s, String start, String end) {
     String res;
     int startIndex, endIndex;
@@ -505,7 +527,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
     return res;
   }
 
-  //return the index of pattern in s after start
+  // return the index of pattern in s after start
   private int getIndexOf(String s, String pattern, int start) {
     int ind = s.indexOf(pattern, start);
     if (ind <= start || ind > s.length()) {
@@ -514,7 +536,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
     return ind;
   }
 
-  //for the phrasal verb, extract the part without spaces : example extractPart("ich komme an")->an
+  // for the phrasal verb, extract the part without spaces : example extractPart("ich komme an")->an
   private String extractPart(String form) {
     String res = "";
     int i = form.length() - 1;
@@ -527,11 +549,11 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
     return res;
   }
 
-  //remove spaces before the first form's character and after the last form's character
-  //and the unsecable spaces
+  // remove spaces before the first form's character and after the last form's character
+  // and the unsecable spaces
   private String removeUselessSpaces(String form) {
-    form = form.replace(" ", " ").replace("&nbsp;", " ")
-        .replace("\t", " ");//replace unsecable spaces
+    form = form.replace(" ", " ").replace("&nbsp;", " ").replace("\t", " ");// replace unsecable
+    // spaces
     String res = form.replace("  ", " ");
     if (!res.isEmpty()) {
       int debut = 0, fin = res.length() - 1;
@@ -551,10 +573,10 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
     return res;
   }
 
-  //return if the form given in parameter is a phrasal verb
+  // return if the form given in parameter is a phrasal verb
   private boolean isPhrasalVerb(String form) {
     int nbsp = nbSpaceForm(form);
-//		return ((!reflexiv && nbsp>=2) || (reflexiv && nbsp>=3));
+    // return ((!reflexiv && nbsp>=2) || (reflexiv && nbsp>=3));
     return 2 <= nbsp;
   }
 
@@ -568,10 +590,10 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
     return nbsp;
   }
 
-  //otherway some phrasal verb don't have any inflected form
-//	public String prepareForTransclusion(String rawWikiText) {
-//		return rawWikiText;
-//	}
+  // otherway some phrasal verb don't have any inflected form
+  // public String prepareForTransclusion(String rawWikiText) {
+  // return rawWikiText;
+  // }
 
   private void addInflectionsInfo() {
     switch (degree) {

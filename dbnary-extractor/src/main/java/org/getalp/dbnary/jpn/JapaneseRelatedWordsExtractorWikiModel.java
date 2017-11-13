@@ -43,24 +43,15 @@ public class JapaneseRelatedWordsExtractorWikiModel {
 
   static {
     // les caractères visible
-    carPatternString =
-        new StringBuilder().append("(.)")
-            .toString();
+    carPatternString = new StringBuilder().append("(.)").toString();
 
-    // TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
-    macroOrLinkOrcarPatternString = new StringBuilder()
-        .append("(?:")
-        .append(WikiPatterns.macroPatternString)
-        .append(")|(?:")
-        .append(WikiPatterns.linkPatternString)
-        .append(")|(?:")
-        .append("(:*\\*)")   // sub list
-        .append(")|(?:")
-        .append("^;([^:\\n\\r]*)") // Term definition
-        .append(")|(?:")
-        .append(carPatternString)
-        .append(")")
-        .toString();
+    // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
+    // line.
+    macroOrLinkOrcarPatternString =
+        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
+            .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)") // sub list
+            .append(")|(?:").append("^;([^:\\n\\r]*)") // Term definition
+            .append(")|(?:").append(carPatternString).append(")").toString();
   }
 
   protected final static Pattern macroOrLinkOrcarPattern;
@@ -68,8 +59,8 @@ public class JapaneseRelatedWordsExtractorWikiModel {
 
   static {
     carPattern = Pattern.compile(carPatternString);
-    macroOrLinkOrcarPattern = Pattern
-        .compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
+    macroOrLinkOrcarPattern =
+        Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
   }
 
   protected final static HashMap<String, String> relMarkerToRelName;
@@ -134,16 +125,16 @@ public class JapaneseRelatedWordsExtractorWikiModel {
           } else if (star != null) {
             ETAT = RELATION;
           } else if (term != null) {
-            currentGlose = term;  // TODO: are there any gloss in related terms section ?
+            currentGlose = term; // TODO: are there any gloss in related terms section ?
           } else if (car != null) {
             if (car.equals(":")) {
-              //System.err.println("Skipping ':' while in INIT state.");
+              // System.err.println("Skipping ':' while in INIT state.");
             } else if (car.equals("\n") || car.equals("\r")) {
 
             } else if (car.equals(",")) {
-              //System.err.println("Skipping ',' while in INIT state.");
+              // System.err.println("Skipping ',' while in INIT state.");
             } else {
-              //System.err.println("Skipping " + g5 + " while in INIT state.");
+              // System.err.println("Skipping " + g5 + " while in INIT state.");
             }
           }
 
@@ -153,11 +144,12 @@ public class JapaneseRelatedWordsExtractorWikiModel {
           if (macro != null) {
             currentRelation = macro;
           } else if (link != null) {
-            // We have a link while we try to get a relation. It means that the link poits to a related word for which the relation is not specified.
+            // We have a link while we try to get a relation. It means that the link poits to a
+            // related word for which the relation is not specified.
             // TODO: should we keep these words with an un-specified relation ?
             // System.err.println("Unexpected link: " + link + " while in RELATION state.");
           } else if (star != null) {
-            //System.err.println("Skipping '*' while in LANGUE state.");
+            // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (term != null) {
             currentGlose = term;
             currentRelation = "";
@@ -176,9 +168,9 @@ public class JapaneseRelatedWordsExtractorWikiModel {
               currentRelation = "";
               ETAT = VALUES;
             } else if (car.equals("\n") || car.equals("\r")) {
-              //System.err.println("Skipping newline while in LANGUE state.");
+              // System.err.println("Skipping newline while in LANGUE state.");
             } else if (car.equals(",")) {
-              //System.err.println("Skipping ',' while in LANGUE state.");
+              // System.err.println("Skipping ',' while in LANGUE state.");
             } else {
               currentRelation = currentRelation + car;
             }
@@ -205,7 +197,7 @@ public class JapaneseRelatedWordsExtractorWikiModel {
                   : macroOrLinkOrcarMatcher.group(4));
             }
           } else if (star != null) {
-            //System.err.println("Skipping '*' while in LANGUE state.");
+            // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (term != null) {
             currentGlose = term;
             currentRelation = "";
@@ -216,7 +208,8 @@ public class JapaneseRelatedWordsExtractorWikiModel {
           } else if (car != null) {
             if (car.equals("\n") || car.equals("\r")) {
               usage = usage.trim();
-              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
+              // currentGlose);
               registerRelation(word, currentNym);
               currentNym = null;
               usage = "";
@@ -224,7 +217,8 @@ public class JapaneseRelatedWordsExtractorWikiModel {
               ETAT = INIT;
             } else if (car.equals(",") || car.equals("、")) {
               usage = usage.trim();
-              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
+              // currentGlose);
               registerRelation(word, currentNym);
               usage = "";
               word = "";
@@ -243,7 +237,8 @@ public class JapaneseRelatedWordsExtractorWikiModel {
   }
 
   // NOTE: trans-top is sometimes used.
-  // Sometimes something is given after the {{trans}} macro to represent the entry of the translation, however, it seems to be redundant with the position.
+  // Sometimes something is given after the {{trans}} macro to represent the entry of the
+  // translation, however, it seems to be redundant with the position.
 
 
   private void registerRelation(String word, String currentNym) {

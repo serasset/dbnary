@@ -3,9 +3,8 @@
  */
 package org.getalp.dbnary.ita;
 
-import org.getalp.LangTools;
-
 import java.util.HashMap;
+import org.getalp.LangTools;
 
 /**
  * @author Mariam

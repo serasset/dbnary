@@ -25,12 +25,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // DONE: Validate the fact that links and macro should be on one line or may be on several...
     // DONE: for this, evaluate the difference in extraction !
 
-    sectionPatternString = new StringBuilder()
-        .append("(?:")
-        .append(sectionPatternString1)
-        .append(")|(?:")
-        .append(sectionPatternString2)
-        .append(")").toString();
+    sectionPatternString = new StringBuilder().append("(?:").append(sectionPatternString1)
+        .append(")|(?:").append(sectionPatternString2).append(")").toString();
 
   }
 
@@ -96,9 +92,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private int nymBlockStart = -1;
   private String currentNym = null;
 
-	/* (non-Javadoc)
-     * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
-	 */  // 7630@Override
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
+   * org.getalp.blexisma.semnet.SemanticNetwork)
+   */ // 7630@Override
 
 
   public void extractData() {
@@ -126,17 +125,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizePageExtraction();
   }
 
-  //    private HashSet<String> unsupportedSections = new HashSet<String>(100);
+  // private HashSet<String> unsupportedSections = new HashSet<String>(100);
   void gotoNoData(Matcher m) {
     state = NODATA;
-    //        try {
-    //            if (! unsupportedSections.contains(m.group(1))) {
-    //                unsupportedSections.add(m.group(1));
-    //                System.out.println(m.group(1));
-    //            }
-    //        } catch (IllegalStateException e) {
-    //            // nop
-    //        }
+    // try {
+    // if (! unsupportedSections.contains(m.group(1))) {
+    // unsupportedSections.add(m.group(1));
+    // System.out.println(m.group(1));
+    // }
+    // } catch (IllegalStateException e) {
+    // // nop
+    // }
   }
 
 
@@ -201,7 +200,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractSuomihData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    //System.err.println(pageContent.substring(startOffset,endOffset));
+    // System.err.println(pageContent.substring(startOffset,endOffset));
     wdh.initializeEntryExtraction(wiktionaryPageName);
     gotoNoData(m);
     // WONTDO: should I use a macroOrLink pattern to detect translations that are not macro based ?
@@ -214,37 +213,37 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
       switch (state) {
         case NODATA:
-          if (m.group(1) != null && m.group(1).equals("Käännökset") || (m.group(2) != null && m
-              .group(2).equals("kään"))) {
+          if (m.group(1) != null && m.group(1).equals("Käännökset")
+              || (m.group(2) != null && m.group(2).equals("kään"))) {
             gotoTradBlock(m);
-          } else if ((m.group(1) != null && posMarkers.contains(m.group(1))) || (m.group(2) != null
-              && posMarkers.contains(m.group(2)))) {
+          } else if ((m.group(1) != null && posMarkers.contains(m.group(1)))
+              || (m.group(2) != null && posMarkers.contains(m.group(2)))) {
             gotoDefBlock(m);
-          } else if (m.group(2) != null && (m.group(2).equals("vaiht-kirj") || m.group(2)
-              .equals("vaiht-muo"))) {
+          } else if (m.group(2) != null
+              && (m.group(2).equals("vaiht-kirj") || m.group(2).equals("vaiht-muo"))) {
             gotoOrthoAltBlock(m);
-          } else if ((m.group(1) != null && nymMarkers.contains(m.group(1))) || (m.group(2) != null
-              && nymMarkers.contains(m.group(2)))) {
+          } else if ((m.group(1) != null && nymMarkers.contains(m.group(1)))
+              || (m.group(2) != null && nymMarkers.contains(m.group(2)))) {
             gotoNymBlock(m);
           }
 
           break;
         case DEFBLOCK:
           // Iterate until we find a new section
-          if (m.group(1) != null && m.group(1).equals("Käännökset") || (m.group(2) != null && m
-              .group(2).equals("kään"))) {
+          if (m.group(1) != null && m.group(1).equals("Käännökset")
+              || (m.group(2) != null && m.group(2).equals("kään"))) {
             leaveDefBlock(m);
             gotoTradBlock(m);
-          } else if ((m.group(1) != null && posMarkers.contains(m.group(1))) || (m.group(2) != null
-              && posMarkers.contains(m.group(2)))) {
+          } else if ((m.group(1) != null && posMarkers.contains(m.group(1)))
+              || (m.group(2) != null && posMarkers.contains(m.group(2)))) {
             leaveDefBlock(m);
             gotoDefBlock(m);
-          } else if (m.group(1) != null && (m.group(1).equals("vaiht-kirj") || m.group(1)
-              .equals("vaiht-muo"))) {
+          } else if (m.group(1) != null
+              && (m.group(1).equals("vaiht-kirj") || m.group(1).equals("vaiht-muo"))) {
             leaveDefBlock(m);
             gotoOrthoAltBlock(m);
-          } else if ((m.group(1) != null && nymMarkers.contains(m.group(1))) || (m.group(2) != null
-              && nymMarkers.contains(m.group(2)))) {
+          } else if ((m.group(1) != null && nymMarkers.contains(m.group(1)))
+              || (m.group(2) != null && nymMarkers.contains(m.group(2)))) {
             leaveDefBlock(m);
             gotoNymBlock(m);
           } else {
@@ -253,20 +252,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           }
           break;
         case TRADBLOCK:
-          if (m.group(1) != null && m.group(1).equals("Käännökset") || (m.group(2) != null && m
-              .group(2).equals("kään"))) {
+          if (m.group(1) != null && m.group(1).equals("Käännökset")
+              || (m.group(2) != null && m.group(2).equals("kään"))) {
             leaveTradBlock(m);
             gotoTradBlock(m);
-          } else if ((m.group(1) != null && posMarkers.contains(m.group(1))) || (m.group(2) != null
-              && posMarkers.contains(m.group(2)))) {
+          } else if ((m.group(1) != null && posMarkers.contains(m.group(1)))
+              || (m.group(2) != null && posMarkers.contains(m.group(2)))) {
             leaveTradBlock(m);
             gotoDefBlock(m);
-          } else if (m.group(2) != null && (m.group(2).equals("vaiht-kirj") || m.group(2)
-              .equals("vaiht-muo"))) {
+          } else if (m.group(2) != null
+              && (m.group(2).equals("vaiht-kirj") || m.group(2).equals("vaiht-muo"))) {
             leaveTradBlock(m);
             gotoOrthoAltBlock(m);
-          } else if ((m.group(1) != null && nymMarkers.contains(m.group(1))) || (m.group(2) != null
-              && nymMarkers.contains(m.group(2)))) {
+          } else if ((m.group(1) != null && nymMarkers.contains(m.group(1)))
+              || (m.group(2) != null && nymMarkers.contains(m.group(2)))) {
             leaveTradBlock(m);
             gotoNymBlock(m);
           } else {
@@ -275,20 +274,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           }
           break;
         case ORTHOALTBLOCK:
-          if (m.group(1) != null && m.group(1).equals("Käännökset") || (m.group(2) != null && m
-              .group(2).equals("kään"))) {
+          if (m.group(1) != null && m.group(1).equals("Käännökset")
+              || (m.group(2) != null && m.group(2).equals("kään"))) {
             leaveOrthoAltBlock(m);
             gotoTradBlock(m);
-          } else if ((m.group(1) != null && posMarkers.contains(m.group(1))) || (m.group(2) != null
-              && posMarkers.contains(m.group(2)))) {
+          } else if ((m.group(1) != null && posMarkers.contains(m.group(1)))
+              || (m.group(2) != null && posMarkers.contains(m.group(2)))) {
             leaveOrthoAltBlock(m);
             gotoDefBlock(m);
-          } else if (m.group(2) != null && (m.group(2).equals("vaiht-kirj") || m.group(2)
-              .equals("vaiht-muo"))) {
+          } else if (m.group(2) != null
+              && (m.group(2).equals("vaiht-kirj") || m.group(2).equals("vaiht-muo"))) {
             leaveOrthoAltBlock(m);
             gotoOrthoAltBlock(m);
-          } else if ((m.group(1) != null && nymMarkers.contains(m.group(1))) || (m.group(2) != null
-              && nymMarkers.contains(m.group(2)))) {
+          } else if ((m.group(1) != null && nymMarkers.contains(m.group(1)))
+              || (m.group(2) != null && nymMarkers.contains(m.group(2)))) {
             leaveOrthoAltBlock(m);
             gotoNymBlock(m);
           } else {
@@ -297,20 +296,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           }
           break;
         case NYMBLOCK:
-          if (m.group(1) != null && m.group(1).equals("Käännökset") || (m.group(2) != null && m
-              .group(2).equals("kään"))) {
+          if (m.group(1) != null && m.group(1).equals("Käännökset")
+              || (m.group(2) != null && m.group(2).equals("kään"))) {
             leaveNymBlock(m);
             gotoTradBlock(m);
-          } else if ((m.group(1) != null && posMarkers.contains(m.group(1))) || (m.group(2) != null
-              && posMarkers.contains(m.group(2)))) {
+          } else if ((m.group(1) != null && posMarkers.contains(m.group(1)))
+              || (m.group(2) != null && posMarkers.contains(m.group(2)))) {
             leaveNymBlock(m);
             gotoDefBlock(m);
-          } else if (m.group(2) != null && (m.group(2).equals("vaiht-kirj") || m.group(2)
-              .equals("vaiht-muo"))) {
+          } else if (m.group(2) != null
+              && (m.group(2).equals("vaiht-kirj") || m.group(2).equals("vaiht-muo"))) {
             leaveNymBlock(m);
             gotoOrthoAltBlock(m);
-          } else if ((m.group(1) != null && nymMarkers.contains(m.group(1))) || (m.group(2) != null
-              && nymMarkers.contains(m.group(2)))) {
+          } else if ((m.group(1) != null && nymMarkers.contains(m.group(1)))
+              || (m.group(2) != null && nymMarkers.contains(m.group(2)))) {
             leaveNymBlock(m);
             gotoNymBlock(m);
           } else {

@@ -59,21 +59,15 @@ public abstract class DbnaryCommandLine {
             + " by default.");
     options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign languages");
     options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("extract morphology data.")
-        .hasArg()
-        .withArgName("file")
+        .withDescription("extract morphology data.").hasArg().withArgName("file")
         .create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
     options.addOption(OptionBuilder.withLongOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("extract etymology data.")
-        .hasArg()
-        .withArgName("file")
+        .withDescription("extract etymology data.").hasArg().withArgName("file")
         .create(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION));
     options.addOption(OptionBuilder.withLongOpt(URI_PREFIX_LONG_OPTION)
         .withDescription("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
-        .hasArg()
-        .withArgName("uri")
-        .create(URI_PREFIX_SHORT_OPTION));
+        .hasArg().withArgName("uri").create(URI_PREFIX_SHORT_OPTION));
 
   }
 
@@ -95,9 +89,7 @@ public abstract class DbnaryCommandLine {
     HelpFormatter formatter = new HelpFormatter();
     String help = getHelpText();
     formatter.printHelp("java -cp /path/to/dbnary.jar " + this.getClass().getCanonicalName()
-            + " [OPTIONS] dumpFile entryname ...",
-        "With OPTIONS in:", options,
-        help, false);
+        + " [OPTIONS] dumpFile entryname ...", "With OPTIONS in:", options, help, false);
   }
 
   protected abstract String getHelpText();
@@ -133,9 +125,8 @@ public abstract class DbnaryCommandLine {
     }
 
     if (cmd.hasOption(MODEL_OPTION)) {
-      System.err.println(
-          "WARN: the " + MODEL_OPTION + " option is now deprecated. Forcibly using model: "
-              + DEFAULT_MODEL);
+      System.err.println("WARN: the " + MODEL_OPTION
+          + " option is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
       // model = cmd.getOptionValue(MODEL_OPTION);
     }
     model = model.toUpperCase();
@@ -160,12 +151,9 @@ public abstract class DbnaryCommandLine {
     }
 
     we = null;
-    if (outputFormat.equals("RDF") ||
-        outputFormat.equals("TURTLE") ||
-        outputFormat.equals("NTRIPLE") ||
-        outputFormat.equals("N3") ||
-        outputFormat.equals("TTL") ||
-        outputFormat.equals("RDFABBREV")) {
+    if (outputFormat.equals("RDF") || outputFormat.equals("TURTLE")
+        || outputFormat.equals("NTRIPLE") || outputFormat.equals("N3") || outputFormat.equals("TTL")
+        || outputFormat.equals("RDFABBREV")) {
       if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
         wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language);
       } else {

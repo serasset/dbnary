@@ -26,7 +26,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String posPatternString = "\\{{2}([^\\}]*)\\}{2}\n";
   protected final static String defPatternString = "#\\s*([^:=#]+)";
   protected final static String examplePatternString = "#:\\s*([^=#-]+)|\\*\\s*([^\\*\n]+)";
-  protected final static String tradPatternString = "\\*\\s*\\{*([^:\\}]+)\\}*:\\s*\\[{2}([^\\]]+)\\]{2}|\\{{2}([^\\}]*)[^:]*\\}{2}";
+  protected final static String tradPatternString =
+      "\\*\\s*\\{*([^:\\}]+)\\}*:\\s*\\[{2}([^\\]]+)\\]{2}|\\{{2}([^\\}]*)[^:]*\\}{2}";
   protected final static String nymPatternString = "([^\\[,\\]]+)";
   protected final static String writtenRepPatternString = "([^\\[,\\]]+)";
   protected final static String pronPatternString = "\\{{2}([^\\}]+)\\}{2}";
@@ -78,35 +79,34 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private enum Block {
-    NOBLOCK, IGNOREPOS, DEFBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK,
-    ABBREVIATIONBLOCK, MORPHOBLOCK, WRITTENREP, EXAMPLEBLOCK
+    NOBLOCK, IGNOREPOS, DEFBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK, ABBREVIATIONBLOCK, MORPHOBLOCK, WRITTENREP, EXAMPLEBLOCK
   }
 
   protected static HashMap<String, Block> blockValue = new HashMap<>();
 
   static {
-    blockValue.put("Egennavn", Block.DEFBLOCK);        // Noun
-    blockValue.put("ubstant", Block.DEFBLOCK);         // Noun
-    blockValue.put("ubtant", Block.DEFBLOCK);         // Noun
-    blockValue.put("Fellesnavn", Block.DEFBLOCK);      // Common noun
-    blockValue.put("Verb", Block.DEFBLOCK);            // Verb
-    blockValue.put("Gjerningsord", Block.DEFBLOCK);    // Verb
-    blockValue.put("djektiv", Block.DEFBLOCK);         // Adj
-    blockValue.put("djeltiv", Block.DEFBLOCK);         // Adj
-    blockValue.put("dverb", Block.DEFBLOCK);           // Adv
-    blockValue.put("Tallord", Block.DEFBLOCK);         // Numeral
-    blockValue.put("Pronomen", Block.DEFBLOCK);        // Pronouns
-    blockValue.put("Preposisjon", Block.DEFBLOCK);     // Preposition
-    blockValue.put("Konjunksjon", Block.DEFBLOCK);     // conjunction
-    blockValue.put("Interjeksjon", Block.DEFBLOCK);    // interjection
-    blockValue.put("Suffiks", Block.DEFBLOCK);         // suffix
-    blockValue.put("Prefiks", Block.DEFBLOCK);         // preffix
-    blockValue.put("rtikkel", Block.DEFBLOCK);         // article
-    blockValue.put("Lydord", Block.DEFBLOCK);          //  Onomatopoeia
-    blockValue.put("Determinativ", Block.DEFBLOCK);    //  Determiner
-    blockValue.put("Ordtak", Block.DEFBLOCK);          //  Proverb
-    blockValue.put("Ordspråk", Block.DEFBLOCK);        //  Proverb
-    blockValue.put("Idiom", Block.DEFBLOCK);           //  Idiom
+    blockValue.put("Egennavn", Block.DEFBLOCK); // Noun
+    blockValue.put("ubstant", Block.DEFBLOCK); // Noun
+    blockValue.put("ubtant", Block.DEFBLOCK); // Noun
+    blockValue.put("Fellesnavn", Block.DEFBLOCK); // Common noun
+    blockValue.put("Verb", Block.DEFBLOCK); // Verb
+    blockValue.put("Gjerningsord", Block.DEFBLOCK); // Verb
+    blockValue.put("djektiv", Block.DEFBLOCK); // Adj
+    blockValue.put("djeltiv", Block.DEFBLOCK); // Adj
+    blockValue.put("dverb", Block.DEFBLOCK); // Adv
+    blockValue.put("Tallord", Block.DEFBLOCK); // Numeral
+    blockValue.put("Pronomen", Block.DEFBLOCK); // Pronouns
+    blockValue.put("Preposisjon", Block.DEFBLOCK); // Preposition
+    blockValue.put("Konjunksjon", Block.DEFBLOCK); // conjunction
+    blockValue.put("Interjeksjon", Block.DEFBLOCK); // interjection
+    blockValue.put("Suffiks", Block.DEFBLOCK); // suffix
+    blockValue.put("Prefiks", Block.DEFBLOCK); // preffix
+    blockValue.put("rtikkel", Block.DEFBLOCK); // article
+    blockValue.put("Lydord", Block.DEFBLOCK); // Onomatopoeia
+    blockValue.put("Determinativ", Block.DEFBLOCK); // Determiner
+    blockValue.put("Ordtak", Block.DEFBLOCK); // Proverb
+    blockValue.put("Ordspråk", Block.DEFBLOCK); // Proverb
+    blockValue.put("Idiom", Block.DEFBLOCK); // Idiom
     blockValue.put("ttrykk", Block.DEFBLOCK); // expression
 
     blockValue.put("Eksemp", Block.EXAMPLEBLOCK);
@@ -127,8 +127,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     blockValue.put("Forkortelse", Block.ABBREVIATIONBLOCK);
 
-    blockValue.put("Grammatikk", Block.MORPHOBLOCK);      // grammar
-    blockValue.put("Bøyning", Block.MORPHOBLOCK);      // conjugation
+    blockValue.put("Grammatikk", Block.MORPHOBLOCK); // grammar
+    blockValue.put("Bøyning", Block.MORPHOBLOCK); // conjugation
     blockValue.put("Avledede", Block.MORPHOBLOCK); // derived term
     blockValue.put("Andre former", Block.MORPHOBLOCK); // other term
     blockValue.put("Avløserord", Block.MORPHOBLOCK); // other term
@@ -264,8 +264,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             wdh.registerPronunciation(tmp[1], "no-fonipa");
           }
           break;
-        case "lyd":            // audio file
-        case "audio":          // audio file
+        case "lyd": // audio file
+        case "audio": // audio file
         case "uttale mangler": // missing
         case "uttale  mangler": // missing
         case "Uttale mangler": // missing
@@ -558,8 +558,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case "toppdrive propaganda":
             case "trans-top":
               if (tTrad.length > 1) {
-                currentGloss = wdh
-                    .createGlossResource(glossFilter.extractGlossStructure(tTrad[1]), rank++);
+                currentGloss =
+                    wdh.createGlossResource(glossFilter.extractGlossStructure(tTrad[1]), rank++);
               }
               break;
             case "overs-midt":

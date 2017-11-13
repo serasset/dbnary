@@ -45,8 +45,7 @@ public class FilterProperties {
   static {
     options = new Options();
     options.addOption("h", false, "Prints usage and exits. ");
-    options.addOption(KEEP_PROPERTIES_OPTION, true,
-        "Comma separated list of properties to keep.");
+    options.addOption(KEEP_PROPERTIES_OPTION, true, "Comma separated list of properties to keep.");
     options.addOption(REMOVE_PROPERTIES_OPTION, true,
         "Comma separated list of properties to remove.");
     options.addOption(RDF_FORMAT_OPTION, true,
@@ -120,12 +119,9 @@ public class FilterProperties {
 
     m = ModelFactory.createDefaultModel();
 
-    if (outputFormat.equals("RDF") ||
-        outputFormat.equals("TURTLE") ||
-        outputFormat.equals("NTRIPLE") ||
-        outputFormat.equals("N3") ||
-        outputFormat.equals("TTL") ||
-        outputFormat.equals("RDFABBREV")) {
+    if (outputFormat.equals("RDF") || outputFormat.equals("TURTLE")
+        || outputFormat.equals("NTRIPLE") || outputFormat.equals("N3") || outputFormat.equals("TTL")
+        || outputFormat.equals("RDFABBREV")) {
       if ("-".equals(remainingArgs[0])) {
         if (verbose) {
           System.err.println("Reading extract from stdin.");
@@ -182,8 +178,8 @@ public class FilterProperties {
     List<Statement> toBeRemoved = new LinkedList<Statement>();
     while (resit.hasNext()) {
       Statement s = resit.nextStatement();
-      if ((!removeProperties.isEmpty() && removeProperties.contains(s.getPredicate())) ||
-          (!keepProperties.isEmpty() && !keepProperties.contains(s.getPredicate()))) {
+      if ((!removeProperties.isEmpty() && removeProperties.contains(s.getPredicate()))
+          || (!keepProperties.isEmpty() && !keepProperties.contains(s.getPredicate()))) {
         toBeRemoved.add(s);
         Resource o = s.getResource();
         if (removeAnons && o.isAnon()) {
@@ -209,16 +205,14 @@ public class FilterProperties {
 
   public static void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
-    String help =
-        "url must point on an RDF model file (use - to read from stdin)." +
-            System.getProperty("line.separator", "\n") +
-            "Filter properties from the model and dumps the filtered model to stdin." +
-            System.getProperty("line.separator", "\n") +
-            "either -i or -o option should be specified, but not both.";
+    String help = "url must point on an RDF model file (use - to read from stdin)."
+        + System.getProperty("line.separator", "\n")
+        + "Filter properties from the model and dumps the filtered model to stdin."
+        + System.getProperty("line.separator", "\n")
+        + "either -i or -o option should be specified, but not both.";
     formatter.printHelp(
         "java -cp /path/to/wiktionary.jar org.getalp.dbnary.cli.FilterProperties [OPTIONS] url",
-        "With OPTIONS in:", options,
-        help, false);
+        "With OPTIONS in:", options, help, false);
   }
 
 }

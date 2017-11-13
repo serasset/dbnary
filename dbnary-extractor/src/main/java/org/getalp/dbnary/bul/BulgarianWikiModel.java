@@ -26,18 +26,21 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
   protected final static HashMap<String, String> nymMarkerToNymName;
 
   protected final static String translationExpression = "\\s?\\*?\\s?.*\\s?:\\s*.*";
-  protected final static Pattern translationPattern = Pattern
-      .compile(BulgarianWikiModel.translationExpression);
-  protected final static String glossExpression = "(\\]|\\})(\\]|\\})[^\\]\\[\\}\\{\\:\\n]*((\\[|\\{)(\\[|\\{)|$)";
+  protected final static Pattern translationPattern =
+      Pattern.compile(BulgarianWikiModel.translationExpression);
+  protected final static String glossExpression =
+      "(\\]|\\})(\\]|\\})[^\\]\\[\\}\\{\\:\\n]*((\\[|\\{)(\\[|\\{)|$)";
   static final Pattern glossPattern = Pattern.compile(glossExpression);
   protected final static String translationLangExpression = "\\s*\\*\\s*[^\\:]*";
-  protected final static Pattern translationLangPattern = Pattern
-      .compile(BulgarianWikiModel.translationLangExpression);
-  //protected final static String translationBodyExpression = "(\\[\\[[^\\]]+\\]\\]\\s?\\(?[^\\)\\[\\,]*\\)?\\)?)";
-  //protected final static String translationBodyExpression = "(\\[\\[[^\\]]+\\]\\]\\s?\\(?[^\\)\\[]+\\)?;?)";
+  protected final static Pattern translationLangPattern =
+      Pattern.compile(BulgarianWikiModel.translationLangExpression);
+  // protected final static String translationBodyExpression =
+  // "(\\[\\[[^\\]]+\\]\\]\\s?\\(?[^\\)\\[\\,]*\\)?\\)?)";
+  // protected final static String translationBodyExpression =
+  // "(\\[\\[[^\\]]+\\]\\]\\s?\\(?[^\\)\\[]+\\)?;?)";
   protected final static String translationBodyExpression = "([^:\\*]*(\\[|\\{)*)$";
-  protected final static Pattern translationBodyPattern = Pattern
-      .compile(BulgarianWikiModel.translationBodyExpression);
+  protected final static Pattern translationBodyPattern =
+      Pattern.compile(BulgarianWikiModel.translationBodyExpression);
 
   static {
 
@@ -45,9 +48,9 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
     bulgarianPOS.add("Съществително собствено име"); // Proper Noun
     bulgarianPOS.add("Прилагателно име"); // Adjective
     bulgarianPOS.add("Глагол"); // Verb
-    bulgarianPOS.add("Наречие"); //  Adverb
+    bulgarianPOS.add("Наречие"); // Adverb
     bulgarianPOS.add("Частица"); // Particle
-    bulgarianPOS.add("Числително име"); //Ordinal
+    bulgarianPOS.add("Числително име"); // Ordinal
     bulgarianPOS.add("Предлог"); // Preposition
     bulgarianPOS.add("междуметие"); // Interjection
     bulgarianPOS.add("съюз"); // Conjunction
@@ -113,9 +116,8 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     String pos = getPOS(templateName);
     if (null != pos) {
       hasAPOS = true;
@@ -128,15 +130,16 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
           String sectionContent = parameterMap.get(section)
               .replaceAll("\\[\\[:[^:]*:[^\\|]*\\|\\s*\\(?[^\\)\\]]*\\)?\\s*\\]\\]", "");
           sectionContent = sectionContent.replaceAll("\\[\\[\\s*\\]\\]", "");
-          // if (sectionContent.contains("\n# ")) log.debug("Translation with sens number in {}", this.getPageName());
+          // if (sectionContent.contains("\n# ")) log.debug("Translation with sens number in {}",
+          // this.getPageName());
           // TODO: use a shared instance of the translation parser.
           TranslationsParser tp = new TranslationsParser();
           tp.extractTranslations(sectionContent, delegate, glossFilter);
 
           // extractTranslationsFromRawWikiCode(sectionContent)
-          //delegate.registerTranslation();
+          // delegate.registerTranslation();
         } else if (section.contains("ID")) { // ID, same as page name for Bulgarian
-        } else if (section.contains("РОД")) { //Gender
+        } else if (section.contains("РОД")) { // Gender
         } else if (section.contains("ТИП")) { // Type
         } else if (section.contains("ИЗРАЗИ")) { // Examples
         } else if (section.contains("ЕТИМОЛОГИЯ")) { // Etymology

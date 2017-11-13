@@ -73,13 +73,15 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   protected Resource currentCanonicalForm;
 
   protected Set<PronunciationPair> currentSharedPronunciations;
-//	private String currentSharedPronunciation;
-//	private String currentSharedPronunciationLang;
+  // private String currentSharedPronunciation;
+  // private String currentSharedPronunciationLang;
 
-  private HashMap<SimpleImmutableEntry<String, String>, HashSet<HashSet<PropertyObjectPair>>> heldBackOtherForms = new HashMap<SimpleImmutableEntry<String, String>, HashSet<HashSet<PropertyObjectPair>>>();
+  private HashMap<SimpleImmutableEntry<String, String>, HashSet<HashSet<PropertyObjectPair>>> heldBackOtherForms =
+      new HashMap<SimpleImmutableEntry<String, String>, HashSet<HashSet<PropertyObjectPair>>>();
 
   protected static HashMap<String, Property> nymPropertyMap = new HashMap<String, Property>();
-  protected static HashMap<String, PosAndType> posAndTypeValueMap = new HashMap<String, PosAndType>();
+  protected static HashMap<String, PosAndType> posAndTypeValueMap =
+      new HashMap<String, PosAndType>();
 
   static {
 
@@ -92,7 +94,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     nymPropertyMap.put("qsyn", DBnaryOnt.approximateSynonym);
     nymPropertyMap.put("tropo", DBnaryOnt.troponym);
 
-    //	posAndTypeValueMap.put("", new PosAndType(null, LemonOnt.LexicalEntry)); // other Part of Speech
+    // posAndTypeValueMap.put("", new PosAndType(null, LemonOnt.LexicalEntry)); // other Part of
+    // Speech
 
   }
 
@@ -187,7 +190,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // Create a dummy lexical entry that points to the one that corresponds to a part of speech
     currentMainLexEntry = getPageResource(wiktionaryPageName, true);
 
-    // Retain these statements to be inserted in the model when we know that the entry corresponds to a proper part of speech
+    // Retain these statements to be inserted in the model when we know that the entry corresponds
+    // to a proper part of speech
     heldBackStatements.add(aBox.createStatement(currentMainLexEntry, RDF.type, DBnaryOnt.Page));
 
     currentEncodedLexicalEntryName = null;
@@ -196,7 +200,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void finalizeEntryExtraction() {
-    // Clear currentStatements. If statemenents do exist-s in it, it is because, there is no extractable part of speech in the entry.
+    // Clear currentStatements. If statemenents do exist-s in it, it is because, there is no
+    // extractable part of speech in the entry.
     heldBackStatements.clear();
     promoteNymProperties();
   }
@@ -206,10 +211,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   public Resource getLexEntry(String languageCode, String pageName, String pos, int defNumber) {
-    //FIXME this doesn't use its languageCode parameter
-    return getLexEntry(
-        getEncodedPageName(pageName, pos, defNumber),
-        OntolexOnt.LexicalEntry //typeResource(pos)
+    // FIXME this doesn't use its languageCode parameter
+    return getLexEntry(getEncodedPageName(pageName, pos, defNumber), OntolexOnt.LexicalEntry
+    // typeResource(pos)
     );
   }
 
@@ -244,16 +248,18 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     currentLexEntry = getLexEntry(currentEncodedLexicalEntryName, normalizedType);
 
     if (!normalizedType.equals(OntolexOnt.LexicalEntry)) {
-      // Add the Lexical Entry type so that users may refer to all entries using the top hierarchy without any reasoner.
+      // Add the Lexical Entry type so that users may refer to all entries using the top hierarchy
+      // without any reasoner.
       aBox.add(aBox.createStatement(currentLexEntry, RDF.type, OntolexOnt.LexicalEntry));
     }
 
     // import other forms
-    SimpleImmutableEntry<String, String> keyOtherForms = new SimpleImmutableEntry<String, String>(
-        currentWiktionaryPageName, originalPOS);
+    SimpleImmutableEntry<String, String> keyOtherForms =
+        new SimpleImmutableEntry<String, String>(currentWiktionaryPageName, originalPOS);
     HashSet<HashSet<PropertyObjectPair>> otherForms = heldBackOtherForms.get(keyOtherForms);
 
-    // TODO: check that other forms point to valid entries and log faulty entries for wiktionary correction.
+    // TODO: check that other forms point to valid entries and log faulty entries for wiktionary
+    // correction.
     if (otherForms != null) {
       for (HashSet<PropertyObjectPair> otherForm : otherForms) {
         addOtherFormPropertiesToLexicalEntry(currentLexEntry, otherForm);
@@ -267,7 +273,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     currentCanonicalForm = aBox
         .createResource(getPrefix() + "__cf_" + currentEncodedLexicalEntryName, OntolexOnt.Form);
 
-    // If a pronunciation was given before the first part of speech, it means that it is shared amoung pos/etymologies
+    // If a pronunciation was given before the first part of speech, it means that it is shared
+    // amoung pos/etymologies
     for (PronunciationPair p : currentSharedPronunciations) {
       if (null != p.lang && p.lang.length() > 0) {
         aBox.add(currentCanonicalForm, OntolexOnt.phoneticRep, p.pron, p.lang);
@@ -351,7 +358,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
 
   // TODO : Alternate spelling or lexical Variant ?
-  // In Ontolex, orthographic variants are supposed to be given as a second writtenRep in the same Form
+  // In Ontolex, orthographic variants are supposed to be given as a second writtenRep in the same
+  // Form
   // lexicalVariant should link 2 Lexical entries, same with varTrans lexicalRel
   @Override
   public void registerAlternateSpelling(String alt) {
@@ -404,13 +412,15 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     aBox.add(currentLexEntry, OntolexOnt.sense, currentSense);
     aBox.add(aBox.createLiteralStatement(currentSense, DBnaryOnt.senseNumber,
         aBox.createTypedLiteral(senseNumber)));
-    // pos is not usefull anymore for word sense as they should be correctly linked to an entry with only one pos.
+    // pos is not usefull anymore for word sense as they should be correctly linked to an entry with
+    // only one pos.
     // if (currentPos != null && ! currentPos.equals("")) {
-    //	aBox.add(currentSense, LexinfoOnt.partOfSpeech, currentPos);
-    //}
+    // aBox.add(currentSense, LexinfoOnt.partOfSpeech, currentPos);
+    // }
 
     Resource defNode = aBox.createResource();
-    // TODO: no definition relation in Ontolex, Lexical Concepts use skos:definition, but not lexical senses, or do they ?
+    // TODO: no definition relation in Ontolex, Lexical Concepts use skos:definition, but not
+    // lexical senses, or do they ?
     aBox.add(currentSense, SkosOnt.definition, defNode);
     // Keep a human readable version of the definition, removing all links annotations.
     aBox.add(defNode, RDF.value, AbstractWiktionaryExtractor.cleanUpMarkup(def, true),
@@ -425,8 +435,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   protected String computeSenseNum() {
-    return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? ""
-        : ("." + currentSubSenseNumber));
+    return "" + currentSenseNumber
+        + ((currentSubSenseNumber == 0) ? "" : ("." + currentSubSenseNumber));
   }
 
   protected Resource registerTranslationToEntity(Resource entity, String lang,
@@ -494,9 +504,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   private boolean incompatibleProperties(Property p1, Property p2, boolean applyCommutativity) {
-    return (
-        p1 == LexinfoOnt.mood && p2 == LexinfoOnt.gender
-    ) || (applyCommutativity && incompatibleProperties(p2, p1, false));
+    return (p1 == LexinfoOnt.mood && p2 == LexinfoOnt.gender)
+        || (applyCommutativity && incompatibleProperties(p2, p1, false));
   }
 
   private boolean incompatibleProperties(Property p1, Property p2) {
@@ -551,8 +560,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     if (!foundCompatible) {
       String otherFormNodeName = computeOtherFormResourceName(lexEntry, properties);
-      Resource otherForm = morphoBox
-          .createResource(getPrefix() + otherFormNodeName, OntolexOnt.Form);
+      Resource otherForm =
+          morphoBox.createResource(getPrefix() + otherFormNodeName, OntolexOnt.Form);
       morphoBox.add(lexEntry, OntolexOnt.otherForm, otherForm);
       mergePropertiesIntoResource(properties, otherForm);
     }
@@ -561,19 +570,15 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   protected String computeOtherFormResourceName(Resource lexEntry,
       HashSet<PropertyObjectPair> properties) {
     String lexEntryLocalName = currentEncodedLexicalEntryName;
-    String compactProperties = DatatypeConverter
-        .printBase64Binary(BigInteger.valueOf(properties.hashCode()).toByteArray())
-        .replaceAll("[/=\\+]", "-");
+    String compactProperties =
+        DatatypeConverter.printBase64Binary(BigInteger.valueOf(properties.hashCode()).toByteArray())
+            .replaceAll("[/=\\+]", "-");
 
     return "__wf_" + compactProperties + "_" + lexEntryLocalName;
   }
 
-  public void registerInflection(String languageCode,
-      String pos,
-      String inflection,
-      String canonicalForm,
-      int defNumber,
-      HashSet<PropertyObjectPair> props,
+  public void registerInflection(String languageCode, String pos, String inflection,
+      String canonicalForm, int defNumber, HashSet<PropertyObjectPair> props,
       HashSet<PronunciationPair> pronunciations) {
 
     if (pronunciations != null) {
@@ -586,17 +591,13 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     registerInflection(languageCode, pos, inflection, canonicalForm, defNumber, props);
   }
 
-  public void registerInflection(String languageCode,
-      String pos,
-      String inflection,
-      String canonicalForm,
-      int defNumber,
-      HashSet<PropertyObjectPair> props) {
+  public void registerInflection(String languageCode, String pos, String inflection,
+      String canonicalForm, int defNumber, HashSet<PropertyObjectPair> props) {
 
     Resource posResource = posResource(pos);
 
-    PropertyObjectPair p = PropertyObjectPair
-        .get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, getCurrentEntryLanguage()));
+    PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep,
+        aBox.createLiteral(inflection, getCurrentEntryLanguage()));
 
     props.add(p);
 
@@ -617,8 +618,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       }
 
       // Second, we store the other form for future possible matching entries
-      SimpleImmutableEntry<String, String> key = new SimpleImmutableEntry<String, String>(
-          canonicalForm, pos);
+      SimpleImmutableEntry<String, String> key =
+          new SimpleImmutableEntry<String, String>(canonicalForm, pos);
 
       HashSet<HashSet<PropertyObjectPair>> otherForms = heldBackOtherForms.get(key);
 
@@ -630,10 +631,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       otherForms.add(props);
     } else {
       // the definition number was specified, this makes registration easy.
-      addOtherFormPropertiesToLexicalEntry(
-          getLexEntry(languageCode, canonicalForm, pos, defNumber),
-          props
-      );
+      addOtherFormPropertiesToLexicalEntry(getLexEntry(languageCode, canonicalForm, pos, defNumber),
+          props);
     }
   }
 
@@ -655,8 +654,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   private String computeTransId(String lang, Resource entity) {
     lang = uriEncode(lang);
-    return getPrefix() + "__tr_" + lang + "_" + translationCount.incr(lang) + "_" + entity.getURI()
-        .substring(getPrefix().length());
+    return getPrefix() + "__tr_" + lang + "_" + translationCount.incr(lang) + "_"
+        + entity.getURI().substring(getPrefix().length());
   }
 
   private Resource getLexvoLanguageResource(String lang) {
@@ -681,7 +680,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
     int hash = target.indexOf('#');
     if (hash != -1) {
-      // The target contains an intra page href. Remove it from the target uri and keep it in the relation.
+      // The target contains an intra page href. Remove it from the target uri and keep it in the
+      // relation.
       target = target.substring(0, hash);
       // TODO: keep additional intra-page href
       // aBox.add(nym, isAnnotatedBy, target.substring(hash));
@@ -708,7 +708,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
     int hash = target.indexOf('#');
     if (hash != -1) {
-      // The target contains an intra page href. Remove it from the target uri and keep it in the relation.
+      // The target contains an intra page href. Remove it from the target uri and keep it in the
+      // relation.
       target = target.substring(0, hash);
       // TODO: keep additional intra-page href
       // aBox.add(nym, isAnnotatedBy, target.substring(hash));
@@ -748,10 +749,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public Resource createGlossResource(StructuredGloss gloss, int rank) {
-    if (gloss == null || (
-        (gloss.getGloss() == null || gloss.getGloss().length() == 0) &&
-            (gloss.getSenseNumber() == null || gloss.getSenseNumber().length() == 0))
-        ) {
+    if (gloss == null || ((gloss.getGloss() == null || gloss.getGloss().length() == 0)
+        && (gloss.getSenseNumber() == null || gloss.getSenseNumber().length() == 0))) {
       return null;
     }
 
@@ -810,7 +809,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
     int hash = target.indexOf('#');
     if (hash != -1) {
-      // The target contains an intra page href. Remove it from the target uri and keep it in the relation.
+      // The target contains an intra page href. Remove it from the target uri and keep it in the
+      // relation.
       target = target.substring(0, hash);
       // TODO: keep additional intra-page href
       // aBox.add(nym, isAnnotatedBy, target.substring(hash));

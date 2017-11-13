@@ -155,9 +155,8 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
           }
           m1.read(in, DbnaryModel.DBNARY_NS_PREFIX + "/" + language + "/", "TURTLE");
 
-          System.err.println(
-              "Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime()
-                  .freeMemory()));
+          System.err.println("Used memory: "
+              + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 
           // Compute general stats
           StringWriter ow = new StringWriter();
@@ -188,9 +187,8 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
         }
         m1 = null;
         System.gc();
-        System.err.println(
-            "Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime()
-                .freeMemory()));
+        System.err.println("Used memory: "
+            + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
       }
     }
 
@@ -226,8 +224,8 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
     File gs = new File(gstatFile);
 
     if (gs.isFile() && gs.canRead()) {
-      BufferedReader br = new BufferedReader(
-          new InputStreamReader(new FileInputStream(gs), "UTF-8"));
+      BufferedReader br =
+          new BufferedReader(new InputStreamReader(new FileInputStream(gs), "UTF-8"));
       String h = br.readLine(); // reading header
       String s = br.readLine();
       while (s != null) {
@@ -242,14 +240,11 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
 
   public static void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
-    String help =
-        "Update diachronic statistics based on archived extracts." +
-            "lang is the language of the archived extracts.";
-    formatter.printHelp(
-        "java -cp /path/to/dbnary.jar " + UpdateDiachronicStatistics.class.getCanonicalName()
-            + "[OPTIONS] lang",
-        "With OPTIONS in:", options,
-        help, false);
+    String help = "Update diachronic statistics based on archived extracts."
+        + "lang is the language of the archived extracts.";
+    formatter.printHelp("java -cp /path/to/dbnary.jar "
+        + UpdateDiachronicStatistics.class.getCanonicalName() + "[OPTIONS] lang",
+        "With OPTIONS in:", options, help, false);
   }
 
   public static byte[] createChecksum(File file) throws Exception {

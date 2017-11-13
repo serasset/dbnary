@@ -16,19 +16,19 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   static {
     posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
     posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
-    posAndTypeValueMap
-        .put("properNoun", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
+    posAndTypeValueMap.put("properNoun",
+        new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
     posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
     posAndTypeValueMap.put("letter", new PosAndType(LexinfoOnt.letter, LexinfoOnt.Symbol));
     posAndTypeValueMap.put("prep", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
     posAndTypeValueMap.put("pron", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
-    posAndTypeValueMap
-        .put("inter", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
-    posAndTypeValueMap
-        .put("abbrev", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("inter",
+        new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
+    posAndTypeValueMap.put("abbrev",
+        new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
-    posAndTypeValueMap
-        .put("contraction", new PosAndType(LexinfoOnt.contraction, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("contraction",
+        new PosAndType(LexinfoOnt.contraction, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("conj", new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
     posAndTypeValueMap.put("num", new PosAndType(LexinfoOnt.number, LexinfoOnt.Number));
     posAndTypeValueMap.put("particle", new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));

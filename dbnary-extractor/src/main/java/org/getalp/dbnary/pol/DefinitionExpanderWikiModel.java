@@ -17,13 +17,12 @@ public class DefinitionExpanderWikiModel extends ExpandAllWikiModel {
     ignoredTemplates.add("wikipedia");
   }
 
-  public DefinitionExpanderWikiModel(Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public DefinitionExpanderWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
     super(locale, imageBaseURL, linkBaseURL);
   }
 
-  public DefinitionExpanderWikiModel(WiktionaryIndex wi, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public DefinitionExpanderWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL,
+      String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
@@ -34,9 +33,8 @@ public class DefinitionExpanderWikiModel extends ExpandAllWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     if (ignoredTemplates.contains(templateName)) {
       ;
     } else if ("skrót".equals(templateName)) {

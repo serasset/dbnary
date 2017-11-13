@@ -12,8 +12,8 @@ public class ItalianDefinitionExtractorWikiModel extends DbnaryWikiModel {
 
   // static Set<String> ignoredTemplates = new TreeSet<String>();
   // static {
-  // 	ignoredTemplates.add("Wikipedia");
-  // 	ignoredTemplates.add("Incorrect");
+  // ignoredTemplates.add("Wikipedia");
+  // ignoredTemplates.add("Incorrect");
   // }
 
   private IWiktionaryDataHandler delegate;
@@ -44,9 +44,8 @@ public class ItalianDefinitionExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     if (templateName.equals("Nodef")) {
       // No definition given, simply ignore.

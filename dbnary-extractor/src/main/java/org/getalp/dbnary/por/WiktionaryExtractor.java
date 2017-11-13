@@ -44,7 +44,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // protected final static Pattern languageSectionPattern;
   protected final static HashSet<String> posMarkers;
-  //protected final static HashSet<String> nymMarkers;
+  // protected final static HashSet<String> nymMarkers;
   protected final static HashMap<String, String> nymMarkerToNymName;
 
   static {
@@ -108,8 +108,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return isCurrentlyExtracting;
   }
 
-  /* (non-Javadoc)
-   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
+   * org.getalp.blexisma.semnet.SemanticNetwork)
    */
   @Override
   public void extractData() {
@@ -129,7 +132,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
     }
     if (-1 != porStart) {
-      //System.err.println("Parsing previous portuguese entry");
+      // System.err.println("Parsing previous portuguese entry");
       extractPortugueseData(porStart, pageContent.length());
     }
     wdh.finalizeEntryExtraction();
@@ -146,7 +149,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return false;
   }
 
-  //    private HashSet<String> unsupportedSections = new HashSet<String>(100);
+  // private HashSet<String> unsupportedSections = new HashSet<String>(100);
   void gotoNoData(Matcher m) {
     state = NODATA;
   }
@@ -230,7 +233,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           } else if (m.group(1).equals("{{pronúncia|pt}}")) {
             gotoPronBlock(m);
           } else if (isLevel2Header(m)) {
-            // Level 2 header that are not a correct POS, or Etimology or Pronunciation are considered as ignorable POS.
+            // Level 2 header that are not a correct POS, or Etimology or Pronunciation are
+            // considered as ignorable POS.
             gotoIgnorePos();
           }
 
@@ -405,9 +409,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    PortugueseTranslationExtractorWikiModel dbnmodel = new PortugueseTranslationExtractorWikiModel(
-        this.wdh, this.wi, new Locale("pt"), "/${image}/" + wiktionaryPageName, "/${title}",
-        glossFilter);
+    PortugueseTranslationExtractorWikiModel dbnmodel =
+        new PortugueseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"),
+            "/${image}/" + wiktionaryPageName, "/${title}", glossFilter);
     dbnmodel.parseTranslationBlock(transCode);
   }
 

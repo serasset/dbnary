@@ -23,14 +23,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("-adj-", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
     posAndTypeValueMap.put("-verb-", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
     posAndTypeValueMap.put("-adv-", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
-    posAndTypeValueMap
-        .put("-loc-adv-", new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("-loc-adj-", new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("-loc-nom-", new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("-loc-verb-", new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-loc-adv-",
+        new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-loc-adj-",
+        new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-loc-nom-",
+        new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-loc-verb-",
+        new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
   }
 
   public WiktionaryDataHandler(String lang) {

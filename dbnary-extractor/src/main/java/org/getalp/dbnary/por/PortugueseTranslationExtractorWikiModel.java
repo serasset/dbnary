@@ -52,9 +52,8 @@ public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
   private Resource currentGloss = null;
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     if ("trad".equals(templateName)) {
       // Trad macro contains a set of translations with no usage note.
       String lang = LangTools.normalize(parameterMap.get("1"));
@@ -67,9 +66,10 @@ public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
     } else if ("xlatio".equals(templateName) || "trad-".equals(templateName)) {
       // xlatio and trad- macro contains a translation and a transcription.
       String lang = LangTools.normalize(parameterMap.get("1"));
-      // if (null != parameterMap.get("4")) System.err.println("map has 4 params in " + this.getImageBaseURL() +": " + parameterMap);
-      delegate
-          .registerTranslation(lang, currentGloss, parameterMap.get("3"), parameterMap.get("2"));
+      // if (null != parameterMap.get("4")) System.err.println("map has 4 params in " +
+      // this.getImageBaseURL() +": " + parameterMap);
+      delegate.registerTranslation(lang, currentGloss, parameterMap.get("3"),
+          parameterMap.get("2"));
     } else if ("t".equals(templateName) || "t+".equals(templateName)) {
       // t macro contains a translation, a transcription and an usage note.
       String lang = LangTools.normalize(parameterMap.get("1"));
@@ -104,7 +104,8 @@ public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
     } else if (LangTools.normalize(templateName) != null) {
       // This is a template for the name of a language, just ignore it...
     } else {
-      // System.err.println("Called template: " + templateName + " while parsing translations of: " + this.getImageBaseURL());
+      // System.err.println("Called template: " + templateName + " while parsing translations of: "
+      // + this.getImageBaseURL());
       // Just ignore the other template calls (uncomment to expand the template calls).
       // super.substituteTemplateCall(templateName, parameterMap, writer);
     }

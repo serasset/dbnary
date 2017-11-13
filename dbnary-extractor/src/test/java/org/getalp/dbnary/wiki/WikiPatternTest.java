@@ -2,7 +2,6 @@ package org.getalp.dbnary.wiki;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.Test;
@@ -28,8 +27,8 @@ public class WikiPatternTest {
 
   @Test
   public void testWikiPatternWithOpenClose() {
-    String test = "==== Header 4 ====\n" +
-        "{{en-noun}} text [[link]]s text {{template}} text [[toto]]";
+    String test =
+        "==== Header 4 ====\n" + "{{en-noun}} text [[link]]s text {{template}} text [[toto]]";
     String p = "(_H1_(.*)_H1_)";
 
     WikiCharSequence seq = new WikiCharSequence(test);

@@ -27,10 +27,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("verbum-tr", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
     posAndTypeValueMap.put("verbum-intr", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
     posAndTypeValueMap.put("adverbium", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
-    //posAndTypeValueMap.put("-loc-adv-", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Phrase));
-    //posAndTypeValueMap.put("-loc-adj-", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Phrase));
-    //posAndTypeValueMap.put("-loc-nom-", new PosAndType(LexinfoOnt.noun, OntolexOnt.Phrase));
-    //posAndTypeValueMap.put("-loc-verb-", new PosAndType(LexinfoOnt.verb, OntolexOnt.Phrase));
+    // posAndTypeValueMap.put("-loc-adv-", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Phrase));
+    // posAndTypeValueMap.put("-loc-adj-", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Phrase));
+    // posAndTypeValueMap.put("-loc-nom-", new PosAndType(LexinfoOnt.noun, OntolexOnt.Phrase));
+    // posAndTypeValueMap.put("-loc-verb-", new PosAndType(LexinfoOnt.verb, OntolexOnt.Phrase));
     posAndTypeValueMap.put("coniunctio", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.Word));
     posAndTypeValueMap.put("pronomen", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.Word));
     posAndTypeValueMap.put("participium", new PosAndType(LexinfoOnt.participle, OntolexOnt.Word));

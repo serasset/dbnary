@@ -18,14 +18,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String languageSectionPatternString = "={2}\\s*\\{{2}=*([^\\}]+)=*\\}{2}\\s*={2}";
-  protected final static String blockPatternString = "\\{{2}-([^\\|\\}]+)|#\\s*-([^-]+)-|={2,3}\\s*([^=]+)={2,3}|\\{{2}(pron)";
+  protected final static String languageSectionPatternString =
+      "={2}\\s*\\{{2}=*([^\\}]+)=*\\}{2}\\s*={2}";
+  protected final static String blockPatternString =
+      "\\{{2}-([^\\|\\}]+)|#\\s*-([^-]+)-|={2,3}\\s*([^=]+)={2,3}|\\{{2}(pron)";
   protected final static String tradPatternString =
-      "\\{{2}([^\\|:]+\\|[^\\}]+)\\}{2}|#\\s*([^:]+):\\s*\\[{2}([^\\]]+)\\]{2}|" +
-          ":\\s*\\[([^\\]]+)\\]\\s*:\\s*\\[{2}([^\\]]+)\\]{2}";
+      "\\{{2}([^\\|:]+\\|[^\\}]+)\\}{2}|#\\s*([^:]+):\\s*\\[{2}([^\\]]+)\\]{2}|"
+          + ":\\s*\\[([^\\]]+)\\]\\s*:\\s*\\[{2}([^\\]]+)\\]{2}";
   protected final static String nymsPatternString = "#\\s*\\[{2}([^\\]]+)\\]{2}";
   protected final static String pronPatternString = "\\|*([^\\}]+)\\}{2}";
-  protected final static String defPatternString = "#\\s*([^\\n#*]+)\\n\\n|([^:\\n]+\\s*:\\s*[^\\n]+)";
+  protected final static String defPatternString =
+      "#\\s*([^\\n#*]+)\\n\\n|([^:\\n]+\\s*:\\s*[^\\n]+)";
 
   protected final static Pattern languageSectionPattern;
   protected final static Pattern blockPattern;
@@ -68,7 +71,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizePageExtraction();
   }
 
-  private enum Block {NOBLOCK, IGNOREPOS, DEFBLOCK, POSBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK}
+  private enum Block {
+    NOBLOCK, IGNOREPOS, DEFBLOCK, POSBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK
+  }
 
   protected static HashMap<String, Block> blockValue = new HashMap<>();
   protected static HashMap<String, String> blockName = new HashMap<>();
@@ -206,7 +211,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (lang.equals("mg")) {
       wdh.initializeEntryExtraction(wiktionaryPageName);
     } else {
-      //log.debug("Unused lang {} --in-- {}", lang, this.wiktionaryPageName);
+      // log.debug("Unused lang {} --in-- {}", lang, this.wiktionaryPageName);
       return;
       // wdh.initializeEntryExtraction(wiktionaryPageName, lang);
     }
@@ -301,11 +306,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           mlgwdh.addTranslation(tmp[2], currentGloss, null, tmp[1]);
         } else {
           if (trad.group(1).startsWith("ébauche-trad") || // missing
-              trad.group(1).startsWith("...") ||
-              trad.group(1).startsWith("T|") ||
-              trad.group(1).startsWith("vang") ||
-              trad.group(1).startsWith("Tsofoka")
-              ) {
+              trad.group(1).startsWith("...") || trad.group(1).startsWith("T|")
+              || trad.group(1).startsWith("vang") || trad.group(1).startsWith("Tsofoka")) {
             continue;
           }
           log.debug("Unknown Trad value {} --in-- {}", trad.group(1), wdh.currentLexEntry());
@@ -356,8 +358,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     while (pron.find()) {
       String[] tmp = pron.group(1).split("\\|");
-      if (tmp.length > 1 && !tmp[0].contains("X-SAMPA")
-          && !tmp[0].startsWith("\n#") && !tmp[0].contains("\\{")) {
+      if (tmp.length > 1 && !tmp[0].contains("X-SAMPA") && !tmp[0].startsWith("\n#")
+          && !tmp[0].contains("\\{")) {
         wdh.registerPronunciation(tmp[0], "mg-fonipa");
       }
     }

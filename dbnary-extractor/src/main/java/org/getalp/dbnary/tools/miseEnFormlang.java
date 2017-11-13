@@ -49,7 +49,7 @@ public class miseEnFormlang {
         t[i] = l2b;
         i = i + 1;
       }
-      //String l2b = l.getPart2b();
+      // String l2b = l.getPart2b();
 
     }
     return t;

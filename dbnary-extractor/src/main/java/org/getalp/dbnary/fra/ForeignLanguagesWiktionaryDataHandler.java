@@ -1,11 +1,10 @@
 package org.getalp.dbnary.fra;
 
+import java.util.HashMap;
 import org.getalp.LangTools;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
 
 public class ForeignLanguagesWiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
@@ -30,9 +29,9 @@ public class ForeignLanguagesWiktionaryDataHandler extends OntolexBasedRDFDataHa
   public void setCurrentLanguage(String lang, String languageName) {
     lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
     currentEntryLanguage = LangTools.normalize(LangTools.threeLettersCode(lang));
-    //currentEntryLanguage = lang;
-    //currentEntryLanguageName = languageName;
-    //wktLanguageEdition = LangTools.getPart1OrId(lang);
+    // currentEntryLanguage = lang;
+    // currentEntryLanguageName = languageName;
+    // wktLanguageEdition = LangTools.getPart1OrId(lang);
     currentPrefix = getPrefix(currentEntryLanguage);
   }
 
@@ -48,8 +47,9 @@ public class ForeignLanguagesWiktionaryDataHandler extends OntolexBasedRDFDataHa
     return currentWiktionaryPageName;
   }
 
-  // TODO: Refactor and generalize the prefixes and current entry languages in main ontolex based data handler so that
-  //       the current english implementation is available for all languages.
+  // TODO: Refactor and generalize the prefixes and current entry languages in main ontolex based
+  // data handler so that
+  // the current english implementation is available for all languages.
   @Override
   public String getPrefix() {
     return currentPrefix;

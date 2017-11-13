@@ -22,11 +22,11 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("prefix", new PosAndType(LexinfoOnt.prefix, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("infix", new PosAndType(LexinfoOnt.infix, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("article", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
-    posAndTypeValueMap
-        .put("none", new PosAndType(OntolexOnt.LexicalEntry, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("none",
+        new PosAndType(OntolexOnt.LexicalEntry, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("root", new PosAndType(LexinfoOnt.radical, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap
-        .put("expr", new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("expr",
+        new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression));
   }
 
   public WiktionaryDataHandler(String lang) {

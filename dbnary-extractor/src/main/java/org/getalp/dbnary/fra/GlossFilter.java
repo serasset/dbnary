@@ -14,16 +14,10 @@ public class GlossFilter extends AbstractGlossFilter {
   private static String aTrierRegExp;
 
   static {
-    aTrierRegExp = (new StringBuffer())
-        .append("(?:")
-        .append("^\\s*[ÀAaà] trier")
-        .append(")|(?:")
-        .append("^\\s*[Tt]raductions? à (?:trier|classer|vérifier)")
-        .append(")|(?:")
-        .append("^\\s*[àaÀA] classer")
-        .append(")|(?:")
-        .append("^\\s*[àaÀA] vérifier et (?:trier|classer)")
-        .append(")").toString();
+    aTrierRegExp = (new StringBuffer()).append("(?:").append("^\\s*[ÀAaà] trier").append(")|(?:")
+        .append("^\\s*[Tt]raductions? à (?:trier|classer|vérifier)").append(")|(?:")
+        .append("^\\s*[àaÀA] classer").append(")|(?:")
+        .append("^\\s*[àaÀA] vérifier et (?:trier|classer)").append(")").toString();
   }
 
   private static Pattern aTrierPattern = Pattern.compile(aTrierRegExp);
@@ -40,8 +34,8 @@ public class GlossFilter extends AbstractGlossFilter {
 
   private static String glossNumSenseNumberingRegExp =
       "^(.*)\\s*\\((" + sensenum + ")\\)(?:[\\p{Punct}\\s])*$";
-  private static Pattern glossNumSenseNumberingPattern = Pattern
-      .compile(glossNumSenseNumberingRegExp);
+  private static Pattern glossNumSenseNumberingPattern =
+      Pattern.compile(glossNumSenseNumberingRegExp);
   private static Matcher glossNumSenseNumberingMatcher = glossNumSenseNumberingPattern.matcher("");
 
   private static String senseNRegExp = "^\\s*Sens\\s+(\\d+)\\s*$";

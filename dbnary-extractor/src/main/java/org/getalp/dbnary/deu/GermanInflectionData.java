@@ -14,43 +14,63 @@ public class GermanInflectionData {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  public enum Genre {MASCULIN, FEMININ, NEUTRUM, NOTHING}
+  public enum Genre {
+    MASCULIN, FEMININ, NEUTRUM, NOTHING
+  }
 
   ;
 
-  public enum Cas {NOMINATIF, GENITIF, DATIF, ACCUSATIF, NOTHING}
+  public enum Cas {
+    NOMINATIF, GENITIF, DATIF, ACCUSATIF, NOTHING
+  }
 
   ;
 
-  public enum Mode {INFINITIV, ZU_INFINITIV, PARTIZIPIEN, GERUNDIVUM, IMPERATIV, INDICATIV, KONJUNKTIV2, KONJUNKTIV1, NOTHING}
+  public enum Mode {
+    INFINITIV, ZU_INFINITIV, PARTIZIPIEN, GERUNDIVUM, IMPERATIV, INDICATIV, KONJUNKTIV2, KONJUNKTIV1, NOTHING
+  }
 
   ;
 
-  public enum Voice {AKTIV, VORGANGSPASSIV, ZUSTANDSPASSIV, PASSIV, ZUSTANDSREFLEXIVEPASSIV, REFLEXIV, NOTHING}
+  public enum Voice {
+    AKTIV, VORGANGSPASSIV, ZUSTANDSPASSIV, PASSIV, ZUSTANDSREFLEXIVEPASSIV, REFLEXIV, NOTHING
+  }
 
   ;
 
-  public enum Tense {PRÄSENS, PRÄTERITUM, PERFEKT, FUTURE1, FUTURE2, PLUSQUAMPERFEKT, NOTHING}
+  public enum Tense {
+    PRÄSENS, PRÄTERITUM, PERFEKT, FUTURE1, FUTURE2, PLUSQUAMPERFEKT, NOTHING
+  }
 
   ;
 
-  public enum Degree {POSITIVE, COMPARATIVE, SUPERLATIVE, NOTHING}
+  public enum Degree {
+    POSITIVE, COMPARATIVE, SUPERLATIVE, NOTHING
+  }
 
   ;
 
-  public enum GNumber {SINGULAR, PLURAL, NOTHING}
+  public enum GNumber {
+    SINGULAR, PLURAL, NOTHING
+  }
 
   ;
 
-  public enum Person {FIRST, SECOND, THIRD, HÖFLICHKEITSFORM, NOTHING}
+  public enum Person {
+    FIRST, SECOND, THIRD, HÖFLICHKEITSFORM, NOTHING
+  }
 
   ;
 
-  public enum InflectionType {STRONG, WEAK, MIXED, NOTHING}
+  public enum InflectionType {
+    STRONG, WEAK, MIXED, NOTHING
+  }
 
   ;
 
-  public enum Valency {TRANSITIVE, INTRANSITIVE, NOTHING}
+  public enum Valency {
+    TRANSITIVE, INTRANSITIVE, NOTHING
+  }
 
   ;
 
@@ -152,8 +172,9 @@ public class GermanInflectionData {
         inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Future));
         break;
       case FUTURE2:
-        inflections.add(PropertyObjectPair
-            .get(OliaOnt.hasTense, OliaOnt.FuturePerfect)); // Confirmed by Ch. Chiarcos...
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.FuturePerfect)); // Confirmed
+        // by Ch.
+        // Chiarcos...
         break;
       case NOTHING:
         break;
@@ -175,16 +196,32 @@ public class GermanInflectionData {
         inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.SubjunctiveMood));
         break;
       case PARTIZIPIEN:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood,
-            OliaOnt.Participle)); // TODO: Participle is a part of speech, not a mood...
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.Participle)); // TODO:
+        // Participle
+        // is a part
+        // of speech,
+        // not a
+        // mood...
         break;
       case INFINITIV:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood,
-            OliaOnt.Infinitive)); // TODO: Infinitive is a part of speech, not a mood...
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.Infinitive)); // TODO:
+        // Infinitive
+        // is a part
+        // of speech,
+        // not a
+        // mood...
         break;
       case GERUNDIVUM:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood,
-            OliaOnt.AdverbialParticiple)); // TODO: AdverbialParticiple is a part of speech, not a mood...
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.AdverbialParticiple)); // TODO:
+        // AdverbialParticiple
+        // is
+        // a
+        // part
+        // of
+        // speech,
+        // not
+        // a
+        // mood...
         break;
       case ZU_INFINITIV:
         note.add("Zustandpassiv");

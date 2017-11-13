@@ -41,9 +41,11 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
   }
 
 
-  // TODO: handle entries where translations refer to the translations of another term (form: Kts. [[other entry]]).
+  // TODO: handle entries where translations refer to the translations of another term (form: Kts.
+  // [[other entry]]).
   public void parseTranslationBlock(String block) {
-    // Heuristics: if the translation block uses kohta macro, we assume that ALL translation data is available in the macro.
+    // Heuristics: if the translation block uses kohta macro, we assume that ALL translation data is
+    // available in the macro.
     this.rank = 1;
     if (block.contains("{{kohta")) {
       parseTranslationBlockWithBliki(block);
@@ -70,28 +72,25 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     if ("kohta".equals(templateName)) {
       // kohta macro contains a set of translations with no usage note.
-      // Either: (1) arg 1 is the sens number and arg2 is the gloss, arg3 are translations and arg 4 is final
+      // Either: (1) arg 1 is the sens number and arg2 is the gloss, arg3 are translations and arg 4
+      // is final
       // Or: arg1 is translations and arg 2 is final
       int translationPositionalArg = findTranslations(parameterMap);
       String xans = parameterMap.get(Integer.toString(translationPositionalArg));
       String gloss = computeGlossValue(parameterMap, translationPositionalArg);
       extractTranslations(xans, gloss, rank++);
 
-    } else if ("käännökset/korjattava".equalsIgnoreCase(templateName) || "kään/korj"
-        .equals(templateName) || "korjattava/käännökset".equals(templateName)) {
+    } else if ("käännökset/korjattava".equalsIgnoreCase(templateName)
+        || "kään/korj".equals(templateName) || "korjattava/käännökset".equals(templateName)) {
       // Missing translation message, just ignore it
     } else if (knownTranslationTemplates.contains(templateName)) {
       // Language name, resubstitute it with its own value
-      writer.append("{-")
-          .append(templateName)
-          .append("|")
-          .append(WikiTool.toParameterString(parameterMap))
-          .append("-}");
+      writer.append("{-").append(templateName).append("|")
+          .append(WikiTool.toParameterString(parameterMap)).append("-}");
     } else if (isALanguageName(templateName)) {
       // Language name, resubstitute it with its own value
       writer.append(templateName);
@@ -150,28 +149,16 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
     // DONE: for this, evaluate the difference in extraction !
 
     // les caractères visible
-    carPatternString =
-        new StringBuilder().append("(.)")
-            .toString();
+    carPatternString = new StringBuilder().append("(.)").toString();
 
-    // TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
-    macroOrLinkOrcarPatternString = new StringBuilder()
-        .append("(?:")
+    // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
+    // line.
+    macroOrLinkOrcarPatternString = new StringBuilder().append("(?:")
         // Macro-modified for translation extractions
-        .append("\\{\\-")
-        .append("([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?")
-        .append("\\-\\}")
-        .append(")|(?:")
-        .append(WikiPatterns.macroPatternString)
-        .append(")|(?:")
-        .append(WikiPatterns.linkPatternString)
-        .append(")|(?:")
-        .append("(:*\\*)")
-        .append(")|(?:")
-        .append("(\\*:)")
-        .append(")|(?:")
-        .append(carPatternString)
-        .append(")").toString();
+        .append("\\{\\-").append("([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?").append("\\-\\}")
+        .append(")|(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
+        .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)").append(")|(?:")
+        .append("(\\*:)").append(")|(?:").append(carPatternString).append(")").toString();
 
 
   }
@@ -182,8 +169,8 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
   static {
     carPattern = Pattern.compile(carPatternString);
-    macroOrLinkOrcarPattern = Pattern
-        .compile(macroOrLinkOrcarPatternString, Pattern.MULTILINE | Pattern.DOTALL);
+    macroOrLinkOrcarPattern =
+        Pattern.compile(macroOrLinkOrcarPatternString, Pattern.MULTILINE | Pattern.DOTALL);
 
   }
 
@@ -230,8 +217,8 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
     int ETAT = INIT;
 
-    Resource currentGlose = delegate
-        .createGlossResource(glossFilter.extractGlossStructure(gloss), r);
+    Resource currentGlose =
+        delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
     String lang = null, word = "";
     String usage = "";
     String langname = "";
@@ -255,12 +242,12 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
             if (macro.equalsIgnoreCase("ylä")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 gloss = macroOrLinkOrcarMatcher.group(2);
-                currentGlose = delegate
-                    .createGlossResource(glossFilter.extractGlossStructure(gloss), r);
+                currentGlose =
+                    delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
               } else if (macroOrLinkOrcarMatcher.group(4) != null) {
                 gloss = macroOrLinkOrcarMatcher.group(4);
-                currentGlose = delegate
-                    .createGlossResource(glossFilter.extractGlossStructure(gloss), r);
+                currentGlose =
+                    delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
               } else {
                 currentGlose = null;
               }
@@ -268,23 +255,23 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
             } else if (macro.equalsIgnoreCase("ala")) {
               currentGlose = null;
             } else if (macro.equalsIgnoreCase("keski")) {
-              //ignore
+              // ignore
             }
           } else if (link != null) {
-            //System.err.println("Unexpected link while in INIT state.");
+            // System.err.println("Unexpected link while in INIT state.");
           } else if (starcont != null) {
             log.debug("Unexpected point continuation while in INIT state.");
           } else if (star != null) {
             ETAT = LANGUE;
           } else if (character != null) {
             if (character.equals(":")) {
-              //System.err.println("Skipping ':' while in INIT state.");
+              // System.err.println("Skipping ':' while in INIT state.");
             } else if (character.equals("\n") || character.equals("\r")) {
 
             } else if (character.equals(",")) {
-              //System.err.println("Skipping ',' while in INIT state.");
+              // System.err.println("Skipping ',' while in INIT state.");
             } else {
-              //System.err.println("Skipping " + g5 + " while in INIT state.");
+              // System.err.println("Skipping " + g5 + " while in INIT state.");
             }
           }
 
@@ -296,8 +283,8 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
             if (macro.equalsIgnoreCase("ylä")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 gloss = macroOrLinkOrcarMatcher.group(2);
-                currentGlose = delegate
-                    .createGlossResource(glossFilter.extractGlossStructure(gloss), r);
+                currentGlose =
+                    delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
               } else {
                 currentGlose = null;
               }
@@ -320,12 +307,12 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
               langname = LangTools.normalize(macro);
             }
           } else if (link != null) {
-            //System.err.println("Unexpected link while in LANGUE state.");
+            // System.err.println("Unexpected link while in LANGUE state.");
           } else if (starcont != null) {
             lang = previousLang;
             ETAT = TRAD;
           } else if (star != null) {
-            //System.err.println("Skipping '*' while in LANGUE state.");
+            // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (character != null) {
             if (character.equals(":")) {
               lang = langname.trim();
@@ -334,31 +321,32 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
               langname = "";
               ETAT = TRAD;
             } else if (character.equals("\n") || character.equals("\r")) {
-              //System.err.println("Skipping newline while in LANGUE state.");
+              // System.err.println("Skipping newline while in LANGUE state.");
             } else if (character.equals(",")) {
-              //System.err.println("Skipping ',' while in LANGUE state.");
+              // System.err.println("Skipping ',' while in LANGUE state.");
             } else {
               langname = langname + character;
             }
           }
 
           break;
-        // TODO: maybe extract words that are not linked (currently kept in usage, but dropped as translation word is null).
+        // TODO: maybe extract words that are not linked (currently kept in usage, but dropped as
+        // translation word is null).
         case TRAD:
           if (macro != null) {
             if (macro.equalsIgnoreCase("ylä")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 gloss = macroOrLinkOrcarMatcher.group(2);
-                currentGlose = delegate
-                    .createGlossResource(glossFilter.extractGlossStructure(gloss), r);
+                currentGlose =
+                    delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
               } else {
                 currentGlose = null;
               }
-              //if (word != null && word.length() != 0) {
-              //	if(lang!=null){
-              //		delegate.registerTranslation(lang, currentGlose, usage, word);
-              //	}
-              //}
+              // if (word != null && word.length() != 0) {
+              // if(lang!=null){
+              // delegate.registerTranslation(lang, currentGlose, usage, word);
+              // }
+              // }
               langname = "";
               word = "";
               usage = "";
@@ -412,11 +400,12 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
           } else if (starcont != null) {
             // System.err.println("Skipping '*:' while in LANGUE state.");
           } else if (star != null) {
-            //System.err.println("Skipping '*' while in LANGUE state.");
+            // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (character != null) {
             if (character.equals("\n") || character.equals("\r")) {
               usage = usage.trim();
-              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
+              // currentGlose);
               if (word != null && word.length() != 0) {
                 if (lang != null) {
                   delegate.registerTranslation(lang, currentGlose, usage, word);
@@ -432,7 +421,8 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
               ETAT = INIT;
             } else if (character.equals(",")) {
               usage = usage.trim();
-              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
+              // currentGlose);
               if (word != null && word.length() != 0) {
                 if (lang != null) {
                   delegate.registerTranslation(lang, currentGlose, usage, word);

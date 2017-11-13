@@ -21,8 +21,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected final static String senseNumberRegExp = "[^\\)]*";
-  //== cebula ({{język polski}}) ==
-  protected final static String languageSectionPatternString = "={2}\\s*([^\\(]*)\\((.*)\\)\\s*={2}";
+  // == cebula ({{język polski}}) ==
+  protected final static String languageSectionPatternString =
+      "={2}\\s*([^\\(]*)\\((.*)\\)\\s*={2}";
 
   protected final static String partOfSpeechPatternString = "''(.*)''";
   protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
@@ -74,17 +75,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     sectionPattern = WikiPatterns.macroPattern;
 
-    String nymLinePattern = new StringBuilder()
-        .append("(?:").append(polishDefinitionPatternString)
-        .append(")|(?:").append("^(.*)$")
-        .append(")").toString();
+    String nymLinePattern = new StringBuilder().append("(?:").append(polishDefinitionPatternString)
+        .append(")|(?:").append("^(.*)$").append(")").toString();
 
     polishNymLinePattern = Pattern.compile(nymLinePattern, Pattern.MULTILINE);
 
-    String defPattern = new StringBuilder()
-        .append("(?:").append(polishDefinitionPatternString)
-        .append(")|(?:").append(partOfSpeechPatternString)
-        .append(")|(?:").append("^(.*)$")
+    String defPattern = new StringBuilder().append("(?:").append(polishDefinitionPatternString)
+        .append(")|(?:").append(partOfSpeechPatternString).append(")|(?:").append("^(.*)$")
         .append(")").toString();
 
     polishDefinitionPattern = Pattern.compile(defPattern, Pattern.MULTILINE);
@@ -122,9 +119,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang
-   * .String, org.getalp.blexisma.semnet.SemanticNetwork)
+   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang .String,
+   * org.getalp.blexisma.semnet.SemanticNetwork)
    */
   @Override
   public void extractData() {
@@ -484,7 +480,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   static final Pattern bulletListPattern;
 
   static {
-    glossOrMacroPatternString = "(?:\\[([^\\]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\|?([^\\}]*)\\}\\})";
+    glossOrMacroPatternString =
+        "(?:\\[([^\\]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\|?([^\\}]*)\\}\\})";
     glossOrMacroPattern = Pattern.compile(glossOrMacroPatternString);
     linePatternString = "^[^\n\r]*$";
     linePattern = Pattern.compile(linePatternString, Pattern.MULTILINE);
@@ -526,18 +523,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   static final Pattern translationLexer;
 
   static {
-    translationLexerString = new StringBuffer()
-        .append("(?:")
-        .append("\\(([\\d\\.\\-—–\\,\\s]*)\\)")
-        .append(")|(?:")
-        .append(WikiPatterns.linkPatternString)
-        .append(")|(?:")
-        .append(WikiPatterns.macroPatternString)
-        .append(")|(?:")
-        .append("\\(([^\\)]*)\\)")
-        .append(")|(?:")
-        .append("(.)")
-        .append(")").toString();
+    translationLexerString = new StringBuffer().append("(?:").append("\\(([\\d\\.\\-—–\\,\\s]*)\\)")
+        .append(")|(?:").append(WikiPatterns.linkPatternString).append(")|(?:")
+        .append(WikiPatterns.macroPatternString).append(")|(?:").append("\\(([^\\)]*)\\)")
+        .append(")|(?:").append("(.)").append(")").toString();
 
     translationLexer = Pattern.compile(translationLexerString);
 
@@ -655,10 +644,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           while (linkMatcher.find()) {
             // It's a link, only keep the alternate string if present.
             String leftGroup = linkMatcher.group(1);
-            if (leftGroup != null && !leftGroup.equals("") &&
-                !leftGroup.startsWith("Wikisaurus:") &&
-                !leftGroup.startsWith("Catégorie:") &&
-                !leftGroup.startsWith("#")) {
+            if (leftGroup != null && !leftGroup.equals("") && !leftGroup.startsWith("Wikisaurus:")
+                && !leftGroup.startsWith("Catégorie:") && !leftGroup.startsWith("#")) {
               wdh.registerNymRelation(leftGroup, synRelation, senseNum);
             }
           }

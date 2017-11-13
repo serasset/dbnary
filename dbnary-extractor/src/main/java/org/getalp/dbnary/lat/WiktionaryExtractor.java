@@ -36,16 +36,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String entrySectionPatternString;
 
   // TODO: handle morphological informations e.g. fr-rég template ?
-  protected final static String pronunciationPatternString = "\\{\\{pron\\|([^\\|\\}]*)\\|([^\\}]*)\\}\\}";
+  protected final static String pronunciationPatternString =
+      "\\{\\{pron\\|([^\\|\\}]*)\\|([^\\}]*)\\}\\}";
 
   protected final static String otherFormPatternString = "\\{\\{fr-[^\\}]*\\}\\}";
 
   private String lastExtractedPronunciationLang = null;
 
   private static Pattern inflectionMacroNamePattern = Pattern.compile("^fr-");
-  protected final static String inflectionDefPatternString = "^\\# ''([^\n]+) (?:de'' |d\\’''||(?:du verbe|du nom|de l’adjectif)'' )\\[\\[([^\n]+)\\]\\]\\.$";
-  protected final static Pattern inflectionDefPattern = Pattern
-      .compile(inflectionDefPatternString, Pattern.MULTILINE);
+  protected final static String inflectionDefPatternString =
+      "^\\# ''([^\n]+) (?:de'' |d\\’''||(?:du verbe|du nom|de l’adjectif)'' )\\[\\[([^\n]+)\\]\\]\\.$";
+  protected final static Pattern inflectionDefPattern =
+      Pattern.compile(inflectionDefPatternString, Pattern.MULTILINE);
 
   private static HashMap<String, String> posMarkers;
   private static HashSet<String> ignorablePosMarkers;
@@ -169,7 +171,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     otherFormPattern = Pattern.compile(otherFormPatternString);
   }
 
-  private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK}
+  private enum Block {
+    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK
+  }
 
   private Block currentBlock = Block.NOBLOCK;
   private int blockStart = -1;
@@ -249,7 +253,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     Matcher m = entrySectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
 
-    // WONTDO: (priority: low) should I use a macroOrLink pattern to detect translations that are not macro based ?
+    // WONTDO: (priority: low) should I use a macroOrLink pattern to detect translations that are
+    // not macro based ?
     // DONE: (priority: top) link the definition node with the current Part of Speech
     // DONE: handle alternative spelling
 
@@ -261,9 +266,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       HashMap<String, Object> context = new HashMap<String, Object>();
       Block nextBlock = computeNextBlock(m, context);
 
-      // If current block is IGNOREPOS, we should ignore everything but a new DEFBLOCK/INFLECTIONBLOCK
-      if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock
-          || Block.INFLECTIONBLOCK == nextBlock)) {
+      // If current block is IGNOREPOS, we should ignore everything but a new
+      // DEFBLOCK/INFLECTIONBLOCK
+      if (Block.IGNOREPOS != currentBlock
+          || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
         leaveCurrentBlock(m);
         gotoNextBlock(nextBlock, context);
       }
@@ -319,9 +325,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case DEFBLOCK:
         String pos = (String) context.get("pos");
         wdh.addPartOfSpeech(pos);
-//                if ("-verb-".equals(pos)) {
-//                    wdh.registerPropertyOnCanonicalForm(LexinfoOnt.verbFormMood, LexinfoOnt.infinitive);
-//                }
+        // if ("-verb-".equals(pos)) {
+        // wdh.registerPropertyOnCanonicalForm(LexinfoOnt.verbFormMood, LexinfoOnt.infinitive);
+        // }
         break;
       case TRADBLOCK:
         break;
@@ -453,7 +459,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentGloss = null;
       } else if ((g1.length() == 2 || g1.length() == 3)
           && LatinLangtoCode.threeLettersCode(g1) != null) {
-        // this a a language identifier, just ignore it as we get the language id from the trad macro parameter.
+        // this a a language identifier, just ignore it as we get the language id from the trad
+        // macro parameter.
       } else {
         log.debug("Unexpected template {} in translations for {}", g1, wiktionaryPageName);
       }

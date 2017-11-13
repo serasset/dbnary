@@ -21,11 +21,11 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap = new HashMap<>(20);
     posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
     posAndTypeValueMap.put("名詞", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
-    posAndTypeValueMap
-        .put("idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("idiom",
+        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("成句", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap
-        .put("四字熟語", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("四字熟語",
+        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
     posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
     posAndTypeValueMap.put("adjective", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
@@ -38,11 +38,19 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("副詞", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
     posAndTypeValueMap.put("abbr", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.Word));
     posAndTypeValueMap.put("略語", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.Word));
-    //        posAndTypeValueMap.put("prov", "Proverb");
-    //        posAndTypeValueMap.put("熟語", "Proverb");
-    //        posAndTypeValueMap.put("ことわざ", "Proverb");
-    posAndTypeValueMap.put("形容動詞", new PosAndType(LexinfoOnt.adjective,
-        OntolexOnt.Word)); // TODO: Find a better mapping; this is rather an "adjectival noun..."
+    // posAndTypeValueMap.put("prov", "Proverb");
+    // posAndTypeValueMap.put("熟語", "Proverb");
+    // posAndTypeValueMap.put("ことわざ", "Proverb");
+    posAndTypeValueMap.put("形容動詞", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word)); // TODO:
+    // Find a
+    // better
+    // mapping;
+    // this
+    // is
+    // rather
+    // an
+    // "adjectival
+    // noun..."
     posAndTypeValueMap.put("adjectivenoun", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
     posAndTypeValueMap.put("感動詞", new PosAndType(LexinfoOnt.interjection, OntolexOnt.Word));
     // Ignorable part of speech
@@ -53,7 +61,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     // adjectivenoun, 形容動詞
     // 慣用句 (Idiom)
-    // 和語の漢字表記 --> notes the kanji spelling of words from Japanese Origin. Sometimes, only points to the kana writing. (it may be used as a category)
+    // 和語の漢字表記 --> notes the kanji spelling of words from Japanese Origin. Sometimes, only points to
+    // the kana writing. (it may be used as a category)
     // 慣用句 --> Idiom ? What is the difference with other Idioms
     // 感動詞 --> Interjection
     // 人名 --> Person's name: Proper Noun
@@ -71,7 +80,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // TODO Check what is meant by the words that are given after the POS.
     // TODO: check if the POS macros are given some args.
     // TODO: treat: ==={{noun}}?{{adverb}}===
-    // DONE: some pos (like idiom) may be used as a POS or as a sub section in the entry. => Check the header level.
+    // DONE: some pos (like idiom) may be used as a POS or as a sub section in the entry. => Check
+    // the header level.
     // Only keep level 3 headers ? --> No.
     // Heuristic is used: if entry length <= 2 then idiom is not a POS.
     PosAndType pos = null;
@@ -85,7 +95,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     }
     pos = posAndTypeValueMap.get(posKey);
     if (null != posKey && (posKey.equals("idiom") || posKey.equals("成句"))) {
-      // When idiom is found on a 1 or 2 char entry, it is assumed to be a section giving the idioms build from the entry.
+      // When idiom is found on a 1 or 2 char entry, it is assumed to be a section giving the idioms
+      // build from the entry.
       // Otherwise it is believed to be a Part Of Speech.
       if (pageName.length() <= 2) {
         pos = null;

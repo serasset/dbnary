@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
 
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-  // TODO: {{grafía alternativa|hogaño|nota1=más usada|leng=es}}: 2450 résultats, 500 pour * '''Variante''', {{variantes si la prononciation est différente}}.
+  // TODO: {{grafía alternativa|hogaño|nota1=más usada|leng=es}}: 2450 résultats, 500 pour *
+  // '''Variante''', {{variantes si la prononciation est différente}}.
 
   private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
@@ -51,46 +52,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
 
-    languageSectionPatternString = new StringBuilder()
-        .append("(?:")
-        .append("^\\s*\\{\\{")
-        .append("([\\p{Upper}\\-]*)(?:\\|([^\\}]*))?")
-        .append("\\}\\}")
-        .append(")|(?:")
-        .append("^==\\s*\\{\\{lengua\\|(.*)\\}\\}\\s*==\\s*$")
-        .append(")")
-        .toString();
+    languageSectionPatternString = new StringBuilder().append("(?:").append("^\\s*\\{\\{")
+        .append("([\\p{Upper}\\-]*)(?:\\|([^\\}]*))?").append("\\}\\}").append(")|(?:")
+        .append("^==\\s*\\{\\{lengua\\|(.*)\\}\\}\\s*==\\s*$").append(")").toString();
 
     languageSectionPattern = Pattern.compile(languageSectionPatternString, Pattern.MULTILINE);
-    multilineMacroPatternString =
-        new StringBuilder().append("\\{\\{")
-            .append("([^\\}\\|]*)(?:\\|([^\\}]*))?")
-            .append("\\}\\}")
-            .toString();
+    multilineMacroPatternString = new StringBuilder().append("\\{\\{")
+        .append("([^\\}\\|]*)(?:\\|([^\\}]*))?").append("\\}\\}").toString();
 
-    headerPatternString = new StringBuilder()
-        .append("(?:")
-        .append("^==([^=].*)==\\s*$")
-        .append(")|(?:")
-        .append("^===([^=].*)===\\s*$")
-        .append(")|(?:")
-        .append("^====([^=].*)====\\s*$")
-        .append(")").toString();
+    headerPatternString = new StringBuilder().append("(?:").append("^==([^=].*)==\\s*$")
+        .append(")|(?:").append("^===([^=].*)===\\s*$").append(")|(?:")
+        .append("^====([^=].*)====\\s*$").append(")").toString();
 
-    sectionPatternString = new StringBuilder()
-        .append("(?m)(?:").append(headerPatternString)
-        .append(")").toString();
+    sectionPatternString =
+        new StringBuilder().append("(?m)(?:").append(headerPatternString).append(")").toString();
 
     sectionPattern = Pattern.compile(sectionPatternString);
 
-    spanishDefinitionPatternString = new StringBuilder()
-        .append("(?:")
-        .append("^;([^:]*):([^\n\r]*)$")
-        .append(")|(?:")
-        .append(WikiPatterns.macroPatternString)
-        .append(")|(?:")
-        .append("^:([^\n\r]*)$")
-        .append(")").toString();
+    spanishDefinitionPatternString = new StringBuilder().append("(?:")
+        .append("^;([^:]*):([^\n\r]*)$").append(")|(?:").append(WikiPatterns.macroPatternString)
+        .append(")|(?:").append("^:([^\n\r]*)$").append(")").toString();
     spanishDefinitionPattern = Pattern.compile(spanishDefinitionPatternString, Pattern.MULTILINE);
 
     posMarkers = new HashSet<String>(20);
@@ -319,7 +300,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     state = IGNOREPOS;
   }
 
-  // TODO: variants, pronunciations and other elements are common to the different entries in the page.
+  // TODO: variants, pronunciations and other elements are common to the different entries in the
+  // page.
   private void extractSpanishData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
@@ -337,7 +319,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               gotoDefBlock(m, pos);
             }
           } else if (isHeader(m)) {
-            // Level 2 header that are not a correct POS, or Etimology or Pronunciation are considered as ignorable POS.
+            // Level 2 header that are not a correct POS, or Etimology or Pronunciation are
+            // considered as ignorable POS.
             // unknownHeaders.add(m.group(0));
             gotoNoData(m);
           } else {

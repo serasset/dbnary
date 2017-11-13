@@ -18,7 +18,8 @@ import org.getalp.dbnary.WiktionaryIndex;
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
-  protected final static String languageSectionPatternString = "(?m)^\\s*=\\s*([^=]*)\\}\\}\\s*=\\s*$";
+  protected final static String languageSectionPatternString =
+      "(?m)^\\s*=\\s*([^=]*)\\}\\}\\s*=\\s*$";
   protected final static String sectionPatternString = "(?m)^={2,5}\\s*(.*?)\\s*={2,5}$";
 
   // TODO: handle pronounciation
@@ -51,7 +52,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // protected final static Pattern languageSectionPattern;
   protected final static HashSet<String> posMarkers;
-  //protected final static HashSet<String> nymMarkers;
+  // protected final static HashSet<String> nymMarkers;
   protected final static HashMap<String, String> nymMarkerToNymName;
 
   static {
@@ -97,8 +98,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private boolean isCorrectPOS;
 
 
-  /* (non-Javadoc)
-   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
+   * org.getalp.blexisma.semnet.SemanticNetwork)
    */
   @Override
   public void extractData() {
@@ -136,17 +140,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
 
-  //    private HashSet<String> unsupportedSections = new HashSet<String>(100);
+  // private HashSet<String> unsupportedSections = new HashSet<String>(100);
   void gotoNoData(Matcher m) {
     state = NODATA;
-//        try {
-//            if (! unsupportedSections.contains(m.group(1))) {
-//                unsupportedSections.add(m.group(1));
-//                System.out.println(m.group(1));
-//            }
-//        } catch (IllegalStateException e) {
-//            // nop
-//        }
+    // try {
+    // if (! unsupportedSections.contains(m.group(1))) {
+    // unsupportedSections.add(m.group(1));
+    // System.out.println(m.group(1));
+    // }
+    // } catch (IllegalStateException e) {
+    // // nop
+    // }
   }
 
 

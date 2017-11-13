@@ -16,29 +16,55 @@ public class WikiPattern {
    * <table border="0" cellpadding="1" cellspacing="0" summary="Regular expression constructs, and
    * what they match">
    *
-   * <tr align="left"> <th align="left" id="construct">Construct</th> <th align="left"
-   * id="matches">Matches</th> </tr>
+   * <tr align="left">
+   * <th align="left" id="construct">Construct</th>
+   * <th align="left" id="matches">Matches</th>
+   * </tr>
    *
-   * <tr><th>&nbsp;</th></tr> <tr align="left"><th colspan="2" id="classes">Character
-   * classes</th></tr>
+   * <tr>
+   * <th>&nbsp;</th>
+   * </tr>
+   * <tr align="left">
+   * <th colspan="2" id="classes">Character classes</th>
+   * </tr>
    *
-   * <tr><td valign="top">{@code \p{Template}}</td> <td headers="matches">a full wiki
-   * template.</td></tr> <tr><td valign="top">{@code \p{Link}}</td> <td headers="matches">either an
-   * Internal or an External Link.</td></tr> <tr><td valign="top">{@code \p{ExternalLink}}</td> <td
-   * headers="matches">an External Link.</td></tr> <tr><td valign="top">{@code
-   * \p{InternalLink}}</td> <td headers="matches">an Internal Link (complete with its eventual
-   * suffix).</td></tr>
+   * <tr>
+   * <td valign="top">{@code \p{Template}}</td>
+   * <td headers="matches">a full wiki template.</td>
+   * </tr>
+   * <tr>
+   * <td valign="top">{@code \p{Link}}</td>
+   * <td headers="matches">either an Internal or an External Link.</td>
+   * </tr>
+   * <tr>
+   * <td valign="top">{@code \p{ExternalLink}}</td>
+   * <td headers="matches">an External Link.</td>
+   * </tr>
+   * <tr>
+   * <td valign="top">{@code \p{InternalLink}}</td>
+   * <td headers="matches">an Internal Link (complete with its eventual suffix).</td>
+   * </tr>
    *
    *
-   * <tr><th>&nbsp;</th></tr> <tr align="left"><th colspan="2" id="events">Open/Close
-   * events</th></tr>
+   * <tr>
+   * <th>&nbsp;</th>
+   * </tr>
+   * <tr align="left">
+   * <th colspan="2" id="events">Open/Close events</th>
+   * </tr>
    *
-   * <tr><td valign="top"><tt>(_</tt><i>xxx</i><tt>_</tt></td> <td headers="matches">the opening of
-   * an event, where <i>xxx</i> is identifies the event (xxx is a sequence of characters, possibly
-   * empty). If present, xxx will represent a group name (take it into account when playing with
-   * group count.</td></tr> <tr><td valign="top"><tt>_</tt><i>xxx</i><tt>_)</tt></td> <td
-   * headers="matches">the closing of an event which was given name <i>xxx</i> on opening. If
-   * <i>xxx</i> is empty, matches any closing event.</td></tr> </table>
+   * <tr>
+   * <td valign="top"><tt>(_</tt><i>xxx</i><tt>_</tt></td>
+   * <td headers="matches">the opening of an event, where <i>xxx</i> is identifies the event (xxx is
+   * a sequence of characters, possibly empty). If present, xxx will represent a group name (take it
+   * into account when playing with group count.</td>
+   * </tr>
+   * <tr>
+   * <td valign="top"><tt>_</tt><i>xxx</i><tt>_)</tt></td>
+   * <td headers="matches">the closing of an event which was given name <i>xxx</i> on opening. If
+   * <i>xxx</i> is empty, matches any closing event.</td>
+   * </tr>
+   * </table>
    *
    * @param regex The extended regular expression
    * @return a Pattern matching the given extended regex.
@@ -48,36 +74,19 @@ public class WikiPattern {
     return Pattern.compile(correctedRegex);
   }
 
-  private static String reserveWikiPatternWords = new StringBuffer()
-      .append("(?<")
-      .append("TMPL")
-      .append(">").append("\\\\(?<TMATCH>[pP])\\{Template\\}")
-      .append(")|(?<")
-      .append("RESERVED")
-      .append(">").append("\\\\(?<RMATCH>[pP])\\{Reserved\\}")
-      .append(")|(?<")
-      .append("L")
-      .append(">").append("\\\\(?<LMATCH>[pP])\\{Link\\}")
-      .append(")|(?<")
-      .append("IL")
-      .append(">").append("\\\\(?<ILMATCH>[pP])\\{InternalLink\\}")
-      .append(")|(?<")
-      .append("EL")
-      .append(">").append("\\\\(?<ELMATCH>[pP])\\{ExternalLink\\}")
-      .append(")|(?<")
-      .append("OPEN")
-      .append(">").append("\\(_(?<ONAME>\\p{Alpha}\\p{Alnum}*)?_")
-      .append(")|(?<")
-      .append("CLOSE")
-      .append(">").append("_(?<CNAME>\\p{Alpha}\\p{Alnum}*)?_\\)")
-      .append(")|(?<")
-      .append("WHITESPACE")
+  private static String reserveWikiPatternWords = new StringBuffer().append("(?<").append("TMPL")
+      .append(">").append("\\\\(?<TMATCH>[pP])\\{Template\\}").append(")|(?<").append("RESERVED")
+      .append(">").append("\\\\(?<RMATCH>[pP])\\{Reserved\\}").append(")|(?<").append("L")
+      .append(">").append("\\\\(?<LMATCH>[pP])\\{Link\\}").append(")|(?<").append("IL").append(">")
+      .append("\\\\(?<ILMATCH>[pP])\\{InternalLink\\}").append(")|(?<").append("EL").append(">")
+      .append("\\\\(?<ELMATCH>[pP])\\{ExternalLink\\}").append(")|(?<").append("OPEN").append(">")
+      .append("\\(_(?<ONAME>\\p{Alpha}\\p{Alnum}*)?_").append(")|(?<").append("CLOSE").append(">")
+      .append("_(?<CNAME>\\p{Alpha}\\p{Alnum}*)?_\\)").append(")|(?<").append("WHITESPACE")
       .append(">").append("\\\\(?<WPMATCH>[pP])\\{White_Space\\}")
-      //.append(")|(?<")
-      //.append("EL")
-      //.append(">").append("\\\\p\\{ExternalLink\\}")
-      .append(")")
-      .toString();
+      // .append(")|(?<")
+      // .append("EL")
+      // .append(">").append("\\\\p\\{ExternalLink\\}")
+      .append(")").toString();
 
   private static final Pattern lexerPatern = Pattern.compile(reserveWikiPatternWords);
 
@@ -89,7 +98,7 @@ public class WikiPattern {
   public static final String LINKS = INTERNAL_LINKS + EXTERNAL_LINKS;
   public static final String RESERVED = TEMPLATES + LINKS + HEADERS + LIST_ITEMS;
 
-  private static String whitespace_chars = ""       /* dummy empty string for homogeneity */
+  private static String whitespace_chars = "" /* dummy empty string for homogeneity */
       + "\\u0009" // CHARACTER TABULATION
       + "\\u000A" // LINE FEED (LF)
       + "\\u000B" // LINE TABULATION
@@ -116,7 +125,7 @@ public class WikiPattern {
       + "\\u202F" // NARROW NO-BREAK SPACE
       + "\\u205F" // MEDIUM MATHEMATICAL SPACE
       + "\\u3000" // IDEOGRAPHIC SPACE
-      ;
+  ;
 
   public static String toStandardPattern(String regex) {
     StringBuffer correctedRegex = new StringBuffer(regex.length());

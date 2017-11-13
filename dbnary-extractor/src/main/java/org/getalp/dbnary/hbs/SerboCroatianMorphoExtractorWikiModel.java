@@ -1,5 +1,8 @@
 package org.getalp.dbnary.hbs;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
 import org.getalp.dbnary.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -9,10 +12,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
 
 public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
 
@@ -214,8 +213,8 @@ public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
       }
     }
 
-    dwdh.registerInflection("hbs", pos, flexionForm,
-        canonicalForm, 1, inflectionData.toPropertyObjectMap());
+    dwdh.registerInflection("hbs", pos, flexionForm, canonicalForm, 1,
+        inflectionData.toPropertyObjectMap());
   }
 
   protected void parseTable(Element table, String contextDiv) {
@@ -294,9 +293,7 @@ public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
   }
 
   protected void checkOtherForm(String word, int curr, int size,
-      ArrayList<ArrayList<String>> contextTop,
-      ArrayList<String> contextLeft,
-      String contextDiv) {
+      ArrayList<ArrayList<String>> contextTop, ArrayList<String> contextLeft, String contextDiv) {
     inflectionData.init();
     addContextDiv(contextDiv);
     addContextLeft(contextLeft);
@@ -398,13 +395,11 @@ public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
         log.debug("Unknown contextTop {} --in-- {}", contextTop, wdh.currentLexEntry());
     }
 
-    if (word != null &&
-        !word.equals(("")) &&
-        !word.contains("1   Standardni hrvatski zapis;") &&
-        !word.contains("2   Za muški rod; u slučaju vršitelja radnje")) {
+    if (word != null && !word.equals(("")) && !word.contains("1   Standardni hrvatski zapis;")
+        && !word.contains("2   Za muški rod; u slučaju vršitelja radnje")) {
       word = word.replaceAll("\\d", "");
-      wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), word,
-          wdh.currentLexEntry(), 1, inflectionData.toPropertyObjectMap());
+      wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), word, wdh.currentLexEntry(), 1,
+          inflectionData.toPropertyObjectMap());
     }
   }
 

@@ -16,7 +16,7 @@ public class TestInterwikiLinks {
     Connector connector = new Connector();
     Parse parse = Parse.create();
     parse.prop("iwlinks").page("flight").format("json");
-    String rawXmlResponse = null; //connector.query(user, parse);
+    String rawXmlResponse = null; // connector.query(user, parse);
     if (rawXmlResponse == null) {
       System.out.println("Got no XML result for the query");
     }

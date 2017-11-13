@@ -41,7 +41,7 @@ public class GeneralStatistics {
       out.println(getHeaders());
     }
 
-    //out.print(ISO639_3.sharedInstance.inEnglish(language));
+    // out.print(ISO639_3.sharedInstance.inEnglish(language));
     out.print((nble));
     out.print("," + nblv);
     out.print("," + nbsense);

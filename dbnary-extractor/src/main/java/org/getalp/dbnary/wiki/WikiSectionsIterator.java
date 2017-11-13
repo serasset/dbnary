@@ -41,9 +41,10 @@ public class WikiSectionsIterator implements Iterator<WikiSection> {
   }
 
   // Collect next element and prepare for the following
-  // sequence is of type XXXXXHCCCCCCCCChXXXHCCC where X is to be discarded, H is a header of level n and h is a higher level header
-  // init state is       ^currentToken
-  // final state is           ^currentToken
+  // sequence is of type XXXXXHCCCCCCCCChXXXHCCC where X is to be discarded, H is a header of level
+  // n and h is a higher level header
+  // init state is ^currentToken
+  // final state is ^currentToken
   private void advanceToNextHeading() {
     while (!eof() && !isOpeningHeading(currentToken)) {
       advance();
@@ -52,13 +53,11 @@ public class WikiSectionsIterator implements Iterator<WikiSection> {
   }
 
   public boolean isOpeningHeading(WikiText.Token tok) {
-    return tok instanceof WikiText.Heading &&
-        ((WikiText.Heading) tok).getLevel() == level;
+    return tok instanceof WikiText.Heading && ((WikiText.Heading) tok).getLevel() == level;
   }
 
   public boolean isClosingHeading(WikiText.Token tok) {
-    return tok instanceof WikiText.Heading &&
-        ((WikiText.Heading) tok).getLevel() <= level;
+    return tok instanceof WikiText.Heading && ((WikiText.Heading) tok).getLevel() <= level;
   }
 
   @Override
@@ -72,8 +71,8 @@ public class WikiSectionsIterator implements Iterator<WikiSection> {
       throw new NoSuchElementException("No remaining section in this wikitext.");
     }
     WikiText.Heading sectionHeading = (WikiText.Heading) currentToken;
-    WikiText.WikiContent sectionContent = content.getWikiText().new WikiContent(
-        currentToken.offset.end);
+    WikiText.WikiContent sectionContent =
+        content.getWikiText().new WikiContent(currentToken.offset.end);
     advance();
     while (!eof() && !isClosingHeading(currentToken)) {
       sectionContent.addToken(currentToken);

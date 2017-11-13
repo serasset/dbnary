@@ -41,13 +41,10 @@ public class DbnaryModel {
       char c = s.charAt(i);
       if (Character.isSpaceChar(c)) {
         res.append('_');
-      } else if ((c >= '\u00A0' && c <= '\u00BF') ||
-          (c == '<') || (c == '>') || (c == '%') ||
-          (c == '"') || (c == '#') || (c == '[') ||
-          (c == ']') || (c == '\\') || (c == '^') ||
-          (c == '`') || (c == '{') || (c == '|') ||
-          (c == '}') || (c == '\u00D7') || (c == '\u00F7')
-          ) {
+      } else if ((c >= '\u00A0' && c <= '\u00BF') || (c == '<') || (c == '>') || (c == '%')
+          || (c == '"') || (c == '#') || (c == '[') || (c == ']') || (c == '\\') || (c == '^')
+          || (c == '`') || (c == '{') || (c == '|') || (c == '}') || (c == '\u00D7')
+          || (c == '\u00F7')) {
         try {
           res.append(URLEncoder.encode("" + c, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
@@ -77,14 +74,10 @@ public class DbnaryModel {
       char c = pos.charAt(i);
       if (Character.isSpaceChar(c)) {
         res.append('_');
-      } else if ((c >= '\u00A0' && c <= '\u00BF') ||
-          (c == '<') || (c == '>') || (c == '%') ||
-          (c == '"') || (c == '#') || (c == '[') ||
-          (c == ']') || (c == '\\') || (c == '^') ||
-          (c == '`') || (c == '{') || (c == '|') ||
-          (c == '}') || (c == '\u00D7') || (c == '\u00F7') ||
-          (c == '-') || (c == '_') ||
-          Character.isISOControl(c)) {
+      } else if ((c >= '\u00A0' && c <= '\u00BF') || (c == '<') || (c == '>') || (c == '%')
+          || (c == '"') || (c == '#') || (c == '[') || (c == ']') || (c == '\\') || (c == '^')
+          || (c == '`') || (c == '{') || (c == '|') || (c == '}') || (c == '\u00D7')
+          || (c == '\u00F7') || (c == '-') || (c == '_') || Character.isISOControl(c)) {
         ; // nop
       } else if (c == '\u200e' || c == '\u200f') {
         ; // ignore rRLM and LRM.

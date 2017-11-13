@@ -107,9 +107,7 @@ public class UpdateAndExtractDumps {
         "Do not use the ftp network, but decompress and extract.");
     options.addOption(OptionBuilder.withLongOpt(ENABLE_FEATURE_OPTION)
         .withDescription("Enable additional extraction features (e.g. morpho,etymology,foreign).")
-        .hasArg()
-        .withArgName("feature")
-        .create());
+        .hasArg().withArgName("feature").create());
 
   }
 
@@ -171,9 +169,8 @@ public class UpdateAndExtractDumps {
     }
 
     if (cmd.hasOption(MODEL_OPTION)) {
-      System.err.println(
-          "WARN: the " + MODEL_OPTION + " option is now deprecated. Forcibly using model: "
-              + DEFAULT_MODEL);
+      System.err.println("WARN: the " + MODEL_OPTION
+          + " option is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
       // model = cmd.getOptionValue(MODEL_OPTION);
     }
 
@@ -384,9 +381,8 @@ public class UpdateAndExtractDumps {
             HttpEntity entity = response.getEntity();
 
             if (null == entity) {
-              System.err
-                  .format("Could not retrieve directory listing for language %s (url=%s)\n", lang,
-                      languageDumpFolder);
+              System.err.format("Could not retrieve directory listing for language %s (url=%s)\n",
+                  lang, languageDumpFolder);
               System.err.format("Using locally available dump.\n");
               return defaultRes;
             }
@@ -563,8 +559,8 @@ public class UpdateAndExtractDumps {
         .println("uncompressing file : " + compressedDumpFile + " to " + uncompressedDumpFile);
 
     try {
-      BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(
-          new FileInputStream(compressedDumpFile));
+      BZip2CompressorInputStream bzIn =
+          new BZip2CompressorInputStream(new FileInputStream(compressedDumpFile));
       r = new BufferedReader(new InputStreamReader(bzIn, "UTF-8"));
 
       FileOutputStream out = new FileOutputStream(uncompressedDumpFile);
@@ -697,9 +693,8 @@ public class UpdateAndExtractDumps {
     try {
       ExtractWiktionary.main(args);
     } catch (WiktionaryIndexerException e) {
-      System.err.println(
-          "Caught IndexerException while extracting dump file: " + uncompressDumpFileName(lang,
-              dir));
+      System.err.println("Caught IndexerException while extracting dump file: "
+          + uncompressDumpFileName(lang, dir));
       System.err.println(e.getLocalizedMessage());
       e.printStackTrace();
       status = false;
@@ -716,7 +711,8 @@ public class UpdateAndExtractDumps {
 
   public static void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp("java -cp /path/to/dbnary.jar " + UpdateAndExtractDumps.class.getName()
+    formatter.printHelp(
+        "java -cp /path/to/dbnary.jar " + UpdateAndExtractDumps.class.getName()
             + " [OPTIONS] languageCode...",
         "With OPTIONS in:", options,
         "languageCode is the wiktionary code for a language (usually a 2 letter code).", false);

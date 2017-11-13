@@ -25,8 +25,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String languageSectionPatternString = "={2}\\s*\\{\\{Dil\\|([^\\}]*)\\}\\}\\s*={2}";
-  protected final static String partOfSpeechPatternString = "={3}([^\\{]*)\\{\\{Söz ?türü\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
+  protected final static String languageSectionPatternString =
+      "={2}\\s*\\{\\{Dil\\|([^\\}]*)\\}\\}\\s*={2}";
+  protected final static String partOfSpeechPatternString =
+      "={3}([^\\{]*)\\{\\{Söz ?türü\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
   protected final static String macroPatternString = "\\{\\{([^\\}]*)\\}\\}";
   protected final static String definitionPatternString = "^:{1,3}\\[[^\\]]*]\\s*(.*)$";
   protected final static String pron1PatternString = "\\{\\{Çeviri Yazı\\|([^\\}\\|]*)(.*)\\}\\}";
@@ -66,23 +68,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // macroPattern = Pattern.compile(macroPatternString);
     definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
     languageSectionPattern = Pattern.compile(languageSectionPatternString);
-        
-       /* pronPatternString = new StringBuilder()
-        .append("(?:").append(pron1PatternString).append(")")
-    	.append("|(?:").append(pron2PatternString).append(")")
-    	.append("|(?:").append(pron3PatternString).append(")")
-        .toString();
 
-        pronPattern = Pattern.compile(pronPatternString);*/
+    /*
+     * pronPatternString = new StringBuilder() .append("(?:").append(pron1PatternString).append(")")
+     * .append("|(?:").append(pron2PatternString).append(")")
+     * .append("|(?:").append(pron3PatternString).append(")") .toString();
+     * 
+     * pronPattern = Pattern.compile(pronPatternString);
+     */
 
     pron1Pattern = Pattern.compile(pron1PatternString);
     pron2Pattern = Pattern.compile(pron2PatternString);
     pron3Pattern = Pattern.compile(pron3PatternString);
 
-    macroOrPOSPatternString = new StringBuilder()
-        .append("(?:").append(macroPatternString)
-        .append(")|(?:").append(partOfSpeechPatternString).append(")")
-        .toString();
+    macroOrPOSPatternString = new StringBuilder().append("(?:").append(macroPatternString)
+        .append(")|(?:").append(partOfSpeechPatternString).append(")").toString();
 
     macroOrPOSPattern = Pattern.compile(macroOrPOSPatternString);
 
@@ -92,7 +92,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     partOfSpeechMarkers.add("Ad"); // Name
     partOfSpeechMarkers.add("Özel ad"); // Name ...
     partOfSpeechMarkers.add("Sıfat"); // Adjective
-    partOfSpeechMarkers.add("Zarf");//Adverb
+    partOfSpeechMarkers.add("Zarf");// Adverb
 
     nymMarkerToNymName = new HashMap<String, String>(20);
     nymMarkerToNymName.put("sinonim", "syn");
@@ -122,7 +122,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     int turkishSectionStartOffset = languageFilter.end();
     // Advance till end of sequence or new language section
-    // WHY filter on section level ?: while (languageFilter.find() && (languageFilter.start(1) - languageFilter.start()) != 2) {
+    // WHY filter on section level ?: while (languageFilter.find() && (languageFilter.start(1) -
+    // languageFilter.start()) != 2) {
     languageFilter.find();
     // languageFilter.find();
     int turkishSectionEndOffset =
@@ -351,8 +352,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizeEntryExtraction();
   }
 
-//    static final String glossOrMacroPatternString;
-//    static final Pattern glossOrMacroPattern;
+  // static final String glossOrMacroPatternString;
+  // static final Pattern glossOrMacroPattern;
 
   protected final static String carPatternString;
   protected final static String macroOrLinkOrCarPatternString;
@@ -361,38 +362,29 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   static {
 
     // les caractères visible
-    carPatternString =
-        new StringBuilder().append("(.)")
-            .toString();
+    carPatternString = new StringBuilder().append("(.)").toString();
 
-    // TODO: We should suppress multiline xml comments even if macros or line are to be on a single line.
-    macroOrLinkOrCarPatternString = new StringBuilder()
-        .append("(?:")
-        .append(WikiPatterns.macroPatternString)
-        .append(")|(?:")
-        .append(WikiPatterns.linkPatternString)
-        .append(")|(?:")
-        .append("(:*\\*)")
-        .append(")|(?:")
-        .append("(\\*:)")
-        .append(")|(?:")
-        .append("\\[([^\\[][^\\]]*)\\]")
-        .append(")|(?:")
-        .append(carPatternString)
-        .append(")").toString();
+    // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
+    // line.
+    macroOrLinkOrCarPatternString =
+        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
+            .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)")
+            .append(")|(?:").append("(\\*:)").append(")|(?:").append("\\[([^\\[][^\\]]*)\\]")
+            .append(")|(?:").append(carPatternString).append(")").toString();
 
-//		glossOrMacroPatternString = "(?:\\[([^\\][a-z]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\}\\})";
-//		glossOrMacroPattern = Pattern.compile(glossOrMacroPatternString);
+    // glossOrMacroPatternString =
+    // "(?:\\[([^\\][a-z]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\}\\})";
+    // glossOrMacroPattern = Pattern.compile(glossOrMacroPatternString);
   }
 
-  //protected final static Pattern carPattern;
+  // protected final static Pattern carPattern;
   protected final static Pattern macroOrLinkOrCarPattern;
 
 
   static {
-    //carPattern = Pattern.compile(carPatternString);
-    macroOrLinkOrCarPattern = Pattern
-        .compile(macroOrLinkOrCarPatternString, Pattern.MULTILINE | Pattern.DOTALL);
+    // carPattern = Pattern.compile(carPatternString);
+    macroOrLinkOrCarPattern =
+        Pattern.compile(macroOrLinkOrCarPatternString, Pattern.MULTILINE | Pattern.DOTALL);
   }
 
   public void extractTranslations(int startOffset, int endOffset) {
@@ -431,8 +423,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (macro.equalsIgnoreCase("Üst")) {
               if (macroOrLinkOrCarMatcher.group(2) != null) {
                 globalGloss = macroOrLinkOrCarMatcher.group(2);
-                globalGlossResource = wdh
-                    .createGlossResource(glossFilter.extractGlossStructure(globalGloss), rank++);
+                globalGlossResource =
+                    wdh.createGlossResource(glossFilter.extractGlossStructure(globalGloss), rank++);
               } else {
                 globalGloss = "";
                 globalGlossResource = null;
@@ -441,10 +433,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else if (macro.equalsIgnoreCase("Alt")) {
               globalGloss = "";
             } else if (macro.equalsIgnoreCase("Orta")) {
-              //ignore
+              // ignore
             }
           } else if (link != null) {
-            //System.err.println("Unexpected link while in INIT state.");
+            // System.err.println("Unexpected link while in INIT state.");
           } else if (starcont != null) {
             log.debug("Unexpected point continuation while in INIT state.");
           } else if (star != null) {
@@ -453,13 +445,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             // Ignore glosses that are outside languages... Maybe add them to global gloss ?
           } else if (character != null) {
             if (character.equals(":")) {
-              //System.err.println("Skipping ':' while in INIT state.");
+              // System.err.println("Skipping ':' while in INIT state.");
             } else if (character.equals("\n") || character.equals("\r")) {
 
             } else if (character.equals(",")) {
-              //System.err.println("Skipping ',' while in INIT state.");
+              // System.err.println("Skipping ',' while in INIT state.");
             } else {
-              //System.err.println("Skipping " + g5 + " while in INIT state.");
+              // System.err.println("Skipping " + g5 + " while in INIT state.");
             }
           }
 
@@ -471,8 +463,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (macro.equalsIgnoreCase("Üst")) {
               if (macroOrLinkOrCarMatcher.group(2) != null) {
                 globalGloss = macroOrLinkOrCarMatcher.group(2);
-                globalGlossResource = wdh
-                    .createGlossResource(glossFilter.extractGlossStructure(globalGloss), rank++);
+                globalGlossResource =
+                    wdh.createGlossResource(glossFilter.extractGlossStructure(globalGloss), rank++);
               } else {
                 globalGloss = "";
                 globalGlossResource = null;
@@ -496,12 +488,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               langname = LangTools.normalize(macro);
             }
           } else if (link != null) {
-            //System.err.println("Unexpected link while in LANGUE state.");
+            // System.err.println("Unexpected link while in LANGUE state.");
           } else if (starcont != null) {
             lang = previousLang;
             ETAT = TRAD;
           } else if (star != null) {
-            //System.err.println("Skipping '*' while in LANGUE state.");
+            // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (null != inlineGloss) {
             // Ignore glosses that are outside languages... Maybe add them to global gloss ?
           } else if (character != null) {
@@ -513,32 +505,33 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               rank = 1;
               ETAT = TRAD;
             } else if (character.equals("\n") || character.equals("\r")) {
-              //System.err.println("Skipping newline while in LANGUE state.");
+              // System.err.println("Skipping newline while in LANGUE state.");
             } else if (character.equals(",")) {
-              //System.err.println("Skipping ',' while in LANGUE state.");
+              // System.err.println("Skipping ',' while in LANGUE state.");
             } else {
               langname = langname + character;
             }
           }
 
           break;
-        // TODO: maybe extract words that are not linked (currently kept in usage, but dropped as translation word is null).
+        // TODO: maybe extract words that are not linked (currently kept in usage, but dropped as
+        // translation word is null).
         case TRAD:
           if (macro != null) {
             if (macro.equalsIgnoreCase("Üst")) {
               if (macroOrLinkOrCarMatcher.group(2) != null) {
                 globalGloss = macroOrLinkOrCarMatcher.group(2);
-                globalGlossResource = wdh
-                    .createGlossResource(glossFilter.extractGlossStructure(globalGloss), rank++);
+                globalGlossResource =
+                    wdh.createGlossResource(glossFilter.extractGlossStructure(globalGloss), rank++);
               } else {
                 globalGloss = "";
                 globalGlossResource = null;
               }
-              //if (word != null && word.length() != 0) {
-              //	if(lang!=null){
-              //		delegate.registerTranslation(lang, currentGlose, usage, word);
-              //	}
-              //}
+              // if (word != null && word.length() != 0) {
+              // if(lang!=null){
+              // delegate.registerTranslation(lang, currentGlose, usage, word);
+              // }
+              // }
               langname = "";
               word = "";
               usage = "";
@@ -601,19 +594,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           } else if (starcont != null) {
             // System.err.println("Skipping '*:' while in LANGUE state.");
           } else if (star != null) {
-            //System.err.println("Skipping '*' while in LANGUE state.");
+            // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (null != inlineGloss) {
-            currentInlineGloss = "[" + inlineGloss
-                + "]";  // an inlinegloss invalidates the previous gloss (see if there
+            currentInlineGloss = "[" + inlineGloss + "]"; // an inlinegloss invalidates the previous
+            // gloss (see if there
             // are cases where several glosses are specified...
             String gloss = (globalGloss.length() == 0) ? currentInlineGloss
                 : globalGloss + "|" + currentInlineGloss;
-            inlineGlossResource = wdh
-                .createGlossResource(glossFilter.extractGlossStructure(gloss), rank++);
+            inlineGlossResource =
+                wdh.createGlossResource(glossFilter.extractGlossStructure(gloss), rank++);
           } else if (character != null) {
             if (character.equals("\n") || character.equals("\r")) {
               usage = usage.trim();
-              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
+              // currentGlose);
               if (word != null && word.length() != 0) {
                 if (lang != null) {
                   wdh.registerTranslation(lang, inlineGlossResource, usage, word);
@@ -630,7 +624,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               ETAT = INIT;
             } else if (character.equals(",") || character.equals(";")) {
               usage = usage.trim();
-              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " + currentGlose);
+              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
+              // currentGlose);
               if (word != null && word.length() != 0) {
                 if (lang != null) {
                   wdh.registerTranslation(lang, inlineGlossResource, usage, word);
@@ -651,57 +646,57 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-//    private void extractTranslationsOriginal(int startOffset, int endOffset) {
-//        Matcher macroMatcher = glossOrMacroPattern.matcher(pageContent);
-//        macroMatcher.region(startOffset, endOffset);
-//        String currentGlose = null;
-//        	
-//        while (macroMatcher.find()) {
-//        	String glose = macroMatcher.group(1);
-//        	
-//        	if(glose != null){
-//
-//        		currentGlose = glose ;
-//        		
-//        	} else {
-//          
-//        		String g1 = macroMatcher.group(2);
-//        		String g2 = macroMatcher.group(3);
-//        		String g3 = macroMatcher.group(4);
-//    
-//           if (g1.equals("çeviri")) {
-//            	String lang;
-//            	String word = null;
-//            	String usage = null;
-//
-//            	lang = g2;
-//        		// normalize language code
-//              lang = LangTools.normalize(lang, lang);
-//                  int i1;    
-//                if ((i1 = g3.indexOf('|')) == -1) {
-//                    word = g3;
-//                } else {
-//                    word = g3.substring(0, i1);
-//                    usage = g3.substring(i1+1);
-//                }
-//            	lang=TurkishLangtoCode.threeLettersCode(lang);
-//                if(lang!=null && word != null){
-//             	   wdh.registerTranslation(lang, currentGlose, usage, word);
-//                }
-//           
-//            } else if (g1.equals("Üst")) {
-//                // German wiktionary does not provide a glose to disambiguate.
-//                // Just ignore this marker.
-//            } else if (g1.equals("Orta")) {
-//                // just ignore it
-//            } else if (g1.equals("Alt")) {
-//                // Forget the current glose
-//                currentGlose = null;
-//            }
-//        
-//        }
-//    }
-// }
+  // private void extractTranslationsOriginal(int startOffset, int endOffset) {
+  // Matcher macroMatcher = glossOrMacroPattern.matcher(pageContent);
+  // macroMatcher.region(startOffset, endOffset);
+  // String currentGlose = null;
+  //
+  // while (macroMatcher.find()) {
+  // String glose = macroMatcher.group(1);
+  //
+  // if(glose != null){
+  //
+  // currentGlose = glose ;
+  //
+  // } else {
+  //
+  // String g1 = macroMatcher.group(2);
+  // String g2 = macroMatcher.group(3);
+  // String g3 = macroMatcher.group(4);
+  //
+  // if (g1.equals("çeviri")) {
+  // String lang;
+  // String word = null;
+  // String usage = null;
+  //
+  // lang = g2;
+  // // normalize language code
+  // lang = LangTools.normalize(lang, lang);
+  // int i1;
+  // if ((i1 = g3.indexOf('|')) == -1) {
+  // word = g3;
+  // } else {
+  // word = g3.substring(0, i1);
+  // usage = g3.substring(i1+1);
+  // }
+  // lang=TurkishLangtoCode.threeLettersCode(lang);
+  // if(lang!=null && word != null){
+  // wdh.registerTranslation(lang, currentGlose, usage, word);
+  // }
+  //
+  // } else if (g1.equals("Üst")) {
+  // // German wiktionary does not provide a glose to disambiguate.
+  // // Just ignore this marker.
+  // } else if (g1.equals("Orta")) {
+  // // just ignore it
+  // } else if (g1.equals("Alt")) {
+  // // Forget the current glose
+  // currentGlose = null;
+  // }
+  //
+  // }
+  // }
+  // }
 
   private void extractPron(int startOffset, int endOffset) {
 
@@ -721,8 +716,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
       if (pron1Matcher.group(1) != null) {
         Pron1 = pron1Matcher.group(1);
-        String pron = StringEscapeUtils.unescapeHtml4(
-            Pron1); // Pour decoder ce qui est codé en caractère exemple: &#x02A7;&#x0251;
+        String pron = StringEscapeUtils.unescapeHtml4(Pron1); // Pour decoder ce qui est codé en
+        // caractère exemple: &#x02A7;&#x0251;
 
         if (null == pron || pron.equals("")) {
           return;
@@ -735,8 +730,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     } else if (pron2Matcher.find()) {
       if (pron2Matcher.group(1) != null) {
         Pron2 = pron2Matcher.group(1);
-        String pron = StringEscapeUtils.unescapeHtml4(
-            Pron2); // Pour decoder ce qui est codé en caractère exemple: &#x02A7;&#x0251;
+        String pron = StringEscapeUtils.unescapeHtml4(Pron2); // Pour decoder ce qui est codé en
+        // caractère exemple: &#x02A7;&#x0251;
 
         if (null == pron || pron.equals("")) {
           return;
@@ -749,12 +744,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     } else if (pron3Matcher.find()) {
       if (pron3Matcher.group(1) != null) {
         Pron3 = pron3Matcher.group(1);
-        if (Pron3.indexOf('[')
-            != -1) { // if pron3 = :[[Yardım:Söyleniş|Ses Dosyası]]: {{HP}} [[Media:Ocak.ogg|ocak]],  ''Çoğul:'' {{HP}}
+        if (Pron3.indexOf('[') != -1) { // if pron3 = :[[Yardım:Söyleniş|Ses Dosyası]]: {{HP}}
+          // [[Media:Ocak.ogg|ocak]], ''Çoğul:'' {{HP}}
           Pron3 = "";
         }
-        String pron = StringEscapeUtils.unescapeHtml4(
-            Pron3); // Pour decoder ce qui est codé en caractère exemple: &#x02A7;&#x0251;
+        String pron = StringEscapeUtils.unescapeHtml4(Pron3); // Pour decoder ce qui est codé en
+        // caractère exemple: &#x02A7;&#x0251;
 
         if (null == pron || pron.equals("")) {
           return;
@@ -771,7 +766,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   protected void extractDefinitions(int startOffset, int endOffset) {
-    // TODO: The definition pattern is the only one that changes. Hence, we should normalize this processing and put the macro in language specific parameters.
+    // TODO: The definition pattern is the only one that changes. Hence, we should normalize this
+    // processing and put the macro in language specific parameters.
     Matcher definitionMatcher = definitionPattern.matcher(this.pageContent);
     definitionMatcher.region(startOffset, endOffset);
     while (definitionMatcher.find()) {

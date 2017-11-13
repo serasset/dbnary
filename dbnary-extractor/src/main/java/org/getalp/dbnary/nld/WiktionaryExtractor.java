@@ -31,7 +31,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private ExpandAllWikiModel defOrExampleExpander;
 
 
-  private enum Block {NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK}
+  private enum Block {
+    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK
+  }
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
@@ -40,8 +42,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryIndex wi) {
     super.setWiktionaryIndex(wi);
-    defOrExampleExpander = new ExpandAllWikiModel(wi, new Locale("nl"),
-        "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    defOrExampleExpander =
+        new ExpandAllWikiModel(wi, new Locale("nl"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
   }
 
   protected final static Pattern languageSectionPattern;
@@ -52,27 +54,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
 
-    String examplePatternString =
-        new StringBuilder().append("\\{\\{\\s*")
-            .append("([^\\}\\|\n\r]*)\\s*\\|([^\n\r]*)")
-            .append("(?:\\}\\})$")
-            .toString();
+    String examplePatternString = new StringBuilder().append("\\{\\{\\s*")
+        .append("([^\\}\\|\n\r]*)\\s*\\|([^\n\r]*)").append("(?:\\}\\})$").toString();
 
-    String defOrExamplePatternString = new StringBuilder()
-        .append("(?:")
-        .append(WikiPatterns.definitionPatternString)
-        .append(")|(?:")
-        .append(examplePatternString)
-        .append(")").toString();
+    String defOrExamplePatternString =
+        new StringBuilder().append("(?:").append(WikiPatterns.definitionPatternString)
+            .append(")|(?:").append(examplePatternString).append(")").toString();
 
-    sectionPatternString =
-        new StringBuilder().append("\\{\\{\\s*-")
-            .append("([^\\}\\|\n\r]*)-\\s*(?:\\|([^\\}\n\r]*))?")
-            .append("\\}\\}")
-            .toString();
+    sectionPatternString = new StringBuilder().append("\\{\\{\\s*-")
+        .append("([^\\}\\|\n\r]*)-\\s*(?:\\|([^\\}\n\r]*))?").append("\\}\\}").toString();
 
     defOrExamplePattern = Pattern.compile(defOrExamplePatternString, Pattern.MULTILINE);
-    //defOrExamplePattern = Pattern.compile(examplePatternString);
+    // defOrExamplePattern = Pattern.compile(examplePatternString);
 
     languageSectionPattern = Pattern.compile(languageSectionPatternString);
 
@@ -83,11 +76,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     nymMarkerToNymName.put("synoniems", "syn");
     nymMarkerToNymName.put("Antoniemen", "ant");
     nymMarkerToNymName.put("Hyponiemen", "hypo");
-        /*nymMarkerToNymName.put("Hypernyms", "hyper");
-        nymMarkerToNymName.put("Meronyms", "mero");
-        nymMarkerToNymName.put("Holonyms", "holo");
-        nymMarkerToNymName.put("Troponyms", "tropo");
-       */
+    /*
+     * nymMarkerToNymName.put("Hypernyms", "hyper"); nymMarkerToNymName.put("Meronyms", "mero");
+     * nymMarkerToNymName.put("Holonyms", "holo"); nymMarkerToNymName.put("Troponyms", "tropo");
+     */
 
   }
 
@@ -96,8 +88,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private String currentNym = null;
 
-  /* (non-Javadoc)
-   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String, org.getalp.blexisma.semnet.SemanticNetwork)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
+   * org.getalp.blexisma.semnet.SemanticNetwork)
    */
   @Override
   public void extractData() {
@@ -149,9 +144,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (nextBlock == null) {
         continue;
       }
-      // If current block is IGNOREPOS, we should ignore everything but a new DEFBLOCK/INFLECTIONBLOCK
-      if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock
-          || Block.INFLECTIONBLOCK == nextBlock)) {
+      // If current block is IGNOREPOS, we should ignore everything but a new
+      // DEFBLOCK/INFLECTIONBLOCK
+      if (Block.IGNOREPOS != currentBlock
+          || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
         leaveCurrentBlock(m);
         gotoNextBlock(nextBlock, context);
       }
@@ -250,7 +246,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     macroMatcher.region(startOffset, endOffset);
     Resource currentGloss = null;
     int rank = 1;
-    // TODO: there are templates called "qualifier" used to further qualify the translation check and evaluate if extracting its data is useful.
+    // TODO: there are templates called "qualifier" used to further qualify the translation check
+    // and evaluate if extracting its data is useful.
     while (macroMatcher.find()) {
       String g1 = macroMatcher.group(1);
 
@@ -269,7 +266,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             word = g2.substring(i1 + 1, i2);
             usage = g2.substring(i2 + 1);
           }
-          //  lang=NetherlandLangToCode.threeLettersCode(lang);
+          // lang=NetherlandLangToCode.threeLettersCode(lang);
           if (lang != null) {
             wdh.registerTranslation(lang, currentGloss, usage, word);
           }
@@ -313,8 +310,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (defOrExampleMatcher.find()) {
       if (null != defOrExampleMatcher.group(1)) {
         extractDefinition(defOrExampleMatcher);
-      } else if ((null != defOrExampleMatcher.group(3)) && (defOrExampleMatcher.group(2)
-          .equals("bijv-1"))) { // Les exemples commencent toujours par bijv-1
+      } else if ((null != defOrExampleMatcher.group(3))
+          && (defOrExampleMatcher.group(2).equals("bijv-1"))) { // Les exemples commencent toujours
+        // par bijv-1
         extractExample(defOrExampleMatcher);
       }
     }

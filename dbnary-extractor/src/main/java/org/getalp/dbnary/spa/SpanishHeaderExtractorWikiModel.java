@@ -37,7 +37,7 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
   }
 
 
-  String[] pronunciationVariants = new String[]{"s", "c", "ll", "y", "yc", "ys", "lls", "llc"};
+  String[] pronunciationVariants = new String[] {"s", "c", "ll", "y", "yc", "ys", "lls", "llc"};
 
 
   private boolean isApi(String s) {
@@ -49,9 +49,8 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName,
-      Map<String, String> parameterMap, Appendable writer)
-      throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
     if ("pronunciación".equals(templateName)) {
       String p1;
       if ((p1 = parameterMap.get("1")) != null && p1.length() > 0) {

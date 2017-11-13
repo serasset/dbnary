@@ -71,8 +71,7 @@ public class WikiText {
 
     Segment offset;
 
-    public void addToken(Token t) {
-    }
+    public void addToken(Token t) {}
 
     public void setEndOffset(int endOffset) {
       this.offset.setEnd(endOffset);
@@ -205,7 +204,8 @@ public class WikiText {
 
     public WikiEventsSequence headers(int level) {
       return headers().and(tok -> ((Heading) tok).getLevel() == level);
-      // return filteredTokens(tok -> (tok instanceof Heading && ((Heading) tok).getLevel() == level));
+      // return filteredTokens(tok -> (tok instanceof Heading && ((Heading) tok).getLevel() ==
+      // level));
     }
 
     public WikiEventsSequence headersMatching(Pattern pattern) {
@@ -481,8 +481,7 @@ public class WikiText {
     }
 
     /**
-     * sets the end offset to the given position (should point to the first char of the closing
-     * "]")
+     * sets the end offset to the given position (should point to the first char of the closing "]")
      *
      * @param position the position of the first character of the enclosing "]"
      */
@@ -560,8 +559,7 @@ public class WikiText {
     }
 
     /**
-     * sets the end offset to the given position (should point to the first char of the closing
-     * "]")
+     * sets the end offset to the given position (should point to the first char of the closing "]")
      *
      * @param position the position of the first character of the enclosing "]"
      */
@@ -620,84 +618,33 @@ public class WikiText {
   private static StringBuffer protocols = new StringBuffer();
 
   static {
-    protocols.append("^(?:")
-        .append("bitcoin:").append("|")
-        .append("ftp://").append("|")
-        .append("ftps://").append("|")
-        .append("geo:").append("|")
-        .append("git://").append("|")
-        .append("gopher://").append("|")
-        .append("http://").append("|")
-        .append("https://").append("|")
-        .append("irc://").append("|")
-        .append("ircs://").append("|")
-        .append("magnet:").append("|")
-        .append("mailto:").append("|")
-        .append("mms://").append("|")
-        .append("news:").append("|")
-        .append("nntp://").append("|")
-        .append("redis://").append("|")
-        .append("sftp://").append("|")
-        .append("sip:").append("|")
-        .append("sips:").append("|")
-        .append("sms:").append("|")
-        .append("ssh://").append("|")
-        .append("svn://").append("|")
-        .append("tel:").append("|")
-        .append("telnet://").append("|")
-        .append("urn:").append("|")
-        .append("worldwind://").append("|")
-        .append("xmpp:").append("|")
-        .append("//").append(")");
+    protocols.append("^(?:").append("bitcoin:").append("|").append("ftp://").append("|")
+        .append("ftps://").append("|").append("geo:").append("|").append("git://").append("|")
+        .append("gopher://").append("|").append("http://").append("|").append("https://")
+        .append("|").append("irc://").append("|").append("ircs://").append("|").append("magnet:")
+        .append("|").append("mailto:").append("|").append("mms://").append("|").append("news:")
+        .append("|").append("nntp://").append("|").append("redis://").append("|").append("sftp://")
+        .append("|").append("sip:").append("|").append("sips:").append("|").append("sms:")
+        .append("|").append("ssh://").append("|").append("svn://").append("|").append("tel:")
+        .append("|").append("telnet://").append("|").append("urn:").append("|")
+        .append("worldwind://").append("|").append("xmpp:").append("|").append("//").append(")");
   }
 
   private static StringBuffer lexerCode = new StringBuffer();
 
   static {
-    lexerCode.append("(?<")
-        .append("OT")
-        .append(">").append("\\{\\{").append(")|")
-        .append("(?<")
-        .append("OIL")
-        .append(">").append("\\[\\[").append(")|")
-        .append("(?<")
-        .append("OEL")
-        .append(">").append("\\[").append(")|")
-        .append("(?<")
-        .append("CT")
-        .append(">").append("\\}\\}").append(")|")
-        .append("(?<")
-        .append("CIL")
-        .append(">").append("\\]\\]").append(")|")
-        .append("(?<")
-        .append("CEL")
-        .append(">").append("\\]").append(")|")
-        .append("(?<")
-        .append("OXC")
-        .append(">").append("<!--").append(")|")
-        .append("(?<")
-        .append("CH")
-        .append(">").append("\\={2,6}$").append(")|")
-        .append("(?<")
-        .append("OH")
-        .append(">").append("={2,6}").append(")|")
-        .append("(?<")
-        .append("OLIST")
-        .append(">").append("\\*+").append(")|")
-        .append("(?<")
-        .append("OINDENT")
-        .append(">").append(":+").append(")|")
-        .append("(?<")
-        .append("PIPE")
-        .append(">").append("\\|").append(")|")
-        .append("(?<")
-        .append("SPACE")
-        .append(">").append(" ").append(")|")
-        .append("(?<")
-        .append("NL")
-        .append(">").append("\r?\n|\r").append(")|")
-        .append("(?<")
-        .append("CHAR")
+    lexerCode.append("(?<").append("OT").append(">").append("\\{\\{").append(")|").append("(?<")
+        .append("OIL").append(">").append("\\[\\[").append(")|").append("(?<").append("OEL")
+        .append(">").append("\\[").append(")|").append("(?<").append("CT").append(">")
+        .append("\\}\\}").append(")|").append("(?<").append("CIL").append(">").append("\\]\\]")
+        .append(")|").append("(?<").append("CEL").append(">").append("\\]").append(")|")
+        .append("(?<").append("OXC").append(">").append("<!--").append(")|").append("(?<")
+        .append("CH").append(">").append("\\={2,6}$").append(")|").append("(?<").append("OH")
+        .append(">").append("={2,6}").append(")|").append("(?<").append("OLIST").append(">")
+        .append("\\*+").append(")|").append("(?<").append("OINDENT").append(">").append(":+")
+        .append(")|").append("(?<").append("PIPE").append(">").append("\\|").append(")|")
+        .append("(?<").append("SPACE").append(">").append(" ").append(")|").append("(?<")
+        .append("NL").append(">").append("\r?\n|\r").append(")|").append("(?<").append("CHAR")
         .append(">").append(".").append(")");
   }
 
@@ -839,7 +786,7 @@ public class WikiText {
             template.gotASpace(pos);
           }
           pos += g.length();
-          //TODO Handle nowiki tags
+          // TODO Handle nowiki tags
         } else if (null != (g = lexer.group("NL"))) {
           // if in ListItem, it's a closing char
           Token t = stack.peek();
@@ -853,7 +800,7 @@ public class WikiText {
           }
           pos += g.length();
           newlineFlag = true;
-          //TODO Handle nowiki tags
+          // TODO Handle nowiki tags
         } else {
           // Normal characters, just advance...
           pos++;
@@ -898,8 +845,7 @@ public class WikiText {
   }
 
   /**
-   * Return the height of the highest template that may be closed (other tokens may be closed
-   * before
+   * Return the height of the highest template that may be closed (other tokens may be closed before
    */
   private int findHighestClosableTemplate(Stack<Token> stack) {
     for (int i = stack.size() - 1; i > 0; i--) {

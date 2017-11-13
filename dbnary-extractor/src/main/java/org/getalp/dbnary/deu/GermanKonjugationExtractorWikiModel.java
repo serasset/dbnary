@@ -54,8 +54,9 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
         return text.equalsIgnoreCase("ich") || text.equalsIgnoreCase("du")
             || text.equalsIgnoreCase("er") || text.equalsIgnoreCase("wir")
             || text.equalsIgnoreCase("ihr") || text.equalsIgnoreCase("sie");
-      } else
+      } else {
         return false;
+      }
     }
     return false;
   }

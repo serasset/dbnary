@@ -86,7 +86,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     polishDefinitionPattern = Pattern.compile(defPattern, Pattern.MULTILINE);
 
-    validSectionTemplates = new HashMap<String, SectionType>(20);
+    validSectionTemplates = new HashMap<>(20);
     validSectionTemplates.put("wymowa", SectionType.PRON);
     validSectionTemplates.put("znaczenia", SectionType.DEFS);
     validSectionTemplates.put("odmiana", SectionType.MORPH);
@@ -106,7 +106,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     validSectionTemplates.put("tłumaczenia", SectionType.TRANS);
     validSectionTemplates.put("źródła", SectionType.IGNORE); // SOURCES
 
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("synonimy", "syn");
     nymMarkerToNymName.put("antonimy", "ant");
     nymMarkerToNymName.put("hiponimy", "hypo");
@@ -131,7 +131,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     // Either the filter is at end of sequence or on Polish language header.
     while (languageFilter.find() && !languageFilter.group(2).contains("polski")) {
-      ;
+      // nop
     }
 
     if (languageFilter.hitEnd()) {
@@ -586,7 +586,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // It's a definition
         HashSet<String> defTemplates = null;
         if (log.isTraceEnabled()) {
-          defTemplates = new HashSet<String>();
+          defTemplates = new HashSet<>();
         }
         String def = definitionExpander.expandAll(definitionMatcher.group(2), defTemplates);
         if (log.isTraceEnabled()) {

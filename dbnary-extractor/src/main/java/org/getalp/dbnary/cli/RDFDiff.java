@@ -43,7 +43,7 @@ public class RDFDiff {
     model.write(System.out, "TURTLE");
   }
 
-  static TreeMap<String, String> anodes2id = new TreeMap<String, String>();
+  static TreeMap<String, String> anodes2id = new TreeMap<>();
 
 
   public static void buildBinding(Model m1, Model m2) {
@@ -56,7 +56,7 @@ public class RDFDiff {
         s = iter.next();
         if (s.isBlank()) {
           ExtendedIterator<Triple> it = m1.getGraph().find(s, Node.ANY, Node.ANY);
-          SortedSet<String> signature = new TreeSet<String>();
+          SortedSet<String> signature = new TreeSet<>();
           while (it.hasNext()) {
             Triple t = it.next();
             signature.add(t.getPredicate().toString() + "+" + t.getObject().toString());
@@ -81,7 +81,7 @@ public class RDFDiff {
         s = iter.next();
         if (s.isBlank()) {
           ExtendedIterator<Triple> it = m2.getGraph().find(s, Node.ANY, Node.ANY);
-          SortedSet<String> signature = new TreeSet<String>();
+          SortedSet<String> signature = new TreeSet<>();
           while (it.hasNext()) {
             Triple t = it.next();
             signature.add(t.getPredicate().toString() + "+" + t.getObject().toString());

@@ -11,7 +11,7 @@ import org.getalp.LangTools;
  */
 public class LatinLangtoCode extends LangTools {
 
-  static HashMap<String, String> h = new HashMap<String, String>();
+  static HashMap<String, String> h = new HashMap<>();
 
   // TODO: check if this is usefull and add Latin language names if necessary
   static {

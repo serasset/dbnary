@@ -30,7 +30,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String senseNumberRegExp =
       "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d)*\\.?[abcdefghijklmn]?)";
   protected final static String senseNumberOrRangeRegExp =
-      "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d|-|–|–|,| |&nbsp;)*\\.?[abcdefghij]?)";
+      "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d|-|\u2013|,| |&nbsp;)*\\.?[abcdefghij]?)"; // long dash
   protected static final String simpleNumListFilter =
       "^\\s*(" + senseNumberRegExp + "(?:\\s*[\\,\\-–]\\s*" + senseNumberRegExp + ")*)\\s*$";
 
@@ -113,7 +113,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // posMarkers.add("Wortverbindung");
     // posMarkers.add("Verb");
 
-    ignorableSectionMarkers = new HashSet<String>(20);
+    ignorableSectionMarkers = new HashSet<>(20);
     ignorableSectionMarkers.add("Silbentrennung");
     ignorableSectionMarkers.add("Aussprache");
     ignorableSectionMarkers.add("Worttrennung");
@@ -168,7 +168,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignorableSectionMarkers.add("Wortbildungen");
     ignorableSectionMarkers.add("Symbole");
 
-    nymMarkers = new HashSet<String>(20);
+    nymMarkers = new HashSet<>(20);
     nymMarkers.add("Synonyme");
     nymMarkers.add("Gegenwörter");
     nymMarkers.add("Gegenworte");
@@ -177,7 +177,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     nymMarkers.add("Meronyms"); // TODO: Any meronym/metonym info in German
     // ?
 
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("Synonyme", "syn");
     nymMarkerToNymName.put("Gegenwörter", "ant");
     nymMarkerToNymName.put("Gegenworte", "ant");
@@ -198,7 +198,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.initializePageExtraction(wiktionaryPageName);
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (languageFilter.find() && !isGermanLanguageHeader(languageFilter)) {
-      ;
+      // nop
     }
     // Either the filter is at end of sequence or on German language header.
     if (languageFilter.hitEnd()) {
@@ -230,8 +230,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, POSBLOCK, NYMBLOCK
   }
 
-  ;
-
   private Block currentBlock = Block.NOBLOCK;
 
   int blockStart = -1;
@@ -245,7 +243,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     currentBlock = Block.IGNOREPOS;
 
     while (m.find()) {
-      HashMap<String, Object> context = new HashMap<String, Object>();
+      HashMap<String, Object> context = new HashMap<>();
       Block nextBlock = computeNextBlock(m, context);
 
       if (nextBlock == null) {
@@ -461,7 +459,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private static HashSet<String> verbMarker;
 
   static {
-    verbMarker = new HashSet<String>();
+    verbMarker = new HashSet<>();
     verbMarker.add("Verb");
     verbMarker.add("Hilfsverb");
   }
@@ -470,14 +468,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private static HashSet<String> inflectedFormMarker;
 
   static {
-    inflectedFormMarker = new HashSet<String>();
+    inflectedFormMarker = new HashSet<>();
     inflectedFormMarker.add("Konjugierte Form");
     inflectedFormMarker.add("Deklinierte Form");
   }
 
 
   private void extractInflections(int startOffset, int endOffset) {
-    if (!wdh.isEnabled(Feature.MORPHOLOGY)) {
+    if (wdh.isDisabled(Feature.MORPHOLOGY)) {
       return;
     }
     parseInflectionTables(startOffset, endOffset);

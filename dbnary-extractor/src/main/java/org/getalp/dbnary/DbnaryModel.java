@@ -52,9 +52,9 @@ public class DbnaryModel {
           e.printStackTrace();
         }
       } else if (Character.isISOControl(c)) {
-        ; // nop
+        // nop
       } else if (c == '\u200e' || c == '\u200f') {
-        ; // ignore rRLM and LRM.
+        // ignore rRLM and LRM.
       } else if (c == '/') {
         res.append("!slash!"); // ignore rRLM and LRM.
       } else {

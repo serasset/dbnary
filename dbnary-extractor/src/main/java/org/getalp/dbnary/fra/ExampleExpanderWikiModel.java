@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
 
-  static Set<String> ignoredTemplates = new HashSet<String>();
+  static Set<String> ignoredTemplates = new HashSet<>();
   static Logger log = LoggerFactory.getLogger(ExampleExpanderWikiModel.class);
 
   static {
@@ -57,7 +57,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
     if (ignoredTemplates.contains(templateName)) {
-      ; // NOP
+      // NOP
     } else if ("source".equals(templateName)) {
       if (context != null) {
         String source = simpleExpander.expandAll(parameterMap.get("1"), this.templates);
@@ -95,7 +95,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       String pattern = parameterMap.get("2");
       int i = s.trim().indexOf(pattern);
       if (-1 != i) {
-        writer.append("" + (i + 1));
+        writer.append("").append(String.valueOf(i + 1));
       }
     } else {
       log.debug("Caught template call: {} --in-- {}", templateName, this.getPageName());

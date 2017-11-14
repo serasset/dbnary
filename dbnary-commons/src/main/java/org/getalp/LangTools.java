@@ -29,11 +29,10 @@ public class LangTools {
     return threeLettersCode(null, s);
   }
 
-  //E.g.: getCode("ita") returns "ita"
-  //E.g.: getCode("it") returns "ita"
-  public static String getCode(String lang) {
-    return ISO639_3.sharedInstance.getIdCode(lang);
-  }
+    //E.g.: getCode("ita") returns "ita"
+  //E.g.: getCode("it") returns "ita"public static String getCode(String lang) {
+        return ISO639_3.sharedInstance.getIdCode(lang);
+    }
 
   public static String getPart1(String language) {
     Lang l = ISO639_3.sharedInstance.getLang(language);

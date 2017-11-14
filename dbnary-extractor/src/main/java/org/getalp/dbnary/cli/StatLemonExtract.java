@@ -75,7 +75,7 @@ public class StatLemonExtract extends DbnaryModel {
   private boolean verbose = true;
 
   // TODO: extract iso code from lexvo entity.
-  private SortedMap<String, IncrementableInt> counts = new TreeMap<String, IncrementableInt>();
+  private SortedMap<String, IncrementableInt> counts = new TreeMap<>();
 
   static {
     options = new Options();
@@ -290,7 +290,7 @@ public class StatLemonExtract extends DbnaryModel {
   private void printTranslationsStats() {
     // Number of relations
     ResIterator relations = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Translation);
-    HashSet<String> langs = new HashSet<String>();
+    HashSet<String> langs = new HashSet<>();
     int others = 0;
     while (relations.hasNext()) {
       Resource r = relations.next();

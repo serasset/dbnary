@@ -6,7 +6,6 @@ package org.getalp.dbnary.lit;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
@@ -287,7 +286,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           String ex =
               tmp.substring(tmp.indexOf("Pvz.") + 4, tmp.length() - 1).replaceAll("\'", "").trim();
           wdh.registerNewDefinition(cleanUpMarkup(def), "" + senseNum);
-          wdh.registerExample(ex, new HashMap<Property, String>());
+          wdh.registerExample(ex, new HashMap<>());
           senseNum++;
         } else {
           wdh.registerNewDefinition(cleanUpMarkup(tmp), "" + senseNum);
@@ -302,7 +301,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     Matcher ex = examplePattern.matcher(pageContent);
     ex.region(start, end);
     while (ex.find()) {
-      wdh.registerExample(ex.group(1), new HashMap<Property, String>());
+      wdh.registerExample(ex.group(1), new HashMap<>());
     }
   }
 

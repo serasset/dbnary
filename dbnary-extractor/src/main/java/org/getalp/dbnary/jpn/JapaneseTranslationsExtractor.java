@@ -71,8 +71,8 @@ public class JapaneseTranslationsExtractor {
         Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
   }
 
-  static HashSet<String> commonUsageMacros = new HashSet<String>();
-  static HashSet<String> fontMacros = new HashSet<String>();
+  static HashSet<String> commonUsageMacros = new HashSet<>();
+  static HashSet<String> fontMacros = new HashSet<>();
 
   static {
     commonUsageMacros.add("m");

@@ -22,7 +22,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static Set<String> bulgarianPOS = new TreeSet<String>();
+  protected final static Set<String> bulgarianPOS = new TreeSet<>();
   protected final static HashMap<String, String> nymMarkerToNymName;
 
   protected final static String translationExpression = "\\s?\\*?\\s?.*\\s?:\\s*.*";
@@ -58,7 +58,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
 
   static {
 
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("Синоними", "syn"); //
     nymMarkerToNymName.put("Антоними", "ant"); //
 
@@ -90,7 +90,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = wdh;
     if (log.isDebugEnabled()) {
-      templates = new HashSet<String>();
+      templates = new HashSet<>();
     }
     this.glossFilter = glossFilter;
     this.expander = new DefinitionsWikiModel(wi, this.fLocale, this.getImageBaseURL(),

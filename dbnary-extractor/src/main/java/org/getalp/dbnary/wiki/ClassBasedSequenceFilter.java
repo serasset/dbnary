@@ -162,26 +162,25 @@ public class ClassBasedSequenceFilter
     }
   }
 
-  public static ArrayList<WikiText.Token> getContent(WikiText.Token t) {
-    if (t instanceof WikiText.Heading) {
-      WikiText.Heading h = (WikiText.Heading) t;
-      return h.getContent().tokens();
-    } else if (t instanceof WikiText.ListItem) {
-      WikiText.ListItem li = (WikiText.ListItem) t;
-      return li.getContent().tokens();
-    } else if (t instanceof WikiText.InternalLink) {
-      WikiText.InternalLink li = (WikiText.InternalLink) t;
-      ArrayList<WikiText.Token> toks = li.getLink().tokens();
+    public static ArrayList<WikiText.Token> getContent(WikiText.Token t) {
+        if (t instanceof WikiText.Heading) {
+            WikiText.Heading h = (WikiText.Heading) t;
+            return h.getContent().tokens();
+        } else if (t instanceof WikiText.ListItem) {
+            WikiText.ListItem li = (WikiText.ListItem) t;
+            return li.getContent().tokens();
+        } else if (t instanceof WikiText.InternalLink) {
+            WikiText.InternalLink li = (WikiText.InternalLink) t;
+            ArrayList<WikiText.Token> toks = li.getLink().tokens();
       WikiText.WikiContent suf = li.getSuffix();
       if (null != suf) {
         toks.addAll(suf.tokens());
-      }
-      return toks;
+      }return toks;
     } else if (t instanceof WikiText.ExternalLink) {
-      WikiText.ExternalLink li = (WikiText.ExternalLink) t;
+      WikiText.ExternalLinkli= (WikiText.ExternalLink) t;
       return li.getLink().tokens();
-    } else {
-      throw new RuntimeException("Cannot collect parameter contents on a content less token");
+        } else{
+            throw new RuntimeException("Cannot collect parameter contents on a content less token");
     }
   }
 

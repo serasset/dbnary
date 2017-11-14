@@ -72,7 +72,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     sectionPattern = Pattern.compile(sectionPatternString);
     pronPattern = Pattern.compile(pronPatternString);
 
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("synoniems", "syn");
     nymMarkerToNymName.put("Antoniemen", "ant");
     nymMarkerToNymName.put("Hyponiemen", "hypo");
@@ -138,7 +138,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     currentBlock = Block.NOBLOCK;
     while (m.find()) {
 
-      HashMap<String, Object> context = new HashMap<String, Object>();
+      HashMap<String, Object> context = new HashMap<>();
       Block nextBlock = computeNextBlock(m, context);
 
       if (nextBlock == null) {

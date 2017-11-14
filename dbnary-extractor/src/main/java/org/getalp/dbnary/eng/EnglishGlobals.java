@@ -7,7 +7,7 @@ public class EnglishGlobals {
   public final static HashMap<String, String> nymMarkerToNymName;
 
   static {
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("Synonyms", "syn");
     nymMarkerToNymName.put("Antonyms", "ant");
     nymMarkerToNymName.put("Hyponyms", "hypo");

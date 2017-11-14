@@ -13,7 +13,6 @@ public class WiktionaryIndexer {
 
   public static final String pageTag = "page";
   public static final String titleTag = "title";
-  public static final int tagSize = pageTag.length() + 3;
 
   public static final XMLInputFactory2 xmlif;
 

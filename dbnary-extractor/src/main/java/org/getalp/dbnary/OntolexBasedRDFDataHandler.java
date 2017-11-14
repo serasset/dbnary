@@ -154,8 +154,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public boolean isEnabled(Feature f) {
-    return featureBoxes.containsKey(f);
+  public boolean isDisabled(Feature f) {
+    return !featureBoxes.containsKey(f);
   }
 
   @Override
@@ -359,8 +359,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   // TODO : Alternate spelling or lexical Variant ?
   // In Ontolex, orthographic variants are supposed to be given as a second writtenRep in the same
-  // Form
-  // lexicalVariant should link 2 Lexical entries, same with varTrans lexicalRel
+  // Form lexicalVariant should link 2 Lexical entries, same with varTrans lexicalRel
   @Override
   public void registerAlternateSpelling(String alt) {
     if (null == currentLexEntry) {
@@ -621,12 +620,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       SimpleImmutableEntry<String, String> key =
           new SimpleImmutableEntry<String, String>(canonicalForm, pos);
 
-      HashSet<HashSet<PropertyObjectPair>> otherForms = heldBackOtherForms.get(key);
-
-      if (otherForms == null) {
-        otherForms = new HashSet<HashSet<PropertyObjectPair>>();
-        heldBackOtherForms.put(key, otherForms);
-      }
+      HashSet<HashSet<PropertyObjectPair>> otherForms =
+          heldBackOtherForms.computeIfAbsent(key, k -> new HashSet<HashSet<PropertyObjectPair>>());
 
       otherForms.add(props);
     } else {
@@ -659,11 +654,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   private Resource getLexvoLanguageResource(String lang) {
-    Resource res = languages.get(lang);
-    if (res == null) {
-      res = tBox.createResource(LEXVO + lang);
-      languages.put(lang, res);
-    }
+    Resource res = languages.computeIfAbsent(lang, l -> tBox.createResource(LEXVO + l));
     return res;
   }
 

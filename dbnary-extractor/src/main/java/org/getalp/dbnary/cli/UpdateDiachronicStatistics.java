@@ -219,7 +219,7 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
   }
 
   private Map<String, String> readAndParseStats(String gstatFile) throws IOException {
-    TreeMap<String, String> m = new TreeMap<String, String>();
+    TreeMap<String, String> m = new TreeMap<>();
 
     File gs = new File(gstatFile);
 
@@ -269,12 +269,12 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
   // a byte array to a HEX string
   public static String getMD5Checksum(File file) throws Exception {
     byte[] b = createChecksum(file);
-    String result = "";
+    StringBuilder result = new StringBuilder();
 
-    for (int i = 0; i < b.length; i++) {
-      result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
+    for (byte aB : b) {
+      result.append(Integer.toString((aB & 0xff) + 0x100, 16).substring(1));
     }
-    return result;
+    return result.toString();
   }
 
 }

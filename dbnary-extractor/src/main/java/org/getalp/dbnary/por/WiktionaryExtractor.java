@@ -49,13 +49,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
 
-    posMarkers = new HashSet<String>(20);
+    posMarkers = new HashSet<>(20);
     posMarkers.add("Substantivo");
     posMarkers.add("Adjetivo");
     posMarkers.add("Advérbio");
     posMarkers.add("Verbo");
 
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("Sinônimos", "syn");
     nymMarkerToNymName.put("Antônimos", "ant");
     nymMarkerToNymName.put("Hipônimos", "hypo");

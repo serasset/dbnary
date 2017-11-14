@@ -12,7 +12,7 @@ import org.getalp.dbnary.WiktionaryIndex;
 
 public class PortugueseMorphoExtractorWikiModel extends DbnaryWikiModel {
 
-  static Set<String> russianPOS = new TreeSet<String>();
+  static Set<String> russianPOS = new TreeSet<>();
 
   static {
     russianPOS.add("сущ");

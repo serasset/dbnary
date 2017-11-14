@@ -2,7 +2,6 @@ package org.getalp.dbnary.nor;
 
 import java.util.HashMap;
 import java.util.Set;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OliaOnt;
@@ -317,7 +316,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void registerExample(String ex) {
     if (currentSense != null) {
-      registerExample(ex, new HashMap<Property, String>());
+      registerExample(ex, new HashMap<>());
     }
   }
 }

@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
  */
 public class GermanMorphologyExtractor {
 
-  private WikiText wikiText;
   private final WiktionaryIndex wi;
   private final IWiktionaryDataHandler wdh;
   protected final GermanDeklinationExtractorWikiModel deklinationExtractor;
@@ -29,7 +28,7 @@ public class GermanMorphologyExtractor {
 
   // private boolean reflexiv=false;
   static {
-    ignoredTemplates = new HashSet<String>();
+    ignoredTemplates = new HashSet<>();
     ignoredTemplates.add("Absatz");
     ignoredTemplates.add("Hebr");
     ignoredTemplates.add("Internetquelle");
@@ -58,7 +57,7 @@ public class GermanMorphologyExtractor {
   }
 
   public void extractMorphologicalData(String wikiSourceText, String pageName) {
-    this.wikiText = new WikiText(wikiSourceText);
+    WikiText wikiText = new WikiText(wikiSourceText);
 
     for (WikiText.Token t : wikiText.templates()) {
       WikiText.Template wt = (WikiText.Template) t;

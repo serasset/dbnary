@@ -10,7 +10,7 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
 
   private Logger log = LoggerFactory.getLogger(ForeignLanguagesWiktionaryDataHandler.class);
 
-  private HashMap<String, String> prefixes = new HashMap<String, String>();
+  private HashMap<String, String> prefixes = new HashMap<>();
 
   private String currentEntryLanguage = null;
   private String currentPrefix = null;

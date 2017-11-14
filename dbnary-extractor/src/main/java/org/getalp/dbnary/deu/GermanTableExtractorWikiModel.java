@@ -25,7 +25,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
   private Logger log = LoggerFactory.getLogger(GermanTableExtractorWikiModel.class);
   protected IWiktionaryDataHandler wdh;
 
-  protected Set<Element> alreadyParsedTables = new HashSet<Element>();
+  protected Set<Element> alreadyParsedTables = new HashSet<>();
 
   public GermanTableExtractorWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL,
       String linkBaseURL, IWiktionaryDataHandler wdh) {
@@ -53,8 +53,8 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
       return;
     }
     Elements elts = doc.select("h3, table");
-    LinkedList<String> h2Context = new LinkedList<String>();
-    LinkedList<String> h3Context = new LinkedList<String>();
+    LinkedList<String> h2Context = new LinkedList<>();
+    LinkedList<String> h3Context = new LinkedList<>();
     for (Element elt : elts) {
       if (elt.tagName().equalsIgnoreCase("h3")) {
         h3Context.clear();
@@ -88,7 +88,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
   protected void parseTable(Element table, List<String> globalContext) {
     alreadyParsedTables.add(table);
     Elements rows = table.select("tr");
-    ArrayMatrix<String> columnHeaders = new ArrayMatrix<String>();
+    ArrayMatrix<String> columnHeaders = new ArrayMatrix<>();
     int nrow = 0;
     for (Element row : rows) {
       // Filter out rows that belong to nested tables

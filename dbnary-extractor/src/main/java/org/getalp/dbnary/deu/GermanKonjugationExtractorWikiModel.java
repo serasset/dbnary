@@ -283,7 +283,7 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
   private static HashSet<String> declinatedFormMarker;
 
   static {
-    declinatedFormMarker = new HashSet<String>();
+    declinatedFormMarker = new HashSet<>();
     declinatedFormMarker.add("adjektivische Deklination");
   }
 

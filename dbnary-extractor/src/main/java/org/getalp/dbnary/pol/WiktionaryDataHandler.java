@@ -22,8 +22,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
-  private Map<String, Resource[]> currentWordsenses = new HashMap<String, Resource[]>();
-  private Set<Resource> currentLexEntries = new HashSet<Resource>();
+  private Map<String, Resource[]> currentWordsenses = new HashMap<>();
+  private Set<Resource> currentLexEntries = new HashSet<>();
 
   class DecodedPOS {
 
@@ -41,7 +41,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     Resource lexinfoPOS;
     Resource entryType;
 
-    ArrayList<PropValPair> additionalProps = new ArrayList<PropValPair>();
+    ArrayList<PropValPair> additionalProps = new ArrayList<>();
 
     public DecodedPOS(String sn, Resource pos, Resource type) {
       this.simplePOSName = sn;
@@ -453,7 +453,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       ArrayList<String> numlist = getSenseNumbers(currentGloss);
       StructuredGloss sg = new StructuredGloss(numlist.toString(), null);
       Resource currentGlossResource = createGlossResource(sg);
-      ArrayList<Resource[]> senseAndEntries = new ArrayList<Resource[]>();
+      ArrayList<Resource[]> senseAndEntries = new ArrayList<>();
       for (String n : numlist) {
         Resource[] se = currentWordsenses.get(n);
         if (se == null) {
@@ -462,15 +462,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           senseAndEntries.add(se);
         }
       }
-      Map<Resource, ArrayList<Resource>> sensesByEntry =
-          new HashMap<Resource, ArrayList<Resource>>();
+      Map<Resource, ArrayList<Resource>> sensesByEntry = new HashMap<>();
       for (Resource[] se : senseAndEntries) {
         Resource sense = se[0];
         Resource entry = se[1];
 
         ArrayList<Resource> senses = sensesByEntry.get(entry);
         if (senses == null) {
-          senses = new ArrayList<Resource>();
+          senses = new ArrayList<>();
         }
         senses.add(sense);
         sensesByEntry.put(entry, senses);
@@ -497,7 +496,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   // static Pattern range3 = Pattern.compile("(\\d+)\\.(\\d+)[\\-—–](\\d+)\\.(\\d+)");
 
   public ArrayList<String> getSenseNumbers(String nums) {
-    ArrayList<String> ns = new ArrayList<String>();
+    ArrayList<String> ns = new ArrayList<>();
     nums = nums.trim();
     Matcher mRange1 = range1.matcher(nums);
     Matcher mRange2 = range2.matcher(nums);

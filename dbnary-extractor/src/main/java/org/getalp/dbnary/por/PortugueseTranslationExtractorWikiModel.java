@@ -41,7 +41,7 @@ public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
     initialize();
   }
 
-  private static final HashSet<String> transMacroWithNotes = new HashSet<String>();
+  private static final HashSet<String> transMacroWithNotes = new HashSet<>();
 
   static {
     transMacroWithNotes.add("xlatio");

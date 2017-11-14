@@ -55,7 +55,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     sectionPattern2 = Pattern.compile(sectionPatternString2);
     sectionPattern = Pattern.compile(sectionPatternString, Pattern.DOTALL);
 
-    posMarkers = new HashSet<String>(20);
+    posMarkers = new HashSet<>(20);
     posMarkers.add("Substantiivi");
     posMarkers.add("Adjektiivi");
     posMarkers.add("adj");
@@ -65,7 +65,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     posMarkers.add("Verbi");
     posMarkers.add("Erisnimi");
 
-    nymMarkers = new HashSet<String>(20);
+    nymMarkers = new HashSet<>(20);
     nymMarkers.add("syn");
     nymMarkers.add("vas");
     nymMarkers.add("Synonyymit");
@@ -73,7 +73,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     nymMarkers.add("syno");
     nymMarkers.add("vast");
 
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("syn", "syn");
     nymMarkerToNymName.put("Synonyymit", "syn");
     nymMarkerToNymName.put("syno", "syn");
@@ -105,7 +105,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // System.out.println(pageContent);
     Matcher languageFilter = languagePattern.matcher(pageContent);
     while (languageFilter.find() && !languageFilter.group(1).equals("Suomi")) {
-      ;
+      // nop
     }
     // Either the filter is at end of sequence or on suomi language header.
     if (languageFilter.hitEnd()) {
@@ -115,7 +115,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int suomiSectionStartOffset = languageFilter.end();
     // Advance till end of sequence or new language section
     while (languageFilter.find() && languageFilter.group().charAt(2) == '=') {
-      ;
+      // nop
     }
     // languageFilter.find();
     int suomiSectionEndOffset =

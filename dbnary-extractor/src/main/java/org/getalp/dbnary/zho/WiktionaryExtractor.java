@@ -267,11 +267,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private boolean isNymHeader(Matcher m) {
     Matcher nym = WikiPatterns.macroPattern.matcher(m.group(1).trim());
 
-    if (nym.matches()) {
-      return (ChineseRelatedWordsExtractorWikiModel.relMarkerToRelName).containsKey(nym.group(1));
-    } else {
-      return false;
-    }
+    return nym.matches()
+        && (ChineseRelatedWordsExtractorWikiModel.relMarkerToRelName).containsKey(nym.group(1));
   }
 
   private void gotoNymBlock(Matcher m) {
@@ -294,11 +291,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // Related Words
   private boolean isRelatedHeader(Matcher m) {
     Matcher rel = WikiPatterns.macroPattern.matcher(m.group(1).trim());
-    if (rel.matches()) {
-      return rel.group(1).trim().equals("rel");
-    } else {
-      return false;
-    }
+    return rel.matches() && rel.group(1).trim().equals("rel");
   }
 
   private void gotoRelBlock(Matcher m) {

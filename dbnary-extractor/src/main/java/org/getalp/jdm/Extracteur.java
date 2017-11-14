@@ -23,8 +23,8 @@ public class Extracteur {
     // DECLARATIONS
     Pattern pattern;
     Matcher matcher;
-    HashMap<String, Noeud> hmn = new HashMap<String, Noeud>();
-    HashMap<String, Property> hmp = new HashMap<String, Property>();
+    HashMap<String, Noeud> hmn = new HashMap<>();
+    HashMap<String, Property> hmp = new HashMap<>();
     // CREATION MODEL
     Model model = ModelFactory.createDefaultModel();
 

@@ -94,7 +94,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    */
   @Override
   public void extractData() {
-    unknownHeaders = new HashSet<String>();
+    unknownHeaders = new HashSet<>();
     Matcher l1 = level2HeaderPattern.matcher(pageContent);
     int jpnStart = -1;
     wdh.initializePageExtraction(wiktionaryPageName);
@@ -127,10 +127,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (l1.group(1).trim().startsWith("{{jpn")) {
       return true;
     }
-    if (l1.group(1).trim().startsWith("日本語")) {
-      return true;
-    }
-    return false;
+    return l1.group(1).trim().startsWith("日本語");
   }
 
   // private static String posPatternString =
@@ -226,11 +223,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private boolean isNymHeader(Matcher m) {
     Matcher nym = WikiPatterns.macroPattern.matcher(m.group(1).trim());
 
-    if (nym.matches()) {
-      return JapaneseRelatedWordsExtractorWikiModel.relMarkerToRelName.containsKey(nym.group(1));
-    } else {
-      return false;
-    }
+    return nym.matches()
+        && JapaneseRelatedWordsExtractorWikiModel.relMarkerToRelName.containsKey(nym.group(1));
   }
 
   private void gotoNymBlock(Matcher m) {
@@ -253,11 +247,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // Related Words
   private boolean isRelatedHeader(Matcher m) {
     Matcher rel = WikiPatterns.macroPattern.matcher(m.group(1).trim());
-    if (rel.matches()) {
-      return rel.group(1).trim().equals("rel");
-    } else {
-      return false;
-    }
+    return rel.matches() && rel.group(1).trim().equals("rel");
   }
 
   private void gotoRelBlock(Matcher m) {

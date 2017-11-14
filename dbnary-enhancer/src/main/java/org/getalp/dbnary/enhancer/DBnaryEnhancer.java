@@ -55,7 +55,7 @@ public class DBnaryEnhancer {
   protected static Options options = null; // Command line op
   protected CommandLine cmd = null; // Command Line arguments
   protected Map<String, String> languages = new TreeMap<>(); // I want the map to be sorted by
-                                                             // language code.
+  // language code.
   protected PrintStream statsOutput = null;
   protected StatsModule stats = null;
   protected String rdfFormat;

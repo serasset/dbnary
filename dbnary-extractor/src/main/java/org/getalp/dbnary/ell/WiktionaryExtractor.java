@@ -47,7 +47,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         .append("([^\\}\\|\n\r]*)(?:([^\\}\n\r]*))?").append("\\s*\\}\\}").append("={2,5}")
         .toString();
 
-    posMacros = new HashSet<String>(20);
+    posMacros = new HashSet<>(20);
     // defMarkers.add("ουσιαστικό"); // Noun
     // defMarkers.add("επίθετο"); // Adjective
     // // defMarkers.add("μορφή επιθέτου"); // Adjective
@@ -115,14 +115,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     posMacros.add("φράση");
     posMacros.add("χαρακτήρας");
 
-    nymMarkers = new HashSet<String>(20);
+    nymMarkers = new HashSet<>(20);
     nymMarkers.add("συνώνυμα");// Synonyms
     nymMarkers.add("αντώνυμα");// Antonyms
     nymMarkers.add("hyponyms");// Hyponyms
     nymMarkers.add("hypernyms");// Hypernyms
     nymMarkers.add("meronyms");// Meronyms
 
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("συνώνυμα", "syn");
     nymMarkerToNymName.put("αντώνυμα", "ant");
     nymMarkerToNymName.put("hyponyms", "hypo");
@@ -175,7 +175,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // System.out.println(pageContent);
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (isnotgreek(languageFilter)) {
-      ;
+      // nop
     }
     // Either the filter is at end of sequence or on greek language header.
     if (languageFilter.hitEnd()) {
@@ -378,36 +378,45 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (macroMatcher.find()) {
       String g1 = macroMatcher.group(1);
 
-      if (g1.equals("τ")) {
-        String g2 = macroMatcher.group(2);
-        int i1, i2;
-        String lang, word;
-        if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
-          lang = LangTools.normalize(g2.substring(0, i1));
-          String usage = null;
-          if ((i2 = g2.indexOf('|', i1 + 1)) == -1) {
-            word = g2.substring(i1 + 1);
-          } else {
-            word = g2.substring(i1 + 1, i2);
-            usage = g2.substring(i2 + 1);
+      switch (g1) {
+        case "τ": {
+          String g2 = macroMatcher.group(2);
+          int i1, i2;
+          String lang, word;
+          if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
+            lang = LangTools.normalize(g2.substring(0, i1));
+            String usage = null;
+            if ((i2 = g2.indexOf('|', i1 + 1)) == -1) {
+              word = g2.substring(i1 + 1);
+            } else {
+              word = g2.substring(i1 + 1, i2);
+              usage = g2.substring(i2 + 1);
+            }
+            lang = GreekLangtoCode.threeLettersCode(lang);
+            if (lang != null) {
+              wdh.registerTranslation(lang, currentGlose, usage, word);
+            }
           }
-          lang = GreekLangtoCode.threeLettersCode(lang);
-          if (lang != null) {
-            wdh.registerTranslation(lang, currentGlose, usage, word);
+          break;
+        }
+        case "μτφ-αρχή":
+        case "(": {
+          // Get the glose that should help disambiguate the source acception
+          String g2 = macroMatcher.group(2);
+          // Ignore glose if it is a macro
+          if (g2 != null && !g2.startsWith("{{")) {
+            currentGlose = wdh.createGlossResource(glossFilter.extractGlossStructure(g2));
           }
+          break;
         }
-      } else if (g1.equals("μτφ-αρχή") || g1.equals("(")) {
-        // Get the glose that should help disambiguate the source acception
-        String g2 = macroMatcher.group(2);
-        // Ignore glose if it is a macro
-        if (g2 != null && !g2.startsWith("{{")) {
-          currentGlose = wdh.createGlossResource(glossFilter.extractGlossStructure(g2));
-        }
-      } else if (g1.equals("μτφ-μέση")) {
-        // just ignore it
-      } else if (g1.equals("μτφ-τέλος") || g1.equals(")")) {
-        // Forget the current glose
-        currentGlose = null;
+        case "μτφ-μέση":
+          // just ignore it
+          break;
+        case "μτφ-τέλος":
+        case ")":
+          // Forget the current glose
+          currentGlose = null;
+          break;
       }
     }
   }

@@ -3,7 +3,6 @@ package org.getalp.dbnary.mlg;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
@@ -399,7 +398,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     String ex = pageContent.substring(start, end);
     if (!ex.trim().equals("")) {
-      wdh.registerExample(ex.replaceAll("\n", ""), new HashMap<Property, String>());
+      wdh.registerExample(ex.replaceAll("\n", ""), new HashMap<>());
     }
   }
 }

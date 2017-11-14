@@ -74,14 +74,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         .append(")|(?:").append("^:([^\n\r]*)$").append(")").toString();
     spanishDefinitionPattern = Pattern.compile(spanishDefinitionPatternString, Pattern.MULTILINE);
 
-    posMarkers = new HashSet<String>(20);
+    posMarkers = new HashSet<>(20);
     posMarkers.add("sustantivo");
     posMarkers.add("adjetivo");
     posMarkers.add("sustantivo propio");
     posMarkers.add("adverbio");
     posMarkers.add("verbo");
 
-    ignorableSectionMarkers = new HashSet<String>(20);
+    ignorableSectionMarkers = new HashSet<>(20);
     ignorableSectionMarkers.add("Silbentrennung");
     ignorableSectionMarkers.add("Aussprache");
     ignorableSectionMarkers.add("Herkunft");
@@ -124,7 +124,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignorableSectionMarkers.add("Charakteristische Wortkombinationen");
     ignorableSectionMarkers.add("Abgeleitete Begriffe");
 
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("sinónimo", "syn");
     nymMarkerToNymName.put("sinónimos", "syn");
     nymMarkerToNymName.put("antónimo", "ant");

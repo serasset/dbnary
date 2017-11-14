@@ -145,7 +145,7 @@ public class FilterProperties {
   }
 
   private Set<Property> parsePropertiesArg(String[] args) {
-    Set<Property> props = new HashSet<Property>();
+    Set<Property> props = new HashSet<>();
     if (args != null) {
       for (String keepArg : args) {
         if (keepArg.startsWith("http://")) {
@@ -175,7 +175,7 @@ public class FilterProperties {
 
   private void filter() {
     StmtIterator resit = m.listStatements();
-    List<Statement> toBeRemoved = new LinkedList<Statement>();
+    List<Statement> toBeRemoved = new LinkedList<>();
     while (resit.hasNext()) {
       Statement s = resit.nextStatement();
       if ((!removeProperties.isEmpty() && removeProperties.contains(s.getPredicate()))

@@ -46,7 +46,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
       Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.wdh = wdh;
-    inflections = new HashSet<PropertyObjectPair>();
+    inflections = new HashSet<>();
   }
 
 
@@ -54,43 +54,29 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
     MASCULIN, FEMININ, NEUTRUM, NOTHING
   }
 
-  ;
-
   private enum Cas {
     NOMINATIF, GENITIF, DATIF, ACCUSATIF, NOTHING
   }
-
-  ;
 
   private enum Mode {
     PARTICIPS, IMPERATIV, INDICATIV, SUBJONCTIVE, NOTHING
   }
 
-  ;
-
   private enum Tense {
     PRESENT, PAST, NOTHING
   }
-
-  ;
 
   private enum Degree {
     POSITIVE, COMPARATIVE, SUPERLATIVE, NOTHING
   }
 
-  ;
-
   private enum Number {
     SINGULAR, PLURAL, NOTHING
   }
 
-  ;
-
   private enum Person {
     FIRST, SECOND, THIRD, NOTHING
   }
-
-  ;
 
   private Degree degree = Degree.NOTHING;
   private Mode mode = Mode.NOTHING;
@@ -104,7 +90,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
   private int isOtherForm = 0;
 
   private void initializeExclusiveInflectionInfo() {
-    inflections = new HashSet<PropertyObjectPair>();
+    inflections = new HashSet<>();
     number = Number.NOTHING;
     cas = Cas.NOTHING;
     genre = Genre.NOTHING;
@@ -186,7 +172,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
   private static HashSet<String> declinatedFormMarker;
 
   static {
-    declinatedFormMarker = new HashSet<String>();
+    declinatedFormMarker = new HashSet<>();
     declinatedFormMarker.add("adjektivische Deklination");
   }
 
@@ -220,7 +206,7 @@ public class GermanOriginalExtractorWikiModel extends DbnaryWikiModel {
         // TODO TODOTODO
         page = page.replaceAll("\\<.*\\>", "\n  =");
         System.out.println(page);
-        HashMap<String, String> pag = new HashMap<String, String>();
+        HashMap<String, String> pag = new HashMap<>();
         pag = (HashMap) (WikiTool.parseArgs(page.replace("{", "").replace("}", "")));
         for (String key : pag.keySet()) {
           String r = pag.get(key);

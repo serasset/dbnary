@@ -11,7 +11,7 @@ import org.getalp.LangTools;
  */
 public class ItalianLangToCode extends LangTools {
 
-  static HashMap<String, String> h = new HashMap<String, String>();
+  static HashMap<String, String> h = new HashMap<>();
 
   static {
     h.put("abcaso", "ab");

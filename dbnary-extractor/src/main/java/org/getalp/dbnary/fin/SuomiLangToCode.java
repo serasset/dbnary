@@ -5,8 +5,8 @@ import org.getalp.LangTools;
 
 public class SuomiLangToCode extends LangTools {
 
-  static HashMap<String, String> nc = new HashMap<String, String>();
-  static HashMap<String, String> cn = new HashMap<String, String>();
+  static HashMap<String, String> nc = new HashMap<>();
+  static HashMap<String, String> cn = new HashMap<>();
 
   static {
     nc.put("kantoninkiina", "zh-yue");

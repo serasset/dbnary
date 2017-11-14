@@ -63,7 +63,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
     initialize();
   }
 
-  private static final HashSet<String> transMacroWithNotes = new HashSet<String>();
+  private static final HashSet<String> transMacroWithNotes = new HashSet<>();
 
   static {
     transMacroWithNotes.add("xlatio");
@@ -178,7 +178,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
     extractTranslations(block, null, -1);
   }
 
-  public static Set<String> knownTranslationTemplates = new HashSet<String>();
+  public static Set<String> knownTranslationTemplates = new HashSet<>();
 
   static {
     knownTranslationTemplates.add("ylä");

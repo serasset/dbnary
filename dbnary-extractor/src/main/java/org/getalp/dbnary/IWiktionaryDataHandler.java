@@ -13,8 +13,6 @@ public interface IWiktionaryDataHandler {
     MAIN, MORPHOLOGY, ETYMOLOGY
   }
 
-  ;
-
   /**
    * Enable the extraction of morphological data in a second Model if available.
    *
@@ -22,7 +20,7 @@ public interface IWiktionaryDataHandler {
    */
   void enableFeature(Feature f);
 
-  boolean isEnabled(Feature f);
+  boolean isDisabled(Feature f);
 
   void initializePageExtraction(String wiktionaryPageName);
 

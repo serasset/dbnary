@@ -28,8 +28,6 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.util.iterator.Filter;
 import org.apache.jena.vocabulary.RDF;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.getalp.LangTools;
 import org.getalp.dbnary.DBnaryOnt;
@@ -76,7 +74,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 
   private CommandLine cmd = null; // Command Line arguments
 
-  private static Set<String> ignorableInterwikiLinks = new HashSet<String>();
+  private static Set<String> ignorableInterwikiLinks = new HashSet<>();
 
   static {
     ignorableInterwikiLinks.add("w");
@@ -98,7 +96,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
   ObjectMapper mapper = new ObjectMapper();
 
   // TODO: extract iso code from lexvo entity.
-  private SortedMap<String, IncrementableInt> counts = new TreeMap<String, IncrementableInt>();
+  private SortedMap<String, IncrementableInt> counts = new TreeMap<>();
 
   static {
     options = new Options();
@@ -246,7 +244,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
   }
 
   private HashSet<Resource> getTranslationsFor(String name) {
-    HashSet<Resource> res = new HashSet<Resource>();
+    HashSet<Resource> res = new HashSet<>();
     Resource voc = m1.getResource(NS + name);
     StmtIterator entries = m1.listStatements(voc, DBnaryOnt.describes, (RDFNode) null);
 
@@ -277,7 +275,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
   }
 
   private HashSet<String> getInterWikiLinks(String name) {
-    HashSet<String> res = new HashSet<String>();
+    HashSet<String> res = new HashSet<>();
     User user = new User("", "", "http://" + wktLangCode + ".wiktionary.org/w/api.php");
     user.login();
     String[] valuePairs = {"action", "parse", "prop", "iwlinks", "format", "json"};
@@ -304,14 +302,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
           res.add((String) ((Map) link).get("*"));
         }
       }
-    } catch (JsonParseException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (JsonMappingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     // System.out.println(res);
@@ -321,7 +312,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
 
 
   private HashSet<String> getRandomEntries(int n) {
-    HashSet<String> res = new HashSet<String>();
+    HashSet<String> res = new HashSet<>();
     int total = countResourcesOfType(OntolexOnt.LexicalEntry);
     int stepWidth = total / n;
 
@@ -379,7 +370,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
   private void printEquivalentsStats() {
     // Number of relations
     ResIterator relations = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Translation);
-    HashSet<String> langs = new HashSet<String>();
+    HashSet<String> langs = new HashSet<>();
     int others = 0;
     while (relations.hasNext()) {
       Resource r = relations.next();

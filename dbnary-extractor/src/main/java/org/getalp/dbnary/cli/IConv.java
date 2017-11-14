@@ -76,16 +76,24 @@ public class IConv {
       if (i == args.length - 1) {
         usage();
       }
-      if (args[i].equals("-from") || args[i].equals("-f")) {
-        from = args[++i];
-      } else if (args[i].equals("-to") || args[i].equals("-t")) {
-        to = args[++i];
-      } else if (args[i].equals("-in")) {
-        infile = args[++i];
-      } else if (args[i].equals("-out")) {
-        outfile = args[++i];
-      } else {
-        usage();
+      switch (args[i]) {
+        case "-from":
+        case "-f":
+          from = args[++i];
+          break;
+        case "-to":
+        case "-t":
+          to = args[++i];
+          break;
+        case "-in":
+          infile = args[++i];
+          break;
+        case "-out":
+          outfile = args[++i];
+          break;
+        default:
+          usage();
+          break;
       }
     }
 

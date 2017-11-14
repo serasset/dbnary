@@ -9,7 +9,7 @@ import org.getalp.LangTools;
 
 public class PolishLangToCode extends LangTools {
 
-  static HashMap<String, String> h = new HashMap<String, String>();
+  static HashMap<String, String> h = new HashMap<>();
 
   static {
     h.put("język arczyński", "aqc");

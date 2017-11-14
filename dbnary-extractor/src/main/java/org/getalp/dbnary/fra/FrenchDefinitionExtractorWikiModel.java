@@ -81,7 +81,7 @@ public class FrenchDefinitionExtractorWikiModel extends DbnaryWikiModel {
       String pattern = parameterMap.get("2");
       int i = s.trim().indexOf(pattern);
       if (-1 != i) {
-        writer.append("" + (i + 1));
+        writer.append("").append(String.valueOf(i + 1));
       }
     } else if (templateName.contains("langues")) {
       log.debug("Got template {}\tin\t{}", templateName, this.getPageName());

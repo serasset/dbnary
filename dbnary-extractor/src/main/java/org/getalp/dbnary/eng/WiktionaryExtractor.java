@@ -100,7 +100,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
    * org.getalp.blexisma.semnet.SemanticNetwork)
    */
@@ -132,12 +132,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public boolean filterOutPage(String pagename) {
-    if (isWikisaurus(pagename)) {
-      // Extract Wikisaurus pages...
-      // log.debug("Existing wikisaurus page | {}", pagename);
-      return false;
-    }
-    return super.filterOutPage(pagename);
+    // Extract Wikisaurus pages...
+    return !isWikisaurus(pagename) && super.filterOutPage(pagename);
   }
 
   private boolean isWikisaurus(String pagename) {
@@ -163,9 +159,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wikiExpander.setPageName(wiktionaryPageName);
     currentBlock = Block.NOBLOCK;
 
-    HashMap<String, Object> previousContext = new HashMap<String, Object>();
+    HashMap<String, Object> previousContext = new HashMap<>();
     while (m.find()) {
-      HashMap<String, Object> context = new HashMap<String, Object>();
+      HashMap<String, Object> context = new HashMap<>();
       Block nextBlock = computeNextBlock(m, context);
 
       if (nextBlock == null) {
@@ -564,7 +560,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // senses
     // TODO: Handle such cases (by creating another lexical entry ?) // Similar to reflexiveness in
     // French wiktionary
-    if (!ewdh.isEnabled(Feature.MORPHOLOGY)) {
+    if (ewdh.isDisabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) {
       return;
     }
 

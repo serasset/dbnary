@@ -11,7 +11,7 @@ import org.getalp.dbnary.wiki.WikiTool;
 
 public class DefinitionExpanderWikiModel extends ExpandAllWikiModel {
 
-  static Set<String> ignoredTemplates = new HashSet<String>();
+  static Set<String> ignoredTemplates = new HashSet<>();
 
   static {
     ignoredTemplates.add("wikipedia");
@@ -36,7 +36,7 @@ public class DefinitionExpanderWikiModel extends ExpandAllWikiModel {
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
     if (ignoredTemplates.contains(templateName)) {
-      ;
+      // nop
     } else if ("skrót".equals(templateName)) {
       writer.append("(").append(parameterMap.get("2")).append(")");
     } else {

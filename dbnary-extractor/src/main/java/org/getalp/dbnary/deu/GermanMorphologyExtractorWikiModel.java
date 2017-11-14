@@ -36,7 +36,7 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
 
   // private boolean reflexiv=false;
   static {
-    ignoredTemplates = new HashSet<String>();
+    ignoredTemplates = new HashSet<>();
     ignoredTemplates.add("Absatz");
     ignoredTemplates.add("Hebr");
     ignoredTemplates.add("Internetquelle");
@@ -92,7 +92,7 @@ public class GermanMorphologyExtractorWikiModel extends GermanDBnaryWikiModel {
         templateName = templateName.substring(8);
       }
       if (ignoredTemplates.contains(templateName)) {
-        ; // NOP
+        // NOP
       } else if ("Deutsch Substantiv Übersicht".equals(templateName)) {
         // TODO: extract the data from generated table, so that it is less fragile.
         extractSubstantiveForms(parameterMap);

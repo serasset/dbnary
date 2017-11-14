@@ -50,7 +50,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
   private final static Pattern senseNumberOrRangePattern =
       Pattern.compile(senseNumberOrRangeRegExp);
   private final Matcher senseNumberOrRangeMatcher = senseNumberOrRangePattern.matcher("");
-  private static Set<String> gender = new HashSet<String>();
+  private static Set<String> gender = new HashSet<>();
 
   static {
     gender.add("m");
@@ -60,7 +60,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
     gender.add("c");
   }
 
-  private static Set<String> pos = new HashSet<String>();
+  private static Set<String> pos = new HashSet<>();
 
   static {
     pos.add("adj");

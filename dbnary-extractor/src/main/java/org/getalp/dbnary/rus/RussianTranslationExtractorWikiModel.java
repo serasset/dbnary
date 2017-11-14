@@ -99,8 +99,8 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
     value = scriptMatcher.replaceAll("");
     value = blackoutCommas(value);
     String translations[] = value.split("[,;]");
-    for (int i = 0; i < translations.length; i++) {
-      extractTranslation(gloss, lang, translations[i]);
+    for (String translation : translations) {
+      extractTranslation(gloss, lang, translation);
     }
   }
 

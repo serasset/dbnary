@@ -51,26 +51,9 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
     setPageName(wdh.currentLexEntry());
   }
 
-  public static Element adjacentDiv(Node ele) {
-    ele = ele.getNextSibling();
-    while (ele != null && !ele.equals("div")) {
-      ele = ele.getNextSibling();
-    }
-
-    return (Element) ele;
-  }
-
-  public static boolean hasRealPreviousSibling(Node ele) {
-    do {
-      ele = ele.getPreviousSibling();
-    } while (ele != null && ele.getNodeType() != Node.ELEMENT_NODE);
-
-    return ele != null;
-  }
-
   private static ArrayList<String> explode(char sep, String str) {
     int lastI = 0;
-    ArrayList<String> res = new ArrayList<String>();
+    ArrayList<String> res = new ArrayList<>();
     int pos = str.indexOf(sep, lastI);
 
     while (pos != -1) {
@@ -228,7 +211,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
     if (mood == null) {
       Node parent = table.getParentNode();
-      while (parent != null && parent.getNodeName().toLowerCase() != "div") {
+      while (parent != null && !"div".equals(parent.getNodeName().toLowerCase())) {
         parent = parent.getParentNode();
       }
 
@@ -237,7 +220,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
             "Cannot find mood in the conjugation table for '" + delegate.currentLexEntry() + "'");
         return false;
       } else if (parent.getParentNode() != null
-          && parent.getParentNode().getNodeName().toLowerCase() == "td") {
+          && "td".equals(parent.getParentNode().getNodeName().toLowerCase())) {
         parent = parent.getParentNode();
         for (int i = 0; i < 3 && parent != null; i++) { // tr, table, div
           parent = parent.getParentNode();
@@ -246,14 +229,14 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
 
       Node title = parent;
 
-      while (title != null && title.getNodeName().toLowerCase() != "h3") {
+      while (title != null && !"h3".equals(title.getNodeName().toLowerCase())) {
         title = title.getPreviousSibling();
       }
 
       if (title == null) {
         title = parent.getParentNode();
 
-        while (title != null && title.getNodeName().toLowerCase() != "h3") {
+        while (title != null && !"h3".equals(title.getNodeName().toLowerCase())) {
           title = title.getPreviousSibling();
         }
 
@@ -379,7 +362,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
       return;
     }
 
-    HashSet<PropertyObjectPair> infos = new HashSet<PropertyObjectPair>();
+    HashSet<PropertyObjectPair> infos = new HashSet<>();
 
     // infos.add(PropertyObjectPair.get(extractedFromConjTable, trueLiteral));
 
@@ -396,7 +379,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
                 "Missing cells in the conjugation table for '" + delegate.currentLexEntry() + "'");
           }
         } else {
-          HashSet<PropertyObjectPair> infl = new HashSet<PropertyObjectPair>(infos);
+          HashSet<PropertyObjectPair> infl = new HashSet<>(infos);
 
           String form = tdList.item(1).getTextContent().replace('\u00A0', ' ').trim();
           if (form.charAt(0) == '-') {
@@ -449,10 +432,10 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
       if (interestingTDs.getLength() < 3) {
         log.error("Cannot get present and past participle of '" + delegate.currentLexEntry() + "'");
       } else {
-        infos = new HashSet<PropertyObjectPair>();
+        infos = new HashSet<>();
         String presentParticiple = interestingTDs.item(2).getTextContent().trim();
         // infos.add(PropertyObjectPair.get(extractedFromConjTable, trueLiteral));
-        infos = new HashSet<PropertyObjectPair>();
+        infos = new HashSet<>();
         infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
         infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
         delegate.registerInflection("fr", "-verb-", presentParticiple, delegate.currentLexEntry(),
@@ -462,7 +445,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
           log.error("Cannot get past participle of '" + delegate.currentLexEntry() + "'");
         } else {
           String pastParticiple = interestingTDs.item(5).getTextContent();
-          infos = new HashSet<PropertyObjectPair>();
+          infos = new HashSet<>();
           // infos.add(PropertyObjectPair.get(extractedFromConjTable, trueLiteral));
           infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
           infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
@@ -554,7 +537,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
   }
 
   private void registerInflectionFromCellChild(Node c, String word) {
-    HashSet<PropertyObjectPair> properties = new HashSet<PropertyObjectPair>();
+    HashSet<PropertyObjectPair> properties = new HashSet<>();
     // properties.add(PropertyObjectPair.get(extractedFromInflectionTable, trueLiteral));
 
     Node cell = c;
@@ -703,7 +686,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
       String pattern = parameterMap.get("2");
       int i = s.trim().indexOf(pattern);
       if (-1 != i) {
-        writer.append("" + (i + 1));
+        writer.append("").append(String.valueOf(i + 1));
       }
     } else if (templateName.equals("pron")) {
       // catch this template call as it resolves in a non useful very heavy Lua processing.

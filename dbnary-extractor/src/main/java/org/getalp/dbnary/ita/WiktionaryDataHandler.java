@@ -243,7 +243,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     if (null != (entrySet = lexEntries.get(pos))) {
       entrySet.add(entry);
     } else {
-      entrySet = new HashSet<Resource>();
+      entrySet = new HashSet<>();
       entrySet.add(entry);
       lexEntries.put(pos, entrySet);
     }

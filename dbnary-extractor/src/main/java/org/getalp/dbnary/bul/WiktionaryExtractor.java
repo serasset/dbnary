@@ -65,7 +65,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.initializePageExtraction(wiktionaryPageName);
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (languageFilter.find() && !isBulgarianLanguageHeader(languageFilter)) {
-      ;
+      // nop
     }
     // Either the filter is at end of sequence or on French language header.
     if (languageFilter.hitEnd()) {

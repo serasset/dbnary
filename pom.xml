@@ -48,6 +48,7 @@
         <module>dbnary-extractor</module>
         <module>dbnary-enhancer</module>
         <module>dbnary-commons</module>
+        <module>build-tools</module>
     </modules>
 
     <reporting>

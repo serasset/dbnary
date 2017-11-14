@@ -41,28 +41,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String otherFormPatternString = "\\{\\{fr-[^\\}]*\\}\\}";
 
-  private String lastExtractedPronunciationLang = null;
-
-  private static Pattern inflectionMacroNamePattern = Pattern.compile("^fr-");
-  protected final static String inflectionDefPatternString =
-      "^\\# ''([^\n]+) (?:de'' |d\\’''||(?:du verbe|du nom|de l’adjectif)'' )\\[\\[([^\n]+)\\]\\]\\.$";
-  protected final static Pattern inflectionDefPattern =
-      Pattern.compile(inflectionDefPatternString, Pattern.MULTILINE);
-
   private static HashMap<String, String> posMarkers;
   private static HashSet<String> ignorablePosMarkers;
   private static HashSet<String> ignorableSectionMarkers;
 
   private final static HashMap<String, String> nymMarkerToNymName;
-
-  private static HashSet<String> unsupportedMarkers = new HashSet<String>();
-
-  public static final Locale frLocale = new Locale("fr");
-
-  // private static Set<String> affixesToDiscardFromLinks = null;
-  private static void addPos(String pos) {
-    posMarkers.put(pos, pos);
-  }
 
   private static void addPos(String p, String n) {
     posMarkers.put(p, n);
@@ -75,8 +58,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // ==={{int:wikt-nomen-subst}}===
     entrySectionPatternString = "===?\\s*\\{\\{int:([^}]*)\\}\\}\\s*=?==";
 
-    posMarkers = new HashMap<String, String>(130);
-    ignorablePosMarkers = new HashSet<String>(130);
+    posMarkers = new HashMap<>(130);
+    ignorablePosMarkers = new HashSet<>(130);
 
     addPos("wikt-nomen-subst", "nomen-subst");
     addPos("wikt-adverbium", "adverbium");
@@ -93,7 +76,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     ignorablePosMarkers.add("-flex-adj-indéf-");
 
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("-méro-", "mero");
     nymMarkerToNymName.put("-hyper-", "hyper");
     nymMarkerToNymName.put("-hypo-", "hypo");
@@ -126,7 +109,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // paronymes, gentillés ?
 
     // Check if these markers still exist in new french organization...
-    ignorableSectionMarkers = new HashSet<String>(200);
+    ignorableSectionMarkers = new HashSet<>(200);
     ignorableSectionMarkers.addAll(posMarkers.keySet());
     ignorableSectionMarkers.addAll(nymMarkerToNymName.keySet());
     ignorableSectionMarkers.add("-étym-");
@@ -263,7 +246,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // Iterate on entry sections
     while (m.find()) {
       // We are in a new block
-      HashMap<String, Object> context = new HashMap<String, Object>();
+      HashMap<String, Object> context = new HashMap<>();
       Block nextBlock = computeNextBlock(m, context);
 
       // If current block is IGNOREPOS, we should ignore everything but a new
@@ -376,7 +359,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
 
-  private static Set<String> variantSections = new HashSet<String>();
+  private static Set<String> variantSections = new HashSet<>();
 
   static {
     variantSections.add("variantes");
@@ -469,7 +452,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   public void extractExample(String example) {
-    Map<Property, String> context = new HashMap<Property, String>();
+    Map<Property, String> context = new HashMap<>();
 
     String ex = exampleExpander.expandExample(example, defTemplates, context);
     Resource exampleNode = null;

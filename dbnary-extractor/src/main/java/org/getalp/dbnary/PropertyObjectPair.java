@@ -29,11 +29,7 @@ public class PropertyObjectPair extends SimpleImmutableEntry<Property, RDFNode> 
 
     if (objects == null) {
       synchronized (PropertyObjectPair.class) {
-        objects = instances.get(p);
-        if (objects == null) {
-          objects = new HashMap<RDFNode, PropertyObjectPair>();
-          instances.put(p, objects);
-        }
+        objects = instances.computeIfAbsent(p, k -> new HashMap<RDFNode, PropertyObjectPair>());
       }
     }
 
@@ -41,11 +37,7 @@ public class PropertyObjectPair extends SimpleImmutableEntry<Property, RDFNode> 
 
     if (po == null) {
       synchronized (PropertyObjectPair.class) {
-        po = objects.get(o);
-        if (po == null) {
-          po = new PropertyObjectPair(p, o);
-          objects.put(o, po);
-        }
+        po = objects.computeIfAbsent(o, o1 -> new PropertyObjectPair(p, o1));
       }
     }
 

@@ -66,7 +66,7 @@ public class JapaneseRelatedWordsExtractorWikiModel {
   protected final static HashMap<String, String> relMarkerToRelName;
 
   static {
-    relMarkerToRelName = new HashMap<String, String>(20);
+    relMarkerToRelName = new HashMap<>(20);
     relMarkerToRelName.put("syn", "syn");
     relMarkerToRelName.put("ant", "ant");
     relMarkerToRelName.put("hypo", "hypo");
@@ -80,7 +80,7 @@ public class JapaneseRelatedWordsExtractorWikiModel {
 
   }
 
-  static HashSet<String> commonUsageMacros = new HashSet<String>();
+  static HashSet<String> commonUsageMacros = new HashSet<>();
 
   static {
     commonUsageMacros.add("m");

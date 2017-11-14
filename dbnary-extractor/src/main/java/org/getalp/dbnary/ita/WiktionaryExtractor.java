@@ -58,7 +58,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     // TODO: -acron-, -acronim-, -acronym-, -espr-, -espress- mark locution as phrases
 
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("syn", "syn");
     nymMarkerToNymName.put("sin", "syn");
     nymMarkerToNymName.put("ant", "ant");
@@ -136,7 +136,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.initializeEntryExtraction(wiktionaryPageName);
     currentBlock = Block.NOBLOCK;
     while (m.find()) {
-      HashMap<String, Object> context = new HashMap<String, Object>();
+      HashMap<String, Object> context = new HashMap<>();
       Block nextBlock = computeNextBlock(m, context);
 
       if (nextBlock == null) {

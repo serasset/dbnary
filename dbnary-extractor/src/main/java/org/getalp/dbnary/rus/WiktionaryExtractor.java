@@ -57,14 +57,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
 
-    posMarkers = new HashSet<String>(20);
+    posMarkers = new HashSet<>(20);
     posMarkers.add("Noun");
     posMarkers.add("Adjective");
     posMarkers.add("Adverb");
     posMarkers.add("Verb");
     posMarkers.add("Proper noun");
 
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("Синонимы", "syn");
     nymMarkerToNymName.put("Антонимы", "ant");
     nymMarkerToNymName.put("Гипонимы", "hypo");

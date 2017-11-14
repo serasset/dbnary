@@ -63,7 +63,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private final static HashMap<String, String> nymMarkerToNymName;
 
-  private static HashSet<String> unsupportedMarkers = new HashSet<String>();
+  private static HashSet<String> unsupportedMarkers = new HashSet<>();
 
   public static final Locale frLocale = new Locale("fr");
 
@@ -81,8 +81,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         new StringBuilder().append("(?:").append(languageSectionPatternString1).append(")|(?:")
             .append(languageSectionPatternString2).append(")").toString();
 
-    posMarkers = new HashMap<String, String>(130);
-    ignorablePosMarkers = new HashSet<String>(130);
+    posMarkers = new HashMap<>(130);
+    ignorablePosMarkers = new HashSet<>(130);
 
     addPos("-déf-");
     addPos("-déf-/2");
@@ -392,7 +392,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     addPos("gismu");
     addPos("rafsi");
 
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("-méro-", "mero");
     nymMarkerToNymName.put("-hyper-", "hyper");
     nymMarkerToNymName.put("-hypo-", "hypo");
@@ -425,7 +425,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // paronymes, gentillés ?
 
     // Check if these markers still exist in new french organization...
-    sectionMarkers = new HashSet<String>(200);
+    sectionMarkers = new HashSet<>(200);
     sectionMarkers.addAll(posMarkers.keySet());
     sectionMarkers.addAll(nymMarkerToNymName.keySet());
     sectionMarkers.add("-étym-");
@@ -544,7 +544,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // TODO: move to the data hanlder ?
   public HashSet<PropertyObjectPair> morphologicalPropertiesFromWikicode(String wikicodeMophology) {
-    HashSet<PropertyObjectPair> infl = new HashSet<PropertyObjectPair>();
+    HashSet<PropertyObjectPair> infl = new HashSet<>();
 
     switch (wikicodeMophology) {
       case "ppr":
@@ -732,7 +732,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       // Iterate until we find a new section
       if (m.group(1).equals("S")) {
         // We are in a new block
-        HashMap<String, Object> context = new HashMap<String, Object>();
+        HashMap<String, Object> context = new HashMap<>();
         Block nextBlock = computeNextBlock(m, context);
 
         // If current block is IGNOREPOS, we should ignore everything but a new
@@ -952,13 +952,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
       }
       if ("m".equals(m.group(1)) || "mf".equals(m.group(1))) {
-        HashSet<PropertyObjectPair> infl = new HashSet<PropertyObjectPair>();
+        HashSet<PropertyObjectPair> infl = new HashSet<>();
         infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
         commonInflectionInformations.inflections.add(infl);
       }
 
       if ("f".equals(m.group(1)) || "mf".equals(m.group(1))) {
-        HashSet<PropertyObjectPair> infl = new HashSet<PropertyObjectPair>();
+        HashSet<PropertyObjectPair> infl = new HashSet<>();
         infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
         commonInflectionInformations.inflections.add(infl);
       }
@@ -977,7 +977,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         canonicalForm = canonicalForm.substring(pipePos + 1);
       }
 
-      Set<PropertyObjectPair> infos = new HashSet<PropertyObjectPair>();
+      Set<PropertyObjectPair> infos = new HashSet<>();
 
       // infos.add(PropertyObjectPair.get(FrenchExtractorWikiModel.extractedFromFrenchSentence,
       // FrenchExtractorWikiModel.trueLiteral));
@@ -987,11 +987,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
 
       if (commonInflectionInformations.inflections.size() == 0) {
-        commonInflectionInformations.inflections.add(new HashSet<PropertyObjectPair>());
+        commonInflectionInformations.inflections.add(new HashSet<>());
       }
 
       for (HashSet<PropertyObjectPair> inflection : commonInflectionInformations.inflections) {
-        HashSet<PropertyObjectPair> union = new HashSet<PropertyObjectPair>(infos);
+        HashSet<PropertyObjectPair> union = new HashSet<>(infos);
 
         protectedUnion(union, inflection);
 
@@ -1048,8 +1048,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     String partOfSpeech;
     String languageCode;
-    HashSet<PronunciationPair> pronunciation = new HashSet<PronunciationPair>();
-    HashSet<HashSet<PropertyObjectPair>> inflections = new HashSet<HashSet<PropertyObjectPair>>();
+    HashSet<PronunciationPair> pronunciation = new HashSet<>();
+    HashSet<HashSet<PropertyObjectPair>> inflections = new HashSet<>();
   }
 
   private InflectionSection commonInflectionInformations;
@@ -1068,7 +1068,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return m.group(1).equals("-trad-");
   }
 
-  private static Set<String> variantSections = new HashSet<String>();
+  private static Set<String> variantSections = new HashSet<>();
 
   static {
     variantSections.add("variantes");
@@ -1213,8 +1213,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     lastExtractedPronunciationLang = null;
 
     // TODO [URGENT]: what is this registerPronounciation boolean ?
-    HashSet<PronunciationPair> res =
-        registerPronunciation ? null : new HashSet<PronunciationPair>();
+    HashSet<PronunciationPair> res = registerPronunciation ? null : new HashSet<>();
 
     while (pronMatcher.find()) {
       String pron = pronMatcher.group(1);
@@ -1302,7 +1301,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // }
 
   public void extractExample(String example) {
-    Map<Property, String> context = new HashMap<Property, String>();
+    Map<Property, String> context = new HashMap<>();
 
     String ex = exampleExpander.expandExample(example, defTemplates, context);
     Resource exampleNode = null;
@@ -1313,7 +1312,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractOtherForms(int start, int end) {
     // TODO: only when we are extracting morphology ?
-    if (!wdh.isEnabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) {
+    if (wdh.isDisabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) {
       return;
     }
 

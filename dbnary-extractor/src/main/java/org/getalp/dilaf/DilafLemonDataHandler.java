@@ -31,7 +31,7 @@ public class DilafLemonDataHandler extends DbnaryModel {
   private String NS;
 
   private CounterSet lexEntryCount = new CounterSet();
-  private HashMap<String, Resource> lexicalEntries = new HashMap<String, Resource>();
+  private HashMap<String, Resource> lexicalEntries = new HashMap<>();
 
   public DilafLemonDataHandler(String lang) {
     super();

@@ -71,7 +71,7 @@ public class EnglishInflectionData {
 
 
   public HashSet<PropertyObjectPair> toPropertyObjectMap() {
-    HashSet<PropertyObjectPair> inflections = new HashSet<PropertyObjectPair>();
+    HashSet<PropertyObjectPair> inflections = new HashSet<>();
     switch (this.degree) {
       case POSITIVE:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasDegree, OliaOnt.Positive));

@@ -87,16 +87,30 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
   }
 
   private String givenName(Map<String, String> parameterMap) {
-    String gender = parameterMap.get("1");
-    if (null == gender) {
-      gender = parameterMap.get("gender");
-    }
-    if (null == gender) {
-      gender = "";
-    }
+    String gender = parameterMap.getOrDefault("1",
+        parameterMap.getOrDefault("gender", ""));
+    String article = parameterMap.get("A");
     String or = parameterMap.get("or");
-    // TODO: there is sometime the origin of the given name (e.g. a Japanese male given name)
-    return "A " + gender + " " + ((or == null) ? "" : or + " ") + "given name";
+    String diminutive = parameterMap.get("diminutive");
+    // TODO: there is sometimes the origin of the given name (e.g. a Japanese male given name)
+    StringBuilder result = new StringBuilder();
+    if (null == article) {
+      result.append("A ");
+    } else {
+      result.append(article).append(" ");
+    }
+    if (null != diminutive) {
+      result.append("diminutive of the ");
+    }
+    result.append(gender).append(" ");
+    if (null != or) {
+      result.append("or ").append(or).append(" ");
+    }
+    result.append("given name");
+    if (null != diminutive) {
+      result.append(" ").append(diminutive);
+    }
+    return result.toString();
   }
 
 }

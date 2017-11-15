@@ -372,7 +372,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: check correct parsing of From ''[[semel#Latin|semel]]'' + ''[[pro#Latin|pro]]'' +
   // ''[[semper#Latin|semper]]''
   protected void extractEtymology(int blockStart, int end) {
-    if (!wdh.isEnabled(Feature.ETYMOLOGY)) {
+    if (wdh.isDisabled(Feature.ETYMOLOGY)) {
       return;
     }
     if (wiktionaryPageName.trim().split("\\s+").length >= 3) {

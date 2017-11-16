@@ -65,6 +65,11 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
   }
 
   @Override
+  public void registerEtymologyPos(String wiktionaryPageName) {
+    registerEtymologyPos(currentEntryLanguage, currentEntryLanguageName, wiktionaryPageName);
+  }
+
+  @Override
   public void registerPronunciation(String pron, String lang) {
     // Catch the call for foreign languages and disregard passed language
     lang = getCurrentEntryLanguage() + "-fonipa";

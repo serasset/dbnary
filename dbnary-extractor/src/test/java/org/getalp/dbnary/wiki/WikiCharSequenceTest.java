@@ -95,10 +95,10 @@ public class WikiCharSequenceTest {
     CharSequence seq = new WikiCharSequence(text, filter);
     System.out.println(seq.toString());
 
-    assertEquals(28, seq.length());
+    assertEquals(29, seq.length());
     Pattern pattern = Pattern.compile("^\\p{Co}.*$");
     assertTrue(pattern.matcher(seq).matches()); // first character is template char
-    pattern = Pattern.compile("\\blink\\b");
+    pattern = Pattern.compile("\\blinks\\b");
     Matcher m = pattern.matcher(seq);
     assertTrue(m.find());
     pattern = Pattern.compile("[\uE900-\uE9FF]");
@@ -112,6 +112,60 @@ public class WikiCharSequenceTest {
 
   }
 
+  @Test
+  public void testWikiCharSequenceWithLinkKeepTarget() throws Exception {
+    String test = "text [[link]]s text";
+    WikiText text = new WikiText(test);
+
+    ClassBasedSequenceFilter filter = new ClassBasedSequenceFilter();
+    filter.clearAction().sourceText().keepContentOfInternalLink();
+    CharSequence seq = new WikiCharSequence(text, filter);
+    // System.out.println(seq.toString());
+
+    assertEquals("Content of link should contain suffix.", "text links text", seq.toString());
+
+    filter = new ClassBasedSequenceFilter();
+    filter.clearAction().sourceText().voidInternalLink();
+    seq = new WikiCharSequence(text, filter);
+    // System.out.println(seq.toString());
+    assertEquals("Voiding link should void suffix.", "text  text", seq.toString());
+
+    filter = new ClassBasedSequenceFilter();
+    filter.clearAction().sourceText().keepTargetOfInternalLink();
+    seq = new WikiCharSequence(text, filter);
+    // System.out.println(seq.toString());
+    assertEquals("target of link should not contain suffix.", "text link text", seq.toString());
+
+    test = "text [[target|source]]s text";
+    text = new WikiText(test);
+
+    filter = new ClassBasedSequenceFilter();
+    filter.clearAction().sourceText().voidInternalLink();
+    seq = new WikiCharSequence(text, filter);
+    // System.out.println(seq.toString());
+    assertEquals("Voiding link should void suffix.", "text  text", seq.toString());
+
+    filter = new ClassBasedSequenceFilter();
+    filter.clearAction().sourceText().keepTargetOfInternalLink();
+    seq = new WikiCharSequence(text, filter);
+    // System.out.println(seq.toString());
+    assertEquals("target of link should not contain suffix.", "text target text", seq.toString());
+
+    filter = new ClassBasedSequenceFilter();
+    filter.clearAction().sourceText().keepContentOfInternalLink();
+    seq = new WikiCharSequence(text, filter);
+    // System.out.println(seq.toString());
+    assertEquals("content of link should contain suffix.", "text sources text", seq.toString());
+
+    test = "[[Australian]] [[capital|Capital]] [[territory|Territory]]";
+    text = new WikiText(test);
+
+    filter = new ClassBasedSequenceFilter();
+    filter.clearAction().sourceText().keepContentOfInternalLink();
+    seq = new WikiCharSequence(text, filter);
+    // System.out.println(seq.toString());
+    assertEquals("Australian Capital Territory", seq.toString());
+  }
 
   @Test
   public void testWikiCharSequenceWithKeepAsis() throws Exception {

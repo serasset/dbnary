@@ -11,7 +11,6 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.VarTransOnt;
 
-import javax.swing.plaf.nimbus.State;
 import java.io.*;
 import java.util.*;
 

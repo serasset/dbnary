@@ -45,6 +45,7 @@ import org.jsoup.select.Elements;
 
 public class UpdateAndExtractDumps {
 
+  private static final String FOREIGN_PREFIX = "_x";
   private static Options options = null; // Command line options
 
   private static final String SERVER_URL_OPTION = "s";
@@ -105,8 +106,8 @@ public class UpdateAndExtractDumps {
     options.addOption(NETWORK_OFF_OPTION, false,
         "Do not use the ftp network, but decompress and extract.");
     options.addOption(OptionBuilder.withLongOpt(ENABLE_FEATURE_OPTION)
-        .withDescription("Enable additional extraction features.").hasArg().withArgName("feature")
-        .create());
+        .withDescription("Enable additional extraction features (e.g. morpho,etymology,foreign).")
+        .hasArg().withArgName("feature").create());
 
   }
 
@@ -159,10 +160,12 @@ public class UpdateAndExtractDumps {
 
     networkIsOff = cmd.hasOption(NETWORK_OFF_OPTION);
 
+    features = new ArrayList<>();
     if (cmd.hasOption(ENABLE_FEATURE_OPTION)) {
-      features = Arrays.asList(cmd.getOptionValue(ENABLE_FEATURE_OPTION).split("[,;]"));
-    } else {
-      features = new ArrayList<>();
+      String[] vs = cmd.getOptionValues(ENABLE_FEATURE_OPTION);
+      for (String v : vs) {
+        features.addAll(Arrays.asList(v.split("[,;]")));
+      }
     }
 
     if (cmd.hasOption(MODEL_OPTION)) {
@@ -282,7 +285,7 @@ public class UpdateAndExtractDumps {
       return;
     }
 
-    SortedSet<String> versions = new TreeSet<>();
+    SortedSet<String> versions = new TreeSet<String>();
     for (File dir : dirs) {
       if (dir.isDirectory()) {
         versions.add(dir.getName());
@@ -450,7 +453,7 @@ public class UpdateAndExtractDumps {
   }
 
   private SortedSet<String> getFolderSetFromIndex(HttpEntity entity, String url) {
-    SortedSet<String> folders = new TreeSet<>();
+    SortedSet<String> folders = new TreeSet<String>();
     InputStream is = null;
     try {
       is = entity.getContent();
@@ -490,7 +493,7 @@ public class UpdateAndExtractDumps {
       return null;
     }
 
-    SortedSet<String> versions = new TreeSet<>();
+    SortedSet<String> versions = new TreeSet<String>();
     for (File dir : dirs) {
       if (dir.isDirectory()) {
         versions.add(dir.getName());
@@ -507,11 +510,11 @@ public class UpdateAndExtractDumps {
   private static Pattern vpat = Pattern.compile(versionPattern);
 
   private String getLastVersionDir(SortedSet<String> dirs) {
+    String res = null;
     if (null == dirs) {
-      return null;
+      return res;
     }
 
-    String res = null;
     Matcher m = vpat.matcher("");
     for (String d : dirs) {
       m.reset(d);
@@ -638,12 +641,20 @@ public class UpdateAndExtractDumps {
     File d = new File(odir);
     d.mkdirs();
 
+    String prefix = "";
+    if (features.contains("foreign")) {
+      prefix = FOREIGN_PREFIX;
+    }
+
     // TODO: correctly test for compressed file if compress is enabled
-    String extractFile = odir + "/" + lang + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
-    String morphoFile = odir + "/" + lang + "_dbnary_morpho_" + dir + ".ttl";
+    String extractFile =
+        odir + "/" + lang + prefix + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
+    String morphoFile = odir + "/" + lang + prefix + "_dbnary_morpho_" + dir + ".ttl";
+    String etymologyFile = odir + "/" + lang + prefix + "_dbnary_etymology_" + dir + ".ttl";
     if (compress) {
       extractFile = extractFile + ".bz2";
       morphoFile = morphoFile + ".bz2";
+      etymologyFile = etymologyFile + ".bz2";
     }
 
     File file = new File(extractFile);
@@ -667,6 +678,13 @@ public class UpdateAndExtractDumps {
     if (features.contains("morpho")) {
       a.add("--morpho");
       a.add(morphoFile);
+    }
+    if (features.contains("etymology")) {
+      a.add("--etymology");
+      a.add(etymologyFile);
+    }
+    if (features.contains("foreign")) {
+      a.add("-x");
     }
     a.add(uncompressDumpFileName(lang, dir));
 

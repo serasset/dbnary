@@ -9,8 +9,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 public class DbnaryModel {
 
 
-  public static final String DBNARY_NS_PREFIX = "http://kaiko.getalp.org/dbnary";
-  // protected static final String LMF = "http://www.lexicalmarkupframework.org/lmf/r14#";
+  public static String DBNARY_NS_PREFIX = "http://kaiko.getalp.org/dbnary";
 
   public static final String LEXVO = "http://lexvo.org/id/iso639-3/";
 
@@ -19,6 +18,14 @@ public class DbnaryModel {
   static {
     // Create T-Box and read rdf schema associated to it.
     tBox = ModelFactory.createDefaultModel();
+  }
+
+  /**
+   * setting the DBNARY prefix globally. Warning, setting this too late in the processus may lead to
+   * inconsistent dataset.
+   */
+  public static void setGlobalDbnaryPrefix(String p) {
+    DBNARY_NS_PREFIX = p;
   }
 
   public static String uriEncode(String s) {
@@ -71,9 +78,9 @@ public class DbnaryModel {
           || (c == '"') || (c == '#') || (c == '[') || (c == ']') || (c == '\\') || (c == '^')
           || (c == '`') || (c == '{') || (c == '|') || (c == '}') || (c == '\u00D7')
           || (c == '\u00F7') || (c == '-') || (c == '_') || Character.isISOControl(c)) {
-        // nop
+        ; // nop
       } else if (c == '\u200e' || c == '\u200f') {
-        // ignore rRLM and LRM.
+        ; // ignore rRLM and LRM.
       } else if (c == '/') {
         res.append("!slash!"); // ignore rRLM and LRM.
       } else {

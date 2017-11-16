@@ -10,7 +10,7 @@ import org.apache.jena.rdf.model.Resource;
 public interface IWiktionaryDataHandler {
 
   enum Feature {
-    MAIN, MORPHOLOGY
+    MAIN, MORPHOLOGY, ETYMOLOGY
   }
 
   /**

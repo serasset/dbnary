@@ -11,7 +11,7 @@ import org.getalp.LangTools;
  */
 public class BulgarianLangtoCode extends LangTools {
 
-  static HashMap<String, String> h = new HashMap<>();
+  static HashMap<String, String> h = new HashMap<String, String>();
 
   static {
     h.put("Шаблон:aa", "aa");

@@ -9,7 +9,8 @@ public class LangTools {
 
   static Logger log = LoggerFactory.getLogger(LangTools.class);
 
-  public static String threeLettersCode(java.util.HashMap<String, String> h, String s) {
+  public static String threeLettersCode(java.util.HashMap<String, String> h, String langname) {
+    String s = langname;
     if (s == null || s.equals("")) {
       log.debug("Null or empty input language");
       return s;
@@ -20,6 +21,12 @@ public class LangTools {
     if (res == null && h != null && h.containsKey(s)) {
       s = h.get(s);
       res = getCode(s);
+      if (null != res && !res.equals(s)) {
+        log.debug("Strange language code : {} => {} => {}", langname, s, res);
+      }
+      if (null == res) {
+        return s;
+      }
     }
 
     return res;
@@ -29,6 +36,8 @@ public class LangTools {
     return threeLettersCode(null, s);
   }
 
+    //E.g.: getCode("ita") returns "ita"
+  //E.g.: getCode("it") returns "ita"
   public static String getCode(String lang) {
     return ISO639_3.sharedInstance.getIdCode(lang);
   }
@@ -72,6 +81,4 @@ public class LangTools {
   public static String getTerm2Code(String l) {
     return ISO639_3.sharedInstance.getTerm2Code(l);
   }
-
-
 }

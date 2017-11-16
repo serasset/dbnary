@@ -9,6 +9,11 @@ public class WikiPatterns {
   public final static String macroOrLinkPatternString;
   public final static String definitionPatternString = "^#{1,2}(\n|[^\\*#:\n].*$)";
   public final static String bulletListPatternString = "\\*\\s*(.*)";
+  /**
+   * Pattern used to parse Section Descendants
+   */
+  public final static String multipleBulletListPatternString = "(\\*+)\\s*(.*)";
+
   public final static String examplePatternString = "^#{1,2}\\*\\s*(.*)$";
 
   public final static String catOrInterwikiLink = "^\\s*\\[\\[([^\\:\\]]*)\\:([^\\]]*)\\]\\]\\s*$";
@@ -36,6 +41,7 @@ public class WikiPatterns {
   public final static Pattern macroOrLinkPattern;
   public final static Pattern definitionPattern;
   public final static Pattern bulletListPattern;
+  public final static Pattern multipleBulletListPattern;
 
   static {
     macroPattern = Pattern.compile(macroPatternString);
@@ -43,5 +49,6 @@ public class WikiPatterns {
     macroOrLinkPattern = Pattern.compile(macroOrLinkPatternString);
     definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
     bulletListPattern = Pattern.compile(bulletListPatternString);
+    multipleBulletListPattern = Pattern.compile(multipleBulletListPatternString);
   }
 }

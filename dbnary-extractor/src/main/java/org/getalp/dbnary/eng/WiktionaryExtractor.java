@@ -132,12 +132,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public boolean filterOutPage(String pagename) {
-    // Extract Wikisaurus pages...
-    return !isWikisaurus(pagename) && super.filterOutPage(pagename);
+    // Extract Wikisaurus and Reconstructed pages...
+    return !isWikisaurus(pagename) && !isReconstructed(pagename) && super.filterOutPage(pagename);
+  }
+
+  private boolean isReconstructed(String pagename) {
+    return pagename.startsWith("Reconstruction:");
   }
 
   private boolean isWikisaurus(String pagename) {
-    return pagename.startsWith("Wikisaurus") || pagename.startsWith("Thesaurus");
+    return pagename.startsWith("Wikisaurus:") || pagename.startsWith("Thesaurus:");
   }
 
   private String cutNamespace(String pagename) {

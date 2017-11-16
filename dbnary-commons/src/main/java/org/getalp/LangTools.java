@@ -9,7 +9,8 @@ public class LangTools {
 
   static Logger log = LoggerFactory.getLogger(LangTools.class);
 
-  public static String threeLettersCode(java.util.HashMap<String, String> h, String s) {
+  public static String threeLettersCode(java.util.HashMap<String, String> h, String langname) {
+    String s = langname;
     if (s == null || s.equals("")) {
       log.debug("Null or empty input language");
       return s;
@@ -20,6 +21,12 @@ public class LangTools {
     if (res == null && h != null && h.containsKey(s)) {
       s = h.get(s);
       res = getCode(s);
+      if (null != res && !res.equals(s)) {
+        log.debug("Strange language code : {} => {} => {}", langname, s, res);
+      }
+      if (null == res) {
+        return s;
+      }
     }
 
     return res;

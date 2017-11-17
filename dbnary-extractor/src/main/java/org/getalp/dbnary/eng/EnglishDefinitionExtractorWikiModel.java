@@ -82,8 +82,9 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
     } else if (templateName.endsWith(" of")) {
       log.debug("Ignoring template {} in definition of {}", templateName, this.getPageName());
     } else if (templateName.equals("categorize") || templateName.equals("catlangname")
-        || templateName.equals("catlangcode")) {
+        || templateName.equals("catlangcode") || templateName.equals("senseid")) {
       // ignore
+      // WARN: senseid should maybe be caught and registered to allow for id= arg in translation table call.
     } else if (templateName.equals("given name")) {
       writer.append(givenName(parameterMap));
     } else if (templateName.equals("quote-book")) {

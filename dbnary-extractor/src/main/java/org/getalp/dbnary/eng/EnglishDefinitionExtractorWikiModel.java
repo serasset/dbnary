@@ -84,11 +84,13 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
     } else if (templateName.equals("categorize") || templateName.equals("catlangname")
         || templateName.equals("catlangcode") || templateName.equals("senseid")) {
       // ignore
-      // WARN: senseid should maybe be caught and registered to allow for id= arg in translation table call.
+      // WARN: senseid should maybe be caught and registered to allow for id= arg in translation
+      // table call.
     } else if (templateName.equals("given name")) {
       writer.append(givenName(parameterMap));
     } else if (templateName.equals("quote-book")) {
-      // TODO: example cannot be registered while transcluding as the lexical sense is not available yet.
+      // TODO: example cannot be registered while transcluding as the lexical sense is not available
+      // yet.
       // StringWriter quotation = new StringWriter();
       // super.substituteTemplateCall(templateName, parameterMap, quotation);
       // delegate.registerExample(quotation.toString(), null);
@@ -153,8 +155,7 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
     }
   }
 
-  private ArrayList<String> listArgs(Map<String, String> args,
-      String arg) {
+  private ArrayList<String> listArgs(Map<String, String> args, String arg) {
     ArrayList<String> res = new ArrayList<>();
     String eq = args.get(arg);
     int i = 2;

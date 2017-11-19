@@ -288,7 +288,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         getCurrentEntryLanguage());
     // TODO : why should I register a label here when I have a writtenRep ?
     // aBox.add(currentCanonicalForm, RDFS.label, currentWiktionaryPageName,
-    //    getCurrentEntryLanguage());
+    // getCurrentEntryLanguage());
     aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
     if (null != currentLexinfoPos) {
       aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);

@@ -390,8 +390,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
 
     etymology.fromDefinitionToSymbols();
-
-    ewdh.registerEtymology(etymology);
+    try {
+      ewdh.registerEtymology(etymology);
+    } catch (RuntimeException e) {
+      log.error("Caught {} while registering etymology in {}", e, wiktionaryPageName);
+      if (log.isDebugEnabled()) {
+        e.printStackTrace(System.err);
+      }
+    }
   }
 
   // TODO: process * {{l|pt|mundinho}}, {{l|pt|mundozinho}} {{gloss|diminutives}}

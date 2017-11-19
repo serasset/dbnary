@@ -247,7 +247,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               DBnaryEtymologyOnt.EtymologyEntry);
           eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyRelatedTo, currentEtymologyEntry);
           eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, currentEtymologyEntry);
-          // TODO: when extracting a reconstructed word the URL of wiktionary page is not correctly computed
+          // TODO: when extracting a reconstructed word the URL of wiktionary page is not correctly
+          // computed
           Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentWiktionaryPageName)
               + "#" + uriEncode(currentEntryLanguageName));
           eBox.add(vocable0, RDFS.seeAlso, w);

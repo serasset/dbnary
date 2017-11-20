@@ -82,14 +82,20 @@ public class GermanMorphologyExtractor {
         }
         // DONE: Extract comparative/Superlative from parametermap before fetching the full flexion
         // page.
-        if (extractAdjectiveDegree(wt.getParsedArgs())) {
-          String deklinationPageName = pageName + " (Deklination)";
+        // extractAdjectiveDegree returns true(!) iff there are NO further forms ("Keine weiteren
+        // Formen") therefore the Flexion: page is only consulted iff false is returned
+        if (!extractAdjectiveDegree(wt.getParsedArgs())) {
+          // Page name has changed to "Flexion:" String deklinationPageName = pageName + "
+          // (Deklination)";
+          String deklinationPageName = "Flexion:" + pageName;
+          log.debug("German Adjectiv: try deklinationPageName: {}", deklinationPageName);
           extractFormsPageWithModel(deklinationPageName, pageName, deklinationExtractor);
         }
       } else if ("Deutsch Verb Übersicht".equals(templateName)
           || ("Verb-Tabelle".equals(templateName))) {
         // DONE get the link to the Konjugationnen page and extract data from the expanded tables
-        String conjugationPage = pageName + " (Konjugation)";
+        // Page name has changed to "Flexion:" String conjugationPage = pageName + " (Konjugation)";
+        String conjugationPage = "Flexion:" + pageName;
         extractFormsPageWithModel(conjugationPage, pageName, konjugationExtractor);
       } else if (templateName.equals("Deutsch adjektivische Deklination")) {
         extractFormsWithModel(wt.toString(), pageName, substantivDeklinationExtractor);
@@ -151,9 +157,13 @@ public class GermanMorphologyExtractor {
       GermanTableExtractorWikiModel model) {
     String subPageContent = wi.getTextOfPageWithRedirects(formsPageName);
     if (null == subPageContent) {
+      log.debug("extractFormsPageWithModel: subPageConten is null : {} / {}", formsPageName,
+          pageName);
       return;
     }
     if (!subPageContent.contains("Deutsch")) {
+      log.debug("extractFormsPageWithModel: page does not contain \"Deutsch\": {} / {}",
+          formsPageName, pageName);
       return;
     }
 

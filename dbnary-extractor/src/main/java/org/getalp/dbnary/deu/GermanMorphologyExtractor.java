@@ -157,7 +157,7 @@ public class GermanMorphologyExtractor {
       GermanTableExtractorWikiModel model) {
     String subPageContent = wi.getTextOfPageWithRedirects(formsPageName);
     if (null == subPageContent) {
-      log.debug("extractFormsPageWithModel: subPageConten is null : {} / {}", formsPageName,
+      log.debug("extractFormsPageWithModel: subPageContent is null : {} / {}", formsPageName,
           pageName);
       return;
     }

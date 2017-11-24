@@ -1,5 +1,7 @@
 package org.getalp.dbnary.deu;
 
+import info.bliki.wiki.model.IWikiModel;
+import info.bliki.wiki.template.ITemplateFunction;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -39,9 +41,72 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
     if ("Flexlink".equals(templateName)) {
       // Just display the link name and drop the link...
       writer.append(parameterMap.get("1"));
+    } else if ("Str subrev".equals(templateName)) {
+      // subrev & rightc are extensively called and generate a very big Lua overhead
+      writer.append(subrev(parameterMap));
+    } else if ("Str rightc".equals(templateName)) {
+      writer.append(rightc(parameterMap));
+    } else if ("Str right".equals(templateName)) {
+      writer.append(right(parameterMap));
+    } else if ("Str len".equals(templateName)) {
+      writer.append(Integer.toString(parameterMap.getOrDefault("1", "").length()));
+    } else if ("Str crop".equals(templateName)) {
+      writer.append(crop(parameterMap));
+    } else if ("Literatur".equals(templateName)) {
+      // nop : catch and ignore this template in the context of morphology tables.
     } else {
-      // log.debug("Caught template call: {} --in-- {}", templateName, this.getPageName());
+      // DONE: catch Str subc and Str subrev for drastic extraction time enhancement
+      // log.trace("Expanding template call: {}", templateName);
       super.substituteTemplateCall(templateName, parameterMap, writer);
+    }
+  }
+
+  /*
+   * function Str.crop(frame) local s = frame.args[1] local cut = tonumber(frame.args[2]) local
+   * laenge = mw.ustring.len(s) if (not cut) or (cut < 1) then return s end return
+   * mw.ustring.sub(s,1,laenge - cut) end
+   */
+
+  private String crop(Map<String, String> parameterMap) {
+    String s = parameterMap.getOrDefault("1", "");
+    int cut = Integer.valueOf(parameterMap.getOrDefault("2", "0"));
+    int end = s.length() - cut;
+    if (0 <= end && end <= s.length()) {
+      return s.substring(0, end);
+    } else {
+      return "";
+    }
+  }
+
+  private String right(Map<String, String> parameterMap) {
+    String text = parameterMap.getOrDefault("1", "").trim();
+    String arg2 = parameterMap.get("2");
+    int start = (null == arg2 || "".equals(arg2)) ? 0 : Integer.valueOf(arg2);
+    if (start < 0) {
+      return "";
+    } else {
+      return text.substring(start);
+    }
+  }
+
+  private String rightc(Map<String, String> parameterMap) {
+    String text = parameterMap.getOrDefault("1", "").trim();
+    int posr = Integer.valueOf(parameterMap.getOrDefault("2", "1"));
+    int start = text.length() - posr;
+    if (start >= 0) {
+      return text.substring(start);
+    } else {
+      return "";
+    }
+  }
+
+  private String subrev(Map<String, String> parameterMap) throws IOException {
+    String rightc = rightc(parameterMap);
+    int length = Integer.valueOf(parameterMap.getOrDefault("3", "1"));
+    if (length <= rightc.length()) {
+      return rightc.substring(0, length);
+    } else {
+      return "";
     }
   }
 
@@ -242,4 +307,14 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
 
     wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 1, infl);
   }
+
+  private static ITemplateFunction germanInvoke = new GermanInvoke();
+
+  @Override
+  public ITemplateFunction getTemplateFunction(String name) {
+    if ("#invoke".equals(name))
+      return germanInvoke;
+    return getTemplateMap().get(name);
+  }
+
 }

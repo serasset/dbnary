@@ -49,18 +49,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super(wdh);
   }
 
-  protected GermanMorphologyExtractorWikiModel morphologyExtractorWikiModel;
   protected GermanMorphologyExtractor morphologyExtractor;
 
   @Override
   public void setWiktionaryIndex(WiktionaryIndex wi) {
     super.setWiktionaryIndex(wi);
-    morphologyExtractorWikiModel =
-        new GermanMorphologyExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
     morphologyExtractor = new GermanMorphologyExtractor(wdh, wi);
   }
-
-  // protected final static Pattern languageSectionPattern;
 
   protected final static String macroOrPOSPatternString;
   protected final static String posHeaderElementsPatternString;
@@ -464,78 +459,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     verbMarker.add("Hilfsverb");
   }
 
-  // TODO [CHECK] this is never used...
-  private static HashSet<String> inflectedFormMarker;
-
-  static {
-    inflectedFormMarker = new HashSet<>();
-    inflectedFormMarker.add("Konjugierte Form");
-    inflectedFormMarker.add("Deklinierte Form");
-  }
-
-
   private void extractInflections(int startOffset, int endOffset) {
     if (wdh.isDisabled(Feature.MORPHOLOGY)) {
       return;
     }
     parseInflectionTables(startOffset, endOffset);
-
-    // parseConjugationAndDeclinationPages(startOffset, endOffset);
-
-  }
-
-  private void parseConjugationAndDeclinationPages(int startOffset, int endOffset) {
-
-    // TODO : next step : for each page with more than one conjugation use all the table
-    // TODO: check and refactor
-    String page = lexEntryToPage(wiktionaryPageName);
-    String normalizedPOS = wdh.currentWiktionaryPos();
-    // deklinationExtractor.setPageName(wiktionaryPageName);
-    // if the currentEntry has a page of conjugation or declination
-    if (null != page && -1 != page.indexOf(normalizedPOS)) {
-      // if(inflectedFormMarker.contains(normalizedPOS)){
-      // deklinationExtractor.parseInflectedForms(page, normalizedPOS);
-      // }
-      if (verbMarker.contains(normalizedPOS)) {
-        // deklinationExtractor.parseConjugation(page, normalizedPOS);
-      } else {
-        // deklinationExtractor.parseTables(page, normalizedPOS);
-      }
-    } else {
-      Matcher m = macroOrPOSPattern.matcher(pageContent.substring(startOffset, endOffset));
-      if (m.find()) {
-        // deklinationExtractor.parseOtherForm(m.group(0), normalizedPOS);
-      }
-    }
-
   }
 
   private void parseInflectionTables(int startOffset, int endOffset) {
-
-    // morphologyExtractorWikiModel.setPageName(wiktionaryPageName);
     String region = pageContent.substring(startOffset, endOffset);
     morphologyExtractor.extractMorphologicalData(region, wiktionaryPageName);
-    // morphologyExtractorWikiModel.parseOtherForm(region, wdh.currentWiktionaryPos());
   }
-
-  private final static String germanDeclinationSuffix = " (Deklination)";
-  private final static String germanConjugationSuffix = " (Konjugation)";
-
-  private String lexEntryToPage(String lexEntry) {
-    int i = 0;
-    String[] suffix = {germanConjugationSuffix, germanDeclinationSuffix};
-    String pageContent = null;
-
-    while (null == pageContent && i < suffix.length) {
-      pageContent = wi.getTextOfPage(lexEntry + suffix[i]);
-      i++;
-    }
-    if (pageContent != null && !pageContent.contains("Deutsch")) {
-      pageContent = null;
-    }
-    return pageContent;
-  }
-
 
   static final String glossOrMacroPatternString;
   static final Pattern glossOrMacroPattern;
@@ -585,8 +519,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractTranslationFromItem(WikiText.ListItem li) {
-    // GermanTranslationLineExtractor extractor = new GermanTranslationLineExtractor();
-    // extractor.extractTranslations(li.getContent(), wdh);
     extractTranslationsFromListContent(li.getContent());
   }
 
@@ -599,7 +531,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractTranslationsFromListContent(WikiText.WikiContent content) {
 
-    log.debug("Translation line = {}", content.toString());
+    // log.trace("Translation line = {}", content);
 
     WikiCharSequence line = new WikiCharSequence(content);
     Pattern pattern = WikiPattern.compile(translationTokenizer);

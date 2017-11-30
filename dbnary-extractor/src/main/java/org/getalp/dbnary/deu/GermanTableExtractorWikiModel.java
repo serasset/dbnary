@@ -1,6 +1,5 @@
 package org.getalp.dbnary.deu;
 
-import info.bliki.wiki.model.IWikiModel;
 import info.bliki.wiki.template.ITemplateFunction;
 import java.io.IOException;
 import java.util.Collection;
@@ -11,7 +10,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.tools.ArrayMatrix;
 import org.jsoup.Jsoup;
@@ -25,7 +23,8 @@ import org.slf4j.LoggerFactory;
 public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiModel {
 
   private Logger log = LoggerFactory.getLogger(GermanTableExtractorWikiModel.class);
-  protected IWiktionaryDataHandler wdh;
+  protected IWiktionaryDataHandler wdh; // TODO : only used to query the current entry name for
+                                        // logging purposes.
 
   protected Set<Element> alreadyParsedTables = new HashSet<>();
 
@@ -60,12 +59,6 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
       super.substituteTemplateCall(templateName, parameterMap, writer);
     }
   }
-
-  /*
-   * function Str.crop(frame) local s = frame.args[1] local cut = tonumber(frame.args[2]) local
-   * laenge = mw.ustring.len(s) if (not cut) or (cut < 1) then return s end return
-   * mw.ustring.sub(s,1,laenge - cut) end
-   */
 
   private String crop(Map<String, String> parameterMap) {
     String s = parameterMap.getOrDefault("1", "");
@@ -111,12 +104,16 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
   }
 
 
-  protected void parseTables(String declinationTemplateCall) {
+  protected InflectedFormSet parseTables(String declinationTemplateCall) {
 
-    Document doc = Jsoup.parse(expandWikiCode(declinationTemplateCall));
+    String htmlCode = expandWikiCode(declinationTemplateCall);
+    Document doc = Jsoup.parse(htmlCode);
     if (null == doc) {
-      return;
+      return null;
     }
+
+    InflectedFormSet forms = new InflectedFormSet();
+
     Elements elts = doc.select("h3, table");
     LinkedList<String> h2Context = new LinkedList<>();
     LinkedList<String> h3Context = new LinkedList<>();
@@ -129,20 +126,22 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
         if (!elt.text().contains("Deutsch")) {
           log.debug("Breaking flexion parse due to header {} --in-- {}", elt.text(),
               wdh.currentLexEntry());
-          return;
+          return forms;
         }
         h2Context.clear();
         h2Context.addAll(decodeH2Context(elt.text()));
       } else {
         if (alreadyParsedTables.contains(elt)) {
+          log.debug("Ignoring already parsed table in {}", wdh.currentLexEntry());
           continue;
         }
         if (elt.id().equalsIgnoreCase("toc")) {
           continue;
         }
-        parseTable(elt, h3Context);
+        forms.addAll(parseTable(elt, h3Context));
       }
     }
+    return forms;
   }
 
   protected Collection<? extends String> decodeH2Context(String text) {
@@ -150,7 +149,8 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
   }
 
 
-  protected void parseTable(Element table, List<String> globalContext) {
+  protected InflectedFormSet parseTable(Element table, List<String> globalContext) {
+    InflectedFormSet forms = new InflectedFormSet();
     alreadyParsedTables.add(table);
     Elements rows = table.select("tr");
     ArrayMatrix<String> columnHeaders = new ArrayMatrix<>();
@@ -210,19 +210,20 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
               // No nested table in current cell.
               GermanInflectionData inflection = getInflectionDataFromCellContext(context);
               if (null != inflection) {
-                addForm(inflection.toPropertyObjectMap(), cell.text());
+                forms.add(inflection, getInflectedForms(cell));
               }
             } else {
               // handle tables that are nested in cells
               Elements tables = cell.select("table");
               for (Element nestedTable : tables) {
                 if (alreadyParsedTables.contains(nestedTable)) {
+                  log.debug("Ignoring already parsed nested table in {}", wdh.currentLexEntry());
                   continue;
                 }
                 if (nestedTable.id().equalsIgnoreCase("toc")) {
                   continue;
                 }
-                parseTable(nestedTable, context);
+                forms.addAll(parseTable(nestedTable, context));
               }
             }
             ncol++;
@@ -233,6 +234,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
       }
       nrow++;
     }
+    return forms;
   }
 
   private boolean inCurrentTable(Element table, Element row) {
@@ -298,14 +300,17 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
 
   protected abstract GermanInflectionData getInflectionDataFromCellContext(List<String> context);
 
-  private void addForm(HashSet<PropertyObjectPair> infl, String s) {
-    // OLD CODE from intern: to be checked:
-    // s=s.replace("]", "").replace("[", "").replaceAll(".*\\) *", "").replace("(", "").trim();
-    if (s.length() == 0 || s.equals("—") || s.equals("-")) {
-      return;
+  protected Set<String> getInflectedForms(Element cell) {
+    Set<String> forms = new HashSet<>();
+    Elements anchors = cell.select("a");
+    if (anchors.isEmpty()) {
+      forms.add(cell.text());
+    } else {
+      for (Element anchor : anchors) {
+        forms.add(anchor.text());
+      }
     }
-
-    wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 1, infl);
+    return forms;
   }
 
   private static ITemplateFunction germanInvoke = new GermanInvoke();

@@ -4,13 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.getalp.dbnary.InflectionData;
 import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.SkosOnt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GermanInflectionData {
+public class GermanInflectionData extends InflectionData {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
@@ -70,6 +71,7 @@ public class GermanInflectionData {
   public static Model model = ModelFactory.createDefaultModel();
 
 
+  @Override
   public HashSet<PropertyObjectPair> toPropertyObjectMap() {
     HashSet<PropertyObjectPair> inflections = new HashSet<>();
     switch (this.degree) {

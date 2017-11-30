@@ -224,23 +224,23 @@ public class ExtractWiktionary {
     }
 
     we = null;
-    if (outputFormat.equals("RDF") || outputFormat.equals("TURTLE")
-        || outputFormat.equals("NTRIPLE") || outputFormat.equals("N3") || outputFormat.equals("TTL")
-        || outputFormat.equals("RDFABBREV")) {
-      if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
-        wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language);
-      } else {
-        wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
-      }
-      if (morphoOutputFile != null) {
-        wdh.enableFeature(Feature.MORPHOLOGY);
-      }
-      if (etymologyOutputFile != null) {
-        wdh.enableFeature(Feature.ETYMOLOGY);
-      }
-    } else {
+    if (!outputFormat.equals("RDF") && !outputFormat.equals("TURTLE")
+        && !outputFormat.equals("NTRIPLE") && !outputFormat.equals("N3")
+        && !outputFormat.equals("TTL") && !outputFormat.equals("RDFABBREV")) {
       System.err.println("unsupported format :" + outputFormat);
       System.exit(1);
+    }
+
+    if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
+      wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language);
+    } else {
+      wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
+    }
+    if (morphoOutputFile != null) {
+      wdh.enableFeature(Feature.MORPHOLOGY);
+    }
+    if (etymologyOutputFile != null) {
+      wdh.enableFeature(Feature.ETYMOLOGY);
     }
 
     if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {

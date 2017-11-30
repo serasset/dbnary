@@ -3,11 +3,13 @@ package org.getalp.dbnary;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 
 public interface IWiktionaryDataHandler {
+
 
   enum Feature {
     MAIN, MORPHOLOGY, ETYMOLOGY
@@ -131,6 +133,8 @@ public interface IWiktionaryDataHandler {
 
   void registerInflection(String languageCode, String pos, String inflection, String canonicalForm,
       int defNumber, HashSet<PropertyObjectPair> properties);
+
+  void registerInflection(InflectionData key, Set<String> value);
 
   int currentDefinitionNumber();
 

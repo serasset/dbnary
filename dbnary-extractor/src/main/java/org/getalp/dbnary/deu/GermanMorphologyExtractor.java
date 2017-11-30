@@ -6,6 +6,8 @@ import static org.getalp.dbnary.deu.GermanInflectionData.Degree.SUPERLATIVE;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -139,7 +141,7 @@ public class GermanMorphologyExtractor {
 
       value = value.replaceAll("<(?:/)?small>", "");
       for (String form : value.split("(?:<br(?: */)?>)|(?:,\\s*)")) {
-        addForm(inflection.toPropertyObjectMap(), form);
+        addForm(inflection.toPropertyObjectMap(), form.trim());
       }
     }
     return noOtherForms;
@@ -149,7 +151,6 @@ public class GermanMorphologyExtractor {
     if (s.length() == 0 || s.equals("—") || s.equals("-")) {
       return;
     }
-
     wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 1, infl);
   }
 
@@ -173,7 +174,14 @@ public class GermanMorphologyExtractor {
   private void extractFormsWithModel(String wikiCode, String pageName,
       GermanTableExtractorWikiModel model) {
     model.setPageName(pageName);
-    model.parseTables(wikiCode);
+    InflectedFormSet forms = model.parseTables(wikiCode);
+    registerAllForms(forms);
+  }
+
+  private void registerAllForms(InflectedFormSet forms) {
+    for (Entry<GermanInflectionData, Set<String>> form : forms) {
+      wdh.registerInflection(form.getKey(), form.getValue());
+    }
   }
 
 }

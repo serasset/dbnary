@@ -112,7 +112,15 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
 
     // Create aBox
-    aBox = ModelFactory.createDefaultModel();
+    aBox = createAndInitializeABox(lang);
+
+    featureBoxes = new HashMap<>();
+    featureBoxes.put(Feature.MAIN, aBox);
+  }
+
+  private Model createAndInitializeABox(String lang) {
+    // Create aBox
+    Model aBox = ModelFactory.createDefaultModel();
     aBox.setNsPrefix(lang, NS);
     aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
     aBox.setNsPrefix("dbetym", DBnaryEtymologyOnt.getURI());
@@ -132,8 +140,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     aBox.setNsPrefix("xs", XSD.getURI());
     aBox.setNsPrefix("wikt", WIKT);
 
-    featureBoxes = new HashMap<>();
-    featureBoxes.put(Feature.MAIN, aBox);
+    return aBox;
   }
 
   /**
@@ -630,6 +637,17 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       addOtherFormPropertiesToLexicalEntry(getLexEntry(languageCode, canonicalForm, pos, defNumber),
           props);
     }
+  }
+
+  @Override
+  public void registerInflection(InflectionData key, Set<String> value) {
+    HashSet<PropertyObjectPair> props = key.toPropertyObjectMap();
+    for (String form : value) {
+      PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep,
+          aBox.createLiteral(form, getCurrentEntryLanguage()));
+      props.add(p);
+    }
+    addOtherFormPropertiesToLexicalEntry(currentLexEntry, props);
   }
 
   private Statement createTargetLanguageProperty(Resource trans, String lang) {

@@ -18,11 +18,8 @@ public class InflectedFormSet implements Iterable<Map.Entry<GermanInflectionData
    * @return
    */
   public void add(GermanInflectionData key, Set<String> values) {
-    Set<String> myValues = map.get(key);
-    if (null == myValues) {
-      map.put(key, values);
-    } else {
-      myValues.addAll(values);
+    for (String value : values) {
+      this.add(key, value);
     }
   }
 
@@ -34,11 +31,10 @@ public class InflectedFormSet implements Iterable<Map.Entry<GermanInflectionData
    * @return
    */
   public void add(GermanInflectionData key, String value) {
-    map.computeIfAbsent(key, k -> {
-      HashSet<String> newSet = new HashSet<>();
-      newSet.add(value);
-      return newSet;
-    });
+    if (value.length() == 0 || value.equals("—") || value.equals("-") || value.equals("\u00A0")) {
+      return;
+    }
+    map.computeIfAbsent(key, k -> new HashSet<>()).add(value);
   }
 
   public void addAll(InflectedFormSet otherSet) {

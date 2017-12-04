@@ -301,13 +301,23 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
   protected abstract GermanInflectionData getInflectionDataFromCellContext(List<String> context);
 
   protected Set<String> getInflectedForms(Element cell) {
+    // TODO: there are cells with <br> and commas to separate different values.
     Set<String> forms = new HashSet<>();
     Elements anchors = cell.select("a");
     if (anchors.isEmpty()) {
-      forms.add(cell.text());
+      String cellText = cell.text();
+      String[] atomicForms = cellText.split("[,;]");
+      for (int i = 0; i < atomicForms.length; i++) {
+        forms.add(atomicForms[i].trim());
+      }
     } else {
       for (Element anchor : anchors) {
         forms.add(anchor.text());
+      }
+    }
+    for (String form : forms) {
+      if (form.contains(",")) {
+        log.trace("Comma found in morphological value: {}", form);
       }
     }
     return forms;

@@ -121,8 +121,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   Map<Resource, Set<Resource>> lexEntries = new HashMap<>();
 
-  public WiktionaryDataHandler(String lang) {
-    super(lang);
+  public WiktionaryDataHandler(String lang, String tdbDir) {
+    super(lang, tdbDir);
   }
 
   @Override

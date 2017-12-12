@@ -53,6 +53,8 @@ public class UpdateAndExtractDumps {
 
   private static final String NETWORK_OFF_OPTION = "n";
 
+  private static final String TDBDIR_OPTION = "tdb";
+
   private static final String FORCE_OPTION = "f";
   private static final boolean DEFAULT_FORCE = false;
 
@@ -74,6 +76,7 @@ public class UpdateAndExtractDumps {
 
   private String outputDir;
   private String extractDir;
+  private String tdbDir;
   private int historySize;
   private boolean force = DEFAULT_FORCE;
   private boolean compress = DEFAULT_COMPRESS;
@@ -108,7 +111,10 @@ public class UpdateAndExtractDumps {
     options.addOption(OptionBuilder.withLongOpt(ENABLE_FEATURE_OPTION)
         .withDescription("Enable additional extraction features (e.g. morpho,etymology,foreign).")
         .hasArg().withArgName("feature").create());
-
+    options.addOption(OptionBuilder.withLongOpt(TDBDIR_OPTION)
+        .withDescription("Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
+        .hasArg().withArgName("dir")
+        .create());
   }
 
   public static void main(String[] args) throws WiktionaryIndexerException, IOException {
@@ -159,6 +165,8 @@ public class UpdateAndExtractDumps {
     compress = cmd.hasOption(COMPRESS_OPTION);
 
     networkIsOff = cmd.hasOption(NETWORK_OFF_OPTION);
+
+    tdbDir = cmd.getOptionValue(TDBDIR_OPTION, null);
 
     features = new ArrayList<>();
     if (cmd.hasOption(ENABLE_FEATURE_OPTION)) {
@@ -685,6 +693,10 @@ public class UpdateAndExtractDumps {
     }
     if (features.contains("foreign")) {
       a.add("-x");
+    }
+    if (null != tdbDir) {
+      a.add("--tdb");
+      a.add(tdbDir + "-" + lang);
     }
     a.add(uncompressDumpFileName(lang, dir));
 

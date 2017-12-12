@@ -135,9 +135,9 @@ public class GetExtractedSemnet {
         || outputFormat.equals("RDFABBREV")) {
       if (model.equals("LEMON")) {
         if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
-          wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language);
+          wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language, null);
         } else {
-          wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
+          wdh = WiktionaryDataHandlerFactory.getDataHandler(language, null);
         }
         if (extractsMorpho) {
           wdh.enableFeature(Feature.MORPHOLOGY);

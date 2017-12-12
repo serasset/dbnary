@@ -36,8 +36,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("akronim", new PosAndType(LexinfoOnt.acronym, OntolexOnt.LexicalEntry));
   }
 
-  public WiktionaryDataHandler(String lang) {
-    super(lang);
+  public WiktionaryDataHandler(String lang, String tdbDir) {
+    super(lang, tdbDir);
   }
 
   public void addExtraPartOfSpeech(String pos) {

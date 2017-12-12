@@ -77,8 +77,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // Initialism ?
   }
 
-  public WiktionaryDataHandler(String lang) {
-    super(lang);
+  public WiktionaryDataHandler(String lang, String tdbDir) {
+    super(lang, tdbDir);
   }
 
   public static boolean isValidPOS(String pos) {

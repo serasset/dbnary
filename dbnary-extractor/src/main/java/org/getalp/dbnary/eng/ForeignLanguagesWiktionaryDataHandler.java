@@ -15,8 +15,8 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
   private String currentEntryLanguage = null;
   private String currentPrefix = null;
 
-  public ForeignLanguagesWiktionaryDataHandler(String lang) {
-    super(lang);
+  public ForeignLanguagesWiktionaryDataHandler(String lang, String tdbDir) {
+    super(lang, tdbDir);
   }
 
   @Override

@@ -14,8 +14,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
-  public WiktionaryDataHandler(String lang) {
-    super(lang);
+  public WiktionaryDataHandler(String lang, String tdbDir) {
+    super(lang, tdbDir);
   }
 
   @Override

@@ -43,6 +43,8 @@ public class ExtractWiktionary {
   private static final String MODEL_OPTION = "m";
   private static final String DEFAULT_MODEL = "ontolex";
 
+  private static final String TDBDIR_OPTION = "tdb";
+
   private static final String OUTPUT_FILE_OPTION = "o";
   private static final String DEFAULT_OUTPUT_FILE = "extract";
 
@@ -79,6 +81,7 @@ public class ExtractWiktionary {
   private String outputFormat = DEFAULT_OUTPUT_FORMAT;
   private String model = DEFAULT_MODEL;
   private boolean compress;
+  private String tdbDir = null;
   private String language = DEFAULT_LANGUAGE;
   private File dumpFile;
   private String outputFileSuffix = "";
@@ -123,6 +126,10 @@ public class ExtractWiktionary {
     options.addOption(OptionBuilder.withLongOpt(TO_PAGE_LONG_OPTION)
         .withDescription("Do not process pages after the nth one. MAXINT by default.").hasArg()
         .withArgName("num").create(TO_PAGE_SHORT_OPTION));
+    options.addOption(OptionBuilder.withLongOpt(TDBDIR_OPTION)
+        .withDescription("Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
+        .hasArg().withArgName("dir")
+        .create());
   }
 
   static {
@@ -176,6 +183,8 @@ public class ExtractWiktionary {
       outputFileSuffix = df.format(new Date());
     }
 
+    tdbDir = cmd.getOptionValue(TDBDIR_OPTION, null);
+
     if (cmd.hasOption(OUTPUT_FORMAT_OPTION)) {
       outputFormat = cmd.getOptionValue(OUTPUT_FORMAT_OPTION);
     }
@@ -227,14 +236,14 @@ public class ExtractWiktionary {
     if (!outputFormat.equals("RDF") && !outputFormat.equals("TURTLE")
         && !outputFormat.equals("NTRIPLE") && !outputFormat.equals("N3")
         && !outputFormat.equals("TTL") && !outputFormat.equals("RDFABBREV")) {
-      System.err.println("unsupported format :" + outputFormat);
-      System.exit(1);
-    }
+          System.err.println("unsupported format :" + outputFormat);
+          System.exit(1);
+        }
 
     if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
-      wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language);
+      wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language, tdbDir);
     } else {
-      wdh = WiktionaryDataHandlerFactory.getDataHandler(language);
+      wdh = WiktionaryDataHandlerFactory.getDataHandler(language, tdbDir);
     }
     if (morphoOutputFile != null) {
       wdh.enableFeature(Feature.MORPHOLOGY);
@@ -323,7 +332,6 @@ public class ExtractWiktionary {
                 // System.err.println(" NbNodes = " + s.getNbNodes());
                 relevantTimeOfLastThousands = System.currentTimeMillis();
               }
-              // if (nbRelevantPages == 1100) break;
             }
           }
         }

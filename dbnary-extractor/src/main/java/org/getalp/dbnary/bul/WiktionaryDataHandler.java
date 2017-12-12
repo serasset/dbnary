@@ -32,8 +32,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
   }
 
-  public WiktionaryDataHandler(String lang) {
-    super(lang);
+  public WiktionaryDataHandler(String lang, String tdbDir) {
+    super(lang, tdbDir);
   }
 
 }

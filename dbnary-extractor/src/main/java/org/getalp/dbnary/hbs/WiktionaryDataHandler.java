@@ -37,8 +37,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public HashMap<String, ArrayList<String>> alreadyRegisteredFlexion = new HashMap<>();
   public HashMap<String, HashMap<String, String>> toBeRegisterFlexion = new HashMap<>();
 
-  public WiktionaryDataHandler(String lang) {
-    super(lang);
+  public WiktionaryDataHandler(String lang, String tdbDir) {
+    super(lang, tdbDir);
     aBox.setNsPrefix("olia", OliaOnt.getURI());
   }
 

@@ -48,8 +48,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("ltsmb", new PosAndType(LexinfoOnt.symbol, LexinfoOnt.Symbol));
   }
 
-  public WiktionaryDataHandler(String lang) {
-    super(lang);
+  public WiktionaryDataHandler(String lang, String tdbDir) {
+    super(lang, tdbDir);
   }
 
   public void addPOSinfo(String s) {

@@ -3,6 +3,7 @@ package org.getalp.dbnary;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
+import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -18,6 +20,7 @@ import org.apache.jena.rdf.model.ReifiedStatement;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -28,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktionaryDataHandler {
+
+  private final Dataset dataset;
 
   protected static class PosAndType {
 
@@ -42,6 +47,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   private Logger log = LoggerFactory.getLogger(OntolexBasedRDFDataHandler.class);
 
+  private final String tdbDir;
   protected Model aBox;
   protected Map<Feature, Model> featureBoxes;
 
@@ -102,8 +108,15 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   // Map of the String to lexvo language entity
   private HashMap<String, Resource> languages = new HashMap<String, Resource>();
 
-  public OntolexBasedRDFDataHandler(String lang) {
+  public OntolexBasedRDFDataHandler(String lang, String tdbDir) {
     super();
+
+    this.tdbDir = tdbDir;
+    if (null != tdbDir) {
+      dataset = TDBFactory.createDataset(tdbDir);
+    } else {
+      dataset = null;
+    }
 
     NS = DBNARY_NS_PREFIX + "/" + lang + "/";
 
@@ -119,8 +132,17 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   private Model createAndInitializeABox(String lang) {
+    return this.createAndInitializeABox(lang, Feature.MAIN);
+  }
+
+  private Model createAndInitializeABox(String lang, Feature f) {
     // Create aBox
-    Model aBox = ModelFactory.createDefaultModel();
+    Model aBox;
+    if (null != dataset) {
+      aBox = dataset.getNamedModel("NS" + f.name().toLowerCase()+ "/");
+    } else {
+      aBox = ModelFactory.createDefaultModel();
+    }
     aBox.setNsPrefix(lang, NS);
     aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
     aBox.setNsPrefix("dbetym", DBnaryEtymologyOnt.getURI());
@@ -155,8 +177,10 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void enableFeature(Feature f) {
-    Model box = ModelFactory.createDefaultModel();
-    fillInPrefixes(aBox, box);
+    // TODO : keep the 3 letter code as the correct language for prefixes (wktLanguageEdition
+    // is the 2 letter code).
+    Model box = createAndInitializeABox(wktLanguageEdition, f);
+    // fillInPrefixes(aBox, box);
     featureBoxes.put(f, box);
   }
 
@@ -853,6 +877,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   private void promoteNymProperties() {
     StmtIterator entries = currentMainLexEntry.listProperties(DBnaryOnt.describes);
     HashSet<Statement> toBeRemoved = new HashSet<Statement>();
+    ArrayList<Statement> toBeAdded = new ArrayList<Statement>();
     while (entries.hasNext()) {
       Resource lu = entries.next().getResource();
       List<Statement> senses = lu.listProperties(OntolexOnt.sense).toList();
@@ -867,12 +892,13 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
           StmtIterator nyms = lu.listProperties(nymProp);
           while (nyms.hasNext()) {
             Statement nymRel = nyms.next();
-            aBox.add(s, nymProp, nymRel.getObject());
+            toBeAdded.add(aBox.createStatement(s, nymProp, nymRel.getObject()));
             toBeRemoved.add(nymRel);
           }
         }
       }
     }
+    aBox.add(toBeAdded);
     for (Statement s : toBeRemoved) {
       s.remove();
     }

@@ -111,10 +111,9 @@ public class UpdateAndExtractDumps {
     options.addOption(OptionBuilder.withLongOpt(ENABLE_FEATURE_OPTION)
         .withDescription("Enable additional extraction features (e.g. morpho,etymology,foreign).")
         .hasArg().withArgName("feature").create());
-    options.addOption(OptionBuilder.withLongOpt(TDBDIR_OPTION)
-        .withDescription("Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
-        .hasArg().withArgName("dir")
-        .create());
+    options.addOption(OptionBuilder.withLongOpt(TDBDIR_OPTION).withDescription(
+        "Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
+        .hasArg().withArgName("dir").create());
   }
 
   public static void main(String[] args) throws WiktionaryIndexerException, IOException {

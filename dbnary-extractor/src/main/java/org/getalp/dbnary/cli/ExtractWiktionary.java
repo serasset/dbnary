@@ -188,7 +188,7 @@ public class ExtractWiktionary {
     // TODO: TDB_DIR should be empty of non existant... check this
     if (cmd.hasOption(TDB_OPTION)) {
       try {
-        Path temp = Files.createTempDirectory("dbnary", null);
+        Path temp = Files.createTempDirectory("dbnary");
         temp.toFile().deleteOnExit();
         tdbDir = temp.toAbsolutePath().toString();
       } catch (IOException e) {

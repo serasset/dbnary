@@ -139,7 +139,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // Create aBox
     Model aBox;
     if (null != dataset) {
-      aBox = dataset.getNamedModel("NS" + f.name().toLowerCase()+ "/");
+      aBox = dataset.getNamedModel("NS" + f.name().toLowerCase() + "/");
     } else {
       aBox = ModelFactory.createDefaultModel();
     }

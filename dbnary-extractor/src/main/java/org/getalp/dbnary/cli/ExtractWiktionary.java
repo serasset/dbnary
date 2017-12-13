@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -126,10 +127,9 @@ public class ExtractWiktionary {
     options.addOption(OptionBuilder.withLongOpt(TO_PAGE_LONG_OPTION)
         .withDescription("Do not process pages after the nth one. MAXINT by default.").hasArg()
         .withArgName("num").create(TO_PAGE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(TDBDIR_OPTION)
-        .withDescription("Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
-        .hasArg().withArgName("dir")
-        .create());
+    options.addOption(OptionBuilder.withLongOpt(TDBDIR_OPTION).withDescription(
+        "Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
+        .hasArg().withArgName("dir").create());
   }
 
   static {
@@ -183,6 +183,7 @@ public class ExtractWiktionary {
       outputFileSuffix = df.format(new Date());
     }
 
+    // TODO: TDB_DIR should be empty of non existant... check this
     tdbDir = cmd.getOptionValue(TDBDIR_OPTION, null);
 
     if (cmd.hasOption(OUTPUT_FORMAT_OPTION)) {
@@ -236,9 +237,9 @@ public class ExtractWiktionary {
     if (!outputFormat.equals("RDF") && !outputFormat.equals("TURTLE")
         && !outputFormat.equals("NTRIPLE") && !outputFormat.equals("N3")
         && !outputFormat.equals("TTL") && !outputFormat.equals("RDFABBREV")) {
-          System.err.println("unsupported format :" + outputFormat);
-          System.exit(1);
-        }
+      System.err.println("unsupported format :" + outputFormat);
+      System.exit(1);
+    }
 
     if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
       wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language, tdbDir);
@@ -319,16 +320,14 @@ public class ExtractWiktionary {
               e.printStackTrace();
             }
             if (nbnodes != wdh.nbEntries()) {
-              totalRelevantTime += (System.currentTimeMillis() - relevantStartTime);
+              totalRelevantTime = (System.currentTimeMillis() - startTime);
               nbRelevantPages++;
               if (nbRelevantPages % 1000 == 0) {
                 System.err.println("Extracted: " + nbRelevantPages + " pages in: "
-                    + totalRelevantTime + " / Average = " + (totalRelevantTime / nbRelevantPages)
+                    + formatHMS(totalRelevantTime) + " / Average = " + (totalRelevantTime / nbRelevantPages)
                     + " ms/extracted page ("
                     + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) ("
-                    + nbPages + " processed Pages in " + (System.currentTimeMillis() - startTime)
-                    + " ms / Average = " + (System.currentTimeMillis() - startTime) / nbPages
-                    + ")");
+                    + nbPages + " processed Pages)");
                 // System.err.println(" NbNodes = " + s.getNbNodes());
                 relevantTimeOfLastThousands = System.currentTimeMillis();
               }
@@ -336,14 +335,14 @@ public class ExtractWiktionary {
           }
         }
       }
+      System.err.println("Extracted " + nbRelevantPages + " pages in: "
+          + formatHMS(totalRelevantTime) + " (" + nbPages + " scanned Pages)");
 
       // TODO : enable post processing after extraction ?
       we.postProcessData();
 
       saveBox(Feature.MAIN, outputFile);
-      System.err
-          .println(nbPages + " entries extracted in : " + (System.currentTimeMillis() - startTime));
-      System.err.println("Semnet contains: " + wdh.nbEntries() + " nodes.");
+
       if (null != morphoOutputFile) {
         saveBox(Feature.MORPHOLOGY, morphoOutputFile);
       }
@@ -371,6 +370,15 @@ public class ExtractWiktionary {
     }
 
 
+  }
+
+  private String formatHMS(long durationInMillis) {
+    Duration d = Duration.ofMillis(durationInMillis);
+    StringBuffer b = new StringBuffer();
+    long h = d.toHours();
+    long m = d.toMinutes();
+    long s = d.getSeconds();
+    return String.format("%d:%2d:%2d", h, m, s);
   }
 
   public void saveBox(IWiktionaryDataHandler.Feature f, String of) throws IOException {

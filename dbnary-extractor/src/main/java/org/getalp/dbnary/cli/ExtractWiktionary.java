@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
@@ -44,7 +46,7 @@ public class ExtractWiktionary {
   private static final String MODEL_OPTION = "m";
   private static final String DEFAULT_MODEL = "ontolex";
 
-  private static final String TDBDIR_OPTION = "tdb";
+  private static final String TDB_OPTION = "tdb";
 
   private static final String OUTPUT_FILE_OPTION = "o";
   private static final String DEFAULT_OUTPUT_FILE = "extract";
@@ -127,9 +129,9 @@ public class ExtractWiktionary {
     options.addOption(OptionBuilder.withLongOpt(TO_PAGE_LONG_OPTION)
         .withDescription("Do not process pages after the nth one. MAXINT by default.").hasArg()
         .withArgName("num").create(TO_PAGE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(TDBDIR_OPTION).withDescription(
+    options.addOption(OptionBuilder.withLongOpt(TDB_OPTION).withDescription(
         "Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
-        .hasArg().withArgName("dir").create());
+        .create());
   }
 
   static {
@@ -184,7 +186,16 @@ public class ExtractWiktionary {
     }
 
     // TODO: TDB_DIR should be empty of non existant... check this
-    tdbDir = cmd.getOptionValue(TDBDIR_OPTION, null);
+    if (cmd.hasOption(TDB_OPTION)) {
+      try {
+        Path temp = Files.createTempDirectory("dbnary", null);
+        temp.toFile().deleteOnExit();
+        tdbDir = temp.toAbsolutePath().toString();
+      } catch (IOException e) {
+        System.err.println("Could not create temporary TDB directory. Exiting...");
+        System.exit(-1);
+      }
+    }
 
     if (cmd.hasOption(OUTPUT_FORMAT_OPTION)) {
       outputFormat = cmd.getOptionValue(OUTPUT_FORMAT_OPTION);
@@ -324,8 +335,8 @@ public class ExtractWiktionary {
               nbRelevantPages++;
               if (nbRelevantPages % 1000 == 0) {
                 System.err.println("Extracted: " + nbRelevantPages + " pages in: "
-                    + formatHMS(totalRelevantTime) + " / Average = " + (totalRelevantTime / nbRelevantPages)
-                    + " ms/extracted page ("
+                    + formatHMS(totalRelevantTime) + " / Average = "
+                    + (totalRelevantTime / nbRelevantPages) + " ms/extracted page ("
                     + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) ("
                     + nbPages + " processed Pages)");
                 // System.err.println(" NbNodes = " + s.getNbNodes());

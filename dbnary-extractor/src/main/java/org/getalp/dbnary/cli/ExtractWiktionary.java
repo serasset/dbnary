@@ -402,8 +402,8 @@ public class ExtractWiktionary {
     Duration d = Duration.ofMillis(durationInMillis);
     StringBuffer b = new StringBuffer();
     long h = d.toHours();
-    long m = d.toMinutes()%60;
-    long s = d.getSeconds()%60;
+    long m = d.toMinutes() % 60;
+    long s = d.getSeconds() % 60;
     return String.format("%d:%2d:%2d", h, m, s);
   }
 

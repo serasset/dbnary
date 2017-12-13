@@ -581,11 +581,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // DONE: Add other forms to a morphology dedicated model.
     StmtIterator otherForms = lexEntry.listProperties(OntolexOnt.otherForm);
 
-    while (otherForms.hasNext() && !foundCompatible) {
+    while (otherForms.hasNext()) {
       Resource otherForm = otherForms.next().getResource();
       if (isResourceCompatible(otherForm, properties)) {
-        foundCompatible = true;
         mergePropertiesIntoResource(properties, otherForm);
+        foundCompatible = true;
+        break;
       }
     }
 
@@ -641,12 +642,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
       StmtIterator entries = vocable.listProperties(DBnaryOnt.describes);
 
+      ArrayList<Resource> addTo = new ArrayList<>();
       while (entries.hasNext()) {
         Resource lexEntry = entries.next().getResource();
         if (aBox.contains(lexEntry, LexinfoOnt.partOfSpeech, posResource)) {
-          addOtherFormPropertiesToLexicalEntry(lexEntry, props);
+          addTo.add(lexEntry);
         }
       }
+      addTo.forEach(entry -> addOtherFormPropertiesToLexicalEntry(entry, props));
 
       // Second, we store the other form for future possible matching entries
       SimpleImmutableEntry<String, String> key =

@@ -27,15 +27,19 @@ import org.getalp.LangTools;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.IWiktionaryExtractor;
+import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.WiktionaryDataHandlerFactory;
 import org.getalp.dbnary.WiktionaryExtractorFactory;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexer;
 import org.getalp.dbnary.WiktionaryIndexerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExtractWiktionary {
 
   private static Options options = null; // Command line options
+  private Logger log = LoggerFactory.getLogger(OntolexBasedRDFDataHandler.class);
 
   private static final String LANGUAGE_OPTION = "l";
   private static final String DEFAULT_LANGUAGE = "en";
@@ -191,6 +195,7 @@ public class ExtractWiktionary {
         Path temp = Files.createTempDirectory("dbnary");
         temp.toFile().deleteOnExit();
         tdbDir = temp.toAbsolutePath().toString();
+        log.debug("Using TDB in {}", tdbDir);
       } catch (IOException e) {
         System.err.println("Could not create temporary TDB directory. Exiting...");
         System.exit(-1);

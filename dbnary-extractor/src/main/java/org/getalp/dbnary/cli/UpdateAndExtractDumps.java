@@ -113,7 +113,7 @@ public class UpdateAndExtractDumps {
         .hasArg().withArgName("feature").create());
     options.addOption(OptionBuilder.withLongOpt(TDB_OPTION).withDescription(
         "Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
-        .hasArg().withArgName("dir").create());
+        .create());
   }
 
   public static void main(String[] args) throws WiktionaryIndexerException, IOException {

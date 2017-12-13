@@ -584,8 +584,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     Resource glossResource = getGlossForWikisaurus(gloss);
     Resource pos = posResource(currentPOS);
     if (null != pos) {
-      aBox.add(
-          aBox.createStatement(glossResource, DBnaryOnt.partOfSpeech, pos));
+      aBox.add(aBox.createStatement(glossResource, DBnaryOnt.partOfSpeech, pos));
     }
     if (null != currentWS) {
       aBox.add(glossResource, RDF.value, currentWS, getCurrentEntryLanguage());

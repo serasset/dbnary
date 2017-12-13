@@ -21,6 +21,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.apache.commons.io.FileUtils;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.LangTools;
@@ -196,6 +197,15 @@ public class ExtractWiktionary {
         temp.toFile().deleteOnExit();
         tdbDir = temp.toAbsolutePath().toString();
         log.debug("Using TDB in {}", tdbDir);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+          try {
+            FileUtils.deleteDirectory(temp.toFile());
+          } catch (IOException e) {
+            System.err.println("Caught " + e.getClass()
+                + " when attempting to delete the temporary TDB directory " + tdbDir);
+            System.err.println(e.getLocalizedMessage());
+          }
+        }));
       } catch (IOException e) {
         System.err.println("Could not create temporary TDB directory. Exiting...");
         System.exit(-1);

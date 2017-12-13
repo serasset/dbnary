@@ -834,6 +834,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
       case INFLECTIONBLOCK:
         commonInflectionInformations.pronunciation = extractPronunciation(blockStart, end, false);
+        // TODO : check if extracting inflections from form pages gives additional information.
         extractInflections(blockStart, end);
         break;
       case DEFBLOCK:

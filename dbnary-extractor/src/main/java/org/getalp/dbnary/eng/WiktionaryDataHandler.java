@@ -582,9 +582,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     gloss = DatatypeConverter.printBase64Binary(BigInteger.valueOf(gloss.hashCode()).toByteArray())
         .replaceAll("[/=\\+]", "-");
     Resource glossResource = getGlossForWikisaurus(gloss);
-    if (null != currentPOS) {
+    Resource pos = posResource(currentPOS);
+    if (null != pos) {
       aBox.add(
-          aBox.createStatement(glossResource, DBnaryOnt.partOfSpeech, posResource(currentPOS)));
+          aBox.createStatement(glossResource, DBnaryOnt.partOfSpeech, pos));
     }
     if (null != currentWS) {
       aBox.add(glossResource, RDF.value, currentWS, getCurrentEntryLanguage());

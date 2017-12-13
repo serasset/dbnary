@@ -25,7 +25,7 @@ public class WikisaurusExtractor {
       if (tok instanceof WikiText.Heading) {
         WikiText.Heading h = (WikiText.Heading) tok;
         if (h.getLevel() == 3) {
-          currentPOS = h.getContent().toString();
+          currentPOS = h.getContent().toString().trim();
           currentWS = null;
           currentNym = null;
         } else if (h.getLevel() == 4) {

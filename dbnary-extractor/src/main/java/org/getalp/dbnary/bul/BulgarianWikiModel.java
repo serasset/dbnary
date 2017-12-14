@@ -11,7 +11,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.getalp.dbnary.AbstractGlossFilter;
-import org.getalp.dbnary.DbnaryWikiModel;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiPatterns;

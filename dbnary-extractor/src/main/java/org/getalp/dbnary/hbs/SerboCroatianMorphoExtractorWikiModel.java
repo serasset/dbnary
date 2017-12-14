@@ -3,7 +3,7 @@ package org.getalp.dbnary.hbs;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
-import org.getalp.dbnary.DbnaryWikiModel;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.jsoup.Jsoup;

@@ -12,10 +12,10 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.vocabulary.DCTerms;
-import org.getalp.dbnary.DbnaryWikiModel;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.dbnary.wiki.ExpandAllWikiModel;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

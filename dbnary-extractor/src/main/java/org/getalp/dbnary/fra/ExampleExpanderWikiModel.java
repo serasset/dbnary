@@ -8,7 +8,7 @@ import java.util.Set;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.vocabulary.DCTerms;
 import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.dbnary.wiki.ExpandAllWikiModel;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

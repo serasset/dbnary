@@ -20,7 +20,7 @@ import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.ClassBasedSequenceFilter;
-import org.getalp.dbnary.wiki.ExpandAllWikiModel;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;

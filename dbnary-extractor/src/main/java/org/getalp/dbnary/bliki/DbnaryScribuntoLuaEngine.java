@@ -16,8 +16,9 @@ public class DbnaryScribuntoLuaEngine extends ScribuntoLuaEngine {
     super(model, cache, debug);
   }
 
-  // WORKAROUND: bug in ScribuntoEngineBase when a module is called using the non primary
+  // WORKAROUND bliki issue #49: bug in ScribuntoEngineBase when a module is called using the non primary
   // (localized) Module name
+  // TODO: remove this patch when issue will be corrected in bliki.
   @Override
   protected ParsedPageName pageNameForModule(String moduleName,
       INamespace.INamespaceValue fallback) {

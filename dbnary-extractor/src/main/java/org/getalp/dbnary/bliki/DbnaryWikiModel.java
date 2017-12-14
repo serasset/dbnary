@@ -1,5 +1,7 @@
-package org.getalp.dbnary;
+package org.getalp.dbnary.bliki;
 
+import info.bliki.extensions.scribunto.engine.ScribuntoEngine;
+import info.bliki.extensions.scribunto.engine.lua.CompiledScriptCache;
 import info.bliki.wiki.filter.HTMLConverter;
 import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.Configuration;
@@ -14,6 +16,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.tools.CounterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,6 +166,17 @@ public class DbnaryWikiModel extends WikiModel {
     log.debug("getRawWikiContent return null for {} in {}", parsedPagename.fullPagename(),
         this.getPageName());
     return null;
+  }
+
+
+  // WORKAROUND: bug in ScribuntoEngineBase when a module is called using the non primary
+  // (localized) Module name
+  private CompiledScriptCache compiledScriptCache = new CompiledScriptCache();
+
+  @Override
+  public ScribuntoEngine createScribuntoEngine() {
+    return new DbnaryScribuntoLuaEngine(this, compiledScriptCache);
+
   }
 
   public String prepareForTransclusion(String rawWikiText) {

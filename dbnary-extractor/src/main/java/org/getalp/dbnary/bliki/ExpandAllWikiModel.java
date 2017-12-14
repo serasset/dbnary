@@ -1,11 +1,11 @@
-package org.getalp.dbnary.wiki;
+package org.getalp.dbnary.bliki;
 
 import info.bliki.wiki.filter.PlainTextConverter;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import org.getalp.dbnary.DbnaryWikiModel;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryIndex;
 
 public class ExpandAllWikiModel extends DbnaryWikiModel {

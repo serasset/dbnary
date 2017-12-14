@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.dbnary.wiki.ExpandAllWikiModel;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.WikiTool;
 
 public class DefinitionExpanderWikiModel extends ExpandAllWikiModel {

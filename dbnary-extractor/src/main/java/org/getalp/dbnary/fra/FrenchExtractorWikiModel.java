@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Literal;
 import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.DbnaryWikiModel;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.PropertyObjectPair;

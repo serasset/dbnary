@@ -248,12 +248,16 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
           inflection.note.clear();
           inflection.tense = Tense.FUTURE2;
           break;
-
         case "Text":
           inflection.note.clear();
           break;
         case "Hilfsverb":
           // TODO: how do I represent the hilfsverbs ?
+          break;
+        case "Infinitive und Partizipien":
+        case "Finite Formen":
+          // comes from a <h4> tag: just add as a note
+          inflection.note.add(h);
           break;
         case "—":
         case "":

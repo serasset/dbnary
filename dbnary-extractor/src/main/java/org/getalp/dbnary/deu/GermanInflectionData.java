@@ -206,7 +206,14 @@ public class GermanInflectionData extends InflectionData {
         // mood...
         break;
       case ZU_INFINITIV:
-        note.add("Zustandpassiv");
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.Infinitive));
+        note.add("Zu-Infinitive"); // TODO:
+        // Infinitive
+        // is a part
+        // of speech,
+        // not a
+        // mood...
+
         break;
       case NOTHING:
         break;

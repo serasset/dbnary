@@ -112,17 +112,33 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
       return null;
     }
 
+    // for debug : show the body of the HTML
+    log.debug("parseTables for template {} returns body {}", declinationTemplateCall,
+    			doc.body().toString());
     InflectedFormSet forms = new InflectedFormSet();
+    
+    // expandWikiCode for Adjective-Flextables now returns headers for the degree info 
+    // (i.e. Positiv, Komparativ, Superlativ) in h4 !
 
-    Elements elts = doc.select("h3, table");
+    Elements elts = doc.select("h3, h4, table");
     LinkedList<String> h2Context = new LinkedList<>();
     LinkedList<String> h3Context = new LinkedList<>();
+    LinkedList<String> h4Context = new LinkedList<>();
     for (Element elt : elts) {
+
+      log.debug("  parseTables: elt.tagName = {} text = {}", elt.tagName(), elt.text());
+      if (elt.tagName().equalsIgnoreCase("h4")) {
+        h4Context.clear();
+        h4Context.addAll(h3Context);
+        h4Context.add(elt.text());
+      }
       if (elt.tagName().equalsIgnoreCase("h3")) {
         h3Context.clear();
         h3Context.addAll(h2Context);
         h3Context.add(elt.text());
+
       } else if (elt.tagName().equalsIgnoreCase("h2")) {
+        // but h2 was not selected ?
         if (!elt.text().contains("Deutsch")) {
           log.debug("Breaking flexion parse due to header {} --in-- {}", elt.text(),
               wdh.currentLexEntry());
@@ -138,7 +154,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
         if (elt.id().equalsIgnoreCase("toc")) {
           continue;
         }
-        forms.addAll(parseTable(elt, h3Context));
+        forms.addAll(parseTable(elt, h4Context));
       }
     }
     return forms;
@@ -164,7 +180,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
       String rowbgcolor = getBackgroundColor(row);
       int ncol = 0;
       for (Element cell : row.children()) {
-        // transmit row background color to cell as it is usefull to decide if it is an header cell
+        // transmit row background color to cell as it is useful to decide if it is an header cell
         // or not.
         if (rowbgcolor != null && cell.attr("bgcolor").length() == 0) {
           cell.attr("bgcolor", rowbgcolor);
@@ -208,9 +224,13 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
             context.addAll(0, globalContext);
             if (cell.select("table").isEmpty()) {
               // No nested table in current cell.
-              GermanInflectionData inflection = getInflectionDataFromCellContext(context);
-              if (null != inflection) {
-                forms.add(inflection, getInflectedForms(cell));
+              // only get inflection for cells without bgcolour!
+              
+              if (cell.attr("bgcolor").isEmpty()) { 
+            	  GermanInflectionData inflection = getInflectionDataFromCellContext(context);
+            	  if (null != inflection) {
+                      forms.add(inflection, getInflectedForms(cell));
+                   }
               }
             } else {
               // handle tables that are nested in cells
@@ -300,15 +320,40 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
 
   protected abstract GermanInflectionData getInflectionDataFromCellContext(List<String> context);
 
+  /**
+   * Extract wordforms from table cell<br>
+   * Splits cell content by \<br\> or comma and removes HTML formatting 
+   *
+   * @param cell the current cell in the inflection table
+   * @return Set of wordforms (Strings) from this cell
+   */
   protected Set<String> getInflectedForms(Element cell) {
-    // TODO: there are cells with <br> and commas to separate different values.
+    // there are cells with <br> and commas to separate different values: split them
+    // get rid of spurious html-formatting (<nbsp> <small> <i> etc.)
     Set<String> forms = new HashSet<>();
     Elements anchors = cell.select("a");
+
     if (anchors.isEmpty()) {
-      String cellText = cell.text();
+      String cellText = cell.html();
+      // check for <br>
+      Elements linebreaks = cell.select("br");
+      if (!linebreaks.isEmpty()) {
+        log.debug("cell contains <br> : {}", cell.html());
+        // replace <br> by ","
+        cellText = cellText.replaceAll("<br/?>", ",");
+      }
+      cellText = cellText.replaceAll("&nbsp;", " ");
+      cellText = cellText.replaceAll("</?small>", "");
+      cellText = cellText.replaceAll("</?i>", "");
+      cellText = cellText.replaceAll("</?strong.*?>", "");
+      
       String[] atomicForms = cellText.split("[,;]");
       for (int i = 0; i < atomicForms.length; i++) {
-        forms.add(atomicForms[i].trim());
+        String trimmedText = atomicForms[i].trim();
+        // log.debug("   was split into : {}", trimmedText);
+        if (!trimmedText.isEmpty()) {
+          forms.add(trimmedText);
+        }
       }
     } else {
       for (Element anchor : anchors) {

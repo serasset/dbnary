@@ -28,8 +28,10 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
   protected GermanInflectionData getInflectionDataFromCellContext(List<String> context) {
     GermanInflectionData inflection = new GermanInflectionData();
     boolean isArticleColumn = false;
+    // log.debug("== getInflectionDataFromCellContext for {} ==", wdh.currentLexEntry());
     for (String h : context) {
       h = h.trim();
+      // log.debug("   h = {}", h);
       switch (h) {
         case "Positiv":
           inflection.degree = Degree.POSITIVE;

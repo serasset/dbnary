@@ -168,17 +168,6 @@ public class DbnaryWikiModel extends WikiModel {
     return null;
   }
 
-
-  // WORKAROUND: bug in ScribuntoEngineBase when a module is called using the non primary
-  // (localized) Module name
-  private CompiledScriptCache compiledScriptCache = new CompiledScriptCache();
-
-  @Override
-  public ScribuntoEngine createScribuntoEngine() {
-    return new DbnaryScribuntoLuaEngine(this, compiledScriptCache);
-
-  }
-
   public String prepareForTransclusion(String rawWikiText) {
     if (null == rawWikiText) {
       return null;

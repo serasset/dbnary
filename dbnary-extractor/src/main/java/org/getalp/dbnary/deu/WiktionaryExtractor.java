@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.sparql.function.library.leviathan.e;
 import org.getalp.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
@@ -36,6 +38,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String languageSectionPatternString =
       "={2}\\s*([^\\(\r\n]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
+
+  // === {{Wortart|Substantiv|Deutsch}}, {{n}} ===
   protected final static String partOfSpeechPatternString =
       "={3}[^\\{]*\\{\\{Wortart\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
   protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
@@ -44,6 +48,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String germanNymLinePatternString =
       "^:{1,3}\\s*(?:\\[(" + senseNumberOrRangeRegExp + "*)\\])?([^\n\r]*)$";
 
+  // :{{IPA}} {{Lautschrift|ˈɛçoˌloːt}}
+  // or multiple variants!
+  // :{{IPA}} bundesdeutsches Hochdeutsch: {{Lautschrift|çeˈmiː}} (im norddeutschen
+  // Gebrauchsstandard auch {{Lautschrift|ʃeˈmiː}}), Schweizer und österreichisches Hochdeutsch:
+  // {{Lautschrift|keˈmiː}} (im Schweizer Gebrauchsstandard auch {{Lautschrift|xeˈmiː}})
+
+  protected final static String pronPatternString = "\\{\\{Lautschrift\\|([^\\}\\|]*)\\}\\}";
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
@@ -72,6 +83,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static HashMap<String, String> nymMarkerToNymName;
   // protected final static HashSet<String> inflectionMarkers;
 
+  protected final static Pattern pronPattern;
+
   static {
 
     // languageSectionPattern =
@@ -96,6 +109,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     germanDefinitionPattern = Pattern.compile(germanDefinitionPatternString, Pattern.MULTILINE);
     germanNymLinePattern = Pattern.compile(germanNymLinePatternString, Pattern.MULTILINE);
+
+    pronPattern = Pattern.compile(pronPatternString);
 
     // posMarkers = new HashSet<String>(20);
     // posMarkers.add("Substantiv"); // Should I get the
@@ -222,7 +237,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: supprimer les "Deklinierte Form" des catégories extraites.
 
   private enum Block {
-    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, POSBLOCK, NYMBLOCK
+    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, POSBLOCK, NYMBLOCK, PRONBLOCK
   }
 
   private Block currentBlock = Block.NOBLOCK;
@@ -266,6 +281,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       String template = m.group(1).trim();
       if (template.equals("Bedeutungen")) {
         return Block.DEFBLOCK;
+      }
+      if (template.equals("Aussprache")) {
+        return Block.PRONBLOCK;
       } else if (template.equals("Alternative Schreibweisen")) {
         return Block.ORTHOALTBLOCK;
       } else if (nymMarkers.contains(template)) {
@@ -359,6 +377,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case NYMBLOCK:
         currentNym = (String) context.get("nym");
         break;
+      case PRONBLOCK:
+        break;
       default:
         assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
     }
@@ -390,6 +410,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case NYMBLOCK:
         extractNyms(currentNym, blockStart, end);
         currentNym = null;
+        break;
+      case PRONBLOCK:
+        extractPron(blockStart, end);
         break;
       case INFLECTIONBLOCK:
         extractInflections(blockStart, end);
@@ -706,6 +729,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   }
 
+  protected void extractPron(int startOffset, int endOffset) {
+    Matcher pronMatcher = pronPattern.matcher(this.pageContent);
+    pronMatcher.region(startOffset, endOffset);
+    // this might be an overkill: but we would like to
+    // add multiple pronunciations in the reverse order
+    // so in the result show up in the original order again
+    ArrayList<String> matches = new ArrayList<String>();
+    while (pronMatcher.find()) {
+      String pron = pronMatcher.group(1);
+      if (null == pron || pron.equals("")) {
+        return;
+      }
+      matches.add(pron);
+    }
+    ListIterator<String> li = matches.listIterator(matches.size());
+    while (li.hasPrevious()) {
+      String pron = li.previous();
+      wdh.registerPronunciation(pron, "de-fonipa");
+    }
+  }
 
   @Override
   protected void extractDefinitions(int startOffset, int endOffset) {

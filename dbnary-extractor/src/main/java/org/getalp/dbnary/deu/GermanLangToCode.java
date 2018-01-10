@@ -14,7 +14,7 @@ public class GermanLangToCode extends LangTools {
   static HashMap<String, String> h = new HashMap<>();
 
   static {
-    h.put(" Pro", "pro");
+    h.put("Pro", "pro");
     h.put("Abchasisch", "ab");
     h.put("Acehnesisch", "ace");
     h.put("Adygeisch", "ady");

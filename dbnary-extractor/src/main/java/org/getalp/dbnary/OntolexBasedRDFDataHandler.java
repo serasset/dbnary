@@ -863,17 +863,21 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   @Override
   public void registerPronunciation(String pron, String lang) {
     if (null == currentCanonicalForm) {
+      // if pronunciation is provided before the first canonical form
+      // assume that this pronunciation is shared by all and put it
+      // into SharedPronunciations
       currentSharedPronunciations.add(new PronunciationPair(pron, lang));
     } else {
       registerPronunciation(currentCanonicalForm, pron, lang);
     }
   }
 
+  // TODO: decide whether to use lexinfo:pronunciation or ontolex:phoneticRep
   protected void registerPronunciation(Resource writtenRepresentation, String pron, String lang) {
     if (null != lang && lang.length() > 0) {
-      aBox.add(writtenRepresentation, LexinfoOnt.pronunciation, pron, lang);
+      aBox.add(writtenRepresentation, OntolexOnt.phoneticRep, pron, lang);
     } else {
-      aBox.add(writtenRepresentation, LexinfoOnt.pronunciation, pron);
+      aBox.add(writtenRepresentation, OntolexOnt.phoneticRep, pron);
     }
   }
 

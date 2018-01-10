@@ -31,7 +31,7 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
     // log.debug("== getInflectionDataFromCellContext for {} ==", wdh.currentLexEntry());
     for (String h : context) {
       h = h.trim();
-      // log.debug("   h = {}", h);
+      // log.debug(" h = {}", h);
       switch (h) {
         case "Positiv":
           inflection.degree = Degree.POSITIVE;

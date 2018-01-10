@@ -114,10 +114,10 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
 
     // for debug : show the body of the HTML
     log.debug("parseTables for template {} returns body {}", declinationTemplateCall,
-    			doc.body().toString());
+        doc.body().toString());
     InflectedFormSet forms = new InflectedFormSet();
-    
-    // expandWikiCode for Adjective-Flextables now returns headers for the degree info 
+
+    // expandWikiCode for Adjective-Flextables now returns headers for the degree info
     // (i.e. Positiv, Komparativ, Superlativ) in h4 !
 
     Elements elts = doc.select("h3, h4, table");
@@ -225,12 +225,12 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
             if (cell.select("table").isEmpty()) {
               // No nested table in current cell.
               // only get inflection for cells without bgcolour!
-              
-              if (cell.attr("bgcolor").isEmpty()) { 
-            	  GermanInflectionData inflection = getInflectionDataFromCellContext(context);
-            	  if (null != inflection) {
-                      forms.add(inflection, getInflectedForms(cell));
-                   }
+
+              if (cell.attr("bgcolor").isEmpty()) {
+                GermanInflectionData inflection = getInflectionDataFromCellContext(context);
+                if (null != inflection) {
+                  forms.add(inflection, getInflectedForms(cell));
+                }
               }
             } else {
               // handle tables that are nested in cells
@@ -322,7 +322,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
 
   /**
    * Extract wordforms from table cell<br>
-   * Splits cell content by \<br\> or comma and removes HTML formatting 
+   * Splits cell content by \<br\> or comma and removes HTML formatting
    *
    * @param cell the current cell in the inflection table
    * @return Set of wordforms (Strings) from this cell
@@ -346,11 +346,11 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
       cellText = cellText.replaceAll("</?small>", "");
       cellText = cellText.replaceAll("</?i>", "");
       cellText = cellText.replaceAll("</?strong.*?>", "");
-      
+
       String[] atomicForms = cellText.split("[,;]");
       for (int i = 0; i < atomicForms.length; i++) {
         String trimmedText = atomicForms[i].trim();
-        // log.debug("   was split into : {}", trimmedText);
+        // log.debug(" was split into : {}", trimmedText);
         if (!trimmedText.isEmpty()) {
           forms.add(trimmedText);
         }

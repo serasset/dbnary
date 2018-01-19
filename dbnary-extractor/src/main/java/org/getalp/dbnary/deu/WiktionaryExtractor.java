@@ -6,12 +6,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.ListIterator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.sparql.function.library.leviathan.e;
 import org.getalp.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
@@ -138,23 +136,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignorableSectionMarkers.add("Ähnlichkeiten");
     ignorableSectionMarkers.add("Anmerkung");
     ignorableSectionMarkers.add("Anmerkungen");
-    ignorableSectionMarkers.add("Alte Rechtschreibung"); // TODO: Integrate
-    // these in
-    // alternative
-    // spelling ?
+    // TODO: Integrate these in alternative spelling ?
+    ignorableSectionMarkers.add("Alte Rechtschreibung");
     ignorableSectionMarkers.add("Nebenformen");
     ignorableSectionMarkers.add("Vokalisierung");
     ignorableSectionMarkers.add("Grammatische Merkmale");
-    ignorableSectionMarkers.add("Abkürzungen"); // TODO: Integrate these in
-    // alternative spelling ?
-    ignorableSectionMarkers.add("Sinnverwandte Wörter"); // TODO: related
-    // words (should I
-    // keep it ?)
+    // TODO: Integrate these in alternative spelling ?
+    ignorableSectionMarkers.add("Abkürzungen");
+    // TODO: related words (should I keep it ?)
+    ignorableSectionMarkers.add("Sinnverwandte Wörter");
     ignorableSectionMarkers.add("Weibliche Wortformen");
     ignorableSectionMarkers.add("Männliche Wortformen");
-    ignorableSectionMarkers.add("Verkleinerungsformen"); // TODO:
-    // Diminutif...
-    // qu'en faire ?
+    // TODO: Diminutif... qu'en faire ?
+    ignorableSectionMarkers.add("Verkleinerungsformen");
     ignorableSectionMarkers.add("Vergrößerungsformen");
     ignorableSectionMarkers.add("Kurzformen");
     ignorableSectionMarkers.add("Koseformen");
@@ -171,8 +165,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignorableSectionMarkers.add("Anmerkung");
     ignorableSectionMarkers.add("Anmerkung Küpper");
     ignorableSectionMarkers.add("Anmerkung Steigerung");
-    ignorableSectionMarkers.add("Lemmaverweis"); // TODO: Refers to another entry... Should keep the
-    // info.
+    // TODO: Refers to another entry... Should keep the info.
+    ignorableSectionMarkers.add("Lemmaverweis");
     ignorableSectionMarkers.add("Veraltete Schreibweisen");
     ignorableSectionMarkers.add("Steigerbarkeit Adjektiv");
     ignorableSectionMarkers.add("Wortbildungen");

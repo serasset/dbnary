@@ -134,6 +134,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
       }
       if (elt.tagName().equalsIgnoreCase("h3")) {
         h3Context.clear();
+        h4Context.clear();
         h3Context.addAll(h2Context);
         h3Context.add(elt.text());
 
@@ -145,6 +146,8 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
           return forms;
         }
         h2Context.clear();
+        h3Context.clear();
+        h4Context.clear();
         h2Context.addAll(decodeH2Context(elt.text()));
       } else {
         if (alreadyParsedTables.contains(elt)) {

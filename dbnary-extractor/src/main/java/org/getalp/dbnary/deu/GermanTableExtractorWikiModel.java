@@ -1,17 +1,24 @@
 package org.getalp.dbnary.deu;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
 import info.bliki.wiki.template.ITemplateFunction;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.tools.ArrayMatrix;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Token;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -104,7 +111,25 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
   }
 
 
+  Set<String> ignoredTemplates =
+      Stream.of("Adjektivdeklination", "Verbkonjugation", "Adverbdeklination")
+          .collect(collectingAndThen(toCollection(HashSet::new), Collections::unmodifiableSet));
+
   protected InflectedFormSet parseTables(String declinationTemplateCall) {
+
+    WikiText txt = new WikiText(declinationTemplateCall);
+    for (Token token : txt.templates()) {
+      Template tmpl = (Template) token;
+      if (!ignoredTemplates.contains(tmpl.getName())) {
+        log.debug("MORPH template: {}", tmpl.getName());
+        if (log.isDebugEnabled()) {
+          String tmplSource = tmpl.toString().replaceAll("\\n", "");
+          log.debug("MORPH template call:  {} @ {}", tmplSource, getPageName());
+        }
+      }
+    }
+    if (log.isDebugEnabled())
+      return new InflectedFormSet();
 
     String htmlCode = expandWikiCode(declinationTemplateCall);
     Document doc = Jsoup.parse(htmlCode);
@@ -113,8 +138,8 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
     }
 
     // for debug : show the body of the HTML
-    log.debug("parseTables for template {} returns body {}", declinationTemplateCall,
-        doc.body().toString());
+    // log.trace("parseTables for template {} returns body {}", declinationTemplateCall,
+    // doc.body().toString());
     InflectedFormSet forms = new InflectedFormSet();
 
     // expandWikiCode for Adjective-Flextables now returns headers for the degree info
@@ -126,7 +151,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
     LinkedList<String> h4Context = new LinkedList<>();
     for (Element elt : elts) {
 
-      log.debug("  parseTables: elt.tagName = {} text = {}", elt.tagName(), elt.text());
+      // log.debug(" parseTables: elt.tagName = {} text = {}", elt.tagName(), elt.text());
       if (elt.tagName().equalsIgnoreCase("h4")) {
         h4Context.clear();
         h4Context.addAll(h3Context);

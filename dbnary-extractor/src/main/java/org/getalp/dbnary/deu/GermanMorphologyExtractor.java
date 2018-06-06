@@ -3,15 +3,20 @@ package org.getalp.dbnary.deu;
 import static org.getalp.dbnary.deu.GermanInflectionData.Degree.COMPARATIVE;
 import static org.getalp.dbnary.deu.GermanInflectionData.Degree.POSITIVE;
 import static org.getalp.dbnary.deu.GermanInflectionData.Degree.SUPERLATIVE;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.tools.StringDistance;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +79,7 @@ public class GermanMorphologyExtractor {
       if ("Deutsch Substantiv Übersicht".equals(templateName)
           || "Deutsch Toponym Übersicht".equals(templateName)
           || "Deutsch Nachname Übersicht".equals(templateName)) {
+        extractMorphologicalSignature(wt);
         // TODO: extract the data from generated table, so that it is less fragile.
         extractFormsWithModel(wt.toString(), pageName, substantivDeklinationExtractor);
       } else if ("Deutsch Adjektiv Übersicht".equals(templateName)) {
@@ -110,6 +116,82 @@ public class GermanMorphologyExtractor {
         // Should I expand every other templates ?
       }
     }
+  }
+
+  private static ArrayList<String> cases = new ArrayList<>();
+  private static ArrayList<String> numbers = new ArrayList<>();
+  private static ArrayList<String> substTmplKeys = new ArrayList<>();
+  static {
+    cases.add("Nominativ");
+    cases.add("Genitiv");
+    cases.add("Dativ");
+    cases.add("Akkusativ");
+    numbers.add("Singular");
+    numbers.add("Plural");
+
+    for (String c : cases) {
+      for (String num : numbers) {
+        String k = c + " " + num;
+        substTmplKeys.add(k);
+      }
+    }
+  }
+
+
+  private static final Pattern dashes = Pattern.compile("[\u2010-\u2015]+");
+
+  private void extractMorphologicalSignature(Template wt) {
+
+
+
+    // Analyse declinations and compute the regular deltas
+    StringBuilder signature = new StringBuilder();
+    signature.append("/");
+    Map<String, String> args = wt.getParsedArgs();
+    for (String k : substTmplKeys) {
+      String arg = args.get(k);
+      signature.setLength(signature.length() - 1);
+      signature.append("|");
+      if (arg != null) {
+        // there is a general pattern
+        arg = arg.trim();
+        addFormSignature(arg, signature);
+        signature.append("/");
+        arg = args.get(k + "*");
+        if (null != arg) {
+          // there is an additional form
+          arg = arg.trim();
+          addFormSignature(arg, signature);
+          signature.append("/");
+        }
+        arg = args.get(k + "**");
+        if (null != arg) {
+          // there is an additional form
+          arg = arg.trim();
+          addFormSignature(arg, signature);
+          signature.append("/");
+        }
+      } else {
+        // We have multiple patterns (depending on Genus)
+        // Should we try to factorise it or not ?
+        signature.append("YYYYYY");
+      }
+    }
+    signature.setLength(signature.length() - 1);
+    // TODO: treat defective cases (kein plural, etc.)
+
+    log.debug("SUBSTANTIVE MORPHOLOGY @ {} >SIGNATURE: {}", wdh.currentLexEntry(),
+        signature.toString());
+  }
+
+  private void addFormSignature(String arg, StringBuilder signature) {
+    char c; // dashes are used for defective entries
+    if (arg.length() == 1 && ('-' == (c = arg.charAt(0)) || ('\u2010' <= c && c <= '\u2015'))) {
+      signature.append("X");
+    } else {
+      signature.append(StringDistance.suffixChange(wdh.currentLexEntry(), arg.trim()));
+    }
+
   }
 
   private boolean extractAdjectiveDegree(Map<String, String> parameterMap) {

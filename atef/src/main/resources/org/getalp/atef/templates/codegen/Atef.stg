@@ -1,0 +1,44 @@
+
+
+DecorationFile(file, decoration) ::= <<
+<fileHeader(file.grammarFileName, file.ATEFVersion)>
+<if(file.genPackage)>
+package <file.genPackage>;
+<endif>
+import java.util.Set;
+import java.util.HashSet;
+import org.getalp.atef.runtime.Decoration;
+
+public class <decoration.name> extends Decoration {
+<decorationVariables(decoration)>
+}
+>>
+
+fileHeader(grammarFileName, ATEFVersion) ::= <<
+// Generated from <grammarFileName; format="java-escape"> by ATEF <ATEFVersion>
+>>
+
+decorationVariables(decoration) ::= <<
+<decoration.exclusiveVariables:exclusiveTypeAndVariable(); separator="\n\n">
+
+<decoration.nonExclusiveVariables:nonExclusiveTypeAndVariable(); separator="\n\n">
+
+>>
+
+exclusiveTypeAndVariable(variable) ::= <<
+<typeDecl(variable)>
+public <variable.name:type()> <variable.name:name()> = null;
+>>
+
+nonExclusiveTypeAndVariable(variable) ::= <<
+<typeDecl(variable)>
+public Set\<<variable.name:type()> > <variable.name:name()> = new HashSet();
+>>
+
+typeDecl(variable) ::= <<
+public enum <variable.name:type()> { <variable.type.possibleValues:value(); separator=", "> } ;
+>>
+
+name(vname) ::= "var_<vname>"
+value(vname) ::= "val_<vname>"
+type(tname) ::= "Type_<tname>"

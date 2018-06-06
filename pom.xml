@@ -49,6 +49,7 @@
         <module>dbnary-enhancer</module>
         <module>dbnary-commons</module>
         <module>build-tools</module>
+        <module>atef</module>
     </modules>
 
     <reporting>

@@ -1,0 +1,72 @@
+*AN- UND *ABFAHREN                                                              ==FTP2    (*       ,AN-UND-ABFAHREN         ).
+*AN- UND *ABFAHREN                                                              01 VID / KMS-E-NM,SUBN-E-PF,GNR-E-N,          
+*AN- UND *ABFAHREN                                                              02 CSNT-E-NOM-U-ACC-U-DAT.                    
+*AUF *GRUND DER *TATSACHE , DASS                                                ==FTP1    (*       ,AUF-GRUND-DER-TATSACHE  ).
+*AUF *GRUND DER *TATSACHE , DASS                                                01 FSCJ / RS-E-CAUSE.                         
+*BIS ZU                                                                         ==FTP1    (*       ,BIS-ZU                  ).
+*BIS ZU                                                                         01 1V2D / VAL2B-E-ZU.                         
+*BIS ZUM                                                                        ==FTP1    (*       ,BIS-ZU                  ).
+*BIS ZUM                                                                        01 DCONTDM / VAL2B-E-ZU.                      
+*BIS ZUR                                                                        ==FTP1    (*       ,BIS-ZU                  ).
+*BIS ZUR                                                                        01 DCONTDF / VAL2B-E-ZU.                      
+*IM *MOMENT                                                                     ==FTP1    (FSRADIP ,IM-MOMENT               ).
+*IM *ZUGE                                                                       ==FTP1    (1V2G    ,IM-ZUGE                 ).
+*IM GRUNDE                                                                      ==FTP1    (FSRADIP ,IM-GRUNDE               ).
+*IN *ZUKUNFT                                                                    ==FTP1    (FSRADIP ,IN-ZUKUNFT              ).
+*IN ERSTER *LINIE                                                               ==FTP2    (FSRADIP ,IN-ERSTER-LINIE         ).
+*JE NACH                                                                        ==FTP1    (1NACHD  ,JE-NACH                 ).
+*NACH *BELIEBEN                                                                 ==FTP1    (FSRADIP ,NACH-BELIEBEN           ).
+*NICHT NUR                                                                      ==FTP1    (*       ,NICHT-NUR               ).
+*NICHT NUR                                                                      01 VID / KMS-E-COP,SUBCOP-E-COCOU.            
+*SONDERN AUCH                                                                   ==FTP1    (*       ,SONDERN-AUCH            ).
+*SONDERN AUCH                                                                   01 VID / KMS-E-COP,SUBCOP-E-COCOU.            
+*UNGEACHTET DESSEN , DASS                                                       ==FTP0    (*       ,UNGEACHTET-DESSEN-DASS  ).
+*UNGEACHTET DESSEN , DASS                                                       01 FSCJ / RS-E-CONCES.                        
+*VIEL IST DIE *REDE                                                             ==FTP3    (*       ,VIEL-DIE-REDE-SEIN      ).
+*VIEL IST DIE *REDE                                                             01 VID / KMS-E-VB, PIND-E-3, MT-E-IPR,        
+*VIEL IST DIE *REDE                                                             02 TOURN-E-TSU, VAL2A-E-DAT,VAL2B-E-VON.      
+*VORAUSGESETZT , DASS                                                           ==FTP0    (*       ,VORAUSGESETZT-DASS      ).
+*VORAUSGESETZT , DASS                                                           01 FSCJ / RS-E-COND.                          
+*ZUM EINEN                                                                      ==FTP1    (FSRADIP ,ZUM-EINEN               ).
+ALS AUCH                                                                        ==FTP1    (*       ,ALS-AUCH                ).
+ALS AUCH                                                                        01 VID / KMS-E-COP,SUBCOP-E-COCOU.            
+AUCH WENN                                                                       ==FTP1    (FSCJS   ,AUCH-WENN               ).
+AUF *GRUND DER *TATSACHE , DASS                                                 ==FTP1    (*       ,AUF-GRUND-DER-TATSACHE  ).
+AUF *GRUND DER *TATSACHE , DASS                                                 01 FSCJ / RS-E-CAUSE.                         
+BIS ZU                                                                          ==FTP1    (*       ,BIS-ZU                  ).
+BIS ZU                                                                          01 1V2D / VAL2B-E-ZU.                         
+BIS ZUM                                                                         ==FTP1    (*       ,BIS-ZU                  ).
+BIS ZUM                                                                         01 DCONTDM / VAL2B-E-ZU.                      
+BIS ZUR                                                                         ==FTP1    (*       ,BIS-ZU                  ).
+BIS ZUR                                                                         01 DCONTDF / VAL2B-E-ZU.                      
+D. H.                                                                           ==FTP1    (CJTENC  ,DAS-HEISST              ).
+D. H. ,                                                                         ==FTP1    (CJTENC  ,DAS-HEISST              ).
+IM *GRUNDE                                                                      ==FTP1    (FSRADIP ,IM-GRUNDE               ).
+IM *MOMENT                                                                      ==FTP1    (FSRADIP ,IM-MOMENT               ).
+IM *ZUGE                                                                        ==FTP1    (1V2G    ,IM-ZUGE                 ).
+IM WESENTLICHEN                                                                 ==FTP1    (FSRADIP ,IM-WESENTLICHEN         ).
+IN *ZUKUNFT                                                                     ==FTP1    (FSRADIP ,IN-ZUKUNFT              ).
+IN DER *REGEL                                                                   ==FTP2    (FSRADIP ,IN-DER-REGEL            ).
+IN ERSTER *LINIE                                                                ==FTP2    (FSRADIP ,IN-ERSTER-LINIE         ).
+JE NACH                                                                         ==FTP1    (1NACHD  ,JE-NACH                 ).
+NACH *BELIEBEN                                                                  ==FTP1    (FSRADIP ,NACH-BELIEBEN           ).
+NICHT NUR                                                                       ==FTP1    (*       ,NICHT-NUR               ).
+NICHT NUR                                                                       01 VID / KMS-E-COP,SUBCOP-E-COCOU.            
+SEI ES , DASS                                                                   ==FTP0    (CJSTENC ,SEI-ES-DASS             ).
+SO DASS                                                                         ==FTP1    (*       ,SO-DASS                 ).
+SO DASS                                                                         01 FSCJ / RS-E-CONSEQ.                        
+SO ZUM *BEISPIEL                                                                ==FTP2    (CJTENC  ,SO-ZUM-BEISPIEL         ).
+SONDERN AUCH                                                                    ==FTP1    (*       ,SONDERN-AUCH            ).
+SONDERN AUCH                                                                    01 VID / KMS-E-COP,SUBCOP-E-COCOU.            
+U. S. W.                                                                        ==FTP2    (FSRADIP ,U.S.W.                  ).
+UND ZWAR                                                                        ==FTP1    (FSRADIP ,UND-ZWAR                ).
+UNGEACHTET DESSEN , DASS                                                        ==FTP0    (*       ,UNGEACHTET-DESSEN-DASS  ).
+UNGEACHTET DESSEN , DASS                                                        01 FSCJ / RS-E-CONCES.                        
+VOR ALLEM                                                                       ==FTP1    (FSRADIP ,VOR-ALLEM               ).
+VORAUSGESETZT , DASS                                                            ==FTP0    (*       ,VORAUSGESETZT-DASS      ).
+VORAUSGESETZT , DASS                                                            01 FSCJ / RS-E-COND.                          
+WIE Z. *B.                                                                      ==FTP2    (CJTENC  ,WIE-ZUM-BEISPIEL        ).
+WIE ZUM *BEISPIEL                                                               ==FTP2    (CJTENC  ,WIE-ZUM-BEISPIEL        ).
+Z. *B.                                                                          ==FTP1    (CJTENC  ,ZUM-BEISPIEL            ).
+ZUM *BEISPIEL                                                                   ==FTP1    (CJTENC  ,ZUM-BEISPIEL            ).
+ZUM EINEN                                                                       ==FTP1    (FSRADIP ,ZUM-EINEN               ).

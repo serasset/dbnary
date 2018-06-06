@@ -1,0 +1,2126 @@
+RDICT:   (1,2,3,4,5/NU).
+
+MOTINC:  MODINC == KMS(C):=INC.
+** SUBN(C):=PF-U-PSF-U-LEG,PSG(C):=3,PPL(C):=3,
+         CSMT(C):=NOM-U-ACC-U-DAT-U-GEN,
+         CSFT(C):=NOM-U-ACC-U-DAT-U-GEN,
+         CSNT(C):=NOM-U-ACC-U-DAT-U-GEN,
+         CPT(C):=NOM-U-ACC-U-DAT-U-GEN.
+
+** ------------ PAS DE MOT COMPOSé -----------------------------------.
+NOPS1 : BIDON ==/ VAR(PS1)-E-VAR0 -ET-VERB(C)-I-UN-E-VERB0.  **2013.
+
+
+** ------------ ARRET DICTIONNAIRE OU PAS 18/11/2009 -----------------.
+SRARD :  BIDON
+         ==   -ARD- /TACTIC(C)-E-TACTIC0.
+
+SR0ARD:  BIDON
+         ==         /TACTIC(C)-E-0ARD.
+
+** ------------ TRAITEMENT DES PREFIXES ------------------------------.
+RPFX:    PFX
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DICT(C):=1-U-2-U-3-U-4 /
+         SCHAINE(A,0,1)-NE-' '.
+
+RPFX1:   PFX1
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DICT(C):=1/
+         SCHAINE(A,0,1)-NE-' '.
+
+RPFX2:   PFX2
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DICT(C):=2/
+         SCHAINE(A,0,1)-NE-' '.
+
+RPFX3:   PFX3
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DICT(C):=3/
+         SCHAINE(A,0,1)-NE-' '.
+
+RPFX4:   PFX4
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DICT(C):=4/
+         SCHAINE(A,0,1)-NE-' '.
+
+RPFX5:   PFX5
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DICT(C):=5/
+         SCHAINE(A,0,1)-NE-' '.
+
+** ------------- TRAITEMENT DES MOTS COMPOSES -------------------------.
+
+SRMC:    BIDON ==
+         VAR(S):=VAR(C),VAR(C):=VAR0,VERB(C):=VERB(S),
+         TYPO(C):=TYPO(S),
+         VAR(S):=VAR0,DICT(C):=1-U-2-U-3-U-4 //// SRMCA,SRMCB.
+
+SRMC1:    BIDON ==
+         VAR(S):=VAR(C),VAR(C):=VAR0,VERB(C):=VERB(S),
+         TYPO(C):=TYPO(S),
+         VAR(S):=VAR0,DICT(C):=1 //// SRMCA,SRMCB.
+
+SRMC23:   BIDON ==
+         VAR(S):=VAR(C),VAR(C):=VAR0,VERB(C):=VERB(S),
+         TYPO(C):=TYPO(S),
+         VAR(S):=VAR0,DICT(C):=2-U-3 //// SRMCA,SRMCB.
+
+SRMCA:   BIDON ==
+         VERB(C):=VERB0 / SUBADIP(PS1)-I-PAS-E-SUBADIP0.
+
+SRMCB:   BIDON ==
+         / SUBADIP(PS1)-I-PAS-NE-SUBADIP0.
+
+**------------- TRAITEMENT DES BASES VERBALES A DESINENCE PREFIXEE -----.
+
+RLEG:    VLEG-XLEG-FCINFZU == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','01').
+RINF:    VINF == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','0INF1').
+
+RBELEG:  VBELEG-XBELEG == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','01'),TCHAINE(0,'01T','02T').
+
+RDEUT:   VDEUT-XDEUT == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','03').
+**NB : uploaden est un VDEUT et on indexe en plus un FCPPA.
+
+RBEDEUT: VBEDEUT-XBEDEUT == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','03'),TCHAINE(0,'03ET','04ET').
+
+RSETZ:   VSETZ-XSETZ == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','01'),TCHAINE(0,'01T','05T').
+
+RPASZ:   VPASZ-XPASZ == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','05').
+
+RBESETZ: VBESETZ-XBESETZ == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','01'),TCHAINE(0,'01T','06T').
+
+RVERPASZ: VVERPASZ-XVERPASZ == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','06').
+
+RENDIG:  VENDIG-XENDIG == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)/
+         SCHAINE(A,0,1)-NE-' '/TCHAINE(0,'','01').
+
+RBEENDIG:VBEENDIG-XBEENDIG == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)/
+         SCHAINE(A,0,1)-NE-' '/TCHAINE(0,'','01'),TCHAINE(0,'01T','02T').
+
+**RELN:    VELNERN-XELNERN == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)/
+         SCHAINE(A,0,1)-NE-' '/
+         TCHAINE(0,'','07'),TCHAINE(0,'07TE','01TE').
+
+
+RELN:    VELN-XELN == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)/
+         SCHAINE(A,0,1)-NE-' '/
+         TCHAINE(0,'','0A7').
+
+RERN:    VERN-XERN == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)/
+         SCHAINE(A,0,1)-NE-' '/
+         TCHAINE(0,'','0B7').
+
+RSTIRLN: VSTIRLN-XSTIRLN == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)/
+         /
+         TCHAINE(0,'','077'),TCHAINE(0,'077TE','01TE').
+
+**RBELN:   VBELNERN-XBELNERN == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)/
+         SCHAINE(A,0,1)-NE-' '/
+         TCHAINE(0,'','07'),TCHAINE(0,'07T','08T').
+
+RBELN:    VBELN-XBELN == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)/
+         SCHAINE(A,0,1)-NE-' '/
+         TCHAINE(0,'','0A8').
+
+RBERN:    VBERN-XBERN == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)/
+         SCHAINE(A,0,1)-NE-' '/
+         TCHAINE(0,'','0B8').
+
+RSING:   WSING-YSING == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','01'),TCHAINE(0,'01T','09T').
+
+RFIND:   WFIND-YFIND == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','03'),TCHAINE(0,'03ET','10ET').
+
+RSITZ:   WSITZ-YSITZ == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','01'),TCHAINE(0,'01T','11T').
+
+RMOEG:   WMOEG-YMOEG == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','12').
+
+RKOMM:   WKOMM-YKOMM == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','13').
+
+RBEKOMM: WBEKOMM-YBEKOMM == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','13'),TCHAINE(0,'13EN','14EN').
+
+RSAUF:   WSAUF-YSAUF == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','15').
+
+RGRAB:   WGRAB-YGRAB == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','15'),TCHAINE(0,'15EN','13EN').
+
+RBEGRAB: WBEGRAB-YBEGRAB == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','15'),TCHAINE(0,'15EN','14EN').
+
+RRAT:    WRAT-YRAT == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','16').
+
+RBERAT:  WBERAT-YBERAT == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','16'),TCHAINE(0,'16EN','14EN'),TCHAINE(0,'16ET','1B6ET').
+
+RNEHM:   WNEHM-YNEHM == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)/
+         SCHAINE(A,0,1)-NE-' '/TCHAINE(0,'','17').
+
+RLOESCH: WLOESCH-YLOESCH == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)/
+         SCHAINE(A,0,1)-NE-' '/TCHAINE(0,'','39').
+
+RGELT:   WGELT-YGELT == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','18').
+
+RGEB:    WGEB-YGEB == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','19').
+
+RESZ:    WESZ-YESZ-WBEMESZ-YBEMESZ == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','40').
+
+RBEGEB:  WBEGEB-YBEGEB == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','19'),TCHAINE(0,'19EN','14EN').
+
+RTRET:   WTRET-YTRET == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','18'),TCHAINE(0,'18EN','19EN').
+
+RBETRET: WBETRET-YBETRET == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','18'),TCHAINE(0,'18EN','14EN').
+
+RGRAEB:  WGRAEB-YGRAEB == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','20').
+
+RGIB:    WGIB-YGIB == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','21').
+
+RGABAETE:WGAB-WBAETE-YGAB-YBAETE-WSOLLTE-YSOLLTE== -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','22').
+
+RFAND:   WFAND-YFAND == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','23').
+
+RSASS:   WSASS-YSASS == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','24').
+
+RLOG:    WLOG-YLOG == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','25').
+
+RBELOG:  WBELOG-YBELOG == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','25'),TCHAINE(0,'25EN','26EN').
+
+RBOT:    WBOT-YBOT == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','27').
+
+RVERBOT: WVERBOT-YVERBOT == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','27'),TCHAINE(0,'27EN','26EN').
+
+RGOSS:   WGOSS-YGOSS == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','28').
+
+RBEGOSS: WBEGOSS-YBEGOSS == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','28'),TCHAINE(0,'28EN','26EN').
+
+RFIEL:   WFIEL-YFIEL == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','29').
+
+RRIET:   WRIET-YRIET == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','30').
+
+RLIESS:  WLIESS-YLIESS == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','31').
+
+RGLICH:  WGLICH-YGLICH == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','29'),TCHAINE(0,'29EN','32EN'),TCHAINE(0,'29N','32EN').
+
+RBEGLICH:WBEGLICH-YBEGLICH == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','29'),TCHAINE(0,'29EN','33EN'),TCHAINE(0,'29N','33EN').
+
+RRITT:   WRITT-YRITT == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','30'),TCHAINE(0,'30EN','32EN').
+
+RBERITT: WBERITT-YBERITT == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','30'),TCHAINE(0,'30EN','33EN').
+
+RWIES:   WWIES-YWIES == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','31'),TCHAINE(0,'31EN','32EN').
+
+RBEWIES: WBEWIES-YBEWIES == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','31'),TCHAINE(0,'31EN','33EN').
+
+RGAEB:   WGAEB-YGAEB == -ARD-,DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','34').
+
+** ------------ TRAITEMENT DES DESINENCES VERBALES --------------------.
+
+RDV0:    ZUO == -FINAL-,MT(C):=INFZU /
+         MT(C)-NE-MT0.
+
+RDV1:    OFGU == -SOL-,
+         VARNM(C):=VARNM(C)-U-VARNM(A) /
+         KMS(C)-INC-VB-ET- **2011.
+         SCHAINE(A,0,1)-NE-' '-ET-
+         VERB(C)-I-VERB(A)-E-VERB0 ///
+         SRMC23.  **À VOIR.
+
+RDV2:    FOAGUOW == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A) /
+         SCHAINE(A,0,1)-E-' '-ET-
+         VERB(C)-I-VERB(A)-E-VERB0-ET-
+         KMS(PS1)-E-KMS0-ET-
+         (TYPO(C)-I-MJ1-NE-MJ1-OU-SUBPC(P1)-E-PC1-OU-KMS(P1)-E-KMS0).
+
+RDV3:    FPOAGMU-FPOAMU-FPOG == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A) /
+         SCHAINE(A,0,1)-E-' '-ET-
+         VERB(C)-I-VERB(A)-E-PSP-ET-TYPO(C)-I-MJ1-NE-MJ1.
+
+RDV4:    FOAGMOP-FOAMUOP == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DRV(C):=DRV(A) /
+         SCHAINE(A,0,1)-E-' '-ET-
+         VERB(C)-I-VERB(A)-E-VERB0-ET-
+         (VERB(C)-INC-PSP-OU-KMS(PS1)-E-KMS0)-ET-
+         TYPO(C)-I-MJ1-NE-MJ1.
+
+RDV5:    FWOAG-FWOAU == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DRV(C):=DRV(A)/
+         SCHAINE(A,0,1)-E-' '-ET-
+         VERB(C)-I-VERB(A)-E-VERB0-ET-
+         KMS(PS1)-E-KMS0-ET-
+         (SUBPC(P1)-E-PC1-OU-KMS(P1)-E-KMS0)**12/12/2013. -ET-
+         TYPO(C)-I-MJ1-E-MJ1.
+
+RDV6:    FPWOAG-FPWOAGU == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A) /
+         SCHAINE(A,0,1)-E-' '-ET-
+         VERB(C)-I-VERB(A)-E-VERB0-ET-
+         VERB(C)-INC-PSP-ET-
+         (SUBPC(P1)-E-PC1-OU-KMS(P1)-E-KMS0)
+         -ET-VAR(PS1)-E-VAR0.  **2011.
+
+RDV7:    FMOGU == -ARD-,DRV(C):=DRV(A),
+         VARNM(C):=VARNM(C)-U-VARNM(A),KMS(C):=KMS(A) /
+         SCHAINE(A,0,1)-E-' '-ET-
+         VERB(C)-I-VERB(A)-E-VERB0-ET-
+         TYPO(C)-INC-MJ1.
+
+RDV8:    OG ==
+         VARNM(C):=VARNM(C)-U-VARNM(A),DICT(C):=6 /
+         VERB(C)-I-VERB(A)-E-VERB0 /
+         TCHAINE(0,'','XX') // SRZU0,SRZU1.
+
+SRZU0:   BIDON == -ARD- / MT(C)-E-PPR.
+
+SRZU1:   BIDON == -ARD-, MT(C):=PPRZU / MT(C)-INC-PPRZU.
+
+RDV9:    FOG-FOGP-FOGU == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A) /
+         SCHAINE(A,0,1)-E-' '-ET-
+         VERB(C)-I-VERB(A)-E-VERB0 **17062010. -ET-
+         (TYPO(C)-I-MJ1-NE-MJ1-OU-
+         SUBPC(P1)-E-PC1-ET-VERB(C)-I-PSP-E-VERB0  **6/7/2010.
+         -OU-KMS(P1)-E-KMS0-ET-VERB(C)-I-PSP-E-VERB0).
+
+RDV10:   G == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DICT(C):=6 /
+         VERB(A)-DANS-VERB(C) /
+         TCHAINE(0,'','XXX').
+
+RDV12A:  FOAGUOWP-FOAGUOP == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A) /
+         SCHAINE(A,0,1)-E-' ' -ET-
+         VERB(C)-I-VERB(A)-E-VERB0 -ET-
+         KMS(PS1)-E-KMS0 -ET-
+         (TYPO(C)-I-MJ1-NE-MJ1-OU-SUBPC(P1)-E-PC1-OU-KMS(P1)-E-KMS0).
+
+RDV12B:  FOAGUOWP-FOAGUOP == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A) /
+         SCHAINE(A,0,1)-E-' ' -ET- MT(C)-NE-INFZU-U-PPRZU-ET-
+         VERB(C)-I-VERB(A)-E-PSP-ET-TYPO(C)-I-MJ1-NE-MJ1
+         **2013/10. -ET-KMS(P1)-NE-KMS0.
+
+RDV13:   U1PMAO1F == -ARD-,DICT(C):=6,
+         VARNM(C):=VARNM(C)-U-VARNM(A) /
+         SCHAINE(A,0,1)-NE-' ' -OU-
+         VERB(C)-INC-UN -OU-
+         (VERB(C)-INC-PSP-ET-TYPO(C)-INC-MJ1) -OU-
+         KMS(PS1)-NE-KMS0 /
+         TCHAINE(0,'','XXX') .
+
+RDV14:   F == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A) /
+         SCHAINE(A,0,1)-E-' '.
+
+RDV15:   1A1UO1F == -ARD-,VARNM(C):=VARNM(C)-U-VARNM(A), DICT(C):=6 /
+         SCHAINE(A,0,1)-NE-' ' -OU-
+         VERB(C)-INC-UN
+         / TCHAINE(0,'','XXX') .
+
+RDV16:   FOAPU-FOAGPU == -ARD-,VARNM(C):=VARNM(C)-U-VARNM(A)
+         / SCHAINE(A,0,1)-E-' '
+         -ET-VERB(C)-I-VERB(A)-E-VERB0
+         -ET-KMS(PS1)-E-KMS0.
+** ----------------.
+RUNG:    VRBOGU-VRBOG == VAR(S):=VAR(C),VAR(C):=VAR0,
+         VARM(C):=VARM(A),TYPO(C):=TYPO(S),VARS(C):=VARS(S),
+         DRV(C):=DRV(A),VAR(S) := VAR0 /
+      ** 27/10/2011  VERB(C)-I-VERB(A)-E-VERB0 /// SRBID,SRMC.
+         VERB(C)-I-VERB(A)-E-VERB0 /// SRFIN,SRSUITE.
+
+SRFIN:   BIDON == -ARD- / SCHAINE(A,0,1)-E-' '.
+
+SRSUITE: BIDON == -SOL- / SCHAINE(A,0,1)-NE-' '///SRMC.
+
+SRBID:   BIDON == -ARD- / SCHAINE(A,0,1)-E-' '.
+
+RHEITVN: VRBGO
+         == VAR(S):=VAR(C),VAR(C):=VAR(A),TYPO(C):=TYPO(S),
+            NEG(C):=NEG(S),VAR(S):=VAR0 /
+            MT(C)-INC-PPA /// SRBID,SRMC.
+
+SRVID:   BIDON == -ARD- .
+
+
+RBAR:    VRBOG00 == -ARD-,
+         VAR(S):=VAR(C),VAR(C):=VAR(A),NEG(C):=NEG(S),
+         TYPO(C):=TYPO(S),
+         VAR(S):=VAR0,DICT(C):=6 /
+         VERB(C)-I-VERB(A)-E-VERB0 /
+         TCHAINE(0,'','00').
+
+** ---------------- TRAITEMENT DES FORMES VERBALES COMPLETES ----------.
+RFCVB1:  FBIN-FBIST-FIST-FSIND-FSEIST-FSEIEN-FSEIET-FLIEST-FMAG-
+         FSEI-FSEID-FHEISST-FTRITT-FGIB-FBIRST-FBACKT-FGEBRACH-F3SSUBJ2-F3SSUBJ1
+         == -ARD-,VARS(C):=VARS(A),VAREM(C):=VAREM(A),
+            VARNM(C):=VARNM(C)-U-VARNM(A)
+            / SCHAINE(A,0,1)-E-' ' -ET-
+              ( ( VERB(C)-I-VERB(A)-E-VERB0 -ET-
+                  KMS(PS1)-E-KMS0 -ET-
+                  ( TYPO(C)-I-MJ1-NE-MJ1 -OU-
+                    SUBPC(P1)-E-PC1 -OU-
+                    VAR(P1)-E-VAR0
+                  )
+                ) -OU-
+                ( VERB(C)-I-VERB(A)-E-PSP-ET-TYPO(C)-I-MJ1-NE-MJ1
+                )
+              ).
+
+RZCVB1:  ZBIN-ZBIST-ZIST-ZSIND-ZSEIST-ZSEIEN-ZSEIET-ZLIEST-ZMAG-
+         ZSEI-ZSEID-ZHEISST-ZTRITT-ZGIB-ZBIRST-ZBACKT
+         == -ARD-,VARS(C):=VARS(A),VAREM(C):=VAREM(A),
+            VARNM(C):=VARNM(C)-U-VARNM(A)
+            / SCHAINE(A,0,1)-E-' ' -ET-
+              VERB(C)-I-VERB(A)-E-VERB0 -ET-
+              KMS(PS1)-E-KMS0 -ET-
+              TYPO(C)-I-MJ1-NE-MJ1.
+
+RFCVB4:  FTUN-ZTUN==
+         -ARD-,VARS(C):=VARS(A),VAREM(C):=VAREM(A),
+         VARNM(C):=VARNM(C)-U-VARNM(A),DICT(C):=6
+         // TCHAINE(0,'','01EN').
+
+RFCVB5A: FCINF ==
+         -FINAL-,VARS(C):=VARS(A),VAREM(C):=VAREM(A),
+         VARNM(C):=VARNM(C)-U-VARNM(C)-U-VARNM(A),MT(C):=INFZU /
+         MT(C)-NE-MT0.
+
+RFCVB5B: FCINF == CPT(C):=NOM-U-ACC-U-DAT-U-GEN,
+         -ARD-,VARS(C):=VARS(A),VAREM(C):=VAREM(A),DRV(C):=VN1,
+         VARNM(C):=VARNM(C)-U-VARNM(C)-U-VARNM(A),KMS(C):=NM,
+         SUBN(C):=PF,PSG(C):=3,PPL(C):=3,GNR(C):=N,CSNT(C):=NOM-U-ACC-U-DAT  /
+         SCHAINE(A,0,1)-E-' ' -ET-
+         VERB(C)-I-VERB(A)-E-VERB0 -ET- TYPO(C)-INC-MJ1.
+
+RFCVB5C: FCINF ==
+         -ARD-,VARS(C):=VARS(A),VAREM(C):=VAREM(A),
+         VARNM(C):=VARNM(C)-U-VARNM(C)-U-VARNM(A) /
+         SCHAINE(A,0,1)-E-' ' -ET-
+         (TYPO(C)-I-MJ1-NE-MJ1-OU-SUBPC(P1)-E-PC1-OU-KMS(P1)-E-KMS0).
+
+RFCVB5D: FCINF ==
+         -ARD-,VARS(C):=VARS(A),VAREM(C):=VAREM(A),
+         VARNM(C):=VARNM(C)-U-VARNM(C)-U-VARNM(A), -SOL- /
+         SCHAINE(A,0,1)-NE-' ' -ET- VERB(C)-I-VERB(A)-E-VERB0 /// SRMC.
+
+** ------------------ TRAITEMENT DES SUBSTANTIFS ----------------------.
+
+**
+RINVPF0: MINVSP0-NINVSP0-FINVSP0-MINVS0-FINVS0-NINVS0-MINVP0-FINVP0-NINVP0-
+         INVP0
+         ==              règle désormais inutile et donc supprimée
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         CSMB(C):=CSMB0,CSNB(C):=CSNB0,CSFB(C):=CSFB0,
+         DICT(C):=6 / SUBN(A)-INC-PF  -ET- VERB(C)-NE-GE -ET-TACTIC(A)-E-0ARD
+         /// A01VID,RMCP.
+
+RINVPFQ: MINVQ-MINVSPQ-NINVSPQ-FINVSPQ-MINVSQ-FINVSQ-NINVSQ-
+         MINVPQ-FINVPQ-NINVPQ-INVPQ
+         == -ARD-,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         CSMB(C):=CSMB0,CSNB(C):=CSNB0,CSFB(C):=CSFB0,
+         DICT(C):=6 / VERB(C)-NE-GE -ET-
+        SUBN(A)-INC-PF-ET-(SCHAINE(A,0,1)-E-' '-OU-SCHAINE(A,0,1)-E-'-')
+        ** 26/11/09. /// NOPS1.
+
+RINVIPQ: MINVQ-MINVSPQ-NINVSPQ-FINVSPQ-MINVSQ-FINVSQ-NINVSQ-
+         MINVPQ-FINVPQ-NINVPQ-INVPQ
+         == -ARD-,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         CSMT(C):=CSMT0,CSNT(C):=CSNT0,CSFT(C):=CSFT0,
+         DICT(C):=6 / SUBN(A)-INC-IP -ET- (SCHAINE(A,0,1)-E-' ' -OU-
+         SCHAINE(A,0,1)-E-'-') -ET- VERB(C)-NE-GE
+        ** 26/11/09. /// NOPS1.
+
+RNOMINV : ** -, -, - .
+	MINV-MINVSP-NINVSP-FINV-FINVSP-MINVS-FINVS-NINVS-MINVP-FINVP-NINVP-MSADGP-
+	INVP-MGUSZ-MNAGP-NGEBISZ-MSNAD-MSN-NSD-
+	MSG-NKINOS-NSGP-
+	FINVS0K-
+	MNINV-NFINVP-MNINVS-NFINVS-NFINVSP-
+	MFNINVS-FNINVS-FINV-
+	MNINVP-MFINV-
+	MNFINVS-MFPD-MPD-MNGUSZ -MFINVP-MSGPD-MFINVS-
+	MNFINV
+==
+   VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+   DICT(C):=6 / VERB(C)-NE-GE/
+   TCHAINE(0,'','001')// SRARD,SR0ARD.
+
+
+RSASCHEN:  MSASCHEN-NJOULE    ** -, -/-s, -, -, - .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','101')// SRARD,SR0ARD.
+
+RACCESS:  MACCESS     ** -, -/-es, -, -, - .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','201')// SRARD,SR0ARD.
+
+RBESEN:  MBESEN-NEISEN-MATEM-NKLOSTER-MNATEM-MNBESEN-MNEISEN ** -, -s, -, -, - .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','301')// SRARD,SR0ARD.
+
+RBLNZ7EN:  FBLNZ7EN     ** -en, -en, -en, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','401')// SRARD,SR0ARD.
+
+RMAID7EN:  NMAID7EN-NWITT7EN-MJOCH7EN ** -en, -en/-ens, -en, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','501')// SRARD,SR0ARD.
+
+
+RBES7EN: MBES7EN-NEIS7EN-MSBES7EN-NSEIS7EN  ** -en, -ens, -en, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','601')// SRARD,SR0ARD.
+
+RFEZ:    MNAVIS-MFEZ   ** -, -/-es, -/-e, -/-e, -/-en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','701') // SRARD,SR0ARD.
+
+RKIRSCH:    MKIRSCH  ** -, -es/-s, -, -/-e, -/-en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','801') // SRARD,SR0ARD.
+
+RSINGRUN:  NSINGRUN   ** -, -s, -, -/-e, -/-en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','901') // SRARD,SR0ARD.
+
+RPOISE: NPOISE-FKOEFTE  ** -, -, -, -, -n .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE /
+         TCHAINE(0,'','002')// SRARD,SR0ARD.
+
+RTWEETER: MTWEETER  ** -, -/-s, -, -, -n .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE /
+         TCHAINE(0,'','102')// SRARD,SR0ARD.
+
+RMEISTER:MMEISTER-NUFER-MNUFER  ** -, -s, -, -, n .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE /
+         TCHAINE(0,'','202') // SRARD,SR0ARD.
+
+RBAECHE:MBAECHE-NHAEUSER-FMUETTER-PLEUTE-MNBAECHE-MFBAECHE-FNBAECHE
+          ** <nil>, <nil>, <nil>, -, -n  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE /
+         TCHAINE(0,'','302') // SRARD,SR0ARD.
+
+RHOLGER:MHOLGER     ** -, -/-s, -, -/-s, -n/-s  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE /
+         TCHAINE(0,'','402')// SRARD,SR0ARD.
+
+RREGIME: NREGIME-MONKEL    ** -, -s, -, -/-s, -n/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE /
+         TCHAINE(0,'','502')// SRARD,SR0ARD.
+
+RTAG:    MTAG-MNTAG-NBROT-MNBROT  ** -, -es/-s, -e, -e, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','003') // SRARD,SR0ARD.
+
+RBLEI:   MBLEI-NBLEI  ** -, -es/-s, -, -e, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','103')// SRARD,SR0ARD.
+
+RSYSTEM: NSYSTEM-MLING-MNLING-MNSYSTEM ** -, -s, -, -e, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','203') // SRARD,SR0ARD.
+
+RBLITZ:  MBLITZ-NKREUZ-MNBLITZ-MNKREUZ    ** -, -es, -e, -e, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','303')// SRARD,SR0ARD.
+
+RDIOPTAS:  MDIOPTAS-MNDIPTAS-FKLIMAX-NKLIMAX   ** -, -, -, -e, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','403') // SRARD,SR0ARD.
+
+RTHORAX:  MTHORAX               ** -, -/-es, -/-e, -e, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','503')// SRARD,SR0ARD.
+
+RALTIN:   MALTIN      ** -, -/-s, -, -e, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','603')// SRARD,SR0ARD.
+
+RLIGULA:   FLIGULA    ** -, -, -, -e, -e .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','703') // SRARD,SR0ARD.
+
+RGELEIT:   NGELEIT      ** -/-e, -es/-s, -/-e, -e, -en.
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','803') // SRARD,SR0ARD.
+
+RBAECH7E:MBAECH7E-FBAECH7E-PLEUT7E   ** <nil>, <nil>, <nil>, -e, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE /
+         TCHAINE(0,'','903') // SRARD,SR0ARD.
+
+RHAUS:   MTROTZ-NHAUS  ** -, -es, -/-e, <nil>, <nil>  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','004') // SRARD,SR0ARD.
+
+RTRAUM:  MZORN-NFLEISCH-MNZORN      **  -, -es/-s, -(e), <nil>, <nil> .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','104') // SRARD,SR0ARD.
+
+RSBAU:  MSBAU-MNSBAU           **  -, -es/-s, -, <nil>, <nil> .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','204')// SRARD,SR0ARD.
+
+RBANAT:  NBANAT  **  -, -/-es/-s, -/-e, <nil>, <nil> .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','304') // SRARD,SR0ARD.
+
+
+RKUKURUZ:  MKUKURUZ-NELSASS
+         **  -, -/-es, -/-e, <nil>, <nil> .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','404')// SRARD,SR0ARD.
+
+RDITHILD:  DIETHILD
+         **  -, -/-es/-s, -, <nil>, <nil> .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','504')// SRARD,SR0ARD.
+
+RGEBELL:  NGEBELL
+         **  -/-e, -es/-s, -/-e, <nil>, <nil>.
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','604')// SRARD,SR0ARD.
+
+RGEHETZ:  NGEHETZ
+         **  -/-e, -es, -/-e, <nil>, <nil> .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','704')// SRARD,SR0ARD.
+
+RSPROSS: MSPROSS
+         ** -, -es, -/-e, -e/-en, -en   .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','005')// SRARD,SR0ARD.
+
+RSTAG:   NSTAG-MMAAT
+         ** -, -es/-s, -/-e, -e/-en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','105')// SRARD,SR0ARD.
+
+RMONITOR: MMONITOR-NMOSAIK
+         ** -, -s, -, -e/-en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','205')// SRARD,SR0ARD.
+
+RLEIS  : MLEIS
+         ** -, -/-es, -/-e, -e/-en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','305')// SRARD,SR0ARD.
+
+RLITH:   MLITH  **2014.
+          ** -, -en/-s, -/-en, -e/-en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','405')// SRARD,SR0ARD.
+
+RPROTZ:   MPROTZ
+          ** -, -en/-es, -/-en, -e/-en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','505')// SRARD,SR0ARD.
+
+RGREIF:  MGREIF
+         ** -, -en/-es/-s, -/-e/-en, -e/-en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','605')// SRARD,SR0ARD.
+
+RDIAKON: MDIAKON
+         ** -, -en/-es/-s, -/-en, -e/-en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','705')// SRARD,SR0ARD.
+
+RSENN:   MSENN
+         ** -/-e, -en/-es/-s, -/-e/-en, -e/-en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','805')// SRARD,SR0ARD.
+
+RFLECK8N: MFLECK8N   ** -/en, -ens/-es/-s, -e/-en, -en  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','905') // SRARD,SR0ARD.
+
+RSKRIPT: NSKRIPT   ** -, -es/-s, -/e , -e/-en/-s, -en/-s  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','006') // SRARD,SR0ARD.
+
+RINTRON: NINTRON   ** - , -s, -e/-en/-s, -en/-s  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','106') // SRARD,SR0ARD.
+
+RSTIFT: NSTIFT-MNWELF     ** -, -es/s , -/-e, -e/-er, -en/-ern  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','206') // SRARD,SR0ARD.
+
+
+ROZID: MNOZID     ** -, -es/s , -/-e, -e/-ien, -en/-ien  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','306') // SRARD,SR0ARD.
+
+RMINERAL: NMINERAL     ** -, -s , -, -e/-ien, -en/-ien  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','406')// SRARD,SR0ARD.
+
+RPACK:   MPACK-MNPACK-NPARKETT       ** -, -es/-s, -/-e, -e/-s, -en/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','007')// SRARD,SR0ARD.
+
+RMATCH:   MNMATCH       ** -, -es/-s, -, -e/-s, -en/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','1$7')// SRARD,SR0ARD.
+
+RNANKING:MNANKING-NODEUR-MNODEUR   ** -, -s, -, -e/-s, -en/-s .
+         == -ARD-,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','2$7').
+
+RHARALD:   MHARALD       ** -, -/-s, -, -e/-s, -en/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','307')// SRARD,SR0ARD.
+
+RAHMING:   FAHMING-NWETGEL       ** -, -, -, -e/-s, -en/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','407')// SRARD,SR0ARD.
+
+RBAU1:   MBAU1       ** -, -es/s, -, -e/-ten, -en/-ten .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','507')// SRARD,SR0ARD.
+
+RPRINZ:  MPRINZ-MSPRINZ-NPRINZ ** -, -en, -en, -en  -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','$$8')// SRARD,SR0ARD.
+
+RBUTZ:  MBUTZ   ** -/-e, -en, -en, -en  -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','1$8')// SRARD,SR0ARD.
+
+RBOT7E:  MBOT7E-MSBOT7E-NBOT7E-MFBOT7E  ** -e, -en, -en, -en  -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','208')// SRARD,SR0ARD.
+
+RHERR:  MHERR   ** -, -en/-n, -en/-n, -en  -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','308')// SRARD,SR0ARD.
+
+RSPATZ:  MSPATZ   ** -/, -en/-es, -/-e/-en, -en  -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','408')// SRARD,SR0ARD.
+
+RAEDIL:  MAEDIL     ** -, -en/-s, -/-en, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','508')// SRARD,SR0ARD.
+
+RFELS:  MFELS     ** -/-en, -ens, -/-en, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','608')// SRARD,SR0ARD.
+
+RHERZ2:  NHERZ2-NSHERZ2     ** -, -ens, -/-en, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','708')// SRARD,SR0ARD.
+
+RHERZ1:  NHERZ1-NSHERZ1   ** -/e, -ens/-es, -/-e/-en, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','808')// SRARD,SR0ARD.
+
+RAHN  :  MAHN   ** -/e, -en/-es/-s, -/-e/-en, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','908')// SRARD,SR0ARD.
+
+RSTAAT:  MSTAAT-NBETT     ** -, -es/-s, -/-e, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','$$9')// SRARD,SR0ARD.
+
+RDOKTOR: MDOKTOR-MNDOKTOR-NPROTON ** -, -s, -, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','109')// SRARD,SR0ARD.
+
+RSCHMERZ:MSCHMERZ-NGLAS  ** -, -es, -e, -en, -en  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','209')// SRARD,SR0ARD.
+
+RARSCHIN:MARSCHIN  ** -, -/-s, -, -en, -en  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','309')// SRARD,SR0ARD.
+
+RFRAU:   FFRAU-FARMUT-MFRAU  ** -, -/(-s-), -, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','409')// SRARD,SR0ARD.
+
+RBRNHILD:   BRUNHILD  ** -, -/-e/-s, -, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','509')// SRARD,SR0ARD.
+
+RMASS:   FMASS-MMASS  ** -, -, -, -/-en, -/-en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','609')// SRARD,SR0ARD.
+
+RLAHN7E: FLAHN7E-FSLAHN7E  ** -/-e, -/-e, -/-e, -en/ -en .
+         == -ARD-,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','709')// SRARD,SR0ARD.
+
+RFAKT:   NFAKT-MNFAKT  ** -, -es/-s, -/-e, -en/-s, -en/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','809')// SRARD,SR0ARD.
+
+RLOTION:   FLOTION  ** -, -, -, -en/-s, -en/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','909')// SRARD,SR0ARD.
+
+RPOPULAR:   MPOPULAR-FBOX  ** -, -s, -, -en/-es, -en/-es [tester FBOX !!].
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','$09')// SRARD,SR0ARD.
+
+RLEIB:   MLEIB-NKLEID  ** -, -es/-s, -/-e, -er, -ern .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','010')// SRARD,SR0ARD.
+
+REI:     NEI  ** -, -es/-s, -, -er, -ern .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','110')// SRARD,SR0ARD.
+
+RREIS:   NREIS ** -, -es, -/-e, -er, -ern  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','210')// SRARD,SR0ARD.
+
+RSKI:   MSKI ** -, -s, -, -/-er, -/-ern  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','310')// SRARD,SR0ARD.
+
+RJETSKI:   MJETSKI ** -, -s, -, -/-er/-s, -/-ern/-s  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','410')// SRARD,SR0ARD.
+
+RBOX:   FBLUEBOX-NBLUEBOX-MINCH ** -, -, -, -es, -es  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','011')// SRARD,SR0ARD.
+
+RCOUCH:   FCOUCH-NSQUELCH ** -, -, -, -es/-s, -es/-s  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','111')// SRARD,SR0ARD.
+
+RCOACH:   MCOACH-MNCOACH ** -, -es/-s, -, -es/-s, -es/-s  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','211')// SRARD,SR0ARD.
+
+RSLASH:   MSLASH ** -, -s, -, -es/-s, -es/-s  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','311')// SRARD,SR0ARD.
+
+RODOR:   MODOR ** -, -s, -, -es, -es  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','411')// SRARD,SR0ARD.
+
+RWATSCH:   MWATSCH-MNWATSCH ** -, -/-es, -, <nil>, <nil>  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','511')// SRARD,SR0ARD.
+
+RFONAR:   NFONAR ** -, -s, -, -ien, -ien  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','$012')// SRARD,SR0ARD.
+
+RJUDIZ:   NJUDIZ ** -, -es, -, -ien, -ien  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','$112')// SRARD,SR0ARD.
+
+RAPOREM:   NAPOREM ** -, -s, -, -ata, -ata  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','$212')// SRARD,SR0ARD.
+
+RFEDER:  FFEDER-FFEDER0-NFEDER-MFEDER-MFFEDER  ** -, -(s-), -, -n, -n.
+         ==   **-ARD-,.
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','013')// SRARD,SR0ARD.
+
+RAMALIE:  FAMALIE-MCHAWER  ** -, -/-s, -, -n, -n.
+         ==   **-ARD-,.
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','113')// SRARD,SR0ARD.
+
+RMUSKEL: MMUSKEL-MNMUSKEL-NAUGE-MNAUGE    ** -, -s, -, -n, -n .
+         ==  **-ARD-,.
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','213')// SRARD,SR0ARD.
+
+RBAIER:  MBAIER    ** -, -n, -n, -n, -n .
+         ==  **-ARD-,.
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','313')// SRARD,SR0ARD.
+
+RSATYR:  MSATYR   ** -, -n/-s, -n, -n, -n .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','413')// SRARD,SR0ARD.
+
+RRLLETTE:  FRLLETTE   ** -, -, -, -n/-s, -n/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','513')// SRARD,SR0ARD.
+
+RMAEDEL:  FMAEDEL-MCOUPE   ** -, -s, -, -n/-s, -n/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','613')// SRARD,SR0ARD.
+
+RJULIE:  FJULIE-MKMMODRE   ** -, -/-s, -, -n/-s, -n/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','713')// SRARD,SR0ARD.
+
+RFATZKE:  MFATZKE   ** -, -n/-s, -/-n, -n/-s, -n/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','813')// SRARD,SR0ARD.
+
+RBINKEL:  MBINKEL-NWERKEL   ** -, -s, -, -/-n, -n .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','913')// SRARD,SR0ARD.
+
+RZARIN:  FZARIN-MZARIN   ** -, -, -, -nen, -nen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','014')// SRARD,SR0ARD.
+
+RBUBO:   MBUBO   ** -, -s, -, -nen, -nen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','114')// SRARD,SR0ARD.
+
+
+RZENTO:  MZENTO-MNZENTO   ** -, -s, -, -nen/-s, -nen/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','214')// SRARD,SR0ARD.
+
+RHALO:   MHALO   ** -, -/-s, -, -nen/-s, -nen/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','314')// SRARD,SR0ARD.
+
+RRELIGIO:   FRELIGIO   ** -, - , -, -nes, -nes .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','414')// SRARD,SR0ARD.
+
+RSAPO:   MSAPO   ** -, -s , -, -nes, -nes .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','514')// SRARD,SR0ARD.
+
+RFYLKE:   NFYLKE   ** -, -/-s , -, -r, -rn .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','614')// SRARD,SR0ARD.
+
+RUHU:    MUHU-NKINO-MNSPRAY-MNUHU-MNKINO ** -, -s, -, -s, -s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','015')// SRARD,SR0ARD.
+
+RJET:    MJET-MSJET-MNJET-MNSJET-NBERLIN-NSEPPUKU-NNIRWANA
+         -FBIRGIT-FINGRID-MKASPAR  ** -, -/-s, -s, -s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE /
+         TCHAINE(0,'','115')// SRARD,SR0ARD.
+
+RBLOCK:  MBLOCK   ** -, -es/-s, -/-e, -s, -s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','215')// SRARD,SR0ARD.
+
+RMAMA:   FMAMA-FNMAMA-FMMAMA-MRONIN-MNRONIN-NMAMA ** -, -, -, -s, -s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE /
+         TCHAINE(0,'','315')// SRARD,SR0ARD.
+
+RCOVER:  MCOVER-NCOVER-MNCOVER  ** -, -s, -, -/-s, -/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','415')// SRARD,SR0ARD.
+
+RPKW:    MPKW-NKZ-FPKW-MNPKW ** -, [-/-s], -, -/-s, -/-s .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','515')// SRARD,SR0ARD.
+
+RZEUGNIS:NZEUGNIS-NSNIS-MKUERBIS       ** -, -ses, -/-se, -se, -sen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','016')// SRARD,SR0ARD.
+
+RBUS:    MBUS     **  -, -ses, -, -se, -sen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','017')// SRARD,SR0ARD.
+
+RATLAS:  MATLAS   **  -, -/-ses, -/se, -se, -sen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','216')// SRARD,SR0ARD.
+
+
+RFNIS:  FNIS-MNIS-MNREBUS  ** -, -, -, -se, -sen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','316')// SRARD,SR0ARD.
+
+RMALUS:  MMALUS      ** -, -/-ses, -/-se, -/-se, -/-sen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','416')// SRARD,SR0ARD.
+
+RMINUS:  NMINUS      ** -, -/-ses, -, -/-se, -/-sen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','516')// SRARD,SR0ARD.
+
+RKOITUS:  MKOITUS      ** -, -, -, -/-se, -/-sen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','616')// SRARD,SR0ARD.
+
+RBORIS:  MBORIS-FISIS-MARIUS-NPARIS      ** -, -/-', -, -se, -sen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','716')// SRARD,SR0ARD.
+
+RSKAZON:  MSKAZON-NKREODON     ** -, -s, -, -ten, -ten .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','017')// SRARD,SR0ARD.
+
+RZEUGM7A: NZEUGM7A   ** -a, -as, -a, as/-ata, as/-ata .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','020')// SRARD,SR0ARD.
+
+RKLIM7A: NKLIM7A  ** -a, -as, -a, as/-ata/-ate, as/-ata/-aten .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','120')// SRARD,SR0ARD.
+
+RSCHEM7A :NSCHEM7A  ** -a, -as, -a, as/-ata/-en, as/-ata/-en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','220')// SRARD,SR0ARD.
+
+RAUL7A:  FAUL7A-FSAUL7A ==      ** -a, -a(s-), -a, -as/-en, -as/-en .
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','320')// SRARD,SR0ARD.
+
+RCHAKR7A:  NCHAKR7A-CACILI7A ==     ** -a, -a/-as, -a, -as/-en, -as/-en .
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','420')// SRARD,SR0ARD.
+
+RDELT7A :NDELT7A-MWED7A  ** -a, -as, -a, -as/-en, -as/-en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','520')// SRARD,SR0ARD.
+
+RTAGM7A :NTAGM7A  ** -a, -a/-as, -a, -ata, -ata .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','620')// SRARD,SR0ARD.
+
+RATHEM7A :NATHEM7A  ** -a, -as, -a, -ata, -ata .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','720')// SRARD,SR0ARD.
+
+RTHEM7A :NTHEM7A  ** -a, -as, -a, -ata/-en, -ata/-en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','820')// SRARD,SR0ARD.
+
+RLAUD7A :FLAUD7A  ** -a, -a, -a, -e, -e .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','021')// SRARD,SR0ARD.
+
+RTSUB7A :NTSUB7A  ** -a, -a/-as, -a, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','121')// SRARD,SR0ARD.
+
+RFIRM7A:  FFIRM7A  ** -a, -a/-as-, -a, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','221')// SRARD,SR0ARD.
+
+RPLASM7A :NPLASM7A-MTSHSM7A   ** -a, -as, -a, -en, -en  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','321')// SRARD,SR0ARD.
+
+RERD7E:  FERD7E-MERD7E  ** -e, -e/-(mcp), -e, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','022')// SRARD,SR0ARD.
+
+RMSSAL7E:  NMSSAL7E  ** -e, -es, -e, -en/-ien, -en/ien .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','122')// SRARD,SR0ARD.
+
+RFRAM7E:  MNFRAM7E-MFRAM7E  ** -e, -es, -e, -es, -es .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','222')// SRARD,SR0ARD.
+
+RPFFRN7E:  MPFFRN7E  ** -e, -e, -e, -en/-i, -en/-i .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','322')// SRARD,SR0ARD.
+
+R7E7I3:  M7E7I3-F7E7I3-N7E7I3  ** -e, -e, -e, -i, -i .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','023')// SRARD,SR0ARD.
+
+R7E7I2:  M7E7I2  ** -e, -e/-es, -e, -i, -i .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','123')// SRARD,SR0ARD.
+
+R7E7I1:  M7E7I1  ** -e, -es, -e, -i, -i .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','223')// SRARD,SR0ARD.
+
+RFONAL7E:  NFONAL7E  ** -e, -es, -e, -ien, -ien .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','323')// SRARD,SR0ARD.
+
+RENG7E:  FENG7E-NRVERS7E-MSTIL7E   ** -e, -e, e, <nil>, <nil> .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','423')// SRARD,SR0ARD.
+
+RTHDOR7E:  THEDOR7E   ** -e, -e/-es, e, <nil>, <nil> .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','523')// SRARD,SR0ARD.
+
+RSEDIL7E:  NSEDIL7E   ** -e, -e/-es, e, -ien, -ien .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','623')// SRARD,SR0ARD.
+
+RFBRIL7E:  NFBRIL7E   ** -e, -e/-es, e, -ia, -ia .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','723')// SRARD,SR0ARD.
+
+RFRIED7E: MFRIED7E ** -e/-en, -ens, -en, -en, -en.
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','024') // SRARD,SR0ARD.
+
+
+RDRCH7EN: MDRCH7EN ** -e/-en, -en/-ens, -en, -en, -en.
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','124') // SRARD,SR0ARD.
+
+RBAS8IS: FBAS8IS-FSBAS8IS  ** -e/-is, -e/-is, -e/-is, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','224') // SRARD,SR0ARD.
+
+RSEM7EN: NSEM7EN  ** -en, -ens, -en, -ina, -ina .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','025') // SRARD,SR0ARD.
+
+RNOM7EN: NNOM7EN  ** -en, -ens, -en, -en/-ina, -en/-ina .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','125') // SRARD,SR0ARD.
+
+RFLAM7EN: MFLAM7EN  ** -en, -en, -en, -ines, -ines .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','225') // SRARD,SR0ARD.
+
+RBAS7IS: FBAS7IS-FSBAS7IS ** -is, -is, -is, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','$26') // SRARD,SR0ARD.
+
+R7IS7ES: F7IS7ES-M7IS7ES ** -is, -is, -is, -es, -es .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','$126') // SRARD,SR0ARD.
+
+RCLAV7IS:FCLAV7IS ** -is, -is, -is, -es/-is, -es/-is .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','226') // SRARD,SR0ARD.
+
+ROTIT7IS:FOTIT7IS  ** -is, -is, -is, -iden, -iden .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','326') // SRARD,SR0ARD.
+
+RCHAR7IS:FCHAR7IS  ** -is, -is, -is, -iten, -iten .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','426') // SRARD,SR0ARD.
+
+RMLF7KUS:MMLF7KUS  ** -kus, -kus, -kus, -kus/-zi, -kus/-zi .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','$27') // SRARD,SR0ARD.
+
+RM7MAN1  :M7MAN1  ** -man, -mans, -man, -men, -men .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','028') // SRARD,SR0ARD.
+
+RM7MAN2  :M7MAN1  ** -man, -man/-mans, -man, -men, -men .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','128') // SRARD,SR0ARD.
+
+RM7MAN3  :M7MAN1  ** -man, -man, -man, -men, -men .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','228') // SRARD,SR0ARD.
+
+RM7MAN4  :M7MAN4  **  -man, -man/-mans, -man, -mans/-men, -mans/-men .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','328') // SRARD,SR0ARD.
+
+R7O7I1   :M7O7I1-N7O7I1  **  -o, -os, -o, -i, -i .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','029') // SRARD,SR0ARD.
+
+R7O7I5   :M7O7I5-N7O7I5-MN7O7I5  **  -o, -o/-os, -o, -i, -i .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','129') // SRARD,SR0ARD.
+
+RSINT7O  :MSINT7O-NSINT7O-MNSINT7O  **  -o, -os, -o, -i, -i .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','229') // SRARD,SR0ARD.
+
+RKONT7O  :NKONT7O-MSALD7O  **  -o, -os, -o, -en/-i/-os, -en/-i/-os .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','329') // SRARD,SR0ARD.
+
+R7O7I3   :M7O7I3  **  -o, -o/-os, -o, -i/-o/-os, -i/-o/-os .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','429') // SRARD,SR0ARD.
+
+R7O7I4   :M7O7I4-N7O7I4  **  -o, -o, -o, -i/-os, -i/-os .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','529') // SRARD,SR0ARD.
+
+R7O7I2   :M7O7I2-N7O7I2-MM7O7I2  **  -o, -os, -o, -i/-os, -i/-os .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','629') // SRARD,SR0ARD.
+
+RIMAG7O   :FIMAG7O  **  -o, -o, -o, -ines, -ines .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','729') // SRARD,SR0ARD.
+
+R7ON7EN :N7ON7EN   ** -on, -ons, -on, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','030') // SRARD,SR0ARD.
+
+RLOGI7ON :NLOGI7ON   ** -on, -on/-ons, -on, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','130') // SRARD,SR0ARD.
+
+RPHOR7ON:NPHOR7ON     ** -on, -ons, -on, -a, -a .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','230') // SRARD,SR0ARD.
+
+RI7ON2:  NI7ON2   ** -on, -on/-ons, -on, -a, -a  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','330') // SRARD,SR0ARD.
+
+RI7ON1:  NI7ON1   ** -on, -on, -on, -a, -a .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','430') // SRARD,SR0ARD.
+
+RZO7ON  :NZO7ON      ** -on, -ons, -on, -a/-en, -a/-en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','530')  // SRARD,SR0ARD.
+
+R7OS7EN1:M7OS7EN1-N7OS7EN1-F7OS7EN1      ** -os, -os, -os, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','$31')  // SRARD,SR0ARD.
+
+R7OS7OI2:M7OS7OI2-F7OS7OI2      ** -os, -os, -os, -en/-oi, -en/-oi .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','131')  // SRARD,SR0ARD.
+
+R7OS7EN2:M7OS7EN2      ** -os, -os, -os, -en/-os, -en/-os .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','231')  // SRARD,SR0ARD.
+
+R7OS7OEN:M7OS7OEN      ** -os, -os, -os, -oen, -oen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','331')  // SRARD,SR0ARD.
+
+
+R7OS7OI1:M7OS7OI1      ** -os, -os, -os, -oi, -oi .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','431')  // SRARD,SR0ARD.
+
+RAN7S4 :NAN7SX4      ** -s, -s, -s, -tia, -tia .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','032')  // SRARD,SR0ARD.
+
+RAN7S3 :NAN7SX3      ** -s, -s, -s, -tia/-zien, -tia/-zien .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','132')  // SRARD,SR0ARD.
+
+RAN7S1 :NAN7SX1      ** -s, -s, -s, -tien, -tien .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','232')  // SRARD,SR0ARD.
+
+RAN7S2 :NAN7SX2      ** -s, -s, -s, -tien/-zien, -tien/-zien .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','332')  // SRARD,SR0ARD.
+
+RAN7S0 :NAN7SX0      ** -s, -s, -s, -zien, -zien   .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','432')  // SRARD,SR0ARD.
+
+RSIGN7UM:NSIGN7UM     ** -um, -ums, -um, -a, -a  .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','033') // SRARD,SR0ARD.
+
+RSTR7UM :NSTR7UM     ** -um, -um/-ums, -um, -a, -a   .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','133') // SRARD,SR0ARD.
+
+RMUSE7UM:NMUSE7UM     ** -um, -ums, -um, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','233') // SRARD,SR0ARD.
+
+RMEDI7UM:NMEDI7UM     ** -um, -ums, -um, -a/-en, -a/-en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','333') // SRARD,SR0ARD.
+
+RKAKT7US:MKAKT7US     ** -us, -us/usses, -us/-usse, -een/-usse, -een/-ussen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','034') // SRARD,SR0ARD.
+
+RTROP7US:MTROP7US-MNVIR7US ** -us, -us, -us, -en, -en .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','134') // SRARD,SR0ARD.
+
+
+R7US7ENI:M7US7ENI ** -us, -us, -us, -en/-i, -en/-i .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','234') // SRARD,SR0ARD.
+
+RIKT7US :MIKT7US-MFIKT7US ** -us, -us, -us, -en/-us, -en/-us .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','334') // SRARD,SR0ARD.
+
+RCHSM7US :MCHSM7US ** -us, -us, -us, -en/-usse, -en/-ussen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','434') // SRARD,SR0ARD.
+
+RGLOM7US :NGLOM7US ** -us, -us, -us, -era, -era .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','534') // SRARD,SR0ARD.
+
+RMOD7US: MMOD7US-FMOD7US ** -us, -us, ,-us, -i, -i .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','634') // SRARD,SR0ARD.
+
+RBON7US :MBON7US     ** -us, -us/usses, -us/-usse, -i/-us/-usse, -i/-us/-ussen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','734') // SRARD,SR0ARD.
+
+RABAK7US :MABAK7US     ** -us, -us, -us, -i/-usse, -i/-ussen .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','834') // SRARD,SR0ARD.
+
+RSAUR7US :MSAUR7US     ** -us, -us, -us, -ier, -iern .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','934') // SRARD,SR0ARD.
+
+RCOP7Y   :FCOP7Y-MDAD7Y    ** -y, -y[s], -y, -ies/-ys, -ies/-ys .
+         ==
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A),
+         DICT(C):=6 / VERB(C)-NE-GE/
+         TCHAINE(0,'','035') // SRARD,SR0ARD.
+
+
+** ---------- TRAITEMENT DES DESINENCES DU SUBSTANTIF -------------- .
+**--->new.
+RDNM:    NPF-NIP-NIF-NIPMN-NIPF-NPFMN-NPFF-NIFF
+          == -ARD-, **2011. PSG(C):=PSG(C)-I-PSG(A),
+                        PPL(C):=PPL(C)-I-PPL(A),
+                CSMB(C):=CSMB(C)-I-CSMB(A),
+                CSFB(C):=CSFB(C)-I-CSFB(A),
+                CSNB(C):=CSNB(C)-I-CSNB(A),
+                CSMT(C):=CSMT(C)-I-CSMT(A),
+                CSFT(C):=CSFT(C)-I-CSFT(A),
+                CSNT(C):=CSNT(C)-I-CSNT(A),
+                 CPT(C):=CPT(C)-I-CPT(A)    /
+  SUBN(A)-DANS-SUBN(C)
+  -ET-(GNR(A)-I-GNR(C)-NE-GNR0-OU-GNR(A)-E-GNR0) **2012.
+    **19 12 2014--->     -ET- ( PSG(A)-DANS-PSG(C)-OU-PSG(A)-E-PSG0)
+     -ET- ( PPL(A)-DANS-PPL(C) -OU-PPL(A)-E-PPL0).
+                /TCHAINE(0,'-','')//
+                A01VID,RMCPN1.
+
+
+A01VID:  BIDON ==  -ARD- / SCHAINE(A,0,1)-E-' '-ET-(TYPO(C)-INC-MJ1-OU-
+                           TYPO(C)-INC-ABB -OU- UL(PS1)-E-'-').
+RMCPN1:  MCP1 ==       CSMT(C):=CSMT0,CSMB(C):=CSMB0,
+                      CSFT(C):=CSFT0,CSFB(C):=CSFB0,
+                      CSNT(C):=CSNT0,CSNB(C):=CSNB0,
+                       CPT(C):=CPT0,-SOL-/
+                   ( CSMB(C)-I-(NOM-U-GEN)-NE-CSMB0 -OU-
+                     CSFB(C)-I-(NOM-U-GEN)-NE-CSFB0 -OU-
+                     CSNB(C)-I-(NOM-U-GEN)-NE-CSNB0 -OU-
+                     CSMT(C)-I-(NOM-U-GEN)-NE-CSMT0 -OU-
+                     CSFT(C)-I-(NOM-U-GEN)-NE-CSFT0 -OU-
+                     CSNT(C)-I-(NOM-U-GEN)-NE-CSNT0 -OU-
+                     CPT(C)-I-(NOM-U-GEN)-NE-CPT0 )-ET-
+             SCHAINE(A,0,1)-NE-' '**-ET-TYPO(C)-INC-MJ1 juin 2013
+             **-ET-
+             VAR(PS1)-E-VAR0 5 mars 2013.
+             ///
+             SRMCN1,SRMCN2,SRMCN3.
+
+SRMCN1:  BIDON ==   **-FINAL-, .   **2013.     **2013.
+         VAR(S):=VAR(C),VAR(C):=VAR0,VERB(C):=VERB(S),
+         TYPO(C):=TYPO(S),
+         VAR(S):=VAR0,DICT(C):=2-U-3 //// .
+
+SRMCN2:  BIDON ==
+         VAR(S):=VAR(C),VAR(C):=VAR0,VERB(C):=VERB(S),
+         TYPO(C):=TYPO(S),
+         VAR(S):=VAR0,DICT(C):=3 //// .
+
+SRMCN3:  BIDON ==   -STOP-,
+         VAR(S):=VAR(C),VAR(C):=VAR0,VERB(C):=VERB(S),
+         TYPO(C):=TYPO(S),
+         VAR(S):=VAR0,DICT(C):=1 //// .
+
+**<----new.
+
+
+RMCP:    MCP ==       CSMT(C):=CSMT0,CSMB(C):=CSMB0,
+                      CSFT(C):=CSFT0,CSFB(C):=CSFB0,
+                      CSNT(C):=CSNT0,CSNB(C):=CSNB0,
+                       CPT(C):=CPT0,-SOL-/
+             SCHAINE(A,0,1)-NE-' '-ET-TACTIC(C)-NE-0KOMPO///
+             SRMC.
+
+
+RDSNORD1:DSNORD1 == -ARD-,VARNM(C):=VARNM(C)-U-VARNM(A),SUBDR(C):=SUBDR0,
+                    KMS(C):=ADJ,SUBADJ(C):=APR,DRV(C):=DRA1,DICT(C):=6
+                    / SCHAINE(A,0,1)-NE-' '
+                    / TCHAINE(0,'','000').
+
+RDSNORD2:DSNORD2 == -ARD-,VARNM(C):=VARNM(C)-U-VARNM(A),SUBDR(C):=SUBDR0,
+                    KMS(C):=ADIP,SUBADIP(C):=RADIP,DRV(C):=DRA2
+                    / SCHAINE(A,0,1)-E-' '.
+
+RKLEIN:  AKLEIN == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A) //
+         TCHAINE(0,'','00').
+
+RAABEL3:  AABEL3 == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A) //
+         TCHAINE(0,'','55').
+
+RSAUER3:  ASAUER3 == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A) //
+         TCHAINE(0,'','77').
+
+RSAUER1:  ASAUER1 == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A) //
+         TCHAINE(0,'','88').
+
+
+RMUEDE:  AMUEDE == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A) //
+         TCHAINE(0,'','0000').
+
+RNAH7E:   ANAH7E == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A) //
+         TCHAINE(0,'','0001').
+
+RMAROD7E:AMAROD7E == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A) //
+         TCHAINE(0,'','0002').
+
+RGUT:    AGUT-ABESSER-ABEST == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A) //
+         TCHAINE(0,'','000').
+
+RBEAMTER:ABEAMTER == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A) /
+         TYPO(C)-INC-MJ1/   TCHAINE(0,'','0Y0').
+
+RRSNDER: ARSNDER == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A) /
+         TYPO(C)-INC-MJ1/   TCHAINE(0,'','0Z0').
+
+RDETSCHE: ADETSCHE == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A) /
+         TYPO(C)-INC-MJ1/   TCHAINE(0,'','0W0').
+
+RKAELT:  AKAELT == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)
+         // TCHAINE(0,'','0X0').
+
+RZWEI:   AZWEI
+         == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A) //
+         TCHAINE(0,'','0').
+
+RDA0:    DA0-
+         DA0ERA
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A)
+         / (KMS(C)-INC-ADJ-OU-SUBDR(C)-E-CARD)-ET-DRV(C)-NE-DRA1 **2011.
+         -ET-SCHAINE(A,0,1)-E-' '
+         -ET-(TYPO(C)-I-MJ1-NE-MJ1-OU-SUBPC(P1)-E-PC1-OU-KMS(P1)-E-KMS0).
+
+RMCPA1:  DA0-DA0E-
+         DA0ERA-DA0STA-MCPA1
+         == -SOL-,
+         VARNM(C):=VARNM(C)-U-VARNM(A)
+         / (KMS(C)-INC-ADJ-OU-SUBDR(C)-E-CARD) **2011 ! À voir ultérieurement.
+         -ET-SCHAINE(A,0,1)-NE-' '
+         /// SRMC.
+
+RDA1:    DA124-DA134-DA124P2-DER124-DER134-DST124-DST134-DST124P2-DAER13-
+         DER124P2-DA12E
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A)
+         / SCHAINE(A,0,1)-E-' '
+         -ET-TYPO(C)-I-MJ1-NE-MJ1.
+
+RDA2:    DA124-DA124P2-DER124-DA12E-
+         DER124P2-DST124-DST124P2
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),SUBADJ(C):=SUBADJ(C)-U-NMEX,
+         CSMB(C):=CSMB0,CSFB(C):=CSFB0,CSNB(C):=CSNB0,CPB(C):=CPB0
+         / SCHAINE(A,0,1)-E-' ' -ET- KMS(PS1)-E-KMS0
+         -ET-(SUBPC(P1)-E-PC1-OU-KMS(P1)-E-KMS0).
+
+RDA3:    DA134-DAER13-
+         DER134-DST134
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),SUBADJ(C):=SUBADJ(C)-U-NMEX
+         / SCHAINE(A,0,1)-E-' ' -ET- KMS(PS1)-E-KMS0
+         -ET-(SUBPC(P1)-E-PC1-OU-KMS(P1)-E-KMS0).
+
+RDA4:    DA124-DA124P2-DER124-DST124-DAER4-DA4E-
+         DA134-DER134-DER124P2-DST134-DST124P2
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),SUBADJ(C):=NMEX
+         /SCHAINE(A,0,1)-E-' '
+         -ET-TYPO(C)-INC-MJ1-ET-SUBPC(P1)-NE-PC1-ET-KMS(P1)-NE-KMS0
+         -ET-KMS(PS1)-NE-NM.     ** ? .
+
+RDA5:    DA568-DA568P3-DER568-DST568-DAER57-
+         DA578-DER578-DR568P3-DST578-
+         DT568P3 == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DRV(C):=DRV(A)
+         / SCHAINE(A,0,1)-E-' '
+         -ET-TYPO(C)-I-MJ1-NE-MJ1.
+
+RDA6:    DA568-DA568P3-DER568-DR568P3-
+         DST568-DT568P3
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DRV(C):=DRV(A),SUBADJ(C):=RSTA-U-NMEX,
+         CSMB(C):=CSMB0,CSFB(C):=CSFB0,CSNB(C):=CSNB0,CPB(C):=CPB0
+         / SCHAINE(A,0,1)-E-' '
+         -ET-(SUBPC(P1)-E-PC1-OU-KMS(P1)-E-KMS0).
+
+RDA7:    DA578-DAER57-
+         DER578-DST578
+         ==-ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DRV(C):=DRV(A),SUBADJ(C):=RSTA-U-NMEX
+         / SCHAINE(A,0,1)-E-' '
+         -ET-(SUBPC(P1)-E-PC1-OU-KMS(P1)-E-KMS0).
+
+RDA8:    DA568-DA568P3-DER568-DST568-DAER8-
+         DA578-DER578-DR568P3-DST578-
+         DT568P3 == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),KMS(C):=ADJ,
+         SUBADJ(C):=NMEX,MT(C):=MT0,VARS(C):=VARS0,DRV(C):=DRV(A)
+         / SCHAINE(A,0,1)-E-' '-ET-TYPO(C)-INC-MJ1-ET-SUBPC(P1)-NE-PC1
+           -ET-KMS(P1)-NE-KMS0-ET-KMS(PS1)-NE-NM.      ** ? .
+
+RMCPA2:  DA124P2
+         == -SOL-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),SUBADJ(C):=NMEX,VARS(C):=VARS0
+         / SCHAINE(A,0,1)-NE-' '/// SRMC.
+
+RMCPA3:  DA568P3
+         == -SOL-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DRV(C):=DRV(A),KMS(C):=ADJ,MT(C):=MT0,
+         SUBADJ(C):=NMEX,VARS(C):=VARS0
+         / SCHAINE(A,0,1)-NE-' '
+         /// SRMC.
+
+RDA0AB:  DA0ER
+         == -ARD-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),KMS(C):=ADJ,MT(C):=MT0,
+         VARS(C):=VARS0,DRV(C):=DRV(A)
+         / SCHAINE(A,0,1)-E-' '
+         -ET-(TYPO(C)-I-MJ1-NE-MJ1-OU-SUBPC(P1)-E-PC1).
+
+RMCPA4:  DA0ER-DA0ST
+         ==-SOL-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),DRV(C):=DRV(A),KMS(C):=ADJ,MT(C):=MT0,
+         VARS(C):=VARS0
+         / SCHAINE(A,0,1)-NE-' '
+         /// SRMC.
+
+RBVPPR:  FCPPR == -ARD-, DICT(C):=6,
+         VARNM(C):=VARNM(C)-U-VARNM(A),VAREM(C):=VAREM(A),VARS(C):=VARS(A),
+         DICT(C):=6 / VERB(C)-NE-GE / TCHAINE(0,'','XXX').
+
+RBVPP:   FCPPA == -ARD-, DICT(C):=6,
+         VARNM(C):=VARNM(C)-U-VARNM(A),VAREM(C):=VAREM(A),VARS(C):=VARS(A),
+         DICT(C):=6 / VERB(C)-NE-GE / TCHAINE(0,'','XXX').
+
+RDURF:   YDURF-WDURF == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','35').
+
+RBEDURF: WBEDURF-YBEDURF == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','36').
+
+RKENN:   VKENN-XKENN == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','01'),TCHAINE(0,'01TE','37TE').
+
+RSCHWOER:WSCHWOER-YSCHWOER == -ARD-, DICT(C):=6,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),VARNM(C):=VARNM(C)-U-VARNM(A)//
+         TCHAINE(0,'','38').
+
+**RZU:     PSPZU1 == -FINAL-,MT(C):=PPRZU-U-INFZU,DICT(C):=1
+                   / VERB(C)-INC-PSP.
+
+**RPSP:    PP14-PP14ZU-PP134-PP13-PP1-PP123-PP12-DAPREP-WOPREP-PP2-PREF-
+         PP4-PARTSEP == -SOL-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),VERB(C):=PSP,
+         VARS(C):=VARS0,KMS(C):=ADIP,SUBCOP(C):=SUBCOP0,POS(C):=POS0 /
+         SCHAINE(A,0,1)-NE-' '///SRMC.
+
+RPSP1:   PSP1-**PSPZU1-PARTSEP-.PP12 == -SOL-,
+         VARNM(C):=VARNM(C)-U-VARNM(A),VERB(C):=PSP,
+         VARS(C):=VARS0,KMS(C):=ADIP,SUBADIP(C):=PAS,SUBCOP(C):=SUBCOP0 /
+         SCHAINE(A,0,1)-NE-' '///SRMC1.
+
+RINVAUT: P1-P12-P13-P14-DEF-DFRLINT-RST-RSTRL-CJP1-PP14-PP14ZU-DADO-
+         COOR-PP2-AINV-APRED-
+         FMWORDEN-COP-APR-FMEIN-FMVIEL-PRS-VIRG-DAPREP-WOPREP-PP134-
+         FMVIEL2-
+         PVIRG-FINVAUT-APRRAD-CJRAD-CJDAD-PP12-DEFPRS-PP1-ISOL-COORCJS-
+         PP13-PP123-DEFRP-RSTRLRP-RSTRP-RSTRPM-PP4-RP-RELINT-CJ-PARTSEP  == -ARD-,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),
+         VARNM(C):=VARNM(C)-U-VARNM(A)
+         / SCHAINE(A,0,1)-E-' '-ET-KMS(PS1)-E-KMS0 -ET-   **2013.
+         (TYPO(C)-I-MJ1-NE-MJ1-OU-SUBPC(P1)-E-PC1-OU-KMS(P1)-E-KMS0).
+
+ **Juin 2013 : .
+RINVFIN: RADIP == -FINAL-,
+         VARS(C):=VARS(A),VAREM(C):=VAREM(A),
+         VARNM(C):=VARNM(C)-U-VARNM(A)
+         / SCHAINE(A,0,1)-E-' '-ET-KMS(PS1)-E-KMS0 -ET-   **2013.
+         (TYPO(C)-I-MJ1-NE-MJ1-OU-SUBPC(P1)-E-PC1-OU-KMS(P1)-E-KMS0).
+
+
+              ** PONCTUATION.
+
+POINT:   FINPH == VAR(C):=VAR(A),-INIT-,-FINAL- /
+                  SCHAINE(A,0,1)-E-' '.
+
+              ** CARDINAUX ET ORDINAUX EN CHIFRRES.
+
+RNBR:    DCARD-CHIFFRE
+         == KMS(C):=DR,-TRANS-,-FINAL- / VAR(C)-E-VAR0 -ET-
+                                     KMS(PS1)-E-KMS0 -OU- KMS(PS1)-E-PC /
+         // SRNBR1,SRNBR2.
+
+SRNBR1:  BIDON
+         == SUBDR(C):=CHIF / SCHAINE(A,0,1)-E-'0' -OU-
+                             SCHAINE(A,0,1)-E-'1' -OU-
+                             SCHAINE(A,0,1)-E-'2' -OU-
+                             SCHAINE(A,0,1)-E-'3' -OU-
+                             SCHAINE(A,0,1)-E-'4' -OU-
+                             SCHAINE(A,0,1)-E-'5' -OU-
+                             SCHAINE(A,0,1)-E-'6' -OU-
+                             SCHAINE(A,0,1)-E-'7' -OU-
+                             SCHAINE(A,0,1)-E-'8' -OU-
+                             SCHAINE(A,0,1)-E-'9' -OU-
+                             SCHAINE(A,0,1)-E-' ' /
+         TCHAINE(0,*,'').
+
+SRNBR2:  BIDON
+         == KMS(C):=ADJ,SUBADJ(C):=APR,IC(C):=2,DRV(C):=DRA1,
+            CSFT(C):=NOM-U-GEN,
+            CSMT(C):=NOM-U-GEN,
+            CSNT(C):=NOM-U-GEN,
+            CSFB(C):=NOM-U-ACC-U-DAT-U-GEN,
+            CSMB(C):=NOM-U-ACC-U-DAT-U-GEN,
+            CSNB(C):=NOM-U-ACC-U-DAT-U-GEN / SCHAINE(A,$0,$1)-E-'.' /
+            TCHAINE(0,*,'').
+
+RSUFINAL:   SUFINAL
+            == VAR(C):=VAR(A) / SCHAINE(A,0,1)-E-' ' -ET-
+                                KMS(PS1)-NE-KMS0.
+
+**--------- TRAITEMENT DES TOURNURES FIGEES--------------------------.
+
+RTP0:    FTP0
+         == VAR(C):=VAR(T), UL(C):=UL(T),ELIT(C),-FINAL- /
+            TOURN(C) -ET- SCHAINE(A,0,1)-E-' '.
+
+RTP1:    FTP1
+         == VAR(C):=VAR(T), UL(C):=UL(T),ELIT(P1),-FINAL- /
+            TOURN(P1) -ET- SCHAINE(A,0,1)-E-' '.
+
+RTP2:    FTP2
+         == VAR(C):=VAR(T), UL(C):=UL(T),ELIT(P2),-FINAL- /
+            TOURN(P2) -ET- SCHAINE(A,0,1)-E-' '.
+
+RTP3:    FTP3
+         == VAR(C):=VAR(T), UL(C):=UL(T),ELIT(P3),-FINAL- /
+            TOURN(P3) -ET- SCHAINE(A,0,1)-E-' '.
+
+                              -FIN-

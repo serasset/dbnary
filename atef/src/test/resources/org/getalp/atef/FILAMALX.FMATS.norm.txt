@@ -1,0 +1,535 @@
+1ANGEBT ==.** MT-E-IPR,PPL-E-2.
+1ANLEGT ==.** MT-E-IPR,PPL-E-2,PIND-E-3.
+1ATMET ==.**MT-E-IPR-U-SPR-U-IMP,PPL-E-2,PIND-E-2-U-3.
+1BAR ==.**KMS-E-ADJ,SUBADJ-E-RSTA,DRV-E-VA1.
+1BEATMET ==.**MT-E-IPR-U-SPR-U-IMP-U-PPA,PPL-E-2,PIND-E-2-U-3,KMS-E-VB-U-ADJ,
+SUBADJ-E-RSTA,IC-E-1.
+1BEGEBEN ==.**MT-E-INF-U-IPR-U-SPR-U-PPA,PPL-E-1-U-3,KMS-E-VB-U-ADJ,
+SUBADJ-E-RSTA,IC-E-1.
+1BELEGT ==.**MT-E-IPR-U-IMP-U-PPA,PPL-E-2,PIND-E-2-U-3,KMS-E-VB-U-ADJ,
+IC-E-1,SUBADJ-E-RSTA.
+1BELEGTE ==.**MT-E-IPA-U-SPA-U-PPA,PSG-E-1-U-3,CSFT-E-NOM-U-ACC,
+CPT-E-NOM-U-ACC,CSMB-E-NOM,CSFB-E-NOM-U-ACC,CSNB-E-NOM-U-ACC,
+KMS-E-VB-U-ADJ,SUBADJ-E-RSTA,IC-E-2,DRV-E-VA3.
+1BELOGEN ==.**MT-E-IPA-U-PPA,PPL-E-1-U-3,KMS-E-VB-U-ADJ,SUBADJ-E-RSTA,IC-E-1.
+1BESETZT ==.**MT-E-IPR-U-PPA-U-IMP,PSG-E-2,PPL-E-2,PIND-E-2-U-3,KMS-E-VB-U-ADJ,
+SUBADJ-E-RSTA,IC-E-1.
+1BETEST ==.**MT-E-IPR-U-SPR,PSG-E-2.
+1BIN ==.**MT-E-IPR,PSG-E-1.
+1BKANNTE ==.**MT-E-IPA-U-PPA,PSG-E-1-U-3,CSFT-E-NOM-U-ACC,CPT-E-NOM-U-ACC,
+CSMB-E-NOM,CSNB-E-NOM-U-ACC,CSFB-E-NOM-U-ACC,KMS-E-VB-U-ADJ,
+SUBADJ-E-RSTA,IC-E-2,DRV-E-VA3.
+1BKANNTN ==.**MT-E-IPA-U-PPA,PPL-E-1-U-3,CSMB-E-ACC-U-DAT-U-GEN,
+CSNB-E-DAT-U-GEN,CSFB-E-DAT-U-GEN,KMS-E-VB-U-ADJ,SUBADJ-E-RSTA,
+IC-E-2,CPB-E-NOM-U-ACC-U-DAT-U-GEN,CSMT-E-ACC-U-GEN,CSNT-E-GEN,
+CPT-E-DAT,DRV-E-VA3.
+1BLEGTEN ==.**MT-E-IPA-U-SPA-U-PPA,PPL-E-1-U-3,CSMB-E-ACC-U-DAT-U-GEN,
+CSNB-E-DAT-U-GEN,CSFB-E-DAT-U-GEN,KMS-E-VB-U-ADJ,SUBADJ-E-RSTA,
+IC-E-2,CPB-E-NOM-U-ACC-U-DAT-U-GEN,CSMT-E-ACC-U-GEN,CSNT-E-GEN,
+CPT-E-DAT,DRV-E-VA3.
+1BRITTEN ==.**MT-E-IPA-U-SPA-U-PPA,PPL-E-1-U-3,KMS-E-VB-U-ADJ,SUBADJ-E-RSTA,
+IC-E-1.
+1BRKEIT ==.**KMS-E-NM,SUBN-E-IP,DRV-E-VN3,GNR-E-F,PSG-E-3,
+CSFB-E-NOM-U-ACC-U-DAT-U-GEN.
+1BRKEITN ==.**KMS-E-NM,SUBN-E-IP,DRV-E-VN3,GNR-E-F,PPL-E-3,
+CPT-E-NOM-U-ACC-U-DAT-U-GEN.
+1BRKEITS ==.**KMS-E-NM,SUBN-E-IP,DRV-E-VN3,GNR-E-F,PSG-E-3,CSFB-E-GEN.
+1GEBE ==.**MT-E-IPR-U-SPR,PSG-E-1,PSIP-E-3.
+1GEBEN ==.**MT-E-INF-U-IPR-U-SPR,PPL-E-1-U-3.
+1GEBEST ==.**MT-E-SPR,PSG-E-2.
+1GEBET ==.**MT-E-SPR,PPL-E-2.
+1GEBT ==.**MT-E-IPR-U-IMP,PPL-E-2,PIND-E-2.
+1GIBST ==.**MT-E-IPR,PSG-E-2.
+1GIBT ==.**MT-E-IPR,PIND-E-3.
+1HEIT ==.**KMS-E-NM,SUBN-E-IP,DRV-E-AN1,GNR-E-F,PSG-E-3,
+CSFB-E-NOM-U-ACC-U-DAT-U-GEN.
+1HEITEN ==.**KMS-E-NM,SUBN-E-IP,DRV-E-AN1,GNR-E-F,PPL-E-3,
+CPT-E-NOM-U-ACC-U-DAT-U-GEN.
+1HEITS ==.**KMS-E-NM,SUBN-E-IP,DRV-E-VN4,GNR-E-F,PSG-E-3,CSFB-E-GEN.
+1LEGT ==.**MT-E-IPR-U-IMP,PPL-E-2,PIND-E-2-U-3.
+1LEGTE ==.**MT-E-IPA-U-SPA,PSG-E-1-U-3.
+1LERNE ==.**MT-E-IPR-U-SPR-U-IMP,PSG-E-1,PSIP-E-2-U-3.
+1LIESST ==.**MT-E-IPA,PSG-E-2,PPL-E-2.
+1LOESCHE ==.**MT-E-IPR-U-SPR-U-SPA,PSG-E-1,PSIP-E-3.
+1LSCHEN ==.**MT-E-INF-U-IPR-U-SPR-U-SPA,PPL-E-1-U-3.
+1LSCHEST ==.**MT-E-SPR-U-SPA,PSG-E-2.
+1LSCHET ==.**MT-E-SPR-U-SPA,PPL-E-2.
+1MBKNNTE ==.**MT-E-IPA-U-PPA,PSG-E-1-U-3,CPT-E-NOM-U-ACC,CSFT-E-NOM-U-ACC,
+KMS-E-VB-U-ADJ,
+SUBADJ-E-RSTA-U-NMEX,IC-E-2,DRV-E-VA3.
+1MBKNNTN ==.**MT-E-IPA-U-PPA,PPL-E-1-U-3,
+CSMT-E-ACC-U-GEN,CSNT-E-GEN,CPT-E-DAT,KMS-E-VB-U-ADJ,
+SUBADJ-E-RSTA-U-NMEX,IC-E-2,DRV-E-VA3.
+1MBLEGTE ==.**MT-E-IPA-U-SPA-U-PPA,PSG-E-1-U-3,CSFT-E-NOM-U-ACC,
+CPT-E-NOM-U-ACC,
+KMS-E-VB-U-ADJ,SUBADJ-E-RSTA-U-NMEX,IC-E-2,DRV-E-VA3.
+1MBLGTEN ==.**MT-E-IPA-U-SPA-U-PPA,PPL-E-1-U-3,
+CSMT-E-ACC-U-GEN,CSNT-E-GEN,CPT-E-DAT,KMS-E-VB-U-ADJ,
+SUBADJ-E-RSTA-U-NMEX,IC-E-2,DRV-E-VA3.
+1PATMET ==.** MT-E-IPR-U-SPR,PPL-E-2,PIND-E-3.
+1PBEATMT ==.** MT-E-IPR-U-SPR-U-PPA,PPL-E-2,PIND-E-3,KMS-E-VB-U-ADJ,
+SUBADJ-E-RSTA,IC-E-1.
+1PBELEGT ==.** MT-E-IPR-U-PPA,PPL-E-2,PIND-E-3,KMS-E-VB-U-ADJ,
+SUBADJ-E-RSTA,IC-E-1.
+1PBSETZT ==.** MT-E-IPR-U-PPA,PSG-E-2,PPL-E-2,PIND-E-3,KMS-E-VB-U-ADJ,
+SUBADJ-E-RSTA,IC-E-1.
+1PRATET ==.** MT-E-IPR-U-SPR,PPL-E-2.
+1PSETZT ==.** MT-E-IPR,PSG-E-2,PIND-E-3,PPL-E-2.
+1PSTRLET ==.**MT-E-SPR,PPL-E-2.
+1RATET ==.**MT-E-IPR-U-SPR-U-IMP,PIND-E-2,PPL-E-2.
+1RIEFEN ==.**MT-E-IPA-U-SPA,PPL-E-1-U-3.
+1RIETEST ==.**MT-E-IPA-U-SPA,PSG-E-2.
+1RIETET ==.**MT-E-IPA-U-SPA,PPL-E-2.
+1RUDEREN ==.**MT-E-IPR-U-SPR,PPL-E-1-U-3.
+1SETZT ==.**MT-E-IPR-U-IMP,PSG-E-2,PPL-E-2,PIND-E-2-U-3.
+1SOLLE ==.**MT-E-SPR,PSIP-E-3,PSG-E-1.
+1STIRL ==.**MT-E-IPR-U-IMP,PSG-E-1,PSIP-E-2.
+1STIRLET ==.**MT-E-SPR-U-IMP,PPL-E-2,PIND-E-2.
+1UNG ==.**KMS-E-NM,SUBN-E-IP,DRV-E-VN2,GNR-E-F,PSG-E-3,
+CSFB-E-NOM-U-ACC-U-DAT-U-GEN.
+1UNGEN ==.**KMS-E-NM,SUBN-E-IP,DRV-E-VN2,GNR-E-F,PPL-E-3,
+CPT-E-NOM-U-ACC-U-DAT-U-GEN.
+1UNGS ==.**KMS-E-NM,SUBN-E-IP,DRV-E-VN2,GNR-E-F,PSG-E-3,CSFB-E-GEN.
+1WAERE ==.**MT-E-SPA,PSG-E-1-U-3.
+1WAEREN ==.**MT-E-SPA,PPL-E-1-U-3.
+1WAERET ==.**MT-E-SPA,PPL-E-2.
+1WAERST ==.**MT-E-SPA,PSG-E-2.
+1WAR ==.**MT-E-IPA,PSG-E-1-U-3.
+1WAREN ==.**MT-E-IPA,PPL-E-1-U-3.
+1WARST ==.**MT-E-IPA,PSG-E-2.
+1WART ==.**MT-E-IPA,PPL-E-2.
+1WOERE == 1SCHWOERE .**MT-E-IPR-U-SPR-U-SPA,PSG-E-1,PSIP-E-3.
+1WOEREN == 1SCHWOEREN .**MT-E-INF-U-IPR-U-SPR-U-SPA,PPL-E-1-U-3.
+1WOEREST == 1SCHWOEREST .**MT-E-SPR-U-SPA,PSG-E-2.
+1WOERET == 1SCHWOERET .**MT-E-SPR-U-SPA,PPL-E-2.
+2WOERE == 2SCHWOERE .**MT-E-IPR-U-SPR-U-SPA-U-IMP,PSG-E-1,PSIP-E-2-U-3.
+AE == Endung '-e'; entweder schwach oder stark; entweder Nom/Akk oder Nom
+.**IC-E-2,CSMB-E-NOM,CSFB-E-NOM-U-ACC,CSNB-E-NOM-U-ACC,
+CSFT-E-NOM-U-ACC,CPT-E-NOM-U-ACC.
+AEFRT == stark dekliniert; Fem/Plur; Nom/Akk;
+.**IC-E-2,CSFT-E-NOM-U-ACC,CPT-E-NOM-U-ACC.
+AEM == stark dekliniert; Dativ; entweder maennlich oder saechlich
+.**IC-E-2,CSMT-E-DAT,CSNT-E-DAT.
+AEMAS == Endung '-e'; entweder schwach oder stark; entweder Nom/Akk oder Nom
+.**IC-E-2,CSMB-E-NOM,CPT-E-NOM-U-ACC.
+AEMF == Endung '-e'; entweder schwach oder stark; entweder Nom/Akk oder Nom
+.**IC-E-2,CSMB-E-NOM,CSFB-E-NOM-U-ACC,
+CSFT-E-NOM-U-ACC,CPT-E-NOM-U-ACC.
+AEMMAS == stark dekliniert; Dativ; maennlich
+.**IC-E-2,CSMT-E-DAT.
+AEN == Endung '-en'; entweder stark oder schwach; sehr mehrdeutig
+.**IC-E-2,CSMB-E-ACC-U-DAT-U-GEN,CSFB-E-DAT-U-GEN,CSNB-E-DAT-U-GEN,
+CPB-E-NOM-U-ACC-U-DAT-U-GEN,CSMT-E-ACC-U-GEN,CSNT-E-GEN,
+CPT-E-DAT.
+AENEUB == Endung '-e';  schwach ; entweder Nom/Akk
+.**IC-E-2,CSNB-E-NOM-U-ACC.
+AENFRT == Endung '-EN'; starke Deklination;
+.**IC-E-2,CSMT-E-ACC-U-GEN,CSNT-E-GEN,CPT-E-DAT.
+AENFT3SP == Endung '-en'; stark dekliniert; Plural-> Dat, maennlich-> Akk/Gen,
+saechlich-> Gen; dritte Person
+.**IC-E-2,CSMT-E-ACC-U-GEN,CSNT-E-GEN,CPT-E-DAT,PSG-E-3,PPL-E-3.
+AENMAS == Endung '-en'; entweder stark oder schwach; sehr mehrdeutig
+.**IC-E-2,CSMB-E-ACC-U-DAT-U-GEN,
+CPB-E-NOM-U-ACC-U-DAT-U-GEN,CSMT-E-ACC-U-GEN,CPT-E-DAT.
+AENMF == Endung '-en'; entweder stark oder schwach; sehr mehrdeutig
+.**IC-E-2,CSMB-E-ACC-U-DAT-U-GEN,CSFB-E-DAT-U-GEN,
+CPB-E-NOM-U-ACC-U-DAT-U-GEN,CSMT-E-ACC-U-GEN,CPT-E-DAT.
+AENNEUB == Endung '-e';  schwach ; entweder Nom/Akk
+.**IC-E-2,CSNB-E-DAT-U-GEN.
+AER == starke Endung '-ER';
+.**IC-E-2,CSMT-E-NOM,CSFT-E-DAT-U-GEN,CPT-E-GEN.
+AERMAS == starke Endung '-ER';
+.**IC-E-2,CSMT-E-NOM,CPT-E-GEN.
+AERMF == starke Endung '-ER';
+.**IC-E-2,CSMT-E-NOM,CSFT-E-DAT-U-GEN,CPT-E-GEN.
+AES == Endung '-ES'; Nom/Akk .**IC-E-2,CSNT-E-NOM-U-ACC.
+AHEIT ==.**KMS-E-NM,SUBN-E-IP,DRV-E-AN1,GNR-E-F,PSG-E-3,
+CSFB-E-NOM-U-ACC-U-DAT-U-GEN.
+AHEITEN ==.**KMS-E-NM,SUBN-E-IP,DRV-E-AN1,GNR-E-F,PPL-E-3,
+CPT-E-NOM-U-ACC-U-DAT-U-GEN.
+AHEITS ==.**KMS-E-NM,SUBN-E-IP,DRV-E-AN1,GNR-E-F,PSG-E-3,CSFB-E-GEN.
+ALSA == Praeposition ALS + Akkusativ--2A .**VAL2A-E-ACC,VAL2B-E-ALS.
+ALSN == Praeposition ALS + Nominativ--1A .**VAL2A-E-NOM,VAL2B-E-ALS.
+ANA == Praeposition AN + Akkusativ--3A .**VAL2A-E-ACC,VAL2B-E-AN.
+AND == Praeposition AN + Dativ--4A .**VAL2A-E-DAT,VAL2B-E-AN.
+AUFA == Praeposition AUF + Akkusativ--5A .**VAL2A-E-ACC,VAL2B-E-AUF.
+AUFD == Praeposition AUF + Dativ--6A .**VAL2A-E-DAT,VAL2B-E-AUF.
+AUSD == Praeposition AUS + Dativ--7A .**VAL2A-E-DAT,VAL2B-E-AUS.
+B11G22D ==.**CSMB-E-NOM-U-ACC-U-DAT,CSNB-E-NOM-U-ACC-U-DAT,PSG-E-3,PPL-E-3,
+CPT-E-NOM-U-ACC-U-GEN.
+B11G2ALL ==.**CSMB-E-NOM-U-ACC-U-DAT,CSNB-E-NOM-U-ACC-U-DAT,PSG-E-3,PPL-E-3,
+CPT-E-NOM-U-ACC-U-GEN-U-DAT.
+B12AGD2N ==.**CSMB-E-ACC-U-DAT-U-GEN,CPT-E-NOM-U-ACC-U-DAT-U-GEN,
+PSG-E-3,PPL-E-3.
+B12NAD2G ==.**CSMB-E-NOM-U-ACC-U-DAT,CSNB-E-NOM-U-ACC-U-DAT,
+CPT-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3,PPL-E-3.
+B12NAD2N ==.**CSMB-E-ACC-U-DAT-U-NOM,CPT-E-NOM-U-ACC-U-DAT-U-GEN,
+PSG-E-3,PPL-E-3.
+B12NAG1D ==.**CSMB-E-NOM-U-ACC-U-DAT-U-GEN,CSNB-E-NOM-U-ACC-U-DAT-U-GEN,
+CPT-E-NOM-U-ACC-U-GEN,PSG-E-3,PPL-E-3.
+B12NAGD ==.**CSMB-E-NOM-U-ACC-U-DAT-U-GEN,CSFB-E-NOM-U-ACC-U-DAT-U-GEN,
+CSNB-E-NOM-U-ACC-U-DAT-U-GEN,CPT-E-NOM-U-ACC-U-DAT-U-GEN,
+PSG-E-3,PPL-E-3.
+B1ADG ==.**CSMB-E-ACC-U-DAT-U-GEN,CSNB-E-ACC-U-DAT-U-GEN,PSG-E-3.
+B1D ==.**CSMB-E-DAT,CSNB-E-DAT,PSG-E-3.
+B1D2NAG ==.**CSMB-E-DAT,CSNB-E-DAT,CPT-E-NOM-U-ACC-U-GEN,PSG-E-3,PPL-E-3.
+B1D2NAGD ==.**CSMB-E-DAT,CSNB-E-DAT,CPT-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3,PPL-E-3.
+B1G ==.**CSMB-E-GEN,CSNB-E-GEN,PSG-E-3,CSFB-E-GEN.
+B1G2NAGD ==.**CSMB-E-GEN,CSNB-E-GEN,CSFB-E-GEN,CPT-E-NOM-U-ACC-U-GEN-U-DAT,
+PSG-E-3,PPL-E-3.
+B1N ==.**CSMB-E-NOM,PSG-E-3.
+B1NAD ==.**CSMB-E-NOM-U-ACC-U-DAT,CSNB-E-NOM-U-ACC-U-DAT,PSG-E-3.
+B1NADFG ==.**CSMB-E-NOM-U-ACC-U-DAT,CSNB-E-NOM-U-ACC-U-DAT,
+CSFB-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3.
+B1NADG ==.**CSMB-E-NOM-U-ACC-U-DAT-U-GEN,CSFB-E-NOM-U-ACC-U-DAT-U-GEN,
+CSNB-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3.
+B1NAGD ==.**CSMB-E-NOM-U-ACC-U-DAT-U-GEN,CSFB-E-NOM-U-ACC-U-DAT-U-GEN,
+CSNB-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3.
+B1ND ==.**CSMB-E-NOM-U-DAT,CSNB-E-NOM-U-DAT,PSG-E-3.
+B2D ==.**CPB-E-DAT,PPL-E-3.
+BEID == Praeposition BEI + Dativ--1B .**VAL2A-E-DAT,VAL2B-E-BEI.
+BERG == Nom de montagne .**SUBN-E-IP-U-LOC.
+BERG1ART == Nom de montagne avec article.**SUBN-E-IP-U-LOC.
+BIS ==.**VAL2B-E-DOUB.
+BNIP == verlangt ein Artikelwort.**SUBN-E-IP.
+BNIP0 == verlangt ein Artikelwort.**SUBN-E-IP,TACTIC-E-0ARD.
+BNIPL == verlangt einen Artikel; dient zur Lokalisierung.**SUBN-E-IP-U-LOC.
+BNIPNN1 == verlangt ein Artikelwort.**SUBN-E-IP,DRV-E-NN1.
+BNIPPSF == verlangt ein Artikelwort.**SUBN-E-IP-U-PSF.
+BNLOC == dient zur Lokalisierung.**SUBN-E-LOC.
+BNPF == kann jedes Artikelwort entbehren .**SUBN-E-PF.
+BNPF0 == verlangt ein Artikelwort.**SUBN-E-PF,TACTIC-E-0ARD.
+BNPSF == personifizierbar.**SUBN-E-PSF.
+BNUNG == cas des noms en -UNG à voir.** SUBN-E-IP.
+CJSTENC == eine Einklammerung einleitende Teilsatzkonjunktion;
+.**KMS-E-COP,SUBCOP-E-CJS,TOURN-E-TENC,VAL3-E-PHSUB.
+CJTENC == eine Einklammerung einleitende Konjunktion;
+.**KMS-E-COP,TOURN-E-TENC.
+DAN1 == vom Adjektiv abgeleitetes Substantiv; .**DRV-E-AN1.
+DCONTDF ==.**SUBDR-E-RST,VAL2A-E-DAT,CSFT-E-DAT,IC-E-2.
+DCONTDM ==.**SUBDR-E-RST,VAL2A-E-DAT,CSMT-E-DAT,CSNT-E-DAT,IC-E-2.
+DRRST ==.**SUBDR-E-RST.
+DUACC == Akkusativ, 2 Person Singular .**CSMT-E-ACC,CSFT-E-ACC,CSNT-E-ACC,
+PSG-E-2.
+DUDAT == Dativ, 1 Person Singular .**CSMT-E-DAT,CSFT-E-DAT,CSNT-E-DAT,
+PSG-E-2.
+DUGEN == Genitiv, 1 Person Singular .**CSMT-E-GEN,CSFT-E-GEN,CSNT-E-GEN,
+PSG-E-2.
+DUNOM == Nominativ, 1 Person Singular .**CSMT-E-NOM,CSFT-E-NOM,CSNT-E-NOM,
+PSG-E-2.
+DURA == Praeposition DURCH + Akkusativ--1D .**VAL2A-E-ACC,VAL2B-E-DURCH.
+DURCHA == Praeposition DURCH + Akkusativ--1D .**VAL2A-E-ACC,VAL2B-E-DURCH.
+DVN2 == Verbalsubstantiv, Nomen actionis/acti; .**DRV-E-VN2.
+EIN ==.**IC-E-1,CSMT-E-NOM,CSNT-E-NOM-U-ACC.
+ERACC == Akk Sing Mask.**CSMT-E-ACC,PSG-E-3.
+ERESDAT == Dat Sing Mask/Neutr.**CSMT-E-DAT,CSNT-E-DAT,PSG-E-3.
+ERESGEN == Dat Sing Mask/Neutr.**CSMT-E-DAT,CSNT-E-DAT,PSG-E-3.
+ERNOM == Nominativ Singular Mask.**CSMT-E-NOM,PSG-E-3.
+ESNOMACC == Nom/Akk Sing Neutr.**CSNT-E-NOM-U-ACC,PSG-E-3.
+FLSS1ART == Nom de cours d'eau avec article.**SUBN-E-IP-U-LOC.
+FSALL == endungslos; Nom/Akk/Dat/Gen; Singular/Plural
+.**IC-E-1,CSMT-E-NOM-U-ACC-U-DAT-U-GEN,CSFT-E-NOM-U-ACC-U-DAT-U-GEN,
+CSNT-E-NOM-U-ACC-U-DAT-U-GEN,CPT-E-NOM-U-ACC-U-DAT-U-GEN.
+FSALLEN == stark dekliniert, auch schwach neutral Dat/Gen
+.**IC-E-2,CSMT-E-ACC-U-GEN,CSNB-E-DAT-U-GEN,CSNT-E-GEN,
+CPT-E-DAT,PPL-E-3.
+FSAM == Verschmelzung der Artikelform 'DEM' mit der Praeposition
+.**SUBDR-E-RST,VAL2A-E-DAT,VAL2B-E-AN,CSMT-E-DAT,CSNT-E-DAT,
+IC-E-2.
+FSANS == Verschmelzung der Artikelform 'DAS' mit der Praeposition AN
+.**SUBDR-E-RST,VAL2A-E-ACC,VAL2B-E-AN,CSNT-E-ACC,IC-E-2.
+FSAUFS == Verschmelzung der Artikelform 'DAS' mit der Praeposition AUF
+.**SUBDR-E-RST,VAL2A-E-ACC,VAL2B-E-AUF,CSNT-E-ACC,IC-E-2.
+FSBEIDE == Nominativ/Akkusativ Plural.**IC-E-2,CPT-E-NOM-U-ACC.
+FSBEIDEN == Plural; schwach: Nom/Akk/Dat/Gen, stark: Dativ
+.**IC-E-2,CPB-E-NOM-U-ACC-U-GEN-U-DAT,CPT-E-DAT.
+FSBEIDER == Plural, Genitiv, stark .**IC-E-2,CPT-E-GEN.
+FSBEIM == Verschmelzung der Artikelform 'DEM' mit der Praeposition BEI
+.**SUBDR-E-RST,VAL2A-E-DAT,VAL2B-E-BEI,CSMT-E-DAT,CSNT-E-DAT,
+IC-E-2.
+FSCJ == unterordnende Konjunktion.**KMS-E-COP,SUBCOP-E-CJS.
+FSCJS == unterordnende Konjunktion.**KMS-E-COP,SUBCOP-E-CJS,VAL3-E-PHSUB.
+FSDAMIT == entweder Teilsatzkonjunktion oder Pronominaladverb
+.**KMS-E-COP,SUBCOP-E-CJS,VAL3-E-PHSUB,VAL2B-E-MIT,
+CSMT-E-DAT,CSNT-E-DAT,CSFT-E-DAT,CPT-E-DAT,RS-E-FINAL.
+FSDEN == entweder Akk Sing oder Dat Plural.**IC-E-2,CSMT-E-ACC,CPT-E-DAT.
+FSDENEN == Dativ Plural.**CPT-E-DAT,PPL-E-3.
+FSDERER == Genitiv Plural.**CPT-E-GEN,PPL-E-3.
+FSDES == Genitiv Mask und Neutr.**IC-E-2,CSMT-E-GEN,CSNT-E-GEN.
+FSDESSEN == als Artikel: Nom/Akk/Dat
+.**IC-E-2,CSMT-E-NOM-U-ACC-U-DAT,CSNT-E-NOM-U-ACC-U-DAT,
+CSFT-E-NOM-U-ACC-U-DAT,CPT-E-NOM-U-ACC-U-DAT.
+FSDIES == Nom/Akk Sing Neutr.**CSNT-E-NOM-U-ACC,IC-E-1,PSG-E-3.
+FSDURCHS == Verschmelzung der Artikelform 'DAS' mit der Praeposition DURCH
+.**SUBDR-E-RST,VAL2A-E-ACC,VAL2B-E-DURCH,CSNT-E-ACC,IC-E-2.
+FSEIN == entweder Nom Sing Mask oder Nom/Akk Sing Neutr
+.**IC-E-1,CSMT-E-NOM,CSNT-E-NOM-U-ACC.
+FSEINE == Nom/Akk Sing
+.**IC-E-2,CSFB-E-NOM-U-ACC,CSFT-E-NOM-U-ACC,CSNB-E-NOM-U-ACC,
+PSG-E-3.
+FSEINEN == Endung '-EN', mehrdeutig
+.**IC-E-2,CSMB-E-ACC-U-DAT-U-GEN,CSMT-E-ACC,CSFB-E-DAT-U-GEN,
+CSNB-E-DAT-U-GEN,CPB-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3.
+FSEINER == entweder Nom Sing Mask oder Dat/Gen Sing Fem
+.**IC-E-2,CSMT-E-NOM,CSFT-E-DAT-U-GEN,PSG-E-3.
+FSETWAS == Nom/Akk/Dat/Gen Singular Neutr
+.**GNR-E-N,CSNT-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3.
+FSEUCH == Akk, Dat, 2 Person Plural .**CPT-E-ACC-U-DAT,PPL-E-2.
+FSFUERS == Verschmelzung der Artikelform 'DAS' mit der Praeposition FUER
+.**SUBDR-E-RST,VAL2A-E-ACC,VAL2B-E-FUER,CSNT-E-ACC,IC-E-2.
+FSHINTRS == Verschmelzung der Artikelform 'DAS' mit der Praeposition HINTER
+.**SUBDR-E-RST,VAL2A-E-ACC,VAL2B-E-HINTER,CSNT-E-ACC,IC-E-2.
+FSIHR == Nom Sing Mask, Nom/Akk Sing Neutr oder Dat Sing Fem
+Attention, à vérifier.**IC-E-1,CSMT-E-NOM,CSNT-E-NOM-U-ACC,CSFT-E-DAT,PPL-E-2,
+GNR-E-F.
+FSIM == Verschmelzung der Artikelform 'DEM' mit der Praeposition IN
+.**SUBDR-E-RST,VAL2A-E-DAT,VAL2B-E-IN,CSMT-E-DAT,CSNT-E-DAT,
+IC-E-2.
+FSINS == Verschmelzung der Artikelform 'DAS' mit der Praeposition IN
+.**SUBDR-E-RST,VAL2A-E-ACC,VAL2B-E-IN,CSNT-E-ACC,IC-E-2.
+FSJEDE == Nom/Akk Sing Fem.**IC-E-2,CSFT-E-NOM-U-ACC,PSG-E-3.
+FSJEDEN == schwach: Dat Sing Mask/Neutr oder Dat/Gen Sing Fem;
+stark:   Gen Sing Mask/Neutr
+.**IC-E-2,CSMB-E-DAT,CSNB-E-DAT,CSFB-E-DAT-U-GEN,
+CSMT-E-GEN,CSNT-E-GEN,PSG-E-3.
+FSMANCH == Nom/Akk/Dat/Gen, stark
+.**IC-E-1,CSMT-E-NOM-U-ACC-U-DAT-U-GEN,CSFT-E-NOM-U-ACC-U-DAT-U-GEN,
+CSNT-E-NOM-U-ACC-U-DAT-U-GEN.
+FSMHRREN == Dativ Plural.**IC-E-2,CPT-E-DAT.
+FSNICHTS == Negierendes indefinites Pronomen im Nom/Akk/Dat/Gen Sing
+.**GNR-E-N,CSNT-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3,NEG-E-NGM.
+FSPG ==.**VERB-E-GE.
+FSPM ==.**TYPO-E-MJ1.
+FSPU ==.**VERB-E-UN,NEG-E-NGM.
+FSRADIP == unbeugbarer Adjunkt.**KMS-E-ADIP,SUBADIP-E-RADIP.
+FSSICH ==Reflexivpronomen im Akk Sing/Plur, 3 Person       ,
+.**CSMT-E-ACC,CPT-E-ACC,PSG-E-3,PPL-E-3,CSNT-E-ACC,
+CSFT-E-ACC.
+FSUEBERS == Verschmelzung der Artikelform 'DAS' mit der Praeposition UEBER
+.**SUBDR-E-RST,VAL2A-E-ACC,VAL2B-E-UEBER,CSNT-E-ACC,IC-E-2.
+FSUNS == Akk, Dat, 1 Person Plural .**CPT-E-ACC-U-DAT,PPL-E-1.
+FSUNTERS == Verschmelzung der Artikelform 'DAS' mit der Praeposition UNTER
+.**SUBDR-E-RST,VAL2A-E-ACC,VAL2B-E-UNTER,CSNT-E-ACC,IC-E-2.
+FSVIELES == Gen Sing Mask oder Nom/Akk/Dat/Gen Sing Neutr
+.**IC-E-2,CSMT-E-GEN,CSNT-E-NOM-U-ACC-U-DAT-U-GEN.
+FSVOM == Verschmelzung der Artikelform 'DEM' mit der Praeposition VON
+.**SUBDR-E-RST,VAL2A-E-DAT,VAL2B-E-VON,CSMT-E-DAT,CSNT-E-DAT,
+IC-E-2.
+FSVORS == Verschmelzung der Artikelform 'DAS' mit der Praeposition VOR
+.**SUBDR-E-RST,VAL2A-E-ACC,VAL2B-E-VOR,CSNT-E-ACC,IC-E-2.
+FSWAS == Nom/Akk/Dat Sing Neutr.**CSNT-E-NOM-U-ACC-U-DAT,PSG-E-3,GNR-E-N.
+FSWEM == Dat Sing Mask/Neutr/Fem.**CSMT-E-DAT,CSNT-E-DAT,CSFT-E-DAT,
+PSG-E-3.
+FSWEN == Akk Sing Mask/Neutr/Fem.**CSMT-E-ACC,CSNT-E-ACC,CSFT-E-ACC,
+PSG-E-3.
+FSWER == Nom Sing Mask/Neutr/Fem.**CSMT-E-NOM,CSNT-E-NOM,CSFT-E-NOM,
+PSG-E-3.
+FSWIR == Nominativ, 1 Person Plural .**CPT-E-NOM,PPL-E-1.
+FSZUM == Verschmelzung der Artikelform 'DEM' mit der Praeposition ZU
+.**SUBDR-E-RST,VAL2A-E-DAT,VAL2B-E-ZU,CSMT-E-DAT,CSNT-E-DAT,
+IC-E-2.
+FSZUR == Verschmelzung der Artikelform 'DER' mit der Praeposition ZU
+.**SUBDR-E-RST,VAL2A-E-DAT,VAL2B-E-ZU,CSFT-E-DAT,IC-E-2.
+FUERA == Praeposition FUER + Akkusativ--1F .**VAL2A-E-ACC,VAL2B-E-FUER.
+GEGA == Praeposition GEGEN + Akkusativ--1G .**VAL2A-E-ACC,VAL2B-E-GEGEN.
+HABA == Hilfsverb zur Bildung der Perfektformen: HABEN;
+direktes Objekt im Akkusativ
+--HA.**SUBV-E-HAB,VAL1-E-ACC.
+HABD == Hilfsverb zur Bildung der Perfektformen: HABEN;
+direktes Objekt im Dativ
+--HD .**SUBV-E-HAB,VAL1-E-DAT.
+HABG == Hilfsverb zur Bildung der Perfektformen: HABEN;
+direktes Objekt im Genitiv
+--HG .**SUBV-E-HAB,VAL1-E-GEN.
+HABN == Hilfsverb zur Bildung der Perfektformen: HABEN;
+direktes Objekt im Nominativ
+--HN .**SUBV-E-HAB,VAL1-E-NOM.
+HNTA == Praeposition HINTER + Akkusativ--1H .**VAL2A-E-ACC,VAL2B-E-HINTER.
+HNTD == Praeposition HINTER + Dativ--2H .**VAL2A-E-DAT,VAL2B-E-HINTER.
+IC1 == Endungslos .**IC-E-1.
+IC1VA2 ==.**IC-E-1,DRV-E-VA2.
+IC1VA3 ==.**IC-E-1,DRV-E-VA3.
+ICHACC == Akkusativ, 1 Person Singular .**CSMT-E-ACC,CSFT-E-ACC,CSNT-E-ACC,
+PSG-E-1.
+ICHDAT == Dativ, 1 Person Singular .**CSMT-E-DAT,CSFT-E-DAT,CSNT-E-DAT,
+PSG-E-1.
+ICHGEN == Genitiv, 1 Person Singular .**CSMT-E-GEN,CSFT-E-GEN,CSNT-E-GEN,
+PSG-E-1.
+ICHNOM == Nominativ, 1 Person Singular .**CSMT-E-NOM,CSFT-E-NOM,CSNT-E-NOM,
+PSG-E-1.
+IHRGEN == Akk, Gen, 2 Person Plural .**CPT-E-GEN,PPL-E-2.
+INA == Praeposition IN + Akkusativ--1I .**VAL2A-E-ACC,VAL2B-E-IN.
+IND == Praeposition IN + Dativ--2I .**VAL2A-E-DAT,VAL2B-E-IN.
+INSL0ART == Ile sans article.**SUBN-E-PF-U-LOC.
+INSL1ART == Nom d'ile avec article.**SUBN-E-IP-U-LOC.
+LAND0 == Nom d'état .**SUBN-E-PF-U-LOC,TACTIC-E-0ARD.
+LAND0ART == Nom d'état sans article.**SUBN-E-PF-U-LOC.
+LOCAL == dient zur Lokalisierung;
+.**SUBADIP-E-DADO.
+MITD == Praeposition MIT + Dativ--1M .**VAL2A-E-DAT,VAL2B-E-MIT.
+NACHD == Praeposition NACH + Dativ--1N .**VAL2A-E-DAT,VAL2B-E-NACH.
+NAMEPER0 == Nom propre de Personne .**SUBN-E-PF-U-PSF,TACTIC-E-0ARD.
+NAMEPERS == Nom propre de Personne .**SUBN-E-PF-U-PSF.
+NFLU1ART == Rivière avec article.**SUBN-E-IP-U-LOC.
+NGEO0ART == Nom géographique sans article.**SUBN-E-PF-U-LOC.
+NGEO1ART == Nom géographique avec article.**SUBN-E-IP-U-LOC.
+NOM ==.**KMS-E-NM.
+ORDINAL == abgeleitete Ordnungszahl; .**DRV-E-DRA1.
+PCT12A == Pronomen steht im Akkusativ
+.**CSMT-E-ACC,CSFT-E-ACC,CSNT-E-ACC,CPT-E-ACC.
+PCT12AD == Pronomen steht entweder im Akkusativ oder im Dativ
+.**CSMT-E-ACC-U-DAT,CSFT-E-ACC-U-DAT,CSNT-E-ACC-U-DAT,
+CPT-E-ACC-U-DAT.
+PCT12D == Pronomen steht im Dativ
+.**CSMT-E-DAT,CSFT-E-DAT,CSNT-E-DAT,CPT-E-DAT.
+PONC == Interpunktionszeichen .**KMS-E-PC.
+PPL3 == 3 Pers Plur.**PPL-E-3.
+PRP1 == Praeposition --1 .**KMS-E-COP,SUBCOP-E-PRP,POS-E-1.
+PSG3 == 3 Pers Sing.**PSG-E-3.
+PSP == trennbarer Verbzusatz.**SUBADIP-E-PAS.
+RFLA == reflexives Verb; direktes Objekt im Akkusativ
+--FA .**SUBV-E-RFL,VAL1-E-ACC.
+RFLD == reflexives Verb; direktes Objekt im Dativ
+--FD .**SUBV-E-RFL,VAL1-E-DAT.
+RFLG == reflexives Verb; direktes Objekt im Genitiv
+--FG .**SUBV-E-RFL,VAL1-E-GEN.
+RFLN == reflexives Verb; direktes Objekt im Nominativ
+--FN .**SUBV-E-RFL,VAL1-E-NOM.
+RSLOCAL == .**RS-E-LOCAL.
+RSTA == Perfektformen werden nicht mit HABEN gebildet;
+direktes Objekt im Akkusativ
+--RA .**SUBV-E-RST,VAL1-E-ACC.
+RSTD == Perfektformen werden nicht mit HABEN gebildet;
+direktes Objekt im Dativ
+--RD .**SUBV-E-RST,VAL1-E-DAT.
+RSTG == Perfektformen werden nicht mit HABEN gebildet;
+direktes Objekt im Genitiv
+--RG .**SUBV-E-RST,VAL1-E-GEN.
+RSTN == Perfektformen werden nicht mit HABEN gebildet;
+direktes Objekt im Nominativ
+--RN .**SUBV-E-RST,VAL1-E-NOM.
+SARADIP == unbeugbarer Adjunkt .**SUBADIP-E-RADIP.
+SIEDATP == Dat, Plural
+.**CPT-E-DAT,PPL-E-3.
+SIEDATS == Dat, Sing Fem
+.**CSFT-E-DAT,PSG-E-3.
+SIEGEN == Gen, Plural oder Sing
+.**CSFT-E-GEN,CPT-E-GEN,PSG-E-3,PPL-E-3.
+SIENOMAC == Nom/Akk, Plural oder Sing Fem
+.**CSFT-E-NOM-U-ACC,CPT-E-NOM-U-ACC,PSG-E-3,PPL-E-3.
+SNIP == mit Artikel versehen --1 .**SUBN-E-IP.
+SNIPPSF == personifizierbar, mit Artikel versehen--3 .**SUBN-E-IP-U-PSF.
+SNPF == personifizierbar --2 .**SUBN-E-PF.
+SNPFPSF == personifizierbar; kann den Artikel entbehren--4 .**SUBN-E-PF-U-PSF.
+STADT == Nom géographique .**SUBN-E-PF-U-LOC.
+STADT0 == Nom géographique .**SUBN-E-PF-U-LOC,TACTIC-E-0ARD.
+SVHAB == Hilfsverb zur Bildung der aktiven Perfektformen  = HABEN --H
+.**SUBV-E-HAB.
+SVPAI == + reiner Infinitiv.**SUBV-E-PAI.
+SVRFL == reflexives Verb--F .**SUBV-E-RFL.
+SVRST == Perfektformen werden nicht mit HABEN gebildet --R .**SUBV-E-RST.
+SYMB == Symbol .**KMS-E-NA.
+T11G22D ==.**CSMT-E-NOM-U-ACC-U-DAT,CSNT-E-NOM-U-ACC-U-DAT,
+CPT-E-NOM-U-ACC-U-GEN,PSG-E-3,PPL-E-3.
+T12AGD2N ==.**CSMT-E-ACC-U-DAT-U-GEN,CPT-E-NOM-U-ACC-U-DAT-U-GEN,
+PSG-E-3,PPL-E-3.
+T12NAD2G ==.**CSMT-E-NOM-U-ACC-U-DAT,CSNT-E-NOM-U-ACC-U-DAT,
+CPT-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3,PPL-E-3.
+T12NAD2N ==.**CSMT-E-ACC-U-DAT-U-NOM,CPT-E-NOM-U-ACC-U-DAT-U-GEN,
+PSG-E-3,PPL-E-3.
+T12NAGD ==.**CSMT-E-NOM-U-ACC-U-DAT-U-GEN,CSFT-E-NOM-U-ACC-U-DAT-U-GEN,
+CSNT-E-NOM-U-ACC-U-DAT-U-GEN,CPT-E-NOM-U-ACC-U-DAT-U-GEN,
+PSG-E-3,PPL-E-3.
+T1ADG ==.**CSMT-E-ACC-U-DAT-U-GEN,CSNT-E-ACC-U-DAT-U-GEN,PSG-E-3.
+T1D ==.**CSMT-E-DAT,CSNT-E-DAT,PSG-E-3.
+T1D2NAG ==.**CSMT-E-DAT,CSNT-E-DAT,CPT-E-NOM-U-ACC-U-GEN,PSG-E-3,PPL-E-3.
+T1D2NAGD ==.**CSMT-E-DAT,CSNB-E-DAT,CPT-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3,PPL-E-3.
+T1G ==.**CSMT-E-GEN,CSNT-E-GEN,CSFT-E-GEN,PSG-E-3.
+T1G2NAGD ==.**CSMT-E-GEN,CSNT-E-GEN,CSFT-E-GEN,CPT-E-NOM-U-ACC-U-GEN-U-DAT,
+PSG-E-3,PPL-E-3.
+T1N ==.**CSMT-E-NOM,PSG-E-3.
+T1NAD ==.**CSMT-E-NOM-U-ACC-U-DAT,CSNT-E-NOM-U-ACC-U-DAT,PSG-E-3.
+T1NADFG ==.**CSMT-E-NOM-U-ACC-U-DAT,CSNT-E-NOM-U-ACC-U-DAT,
+CSFT-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3.
+T1NADG ==.**CSMT-E-NOM-U-ACC-U-DAT-U-GEN,CSFT-E-NOM-U-ACC-U-DAT-U-GEN,
+CSNT-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3.
+T1NAGD ==.**CSMT-E-NOM-U-ACC-U-DAT-U-GEN,CSFT-E-NOM-U-ACC-U-DAT-U-GEN,
+CSNT-E-NOM-U-ACC-U-DAT-U-GEN,PSG-E-3.
+T1ND ==.**CSMT-E-NOM-U-DAT,CSNT-E-NOM-U-DAT,PSG-E-3.
+T22D ==.**CPT-E-NOM-U-ACC-U-GEN,PPL-E-3.
+T2D ==.**CPT-E-DAT,PPL-E-3.
+T2NAG ==.**CPT-E-NOM-U-ACC-U-GEN,PPL-E-3.
+T2NAGD ==.**CPT-E-NOM-U-ACC-U-DAT-U-GEN,PPL-E-3.
+TABB == Abkuerzung .**TYPO-E-ABB.
+UEBA == Praeposition UEBER + Akkusativ--1U .**VAL2A-E-ACC,VAL2B-E-UEBER.
+UEBD == Praeposition UEBER + Dativ--2U .**VAL2A-E-DAT,VAL2B-E-UEBER.
+UMA == Praeposition UM + Akkusativ--3U .**VAL2A-E-ACC,VAL2B-E-UM.
+UNTA == Praeposition UNTER + Akkusativ--4U .**VAL2A-E-ACC,VAL2B-E-UNTER.
+UNTD == Praeposition UNTER + Dativ--5U .**VAL2A-E-DAT,VAL2B-E-UNTER.
+V13P ==.**PPL-E-1-U-3.
+V13S ==.**PSG-E-1-U-3.
+V1A == Akkusativobjekt --A .**VAL1-E-ACC.
+V1AD == Akkusativ- oder Dativobjekt --AD .**VAL1-E-ACC-U-DAT.
+V1D == Dativobjekt --D .**VAL1-E-DAT.
+V1G == Genitivobjekt --G .**VAL1-E-GEN.
+V1N == Nominativobjekt  .**VAL1-E-NOM.
+V2 == Nom/Akk/Dat/Gen.**VAL2A-E-NOM-U-ACC-U-DAT-U-GEN.
+V2A == Akk .**VAL2A-E-ACC.
+V2AD == Akk/Dat--6 .**VAL2A-E-ACC-U-DAT.
+V2BAN == Praeposition AN--.**VAL2B-E-AN.
+V2BAUS == Praeposition AUS--.**VAL2B-E-AUS.
+V2BBEI == Praeposition BEI--.**VAL2B-E-BEI.
+V2BFUER == Praeposition FUER--.**VAL2B-E-FUER.
+V2BIN == Praeposition IN--.**VAL2B-E-IN.
+V2BUEBER == Praeposition UEBER--.**VAL2B-E-UEBER.
+V2BUM == Praeposition UM--.**VAL2B-E-UM.
+V2BVON == Praeposition VON--.**VAL2B-E-VON.
+V2BVOR == Praeposition VOR--.**VAL2B-E-VOR.
+V2BZU == Praeposition ZU--.**VAL2B-E-ZU.
+V2D == Dativ --4 .**VAL2A-E-DAT.
+V2DG == Dat/Gen --6 .**VAL2A-E-GEN-U-DAT.
+V2G == Genitiv --3 .**VAL2A-E-GEN.
+V2GD == Dat/Gen --7 .**VAL2A-E-GEN-U-DAT.
+V2N == Nominativ --1 .**VAL2A-E-NOM.
+V2NAGD == Nom/Akk/Dat/Gen --5 .**VAL2A-E-NOM-U-ACC-U-GEN-U-DAT.
+V2P == 2 Pers Plur .**PPL-E-2.
+V2S == 2 Pers Sing .**PSG-E-2.
+V3GPPA == regiert eine Partizipialgruppe --A .**VAL3-E-GPPA.
+V3INF == regiert einen reinen Infinitiv --I .**VAL3-E-PHINF.
+V3INF1 == regiert einen Infinitivsatz mit 'ZU' --Z .**VAL3-E-PHINF1.
+V3QUEST == regiert einen Ob-Satz .**VAL3-E-QUEST.
+V3SUB == regiert einen Dass-Satz .**VAL3-E-PHSUB.
+V3SUBL == regiert einen Dass-Satz .**VAL3-E-PHSUB,RS-E-LOCAL.
+V4D == Dativobjekt .**VAL4-E-DAT.
+V4DG == Dativ- oder Genitivobjekt .**VAL4-E-DAT-U-GEN.
+V4G == Genitivobjekt .**VAL4-E-GEN.
+VA2 ==.**DRV-E-VA2.
+VA3 ==.**DRV-E-VA3.
+VEN11B ==.**MT-E-PPA,KMS-E-VB-U-ADJ,SUBADJ-E-RSTA,IC-E-1.
+VERBE ==.**KMS-E-VB.
+VGPA == regiert eine Partizipialgruppe --A .**VAL3-E-GPPA.
+VID ==.** .
+VIDE ==.**.
+VIMP ==.**MT-E-IMP,PSIP-E-2.
+VINF ==.**MT-E-INF.
+VINF1 == --Z .**VAL3-E-PHINF1.
+VINFPPA1 ==.**MT-E-INF-U-PPA,KMS-E-VB-U-ADJ,SUBADJ-E-RSTA,IC-E-1.
+VIPR ==.**MT-E-IPR.
+VN1G ==.**DRV-E-VN1,PSG-E-3,CSNT-E-GEN,KMS-E-NM,SUBN-E-PF.
+VN1NAGD ==.**DRV-E-VN1,KMS-E-NM,SUBN-E-PF,GNR-E-N,PSG-E-3,PPL-E-3,
+CSNT-E-NOM-U-ACC-U-DAT,CPT-E-NOM-U-ACC-U-DAT-U-GEN.
+VOND == Praeposition VON + Dativ--1V .**VAL2A-E-DAT,VAL2B-E-VON.
+VORA == Praeposition VOR + Akkusativ--2V .**VAL2A-E-ACC,VAL2B-E-VOR.
+VORD == Praeposition VOR + Dativ--3V .**VAL2A-E-DAT,VAL2B-E-VOR.
+VPPA ==.**MT-E-PPA,KMS-E-VB-U-ADJ,SUBADJ-E-RSTA.
+VPPR ==.**MT-E-PPR,KMS-E-VB-U-ADJ,SUBADJ-E-RSTA.
+VSUB == Dass-Satz--S .**VAL3-E-PHSUB.
+WIEA == Praeposition WIE + Akkusativ--2W .**VAL2A-E-ACC,VAL2B-E-WIE.
+WIEN == Praeposition WIE + Nominativ--1W .**VAL2A-E-NOM,VAL2B-E-WIE.
+WIRGEN == Genitiv, 1 Person Plural .**CPT-E-GEN,PPL-E-1.
+XSVHAB == Hilfsverb zur Bildung der aktiven Perfektformen  = HABEN --H
+.**SUBV-E-HAB.
+ZUD == Praeposition ZU + Dativ--1Z .**VAL2A-E-DAT,VAL2B-E-ZU.
+ZWIA == Praeposition ZWISCHEN + Akkusativ--2Z
+.**VAL2A-E-ACC,VAL2B-E-ZWISCHEN.
+ZWID == Praeposition ZWISCHEN + Dativ--3Z .**VAL2A-E-DAT,VAL2B-E-ZWISCHEN.

@@ -1,0 +1,453 @@
+1H2H    01== Rektion :.**HNTA,HNTD.
+1I2I    01== Rektion : .**INA,IND.
+1NACHD  01== besondere Merkmale :.**PRP1,NACHD.
+1U2U    01== Rektion :.**UEBA,UEBD.
+1V2D    01== besondere Merkmale :.**PRP1,V2D.
+1V2G    01== besondere Merkmale :.**PRP1,V2G.
+1ZZ     01== Rektion :.**ZUD,V3INF1.
+23      01== Valenz :.**V2A,V2G.
+2V3V    01== Rektion :.**VORA,VORD.
+2Z      01== Valenz :.**V2A,V3INF1.
+2Z3Z    01== Rektion :.**ZWIA,ZWID.
+31ZZ    01== Valenz :.**V4D,ZUD,V3INF1.
+34      01== Valenz :.**V4D,V4G.
+34A1B3V 01== Valenz :.**V4D,AND,BEID,VORD.
+3A4A    01== Rektion :.**ANA,AND.
+3UZ     01== Rektion :.**UMA,V3INF1.
+4U5U    01== Rektion :.**UNTA,UNTD.
+5A6A    01== Rektion :.**AUFA,AUFD.
+A4Z     01== Valenz : .**V1A,V4G,V3INF1.
+AE3SP   01== Beugungsmerkmale: .**AE,PSG3,PPL3.
+AEFRT3S 01== Beugungsmerkmale: .**AEFRT,PSG3.
+AEFRT3SP01== Beugungsmerkmale: .**AEFRT,PSG3,PPL3.
+AEM3S   01==.**AEM,PSG3.
+AEMVA2  01==.**AEM,VA2.
+AEMVA3  01==.**AEM,VA3.
+AEN3SP  01== Beugungsmerkmale: .**AEN,PSG3,PPL3.
+AENVA2  01==.**AEN,VA2.
+AENVA3  01==.**AEN,VA3.
+AER3S   01== Beugungsmerkmale: .**AER,PSG3.
+AER3SP  01== Beugungsmerkmale: .**AER,PSG3,PPL3.
+AERVA2  01==.**AER,VA2.
+AERVA3  01==.**AER,VA3.
+AES3S   01== Beugungsmerkmale: .**AES,PSG3.
+AESVA2  01==.**AES,VA2.
+AESVA3  01==.**AES,VA3.
+AEVA2   01==.**AE,VA2.
+AEVA3   01==.**AE,VA3.
+DASDES  01== wie 'DAS' oder 'DES': .**AES,PSG3,FSDES.
+F1I     01== POTENZ UND VALENZ : .**SVRFL,INA.
+F1M     01== Potenz und Valenz : .**SVRFL,MITD.
+F5A     01== Potenz und Valenz : .**SVRFL,AUFA.
+F7AS    01== Potenz und Valenz : .**SVRFL,AUSD,V3SUB.
+FA1B    01== HABEN             :.**SVRFL,V1A,BEID.
+FA1D    01== HABEN             :.**SVRFL,V1A,DURCHA.
+FA1F    01== HABEN             :.**SVRFL,V1A,FUERA.
+FA1G    01== HABEN             :.**SVRFL,V1A,GEGA.
+FA1I    01== HABEN             :.**SVRFL,V1A,INA.
+FA1I2I  01== HABEN             :.**SVRFL,V1A,INA,IND.
+FA1M    01== HABEN             :.**SVRFL,V1A,MITD.
+FA1M1U  01== HABEN             :.**SVRFL,V1A,MITD,UEBA.
+FA1N    01== HABEN             :.**SVRFL,V1A,NACHD.
+FA1U    01== HABEN             :.**SVRFL,V1A,UEBA.
+FA1V    01== HABEN             :.**SVRFL,V1A,VOND.
+FA1Z    01== HABEN             :.**SVRFL,V1A,ZUD.
+FA2A    01== HABEN             :.**SVRFL,V1A,ALSA.
+FA2I    01== HABEN             :.**SVRFL,V1A,IND.
+FA3     01== HABEN             :.**SVRFL,V1A,V4D.
+FA31I   01== HABEN             :.**SVRFL,V1A,V4D,INA.
+FA31M   01== HABEN             :.**SVRFL,V1A,V4D,MITD.
+FA33VIMP01== HABEN             :.**SVRFL,V1A,V4D,VORD.
+FA35A   01== HABEN             :.**SVRFL,V1A,V4D,AUFA.
+FA3A    01== HABEN             :.**SVRFL,V1A,ANA.
+FA3A1I  01== HABEN             :.**SVRFL,V1A,ANA,INA.
+FA3A4A  01== HABEN             :.**SVRFL,V1A,ANA,AND.
+FA3U    01== HABEN             :.**SVRFL,V1A,UMA.
+FA4     01== HABEN             :.**SVRFL,V1A,V4G.
+FA43A   01== HABEN             :.**SVRFL,V1A,V4G,ANA.
+FA4A    01== HABEN             :.**SVRFL,V1A,AND.
+FA4A2I  01== HABEN             :.**SVRFL,V1A,AND,IND.
+FA5A    01== HABEN             :.**SVRFL,V1A,AUFA.
+FA5A1U  01== HABEN             :.**SVRFL,V1A,AUFA,UEBA.
+FA7A    01== POTENZ UND VALENZ :.**RFLA,AUSD.
+FAIMPERS01== HABEN             :.**SVRFL,V1A.
+FAZ     01== Potenz und Valenz :.**RFLA,V3INF1.
+FLA     01== HABEN             :.**SVRFL,V1A.
+FSDABEI 01== besondere Merkmale der Komponenten: .**PCT12D,V2BBEI.
+FSDAFUER01== besondere Merkmale der Komponenten:  .**PCT12A,V2BFUER.
+FSDARAN 01== besondere Merkmale der Komponenten:  .**PCT12AD,V2BAN.
+FSDARAUS01== besondere Merkmale der Komponenten:  .**PCT12D,V2BAUS.
+FSDARIN 01== besondere Merkmale der Komponenten:  .**PCT12AD,V2BIN.
+FSDARUEB01== besondere Merkmale der Komponenten:  .**PCT12AD,V2BUEBER.
+FSDARUM 01== besondere Merkmale der Komponenten:  .**PCT12A,V2BUM,SARADIP.
+FSDAVON 01== besondere Merkmale der Komponenten:  .**PCT12D,V2BVON.
+FSDAVOR 01== besondere Merkmale der Komponenten:  .**PCT12AD,V2BVOR.
+FSDAZU  01== besondere Merkmale der Komponenten:  .**PCT12D,V2BZU,SARADIP.
+FSDEN3S 01== besondere Merkmale : .**FSDEN,PSG3.
+FSDEN3SP01== besondere Merkmale : .**FSDEN,PSG3,PPL3.
+H1B     01== POTENZ UND VALENZ :.**SVHAB,BEID.
+H1B4A   01== POTENZ UND VALENZ :.**SVHAB,BEID,AND.
+H1D     01== POTENZ UND VALENZ :.**SVHAB,DURA.
+H1D1U   01== POTENZ UND VALENZ :.**SVHAB,DURA,UEBA.
+H1D1Z   01== POTENZ UND VALENZ :.**SVHAB,DURA,ZUD.
+H1F     01== Potenz und Valenz : .**SVHAB,FUERA.
+H1F1G1V 01== POTENZ UND VALENZ : .**SVHAB,FUERA,GEGA,VOND.
+H1F1Z   01== POTENZ UND VALENZ : .**SVHAB,FUERA,ZUD.
+H1FS    01== Potenz und Valenz : .**SVHAB,FUERA,V3SUB.
+H1G     01== POTENZ UND VALENZ :.**SVHAB,GEGA.
+H1G1M   01== POTENZ UND VALENZ :.**SVHAB,GEGA,MITD.
+H1I     01== POTENZ UND VALENZ : .**SVHAB,INA.
+H1I1U   01== POTENZ UND VALENZ : .**SVHAB,INA,UEBA.
+H1I2I   01== POTENZ UND VALENZ : .**SVHAB,INA,IND.
+H1M     01== POTENZ UND VALENZ :.**SVHAB,MITD.
+H1M1U   01== POTENZ UND VALENZ :.**SVHAB,MITD,UEBA.
+H1M2I   01== POTENZ UND VALENZ :.**SVHAB,MITD,IND.
+H1M3U   01== POTENZ UND VALENZ :.**SVHAB,MITD,UMA.
+H1N     01== POTENZ UND VALENZ :.**SVHAB,NACHD.
+H1N1Z   01== POTENZ UND VALENZ :.**SVHAB,NACHD,ZUD.
+H1U     01== POTENZ UND VALENZ : .**SVHAB,UEBA.
+H1U3U   01== POTENZ UND VALENZ : .**SVHAB,UEBA,UMA.
+H1V     01== POTENZ UND VALENZ :.**SVHAB,VOND.
+H1V3V   01== POTENZ UND VALENZ :.**SVHAB,VOND,VORD.
+H1V4A   01== POTENZ UND VALENZ :.**SVHAB,VOND,AND.
+H1VIMP  01== POTENZ UND VALENZ :.**SVHAB,VOND.
+H1VZ    01== POTENZ UND VALENZ :.**SVHAB,VOND,ZUD.
+H1WA    01== Potenz und Valenz : .**SVHAB,WIEN,V3GPPA.
+H1Z     01== Potenz und Valenz : .**SVHAB,ZUD.
+H1ZIMP  01== POTENZ UND VALENZ : .**SVHAB,ZUD.
+H2H     01== POTENZ UND VALENZ : .**SVHAB,HNTD.
+H2H5U   01== POTENZ UND VALENZ : .**SVHAB,HNTD,UNTD.
+H2I     01== POTENZ UND VALENZ : .**SVHAB,IND.
+H3      01== Potenz und Valenz : .**SVHAB,V4D.
+H31A1Z  01== Potenz und Valenz : .**SVHAB,ALSN,ZUD,V4D.
+H31B    01== Potenz und Valenz : .**SVHAB,V4D,BEID.
+H31F    01== POTENZ UND VALENZ : .**SVHAB,V4D,FUERA.
+H31FIMP 01== POTENZ UND VALENZ : .**SVHAB,V4D,FUERA.
+H31I    01== POTENZ UND VALENZ : .**SVHAB,V4D,INA.
+H31M    01== POTENZ UND VALENZ : .**SVHAB,V4D,MITD.
+H31N    01== POTENZ UND VALENZ : .**SVHAB,V4D,NACHD.
+H31NIMP 01== POTENZ UND VALENZ : .**SVHAB,V4D,NACHD.
+H31U    01== POTENZ UND VALENZ : .**SVHAB,V4D,UEBA.
+H31V    01== POTENZ UND VALENZ : .**SVHAB,V4D,VOND.
+H31Z    01== Potenz und Valenz : .**SVHAB,V4D,ZUD.
+H33A    01== POTENZ UND VALENZ : .**SVHAB,V4D,ANA.
+H33V    01== POTENZ UND VALENZ : .**SVHAB,V4D,VORD.
+H33VIMP 01== POTENZ UND VALENZ : .**SVHAB,V4D,VORD.
+H33VIP  01== POTENZ UND VALENZ :.**SVHAB,V4D,VORD.
+H34A    01== POTENZ UND VALENZ : .**SVHAB,V4D,AND.
+H35A    01== POTENZ UND VALENZ : .**SVHAB,V4D,AUFA.
+H37A    01== POTENZ UND VALENZ : .**SVHAB,V4D,AUSD.
+H3A     01== POTENZ UND VALENZ : .**SVHAB,ANA.
+H3A4A   01== POTENZ UND VALENZ : .**SVHAB,ANA,AND.
+H3AZS   01== Potenz und Valenz : .**SVHAB,ANA,V3INF1,VSUB.
+H3IMP   01== POTENZ UND VALENZ : .**SVHAB,V4D.
+H3IMPERS01== POTENZ UND VALENZ : .**SVHAB,V4D.
+H3U     01== POTENZ UND VALENZ :.**SVHAB,UMA.
+H3V     01== POTENZ UND VALENZ :.**SVHAB,VORD.
+H3VIP   01== POTENZ UND VALENZ :.**SVHAB,VORD.
+H3VRFL  01== POTENZ UND VALENZ : .**SVHAB,VORD.
+H3ZA    01== Potenz und Valenz : .**SVHAB,V4D,V3INF1,V3GPPA.
+H4      01== Potenz und Valenz : .**SVHAB,V4G.
+H4A     01== Potenz und Valenz : .**SVHAB,AND.
+H4A1M   01== Potenz und Valenz : .**SVHAB,AND,MITD.
+H4AIMP  01== POTENZ UND VALENZ : .**SVHAB,AND.
+H5A     01== Potenz und Valenz : .**SVHAB,AUFA.
+H5A1U   01== POTENZ UND VALENZ : .**SVHAB,AUFA,UEBA.
+H5A1V   01== POTENZ UND VALENZ : .**SVHAB,AUFA,VOND.
+H5A1W   01== Potenz und Valenz : .**SVHAB,AUFA,WIEN.
+H5A1Z   01== Potenz und Valenz : .**SVHAB,AUFA,ZUD.
+H5AS    01== Potenz und Valenz : .**SVHAB,AUFA,V3SUB.
+H5U     01== POTENZ UND VALENZ : .**SVHAB,UNTD.
+H6A     01== POTENZ UND VALENZ : .**SVHAB,AUFD.
+H6A1M   01== Potenz und Valenz : .**SVHAB,AUFD,MITD.
+H6A7A   01== Potenz und Valenz : .**SVHAB,AUFD,AUSD.
+H6A7A2I 01== Potenz und Valenz : .**SVHAB,AUFD,AUSD,IND.
+H6AS    01== Potenz und Valenz : .**SVHAB,AUFD,V3SUB.
+H7A     01== POTENZ UND VALENZ : .**SVHAB,AUSD.
+HA      01== Potenz und Valenz :.**SVHAB,V1A.
+HA1B    01== POTENZ UND VALENZ :.**HABA,BEID.
+HA1D    01== POTENZ UND VALENZ :.**HABA,DURA.
+HA1F    01== Potenz und Valenz :.**HABA,FUERA.
+HA1F1Z  01== Potenz und Valenz :.**HABA,FUERA,ZUD.
+HA1F3U  01== POTENZ UND VALENZ :.**HABA,FUERA,UMA.
+HA1FRFL 01== POTENZ UND VALENZ :.**SVHAB,V1A,FUERA.
+HA1G    01== POTENZ UND VALENZ :.**HABA,GEGA.
+HA1GRFL 01== POTENZ UND VALENZ :.**HABA,GEGA.
+HA1I    01== Potenz und Valenz :.**HABA,INA.
+HA1I1Z  01== POTENZ UND VALENZ :.**HABA,INA,ZUD.
+HA1I2I  01== POTENZ UND VALENZ :.**HABA,INA,IND.
+HA1I2I1M01== POTENZ UND VALENZ :.**HABA,INA,IND,MITD.
+HA1I3U  01== POTENZ UND VALENZ :.**HABA,INA,UMA.
+HA1IRFL 01== POTENZ UND VALENZ : .**SVHAB,V1A,INA.
+HA1M    01== Potenz und Valenz :.**HABA,MITD.
+HA1M1I  01== POTENZ UND VALENZ :.**HABA,MITD,INA.
+HA1M1U  01== POTENZ UND VALENZ :.**HABA,MITD,UEBA.
+HA1MRFL 01== POTENZ UND VALENZ :.**HABA,MITD.
+HA1MZ   01== Potenz und Valenz :.**HABA,MITD,V3INF1.
+HA1N    01== Potenz und Valenz :.**HABA,NACHD.
+HA1N1Z  01== POTENZ UND VALENZ :.**HABA,NACHD,ZUD.
+HA1N3US 01== Potenz und Valenz :.**HABA,NACHD,UMA,V3SUB.
+HA1N3USQ01== POTENZ UND VALENZ :.**HABA,NACHD,UMA,V3SUB,V3QUEST.
+HA1NZ   01== Potenz und Valenz :.**HABA,NACHD,V3INF1.
+HA1U    01== Potenz und Valenz :.**HABA,UEBA.
+HA1URFL 01== HABEN+SEIN+RFL    :.**HABA,UEBA.
+HA1US   01== Potenz und Valenz :.**HABA,UEBA,V3SUB.
+HA1USZ  01== Potenz und Valenz :.**HABA,UEBA,V3SUB,V3INF1.
+HA1V    01== Potenz und Valenz :.**HABA,VOND.
+HA1V3Z  01== Potenz und Valenz :.**HABA,VOND,ZWID.
+HA1VRFL 01== POTENZ UND VALENZ :.**SVHAB,V1A,VOND.
+HA1VS   01== Potenz und Valenz :.**HABA,VOND,V3SUB.
+HA1VZA  01== Potenz und Valenz :.**HABA,VOND,V3INF1,V3GPPA.
+HA1Z    01== Potenz und Valenz :.**HABA,ZUD.
+HA1ZRFL 01== POTENZ UND VALENZ :.**HABA,ZUD.
+HA1ZSZ  01== Potenz und Valenz :.**HABA,ZUD,V3SUB,V3INF1.
+HA1ZZ   01== Potenz und Valenz :.**HABA,ZUD,V3INF1.
+HA2A    01== Potenz und Valenz :.**HABA,ALSA.
+HA2A1M  01== Potenz und Valenz :.**HABA,ALSA,MITD.
+HA2I    01== Potenz und Valenz :.**HABA,IND.
+HA2I1Z  01== Potenz und Valenz :.**HABA,IND,ZUD.
+HA2IRFL 01== POTENZ UND VALENZ :.**HABA,IND.
+HA2U    01== POTENZ UND VALENZ :.**HABA,UEBD.
+HA2V    01== POTENZ UND VALENZ :.**HABA,VORA.
+HA3     01== Potenz und Valenz :.**HABA,V4D.
+HA31A   01== Potenz und Valenz :.**HABA,V4D,ALSN.
+HA31B   01== Potenz und Valenz :.**HABA,V4D,BEID.
+HA31F   01== POTENZ UND VALENZ :.**HABA,V4D,FUERA.
+HA31I   01== POTENZ UND VALENZ :.**HABA,V4D,INA.
+HA31M   01== POTENZ UND VALENZ :.**HABA,V4D,MITD.
+HA32A5A 01== Potenz und Valenz :.**HABA,V4D,ALSA,AUFA.
+HA32I   01== POTENZ UND VALENZ :.**HABA,V4D,IND.
+HA33A   01== POTENZ UND VALENZ :.**HABA,V4D,ANA.
+HA33A4A 01== POTENZ UND VALENZ :.**HABA,V4D,ANA,AND.
+HA35A   01== POTENZ UND VALENZ :.**HABA,V4D,AUFA.
+HA37A   01== POTENZ UND VALENZ :.**HABA,V4D,AUSD.
+HA3A    01== Potenz und Valenz :.**HABA,ANA.
+HA3A1F  01== Potenz und Valenz :.**HABA,ANA,FUERA.
+HA3A1I  01== POTENZ UND VALENZ :.**HABA,ANA,INA.
+HA3A4A  01== POTENZ UND VALENZ :.**HABA,ANA,AND.
+HA3A5A  01== Potenz und Valenz :.**HABA,ANA,AUFA.
+HA3ARFL 01== POTENZ UND VALENZ :.**HABA,ANA.
+HA3AZS  01== Potenz und Valenz :.**HABA,ANA,V3INF1,VSUB.
+HA3IMP  01== POTENZ UND VALENZ :.**HABA,V4D.
+HA3RFL  01== HABEN+RFL         :.**HABA,V4D.
+HA3S    01== Potenz und Valenz :.**HABA,V4D,V3SUB.
+HA3U    01== POTENZ UND VALENZ :.**HABA,UMA.
+HA3URFL 01== POTENZ UND VALENZ :.**HABA,UMA.
+HA3UZ   01== Potenz und Valenz :.**HABA,UMA,V3INF1.
+HA3V    01== POTENZ UND VALENZ :.**SVHAB,V1A,VORD.
+HA3VRFL 01== POTENZ UND VALENZ :.**SVHAB,V1A,VORD.
+HA3Z    01== Potenz und Valenz :.**HABA,V4D,V3INF1.
+HA4     01== POTENZ UND VALENZ :.**HABA,V4G.
+HA41F   01== POTENZ UND VALENZ :.**HABA,V4G,FUERA.
+HA4A    01== Potenz und Valenz :.**HABA,AND.
+HA4A1F  01== POTENZ UND VALENZ :.**HABA,AND,FUERA.
+HA4A2I1Z01== Potenz und Valenz :.**HABA,AND,IND,ZUD.
+HA4ARFL 01== POTENZ UND VALENZ :.**HABA,AND.
+HA4RFL  01== POTENZ UND VALENZ :.**HABA,V4G.
+HA5     01== POTENZ UND VALENZ :.**HABA,V4G.
+HA5A    01== Potenz und Valenz :.**HABA,AUFA.
+HA5A1F  01== Potenz und Valenz :.**HABA,AUFA,FUERA.
+HA5A1I  01== POTENZ UND VALENZ :.**HABA,AUFA,INA.
+HA5A1M1Z01== Potenz und Valenz :.**HABA,AUFA,MITD,ZUD.
+HA5A1USZ01== Potenz und Valenz :.**HABA,AUFA,UEBA,V3SUB,V3INF1.
+HA5A1V  01== POTENZ UND VALENZ :.**HABA,AUFA,VOND.
+HA5ARFL 01== POTENZ UND VALENZ :.**HABA,AUFA.
+HA5AZ   01== Potenz und Valenz :.**HABA,AUFA,V3INF1.
+HA6A    01== POTENZ UND VALENZ :.**HABA,AUFD.
+HA6A7A  01== Potenz und Valenz :.**HABA,AUFD,AUSD.
+HA7A    01== Potenz und Valenz :.**HABA,AUSD.
+HAA     01== Potenz und Valenz :.**HABA,V3GPPA.
+HAAS    01== Potenz und Valenz :.**HABA,V3GPPA,VSUB.
+HAAZ    01== Potenz und Valenz :.**HABA,V3GPPA,V3INF1.
+HABIZA  01== Potenz und Valenz :.**HABA,BIS,V3INF1,V3GPPA.
+HAIMP   01== POTENZ UND VALENZ :.**SVHAB,V1A.
+HAIMPERS01== POTENZ UND VALENZ :.**SVHAB,V1A.
+HANS    01== Nom propre :  .**BNPF,BNPSF.
+HARFL   01== POTENZ UND VALENZ :.**HABA.
+HARFL2I 01== POTENZ UND VALENZ :.**HABA,IND.
+HAS     01== Potenz und Valenz :.**HABA,V3SUB.
+HASZ    01== Potenz und Valenz :.**HABA,V3SUB,V3INF1.
+HASZQ   01== POTENZ UND VALENZ :.**HABA,V3SUB,V3INF1,V3QUEST.
+HAZ     01== Potenz und Valenz :.**HABA,V3INF1.
+HF1I    01== HABEN+RFL         :.**SVHAB,INA.
+HF1I2I  01== HABEN+RFL         :.**SVHAB,INA,IND.
+HF1M    01== HABEN+RFL         :.**HABA,MITD.
+HF1N    01== HABEN+RFL         :.**HABA,NACHD.
+HF1U    01== HABEN+RFL         :.**HABA,UEBA.
+HF1V    01== HABEN+RFL         :.**HABA,VOND.
+HF3     01== HABEN+RFL         :.**HABD.
+HF4     01== HABEN+RFL         :.**HABG.
+HFA     01== HABEN+RFL         :.**HABA.
+HFA1F3U 01== HABEN+RFL         :.**HABA,FUERA,UMA.
+HFA1G   01== HABEN+RFL         :.**HABA,GEGA.
+HFA1I   01== HABEN+RFL         :.**HABA,INA.
+HFA1M   01== HABEN+RFL         :.**HABA,MITD.
+HFA1M1U 01== HABEN+RFL         :.**HABA,MITD,UEBA.
+HFA1U   01== HABEN+RFL         :.**HABA,UEBA.
+HFA1V   01== HABEN+RFL         :.**HABA,VOND.
+HFA1Z   01== HABEN+RFL         :.**HABA,ZUD.
+HFA1Z1N 01== HABEN+RFL         :.**HABA,ZUD,NACHD.
+HFA2H   01== HABEN+RFL         :.**HABA,HNTD.
+HFA2I   01== HABEN+RFL         :.**HABA,IND.
+HFA3    01== HABEN+RFL         :.**HABA,V4D.
+HFA31G  01== HABEN+RFL         :.**HABA,V4D,GEGA.
+HFA33A  01== HABEN+RFL         :.**HABA,V4D,ANA.
+HFA3A   01== HABEN+RFL         :.**HABA,ANA.
+HFA3A4A 01== HABEN+RFL         :.**HABA,ANA,AND.
+HFA3U   01== HABEN+RFL         :.**HABA,UMA.
+HFA4    01== HABEN+RFL         :.**HABA,V4G.
+HFA4A   01== HABEN+RFL         :.**HABA,AND.
+HFA5A   01== HABEN+RFL         :.**HABA,AUFA.
+HFAIMP  01== HABEN+RFL         :.**HABA.
+HFRA    01== HABEN+SEIN+RFL    :.**SVRFL,V1A.
+HI      01== Potenz und Valenz : .**SVHAB,V3INF.
+HIMP    01== POTENZ UND VALENZ :.**SVHAB.
+HIMPERS 01== POTENZ UND VALENZ :.**SVHAB.
+HNABIA  01== Potenz und Valenz : .**SVHAB,V1A,BIS,V3GPPA.
+HNABIAS 01== Potenz und Valenz :.**HABA,BIS,V3GPPA,V3SUB.
+HR      01== POTENZ UND VALENZ :.**SVRST.
+HR1F    01== POTENZ UND VALENZ :.**SVRST,FUERA.
+HR1M    01== POTENZ UND VALENZ :.**SVRST,MITD.
+HR3U    01== POTENZ UND VALENZ : .**SVRST,UMA.
+HR3V    01== POTENZ UND VALENZ : .**SVRST,VOND.
+HRA     01== POTENZ UND VALENZ : .**SVRST,V1A.
+HRA1D   01== POTENZ UND VALENZ : .**SVHAB,V1A,DURA.
+HRA1I   01== POTENZ UND VALENZ : .**SVHAB,V1A,INA.
+HRA1V   01== POTENZ UND VALENZ : .**SVHAB,V1A,VOND.
+HRA1ZRFL01== POTENZ UND VALENZ : .**SVHAB,V1A,ZUD.
+HRA5A   01== POTENZ UND VALENZ : .**SVRST,V1A,AUFA.
+HREZIP  01== EINANDER          : .**SVHAB.
+HRF     01== POTENZ UND VALENZ :.**SVRFL.
+HRFL    01== POTENZ UND VALENZ :.**SVRFL.
+HRFLA   01== POTENZ UND VALENZ :.**SVRFL,V1A.
+HSZ     01== Potenz und Valenz :.**SVHAB,V3SUB,V3INF1.
+HZ      01== Potenz und Valenz :.**SVHAB,V3INF1.
+I1F     01== besondere Merkmale :  .**BNIP,FUERA.
+I1M3Z   01== besondere Merkmale :  .**BNIP,MITD,ZWID.
+I1U     01== besondere Merkmale :  .**BNIP,UEBA.
+I1V1Z   01== besondere Merkmale :  .**BNIP,VOND,ZUD.
+I1Z     01== besondere Merkmale :  .**BNIP,ZUD.
+I4A     01== besondere Merkmale :  .**BNIP,AND.
+I5A     01== besondere Merkmale :  .**BNIP,AUFA.
+I7A     01== besondere Merkmale :  .**BNIP,AUSD.
+IL      01== besondere Merkmale :  .**BNIP,BNLOC.
+ILS     01== besondere Merkmale :  .**BNIP,BNLOC,BNPSF.
+IPABB   01== besondere Merkmale :  .**BNIP,TABB.
+IPAND   01== besondere Merkmale :  .**BNIP,AND.
+IPUEBA  01== besondere Merkmale :  .**BNIP,UEBA.
+IS      01== besondere Merkmale :  .**BNIP,BNPSF.
+IY1     01== besondere Merkmale :  .**BNIP,DVN2.
+IY1H    01== besondere Merkmale :  .**BNIP,DVN2,SVHAB.
+IY1H1F  01== besondere Merkmale :  .**BNIP,DVN2,SVHAB,FUERA.
+IY1H1Z  01== besondere Merkmale :  .**BNIP,DVN2,SVHAB,ZUD.
+IY1H3   01== besondere Merkmale :  .**BNIP,DVN2,SVHAB,V4D.
+IY1HA   01== besondere Merkmale :  .**BNIP,DVN2,HABA.
+IY1HA4A 01== besondere Merkmale :  .**BNIP,DVN2,HABA,AND.
+IY1HAZ  01== besondere Merkmale :  .**BNIP,DVN2,HABA,V3INF1.
+IY1R    01== besondere Merkmale :  .**BNIP,DVN2,SVRST.
+IY2     01== besondere Merkmale :  .**BNIP,DAN1.
+LANDPLS 01== Nom propre :  .**BNPF,BNLOC,BNPSF.
+P1F     01== besondere Merkmale :  .**BNPF,FUERA.
+P1U     01== besondere Merkmale :  .**BNPF,UEBA.
+P1Z     01== besondere Merkmale :  .**BNPF,ZUD.
+P2I     01== besondere Merkmale :  .**BNPF,IND.
+P4A     01== besondere Merkmale :  .**BNPF,AND.
+P7A     01== besondere Merkmale :  .**BNPF,AUSD.
+PA      01== Valenz :.**SVPAI,V1A.
+PA2A1FSZ01== Valenz :.**SVPAI,V1A,ALSA,FUERA,V3SUB,V3INF1.
+PAI     01== Valenz :.**SVPAI,V1A,V3INF.
+PASI    01== Valenz :.**SVPAI,V1A,V3SUB,V3INF.
+PFABB   01== besondere Mermale :.**BNPF,TABB.
+PI      01== Valenz.**SVPAI,V3INF.
+PL      01== besondere Merkmale :  .**BNPF,BNLOC.
+PLS     01== besondere Merkmale :  .**BNPF,BNLOC,BNPSF.
+PS      01== besondere Merkmale :  .**BNPF,BNPSF.
+PY1     01== besondere Merkmale :  .**BNPF,DVN2.
+PY1H1F  01== besondere Merkmale :  .**BNPF,DVN2,SVHAB,FUERA.
+PY1H1Z  01== besondere Merkmale :  .**BNPF,DVN2,SVHAB,ZUD.
+PY1HA   01== besondere Merkmale :  .**BNPF,DVN2,HABA.
+PY1HAZ  01== besondere Merkmale :  .**BNPF,DVN2,HABA,V3INF1.
+PY1R    01== besondere Merkmale :  .**BNPF,DVN2,SVRST.
+PY2     01== besondere Merkmale :  .**BNPF,DAN1.
+R1B2I   01== POTENZ UND VALENZ : .**SVRST,BEID,IND.
+R1D     01== POTENZ UND VALENZ : .**SVRST,DURA.
+R1F     01== POTENZ UND VALENZ : .**SVRST,FUERA.
+R1G     01== POTENZ UND VALENZ : .**SVRST,GEGA.
+R1I     01== Potenz und Valenz : .**SVRST,INA.
+R1I1F   01== SEIN              :.**SVRST,INA,FUERA.
+R1I1Z   01== SEIN              :.**SVRST,INA,ZUD.
+R1I2I   01== POTENZ UND VALENZ : .**SVRST,INA,IND.
+R1IRFL  01== POTENZ UND VALENZ : .**SVRST,INA.
+R1M     01== Potenz und Valenz : .**SVRST,MITD.
+R1U     01== Potenz und Valenz : .**SVRST,UEBA.
+R1V     01== POTENZ UND VALENZ : .**SVRST,VOND.
+R1V1Z   01== Potenz und Valenz : .**SVRST,VOND,ZUD.
+R1V5A   01== POTENZ UND VALENZ : .**SVRST,VOND,AUFA.
+R1Z     01== Potenz und Valenz : .**SVRST,ZUD.
+R2I     01== POTENZ UND VALENZ : .**SVRST,IND.
+R2V     01== SEIN              :.**SVRST,VORA.
+R3      01== Potenz und Valenz : .**SVRST,V4D.
+R31I    01== SEIN              :.**SVRST,V4D,INA.
+R31V    01== SEIN              :.**SVRST,V4D,VOND.
+R35A    01== SEIN              :.**SVRST,V4D,AUFA.
+R37A    01== SEIN              :.**SVRST,V4D,AUSD.
+R3A     01== POTENZ UND VALENZ : .**SVRST,ANA.
+R3HA    01== SEIN              :.**SVRST,V4D,V1A.
+R3IMP   01== POTENZ UND VALENZ : .**SVRST,V4D.
+R3U     01== Potenz und Valenz : .**SVRST,UMA.
+R3V     01== POTENZ UND VALENZ : .**SVRST,VORD.
+R4A     01== SEIN              :.**SVRST,AND.
+R4A3V   01== SEIN              :.**SVRST,AND,VORD.
+R5A     01== SEIN              :.**SVRST,AUFA.
+R5A1G   01== SEIN              :.**SVRST,AUFA,GEGA.
+R5A1I   01== SEIN              :.**SVRST,AUFA,INA.
+R5U     01== Potenz und Valenz : .**SVRST,UNTD.
+R6A     01== SEIN              :.**SVRST,AUFD.
+R7A     01== Potenz und Valenz : .**SVRST,AUSD.
+R7A1V   01== POTENZ UND VALENZ : .**SVRST,AUSD,VOND.
+R7AH    01== POTENZ UND VALENZ : .**SVRST,AUSD.
+RA      01== Potenz und Valenz : .**SVRST,V1A.
+RA1U    01== POTENZ UND VALENZ : .**SVRST,V1A,UEBA.
+RA1V    01== Potenz und Valenz : .**SVRST,V1A,VOND.
+RD27AS  01== Potenz und Valenz : .**SVRST,V1D,V2A,AUSD,VSUB.
+RFA     01== HABEN+RFL+SEIN    :.**HABA.
+RFA1M   01== HABEN+RFL+SEIN    :.**HABA,MITD.
+RFA3A   01== HABEN+RFL+SEIN    :.**HABA,ANA.
+RFA4A   01== HABEN+RFL+SEIN    :.**HABA,AND.
+RFLDA   01== HABEN             :.**SVRFL,V1A,V4D.
+RFLDA1B 01== HABEN             :.**SVRFL,V1A,V4D,BEID.
+RFLDA1N 01== HABEN             :.**SVRFL,V1A,V4D,NACHD.
+RH      01== POTENZ UND VALENZ : .**SVRST.
+RH1N    01== POTENZ UND VALENZ : .**SVRST,NACHD.
+RH1V    01== POTENZ UND VALENZ : .**SVRST,VOND.
+RHA     01== POTENZ UND VALENZ : .**SVRST,V1A.
+RHA1G   01== POTENZ UND VALENZ : .**SVRST,V1A,GEGA.
+RHA1I   01== POTENZ UND VALENZ : .**SVRST,V1A,INA.
+RHA1I5A 01== POTENZ UND VALENZ : .**SVRST,V1A,INA,AUFA.
+RHA1M   01== POTENZ UND VALENZ : .**SVRST,V1A,MITD.
+RHA1N   01== POTENZ UND VALENZ : .**SVRST,V1A,NACHD.
+RHA1U   01== POTENZ UND VALENZ : .**SVRST,V1A,UEBA.
+RHA1V   01== POTENZ UND VALENZ : .**SVRST,V1A,VOND.
+RHA1Z   01== POTENZ UND VALENZ : .**SVRST,V1A,ZUD.
+RHA2IRFL01== POTENZ UND VALENZ : .**SVRST,V1A,IND.
+RHA3    01== POTENZ UND VALENZ : .**SVRST,V1A,V4D.
+RHA3A   01== POTENZ UND VALENZ : .**SVRST,V1A,ANA.
+RHA3V   01== POTENZ UND VALENZ : .**SVRST,V1A,VORD.
+RHA4    01== POTENZ UND VALENZ : .**SVRST,V1A,V4G.
+RHA5ARFL01== POTENZ UND VALENZ : .**SVRST,V1A,AUFA.
+RHA7A   01== POTENZ UND VALENZ : .**SVRST,V1A,AUSD.
+RHARFL  01== RFL+HABEN+SEIN    :.**SVRFL,V1A.
+RIMPERS 01== SEIN+IMPERS       :.**SVRST.
+RN1ZA   01== Potenz und Valenz : .**SVRST,V1N,ZUD,V3GPPA.
+RN1ZIA  01== Potenz und Valenz : .**SVRST,V1N,ZUD,V3INF,V3GPPA.
+RNA     01== Potenz und Valenz : .**SVRST,V1N,V3GPPA.
+RNZA    01== Potenz und Valenz : .**SVRST,V1N,V3INF1,V3GPPA.
+RV3GPPA 01== Potenz und Valenz : .**SVRST,V3GPPA.
+SHA     01== POTENZ UND VALENZ : .**SVRST,V1A.
+SRFL    01== HABEN             :.**SVRFL.
+STROMIL 01== Nom géographique :  .**BNIP,BNLOC.
+STROMILS01== Nom géographique :  .**BNIP,BNLOC,BNPSF.
+T2NAGDI101==                   .**T2NAGD,IC1.
+V21AS   01== Valenz :.**V2,ALSN,V3SUB.
+V21WS   01== Valenz :.**V2,WIEN,V3SUB.
+V2DGS   01== Valenz :.**V2DG,V3SUB.

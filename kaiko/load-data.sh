@@ -141,9 +141,9 @@ ld_dir ('$DATASETDIR', '*.ttl', 'http://kaiko.getalp.org/dbnary');
 SELECT * FROM DB.DBA.LOAD_LIST;
 -- if unsatisfied use:
 -- delete from DB.DBA.LOAD_LIST;
-echoln ========================================================
-echoln === Loading previously shown graphs                  ===
-echoln ========================================================
+echoln ======================================================== ;
+echoln === Loading previously shown graphs                  === ;
+echoln ======================================================== ;
 
 rdf_loader_run();
 
@@ -151,7 +151,7 @@ rdf_loader_run();
 checkpoint;
 commit WORK;
 checkpoint;
-echoln === Loading done                                     ===
+echoln === Loading done                                     === ;
 END
 
 ## (TODO: create the virtlabels for correct facetted browsing)
@@ -165,16 +165,16 @@ END
 
 ## index facetted browsing
 isql $SERVERPORT dba "$pwd" <<END
-echoln ========================================================
-echoln === Stats on loaded graphs                           ===
-echoln ========================================================
+echoln ======================================================== ;
+echoln === Stats on loaded graphs                           === ;
+echoln ======================================================== ;
 
 sparql SELECT COUNT(*) WHERE { ?s ?p ?o } ;
 sparql SELECT ?g COUNT(*) { GRAPH ?g {?s ?p ?o.} } GROUP BY ?g ORDER BY DESC 2;
 
-echoln ========================================================
-echoln === Beginning full text indexing on loaded graphs    ===
-echoln ========================================================
+echoln ======================================================== ;
+echoln === Beginning full text indexing on loaded graphs    === ;
+echoln ======================================================== ;
 
 -- Build Full Text Indexes by running the following commands using the Virtuoso isql program
 -- With this rule added, all text in all graphs will be indexed...
@@ -187,7 +187,7 @@ urilbl_ac_init_db();
 echoln --- Ranking IRIs
 -- Run the following procedure using the Virtuoso isql program to calculate the IRI ranks. Note this should be run periodically as the data grows to re-rank the IRIs.
 s_rank();
-echoln === Indexing done                                    ===
+echoln === Indexing done                                    === ;
 
 shutdown();
 END

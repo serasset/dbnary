@@ -1,0 +1,204 @@
+
+###==========================================================================================
+###  WORKING WITH HOMONYMS
+###==========================================================================================
+
+# Select pages and entries
+select ?p where {
+    ?p dbnary:describes ?le .
+}
+
+# Select pages describing more than 1 lexical entry
+SELECT ?page {
+    ?page dbnary:describes ?le .
+}
+GROUP BY ?page
+HAVING (COUNT(*) > 1)
+
+# Select pages describing at least 2 lexical entries with the same part of speech
+SELECT ?page, ?le1, ?le2 {
+    ?page dbnary:describes ?le1 ; dbnary:describes ?le2 .
+    ?le1 lexinfo:partOfSpeech ?partOfSpeech.
+    ?le2 lexinfo:partOfSpeech ?partOfSpeech.
+    FILTER (?le1 != ?le2)
+}
+GROUP BY ?page
+
+
+# Select pages and lexical entries that are homonyms for a given partOfSpeech
+select ?page, ?le, ?partOfSpeech where {
+    ?page dbnary:describes ?le .
+    ?le lexinfo:partOfSpeech ?partOfSpeech .
+    { SELECT distinct ?page , ?partOfSpeech where {
+        ?page dbnary:describes ?le1 ; dbnary:describes ?le2 .
+        ?le1 lexinfo:partOfSpeech ?partOfSpeech.
+        ?le2 lexinfo:partOfSpeech ?partOfSpeech.
+        FILTER (?le1 != ?le2)
+        }
+    }
+}
+group by ?partOfSpeech
+order by ?page
+
+# Select pages and partOfSpeech for which the page has homonymy
+select ?page, ?partOfSpeech where {
+    ?page dbnary:describes / lexinfo:partOfSpeech ?partOfSpeech .
+    { SELECT distinct ?page , ?partOfSpeech where {
+        ?page dbnary:describes ?le1 ; dbnary:describes ?le2 .
+        ?le1 lexinfo:partOfSpeech ?partOfSpeech.
+        ?le2 lexinfo:partOfSpeech ?partOfSpeech.
+        FILTER (?le1 != ?le2)
+        }
+    }
+}
+group by ?partOfSpeech
+order by ?page
+
+# Count number of pages with homonyms (describing lexical entries of the same partOfSpeech) by language.
+select ?lg, count(distinct ?page) where {
+    ?page dbnary:describes ?le .
+    ?le dct:language ?lg .
+    { SELECT distinct ?page , ?partOfSpeech where {
+        ?page dbnary:describes ?le1 ; dbnary:describes ?le2 .
+        ?le1 lexinfo:partOfSpeech ?partOfSpeech.
+        ?le2 lexinfo:partOfSpeech ?partOfSpeech.
+        FILTER (?le1 != ?le2)
+        }
+    }
+}
+group by ?lg
+
+# Select the number of pages with homonyms, along with total number of pages, per language
+select ?lg, ?nbHomonyms, ?nbPages where {
+    {
+        select ?lg, count(distinct ?page) as ?nbHomonyms where {
+            ?page dbnary:describes ?le .
+            ?le dct:language ?lg .
+            { SELECT distinct ?page , ?partOfSpeech where {
+                ?page dbnary:describes ?le1 ; dbnary:describes ?le2 .
+                ?le1 lexinfo:partOfSpeech ?partOfSpeech.
+                ?le2 lexinfo:partOfSpeech ?partOfSpeech.
+                FILTER (?le1 != ?le2)
+                }
+            }
+        } group by ?lg
+    }
+    {
+        SELECT ?lg, count (distinct ?p) as ?nbPages where {
+            ?p dbnary:describes ?l .
+            ?l dct:language ?lg .
+        } group by ?lg
+    }
+}
+group by ?lg
+
+###==========================================================================================
+### LINKING TRANSLATIONS TO ENTRIES
+###==========================================================================================
+
+# marche pas....
+SELECT ?trans, ?le WHERE {
+    { SELECT ?trans, ?lg, ?wf WHERE {
+        ?trans
+            a dbnary:Translation ;
+            dbnary:isTranslationOf ?sle ;
+            dbnary:targetLanguage ?lg ;
+            dbnary:writtenForm ?wf.
+        }
+    }
+    { SELECT distinct ?lg, ?l2 WHERE {
+        ?x lime:language ?l2 ; dct:language ?lg.
+        }
+    }
+    # bind(STRLANG(?wf, ?l2) as ?wfl)
+    ?le
+        dct:language ?lg ;
+        ontolex:canonicalForm / ontolex:writtenRep ?wfl.
+    #FILTER (STR(?wfl) = ?wf)
+}
+
+# Marche, mais avec des répétitions...
+SELECT ?trans, ?le WHERE {
+    { SELECT ?trans, ?lg, ?wf WHERE {
+        ?trans
+            a dbnary:Translation ;
+            dbnary:isTranslationOf ?sle ;
+            dbnary:targetLanguage ?lg ;
+            dbnary:writtenForm ?wf.
+        }
+    }
+    # bind(STRLANG(?wf, ?l2) as ?wfl)
+    ?le
+        dct:language ?lg ;
+        ontolex:canonicalForm / ontolex:writtenRep ?wf.
+    #FILTER (STR(?wfl) = ?wf)
+}
+
+#Link source and target lexical entries of translations without homonymy.
+SELECT (sample(?sle) as ?sle), (sample(?le) as ?tle) WHERE {
+    #Get all translations
+    ?trans
+        a dbnary:Translation ;
+        dbnary:isTranslationOf ?sle ;
+        dbnary:targetLanguage ?lg ;
+        dbnary:writtenForm ?wf.
+    # Along with source lexical entry.
+    ?sle a ontolex:LexicalEntry;
+        lexinfo:partOfSpeech ?pos.
+    # And target lexical entry which are conformant on their partOfSpeech.
+    ?le a ontolex:LexicalEntry;
+        dct:language ?lg;
+        ontolex:canonicalForm / ontolex:writtenRep ?wf;
+        lexinfo:partOfSpeech ?pos.
+}
+GROUP BY ?trans
+HAVING (COUNT(*) = 1)
+
+#Link source and target lexical entries of translations without homonymy.
+INSERT
+    { GRAPH <http://kaiko.getalp.org/dbnary/vartrans> {?sle vartrans:translatableAs ?tle} }
+WHERE {
+    { SELECT (sample(?sle) as ?sle), (sample(?le) as ?tle) WHERE {
+    #Get all translations
+    ?trans
+        a dbnary:Translation ;
+        dbnary:isTranslationOf ?sle ;
+        dbnary:targetLanguage ?lg ;
+        dbnary:writtenForm ?wf.
+    # Along with source lexical entry.
+    ?sle a ontolex:LexicalEntry;
+        lexinfo:partOfSpeech ?pos.
+    # And target lexical entry which are conformant on their partOfSpeech.
+    ?le a ontolex:LexicalEntry;
+        dct:language ?lg;
+        ontolex:canonicalForm / ontolex:writtenRep ?wf;
+        lexinfo:partOfSpeech ?pos.
+}
+GROUP BY ?trans
+HAVING (COUNT(*) = 1)
+}
+}
+
+
+
+
+###==========================================================================================
+### EXTRACTING DEFINITIONS
+###==========================================================================================
+
+# Select definitions for each word sens in english
+SELECT ?sid, ?def WHERE {
+    ?le ontolex:sense ?sid ;
+        dct:language lexvo:eng .
+    ?sid skos:definition / rdf:value ?def .
+}
+
+# Select definitions for each word sens in english (here, the prefix is shortened to be easier to read)
+SELECT ?ssid, ?def WHERE {
+    ?le ontolex:sense ?sid ;
+        dct:language lexvo:eng .
+    ?sid skos:definition / rdf:value ?def .
+    bind(strafter(str(?sid),str(dbnary-eng:)) as ?ssid)
+}
+
+

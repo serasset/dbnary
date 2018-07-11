@@ -189,7 +189,7 @@ public class EnhanceLatestExtracts {
 
     Path latestDir = modelPath.getParent();
     if (null == latestDir) {
-      System.err.println("Unexpedted null parent for input model file...");
+      System.err.println("Unexpected null parent for input model file...");
       System.exit(-1);
     }
     if (Files.isSymbolicLink(modelPath)) {

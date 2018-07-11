@@ -141,9 +141,9 @@ ld_dir ('$DATASETDIR', '*.ttl', 'http://kaiko.getalp.org/dbnary');
 SELECT * FROM DB.DBA.LOAD_LIST;
 -- if unsatisfied use:
 -- delete from DB.DBA.LOAD_LIST;
-echoln ======================================================== ;
-echoln === Loading previously shown graphs                  === ;
-echoln ======================================================== ;
+echoln "========================================================" ;
+echoln "=== Loading previously shown graphs                  ===" ;
+echoln "========================================================" ;
 
 rdf_loader_run();
 
@@ -151,7 +151,7 @@ rdf_loader_run();
 checkpoint;
 commit WORK;
 checkpoint;
-echoln === Loading done                                     === ;
+echoln "=== Loading done                                     ===" ;
 END
 
 ## (TODO: create the virtlabels for correct facetted browsing)
@@ -163,18 +163,18 @@ END
 ## And then in queries I use
 ## define input:inference "etymology_ontology";
 
-## index facetted browsing
+## index strings for faceted browsing
 isql $SERVERPORT dba "$pwd" <<END
-echoln ======================================================== ;
-echoln === Stats on loaded graphs                           === ;
-echoln ======================================================== ;
+echoln "========================================================" ;
+echoln "=== Stats on loaded graphs                           ===" ;
+echoln "========================================================" ;
 
 sparql SELECT COUNT(*) WHERE { ?s ?p ?o } ;
 sparql SELECT ?g COUNT(*) { GRAPH ?g {?s ?p ?o.} } GROUP BY ?g ORDER BY DESC 2;
 
-echoln ======================================================== ;
-echoln === Beginning full text indexing on loaded graphs    === ;
-echoln ======================================================== ;
+echoln "========================================================" ;
+echoln "=== Beginning full text indexing on loaded graphs    ===" ;
+echoln "========================================================" ;
 
 -- Build Full Text Indexes by running the following commands using the Virtuoso isql program
 -- With this rule added, all text in all graphs will be indexed...
@@ -187,8 +187,44 @@ urilbl_ac_init_db();
 echoln --- Ranking IRIs
 -- Run the following procedure using the Virtuoso isql program to calculate the IRI ranks. Note this should be run periodically as the data grows to re-rank the IRIs.
 s_rank();
-echoln === Indexing done                                    === ;
+echoln "=== Indexing done                                    ===" ;
 
-shutdown();
 END
 
+## Expand data by linking lexical entries when there is no homonymy
+isql $SERVERPORT dba "$pwd" <<END
+-- turn off transaction isolation to avoid reaching limits in transaction log
+log_enable(2);
+echoln "========================================================" ;
+echoln "=== Linking translatableAs Lexical Entries           ===" ;
+echoln "========================================================" ;
+SPARQL INSERT
+    { GRAPH <http://kaiko.getalp.org/dbnary/vartrans> {?sle vartrans:translatableAs ?tle} }
+WHERE {
+    { SELECT (sample(?sle) as ?sle), (sample(?le) as ?tle) WHERE {
+      ?trans
+        a dbnary:Translation ;
+        dbnary:isTranslationOf ?sle ;
+        dbnary:targetLanguage ?lg ;
+        dbnary:writtenForm ?wf.
+      ?sle a ontolex:LexicalEntry;
+        lexinfo:partOfSpeech ?pos.
+      ?le a ontolex:LexicalEntry;
+        dct:language ?lg;
+        ontolex:canonicalForm / ontolex:writtenRep ?wf;
+        lexinfo:partOfSpeech ?pos.
+      } GROUP BY ?trans
+        HAVING (COUNT(*) = 1)
+    }
+}
+checkpoint;
+commit WORK;
+checkpoint;
+echoln "=== Loading done                                     ===" ;
+END
+
+#Shutdown the bootstrap database
+isql $SERVERPORT dba "$pwd" <<END
+checkpoint;
+shutdown();
+END

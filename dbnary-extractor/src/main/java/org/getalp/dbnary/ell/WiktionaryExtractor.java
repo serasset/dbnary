@@ -268,7 +268,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         case DEFBLOCK:
           // Iterate until we find a new section
-          if (m.group(1).equals("εταφράσεις")) {
+          if (m.group(1).equals("μεταφράσεις")) {
             leaveDefBlock(m);
             gotoTradBlock(m);
           } else if (posMacros.contains(m.group(1))) {
@@ -287,7 +287,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           break;
 
         case TRADBLOCK:
-          if (m.group(1).equals("εταφράσεις")) {
+          if (m.group(1).equals("μεταφράσεις")) {
             leaveTradBlock(m);
             gotoTradBlock(m);
           } else if (posMacros.contains(m.group(1))) {
@@ -306,7 +306,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           break;
 
         case NYMBLOCK:
-          if (m.group(1).equals("εταφράσεις")) {
+          if (m.group(1).equals("μεταφράσεις")) {
             leaveNymBlock(m);
             gotoTradBlock(m);
           } else if (posMacros.contains(m.group(1))) {
@@ -325,7 +325,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           break;
 
         case PRONBLOCK:
-          if (m.group(1).equals("εταφράσεις")) {
+          if (m.group(1).equals("μεταφράσεις")) {
             leavePronBlock(m);
             gotoTradBlock(m);
           } else if (posMacros.contains(m.group(1))) {

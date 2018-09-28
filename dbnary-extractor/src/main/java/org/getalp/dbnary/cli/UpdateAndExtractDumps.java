@@ -49,7 +49,7 @@ public class UpdateAndExtractDumps {
   private static Options options = null; // Command line options
 
   private static final String SERVER_URL_OPTION = "s";
-  private static final String DEFAULT_SERVER_URL = "ftp://ftpmirror.your.org/pub/wikimedia/dumps/";
+  private static final String DEFAULT_SERVER_URL = "http://dumps.wikimedia.org/";
 
   private static final String NETWORK_OFF_OPTION = "n";
 

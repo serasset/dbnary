@@ -1097,7 +1097,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // and evaluate if extracting its data is useful.
     while (macroMatcher.find()) {
       String g1 = macroMatcher.group(1);
-
+      
       if (g1.equals("t+") || g1.equals("t-") || g1.equals("tø") || g1.equals("t")) {
         // DONE: Sometimes translation links have a remaining info after the word, keep it.
         String g2 = macroMatcher.group(2);
@@ -1119,10 +1119,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           }
 
         }
-      } else if (g1.equals("trans-top")) {
-        // Get the glose that should help disambiguate the source acception
+      } else if (g1.equals("trans-top") || g1.equals("trans-top-also")) {
+        // Get the gloss that should help disambiguate the source acception
         String g2 = macroMatcher.group(2);
-        // Ignore glose if it is a macro
+        // Ignore gloss if it is a macro
         if (g2 != null && !g2.startsWith("{{")) {
           currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);
         } else {

@@ -13,7 +13,7 @@ public class ClassBasedSequenceFilter
   private HashMap<Class, WikiSequenceFiltering.Action> actions = new HashMap<>();
 
   /**
-   * Creates a default Class baed filter that :
+   * Creates a default Class based filter that :
    * <ul>
    * <li>atomizes all, but</li>
    * <li>keep textual content</li>

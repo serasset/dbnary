@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
@@ -24,6 +25,7 @@ import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiSection;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
@@ -1088,16 +1090,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ewdh.registerInflection(s, note, infl);
   }
 
-  private void extractTranslations(int startOffset, int endOffset) {
-    Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
-    macroMatcher.region(startOffset, endOffset);
+  private void extractTranslations(String wikiSource) {
+    Matcher macroMatcher = WikiPatterns.macroPattern.matcher(wikiSource);
     Resource currentGloss = null;
     int rank = 1;
     // TODO: there are templates called "qualifier" used to further qualify the translation check
     // and evaluate if extracting its data is useful.
     while (macroMatcher.find()) {
       String g1 = macroMatcher.group(1);
-      
+
       if (g1.equals("t+") || g1.equals("t-") || g1.equals("tø") || g1.equals("t")) {
         // DONE: Sometimes translation links have a remaining info after the word, keep it.
         String g2 = macroMatcher.group(2);
@@ -1136,8 +1137,51 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (g1.equals("trans-bottom")) {
         // Forget the current glose
         currentGloss = null;
+      } else if (g1.equals("section link")) {
+        String g2 = macroMatcher.group(2);
+        log.debug("Section link: {} for entry {}", g2, wiktionaryPageName);
+        String translationContent = getTranslationContentForLink(g2);
+        if (null != translationContent)
+          extractTranslations(translationContent);
       }
     }
+  }
+
+  /**
+   * Returns the content of the specified translation page's section. returns null if the page does
+   * not exists or has already been extracted.
+   * 
+   * @param link
+   * @return
+   */
+  private String getTranslationContentForLink(String link) {
+    if (!processedLinks.add(link))
+      return null;
+    String[] linkAndSection = link.split("#");
+    String translationPage = linkAndSection[0];
+    String translationSection = linkAndSection[1];
+
+    String translationPageContent = wi.getTextOfPageWithRedirects(translationPage);
+
+    // TODO : extract the correct section from the full page.
+    // Assume there is only on language and the anchor corresponds to level 3 Header (POS)
+    WikiText text = new WikiText(translationPageContent);
+    for (WikiSection s : text.sections(3)) {
+      // return the first matching section
+      if (s.getHeader().getContent().toString().equals(translationSection))
+        return s.getContent().toString();
+    }
+    log.debug("Could not find appropriate section {} in translation section link target for {}",
+        translationSection, wiktionaryPageName);
+    return translationPageContent;
+  }
+
+  private Set<String> processedLinks = new HashSet<>();
+
+  private void extractTranslations(int startOffset, int endOffset) {
+    processedLinks.clear();
+    processedLinks.add(wiktionaryPageName);
+    extractTranslations(pageContent.substring(startOffset, endOffset));
   }
 
   @Override

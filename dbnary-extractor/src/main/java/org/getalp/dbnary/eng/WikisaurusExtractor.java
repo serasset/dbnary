@@ -59,7 +59,7 @@ public class WikisaurusExtractor {
   private String getGlossString(WikiText.WikiContent content) {
     StringBuilder gloss = new StringBuilder();
     log.debug("Wikisaurus gloss = {}", content.toString());
-    for (WikiText.Token t : content.templates()) {
+    for (WikiText.Token t : content.templatesOnUpperLevel()) {
       WikiText.Template tmpl = (WikiText.Template) t;
       if (((WikiText.Template) t).getName().equals("ws sense")) {
         gloss.append(((WikiText.Template) t).getParsedArgs().get("1"));

@@ -74,19 +74,18 @@ public class WikiPattern {
     return Pattern.compile(correctedRegex);
   }
 
-  private static String reserveWikiPatternWords = new StringBuffer().append("(?<").append("TMPL")
-      .append(">").append("\\\\(?<TMATCH>[pP])\\{Template\\}").append(")|(?<").append("RESERVED")
-      .append(">").append("\\\\(?<RMATCH>[pP])\\{Reserved\\}").append(")|(?<").append("L")
-      .append(">").append("\\\\(?<LMATCH>[pP])\\{Link\\}").append(")|(?<").append("IL").append(">")
-      .append("\\\\(?<ILMATCH>[pP])\\{InternalLink\\}").append(")|(?<").append("EL").append(">")
-      .append("\\\\(?<ELMATCH>[pP])\\{ExternalLink\\}").append(")|(?<").append("OPEN").append(">")
-      .append("\\(_(?<ONAME>\\p{Alpha}\\p{Alnum}*)?_").append(")|(?<").append("CLOSE").append(">")
-      .append("_(?<CNAME>\\p{Alpha}\\p{Alnum}*)?_\\)").append(")|(?<").append("WHITESPACE")
-      .append(">").append("\\\\(?<WPMATCH>[pP])\\{White_Space\\}")
+  private static String reserveWikiPatternWords = "(?<" + "TMPL" + ">"
+      + "\\\\(?<TMATCH>[pP])\\{Template\\}" + ")|(?<" + "RESERVED" + ">"
+      + "\\\\(?<RMATCH>[pP])\\{Reserved\\}" + ")|(?<" + "L" + ">" + "\\\\(?<LMATCH>[pP])\\{Link\\}"
+      + ")|(?<" + "IL" + ">" + "\\\\(?<ILMATCH>[pP])\\{InternalLink\\}" + ")|(?<" + "EL" + ">"
+      + "\\\\(?<ELMATCH>[pP])\\{ExternalLink\\}" + ")|(?<" + "OPEN" + ">"
+      + "\\(_(?<ONAME>\\p{Alpha}\\p{Alnum}*)?_" + ")|(?<" + "CLOSE" + ">"
+      + "_(?<CNAME>\\p{Alpha}\\p{Alnum}*)?_\\)" + ")|(?<" + "WHITESPACE" + ">"
+      + "\\\\(?<WPMATCH>[pP])\\{White_Space\\}"
       // .append(")|(?<")
       // .append("EL")
       // .append(">").append("\\\\p\\{ExternalLink\\}")
-      .append(")").toString();
+      + ")";
 
   private static final Pattern lexerPatern = Pattern.compile(reserveWikiPatternWords);
 

@@ -140,7 +140,7 @@ public class WikiTextTest {
     String test = "{{en-noun}} text [[link]] text {{template}} text ";
     WikiText text = new WikiText(test);
 
-    WikiEventsSequence s = text.templates();
+    WikiEventsSequence s = text.templatesOnUpperLevel();
     Iterator<WikiText.Token> it = s.iterator();
 
     assertTrue(it.hasNext());

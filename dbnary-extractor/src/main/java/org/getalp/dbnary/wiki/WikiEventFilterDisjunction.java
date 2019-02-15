@@ -11,7 +11,12 @@ public class WikiEventFilterDisjunction implements WikiEventFilter {
   }
 
   @Override
-  public boolean apply(WikiText.Token tok) {
-    return rhs.apply(tok) || lhs.apply(tok);
+  public Action apply(WikiText.Token tok) {
+    Action rhsA = rhs.apply(tok);
+    if (rhsA == Action.VOID) {
+      return lhs.apply(tok);
+    } else {
+      return rhsA;
+    }
   }
 }

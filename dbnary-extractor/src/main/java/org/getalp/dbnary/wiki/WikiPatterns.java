@@ -22,10 +22,8 @@ public class WikiPatterns {
   static {
     // DONE: Validate the fact that links and macro should be on one line or may be on several...
     // DONE: for this, evaluate the difference in extraction !
-    linkPatternString = new StringBuilder().append("\\[\\[")
-        .append("([^\\]\\|\n\r]*)(?:\\|([^\\]\n\r]*))?").append("\\]\\]").toString();
-    macroPatternString = new StringBuilder().append("\\{\\{")
-        .append("([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?").append("\\}\\}").toString();
+    linkPatternString = "\\[\\[" + "([^\\]\\|\n\r]*)(?:\\|([^\\]\n\r]*))?" + "\\]\\]";
+    macroPatternString = "\\{\\{" + "([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?" + "\\}\\}";
     // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
     // line.
     macroOrLinkPatternString = new StringBuilder().append("(?:").append(macroPatternString)

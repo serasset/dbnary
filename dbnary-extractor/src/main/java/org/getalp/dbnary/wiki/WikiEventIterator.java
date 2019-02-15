@@ -1,31 +1,61 @@
 package org.getalp.dbnary.wiki;
 
 import java.util.Iterator;
+import java.util.Stack;
+import org.getalp.dbnary.wiki.WikiText.Heading;
+import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.Token;
 
 /**
  * Created by serasset on 28/01/16.
  */
 public class WikiEventIterator implements Iterator<WikiText.Token> {
 
-  WikiEventFilter filter;
-  WikiText.WikiContent content;
-  Iterator<WikiText.Token> baseIterator;
-  WikiText.Token nextToken = null;
+  private WikiEventFilter filter;
+  private WikiText.WikiContent content;
+  private Stack<Iterator<Token>> iterators = new Stack<>();
+  private WikiText.Token nextToken = null;
 
   public WikiEventIterator(WikiText.WikiContent content, WikiEventFilter filter) {
     this.content = content;
     this.filter = filter;
-    this.baseIterator = content.tokens().iterator();
+    this.iterators.push(content.tokens().iterator());
     advance();
   }
 
   private void advance() {
-    nextToken = null;
-    while (baseIterator.hasNext() && !filter.apply(nextToken = baseIterator.next())) {
-      ;
+    nextToken = nextTokenToReturn();
+  }
+
+  private Token nextTokenToReturn() {
+    if (iterators.empty())
+      return null;
+    Iterator<Token> currentIterator = iterators.peek();
+    if (!currentIterator.hasNext()) {
+      iterators.pop();
+      return nextTokenToReturn();
     }
-    if (null != nextToken && !baseIterator.hasNext() && !filter.apply(nextToken)) {
-      nextToken = null;
+    Token t = currentIterator.next();
+    switch (filter.apply(t)) {
+      case VOID:
+        return nextTokenToReturn();
+      case ENTER:
+        if (t instanceof ListItem) {
+          ListItem li = (ListItem) t;
+          iterators.push(li.getContent().tokens().iterator());
+          return nextTokenToReturn();
+        } else if (t instanceof Heading) {
+          Heading h = (Heading) t;
+          iterators.push(h.getContent().tokens().iterator());
+          return nextTokenToReturn();
+        } else {
+          // treat a incorrect ENTER action as a VOID
+          return nextTokenToReturn();
+        }
+      case KEEP:
+        return t;
+      default:
+        return nextTokenToReturn();
     }
   }
 

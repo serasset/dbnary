@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +28,9 @@ import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiSection;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Token;
+import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -334,7 +338,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractHeadInformation(int start, int end) {
     WikiText text = new WikiText(wiktionaryPageName, pageContent, start, end);
-    for (WikiText.Token t : text.templates()) {
+    for (WikiText.Token t : text.templatesOnUpperLevel()) {
       WikiText.Template tmpl = (WikiText.Template) t;
       if (tmpl.getName().equals("head") || tmpl.getName().startsWith("en-")) {
         Map<String, WikiText.WikiContent> args = tmpl.getArgs();
@@ -578,7 +582,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
 
-    WikiEventsSequence wikiTemplates = text.templates();
+    WikiEventsSequence wikiTemplates = text.templatesOnUpperLevel();
 
     // Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
     // macroMatcher.region(startOffset, endOffset);
@@ -1091,6 +1095,85 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractTranslations(String wikiSource) {
+    WikiText txt = new WikiText(wikiSource);
+    Resource currentGloss = null;
+    int rank = 1;
+    // TODO: there are templates called "qualifier" used to further qualify the translation check
+    // and evaluate if extracting its data is useful.
+    for (Token token : txt.templates()) {
+      Template t = (Template) token;
+      String tName = t.getName();
+      if (tName.equals("t+") || tName.equals("t-") || tName.equals("tø") || tName.equals("t")) {
+        WikiContent l = t.getArgs().get("1");
+        WikiContent word = t.getArgs().get("2");
+        WikiContent usageContent = t.getArgs().get("3");
+        String usage = (usageContent == null) ? "" : usageContent.toString();
+        if (word == null) {
+          log.debug("No (required) translation in {} : {}", t, wiktionaryPageName);
+          continue;
+        }
+        Map<String, WikiContent> args = new HashMap<>(t.getArgs()); // clone the args map so that
+                                                                    // we can destroy it
+        args.remove("1");
+        args.remove("2");
+        args.remove("3");
+        String remainingArgs = "";
+        if (args.size() > 0) {
+          for (Entry<String, WikiContent> s : args.entrySet()) {
+            remainingArgs = remainingArgs + "|" + s.getKey() + "=" + s.getValue();
+          }
+          if (usage.length() > 0) {
+            usage = usage + remainingArgs;
+          } else {
+            usage = remainingArgs.substring(1);
+          }
+        }
+        String lang = null;
+        if (l != null) {
+          lang = LangTools.normalize(l.toString());
+        } else {
+          log.debug("null language (first positional arg) in {} > {}", t.toString(),
+              wiktionaryPageName);
+        }
+        lang = EnglishLangToCode.threeLettersCode(lang);
+        if (lang != null) {
+          // TODO: handle translations that are the result of template expansions (e.g. "anecdotal
+          // evidence").
+          wdh.registerTranslation(lang, currentGloss, usage, word.toString());
+        }
+      } else if (tName.equals("trans-top") || tName.equals("trans-top-also")) {
+        // Get the gloss that should help disambiguate the source acception
+        String g2 = t.getParsedArgs().get("1");
+        // Ignore gloss if it is a macro
+        if (g2 != null && !g2.startsWith("{{")) {
+          currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);
+        } else {
+          currentGloss = null;
+        }
+      } else if (tName.equals("checktrans-top")) {
+        // forget glose.
+        currentGloss = null;
+      } else if (tName.equals("trans-mid")) {
+        // just ignore it
+      } else if (tName.equals("trans-bottom")) {
+        // Forget the current glose
+        currentGloss = null;
+      } else if (tName.equals("section link")) {
+        WikiContent g2 = t.getArgs().get("1");
+        log.debug("Section link: {} for entry {}", g2, wiktionaryPageName);
+        if (g2 != null) {
+          String translationContent = getTranslationContentForLink(g2.toString());
+          if (null != translationContent)
+            extractTranslations(translationContent);
+        }
+      } else if (log.isDebugEnabled()) {
+        log.debug("Ignored template: {} in translation section for entry {}", t.toString(),
+            wiktionaryPageName);
+      }
+    }
+  }
+
+  private void extractTranslationsOld(String wikiSource) {
     Matcher macroMatcher = WikiPatterns.macroPattern.matcher(wikiSource);
     Resource currentGloss = null;
     int rank = 1;

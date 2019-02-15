@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.PropertyObjectPair;
@@ -66,7 +65,7 @@ public class GermanMorphologyExtractor {
   public void extractMorphologicalData(String wikiSourceText, String pageName) {
     WikiText wikiText = new WikiText(wikiSourceText);
 
-    for (WikiText.Token t : wikiText.templates()) {
+    for (WikiText.Token t : wikiText.templatesOnUpperLevel()) {
       WikiText.Template wt = (WikiText.Template) t;
       String templateName = wt.getName().trim();
       if (templateName.startsWith("Vorlage:")) {

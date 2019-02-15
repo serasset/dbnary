@@ -1,11 +1,14 @@
 package org.getalp.dbnary.wiki;
 
+import static org.getalp.dbnary.wiki.WikiEventFilter.Action.KEEP;
+import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.getalp.dbnary.wiki.WikiEventFilter.Action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,9 +193,16 @@ public class WikiText {
       return filteredTokens(filter);
     }
 
-    public WikiEventsSequence templates() {
+    public WikiEventsSequence templatesOnUpperLevel() {
       ClassBasedFilter filter = new ClassBasedFilter();
       filter.allowTemplates();
+      return filteredTokens(filter);
+    }
+
+    // When parsing throw templates, some of them may be found in headers, lists, etc.
+    public WikiEventsSequence templates() {
+      ClassBasedFilter filter = new ClassBasedFilter();
+      filter.allowTemplates().enterAll();
       return filteredTokens(filter);
     }
 
@@ -203,19 +213,21 @@ public class WikiText {
     }
 
     public WikiEventsSequence headers(int level) {
-      return headers().and(tok -> ((Heading) tok).getLevel() == level);
+      return headers().and(tok -> (((Heading) tok).getLevel() == level) ? KEEP : VOID);
       // return filteredTokens(tok -> (tok instanceof Heading && ((Heading) tok).getLevel() ==
       // level));
     }
 
     public WikiEventsSequence headersMatching(Pattern pattern) {
       return headers()
-          .and(tok -> (pattern.matcher(((Heading) tok).getContent().toString()).matches()));
+          .and(tok -> ((pattern.matcher(((Heading) tok).getContent().toString()).matches())) ? KEEP
+              : VOID);
     }
 
     public WikiEventsSequence headersMatching(int level, Pattern pattern) {
       return headers(level)
-          .and(tok -> (pattern.matcher(((Heading) tok).getContent().toString()).matches()));
+          .and(tok -> ((pattern.matcher(((Heading) tok).getContent().toString()).matches())) ? KEEP
+              : VOID);
     }
 
   }
@@ -679,8 +691,8 @@ public class WikiText {
           int height = findHighestClosableTemplate(stack);
           if (height != -1) {
             for (int i = stack.size() - 1; i > height; i--) {
-              if (stack.peek() instanceof ExternalLink) {
-                ExternalLink t = (ExternalLink) stack.pop();
+              if (stack.peek() instanceof Link) {
+                Link t = (Link) stack.pop();
                 stack.peek().addFlattenedTokens(t);
               } else if (stack.peek() instanceof ListItem) {
                 ListItem li = (ListItem) stack.pop();
@@ -788,15 +800,23 @@ public class WikiText {
           pos += g.length();
           // TODO Handle nowiki tags
         } else if (null != (g = lexer.group("NL"))) {
+          // First close and void any token that cannot contain a newline
+          while (true) {
+            Token t = stack.peek();
+            if (t instanceof Heading || t instanceof Link) {
+              stack.pop();
+              stack.peek().addFlattenedTokens(t);
+              continue;
+            } else {
+              break;
+            }
+          }
           // if in ListItem, it's a closing char
           Token t = stack.peek();
           if (t instanceof ListItem) {
             ListItem li = (ListItem) stack.pop();
             li.setEndOffset(pos);
             stack.peek().addToken(t);
-          } else if (t instanceof Heading) {
-            Heading h = (Heading) stack.pop();
-            stack.peek().addFlattenedTokens(h);
           }
           pos += g.length();
           newlineFlag = true;
@@ -849,7 +869,7 @@ public class WikiText {
    */
   private int findHighestClosableTemplate(Stack<Token> stack) {
     for (int i = stack.size() - 1; i > 0; i--) {
-      if (stack.get(i) instanceof ListItem || stack.get(i) instanceof ExternalLink) {
+      if (stack.get(i) instanceof ListItem || stack.get(i) instanceof Link) {
         continue;
       } else if (stack.get(i) instanceof Template) {
         return i;
@@ -913,6 +933,10 @@ public class WikiText {
   // frequent simple access to the wiki text
   public WikiEventsSequence links() {
     return content().links();
+  }
+
+  public WikiEventsSequence templatesOnUpperLevel() {
+    return content().templatesOnUpperLevel();
   }
 
   public WikiEventsSequence templates() {

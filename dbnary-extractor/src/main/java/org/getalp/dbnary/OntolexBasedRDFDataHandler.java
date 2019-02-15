@@ -478,6 +478,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       return null; // Don't register anything if current lex entry is not known.
     }
     word = word.trim();
+    usage = usage.trim();
     // Do not register empty translations
     if (word.length() == 0 && (usage == null || usage.length() == 0)) {
       return null;
@@ -500,7 +501,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       aBox.add(trans, DBnaryOnt.gloss, currentGlose);
     }
 
-    if (usage != null && !usage.equals("")) {
+    if (usage != null && usage.length() > 0) {
       aBox.add(trans, DBnaryOnt.usage, usage);
     }
     return trans;

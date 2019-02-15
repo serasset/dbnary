@@ -1,5 +1,8 @@
 package org.getalp.dbnary.wiki;
 
+import static org.getalp.dbnary.wiki.WikiEventFilter.Action.ENTER;
+import static org.getalp.dbnary.wiki.WikiEventFilter.Action.KEEP;
+import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,7 +11,8 @@ import java.util.Set;
  */
 public class ClassBasedFilter implements WikiEventFilter {
 
-  private HashSet<Class> allowedClasses = new HashSet<Class>();
+  private HashSet<Class> classesToKeep = new HashSet<Class>();
+  private HashSet<Class> classesToEnter = new HashSet<Class>();
 
   public ClassBasedFilter() {
     super();
@@ -16,41 +20,47 @@ public class ClassBasedFilter implements WikiEventFilter {
 
   public ClassBasedFilter(Set<Class> allowedClasses) {
     super();
-    this.allowedClasses.addAll(allowedClasses);
+    this.classesToKeep.addAll(allowedClasses);
+  }
+
+  public ClassBasedFilter(Set<Class> allowedClasses, Set<Class> goIntoClasses) {
+    super();
+    this.classesToKeep.addAll(allowedClasses);
+    this.enterAll();
   }
 
   public ClassBasedFilter allowTemplates() {
-    allowedClasses.add(WikiText.Template.class);
+    classesToKeep.add(WikiText.Template.class);
     return this;
   }
 
   public ClassBasedFilter allowInternalLink() {
-    allowedClasses.add(WikiText.InternalLink.class);
+    classesToKeep.add(WikiText.InternalLink.class);
     return this;
   }
 
   public ClassBasedFilter allowLink() {
-    allowedClasses.add(WikiText.Link.class);
+    classesToKeep.add(WikiText.Link.class);
     return this;
   }
 
   public ClassBasedFilter allowExternalLink() {
-    allowedClasses.add(WikiText.ExternalLink.class);
+    classesToKeep.add(WikiText.ExternalLink.class);
     return this;
   }
 
   public ClassBasedFilter allowHTMLComment() {
-    allowedClasses.add(WikiText.HTMLComment.class);
+    classesToKeep.add(WikiText.HTMLComment.class);
     return this;
   }
 
   public ClassBasedFilter allowListItem() {
-    allowedClasses.add(WikiText.ListItem.class);
+    classesToKeep.add(WikiText.ListItem.class);
     return this;
   }
 
   public ClassBasedFilter allowHeading() {
-    allowedClasses.add(WikiText.Heading.class);
+    classesToKeep.add(WikiText.Heading.class);
     return this;
   }
 
@@ -60,7 +70,7 @@ public class ClassBasedFilter implements WikiEventFilter {
   }
 
   public ClassBasedFilter allowText() {
-    allowedClasses.add(WikiText.Text.class);
+    classesToKeep.add(WikiText.Text.class);
     return this;
   }
 
@@ -71,32 +81,32 @@ public class ClassBasedFilter implements WikiEventFilter {
   }
 
   public ClassBasedFilter denyTemplates() {
-    allowedClasses.remove(WikiText.Template.class);
+    classesToKeep.remove(WikiText.Template.class);
     return this;
   }
 
   public ClassBasedFilter denyInternalLink() {
-    allowedClasses.remove(WikiText.InternalLink.class);
+    classesToKeep.remove(WikiText.InternalLink.class);
     return this;
   }
 
   public ClassBasedFilter denyExternalLink() {
-    allowedClasses.remove(WikiText.ExternalLink.class);
+    classesToKeep.remove(WikiText.ExternalLink.class);
     return this;
   }
 
   public ClassBasedFilter denyListItem() {
-    allowedClasses.remove(WikiText.ListItem.class);
+    classesToKeep.remove(WikiText.ListItem.class);
     return this;
   }
 
   public ClassBasedFilter denyHeading() {
-    allowedClasses.remove(WikiText.Heading.class);
+    classesToKeep.remove(WikiText.Heading.class);
     return this;
   }
 
   public ClassBasedFilter denyHTMLComment() {
-    allowedClasses.remove(WikiText.HTMLComment.class);
+    classesToKeep.remove(WikiText.HTMLComment.class);
     return this;
   }
 
@@ -106,22 +116,43 @@ public class ClassBasedFilter implements WikiEventFilter {
   }
 
   public ClassBasedFilter denyText() {
-    allowedClasses.remove(WikiText.Text.class);
+    classesToKeep.remove(WikiText.Text.class);
     return this;
   }
 
   public ClassBasedFilter denyAll() {
-    allowedClasses.clear();
+    classesToKeep.clear();
+    return this;
+  }
+
+
+  public ClassBasedFilter enterListItems() {
+    classesToEnter.add(WikiText.ListItem.class);
+    return this;
+  }
+
+  public ClassBasedFilter enterHeadings() {
+    classesToEnter.add(WikiText.Heading.class);
+    return this;
+  }
+
+  public ClassBasedFilter enterAll() {
+    this.enterListItems().enterHeadings();
     return this;
   }
 
   @Override
-  public boolean apply(WikiText.Token tok) {
-    for (Class allowedClass : allowedClasses) {
+  public Action apply(WikiText.Token tok) {
+    for (Class allowedClass : classesToKeep) {
       if (allowedClass.isInstance(tok)) {
-        return true;
+        return KEEP;
       }
     }
-    return false;
+    for (Class allowedClass : classesToEnter) {
+      if (allowedClass.isInstance(tok)) {
+        return ENTER;
+      }
+    }
+    return VOID;
   }
 }

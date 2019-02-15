@@ -17,13 +17,17 @@ import org.getalp.dbnary.tools.CharRange;
 public class WikiCharSequence implements CharSequence {
 
 
+  // FIXME: there are already 2 pages in English wiktionray which hits the limits in the number of
+  // allowed templates (number of different private use chars in range. Find a way to overpass this
+  // limit
+  // (using upper plane private chars or using a private char sequence).
   public static final CharRange LISTS_RANGE = new CharRange('\uE000', '\uE3FF'); // links from
   // U+E000 - U+E3FF
-  public static final CharRange TEMPLATES_RANGE = new CharRange('\uE400', '\uE7FF'); // templates
-  // from U+E300 - U+E4FF
-  public static final CharRange EXTERNAL_LINKS_RANGE = new CharRange('\uE800', '\uEBFF');
-  public static final CharRange INTERNAL_LINKS_RANGE = new CharRange('\uEC00', '\uEFFF');
-  public static final CharRange HEADERS_RANGE = new CharRange('\uF000', '\uF3FF');
+  public static final CharRange TEMPLATES_RANGE = new CharRange('\uE400', '\uEBFF'); // templates
+  // from U+E400 - U+E7FF
+  public static final CharRange EXTERNAL_LINKS_RANGE = new CharRange('\uEC00', '\uEFFF');
+  public static final CharRange INTERNAL_LINKS_RANGE = new CharRange('\uF000', '\uF3FF');
+  public static final CharRange HEADERS_RANGE = new CharRange('\uF400', '\uF8FF');
 
   private final StringBuffer chars;
   private final WikiText.WikiContent content;

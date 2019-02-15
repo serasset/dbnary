@@ -3,7 +3,6 @@ package org.getalp.dbnary.wiki;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import java.util.Iterator;
 import org.junit.Test;
 
@@ -12,8 +11,7 @@ import org.junit.Test;
  */
 public class WikiSectionsIterationTest {
 
-  private String testContent = ""
-      + "==English==\n" + "\n" + "===Verb===\n" + "\n"
+  private String testContent = "" + "==English==\n" + "\n" + "===Verb===\n" + "\n"
       + "====Translations====\n" + "{{template}} text text text\n" + "Content\n" + "===Noun===\n"
       + "\n" + "====Translations====\n" + "nominal translations\n" + "==French==\n" + "\n"
       + "===Noun===\n" + "\n" + "====Translations====\n" + "Translations of French Noun";

@@ -314,8 +314,14 @@ public class WiktionaryIndex implements Map<String, String> {
   private static List<String> redirects =
       Arrays.asList("#REDIRECT", "#WEITERLEITUNG", "#REDIRECCIÓN");
 
-  public String getTextOfPageWithRedirects(Object key) {
+  public String getTextOfPageWithRedirects(String key) {
     String text = getTextOfPage(key);
+    if (null == text) {
+      text = getTextOfPage(key.replaceAll(" ", "_"));
+    }
+    if (null == text) {
+      text = getTextOfPage(key.replaceAll("_", " "));
+    }
     if (null != text) {
       for (String redirect : redirects) {
         if (text.startsWith(redirect)) {
@@ -330,7 +336,7 @@ public class WiktionaryIndex implements Map<String, String> {
     return text;
   }
 
-  public String getTextOfPage(Object key) {
+  public String getTextOfPage(String key) {
     String skey = (String) key;
     boolean notMainSpace = skey.contains(":");
     Element element = cache.get(skey);

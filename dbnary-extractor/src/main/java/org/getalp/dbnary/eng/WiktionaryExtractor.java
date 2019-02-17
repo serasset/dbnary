@@ -1103,7 +1103,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token token : txt.templates()) {
       Template t = (Template) token;
       String tName = t.getName();
-      if (tName.equals("t+") || tName.equals("t-") || tName.equals("tø") || tName.equals("t")) {
+      if (tName.equals("t+") || tName.equals("t-") || tName.equals("tø") || tName.equals("t")
+          || tName.equals("t-check") || tName.equals("t+check") || tName.equals("t-simple")) {
         WikiContent l = t.getArgs().get("1");
         WikiContent word = t.getArgs().get("2");
         WikiContent usageContent = t.getArgs().get("3");

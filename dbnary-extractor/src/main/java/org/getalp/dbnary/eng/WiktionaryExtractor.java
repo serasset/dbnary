@@ -1100,6 +1100,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int rank = 1;
     // TODO: there are templates called "qualifier" used to further qualify the translation check
     // and evaluate if extracting its data is useful.
+    // TODO: Handle trans-see links that point to the translation section of a synonym. Keep the
+    // link in the extracted dataset.
     for (Token token : txt.templates()) {
       Template t = (Template) token;
       String tName = t.getName();
@@ -1140,6 +1142,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (lang != null) {
           // TODO: handle translations that are the result of template expansions (e.g. "anecdotal
           // evidence").
+          // TODO : handle translations that are links to other entries (maybe keep those links)
           wdh.registerTranslation(lang, currentGloss, usage, word.toString());
         }
       } else if (tName.equals("trans-top") || tName.equals("trans-top-also")) {
@@ -1170,63 +1173,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (log.isDebugEnabled()) {
         log.debug("Ignored template: {} in translation section for entry {}", t.toString(),
             wiktionaryPageName);
-      }
-    }
-  }
-
-  private void extractTranslationsOld(String wikiSource) {
-    Matcher macroMatcher = WikiPatterns.macroPattern.matcher(wikiSource);
-    Resource currentGloss = null;
-    int rank = 1;
-    // TODO: there are templates called "qualifier" used to further qualify the translation check
-    // and evaluate if extracting its data is useful.
-    while (macroMatcher.find()) {
-      String g1 = macroMatcher.group(1);
-
-      if (g1.equals("t+") || g1.equals("t-") || g1.equals("tø") || g1.equals("t")) {
-        // DONE: Sometimes translation links have a remaining info after the word, keep it.
-        String g2 = macroMatcher.group(2);
-        int i1, i2;
-        String lang, word;
-        if (g2 != null && (i1 = g2.indexOf('|')) != -1) {
-          lang = LangTools.normalize(g2.substring(0, i1));
-
-          String usage = null;
-          if ((i2 = g2.indexOf('|', i1 + 1)) == -1) {
-            word = g2.substring(i1 + 1);
-          } else {
-            word = g2.substring(i1 + 1, i2);
-            usage = g2.substring(i2 + 1);
-          }
-          lang = EnglishLangToCode.threeLettersCode(lang);
-          if (lang != null) {
-            wdh.registerTranslation(lang, currentGloss, usage, word);
-          }
-
-        }
-      } else if (g1.equals("trans-top") || g1.equals("trans-top-also")) {
-        // Get the gloss that should help disambiguate the source acception
-        String g2 = macroMatcher.group(2);
-        // Ignore gloss if it is a macro
-        if (g2 != null && !g2.startsWith("{{")) {
-          currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);
-        } else {
-          currentGloss = null;
-        }
-      } else if (g1.equals("checktrans-top")) {
-        // forget glose.
-        currentGloss = null;
-      } else if (g1.equals("trans-mid")) {
-        // just ignore it
-      } else if (g1.equals("trans-bottom")) {
-        // Forget the current glose
-        currentGloss = null;
-      } else if (g1.equals("section link")) {
-        String g2 = macroMatcher.group(2);
-        log.debug("Section link: {} for entry {}", g2, wiktionaryPageName);
-        String translationContent = getTranslationContentForLink(g2);
-        if (null != translationContent)
-          extractTranslations(translationContent);
       }
     }
   }

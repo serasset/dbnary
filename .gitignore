@@ -238,3 +238,4 @@ raw.*
 README_*
 extract*.sh 
 
+/.ipynb_checkpoints/

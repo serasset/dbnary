@@ -268,12 +268,11 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void populateMetadata(String dumpFilename, String extractorVersion) {
-    Resource lexicon = aBox
-        .createResource(getPrefix() + "___" + wktLanguageEdition + "_dbnary_dataset",
-            LimeOnt.Lexicon);
+    Resource lexicon = aBox.createResource(
+        getPrefix() + "___" + wktLanguageEdition + "_dbnary_dataset", LimeOnt.Lexicon);
     aBox.add(aBox.createStatement(lexicon, DCTerms.description,
         "This lexicon is extracted from the original wiktionary data that con be found"
-            + " in http://" + wktLanguageEdition +".wiktionary.org/ by the DBnary Extractor"));
+            + " in http://" + wktLanguageEdition + ".wiktionary.org/ by the DBnary Extractor"));
     aBox.add(aBox.createStatement(lexicon, LimeOnt.language, wktLanguageEdition));
     aBox.add(aBox.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
 
@@ -491,7 +490,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       return null; // Don't register anything if current lex entry is not known.
     }
     word = word.trim();
-    if (null != usage) usage = usage.trim();
+    if (null != usage)
+      usage = usage.trim();
     // Do not register empty translations
     if (word.length() == 0 && (usage == null || usage.length() == 0)) {
       return null;

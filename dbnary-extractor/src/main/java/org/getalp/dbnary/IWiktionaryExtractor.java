@@ -8,4 +8,5 @@ public interface IWiktionaryExtractor {
 
   void postProcessData();
 
+  void populateMetadata(String dumpFileName, String extractorVersion);
 }

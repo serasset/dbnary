@@ -497,4 +497,10 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   public void postProcessData() {
     // do nothing
   }
+
+  @Override
+  public void populateMetadata(String dumpFilename, String extractorVersion) {
+    this.wdh.populateMetadata(dumpFilename, extractorVersion);
+  }
+
 }

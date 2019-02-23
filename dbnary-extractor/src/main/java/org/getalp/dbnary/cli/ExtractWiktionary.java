@@ -11,6 +11,8 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.cli.CommandLine;
@@ -95,6 +97,7 @@ public class ExtractWiktionary {
   private String outputFileSuffix = "";
   private int fromPage = 0;
   private int toPage = Integer.MAX_VALUE;
+  private String extractorVersion;
 
   WiktionaryIndex wi;
   IWiktionaryExtractor we;
@@ -183,6 +186,18 @@ public class ExtractWiktionary {
     if (cmd.hasOption("h")) {
       printUsage();
       System.exit(0);
+    }
+
+    extractorVersion = "UNKNOWN";
+    Manifest mf = new Manifest();
+    try {
+      mf.read(Thread.currentThread().getContextClassLoader()
+          .getResourceAsStream("META-INF/MANIFEST.MF"));
+
+      Attributes atts = mf.getMainAttributes();
+      extractorVersion = atts.getValue("Extractor-Version");
+    } catch (IOException e) {
+      log.info("Could not retrieve extractor version.");
     }
 
     if (cmd.hasOption(SUFFIX_OUTPUT_FILE_OPTION)) {
@@ -366,6 +381,7 @@ public class ExtractWiktionary {
 
       // TODO : enable post processing after extraction ?
       we.postProcessData();
+      we.populateMetadata(dumpFile.getName(), extractorVersion);
 
       saveBox(Feature.MAIN, outputFile);
 

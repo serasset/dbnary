@@ -11,6 +11,7 @@ import org.apache.jena.rdf.model.Resource;
 public interface IWiktionaryDataHandler {
 
 
+
   enum Feature {
     MAIN, MORPHOLOGY, ETYMOLOGY
   }
@@ -142,5 +143,6 @@ public interface IWiktionaryDataHandler {
 
   Resource currentLexinfoPos();
 
+  void populateMetadata(String dumpFilename, String extractorVersion);
 
 }

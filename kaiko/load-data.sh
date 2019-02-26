@@ -216,7 +216,7 @@ WHERE {
       } GROUP BY ?trans
         HAVING (COUNT(*) = 1)
     }
-}
+};
 checkpoint;
 commit WORK;
 checkpoint;

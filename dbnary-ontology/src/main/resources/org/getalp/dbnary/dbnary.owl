@@ -207,6 +207,15 @@
     
 
 
+    <!-- http://kaiko.getalp.org/dbnary#extractorVersion -->
+
+    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#extractorVersion">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:comment xml:lang="en">The version number of the extraction program used to produce this dataset from the wiktionary dumps.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://kaiko.getalp.org/dbnary#partOfSpeech -->
 
     <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#partOfSpeech">

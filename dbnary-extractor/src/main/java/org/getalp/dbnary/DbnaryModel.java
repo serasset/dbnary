@@ -21,8 +21,10 @@ public class DbnaryModel {
   }
 
   /**
-   * setting the DBNARY prefix globally. Warning, setting this too late in the processus may lead to
+   * Set the DBNARY prefix globally. Warning, setting this too late in the processus may lead to
    * inconsistent dataset.
+   * 
+   * @param p the global prefix to be used for the extracted data.
    */
   public static void setGlobalDbnaryPrefix(String p) {
     DBNARY_NS_PREFIX = p;

@@ -142,7 +142,9 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   }
 
   /**
-   * returns true iff the pagename should be ignored during extraction.
+   *
+   * @param pagename the name of the page
+   * @return returns true iff the pagename should be ignored during extraction.
    */
   public boolean filterOutPage(String pagename) {
     return pagename.contains(":");

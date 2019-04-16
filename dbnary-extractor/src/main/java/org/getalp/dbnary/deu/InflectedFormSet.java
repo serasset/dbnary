@@ -15,7 +15,6 @@ public class InflectedFormSet implements Iterable<Map.Entry<GermanInflectionData
    *
    * @param key the inflection for which the set of values are added
    * @param values the set of values to add to the map.
-   * @return
    */
   public void add(GermanInflectionData key, Set<String> values) {
     for (String value : values) {
@@ -28,7 +27,6 @@ public class InflectedFormSet implements Iterable<Map.Entry<GermanInflectionData
    *
    * @param key the inflection for which the map of values are added
    * @param value the value to add to the map.
-   * @return
    */
   public void add(GermanInflectionData key, String value) {
     if (value.length() == 0 || value.equals("—") || value.equals("-") || value.equals("\u00A0")) {

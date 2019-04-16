@@ -26,9 +26,8 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.iterator.ExtendedIterator;
-import org.apache.jena.util.iterator.Filter;
 import org.apache.jena.vocabulary.RDF;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.getalp.LangTools;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;
@@ -319,13 +318,7 @@ public class CompareTradsAndIWLinks extends DbnaryModel {
     ResIterator vocables = m1.listResourcesWithProperty(RDF.type, DBnaryOnt.Page);
 
     // Only keep vocable that are valid pages.
-    ExtendedIterator<Resource> vocs = vocables.filterKeep(new Filter<Resource>() {
-
-      @Override
-      public boolean accept(Resource o) {
-        return o.hasProperty(DBnaryOnt.describes);
-      }
-    });
+    ExtendedIterator<Resource> vocs = vocables.filterKeep(o -> o.hasProperty(DBnaryOnt.describes));
     int i = 0;
     while (vocs.hasNext() && i != n) {
       int step = (int) (Math.random() * stepWidth);

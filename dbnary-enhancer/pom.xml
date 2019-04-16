@@ -34,6 +34,15 @@
     </license>
   </licenses>
 
+  <developers>
+    <developer>
+      <name>Andon Tchechmedjiev</name>
+    </developer>
+    <developer>
+      <name>Mathilde Vernet</name>
+    </developer>
+  </developers>
+
   <dependencies>
     <dependency>
       <groupId>com.wcohen</groupId>

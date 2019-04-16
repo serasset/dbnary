@@ -429,8 +429,9 @@ public class Etymology {
   }
 
   /**
+   * @param a list of Symbols
    * @return a String (e.g., "FROM LEMMA OR LEMMA") concatenating the property "symbols" of each
-   *         element of ArrayList<Symbols>
+   *         element of ArrayList$lt;Symbols$gt;
    */
   public static String toString(ArrayList<Symbols> a) {
     StringBuilder s = new StringBuilder();

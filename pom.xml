@@ -9,7 +9,9 @@
   <packaging>pom</packaging>
 
   <inceptionYear>2010</inceptionYear>
-  <name>DBnary: Ontolex-based multilingual lexical resource in RDF, from Wiktionary and other sources</name>
+  <name>DBnary: Ontolex-based multilingual lexical resource in RDF, from Wiktionary and other
+    sources
+  </name>
   <url>http://kaiko.getalp.org/about-dbnary</url>
 
   <description>Dbnary is an effort to provide multilingual lexical data extracted from wiktionary.
@@ -100,6 +102,10 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+      </plugin>
     </plugins>
   </reporting>
 
@@ -135,121 +141,124 @@
   </dependencies>
 
   <build>
-  <extensions>
-    <extension>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-ssh</artifactId>
-      <version>2.12</version>
-    </extension>
-    <extension>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-ssh-external</artifactId>
-      <version>2.12</version>
-      <!-- version was 2.6-->
-    </extension>
-  </extensions>
-  <plugins>
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-compiler-plugin</artifactId>
-      <executions>
-        <execution>
-          <phase>compile</phase>
-          <goals>
-            <goal>compile</goal>
-          </goals>
-        </execution>
-      </executions><!-- TODO: Change plugins versions to current stable versions -->
-      <configuration>
-        <fork>true</fork>
-        <source>8</source>
-        <target>8</target>
-      </configuration>
-    </plugin>
-    <plugin>
-      <groupId>external.atlassian.jgitflow</groupId>
-      <artifactId>jgitflow-maven-plugin</artifactId>
-      <version>1.0-m5.1</version>
-      <configuration>
-        <!-- Enable this to push to origin using SSH keys -->
-        <!--enableSshAgent>true</enableSshAgent-->
-        <!-- Keep your maven submodules at the same version as the parent POM -->
-        <autoVersionSubmodules>true</autoVersionSubmodules>
-        <!--
-          Pusing in-development features to origin allows all devs to see what each other
-          are working on
-         -->
-        <pushFeatures>true</pushFeatures>
-        <!--
-          This allows the CI server (e.g. Jenkins) to automatically push new releases to
-          origin; you can then either manually deploy them or, if you are doing Continuous
-          Deployments, auto-deploy them to prod
-         -->
-        <pushReleases>true</pushReleases>
-        <!--
-          Hot Fixes should be pushed to origin as well so that any dev can pick them up
-         -->
-        <!--pushHotfixes>true</pushHotfixes-->
-        <!--
-          Prevents deployments from dev workstations so that they can be done by a CI
-          server
-         -->
-        <!--noDeploy>true</noDeploy-->
-      </configuration>
-    </plugin>
-    <plugin>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>native2ascii-maven-plugin</artifactId>
-      <version>1.0-beta-1</version>
-      <executions>
-        <execution>
-          <goals>
-            <goal>native2ascii</goal>
-          </goals>
-          <configuration>
-          </configuration>
-        </execution>
-      </executions>
-    </plugin>
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-source-plugin</artifactId>
-      <version>3.0.1</version>
-      <executions>
-        <execution>
-          <id>attach-sources</id>
-          <goals>
-            <goal>jar</goal>
-          </goals>
-        </execution>
-      </executions>
-    </plugin>
-    <!--plugin>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>license-maven-plugin</artifactId>
-      <version>1.19</version>
-      <configuration>
-        <verbose>false</verbose>
-        <addSvnKeyWords>true</addSvnKeyWords>
-      </configuration>
-      <executions>
-        <execution>
-          <id>first</id>
-          <goals>
-            <goal>update-file-header</goal>
-          </goals>
-          <phase>process-sources</phase>
-          <configuration>
-            <licenseName>mit</licenseName>
-            <roots>
-              <root>src/main/java</root>
-              <root>src/test/java</root>
-            </roots>
-          </configuration>
-        </execution>
-      </executions>
-    </plugin-->
-  </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh</artifactId>
+        <version>2.12</version>
+      </extension>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>2.12</version>
+        <!-- version was 2.6-->
+      </extension>
+    </extensions>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions><!-- TODO: Change plugins versions to current stable versions -->
+        <configuration>
+          <fork>true</fork>
+          <source>8</source>
+          <target>8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>external.atlassian.jgitflow</groupId>
+        <artifactId>jgitflow-maven-plugin</artifactId>
+        <version>1.0-m5.1</version>
+        <configuration>
+          <!-- Enable this to push to origin using SSH keys -->
+          <!--enableSshAgent>true</enableSshAgent-->
+          <!-- Keep your maven submodules at the same version as the parent POM -->
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <!--
+            Pusing in-development features to origin allows all devs to see what each other
+            are working on
+           -->
+          <pushFeatures>true</pushFeatures>
+          <!--
+            This allows the CI server (e.g. Jenkins) to automatically push new releases to
+            origin; you can then either manually deploy them or, if you are doing Continuous
+            Deployments, auto-deploy them to prod
+           -->
+          <pushReleases>true</pushReleases>
+          <!--
+            Hot Fixes should be pushed to origin as well so that any dev can pick them up
+           -->
+          <!--pushHotfixes>true</pushHotfixes-->
+          <!--
+            Prevents deployments from dev workstations so that they can be done by a CI
+            server
+           -->
+          <!--noDeploy>true</noDeploy-->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>native2ascii-maven-plugin</artifactId>
+        <version>1.0-beta-1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>native2ascii</goal>
+            </goals>
+            <configuration>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>1.19</version>
+        <configuration>
+          <verbose>false</verbose>
+        </configuration>
+        <executions>
+          <execution>
+            <id>first</id>
+            <goals>
+              <goal>update-project-license</goal>
+              <!--goal>check-file-header</goal-->
+              <goal>update-file-header</goal>
+            </goals>
+            <phase>process-sources</phase>
+            <configuration>
+              <licenseName>mit</licenseName>
+              <roots>
+                <root>src/main/java</root>
+                <root>src/test/java</root>
+              </roots>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
     <pluginManagement>
       <plugins>
         <plugin>

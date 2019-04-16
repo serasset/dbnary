@@ -244,7 +244,7 @@
             <goals>
               <goal>update-project-license</goal>
               <!--goal>check-file-header</goal-->
-              <goal>update-file-header</goal>
+              <!--goal>update-file-header</goal-->
             </goals>
             <phase>process-sources</phase>
             <configuration>

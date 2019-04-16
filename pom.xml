@@ -237,6 +237,7 @@
         <version>1.19</version>
         <configuration>
           <verbose>false</verbose>
+          <copyrightOwners>Gilles Sérasset, Université Grenoble Alpes</copyrightOwners>
         </configuration>
         <executions>
           <execution>
@@ -249,10 +250,10 @@
             <phase>process-sources</phase>
             <configuration>
               <licenseName>mit</licenseName>
-              <roots>
+              <!--roots>
                 <root>src/main/java</root>
                 <root>src/test/java</root>
-              </roots>
+              </roots-->
             </configuration>
           </execution>
         </executions>

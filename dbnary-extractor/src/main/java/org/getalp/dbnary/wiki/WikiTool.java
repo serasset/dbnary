@@ -179,8 +179,8 @@ public class WikiTool {
   }
 
   /**
-   * @param a String
-   * @param a character
+   * @param s String
+   * @param c character
    * @return an ArrayList of String This function takes as input a String s and a character or
    *         separator c, and splits s into an ArrayList of Strings using separator c, unless
    *         character c falls inside a wiki link or a wiki template

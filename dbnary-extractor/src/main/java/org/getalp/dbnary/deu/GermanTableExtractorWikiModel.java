@@ -350,7 +350,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
 
   /**
    * Extract wordforms from table cell<br>
-   * Splits cell content by \<br\> or comma and removes HTML formatting
+   * Splits cell content by &lt;br\&gt; or comma and removes HTML formatting
    *
    * @param cell the current cell in the inflection table
    * @return Set of wordforms (Strings) from this cell

@@ -139,7 +139,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public boolean filterOutPage(String pagename) {
     // Extract Wikisaurus and Reconstructed pages...
-    return isTranslationPage(pagename) || (!isWikisaurus(pagename) && !isReconstructed(pagename) && super.filterOutPage(pagename));
+    return isTranslationPage(pagename)
+        || (!isWikisaurus(pagename) && !isReconstructed(pagename) && super.filterOutPage(pagename));
   }
 
   private boolean isTranslationPage(String pagename) {

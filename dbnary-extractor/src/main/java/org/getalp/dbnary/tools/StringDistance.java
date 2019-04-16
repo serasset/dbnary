@@ -168,7 +168,7 @@ public class StringDistance {
 
   /**
    * @param form
-   * @param string
+   * @param operation
    * @param c
    * @return
    */
@@ -208,7 +208,7 @@ public class StringDistance {
 
 
   /**
-   * @param string
+   * @param o
    * @return
    */
   public static String simple(String o) {

@@ -32,9 +32,7 @@ Easiest way is to use the Command Line Interfaces found in the org.getalp.dbnary
 
 The DBnary project uses the [git flow](https://nvie.com/posts/a-successful-git-branching-model/) 
 branching model. To successfully release the code using maven, we use the 
-[jgit-flow maven plugin](https://jgitflow.bitbucket.io). NOW: [git flow plugin](https://github.com/aleksandr-m/gitflow-maven-plugin)
-
-Releasing : 
+[git flow plugin](https://github.com/aleksandr-m/gitflow-maven-plugin).
  
 ```bash
 mvn gitflow:release-start

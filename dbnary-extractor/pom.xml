@@ -5,7 +5,6 @@
     <artifactId>dbnary</artifactId>
     <version>2.2-SNAPSHOT</version>
   </parent>
-  <groupId>org.getalp</groupId>
   <artifactId>dbnary-extractor</artifactId>
   <packaging>jar</packaging>
 

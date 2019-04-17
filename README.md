@@ -28,6 +28,20 @@ However, you are free (and encouraged) to compile and enhance the extractors.
 
 Easiest way is to use the Command Line Interfaces found in the org.getalp.dbnary.cli package.
 
+### Performing releases ###
+
+The DBnary project uses the [git flow](https://nvie.com/posts/a-successful-git-branching-model/) 
+branching model. To successfully release the code using maven, we use the 
+[jgit-flow maven plugin](https://jgitflow.bitbucket.io). NOW: [git flow plugin](https://github.com/aleksandr-m/gitflow-maven-plugin)
+
+Releasing : 
+ 
+```bash
+mvn gitflow:release-start 
+alert(s);
+```
+
+
 ### Contribution guidelines ###
 
 

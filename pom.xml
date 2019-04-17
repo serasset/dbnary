@@ -177,7 +177,7 @@
         <version>1.12.0</version>
         <configuration>
           <allowSnapshots>true</allowSnapshots>
-          <postReleaseGoals>deploy site:deploy</postReleaseGoals>
+          <postReleaseGoals>deploy site:site site:deploy</postReleaseGoals>
           <verbose>true</verbose>
         </configuration>
       </plugin>

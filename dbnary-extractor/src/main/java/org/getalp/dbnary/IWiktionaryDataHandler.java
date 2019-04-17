@@ -1,150 +1,148 @@
 package org.getalp.dbnary;
 
+import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 
-import java.io.OutputStream;
-import java.util.HashSet;
-import java.util.Map;
-
 public interface IWiktionaryDataHandler {
 
-    enum Feature {MAIN, MORPHOLOGY}
-
-    ;
-
-    /**
-     * Enable the extraction of morphological data in a second Model if available.
-     *
-     * @param f Feature
-     */
-    void enableFeature(Feature f);
-
-    boolean isEnabled(Feature f);
-
-    void initializePageExtraction(String wiktionaryPageName);
-
-    void finalizePageExtraction();
-
-    void initializeEntryExtraction(String wiktionaryPageName);
-
-    void initializeEntryExtraction(String wiktionaryPageName, String lang);
-
-    void finalizeEntryExtraction();
-
-    String getCurrentEntryLanguage();
-
-    void addPartOfSpeech(String pos);
-
-    /**
-     *
-     * @param def the not cleaned up version of the definition. This version contains macros (that may represent subject fields) and links.
-     */
-    // TODO: maybe pass the cleaned up and the original def, so that the extractor takes what fits its requirements.
-
-    /**
-     * Register definition def for the current lexical entry.
-     * <p>
-     * This method will compute a sense number based on the rank of the definition in
-     * the entry.
-     * <p>
-     * It is equivalent to registerNewDefinition(def, 1);
-     *
-     * @param def a string
-     */
-    void registerNewDefinition(String def);
-
-    /**
-     * Register definition def for the current lexical entry.
-     * <p>
-     * This method will compute a sense number based on the rank of the definition in
-     * the entry, taking into account the level of the definition. 1, 1a, 1b, 1c, 2, etc.
-     *
-     * @param def the definition string
-     * @param lvl an integer giving the level of the definition (1 or 2).
-     */
-    void registerNewDefinition(String def, int lvl);
-
-    /**
-     * Register example ex for the current lexical sense.
-     *
-     * @param ex      the example string
-     * @param context map of property + object that are to be attached to the example object.
-     * @return a Resource
-     */
-    Resource registerExample(String ex, Map<Property, String> context);
 
 
-    /**
-     * Register definition def for the current lexical entry.
-     * <p>
-     * This method will use senseNumber as a sense number for this definition.
-     *
-     * @param def         the definition string
-     * @param senseNumber a string giving the sense number of the definition.
-     */
-    void registerNewDefinition(String def, String senseNumber);
+  enum Feature {
+    MAIN, MORPHOLOGY, ETYMOLOGY
+  }
+
+  /**
+   * Enable the extraction of morphological data in a second Model if available.
+   *
+   * @param f Feature
+   */
+  void enableFeature(Feature f);
+
+  boolean isDisabled(Feature f);
+
+  void initializePageExtraction(String wiktionaryPageName);
+
+  void finalizePageExtraction();
+
+  void initializeEntryExtraction(String wiktionaryPageName);
+
+  void initializeEntryExtraction(String wiktionaryPageName, String lang);
+
+  void finalizeEntryExtraction();
+
+  String getCurrentEntryLanguage();
+
+  void addPartOfSpeech(String pos);
+
+  /**
+   *
+   * @param def the not cleaned up version of the definition. This version contains macros (that may
+   *        represent subject fields) and links.
+   */
+  // TODO: maybe pass the cleaned up and the original def, so that the extractor takes what fits its
+  // requirements.
+
+  /**
+   * Register definition def for the current lexical entry.
+   * <p>
+   * This method will compute a sense number based on the rank of the definition in the entry.
+   * <p>
+   * It is equivalent to registerNewDefinition(def, 1);
+   *
+   * @param def a string
+   */
+  void registerNewDefinition(String def);
+
+  /**
+   * Register definition def for the current lexical entry.
+   * <p>
+   * This method will compute a sense number based on the rank of the definition in the entry,
+   * taking into account the level of the definition. 1, 1a, 1b, 1c, 2, etc.
+   *
+   * @param def the definition string
+   * @param lvl an integer giving the level of the definition (1 or 2).
+   */
+  void registerNewDefinition(String def, int lvl);
+
+  /**
+   * Register example ex for the current lexical sense.
+   *
+   * @param ex the example string
+   * @param context map of property + object that are to be attached to the example object.
+   * @return a Resource
+   */
+  Resource registerExample(String ex, Map<Property, String> context);
 
 
-    void registerAlternateSpelling(String alt);
+  /**
+   * Register definition def for the current lexical entry.
+   * <p>
+   * This method will use senseNumber as a sense number for this definition.
+   *
+   * @param def the definition string
+   * @param senseNumber a string giving the sense number of the definition.
+   */
+  void registerNewDefinition(String def, String senseNumber);
 
-    void registerNymRelation(String target, String synRelation);
 
-    Resource createGlossResource(StructuredGloss gloss, int rank);
+  void registerAlternateSpelling(String alt);
 
-    Resource createGlossResource(StructuredGloss gloss);
+  void registerNymRelation(String target, String synRelation);
 
-    void registerNymRelation(String target, String synRelation, Resource gloss);
+  Resource createGlossResource(StructuredGloss gloss, int rank);
 
-    void registerNymRelation(String target, String synRelation, Resource gloss, String usage);
+  Resource createGlossResource(StructuredGloss gloss);
 
-    void registerTranslation(String lang, Resource currentGlose, String usage, String word);
+  void registerNymRelation(String target, String synRelation, Resource gloss);
 
-    void registerPronunciation(String pron, String lang);
+  void registerNymRelation(String target, String synRelation, Resource gloss, String usage);
 
-    int nbEntries();
+  void registerTranslation(String lang, Resource currentGlose, String usage, String word);
 
-    String currentLexEntry();
+  void registerPronunciation(String pron, String lang);
 
-    /**
-     * Write a serialized represention of this model in a specified language.
-     * The language in which to write the model is specified by the lang argument.
-     * Predefined values are "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3".
-     * The default value, represented by null, is "RDF/XML".
-     *
-     * @param f      a Feature
-     * @param out    an OutputStream
-     * @param format a String
-     */
-    void dump(Feature f, OutputStream out, String format);
+  int nbEntries();
 
-    void registerNymRelationOnCurrentSense(String target, String synRelation);
+  String currentLexEntry();
 
-    void registerPropertyOnLexicalEntry(Property p, RDFNode r);
+  /**
+   * Write a serialized represention of this model in a specified language. The language in which to
+   * write the model is specified by the lang argument. Predefined values are "RDF/XML",
+   * "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3". The default value, represented by
+   * null, is "RDF/XML".
+   *
+   * @param f a Feature
+   * @param out an OutputStream
+   * @param format a String
+   */
+  void dump(Feature f, OutputStream out, String format);
 
-    void registerPropertyOnCanonicalForm(Property p, RDFNode r);
+  void registerNymRelationOnCurrentSense(String target, String synRelation);
 
-    void registerInflection(String languageCode,
-                            String pos,
-                            String inflection,
-                            String canonicalForm,
-                            int defNumber,
-                            HashSet<PropertyObjectPair> properties,
-                            HashSet<PronunciationPair> pronunciations);
+  void registerPropertyOnLexicalEntry(Property p, RDFNode r);
 
-    void registerInflection(String languageCode,
-                            String pos,
-                            String inflection,
-                            String canonicalForm,
-                            int defNumber,
-                            HashSet<PropertyObjectPair> properties);
+  void registerPropertyOnCanonicalForm(Property p, RDFNode r);
 
-    int currentDefinitionNumber();
+  void registerInflection(String languageCode, String pos, String inflection, String canonicalForm,
+      int defNumber, HashSet<PropertyObjectPair> properties,
+      HashSet<PronunciationPair> pronunciations);
 
-    String currentWiktionaryPos();
+  void registerInflection(String languageCode, String pos, String inflection, String canonicalForm,
+      int defNumber, HashSet<PropertyObjectPair> properties);
 
-    Resource currentLexinfoPos();
+  void registerInflection(InflectionData key, Set<String> value);
 
+  int currentDefinitionNumber();
+
+  String currentWiktionaryPos();
+
+  Resource currentLexinfoPos();
+
+  void populateMetadata(String dumpFilename, String extractorVersion);
 
 }

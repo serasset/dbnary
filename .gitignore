@@ -228,3 +228,14 @@ TSWLatexianTemp*
 
 # KBibTeX
 *~[0-9]*
+
+# logging und testing
+log.*
+out.*
+raw.*
+
+# local documentation
+README_*
+extract*.sh 
+
+/.ipynb_checkpoints/

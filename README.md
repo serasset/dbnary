@@ -37,8 +37,9 @@ branching model. To successfully release the code using maven, we use the
 Releasing : 
  
 ```bash
-mvn gitflow:release-start 
-alert(s);
+mvn gitflow:release-start
+mvn deploy site:site site:deploy
+mvn gitflow:release-finish 
 ```
 
 

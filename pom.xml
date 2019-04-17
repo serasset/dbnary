@@ -61,7 +61,7 @@
     </repository>
     <site>
       <id>kaiko.getalp.org</id>
-      <url>scp://getalp.imag.fr//opt/dbnary/static/reports/${project.version}/</url>
+      <url>scpexe://getalp.imag.fr/opt/dbnary/static/reports/${project.version}/</url>
     </site>
   </distributionManagement>
 
@@ -177,7 +177,6 @@
         <version>1.12.0</version>
         <configuration>
           <allowSnapshots>true</allowSnapshots>
-          <postReleaseGoals>deploy site:site site:deploy</postReleaseGoals>
           <verbose>true</verbose>
         </configuration>
       </plugin>

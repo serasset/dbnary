@@ -1,315 +1,415 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.getalp</groupId>
   <artifactId>dbnary</artifactId>
-  <version>2.0</version>
+  <version>2.1</version>
   <packaging>pom</packaging>
 
-  <name>dbnary</name>
+  <inceptionYear>2010</inceptionYear>
+  <name>DBnary: Ontolex-based multilingual lexical resource in RDF, from Wiktionary and other
+    sources
+  </name>
   <url>http://kaiko.getalp.org/about-dbnary</url>
+
+  <description>Dbnary is an effort to provide multilingual lexical data extracted from wiktionary.
+    The extracted data is made available as LLOD (Linguistic Linked Open Data). This data set has
+    won the Monnet challenge in 2012 and 2014.
+    This project consists in a set of extraction tools (whose status report is given in these maven
+    generated pages. The extracted data is made available on the
+    http://kaiko.getalp.org/about-dbnary/ web site.
+  </description>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-    <issueManagement>
-        <system>bitbucket</system>
-        <url>https://bitbucket.org/serasset/dbnary/issues</url>
-    </issueManagement>
+  <issueManagement>
+    <system>bitbucket</system>
+    <url>https://bitbucket.org/serasset/dbnary/issues</url>
+  </issueManagement>
 
-    <developers>
-        <developer>
-            <name>Gilles Sérasset</name>
-        </developer>
-    </developers>
+  <developers>
+    <developer>
+      <name>Gilles Sérasset</name>
+      <organization>Université Grenoble Alpes, LIG Lab, GETALP team</organization>
+      <url>https://serasset.bitbucket.io/</url>
+    </developer>
+    <developer>
+      <name>Ester Pantaleo</name>
+    </developer>
+  </developers>
 
-    <organization>
-        <name>GETALP</name>
-        <url>http://www.getalp.org/</url>
-    </organization>
+  <organization>
+    <name>GETALP team, LIG lab, Université Grenoble Alpes</name>
+    <url>http://www.getalp.org/</url>
+  </organization>
 
-    <distributionManagement>
-        <repository>
-            <id>getalp.repository</id>
-            <name>Getalp Projects and third party repository</name>
-            <url>scpexe://getalp.imag.fr/opt/www/m2</url>
-        </repository>
-    </distributionManagement>
-    <scm>
-        <connection>scm:git:ssh://git@bitbucket.org/serasset/dbnary.git</connection>
-        <developerConnection>scm:git:ssh://git@bitbucket.org/serasset/dbnary.git</developerConnection>
-        <url>https://bitbucket.org/serasset/dbnary.git</url>
-    </scm>
+  <distributionManagement>
+    <repository>
+      <id>getalp.repository</id>
+      <name>Getalp Projects and third party repository</name>
+      <url>scpexe://getalp.imag.fr/opt/www/m2</url>
+    </repository>
+    <site>
+      <id>kaiko.getalp.org</id>
+      <url>scp://getalp.imag.fr//opt/dbnary/static/reports/${project.version}/</url>
+    </site>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:git:ssh://git@bitbucket.org/serasset/dbnary.git</connection>
+    <developerConnection>scm:git:ssh://git@bitbucket.org/serasset/dbnary.git</developerConnection>
+    <url>https://bitbucket.org/serasset/dbnary.git</url>
+  </scm>
 
   <modules>
     <module>dbnary-ontology</module>
     <module>dbnary-extractor</module>
+    <module>dbnary-enhancer</module>
+    <module>dbnary-commons</module>
+    <module>build-tools</module>
   </modules>
 
-    <reporting>
-        <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.4</version>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <failOnError>false</failOnError>
+          <!--tags>
+            <tag>
+              <name>uml.property</name>
+              <!- - The value X makes javadoc ignoring the tag - ->
+              <placement>X</placement>
+            </tag>
+          </tags-->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <dependencies>
+    <!-- uses slf4j in all modules -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>apache-jena-libs</artifactId>
+      <type>pom</type>
+      <version>3.10.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.9</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh</artifactId>
+        <version>2.12</version>
+      </extension>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>2.12</version>
+        <!-- version was 2.6-->
+      </extension>
+    </extensions>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions><!-- TODO: Change plugins versions to current stable versions -->
+        <configuration>
+          <fork>true</fork>
+          <source>8</source>
+          <target>8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>external.atlassian.jgitflow</groupId>
+        <artifactId>jgitflow-maven-plugin</artifactId>
+        <version>1.0-m5.1</version>
+        <configuration>
+          <!-- Enable this to push to origin using SSH keys -->
+          <!--enableSshAgent>true</enableSshAgent-->
+          <!-- Keep your maven submodules at the same version as the parent POM -->
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <!--
+            Pusing in-development features to origin allows all devs to see what each other
+            are working on
+           -->
+          <pushFeatures>true</pushFeatures>
+          <!--
+            This allows the CI server (e.g. Jenkins) to automatically push new releases to
+            origin; you can then either manually deploy them or, if you are doing Continuous
+            Deployments, auto-deploy them to prod
+           -->
+          <pushReleases>true</pushReleases>
+          <!--
+            Hot Fixes should be pushed to origin as well so that any dev can pick them up
+           -->
+          <!--pushHotfixes>true</pushHotfixes-->
+          <!--
+            Prevents deployments from dev workstations so that they can be done by a CI
+            server
+           -->
+          <!--noDeploy>true</noDeploy-->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>native2ascii-maven-plugin</artifactId>
+        <version>1.0-beta-1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>native2ascii</goal>
+            </goals>
             <configuration>
-            <failOnError>false</failOnError>
-                <tags>
-                <tag>
-                    <name>uml.property</name>
-                    <!-- The value X makes javadoc ignoring the tag -->
-                    <placement>X</placement>
-                </tag>
-            </tags>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>1.19</version>
+        <configuration>
+          <verbose>false</verbose>
+          <copyrightOwners>Gilles Sérasset, Université Grenoble Alpes</copyrightOwners>
+        </configuration>
+        <executions>
+          <execution>
+            <id>first</id>
+            <goals>
+              <goal>update-project-license</goal>
+              <!--goal>check-file-header</goal-->
+              <!--goal>update-file-header</goal-->
+            </goals>
+            <phase>process-sources</phase>
+            <configuration>
+              <licenseName>mit</licenseName>
+              <!--roots>
+                <root>src/main/java</root>
+                <root>src/test/java</root>
+              </roots-->
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.0</version>
+          <!--version>3.1</version-->
         </plugin>
-        </plugins>
-    </reporting>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.7.1</version>
+          <configuration>
+            <outputEncoding>UTF-8</outputEncoding>
+          </configuration>
+          <dependencies>
+            <dependency><!-- add support for ssh/scp -->
+              <groupId>org.apache.maven.wagon</groupId>
+              <artifactId>wagon-ssh-external</artifactId>
+              <version>2.12</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.6.0</version>
+          <!-- was 1.2.1-->
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.2.1</version>
+        </plugin>
+        <plugin>
+          <groupId>net.revelc.code.formatter</groupId>
+          <artifactId>formatter-maven-plugin</artifactId>
+          <version>2.7.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
-    <dependencies>
-        <!-- uses slf4j in all modules -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>apache-jena-libs</artifactId>
-            <type>pom</type>
-            <version>3.3.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>2.12</version>
-            </extension>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-                <version>2.12</version>
-                <!-- version was 2.6-->
-            </extension>
-        </extensions>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions><!-- TODO: Change plugins versions to current stable versions -->
-                <configuration>
-                    <fork>true</fork>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>external.atlassian.jgitflow</groupId>
-                <artifactId>jgitflow-maven-plugin</artifactId>
-                <version>1.0-m5.1</version>
-                <configuration>
-                    <!-- Enable this to push to origin using SSH keys -->
-                    <!--enableSshAgent>true</enableSshAgent-->
-                    <!-- Keep your maven submodules at the same version as the parent POM -->
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <!--
-                      Pusing in-development features to origin allows all devs to see what each other
-                      are working on
-                     -->
-                    <pushFeatures>true</pushFeatures>
-                    <!--
-                      This allows the CI server (e.g. Jenkins) to automatically push new releases to
-                      origin; you can then either manually deploy them or, if you are doing Continuous
-                      Deployments, auto-deploy them to prod
-                     -->
-                    <pushReleases>true</pushReleases>
-                    <!--
-                      Hot Fixes should be pushed to origin as well so that any dev can pick them up
-                     -->
-                    <!--pushHotfixes>true</pushHotfixes-->
-                    <!--
-                      Prevents deployments from dev workstations so that they can be done by a CI
-                      server
-                     -->
-                    <!--noDeploy>true</noDeploy-->
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>native2ascii-maven-plugin</artifactId>
-                <version>1.0-beta-1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>native2ascii</goal>
-                        </goals>
-                        <configuration>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
+  <repositories>
+    <repository>
+      <!-- Getalp third party stuff -->
+      <id>getalp.repository</id>
+      <url>http://getalp.imag.fr/m2/</url>
+    </repository>
+    <repository>
+      <id>info-bliki-repository</id>
+      <url>http://gwtwiki.googlecode.com/svn/maven-repository/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>info-bliki-snapshot-repository</id>
+      <url>http://gwtwiki.googlecode.com/svn/maven-snapshot-repository/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>ukp-oss-releases</id>
+      <url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-releases</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>ukp-oss-snapshots</id>
+      <url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </snapshots>
+      <id>osr-public-repo</id>
+      <name>OSR Public Repository</name>
+      <url>http://mojo-maven.cs.fau.de/content/repositories/public</url>
+    </repository>
+    <repository>
+      <id>sonatype-snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+  </repositories>
+  <profiles>
+    <profile>
+      <id>only-eclipse</id>
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <build>
         <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.6.1</version>
-                    <!--version>3.1</version-->
-                </plugin>
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.codehaus.mojo</groupId>
-                                        <artifactId>native2ascii-maven-plugin</artifactId>
-                                        <versionRange>[1.0-beta-1,)</versionRange>
-                                        <goals>
-                                            <goal>native2ascii</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute />
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.6</version>
-                    <configuration>
-                        <outputEncoding>UTF-8</outputEncoding>
-                    </configuration>
-                    <dependencies>
-                        <dependency><!-- add support for ssh/scp -->
-                            <groupId>org.apache.maven.wagon</groupId>
-                            <artifactId>wagon-ssh-external</artifactId>
-                            <version>2.12</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.6.0</version>
-                    <!-- was 1.2.1-->
-                </plugin>
-                <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-shade-plugin</artifactId>
-                  <version>3.0.0</version>
-                </plugin>
-            </plugins>
+          <plugins>
+            <plugin>
+              <groupId>org.eclipse.m2e</groupId>
+              <artifactId>lifecycle-mapping</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>native2ascii-maven-plugin</artifactId>
+                        <versionRange>[1.0-beta-1,)</versionRange>
+                        <goals>
+                          <goal>native2ascii</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <execute />
+                      </action>
+                    </pluginExecution>
+                  </pluginExecutions>
+                </lifecycleMappingMetadata>
+              </configuration>
+            </plugin>
+          </plugins>
         </pluginManagement>
-    </build>
-
-    <repositories>
-        <repository>
-            <!-- Getalp third party stuff -->
-            <id>getalp.repository</id>
-            <url>http://getalp.imag.fr/m2/</url>
-        </repository>
-        <repository>
-            <id>info-bliki-repository</id>
-            <url>http://gwtwiki.googlecode.com/svn/maven-repository/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>info-bliki-snapshot-repository</id>
-            <url>http://gwtwiki.googlecode.com/svn/maven-snapshot-repository/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>ukp-oss-releases</id>
-            <url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-releases</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>ukp-oss-snapshots</id>
-            <url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
-            <id>osr-public-repo</id>
-            <name>OSR Public Repository</name>
-            <url>http://mojo-maven.cs.fau.de/content/repositories/public</url>
-        </repository>
-        <repository>
-            <id>sonatype-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-    </repositories>
- </project>
+      </build>
+    </profile>
+  </profiles>
+</project>

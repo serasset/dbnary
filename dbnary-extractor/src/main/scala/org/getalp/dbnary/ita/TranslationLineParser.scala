@@ -1,9 +1,9 @@
 package org.getalp.dbnary.ita
 
+import grizzled.slf4j.Logger
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.RDF
-import grizzled.slf4j.Logger
-import org.getalp.dbnary.wiki.{WikiCharSequence, WikiPattern, WikiRegexParsers, WikiText}
+import org.getalp.dbnary.wiki.{WikiCharSequence, WikiRegexParsers, WikiText}
 import org.getalp.dbnary.{AbstractGlossFilter, IWiktionaryDataHandler}
 
 class TranslationLineParser(page: String) extends WikiRegexParsers {
@@ -17,11 +17,12 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
   val SenseNumber = """\[?((?:\s*\d+\s*[.,-]?)+)\]?""".r
   val Italics = """'''([ _\p{L}]+)'''""".r
 
-  def languageName: Parser[Language] = """[ _\p{L}]+""".r ^^ {
-    case ln => Language(ln, null)
-  } | matching(Italics) ^^{
-    case Italics(l) => Language(l, null)
-  }
+  def languageName: Parser[Language] =
+    """[ _\p{L}]+""".r ^^ {
+      case ln => Language(ln, null)
+    } | matching(Italics) ^^ {
+      case Italics(l) => Language(l, null)
+    }
 
   def languageTemplate: Parser[Language] = template ^^ {
     case lt => Language("", lt.getName)
@@ -32,7 +33,7 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
     case l => {
       val target = l.getTargetText
       if (target.contains(":")) {
-        logger.debug("Ignoring translation link " + target + " in " + currentEntry )
+        logger.debug("Ignoring translation link " + target + " in " + currentEntry)
         ""
       } else if (target.equals("")) {
         pagename
@@ -69,31 +70,30 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
 
   def linkRegex = """\[\[|\]\]""".r
 
-  def getTranslation(content: WikiText#WikiContent) : Translation = {
+  def getTranslation(content: WikiText#WikiContent): Translation = {
     Translation("", linkRegex.replaceAllIn(content.toString, ""), null, "")
   }
 
   def uniqueTranslationValue: Parser[List[Translation]] =
   // Special serbo croatian cases where both transliterations are given as links
-    links ~ "/" ~ links ^^{
+    links ~ "/" ~ links ^^ {
       case "" ~ _ ~ _ => List(null)
       case l1 ~ _ ~ l2 => List(Translation("", l1, null, ""), Translation("", l2, null, ""))
     } | links ^^ {
-      case ""  => List(null)
-      case l  => List(Translation("", l, null, ""))
-    } | template("zh-tradsem") ^^{
+      case "" => List(null)
+      case l => List(Translation("", l, null, ""))
+    } | template("zh-tradsem") ^^ {
       // {{zh-tradsem|[[英語]]|[[英语]]}} (yīngyǔ);
       // TODO: Should I create 2 translations (one for traditional chinese, one for simplified ?)
       // TODO: Or else ?
       case tmpl => List(getTranslation(tmpl.getArgs.get("1")), getTranslation(tmpl.getArgs.get("2")))
-    } | simpleStrings ^^{
+    } | simpleStrings ^^ {
       case s =>
-        logger.debug("Ignoring translation value " + source.getSourceContent(s) + " in " + currentEntry )
+        logger.debug("Ignoring translation value " + source.getSourceContent(s) + " in " + currentEntry)
         List(null)
-    } | "" ^^{
+    } | "" ^^ {
       case s => List(null)
     }
-
 
 
   def cleanTranslationValue: Parser[List[Translation]] =
@@ -102,33 +102,39 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
       case lt ~ None => lt
       case lt ~ Some(u) => lt map {
         case null => null
-        case t:Translation => t.addUsage(u)
+        case t: Translation => t.addUsage(u)
       }
     }
 
- def cleanTranslationValues: Parser[List[Translation]] = cleanTranslationValue ~ rep( """,|;""".r ~> cleanTranslationValue) ^^ {
+  def cleanTranslationValues: Parser[List[Translation]] = cleanTranslationValue ~ rep( """,|;""".r ~> cleanTranslationValue) ^^ {
     case null ~ null => null
-    case null ~ moreTrans => moreTrans.flatten filter { _ != null }
-    case trans ~ null => trans filter { _ != null }
-    case trans ~ moreTrans => {
-      (trans ::: moreTrans.flatten) filter { _ != null }
+    case null ~ moreTrans => moreTrans.flatten filter {
+      _ != null
     }
- }
+    case trans ~ null => trans filter {
+      _ != null
+    }
+    case trans ~ moreTrans => {
+      (trans ::: moreTrans.flatten) filter {
+        _ != null
+      }
+    }
+  }
 
   var localGloss: String = null;
   val garbagePrefix = """:*(?:\))?(?:\s*(?:[tT]o|[Aa]|≈)\s+)?""".r
 
-  def hint: Parser[String] = matching(SenseNumber) ^^{
+  def hint: Parser[String] = matching(SenseNumber) ^^ {
     case SenseNumber(d) => {
       TranslationLineParser.this.localGloss = d
       TranslationLineParser.this.localGloss
     }
-  } | template("Term") ^^{
+  } | template("Term") ^^ {
     case tmpl => {
       TranslationLineParser.this.localGloss = tmpl.getArgs.get("1").toString
       TranslationLineParser.this.localGloss
     }
-  } | parens ^^{
+  } | parens ^^ {
     case ptext => {
       TranslationLineParser.this.localGloss = ptext
       TranslationLineParser.this.localGloss
@@ -138,12 +144,14 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
   def hintAndTranslation: Parser[List[Translation]] = (hint.? <~ garbagePrefix) ~ cleanTranslationValue ^^ {
     case _ ~ lt => lt map {
       case null => null
-      case t:Translation => t.gloss = localGloss; t
+      case t: Translation => t.gloss = localGloss; t
     }
   }
 
-  def hintedTranslations: Parser[List[Translation]] = repsep(hintAndTranslation, """,|;""".r) ^^{
-    case rl => rl.flatten filter {_ != null}
+  def hintedTranslations: Parser[List[Translation]] = repsep(hintAndTranslation, """,|;""".r) ^^ {
+    case rl => rl.flatten filter {
+      _ != null
+    }
   }
 
   def translations: Parser[List[Translation]] = hintedTranslations // keep garbage ? | simpleTranslations | garbageTranslations
@@ -174,8 +182,7 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
     }
   }
 
-  def extractTranslationLine(input: WikiCharSequence, gloss: Resource, delegate: IWiktionaryDataHandler, filter: AbstractGlossFilter): Unit =
-  {
+  def extractTranslationLine(input: WikiCharSequence, gloss: Resource, delegate: IWiktionaryDataHandler, filter: AbstractGlossFilter): Unit = {
     parseTranslationLine(input, delegate.currentLexEntry()).foreach {
       case Translation(lg, wr, null, use) => delegate.registerTranslation(lg, gloss, use, wr)
       case Translation(lg, wr, localGloss, use) => {

@@ -57,12 +57,15 @@ Here is an example of CacheManager level resource tuning, which will use up to 4
          dynamicConfig="true" maxBytesLocalHeap="400M" maxBytesLocalOffHeap="2G">
 
 -->
-<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd"
-         updateCheck="false" monitoring="off" dynamicConfig="true">
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="ehcache.xsd"
+  updateCheck="false" monitoring="off" dynamicConfig="true">
 
-    <defaultCache maxEntriesLocalHeap="0" eternal="false" timeToIdleSeconds="1200" timeToLiveSeconds="1200">
-    </defaultCache>
+  <defaultCache maxEntriesLocalHeap="0" eternal="false" timeToIdleSeconds="1200"
+    timeToLiveSeconds="1200">
+  </defaultCache>
 
-    <cache name="wiktcache" maxEntriesLocalHeap="1000" eternal="true" memoryStoreEvictionPolicy="FIFO"/>
+  <cache name="wiktcache" maxEntriesLocalHeap="1000" eternal="true"
+    memoryStoreEvictionPolicy="FIFO"/>
 
 </ehcache>

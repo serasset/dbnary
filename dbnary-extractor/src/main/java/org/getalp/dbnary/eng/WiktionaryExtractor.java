@@ -52,7 +52,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
   protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
-  protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
+  protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}]*)\\}\\}";
 
   private enum Block {
     NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, CONJUGATIONBLOCK, ETYMOLOGYBLOCK, DERIVEDBLOCK, DESCENDANTSBLOCK, PRONBLOCK
@@ -1302,6 +1302,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     pronMatcher.region(startOffset, endOffset);
     while (pronMatcher.find()) {
       String pron = pronMatcher.group(1);
+      Map<String, String> args = WikiTool.parseArgs(pron);
+      pron = args.get("2");
 
       if (null == pron || pron.equals("")) {
         return;

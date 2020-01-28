@@ -13,7 +13,7 @@ public interface IWiktionaryDataHandler {
 
 
   enum Feature {
-    MAIN, MORPHOLOGY, ETYMOLOGY
+    MAIN, MORPHOLOGY, ETYMOLOGY, LIME;
   }
 
   /**

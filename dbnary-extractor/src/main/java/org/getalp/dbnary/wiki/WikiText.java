@@ -4,6 +4,7 @@ import static org.getalp.dbnary.wiki.WikiEventFilter.Action.KEEP;
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Matcher;
@@ -70,7 +71,7 @@ public class WikiText {
     }
   }
 
-  public abstract class Token {
+  public abstract class Token implements Visitable {
 
     Segment offset;
 
@@ -230,6 +231,10 @@ public class WikiText {
               : VOID);
     }
 
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
   }
 
   public class Text extends Token {
@@ -261,6 +266,11 @@ public class WikiText {
     public void addFlattenedTokens(Token t) {
       throw new RuntimeException("Cannot add flatened tokens to Text");
     }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
   }
 
   public class HTMLComment extends Token {
@@ -269,6 +279,10 @@ public class WikiText {
       this.offset = new Segment(startOffset);
     }
 
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
   }
 
   public class Template extends Token {
@@ -335,9 +349,16 @@ public class WikiText {
       return argsAsString;
     }
 
+    /**
+     * return the argName/argValue Map. argNae being a String and argValue a WikiContent.
+     * When iterated, the map will provide values or entries in insertion order, hence
+     * iterating over the map will give args in the order they were defined.
+     *
+     * @return the argName/argVal map
+     */
     public Map<String, WikiContent> getArgs() {
       if (parsedArgs == null) {
-        parsedArgs = new HashMap<String, WikiContent>();
+        parsedArgs = new LinkedHashMap<String, WikiContent>();
         if (null != args) {
           int n = 1; // number for positional args.
           for (int i = 0; i < args.size(); i++) {
@@ -385,6 +406,11 @@ public class WikiText {
       }
       res.setEndOffset(end);
       return res;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
     }
   }
 
@@ -483,6 +509,11 @@ public class WikiText {
         this.text.setEndOffset(position);
       }
     }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
   }
 
   public class ExternalLink extends Link {
@@ -517,6 +548,11 @@ public class WikiText {
     public boolean isCorrectExternalLink() {
       protocolsMatcher.region(this.target.offset.start, this.target.offset.end);
       return protocolsMatcher.lookingAt();
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
     }
   }
 
@@ -556,6 +592,10 @@ public class WikiText {
       return level;
     }
 
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
   }
 
   public class ListItem extends Token {
@@ -594,12 +634,21 @@ public class WikiText {
       return this.level;
     }
 
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
   }
 
   public class Indentation extends ListItem {
 
     public Indentation(int position, int level) {
       super(position, level);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
     }
   }
 

@@ -76,7 +76,7 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
       }
       writer.append(l);
     } else if (templateName.equals("synonym of")) {
-      // TODO: handle sysnonym of by creating the appropriate synonymy relation.
+      // TODO: handle synonym of by creating the appropriate synonymy relation.
       // catch and expand synonym of template before it is caught by next condition.
       super.substituteTemplateCall(templateName, parameterMap, writer);
     } else if (templateName.endsWith(" of")) {

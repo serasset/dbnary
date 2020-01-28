@@ -6,20 +6,21 @@ import java.util.NoSuchElementException;
 /**
  * Created by serasset on 28/01/16.
  */
-public class WikiSectionsIterator implements Iterator<WikiSection> {
+public class LevelBasedWikiSectionsIterator implements Iterator<WikiSection> {
 
   int level;
   WikiText.WikiContent content;
   Iterator<WikiText.Token> baseIterator;
   WikiText.Token currentToken = null;
 
-  public WikiSectionsIterator(WikiText.WikiContent content, int level) {
+  public LevelBasedWikiSectionsIterator(WikiText.WikiContent content, int level) {
     this.content = content;
     this.level = level;
     this.baseIterator = content.tokens().iterator();
     init();
     advanceToNextHeading();
   }
+
 
   // My model 1 primitives...
   public void init() {

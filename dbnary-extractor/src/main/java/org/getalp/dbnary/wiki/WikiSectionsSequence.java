@@ -17,7 +17,7 @@ public class WikiSectionsSequence implements Iterable<WikiSection> {
 
   @Override
   public Iterator<WikiSection> iterator() {
-    return new WikiSectionsIterator(content, level);
+    return new LevelBasedWikiSectionsIterator(content, level);
   }
 
 }

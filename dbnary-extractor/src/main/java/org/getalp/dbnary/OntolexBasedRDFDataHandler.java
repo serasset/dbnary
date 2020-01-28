@@ -4,6 +4,8 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,12 +13,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
+import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ReifiedStatement;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -268,13 +272,27 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void populateMetadata(String dumpFilename, String extractorVersion) {
-    Resource lexicon = aBox.createResource(
+    if (isDisabled(Feature.LIME))
+      return;
+    Model limeBox = featureBoxes.get(Feature.LIME);
+    Resource creator = limeBox.createResource("http://serasset.bitbucket.io/");
+    Resource lexicon = limeBox.createResource(
         getPrefix() + "___" + wktLanguageEdition + "_dbnary_dataset", LimeOnt.Lexicon);
-    aBox.add(aBox.createStatement(lexicon, DCTerms.description,
-        "This lexicon is extracted from the original wiktionary data that con be found"
-            + " in http://" + wktLanguageEdition + ".wiktionary.org/ by the DBnary Extractor"));
-    aBox.add(aBox.createStatement(lexicon, LimeOnt.language, wktLanguageEdition));
-    aBox.add(aBox.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
+        "This lexicon is extracted from the original wiktionary data that can be found"
+            + " in http://" + wktLanguageEdition + ".wiktionary.org/ by the DBnary Extractor.", "en"));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
+        "Cet ensemble de données est extrait du wiktionnaire original disponible"
+            + " à http://" + wktLanguageEdition + ".wiktionary.org/ par le programme d'extraction de DBnary.", "fr"));
+     limeBox.add(limeBox.createStatement(lexicon, DCTerms.creator, creator));
+    limeBox.add(limeBox.createLiteralStatement(lexicon, DCTerms.created,
+        limeBox.createTypedLiteral(GregorianCalendar.getInstance())));
+
+    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.language, wktLanguageEdition));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
+    limeBox.add(limeBox.createLiteralStatement(lexicon, LimeOnt.lexicalEntries, nbEntries()));
+    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, LexinfoOnt.getURI()));
+    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, OliaOnt.getURI()));
 
   }
 

@@ -71,6 +71,9 @@ public class ExtractWiktionary {
   private static final String ETYMOLOGY_OUTPUT_FILE_LONG_OPTION = "etymology";
   private static final String ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION = "E";
 
+  private static final String METADATA_OUTPUT_FILE_LONG_OPTION = "lime";
+  private static final String METADATA_OUTPUT_FILE_SHORT_OPTION = "L";
+
   protected static final String URI_PREFIX_LONG_OPTION = "prefix";
   protected static final String URI_PREFIX_SHORT_OPTION = "p";
 
@@ -88,6 +91,7 @@ public class ExtractWiktionary {
   private String outputFile = DEFAULT_OUTPUT_FILE;
   private String morphoOutputFile = null;
   private String etymologyOutputFile = null;
+  private String limeOutputFile = null;
   private String outputFormat = DEFAULT_OUTPUT_FORMAT;
   private String model = DEFAULT_MODEL;
   private boolean compress;
@@ -126,6 +130,9 @@ public class ExtractWiktionary {
     options.addOption(OptionBuilder.withLongOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)
         .withDescription("extract etymology data.").hasArg().withArgName("file")
         .create(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION));
+    options.addOption(OptionBuilder.withLongOpt(METADATA_OUTPUT_FILE_LONG_OPTION)
+        .withDescription("Output file for LIME metadata. Undefined by default.").hasArg()
+        .withArgName("file").create(METADATA_OUTPUT_FILE_SHORT_OPTION));
     options.addOption(OptionBuilder.withLongOpt(URI_PREFIX_LONG_OPTION)
         .withDescription("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
@@ -256,6 +263,11 @@ public class ExtractWiktionary {
     if (cmd.hasOption(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)) {
       etymologyOutputFile = cmd.getOptionValue(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION);
     }
+
+    if (cmd.hasOption(METADATA_OUTPUT_FILE_LONG_OPTION)) {
+      limeOutputFile = cmd.getOptionValue(METADATA_OUTPUT_FILE_LONG_OPTION);
+    }
+
     if (cmd.hasOption(LANGUAGE_OPTION)) {
       language = cmd.getOptionValue(LANGUAGE_OPTION);
       language = LangTools.getCode(language);
@@ -292,6 +304,9 @@ public class ExtractWiktionary {
     }
     if (etymologyOutputFile != null) {
       wdh.enableFeature(Feature.ETYMOLOGY);
+    }
+    if (limeOutputFile != null) {
+      wdh.enableFeature(Feature.LIME);
     }
 
     if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
@@ -391,6 +406,10 @@ public class ExtractWiktionary {
       if (null != etymologyOutputFile) {
         saveBox(Feature.ETYMOLOGY, etymologyOutputFile);
       }
+      if (null != limeOutputFile) {
+        saveBox(Feature.LIME, limeOutputFile);
+      }
+
 
     } catch (XMLStreamException ex) {
       System.out.println(ex.getMessage());

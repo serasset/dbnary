@@ -658,10 +658,12 @@ public class UpdateAndExtractDumps {
         odir + "/" + lang + prefix + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
     String morphoFile = odir + "/" + lang + prefix + "_dbnary_morpho_" + dir + ".ttl";
     String etymologyFile = odir + "/" + lang + prefix + "_dbnary_etymology_" + dir + ".ttl";
+    String limeFile = odir + "/" + lang + prefix + "_dbnary_lime_" + dir + ".ttl";
     if (compress) {
       extractFile = extractFile + ".bz2";
       morphoFile = morphoFile + ".bz2";
       etymologyFile = etymologyFile + ".bz2";
+      limeFile = limeFile + ".bz2";
     }
 
     File file = new File(extractFile);
@@ -690,6 +692,11 @@ public class UpdateAndExtractDumps {
       a.add("--etymology");
       a.add(etymologyFile);
     }
+    if (features.contains("lime")) {
+      a.add("--lime");
+      a.add(limeFile);
+    }
+
     if (features.contains("foreign")) {
       a.add("-x");
     }

@@ -670,13 +670,13 @@ public class WikiText {
     this.sourceContent = sourceContent;
     this.startOffset = startOffset;
     this.endOffset = endOffset;
-    protocolsMatcher = Pattern.compile(protocols.toString()).matcher(sourceContent);
-    lexer = Pattern.compile(lexerCode.toString(), Pattern.MULTILINE | Pattern.DOTALL)
-        .matcher(sourceContent);
+    protocolsMatcher = protocolPattern.matcher(sourceContent);
+    lexer = lexerPattern.matcher(sourceContent);
 
   }
 
   private static StringBuffer protocols = new StringBuffer();
+  private static final Pattern protocolPattern;
 
   static {
     protocols.append("^(?:").append("bitcoin:").append("|").append("ftp://").append("|")
@@ -689,9 +689,12 @@ public class WikiText {
         .append("|").append("ssh://").append("|").append("svn://").append("|").append("tel:")
         .append("|").append("telnet://").append("|").append("urn:").append("|")
         .append("worldwind://").append("|").append("xmpp:").append("|").append("//").append(")");
+
+    protocolPattern = Pattern.compile(protocols.toString());
   }
 
   private static StringBuffer lexerCode = new StringBuffer();
+  private static final Pattern lexerPattern;
 
   static {
     lexerCode.append("(?<").append("OT").append(">").append("\\{\\{").append(")|").append("(?<")
@@ -707,6 +710,8 @@ public class WikiText {
         .append("(?<").append("SPACE").append(">").append(" ").append(")|").append("(?<")
         .append("NL").append(">").append("\r?\n|\r").append(")|").append("(?<").append("CHAR")
         .append(">").append(".").append(")");
+
+    lexerPattern = Pattern.compile(lexerCode.toString(), Pattern.MULTILINE | Pattern.DOTALL);
   }
 
   private WikiContent parse() {

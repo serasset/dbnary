@@ -96,7 +96,9 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
       // super.substituteTemplateCall(templateName, parameterMap, quotation);
       // delegate.registerExample(quotation.toString(), null);
     } else if ("rfex".equals(templateName) || "rfd-sense".equals(templateName)
-        || "attention".equals(templateName) || "attn".equals(templateName) || "rfclarify".equals(templateName)
+        || "attention".equals(templateName) || "attn".equals(templateName)
+        || "rfclarify".equals(templateName) || "rfquote".equals(templateName)
+        || "rfquotek".equals(templateName)
         || "rfv-sense".equals(templateName) || "rfc-sense".equals(templateName)
         || "rfquote-sense".equals(templateName) || "rfdef".equals(templateName)) {
       // Request for examples or request for discussion on sense :

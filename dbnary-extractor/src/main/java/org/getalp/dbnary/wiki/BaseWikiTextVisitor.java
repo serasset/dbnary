@@ -44,7 +44,7 @@ public abstract class BaseWikiTextVisitor implements Visitor {
 
   @Override
   public void visit(Template template) {
-    for(WikiContent value: template.getArgs().values()) {
+    for (WikiContent value : template.getArgs().values()) {
       value.accept(this);
     }
   }
@@ -57,10 +57,8 @@ public abstract class BaseWikiTextVisitor implements Visitor {
   }
 
   @Override
-  public void visit(Text text) {
-  }
+  public void visit(Text text) {}
 
   @Override
-  public void visit(HTMLComment htmlComment) {
-  }
+  public void visit(HTMLComment htmlComment) {}
 }

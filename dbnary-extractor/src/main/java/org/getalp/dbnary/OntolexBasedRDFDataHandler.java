@@ -280,11 +280,13 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         getPrefix() + "___" + wktLanguageEdition + "_dbnary_dataset", LimeOnt.Lexicon);
     limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
         "This lexicon is extracted from the original wiktionary data that can be found"
-            + " in http://" + wktLanguageEdition + ".wiktionary.org/ by the DBnary Extractor.", "en"));
+            + " in http://" + wktLanguageEdition + ".wiktionary.org/ by the DBnary Extractor.",
+        "en"));
     limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
-        "Cet ensemble de données est extrait du wiktionnaire original disponible"
-            + " à http://" + wktLanguageEdition + ".wiktionary.org/ par le programme d'extraction de DBnary.", "fr"));
-     limeBox.add(limeBox.createStatement(lexicon, DCTerms.creator, creator));
+        "Cet ensemble de données est extrait du wiktionnaire original disponible" + " à http://"
+            + wktLanguageEdition + ".wiktionary.org/ par le programme d'extraction de DBnary.",
+        "fr"));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.creator, creator));
     limeBox.add(limeBox.createLiteralStatement(lexicon, DCTerms.created,
         limeBox.createTypedLiteral(GregorianCalendar.getInstance())));
 

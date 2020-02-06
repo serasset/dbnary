@@ -1304,14 +1304,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       String pron = pronMatcher.group(1);
       Map<String, String> args = WikiTool.parseArgs(pron);
       pron = args.get("2");
+      if (!"en".equals(args.get("1"))) {
+        log.debug("Non English ({}) pronunciation in page {}.", this.wiktionaryPageName);
+      }
 
       if (null == pron || pron.equals("")) {
         return;
       }
 
-      if (!pron.equals("")) {
-        wdh.registerPronunciation(pron, "en-fonipa");
-      }
+      wdh.registerPronunciation(pron, "en-fonipa");
+
     }
   }
 

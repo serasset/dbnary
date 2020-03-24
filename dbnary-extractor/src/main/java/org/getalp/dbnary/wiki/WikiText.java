@@ -23,6 +23,7 @@ public class WikiText {
   private final int startOffset;
   private final int endOffset;
   private WikiContent root;
+  private WikiContent docRoot; // The root of the section-structured doc tree...
   private final Matcher protocolsMatcher;
   private final Matcher lexer;
 
@@ -350,9 +351,9 @@ public class WikiText {
     }
 
     /**
-     * return the argName/argValue Map. argNae being a String and argValue a WikiContent.
-     * When iterated, the map will provide values or entries in insertion order, hence
-     * iterating over the map will give args in the order they were defined.
+     * return the argName/argValue Map. argNae being a String and argValue a WikiContent. When
+     * iterated, the map will provide values or entries in insertion order, hence iterating over the
+     * map will give args in the order they were defined.
      *
      * @return the argName/argVal map
      */
@@ -1016,6 +1017,7 @@ public class WikiText {
   public WikiSectionsSequence sections(int level) {
     return content().sections(level);
   }
+
 
   private String wikiTextString = null;
 

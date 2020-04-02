@@ -11,9 +11,9 @@ import org.getalp.dbnary.wiki.WikiText.Token;
  */
 public class WikiEventIterator implements Iterator<WikiText.Token> {
 
-  private WikiEventFilter filter;
-  private WikiText.WikiContent content;
-  private Stack<Iterator<Token>> iterators = new Stack<>();
+  private final WikiEventFilter filter;
+  private final WikiText.WikiContent content;
+  private final Stack<Iterator<Token>> iterators = new Stack<>();
   private WikiText.Token nextToken = null;
 
   public WikiEventIterator(WikiText.WikiContent content, WikiEventFilter filter) {
@@ -49,7 +49,7 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
           iterators.push(h.getContent().tokens().iterator());
           return nextTokenToReturn();
         } else {
-          // treat a incorrect ENTER action as a VOID
+          // treat an incorrect ENTER action as a VOID
           return nextTokenToReturn();
         }
       case KEEP:
@@ -71,9 +71,5 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
     advance();
     return t;
   }
-
-  @Override
-  public void remove() {
-    throw new UnsupportedOperationException();
-  }
+  
 }

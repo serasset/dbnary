@@ -328,22 +328,22 @@ public class WikiTextTest {
     assertFalse(text.wikiTokens().isEmpty());
     assertTrue(text.wikiTokens().get(0) instanceof WikiText.Heading);
     WikiText.Heading el = (WikiText.Heading) text.wikiTokens().get(0);
-    assertEquals(" Simple Heading ", el.content.toString());
+    assertEquals(" Simple Heading ", el.getContent().toString());
     assertEquals(3, el.getLevel());
 
     assertTrue(text.wikiTokens().get(1) instanceof WikiText.Heading);
     el = (WikiText.Heading) text.wikiTokens().get(1);
-    assertEquals("= Heading level 2 ", el.content.toString());
+    assertEquals("= Heading level 2 ", el.getContent().toString());
     assertEquals(2, el.getLevel());
 
     assertTrue(text.wikiTokens().get(2) instanceof WikiText.Heading);
     el = (WikiText.Heading) text.wikiTokens().get(2);
-    assertEquals(" Heading level 3 =", el.content.toString());
+    assertEquals(" Heading level 3 =", el.getContent().toString());
     assertEquals(3, el.getLevel());
 
     assertTrue(text.wikiTokens().get(3) instanceof WikiText.Heading);
     el = (WikiText.Heading) text.wikiTokens().get(3);
-    assertEquals("end", el.content.toString());
+    assertEquals("end", el.getContent().toString());
     assertEquals(3, el.getLevel());
 
     int nbH = 0;
@@ -394,8 +394,8 @@ public class WikiTextTest {
 
     WikiText t = new WikiText(test);
 
-    for (WikiSection s : t.sections(2)) {
-      assertTrue(s.getHeader().getContent().toString().startsWith("H2"));
+    for (WikiText.WikiSection s : t.sections(2)) {
+      assertTrue(s.getHeading().getContent().toString().startsWith("H2"));
       for (WikiText.Token tok : s.getContent().tokens()) {
         System.out.println("tok=" + tok.toString());
       }
@@ -403,7 +403,7 @@ public class WikiTextTest {
     }
     System.out.println("+++++++++");
 
-    for (WikiSection s : t.sections(3)) {
+    for (WikiText.WikiSection s : t.sections(3)) {
       System.out.println(s.getContent());
       System.out.println("---------");
     }

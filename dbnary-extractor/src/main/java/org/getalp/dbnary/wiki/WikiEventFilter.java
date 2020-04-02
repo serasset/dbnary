@@ -3,6 +3,7 @@ package org.getalp.dbnary.wiki;
 /**
  * Created by serasset on 01/02/16.
  */
+@FunctionalInterface
 public interface WikiEventFilter {
 
   enum Action {

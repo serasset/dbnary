@@ -71,5 +71,5 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
     advance();
     return t;
   }
-  
+
 }

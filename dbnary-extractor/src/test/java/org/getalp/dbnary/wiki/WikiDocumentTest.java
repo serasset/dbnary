@@ -2,7 +2,6 @@ package org.getalp.dbnary.wiki;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.getalp.dbnary.wiki.WikiText.Heading;
@@ -36,13 +35,11 @@ public class WikiDocumentTest {
     assertTrue("The second token should be a WikiSection.",
         topTokens.get(1) instanceof WikiSection);
     Heading h = topTokens.get(1).asWikiSection().getHeading();
-    assertEquals("First WikiSection should be a level 2 header.",
-        2, h.getLevel());
+    assertEquals("First WikiSection should be a level 2 header.", 2, h.getLevel());
     assertTrue("First WikiSection should have title containing \"English\".",
         h.getContent().toString().contains("English"));
     h = topTokens.get(2).asWikiSection().getHeading();
-    assertEquals("First WikiSection should be a level 2 header.",
-        2, h.getLevel());
+    assertEquals("First WikiSection should be a level 2 header.", 2, h.getLevel());
     assertTrue("First WikiSection should have title containing \"French\".",
         h.getContent().toString().contains("French"));
 

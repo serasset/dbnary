@@ -2,7 +2,6 @@ package org.getalp.dbnary.wiki;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,8 +16,8 @@ import org.junit.Test;
 public class WikiTextOnRealWikiPagesTest {
 
   private WikiText getWikiTextFor(String pagename) throws IOException {
-    InputStream inputStream = WikiTextOnRealWikiPagesTest.class
-        .getResourceAsStream(pagename + ".wiki");
+    InputStream inputStream =
+        WikiTextOnRealWikiPagesTest.class.getResourceAsStream(pagename + ".wiki");
     ByteArrayOutputStream result = new ByteArrayOutputStream();
     byte[] buffer = new byte[1024];
     int length;
@@ -35,35 +34,23 @@ public class WikiTextOnRealWikiPagesTest {
     // test standard WikiText structure
     assert !text.wikiTokens().isEmpty();
 
-    List<Heading> h2FromWikiText = text.wikiTokens().stream()
-        .filter(h -> h instanceof Heading)
-        .map(Token::asHeading)
-        .filter(h -> h.getLevel() == 2)
-        .collect(Collectors.toList());
+    List<Heading> h2FromWikiText = text.wikiTokens().stream().filter(h -> h instanceof Heading)
+        .map(Token::asHeading).filter(h -> h.getLevel() == 2).collect(Collectors.toList());
 
     List<Heading> topLevelSections = text.asStructuredDocument().getContent().wikiTokens().stream()
-        .filter(t -> t instanceof WikiSection)
-        .map(Token::asWikiSection)
-        .map(WikiSection::getHeading)
-        .collect(Collectors.toList());
+        .filter(t -> t instanceof WikiSection).map(Token::asWikiSection)
+        .map(WikiSection::getHeading).collect(Collectors.toList());
 
     assertThat(h2FromWikiText, is(topLevelSections));
 
-    List<Heading> h3FromWikiText = text.wikiTokens().stream()
-        .filter(h -> h instanceof Heading)
-        .map(Token::asHeading)
-        .filter(h -> h.getLevel() == 3)
-        .collect(Collectors.toList());
+    List<Heading> h3FromWikiText = text.wikiTokens().stream().filter(h -> h instanceof Heading)
+        .map(Token::asHeading).filter(h -> h.getLevel() == 3).collect(Collectors.toList());
 
     List<Heading> h3Headings = text.asStructuredDocument().getContent().wikiTokens().stream()
-        .filter(t -> t instanceof WikiSection)
-        .map(Token::asWikiSection)
-        .map(WikiSection::getContent)
-        .flatMap(c -> c.wikiTokens().stream())
-        .filter(t -> t instanceof WikiSection)
-        .map(Token::asWikiSection)
-        .map(WikiSection::getHeading)
-        .collect(Collectors.toList());
+        .filter(t -> t instanceof WikiSection).map(Token::asWikiSection)
+        .map(WikiSection::getContent).flatMap(c -> c.wikiTokens().stream())
+        .filter(t -> t instanceof WikiSection).map(Token::asWikiSection)
+        .map(WikiSection::getHeading).collect(Collectors.toList());
 
     assertThat(h3FromWikiText, is(h3Headings));
 

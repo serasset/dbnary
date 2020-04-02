@@ -209,7 +209,7 @@ public class WikiTextTest {
     WikiText text = new WikiText(test);
 
     ClassBasedFilter filter = new ClassBasedFilter();
-    filter.allowInternalLink().allowTemplates().allowListItem();
+    filter.allowIndentedItem();
     WikiEventsSequence s = text.filteredTokens(filter);
     Iterator<WikiText.Token> it = s.iterator();
 

@@ -54,8 +54,23 @@ public class ClassBasedFilter implements WikiEventFilter {
     return this;
   }
 
+  public ClassBasedFilter allowIndentedItem() {
+    classesToKeep.add(WikiText.IndentedItem.class);
+    return this;
+  }
+
   public ClassBasedFilter allowListItem() {
     classesToKeep.add(WikiText.ListItem.class);
+    return this;
+  }
+
+  public ClassBasedFilter allowNumberedListItem() {
+    classesToKeep.add(WikiText.NumberedListItem.class);
+    return this;
+  }
+
+  public ClassBasedFilter allowIndentation() {
+    classesToKeep.add(WikiText.Indentation.class);
     return this;
   }
 

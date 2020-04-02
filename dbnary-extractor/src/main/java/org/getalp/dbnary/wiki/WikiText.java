@@ -2,7 +2,6 @@ package org.getalp.dbnary.wiki;
 
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.KEEP;
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -131,36 +130,47 @@ public class WikiText {
     public ExternalLink asExternalLink() {
       throw new IllegalStateException("Not an ExternalLink.");
     }
+
     public Heading asHeading() {
       throw new IllegalStateException("Not an Heading.");
     }
+
     public HTMLComment asHTMLComment() {
       throw new IllegalStateException("Not an HTMLComment.");
     }
+
     public Indentation asIndentation() {
       throw new IllegalStateException("Not an Indentation.");
     }
+
     public InternalLink asInternalLink() {
       throw new IllegalStateException("Not an InternalLink.");
     }
+
     public Link asLink() {
       throw new IllegalStateException("Not an Link.");
     }
+
     public ListItem asListItem() {
       throw new IllegalStateException("Not an ListItem.");
     }
+
     public NumberedListItem asNumberedListItem() {
       throw new IllegalStateException("Not an NumberedListItem.");
     }
+
     public Template asTemplate() {
       throw new IllegalStateException("Not an Template.");
     }
+
     public Text asText() {
       throw new IllegalStateException("Not an Text.");
     }
+
     public WikiContent asWikiContent() {
       throw new IllegalStateException("Not an WikiContent.");
     }
+
     public WikiSection asWikiSection() {
       throw new IllegalStateException("Not an WikiSection.");
     }
@@ -797,8 +807,10 @@ public class WikiText {
 
     private WikiSection(WikiText.Heading heading) {
       this.heading = heading;
-      this.content = new WikiContent(null == heading ? getWikiText().getStartOffset() : heading.offset.end);
-      this.offset = new Segment(null == heading ? getWikiText().getStartOffset() : heading.offset.start);
+      this.content =
+          new WikiContent(null == heading ? getWikiText().getStartOffset() : heading.offset.end);
+      this.offset =
+          new Segment(null == heading ? getWikiText().getStartOffset() : heading.offset.start);
     }
 
     public WikiText.Heading getHeading() {
@@ -826,11 +838,8 @@ public class WikiText {
 
     @Override
     public String toString() {
-      return "WikiSection{" +
-          "offset=" + offset +
-          ", heading=" + heading +
-          ", content=" + content +
-          '}';
+      return "WikiSection{" + "offset=" + offset + ", heading=" + heading + ", content=" + content
+          + '}';
     }
 
     @Override
@@ -844,8 +853,9 @@ public class WikiText {
     }
   }
 
-  /** A wiki content structured as a document, i.e. with a tree structure
-   * representing sections and subsections.
+  /**
+   * A wiki content structured as a document, i.e. with a tree structure representing sections and
+   * subsections.
    */
   public final class WikiDocument implements Visitable {
 
@@ -875,7 +885,7 @@ public class WikiText {
       stack.push(new WikiSection(null));
       WikiText.this.wikiTokens().stream().forEach(this::registerToken);
       WikiSection top = null;
-      while (! stack.isEmpty()) {
+      while (!stack.isEmpty()) {
         top = stack.pop();
         top.setEndOffset(WikiText.this.getEndOffset());
       }
@@ -946,38 +956,20 @@ public class WikiText {
   private static final Pattern lexerPattern;
 
   static {
-    lexerCode.append("(?<").append("OT").append(">").append("\\{\\{")
-        .append(")|")
-        .append("(?<").append("OIL").append(">").append("\\[\\[")
-        .append(")|")
-        .append("(?<").append("OEL").append(">").append("\\[")
-        .append(")|")
-        .append("(?<").append("CT").append(">").append("\\}\\}")
-        .append(")|")
-        .append("(?<").append("CIL").append(">").append("\\]\\]")
-        .append(")|")
-        .append("(?<").append("CEL").append(">").append("\\]")
-        .append(")|")
-        .append("(?<").append("OXC").append(">").append("<!--")
-        .append(")|")
-        .append("(?<").append("CH").append(">").append("\\={2,6}$")
-        .append(")|")
-        .append("(?<").append("OH").append(">").append("={2,6}")
-        .append(")|")
-        .append("(?<").append("OLIST").append(">").append("\\*+")
-        .append(")|")
-        .append("(?<").append("OINDENT").append(">").append(":+")
-        .append(")|")
-        .append("(?<").append("ONUMLIST").append(">").append("\\#+")
-        .append(")|")
-        .append("(?<").append("PIPE").append(">").append("\\|")
-        .append(")|")
-        .append("(?<").append("SPACE").append(">").append(" ")
-        .append(")|")
-        .append("(?<").append("NL").append(">").append("\r?\n|\r")
-        .append(")|")
-        .append("(?<").append("CHAR").append(">")
-        .append(".").append(")");
+    lexerCode.append("(?<").append("OT").append(">").append("\\{\\{").append(")|").append("(?<")
+        .append("OIL").append(">").append("\\[\\[").append(")|").append("(?<").append("OEL")
+        .append(">").append("\\[").append(")|").append("(?<").append("CT").append(">")
+        .append("\\}\\}").append(")|").append("(?<").append("CIL").append(">").append("\\]\\]")
+        .append(")|").append("(?<").append("CEL").append(">").append("\\]").append(")|")
+        .append("(?<").append("OXC").append(">").append("<!--").append(")|").append("(?<")
+        .append("CH").append(">").append("\\={2,6}$").append(")|").append("(?<").append("OH")
+        .append(">").append("={2,6}").append(")|").append("(?<").append("OLIST").append(">")
+        .append("\\*+").append(")|").append("(?<").append("OINDENT").append(">").append(":+")
+        .append(")|").append("(?<").append("ONUMLIST").append(">").append("\\#+").append(")|")
+        .append("(?<").append("PIPE").append(">").append("\\|").append(")|").append("(?<")
+        .append("SPACE").append(">").append(" ").append(")|").append("(?<").append("NL").append(">")
+        .append("\r?\n|\r").append(")|").append("(?<").append("CHAR").append(">").append(".")
+        .append(")");
 
     lexerPattern = Pattern.compile(lexerCode.toString(), Pattern.MULTILINE | Pattern.DOTALL);
   }
@@ -1160,8 +1152,8 @@ public class WikiText {
     // the end of text is considered as a new line... Handle it.
     // if in ListItem, it's a closing char
     Token lastToken = stack.peek();
-    if (lastToken instanceof ListItem) {
-      ListItem li = (ListItem) stack.pop();
+    if (lastToken instanceof IndentedItem) {
+      IndentedItem li = (IndentedItem) stack.pop();
       li.setEndOffset(pos);
       stack.peek().addToken(lastToken);
     }
@@ -1169,8 +1161,8 @@ public class WikiText {
     while (stack.size() > 1) {
       // error: end of wiki text while elements are being parsed
       // if in ListItem, it's a closing char
-      if (lastToken instanceof ListItem) {
-        ListItem li = (ListItem) stack.pop();
+      if (lastToken instanceof IndentedItem) {
+        IndentedItem li = (IndentedItem) stack.pop();
         li.setEndOffset(pos - 1);
         stack.peek().addToken(lastToken);
       } else {
@@ -1287,6 +1279,7 @@ public class WikiText {
   }
 
   private WikiDocument doc = null;
+
   public WikiDocument asStructuredDocument() {
     if (null == doc) {
       doc = new WikiDocument();
@@ -1294,8 +1287,8 @@ public class WikiText {
     return doc;
   }
 
-// TODO: make all creation/parsing time methods private and add wiki section iterator and
-//  document structure as internal classes
+  // TODO: make all creation/parsing time methods private and add wiki section iterator and
+  // document structure as internal classes
 
   private String wikiTextString = null;
 
@@ -1349,7 +1342,8 @@ public class WikiText {
     }
 
     // Collect next element and prepare for the following
-    // sequence is of type XXXXXHCCCCCCCCChXXXHCCC where X is to be discarded, H is a header of level
+    // sequence is of type XXXXXHCCCCCCCCChXXXHCCC where X is to be discarded, H is a header of
+    // level
     // n and h is a higher level header
     // init state is ^currentToken
     // final state is ^currentToken
@@ -1379,8 +1373,7 @@ public class WikiText {
         throw new NoSuchElementException("No remaining section in this wikitext.");
       }
       Heading sectionHeading = (Heading) currentToken;
-      WikiContent sectionContent =
-          content.getWikiText().new WikiContent(currentToken.offset.end);
+      WikiContent sectionContent = content.getWikiText().new WikiContent(currentToken.offset.end);
       advance();
       while (!eof() && !isClosingHeading(currentToken)) {
         sectionContent.addToken(currentToken);

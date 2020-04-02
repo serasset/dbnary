@@ -1133,6 +1133,7 @@ public class WikiText {
             li.setEndOffset(pos);
             stack.peek().addToken(t);
           }
+          // TODO Handle nowiki tags
           pos += g.length();
           newlineFlag = true;
           // TODO Handle nowiki tags
@@ -1151,24 +1152,19 @@ public class WikiText {
 
     // the end of text is considered as a new line... Handle it.
     // if in ListItem, it's a closing char
-    Token lastToken = stack.peek();
-    if (lastToken instanceof IndentedItem) {
-      IndentedItem li = (IndentedItem) stack.pop();
-      li.setEndOffset(pos);
-      stack.peek().addToken(lastToken);
-    }
-
     while (stack.size() > 1) {
-      // error: end of wiki text while elements are being parsed
-      // if in ListItem, it's a closing char
-      if (lastToken instanceof IndentedItem) {
-        IndentedItem li = (IndentedItem) stack.pop();
-        li.setEndOffset(pos - 1);
-        stack.peek().addToken(lastToken);
-      } else {
-        // In this case, we assume that unclosed elements are simple textual contents.
-        Token t = stack.pop();
+      Token t = stack.peek();
+      if (t instanceof Heading || t instanceof Link) {
+        stack.pop();
         stack.peek().addFlattenedTokens(t);
+        continue;
+      } else if (t instanceof Template) {
+        stack.pop();
+        stack.peek().addFlattenedTokens(t);
+      } else if (t instanceof IndentedItem) {
+        IndentedItem li = (IndentedItem) stack.pop();
+        li.setEndOffset(pos);
+        stack.peek().addToken(t);
       }
     }
 
@@ -1176,6 +1172,10 @@ public class WikiText {
 
     ((WikiContent) root).setEndOffset(end);
     return (WikiContent) root;
+
+  }
+
+  private void handleNL(Stack<Token> stack, int pos) {
 
   }
 

@@ -13,6 +13,8 @@ public interface Visitor {
 
   void visit(ListItem listItem);
 
+  void visit(NumberedListItem listItem);
+
   void visit(Template template);
 
   void visit(WikiContent content);
@@ -20,4 +22,8 @@ public interface Visitor {
   void visit(Text text);
 
   void visit(HTMLComment htmlComment);
+
+  void visit(WikiSection section);
+
+  void visit(WikiDocument section);
 }

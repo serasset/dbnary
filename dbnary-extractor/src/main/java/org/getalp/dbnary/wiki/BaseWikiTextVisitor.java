@@ -10,6 +10,8 @@ import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Text;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
+import org.getalp.dbnary.wiki.WikiText.WikiDocument;
+import org.getalp.dbnary.wiki.WikiText.WikiSection;
 
 public abstract class BaseWikiTextVisitor implements Visitor {
 
@@ -29,17 +31,17 @@ public abstract class BaseWikiTextVisitor implements Visitor {
 
   @Override
   public void visit(Heading heading) {
-    heading.content.accept(this);
+    heading.getContent().accept(this);
   }
 
   @Override
   public void visit(Indentation indentation) {
-    indentation.content.accept(this);
+    indentation.getContent().accept(this);
   }
 
   @Override
   public void visit(ListItem listItem) {
-    listItem.content.accept(this);
+    listItem.getContent().accept(this);
   }
 
   @Override
@@ -61,4 +63,19 @@ public abstract class BaseWikiTextVisitor implements Visitor {
 
   @Override
   public void visit(HTMLComment htmlComment) {}
+
+  @Override
+  public void visit(WikiSection section) {
+    section.getHeading().accept(this);
+    for (Token token : section.getContent().tokens()) {
+      token.accept(this);
+    }
+  }
+
+  @Override
+  public void visit(WikiDocument doc) {
+    for (Token token : doc.getContent().tokens()) {
+      token.accept(this);
+    }
+  }
 }

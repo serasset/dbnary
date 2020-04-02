@@ -1,0 +1,679 @@
+{{voir|Bleu}}
+
+== {{langue|fr}} ==
+=== {{S|étymologie}} ===
+: ''([[#fr-adj|Adjectif]], [[#fr-nom|Nom]])'' De l’{{étyl|fro|fr|mot=blou}}, ''blo'', ''blau'', de l’ancien bas {{étyl|frk|fr}} {{recons|blāo}} (''cf''. [[néerlandais]] ''[[blauw]]''), apparenté au [[luxembourgeois]] ''blo'', à l’[[allemand]] ''[[blau]]''. Le francique a aussi donné le vieil espagnol ''blavo'', le vieil italien ''biavo'', le romanche ''blau'' et l’occitan et le catalan ''blau'' (au fém. ''blava''). L’anglais ''blue'' a été emprunté à l’anglo-normand.
+: {{note}} Dans nombre d’[[interjection]]s [[composée]]s de ''bleu'' (par ex. ''[[corbleu]] !'', ''[[nom de Bleu]]'', etc.), le mot se [[substitue]] à ''[[Dieu]]'' pour [[éviter]] le [[blasphème]].
+: Pour le sens « novice » du nom commun, une tradition [[faire allusion|fait allusion]] à l’usage consistant à faire boire aux jeunes recrues une solution de bleu de méthylène, qui s’élimine par les urines. (le terme original était ''bleu-bite''). Ces urines bleues auraient fait croire aux petites amies de l’individu que celui-ci était malade, ce qui contrariait fortement ses prouesses amoureuses. Pour les militaires, le mot bleu a pour origine l'uniforme des engagés volontaires de 1793 qui portaient tous des vestes d'uniforme bleues, contrairement aux autres troupes aguerries dont la dominante était encore le blanc.
+
+=== {{S|adjectif|fr}} ===
+{{fr-accord-rég|blø}}
+'''bleu''' {{pron|blø|fr}}
+# De la [[couleur]] du [[ciel]] en plein jour quand il est [[dégager|dégagé]].{{couleur|#0000FF}}
+#* […]'' sur toute l’Ardenne, le temps s’était levé. Le ciel était '''bleu''' éblouissant, la neige étincelait au soleil.'' {{source|{{w|Georges Blond}}, ''L’Agonie de l’Allemagne 1944-1945'', Fayard, 1952, page 155}}
+# {{par extension}} D’une couleur appartenant au [[champ chromatique]] du [[#fr-nom-1|bleu]], c’est-à-dire légèrement différente de la couleur originelle mais liée à celle-ci.{{couleur|#DFF2FF}}{{couleur|#77B5FE}}{{couleur|#2BFAFA}}{{couleur|#3A8EBA}}{{couleur|#0000FF}}{{couleur|#17657D}}{{couleur|#686F8C}}
+#* ''On ne pouvait voir de fille plus fraîche, plus riante ; elle était blonde, avec de beaux yeux '''bleus''', des joues roses et des dents blanches comme du lait ''[…] {{source|{{w|Erckmann-Chatrian}}, ''{{ws|Histoire d’un conscrit de 1813/1|Histoire d’un conscrit de 1813}}'', J. Hetzel, 1864}}
+#* ''Vers l’est, l’océan nuageux s’étendait '''bleu''' sombre à perte de vue, et Bert crut qu’il contemplait l’hémisphère entier du monde.'' {{source|{{Citation/H. G. Wells/La Guerre dans les airs/1921|95}}}}
+#* ''Le surlendemain ''[…]'' dans la soirée, la couleur '''bleue''' de l’eau, indice des grands fonds, m’apprenait ma sortie du golfe de Panama.'' {{source|{{w|Alain Gerbault}}, ''À la poursuite du soleil'' ; tome 1 : ''De New-York à Tahiti'', 1929}}
+#* ''Au-delà des bois qui cernaient la ville, on apercevait une longue rangée de collines d’un '''bleu''' de fumée.'' {{source|{{nom w pc|Julien|Green}}, « Moïra », 1950, réédition Le Livre de Poche, page 43}}
+#* ''À mesure que les châteaux de nuages s’éloignaient l’un de l’autre découvrant de plus en plus du ciel, l’azur vira au '''bleu''' de gentiane [...].'' {{source|{{nom w pc|Jean|Giono}}, ''Le hussard sur le toit'', 1951, réédition Folio Plus, page 274}}
+#* ''Gordon portait une veste marron à chevrons, une chemise '''bleu''' Oxford et une cravate en tissu de la même couleur que la veste, tachetée de motifs de forme ovale striés de '''bleu''' ciel.'' {{source|{{nom w pc|Philippe|Labro}}, ''{{w|L’étudiant étranger}}'', Gallimard, 1986, page 44}}
+# De la couleur que certains [[épanchement]]s de [[sang]] ou certaines [[contusion]]s font prendre à la [[peau]].
+#* ''Quand le sang lui porte à la tête, il devient tout '''bleu'''.''
+#* ''L’endroit de la contusion est encore '''bleu'''.''
+# {{zootechnie|fr}} D’une couleur de robe de chien [[gris]] [[clair]] évoquant le bleu.
+#* ''Le berger de Brie peut avoir une robe '''bleue'''.''
+# {{cuisine|fr}} Très peu [[cuit]], en parlant d’une [[viande]] grillée.
+#* ''On m’a servi un bifteck '''bleu'''.''
+# [[vivement|Vivement]] [[surpris]] de quelque chose.
+#* ''J’en étais complètement '''bleue'''.''
+# {{argot|fr}} {{populaire|fr}} Complètement [[ivre]].
+#* ''Tu aurais vu le Maurice, avec les canons qu’il s’est mis, il était '''bleu''', il divaguait complètement !''<br />{{note}} Dans les cas extrêmes, on dit aussi ''[[bleu nuit]]''.
+# {{Belgique|fr}} [[passionnément|Passionnément]] [[amoureux]] de quelqu’un.
+#* ''Je suis '''bleu''' de Stéph.''
+
+==== {{S|synonymes}} ====
+* (1) [[azur]]
+
+==== {{S|apparentés}} ====
+* [[bleuâtre]]
+* [[bleuir]]
+
+==== {{S|dérivés}} ====
+{{(}}
+* [[autour bleu et gris]]
+* [[avoir les bleus]] {{Québec|nocat=1}}
+* [[baleine bleue]]
+* [[banane bleue]]
+* [[bas-bleu]]
+* [[bas-bleuisme]]
+* [[béret bleu]], [[Béret bleu]]
+* [[blanc bleu]]
+* [[blanc bleu belge]]
+* [[bleu de linge]]
+* [[bleu de travail]]
+* [[bleuet]]
+* [[bleuette]]
+* [[bleuetière]]
+* [[bleuir]]
+* [[bleuissage]]
+* [[bleuissant]]
+* [[bleuissement]]
+* [[bleuissoir]]
+* [[bleu layette]]
+* [[bleu-manteau]] ''(espèce d’oiseau)''
+* [[bleusaille]]
+* [[bleutage]]
+* [[bleuté]]
+* [[bleuter]]
+* [[brève à dos bleu]]
+* [[brève à nuque bleue]]
+* [[casque bleu]], [[Casque bleu]]
+* [[cendres bleues]]
+* [[chardon bleu des Alpes]]
+* [[chat bleu]]
+* [[chêne bleu]]
+* [[chèvre bleue]]
+* [[col bleu]]
+* [[colère bleue]]
+* [[conte bleu]]
+* [[corbleu]] !
+* [[cordon bleu]], [[cordon-bleu]]
+* [[corneille bleue]]
+* [[crebleu]] !
+* [[débleuir]]
+* [[dentelaire bleue]]
+* [[diable bleu]]
+* [[enfant bleu]]
+* [[épagneul bleu de Picardie]]
+* [[État bleu]]
+* [[être dans le bleu]]
+* [[Europe bleue]]
+* [[faire bleu]]
+* [[fleur bleue]]
+* [[fleuve Bleu]]
+* [[gorgebleue]], [[gorge-bleue]]
+* [[gorgebleue à miroir]], [[gorge-bleue à miroir]]
+* [[grande baleine bleue]]
+* [[grande bleue]]
+* [[grenadin à poitrine bleue]]
+* [[gros bleu]], [[gros-bleu]]
+* [[heure bleue]]
+* [[houille bleue]]
+* [[jarnibleu]] !
+* [[langue bleue]]
+* [[Les Bleus]]
+* [[l’île Bleue]]
+* [[maladie bleue]]
+* [[maugrebleu]] !, [[maugrébleu]] !
+* [[menton bleu]]
+* [[merlan bleu]]
+* [[merle bleu]]
+* [[merle bleu d’Europe]]
+* [[mésange bleue]]
+* [[mettre au bleu]]
+* [[monticole bleu]]
+* [[monticole merle-bleu]]
+* [[morbleu]] !
+* [[n’y voir que du bleu]]
+* [[nager dans le bleu]]
+* [[nom de Bleu]]
+* [[note bleue]]
+* [[nuit bleue]]
+* [[œillet bleu de Montpellier]]
+* [[oiseau bleu]]
+* [[palmier bleu du Mexique]]
+* [[palsambleu]] !
+* [[panicaut bleu]]
+* [[panicaut bleu des Alpes]]
+* [[parbleu]] !
+* [[passer au bleu]]
+* [[pâte-bleue]]
+* [[Pavillon Bleu]]
+* [[pavillon bleu]]
+* [[perruche à croupion bleu]]
+* [[perruche-moineau à croupion bleu]]
+* [[petit bleu]]
+* [[peur bleue]]
+* [[pied-bleu]]
+* [[pieuvre à anneaux bleus]]
+* [[piste bleue]]
+* [[poisson bleu]]
+* [[regard bleu]]
+* [[requin bleu]]
+* [[rorqual bleu]]
+* [[sacrebleu]] !
+* [[sambleu]] !
+* [[sang bleu]]
+* [[têtebleu]], [[tête-bleue]] !
+* [[trou bleu]]
+* [[tubleu]] !
+* [[ventrebleu]] !
+* [[vertubleu]] !
+* [[vouer au bleu]]
+* [[zone bleue]]
+{{)}}
+
+==== {{S|vocabulaire}} ====
+* {{voir thésaurus|fr|art funéraire|police}}
+
+==== {{S|traductions}} ====
+{{trad-début|Couleur.}}
+* {{T|aa}} : {{trad--|aa|bulhi}}
+* {{T|af}} : {{trad+|af|blou}}
+* {{T|sq}} : {{trad-|sq|kaltërt}}
+* {{T|de}} : {{trad+|de|blau}}
+* {{T|alt}} : {{trad--|alt|кӧк}}
+* {{T|en}} : {{trad+|en|blue}}
+* {{T|ang}} : {{trad-|ang|blāw}}
+* {{T|ar}} : {{trad+|ar|أزرق|R=ʾāzraq|dif=أَزْرَق}}
+* {{T|hy}} : {{trad+|hy|կապույտ|tr=kapuyt}}
+* {{T|az}} : {{trad+|az|göy}}, {{trad+|az|mavi}}
+* {{T|ba}} : {{trad--|ba|күк}}
+* {{T|nds}} : {{trad+|nds|blao}} (Münsterland), {{trad+|nds|blo'}} (Vest Recklinghausen)
+* {{T|eu}} : {{trad+|eu|urdin}}
+* {{T|bth}} : {{trad--|bth|barŭm}}
+* {{T|br}} : {{trad+|br|glas}}
+* {{T|bg}} : {{trad+|bg|син|R=sin}} {{m}}
+* {{T|ca}} : {{trad+|ca|blau}} {{m}}, {{trad+|ca|blava}} {{f}}
+* {{T|shy}} : {{trad--|shy|azenẓari}}
+* {{T|zh}} : {{trad+|zh|蓝|R=lán|tradi=藍}}
+* {{T|cjs}} : {{trad--|cjs|кӧк}}
+* {{T|ko}} : {{trad+|ko|푸른|R=pureun}}
+* {{T|kw}} : {{trad-|kw|glas}}
+* {{T|co}} : {{trad+|co|turchinu}}, {{trad-|co|azuru}}
+* {{T|ht}} : {{trad--|ht|ble}}
+* {{T|hr}} : {{trad+|hr|plava}}
+* {{T|da}} : {{trad+|da|blå}}
+* {{T|es}} : {{trad+|es|azul}}, {{trad+|es|celeste}} (bleu clair)
+* {{T|eo}} : {{trad+|eo|blua}}
+* {{T|et}} : {{trad+|et|sinine}}
+* {{T|fo}} : {{trad-|fo|bláur}}
+* {{T|fi}} : {{trad+|fi|sininen}}
+* {{T|fy}} : {{trad+|fy|blau}}
+* {{T|gd}} : {{trad-|gd|gorm}}
+* {{T|ga}} : {{trad+|ga|gorm}}
+* {{T|gag}} : {{trad--|gag|maavi}}
+* {{T|cy}} : {{trad+|cy|glas}}
+* {{T|ka}} : {{trad+|ka|ლურჯი}}, {{trad-|ka|ცისფერი|R=c’isp’eri}} (bleu clair, bleu ciel)
+* {{T|got}} : {{trad--|got|𐌱𐌻𐌴𐍅𐍃|R=blēws}}
+* {{T|el}} : {{trad+|el|κυανός|R=kianós}}
+* {{T|gu}} : {{trad+|gu|નીલો}}
+* {{T|he}} : {{trad+|he|כחול}}
+* {{T|hi}} : {{trad+|hi|नीला|R=nīlā}}
+* {{T|mww}} : {{trad--|mww|xiav}}
+* {{T|hu}} : {{trad+|hu|kék}}
+* {{T|sah}} : {{trad--|sah|күөх}}
+* {{T|io}} : {{trad+|io|blua}}
+* {{T|id}} : {{trad+|id|biru}}
+* {{T|ia}} : {{trad+|ia|blau}}
+* {{T|iu}} : {{trad-|iu|ᑐᖑᔪᖅᑐᖅ|R=[[tungujuqtuq]]}}
+* {{T|is}} : {{trad+|is|blár}}
+* {{T|it}} : {{trad+|it|blu}} (bleu foncé), {{trad+|it|azzurro}} (bleu clair)
+* {{T|ja}} : {{trad+|ja|青い|R=aoi}}, {{trad+|ja|ブルー|R=burū}}
+* {{T|krc}} : {{trad--|krc|кёк}}
+* {{T|kkz}} : {{trad--|kkz|dētlʼęse}}, {{trad--|kkz|detlʼįse}}
+* {{T|kk}} : {{trad+|kk|көк|tr=kök}}
+* {{T|kjh}} : {{trad--|kjh|кӧк}}
+* {{T|rw}} : {{trad-|rw|bogobogo}}
+* {{T|ky}} : {{trad+|ky|көк}}
+* {{T|kum}} : {{trad--|kum|гёк}}
+* {{T|ku}} : {{trad+|ku|şîn}}
+* {{T|fsl}} : {{wikisign|bleu}}
+* {{T|la}} : {{trad+|la|caeruleus}}
+* {{T|lv}} : {{trad+|lv|zils}}
+* {{T|lt}} : {{trad-|lt|mėlyna}}
+* {{T|lb}} : {{trad-|lb|blo}}
+* {{T|mk}} : {{trad-|mk|сина|R=sina}}
+* {{T|ms}} : {{trad+|ms|biru}}
+* {{T|mg}} : {{trad+|mg|manga}}
+* {{T|mt}} : {{trad+|mt|blu}}
+* {{T|gv}} : {{trad-|gv|gorrym}}
+* {{T|mi}} : {{trad-|mi|kahurangi}}
+* {{T|yua}} : {{trad--|yua|ya’ax}}
+* {{T|mn}} : {{trad+|mn|хөх|R=höh}}
+* {{T|nah}} : {{trad-|nah|xuihuitl}}
+* {{T|nl}} : {{trad+|nl|blauw}}
+* {{T|nog}} : {{trad--|nog|коьк}}
+* {{T|fra-nor}} : {{trad--|fra-nor|blû}}
+* {{T|no}} : {{trad+|no|blå}}, {{trad-|no|blåfarge}}
+* {{T|oc}} : {{trad+|oc|blau}}
+* {{T|xwo}} : {{trad--|xwo|ᡍᡈᡍᡈ|R=kökö}}
+* {{T|uz}} : {{trad+|uz|ko‘k}}
+* {{T|pap}} : {{trad--|pap|blou}}
+* {{T|fa}} : {{trad+|fa|آبی|R=âbi}}, {{trad+|fa|کبود|tr=kabud}}
+* {{T|pl}} : {{trad+|pl|niebieski}}, {{trad+|pl|błękit}} (bleu ciel)
+* {{T|pt}} : {{trad+|pt|azul}}
+* {{T|ro}} : {{trad+|ro|albastru}}
+* {{T|ru}} : {{trad+|ru|синий|R=siniï}}, {{trad+|ru|голубой|R=golouboï}} (bleu clair)
+* {{T|se}} : {{trad--|se|alit}}
+* {{T|sa}} : {{trad+|sa|भाल|R=bhāla}}
+* {{T|sc}} : {{trad--|sc|biaittu}}
+* {{T|sr}} : {{trad-|sr|plava}}, {{trad-|sr|плава}}
+* {{T|scn}} : {{trad+|scn|azzurru}}
+* {{T|sk}} : {{trad-|sk|belasý}}, {{trad+|sk|modrý}}
+* {{T|sl}} : {{trad-|sl|modra}}
+* {{T|ses}} : {{trad--|ses|alkama}}
+* {{T|sv}} : {{trad+|sv|blå}}
+* {{T|tl}} : {{trad-|tl|asul}}, {{trad-|tl|bughaw}}
+* {{T|ta}} : {{trad+|ta|நீலம்|R=nīlam}}
+* {{T|crh}} : {{trad--|crh|mavı}}
+* {{T|tt}} : {{trad+|tt|күк}}
+* {{T|cs}} : {{trad+|cs|modrý}}
+* {{T|ce}} : {{trad--|ce|сийна}}
+* {{T|cv}} : {{trad--|cv|кăвак}}
+* {{T|tet}} : {{trad--|tet|azúl}}
+* {{T|th}} : {{trad+|th|สีน้ำเงิน}}, {{trad+|th|น้ำเงิน}}
+* {{T|tox}} : {{trad--|tox|hawahawo}}
+* {{T|kim}} : {{trad--|kim|көк}}
+* {{T|tpi}} : {{trad-|tpi|blu}}
+* {{T|tyv}} : {{trad--|tyv|көк}}
+* {{T|tsolyáni}} : {{trad--|tsolyáni|níri-n}}
+* {{T|tpw}} : {{trad--|tpw|oby}}
+* {{T|tr}} : {{trad+|tr|mavi}}
+* {{T|tk}} : {{trad-|tk|gök}}
+* {{T|osp}} : {{trad--|osp|blavo|m}}, {{trad--|osp|blava|f}}
+* {{T|vi}} : {{trad+|vi|xanh}} (bleu ou vert), {{trad-|vi|xanh lam}}, {{trad-|vi|màu xanh}}
+* {{T|non}} : {{trad--|non|blár}}
+* {{T|otk}} : {{trad--|otk|𐰚𐰇𐰚}}
+{{trad-fin}}
+
+{{trad-début|Épanchements de sang.}}
+* {{T|en}} : {{trad+|en|blue}}
+* {{T|ca}} : {{trad+|ca|blau|m}}
+* {{T|co}} : {{trad-|co|ematomu}}
+* {{T|eo}} : {{trad-|eo|bluaĵo}}
+* {{T|el}} : {{trad+|el|μελανιά|R=melaniá}} {{f}}
+* {{T|id}} : {{trad-|id|luka memar}}
+* {{T|ro}} : {{trad+|ro|hematom|n}}, {{trad+|ro|vânătaie|f}}
+{{trad-fin}}
+
+{{trad-début|Légèrement cuit.}}
+* {{T|en}} : {{trad-|en|very rare}} ; {{trad+|en|underdone}} {{péjoratif|nocat=1}}
+{{trad-fin}}
+
+{{trad-début|Noble (avoir le sang bleu).}}
+* {{T|en}} : {{trad+|en|blue}}
+* {{T|ca}} : {{trad+|ca|blava|f}}
+* {{T|es}} : {{trad+|es|azul}}
+* {{T|el}} : {{trad+|el|γαλαζοαίματος|R=galazoématos}}
+* {{T|sv}} : {{trad-|sv|ha blått blod}}
+{{trad-fin}}
+
+==== {{S|hyponymes}} ====
+{{(|Couleur|1}}
+* [[bleu aldégo]]
+* [[bleu antique]]
+* [[bleu barbeau]]
+* [[bleu cæruleum]]
+* [[bleu céleste]]
+* [[bleu cerise]]
+* [[bleu charrette]]
+* [[bleu charron]]
+* [[bleu ciel]]
+* [[bleu Coupier]]
+* [[bleu d’amidon]]
+* [[bleu d’Anvers]]
+* [[bleu d’azur]]
+* [[bleu d’émail]]
+* [[bleu d’enfer]]
+* [[bleu de Brême]]
+* [[bleu de bromothymol]]
+* [[bleu de cobalt]]
+* [[bleu de crésyle]]
+* [[bleu de fécule]]
+* [[bleu de France]]
+* [[bleu de Hambourg]]
+* [[bleu de méthylène]]
+* [[bleu de minuit]]
+* [[bleu de montagne]]
+* [[bleu de Paris]]
+* [[bleu de Péligot]]
+* [[bleu de Prusse]]
+* [[bleu de reine]]
+* [[bleu de roi]]
+* [[bleu de smalt]]
+* [[bleu de Turnbull]]
+* [[bleu des Anciens]]
+* [[bleu des mers du sud]]
+* [[bleu dragée]]
+* [[bleu égyptien]]
+* [[bleu électrique]]
+* [[bleu France]]
+* [[bleu jonquille]]
+* [[bleu lapis]]
+* [[bleu Majorelle]]
+* [[bleu marine]]
+* [[bleu mignon]]
+* [[bleu minéral]]
+* [[bleu mourant]]
+* [[bleu naissant]]
+* [[bleu nattier]]
+* [[bleu nuit]]
+* [[bleu oriental]]
+* [[bleu pâle]]
+* [[bleu pers]]
+* [[bleu persan]]
+* [[bleu réflexe]]
+* [[bleu roi]]
+* [[bleu turquin]]
+* [[bleu-blanc]]
+* [[cyan]]
+* [[fleur de guède]]
+* (bleu) [[klein]]
+* (bleu) [[lavande]]
+* [[outremer]]
+* (bleu) [[turquoise]]
+{{)}}
+
+=== {{S|nom|fr}} ===
+{{fr-rég|blø}}
+'''bleu''' {{pron|blø|fr}} {{m}}
+# La [[couleur]] bleue.
+#* ''Le '''bleu''' qui domine dans le tableau est donc construit régulièrement, en échelons, espacé en vis-à-vis, presque de la même manière, de chaque côté du trône.'' {{source|{{w|Joris-Karl Huysmans}}, ''{{ws|La Cathédrale/VII|La Cathédrale}}'', Plon-Nourrit, 1915}}
+#* ''De nombreux arcs-en-ciel apparaissent, mais le ciel entre les nuages est d’un '''bleu''' trop pâle et je sais que ce n’est pas encore la fin du mauvais temps.'' {{source|{{w|Alain Gerbault}}, ''À la poursuite du soleil'' ; tome 1 : ''De New-York à Tahiti'', 1929}}
+#* ''Des feux tantôt roses, tantôt d’un '''bleu''' acide qui tournait au vert pomme, scintillaient à l’extérieur des ''Folies. {{source|{{Citation/Francis Carco/L’Homme de minuit/1938}}}}
+#* ''Au printemps les sous-bois se tapissent des fleurs de ''Caltha palustris'', ''Ranunculus Ficaria'', ''Prímula elatíor'' dont la jaune monotonie s’égaie du '''bleu''' des ''Glechoma hederacea'' et ''Viola silvestris. {{source|{{w|Gustave Malcuit}}, ''Contributions à l’étude phytosociologique des Vosges méridionales saônoises, les associations végétales de la vallée de La Lanterne'', thèse de doctorat, Société d’édition du Nord, 1929, p. 149}}
+#* ''Mais dans le même temps qu'elle admirait les robes, Francie éprouvait un étrange malaise. Ses yeux voyaient bien les couleurs, le cerise, l'orange, le '''bleu''' vif, le rouge et le jaune, mais elle avait l’impression qu'une chose sournoise se cachait derrière les costumes : […].'' {{source|{{w|Betty Smith}}, ''Le lys de Brooklyn'', traduit par Maurice Beerblock, 1947, Éditions Belfond, 2014, chap. 4}}
+# {{méton|fr}} [[famille|Famille]] de [[fromage]]s dont la [[pâte]] contient des [[champignon]]s formant des [[veine]]s de couleur bleue. [[Fichier:Bleu auvergne.jpg|thumb|right|Une part de '''bleu''' d’Auvergne. (2)]]
+#* ''La barbaque est accompagnée de légumes ou de pâtes, c’est comme on veut. Pour le frometon, à pile ou face, on se prend camembert ou '''bleu'''.'' {{source|{{w|Petit Futé}} [[Niort]] 2007, p. 36}}
+# [[personne|Personne]] [[vêtue]] d’un [[uniforme]] bleu, vêtue de bleu.
+# {{spéc}} {{histoire|fr}} Nom que les [[chouan]]s donnaient, pendant la {{w|guerre de Vendée}}, aux [[soldat]]s des [[armée]]s de la [[République]].
+# {{par ext}} {{France|fr}} [[républicain|Républicain]].
+#* ''Charette, qui, depuis la prise de Noirmoutiers par les républicains, ne disposait plus que de faibles bandes, sévit de nouveau à la tête d’une armée; et, le 26 nivôse (15 janvier), il fut en mesure de battre les '''bleus''' à Chancé et à Légé ''[…] {{source|Amédée Gabourd, ''Histoire de la révolution et de l’empire : Convention nationale'', tome 2, vol. 4, Jacques Lecoffre, Paris, 1847, page 100}}
+#* ''Dans une Vendée religieusement fidèle à ses martyrs, dans son village même, Clémenceau, le « '''bleu''' », était moins qu’un autre prophète.'' {{source|{{w|Michel Droit}}, ''De Lattre, maréchal de France'', Pierre Horay, éditions de Flore, 1952, p. 21}}
+# {{spéc}} {{histoire|fr}} Nom donné, pendant la {{w|guerre de Sécession}}, aux soldats [[nordiste]]s (par [[opposition]] aux ''[[gris]]'', les [[sudiste]]s). [[Fichier:Battle of Williamsburg.png|thumb|Les '''bleus''' face aux gris à la bataille de Williamsburg. (6)]]
+# {{spéc}} {{QC|fr}} {{politique|fr}} {{vieilli|fr}} Partisan du Parti conservateur du Canada. {{note}} S'oppose à ''[[rouge]]'', partisan du Parti libéral du Canada.
+#* ''Proche du Parti conservateur, Alphone Desjardins y a beaucoup d'amis; [...]. Les « '''bleus''' » étant au pouvoir à Ottawa – sir John Thompson est alors premier ministre –, il faut jouer ses relations afin d'y obtenir un emploi.'' {{source|Alain Otis et Jean Delisle, ''Les douaniers des langues — Grandeur et misère de la traduction à Ottawa, 1867-1967'', Presses de l'Université Laval, 2016, page 103}}
+# {{spéc}} {{QC|fr}} {{histoire|fr}} Partisan de l'[[w|Union nationale]], parti politique provincial québécois ayant connu son apogée entre 1936 et 1959 et disparu en 1989. {{note}} S'oppose à ''[[rouge]]'', partisan du Parti libéral du Québec.
+# {{spéc}} {{siècle|XXI}} [[policier|Policier]] ; [[gendarme]].
+# {{familier|fr}} [[personne|Personne]] [[sans]] [[expérience]] ; [[novice]].
+#* ''Les anciens aiment taquiner les '''bleus'''.''
+## {{militaire|fr}} {{familier|fr}} [[jeune|Jeune]] [[soldat]] sans expérience.
+##* ''Ce soldat était un vrai '''bleu'''.''
+## {{Belgique|fr}} {{familier|fr}} Personne [[nouvellement]] [[arrivée]] en première année d’[[étude supérieure]] ([[baccalauréat]] ou [[candidature]]), qui garde ce [[titre]] [[jusqu’à]] la [[fin]] de son [[baptême]].
+##* ''Le cercle de la faculté d’économie a baptisé beaucoup de '''bleus''' cette année.''
+# {{militaire|fr}} Par [[convention]], toute [[force armée]] [[amical]]e ou [[allié]]e.
+#* ''Le fratricide survient lorsque les '''bleus''' s’entretuent.''
+# {{méton|fr}} [[ecchymose|Ecchymose]], [[résultat]] d’un [[choc]] sur une [[région]] du [[corps]] [[humain]], [[conduire|conduisant]] à l’[[apparition]] d’une couleur [[bleuté]]e. [[Fichier:Myk-haematoma.jpg|vignette|droite|Un '''bleu''' de neuf jours (12)]]
+#* ''Il est tombé, et maintenant il a un '''bleu'''.''
+# {{en particulier}} {{figuré|fr}} [[blessure|Blessure]], [[empreinte]], [[marque]] infligé à la [[psyché]], aux [[sentiment]]s ou à la [[pensée]].
+#* ''À cette heure c’était sûrement Julien qui avait des '''bleus''' à l’âme, des envies de la revoir.'' {{source|Frédérique Deghelt, ''La Grand-mère de Jade'', Folio, page 9}}
+# [[plan|Plan]], [[schéma]] ou [[croquis]] [[reproduit]] sur [[papier]] au [[ferro-prussiate]] ([[bleu de Prusse]]). [[Fichier:Design of elevated steel tanks (1911) (14784687345).jpg|vignette|droite|Un '''bleu''' (14)]]
+# {{France|fr}} {{administration|fr}} [[document|Document]] [[relié]] en bleu [[représentant]] le [[budget]] proposé par le [[gouvernement]], par [[opposition]] au ''[[vert]]'', le [[budget]] [[voter|voté]] par le [[Parlement]].
+#* ''Le '''bleu''' du budget.''
+# {{France|fr}} {{administration|fr}} [[document|Document]] de travail [[interministériel]] relatif à un [[projet de loi]].
+#* ''Le '''bleu''', établi après cette réunion, fait apparaître quelles étaient les questions à trancher à l’issue des travaux menés devant le Conseil d’État et puis rend compte de la manière la plus précise des décisions prises au nom du Premier ministre.'' {{source|{{W|Secrétariat général du gouvernement}} et {{W|Conseil d’État (France)|Conseil d’État}}, ''Guide de légistique, 3<sup>e</sup> version'', {{W|La Documentation française}}, 2017, {{ISBN|978-2-11-145578-8}}|lien=https://www.legifrance.gouv.fr/Media/Droit-francais/Guide-legistique/Guide_Legistique_2017_PDF}}
+# {{Suisse|fr}} {{familier|fr}} [[permis de conduire|Permis de conduire]].
+#* ''Il s’est fait retirer son '''bleu'''.''
+# {{biologie|fr}} [[maladie|Maladie]] du [[lait]] et du [[vin]] [[blanc]], [[causée]] par des [[bactérie]]s.
+# {{méton|fr}} {{vête|fr}} [[bleu de travail|Bleu de travail]]. [[Fichier:Associacao 5.jpg|vignette|droite|Trois hommes en '''bleu''' (19)]]
+#* ''Ceci est un '''bleu''' de mécanicien ; ceux-là des '''bleus''' de chauffe.''
+#* ''Cinquante balais, c'est pas vieux : qu'est-ce qu'il va faire de son '''bleu''', de sa gamelle, de sa gapette ? C'est toute sa vie qu'était dans sa musette…'' {{source|{{nom w pc|Renaud|Séchan}}, ''Son bleu'', ''{{w|À la belle de mai}}'', 1994}}
+# {{méton|fr}} {{billard|fr}} Sorte de [[craie]] de couleur bleue dont on [[frotter|frotte]] le [[procédé]] de la [[queue]] pour qu’il [[adhérer|adhère]] [[mieux]] à la [[bille]]. [[Fichier:Billiard chalk 20050724.png|thumb|'''Bleu''' de billard. (20)]]
+# {{télécom|fr}} {{France|fr}} {{vieilli|fr}} [[télégramme|Télégramme]].
+#* ''J’ai cherché à vous joindre au téléphone… Mais impossible d’obtenir la communication. Voilà pourquoi je vous envoie ce '''bleu'''. J’espère qu’il vous parviendra à temps.'' {{source|{{w|Arthur Bernède}}, ''Belphégor'', 1927}}
+#* ''Est-ce qu’il ne pourrait pas venir une fois prendre ''a cup of tea'', comme disent nos voisins les Anglais ; il n’aurait qu’à m’envoyer un '''bleu''' le matin.'' {{source|{{nom w pc|Marcel|Proust}}, ''{{w|À la recherche du temps perdu}}'', ''{{w|Du côté de chez Swann}}'', 1913, {{w|Éditions Gallimard}}, Folio n°1924, 1987, page 77}}
+# {{cuisine|fr}} Mode de cuisson des [[poisson]]s dans un [[court-bouillon]] au [[vin rouge]], qui leur donne une couleur [[bleuâtre]].
+#* ''Mettre une carpe, un brochet au '''bleu'''.''
+# {{physique|fr}} Un des trois [[charge de couleur|charges de couleur]] du [[quark]], les deux autres étant le [[rouge]] et le [[vert]].
+
+==== {{S|notes}} ====
+{{note-fr-nom-eus}}
+
+==== {{S|synonymes}} ====
+; ''Couleur''
+* [[couleur de l’infini]] ''(Surnom donné souvent à la couleur bleue)''
+; ''Novice''
+* [[débutant]]
+* [[novice]]
+; ''Soldat sans expérience''
+* [[recrue]]
+; ''Force amicale''
+* [[allié]]
+* [[ami]]
+; ''Résultat d’un choc''
+* [[ecchymose]]
+* [[hématome]]
+; ''Télégramme''
+* [[petit bleu]]
+
+==== {{S|dérivés}} ====
+{{(}}
+* [[antibleu]]
+* [[au bleu]]
+* [[bleu anglais]]
+* [[bleu ardent]]
+* [[bleu barbeau]]
+* [[bleu bénédiction]]
+* [[bleu-bite]]
+* [[bleu céleste]]
+* [[bleu ciel]]
+* [[bleu clair]]
+* [[bleu dahlia]]
+* [[bleu d’Anvers]]
+* [[bleu d’ardoise]]
+* [[bleu d’Auvergne]]
+* [[bleu d’azur]]
+* [[bleu de Bresse]]
+* [[bleu de bromothymol]]
+* [[bleu de Gascogne]]
+* [[bleu de Gex]]
+* [[bleu de lessive]]
+* [[bleu de roi]]
+* [[bleu de France]]
+* [[bleu de Franchimont]]
+* [[bleu de Laqueuille]]
+* [[bleu de lavande]]
+* [[bleu de méthylène]]
+* [[bleu de Termignon]]
+* [[bleu de travail]]
+* [[bleu d’Élizabeth]]
+* [[bleu des moines]]
+* [[bleu doux]]
+* [[bleu du Queyras]]
+* [[bleu du Vercors-Sassenage]]
+* [[bleu dur]]
+* [[bleu électrique]]
+* [[bleu foncé]]
+* [[bleu froid]]
+* [[bleu fumé]]
+* [[bleu-gris]]
+* [[bleu horizon]]
+* [[bleu-indigo]]
+* [[bleu intense]]
+* [[bleu laiteux]]
+* [[bleu lavande]]
+* [[bleu limpide]]
+* [[bleu lin]]
+* [[bleu marin]]
+* [[bleu marine]]
+* [[bleu minéral]]
+* [[bleu minuit]]
+* [[bleu myosotis]]
+* [[bleu-noir]]
+* [[bleu nuit]]
+* [[bleu pâle]]
+* [[bleu paon]]
+* [[bleu pervenche]]
+* [[bleu pétrole]]
+* [[bleu porcelaine]]
+* [[bleu profond]]
+* [[bleu roi]]
+* [[bleu russe]]
+* [[bleu sombre]]
+* [[bleu tendre]]
+* [[bleu-vert]]
+* [[bleu-violet]]
+* [[bleu vif]]
+* [[bleusaille]]
+* [[bleusaillon]]
+* [[être dans le bleu]]
+* [[gris bleu]]
+* [[gros bleu]]
+* [[n’y voir que du bleu]]
+* [[passer au bleu]]
+* [[petit bleu]], [[petit-bleu]]
+* [[truite au bleu]]
+* [[voir tout en bleu]]
+{{)}}
+
+==== {{S|traductions}} ====
+{{trad-début|Couleur}}
+* {{T|en}} : {{trad+|en|blue}}
+* {{T|ca}} : {{trad+|ca|blau}}
+* {{T|ko}} : {{trad+|ko|파란색|tr=paransaek|tradi=파란色}}, {{trad+|ko|파랑|tr=parang}}
+* {{T|co}} : {{trad+|co|turchinu|m}}
+* {{T|es}} : {{trad+|es|azul}}
+* {{T|eo}} : {{trad-|eo|bluo}}
+* {{T|fi}} : {{trad+|fi|sininen}}, {{trad+|fi|sini}}
+* {{T|ja}} : {{trad+|ja|青|R=ao}}
+* {{T|nl}} : {{trad+|nl|blauw}}
+* {{T|fa}} : {{trad+|fa|آبی|R=âbi}}
+* {{T|myp}} : {{trad--|myp|xahoasai}}
+* {{T|cs}} : {{trad+|cs|modř}} {{f}}
+* {{T|tsolyáni}} : {{trad--|tsolyáni|níri-kh}}
+{{trad-fin}}
+
+{{trad-début|Famille de fromages}}
+* {{T|en}} : {{trad+|en|blue cheese}}
+* {{T|bar}} : {{trad--|bar|Schimmikas|m}}, {{trad--|bar|Blauschimmikas|m}}
+* {{T|ca}} : {{trad-|ca|formatge blau}}
+* {{T|es}} : {{trad-|es|queso azul}}
+* {{T|fi}} : {{trad+|fi|sinihomejuusto}}
+* {{T|gl}} : {{trad-|gl|queixo azul}}
+* {{T|ja}} : {{trad-|ja|ブルーチーズ|tr=burū chīzu}}
+* {{T|no}} : {{trad-|no|normannaost}}
+* {{T|sv}} : {{trad+|sv|grönmögelost|c}}
+{{trad-fin}}
+
+{{trad-début|Soldat nordiste pendant la guerre de Sécession américaine}}
+* {{T|en}} : {{trad+|en|blue}} (l’ensemble des soldats nordistes), {{trad+|en|bluecoat}} (individu)
+{{trad-fin}}
+
+{{trad-début|Soldat sans expérience}}
+* {{T|en}} : {{trad+|en|green}} (''adjectif''), {{trad+|en|rookie}}
+* {{T|es}} : {{trad+|es|verde}} (''adjectif'')
+* {{T|fi}} : {{trad+|fi|alokas}}, {{trad-|fi|mosa}}
+* {{T|nl}} : {{trad+|nl|groentje}} {{n}} ; {{trad-|nl|blauwe plek}} {{f}}
+* {{T|cs}} : {{trad+|cs|bažant}} {{m}}
+{{trad-fin}}
+
+{{trad-début|Ecchymose}}
+* {{T|en}} : {{trad+|en|bruise}}
+* {{T|ca}} : {{trad+|ca|blau}}
+* {{T|es}} : {{trad+|es|moretón}}, {{trad+|es|cardenal}}
+* {{T|eo}} : {{trad-|eo|bluaĵo}}
+* {{T|fi}} : {{trad+|fi|mustelma}}, {{trad+|fi|sinelmä}}
+* {{T|pl}} : {{trad+|pl|siniak|m}}
+* {{T|ru}} : {{trad+|ru|синяк|R=sin<sup>i</sup>ák}} {{m}}
+* {{T|se}} : {{trad--|se|sáhpadas}}
+* {{T|cs}} : {{trad+|cs|modřina}} {{f}}
+{{trad-fin}}
+
+{{trad-début|Plan}}
+* {{T|en}} : {{trad+|en|blueprint}}
+* {{T|eo}} : {{trad-|eo|plano}}, {{trad-|eo|konstruplano}}
+* {{T|nl}} : {{trad+|nl|blauwdruk}}
+{{trad-fin}}
+
+==== {{S|hyperonymes}} ====
+; ''Couleur'' (1) :
+* [[couleur]]
+* [[couleur primaire]]
+; ''Schéma'' (7) :
+* [[croquis]]
+* [[plan]]
+* [[schéma]]
+
+==== {{S|hyponymes}} ====
+{{(|Fromage (2)}}
+* [[bleu d’Auvergne]]
+* [[bleu de Bonneval]]
+* [[bleu de Bresse]]
+* [[bleu de Gex]]
+{{)}}
+
+=== {{S|prononciation}} ===
+* {{écouter|lang=fr|France (Ouest)|dy.blø|titre=du bleu|audio=Fr-du bleu-fr.ogg}}
+* {{écouter|lang=fr|France|œ̃.blø|titre=un bleu|audio=Fr-bleu.ogg}}
+* {{écouter||blø|lang=fr|audio=LL-Guilhelma-fr-bleu.wav}}
+* {{écouter|lang=fr|France (Paris)|audio=LL-Q150 (fra)-GrandCelinien-bleu.wav}}
+* {{écouter|lang=fr|France (Occitanie)|audio=LL-Q150 (fra)-Arthur Crbz-bleu.wav}}
+* {{écouter|lang=fr|France (Saint-Maurice-de-Beynost)|audio=LL-Q150 (fra)-Benoît Prieur-bleu.wav}}
+* {{écouter|lang=fr|France (Toulouse)|audio=LL-Q150 (fra)-Lepticed7-bleu.wav}}
+* {{écouter|||lang=fr|audio=LL-Q150 (fra)-DSwissK-bleu.wav}}
+* {{écouter|lang=fr||audio=LL-Q150 (fra)-Justforoc-bleu.wav}}
+* {{écouter|lang=fr|France (Paris)|audio=LL-Q150 (fra)-Aemines1-bleu.wav}}
+* {{écouter|lang=fr|France (Paris)|audio=LL-Q150 (fra)-Aemines2-bleu.wav}}
+* {{écouter|lang=fr|France (Paris)|audio=LL-Q150 (fra)-Aemines3-bleu.wav}}
+* {{écouter|lang=fr|France (Paris)|audio=LL-Q150 (fra)-Aemines5-bleu.wav}}
+* {{écouter|lang=fr||audio=LL-Q150 (fra)-Aemines4-bleu.wav}}
+* {{écouter|lang=fr|France (Paris)|audio=LL-Q150 (fra)-Aemines6-bleu.wav}}
+* {{écouter|lang=fr|France (Vosges)|audio=LL-Q150 (fra)-Poslovitch-bleu.wav}}
+* {{écouter|lang=fr|France (Lyon)||audio=LL-Q150 (fra)-WikiLucas00-bleu.wav}}
+* {{écouter|lang=fr|France (Vosges)||audio=LL-Q150 (fra)-LoquaxFR-bleu.wav}}
+
+
+
+
+
+==== {{S|paronymes}} ====
+* [[blanc]]
+* [[blé]]
+* [[blond]]
+* [[bulleux]]
+* [[de]]
+* [[deux]]
+* [[pleut]]
+
+=== {{S|voir aussi}} ===
+* {{WP}}
+* {{Thésaurus|fr|couleur}}
+* {{Annexe|Vêtements en français}}
+
+=== {{S|références}} ===
+* {{Import:DAF8}}
+
+{{Très bonne entrée|français}}
+
+[[Catégorie:Couleurs bleues en français]]
+
+== {{langue|frm}} ==
+=== {{S|étymologie}} ===
+: {{ébauche-étym|frm}}
+
+=== {{S|adjectif|frm}} ===
+{{frm-accord-mixte}}
+'''bleu''' {{pron||frm}} {{m}}
+# [[bleu#fr|Bleu]].
+
+=== {{S|nom|frm}} ===
+'''bleu''' {{pron||frm}} {{m}}
+# [[bleu#fr|Bleu]].
+
+== {{langue|nl}} ==
+{{ébauche|nl}}
+
+=== {{S|étymologie}} ===
+: {{ébauche-étym|nl}}
+
+=== {{S|nom|nl}} ===
+'''bleu''' {{pron||nl}} {{m}}
+# ''(Histoire)'' L’union [[douanière]] entre la [[Belgique]] et le [[Luxembourg]].
+
+=== {{S|adjectif|nl}} ===
+'''bleu''' {{pron||nl}} {{m}}
+# {{désuet|nl}} [[timide|Timide]].
+
+=== {{S|taux de reconnaissance}} ===
+{{nl-taux|87,1|81,5|pourB=82|pourNL=87}}
+
+=== {{S|prononciation}} ===
+* {{écouter|||lang=nl|audio=Nl-bleu.ogg}}
+
+=== {{S|anagrammes}} ===
+* {{lien|beul|nl}}
+
+=== {{S|références}} ===
+{{références}}

@@ -26,7 +26,7 @@ import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;
-import org.getalp.dbnary.wiki.WikiSection;
+import org.getalp.dbnary.wiki.WikiText.WikiSection;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Token;
@@ -1204,7 +1204,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     WikiText text = new WikiText(translationPageContent);
     for (WikiSection s : text.sections(3)) {
       // return the first matching section
-      if (s.getHeader().getContent().toString().equals(translationSection))
+      if (s.getHeading().getContent().toString().equals(translationSection))
         return s.getContent().toString();
     }
     log.debug("Could not find appropriate section {} in translation section link target for {}",

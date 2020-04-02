@@ -16,7 +16,6 @@ import org.getalp.dbnary.tools.CharRange;
  */
 public class WikiCharSequence implements CharSequence {
 
-
   // FIXME: there are already 2 pages in English wiktionray which hits the limits in the number of
   // allowed templates (number of different private use chars in range. Find a way to overpass this
   // limit

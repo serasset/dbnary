@@ -1,5 +1,6 @@
 package org.getalp.dbnary.cli;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import info.bliki.api.Connector;
 import info.bliki.api.User;
 import java.io.IOException;
@@ -27,7 +28,6 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.vocabulary.RDF;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.getalp.LangTools;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DbnaryModel;

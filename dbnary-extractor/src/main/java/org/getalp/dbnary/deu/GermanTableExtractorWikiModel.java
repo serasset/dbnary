@@ -2,7 +2,6 @@ package org.getalp.dbnary.deu;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toCollection;
-
 import info.bliki.wiki.template.ITemplateFunction;
 import java.io.IOException;
 import java.util.Collection;

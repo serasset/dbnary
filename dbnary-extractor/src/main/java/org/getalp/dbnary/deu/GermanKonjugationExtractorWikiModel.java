@@ -6,7 +6,6 @@ import static org.getalp.dbnary.deu.GermanInflectionData.Person;
 import static org.getalp.dbnary.deu.GermanInflectionData.Tense;
 import static org.getalp.dbnary.deu.GermanInflectionData.Valency;
 import static org.getalp.dbnary.deu.GermanInflectionData.Voice;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;

@@ -3,7 +3,6 @@ package org.getalp.dbnary.wiki;
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.ENTER;
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.KEEP;
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -92,7 +91,7 @@ public class ClassBasedFilter implements WikiEventFilter {
 
   public ClassBasedFilter allowAll() {
     this.allowExternalLink().allowHTMLComment().allowInternalLink().allowNowiki().allowTemplates()
-        .allowListItem().allowHeading().allowText();
+        .allowIndentedItem().allowHeading().allowText();
     return this;
   }
 
@@ -111,8 +110,23 @@ public class ClassBasedFilter implements WikiEventFilter {
     return this;
   }
 
+  public ClassBasedFilter denyIndentedItem() {
+    classesToKeep.remove(WikiText.IndentedItem.class);
+    return this;
+  }
+
   public ClassBasedFilter denyListItem() {
     classesToKeep.remove(WikiText.ListItem.class);
+    return this;
+  }
+
+  public ClassBasedFilter denyIndentation() {
+    classesToKeep.remove(WikiText.Indentation.class);
+    return this;
+  }
+
+  public ClassBasedFilter denyNumberedListItem() {
+    classesToKeep.remove(WikiText.NumberedListItem.class);
     return this;
   }
 
@@ -141,9 +155,8 @@ public class ClassBasedFilter implements WikiEventFilter {
     return this;
   }
 
-
-  public ClassBasedFilter enterListItems() {
-    classesToEnter.add(WikiText.ListItem.class);
+  public ClassBasedFilter enterIndentedItem() {
+    classesToEnter.add(WikiText.IndentedItem.class);
     return this;
   }
 
@@ -153,7 +166,7 @@ public class ClassBasedFilter implements WikiEventFilter {
   }
 
   public ClassBasedFilter enterAll() {
-    this.enterListItems().enterHeadings();
+    this.enterIndentedItem().enterHeadings();
     return this;
   }
 

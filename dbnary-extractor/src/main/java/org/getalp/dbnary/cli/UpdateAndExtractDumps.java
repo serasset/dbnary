@@ -23,6 +23,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -70,6 +72,10 @@ public class UpdateAndExtractDumps {
   private static final String COMPRESS_OPTION = "z";
   private static final boolean DEFAULT_COMPRESS = true;
 
+  private static final String FETCH_DATE_OPTION = "D";
+
+  private static final String VERBOSE_OPTION = "v";
+
   private static final String ENABLE_FEATURE_OPTION = "enable";
 
   private CommandLine cmd = null; // Command Line arguments
@@ -83,6 +89,9 @@ public class UpdateAndExtractDumps {
   private String server = DEFAULT_SERVER_URL;
   private String model = DEFAULT_MODEL;
   private List<String> features = null;
+  private String fetchDate = null;
+  private boolean verbose = false;
+
 
   String[] remainingArgs;
 
@@ -97,6 +106,7 @@ public class UpdateAndExtractDumps {
     options.addOption(FORCE_OPTION, false,
         "force the updating even if a file with the same name already exists in the output directory. "
             + DEFAULT_FORCE + " by default.");
+    options.addOption(VERBOSE_OPTION, false, "Print more info while processing.");
     options.addOption(HISTORY_SIZE_OPTION, true,
         "number of dumps to be kept in output directory. " + DEFAULT_HISTORY_SIZE + " by default ");
     options.addOption(PREFIX_DIR_OPTION, true,
@@ -108,6 +118,8 @@ public class UpdateAndExtractDumps {
         "compress the output file using bzip2." + DEFAULT_COMPRESS + " by default ");
     options.addOption(NETWORK_OFF_OPTION, false,
         "Do not use the ftp network, but decompress and extract.");
+    options.addOption(FETCH_DATE_OPTION, true,
+        "force the dump date to be retreived. latest dump by default ");
     options.addOption(OptionBuilder.withLongOpt(ENABLE_FEATURE_OPTION)
         .withDescription("Enable additional extraction features (e.g. morpho,etymology,foreign).")
         .hasArg().withArgName("feature").create());
@@ -149,6 +161,9 @@ public class UpdateAndExtractDumps {
       System.exit(0);
     }
 
+    // Check for verbosity
+    verbose = cmd.hasOption(VERBOSE_OPTION);
+
     String h = cmd.getOptionValue(HISTORY_SIZE_OPTION, DEFAULT_HISTORY_SIZE);
     historySize = Integer.parseInt(h);
 
@@ -157,6 +172,10 @@ public class UpdateAndExtractDumps {
       if (!server.endsWith("/")) {
         server = server + "/";
       }
+    }
+
+    if (cmd.hasOption(FETCH_DATE_OPTION)) {
+      fetchDate = cmd.getOptionValue(FETCH_DATE_OPTION);
     }
 
     force = cmd.hasOption(FORCE_OPTION);
@@ -304,14 +323,16 @@ public class UpdateAndExtractDumps {
     int vsize = versions.size();
 
     for (String v : versions) {
-      if (vsize > historySize) {
-        deleteDump(lang, v);
-      }
-      if (vsize > 1) {
-        deleteUncompressedDump(lang, v);
-      }
-      if (vsize > historySize) {
-        deleteDumpDir(lang, v);
+      if (!v.equals(lastDir)) {
+        if (vsize > historySize) {
+          deleteDump(lang, v);
+        }
+        if (vsize > 1) {
+          deleteUncompressedDump(lang, v);
+        }
+        if (vsize > historySize) {
+          deleteDumpDir(lang, v);
+        }
       }
       vsize--;
     }
@@ -365,6 +386,9 @@ public class UpdateAndExtractDumps {
   private String updateDumpFile(String lang) {
     String defaultRes = getLastLocalDumpDir(lang);
     if (networkIsOff) {
+      if (verbose) {
+        System.err.println("Using already existing dump : " + defaultRes);
+      }
       return defaultRes;
     }
 
@@ -383,24 +407,35 @@ public class UpdateAndExtractDumps {
 
           HttpGet request = new HttpGet(languageDumpFolder);
           HttpResponse response = null;
-          try {
-            response = client.execute(request);
-            HttpEntity entity = response.getEntity();
-
-            if (null == entity) {
-              System.err.format("Could not retrieve directory listing for language %s (url=%s)\n",
-                  lang, languageDumpFolder);
-              System.err.format("Using locally available dump.\n");
-              return defaultRes;
+          if (null != fetchDate) {
+            if (verbose) {
+              System.err.println("Fetching specified version date : " + fetchDate);
             }
-            // parse directory listing to get the latest dump folder
+            lastDir = fetchDate;
+          } else {
+            try {
+              response = client.execute(request);
+              HttpEntity entity = response.getEntity();
 
-            dirs = getFolderSetFromIndex(entity, languageDumpFolder);
+              if (null == entity) {
+                System.err.format("Could not retrieve directory listing for language %s (url=%s)\n",
+                    lang, languageDumpFolder);
+                System.err.format("Using locally available dump.\n");
+                return defaultRes;
+              }
+              // parse directory listing to get the latest dump folder
 
-          } finally {
-            HttpClientUtils.closeQuietly(response);
+              dirs = getFolderSetFromIndex(entity, languageDumpFolder);
+
+            } finally {
+              HttpClientUtils.closeQuietly(response);
+            }
+            lastDir = getLastVersionDir(dirs);
+            if (verbose) {
+              System.err.println("Fetching latest version : " + lastDir);
+            }
           }
-          lastDir = getLastVersionDir(dirs);
+
 
           if (null == lastDir) {
             System.err.format("Empty directory list for %s (url=%s)\n", lang, languageDumpFolder);
@@ -426,6 +461,9 @@ public class UpdateAndExtractDumps {
             HttpEntity entity = response.getEntity();
 
             if (entity != null) {
+              if (verbose) {
+                System.err.println("Retrieving data from : " + dumpFileUrl);
+              }
               FileOutputStream dfile = new FileOutputStream(file);
               System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
               long s = System.currentTimeMillis();
@@ -703,10 +741,17 @@ public class UpdateAndExtractDumps {
     if (tdbDir) {
       a.add("--tdb");
     }
+    if (verbose) {
+      a.add("-v");
+    }
     a.add(uncompressDumpFileName(lang, dir));
 
     String[] args = a.toArray(new String[0]);
 
+    if (verbose) {
+      System.err.println("Launching ExtractWiktionary with args : ");
+      System.err.println(Arrays.stream(args).collect(Collectors.joining(" ")));
+    }
     try {
       ExtractWiktionary.main(args);
     } catch (WiktionaryIndexerException e) {

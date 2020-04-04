@@ -139,16 +139,20 @@ public class WikiText {
       throw new IllegalStateException("Not an HTMLComment.");
     }
 
-    public Indentation asIndentation() {
-      throw new IllegalStateException("Not an Indentation.");
-    }
-
     public InternalLink asInternalLink() {
       throw new IllegalStateException("Not an InternalLink.");
     }
 
     public Link asLink() {
       throw new IllegalStateException("Not an Link.");
+    }
+
+    public IndentedItem asIndentedItem() {
+      throw new IllegalStateException("Not an IndentedItem.");
+    }
+
+    public Indentation asIndentation() {
+      throw new IllegalStateException("Not an Indentation.");
     }
 
     public ListItem asListItem() {
@@ -736,6 +740,10 @@ public class WikiText {
 
     public String getListPrefix() {
       return listPrefix;
+    }
+
+    public IndentedItem asIndentedItem() {
+      return this;
     }
   }
 

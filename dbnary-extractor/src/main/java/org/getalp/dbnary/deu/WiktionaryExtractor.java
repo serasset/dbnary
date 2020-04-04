@@ -528,14 +528,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // TODO : faire une analyse plus poussée des traduction, car il y a des entrées comme cela :
     // se {{Ü|fr|mettre}} {{Ü|fr|à}} {{Ü|fr|couler}} qui est extrait en 3 traductions différentes
     for (WikiText.Token li : toks) {
-      if (li instanceof WikiText.ListItem) {
-        WikiText.ListItem lit = (WikiText.ListItem) li;
-        extractTranslationFromItem(lit);
+      if (li instanceof WikiText.IndentedItem) {
+        extractTranslationFromItem(li.asIndentedItem());
       }
     }
   }
 
-  private void extractTranslationFromItem(WikiText.ListItem li) {
+  private void extractTranslationFromItem(WikiText.IndentedItem li) {
     extractTranslationsFromListContent(li.getContent());
   }
 

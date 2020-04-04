@@ -83,6 +83,8 @@ public class ExtractWiktionary {
   private static final String TO_PAGE_LONG_OPTION = "topage";
   private static final String TO_PAGE_SHORT_OPTION = "T";
 
+  private static final String VERBOSE_OPTION = "v";
+
   public static final XMLInputFactory2 xmlif;
 
 
@@ -102,6 +104,7 @@ public class ExtractWiktionary {
   private int fromPage = 0;
   private int toPage = Integer.MAX_VALUE;
   private String extractorVersion;
+  private boolean verbose;
 
   WiktionaryIndex wi;
   IWiktionaryExtractor we;
@@ -113,6 +116,7 @@ public class ExtractWiktionary {
     options = new Options();
     options.addOption("h", "help", false, "Prints usage and exits. ");
     options.addOption(SUFFIX_OUTPUT_FILE_OPTION, false, "Add a unique suffix to output file. ");
+    options.addOption(VERBOSE_OPTION, false, "Be verbose on what I do... ");
     options.addOption(LANGUAGE_OPTION, true,
         "Language (fra, eng, deu or por). " + DEFAULT_LANGUAGE + " by default.");
     options.addOption(OUTPUT_FORMAT_OPTION, true,
@@ -195,6 +199,8 @@ public class ExtractWiktionary {
       System.exit(0);
     }
 
+    verbose = cmd.hasOption(VERBOSE_OPTION);
+
     extractorVersion = "UNKNOWN";
     Manifest mf = new Manifest();
     try {
@@ -218,6 +224,9 @@ public class ExtractWiktionary {
         Path temp = Files.createTempDirectory("dbnary");
         temp.toFile().deleteOnExit();
         tdbDir = temp.toAbsolutePath().toString();
+        if (verbose) {
+          System.err.println("Using temp TDB at " + tdbDir);
+        }
         log.debug("Using TDB in {}", tdbDir);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
           try {
@@ -327,6 +336,18 @@ public class ExtractWiktionary {
     outputFile = outputFile + outputFileSuffix;
 
     dumpFile = new File(remainingArgs[0]);
+
+    if (verbose) {
+      System.err.println("Extracting Wiktionary Dump:");
+      System.err.println("  Language: " + language);
+      System.err.println("  Dump: " + dumpFile);
+      System.err.println("  TDB : " + tdbDir);
+      System.err.println("  Ontolex : " + outputFile);
+      System.err.println("  Etymology : " + etymologyOutputFile);
+      System.err.println("  Morphology : " + morphoOutputFile);
+      System.err.println("  LIME : " + limeOutputFile);
+      System.err.println("  Format : " + outputFormat);
+    }
   }
 
   public void extract() throws IOException {

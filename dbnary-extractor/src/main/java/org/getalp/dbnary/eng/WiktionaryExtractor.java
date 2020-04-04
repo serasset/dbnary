@@ -4,7 +4,6 @@
 package org.getalp.dbnary.eng;
 
 import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1225,15 +1224,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractNyms(String synRelation, int startOffset, int endOffset) {
     WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
     ClassBasedFilter filter = new ClassBasedFilter();
-    filter.allowListItem();
+    filter.allowListItem().allowIndentation();
+    // TODO ! For now I mimick the previous behaviour by
+    //   allowing ListItems and Indentations (consider adding NumberedListItem ?) !!!!!
 
     WikiEventsSequence wikiEvents = text.filteredTokens(filter);
 
     for (WikiText.Token tok : wikiEvents) {
-      if (tok instanceof WikiText.ListItem) {
+      if (tok instanceof WikiText.IndentedItem) {
         // It's a link, only keep the alternate string if present.
-        WikiText.ListItem li = (WikiText.ListItem) tok;
-        extractNyms(synRelation, li.getContent());
+        extractNyms(synRelation, tok.asIndentedItem().getContent());
       }
     }
   }

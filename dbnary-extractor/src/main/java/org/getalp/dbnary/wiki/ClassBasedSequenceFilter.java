@@ -23,7 +23,7 @@ public class ClassBasedSequenceFilter
   public ClassBasedSequenceFilter() {
     super();
     this.atomizeAll().sourceText().voidHTMLComment().voidNowiki().openCloseHeading()
-        .openCloseListItem();
+        .openCloseIndentedItem();
   }
 
   public ClassBasedSequenceFilter clearAction() {
@@ -60,6 +60,21 @@ public class ClassBasedSequenceFilter
     return this;
   }
 
+  public ClassBasedSequenceFilter atomizeIndentedItem() {
+    actions.put(WikiText.IndentedItem.class, new WikiSequenceFiltering.Atomize());
+    return this;
+  }
+
+  public ClassBasedSequenceFilter atomizeIndentation() {
+    actions.put(WikiText.Indentation.class, new WikiSequenceFiltering.Atomize());
+    return this;
+  }
+
+  public ClassBasedSequenceFilter atomizeNumberedListItem() {
+    actions.put(WikiText.NumberedListItem.class, new WikiSequenceFiltering.Atomize());
+    return this;
+  }
+
   public ClassBasedSequenceFilter atomizeListItem() {
     actions.put(WikiText.ListItem.class, new WikiSequenceFiltering.Atomize());
     return this;
@@ -82,7 +97,7 @@ public class ClassBasedSequenceFilter
 
   public ClassBasedSequenceFilter atomizeAll() {
     this.atomizeExternalLink().atomizeHTMLComment().atomizeInternalLink().atomizeNowiki()
-        .atomizeTemplates().atomizeListItem().atomizeHeading().atomizeText();
+        .atomizeTemplates().atomizeIndentedItem().atomizeHeading().atomizeText();
     return this;
   }
 
@@ -115,6 +130,21 @@ public class ClassBasedSequenceFilter
     return this;
   }
 
+  public ClassBasedSequenceFilter voidIndentedItem() {
+    actions.put(WikiText.IndentedItem.class, new WikiSequenceFiltering.Void());
+    return this;
+  }
+
+  public ClassBasedSequenceFilter voidIndentation() {
+    actions.put(WikiText.Indentation.class, new WikiSequenceFiltering.Void());
+    return this;
+  }
+
+  public ClassBasedSequenceFilter voidNumberedListItem() {
+    actions.put(WikiText.NumberedListItem.class, new WikiSequenceFiltering.Void());
+    return this;
+  }
+
   public ClassBasedSequenceFilter voidListItem() {
     actions.put(WikiText.ListItem.class, new WikiSequenceFiltering.Void());
     return this;
@@ -137,7 +167,7 @@ public class ClassBasedSequenceFilter
 
   public ClassBasedSequenceFilter voidAll() {
     this.voidExternalLink().voidHTMLComment().voidInternalLink().voidNowiki().voidTemplates()
-        .voidListItem().voidHeading().voidText();
+        .voidIndentedItem().voidHeading().voidText();
     return this;
   }
 
@@ -166,9 +196,8 @@ public class ClassBasedSequenceFilter
     if (t instanceof WikiText.Heading) {
       WikiText.Heading h = (WikiText.Heading) t;
       return h.getContent().tokens();
-    } else if (t instanceof WikiText.ListItem) {
-      WikiText.ListItem li = (WikiText.ListItem) t;
-      return li.getContent().tokens();
+    } else if (t instanceof WikiText.IndentedItem) {
+      return t.asIndentedItem().getContent().tokens();
     } else if (t instanceof WikiText.InternalLink) {
       WikiText.InternalLink li = (WikiText.InternalLink) t;
       ArrayList<WikiText.Token> toks = li.getLink().tokens();
@@ -242,8 +271,26 @@ public class ClassBasedSequenceFilter
   // return this;
   // }
 
+  public ClassBasedSequenceFilter keepContentOfIndentedItem() {
+    actions.put(WikiText.IndentedItem.class,
+        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    return this;
+  }
+
   public ClassBasedSequenceFilter keepContentOfListItem() {
     actions.put(WikiText.ListItem.class,
+        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    return this;
+  }
+
+  public ClassBasedSequenceFilter keepContentOfIndentation() {
+    actions.put(WikiText.Indentation.class,
+        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    return this;
+  }
+
+  public ClassBasedSequenceFilter keepContentOfNumberedListItem() {
+    actions.put(WikiText.NumberedListItem.class,
         new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
     return this;
   }
@@ -266,7 +313,7 @@ public class ClassBasedSequenceFilter
 
   public ClassBasedSequenceFilter keepContentOfAll() {
     this.keepTargetOfExternalLink().keepTargetOfInternalLink().keepContentOfNowiki()
-        .keepContentOfTemplates().keepContentOfListItem().keepContentOfHeading().sourceText();
+        .keepContentOfTemplates().keepContentOfIndentedItem().keepContentOfHeading().sourceText();
     return this;
   }
 
@@ -303,8 +350,26 @@ public class ClassBasedSequenceFilter
   // return this;
   // }
 
+  public ClassBasedSequenceFilter openCloseIndentedItem() {
+    actions.put(WikiText.IndentedItem.class,
+        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
+    return this;
+  }
+
   public ClassBasedSequenceFilter openCloseListItem() {
     actions.put(WikiText.ListItem.class,
+        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
+    return this;
+  }
+
+  public ClassBasedSequenceFilter openCloseIndentation() {
+    actions.put(WikiText.Indentation.class,
+        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
+    return this;
+  }
+
+  public ClassBasedSequenceFilter openCloseNumberedListItem() {
+    actions.put(WikiText.NumberedListItem.class,
         new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
     return this;
   }
@@ -328,7 +393,7 @@ public class ClassBasedSequenceFilter
 
   public ClassBasedSequenceFilter openCloseAll() {
     this.openCloseExternalLink().openCloseInternalLink().openCloseNowiki().openCloseTemplates()
-        .openCloseListItem().openCloseHeading().sourceText();
+        .openCloseIndentedItem().openCloseHeading().sourceText();
     return this;
   }
 
@@ -361,8 +426,23 @@ public class ClassBasedSequenceFilter
     return this;
   }
 
+  public ClassBasedSequenceFilter sourceIndentedItem() {
+    actions.put(WikiText.IndentedItem.class, new WikiSequenceFiltering.KeepAsis());
+    return this;
+  }
+
   public ClassBasedSequenceFilter sourceListItem() {
     actions.put(WikiText.ListItem.class, new WikiSequenceFiltering.KeepAsis());
+    return this;
+  }
+
+  public ClassBasedSequenceFilter sourceIndentation() {
+    actions.put(WikiText.Indentation.class, new WikiSequenceFiltering.KeepAsis());
+    return this;
+  }
+
+  public ClassBasedSequenceFilter sourceNumberedListItem() {
+    actions.put(WikiText.NumberedListItem.class, new WikiSequenceFiltering.KeepAsis());
     return this;
   }
 
@@ -383,7 +463,7 @@ public class ClassBasedSequenceFilter
 
   public ClassBasedSequenceFilter sourceAll() {
     this.sourceExternalLink().sourceHTMLComment().sourceInternalLink().sourceNowiki()
-        .sourceTemplates().sourceListItem().sourceHeading().sourceText();
+        .sourceTemplates().sourceIndentedItem().sourceHeading().sourceText();
     return this;
   }
 

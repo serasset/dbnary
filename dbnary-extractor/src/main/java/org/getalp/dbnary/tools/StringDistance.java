@@ -1,8 +1,6 @@
 package org.getalp.dbnary.tools;
 
-import java.util.ArrayList;
 import java.util.function.BiFunction;
-import org.apache.commons.lang3.text.StrBuilder;
 
 public class StringDistance {
 

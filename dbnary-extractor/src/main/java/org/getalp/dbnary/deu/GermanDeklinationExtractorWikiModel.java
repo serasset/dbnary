@@ -5,6 +5,7 @@ import static org.getalp.dbnary.deu.GermanInflectionData.Degree;
 import static org.getalp.dbnary.deu.GermanInflectionData.GNumber;
 import static org.getalp.dbnary.deu.GermanInflectionData.Genre;
 import static org.getalp.dbnary.deu.GermanInflectionData.InflectionType;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;

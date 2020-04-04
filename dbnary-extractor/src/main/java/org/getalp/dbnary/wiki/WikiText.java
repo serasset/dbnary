@@ -2,6 +2,7 @@ package org.getalp.dbnary.wiki;
 
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.KEEP;
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;

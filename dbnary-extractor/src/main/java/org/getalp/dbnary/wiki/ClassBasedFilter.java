@@ -3,6 +3,7 @@ package org.getalp.dbnary.wiki;
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.ENTER;
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.KEEP;
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
+
 import java.util.HashSet;
 import java.util.Set;
 

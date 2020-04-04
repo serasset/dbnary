@@ -4,9 +4,9 @@ import info.bliki.wiki.filter.PlainTextConverter;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 
 public class PortugueseDefinitionExtractorWikiModel extends DbnaryWikiModel {
 

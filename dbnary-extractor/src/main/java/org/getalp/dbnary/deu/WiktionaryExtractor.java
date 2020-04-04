@@ -1,6 +1,7 @@
 package org.getalp.dbnary.deu;
 
 import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

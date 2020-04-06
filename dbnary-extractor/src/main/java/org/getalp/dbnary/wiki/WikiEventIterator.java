@@ -3,7 +3,7 @@ package org.getalp.dbnary.wiki;
 import java.util.Iterator;
 import java.util.Stack;
 import org.getalp.dbnary.wiki.WikiText.Heading;
-import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.Token;
 
 /**
@@ -40,8 +40,8 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
       case VOID:
         return nextTokenToReturn();
       case ENTER:
-        if (t instanceof ListItem) {
-          ListItem li = (ListItem) t;
+        if (t instanceof IndentedItem) {
+          IndentedItem li = (IndentedItem) t;
           iterators.push(li.getContent().tokens().iterator());
           return nextTokenToReturn();
         } else if (t instanceof Heading) {

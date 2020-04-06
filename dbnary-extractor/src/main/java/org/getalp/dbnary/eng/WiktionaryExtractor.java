@@ -1226,7 +1226,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ClassBasedFilter filter = new ClassBasedFilter();
     filter.allowListItem().allowIndentation();
     // TODO ! For now I mimick the previous behaviour by
-    //   allowing ListItems and Indentations (consider adding NumberedListItem ?) !!!!!
+    // allowing ListItems and Indentations (consider adding NumberedListItem ?) !!!!!
 
     WikiEventsSequence wikiEvents = text.filteredTokens(filter);
 

@@ -463,12 +463,13 @@ public class UpdateAndExtractDumps {
               if (verbose) {
                 System.err.println("Retrieving data from : " + dumpFileUrl);
               }
-              FileOutputStream dfile = new FileOutputStream(file);
-              System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
-              long s = System.currentTimeMillis();
-              entity.writeTo(dfile);
-              System.err.println(
-                  "Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
+              try (FileOutputStream dfile = new FileOutputStream(file)) {
+                System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
+                long s = System.currentTimeMillis();
+                entity.writeTo(dfile);
+                System.err.println(
+                    "Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
+              }
             }
 
           } catch (IOException e) {

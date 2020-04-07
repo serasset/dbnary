@@ -113,6 +113,8 @@ public class RDFDiff {
           System.err.print("Indexed " + nbBlank + " blank nodes /" + nbtriple + "\r");
         }
       }
+      if (verbose)
+        System.err.println();
     } finally {
       if (null != iter) {
         iter.close();
@@ -185,7 +187,8 @@ public class RDFDiff {
         if (verbose && nbprocessed % 1000 == 0)
           System.err.print("" + nbdiffs + "/" + nbprocessed / 1000 + " k\r");
       }
-      System.err.print("" + nbdiffs + "/" + nbprocessed + "\n");
+      if (verbose)
+        System.err.print("" + nbdiffs + "/" + nbprocessed + "\n");
     } finally {
       iter.close();
     }

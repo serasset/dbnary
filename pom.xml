@@ -29,7 +29,9 @@
   </licenses>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	  <jaxb.api.version>2.3.0</jaxb.api.version>
+ 	  <javax.activation.version>1.2.0</javax.activation.version>
   </properties>
 
   <issueManagement>
@@ -140,22 +142,27 @@
     <!-- Java 7 = JAXB version 2.2.3 -->
     <!-- Java 8 = JAXB version 2.2.8 -->
     <!-- Java 9 = JAXB version 2.3.0 -->
-    <!-- These dependencies should be used if using the JDK 9+
+    <!-- These dependencies should be used if using the JDK 9+ -->
+    <dependency>
+      <groupId>com.sun.activation</groupId>
+      <artifactId>javax.activation</artifactId>
+      <version>${javax.activation.version}</version>
+    </dependency>
     <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
-      <version>2.2.8</version>
+      <version>${jaxb.api.version}</version>
     </dependency>
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-core</artifactId>
-      <version>2.3.0</version>
+      <version>${jaxb.api.version}</version>
     </dependency>
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
-      <version>2.3.0</version>
-    </dependency-->
+      <version>${jaxb.api.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

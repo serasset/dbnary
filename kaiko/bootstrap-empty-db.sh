@@ -15,7 +15,11 @@ then
     PREFIX=$1
 fi
 
-source config.sh
+DBNARY_GLOBAL_CONFIG="$HOME/.dbnary/config"
+[[ -f $DBNARY_GLOBAL_CONFIG ]] && source $DBNARY_GLOBAL_CONFIG
+[[ -f ./config ]] && source ./config
+
+#source config.sh
 
 test -x $DAEMON || (echo "Could not find virtuoso-t bin" && exit 0)
 

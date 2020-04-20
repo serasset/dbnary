@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Test if bash version 4 as we need associative arrays.
-if [[ $BASH_VERSION != 4.* ]]
+if [[ "${BASH_VERSINFO:-0}" -lt 4 ]]
 then
     >&2 echo "Need bash 4 version. Exiting."
     exit -1

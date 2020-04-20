@@ -3,7 +3,7 @@
 ## Test if bash version 4 as we need associative arrays.
 if [[ $BASH_VERSION != 4.* ]]
 then
-    echo "Need bash 4 version. Exiting."
+    >&2 echo "Need bash 4 version. Exiting."
     exit -1
 fi
 
@@ -19,9 +19,7 @@ DBNARY_GLOBAL_CONFIG="$HOME/.dbnary/config"
 [[ -f $DBNARY_GLOBAL_CONFIG ]] && source $DBNARY_GLOBAL_CONFIG
 [[ -f ./config ]] && source ./config
 
-#source config.sh
-
-test -x $DAEMON || (echo "Could not find virtuoso-t bin" && exit 0)
+test -x "$DAEMON" || (echo "Could not find virtuoso-t bin" && exit 0)
 
 if [ ! -d "$EMPTYDBFOLDER" ] ; then
     mkdir -p "$EMPTYDBFOLDER"

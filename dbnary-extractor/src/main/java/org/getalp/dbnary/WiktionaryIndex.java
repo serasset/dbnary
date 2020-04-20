@@ -266,6 +266,7 @@ public class WiktionaryIndex implements Map<String, String> {
    * 
    * @see java.util.Map#get(java.lang.Object)
    */
+  @Override
   public String get(Object key) {
     OffsetValue ofs = map.get(key);
     if (ofs == null) {

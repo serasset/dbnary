@@ -1,6 +1,7 @@
 package org.getalp.dbnary;
 
 import static org.junit.Assert.assertEquals;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.Test;
 

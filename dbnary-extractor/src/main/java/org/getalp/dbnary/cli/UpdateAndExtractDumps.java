@@ -127,6 +127,34 @@ public class UpdateAndExtractDumps {
         .create());
   }
 
+  private static class LanguageConfiguration {
+    String lang;
+    String dumpDir;
+    private boolean uncompressed = false;
+    private boolean extracted = false;
+
+    public LanguageConfiguration(String lang, String dumpDir) {
+      this.lang = lang;
+      this.dumpDir = dumpDir;
+    }
+
+    public void setUncompressed(boolean status) {
+      uncompressed = status;
+    }
+
+    public boolean isUncompressed() {
+      return uncompressed;
+    }
+
+    public void setExtracted(boolean ok) {
+      extracted = ok;
+    }
+
+    public boolean isExtracted() {
+      return extracted;
+    }
+  }
+
   public static void main(String[] args) throws WiktionaryIndexerException, IOException {
     UpdateAndExtractDumps cliProg = new UpdateAndExtractDumps();
     cliProg.loadArgs(args);
@@ -215,12 +243,17 @@ public class UpdateAndExtractDumps {
   }
 
   public void updateAndExtract() throws WiktionaryIndexerException, IOException {
-    String[] dirs = updateDumpFiles(remainingArgs);
-    uncompressDumpFiles(remainingArgs, dirs);
-    extractDumpFiles(remainingArgs, dirs);
-    cleanUpDumpFiles(remainingArgs, dirs);
-    cleanUpExtractFiles(remainingArgs, dirs);
-    linkToLatestExtractFiles(remainingArgs, dirs);
+    List<LanguageConfiguration> confs =
+        Arrays.stream(remainingArgs).parallel().map(this::retrieveLastDump)
+            .map(this::uncompressRetrievedDump).collect(Collectors.toList());
+    confs = confs.stream().sequential().map(this::extract).peek(this::removeOldDumps)
+        .peek(this::linkToLatestExtractedFiles).collect(Collectors.toList());
+    // String[] dirs = updateDumpFiles(remainingArgs);
+    // uncompressDumpFiles(remainingArgs, dirs);
+    // extractDumpFiles(remainingArgs, dirs);
+    // cleanUpDumpFiles(remainingArgs, dirs);
+    // cleanUpExtractFiles(remainingArgs, dirs);
+    // linkToLatestExtractFiles(remainingArgs, dirs);
   }
 
   private void linkToLatestExtractFiles(String[] langs, String[] dirs) {
@@ -234,6 +267,15 @@ public class UpdateAndExtractDumps {
     }
   }
 
+  private void linkToLatestExtractedFiles(LanguageConfiguration conf) {
+    if (conf.isExtracted()) {
+      System.err.format("[%s] ==> Linking to latest versions.", conf.lang);
+      linkToLatestExtractFile(conf.lang, conf.dumpDir, model.toLowerCase());
+      for (String f : features) {
+        linkToLatestExtractFile(conf.lang, conf.dumpDir, f);
+      }
+    }
+  }
 
   private void linkToLatestExtractFile(String lang, String dir, String feature) {
     if (null == dir || dir.equals("")) {
@@ -295,6 +337,12 @@ public class UpdateAndExtractDumps {
     }
   }
 
+  private void removeOldDumps(LanguageConfiguration conf) {
+    if (conf.isExtracted())
+      cleanUpDumps(conf.lang, conf.dumpDir);
+    else if (verbose)
+      System.err.println("Older dumps cleanup aborted as extraction did not succeed.");
+  }
 
   private void cleanUpDumps(String lang, String lastDir) {
 
@@ -381,6 +429,9 @@ public class UpdateAndExtractDumps {
     }
   }
 
+  private LanguageConfiguration retrieveLastDump(String lang) {
+    return new LanguageConfiguration(lang, updateDumpFile(lang));
+  }
 
   private String updateDumpFile(String lang) {
     String defaultRes = getLastLocalDumpDir(lang);
@@ -581,6 +632,12 @@ public class UpdateAndExtractDumps {
     }
   }
 
+  private LanguageConfiguration uncompressRetrievedDump(LanguageConfiguration conf) {
+    boolean status = uncompressDumpFile(conf.lang, conf.dumpDir);
+    conf.setUncompressed(status);
+    return conf;
+  }
+
   private boolean uncompressDumpFile(String lang, String dir) {
     boolean status = true;
     if (null == dir || dir.equals("")) {
@@ -596,7 +653,8 @@ public class UpdateAndExtractDumps {
 
     File file = new File(uncompressedDumpFile);
     if (file.exists() && !force) {
-      // System.err.println("Uncompressed dump file " + uncompressedDumpFile + " already exists.");
+      if (verbose)
+        System.err.println("Uncompressed dump file " + uncompressedDumpFile + " already exists.");
       return true;
     }
 
@@ -618,6 +676,8 @@ public class UpdateAndExtractDumps {
       }
       r.close();
       w.close();
+      System.err.println("Correctly uncompressed file : " + uncompressedDumpFile);
+
     } catch (IOException e) {
       System.err
           .println("Caught an IOException while uncompressing dump: " + dumpFileName(lang, dir));
@@ -661,6 +721,21 @@ public class UpdateAndExtractDumps {
       i++;
     }
     return res;
+  }
+
+  private LanguageConfiguration extract(LanguageConfiguration conf) {
+    if (conf.isUncompressed()) {
+      boolean ok = extractDumpFile(conf.lang, conf.dumpDir);
+      conf.setExtracted(ok);
+      if (!ok) {
+        // Sometimes the dump is incomplete and finishes in the middle of the xml file,
+        // leading to IOException or IndexException from Extractor.
+        deleteDump(conf.lang, conf.dumpDir);
+        deleteUncompressedDump(conf.lang, conf.dumpDir);
+        deleteDumpDir(conf.lang, conf.dumpDir);
+      }
+    }
+    return conf;
   }
 
   private void extractDumpFiles(String[] langs, String[] dirs) {

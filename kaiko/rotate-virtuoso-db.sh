@@ -72,7 +72,7 @@ script_dir=$(dirname $(realpath $0))
 ## Read values from configuration file
 [[ -f $DBNARY_USER_CONFIG_DIR/config ]] && source $DBNARY_USER_CONFIG_DIR/config
 [[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL=$DBNARY_USER_CONFIG_DIR/virtuoso.ini.tmpl
-[[ -f $VIRTUOSOINITMPL ] || VIRTUOSOINITMPL=$script_dir/viruoso.ini.tmpl
+[[ -f $VIRTUOSOINITMPL ]] || VIRTUOSOINITMPL=$script_dir/viruoso.ini.tmpl
 if [[ ! -f $VIRTUOSOINITMPL ]]; then
   >&2 echo "Could not find virtuoso.ini template file."
   exit 1

@@ -14,16 +14,17 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 askpass=false
 password=''
 verbose=false
-DBNARY_GLOBAL_CONFIG="$HOME/.dbnary/config"
+DBNARY_USER_CONFIG_DIR="$HOME/.dbnary/"
 DBNARYLATEST=$HOME/develop/wiktionary/extracts/ontolex/latest
 VIRTUOSODBLOCATION=/var/lib/virtuoso
 TEMPORARYPREFIX=/var/tmp/
 
 function show_help {
-  echo "USAGE: $0 [-hvP] [-p password] [-P] [-d dir] [-f config] [-l latestdir] [-t tmp]"
+  echo "USAGE: $0 [-hvP] [-p password] [-P] [-d dir] [-c config] [-l latestdir] [-t tmp]"
   echo "OPTIONS:"
   echo "      h: display this help message."
-  echo "      f: use provided value as the configuration file (default value = $DBNARY_GLOBAL_CONFIG)."
+  echo "      c: use provided value as the configuration directory (default value = $DBNARY_USER_CONFIG_DIR)."
+  echo "         This directory should contain config and virtuoso.ini.tmpl files."
   echo "      d: use provided value as the virtuoso database location (default value = $VIRTUOSODBLOCATION)."
   echo "      l: use provided value as the dbnary folder containing all latest data (default value = $DBNARYLATEST)."
   echo "      t: use provided value as the prefix for temp folders (default value = $TEMPORARYPREFIX)."
@@ -32,7 +33,7 @@ function show_help {
   echo "      v: uses verbose output."
 }
 
-while getopts "h?p:Pvf:l:t:d:" opt; do
+while getopts "h?p:Pvc:l:t:d:" opt; do
     case "$opt" in
     h|\?)
         show_help
@@ -44,7 +45,7 @@ while getopts "h?p:Pvf:l:t:d:" opt; do
         ;;
     P)  askpass=true
         ;;
-    f)  DBNARY_GLOBAL_CONFIG=$OPTARG
+    c)  DBNARY_USER_CONFIG_DIR=$OPTARG
         ;;
     l)  DBNARYLATEST=$OPTARG
         ;;
@@ -66,8 +67,16 @@ SERVERPORT=1112
 SSLSERVERPORT=2112
 WEBSERVERPORT=8899
 
+script_dir=$(dirname $(realpath $0))
+
 ## Read values from configuration file
-[[ -f $DBNARY_GLOBAL_CONFIG ]] && source $DBNARY_GLOBAL_CONFIG
+[[ -f $DBNARY_USER_CONFIG_DIR/config ]] && source $DBNARY_USER_CONFIG_DIR/config
+[[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL=$DBNARY_USER_CONFIG_DIR/virtuoso.ini.tmpl
+[[ -f $VIRTUOSOINITMPL ] || VIRTUOSOINITMPL=$script_dir/viruoso.ini.tmpl
+if [[ ! -f $VIRTUOSOINITMPL ]]; then
+  >&2 echo "Could not find virtuoso.ini template file."
+  exit 1
+fi
 
 if [ ! -x $VIRTUOSODAEMON ]; then
   echo >&2 "Could not find virtuoso-t bin"
@@ -138,6 +147,14 @@ function cleanup {
 
 # register the cleanup function to be called on the EXIT signal
 trap cleanup EXIT
+
+if [[ $verbose == "true" ]]; then
+  echo "Virtuoso Daemon: $VIRTUOSODAEMON"
+  echo "Latest extracts: $DBNARYLATEST"
+  echo "Virtuoso ini template: $VIRTUOSOINITMPL"
+  echo "Temporary dataset folder: $DATASETDIR"
+  echo "Temporary bootstrap folder: $DBBOOTSTRAPFOLDER"
+fi
 
 # TODO: use a fixed dataset dir for dataset outside of dbnary latest folder.
 (

@@ -68,15 +68,18 @@ SSLSERVERPORT=2112
 WEBSERVERPORT=8899
 
 script_dir=$(dirname $(realpath $0))
-
+bootstrap_ini=virtuoso.ini.bootstrap.tmpl
+prod_ini=virtuoso.ini.prod.tmpl
 ## Read values from configuration file
 [[ -f $DBNARY_USER_CONFIG_DIR/config ]] && source $DBNARY_USER_CONFIG_DIR/config
-[[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL=$DBNARY_USER_CONFIG_DIR/virtuoso.ini.tmpl
-[[ -f $VIRTUOSOINITMPL ]] || VIRTUOSOINITMPL=$script_dir/viruoso.ini.tmpl
+[[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL=$DBNARY_USER_CONFIG_DIR/$bootstrap_ini
+[[ -f $VIRTUOSOINITMPL ]] || VIRTUOSOINITMPL=$script_dir/$bootstrap_ini
 if [[ ! -f $VIRTUOSOINITMPL ]]; then
   >&2 echo "Could not find virtuoso.ini template file."
   exit 1
 fi
+
+BOOTSTRAPSQL=$script_dir/bootstrap.sql
 
 if [ ! -x $VIRTUOSODAEMON ]; then
   echo >&2 "Could not find virtuoso-t bin"
@@ -85,6 +88,11 @@ fi
 
 if [ ! -d $DBNARYLATEST ] ; then
   echo >&2 "Latest turtle data not available. $DBNARYLATEST does not exist."
+  exit 1
+fi
+
+if [[ ! -w $VIRTUOSODBLOCATION ]]; then
+  >&2 echo "Virtuoso database location is not writable."
   exit 1
 fi
 
@@ -203,6 +211,7 @@ sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <$VIRTUOSOINITMPL |
     sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
     sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" >"$DBBOOTSTRAPFOLDER"/virtuoso.ini
 
+
 ## CREATING A NEW EMPTY DATABASE WITH NECESSARY SETTINGS
 
 ## Launch virtuoso to create the new DB
@@ -210,11 +219,15 @@ echo "Launching daemon."
 pushd "$DBBOOTSTRAPFOLDER" || exit 1
 $VIRTUOSODAEMON -c virtuoso +wait &
 daemon_pid=$!
+echo launched deamon
 wait
+echo deamon aunched and initialized
 
 ## connect to isql to load the different configurations
+echo isql $SERVERPORT dba dba $BOOTSTRAPSQL
 isql $SERVERPORT dba dba $BOOTSTRAPSQL
 
+echo bootstrap done, changing password.
 ## Now change admin passwords and shutdown the database.
 isql $SERVERPORT dba dba <<END
 user_change_password('dba','dba', '$password');

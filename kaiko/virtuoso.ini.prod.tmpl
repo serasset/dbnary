@@ -21,11 +21,11 @@
 ;  Database setup
 ;
 [Database]
-DatabaseFile       = /var/lib/virtuoso/db/virtuoso.db
-ErrorLogFile       = /var/lib/virtuoso/db/virtuoso.log
-LockFile           = /var/lib/virtuoso/db/virtuoso.lck
-TransactionFile    = /var/lib/virtuoso/db/virtuoso.trx
-xa_persistent_file = /var/lib/virtuoso/db/virtuoso.pxa
+DatabaseFile       = @@DBFOLDER@@/virtuoso.db
+ErrorLogFile       = @@DBFOLDER@@/virtuoso.log
+LockFile           = @@DBFOLDER@@/virtuoso.lck
+TransactionFile    = @@DBFOLDER@@/virtuoso.trx
+xa_persistent_file = @@DBFOLDER@@/virtuoso.pxa
 ErrorLogLevel      = 7
 FileExtend         = 200
 MaxCheckpointRemap = 680000
@@ -33,8 +33,8 @@ Striping           = 0
 TempStorage        = TempDatabase
 
 [TempDatabase]
-DatabaseFile       = /var/lib/virtuoso/db/virtuoso-temp.db
-TransactionFile    = /var/lib/virtuoso/db/virtuoso-temp.trx
+DatabaseFile       = @@DBFOLDER@@/virtuoso-temp.db
+TransactionFile    = @@DBFOLDER@@/virtuoso-temp.trx
 MaxCheckpointRemap = 2000
 Striping           = 0
 
@@ -60,7 +60,7 @@ MaxStaticCursorRows      = 5000
 CheckpointAuditTrail     = 0
 AllowOSCalls             = 0
 SchedulerInterval        = 10
-DirsAllowed              = ., /opt/virtuoso-opensource/share/virtuoso/vad,/var/lib/virtuoso/datasets/dbnary
+DirsAllowed              = ., /opt/virtuoso-opensource/share/virtuoso/vad,@@DATASETDIR@@
 ThreadCleanupInterval    = 0
 ThreadThreshold          = 10
 ResourcesCleanupInterval = 0

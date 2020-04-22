@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Test if bash version 4 as we need associative arrays.
 if [[ "${BASH_VERSINFO:-0}" -lt 4 ]]; then
@@ -6,21 +6,87 @@ if [[ "${BASH_VERSINFO:-0}" -lt 4 ]]; then
   exit 1
 fi
 
-## Bootstrapping a virtuoso db.
 
-PREFIX=$HOME/develop
-if [[ ! $# -eq 0 ]]; then
-  PREFIX=$1
+## Parse command line options
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+# Initialize our own variables:
+askpass=false
+password=''
+verbose=false
+DBNARY_GLOBAL_CONFIG="$HOME/.dbnary/config"
+DBNARYLATEST=$HOME/develop/wiktionary/extracts/ontolex/latest
+VIRTUOSODBLOCATION=/var/lib/virtuoso
+TEMPORARYPREFIX=/var/tmp/
+
+function show_help {
+  echo "USAGE: $0 [-hvP] [-p password] [-P] [-d dir] [-f config] [-l latestdir] [-t tmp]"
+  echo "OPTIONS:"
+  echo "      h: display this help message."
+  echo "      f: use provided value as the configuration file (default value = $DBNARY_GLOBAL_CONFIG)."
+  echo "      d: use provided value as the virtuoso database location (default value = $VIRTUOSODBLOCATION)."
+  echo "      l: use provided value as the dbnary folder containing all latest data (default value = $DBNARYLATEST)."
+  echo "      t: use provided value as the prefix for temp folders (default value = $TEMPORARYPREFIX)."
+  echo "      p: use provided password as the db password (default: password will be provided by DBPASSWD)."
+  echo "      P: asks for a db password interactively (default: true if password is not provided)."
+  echo "      v: uses verbose output."
+}
+
+while getopts "h?p:Pvf:l:t:d:" opt; do
+    case "$opt" in
+    h|\?)
+        show_help
+        exit 0
+        ;;
+    v)  verbose=true
+        ;;
+    p)  password=$OPTARG
+        ;;
+    P)  askpass=true
+        ;;
+    f)  DBNARY_GLOBAL_CONFIG=$OPTARG
+        ;;
+    l)  DBNARYLATEST=$OPTARG
+        ;;
+    d)  VIRTUOSODBLOCATION=$OPTARG
+        ;;
+    t)  TEMPORARYPREFIX=$OPTARG
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+[ "$1" = "--" ] && shift
+
+## Default values that will be overriden by configuration file
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
+VIRTUOSODAEMON=/opt/virtuoso-opensource/bin/virtuoso-t
+SERVERPORT=1112
+SSLSERVERPORT=2112
+WEBSERVERPORT=8899
+
+## Read values from configuration file
+[[ -f $DBNARY_GLOBAL_CONFIG ]] && source $DBNARY_GLOBAL_CONFIG
+
+if [ ! -x $VIRTUOSODAEMON ]; then
+  echo >&2 "Could not find virtuoso-t bin"
+  exit 1
 fi
 
-DBNARY_GLOBAL_CONFIG="$HOME/.dbnary/config"
-[[ -f $DBNARY_GLOBAL_CONFIG ]] && source $DBNARY_GLOBAL_CONFIG
-[[ -f ./config ]] && source ./config
+if [ ! -d $DBNARYLATEST ] ; then
+  echo >&2 "Latest turtle data not available. $DBNARYLATEST does not exist."
+  exit 1
+fi
 
-DBNARYLATEST=$PREFIX/wiktionary/extracts/ontolex/latest
+## READING DB PASSWORD
+if [[ $askpass == "true" || ${password}x == 'x'  ]]
+then
+  echo "Enter your bootstrap database password : "
+  IFS= read -s -p Password: password
+fi
 
-test -x $DAEMON || (echo >&2 "Could not find virtuoso-t bin" && exit 1)
-
+## Prepare the dataset directory
 ## Converting language codes
 declare -A iso3Lang
 iso3Lang[bg]=bul
@@ -46,50 +112,41 @@ iso3Lang[mg]=mlg
 iso3Lang[no]=nor
 iso3Lang[bm]=bam
 
-if [ ! -d "$EMPTYDBFOLDER" ]; then
-  echo >&2 "No Bootstrap DB folder, cannot load data."
-  exit 1
-elif [[ ! -f $EMPTYDBFOLDER/virtuoso.db ]]; then
-  echo >&2 "Bootstrap database file does not exists, cannot load data."
-  exit 1
-fi
-
-if [ ! -d "$DBFOLDER" ]; then
-  cp -r $EMPTYDBFOLDER $DBFOLDER
-  sed "s|@@DBFOLDER@@|$DBFOLDER|g" <$VIRTUOSOINITMPL |
-    sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
-    sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
-    sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
-    sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" >"$DBFOLDER"/virtuoso.ini
-elif [[ ! -f $EMPTYDBFOLDER/virtuoso.db ]]; then
-  >&2 echo "Database Folder $DBFOLDER exists but seems not to be a valid virtuoso db."
-  exit 1
-else
-  echo "Already existing database folder in bootstrap folder, should I load the data in the existing DB? (y/N):"
-  read answer
-  if [ z$answer != zy ]; then
-    >&2 echo "delete existing bootstrap DB and restart the loading script."
-    exit 1
-  fi
-fi
-
-if [ ! -d $DBNARYLATEST ]; then
-  >&2 echo "Latest turtle data not available."
-  exit 1
-fi
-
+SAVETMPDIR=$TMPDIR
+export TMPDIR=$TEMPORARYPREFIX
+DATASETDIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'dbnary-dataset' || exit 1)
+[[ "$verbose" == "true" ]] && >&2 echo "Creating dataset directory : $DATASETDIR"
 if [ ! -d "$DATASETDIR" ]; then
-  mkdir -p "$DATASETDIR"
+  >&2 echo "Could not create temporary dir. Aborting."
+  exit 1
 fi
+DBBOOTSTRAPFOLDER=$(mktemp -d 2>/dev/null || mktemp -d -t 'dbnary-db' || exit 1)
+[[ "$verbose" == "true" ]] && >&2 echo "Creating bootstrap database directory : $DBBOOTSTRAPFOLDER"
+if [ ! -d "$DBBOOTSTRAPFOLDER" ]; then
+  >&2 echo "Could not create temporary dir. Aborting."
+  exit 1
+fi
+TMPDIR=$SAVETMPDIR
 
-## Prepare the dataset directory
+# deletes the temp directory
+function cleanup {
+  rm -rf "$DATASETDIR"
+  echo "Deleted temp working directory $DATASETDIR"
+  rm -rf "$DBBOOTSTRAPFOLDER"
+  echo "Deleted temp working directory $DBBOOTSTRAPFOLDER"
+}
+
+# register the cleanup function to be called on the EXIT signal
+trap cleanup EXIT
+
+# TODO: use a fixed dataset dir for dataset outside of dbnary latest folder.
 (
   shopt -s nullglob
   files=($DATASETDIR/*.ttl)
   if [[ "${#files[@]}" -gt 0 ]]; then
     >&2 echo "Dataset already exists and is not empty, assuming its content is up to date."
   else
-    echo "Copying and expanding latest extracts."
+    >&2 echo "Copying and expanding latest extracts."
     ## Ontolex normal dumps
     cp $DBNARYLATEST/*.ttl.bz2 "$DATASETDIR"
     ## TODO: expand Disambiguated translations + foreign data ? + etymology
@@ -115,17 +172,47 @@ for f in $DATASETDIR/*.ttl; do
   fi
 done
 
-## Launch virtuoso to load the data into DB
+# TODO: the folder is now a new temporary folder
+if [ ! -d "$DBBOOTSTRAPFOLDER" ]; then
+  mkdir -p $DBBOOTSTRAPFOLDER
+elif [ "$(ls -A $DBBOOTSTRAPFOLDER)" ]; then
+  >&2 echo "Database Folder $DBBOOTSTRAPFOLDER exists but is not empty. Aborting."
+  exit 1
+fi
+
+sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <$VIRTUOSOINITMPL |
+    sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
+    sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
+    sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
+    sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" >"$DBBOOTSTRAPFOLDER"/virtuoso.ini
+
+## CREATING A NEW EMPTY DATABASE WITH NECESSARY SETTINGS
+
+## Launch virtuoso to create the new DB
 echo "Launching daemon."
-pushd "$DBFOLDER" || exit 1
-$DAEMON -c $NAME +wait &
+pushd "$DBBOOTSTRAPFOLDER" || exit 1
+$VIRTUOSODAEMON -c virtuoso +wait &
+daemon_pid=$!
 wait
 
-## connect to isql and load all the data
-echo "Enter your bootstrap database password : "
-IFS= read -s -p Password: pwd
+## connect to isql to load the different configurations
+isql $SERVERPORT dba dba $BOOTSTRAPSQL
 
-isql $SERVERPORT dba "$pwd" <<END
+## Now change admin passwords and shutdown the database.
+isql $SERVERPORT dba dba <<END
+user_change_password('dba','dba', '$password');
+user_change_password('dav','dav', '$password');
+exit();
+END
+
+## LOADING DATA IN DB.
+## Launch virtuoso to load the data into DB
+echo "Launching daemon."
+pushd "$DBBOOTSTRAPFOLDER" || exit 1
+$VIRTUOSODAEMON -c virtuoso +wait &
+wait
+
+isql $SERVERPORT dba "$password" <<END
 ld_dir ('$DATASETDIR', '*.ttl', 'http://kaiko.getalp.org/dbnary');
 
 -- do the following to see which files were registered to be added:
@@ -155,7 +242,7 @@ END
 ## define input:inference "etymology_ontology";
 
 ## index strings for faceted browsing
-isql $SERVERPORT dba "$pwd" <<END
+isql $SERVERPORT dba "$password" <<END
 echoln "========================================================" ;
 echoln "=== Stats on loaded graphs                           ===" ;
 echoln "========================================================" ;
@@ -183,7 +270,7 @@ echoln "=== Indexing done                                    ===" ;
 END
 
 ## Expand data by linking lexical entries when there is no homonymy
-isql $SERVERPORT dba "$pwd" <<END
+isql $SERVERPORT dba "$password" <<END
 -- turn off transaction isolation to avoid reaching limits in transaction log
 log_enable(2);
 echoln "========================================================" ;
@@ -215,7 +302,13 @@ echoln "=== Loading done                                     ===" ;
 END
 
 #Shutdown the bootstrap database
-isql $SERVERPORT dba "$pwd" <<END
+isql $SERVERPORT dba "$password" <<END
 checkpoint;
 shutdown();
 END
+
+## COPY THE DATABASE NEAR THE VIRTUOSO DB
+CURRENTDATETIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
+NEWDBFOLDER=${VIRTUOSODBLOCATION}/db.$CURRENTDATETIMESTAMP
+echo "Moving database to $NEWDBFOLDER"
+mv $DBBOOTSTRAPFOLDER $NEWDBFOLDER

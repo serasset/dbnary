@@ -148,8 +148,9 @@ public class ExtractWiktionary {
     options.addOption(OptionBuilder.withLongOpt(TO_PAGE_LONG_OPTION)
         .withDescription("Do not process pages after the nth one. MAXINT by default.").hasArg()
         .withArgName("num").create(TO_PAGE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(TDB_OPTION).withDescription(
-        "Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
+    options.addOption(OptionBuilder.withLongOpt(TDB_OPTION)
+        .withDescription(
+            "Use a temporary TDB to back the extractors models (use only for big extractions).")
         .create());
   }
 

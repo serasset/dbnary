@@ -128,8 +128,6 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
         }
       }
     }
-    if (log.isDebugEnabled())
-      return new InflectedFormSet();
 
     String htmlCode = expandWikiCode(declinationTemplateCall);
     Document doc = Jsoup.parse(htmlCode);
@@ -145,10 +143,13 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
     // expandWikiCode for Adjective-Flextables now returns headers for the degree info
     // (i.e. Positiv, Komparativ, Superlativ) in h4 !
 
-    Elements elts = doc.select("h3, h4, table");
+    Elements elts = doc.select("h2, h3, h4, table");
     LinkedList<String> h2Context = new LinkedList<>();
     LinkedList<String> h3Context = new LinkedList<>();
     LinkedList<String> h4Context = new LinkedList<>();
+    // emptying the alreadyParsedTables for the current parse
+    alreadyParsedTables.clear();
+    boolean inGermanH2 = true;
     for (Element elt : elts) {
 
       // log.debug(" parseTables: elt.tagName = {} text = {}", elt.tagName(), elt.text());
@@ -156,27 +157,30 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
         h4Context.clear();
         h4Context.addAll(h3Context);
         h4Context.add(elt.text());
-      }
-      if (elt.tagName().equalsIgnoreCase("h3")) {
+      } else if (elt.tagName().equalsIgnoreCase("h3")) {
         h3Context.clear();
         h4Context.clear();
         h3Context.addAll(h2Context);
         h3Context.add(elt.text());
 
       } else if (elt.tagName().equalsIgnoreCase("h2")) {
-        // but h2 was not selected ?
         if (!elt.text().contains("Deutsch")) {
+          inGermanH2 = false;
           log.debug("Breaking flexion parse due to header {} --in-- {}", elt.text(),
               wdh.currentLexEntry());
-          return forms;
+          // return forms;
+        } else {
+          inGermanH2 = true;
+          h2Context.clear();
+          h3Context.clear();
+          h4Context.clear();
+          h2Context.addAll(decodeH2Context(elt.text()));
         }
-        h2Context.clear();
-        h3Context.clear();
-        h4Context.clear();
-        h2Context.addAll(decodeH2Context(elt.text()));
       } else {
+        if (!inGermanH2)
+          continue;
         if (alreadyParsedTables.contains(elt)) {
-          log.debug("Ignoring already parsed table in {}", wdh.currentLexEntry());
+          log.debug("Ignoring already parsed table {} in {}", elt.html(), wdh.currentLexEntry());
           continue;
         }
         if (elt.id().equalsIgnoreCase("toc")) {

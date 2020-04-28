@@ -16,6 +16,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -269,7 +270,7 @@ public class UpdateAndExtractDumps {
 
   private void linkToLatestExtractedFiles(LanguageConfiguration conf) {
     if (conf.isExtracted()) {
-      System.err.format("[%s] ==> Linking to latest versions.", conf.lang);
+      System.err.format("[%s] ==> Linking to latest versions.\n", conf.lang);
       linkToLatestExtractFile(conf.lang, conf.dumpDir, model.toLowerCase());
       for (String f : features) {
         linkToLatestExtractFile(conf.lang, conf.dumpDir, f);
@@ -751,12 +752,35 @@ public class UpdateAndExtractDumps {
     }
   }
 
+  private static void displayMemoryUsage() {
+    Runtime runtime = Runtime.getRuntime();
+    runtime.gc();
+
+    NumberFormat format = NumberFormat.getInstance();
+
+    StringBuilder sb = new StringBuilder();
+    long maxMemory = runtime.maxMemory();
+    long allocatedMemory = runtime.totalMemory();
+    long freeMemory = runtime.freeMemory();
+
+    sb.append("free memory: " + format.format(freeMemory / 1024) + "\n");
+    sb.append("allocated memory: " + format.format(allocatedMemory / 1024) + "\n");
+    sb.append("max memory: " + format.format(maxMemory / 1024) + "\n");
+    sb.append("total free memory: "
+        + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024) + "\n");
+    System.err.println("--------------------------------");
+    System.err.println(sb.toString());
+    System.err.println("--------------------------------");
+  }
+
   private boolean extractDumpFile(String lang, String dir) {
     boolean status = true;
     if (null == dir || dir.equals("")) {
       return true;
     }
 
+    // TODO: GC and show used memory.
+    displayMemoryUsage();
     String odir = extractDir + "/" + model.toLowerCase() + "/" + lang;
     File d = new File(odir);
     d.mkdirs();
@@ -842,6 +866,7 @@ public class UpdateAndExtractDumps {
       e.printStackTrace();
       status = false;
     }
+    displayMemoryUsage();
     return status;
   }
 

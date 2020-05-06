@@ -27,18 +27,21 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.getalp.dbnary.WiktionaryIndexerException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -120,12 +123,12 @@ public class UpdateAndExtractDumps {
         "Do not use the ftp network, but decompress and extract.");
     options.addOption(FETCH_DATE_OPTION, true,
         "force the dump date to be retreived. latest dump by default ");
-    options.addOption(OptionBuilder.withLongOpt(ENABLE_FEATURE_OPTION)
-        .withDescription("Enable additional extraction features (e.g. morpho,etymology,foreign).")
-        .hasArg().withArgName("feature").create());
-    options.addOption(OptionBuilder.withLongOpt(TDB_OPTION).withDescription(
+    options.addOption(Option.builder().longOpt(ENABLE_FEATURE_OPTION)
+        .desc("Enable additional extraction features (e.g. morpho,etymology,foreign).").hasArg()
+        .argName("feature").build());
+    options.addOption(Option.builder().longOpt(TDB_OPTION).desc(
         "Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
-        .create());
+        .build());
   }
 
   private static class LanguageConfiguration {
@@ -174,7 +177,7 @@ public class UpdateAndExtractDumps {
    * @param args String[] args as featured in public static void main()
    */
   private void loadArgs(String[] args) {
-    CommandLineParser parser = new PosixParser();
+    CommandLineParser parser = new DefaultParser();
     try {
       cmd = parser.parse(options, args);
     } catch (ParseException e) {
@@ -445,72 +448,70 @@ public class UpdateAndExtractDumps {
 
     try {
       URL url = new URL(server);
+      if (!url.getProtocol().equals("http")) { // URL protocol is not http
+        System.err.format("Unsupported protocol: %s", url.getProtocol());
+        return defaultRes;
+      }
 
-      if (url.getProtocol().equals("http")) {
-        HttpClient client = new DefaultHttpClient();
+      String languageDumpFolder = server + lang + "wiktionary";
+      String lastDir = defaultRes;
 
-        String languageDumpFolder = server + lang + "wiktionary";
-        String lastDir = defaultRes;
+      try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+        System.err.println("Updating " + lang);
+        SortedSet<String> dirs = null;
+
+        if (null != fetchDate) {
+          if (verbose) {
+            System.err.println("Fetching specified version date : " + fetchDate);
+          }
+          lastDir = fetchDate;
+        } else {
+          HttpGet request = new HttpGet(languageDumpFolder);
+          try (CloseableHttpResponse response = client.execute(request)) {
+            HttpEntity entity = response.getEntity();
+
+            if (null == entity) {
+              System.err.format("Could not retrieve directory listing for language %s (url=%s)\n",
+                  lang, languageDumpFolder);
+              System.err.format("Using locally available dump.\n");
+              return defaultRes;
+            }
+            // parse directory listing to get the latest dump folder
+
+            dirs = getFolderSetFromIndex(entity, languageDumpFolder);
+            lastDir = getLastVersionDir(dirs);
+          }
+
+          if (verbose) {
+            System.err.println("Fetching latest version : " + lastDir);
+          }
+        }
+
+
+        if (null == lastDir) {
+          System.err.format("Empty directory list for %s (url=%s)\n", lang, languageDumpFolder);
+          System.err.format("Using locally available dump.\n");
+          return defaultRes;
+        }
 
         try {
-          System.err.println("Updating " + lang);
-          SortedSet<String> dirs = null;
-
-          HttpGet request = new HttpGet(languageDumpFolder);
-          HttpResponse response = null;
-          if (null != fetchDate) {
-            if (verbose) {
-              System.err.println("Fetching specified version date : " + fetchDate);
-            }
-            lastDir = fetchDate;
-          } else {
-            try {
-              response = client.execute(request);
-              HttpEntity entity = response.getEntity();
-
-              if (null == entity) {
-                System.err.format("Could not retrieve directory listing for language %s (url=%s)\n",
-                    lang, languageDumpFolder);
-                System.err.format("Using locally available dump.\n");
-                return defaultRes;
-              }
-              // parse directory listing to get the latest dump folder
-
-              dirs = getFolderSetFromIndex(entity, languageDumpFolder);
-
-            } finally {
-              HttpClientUtils.closeQuietly(response);
-            }
-            lastDir = getLastVersionDir(dirs);
-            if (verbose) {
-              System.err.println("Fetching latest version : " + lastDir);
-            }
+          String dumpdir = outputDir + "/" + lang + "/" + lastDir;
+          String filename = dumpdir + "/" + dumpFileName(lang, lastDir);
+          File file = new File(filename);
+          if (file.exists() && !force) {
+            // System.err.println("Dump file " + filename + " already retrieved.");
+            return lastDir;
           }
+          File dumpFile = new File(dumpdir);
+          dumpFile.mkdirs();
 
+          String dumpFileUrl =
+              languageDumpFolder + "/" + lastDir + "/" + dumpFileName(lang, lastDir);
+          if (verbose)
+            System.err.println("Fetching dump from " + dumpFileUrl);
 
-          if (null == lastDir) {
-            System.err.format("Empty directory list for %s (url=%s)\n", lang, languageDumpFolder);
-            System.err.format("Using locally available dump.\n");
-            return defaultRes;
-          }
-
-          try {
-            String dumpdir = outputDir + "/" + lang + "/" + lastDir;
-            String filename = dumpdir + "/" + dumpFileName(lang, lastDir);
-            File file = new File(filename);
-            if (file.exists() && !force) {
-              // System.err.println("Dump file " + filename + " already retrieved.");
-              return lastDir;
-            }
-            File dumpFile = new File(dumpdir);
-            dumpFile.mkdirs();
-
-            String dumpFileUrl =
-                languageDumpFolder + "/" + lastDir + "/" + dumpFileName(lang, lastDir);
-            if (verbose)
-              System.err.println("Fetching dump from " + dumpFileUrl);
-            request = new HttpGet(dumpFileUrl);
-            response = client.execute(request);
+          HttpGet request = new HttpGet(dumpFileUrl);
+          try (CloseableHttpResponse response = client.execute(request)) {
             HttpEntity entity = response.getEntity();
 
             if (entity != null) {
@@ -525,24 +526,18 @@ public class UpdateAndExtractDumps {
                     "Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
               }
             }
-
-          } catch (IOException e) {
-            System.err.println(e.getLocalizedMessage());
-            e.printStackTrace(System.err);
-          } finally {
-            HttpClientUtils.closeQuietly(response);
           }
+
         } catch (IOException e) {
-          e.printStackTrace();
-          return null;
-        } finally {
-          client.getConnectionManager().shutdown();
+          System.err.println(e.getLocalizedMessage());
+          e.printStackTrace(System.err);
         }
-        return lastDir;
-      } else { // URL protocol is not http
-        System.err.format("Unsupported protocol: %s", url.getProtocol());
-        return defaultRes;
+      } catch (IOException e) {
+        e.printStackTrace();
+        return null;
       }
+
+      return lastDir;
     } catch (MalformedURLException e) {
       System.err.format("Malformed dump server URL: %s", server);
       System.err.format("Using locally available dump.");

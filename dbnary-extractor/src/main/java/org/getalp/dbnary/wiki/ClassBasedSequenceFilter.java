@@ -70,6 +70,11 @@ public class ClassBasedSequenceFilter
     return this;
   }
 
+  public ClassBasedSequenceFilter atomizeItem() {
+    actions.put(WikiText.Item.class, new WikiSequenceFiltering.Atomize());
+    return this;
+  }
+
   public ClassBasedSequenceFilter atomizeNumberedListItem() {
     actions.put(WikiText.NumberedListItem.class, new WikiSequenceFiltering.Atomize());
     return this;
@@ -137,6 +142,11 @@ public class ClassBasedSequenceFilter
 
   public ClassBasedSequenceFilter voidIndentation() {
     actions.put(WikiText.Indentation.class, new WikiSequenceFiltering.Void());
+    return this;
+  }
+
+  public ClassBasedSequenceFilter voidItem() {
+    actions.put(WikiText.Item.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
@@ -289,6 +299,12 @@ public class ClassBasedSequenceFilter
     return this;
   }
 
+  public ClassBasedSequenceFilter keepContentOfItem() {
+    actions.put(WikiText.Item.class,
+        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    return this;
+  }
+
   public ClassBasedSequenceFilter keepContentOfNumberedListItem() {
     actions.put(WikiText.NumberedListItem.class,
         new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
@@ -368,6 +384,12 @@ public class ClassBasedSequenceFilter
     return this;
   }
 
+  public ClassBasedSequenceFilter openCloseItem() {
+    actions.put(WikiText.Item.class,
+        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
+    return this;
+  }
+
   public ClassBasedSequenceFilter openCloseNumberedListItem() {
     actions.put(WikiText.NumberedListItem.class,
         new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
@@ -438,6 +460,11 @@ public class ClassBasedSequenceFilter
 
   public ClassBasedSequenceFilter sourceIndentation() {
     actions.put(WikiText.Indentation.class, new WikiSequenceFiltering.KeepAsis());
+    return this;
+  }
+
+  public ClassBasedSequenceFilter sourceItem() {
+    actions.put(WikiText.Item.class, new WikiSequenceFiltering.KeepAsis());
     return this;
   }
 

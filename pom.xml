@@ -204,11 +204,15 @@
               <goal>compile</goal>
             </goals>
           </execution>
-        </executions><!-- TODO: Change plugins versions to current stable versions -->
+        </executions>
         <configuration>
           <fork>true</fork>
           <source>8</source>
           <target>8</target>
+          <compilerArgs>
+            <!-- arg>-Werror</arg-->
+            <arg>-Xlint:all</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
       <plugin>
@@ -311,7 +315,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>2.9</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

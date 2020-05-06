@@ -6,6 +6,7 @@ import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.Indentation;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.InternalLink;
+import org.getalp.dbnary.wiki.WikiText.Item;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
@@ -39,6 +40,11 @@ public abstract class BaseWikiTextVisitor implements Visitor {
   @Override
   public void visit(Indentation indentation) {
     indentation.getContent().accept(this);
+  }
+
+  @Override
+  public void visit(Item item) {
+    item.getContent().accept(this);
   }
 
   @Override

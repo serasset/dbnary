@@ -74,6 +74,11 @@ public class ClassBasedFilter implements WikiEventFilter {
     return this;
   }
 
+  public ClassBasedFilter allowItem() {
+    classesToKeep.add(WikiText.Item.class);
+    return this;
+  }
+
   public ClassBasedFilter allowHeading() {
     classesToKeep.add(WikiText.Heading.class);
     return this;
@@ -122,6 +127,11 @@ public class ClassBasedFilter implements WikiEventFilter {
 
   public ClassBasedFilter denyIndentation() {
     classesToKeep.remove(WikiText.Indentation.class);
+    return this;
+  }
+
+  public ClassBasedFilter denyItem() {
+    classesToKeep.remove(WikiText.Item.class);
     return this;
   }
 

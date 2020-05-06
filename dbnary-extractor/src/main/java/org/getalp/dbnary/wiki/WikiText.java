@@ -155,6 +155,10 @@ public class WikiText {
       throw new IllegalStateException("Not an Indentation.");
     }
 
+    public Item asItem() {
+      throw new IllegalStateException("Not an Item.");
+    }
+
     public ListItem asListItem() {
       throw new IllegalStateException("Not an ListItem.");
     }
@@ -799,6 +803,22 @@ public class WikiText {
     }
   }
 
+  public final class Item extends IndentedItem {
+
+    private Item(int position, String listPrefix) {
+      super(position, listPrefix);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public Item asItem() {
+      return this;
+    }
+  }
   ////////////////////////////////////////////////////////////////////////
   /// View wiki text as a document structured in sections and subsections
   ////////////////////////////////////////////////////////////////////////
@@ -974,8 +994,9 @@ public class WikiText {
         .append(">").append("={2,6}").append(")|").append("(?<").append("OLIST").append(">")
         .append("\\*+").append(")|").append("(?<").append("OINDENT").append(">").append(":+")
         .append(")|").append("(?<").append("ONUMLIST").append(">").append("\\#+").append(")|")
-        .append("(?<").append("PIPE").append(">").append("\\|").append(")|").append("(?<")
-        .append("SPACE").append(">").append(" ").append(")|").append("(?<").append("NL").append(">")
+        .append("(?<").append("OITEM").append(">").append(";").append(")|").append("(?<")
+        .append("PIPE").append(">").append("\\|").append(")|").append("(?<").append("SPACE")
+        .append(">").append(" ").append(")|").append("(?<").append("NL").append(">")
         .append("\r?\n|\r").append(")|").append("(?<").append("CHAR").append(">").append(".")
         .append(")");
 
@@ -1099,6 +1120,9 @@ public class WikiText {
           pos += g.length();
         } else if (null != (g = lexer.group("ONUMLIST")) && atLineBeginning) {
           stack.push(new NumberedListItem(pos, g));
+          pos += g.length();
+        } else if (null != (g = lexer.group("OITEM")) && atLineBeginning) {
+          stack.push(new Item(pos, g));
           pos += g.length();
         } else if (null != (g = lexer.group("PIPE"))) {
           // if in Template or InternalLink, it's a special char

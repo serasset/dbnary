@@ -5,11 +5,11 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.getalp.LangTools;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
@@ -65,14 +65,14 @@ public class GetExtractedSemnet {
         "Ontology Model used  (lmf or lemon). Only useful with rdf base formats." + DEFAULT_MODEL
             + " by default.");
     options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign languages");
-    options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("extract morphology data.").create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("extract etymology data.").create(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(URI_PREFIX_LONG_OPTION)
-        .withDescription("set the URI prefix used in the extracted dataset. Default: "
+    options.addOption(Option.builder(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION)
+        .longOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION).desc("extract morphology data.").build());
+    options.addOption(Option.builder(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION)
+        .longOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION).desc("extract etymology data.").build());
+    options.addOption(Option.builder(URI_PREFIX_SHORT_OPTION).longOpt(URI_PREFIX_LONG_OPTION)
+        .desc("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
-        .hasArg().withArgName("uri").create(URI_PREFIX_SHORT_OPTION));
+        .hasArg().argName("uri").build());
   }
 
   WiktionaryIndex wi;
@@ -86,7 +86,7 @@ public class GetExtractedSemnet {
    * @param args String[] args as featured in public static void main()
    */
   private void loadArgs(String[] args) throws WiktionaryIndexerException {
-    CommandLineParser parser = new PosixParser();
+    CommandLineParser parser = new DefaultParser();
     try {
       cmd = parser.parse(options, args);
     } catch (ParseException e) {

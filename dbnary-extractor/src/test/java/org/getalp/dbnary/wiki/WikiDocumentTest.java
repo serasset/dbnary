@@ -3,7 +3,7 @@ package org.getalp.dbnary.wiki;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.Text;
 import org.getalp.dbnary.wiki.WikiText.Token;
@@ -67,7 +67,7 @@ public class WikiDocumentTest {
       printer.print("+ ");
       printer.print(token.getClass().getCanonicalName());
       printer.print(" : ");
-      printer.println(StringUtils.abbreviate(token.toString().trim(), 10));
+      printer.println(WordUtils.abbreviate(token.toString().trim(), 10, 20, "..."));
     }
   }
 
@@ -76,7 +76,8 @@ public class WikiDocumentTest {
     printer.print("+ Section Heading [");
     printer.print(String.valueOf(section.getHeading().getLevel()));
     printer.print("] :");
-    printer.println(StringUtils.abbreviate(section.getHeading().getContent().toString(), 10));
+    printer
+        .println(WordUtils.abbreviate(section.getHeading().getContent().toString(), 10, 20, "..."));
     printer.incrementIndent();
     printContentForrest(printer, section.getContent());
     printer.decrementIndent();

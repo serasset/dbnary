@@ -19,7 +19,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
@@ -128,30 +128,31 @@ public class ExtractWiktionary {
     options.addOption(MODEL_OPTION, true, "(Deprecated) the model will always be " + DEFAULT_MODEL);
     options.addOption(OUTPUT_FILE_OPTION, true,
         "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");
-    options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("Output file for morphology data. Undefined by default.").hasArg()
-        .withArgName("file").create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("extract etymology data.").hasArg().withArgName("file")
-        .create(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(METADATA_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("Output file for LIME metadata. Undefined by default.").hasArg()
-        .withArgName("file").create(METADATA_OUTPUT_FILE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(URI_PREFIX_LONG_OPTION)
-        .withDescription("set the URI prefix used in the extracted dataset. Default: "
+    options.addOption(Option.builder(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION)
+        .longOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
+        .desc("Output file for morphology data. Undefined by default.").hasArg().argName("file")
+        .build());
+    options.addOption(Option.builder(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION)
+        .longOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION).desc("extract etymology data.").hasArg()
+        .argName("file").build());
+    options.addOption(
+        Option.builder(METADATA_OUTPUT_FILE_SHORT_OPTION).longOpt(METADATA_OUTPUT_FILE_LONG_OPTION)
+            .desc("Output file for LIME metadata. Undefined by default.").hasArg().argName("file")
+            .build());
+    options.addOption(Option.builder(URI_PREFIX_SHORT_OPTION).longOpt(URI_PREFIX_LONG_OPTION)
+        .desc("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
-        .hasArg().withArgName("uri").create(URI_PREFIX_SHORT_OPTION));
+        .hasArg().argName("uri").build());
     options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign Languages");
-    options.addOption(OptionBuilder.withLongOpt(FROM_PAGE_LONG_OPTION)
-        .withDescription("Do not process pages before the nth one. 0 by default.").hasArg()
-        .withArgName("num").create(FROM_PAGE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(TO_PAGE_LONG_OPTION)
-        .withDescription("Do not process pages after the nth one. MAXINT by default.").hasArg()
-        .withArgName("num").create(TO_PAGE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(TDB_OPTION)
-        .withDescription(
-            "Use a temporary TDB to back the extractors models (use only for big extractions).")
-        .create());
+    options.addOption(Option.builder(FROM_PAGE_SHORT_OPTION).longOpt(FROM_PAGE_LONG_OPTION)
+        .desc("Do not process pages before the nth one. 0 by default.").hasArg().argName("num")
+        .build());
+    options.addOption(Option.builder(TO_PAGE_SHORT_OPTION).longOpt(TO_PAGE_LONG_OPTION)
+        .desc("Do not process pages after the nth one. MAXINT by default.").hasArg().argName("num")
+        .build());
+    options.addOption(Option.builder().longOpt(TDB_OPTION)
+        .desc("Use a temporary TDB to back the extractors models (use only for big extractions).")
+        .build());
   }
 
   static {

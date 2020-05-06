@@ -1317,10 +1317,11 @@ public class WikiText {
 
     /**
      *
-     * @param content
-     * @param level
+     * @param content the content from which we get the sections
+     * @param level the expected level
      * @deprecated
      */
+    @Deprecated
     public LevelBasedWikiSectionsIterator(WikiContent content, int level) {
       this.content = content;
       this.level = level;

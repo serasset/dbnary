@@ -80,10 +80,11 @@ public final class CharRange {
 
   /**
    * <p>
-   * Gets the end character for this character range.
+   * check if a char is inside the current range.
    * </p>
    *
-   * @return the end char (inclusive)
+   * @param c the character to check
+   * @return true if the range contains c
    */
   public boolean contains(char c) {
     return (c >= this.start && c <= this.end);

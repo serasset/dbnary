@@ -22,6 +22,7 @@ public class WikiTool {
    *             handle nested parentheses, e.g., xxx=yyy|zzz={{aaa=bbb|ccc=ddd}}|kkk=hhh and
    *             xxx=yyy|zzz=[[aaa|bbb|ccc]]|kkk=hhh.
    */
+  @Deprecated
   public static Map<String, String> parseArgs(String argsString) {
     HashMap<String, String> argsMap = new HashMap<String, String>();
     if (null == argsString || "" == argsString) {

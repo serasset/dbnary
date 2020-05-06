@@ -1,279 +1,247 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.getalp</groupId>
-        <artifactId>dbnary</artifactId>
-        <version>2.2-SNAPSHOT</version>
-    </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
     <groupId>org.getalp</groupId>
-    <artifactId>dbnary-ontology</artifactId>
+    <artifactId>dbnary</artifactId>
+    <version>2.2-SNAPSHOT</version>
+  </parent>
+  <groupId>org.getalp</groupId>
+  <artifactId>dbnary-ontology</artifactId>
 
-    <packaging>jar</packaging>
+  <packaging>jar</packaging>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
-    <name>DBnary Ontology API</name>
-    <description>DBnary API as generated from DBnary ontology using SchemaGen</description>
+  <name>DBnary Ontology API</name>
+  <description>DBnary API as generated from DBnary ontology using SchemaGen</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-cmds</artifactId>
-            <version>3.10.0</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
-    <build>
-         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
-                <executions>
-                    <execution>
-                        <id>dbnary</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>jena.schemagen</mainClass>
-                            <commandlineArgs>
-                                -i ${basedir}/src/main/resources/org/getalp/dbnary/dbnary.owl \
-                                --package org.getalp.dbnary \
-                                -o ${project.build.directory}/generated-sources/java \
-                                -n DBnaryOnt \
-                                --owl
-                            </commandlineArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>lexinfo</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>jena.schemagen</mainClass>
-                            <commandlineArgs>
-                                -i ${basedir}/src/main/resources/org/getalp/dbnary/lexinfo.owl \
-                                --package org.getalp.dbnary \
-                                -o ${project.build.directory}/generated-sources/java \
-                                -n LexinfoOnt \
-                                --owl
-                            </commandlineArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>olia</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>jena.schemagen</mainClass>
-                            <commandlineArgs>
-                                -i ${basedir}/src/main/resources/org/getalp/dbnary/olia.owl \
-                                --package org.getalp.dbnary \
-                                -o ${project.build.directory}/generated-sources/java \
-                                -n OliaOnt \
-                                --owl
-                            </commandlineArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>dbnary_etymology</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>jena.schemagen</mainClass>
-                            <commandlineArgs>
-                                -i ${basedir}/src/main/resources/org/getalp/dbnary/dbnary_etymology.owl \
-                                --package org.getalp.dbnary \
-                                -o ${project.build.directory}/generated-sources/java \
-                                -n DBnaryEtymologyOnt \
-                                --owl
-                            </commandlineArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>ontolex</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>jena.schemagen</mainClass>
-                            <commandlineArgs>
-                                -i ${basedir}/src/main/resources/org/getalp/dbnary/ontolex.owl \
-                                --package org.getalp.dbnary \
-                                -o ${project.build.directory}/generated-sources/java \
-                                -n OntolexOnt \
-                                --owl
-                            </commandlineArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>ontolex-vartrans</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>jena.schemagen</mainClass>
-                            <commandlineArgs>
-                                -i ${basedir}/src/main/resources/org/getalp/dbnary/vartrans.owl \
-                                --package org.getalp.dbnary \
-                                -o ${project.build.directory}/generated-sources/java \
-                                -n VarTransOnt \
-                                --owl
-                            </commandlineArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>ontolex-lime</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>jena.schemagen</mainClass>
-                            <commandlineArgs>
-                                -i ${basedir}/src/main/resources/org/getalp/dbnary/lime.owl \
-                                --package org.getalp.dbnary \
-                                -o ${project.build.directory}/generated-sources/java \
-                                -n LimeOnt \
-                                --owl
-                            </commandlineArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>ontolex-decomp</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>jena.schemagen</mainClass>
-                            <commandlineArgs>
-                                -i ${basedir}/src/main/resources/org/getalp/dbnary/decomp.owl \
-                                --package org.getalp.dbnary \
-                                -o ${project.build.directory}/generated-sources/java \
-                                -n DecompOnt \
-                                -a http://www.w3.org/ns/lemon/decomp# \
-                                --owl
-                            </commandlineArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>ontolex-synsem</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>jena.schemagen</mainClass>
-                            <commandlineArgs>
-                                -i ${basedir}/src/main/resources/org/getalp/dbnary/synsem.owl \
-                                --package org.getalp.dbnary \
-                                -o ${project.build.directory}/generated-sources/java \
-                                -n SynSemOnt \
-                                --owl
-                            </commandlineArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>skos</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>jena.schemagen</mainClass>
-                            <commandlineArgs>
-                                -i ${basedir}/src/main/resources/org/getalp/dbnary/skos.rdf \
-                                --package org.getalp.dbnary \
-                                -o ${project.build.directory}/generated-sources/java \
-                                -n SkosOnt \
-                                --owl
-                            </commandlineArgs>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${project.build.directory}/generated-sources/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-        <pluginManagement>
-            <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.codehaus.mojo</groupId>
-                                        <artifactId>
-                                            exec-maven-plugin
-                                        </artifactId>
-                                        <versionRange>[1.3,)</versionRange>
-                                        <goals>
-                                            <goal>java</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore />
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                	<pluginExecutionFilter>
-                                		<groupId>
-                                			org.codehaus.mojo
-                                		</groupId>
-                                		<artifactId>
-                                			build-helper-maven-plugin
-                                		</artifactId>
-                                		<versionRange>
-                                			[1.8,)
-                                		</versionRange>
-                                		<goals>
-                                			<goal>add-source</goal>
-                                		</goals>
-                                	</pluginExecutionFilter>
-                                	<action>
-                                		<ignore />
-                                	</action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-cmds</artifactId>
+      <version>${jena.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>slf4j-log4j12</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.getalp</groupId>
+      <artifactId>dbnary-commons</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.6.0</version>
+        <executions>
+          <execution>
+            <id>dbnary</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>jena.schemagen</mainClass>
+              <commandlineArgs>
+                -i ${basedir}/src/main/resources/org/getalp/dbnary/dbnary.owl \
+                --package org.getalp.dbnary \
+                -o ${project.build.directory}/generated-sources/java \
+                -n DBnaryOnt \
+                --owl
+              </commandlineArgs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>lexinfo</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>jena.schemagen</mainClass>
+              <commandlineArgs>
+                -i ${basedir}/src/main/resources/org/getalp/dbnary/lexinfo.owl \
+                --package org.getalp.dbnary \
+                -o ${project.build.directory}/generated-sources/java \
+                -n LexinfoOnt \
+                --owl
+              </commandlineArgs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>olia</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>jena.schemagen</mainClass>
+              <commandlineArgs>
+                -i ${basedir}/src/main/resources/org/getalp/dbnary/olia.owl \
+                --package org.getalp.dbnary \
+                -o ${project.build.directory}/generated-sources/java \
+                -n OliaOnt \
+                --owl
+              </commandlineArgs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>dbnary_etymology</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>jena.schemagen</mainClass>
+              <commandlineArgs>
+                -i ${basedir}/src/main/resources/org/getalp/dbnary/dbnary_etymology.owl \
+                --package org.getalp.dbnary \
+                -o ${project.build.directory}/generated-sources/java \
+                -n DBnaryEtymologyOnt \
+                --owl
+              </commandlineArgs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>ontolex</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>jena.schemagen</mainClass>
+              <commandlineArgs>
+                -i ${basedir}/src/main/resources/org/getalp/dbnary/ontolex.owl \
+                --package org.getalp.dbnary \
+                -o ${project.build.directory}/generated-sources/java \
+                -n OntolexOnt \
+                --owl
+              </commandlineArgs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>ontolex-vartrans</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>jena.schemagen</mainClass>
+              <commandlineArgs>
+                -i ${basedir}/src/main/resources/org/getalp/dbnary/vartrans.owl \
+                --package org.getalp.dbnary \
+                -o ${project.build.directory}/generated-sources/java \
+                -n VarTransOnt \
+                --owl
+              </commandlineArgs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>ontolex-lime</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>jena.schemagen</mainClass>
+              <commandlineArgs>
+                -i ${basedir}/src/main/resources/org/getalp/dbnary/lime.owl \
+                --package org.getalp.dbnary \
+                -o ${project.build.directory}/generated-sources/java \
+                -n LimeOnt \
+                --owl
+              </commandlineArgs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>ontolex-decomp</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>jena.schemagen</mainClass>
+              <commandlineArgs>
+                -i ${basedir}/src/main/resources/org/getalp/dbnary/decomp.owl \
+                --package org.getalp.dbnary \
+                -o ${project.build.directory}/generated-sources/java \
+                -n DecompOnt \
+                -a http://www.w3.org/ns/lemon/decomp# \
+                --owl
+              </commandlineArgs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>ontolex-synsem</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>jena.schemagen</mainClass>
+              <commandlineArgs>
+                -i ${basedir}/src/main/resources/org/getalp/dbnary/synsem.owl \
+                --package org.getalp.dbnary \
+                -o ${project.build.directory}/generated-sources/java \
+                -n SynSemOnt \
+                --owl
+              </commandlineArgs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>skos</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>jena.schemagen</mainClass>
+              <commandlineArgs>
+                -i ${basedir}/src/main/resources/org/getalp/dbnary/skos.rdf \
+                --package org.getalp.dbnary \
+                -o ${project.build.directory}/generated-sources/java \
+                -n SkosOnt \
+                --owl
+              </commandlineArgs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

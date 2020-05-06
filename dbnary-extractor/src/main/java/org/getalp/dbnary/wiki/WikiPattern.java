@@ -11,7 +11,7 @@ public class WikiPattern {
   /**
    * Compiles the pattern using extended syntax fit to define patterns on wiki texts.
    *
-   * <h3><a name="sum">Summary of regular-expression extension</a></h3>
+   * <h3><a id="sum">Summary of regular-expression extension</a></h3>
    *
    * <table border="0" cellpadding="1" cellspacing="0" summary="Regular expression constructs, and
    * what they match">

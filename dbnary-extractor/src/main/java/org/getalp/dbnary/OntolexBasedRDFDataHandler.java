@@ -656,12 +656,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   /**
    *
-   * @param languageCode
-   * @param pos
-   * @param inflection
-   * @param canonicalForm
-   * @param defNumber
-   * @param props
+   * @param languageCode the language code of the inflection
+   * @param pos the part of speech of the inflected form
+   * @param inflection inflected form
+   * @param canonicalForm canonical form
+   * @param defNumber definition number of the word sense associated to the form
+   * @param props morpho syntactic properties to be registered with the inflected form
    */
   public void registerInflection(String languageCode, String pos, String inflection,
       String canonicalForm, int defNumber, HashSet<PropertyObjectPair> props) {

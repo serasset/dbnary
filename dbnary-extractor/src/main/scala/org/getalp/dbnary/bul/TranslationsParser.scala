@@ -1,6 +1,6 @@
 package org.getalp.dbnary.bul
 
-import grizzled.slf4j.Logger
+import com.typesafe.scalalogging.Logger
 import org.apache.jena.rdf.model.Resource
 import org.getalp.dbnary.{AbstractGlossFilter, IWiktionaryDataHandler}
 

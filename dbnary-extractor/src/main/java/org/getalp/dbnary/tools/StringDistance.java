@@ -73,9 +73,9 @@ public class StringDistance {
   /**
    * Compute the cost for an edition.
    * 
-   * @param c1
-   * @param c2
-   * @return
+   * @param c1 the first char
+   * @param c2 the second char
+   * @return the levenstein distance between chars
    */
   private static int levensteinCost(char c1, char c2) {
     if (c1 == c2)
@@ -165,10 +165,10 @@ public class StringDistance {
   }
 
   /**
-   * @param form
-   * @param operation
-   * @param c
-   * @return
+   * @param form the form
+   * @param operation the operation to apply
+   * @param c the char
+   * @return the resulting form
    */
   public static String changeSimple(String form, String operation, int c) {
 
@@ -201,18 +201,6 @@ public class StringDistance {
       return f.toString();
     }
     return form;
-  }
-
-
-
-  /**
-   * @param o
-   * @return
-   */
-  public static String simple(String o) {
-    StringBuffer s = new StringBuffer(o);
-    s.delete(1, 2);
-    return s.toString();
   }
 
 

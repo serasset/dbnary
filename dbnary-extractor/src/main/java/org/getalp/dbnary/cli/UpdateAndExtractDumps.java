@@ -507,6 +507,8 @@ public class UpdateAndExtractDumps {
 
             String dumpFileUrl =
                 languageDumpFolder + "/" + lastDir + "/" + dumpFileName(lang, lastDir);
+            if (verbose)
+              System.err.println("Fetching dump from " + dumpFileUrl);
             request = new HttpGet(dumpFileUrl);
             response = client.execute(request);
             HttpEntity entity = response.getEntity();

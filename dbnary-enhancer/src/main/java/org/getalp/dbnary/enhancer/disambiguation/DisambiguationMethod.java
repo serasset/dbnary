@@ -11,6 +11,9 @@ public interface DisambiguationMethod {
    *
    * @param lexicalEntry the resource of the LEMON lexicalEntry to be disambiguated
    * @param context : the context used by the specific method as a disambiguation criterion
+   * @return a set of resources corresponding to selected word senses.
+   * @throws InvalidContextException if the given context object is not a context
+   * @throws InvalidEntryException if the given resource does not represent an ontolex entry
    */
   public Set<? extends Resource> selectWordSenses(Resource lexicalEntry, Object context)
       throws InvalidContextException, InvalidEntryException;

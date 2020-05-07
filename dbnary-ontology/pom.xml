@@ -24,17 +24,7 @@
       <groupId>org.apache.jena</groupId>
       <artifactId>jena-cmds</artifactId>
       <version>${jena.version}</version>
-      <scope>compile</scope>
-      <!--exclusions>
-        <exclusion>
-          <artifactId>log4j</artifactId>
-          <groupId>log4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>slf4j-log4j12</artifactId>
-          <groupId>org.slf4j</groupId>
-        </exclusion>
-      </exclusions-->
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.getalp</groupId>
@@ -54,171 +44,281 @@
             <id>dbnary</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>java</goal>
+              <goal>exec</goal>
             </goals>
             <configuration>
-              <mainClass>jena.schemagen</mainClass>
-              <commandlineArgs>
-                -i ${basedir}/src/main/resources/org/getalp/dbnary/dbnary.owl \
-                --package org.getalp.dbnary \
-                -o ${project.build.directory}/generated-sources/java \
-                -n DBnaryOnt \
-                --owl
-              </commandlineArgs>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>
+                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
+                </argument>
+                <argument>jena.schemagen</argument>
+                <argument>-i</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/dbnary.owl</argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>-n</argument>
+                <argument>DBnaryOnt</argument>
+                <argument>--owl</argument>
+              </arguments>
             </configuration>
           </execution>
           <execution>
             <id>lexinfo</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>java</goal>
+              <goal>exec</goal>
             </goals>
             <configuration>
-              <mainClass>jena.schemagen</mainClass>
-              <commandlineArgs>
-                -i ${basedir}/src/main/resources/org/getalp/dbnary/lexinfo.owl \
-                --package org.getalp.dbnary \
-                -o ${project.build.directory}/generated-sources/java \
-                -n LexinfoOnt \
-                --owl
-              </commandlineArgs>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>
+                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
+                </argument>
+                <argument>jena.schemagen</argument>
+                <argument>-i</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/lexinfo.owl</argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>-n</argument>
+                <argument>LexinfoOnt</argument>
+                <argument>--owl</argument>
+              </arguments>
             </configuration>
           </execution>
           <execution>
             <id>olia</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>java</goal>
+              <goal>exec</goal>
             </goals>
             <configuration>
-              <mainClass>jena.schemagen</mainClass>
-              <commandlineArgs>
-                -i ${basedir}/src/main/resources/org/getalp/dbnary/olia.owl \
-                --package org.getalp.dbnary \
-                -o ${project.build.directory}/generated-sources/java \
-                -n OliaOnt \
-                --owl
-              </commandlineArgs>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>
+                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
+                </argument>
+                <argument>jena.schemagen</argument>
+                <argument>-i</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/olia.owl</argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>-n</argument>
+                <argument>OliaOnt</argument>
+                <argument>--owl</argument>
+              </arguments>
             </configuration>
           </execution>
           <execution>
             <id>dbnary_etymology</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>java</goal>
+              <goal>exec</goal>
             </goals>
             <configuration>
-              <mainClass>jena.schemagen</mainClass>
-              <commandlineArgs>
-                -i ${basedir}/src/main/resources/org/getalp/dbnary/dbnary_etymology.owl \
-                --package org.getalp.dbnary \
-                -o ${project.build.directory}/generated-sources/java \
-                -n DBnaryEtymologyOnt \
-                --owl
-              </commandlineArgs>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>
+                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
+                </argument>
+                <argument>jena.schemagen</argument>
+                <argument>-i</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/dbnary_etymology.owl
+                </argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>-n</argument>
+                <argument>DBnaryEtymologyOnt</argument>
+                <argument>--owl</argument>
+              </arguments>
             </configuration>
           </execution>
           <execution>
             <id>ontolex</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>java</goal>
+              <goal>exec</goal>
             </goals>
             <configuration>
-              <mainClass>jena.schemagen</mainClass>
-              <commandlineArgs>
-                -i ${basedir}/src/main/resources/org/getalp/dbnary/ontolex.owl \
-                --package org.getalp.dbnary \
-                -o ${project.build.directory}/generated-sources/java \
-                -n OntolexOnt \
-                --owl
-              </commandlineArgs>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>
+                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
+                </argument>
+                <argument>jena.schemagen</argument>
+                <argument>-i</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/ontolex.owl</argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>-n</argument>
+                <argument>OntolexOnt</argument>
+                <argument>--owl</argument>
+              </arguments>
             </configuration>
           </execution>
           <execution>
             <id>ontolex-vartrans</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>java</goal>
+              <goal>exec</goal>
             </goals>
             <configuration>
-              <mainClass>jena.schemagen</mainClass>
-              <commandlineArgs>
-                -i ${basedir}/src/main/resources/org/getalp/dbnary/vartrans.owl \
-                --package org.getalp.dbnary \
-                -o ${project.build.directory}/generated-sources/java \
-                -n VarTransOnt \
-                --owl
-              </commandlineArgs>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>
+                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
+                </argument>
+                <argument>jena.schemagen</argument>
+                <argument>-i</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/vartrans.owl</argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>-n</argument>
+                <argument>VarTransOnt</argument>
+                <argument>--owl</argument>
+              </arguments>
             </configuration>
           </execution>
           <execution>
             <id>ontolex-lime</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>java</goal>
+              <goal>exec</goal>
             </goals>
             <configuration>
-              <mainClass>jena.schemagen</mainClass>
-              <commandlineArgs>
-                -i ${basedir}/src/main/resources/org/getalp/dbnary/lime.owl \
-                --package org.getalp.dbnary \
-                -o ${project.build.directory}/generated-sources/java \
-                -n LimeOnt \
-                --owl
-              </commandlineArgs>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>
+                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
+                </argument>
+                <argument>jena.schemagen</argument>
+                <argument>-i</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/lime.owl</argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>-n</argument>
+                <argument>LimeOnt</argument>
+                <argument>--owl</argument>
+              </arguments>
             </configuration>
           </execution>
           <execution>
             <id>ontolex-decomp</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>java</goal>
+              <goal>exec</goal>
             </goals>
             <configuration>
-              <mainClass>jena.schemagen</mainClass>
-              <commandlineArgs>
-                -i ${basedir}/src/main/resources/org/getalp/dbnary/decomp.owl \
-                --package org.getalp.dbnary \
-                -o ${project.build.directory}/generated-sources/java \
-                -n DecompOnt \
-                -a http://www.w3.org/ns/lemon/decomp# \
-                --owl
-              </commandlineArgs>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>
+                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
+                </argument>
+                <argument>jena.schemagen</argument>
+                <argument>-i</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/decomp.owl</argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>-n</argument>
+                <argument>DecompOnt</argument>
+                <argument>--owl</argument>
+              </arguments>
             </configuration>
           </execution>
           <execution>
             <id>ontolex-synsem</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>java</goal>
+              <goal>exec</goal>
             </goals>
             <configuration>
-              <mainClass>jena.schemagen</mainClass>
-              <commandlineArgs>
-                -i ${basedir}/src/main/resources/org/getalp/dbnary/synsem.owl \
-                --package org.getalp.dbnary \
-                -o ${project.build.directory}/generated-sources/java \
-                -n SynSemOnt \
-                --owl
-              </commandlineArgs>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>
+                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
+                </argument>
+                <argument>jena.schemagen</argument>
+                <argument>-i</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/synsem.owl</argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>-n</argument>
+                <argument>SynSemOnt</argument>
+                <argument>--owl</argument>
+              </arguments>
             </configuration>
           </execution>
           <execution>
             <id>skos</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>java</goal>
+              <goal>exec</goal>
             </goals>
             <configuration>
-              <mainClass>jena.schemagen</mainClass>
-              <commandlineArgs>
-                -i ${basedir}/src/main/resources/org/getalp/dbnary/skos.rdf \
-                --package org.getalp.dbnary \
-                -o ${project.build.directory}/generated-sources/java \
-                -n SkosOnt \
-                --owl
-              </commandlineArgs>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>
+                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
+                </argument>
+                <argument>jena.schemagen</argument>
+                <argument>-i</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/skos.rdf</argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>-n</argument>
+                <argument>SkosOnt</argument>
+                <argument>--owl</argument>
+              </arguments>
             </configuration>
           </execution>
         </executions>

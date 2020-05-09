@@ -54,8 +54,28 @@ public class ClassBasedFilter implements WikiEventFilter {
     return this;
   }
 
+  public ClassBasedFilter allowIndentedItem() {
+    classesToKeep.add(WikiText.IndentedItem.class);
+    return this;
+  }
+
   public ClassBasedFilter allowListItem() {
     classesToKeep.add(WikiText.ListItem.class);
+    return this;
+  }
+
+  public ClassBasedFilter allowNumberedListItem() {
+    classesToKeep.add(WikiText.NumberedListItem.class);
+    return this;
+  }
+
+  public ClassBasedFilter allowIndentation() {
+    classesToKeep.add(WikiText.Indentation.class);
+    return this;
+  }
+
+  public ClassBasedFilter allowItem() {
+    classesToKeep.add(WikiText.Item.class);
     return this;
   }
 
@@ -76,7 +96,7 @@ public class ClassBasedFilter implements WikiEventFilter {
 
   public ClassBasedFilter allowAll() {
     this.allowExternalLink().allowHTMLComment().allowInternalLink().allowNowiki().allowTemplates()
-        .allowListItem().allowHeading().allowText();
+        .allowIndentedItem().allowHeading().allowText();
     return this;
   }
 
@@ -95,8 +115,28 @@ public class ClassBasedFilter implements WikiEventFilter {
     return this;
   }
 
+  public ClassBasedFilter denyIndentedItem() {
+    classesToKeep.remove(WikiText.IndentedItem.class);
+    return this;
+  }
+
   public ClassBasedFilter denyListItem() {
     classesToKeep.remove(WikiText.ListItem.class);
+    return this;
+  }
+
+  public ClassBasedFilter denyIndentation() {
+    classesToKeep.remove(WikiText.Indentation.class);
+    return this;
+  }
+
+  public ClassBasedFilter denyItem() {
+    classesToKeep.remove(WikiText.Item.class);
+    return this;
+  }
+
+  public ClassBasedFilter denyNumberedListItem() {
+    classesToKeep.remove(WikiText.NumberedListItem.class);
     return this;
   }
 
@@ -125,9 +165,8 @@ public class ClassBasedFilter implements WikiEventFilter {
     return this;
   }
 
-
-  public ClassBasedFilter enterListItems() {
-    classesToEnter.add(WikiText.ListItem.class);
+  public ClassBasedFilter enterIndentedItem() {
+    classesToEnter.add(WikiText.IndentedItem.class);
     return this;
   }
 
@@ -137,7 +176,7 @@ public class ClassBasedFilter implements WikiEventFilter {
   }
 
   public ClassBasedFilter enterAll() {
-    this.enterListItems().enterHeadings();
+    this.enterIndentedItem().enterHeadings();
     return this;
   }
 

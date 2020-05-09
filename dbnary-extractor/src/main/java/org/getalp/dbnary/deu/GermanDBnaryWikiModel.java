@@ -4,8 +4,8 @@ import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.WikiModelContentException;
 import java.util.Locale;
 import java.util.Map;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 
 /**
  * Created by serasset on 07/01/15.

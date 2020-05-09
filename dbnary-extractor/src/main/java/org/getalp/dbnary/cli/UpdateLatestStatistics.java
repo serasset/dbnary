@@ -13,10 +13,10 @@ import java.util.Map;
 import java.util.TreeMap;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -59,7 +59,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
   Model m1;
 
   private void loadArgs(String[] args) {
-    CommandLineParser parser = new PosixParser();
+    CommandLineParser parser = new DefaultParser();
     try {
       cmd = parser.parse(options, args);
     } catch (ParseException e) {

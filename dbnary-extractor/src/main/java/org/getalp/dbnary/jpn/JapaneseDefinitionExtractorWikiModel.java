@@ -6,9 +6,9 @@ import info.bliki.wiki.model.WikiModelContentException;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.wiki.WikiTool;
 
 public class JapaneseDefinitionExtractorWikiModel extends DbnaryWikiModel {

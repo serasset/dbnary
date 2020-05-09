@@ -20,26 +20,26 @@ public class WikiSectionsIterationTest {
   public void testWikiWikiSectionIteration() {
     WikiText text = new WikiText(testContent);
 
-    Iterator<WikiSection> it1 = text.sections(2).iterator();
+    Iterator<WikiText.WikiSection> it1 = text.sections(2).iterator();
 
     assertTrue(it1.hasNext());
-    WikiSection section2 = it1.next();
-    assertEquals("English", section2.getHeader().getContent().toString());
+    WikiText.WikiSection section2 = it1.next();
+    assertEquals("English", section2.getHeading().getContent().toString());
 
-    Iterator<WikiSection> it2 = section2.getContent().sections(3).iterator();
+    Iterator<WikiText.WikiSection> it2 = section2.getContent().sections(3).iterator();
     assertTrue(it2.hasNext());
-    assertEquals("Verb", it2.next().getHeader().getContent().toString());
+    assertEquals("Verb", it2.next().getHeading().getContent().toString());
     assertTrue(it2.hasNext());
-    assertEquals("Noun", it2.next().getHeader().getContent().toString());
+    assertEquals("Noun", it2.next().getHeading().getContent().toString());
     assertFalse(it2.hasNext());
 
     assertTrue(it1.hasNext());
     section2 = it1.next();
-    assertEquals("French", section2.getHeader().getContent().toString());
+    assertEquals("French", section2.getHeading().getContent().toString());
 
     it2 = section2.getContent().sections(3).iterator();
     assertTrue(it2.hasNext());
-    assertEquals("Noun", it2.next().getHeader().getContent().toString());
+    assertEquals("Noun", it2.next().getHeading().getContent().toString());
     assertFalse(it2.hasNext());
 
   }

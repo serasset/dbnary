@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.junit.Test;
 
 public class WikiTextTest {
@@ -209,7 +212,7 @@ public class WikiTextTest {
     WikiText text = new WikiText(test);
 
     ClassBasedFilter filter = new ClassBasedFilter();
-    filter.allowInternalLink().allowTemplates().allowListItem();
+    filter.allowIndentedItem();
     WikiEventsSequence s = text.filteredTokens(filter);
     Iterator<WikiText.Token> it = s.iterator();
 
@@ -328,22 +331,22 @@ public class WikiTextTest {
     assertFalse(text.wikiTokens().isEmpty());
     assertTrue(text.wikiTokens().get(0) instanceof WikiText.Heading);
     WikiText.Heading el = (WikiText.Heading) text.wikiTokens().get(0);
-    assertEquals(" Simple Heading ", el.content.toString());
+    assertEquals(" Simple Heading ", el.getContent().toString());
     assertEquals(3, el.getLevel());
 
     assertTrue(text.wikiTokens().get(1) instanceof WikiText.Heading);
     el = (WikiText.Heading) text.wikiTokens().get(1);
-    assertEquals("= Heading level 2 ", el.content.toString());
+    assertEquals("= Heading level 2 ", el.getContent().toString());
     assertEquals(2, el.getLevel());
 
     assertTrue(text.wikiTokens().get(2) instanceof WikiText.Heading);
     el = (WikiText.Heading) text.wikiTokens().get(2);
-    assertEquals(" Heading level 3 =", el.content.toString());
+    assertEquals(" Heading level 3 =", el.getContent().toString());
     assertEquals(3, el.getLevel());
 
     assertTrue(text.wikiTokens().get(3) instanceof WikiText.Heading);
     el = (WikiText.Heading) text.wikiTokens().get(3);
-    assertEquals("end", el.content.toString());
+    assertEquals("end", el.getContent().toString());
     assertEquals(3, el.getLevel());
 
     int nbH = 0;
@@ -394,8 +397,8 @@ public class WikiTextTest {
 
     WikiText t = new WikiText(test);
 
-    for (WikiSection s : t.sections(2)) {
-      assertTrue(s.getHeader().getContent().toString().startsWith("H2"));
+    for (WikiText.WikiSection s : t.sections(2)) {
+      assertTrue(s.getHeading().getContent().toString().startsWith("H2"));
       for (WikiText.Token tok : s.getContent().tokens()) {
         System.out.println("tok=" + tok.toString());
       }
@@ -403,13 +406,90 @@ public class WikiTextTest {
     }
     System.out.println("+++++++++");
 
-    for (WikiSection s : t.sections(3)) {
+    for (WikiText.WikiSection s : t.sections(3)) {
       System.out.println(s.getContent());
       System.out.println("---------");
     }
 
   }
 
+  @Test
+  public void testWikiTextEndOfFileHandling() throws Exception {
+    WikiText text = new WikiText("{{en-noun}}");
+    assertEquals("Bad handling of end of file for correct template", 1, text.wikiTokens().size());
+    assertTrue("Bad handling of end of file for correct template",
+        text.wikiTokens().get(0) instanceof Template);
+
+    text = new WikiText("{{en-noun}");
+    assertEquals("Bad handling of end of file for correct template", 0, text.wikiTokens().size());
+
+    text = new WikiText("{{en-noun");
+    assertEquals("Bad handling of end of file for correct template", 0, text.wikiTokens().size());
+
+    text = new WikiText("* {{en-noun}}");
+    assertEquals("Bad handling of end of file for correct list item with correct template", 1,
+        text.wikiTokens().size());
+
+    text = new WikiText("# {{en-noun}}");
+    assertEquals("Bad handling of end of file for correct numbered list item with correct template",
+        1, text.wikiTokens().size());
+    assertTrue("Bad handling of end of file for correct numbered list item with correct template",
+        text.wikiTokens().get(0) instanceof NumberedListItem);
+    WikiContent content = text.wikiTokens().get(0).asNumberedListItem().getContent();
+    assertEquals("Bad handling of end of file for correct numbered list item with correct template",
+        1, content.wikiTokens().size());
+    assertTrue("Bad handling of end of file for correct numbered list item with correct template",
+        content.wikiTokens().get(0) instanceof Template);
+
+    text = new WikiText("# {{en-noun}");
+    assertEquals("Bad handling of end of file for correct numbered list item with bad template", 1,
+        text.wikiTokens().size());
+    assertTrue("Bad handling of end of file for correct numbered list item with correct template",
+        text.wikiTokens().get(0) instanceof NumberedListItem);
+    content = text.wikiTokens().get(0).asNumberedListItem().getContent();
+    assertEquals("Bad handling of end of file for correct numbered list item with correct template",
+        0, content.wikiTokens().size());
+
+  }
+
+  @Test
+  public void testWikiTextTemplatesWithNewLines() throws Exception {
+    WikiText text = new WikiText("{{en-noun\n}}");
+    assertEquals("Bad handling of end of file for correct template", 1, text.wikiTokens().size());
+    assertTrue("Bad handling of end of file for correct template",
+        text.wikiTokens().get(0) instanceof Template);
+
+    text = new WikiText("{{en-noun\n}");
+    assertEquals("Bad handling of end of file for correct template", 0, text.wikiTokens().size());
+
+    text = new WikiText("{{en-noun\n");
+    assertEquals("Bad handling of end of file for correct template", 0, text.wikiTokens().size());
+
+    text = new WikiText("* {{en-noun\n}}");
+    assertEquals("Bad handling of end of file for correct list item with correct template", 1,
+        text.wikiTokens().size());
+
+    text = new WikiText("# {{en-noun\n}}");
+    assertEquals("Bad handling of end of file for correct numbered list item with correct template",
+        1, text.wikiTokens().size());
+    assertTrue("Bad handling of end of file for correct numbered list item with correct template",
+        text.wikiTokens().get(0) instanceof NumberedListItem);
+    WikiContent content = text.wikiTokens().get(0).asNumberedListItem().getContent();
+    assertEquals("Bad handling of end of file for correct numbered list item with correct template",
+        1, content.wikiTokens().size());
+    assertTrue("Bad handling of end of file for correct numbered list item with correct template",
+        content.wikiTokens().get(0) instanceof Template);
+
+    text = new WikiText("# {{en-noun\n}");
+    assertEquals("Bad handling of end of file for correct numbered list item with bad template", 1,
+        text.wikiTokens().size());
+    assertTrue("Bad handling of end of file for correct numbered list item with correct template",
+        text.wikiTokens().get(0) instanceof NumberedListItem);
+    content = text.wikiTokens().get(0).asNumberedListItem().getContent();
+    assertEquals("Bad handling of end of file for correct numbered list item with correct template",
+        0, content.wikiTokens().size());
+
+  }
   /*
    * @Test public void testRegex() { Matcher m = Pattern.compile("(?<CH>={2,6}$)|(?<OH>^={2,6})",
    * Pattern.MULTILINE).matcher("=== toto ===\nr === titi ===");

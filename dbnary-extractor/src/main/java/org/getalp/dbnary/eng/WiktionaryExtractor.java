@@ -20,17 +20,17 @@ import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.Pair;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.ClassBasedSequenceFilter;
-import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;
-import org.getalp.dbnary.wiki.WikiSection;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
+import org.getalp.dbnary.wiki.WikiText.WikiSection;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
   protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
-  protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
+  protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}]*)\\}\\}";
 
   private enum Block {
     NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, CONJUGATIONBLOCK, ETYMOLOGYBLOCK, DERIVEDBLOCK, DESCENDANTSBLOCK, PRONBLOCK
@@ -1204,7 +1204,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     WikiText text = new WikiText(translationPageContent);
     for (WikiSection s : text.sections(3)) {
       // return the first matching section
-      if (s.getHeader().getContent().toString().equals(translationSection))
+      if (s.getHeading().getContent().toString().equals(translationSection))
         return s.getContent().toString();
     }
     log.debug("Could not find appropriate section {} in translation section link target for {}",
@@ -1224,15 +1224,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractNyms(String synRelation, int startOffset, int endOffset) {
     WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
     ClassBasedFilter filter = new ClassBasedFilter();
-    filter.allowListItem();
+    filter.allowListItem().allowIndentation();
+    // TODO ! For now I mimick the previous behaviour by
+    // allowing ListItems and Indentations (consider adding NumberedListItem ?) !!!!!
 
     WikiEventsSequence wikiEvents = text.filteredTokens(filter);
 
     for (WikiText.Token tok : wikiEvents) {
-      if (tok instanceof WikiText.ListItem) {
+      if (tok instanceof WikiText.IndentedItem) {
         // It's a link, only keep the alternate string if present.
-        WikiText.ListItem li = (WikiText.ListItem) tok;
-        extractNyms(synRelation, li.getContent());
+        extractNyms(synRelation, tok.asIndentedItem().getContent());
       }
     }
   }
@@ -1302,14 +1303,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     pronMatcher.region(startOffset, endOffset);
     while (pronMatcher.find()) {
       String pron = pronMatcher.group(1);
+      Map<String, String> args = WikiTool.parseArgs(pron);
+      pron = args.get("2");
+      if (!"en".equals(args.get("1"))) {
+        log.debug("Non English ({}) pronunciation in page {}.", this.wiktionaryPageName);
+      }
 
       if (null == pron || pron.equals("")) {
         return;
       }
 
-      if (!pron.equals("")) {
-        wdh.registerPronunciation(pron, "en-fonipa");
-      }
+      wdh.registerPronunciation(pron, "en-fonipa");
+
     }
   }
 

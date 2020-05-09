@@ -16,7 +16,6 @@ import org.getalp.dbnary.tools.CharRange;
  */
 public class WikiCharSequence implements CharSequence {
 
-
   // FIXME: there are already 2 pages in English wiktionray which hits the limits in the number of
   // allowed templates (number of different private use chars in range. Find a way to overpass this
   // limit
@@ -122,15 +121,10 @@ public class WikiCharSequence implements CharSequence {
       if (ch > HEADERS_RANGE.getEnd()) {
         throw new RuntimeException("Too many headings in current WikiText");
       }
-    } else if (tok instanceof WikiText.Indentation) {
+    } else if (tok instanceof WikiText.IndentedItem) {
       ch = firstAvailableListChar++;
       if (ch > LISTS_RANGE.getEnd()) {
-        throw new RuntimeException("Too many headings in current WikiText");
-      }
-    } else if (tok instanceof WikiText.ListItem) {
-      ch = firstAvailableListChar++;
-      if (ch > LISTS_RANGE.getEnd()) {
-        throw new RuntimeException("Too many headings in current WikiText");
+        throw new RuntimeException("Too many indented items in current WikiText");
       }
     } else {// TODO: consider all possible tokens
       throw new RuntimeException("Cannot allocate atomization char for unsupported token type.");

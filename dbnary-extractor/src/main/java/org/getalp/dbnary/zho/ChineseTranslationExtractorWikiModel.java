@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractGlossFilter;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.iso639.ISO639_3;
 
 public class ChineseTranslationExtractorWikiModel extends DbnaryWikiModel {

@@ -1,25 +1,25 @@
 #!/bin/bash
 
 ## Test if bash version 4 as we need associative arrays.
-if [[ $BASH_VERSION != 4.* ]]
-then
-    echo "Need bash 4 version. Exiting."
-    exit -1
+if [[ "${BASH_VERSINFO:-0}" -lt 4 ]]; then
+  echo >&2 "Need bash 4 version. Exiting."
+  exit 1
 fi
 
 ## Bootstrapping a virtuoso db.
 
 PREFIX=$HOME/develop
-if [[ ! $# -eq 0 ]]
-then
-    PREFIX=$1
+if [[ ! $# -eq 0 ]]; then
+  PREFIX=$1
 fi
 
-source config.sh
+DBNARY_GLOBAL_CONFIG="$HOME/.dbnary/config"
+[[ -f $DBNARY_GLOBAL_CONFIG ]] && source $DBNARY_GLOBAL_CONFIG
+[[ -f ./config ]] && source ./config
 
-DBNARYLATEST=$HOME/dev/wiktionary/extracts/ontolex/latest
+DBNARYLATEST=$PREFIX/wiktionary/extracts/ontolex/latest
 
-test -x $DAEMON || (echo "Could not find virtuoso-t bin" && exit 0)
+test -x $DAEMON || (echo >&2 "Could not find virtuoso-t bin" && exit 1)
 
 ## Converting language codes
 declare -A iso3Lang
@@ -46,52 +46,48 @@ iso3Lang[mg]=mlg
 iso3Lang[no]=nor
 iso3Lang[bm]=bam
 
-
-if [ ! -d "$EMPTYDBFOLDER" ] ; then
-    echo "No Bootstrap DB folder, cannot load data."
-    exit -1
+if [ ! -d "$EMPTYDBFOLDER" ]; then
+  echo >&2 "No Bootstrap DB folder, cannot load data."
+  exit 1
 elif [[ ! -f $EMPTYDBFOLDER/virtuoso.db ]]; then
-    echo "Bootstrap database file does not exists, cannot load data."
-    exit -1
+  echo >&2 "Bootstrap database file does not exists, cannot load data."
+  exit 1
 fi
 
-if [ ! -d "$DBFOLDER" ] ; then
-    cp -r $EMPTYDBFOLDER $DBFOLDER
-    sed "s|@@DBFOLDER@@|$DBFOLDER|g" < $VIRTUOSOINITMPL | \
-    sed "s|@@DATASETDIR@@|$DATASETDIR|g" | \
-    sed "s|@@SERVERPORT@@|$SERVERPORT|g" | \
-    sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" | \
-    sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" > "$DBFOLDER"/virtuoso.ini
+if [ ! -d "$DBFOLDER" ]; then
+  cp -r $EMPTYDBFOLDER $DBFOLDER
+  sed "s|@@DBFOLDER@@|$DBFOLDER|g" <$VIRTUOSOINITMPL |
+    sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
+    sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
+    sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
+    sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" >"$DBFOLDER"/virtuoso.ini
 elif [[ ! -f $EMPTYDBFOLDER/virtuoso.db ]]; then
-    exit -1
+  >&2 echo "Database Folder $DBFOLDER exists but seems not to be a valid virtuoso db."
+  exit 1
 else
-    echo "Already existing database folder in bootstrap folder, should I load the data in the existing DB? (y/N):"
-    read answer
-    if [ z$answer != zy ]; then
-        echo "delete existing bootstrap DB and restart the loading script."
-        exit -1
-    fi
+  echo "Already existing database folder in bootstrap folder, should I load the data in the existing DB? (y/N):"
+  read answer
+  if [ z$answer != zy ]; then
+    >&2 echo "delete existing bootstrap DB and restart the loading script."
+    exit 1
+  fi
 fi
 
-
-if [ ! -d $DBNARYLATEST ]
-then
-    echo "Latest turtle data not available."
-    exit -1
+if [ ! -d $DBNARYLATEST ]; then
+  >&2 echo "Latest turtle data not available."
+  exit 1
 fi
 
-if [ ! -d "$DATASETDIR" ]
-then
-    mkdir -p "$DATASETDIR"
+if [ ! -d "$DATASETDIR" ]; then
+  mkdir -p "$DATASETDIR"
 fi
-
 
 ## Prepare the dataset directory
 (
   shopt -s nullglob
   files=($DATASETDIR/*.ttl)
-  if [[ "${#files[@]}" -gt 0 ]] ; then
-    echo "Dataset already exists and is not empty, assuming its content is up to date."
+  if [[ "${#files[@]}" -gt 0 ]]; then
+    >&2 echo "Dataset already exists and is not empty, assuming its content is up to date."
   else
     echo "Copying and expanding latest extracts."
     ## Ontolex normal dumps
@@ -102,37 +98,32 @@ fi
   fi
 )
 
-
-
 ## create the .graph files for all files in datasetdir
 ## DONE: detect the graph (dbnary or dilaf ?)
 langRegex2='(..)_([^_]*)_(.*)'
 langRegex3='(...)_([^_]*)_(.*)'
-for f in $DATASETDIR/*.ttl
-do
-    if [[ $f =~ $langRegex2 ]]
-    then
-        lg2=${BASH_REMATCH[1]}
-        graph=${BASH_REMATCH[2]}
-        lg3=${iso3Lang[$lg2]}
-        echo "http://kaiko.getalp.org/$graph/$lg3" > "$f.graph"
-    elif [[ $f =~ $langRegex3 ]]
-    then
-        lg3=${BASH_REMATCH[1]}
-        graph=${BASH_REMATCH[2]}
-        echo "http://kaiko.getalp.org/$graph/$lg3" > "$f.graph"
-    fi
+for f in $DATASETDIR/*.ttl; do
+  if [[ $f =~ $langRegex2 ]]; then
+    lg2=${BASH_REMATCH[1]}
+    graph=${BASH_REMATCH[2]}
+    lg3=${iso3Lang[$lg2]}
+    echo "http://kaiko.getalp.org/$graph/$lg3" >"$f.graph"
+  elif [[ $f =~ $langRegex3 ]]; then
+    lg3=${BASH_REMATCH[1]}
+    graph=${BASH_REMATCH[2]}
+    echo "http://kaiko.getalp.org/$graph/$lg3" >"$f.graph"
+  fi
 done
 
 ## Launch virtuoso to load the data into DB
 echo "Launching daemon."
-pushd "$DBFOLDER" || exit -1
+pushd "$DBFOLDER" || exit 1
 $DAEMON -c $NAME +wait &
 wait
 
 ## connect to isql and load all the data
 echo "Enter your bootstrap database password : "
-IFS= read -s  -p Password: pwd
+IFS= read -s -p Password: pwd
 
 isql $SERVERPORT dba "$pwd" <<END
 ld_dir ('$DATASETDIR', '*.ttl', 'http://kaiko.getalp.org/dbnary');

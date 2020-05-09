@@ -1,6 +1,6 @@
 package org.getalp.dbnary.ita
 
-import grizzled.slf4j.Logger
+import com.typesafe.scalalogging.Logger
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.RDF
 import org.getalp.dbnary.wiki.{WikiCharSequence, WikiRegexParsers, WikiText}

@@ -1,0 +1,11 @@
+{{fr-accord-rég|blø}}
+'''bleu''' {{pron|blø|fr}}
+# De la [[couleur]] du [[ciel]] en plein jour quand il est [[dégager|dégagé]].{{couleur|#0000FF}}
+#* […]'' sur toute l’Ardenne, le temps s’était levé. Le ciel était '''bleu''' éblouissant, la neige étincelait au soleil.'' {{source|{{w|Georges Blond}}, ''L’Agonie de l’Allemagne 1944-1945'', Fayard, 1952, page 155}}
+# {{par extension}} D’une couleur appartenant au [[champ chromatique]] du [[#fr-nom-1|bleu]], c’est-à-dire légèrement différente de la couleur originelle mais liée à celle-ci.{{couleur|#DFF2FF}}{{couleur|#77B5FE}}{{couleur|#2BFAFA}}{{couleur|#3A8EBA}}{{couleur|#0000FF}}{{couleur|#17657D}}{{couleur|#686F8C}}
+#* ''On ne pouvait voir de fille plus fraîche, plus riante ; elle était blonde, avec de beaux yeux '''bleus''', des joues roses et des dents blanches comme du lait ''[…] {{source|{{w|Erckmann-Chatrian}}, ''{{ws|Histoire d’un conscrit de 1813/1|Histoire d’un conscrit de 1813}}'', J. Hetzel, 1864}}
+#* ''Vers l’est, l’océan nuageux s’étendait '''bleu''' sombre à perte de vue, et Bert crut qu’il contemplait l’hémisphère entier du monde.'' {{source|{{Citation/H. G. Wells/La Guerre dans les airs/1921|95}}}}
+#* ''Le surlendemain ''[…]'' dans la soirée, la couleur '''bleue''' de l’eau, indice des grands fonds, m’apprenait ma sortie du golfe de Panama.'' {{source|{{w|Alain Gerbault}}, ''À la poursuite du soleil'' ; tome 1 : ''De New-York à Tahiti'', 1929}}
+#* ''Au-delà des bois qui cernaient la ville, on apercevait une longue rangée de collines d’un '''bleu''' de fumée.'' {{source|{{nom w pc|Julien|Green}}, « Moïra », 1950, réédition Le Livre de Poche, page 43}}
+#* ''À mesure que les châteaux de nuages s’éloignaient l’un de l’autre découvrant de plus en plus du ciel, l’azur vira au '''bleu''' de gentiane [...].'' {{source|{{nom w pc|Jean|Giono}}, ''Le hussard sur le toit'', 1951, réédition Folio Plus, page 274}}
+#* ''Gordon portait une veste marron à chevrons, une chemise '''bleu''' Oxford et une cravate en tissu de la même couleur que la veste, tachetée de motifs de forme ovale striés de '''bleu''' ciel.'' {{source|{{nom w pc|Philippe|Labro}}, ''{{w|L’étudiant étranger}}'', Gallimard, 1986, page 44}}

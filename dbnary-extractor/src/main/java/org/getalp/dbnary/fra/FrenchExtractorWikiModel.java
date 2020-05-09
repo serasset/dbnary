@@ -8,13 +8,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.jena.rdf.model.Literal;
 import org.getalp.dbnary.DbnaryModel;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -692,6 +693,9 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
       // catch this template call as it resolves in a non useful very heavy Lua processing.
       writer.append("\\").append(parameterMap.get("1")).append("\\");
     } else {
+      log.trace("substituting template %s with parameters [[%s]]", templateName,
+          parameterMap.entrySet().stream().map(e -> "<" + e.getKey() + " --> " + e.getValue() + ">")
+              .collect(Collectors.joining(", ")));
       super.substituteTemplateCall(templateName, parameterMap, writer);
     }
   }

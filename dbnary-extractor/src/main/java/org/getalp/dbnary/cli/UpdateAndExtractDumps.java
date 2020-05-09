@@ -248,7 +248,7 @@ public class UpdateAndExtractDumps {
 
   public void updateAndExtract() throws WiktionaryIndexerException, IOException {
     List<LanguageConfiguration> confs =
-        Arrays.stream(remainingArgs).parallel().map(this::retrieveLastDump)
+        Arrays.stream(remainingArgs).sequential().map(this::retrieveLastDump)
             .map(this::uncompressRetrievedDump).collect(Collectors.toList());
     confs = confs.stream().sequential().map(this::extract).peek(this::removeOldDumps)
         .peek(this::linkToLatestExtractedFiles).collect(Collectors.toList());

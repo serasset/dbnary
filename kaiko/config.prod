@@ -26,3 +26,4 @@ WEBSERVERPORT=8899
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
 DAEMON=/opt/virtuoso-opensource/bin/virtuoso-t
 NAME=virtuoso
+

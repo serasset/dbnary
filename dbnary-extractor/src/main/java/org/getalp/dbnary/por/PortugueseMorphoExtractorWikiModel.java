@@ -6,9 +6,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 
 public class PortugueseMorphoExtractorWikiModel extends DbnaryWikiModel {
 

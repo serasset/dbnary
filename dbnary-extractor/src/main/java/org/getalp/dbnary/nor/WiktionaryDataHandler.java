@@ -48,7 +48,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("uttrykk",
         new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("idiom",
+        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Idiom",
+        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
   }
 
   public void addExtraPartOfSpeech(String pos) {

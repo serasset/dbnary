@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 
 public class DefinitionsWikiModel extends DbnaryWikiModel {
 

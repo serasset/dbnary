@@ -3,7 +3,7 @@ package org.getalp.dbnary.wiki;
 import java.util.Iterator;
 import java.util.Stack;
 import org.getalp.dbnary.wiki.WikiText.Heading;
-import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.Token;
 
 /**
@@ -11,9 +11,9 @@ import org.getalp.dbnary.wiki.WikiText.Token;
  */
 public class WikiEventIterator implements Iterator<WikiText.Token> {
 
-  private WikiEventFilter filter;
-  private WikiText.WikiContent content;
-  private Stack<Iterator<Token>> iterators = new Stack<>();
+  private final WikiEventFilter filter;
+  private final WikiText.WikiContent content;
+  private final Stack<Iterator<Token>> iterators = new Stack<>();
   private WikiText.Token nextToken = null;
 
   public WikiEventIterator(WikiText.WikiContent content, WikiEventFilter filter) {
@@ -40,8 +40,8 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
       case VOID:
         return nextTokenToReturn();
       case ENTER:
-        if (t instanceof ListItem) {
-          ListItem li = (ListItem) t;
+        if (t instanceof IndentedItem) {
+          IndentedItem li = (IndentedItem) t;
           iterators.push(li.getContent().tokens().iterator());
           return nextTokenToReturn();
         } else if (t instanceof Heading) {
@@ -49,7 +49,7 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
           iterators.push(h.getContent().tokens().iterator());
           return nextTokenToReturn();
         } else {
-          // treat a incorrect ENTER action as a VOID
+          // treat an incorrect ENTER action as a VOID
           return nextTokenToReturn();
         }
       case KEEP:
@@ -72,8 +72,4 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
     return t;
   }
 
-  @Override
-  public void remove() {
-    throw new UnsupportedOperationException();
-  }
 }

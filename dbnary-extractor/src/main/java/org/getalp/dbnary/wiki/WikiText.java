@@ -2,13 +2,17 @@ package org.getalp.dbnary.wiki;
 
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.KEEP;
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.getalp.dbnary.wiki.WikiEventFilter.Action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,30 +74,17 @@ public class WikiText {
     }
   }
 
-  public abstract class Token {
+  public abstract class Token implements Visitable {
 
     Segment offset;
 
-    public void addToken(Token t) {}
+    protected abstract void addToken(Token t);
 
-    public void setEndOffset(int endOffset) {
+    protected void setEndOffset(int endOffset) {
       this.offset.setEnd(endOffset);
     }
 
-    public String toString() {
-      return (null == offset) ? super.toString() : this.offset.toString();
-    }
-
-    /**
-     * returns the full source content that support the wikiText as its specified offsets.
-     *
-     * @return the MediaWiki source String
-     */
-    public String getFullContent() {
-      return sourceContent;
-    }
-
-    public void addFlattenedTokens(Token t) {
+    protected void addFlattenedTokens(Token t) {
       if (t instanceof WikiContent) {
         WikiContent wc = (WikiContent) t;
         for (Token token : wc.tokens) {
@@ -121,21 +112,91 @@ public class WikiText {
     public WikiText getWikiText() {
       return WikiText.this;
     }
+
+    public String toString() {
+      return (null == offset) ? super.toString() : this.offset.toString();
+    }
+
+    /**
+     * returns the full source content that support the wikiText as its specified offsets.
+     *
+     * @return the MediaWiki source String
+     */
+    public String getFullContent() {
+      return sourceContent;
+    }
+
+    // Simplifying typeCasting in Streams
+    public ExternalLink asExternalLink() {
+      throw new IllegalStateException("Not an ExternalLink.");
+    }
+
+    public Heading asHeading() {
+      throw new IllegalStateException("Not an Heading.");
+    }
+
+    public HTMLComment asHTMLComment() {
+      throw new IllegalStateException("Not an HTMLComment.");
+    }
+
+    public InternalLink asInternalLink() {
+      throw new IllegalStateException("Not an InternalLink.");
+    }
+
+    public Link asLink() {
+      throw new IllegalStateException("Not an Link.");
+    }
+
+    public IndentedItem asIndentedItem() {
+      throw new IllegalStateException("Not an IndentedItem.");
+    }
+
+    public Indentation asIndentation() {
+      throw new IllegalStateException("Not an Indentation.");
+    }
+
+    public Item asItem() {
+      throw new IllegalStateException("Not an Item.");
+    }
+
+    public ListItem asListItem() {
+      throw new IllegalStateException("Not an ListItem.");
+    }
+
+    public NumberedListItem asNumberedListItem() {
+      throw new IllegalStateException("Not an NumberedListItem.");
+    }
+
+    public Template asTemplate() {
+      throw new IllegalStateException("Not an Template.");
+    }
+
+    public Text asText() {
+      throw new IllegalStateException("Not an Text.");
+    }
+
+    public WikiContent asWikiContent() {
+      throw new IllegalStateException("Not an WikiContent.");
+    }
+
+    public WikiSection asWikiSection() {
+      throw new IllegalStateException("Not an WikiSection.");
+    }
   }
 
   /**
    * Upper element containing text/links/templates and comments interleaved
    */
-  public class WikiContent extends Token {
+  public final class WikiContent extends Token {
 
     private ArrayList<Token> tokens = new ArrayList<>();
 
-    public WikiContent(int startOffset) {
+    private WikiContent(int startOffset) {
       this.offset = new Segment(startOffset);
     }
 
     @Override
-    public void addToken(Token t) {
+    protected void addToken(Token t) {
       tokens.add(t);
     }
 
@@ -230,12 +291,36 @@ public class WikiText {
               : VOID);
     }
 
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public WikiContent asWikiContent() {
+      return this;
+    }
   }
 
-  public class Text extends Token {
+  public final class Text extends Token {
 
-    public Text(int startOffset, int endOffset) {
+    private Text(int startOffset, int endOffset) {
       this.offset = new Segment(startOffset, endOffset);
+    }
+
+    @Override
+    protected void addToken(Token t) {
+      throw new RuntimeException("Cannot add tokens to Text");
+    }
+
+    @Override
+    protected void setEndOffset(int endOffset) {
+      throw new RuntimeException("Cannot modify Text token");
+    }
+
+    @Override
+    protected void addFlattenedTokens(Token t) {
+      throw new RuntimeException("Cannot add flatened tokens to Text");
     }
 
     public String getText() {
@@ -246,38 +331,51 @@ public class WikiText {
       return new Text(startOffset, endOffset);
     }
 
-
     @Override
-    public void addToken(Token t) {
-      throw new RuntimeException("Cannot add tokens to Text");
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
     }
 
     @Override
-    public void setEndOffset(int endOffset) {
-      throw new RuntimeException("Cannot modify Text token");
-    }
-
-    @Override
-    public void addFlattenedTokens(Token t) {
-      throw new RuntimeException("Cannot add flatened tokens to Text");
+    public Text asText() {
+      return this;
     }
   }
 
-  public class HTMLComment extends Token {
+  public final class HTMLComment extends Token {
 
     public HTMLComment(int startOffset) {
       this.offset = new Segment(startOffset);
     }
 
+    @Override
+    protected void addToken(Token t) {
+      throw new UnsupportedOperationException("Cannot add token to HTML Comment");
+    }
+
+    @Override
+    protected void addFlattenedTokens(Token t) {
+      throw new RuntimeException("Cannot add flatened tokens to HTML Comment");
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public HTMLComment asHTMLComment() {
+      return this;
+    }
   }
 
-  public class Template extends Token {
+  public final class Template extends Token {
 
-    protected WikiContent name;
-    protected ArrayList<WikiContent> args;
-    protected Map<String, WikiContent> parsedArgs = null;
+    private WikiContent name;
+    private ArrayList<WikiContent> args;
+    private Map<String, WikiContent> parsedArgs = null;
 
-    public Template(int startOffset) {
+    private Template(int startOffset) {
       this.offset = new Segment(startOffset);
       name = new WikiContent(startOffset + 2);
     }
@@ -289,7 +387,7 @@ public class WikiText {
      * @param position the position of the first character of the enclosing "}}"
      */
     @Override
-    public void setEndOffset(int position) {
+    protected void setEndOffset(int position) {
       if (null == args) {
         this.name.setEndOffset(position);
       } else {
@@ -298,22 +396,21 @@ public class WikiText {
       super.setEndOffset(position + 2);
     }
 
-    public void gotAPipe(int position) {
+    private void gotAPipe(int position) {
       if (null == args) {
         this.name.setEndOffset(position);
         args = new ArrayList<>();
-        args.add(new WikiContent(position + 1));
       } else {
         // got a new parameter separator...
         if (!args.isEmpty()) {
           args.get(args.size() - 1).setEndOffset(position);
         }
-        args.add(new WikiContent(position + 1));
       }
+      args.add(new WikiContent(position + 1));
     }
 
     @Override
-    public void addToken(Token t) {
+    protected void addToken(Token t) {
       if (null == args) {
         this.name.addToken(t);
       } else {
@@ -335,9 +432,16 @@ public class WikiText {
       return argsAsString;
     }
 
+    /**
+     * return the argName/argValue Map. argNae being a String and argValue a WikiContent. When
+     * iterated, the map will provide values or entries in insertion order, hence iterating over the
+     * map will give args in the order they were defined.
+     *
+     * @return the argName/argVal map
+     */
     public Map<String, WikiContent> getArgs() {
       if (parsedArgs == null) {
-        parsedArgs = new HashMap<String, WikiContent>();
+        parsedArgs = new LinkedHashMap<String, WikiContent>();
         if (null != args) {
           int n = 1; // number for positional args.
           for (int i = 0; i < args.size(); i++) {
@@ -386,15 +490,25 @@ public class WikiText {
       res.setEndOffset(end);
       return res;
     }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public Template asTemplate() {
+      return this;
+    }
   }
 
   public abstract class Link extends Token {
 
-    WikiContent target;
-    WikiContent text;
+    protected WikiContent target;
+    protected WikiContent text;
 
     @Override
-    public void addToken(WikiText.Token t) {
+    protected void addToken(WikiText.Token t) {
       if (null == this.text) {
         this.target.addToken(t);
       } else {
@@ -439,25 +553,29 @@ public class WikiText {
       return (null == this.text) ? target : text;
     }
 
+    @Override
+    public Link asLink() {
+      return this;
+    }
   }
 
-  public class InternalLink extends Link {
+  public final class InternalLink extends Link {
 
     protected WikiContent suffix = null;
 
-    public InternalLink(int startOffset) {
+    private InternalLink(int startOffset) {
       this.offset = new Segment(startOffset);
       this.target = new WikiContent(startOffset + 2);
     }
 
-    public void gotAPipe(int position) {
+    protected void gotAPipe(int position) {
       if (null == this.text) {
         this.target.setEndOffset(position);
         this.text = new WikiContent(position + 1);
       }
     }
 
-    public void setSuffix(WikiContent suffix) {
+    protected void setSuffix(WikiContent suffix) {
       this.suffix = suffix;
     }
 
@@ -476,18 +594,28 @@ public class WikiText {
      *
      * @param position the position of the first character of the enclosing "]]"
      */
-    public void setLinkEnd(int position) {
+    private void setLinkEnd(int position) {
       if (null == this.text) {
         this.target.setEndOffset(position);
       } else {
         this.text.setEndOffset(position);
       }
     }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public InternalLink asInternalLink() {
+      return this;
+    }
   }
 
-  public class ExternalLink extends Link {
+  public final class ExternalLink extends Link {
 
-    public ExternalLink(int startOffset) {
+    private ExternalLink(int startOffset) {
       this.offset = new Segment(startOffset);
       this.target = new WikiContent(startOffset + 1);
     }
@@ -498,7 +626,7 @@ public class WikiText {
      * @param position the position of the first character of the enclosing "]"
      */
     @Override
-    public void setEndOffset(int position) {
+    protected void setEndOffset(int position) {
       super.setEndOffset(position + 1);
       if (null == this.text) {
         this.target.setEndOffset(position);
@@ -507,25 +635,35 @@ public class WikiText {
       }
     }
 
-    public void gotASpace(int position) {
+    private void gotASpace(int position) {
       if (null == this.text) {
         this.target.setEndOffset(position);
         this.text = new WikiContent(position + 1);
       }
     }
 
-    public boolean isCorrectExternalLink() {
+    private boolean isCorrectExternalLink() {
       protocolsMatcher.region(this.target.offset.start, this.target.offset.end);
       return protocolsMatcher.lookingAt();
     }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public ExternalLink asExternalLink() {
+      return this;
+    }
   }
 
-  public class Heading extends Token {
+  public final class Heading extends Token {
 
     private int level;
-    WikiContent content;
+    private WikiContent content;
 
-    public Heading(int position, int level) {
+    private Heading(int position, int level) {
       this.level = level;
       this.offset = new Segment(position);
       this.content = new WikiContent(position + level);
@@ -538,13 +676,13 @@ public class WikiText {
      * @param position the position after the last character of the enclosing "===..."
      */
     @Override
-    public void setEndOffset(int position) {
+    protected void setEndOffset(int position) {
       super.setEndOffset(position);
       this.content.setEndOffset(position - level);
     }
 
     @Override
-    public void addToken(Token t) {
+    protected void addToken(Token t) {
       this.content.addToken(t);
     }
 
@@ -556,18 +694,28 @@ public class WikiText {
       return level;
     }
 
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public Heading asHeading() {
+      return this;
+    }
   }
 
-  public class ListItem extends Token {
+  public abstract class IndentedItem extends Token {
 
-    int level;
-    WikiContent content;
+    protected WikiContent content;
+    protected String listPrefix;
+    // int level;
 
-    public ListItem(int position, int level) {
+    protected IndentedItem(int position, String listPrefix) {
       super();
-      this.level = level;
+      this.listPrefix = listPrefix;
       this.offset = new Segment(position);
-      this.content = new WikiContent(position + level);
+      this.content = new WikiContent(position + listPrefix.length());
     }
 
     /**
@@ -576,13 +724,13 @@ public class WikiText {
      * @param position the position of the first character of the enclosing "]"
      */
     @Override
-    public void setEndOffset(int position) {
+    protected void setEndOffset(int position) {
       super.setEndOffset(position);
       this.content.setEndOffset(position);
     }
 
     @Override
-    public void addToken(Token t) {
+    protected void addToken(Token t) {
       this.content.addToken(t);
     }
 
@@ -591,20 +739,208 @@ public class WikiText {
     }
 
     public int getLevel() {
-      return this.level;
+      return this.listPrefix.length();
     }
 
-  }
+    public String getListPrefix() {
+      return listPrefix;
+    }
 
-  public class Indentation extends ListItem {
-
-    public Indentation(int position, int level) {
-      super(position, level);
+    public IndentedItem asIndentedItem() {
+      return this;
     }
   }
+
+  public final class ListItem extends IndentedItem {
+
+    public ListItem(int position, String listPrefix) {
+      super(position, listPrefix);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public ListItem asListItem() {
+      return this;
+    }
+  }
+
+  public final class NumberedListItem extends IndentedItem {
+
+    private NumberedListItem(int position, String listPrefix) {
+      super(position, listPrefix);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public NumberedListItem asNumberedListItem() {
+      return this;
+    }
+  }
+
+
+  public final class Indentation extends IndentedItem {
+
+    private Indentation(int position, String listPrefix) {
+      super(position, listPrefix);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public Indentation asIndentation() {
+      return this;
+    }
+  }
+
+  public final class Item extends IndentedItem {
+
+    private Item(int position, String listPrefix) {
+      super(position, listPrefix);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public Item asItem() {
+      return this;
+    }
+  }
+  ////////////////////////////////////////////////////////////////////////
+  /// View wiki text as a document structured in sections and subsections
+  ////////////////////////////////////////////////////////////////////////
+
+  public final class WikiSection extends Token {
+
+    private WikiText.Heading heading;
+    private WikiText.WikiContent content;
+
+    private WikiSection(WikiText.Heading heading, WikiText.WikiContent content) {
+      this.heading = heading;
+      this.content = content;
+    }
+
+    private WikiSection(WikiText.Heading heading) {
+      this.heading = heading;
+      this.content =
+          new WikiContent(null == heading ? getWikiText().getStartOffset() : heading.offset.end);
+      this.offset =
+          new Segment(null == heading ? getWikiText().getStartOffset() : heading.offset.start);
+    }
+
+    public WikiText.Heading getHeading() {
+      return heading;
+    }
+
+    public WikiText.WikiContent getContent() {
+      return content;
+    }
+
+    @Override
+    protected void addToken(Token t) {
+      this.content.addToken(t);
+    }
+
+    @Override
+    protected void setEndOffset(int position) {
+      super.setEndOffset(position);
+      this.content.setEndOffset(position);
+    }
+
+    public int getLevel() {
+      return null == heading ? 0 : heading.getLevel();
+    }
+
+    @Override
+    public String toString() {
+      return "WikiSection{" + "offset=" + offset + ", heading=" + heading + ", content=" + content
+          + '}';
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public WikiSection asWikiSection() {
+      return this;
+    }
+  }
+
+  /**
+   * A wiki content structured as a document, i.e. with a tree structure representing sections and
+   * subsections.
+   */
+  public final class WikiDocument implements Visitable {
+
+    private Deque<WikiSection> stack = new ArrayDeque<>();
+    private WikiContent content;
+
+    private WikiDocument() {
+      buildDoc();
+    }
+
+    private void registerToken(Token h) {
+      if (h instanceof Heading) {
+        while (stack.peek().getLevel() >= h.asHeading().getLevel()) {
+          WikiSection top = stack.pop();
+          top.setEndOffset(h.offset.start);
+        }
+        WikiSection ws = new WikiSection(h.asHeading());
+        stack.peek().addToken(ws);
+        stack.push(ws);
+      } else {
+        stack.peek().addToken(h);
+      }
+    }
+
+    private void buildDoc() {
+      WikiText.this.content();
+      stack.push(new WikiSection(null));
+      WikiText.this.wikiTokens().stream().forEach(this::registerToken);
+      WikiSection top = null;
+      while (!stack.isEmpty()) {
+        top = stack.pop();
+        top.setEndOffset(WikiText.this.getEndOffset());
+      }
+      content = top.getContent();
+    }
+
+
+    public WikiContent getContent() {
+      return content;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////////////
+  /// WikiText external methods
+  ////////////////////////////////////////////////////////////////////////
 
   public WikiText(String sourceContent) {
-    this(null, sourceContent, 0, sourceContent.length());
+    this(null, sourceContent);
+  }
+
+  public WikiText(String pagename, String sourceContent) {
+    this(pagename, sourceContent, 0, sourceContent.length());
   }
 
   public WikiText(String pagename, String sourceContent, int startOffset, int endOffset) {
@@ -621,13 +957,13 @@ public class WikiText {
     this.sourceContent = sourceContent;
     this.startOffset = startOffset;
     this.endOffset = endOffset;
-    protocolsMatcher = Pattern.compile(protocols.toString()).matcher(sourceContent);
-    lexer = Pattern.compile(lexerCode.toString(), Pattern.MULTILINE | Pattern.DOTALL)
-        .matcher(sourceContent);
+    protocolsMatcher = protocolPattern.matcher(sourceContent);
+    lexer = lexerPattern.matcher(sourceContent);
 
   }
 
   private static StringBuffer protocols = new StringBuffer();
+  private static final Pattern protocolPattern;
 
   static {
     protocols.append("^(?:").append("bitcoin:").append("|").append("ftp://").append("|")
@@ -640,9 +976,12 @@ public class WikiText {
         .append("|").append("ssh://").append("|").append("svn://").append("|").append("tel:")
         .append("|").append("telnet://").append("|").append("urn:").append("|")
         .append("worldwind://").append("|").append("xmpp:").append("|").append("//").append(")");
+
+    protocolPattern = Pattern.compile(protocols.toString());
   }
 
   private static StringBuffer lexerCode = new StringBuffer();
+  private static final Pattern lexerPattern;
 
   static {
     lexerCode.append("(?<").append("OT").append(">").append("\\{\\{").append(")|").append("(?<")
@@ -654,10 +993,14 @@ public class WikiText {
         .append("CH").append(">").append("\\={2,6}$").append(")|").append("(?<").append("OH")
         .append(">").append("={2,6}").append(")|").append("(?<").append("OLIST").append(">")
         .append("\\*+").append(")|").append("(?<").append("OINDENT").append(">").append(":+")
-        .append(")|").append("(?<").append("PIPE").append(">").append("\\|").append(")|")
-        .append("(?<").append("SPACE").append(">").append(" ").append(")|").append("(?<")
-        .append("NL").append(">").append("\r?\n|\r").append(")|").append("(?<").append("CHAR")
-        .append(">").append(".").append(")");
+        .append(")|").append("(?<").append("ONUMLIST").append(">").append("\\#+").append(")|")
+        .append("(?<").append("OITEM").append(">").append(";").append(")|").append("(?<")
+        .append("PIPE").append(">").append("\\|").append(")|").append("(?<").append("SPACE")
+        .append(">").append(" ").append(")|").append("(?<").append("NL").append(">")
+        .append("\r?\n|\r").append(")|").append("(?<").append("CHAR").append(">").append(".")
+        .append(")");
+
+    lexerPattern = Pattern.compile(lexerCode.toString(), Pattern.MULTILINE | Pattern.DOTALL);
   }
 
   private WikiContent parse() {
@@ -770,13 +1113,17 @@ public class WikiText {
           stack.push(new Heading(pos, level));
           pos += level;
         } else if (null != (g = lexer.group("OLIST")) && atLineBeginning) {
-          int level = g.length();
-          stack.push(new ListItem(pos, level));
-          pos += level;
+          stack.push(new ListItem(pos, g));
+          pos += g.length();
         } else if (null != (g = lexer.group("OINDENT")) && atLineBeginning) {
-          int level = g.length();
-          stack.push(new Indentation(pos, level));
-          pos += level;
+          stack.push(new Indentation(pos, g));
+          pos += g.length();
+        } else if (null != (g = lexer.group("ONUMLIST")) && atLineBeginning) {
+          stack.push(new NumberedListItem(pos, g));
+          pos += g.length();
+        } else if (null != (g = lexer.group("OITEM")) && atLineBeginning) {
+          stack.push(new Item(pos, g));
+          pos += g.length();
         } else if (null != (g = lexer.group("PIPE"))) {
           // if in Template or InternalLink, it's a special char
           Token t = stack.peek();
@@ -813,11 +1160,12 @@ public class WikiText {
           }
           // if in ListItem, it's a closing char
           Token t = stack.peek();
-          if (t instanceof ListItem) {
-            ListItem li = (ListItem) stack.pop();
+          if (t instanceof IndentedItem) {
+            IndentedItem li = (IndentedItem) stack.pop();
             li.setEndOffset(pos);
             stack.peek().addToken(t);
           }
+          // TODO Handle nowiki tags
           pos += g.length();
           newlineFlag = true;
           // TODO Handle nowiki tags
@@ -836,24 +1184,19 @@ public class WikiText {
 
     // the end of text is considered as a new line... Handle it.
     // if in ListItem, it's a closing char
-    Token lastToken = stack.peek();
-    if (lastToken instanceof ListItem) {
-      ListItem li = (ListItem) stack.pop();
-      li.setEndOffset(pos);
-      stack.peek().addToken(lastToken);
-    }
-
     while (stack.size() > 1) {
-      // error: end of wiki text while elements are being parsed
-      // if in ListItem, it's a closing char
-      if (lastToken instanceof ListItem) {
-        ListItem li = (ListItem) stack.pop();
-        li.setEndOffset(pos - 1);
-        stack.peek().addToken(lastToken);
-      } else {
-        // In this case, we assume that unclosed elements are simple textual contents.
-        Token t = stack.pop();
+      Token t = stack.peek();
+      if (t instanceof Heading || t instanceof Link) {
+        stack.pop();
         stack.peek().addFlattenedTokens(t);
+        continue;
+      } else if (t instanceof Template) {
+        stack.pop();
+        stack.peek().addFlattenedTokens(t);
+      } else if (t instanceof IndentedItem) {
+        IndentedItem li = (IndentedItem) stack.pop();
+        li.setEndOffset(pos);
+        stack.peek().addToken(t);
       }
     }
 
@@ -861,6 +1204,10 @@ public class WikiText {
 
     ((WikiContent) root).setEndOffset(end);
     return (WikiContent) root;
+
+  }
+
+  private void handleNL(Stack<Token> stack, int pos) {
 
   }
 
@@ -963,6 +1310,18 @@ public class WikiText {
     return content().sections(level);
   }
 
+  private WikiDocument doc = null;
+
+  public WikiDocument asStructuredDocument() {
+    if (null == doc) {
+      doc = new WikiDocument();
+    }
+    return doc;
+  }
+
+  // TODO: make all creation/parsing time methods private and add wiki section iterator and
+  // document structure as internal classes
+
   private String wikiTextString = null;
 
   @Override
@@ -973,4 +1332,98 @@ public class WikiText {
     return wikiTextString;
   }
 
+  public static class LevelBasedWikiSectionsIterator implements Iterator<WikiSection> {
+
+    int level;
+    WikiContent content;
+    Iterator<Token> baseIterator;
+    Token currentToken = null;
+
+    /**
+     *
+     * @param content the content from which we get the sections
+     * @param level the expected level
+     * @deprecated
+     */
+    @Deprecated
+    public LevelBasedWikiSectionsIterator(WikiContent content, int level) {
+      this.content = content;
+      this.level = level;
+      this.baseIterator = content.tokens().iterator();
+      init();
+      advanceToNextHeading();
+    }
+
+
+    // My model 1 primitives...
+    public void init() {
+      if (baseIterator.hasNext()) {
+        currentToken = baseIterator.next();
+      }
+    }
+
+    public boolean eof() {
+      return currentToken == null;
+    }
+
+    public void advance() {
+      if (!baseIterator.hasNext()) {
+        currentToken = null;
+      } else {
+        currentToken = baseIterator.next();
+      }
+    }
+
+    // Collect next element and prepare for the following
+    // sequence is of type XXXXXHCCCCCCCCChXXXHCCC where X is to be discarded, H is a header of
+    // level
+    // n and h is a higher level header
+    // init state is ^currentToken
+    // final state is ^currentToken
+    private void advanceToNextHeading() {
+      while (!eof() && !isOpeningHeading(currentToken)) {
+        advance();
+      }
+      // either at eof or on an opening heading
+    }
+
+    public boolean isOpeningHeading(Token tok) {
+      return tok instanceof Heading && ((Heading) tok).getLevel() == level;
+    }
+
+    public boolean isClosingHeading(Token tok) {
+      return tok instanceof Heading && ((Heading) tok).getLevel() <= level;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return !eof();
+    }
+
+    @Override
+    public WikiSection next() {
+      if (eof()) {
+        throw new NoSuchElementException("No remaining section in this wikitext.");
+      }
+      Heading sectionHeading = (Heading) currentToken;
+      WikiContent sectionContent = content.getWikiText().new WikiContent(currentToken.offset.end);
+      advance();
+      while (!eof() && !isClosingHeading(currentToken)) {
+        sectionContent.addToken(currentToken);
+        advance();
+      }
+      if (eof()) {
+        sectionContent.setEndOffset(content.getWikiText().getEndOffset());
+      } else {
+        sectionContent.setEndOffset(currentToken.offset.start);
+      }
+      advanceToNextHeading();
+      return content.getWikiText().new WikiSection(sectionHeading, sectionContent);
+    }
+
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+  }
 }

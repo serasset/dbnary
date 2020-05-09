@@ -16,6 +16,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,20 +24,24 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.getalp.dbnary.WiktionaryIndexerException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -70,6 +75,10 @@ public class UpdateAndExtractDumps {
   private static final String COMPRESS_OPTION = "z";
   private static final boolean DEFAULT_COMPRESS = true;
 
+  private static final String FETCH_DATE_OPTION = "D";
+
+  private static final String VERBOSE_OPTION = "v";
+
   private static final String ENABLE_FEATURE_OPTION = "enable";
 
   private CommandLine cmd = null; // Command Line arguments
@@ -83,6 +92,9 @@ public class UpdateAndExtractDumps {
   private String server = DEFAULT_SERVER_URL;
   private String model = DEFAULT_MODEL;
   private List<String> features = null;
+  private String fetchDate = null;
+  private boolean verbose = false;
+
 
   String[] remainingArgs;
 
@@ -97,6 +109,7 @@ public class UpdateAndExtractDumps {
     options.addOption(FORCE_OPTION, false,
         "force the updating even if a file with the same name already exists in the output directory. "
             + DEFAULT_FORCE + " by default.");
+    options.addOption(VERBOSE_OPTION, false, "Print more info while processing.");
     options.addOption(HISTORY_SIZE_OPTION, true,
         "number of dumps to be kept in output directory. " + DEFAULT_HISTORY_SIZE + " by default ");
     options.addOption(PREFIX_DIR_OPTION, true,
@@ -108,12 +121,42 @@ public class UpdateAndExtractDumps {
         "compress the output file using bzip2." + DEFAULT_COMPRESS + " by default ");
     options.addOption(NETWORK_OFF_OPTION, false,
         "Do not use the ftp network, but decompress and extract.");
-    options.addOption(OptionBuilder.withLongOpt(ENABLE_FEATURE_OPTION)
-        .withDescription("Enable additional extraction features (e.g. morpho,etymology,foreign).")
-        .hasArg().withArgName("feature").create());
-    options.addOption(OptionBuilder.withLongOpt(TDB_OPTION).withDescription(
+    options.addOption(FETCH_DATE_OPTION, true,
+        "force the dump date to be retreived. latest dump by default ");
+    options.addOption(Option.builder().longOpt(ENABLE_FEATURE_OPTION)
+        .desc("Enable additional extraction features (e.g. morpho,etymology,foreign).").hasArg()
+        .argName("feature").build());
+    options.addOption(Option.builder().longOpt(TDB_OPTION).desc(
         "Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
-        .create());
+        .build());
+  }
+
+  private static class LanguageConfiguration {
+    String lang;
+    String dumpDir;
+    private boolean uncompressed = false;
+    private boolean extracted = false;
+
+    public LanguageConfiguration(String lang, String dumpDir) {
+      this.lang = lang;
+      this.dumpDir = dumpDir;
+    }
+
+    public void setUncompressed(boolean status) {
+      uncompressed = status;
+    }
+
+    public boolean isUncompressed() {
+      return uncompressed;
+    }
+
+    public void setExtracted(boolean ok) {
+      extracted = ok;
+    }
+
+    public boolean isExtracted() {
+      return extracted;
+    }
   }
 
   public static void main(String[] args) throws WiktionaryIndexerException, IOException {
@@ -134,7 +177,7 @@ public class UpdateAndExtractDumps {
    * @param args String[] args as featured in public static void main()
    */
   private void loadArgs(String[] args) {
-    CommandLineParser parser = new PosixParser();
+    CommandLineParser parser = new DefaultParser();
     try {
       cmd = parser.parse(options, args);
     } catch (ParseException e) {
@@ -149,6 +192,9 @@ public class UpdateAndExtractDumps {
       System.exit(0);
     }
 
+    // Check for verbosity
+    verbose = cmd.hasOption(VERBOSE_OPTION);
+
     String h = cmd.getOptionValue(HISTORY_SIZE_OPTION, DEFAULT_HISTORY_SIZE);
     historySize = Integer.parseInt(h);
 
@@ -157,6 +203,10 @@ public class UpdateAndExtractDumps {
       if (!server.endsWith("/")) {
         server = server + "/";
       }
+    }
+
+    if (cmd.hasOption(FETCH_DATE_OPTION)) {
+      fetchDate = cmd.getOptionValue(FETCH_DATE_OPTION);
     }
 
     force = cmd.hasOption(FORCE_OPTION);
@@ -197,12 +247,17 @@ public class UpdateAndExtractDumps {
   }
 
   public void updateAndExtract() throws WiktionaryIndexerException, IOException {
-    String[] dirs = updateDumpFiles(remainingArgs);
-    uncompressDumpFiles(remainingArgs, dirs);
-    extractDumpFiles(remainingArgs, dirs);
-    cleanUpDumpFiles(remainingArgs, dirs);
-    cleanUpExtractFiles(remainingArgs, dirs);
-    linkToLatestExtractFiles(remainingArgs, dirs);
+    List<LanguageConfiguration> confs =
+        Arrays.stream(remainingArgs).sequential().map(this::retrieveLastDump)
+            .map(this::uncompressRetrievedDump).collect(Collectors.toList());
+    confs = confs.stream().sequential().map(this::extract).peek(this::removeOldDumps)
+        .peek(this::linkToLatestExtractedFiles).collect(Collectors.toList());
+    // String[] dirs = updateDumpFiles(remainingArgs);
+    // uncompressDumpFiles(remainingArgs, dirs);
+    // extractDumpFiles(remainingArgs, dirs);
+    // cleanUpDumpFiles(remainingArgs, dirs);
+    // cleanUpExtractFiles(remainingArgs, dirs);
+    // linkToLatestExtractFiles(remainingArgs, dirs);
   }
 
   private void linkToLatestExtractFiles(String[] langs, String[] dirs) {
@@ -216,6 +271,15 @@ public class UpdateAndExtractDumps {
     }
   }
 
+  private void linkToLatestExtractedFiles(LanguageConfiguration conf) {
+    if (conf.isExtracted()) {
+      System.err.format("[%s] ==> Linking to latest versions.\n", conf.lang);
+      linkToLatestExtractFile(conf.lang, conf.dumpDir, model.toLowerCase());
+      for (String f : features) {
+        linkToLatestExtractFile(conf.lang, conf.dumpDir, f);
+      }
+    }
+  }
 
   private void linkToLatestExtractFile(String lang, String dir, String feature) {
     if (null == dir || dir.equals("")) {
@@ -277,6 +341,12 @@ public class UpdateAndExtractDumps {
     }
   }
 
+  private void removeOldDumps(LanguageConfiguration conf) {
+    if (conf.isExtracted())
+      cleanUpDumps(conf.lang, conf.dumpDir);
+    else if (verbose)
+      System.err.println("Older dumps cleanup aborted as extraction did not succeed.");
+  }
 
   private void cleanUpDumps(String lang, String lastDir) {
 
@@ -304,14 +374,16 @@ public class UpdateAndExtractDumps {
     int vsize = versions.size();
 
     for (String v : versions) {
-      if (vsize > historySize) {
-        deleteDump(lang, v);
-      }
-      if (vsize > 1) {
-        deleteUncompressedDump(lang, v);
-      }
-      if (vsize > historySize) {
-        deleteDumpDir(lang, v);
+      if (!v.equals(lastDir)) {
+        if (vsize > historySize) {
+          deleteDump(lang, v);
+        }
+        if (vsize > 1) {
+          deleteUncompressedDump(lang, v);
+        }
+        if (vsize > historySize) {
+          deleteDumpDir(lang, v);
+        }
       }
       vsize--;
     }
@@ -361,30 +433,41 @@ public class UpdateAndExtractDumps {
     }
   }
 
+  private LanguageConfiguration retrieveLastDump(String lang) {
+    return new LanguageConfiguration(lang, updateDumpFile(lang));
+  }
 
   private String updateDumpFile(String lang) {
     String defaultRes = getLastLocalDumpDir(lang);
     if (networkIsOff) {
+      if (verbose) {
+        System.err.println("Using already existing dump : " + defaultRes);
+      }
       return defaultRes;
     }
 
     try {
       URL url = new URL(server);
+      if (!url.getProtocol().equals("http")) { // URL protocol is not http
+        System.err.format("Unsupported protocol: %s", url.getProtocol());
+        return defaultRes;
+      }
 
-      if (url.getProtocol().equals("http")) {
-        HttpClient client = new DefaultHttpClient();
+      String languageDumpFolder = server + lang + "wiktionary";
+      String lastDir = defaultRes;
 
-        String languageDumpFolder = server + lang + "wiktionary";
-        String lastDir = defaultRes;
+      try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+        System.err.println("Updating " + lang);
+        SortedSet<String> dirs = null;
 
-        try {
-          System.err.println("Updating " + lang);
-          SortedSet<String> dirs = null;
-
+        if (null != fetchDate) {
+          if (verbose) {
+            System.err.println("Fetching specified version date : " + fetchDate);
+          }
+          lastDir = fetchDate;
+        } else {
           HttpGet request = new HttpGet(languageDumpFolder);
-          HttpResponse response = null;
-          try {
-            response = client.execute(request);
+          try (CloseableHttpResponse response = client.execute(request)) {
             HttpEntity entity = response.getEntity();
 
             if (null == entity) {
@@ -396,61 +479,65 @@ public class UpdateAndExtractDumps {
             // parse directory listing to get the latest dump folder
 
             dirs = getFolderSetFromIndex(entity, languageDumpFolder);
-
-          } finally {
-            HttpClientUtils.closeQuietly(response);
-          }
-          lastDir = getLastVersionDir(dirs);
-
-          if (null == lastDir) {
-            System.err.format("Empty directory list for %s (url=%s)\n", lang, languageDumpFolder);
-            System.err.format("Using locally available dump.\n");
-            return defaultRes;
+            lastDir = getLastVersionDir(dirs);
           }
 
-          try {
-            String dumpdir = outputDir + "/" + lang + "/" + lastDir;
-            String filename = dumpdir + "/" + dumpFileName(lang, lastDir);
-            File file = new File(filename);
-            if (file.exists() && !force) {
-              // System.err.println("Dump file " + filename + " already retrieved.");
-              return lastDir;
-            }
-            File dumpFile = new File(dumpdir);
-            dumpFile.mkdirs();
+          if (verbose) {
+            System.err.println("Fetching latest version : " + lastDir);
+          }
+        }
 
-            String dumpFileUrl =
-                languageDumpFolder + "/" + lastDir + "/" + dumpFileName(lang, lastDir);
-            request = new HttpGet(dumpFileUrl);
-            response = client.execute(request);
+
+        if (null == lastDir) {
+          System.err.format("Empty directory list for %s (url=%s)\n", lang, languageDumpFolder);
+          System.err.format("Using locally available dump.\n");
+          return defaultRes;
+        }
+
+        try {
+          String dumpdir = outputDir + "/" + lang + "/" + lastDir;
+          String filename = dumpdir + "/" + dumpFileName(lang, lastDir);
+          File file = new File(filename);
+          if (file.exists() && !force) {
+            // System.err.println("Dump file " + filename + " already retrieved.");
+            return lastDir;
+          }
+          File dumpFile = new File(dumpdir);
+          dumpFile.mkdirs();
+
+          String dumpFileUrl =
+              languageDumpFolder + "/" + lastDir + "/" + dumpFileName(lang, lastDir);
+          if (verbose)
+            System.err.println("Fetching dump from " + dumpFileUrl);
+
+          HttpGet request = new HttpGet(dumpFileUrl);
+          try (CloseableHttpResponse response = client.execute(request)) {
             HttpEntity entity = response.getEntity();
 
             if (entity != null) {
-              FileOutputStream dfile = new FileOutputStream(file);
-              System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
-              long s = System.currentTimeMillis();
-              entity.writeTo(dfile);
-              System.err.println(
-                  "Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
+              if (verbose) {
+                System.err.println("Retrieving data from : " + dumpFileUrl);
+              }
+              try (FileOutputStream dfile = new FileOutputStream(file)) {
+                System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
+                long s = System.currentTimeMillis();
+                entity.writeTo(dfile);
+                System.err.println(
+                    "Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
+              }
             }
-
-          } catch (IOException e) {
-            System.err.println(e.getLocalizedMessage());
-            e.printStackTrace(System.err);
-          } finally {
-            HttpClientUtils.closeQuietly(response);
           }
+
         } catch (IOException e) {
-          e.printStackTrace();
-          return null;
-        } finally {
-          client.getConnectionManager().shutdown();
+          System.err.println(e.getLocalizedMessage());
+          e.printStackTrace(System.err);
         }
-        return lastDir;
-      } else { // URL protocol is not http
-        System.err.format("Unsupported protocol: %s", url.getProtocol());
-        return defaultRes;
+      } catch (IOException e) {
+        e.printStackTrace();
+        return null;
       }
+
+      return lastDir;
     } catch (MalformedURLException e) {
       System.err.format("Malformed dump server URL: %s", server);
       System.err.format("Using locally available dump.");
@@ -543,6 +630,12 @@ public class UpdateAndExtractDumps {
     }
   }
 
+  private LanguageConfiguration uncompressRetrievedDump(LanguageConfiguration conf) {
+    boolean status = uncompressDumpFile(conf.lang, conf.dumpDir);
+    conf.setUncompressed(status);
+    return conf;
+  }
+
   private boolean uncompressDumpFile(String lang, String dir) {
     boolean status = true;
     if (null == dir || dir.equals("")) {
@@ -558,7 +651,8 @@ public class UpdateAndExtractDumps {
 
     File file = new File(uncompressedDumpFile);
     if (file.exists() && !force) {
-      // System.err.println("Uncompressed dump file " + uncompressedDumpFile + " already exists.");
+      if (verbose)
+        System.err.println("Uncompressed dump file " + uncompressedDumpFile + " already exists.");
       return true;
     }
 
@@ -580,6 +674,8 @@ public class UpdateAndExtractDumps {
       }
       r.close();
       w.close();
+      System.err.println("Correctly uncompressed file : " + uncompressedDumpFile);
+
     } catch (IOException e) {
       System.err
           .println("Caught an IOException while uncompressing dump: " + dumpFileName(lang, dir));
@@ -625,6 +721,21 @@ public class UpdateAndExtractDumps {
     return res;
   }
 
+  private LanguageConfiguration extract(LanguageConfiguration conf) {
+    if (conf.isUncompressed()) {
+      boolean ok = extractDumpFile(conf.lang, conf.dumpDir);
+      conf.setExtracted(ok);
+      if (!ok) {
+        // Sometimes the dump is incomplete and finishes in the middle of the xml file,
+        // leading to IOException or IndexException from Extractor.
+        deleteDump(conf.lang, conf.dumpDir);
+        deleteUncompressedDump(conf.lang, conf.dumpDir);
+        deleteDumpDir(conf.lang, conf.dumpDir);
+      }
+    }
+    return conf;
+  }
+
   private void extractDumpFiles(String[] langs, String[] dirs) {
     for (int i = 0; i < langs.length; i++) {
       boolean ok = extractDumpFile(langs[i], dirs[i]);
@@ -638,12 +749,35 @@ public class UpdateAndExtractDumps {
     }
   }
 
+  private static void displayMemoryUsage() {
+    Runtime runtime = Runtime.getRuntime();
+    runtime.gc();
+
+    NumberFormat format = NumberFormat.getInstance();
+
+    StringBuilder sb = new StringBuilder();
+    long maxMemory = runtime.maxMemory();
+    long allocatedMemory = runtime.totalMemory();
+    long freeMemory = runtime.freeMemory();
+
+    sb.append("free memory: " + format.format(freeMemory / 1024) + "\n");
+    sb.append("allocated memory: " + format.format(allocatedMemory / 1024) + "\n");
+    sb.append("max memory: " + format.format(maxMemory / 1024) + "\n");
+    sb.append("total free memory: "
+        + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024) + "\n");
+    System.err.println("--------------------------------");
+    System.err.println(sb.toString());
+    System.err.println("--------------------------------");
+  }
+
   private boolean extractDumpFile(String lang, String dir) {
     boolean status = true;
     if (null == dir || dir.equals("")) {
       return true;
     }
 
+    // TODO: GC and show used memory.
+    displayMemoryUsage();
     String odir = extractDir + "/" + model.toLowerCase() + "/" + lang;
     File d = new File(odir);
     d.mkdirs();
@@ -658,10 +792,12 @@ public class UpdateAndExtractDumps {
         odir + "/" + lang + prefix + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
     String morphoFile = odir + "/" + lang + prefix + "_dbnary_morpho_" + dir + ".ttl";
     String etymologyFile = odir + "/" + lang + prefix + "_dbnary_etymology_" + dir + ".ttl";
+    String limeFile = odir + "/" + lang + prefix + "_dbnary_lime_" + dir + ".ttl";
     if (compress) {
       extractFile = extractFile + ".bz2";
       morphoFile = morphoFile + ".bz2";
       etymologyFile = etymologyFile + ".bz2";
+      limeFile = limeFile + ".bz2";
     }
 
     File file = new File(extractFile);
@@ -690,16 +826,28 @@ public class UpdateAndExtractDumps {
       a.add("--etymology");
       a.add(etymologyFile);
     }
+    if (features.contains("lime")) {
+      a.add("--lime");
+      a.add(limeFile);
+    }
+
     if (features.contains("foreign")) {
       a.add("-x");
     }
     if (tdbDir) {
       a.add("--tdb");
     }
+    if (verbose) {
+      a.add("-v");
+    }
     a.add(uncompressDumpFileName(lang, dir));
 
     String[] args = a.toArray(new String[0]);
 
+    if (verbose) {
+      System.err.println("Launching ExtractWiktionary with args : ");
+      System.err.println(Arrays.stream(args).collect(Collectors.joining(" ")));
+    }
     try {
       ExtractWiktionary.main(args);
     } catch (WiktionaryIndexerException e) {
@@ -715,6 +863,7 @@ public class UpdateAndExtractDumps {
       e.printStackTrace();
       status = false;
     }
+    displayMemoryUsage();
     return status;
   }
 

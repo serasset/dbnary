@@ -36,7 +36,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   /**
    * a HashSet to store the name of etymtree pages that have already been extracted
    */
-  static HashSet etymtreeHashSet = new HashSet();
+  static HashSet<String> etymtreeHashSet = new HashSet<>();
 
   /**
    * Resources containing Etymology Entries.

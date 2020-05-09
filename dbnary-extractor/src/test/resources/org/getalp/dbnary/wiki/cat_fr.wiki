@@ -1,0 +1,253 @@
+{{voir/cat}}
+
+== {{langue|conv}} ==
+=== {{S|symbole|conv}} ===
+'''cat'''
+# {{linguistique|conv}} Code {{w|ISO 639-3}} du [[{{nom langue|ca}}]].
+
+==== {{S|notes}} ====
+* {{note code langue|catalan}}
+
+=== {{S|références}} ===
+* {{Lien 639-3|cat}}
+
+== {{langue|fr}} ==
+=== {{S|nom|fr}} ===
+{{fr-rég|kat}}
+'''cat''' {{pron|kat|fr}} {{m}}
+# {{plantes|fr}} {{variante de|qat|fr}}.
+#* ''Arrivé le matin, ayant tout juste pris le temps de se délester de son rapport verbal, Carlier s’était couché, rendu, ayant à compenser deux nuits blanches passées, en plus de la journée intercalaire, à déterrer la B 144 qui, sous la diligente impulsion d’un indigène bourré de '''cat''', était allée, toutes bielles trépignantes, donner du nez dans un éboulis de tranchée.'' {{source|{{w|André{{pc| Armandy}}}}, ''La Voie sans disque'', les éditions de France, 1934, page 1}}
+#* ''En Ethiopie, au Yémen et aux Somalies, un petit arbuste fait l’objet d'un important commerce : le '''cat''' (''Catha edulis'' Célastracées).'' {{source|{{w|Jean-Marie {{pc|Pelt}}}}, ''Drogues et plantes magiques'', 1983}}
+
+== {{langue|fro}} ==
+=== {{S|nom|fro}} ===
+'''cat''' {{pron||fro}} {{m}}
+# {{variante de|chat|fro}}.
+
+=== {{S|références}} ===
+* {{R:Godefroy|chat}}
+
+== {{langue|pro}} ==
+{{ébauche|pro}}
+
+=== {{S|étymologie}} ===
+: Du {{étyl|bas latin|pro|cattus}}.
+
+=== {{S|nom|pro}} ===
+'''cat''' {{m}}
+# {{animaux|nocat=1}} Chat.
+
+=== {{S|références}} ===
+* {{R:Raynouard}}
+
+== {{langue|en}} ==
+=== {{S|étymologie}} ===
+: Du {{étyl|proto-germanique|en}} {{recons|kattuz|proto-germanique}}, lui-même emprunté au {{étyl|bas latin|en|mot=cattus}}.
+
+=== {{S|nom|en}} ===
+{{en-nom-rég|ˈkæt}}
+[[Image:Cat03.jpg|thumb|A '''cat'''.]]
+'''cat''' {{pron|ˈkæt|en}}
+# {{zoologie|nocat=1}} [[chat#fr-nom-1|Chat]], [[chatte]] (animal).
+#* ''That stray '''cat''' was carrying a bird in her mouth''.
+#* ''[…] he is the '''Cat''' that walks by himself, and all places are alike to him. Then he goes out to the Wet Wild Woods or up the Wet Wild Trees or on the Wet Wild Roofs, waving his wild tail and walking by his wild lone.'' {{source|{{w|Rudyard Kipling|lang=en}}, ''[[s:en:Just So Stories|Just So Stories]]'', 1912}}
+#*: […] il est le Chat qui s'en va tout seul et tous lieux se valent pour lui. Alors il s'en va par les Chemins Mouillés du Bois Sauvage, sous les Arbres ou sur les Toits, remuant sa queue, solitaire et sauvage.
+# {{argot|en}} {{vulgaire|en}} {{term|{{w|Anglais vernaculaire afro-américain}}}} [[vagin|Vagin]] ; [[vulve]].
+
+==== {{S|notes}} ====
+: Dans le cas où le sexe de l’individu est inconnu, l’on peut désigner cet animal au féminin.
+
+==== {{S|dérivés}} ====
+{{(}}
+* {{lien|catfight|en}} (''crêpage de chignons'')
+* {{lien|catfight|en}} (''se crêper le chignon'')
+* {{lien|cat’s cradle|en}} ''(jeu de ficelle)''
+* {{lien|catsuit|en}}
+* {{lien|cat typing|en}} {{rare|nocat=1}}
+* {{lien|curiosity killed the cat|en}}
+* {{lien|rain cats and dogs|en}}
+{{)}}
+
+==== {{S|phrases}} ====
+* {{lien|when the cat’s away the mice will play|en}} ''(quand le chat n’est pas là, les souris dansent)''
+
+==== {{S|vocabulaire}} ====
+* {{lien|kitten|en}} (''chaton'')
+
+=== {{S|prononciation}} ===
+* {{pron|ˈkæt|en}}
+** {{écouter|Royaume-Uni (Londres)|ə ˈkæt|audio=En-uk-a cat.ogg|titre=a cat|lang=en}}
+** {{écouter|États-Unis (Californie)|ˈkæt|audio=En-us-cat.ogg|lang=en}}
+** {{écouter|États-Unis|ˈkeət|audio=En-us-inlandnorth-cat.ogg|lang=en}}
+* {{écouter|lang=en|Suisse (Genève)|audio=LL-Q1860 (eng)-Nattes à chat-cat.wav}}
+
+==== {{S|homophones|en}} ====
+* {{lien|kat|en}}
+* {{lien|khat|en}}
+* {{lien|qat|en}}
+
+=== {{S|anagrammes}} ===
+* {{lien|act|en}}
+
+=== {{S|voir aussi}} ===
+* {{WP|lang=en}}
+
+== {{langue|dua}} ==
+=== {{S|onomatopée|dua}} ===
+'''cat''' {{pron||dua}}
+# Onomatopée exprimant l'[[indifférence]].
+
+=== {{S|adverbe|dua}} ===
+ná '''cat''' {{pron||dua}}
+# [[mépris|Mépris]] [[indifférent]]
+#* ''a si pelan moe̱ toe̱ ná '''cat'''''– il (elle) n'a pas daigné lui répondre un seul mot.
+# [[immédiatement|Immédiatement]] [[après]], [[aussitôt]] [[après]], [[dès que]]
+#* ''moe̱ jingea ná '''cat''', mbuwa pee̱ e siba''– Dès qu'il ou elle est rentré(e), il s'est mis à pleuvoir.
+
+== {{langue|gd}} ==
+=== {{S|étymologie}} ===
+: {{ébauche-étym|gd}}
+
+=== {{S|nom|gd}} ===
+'''cat''' {{pron||gd}} {{m}}
+# {{zoologie|nocat=1}} [[chat#fr-nom-1|Chat]] (animal).
+
+[[Catégorie:Mammifères en gaélique écossais]]
+
+== {{langue|ga}} ==
+{{ébauche|ga}}
+
+=== {{S|étymologie}} ===
+: {{ébauche-étym|ga}}
+
+=== {{S|nom|ga}} ===
+'''cat''' {{pron||ga}} {{m}}
+# {{zoologie|nocat=1}} [[chat#fr-nom-1|Chat]] (animal).
+
+[[Catégorie:Mammifères en gaélique irlandais]]
+
+== {{langue|id}} ==
+=== {{S|étymologie}} ===
+: {{ébauche-étym|id}}
+
+=== {{S|nom|id}} ===
+'''cat''' {{pron||id}}
+# [[peinture|Peinture]].
+#* {{ébauche-exe|id}}
+# [[teinture|Teinture]].
+#* {{ébauche-exe|id}}
+
+==== {{S|dérivés}} ====
+* [[bercat]]
+* [[dicat]]
+* [[mengecat]]
+
+== {{langue|fra-nor}} ==
+=== {{S|étymologie}} ===
+: De l’{{étyl|fro|fra-nor|cat}}, variante normano-picarde de ''{{lien|chat|fro}}'', du {{étyl|la|fra-nor|cattus}}.
+
+=== {{S|nom|fra-nor}} ===
+'''cat''' {{pron|ka|fra-nor}}
+# {{Rouen|fra-nor}} {{Bray|fra-nor}} {{animaux|nocat=1}} [[chat#fr-nom-1|Chat]].
+#* ''Mêfie-té des '''cats'''!'' {{source|''Mêfie-té des Monstres!''&#32;page 12, publié en 2010 par Le Don Balleine, L’Office du Jèrriais. ISBN 978-0-9566289-0-9.}}
+#*:
+
+=== {{S|voir aussi}} ===
+* {{WP|lang=fra-nor}}
+
+== {{langue|oc}} ==
+=== {{S|étymologie}} ===
+: Du {{étyl|bas latin|oc|mot=cattus}}.
+
+=== {{S|nom|oc}} ===
+'''cat''' {{pron|kat|oc}} {{oc-norme classique}} {{m}}
+# {{zoologie|nocat=1}} [[chat#fr-nom-1|Chat]] (animal).
+
+==== {{S|variantes}} ====
+* [[gat#oc|gat]]
+
+==== {{S|dérivés}} ====
+{{(}}
+* [[cataràs]]
+* [[catet]]
+* [[caton]]
+* [[catonada]]
+* [[catonar]]
+{{)}}
+
+=== {{S|prononciation}} ===
+* {{écouter|lang=oc|France (Béarn)|audio=LL-Q14185 (oci)-Davidgrosclaude-cat.wav}}
+
+=== {{S|références}} ===
+* {{R:Cantalausa}}
+
+== {{langue|pcd}} ==
+{{ébauche|pcd}}
+
+=== {{S|étymologie}} ===
+: Du {{étyl|bas latin|pcd|mot=cattus}}.
+
+=== {{S|nom|pcd}} ===
+'''cat''' {{pron||pcd}} {{m}}
+# {{zool|pcd}} [[chat|Chat]].
+
+==== {{S|dérivés}} ====
+* [[catière]]
+* [[caton]]
+
+==== {{S|variantes}} ====
+{{(}}
+* [[ca]]
+* [[cas]]
+* [[co]]
+* [[cot]]
+* [[ka]]
+* [[kat]]
+* [[keu]]
+* [[keut]]
+* [[ko]]
+* [[kou]]
+{{)}}
+
+=== {{S|références}} ===
+* Jean-Baptiste Jouancoux, ''Études pour servir à un glossaire étymologique du patois picard'', 1880, vol. I
+* {{R:Freelang}}
+
+== {{langue|obt}} ==
+=== {{S|étymologie}} ===
+: {{ébauche-étym|obt}}
+
+=== {{S|nom|obt}} ===
+'''cat''' {{pron|ˈkɑːt|obt}} {{f}}
+# [[combat|Combat]], [[bataille]].
+
+=== {{S|voir aussi}} ===
+* [[kad]] en breton moderne
+
+=== {{S|références}} ===
+* {{R:DPC}}
+== {{langue|wa}} ==
+=== {{S|étymologie}} ===
+: {{ébauche-étym|wa}}
+
+=== {{S|nom|wa}} ===
+'''cat''' {{pron||wa}} {{m}}
+# {{zoologie|nocat=1}} [[chat#fr-nom-1|Chat]] (animal).
+
+== {{langue|esu}} ==
+=== {{S|nom|esu|flexion}} ===
+'''cat'''
+# ''Absolutif pluriel de ''{{lien|ca|esu}}.
+# ''Relatif pluriel de ''{{lien|ca|esu}}.
+
+=== {{S|prononciation}} ===
+* Dialecte du bas Kuskokwim : {{phon|t͡ʃat|esu}}
+
+[[Catégorie:Plantes en français]]
+[[Catégorie:Animaux en anglais]]
+[[Catégorie:Radicaux en indonésien]]
+[[Catégorie:Animaux en normand]]
+[[Catégorie:Mammifères en occitan]]
+[[Catégorie:Animaux en picard]]
+[[Catégorie:Animaux en wallon]]
+[[Catégorie:-t prononcés /t/ en français]]

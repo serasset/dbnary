@@ -9,7 +9,6 @@ import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.collection.concurrent.Debug;
 
 
 public class GermanSubstantiveDeklinationExtractorWikiModel extends GermanTableExtractorWikiModel {

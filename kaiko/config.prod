@@ -12,6 +12,7 @@ then
 fi
 
 VIRTUOSOINITMPL=./virtuoso.ini.tmpl
+#VIRTUOSOINIPRODUCTIONTMPL=./virtuoso.ini.prod.tmpl
 BOOTSTRAPSQL=./bootstrap.sql
 
 DBFOLDER=$PREFIX/virtuoso/db.bootstrap
@@ -22,8 +23,7 @@ SSLSERVERPORT=2112
 WEBSERVERPORT=8899
 
 # Virtuoso installation variables
-#PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
-PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource724/bin
-#DAEMON=/opt/virtuoso-opensource/bin/virtuoso-t
-DAEMON=/opt/virtuoso-opensource724/bin/virtuoso-t
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
+DAEMON=/opt/virtuoso-opensource/bin/virtuoso-t
 NAME=virtuoso
+

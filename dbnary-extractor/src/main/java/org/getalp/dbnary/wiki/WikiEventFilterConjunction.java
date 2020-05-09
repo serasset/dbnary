@@ -2,12 +2,12 @@ package org.getalp.dbnary.wiki;
 
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
 
-public class WikiEventFilterConjuction implements WikiEventFilter {
+public class WikiEventFilterConjunction implements WikiEventFilter {
 
   private WikiEventFilter rhs;
   private WikiEventFilter lhs;
 
-  public WikiEventFilterConjuction(WikiEventFilter rhs, WikiEventFilter lhs) {
+  public WikiEventFilterConjunction(WikiEventFilter rhs, WikiEventFilter lhs) {
     this.rhs = rhs;
     this.lhs = lhs;
   }

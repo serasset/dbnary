@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -268,13 +269,29 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void populateMetadata(String dumpFilename, String extractorVersion) {
-    Resource lexicon = aBox.createResource(
+    if (isDisabled(Feature.LIME))
+      return;
+    Model limeBox = featureBoxes.get(Feature.LIME);
+    Resource creator = limeBox.createResource("http://serasset.bitbucket.io/");
+    Resource lexicon = limeBox.createResource(
         getPrefix() + "___" + wktLanguageEdition + "_dbnary_dataset", LimeOnt.Lexicon);
-    aBox.add(aBox.createStatement(lexicon, DCTerms.description,
-        "This lexicon is extracted from the original wiktionary data that con be found"
-            + " in http://" + wktLanguageEdition + ".wiktionary.org/ by the DBnary Extractor"));
-    aBox.add(aBox.createStatement(lexicon, LimeOnt.language, wktLanguageEdition));
-    aBox.add(aBox.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
+        "This lexicon is extracted from the original wiktionary data that can be found"
+            + " in http://" + wktLanguageEdition + ".wiktionary.org/ by the DBnary Extractor.",
+        "en"));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
+        "Cet ensemble de données est extrait du wiktionnaire original disponible" + " à http://"
+            + wktLanguageEdition + ".wiktionary.org/ par le programme d'extraction de DBnary.",
+        "fr"));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.creator, creator));
+    limeBox.add(limeBox.createLiteralStatement(lexicon, DCTerms.created,
+        limeBox.createTypedLiteral(GregorianCalendar.getInstance())));
+
+    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.language, wktLanguageEdition));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
+    limeBox.add(limeBox.createLiteralStatement(lexicon, LimeOnt.lexicalEntries, nbEntries()));
+    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, LexinfoOnt.getURI()));
+    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, OliaOnt.getURI()));
 
   }
 
@@ -639,12 +656,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   /**
    *
-   * @param languageCode
-   * @param pos
-   * @param inflection
-   * @param canonicalForm
-   * @param defNumber
-   * @param props
+   * @param languageCode the language code of the inflection
+   * @param pos the part of speech of the inflected form
+   * @param inflection inflected form
+   * @param canonicalForm canonical form
+   * @param defNumber definition number of the word sense associated to the form
+   * @param props morpho syntactic properties to be registered with the inflected form
    */
   public void registerInflection(String languageCode, String pos, String inflection,
       String canonicalForm, int defNumber, HashSet<PropertyObjectPair> props) {

@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +38,7 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
   public void parseDefinition(String definition, int defLevel) {
     // Render the definition to plain text, while ignoring the example template
     // log.trace("extracting definitions in {}", this.getPageName());
+    log.debug("Parsing definition : ||| {} ||| in {}", definition, delegate.currentLexEntry());
     String def = null;
     try {
       def = render(new PlainTextConverter(), definition).trim();
@@ -76,7 +77,7 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
       }
       writer.append(l);
     } else if (templateName.equals("synonym of")) {
-      // TODO: handle sysnonym of by creating the appropriate synonymy relation.
+      // TODO: handle synonym of by creating the appropriate synonymy relation.
       // catch and expand synonym of template before it is caught by next condition.
       super.substituteTemplateCall(templateName, parameterMap, writer);
     } else if (templateName.endsWith(" of")) {
@@ -94,8 +95,22 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
       // StringWriter quotation = new StringWriter();
       // super.substituteTemplateCall(templateName, parameterMap, quotation);
       // delegate.registerExample(quotation.toString(), null);
+    } else if ("rfex".equals(templateName) || "rfd-sense".equals(templateName)
+        || "attention".equals(templateName) || "attn".equals(templateName)
+        || "rfclarify".equals(templateName) || "rfquote".equals(templateName)
+        || "rfquotek".equals(templateName) || "rfv-sense".equals(templateName)
+        || "rfc-sense".equals(templateName) || "rfquote-sense".equals(templateName)
+        || "rfdef".equals(templateName)) {
+      // Request for examples or request for discussion on sense :
+      // -> just ignore the template as it raises a Lua Exception
+      // rfdef : request for definition, -> just return an empty def.
+      ;
     } else {
+      // log.debug("BEGIN >>> Subtituting template {} in page {}", templateName,
+      // delegate.currentLexEntry());
       super.substituteTemplateCall(templateName, parameterMap, writer);
+      // log.debug("END <<< Subtituting template {} in page {}", templateName,
+      // delegate.currentLexEntry());
     }
   }
 

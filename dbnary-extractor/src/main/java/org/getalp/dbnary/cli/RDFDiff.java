@@ -7,27 +7,52 @@ import java.util.TreeSet;
 import org.apache.jena.graph.GraphUtil;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
 public class RDFDiff {
 
+  private static boolean verbose = true;
+
   public static void main(String args[]) {
     Model m1, m2;
+    Dataset dataset1 = null, dataset2 = null;
+
     if (args.length != 2) {
       usage();
       System.exit(1);
     }
 
-    m1 = ModelFactory.createDefaultModel();
-    m2 = ModelFactory.createDefaultModel();
+    if (args[0].endsWith(".tdb")) {
+      // read the RDF/XML files
+      System.err.println("Handling first model from TDB database: " + args[0]);
+      dataset1 = TDBFactory.createDataset(args[0]);
+      dataset1.begin(ReadWrite.READ);
+      // Get model inside the transaction
+      m1 = dataset1.getDefaultModel();
+    } else {
+      System.err.println("Handling first model from turtle: " + args[0]);
+      m1 = ModelFactory.createDefaultModel();
+      m1.read(args[0], "TURTLE");
+    }
 
-    // read the RDF/XML files
-    System.err.println("Reading first model.");
-    m1.read(args[0], "TURTLE");
-    System.err.println("Reading second model.");
-    m2.read(args[1], "TURTLE");
+    if (args[1].endsWith(".tdb")) {
+      // read the RDF/XML files
+      System.err.println("Handling second model from TDB database: " + args[1]);
+      dataset2 = TDBFactory.createDataset(args[1]);
+      dataset2.begin(ReadWrite.READ);
+      // Get model inside the transaction
+      m2 = dataset2.getDefaultModel();
+    } else {
+      System.err.println("Handling second model from turtle: " + args[1]);
+      m2 = ModelFactory.createDefaultModel();
+      m2.read(args[1], "TURTLE");
+    }
+
     System.err.println("Building bindings.");
     buildBinding(m1, m2);
 
@@ -35,6 +60,11 @@ public class RDFDiff {
 
     // merge the Models
     Model model = difference(m1, m2);
+
+    if (null != dataset1)
+      dataset1.end();
+    if (null != dataset2)
+      dataset2.end();
 
     for (Entry<String, String> e : m1.getNsPrefixMap().entrySet()) {
       model.setNsPrefix(e.getKey(), e.getValue());
@@ -50,12 +80,22 @@ public class RDFDiff {
     // Creates a binding between equivalent blank nodes in m1 and m2;
     ExtendedIterator<Node> iter = null;
     Node s;
+    indexBlankNodes(m1);
+    indexBlankNodes(m2);
+  }
+
+  private static void indexBlankNodes(Model m) {
+    Node s;
+    ExtendedIterator<Node> iter = null;
     try {
-      iter = GraphUtil.listSubjects(m1.getGraph(), Node.ANY, Node.ANY);
+      iter = GraphUtil.listSubjects(m.getGraph(), Node.ANY, Node.ANY);
+      int nbtriple = 0, nbBlank = 0;
       while (iter.hasNext()) {
         s = iter.next();
+        nbtriple++;
         if (s.isBlank()) {
-          ExtendedIterator<Triple> it = m1.getGraph().find(s, Node.ANY, Node.ANY);
+          nbBlank++;
+          ExtendedIterator<Triple> it = m.getGraph().find(s, Node.ANY, Node.ANY);
           SortedSet<String> signature = new TreeSet<>();
           while (it.hasNext()) {
             Triple t = it.next();
@@ -69,32 +109,12 @@ public class RDFDiff {
           assert anodes2id.get(s.getBlankNodeLabel()) == null;
           anodes2id.put(s.getBlankNodeLabel(), key);
         }
-      }
-    } finally {
-      if (null != iter) {
-        iter.close();
-      }
-    }
-    try {
-      iter = GraphUtil.listSubjects(m2.getGraph(), Node.ANY, Node.ANY);
-      while (iter.hasNext()) {
-        s = iter.next();
-        if (s.isBlank()) {
-          ExtendedIterator<Triple> it = m2.getGraph().find(s, Node.ANY, Node.ANY);
-          SortedSet<String> signature = new TreeSet<>();
-          while (it.hasNext()) {
-            Triple t = it.next();
-            signature.add(t.getPredicate().toString() + "+" + t.getObject().toString());
-          }
-          StringBuffer b = new StringBuffer();
-          for (String r : signature) {
-            b.append(r).append("|");
-          }
-          String key = b.toString();
-          assert anodes2id.get(s.getBlankNodeLabel()) == null;
-          anodes2id.put(s.getBlankNodeLabel(), key);
+        if (verbose && nbtriple % 1000 == 0) {
+          System.err.print("Indexed " + nbBlank + " blank nodes /" + nbtriple + "\r");
         }
       }
+      if (verbose)
+        System.err.println();
     } finally {
       if (null != iter) {
         iter.close();
@@ -164,9 +184,11 @@ public class RDFDiff {
           resultModel.getGraph().add(triple);
           nbdiffs++;
         }
-        System.err.print("" + nbdiffs + "/" + nbprocessed + "\r");
+        if (verbose && nbprocessed % 1000 == 0)
+          System.err.print("" + nbdiffs + "/" + nbprocessed / 1000 + " k\r");
       }
-      System.err.print("" + nbdiffs + "/" + nbprocessed + "\n");
+      if (verbose)
+        System.err.print("" + nbdiffs + "/" + nbprocessed + "\n");
     } finally {
       iter.close();
     }

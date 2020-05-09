@@ -285,9 +285,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // Noetim comes in place of an etymology section and ends the translation section.
           ti = toks.size();
         }
-      } else if (t instanceof WikiText.Indentation || t instanceof WikiText.ListItem) {
+      } else if (t instanceof WikiText.IndentedItem) {
         // line of translations
-        processTranslationLine(currentStructuredGloss, (WikiText.ListItem) t);
+        processTranslationLine(currentStructuredGloss, t.asIndentedItem());
       } else if (t instanceof WikiText.Heading) {
         // Headings indicate the unexpected end of the translation section (error in the page or
         // specific headings)
@@ -317,7 +317,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return wdh.createGlossResource(glossFilter.extractGlossStructure(currentGloss), i);
   }
 
-  private void processTranslationLine(Resource gloss, WikiText.ListItem t) {
+  private void processTranslationLine(Resource gloss, WikiText.IndentedItem t) {
     log.trace("Translation line: {} ||| {}", t.toString(), wiktionaryPageName);
     WikiCharSequence line = new WikiCharSequence(t.getContent());
     TranslationLineParser tp = new TranslationLineParser(wiktionaryPageName);

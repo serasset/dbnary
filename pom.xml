@@ -3,7 +3,7 @@
 
   <groupId>org.getalp</groupId>
   <artifactId>dbnary</artifactId>
-  <version>2.1.1</version>
+  <version>2.2RC1</version>
   <packaging>pom</packaging>
 
   <inceptionYear>2010</inceptionYear>
@@ -29,7 +29,10 @@
   </licenses>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	  <jaxb.api.version>2.3.0</jaxb.api.version>
+ 	  <javax.activation.version>1.2.0</javax.activation.version>
+    <jena.version>3.13.1</jena.version>
   </properties>
 
   <issueManagement>
@@ -84,16 +87,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.0</version>
         <configuration>
           <failOnError>false</failOnError>
-          <!--tags>
-            <tag>
-              <name>uml.property</name>
-              <!- - The value X makes javadoc ignoring the tag - ->
-              <placement>X</placement>
-            </tag>
-          </tags-->
+          <source>8</source>
+          <!--doclint>none</doclint-->
         </configuration>
       </plugin>
       <plugin>
@@ -112,29 +110,72 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.25</version>
+      <version>1.7.30</version>
     </dependency>
     <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>apache-jena-libs</artifactId>
       <type>pom</type>
-      <version>3.10.0</version>
+      <version>${jena.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-log4j12</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
+        </exclusion>
+        <!-- older jackson is used in 3.13.1 version of jena -->
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-core</artifactId>
+        </exclusion>
+        <!-- older commons-compress is used in 3.13.1 version of jena -->
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-compress</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.9</version>
+      <version>4.12</version>
       <scope>test</scope>
+    </dependency>
+    <!-- Java 6 = JAXB version 2.0   -->
+    <!-- Java 7 = JAXB version 2.2.3 -->
+    <!-- Java 8 = JAXB version 2.2.8 -->
+    <!-- Java 9 = JAXB version 2.3.0 -->
+    <!-- These dependencies should be used if using the JDK 9+ -->
+    <dependency>
+      <groupId>com.sun.activation</groupId>
+      <artifactId>javax.activation</artifactId>
+      <version>${javax.activation.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>${jaxb.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-core</artifactId>
+      <version>${jaxb.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>${jaxb.api.version}</version>
     </dependency>
   </dependencies>
 
@@ -143,13 +184,12 @@
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-ssh</artifactId>
-        <version>2.12</version>
+        <version>3.4.0</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-ssh-external</artifactId>
-        <version>2.12</version>
-        <!-- version was 2.6-->
+        <version>3.4.0</version>
       </extension>
     </extensions>
 
@@ -164,17 +204,21 @@
               <goal>compile</goal>
             </goals>
           </execution>
-        </executions><!-- TODO: Change plugins versions to current stable versions -->
+        </executions>
         <configuration>
           <fork>true</fork>
           <source>8</source>
           <target>8</target>
+          <compilerArgs>
+            <!-- arg>-Werror</arg-->
+            <arg>-Xlint:all</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
       <plugin>
         <groupId>com.amashchenko.maven.plugin</groupId>
         <artifactId>gitflow-maven-plugin</artifactId>
-        <version>1.12.0</version>
+        <version>1.14.0</version>
         <configuration>
           <allowSnapshots>true</allowSnapshots>
           <verbose>true</verbose>
@@ -228,7 +272,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.2.0</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -241,10 +285,11 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>1.19</version>
+        <version>1.20</version>
         <configuration>
-          <verbose>false</verbose>
+          <verbose>true</verbose>
           <copyrightOwners>Gilles Sérasset, Université Grenoble Alpes</copyrightOwners>
+          <licenseName>mit</licenseName>
         </configuration>
         <executions>
           <execution>
@@ -255,13 +300,6 @@
               <!--goal>update-file-header</goal-->
             </goals>
             <phase>process-sources</phase>
-            <configuration>
-              <licenseName>mit</licenseName>
-              <!--roots>
-                <root>src/main/java</root>
-                <root>src/test/java</root>
-              </roots-->
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -272,18 +310,17 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
-          <!--version>3.1</version-->
+          <version>3.8.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>2.9</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.7.1</version>
+          <version>3.9.0</version>
           <configuration>
             <outputEncoding>UTF-8</outputEncoding>
           </configuration>
@@ -291,7 +328,7 @@
             <dependency><!-- add support for ssh/scp -->
               <groupId>org.apache.maven.wagon</groupId>
               <artifactId>wagon-ssh-external</artifactId>
-              <version>2.12</version>
+              <version>3.4.0</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -299,17 +336,16 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
           <version>1.6.0</version>
-          <!-- was 1.2.1-->
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.2.1</version>
+          <version>3.2.3</version>
         </plugin>
         <plugin>
           <groupId>net.revelc.code.formatter</groupId>
           <artifactId>formatter-maven-plugin</artifactId>
-          <version>2.7.0</version>
+          <version>2.11.0</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -320,26 +356,6 @@
       <!-- Getalp third party stuff -->
       <id>getalp.repository</id>
       <url>http://getalp.imag.fr/m2/</url>
-    </repository>
-    <repository>
-      <id>info-bliki-repository</id>
-      <url>http://gwtwiki.googlecode.com/svn/maven-repository/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>info-bliki-snapshot-repository</id>
-      <url>http://gwtwiki.googlecode.com/svn/maven-snapshot-repository/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
     </repository>
     <repository>
       <id>ukp-oss-releases</id>
@@ -364,61 +380,8 @@
       </snapshots>
     </repository>
     <repository>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-        <checksumPolicy>warn</checksumPolicy>
-      </snapshots>
-      <id>osr-public-repo</id>
-      <name>OSR Public Repository</name>
-      <url>http://mojo-maven.cs.fau.de/content/repositories/public</url>
-    </repository>
-    <repository>
       <id>sonatype-snapshots</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
   </repositories>
-  <profiles>
-    <profile>
-      <id>only-eclipse</id>
-      <activation>
-        <property>
-          <name>m2e.version</name>
-        </property>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.eclipse.m2e</groupId>
-              <artifactId>lifecycle-mapping</artifactId>
-              <version>1.0.0</version>
-              <configuration>
-                <lifecycleMappingMetadata>
-                  <pluginExecutions>
-                    <pluginExecution>
-                      <pluginExecutionFilter>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>native2ascii-maven-plugin</artifactId>
-                        <versionRange>[1.0-beta-1,)</versionRange>
-                        <goals>
-                          <goal>native2ascii</goal>
-                        </goals>
-                      </pluginExecutionFilter>
-                      <action>
-                        <execute />
-                      </action>
-                    </pluginExecution>
-                  </pluginExecutions>
-                </lifecycleMappingMetadata>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-  </profiles>
 </project>

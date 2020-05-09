@@ -1,7 +1,5 @@
 package org.getalp.dbnary.bliki;
 
-import info.bliki.extensions.scribunto.engine.ScribuntoEngine;
-import info.bliki.extensions.scribunto.engine.lua.CompiledScriptCache;
 import info.bliki.wiki.filter.HTMLConverter;
 import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.Configuration;

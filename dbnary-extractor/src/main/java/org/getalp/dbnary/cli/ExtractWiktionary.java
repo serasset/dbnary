@@ -19,7 +19,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
@@ -71,6 +71,9 @@ public class ExtractWiktionary {
   private static final String ETYMOLOGY_OUTPUT_FILE_LONG_OPTION = "etymology";
   private static final String ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION = "E";
 
+  private static final String METADATA_OUTPUT_FILE_LONG_OPTION = "lime";
+  private static final String METADATA_OUTPUT_FILE_SHORT_OPTION = "L";
+
   protected static final String URI_PREFIX_LONG_OPTION = "prefix";
   protected static final String URI_PREFIX_SHORT_OPTION = "p";
 
@@ -80,6 +83,8 @@ public class ExtractWiktionary {
   private static final String TO_PAGE_LONG_OPTION = "topage";
   private static final String TO_PAGE_SHORT_OPTION = "T";
 
+  private static final String VERBOSE_OPTION = "v";
+
   public static final XMLInputFactory2 xmlif;
 
 
@@ -88,6 +93,7 @@ public class ExtractWiktionary {
   private String outputFile = DEFAULT_OUTPUT_FILE;
   private String morphoOutputFile = null;
   private String etymologyOutputFile = null;
+  private String limeOutputFile = null;
   private String outputFormat = DEFAULT_OUTPUT_FORMAT;
   private String model = DEFAULT_MODEL;
   private boolean compress;
@@ -98,6 +104,7 @@ public class ExtractWiktionary {
   private int fromPage = 0;
   private int toPage = Integer.MAX_VALUE;
   private String extractorVersion;
+  private boolean verbose;
 
   WiktionaryIndex wi;
   IWiktionaryExtractor we;
@@ -109,6 +116,7 @@ public class ExtractWiktionary {
     options = new Options();
     options.addOption("h", "help", false, "Prints usage and exits. ");
     options.addOption(SUFFIX_OUTPUT_FILE_OPTION, false, "Add a unique suffix to output file. ");
+    options.addOption(VERBOSE_OPTION, false, "Be verbose on what I do... ");
     options.addOption(LANGUAGE_OPTION, true,
         "Language (fra, eng, deu or por). " + DEFAULT_LANGUAGE + " by default.");
     options.addOption(OUTPUT_FORMAT_OPTION, true,
@@ -120,26 +128,31 @@ public class ExtractWiktionary {
     options.addOption(MODEL_OPTION, true, "(Deprecated) the model will always be " + DEFAULT_MODEL);
     options.addOption(OUTPUT_FILE_OPTION, true,
         "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");
-    options.addOption(OptionBuilder.withLongOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("Output file for morphology data. Undefined by default.").hasArg()
-        .withArgName("file").create(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)
-        .withDescription("extract etymology data.").hasArg().withArgName("file")
-        .create(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(URI_PREFIX_LONG_OPTION)
-        .withDescription("set the URI prefix used in the extracted dataset. Default: "
+    options.addOption(Option.builder(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION)
+        .longOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION)
+        .desc("Output file for morphology data. Undefined by default.").hasArg().argName("file")
+        .build());
+    options.addOption(Option.builder(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION)
+        .longOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION).desc("extract etymology data.").hasArg()
+        .argName("file").build());
+    options.addOption(
+        Option.builder(METADATA_OUTPUT_FILE_SHORT_OPTION).longOpt(METADATA_OUTPUT_FILE_LONG_OPTION)
+            .desc("Output file for LIME metadata. Undefined by default.").hasArg().argName("file")
+            .build());
+    options.addOption(Option.builder(URI_PREFIX_SHORT_OPTION).longOpt(URI_PREFIX_LONG_OPTION)
+        .desc("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
-        .hasArg().withArgName("uri").create(URI_PREFIX_SHORT_OPTION));
+        .hasArg().argName("uri").build());
     options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign Languages");
-    options.addOption(OptionBuilder.withLongOpt(FROM_PAGE_LONG_OPTION)
-        .withDescription("Do not process pages before the nth one. 0 by default.").hasArg()
-        .withArgName("num").create(FROM_PAGE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(TO_PAGE_LONG_OPTION)
-        .withDescription("Do not process pages after the nth one. MAXINT by default.").hasArg()
-        .withArgName("num").create(TO_PAGE_SHORT_OPTION));
-    options.addOption(OptionBuilder.withLongOpt(TDB_OPTION).withDescription(
-        "Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
-        .create());
+    options.addOption(Option.builder(FROM_PAGE_SHORT_OPTION).longOpt(FROM_PAGE_LONG_OPTION)
+        .desc("Do not process pages before the nth one. 0 by default.").hasArg().argName("num")
+        .build());
+    options.addOption(Option.builder(TO_PAGE_SHORT_OPTION).longOpt(TO_PAGE_LONG_OPTION)
+        .desc("Do not process pages after the nth one. MAXINT by default.").hasArg().argName("num")
+        .build());
+    options.addOption(Option.builder().longOpt(TDB_OPTION)
+        .desc("Use a temporary TDB to back the extractors models (use only for big extractions).")
+        .build());
   }
 
   static {
@@ -188,6 +201,8 @@ public class ExtractWiktionary {
       System.exit(0);
     }
 
+    verbose = cmd.hasOption(VERBOSE_OPTION);
+
     extractorVersion = "UNKNOWN";
     Manifest mf = new Manifest();
     try {
@@ -211,6 +226,9 @@ public class ExtractWiktionary {
         Path temp = Files.createTempDirectory("dbnary");
         temp.toFile().deleteOnExit();
         tdbDir = temp.toAbsolutePath().toString();
+        if (verbose) {
+          System.err.println("Using temp TDB at " + tdbDir);
+        }
         log.debug("Using TDB in {}", tdbDir);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
           try {
@@ -256,6 +274,11 @@ public class ExtractWiktionary {
     if (cmd.hasOption(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION)) {
       etymologyOutputFile = cmd.getOptionValue(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION);
     }
+
+    if (cmd.hasOption(METADATA_OUTPUT_FILE_LONG_OPTION)) {
+      limeOutputFile = cmd.getOptionValue(METADATA_OUTPUT_FILE_LONG_OPTION);
+    }
+
     if (cmd.hasOption(LANGUAGE_OPTION)) {
       language = cmd.getOptionValue(LANGUAGE_OPTION);
       language = LangTools.getCode(language);
@@ -293,6 +316,9 @@ public class ExtractWiktionary {
     if (etymologyOutputFile != null) {
       wdh.enableFeature(Feature.ETYMOLOGY);
     }
+    if (limeOutputFile != null) {
+      wdh.enableFeature(Feature.LIME);
+    }
 
     if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
       we = WiktionaryExtractorFactory.getForeignExtractor(language, wdh);
@@ -312,6 +338,18 @@ public class ExtractWiktionary {
     outputFile = outputFile + outputFileSuffix;
 
     dumpFile = new File(remainingArgs[0]);
+
+    if (verbose) {
+      System.err.println("Extracting Wiktionary Dump:");
+      System.err.println("  Language: " + language);
+      System.err.println("  Dump: " + dumpFile);
+      System.err.println("  TDB : " + tdbDir);
+      System.err.println("  Ontolex : " + outputFile);
+      System.err.println("  Etymology : " + etymologyOutputFile);
+      System.err.println("  Morphology : " + morphoOutputFile);
+      System.err.println("  LIME : " + limeOutputFile);
+      System.err.println("  Format : " + outputFormat);
+    }
   }
 
   public void extract() throws IOException {
@@ -391,6 +429,10 @@ public class ExtractWiktionary {
       if (null != etymologyOutputFile) {
         saveBox(Feature.ETYMOLOGY, etymologyOutputFile);
       }
+      if (null != limeOutputFile) {
+        saveBox(Feature.LIME, limeOutputFile);
+      }
+
 
     } catch (XMLStreamException ex) {
       System.out.println(ex.getMessage());

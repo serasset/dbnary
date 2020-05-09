@@ -88,7 +88,7 @@ public class Etymology {
     // superseded and equivalent to
     tmp.put("COLON", Arrays.asList(":"));
     tmp.put("SLASH", Arrays.asList("/"));
-    mappings = new HashMap(tmp);
+    mappings = new HashMap<>(tmp);
   }
 
   public static List<String> bulletSymbolsList =

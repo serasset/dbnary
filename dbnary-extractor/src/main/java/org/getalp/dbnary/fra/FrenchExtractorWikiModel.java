@@ -383,18 +383,20 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
           HashSet<PropertyObjectPair> infl = new HashSet<>(infos);
 
           String form = tdList.item(1).getTextContent().replace('\u00A0', ' ').trim();
-          if (form.charAt(0) == '-') {
-            // "dépèche-toi"
-            getPerson(infl, form, i, lines.getLength());
-            form = tdList.item(0).getTextContent().replace('\u00A0', ' ').trim();
-          } else {
-            getPerson(infl, tdList.item(0).getTextContent().replace('\u00A0', ' ').trim(), i,
-                lines.getLength());
-          }
+          if (form.length() > 0) {
+            if (form.charAt(0) == '-') {
+              // "dépèche-toi"
+              getPerson(infl, form, i, lines.getLength());
+              form = tdList.item(0).getTextContent().replace('\u00A0', ' ').trim();
+            } else {
+              getPerson(infl, tdList.item(0).getTextContent().replace('\u00A0', ' ').trim(), i,
+                  lines.getLength());
+            }
 
-          if (!"—".equals(form)) {
-            delegate.registerInflection("fr", "-verb-", form, delegate.currentLexEntry(), 0, infl,
-                null);
+            if (!"—".equals(form)) {
+              delegate.registerInflection("fr", "-verb-", form, delegate.currentLexEntry(), 0, infl,
+                  null);
+            }
           }
         }
       }

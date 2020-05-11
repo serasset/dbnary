@@ -4,6 +4,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.getalp.LangTools;
+import org.getalp.dbnary.IWiktionaryDataHandler.Feature;
+import org.getalp.dbnary.enhancer.TranslationSourcesDisambiguator;
+import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
+import org.getalp.dbnary.enhancer.preprocessing.StatsModule;
 import org.getalp.dbnary.wiki.WikiPatterns;
 
 public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtractor {
@@ -497,7 +501,13 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   @Override
   public void postProcessData() {
-    // do nothing
+    if (wdh.isDisabled(Feature.ENHANCEMENT)) return;
+    StatsModule stats = new StatsModule();
+    EvaluationStats evaluator = new EvaluationStats();
+    TranslationSourcesDisambiguator disambiguator = new TranslationSourcesDisambiguator(0.1, 0.9,
+        0.05, true, stats, evaluator);
+    // TODO: getCurrentEntryLanguage may be incorrect in DataHandler refinements...
+    disambiguator.processTranslations(wdh.getFeatureBox(Feature.MAIN), wdh.getFeatureBox(Feature.ENHANCEMENT), wdh.getCurrentEntryLanguage());
   }
 
   @Override

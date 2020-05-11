@@ -228,7 +228,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   protected void addOtherFormPropertiesToLexicalEntry(Resource lexEntry,
       HashSet<PropertyObjectPair> properties) {
 
-    Model morphoBox = featureBoxes.get(Feature.MORPHOLOGY);
+    Model morphoBox = this.getFeatureBox(Feature.MORPHOLOGY);
     if (null == morphoBox) {
       return;
     }

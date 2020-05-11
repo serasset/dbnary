@@ -133,7 +133,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return null;
     }
     Model eBox = null;
-    if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) != null) {
+    if ((eBox = this.getFeatureBox(Feature.ETYMOLOGY)) != null) {
       // TODO : should I check that getPrefix returns null ?
       lang = EnglishLangToCode.threeLettersCode(lang);
       Resource r =
@@ -162,7 +162,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return;
     }
     Model eBox = null;
-    if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) == null) {
+    if ((eBox = this.getFeatureBox(Feature.ETYMOLOGY)) == null) {
       return;
     }
     if (currentEtymologyEntry == null) { // there is no etymology section
@@ -223,7 +223,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void registerDerived(Etymology etymology) {
     Model eBox = null;
-    if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) == null) {
+    if ((eBox = this.getFeatureBox(Feature.ETYMOLOGY)) == null) {
       return;
     }
 
@@ -271,7 +271,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void registerCurrentEtymologyEntry(String lang) {
     Model eBox = null;
-    if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) == null) {
+    if ((eBox = this.getFeatureBox(Feature.ETYMOLOGY)) == null) {
       return;
     }
 
@@ -295,7 +295,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void registerEtymology(Etymology etymology) {
     Model eBox = null;
-    if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) == null) {
+    if ((eBox = this.getFeatureBox(Feature.ETYMOLOGY)) == null) {
       return;
     }
 
@@ -385,7 +385,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void addAncestorsAndRegisterDescendants(Etymology etymology) {
     Model eBox = null;
-    if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) == null) {
+    if ((eBox = this.getFeatureBox(Feature.ETYMOLOGY)) == null) {
       return;
     }
 
@@ -458,7 +458,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // Do not try to merge new form with an existing compatible one in English.
     // This would lead to a Past becoming a PastParticiple when registering the past participle
     // form.
-    Model morphoBox = featureBoxes.get(Feature.MORPHOLOGY);
+    Model morphoBox = this.getFeatureBox(Feature.MORPHOLOGY);
 
     if (null == morphoBox) {
       return;

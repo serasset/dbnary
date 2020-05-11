@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
@@ -13,7 +14,7 @@ public interface IWiktionaryDataHandler {
 
 
   enum Feature {
-    MAIN, MORPHOLOGY, ETYMOLOGY, LIME;
+    MAIN, MORPHOLOGY, ETYMOLOGY, LIME, ENHANCEMENT;
   }
 
   /**
@@ -22,6 +23,8 @@ public interface IWiktionaryDataHandler {
    * @param f Feature
    */
   void enableFeature(Feature f);
+
+  Model getFeatureBox(Feature f);
 
   boolean isDisabled(Feature f);
 

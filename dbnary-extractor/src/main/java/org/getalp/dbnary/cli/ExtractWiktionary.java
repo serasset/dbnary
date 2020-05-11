@@ -1,6 +1,7 @@
 package org.getalp.dbnary.cli;
 
 import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,6 +51,7 @@ public class ExtractWiktionary {
   private static final String OUTPUT_FORMAT_OPTION = "f";
   private static final String DEFAULT_OUTPUT_FORMAT = "ttl";
 
+  @Deprecated
   private static final String MODEL_OPTION = "m";
   private static final String DEFAULT_MODEL = "ontolex";
 
@@ -74,6 +76,9 @@ public class ExtractWiktionary {
   private static final String METADATA_OUTPUT_FILE_LONG_OPTION = "lime";
   private static final String METADATA_OUTPUT_FILE_SHORT_OPTION = "L";
 
+  private static final String ENHANCEMENT_OUTPUT_FILE_LONG_OPTION = "enhancement";
+  private static final String ENHANCEMENT_OUTPUT_FILE_SHORT_OPTION = "X";
+
   protected static final String URI_PREFIX_LONG_OPTION = "prefix";
   protected static final String URI_PREFIX_SHORT_OPTION = "p";
 
@@ -94,6 +99,7 @@ public class ExtractWiktionary {
   private String morphoOutputFile = null;
   private String etymologyOutputFile = null;
   private String limeOutputFile = null;
+  private String enhancementOutputFile = null;
   private String outputFormat = DEFAULT_OUTPUT_FORMAT;
   private String model = DEFAULT_MODEL;
   private boolean compress;
@@ -138,6 +144,10 @@ public class ExtractWiktionary {
     options.addOption(
         Option.builder(METADATA_OUTPUT_FILE_SHORT_OPTION).longOpt(METADATA_OUTPUT_FILE_LONG_OPTION)
             .desc("Output file for LIME metadata. Undefined by default.").hasArg().argName("file")
+            .build());
+    options.addOption(
+        Option.builder(ENHANCEMENT_OUTPUT_FILE_SHORT_OPTION).longOpt(ENHANCEMENT_OUTPUT_FILE_LONG_OPTION)
+            .desc("Output file for ENHANCED (disambiguated) data. Undefined by default.").hasArg().argName("file")
             .build());
     options.addOption(Option.builder(URI_PREFIX_SHORT_OPTION).longOpt(URI_PREFIX_LONG_OPTION)
         .desc("set the URI prefix used in the extracted dataset. Default: "
@@ -279,17 +289,21 @@ public class ExtractWiktionary {
       limeOutputFile = cmd.getOptionValue(METADATA_OUTPUT_FILE_LONG_OPTION);
     }
 
+    if (cmd.hasOption(ENHANCEMENT_OUTPUT_FILE_LONG_OPTION)) {
+      enhancementOutputFile = cmd.getOptionValue(ENHANCEMENT_OUTPUT_FILE_LONG_OPTION);
+    }
+
     if (cmd.hasOption(LANGUAGE_OPTION)) {
       language = cmd.getOptionValue(LANGUAGE_OPTION);
       language = LangTools.getCode(language);
     }
 
     if (cmd.hasOption(FROM_PAGE_LONG_OPTION)) {
-      fromPage = Integer.valueOf(cmd.getOptionValue(FROM_PAGE_LONG_OPTION));
+      fromPage = Integer.parseInt(cmd.getOptionValue(FROM_PAGE_LONG_OPTION));
     }
 
     if (cmd.hasOption(TO_PAGE_LONG_OPTION)) {
-      toPage = Integer.valueOf(cmd.getOptionValue(TO_PAGE_LONG_OPTION));
+      toPage = Integer.parseInt(cmd.getOptionValue(TO_PAGE_LONG_OPTION));
     }
     String[] remainingArgs = cmd.getArgs();
     if (remainingArgs.length != 1) {
@@ -307,9 +321,13 @@ public class ExtractWiktionary {
 
     if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
       wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language, tdbDir);
+      we = WiktionaryExtractorFactory.getForeignExtractor(language, wdh);
     } else {
       wdh = WiktionaryDataHandlerFactory.getDataHandler(language, tdbDir);
+      we = WiktionaryExtractorFactory.getExtractor(language, wdh);
     }
+
+
     if (morphoOutputFile != null) {
       wdh.enableFeature(Feature.MORPHOLOGY);
     }
@@ -319,11 +337,8 @@ public class ExtractWiktionary {
     if (limeOutputFile != null) {
       wdh.enableFeature(Feature.LIME);
     }
-
-    if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
-      we = WiktionaryExtractorFactory.getForeignExtractor(language, wdh);
-    } else {
-      we = WiktionaryExtractorFactory.getExtractor(language, wdh);
+    if (enhancementOutputFile != null) {
+      wdh.enableFeature(Feature.ENHANCEMENT);
     }
 
     if (null == we) {
@@ -348,6 +363,7 @@ public class ExtractWiktionary {
       System.err.println("  Etymology : " + etymologyOutputFile);
       System.err.println("  Morphology : " + morphoOutputFile);
       System.err.println("  LIME : " + limeOutputFile);
+      System.err.println("  Enhancement : " + enhancementOutputFile);
       System.err.println("  Format : " + outputFormat);
     }
   }
@@ -431,6 +447,9 @@ public class ExtractWiktionary {
       }
       if (null != limeOutputFile) {
         saveBox(Feature.LIME, limeOutputFile);
+      }
+      if (null != enhancementOutputFile) {
+        saveBox(Feature.ENHANCEMENT, enhancementOutputFile);
       }
 
 

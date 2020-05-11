@@ -50,7 +50,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   private final String tdbDir;
   protected Model aBox;
-  protected Map<Feature, Model> featureBoxes;
+
+  private Map<Feature, Model> featureBoxes;
 
   // States used for processing
   protected Resource currentLexEntry;
@@ -147,7 +148,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     aBox.setNsPrefix(lang, NS);
     aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
     aBox.setNsPrefix("dbetym", DBnaryEtymologyOnt.getURI());
-    // aBox.setNsPrefix("lemon", LemonOnt.getURI());
     aBox.setNsPrefix("lexinfo", LexinfoOnt.getURI());
     aBox.setNsPrefix("rdfs", RDFS.getURI());
     aBox.setNsPrefix("dcterms", DCTerms.getURI());
@@ -183,6 +183,11 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     Model box = createAndInitializeABox(wktLanguageEdition, f);
     // fillInPrefixes(aBox, box);
     featureBoxes.put(f, box);
+  }
+
+  @Override
+  public Model getFeatureBox(Feature f) {
+    return featureBoxes.get(f);
   }
 
   @Override
@@ -271,7 +276,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   public void populateMetadata(String dumpFilename, String extractorVersion) {
     if (isDisabled(Feature.LIME))
       return;
-    Model limeBox = featureBoxes.get(Feature.LIME);
+    Model limeBox = this.getFeatureBox(Feature.LIME);
     Resource creator = limeBox.createResource("http://serasset.bitbucket.io/");
     Resource lexicon = limeBox.createResource(
         getPrefix() + "___" + wktLanguageEdition + "_dbnary_dataset", LimeOnt.Lexicon);
@@ -601,7 +606,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   protected void addOtherFormPropertiesToLexicalEntry(Resource lexEntry,
       HashSet<PropertyObjectPair> properties) {
     boolean foundCompatible = false;
-    Model morphoBox = featureBoxes.get(Feature.MORPHOLOGY);
+    Model morphoBox = this.getFeatureBox(Feature.MORPHOLOGY);
 
     if (null == morphoBox) {
       return;
@@ -953,7 +958,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void dump(Feature f, OutputStream out, String format) {
-    Model box = featureBoxes.get(f);
+    Model box = this.getFeatureBox(f);
     if (null != box) {
       box.write(out, format);
     }

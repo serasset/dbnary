@@ -38,8 +38,7 @@ public class TranslationSourcesDisambiguator {
     this.evaluator = evaluator;
   }
 
-  protected void processTranslations(Model inputModel, Model outputModel, String lang)
-      throws FileNotFoundException {
+  public void processTranslations(Model inputModel, Model outputModel, String lang) {
 
     if (null != evaluator) {
       evaluator.reset(lang);

@@ -3,30 +3,27 @@ package org.getalp.dbnary;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
 
 public interface IWiktionaryDataHandler {
 
-
-
-  enum Feature {
-    MAIN, MORPHOLOGY, ETYMOLOGY, LIME, ENHANCEMENT;
-  }
 
   /**
    * Enable the extraction of morphological data in a second Model if available.
    *
    * @param f Feature
    */
-  void enableFeature(Feature f);
+  void enableFeature(ExtractionFeature f);
 
-  Model getFeatureBox(Feature f);
+  Model getFeatureBox(ExtractionFeature f);
 
-  boolean isDisabled(Feature f);
+  boolean isDisabled(ExtractionFeature f);
 
   void initializePageExtraction(String wiktionaryPageName);
 
@@ -123,7 +120,7 @@ public interface IWiktionaryDataHandler {
    * @param out an OutputStream
    * @param format a String
    */
-  void dump(Feature f, OutputStream out, String format);
+  void dump(ExtractionFeature f, OutputStream out, String format);
 
   void registerNymRelationOnCurrentSense(String target, String synRelation);
 
@@ -148,4 +145,5 @@ public interface IWiktionaryDataHandler {
 
   void populateMetadata(String dumpFilename, String extractorVersion);
 
+  void addTranslationGlossesStats(Entry<String, TranslationGlossesStat> e, String dumpFileName);
 }

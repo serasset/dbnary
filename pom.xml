@@ -300,7 +300,7 @@
             </manifest>
             <manifestEntries>
               <Implementation-Build>${buildNumber}</Implementation-Build>
-              <Extractor-Version>${project.groupId}.${project.artifactId}.${project.version}-${buildNumber}</Extractor-Version>
+              <Extractor-Version>${project.version}-r${buildNumber}</Extractor-Version>
             </manifestEntries>
           </archive>
         </configuration>

@@ -16,7 +16,7 @@ import org.getalp.dbnary.enhancer.disambiguation.InvalidEntryException;
 import org.getalp.dbnary.enhancer.disambiguation.SenseNumberBasedTranslationDisambiguationMethod;
 import org.getalp.dbnary.enhancer.disambiguation.TverskyBasedTranslationDisambiguationMethod;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
-import org.getalp.dbnary.enhancer.preprocessing.StatsModule;
+import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStatsModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,13 +27,13 @@ public class TranslationSourcesDisambiguator {
   private double beta;
   private double delta;
   private boolean useGlosses;
-  private StatsModule stats;
+  private TranslationGlossesStatsModule stats;
   private EvaluationStats evaluator;
 
   private Logger log = LoggerFactory.getLogger(TranslationSourcesDisambiguator.class);
 
   public TranslationSourcesDisambiguator(double alpha, double beta, double delta,
-      boolean useGlosses, StatsModule stats, EvaluationStats evaluator) {
+      boolean useGlosses, TranslationGlossesStatsModule stats, EvaluationStats evaluator) {
     this.alpha = alpha;
     this.beta = beta;
     this.delta = delta;
@@ -121,7 +121,6 @@ public class TranslationSourcesDisambiguator {
 
     translationToWSMap.forEach((t, wss) -> wss.forEach(ws -> outputModel.add(outputModel
         .createStatement(t, DBnaryOnt.isTranslationOf, outputModel.createResource(ws.getURI())))));
-
 
   }
 

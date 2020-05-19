@@ -299,7 +299,7 @@
               <useUniqueVersions>true</useUniqueVersions>
             </manifest>
             <manifestEntries>
-              <Implementation-Build>$\{buildNumber}</Implementation-Build>
+              <Implementation-Build>${buildNumber}</Implementation-Build>
               <Extractor-Version>${project.groupId}.${project.artifactId}.${project.version}-${buildNumber}</Extractor-Version>
             </manifestEntries>
           </archive>

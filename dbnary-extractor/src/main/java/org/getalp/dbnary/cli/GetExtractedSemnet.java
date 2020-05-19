@@ -13,7 +13,7 @@ import org.apache.commons.cli.ParseException;
 import org.getalp.LangTools;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.IWiktionaryDataHandler.Feature;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.IWiktionaryExtractor;
 import org.getalp.dbnary.WiktionaryDataHandlerFactory;
 import org.getalp.dbnary.WiktionaryExtractorFactory;
@@ -79,6 +79,7 @@ public class GetExtractedSemnet {
   String[] remainingArgs;
   IWiktionaryExtractor we;
   IWiktionaryDataHandler wdh;
+  private String dumpFileName;
 
   /**
    * Validate and set command line arguments. Exit after printing usage if anything is astray
@@ -139,11 +140,12 @@ public class GetExtractedSemnet {
         } else {
           wdh = WiktionaryDataHandlerFactory.getDataHandler(language, null);
         }
+        wdh.enableFeature(ExtractionFeature.ENHANCEMENT);
         if (extractsMorpho) {
-          wdh.enableFeature(Feature.MORPHOLOGY);
+          wdh.enableFeature(ExtractionFeature.MORPHOLOGY);
         }
         if (extractsEtymology) {
-          wdh.enableFeature(Feature.ETYMOLOGY);
+          wdh.enableFeature(ExtractionFeature.ETYMOLOGY);
         }
       } else {
         System.err.println("LMF format not supported anymore.");
@@ -166,7 +168,8 @@ public class GetExtractedSemnet {
       System.exit(1);
     }
 
-    wi = new WiktionaryIndex(remainingArgs[0]);
+    dumpFileName = remainingArgs[0];
+    wi = new WiktionaryIndex(dumpFileName);
     we.setWiktionaryIndex(wi);
   }
 
@@ -183,20 +186,25 @@ public class GetExtractedSemnet {
       String pageContent = wi.getTextOfPage(remainingArgs[i]);
       we.extractData(remainingArgs[i], pageContent);
     }
-    we.postProcessData();
+    we.postProcessData(dumpFileName);
 
-    dumpBox(Feature.MAIN);
+    dumpBox(ExtractionFeature.MAIN);
+
+    System.out.println("----------- ENHANCEMENT ----------");
+    dumpBox(ExtractionFeature.ENHANCEMENT);
+
     if (extractsMorpho) {
       System.out.println("----------- MORPHOLOGY ----------");
-      dumpBox(Feature.MORPHOLOGY);
+      dumpBox(ExtractionFeature.MORPHOLOGY);
     }
     if (extractsEtymology) {
       System.out.println("----------- ETYMOLOGY ----------");
-      dumpBox(Feature.ETYMOLOGY);
+      dumpBox(ExtractionFeature.ETYMOLOGY);
     }
+
   }
 
-  public void dumpBox(IWiktionaryDataHandler.Feature f) throws IOException {
+  public void dumpBox(ExtractionFeature f) throws IOException {
     OutputStream ostream = System.out;
     try {
       wdh.dump(f, new PrintStream(ostream, false, "UTF-8"), outputFormat);

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
@@ -228,7 +229,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   protected void addOtherFormPropertiesToLexicalEntry(Resource lexEntry,
       HashSet<PropertyObjectPair> properties) {
 
-    Model morphoBox = this.getFeatureBox(Feature.MORPHOLOGY);
+    Model morphoBox = this.getFeatureBox(ExtractionFeature.MORPHOLOGY);
     if (null == morphoBox) {
       return;
     }

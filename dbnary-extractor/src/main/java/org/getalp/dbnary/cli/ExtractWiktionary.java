@@ -1,6 +1,6 @@
 package org.getalp.dbnary.cli;
 
-import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
+import org.getalp.dbnary.ExtractionFeature;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -67,7 +67,7 @@ public class ExtractWiktionary {
 
   private static final String FOREIGN_EXTRACTION_OPTION = "x";
 
-  private static final String MORPHOLOGY_OUTPUT_FILE_LONG_OPTION = "morpho";
+  private static final String MORPHOLOGY_OUTPUT_FILE_LONG_OPTION = "morphology";
   private static final String MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION = "M";
 
   private static final String ETYMOLOGY_OUTPUT_FILE_LONG_OPTION = "etymology";
@@ -145,10 +145,10 @@ public class ExtractWiktionary {
         Option.builder(METADATA_OUTPUT_FILE_SHORT_OPTION).longOpt(METADATA_OUTPUT_FILE_LONG_OPTION)
             .desc("Output file for LIME metadata. Undefined by default.").hasArg().argName("file")
             .build());
-    options.addOption(
-        Option.builder(ENHANCEMENT_OUTPUT_FILE_SHORT_OPTION).longOpt(ENHANCEMENT_OUTPUT_FILE_LONG_OPTION)
-            .desc("Output file for ENHANCED (disambiguated) data. Undefined by default.").hasArg().argName("file")
-            .build());
+    options.addOption(Option.builder(ENHANCEMENT_OUTPUT_FILE_SHORT_OPTION)
+        .longOpt(ENHANCEMENT_OUTPUT_FILE_LONG_OPTION)
+        .desc("Output file for ENHANCED (disambiguated) data. Undefined by default.").hasArg()
+        .argName("file").build());
     options.addOption(Option.builder(URI_PREFIX_SHORT_OPTION).longOpt(URI_PREFIX_LONG_OPTION)
         .desc("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
@@ -230,7 +230,7 @@ public class ExtractWiktionary {
       outputFileSuffix = df.format(new Date());
     }
 
-    // TODO: TDB_DIR should be empty of non existant... check this
+    // TODO: TDB_DIR should be empty or non existant... check this
     if (cmd.hasOption(TDB_OPTION)) {
       try {
         Path temp = Files.createTempDirectory("dbnary");
@@ -329,16 +329,16 @@ public class ExtractWiktionary {
 
 
     if (morphoOutputFile != null) {
-      wdh.enableFeature(Feature.MORPHOLOGY);
+      wdh.enableFeature(ExtractionFeature.MORPHOLOGY);
     }
     if (etymologyOutputFile != null) {
-      wdh.enableFeature(Feature.ETYMOLOGY);
+      wdh.enableFeature(ExtractionFeature.ETYMOLOGY);
     }
     if (limeOutputFile != null) {
-      wdh.enableFeature(Feature.LIME);
+      wdh.enableFeature(ExtractionFeature.LIME);
     }
     if (enhancementOutputFile != null) {
-      wdh.enableFeature(Feature.ENHANCEMENT);
+      wdh.enableFeature(ExtractionFeature.ENHANCEMENT);
     }
 
     if (null == we) {
@@ -434,22 +434,24 @@ public class ExtractWiktionary {
           + formatHMS(totalRelevantTime) + " (" + nbPages + " scanned Pages)");
 
       // TODO : enable post processing after extraction ?
-      we.postProcessData();
+      if (verbose)
+        System.out.println("Postprocessing extracted entries.");
+      we.postProcessData(dumpFile.getName());
       we.populateMetadata(dumpFile.getName(), extractorVersion);
 
-      saveBox(Feature.MAIN, outputFile);
+      saveBox(ExtractionFeature.MAIN, outputFile);
 
       if (null != morphoOutputFile) {
-        saveBox(Feature.MORPHOLOGY, morphoOutputFile);
+        saveBox(ExtractionFeature.MORPHOLOGY, morphoOutputFile);
       }
       if (null != etymologyOutputFile) {
-        saveBox(Feature.ETYMOLOGY, etymologyOutputFile);
+        saveBox(ExtractionFeature.ETYMOLOGY, etymologyOutputFile);
       }
       if (null != limeOutputFile) {
-        saveBox(Feature.LIME, limeOutputFile);
+        saveBox(ExtractionFeature.LIME, limeOutputFile);
       }
       if (null != enhancementOutputFile) {
-        saveBox(Feature.ENHANCEMENT, enhancementOutputFile);
+        saveBox(ExtractionFeature.ENHANCEMENT, enhancementOutputFile);
       }
 
 
@@ -484,7 +486,7 @@ public class ExtractWiktionary {
     return String.format("%d:%2d:%2d", h, m, s);
   }
 
-  public void saveBox(IWiktionaryDataHandler.Feature f, String of) throws IOException {
+  public void saveBox(ExtractionFeature f, String of) throws IOException {
     OutputStream ostream;
     if (compress) {
       // outputFile = outputFile + ".bz2";

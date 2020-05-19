@@ -7,15 +7,15 @@ LANGS="fr"
 
 DEBUG=""
 NETWORK=""
-MORPHO="--enable morpho"
+MORPHO="--enable morphology"
 ETYMOLOGY="--enable etymology"
 LIME="--enable lime"
+ENHANCE="--enable enhancement"
 TDB=""
 DATE=""
 VERBOSE=""
-ENHANCE="false"
 
-while getopts ":d:t:v:D:nmMeElLTVX" opt; do
+while getopts ":d:t:v:D:nmMeElLTVxX" opt; do
   case $opt in
     d)
       DEBUG="${DEBUG} -Dorg.slf4j.simpleLogger.log.${OPTARG}=debug"
@@ -33,7 +33,7 @@ while getopts ":d:t:v:D:nmMeElLTVX" opt; do
       NETWORK="-n"
       ;;
     m)
-      MORPHO="--enable morpho"
+      MORPHO="--enable morphology"
       ;;
     M)
       MORPHO=""
@@ -50,11 +50,14 @@ while getopts ":d:t:v:D:nmMeElLTVX" opt; do
     E)
       ETYMOLOGY=""
       ;;
-    T)
-      TDB="--tdb"
+    x)
+      ENHANCE="--enable enhancer"
       ;;
     X)
-      ENHANCE="true"
+      ENHANCE=""
+      ;;
+    T)
+      TDB="--tdb"
       ;;
     V)
       VERBOSE="-v"
@@ -88,23 +91,10 @@ if [ ! -z $VERBOSE ]
 then
 echo $JAVA -Xmx16g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $TDB -d $DIR -z  -k 1 $LANGS
+    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $TDB -d $DIR -z  -k 1 $LANGS
 fi
 
 $JAVA -Xmx16g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $TDB -d $DIR -z  -k 1 $LANGS
-
-ENHANCER=dbnary-enhancer
-#-s http://dumps.wikimedia.org/
-if [ $ENHANCE == 'true' ]
-then
-  # Enhancing translation (source disambiguation)
-  if [ ! -z $VERBOSE ]
-then
-  echo $JAVA  -cp $HOME/.m2/repository/org/getalp/${ENHANCER}/${VERSION}/${ENHANCER}-${VERSION}-jar-with-dependencies.jar org.getalp.dbnary.enhancer.EnhanceLatestExtracts -d ${DIR}/extracts -z
-fi
-
-  $JAVA  -cp $HOME/.m2/repository/org/getalp/${ENHANCER}/${VERSION}/${ENHANCER}-${VERSION}-jar-with-dependencies.jar org.getalp.dbnary.enhancer.EnhanceLatestExtracts -d ${DIR}/extracts -z
-fi
+    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $TDB -d $DIR -z  -k 1 $LANGS
 

@@ -321,6 +321,34 @@
               </arguments>
             </configuration>
           </execution>
+          <execution>
+            <id>datacube</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>
+                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
+                </argument>
+                <argument>jena.schemagen</argument>
+                <argument>-i</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/cube.ttl</argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>-n</argument>
+                <argument>DataCubeOnt</argument>
+                <argument>--owl</argument>
+              </arguments>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>

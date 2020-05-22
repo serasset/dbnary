@@ -43,6 +43,28 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>apache-jena-libs</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+    </dependency>
+    <!--dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency-->
+    <dependency>
       <groupId>com.wcohen</groupId>
       <artifactId>secondstring</artifactId>
       <version>20120620</version>
@@ -73,7 +95,7 @@
       <version>0.6.2</version>
       <type>jar</type>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>org.jgrapht</groupId>
       <artifactId>jgrapht-core</artifactId>
       <version>1.0.1</version>
@@ -82,7 +104,7 @@
       <groupId>org.jgrapht</groupId>
       <artifactId>jgrapht-ext</artifactId>
       <version>1.0.1</version>
-    </dependency>
+    </dependency-->
   </dependencies>
 
   <build>

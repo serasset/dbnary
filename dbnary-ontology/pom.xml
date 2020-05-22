@@ -23,14 +23,13 @@
     <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>jena-cmds</artifactId>
-      <version>${jena.version}</version>
+      <!-- keep in test scope so that it is not required when the module is used as a dependency-->
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.getalp</groupId>
-      <artifactId>dbnary-commons</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>apache-jena-libs</artifactId>
+      <type>pom</type>
     </dependency>
   </dependencies>
   <build>

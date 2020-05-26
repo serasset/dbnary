@@ -307,11 +307,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     limeBox.add(limeBox.createStatement(lexicon, DCTerms.creator, creator));
     limeBox.add(limeBox.createLiteralStatement(lexicon, DCTerms.created,
         limeBox.createTypedLiteral(GregorianCalendar.getInstance())));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.source, "http://" + wktLanguageEdition + ".wiktionary.org/"));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.source,
+        "http://" + wktLanguageEdition + ".wiktionary.org/"));
 
 
-    limeBox.add(limeBox.createStatement(lexicon, FOAF.homepage, "http://kaiko.getalp.org/about-dbnary"));
-    limeBox.add(limeBox.createStatement(lexicon, FOAF.page, "http://kaiko.getalp.org/static/ontolex/" + wktLanguageEdition));
+    limeBox.add(
+        limeBox.createStatement(lexicon, FOAF.homepage, "http://kaiko.getalp.org/about-dbnary"));
+    limeBox.add(limeBox.createStatement(lexicon, FOAF.page,
+        "http://kaiko.getalp.org/static/ontolex/" + wktLanguageEdition));
 
     limeBox.add(limeBox.createStatement(lexicon, LimeOnt.language, wktLanguageEdition));
     limeBox.add(limeBox.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));

@@ -24,6 +24,7 @@ import org.apache.jena.rdf.model.ReifiedStatement;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
@@ -32,6 +33,7 @@ import org.apache.jena.vocabulary.XSD;
 import org.getalp.LangTools;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
 import org.getalp.dbnary.tools.CounterSet;
+import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -288,6 +290,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     Resource creator = limeBox.createResource("http://serasset.bitbucket.io/");
     Resource lexicon = limeBox.createResource(
         getPrefix() + "___" + wktLanguageEdition + "_dbnary_dataset", LimeOnt.Lexicon);
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.title,
+        ISO639_3.sharedInstance.getLanguageNameInEnglish(wktLanguageEdition) + " DBnary Dataset",
+        "en"));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.title,
+        "Dataset DBnary " + ISO639_3.sharedInstance.getLanguageNameInFrench(wktLanguageEdition),
+        "fr"));
     limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
         "This lexicon is extracted from the original wiktionary data that can be found"
             + " in http://" + wktLanguageEdition + ".wiktionary.org/ by the DBnary Extractor.",
@@ -299,6 +307,11 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     limeBox.add(limeBox.createStatement(lexicon, DCTerms.creator, creator));
     limeBox.add(limeBox.createLiteralStatement(lexicon, DCTerms.created,
         limeBox.createTypedLiteral(GregorianCalendar.getInstance())));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.source, "http://" + wktLanguageEdition + ".wiktionary.org/"));
+
+
+    limeBox.add(limeBox.createStatement(lexicon, FOAF.homepage, "http://kaiko.getalp.org/about-dbnary"));
+    limeBox.add(limeBox.createStatement(lexicon, FOAF.page, "http://kaiko.getalp.org/static/ontolex/" + wktLanguageEdition));
 
     limeBox.add(limeBox.createStatement(lexicon, LimeOnt.language, wktLanguageEdition));
     limeBox.add(limeBox.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));

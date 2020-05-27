@@ -10,7 +10,7 @@ DIR=$HOME/develop/wiktionary
 LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la"
 TLANGS="fra,eng,por,deu,ell,rus,ita,fin,tur,jpn"
 JAVA=java
-VERS=2.2RC1
+VERS=2.2.1
 MIRROR=http://dumps.wikimedia.org/
 #MIRROR=http://dumps.wikimedia.your.org/
 #MIRROR=http://wikipedia.c3sl.ufpr.br/
@@ -18,6 +18,11 @@ MIRROR=http://dumps.wikimedia.org/
 EXTRACTOR=dbnary-extractor
 ENHANCER=dbnary-enhancer
 OPTIONS="--tdb -v"
+
+# Change tmp dir on debian systems (as the default /tmp partition may niot be sufficient to cope with TDBs)
+if [ -f "/etc/debian_version" ]; then
+  JVM_OPTIONS="-Djava.io.tmpdir=/var/tmp/"
+fi
 
 if [ $# -ge 1 ]
 then
@@ -29,7 +34,7 @@ fi
   date 
   echo "==============================================="
 
-  $JAVA  -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateAndExtractDumps $OPTIONS -d $DIR -m ontolex -s $MIRROR -k 1 -z --enable morpho --enable etymology --enable lime $LANGS
+  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateAndExtractDumps $OPTIONS -d $DIR -m ontolex -s $MIRROR -k 1 -z --enable morpho --enable etymology --enable lime $LANGS
 
   echo "==============================================="
   echo -n "  DBnary dumps updated - "
@@ -37,7 +42,7 @@ fi
   echo "==============================================="
 
   # Enhancing translation (source disambiguation)
-  $JAVA  -cp $HOME/.m2/repository/org/getalp/${ENHANCER}/$VERS/${ENHANCER}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.enhancer.EnhanceLatestExtracts -d ${DIR}/extracts -z
+  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${ENHANCER}/$VERS/${ENHANCER}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.enhancer.EnhanceLatestExtracts -d ${DIR}/extracts -z
 
   echo "==============================================="
   echo -n "  DBnary dumps - enhanced "
@@ -45,7 +50,7 @@ fi
   echo "==============================================="
 
   # Updating latest extractions stats
-  $JAVA  -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateLatestStatistics  -d $DIR/extracts -c $TLANGS
+  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateLatestStatistics  -d $DIR/extracts -c $TLANGS
 
   # Updating archived extraction stats
   for lg in $LANGS

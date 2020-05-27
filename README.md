@@ -35,8 +35,8 @@ branching model. To successfully release the code using maven, we use the
 [git flow plugin](https://github.com/aleksandr-m/gitflow-maven-plugin).
  
 ```bash
-mvn gitflow:release-start 
-mvn deploy site:site site:deploy 
+mvn gitflow:release-start
+mvn deploy site:site site:deploy
 mvn gitflow:release-finish 
 ```
 

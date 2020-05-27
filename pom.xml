@@ -3,7 +3,7 @@
 
   <groupId>org.getalp</groupId>
   <artifactId>dbnary</artifactId>
-  <version>2.2.1-SNAPSHOT</version>
+  <version>2.2.1</version>
   <packaging>pom</packaging>
 
   <inceptionYear>2010</inceptionYear>

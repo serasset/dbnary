@@ -43,7 +43,7 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
       // Test if background color is grey.
       String color = getBackgroundColor(cell);
       if (color != null && (color.equalsIgnoreCase("#F4F4F4") || color.equalsIgnoreCase("#DEDEDE")
-          || color.equalsIgnoreCase("#C1C1C1"))) {
+          || color.equalsIgnoreCase("#C1C1C1") || color.equalsIgnoreCase("#CCCCFF"))) {
         return true;
       }
       // Test special cases when no gender/number metadata is given, but pronouns (ich, du, etc. are
@@ -262,6 +262,9 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
         case "":
         case " ":
           break;
+        case "Flexion der Verbaladjektive":
+          // This table header is the last one and cells under it should be ignored.
+          return null;
         default:
           log.debug("Deklination Extraction: Unhandled header {} in {}", h, wdh.currentLexEntry());
       }

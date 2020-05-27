@@ -207,12 +207,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   }
 
-  private void fillInPrefixes(Model aBox, Model morphoBox) {
-    for (Map.Entry<String, String> e : aBox.getNsPrefixMap().entrySet()) {
-      morphoBox.setNsPrefix(e.getKey(), e.getValue());
-    }
-  }
-
   @Override
   public void initializeEntryExtraction(String wiktionaryPageName) {
     currentSense = null;

@@ -177,6 +177,13 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
+  public void closeDataset() {
+    if (null != dataset) {
+      dataset.close();
+    }
+  }
+
+  @Override
   public void enableFeature(Feature f) {
     // TODO : keep the 3 letter code as the correct language for prefixes (wktLanguageEdition
     // is the 2 letter code).

@@ -354,106 +354,118 @@ public class ExtractWiktionary {
 
   public void extract() throws IOException {
 
-    // create new XMLStreamReader
-
-    long startTime = System.currentTimeMillis();
-    long totalRelevantTime = 0, relevantStartTime = 0, relevantTimeOfLastThousands;
-    int nbPages = 0, nbRelevantPages = 0;
-    relevantTimeOfLastThousands = System.currentTimeMillis();
-
-    XMLStreamReader2 xmlr = null;
     try {
-      // pass the file name. all relative entity references will be
-      // resolved against this as base URI.
-      xmlr = xmlif.createXMLStreamReader(dumpFile);
+      // create new XMLStreamReader
+      long startTime = System.currentTimeMillis();
+      long totalRelevantTime = 0, relevantStartTime = 0, relevantTimeOfLastThousands;
+      int nbPages = 0, nbRelevantPages = 0;
+      relevantTimeOfLastThousands = System.currentTimeMillis();
 
-      // check if there are more events in the input stream
-      String title = "";
-      String page = "";
-      while (xmlr.hasNext()) {
-        xmlr.next();
-        if (xmlr.isStartElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
-          title = "";
-          page = "";
-        } else if (xmlr.isStartElement()
-            && xmlr.getLocalName().equals(WiktionaryIndexer.titleTag)) {
-          title = xmlr.getElementText();
-        } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("text")) {
-          page = xmlr.getElementText();
-        } else if (xmlr.isEndElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
-          if (!title.equals("")) {
-            nbPages++;
-            int nbnodes = wdh.nbEntries();
-            if (nbPages < fromPage) {
-              continue;
-            }
-            if (nbPages > toPage) {
-              break;
-            }
-            try {
-              we.extractData(title, page);
-            } catch (RuntimeException e) {
-              System.err.println("Runtime exception while extracting  page<<" + title
-                  + ">>, proceeding to next pages.");
-              System.err.println(e.getMessage());
-              e.printStackTrace();
-            }
-            if (nbnodes != wdh.nbEntries()) {
-              totalRelevantTime = (System.currentTimeMillis() - startTime);
-              nbRelevantPages++;
-              if (nbRelevantPages % 1000 == 0) {
-                System.err.println("Extracted: " + nbRelevantPages + " pages in: "
-                    + formatHMS(totalRelevantTime) + " / Average = "
-                    + (totalRelevantTime / nbRelevantPages) + " ms/extracted page ("
-                    + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) ("
-                    + nbPages + " processed Pages)");
-                // System.err.println(" NbNodes = " + s.getNbNodes());
-                relevantTimeOfLastThousands = System.currentTimeMillis();
+      XMLStreamReader2 xmlr = null;
+      try {
+        // pass the file name. all relative entity references will be
+        // resolved against this as base URI.
+        xmlr = xmlif.createXMLStreamReader(dumpFile);
+
+        // check if there are more events in the input stream
+        String title = "";
+        String page = "";
+        while (xmlr.hasNext()) {
+          xmlr.next();
+          if (xmlr.isStartElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
+            title = "";
+            page = "";
+          } else if (xmlr.isStartElement()
+              && xmlr.getLocalName().equals(WiktionaryIndexer.titleTag)) {
+            title = xmlr.getElementText();
+          } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("text")) {
+            page = xmlr.getElementText();
+          } else if (xmlr.isEndElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
+            if (!title.equals("")) {
+              nbPages++;
+              int nbnodes = wdh.nbEntries();
+              if (nbPages < fromPage) {
+                continue;
+              }
+              if (nbPages > toPage) {
+                break;
+              }
+              try {
+                we.extractData(title, page);
+              } catch (RuntimeException e) {
+                System.err.println("Runtime exception while extracting  page<<" + title
+                    + ">>, proceeding to next pages.");
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+              }
+              if (nbnodes != wdh.nbEntries()) {
+                totalRelevantTime = (System.currentTimeMillis() - startTime);
+                nbRelevantPages++;
+                if (nbRelevantPages % 1000 == 0) {
+                  System.err.println("Extracted: " + nbRelevantPages + " pages in: "
+                      + formatHMS(totalRelevantTime) + " / Average = "
+                      + (totalRelevantTime / nbRelevantPages) + " ms/extracted page ("
+                      + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000 + " ms) ("
+                      + nbPages + " processed Pages)");
+                  // System.err.println(" NbNodes = " + s.getNbNodes());
+                  relevantTimeOfLastThousands = System.currentTimeMillis();
+                }
               }
             }
           }
         }
-      }
-      System.err.println("Extracted " + nbRelevantPages + " pages in: "
-          + formatHMS(totalRelevantTime) + " (" + nbPages + " scanned Pages)");
+        System.err.println("Extracted " + nbRelevantPages + " pages in: "
+            + formatHMS(totalRelevantTime) + " (" + nbPages + " scanned Pages)");
 
-      // TODO : enable post processing after extraction ?
-      we.postProcessData();
-      we.populateMetadata(dumpFile.getName(), extractorVersion);
+        // TODO : enable post processing after extraction ?
+        we.postProcessData();
+        we.populateMetadata(dumpFile.getName(), extractorVersion);
 
-      saveBox(Feature.MAIN, outputFile);
+        saveBox(Feature.MAIN, outputFile);
 
-      if (null != morphoOutputFile) {
-        saveBox(Feature.MORPHOLOGY, morphoOutputFile);
-      }
-      if (null != etymologyOutputFile) {
-        saveBox(Feature.ETYMOLOGY, etymologyOutputFile);
-      }
-      if (null != limeOutputFile) {
-        saveBox(Feature.LIME, limeOutputFile);
-      }
-
-
-    } catch (XMLStreamException ex) {
-      System.out.println(ex.getMessage());
-
-      if (ex.getNestedException() != null) {
-        ex.getNestedException().printStackTrace();
-      }
-      throw new IOException("XML Stream Exception while reading dump", ex);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      try {
-        if (xmlr != null) {
-          xmlr.close();
+        if (null != morphoOutputFile) {
+          saveBox(Feature.MORPHOLOGY, morphoOutputFile);
         }
+        if (null != etymologyOutputFile) {
+          saveBox(Feature.ETYMOLOGY, etymologyOutputFile);
+        }
+        if (null != limeOutputFile) {
+          saveBox(Feature.LIME, limeOutputFile);
+        }
+
       } catch (XMLStreamException ex) {
+        System.out.println(ex.getMessage());
+
+        if (ex.getNestedException() != null) {
+          ex.getNestedException().printStackTrace();
+        }
+        throw new IOException("XML Stream Exception while reading dump", ex);
+      } catch (Exception ex) {
         ex.printStackTrace();
+      } finally {
+        wdh.closeDataset();
+        try {
+          if (xmlr != null) {
+            xmlr.close();
+          }
+        } catch (XMLStreamException ex) {
+          ex.printStackTrace();
+        }
+
+      }
+    } finally {
+      // Force TDB dir deletion after language extraction to avoid disk exhaustion when the main
+      // method is called by UpdateAndExtractDumps.
+      if (null != tdbDir) {
+        try {
+          FileUtils.deleteDirectory(new File(tdbDir));
+        } catch (IOException e) {
+          System.err.println("Caught " + e.getClass()
+              + " when attempting to delete the temporary TDB directory " + tdbDir);
+          System.err.println(e.getLocalizedMessage());
+        }
       }
     }
-
-
   }
 
   private String formatHMS(long durationInMillis) {

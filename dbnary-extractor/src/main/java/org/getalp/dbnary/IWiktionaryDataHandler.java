@@ -4,17 +4,23 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 
 public interface IWiktionaryDataHandler {
 
-
-
   enum Feature {
     MAIN, MORPHOLOGY, ETYMOLOGY, LIME;
   }
+
+  /**
+   * close the dataset that eventually backs up the different feature boxes.
+   * <p>
+   * Does nothing when there is no dataset backing up the boxes.
+   */
+  void closeDataset();
 
   /**
    * Enable the extraction of morphological data in a second Model if available.

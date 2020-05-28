@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
@@ -205,12 +206,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   @Override
   public void finalizePageExtraction() {
 
-  }
-
-  private void fillInPrefixes(Model aBox, Model morphoBox) {
-    for (Map.Entry<String, String> e : aBox.getNsPrefixMap().entrySet()) {
-      morphoBox.setNsPrefix(e.getKey(), e.getValue());
-    }
   }
 
   @Override
@@ -639,7 +634,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   protected String computeOtherFormResourceName(Resource lexEntry,
       HashSet<PropertyObjectPair> properties) {
-    String lexEntryLocalName = currentEncodedLexicalEntryName;
+    String lexEntryLocalName = lexEntry.getLocalName();
     String compactProperties =
         DatatypeConverter.printBase64Binary(BigInteger.valueOf(properties.hashCode()).toByteArray())
             .replaceAll("[/=\\+]", "-");

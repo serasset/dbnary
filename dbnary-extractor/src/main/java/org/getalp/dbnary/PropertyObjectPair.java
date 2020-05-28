@@ -46,7 +46,12 @@ public class PropertyObjectPair extends SimpleImmutableEntry<Property, RDFNode> 
 
   @Override
   public String toString() {
-    return new StringBuffer().append(this.getKey().getLocalName()).append("-->")
-        .append(this.getResource().getLocalName()).toString();
+    StringBuffer str = new StringBuffer().append(this.getKey().getLocalName()).append("-->");
+    if (this.getValue() instanceof Resource)
+      str.append(this.getResource());
+    else
+      str.append(this.getValue());
+
+    return str.toString();
   }
 }

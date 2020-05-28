@@ -144,10 +144,14 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
         infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
         break;
       case "participe passé masculin singulier":
+        infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+        infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
         infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
         infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
         break;
       case "participe passé féminin singulier":
+        infos.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
+        infos.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
         infos.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
         infos.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
         break;
@@ -198,7 +202,7 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
         || tense.startsWith("passé antérieur") || tense.startsWith("futur antérieur")
         || tense.startsWith("passé 1e forme") || tense.startsWith("passé 1re forme")
         || tense.startsWith("passé 2e forme") || tense.startsWith("conjugaison en français")
-        || tense.startsWith("passé")) {
+        || tense.equals("passé")) {
       return false;
     } else if (!(tense.startsWith("futur simple") || tense.startsWith("passé simple")
         || tense.startsWith("présent") || tense.startsWith("imparfait"))) {

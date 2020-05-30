@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
@@ -187,7 +188,15 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void enableFeature(ExtractionFeature f) {
+
+  public void closeDataset() {
+    if (null != dataset) {
+      dataset.close();
+    }
+  }
+
+  @Override
+  public void enableFeature(Feature f) {
     // TODO : keep the 3 letter code as the correct language for prefixes (wktLanguageEdition
     // is the 2 letter code).
     Model box = createAndInitializeABox(wktLanguageEdition, f);
@@ -213,12 +222,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   @Override
   public void finalizePageExtraction() {
 
-  }
-
-  private void fillInPrefixes(Model aBox, Model morphoBox) {
-    for (Map.Entry<String, String> e : aBox.getNsPrefixMap().entrySet()) {
-      morphoBox.setNsPrefix(e.getKey(), e.getValue());
-    }
   }
 
   @Override
@@ -692,7 +695,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   protected String computeOtherFormResourceName(Resource lexEntry,
       HashSet<PropertyObjectPair> properties) {
-    String lexEntryLocalName = currentEncodedLexicalEntryName;
+    String lexEntryLocalName = lexEntry.getLocalName();
     String compactProperties =
         DatatypeConverter.printBase64Binary(BigInteger.valueOf(properties.hashCode()).toByteArray())
             .replaceAll("[/=\\+]", "-");

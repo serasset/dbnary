@@ -13,6 +13,12 @@ import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
 
 public interface IWiktionaryDataHandler {
 
+  /**
+   * close the dataset that eventually backs up the different feature boxes.
+   * <p>
+   * Does nothing when there is no dataset backing up the boxes.
+   */
+  void closeDataset();
 
   /**
    * Enable the extraction of morphological data in a second Model if available.

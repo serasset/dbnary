@@ -999,15 +999,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         wdh.registerInflection(commonInflectionInformations.languageCode,
             commonInflectionInformations.partOfSpeech, wdh.currentLexEntry(), canonicalForm, 0,
-            // TODO:
-            // Where
-            // should
-            // this
-            // definition
-            // number
-            // be
-            // found
-            // ?
+            // TODO: Where should this definition number be found ?
             union, commonInflectionInformations.pronunciation);
       }
     }

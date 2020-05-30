@@ -438,9 +438,9 @@ public class ExtractWiktionary {
           System.out.println("Postprocessing extracted entries.");
         we.postProcessData(dumpFile.getName());
         we.populateMetadata(dumpFile.getName(), extractorVersion);
-  
+
         saveBox(ExtractionFeature.MAIN, outputFile);
-  
+
         if (null != morphoOutputFile) {
           saveBox(ExtractionFeature.MORPHOLOGY, morphoOutputFile);
         }
@@ -453,7 +453,7 @@ public class ExtractWiktionary {
         if (null != enhancementOutputFile) {
           saveBox(ExtractionFeature.ENHANCEMENT, enhancementOutputFile);
         }
-  
+
 
       } catch (XMLStreamException ex) {
         System.out.println(ex.getMessage());

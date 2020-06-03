@@ -20,9 +20,7 @@ import org.getalp.dbnary.WiktionaryExtractorFactory;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexerException;
 
-public class GetExtractedSemnet {
-
-  private static Options options = null; // Command line options
+public class GetExtractedSemnet extends DBnaryCommandLine {
 
   private static final String LANGUAGE_OPTION = "l";
   private static final String DEFAULT_LANGUAGE = "en";
@@ -30,16 +28,11 @@ public class GetExtractedSemnet {
   private static final String OUTPUT_FORMAT_OPTION = "f";
   private static final String DEFAULT_OUTPUT_FORMAT = "ttl";
 
-  private static final String MODEL_OPTION = "m";
-  private static final String DEFAULT_MODEL = "lemon";
-
-  private CommandLine cmd = null; // Command Line arguments
-
   private String outputFormat = DEFAULT_OUTPUT_FORMAT;
   private String language = DEFAULT_LANGUAGE;
-  private String model = DEFAULT_MODEL;
   private boolean extractsMorpho = false;
   private boolean extractsEtymology = false;
+  private boolean extractsStats = false;
 
 
   private static final String FOREIGN_EXTRACTION_OPTION = "x";
@@ -50,25 +43,26 @@ public class GetExtractedSemnet {
   protected static final String ETYMOLOGY_OUTPUT_FILE_LONG_OPTION = "etymology";
   protected static final String ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION = "E";
 
+  protected static final String STATS_OUTPUT_FILE_LONG_OPTION = "stats";
+  protected static final String STATS_OUTPUT_FILE_SHORT_OPTION = "S";
+
   protected static final String URI_PREFIX_LONG_OPTION = "prefix";
   protected static final String URI_PREFIX_SHORT_OPTION = "p";
 
   static {
-    options = new Options();
-    options.addOption("h", false, "Prints usage and exits. ");
     options.addOption(LANGUAGE_OPTION, true,
         "Language (fr, en,it,pt de, fi or ru). " + DEFAULT_LANGUAGE + " by default.");
     options.addOption(OUTPUT_FORMAT_OPTION, true,
         "Output format (graphml, raw, rdf, turtle, ntriple, n3, ttl or rdfabbrev). "
             + DEFAULT_OUTPUT_FORMAT + " by default.");
-    options.addOption(MODEL_OPTION, true,
-        "Ontology Model used  (lmf or lemon). Only useful with rdf base formats." + DEFAULT_MODEL
-            + " by default.");
     options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign languages");
     options.addOption(Option.builder(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION)
         .longOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION).desc("extract morphology data.").build());
     options.addOption(Option.builder(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION)
         .longOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION).desc("extract etymology data.").build());
+    options.addOption(Option.builder(STATS_OUTPUT_FILE_SHORT_OPTION)
+        .longOpt(STATS_OUTPUT_FILE_LONG_OPTION)
+        .desc("extract statistics from data processing (enhancement, sizes, etc.).").build());
     options.addOption(Option.builder(URI_PREFIX_SHORT_OPTION).longOpt(URI_PREFIX_LONG_OPTION)
         .desc("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
@@ -81,36 +75,21 @@ public class GetExtractedSemnet {
   IWiktionaryDataHandler wdh;
   private String dumpFileName;
 
+  public GetExtractedSemnet(String[] args) throws WiktionaryIndexerException {
+    super(args);
+    this.loadArgs();
+  }
+
   /**
    * Validate and set command line arguments. Exit after printing usage if anything is astray
    *
    * @param args String[] args as featured in public static void main()
    */
-  private void loadArgs(String[] args) throws WiktionaryIndexerException {
-    CommandLineParser parser = new DefaultParser();
-    try {
-      cmd = parser.parse(options, args);
-    } catch (ParseException e) {
-      System.err.println("Error parsing arguments: " + e.getLocalizedMessage());
-      printUsage();
-      System.exit(1);
-    }
-
-    // Check for args
-    if (cmd.hasOption("h")) {
-      printUsage();
-      System.exit(0);
-    }
-
+  private void loadArgs() throws WiktionaryIndexerException {
     if (cmd.hasOption(OUTPUT_FORMAT_OPTION)) {
       outputFormat = cmd.getOptionValue(OUTPUT_FORMAT_OPTION);
     }
     outputFormat = outputFormat.toUpperCase();
-
-    if (cmd.hasOption(MODEL_OPTION)) {
-      model = cmd.getOptionValue(MODEL_OPTION);
-    }
-    model = model.toUpperCase();
 
     if (cmd.hasOption(LANGUAGE_OPTION)) {
       language = cmd.getOptionValue(LANGUAGE_OPTION);
@@ -119,6 +98,7 @@ public class GetExtractedSemnet {
 
     extractsMorpho = cmd.hasOption(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION);
     extractsEtymology = cmd.hasOption(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION);
+    extractsStats = cmd.hasOption(STATS_OUTPUT_FILE_LONG_OPTION);
 
     if (cmd.hasOption(URI_PREFIX_LONG_OPTION)) {
       DbnaryModel.setGlobalDbnaryPrefix(cmd.getOptionValue(URI_PREFIX_SHORT_OPTION));
@@ -134,22 +114,20 @@ public class GetExtractedSemnet {
     if (outputFormat.equals("RDF") || outputFormat.equals("TURTLE")
         || outputFormat.equals("NTRIPLE") || outputFormat.equals("N3") || outputFormat.equals("TTL")
         || outputFormat.equals("RDFABBREV")) {
-      if (model.equals("LEMON")) {
-        if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
-          wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language, null);
-        } else {
-          wdh = WiktionaryDataHandlerFactory.getDataHandler(language, null);
-        }
-        wdh.enableFeature(ExtractionFeature.ENHANCEMENT);
-        if (extractsMorpho) {
-          wdh.enableFeature(ExtractionFeature.MORPHOLOGY);
-        }
-        if (extractsEtymology) {
-          wdh.enableFeature(ExtractionFeature.ETYMOLOGY);
-        }
+      if (cmd.hasOption(FOREIGN_EXTRACTION_OPTION)) {
+        wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language, null);
       } else {
-        System.err.println("LMF format not supported anymore.");
-        System.exit(1);
+        wdh = WiktionaryDataHandlerFactory.getDataHandler(language, null);
+      }
+      wdh.enableFeature(ExtractionFeature.ENHANCEMENT);
+      if (extractsMorpho) {
+        wdh.enableFeature(ExtractionFeature.MORPHOLOGY);
+      }
+      if (extractsEtymology) {
+        wdh.enableFeature(ExtractionFeature.ETYMOLOGY);
+      }
+      if (extractsStats) {
+        wdh.enableFeature(ExtractionFeature.STATS);
       }
     } else {
       System.err.println("unsupported format :" + outputFormat);
@@ -174,9 +152,8 @@ public class GetExtractedSemnet {
   }
 
   public static void main(String[] args) throws WiktionaryIndexerException, IOException {
-    GetExtractedSemnet cliProg = new GetExtractedSemnet();
-    cliProg.loadArgs(args);
-    cliProg.extract();
+    GetExtractedSemnet cli = new GetExtractedSemnet(args);
+    cli.extract();
   }
 
 
@@ -202,6 +179,11 @@ public class GetExtractedSemnet {
       dumpBox(ExtractionFeature.ETYMOLOGY);
     }
 
+    if (extractsStats) {
+      System.out.println("----------- STATISTICS ----------");
+      dumpBox(ExtractionFeature.STATS);
+    }
+
   }
 
   public void dumpBox(ExtractionFeature f) throws IOException {
@@ -220,7 +202,8 @@ public class GetExtractedSemnet {
     }
   }
 
-  public static void printUsage() {
+  @Override
+  public void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
     String help =
         "dumpFile must be a Wiktionary dump file in UTF-16 encoding. dumpFile directory must be writable to store the index."

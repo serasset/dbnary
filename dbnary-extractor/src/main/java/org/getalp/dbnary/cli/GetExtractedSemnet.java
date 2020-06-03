@@ -81,9 +81,7 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
   }
 
   /**
-   * Validate and set command line arguments. Exit after printing usage if anything is astray
-   *
-   * @param args String[] args as featured in public static void main()
+   * decode args to prepare process.
    */
   private void loadArgs() throws WiktionaryIndexerException {
     if (cmd.hasOption(OUTPUT_FORMAT_OPTION)) {
@@ -163,7 +161,7 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
       String pageContent = wi.getTextOfPage(remainingArgs[i]);
       we.extractData(remainingArgs[i], pageContent);
     }
-    we.postProcessData(dumpFileName);
+    we.postProcessData(getDumpVersion(dumpFileName));
 
     dumpBox(ExtractionFeature.MAIN);
 

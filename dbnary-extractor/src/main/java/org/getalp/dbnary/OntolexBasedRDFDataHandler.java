@@ -170,7 +170,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     aBox.setNsPrefix("xs", XSD.getURI());
     aBox.setNsPrefix("wikt", WIKT);
 
-    if (f == ExtractionFeature.ENHANCEMENT)
+    if (f == ExtractionFeature.STATS)
       aBox.setNsPrefix("qb", DataCubeOnt.getURI());
 
 
@@ -330,26 +330,26 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   @Override
   public void addTranslationGlossesStats(Entry<String, TranslationGlossesStat> e,
       String dumpFileVersion) {
-    if (isDisabled(ExtractionFeature.ENHANCEMENT))
+    if (isDisabled(ExtractionFeature.ENHANCEMENT) || isDisabled(ExtractionFeature.STATS))
       return;
-    Model enhBox = this.getFeatureBox(ExtractionFeature.ENHANCEMENT);
+    Model statsBox = this.getFeatureBox(ExtractionFeature.STATS);
 
-    Resource obs = enhBox.createResource(
+    Resource obs = statsBox.createResource(
         getPrefix() + "___obs__" + wktLanguageEdition + "__" + date() + "_" + dumpFileVersion);
-    enhBox.add(enhBox.createStatement(obs, RDF.type, DataCubeOnt.observation));
-    enhBox.add(enhBox.createStatement(obs, DataCubeOnt.dataSet, DBnaryOnt.translationGlossesCube));
-    enhBox.add(enhBox.createStatement(obs, DBnaryOnt.wiktionaryDumpVersion,
-        enhBox.createTypedLiteral(dumpFileVersion)));
-    enhBox.add(enhBox.createStatement(obs, DBnaryOnt.observationLanguage, e.getKey()));
+    statsBox.add(statsBox.createStatement(obs, RDF.type, DataCubeOnt.Observation));
+    statsBox.add(statsBox.createStatement(obs, DataCubeOnt.dataSet, DBnaryOnt.translationGlossesCube));
+    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.wiktionaryDumpVersion,
+        statsBox.createTypedLiteral(dumpFileVersion)));
+    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.observationLanguage, e.getKey()));
 
-    enhBox.add(enhBox.createStatement(obs, DBnaryOnt.translationsWithNoGloss,
-        enhBox.createTypedLiteral(e.getValue().getTranslationsWithoutGlosses())));
-    enhBox.add(enhBox.createStatement(obs, DBnaryOnt.translationsWithSenseNumber,
-        enhBox.createTypedLiteral(e.getValue().getNbGlossesWithSenseNumberOnly())));
-    enhBox.add(enhBox.createStatement(obs, DBnaryOnt.translationsWithTextualGloss,
-        enhBox.createTypedLiteral(e.getValue().getNbGlossesWithTextOnly())));
-    enhBox.add(enhBox.createStatement(obs, DBnaryOnt.translationsWithSenseNumberAndTextualGloss,
-        enhBox.createTypedLiteral(e.getValue().getNbGlossesWithSensNumberAndText())));
+    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.translationsWithNoGloss,
+        statsBox.createTypedLiteral(e.getValue().getTranslationsWithoutGlosses())));
+    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.translationsWithSenseNumber,
+        statsBox.createTypedLiteral(e.getValue().getNbGlossesWithSenseNumberOnly())));
+    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.translationsWithTextualGloss,
+        statsBox.createTypedLiteral(e.getValue().getNbGlossesWithTextOnly())));
+    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.translationsWithSenseNumberAndTextualGloss,
+        statsBox.createTypedLiteral(e.getValue().getNbGlossesWithSensNumberAndText())));
   }
 
   private String date() {

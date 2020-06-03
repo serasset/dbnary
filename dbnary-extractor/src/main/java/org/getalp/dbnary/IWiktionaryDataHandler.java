@@ -78,7 +78,7 @@ public interface IWiktionaryDataHandler {
   /**
    * Register example ex for the current lexical sense.
    *
-   * @param ex the example string
+   * @param ex      the example string
    * @param context map of property + object that are to be attached to the example object.
    * @return a Resource
    */
@@ -90,7 +90,7 @@ public interface IWiktionaryDataHandler {
    * <p>
    * This method will use senseNumber as a sense number for this definition.
    *
-   * @param def the definition string
+   * @param def         the definition string
    * @param senseNumber a string giving the sense number of the definition.
    */
   void registerNewDefinition(String def, String senseNumber);
@@ -122,8 +122,8 @@ public interface IWiktionaryDataHandler {
    * "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3". The default value, represented by
    * null, is "RDF/XML".
    *
-   * @param f a Feature
-   * @param out an OutputStream
+   * @param f      a Feature
+   * @param out    an OutputStream
    * @param format a String
    */
   void dump(ExtractionFeature f, OutputStream out, String format);

@@ -16,12 +16,9 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.io.FileUtils;
@@ -40,9 +37,8 @@ import org.getalp.dbnary.WiktionaryIndexerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExtractWiktionary {
+public class ExtractWiktionary extends DBnaryCommandLine {
 
-  private static Options options = null; // Command line options
   private Logger log = LoggerFactory.getLogger(OntolexBasedRDFDataHandler.class);
 
   private static final String LANGUAGE_OPTION = "l";
@@ -79,6 +75,9 @@ public class ExtractWiktionary {
   private static final String ENHANCEMENT_OUTPUT_FILE_LONG_OPTION = "enhancement";
   private static final String ENHANCEMENT_OUTPUT_FILE_SHORT_OPTION = "X";
 
+  private static final String STATS_OUTPUT_FILE_LONG_OPTION = "statistics";
+  private static final String STATS_OUTPUT_FILE_SHORT_OPTION = "S";
+
   protected static final String URI_PREFIX_LONG_OPTION = "prefix";
   protected static final String URI_PREFIX_SHORT_OPTION = "p";
 
@@ -88,18 +87,15 @@ public class ExtractWiktionary {
   private static final String TO_PAGE_LONG_OPTION = "topage";
   private static final String TO_PAGE_SHORT_OPTION = "T";
 
-  private static final String VERBOSE_OPTION = "v";
-
   public static final XMLInputFactory2 xmlif;
 
-
-  private CommandLine cmd = null; // Command Line arguments
 
   private String outputFile = DEFAULT_OUTPUT_FILE;
   private String morphoOutputFile = null;
   private String etymologyOutputFile = null;
   private String limeOutputFile = null;
   private String enhancementOutputFile = null;
+  private String statsOutputFile = null;
   private String outputFormat = DEFAULT_OUTPUT_FORMAT;
   private String model = DEFAULT_MODEL;
   private boolean compress;
@@ -110,7 +106,6 @@ public class ExtractWiktionary {
   private int fromPage = 0;
   private int toPage = Integer.MAX_VALUE;
   private String extractorVersion;
-  private boolean verbose;
 
   WiktionaryIndex wi;
   IWiktionaryExtractor we;
@@ -119,10 +114,7 @@ public class ExtractWiktionary {
 
 
   static {
-    options = new Options();
-    options.addOption("h", "help", false, "Prints usage and exits. ");
     options.addOption(SUFFIX_OUTPUT_FILE_OPTION, false, "Add a unique suffix to output file. ");
-    options.addOption(VERBOSE_OPTION, false, "Be verbose on what I do... ");
     options.addOption(LANGUAGE_OPTION, true,
         "Language (fra, eng, deu or por). " + DEFAULT_LANGUAGE + " by default.");
     options.addOption(OUTPUT_FORMAT_OPTION, true,
@@ -148,6 +140,10 @@ public class ExtractWiktionary {
     options.addOption(Option.builder(ENHANCEMENT_OUTPUT_FILE_SHORT_OPTION)
         .longOpt(ENHANCEMENT_OUTPUT_FILE_LONG_OPTION)
         .desc("Output file for ENHANCED (disambiguated) data. Undefined by default.").hasArg()
+        .argName("file").build());
+    options.addOption(Option.builder(STATS_OUTPUT_FILE_SHORT_OPTION)
+        .longOpt(STATS_OUTPUT_FILE_LONG_OPTION)
+        .desc("Output file for statistics on data. Undefined by default.").hasArg()
         .argName("file").build());
     options.addOption(Option.builder(URI_PREFIX_SHORT_OPTION).longOpt(URI_PREFIX_LONG_OPTION)
         .desc("set the URI prefix used in the extracted dataset. Default: "
@@ -177,6 +173,10 @@ public class ExtractWiktionary {
     }
   }
 
+  public ExtractWiktionary(String[] args) throws WiktionaryIndexerException {
+    super(args);
+    this.loadArgs();
+  }
 
   /**
    * @param args arguments
@@ -184,35 +184,16 @@ public class ExtractWiktionary {
    * @throws WiktionaryIndexerException ...
    */
   public static void main(String[] args) throws WiktionaryIndexerException, IOException {
-    ExtractWiktionary cliProg = new ExtractWiktionary();
-    cliProg.loadArgs(args);
-    cliProg.extract();
+    ExtractWiktionary cli = new ExtractWiktionary(args);
+    cli.extract();
   }
 
   /**
-   * Validate and set command line arguments. Exit after printing usage if anything is astray
+   * Analyse command line arguments to prepare processing.
    *
-   * @param args String[] args as featured in public static void main()
    * @throws WiktionaryIndexerException ..
    */
-  private void loadArgs(String[] args) throws WiktionaryIndexerException {
-    CommandLineParser parser = new DefaultParser();
-    try {
-      cmd = parser.parse(options, args);
-    } catch (ParseException e) {
-      System.err.println("Error parsing arguments: " + e.getLocalizedMessage());
-      printUsage();
-      System.exit(1);
-    }
-
-    // Check for args
-    if (cmd.hasOption("h")) {
-      printUsage();
-      System.exit(0);
-    }
-
-    verbose = cmd.hasOption(VERBOSE_OPTION);
-
+  private void loadArgs() throws WiktionaryIndexerException {
     extractorVersion = "UNKNOWN";
     Manifest mf = new Manifest();
     try {
@@ -293,6 +274,10 @@ public class ExtractWiktionary {
       enhancementOutputFile = cmd.getOptionValue(ENHANCEMENT_OUTPUT_FILE_LONG_OPTION);
     }
 
+    if (cmd.hasOption(STATS_OUTPUT_FILE_LONG_OPTION)) {
+      statsOutputFile = cmd.getOptionValue(STATS_OUTPUT_FILE_LONG_OPTION);
+    }
+
     if (cmd.hasOption(LANGUAGE_OPTION)) {
       language = cmd.getOptionValue(LANGUAGE_OPTION);
       language = LangTools.getCode(language);
@@ -339,6 +324,10 @@ public class ExtractWiktionary {
     }
     if (enhancementOutputFile != null) {
       wdh.enableFeature(ExtractionFeature.ENHANCEMENT);
+    }
+
+    if (statsOutputFile != null) {
+      wdh.enableFeature(ExtractionFeature.STATS);
     }
 
     if (null == we) {
@@ -436,8 +425,8 @@ public class ExtractWiktionary {
         // TODO : enable post processing after extraction ?
         if (verbose)
           System.out.println("Postprocessing extracted entries.");
-        we.postProcessData(dumpFile.getName());
-        we.populateMetadata(dumpFile.getName(), extractorVersion);
+        we.postProcessData(getDumpVersion(dumpFile.getName()));
+        we.populateMetadata(getDumpVersion(dumpFile.getName()), extractorVersion);
 
         saveBox(ExtractionFeature.MAIN, outputFile);
 
@@ -452,6 +441,10 @@ public class ExtractWiktionary {
         }
         if (null != enhancementOutputFile) {
           saveBox(ExtractionFeature.ENHANCEMENT, enhancementOutputFile);
+        }
+
+        if (null != statsOutputFile) {
+          saveBox(ExtractionFeature.STATS, statsOutputFile);
         }
 
 
@@ -524,16 +517,6 @@ public class ExtractWiktionary {
       ostream.flush();
       ostream.close();
     }
-  }
-
-
-  public static void printUsage() {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(
-        "java -cp /path/to/dbnary.jar org.getalp.dbnary.cli.ExtractWiktionary [OPTIONS] dumpFile",
-        "With OPTIONS in:", options,
-        "dumpFile must be a Wiktionary dump file in UTF-16 encoding. dumpFile directory must be writable to store the index.",
-        false);
   }
 
 }

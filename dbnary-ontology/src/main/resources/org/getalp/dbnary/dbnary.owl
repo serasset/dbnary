@@ -30,6 +30,7 @@
         <rdfs:comment xml:lang="en">DBnary: A lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the ontolex model (http://www.w3.org/ns/lemon/ontolex).</rdfs:comment>
         <rdfs:label>dbnary</rdfs:label>
         <rdfs:seeAlso>http://kaiko.getalp.org/about-dbnary/</rdfs:seeAlso>
+        <dcterms:license rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/"/>
     </owl:Ontology>
     
 
@@ -219,11 +220,27 @@
     
 
 
+    <!-- http://kaiko.getalp.org/dbnary#enhancementMethod -->
+
+    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#enhancementMethod">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://kaiko.getalp.org/dbnary#extractorVersion -->
 
     <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#extractorVersion">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:comment xml:lang="en">The version number of the extraction program used to produce this dataset from the wiktionary dumps.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnary#f1Measure -->
+
+    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#f1Measure">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
     
 
@@ -238,10 +255,26 @@
     
 
 
+    <!-- http://kaiko.getalp.org/dbnary#precisionMeasure -->
+
+    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#precisionMeasure">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://kaiko.getalp.org/dbnary#rank -->
 
     <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#rank">
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnary#recallMeasure -->
+
+    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#recallMeasure">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
     
 
@@ -269,7 +302,9 @@
 
     <!-- http://kaiko.getalp.org/dbnary#translationsWithNoGloss -->
 
-    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#translationsWithNoGloss"/>
+    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#translationsWithNoGloss">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
     
 
 
@@ -277,19 +312,24 @@
 
     <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#translationsWithSenseNumber">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://kaiko.getalp.org/dbnary#translationsWithSenseNumberAndTextualGloss -->
 
-    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#translationsWithSenseNumberAndTextualGloss"/>
+    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#translationsWithSenseNumberAndTextualGloss">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
     
 
 
     <!-- http://kaiko.getalp.org/dbnary#translationsWithTextualGloss -->
 
-    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#translationsWithTextualGloss"/>
+    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#translationsWithTextualGloss">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
     
 
 
@@ -305,7 +345,9 @@
 
     <!-- http://kaiko.getalp.org/dbnary#wiktionaryDumpVersion -->
 
-    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#wiktionaryDumpVersion"/>
+    <owl:DatatypeProperty rdf:about="http://kaiko.getalp.org/dbnary#wiktionaryDumpVersion">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
     
 
 
@@ -480,9 +522,91 @@
     
 
 
+    <!-- http://kaiko.getalp.org/dbnary#EnhancementMethodComponent -->
+
+    <owl:NamedIndividual rdf:about="http://kaiko.getalp.org/dbnary#EnhancementMethodComponent">
+        <rdf:type rdf:resource="http://purl.org/linked-data/cube#ComponentSpecification"/>
+        <qb:dimension rdf:resource="http://kaiko.getalp.org/dbnary#enhancementMethod"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnary#F1MeasureComponent -->
+
+    <owl:NamedIndividual rdf:about="http://kaiko.getalp.org/dbnary#F1MeasureComponent">
+        <rdf:type rdf:resource="http://purl.org/linked-data/cube#ComponentSpecification"/>
+        <qb:measure rdf:resource="http://kaiko.getalp.org/dbnary#f1Measure"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnary#PrecisionMeasureComponent -->
+
+    <owl:NamedIndividual rdf:about="http://kaiko.getalp.org/dbnary#PrecisionMeasureComponent">
+        <rdf:type rdf:resource="http://purl.org/linked-data/cube#ComponentSpecification"/>
+        <qb:measure rdf:resource="http://kaiko.getalp.org/dbnary#precisionMeasure"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnary#RecallMeasureComponent -->
+
+    <owl:NamedIndividual rdf:about="http://kaiko.getalp.org/dbnary#RecallMeasureComponent">
+        <rdf:type rdf:resource="http://purl.org/linked-data/cube#ComponentSpecification"/>
+        <qb:measure rdf:resource="http://kaiko.getalp.org/dbnary#recallMeasure"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnary#enhancementConfidenceDataStructure -->
+
+    <owl:NamedIndividual rdf:about="http://kaiko.getalp.org/dbnary#enhancementConfidenceDataStructure">
+        <rdf:type rdf:resource="http://purl.org/linked-data/cube#DataStructureDefinition"/>
+        <qb:component rdf:resource="http://kaiko.getalp.org/ObservationLanguageComponent"/>
+        <qb:component rdf:resource="http://kaiko.getalp.org/WiktionaryDumpVersionComponent"/>
+        <qb:component rdf:resource="http://kaiko.getalp.org/dbnary#EnhancementMethodComponent"/>
+        <qb:component rdf:resource="http://kaiko.getalp.org/dbnary#F1MeasureComponent"/>
+        <qb:component rdf:resource="http://kaiko.getalp.org/dbnary#PrecisionMeasureComponent"/>
+        <qb:component rdf:resource="http://kaiko.getalp.org/dbnary#RecallMeasureComponent"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnary#enhancementMethod -->
+
+    <owl:NamedIndividual rdf:about="http://kaiko.getalp.org/dbnary#enhancementMethod">
+        <rdf:type rdf:resource="http://purl.org/linked-data/cube#DimensionProperty"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnary#f1Measure -->
+
+    <owl:NamedIndividual rdf:about="http://kaiko.getalp.org/dbnary#f1Measure">
+        <rdf:type rdf:resource="http://purl.org/linked-data/cube#MeasureProperty"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://kaiko.getalp.org/dbnary#observationLanguage -->
 
     <owl:NamedIndividual rdf:about="http://kaiko.getalp.org/dbnary#observationLanguage">
+        <rdf:type rdf:resource="http://purl.org/linked-data/cube#DimensionProperty"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnary#precisionMeasure -->
+
+    <owl:NamedIndividual rdf:about="http://kaiko.getalp.org/dbnary#precisionMeasure">
+        <rdf:type rdf:resource="http://purl.org/linked-data/cube#MeasureProperty"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://kaiko.getalp.org/dbnary#recallMeasure -->
+
+    <owl:NamedIndividual rdf:about="http://kaiko.getalp.org/dbnary#recallMeasure">
         <rdf:type rdf:resource="http://purl.org/linked-data/cube#MeasureProperty"/>
     </owl:NamedIndividual>
     
@@ -561,8 +685,17 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    <rdf:Description rdf:about="http://kaiko.getalp.org/dbnary#f1Measure">
+        <rdfs:comment xml:lang="en">The F1 confidence value as calculated by (2xPrecxRecall)/(Prec+Recall)</rdfs:comment>
+    </rdf:Description>
     <rdf:Description rdf:about="http://kaiko.getalp.org/dbnary#observationLanguage">
         <rdfs:comment xml:lang="en">The language dimension of an observation</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://kaiko.getalp.org/dbnary#precisionMeasure">
+        <rdfs:comment xml:lang="en">The number of correct guesses among the computed guesses</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://kaiko.getalp.org/dbnary#recallMeasure">
+        <rdfs:comment xml:lang="en">The fraction of relevant instances that were actually retrieved</rdfs:comment>
     </rdf:Description>
     <rdf:Description rdf:about="http://kaiko.getalp.org/dbnary#translationsWithNoGloss">
         <rdfs:comment xml:lang="en">count of the number of translation that is not associated to a gloss.</rdfs:comment>

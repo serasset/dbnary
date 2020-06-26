@@ -17,7 +17,7 @@ fi
 
 DBNARY_GLOBAL_CONFIG="$HOME/.dbnary/config"
 [[ -f $DBNARY_GLOBAL_CONFIG ]] && source $DBNARY_GLOBAL_CONFIG
-[[ -f ./config ]] && source ./config
+[[ -f ./config ]] && source ../virtuoso/config
 
 test -x "$DAEMON" || (echo "Could not find virtuoso-t bin" && exit 0)
 

@@ -76,7 +76,8 @@ fi
 mkdir -p $OUTPUTDIR
 
 $JAVA -jar $WIDOCOJAR -ontFile ../../dbnary-ontology/src/main/resources/org/getalp/dbnary/dbnary.owl \
-  -outFolder $OUTPUTDIR -getOntologyMetadata -oops -rewriteAll -htaccess -uniteSections
+  -outFolder $OUTPUTDIR -getOntologyMetadata -oops -rewriteAll -htaccess -uniteSections \
+  -rewriteBase /static/datamodel/
 
 pushd $PREFIXDIR/datamodel
 [[ -L current ]] && rm current

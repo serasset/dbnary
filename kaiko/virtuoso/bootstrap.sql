@@ -6,32 +6,85 @@ DB.DBA.VAD_INSTALL('/opt/virtuoso-opensource/share/virtuoso/vad/isparql_dav.vad'
 DB.DBA.VAD_INSTALL('/opt/virtuoso-opensource/share/virtuoso/vad/fct_dav.vad', 0);
 DB.DBA.VHOST_REMOVE ( lhost=>'*ini*', vhost=>'*ini*', lpath=>'/dbnary' );
 
-DB.DBA.VHOST_DEFINE ( lhost=>'*ini*', vhost=>'*ini*', lpath=>'/dbnary', ppath=>'/DAV/', is_dav=>1,
-def_page=>'', vsp_user=>'dba', ses_vars=>0, opts=>vector ('browse_sheet', '', 'url_rewrite', 'http_rule_list_1'),
-is_default_host=>0
+DB.DBA.VHOST_DEFINE (
+	 lhost=>'*ini*',
+	 vhost=>'*ini*',
+	 lpath=>'/dbnary',
+	 ppath=>'/DAV/',
+	 is_dav=>1,
+	 is_brws=>0,
+	 def_page=>'',
+	 vsp_user=>'dba',
+	 ses_vars=>0,
+	 opts=>vector ('browse_sheet', '', 'url_rewrite', 'http_rule_list_1'),
+	 is_default_host=>0
 );
 
 DB.DBA.URLREWRITE_CREATE_RULELIST (
 'http_rule_list_1', 1,
-vector ('http_rule_1', 'http_rule_2', 'http_rule_3', 'http_rule_4'));
+vector ('datamodel_200_rule', 'datamodel_current', 'sparql_describe_for_known_formats', 'sparql_describe_for_ntriples', 'faceted_browsing'));
 
+-- send back all request to the versioned datamodel url to apache (which will make content negociation)
 DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
-'http_rule_1', 1,
-'^/(.*)\$',
+'datamodel_200_rule', 1,
+    '^/dbnary/2.0.0/*$',
+vector (),
+0,
+  '/static/datamodel/2.0.0',
+vector (),
+NULL,
+NULL,
+1,
+303,
+''
+);
+
+-- send back all request to the datamodel url to apache (which will make content negociation)
+DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
+'datamodel_current', 1,
+    '^/dbnary/*$',
+vector (),
+0,
+  '/static/datamodel/current/',
+vector (),
+NULL,
+NULL,
+1,
+303,
+''
+);
+
+-- Send all request to dbanry IRI to SPARQL DESCRIBE for various response formats
+DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
+'sparql_describe_for_known_formats', 1,
+    '^/(.*)\$',
 vector ('par_1'),
 1,
-'/sparql?query=DESCRIBE%%20%%3Chttp%%3A%%2F%%2Fkaiko.getalp.org%%2F%U%%3E&format=%U',
+  '/sparql?query=DESCRIBE%%20%%3Chttp%%3A%%2F%%2Fkaiko.getalp.org%%2F%U%%3E&format=%U',
 vector ('par_1', '*accept*'),
 NULL,
-'(text/rdf.n3)|(application/rdf.xml)',
+'(text/rdf.n3)|(application/rdf.xml)|(text/n3)|(text/turtle)|(application/x-turtle)|(application/x-trig)|(application/ld.json)|(text/rdf.nt)|(text/csv)|(application/odata.json)|(application/microdata.json)|(application/rdf.json)|(application/x-json.ld)|(application/atom.xml)|(application/xhtml.xml)|(application/rdf.json)',
 2,
 303,
 ''
 );
 
+DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
+'sparql_describe_for_ntriples', 1,
+    '^/(.*)\$',
+vector ('par_1'),
+1,
+  '/sparql?query=DESCRIBE%%20%%3Chttp%%3A%%2F%%2Fkaiko.getalp.org%%2F%U%%3E&format=text%%2Fplain',
+vector ('par_1'),
+NULL,
+'(application/n-triple)|(text/plain)',
+2,
+303,
+''
+);
 
 DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
-'http_rule_2', 1,
+'faceted_browsing', 1,
 '^/(.*)\$',
 vector ('par_1'),
 1,
@@ -39,34 +92,6 @@ vector ('par_1'),
 vector ('par_1'),
 NULL,
 '(text/html)|(\\*/\\*)',
-0,
-303,
-''
-);
-
-DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
-'http_rule_3', 1,
-'^/dbnary/*\$',
-vector (),
-0,
-'/about-dbnary/ontolex/dbnary-doc/index.html',
-vector (),
-NULL,
-'(text/html)|(\\*/\\*)',
-0,
-303,
-''
-);
-
-DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
-'http_rule_4', 1,
-'^/dbnary/*\$',
-vector (),
-0,
-'/about-dbnary/ontolex/latest/dbnary.owl',
-vector (),
-NULL,
-'(text/rdf.n3)|(application/rdf.xml)',
 0,
 303,
 ''

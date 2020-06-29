@@ -9,24 +9,18 @@
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:foaf="http://xmlns.com/foaf/0.1/"
-     xmlns:lime="http://www.w3.org/ns/lemon/lime#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:skos="http://www.w3.org/2004/02/skos/core#"
      xmlns:vann="http://purl.org/vocab/vann/"
      xmlns:void="http://rdfs.org/ns/void#"
      xmlns:dbnary="http://kaiko.getalp.org/dbnary#"
-     xmlns:synsem="http://www.w3.org/ns/lemon/synsem#"
      xmlns:dcterms="http://purl.org/dc/terms/"
-     xmlns:ontolex="http://www.w3.org/ns/lemon/ontolex#"
-     xmlns:vartrans="http://www.w3.org/ns/lemon/vartrans#">
+     xmlns:ontolex="http://www.w3.org/ns/lemon/ontolex#">
     <owl:Ontology rdf:about="http://kaiko.getalp.org/dbnary">
         <owl:versionIRI rdf:resource="http://kaiko.getalp.org/dbnary/2.1.0"/>
         <owl:imports rdf:resource="http://purl.org/linked-data/cube"/>
         <owl:imports rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
-        <owl:imports rdf:resource="http://www.w3.org/ns/lemon/lime"/>
         <owl:imports rdf:resource="http://www.w3.org/ns/lemon/ontolex"/>
-        <owl:imports rdf:resource="http://www.w3.org/ns/lemon/synsem"/>
-        <owl:imports rdf:resource="http://www.w3.org/ns/lemon/vartrans"/>
         <rdfs:comment xml:lang="en">DBnary: A lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the ontolex model (http://www.w3.org/ns/lemon/ontolex).</rdfs:comment>
         <rdfs:label>dbnary</rdfs:label>
         <rdfs:seeAlso>http://kaiko.getalp.org/about-dbnary/</rdfs:seeAlso>

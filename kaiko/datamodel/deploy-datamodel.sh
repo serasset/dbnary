@@ -32,7 +32,7 @@ function checkEnvironment() {
 
 function getOntologyVersion() {
 echo Reading version from $1
-  ONTOLOGY_VERSION=$(sed -ne 's/^.*owl:versionIRI *\<http:\/\/kaiko\.getalp\.org\/dbnary\/\(.*\)\>.*$/\1/p' < $1)
+  ONTOLOGY_VERSION=$(sed -ne 's/^.*owl:versionIRI.*\<http:\/\/kaiko\.getalp\.org\/dbnary\/\(.*\)\>.*$/\1/p' < $1)
 }
 
 while getopts "h?vd:" opt; do
@@ -75,7 +75,7 @@ fi
 
 mkdir -p $OUTPUTDIR
 
-$JAVA -jar $WIDOCOJAR -ontFile ../../dbnary-ontology/src/main/resources/org/getalp/dbnary/dbnary.owl \
+$JAVA -jar $WIDOCOJAR -ontFile $ONTOLOGY \
   -outFolder $OUTPUTDIR -getOntologyMetadata -oops -rewriteAll -htaccess -uniteSections \
   -rewriteBase /static/datamodel/
 

@@ -337,7 +337,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     Resource obs = statsBox.createResource(
         getPrefix() + "___obs__" + wktLanguageEdition + "__" + date() + "_" + dumpFileVersion);
     statsBox.add(statsBox.createStatement(obs, RDF.type, DataCubeOnt.Observation));
-    statsBox.add(statsBox.createStatement(obs, DataCubeOnt.dataSet, DBnaryOnt.translationGlossesCube));
+    statsBox
+        .add(statsBox.createStatement(obs, DataCubeOnt.dataSet, DBnaryOnt.translationGlossesCube));
     statsBox.add(statsBox.createStatement(obs, DBnaryOnt.wiktionaryDumpVersion,
         statsBox.createTypedLiteral(dumpFileVersion)));
     statsBox.add(statsBox.createStatement(obs, DBnaryOnt.observationLanguage, e.getKey()));

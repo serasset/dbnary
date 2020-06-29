@@ -12,7 +12,8 @@ import org.apache.commons.cli.ParseException;
 public class DBnaryCommandLine {
 
   protected static final String VERBOSE_OPTION = "v";
-  private static final Pattern DUMP_VERSION_PATTERN = Pattern.compile("(20\\d\\d\\d{4}|20\\d\\d_\\d{2}_\\d{2})");
+  private static final Pattern DUMP_VERSION_PATTERN =
+      Pattern.compile("(20\\d\\d\\d{4}|20\\d\\d_\\d{2}_\\d{2})");
   protected static final Options options = new Options(); // Command line options
   protected CommandLine cmd = null; // Command Line arguments
   protected boolean verbose;
@@ -60,7 +61,8 @@ public class DBnaryCommandLine {
   protected void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(
-        "java -cp /path/to/dbnary.jar " + this.getClass().getCanonicalName() + " [OPTIONS] dumpFile",
+        "java -cp /path/to/dbnary.jar " + this.getClass().getCanonicalName()
+            + " [OPTIONS] dumpFile",
         "With OPTIONS in:", options,
         "dumpFile must be a Wiktionary dump file in UTF-16 encoding. dumpFile directory must be writable to store the index.",
         false);

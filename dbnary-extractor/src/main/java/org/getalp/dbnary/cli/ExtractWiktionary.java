@@ -141,10 +141,10 @@ public class ExtractWiktionary extends DBnaryCommandLine {
         .longOpt(ENHANCEMENT_OUTPUT_FILE_LONG_OPTION)
         .desc("Output file for ENHANCED (disambiguated) data. Undefined by default.").hasArg()
         .argName("file").build());
-    options.addOption(Option.builder(STATS_OUTPUT_FILE_SHORT_OPTION)
-        .longOpt(STATS_OUTPUT_FILE_LONG_OPTION)
-        .desc("Output file for statistics on data. Undefined by default.").hasArg()
-        .argName("file").build());
+    options.addOption(
+        Option.builder(STATS_OUTPUT_FILE_SHORT_OPTION).longOpt(STATS_OUTPUT_FILE_LONG_OPTION)
+            .desc("Output file for statistics on data. Undefined by default.").hasArg()
+            .argName("file").build());
     options.addOption(Option.builder(URI_PREFIX_SHORT_OPTION).longOpt(URI_PREFIX_LONG_OPTION)
         .desc("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)

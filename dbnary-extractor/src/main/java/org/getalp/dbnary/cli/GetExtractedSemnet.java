@@ -3,13 +3,8 @@ package org.getalp.dbnary.cli;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.getalp.LangTools;
 import org.getalp.dbnary.DbnaryModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
@@ -125,7 +120,7 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
         wdh.enableFeature(ExtractionFeature.ETYMOLOGY);
       }
       if (extractsStats) {
-        wdh.enableFeature(ExtractionFeature.STATS);
+        wdh.enableFeature(ExtractionFeature.STATISTICS);
       }
     } else {
       System.err.println("unsupported format :" + outputFormat);
@@ -179,7 +174,7 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
 
     if (extractsStats) {
       System.out.println("----------- STATISTICS ----------");
-      dumpBox(ExtractionFeature.STATS);
+      dumpBox(ExtractionFeature.STATISTICS);
     }
 
   }

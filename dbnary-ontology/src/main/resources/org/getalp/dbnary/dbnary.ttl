@@ -274,10 +274,10 @@ dbnary:enhancementConfidenceDataStructure
 # -- Dimensions and measures  ----------------------------
 
 dbnary:observationLanguage
-    a            owl:ObjectProperty, qb:DimensionProperty ;
+    a            owl:DatatypeProperty, qb:DimensionProperty ;
     rdfs:label   "Observation Language"@en ;
     rdfs:comment "The language dimension of an observation"@en ;
-    rdfs:range   dcterms:LinguisticSystem .
+    rdfs:range   xsd:string .
 
 dbnary:wiktionaryDumpVersion
     a          owl:DatatypeProperty, qb:DimensionProperty ;

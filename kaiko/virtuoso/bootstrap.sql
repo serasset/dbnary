@@ -22,7 +22,7 @@ DB.DBA.VHOST_DEFINE (
 
 DB.DBA.URLREWRITE_CREATE_RULELIST (
 'http_rule_list_1', 1,
-vector ('datamodel_200_rule', 'datamodel_current', 'sparql_describe_for_known_formats', 'sparql_describe_for_ntriples', 'faceted_browsing'));
+vector ('datamodel_200_rule', 'datamodel_210_rule','datamodel_current', 'sparql_describe_for_known_formats', 'sparql_describe_for_ntriples', 'faceted_browsing'));
 
 -- send back all request to the versioned datamodel url to apache (which will make content negociation)
 DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
@@ -31,6 +31,21 @@ DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
 vector (),
 0,
   '/static/datamodel/2.0.0',
+vector (),
+NULL,
+NULL,
+1,
+303,
+''
+);
+
+-- send back all request to the versioned datamodel url to apache (which will make content negociation)
+DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
+'datamodel_210_rule', 1,
+    '^/dbnary/2.1.0/*$',
+vector (),
+0,
+  '/static/datamodel/2.1.0',
 vector (),
 NULL,
 NULL,
@@ -235,7 +250,8 @@ SPARQL LOAD <http://www.w3.org/ns/lemon/synsem> into graph <http://kaiko.getalp.
 SPARQL LOAD <http://www.w3.org/ns/lemon/decomp> into graph <http://kaiko.getalp.org/datamodel>;
 SPARQL LOAD <http://purl.org/olia/olia.owl> into graph <http://kaiko.getalp.org/datamodel>;
 SPARQL LOAD <http://purl.org/linked-data/cube> into graph <http://kaiko.getalp.org/datamodel>;
--- TODO: Load dbnary ontology from latest version file
+-- Load dbnary ontology from latest version (be sure to deploy the latest version to the public server before rotating)
+SPARQL LOAD <http://purl.org/linked-data/cube> into graph <http://kaiko.getalp.org/datamodel>;
 
 commit WORK;
 checkpoint;

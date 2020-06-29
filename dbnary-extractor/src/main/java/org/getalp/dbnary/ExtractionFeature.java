@@ -1,7 +1,7 @@
 package org.getalp.dbnary;
 
 public enum ExtractionFeature {
-  MAIN, MORPHOLOGY, ETYMOLOGY, LIME, ENHANCEMENT, STATS;
+  MAIN, MORPHOLOGY, ETYMOLOGY, LIME, ENHANCEMENT, STATISTICS;
 
   @Override
   public String toString() {

@@ -14,7 +14,7 @@ verbose=false
 PREFIXDIR=$HOME/develop/wiktionary/extracts/
 WIDOCOJAR=$HOME/lib/widoco-1.4.14-jar-with-dependencies.jar
 JAVA=java
-ONTOLOGY=./../../dbnary-ontology/src/main/resources/org/getalp/dbnary/dbnary.owl
+ONTOLOGY=./../../dbnary-ontology/src/main/resources/org/getalp/dbnary/dbnary.ttl
 
 function show_help() {
   echo "USAGE: $0 [-hvP] [-p password] [-P] [-d dir] [-c config] [-l latestdir] [-t tmp]"
@@ -32,7 +32,7 @@ function checkEnvironment() {
 
 function getOntologyVersion() {
 echo Reading version from $1
-  ONTOLOGY_VERSION=$(sed -ne 's/^.*owl:versionIRI rdf:resource="http:\/\/kaiko\.getalp\.org\/dbnary\/\(.*\)".*$/\1/p' < $1)
+  ONTOLOGY_VERSION=$(sed -ne 's/^.*owl:versionIRI *\<http:\/\/kaiko\.getalp\.org\/dbnary\/\(.*\)\>.*$/\1/p' < $1)
 }
 
 while getopts "h?vd:" opt; do

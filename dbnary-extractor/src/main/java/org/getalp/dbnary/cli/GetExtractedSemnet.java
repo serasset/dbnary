@@ -60,9 +60,9 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
         .longOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION).desc("extract morphology data.").build());
     options.addOption(Option.builder(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION)
         .longOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION).desc("extract etymology data.").build());
-    options.addOption(Option.builder(STATS_OUTPUT_FILE_SHORT_OPTION)
-        .longOpt(STATS_OUTPUT_FILE_LONG_OPTION)
-        .desc("extract statistics from data processing (enhancement, sizes, etc.).").build());
+    options.addOption(
+        Option.builder(STATS_OUTPUT_FILE_SHORT_OPTION).longOpt(STATS_OUTPUT_FILE_LONG_OPTION)
+            .desc("extract statistics from data processing (enhancement, sizes, etc.).").build());
     options.addOption(Option.builder(URI_PREFIX_SHORT_OPTION).longOpt(URI_PREFIX_LONG_OPTION)
         .desc("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)

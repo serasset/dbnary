@@ -56,7 +56,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/dbnary.owl</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/dbnary.ttl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>

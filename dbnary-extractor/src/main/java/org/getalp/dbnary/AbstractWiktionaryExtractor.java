@@ -1,18 +1,12 @@
 package org.getalp.dbnary;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
 import org.getalp.LangTools;
 import org.getalp.dbnary.enhancer.TranslationSourcesDisambiguator;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStatsModule;
-import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
 import org.getalp.dbnary.wiki.WikiPatterns;
 
 public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtractor {
@@ -516,20 +510,11 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     disambiguator.processTranslations(wdh.getFeatureBox(ExtractionFeature.MAIN),
         wdh.getFeatureBox(ExtractionFeature.ENHANCEMENT), wdh.getCurrentEntryLanguage());
 
-    // add stats results in the Enhancement box
-    // TODO: get the correct wiktionary dump number
-    Model statsDataCube = getStatModel(stats, dumpFileVersion);
-    wdh.getFeatureBox(ExtractionFeature.ENHANCEMENT).add(statsDataCube);
-  }
-
-
-  private Model getStatModel(TranslationGlossesStatsModule stats, String dumpFileVersion) {
-    Model dcube = ModelFactory.createDefaultModel();
-    for (Entry<String, TranslationGlossesStat> e : stats.getStatsMap().entrySet()) {
-      wdh.addTranslationGlossesStats(e, dumpFileVersion);
+    // add stats results in the Stats box
+    for (String l : stats.getStatsMap().keySet()) {
+      wdh.buildDatacubeObservations(l, stats.getStatsMap().get(l),
+          evaluator.getConfidenceMap().get(l), dumpFileVersion);
     }
-
-    return dcube;
   }
 
   @Override

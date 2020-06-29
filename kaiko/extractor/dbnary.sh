@@ -11,11 +11,12 @@ MORPHO="--enable morphology"
 ETYMOLOGY="--enable etymology"
 LIME="--enable lime"
 ENHANCE="--enable enhancement"
+STATS="--enable statistics"
 TDB=""
 DATE=""
 VERBOSE=""
 
-while getopts ":d:t:v:D:nmMeElLTVxX" opt; do
+while getopts ":d:t:v:D:nmMeElLsSTVxX" opt; do
   case $opt in
     d)
       DEBUG="${DEBUG} -Dorg.slf4j.simpleLogger.log.${OPTARG}=debug"
@@ -43,6 +44,12 @@ while getopts ":d:t:v:D:nmMeElLTVxX" opt; do
       ;;
     L)
       LIME=""
+      ;;
+    s)
+      STATS="--enable statistics"
+      ;;
+    S)
+      STATS=""
       ;;
     e)
       ETYMOLOGY="--enable etymology"
@@ -91,10 +98,10 @@ if [ ! -z $VERBOSE ]
 then
 echo $JAVA -Xmx16g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $TDB -d $DIR -z  -k 1 $LANGS
+    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR -z  -k 1 $LANGS
 fi
 
 $JAVA -Xmx16g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $TDB -d $DIR -z  -k 1 $LANGS
+    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR -z  -k 1 $LANGS
 

@@ -30,7 +30,7 @@ then
 fi
 
   echo "==============================================="
-  echo -n "  Updating DBnary dumps - "
+  echo -n "  Updating and extracting DBnary dumps - "
   date 
   echo "==============================================="
 

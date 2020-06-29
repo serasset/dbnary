@@ -11,10 +11,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
@@ -32,6 +30,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.XSD;
 import org.getalp.LangTools;
+import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
 import org.getalp.dbnary.tools.CounterSet;
 import org.getalp.iso639.ISO639_3;
@@ -170,9 +169,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     aBox.setNsPrefix("xs", XSD.getURI());
     aBox.setNsPrefix("wikt", WIKT);
 
-    if (f == ExtractionFeature.STATS)
+    if (f == ExtractionFeature.STATISTICS) {
       aBox.setNsPrefix("qb", DataCubeOnt.getURI());
-
+    }
 
     return aBox;
   }
@@ -287,8 +286,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void populateMetadata(String dumpFilename, String extractorVersion) {
-    if (isDisabled(ExtractionFeature.LIME))
+    if (isDisabled(ExtractionFeature.LIME)) {
       return;
+    }
     Model limeBox = this.getFeatureBox(ExtractionFeature.LIME);
     Resource creator = limeBox.createResource("http://serasset.bitbucket.io/");
     Resource lexicon = limeBox.createResource(
@@ -313,7 +313,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     limeBox.add(limeBox.createStatement(lexicon, DCTerms.source,
         "http://" + wktLanguageEdition + ".wiktionary.org/"));
 
-
     limeBox.add(
         limeBox.createStatement(lexicon, FOAF.homepage, "http://kaiko.getalp.org/about-dbnary"));
     limeBox.add(limeBox.createStatement(lexicon, FOAF.page,
@@ -328,29 +327,70 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void addTranslationGlossesStats(Entry<String, TranslationGlossesStat> e,
-      String dumpFileVersion) {
-    if (isDisabled(ExtractionFeature.ENHANCEMENT) || isDisabled(ExtractionFeature.STATS))
+  public void buildDatacubeObservations(String l, TranslationGlossesStat tgs,
+      EvaluationStats.Stat es, String dumpFileVersion) {
+    if (isDisabled(ExtractionFeature.ENHANCEMENT) || isDisabled(ExtractionFeature.STATISTICS)) {
       return;
-    Model statsBox = this.getFeatureBox(ExtractionFeature.STATS);
+    }
+    Model statsBox = this.getFeatureBox(ExtractionFeature.STATISTICS);
 
-    Resource obs = statsBox.createResource(
-        getPrefix() + "___obs__" + wktLanguageEdition + "__" + date() + "_" + dumpFileVersion);
-    statsBox.add(statsBox.createStatement(obs, RDF.type, DataCubeOnt.Observation));
-    statsBox
-        .add(statsBox.createStatement(obs, DataCubeOnt.dataSet, DBnaryOnt.translationGlossesCube));
-    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.wiktionaryDumpVersion,
-        statsBox.createTypedLiteral(dumpFileVersion)));
-    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.observationLanguage, e.getKey()));
+    {
+      Resource glossObs = statsBox.createResource(getPrefix() + "___glossObs__" + wktLanguageEdition
+          + "__" + date() + "_" + dumpFileVersion);
+      statsBox.add(statsBox.createStatement(glossObs, RDF.type, DataCubeOnt.Observation));
+      statsBox.add(statsBox.createStatement(glossObs, DataCubeOnt.dataSet,
+          DBnaryOnt.translationGlossesCube));
+      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.wiktionaryDumpVersion,
+          statsBox.createTypedLiteral(dumpFileVersion)));
+      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.observationLanguage, l));
 
-    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.translationsWithNoGloss,
-        statsBox.createTypedLiteral(e.getValue().getTranslationsWithoutGlosses())));
-    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.translationsWithSenseNumber,
-        statsBox.createTypedLiteral(e.getValue().getNbGlossesWithSenseNumberOnly())));
-    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.translationsWithTextualGloss,
-        statsBox.createTypedLiteral(e.getValue().getNbGlossesWithTextOnly())));
-    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.translationsWithSenseNumberAndTextualGloss,
-        statsBox.createTypedLiteral(e.getValue().getNbGlossesWithSensNumberAndText())));
+      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.translationsWithNoGloss,
+          statsBox.createTypedLiteral(tgs.getTranslationsWithoutGlosses())));
+      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.translationsWithSenseNumber,
+          statsBox.createTypedLiteral(tgs.getNbGlossesWithSenseNumberOnly())));
+      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.translationsWithTextualGloss,
+          statsBox.createTypedLiteral(tgs.getNbGlossesWithTextOnly())));
+      statsBox.add(
+          statsBox.createStatement(glossObs, DBnaryOnt.translationsWithSenseNumberAndTextualGloss,
+              statsBox.createTypedLiteral(tgs.getNbGlossesWithSensNumberAndText())));
+    }
+
+    {
+      Resource enhObsRandom = statsBox.createResource(getPrefix() + "___enhObsRandom__"
+          + wktLanguageEdition + "__" + date() + "_" + dumpFileVersion);
+      statsBox.add(statsBox.createStatement(enhObsRandom, RDF.type, DataCubeOnt.Observation));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DataCubeOnt.dataSet,
+          DBnaryOnt.enhancementConfidenceDataset));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.wiktionaryDumpVersion,
+          statsBox.createTypedLiteral(dumpFileVersion)));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.observationLanguage, l));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.enhancementMethod, "random"));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.f1Measure,
+          statsBox.createTypedLiteral(es.getRandomF1Score())));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.precisionMeasure,
+          statsBox.createTypedLiteral(es.getRandomPrecision())));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.recallMeasure,
+          statsBox.createTypedLiteral(es.getRandomRecall())));
+    }
+
+    {
+      Resource enhObs = statsBox.createResource(
+          getPrefix() + "___enhObs__" + wktLanguageEdition + "__" + date() + "_" + dumpFileVersion);
+      statsBox.add(statsBox.createStatement(enhObs, RDF.type, DataCubeOnt.Observation));
+      statsBox.add(statsBox.createStatement(enhObs, DataCubeOnt.dataSet,
+          DBnaryOnt.enhancementConfidenceDataset));
+      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.wiktionaryDumpVersion,
+          statsBox.createTypedLiteral(dumpFileVersion)));
+      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.observationLanguage, l));
+      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.enhancementMethod, "dbnary_tversky"));
+      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.f1Measure,
+          statsBox.createTypedLiteral(es.getF1Score())));
+      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.precisionMeasure,
+          statsBox.createTypedLiteral(es.getPrecision())));
+      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.recallMeasure,
+          statsBox.createTypedLiteral(es.getRecall())));
+    }
+
   }
 
   private String date() {
@@ -571,8 +611,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       return null; // Don't register anything if current lex entry is not known.
     }
     word = word.trim();
-    if (null != usage)
+    if (null != usage) {
       usage = usage.trim();
+    }
     // Do not register empty translations
     if (word.length() == 0 && (usage == null || usage.length() == 0)) {
       return null;
@@ -719,7 +760,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   /**
-   *
    * @param languageCode the language code of the inflection
    * @param pos the part of speech of the inflected form
    * @param inflection inflected form

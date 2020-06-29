@@ -268,6 +268,8 @@ END
 ## And then in queries I use
 ## define input:inference "etymology_ontology";
 
+## (TODO: Load all statistics from the current extracts AND from all previous ones).
+
 ## index strings for faceted browsing
 isql $SERVERPORT dba "$password" <<END
 echoln "========================================================" ;

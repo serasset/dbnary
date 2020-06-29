@@ -29,10 +29,14 @@ public class EvaluationStats {
     this.printStat(lang, new PrintWriter(out));
   }
 
+  public Map<String, Stat> getConfidenceMap() {
+    return confidenceMap;
+  }
+
   public void printStat(String lang, PrintWriter out) {
     Stat lstat = confidenceMap.get(lang);
     out.format("%s,%.4f,%.4f,%.4f,%.4f,%.4f", lang, lstat.getPrecision(), lstat.getRecall(),
-        lstat.getF1Score(), lstat.getRandomPrec(), lstat.getRandomRecall());
+        lstat.getF1Score(), lstat.getRandomPrecision(), lstat.getRandomRecall());
   }
 
   public void printConfidenceStats(PrintStream out) {
@@ -44,7 +48,7 @@ public class EvaluationStats {
     }
   }
 
-  private class Stat {
+  public static class Stat {
 
     private double sumPrec;
     private double sumRecall;
@@ -114,11 +118,11 @@ public class EvaluationStats {
     @Override
     public String toString() {
       return "Stat{" + "sumPrec=" + sumPrec + ", sumRecall=" + sumRecall + ", nbReq=" + nbReq
-          + ", P=" + getPrecision() + ", R=" + getRecall() + ", randPrec=" + getRandomPrec()
+          + ", P=" + getPrecision() + ", R=" + getRecall() + ", randPrec=" + getRandomPrecision()
           + ", randRecall=" + getRandomRecall() + '}';
     }
 
-    private double getRandomRecall() {
+    public double getRandomRecall() {
       if (0 == nbReq) {
         return 0;
       } else {
@@ -126,11 +130,20 @@ public class EvaluationStats {
       }
     }
 
-    private double getRandomPrec() {
+    public double getRandomPrecision() {
       if (0 == nbReq) {
         return 0;
       } else {
         return ((double) randRecall) / (double) (nbReq);
+      }
+    }
+
+    public double getRandomF1Score() {
+      if (0 == getRandomPrecision() + getRandomRecall()) {
+        return 0;
+      } else {
+        return (2.0 * getRandomPrecision() * getRandomRecall())
+            / (getRandomPrecision() + getRandomRecall());
       }
     }
   }

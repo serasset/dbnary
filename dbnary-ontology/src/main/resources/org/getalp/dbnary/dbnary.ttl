@@ -1,0 +1,343 @@
+@prefix dc:       <http://purl.org/dc/elements/1.1/> .
+@prefix ns:       <http://creativecommons.org/ns#> .
+@prefix qb:       <http://purl.org/linked-data/cube#> .
+@prefix owl:      <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml:      <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf:     <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:     <http://www.w3.org/2004/02/skos/core#> .
+@prefix vann:     <http://purl.org/vocab/vann/> .
+@prefix void:     <http://rdfs.org/ns/void#> .
+@prefix dbnary:   <http://kaiko.getalp.org/dbnary#> .
+@prefix dcterms:  <http://purl.org/dc/terms/> .
+@prefix ontolex:  <http://www.w3.org/ns/lemon/ontolex#> .
+@prefix vartrans: <http://www.w3.org/ns/lemon/vartrans#> .
+@base             <http://kaiko.getalp.org/dbnary> .
+
+<http://kaiko.getalp.org/dbnary>
+    rdf:type                      owl:Ontology ;
+    owl:versionIRI                <http://kaiko.getalp.org/dbnary/2.1.0> ;
+    owl:versionInfo               "2.1.0" ;
+    owl:priorVersion              <http://kaiko.getalp.org/dbnary/2.0.0> ;
+    owl:imports                   <http://purl.org/linked-data/cube>, rdf:,
+                                  <http://www.w3.org/ns/lemon/ontolex> ;
+    dcterms:license               <http://creativecommons.org/licenses/by-sa/4.0/> ;
+    rdfs:comment
+                                  "DBnary: A lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the ontolex model (http://www.w3.org/ns/lemon/ontolex)."@en ;
+    rdfs:label                    "DBnary" ;
+    rdfs:seeAlso                  "http://kaiko.getalp.org/about-dbnary/" ;
+    vann:preferredNamespaceUri    "http://kaiko.getalp.org/dbnary" ;
+    vann:preferredNamespacePrefix "dbnary" ;
+    dcterms:title                 "The DBnary Ontolex Extension Data Model" ;
+    dcterms:abstract
+                                  "The DBnary dataset gives access to many lexical data currently contained implicitely in several editions of Wiktionary.\n The data model used is Ontolex, with very few extensions used to encode specific information. We also uses the DataCube Ontology to provide some statistivs concerning the extraction and enhancement process on each version of Wiktionary.\n This Ontology describes these extensions." ;
+    dcterms:creator               <http://serasset.bitbucket.io/> .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+## General structures
+##-------------------
+
+dbnary:describes
+    rdf:type     owl:ObjectProperty ;
+    rdfs:domain  dbnary:Page ;
+    rdfs:range   ontolex:LexicalEntry ;
+    rdfs:comment "links a vocable to any lexical entry that share the same written form. "@en .
+
+
+dbnary:partOfSpeech
+    rdf:type    owl:DatatypeProperty ;
+    rdfs:domain ontolex:LexicalEntry ;
+    rdfs:range  xsd:string ;
+    rdfs:comment
+                "The original part of speech as it was defined in the Wiktionary page. This property takes a String litteral as object."@en .
+
+
+dbnary:rank
+    rdf:type   owl:DatatypeProperty ;
+    rdfs:range xsd:int .
+
+
+dbnary:senseNumber
+    rdf:type    owl:DatatypeProperty ;
+    rdfs:domain ontolex:LexicalSense ;
+    rdfs:range  xsd:string ;
+    rdfs:comment
+                "The number of the lexical Sense in the Lexical Entry, as given by Wiktionary. This property takes a String literal as an object."@en .
+
+
+dbnary:Gloss
+    rdf:type owl:Class ;
+    rdfs:comment
+             "A gloss used to represent the context in which a translation or a relation is valid."@en .
+
+
+dbnary:Page
+    rdf:type owl:Class ;
+    rdfs:comment
+             "A Page corresponds to a Wiktionary web page describing a set of Lexical Entries that usually share the same written form but that do not necessarily share the same Part Of Speech. E.g. cat_n and cat_v are distinct lexical entries while the page \"cat\" refers to both of them."@en .
+
+
+## Translations
+##-------------------
+
+dbnary:Translation
+    rdf:type        owl:Class ;
+    rdfs:subClassOf owl:Thing ;
+    rdfs:comment    "Describe translation information for a Lexical Entry or a Lexical Sense."@en .
+
+
+dbnary:gloss
+    rdf:type    owl:ObjectProperty ;
+    rdfs:domain [ rdf:type    owl:Class ;
+                  owl:unionOf ( rdf:Statement
+                                dbnary:Translation ) ] ;
+    rdfs:range  dbnary:Gloss ;
+    rdfs:comment
+                "A short description of the context (usually a brief definition) under which the subject Translation or Relation is valid"@en .
+
+
+dbnary:isTranslationOf
+    rdf:type     owl:ObjectProperty ;
+    rdfs:domain  dbnary:Translation ;
+    rdfs:range   [ rdf:type    owl:Class ;
+                   owl:unionOf ( dbnary:Page
+                                 ontolex:LexicalEntry
+                                 ontolex:LexicalSense ) ] ;
+    rdfs:comment "links the translation information to the Lexical Entity it belongs to."@en .
+
+
+dbnary:targetLanguage
+    rdf:type     owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:domain  dbnary:Translation ;
+    rdfs:range   dcterms:LinguisticSystem ;
+    rdfs:comment "The target language of a given translation, defined as a Linguistic System."@en .
+
+
+dbnary:targetLanguageCode
+    rdf:type    owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain dbnary:Translation ;
+    rdfs:range  xsd:string ;
+    rdfs:comment
+                "The target language of a given translation. This may be used when the dbnary:targetLanguage object property can not be used."@en .
+
+
+dbnary:usage
+    rdf:type     owl:DatatypeProperty ;
+    rdfs:domain  dbnary:Translation ;
+    rdfs:range   xsd:string ;
+    rdfs:comment "Usage note that is used to further annotate the target of the translation."@en .
+
+
+dbnary:writtenForm
+    rdf:type     owl:DatatypeProperty ;
+    rdfs:domain  dbnary:Translation ;
+    rdfs:range   xsd:string ;
+    rdfs:comment "The written form of a translation equivalent."@en .
+
+
+
+## Nyms
+##-------------------
+
+dbnary:antonym
+    rdf:type           owl:ObjectProperty ;
+    rdfs:subPropertyOf dbnary:topNymProperty ;
+    rdfs:comment
+                       "An underspecified antonymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
+
+
+dbnary:approximateSynonym
+    rdf:type           owl:ObjectProperty ;
+    rdfs:subPropertyOf dbnary:topNymProperty ;
+    rdfs:comment
+                       "An underspecified approximate synonymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
+
+
+dbnary:holonym
+    rdf:type           owl:ObjectProperty ;
+    rdfs:subPropertyOf dbnary:topNymProperty ;
+    rdfs:comment
+                       "An underspecified holonymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
+
+
+dbnary:hypernym
+    rdf:type           owl:ObjectProperty ;
+    rdfs:subPropertyOf dbnary:topNymProperty ;
+    rdfs:comment
+                       "An underspecified hypernymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
+
+
+dbnary:hyponym
+    rdf:type           owl:ObjectProperty ;
+    rdfs:subPropertyOf dbnary:topNymProperty ;
+    rdfs:comment
+                       "An underspecified hyponymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
+
+
+dbnary:meronym
+    rdf:type           owl:ObjectProperty ;
+    rdfs:subPropertyOf dbnary:topNymProperty ;
+    rdfs:comment
+                       "An underspecified meronymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
+
+
+dbnary:synonym
+    rdf:type           owl:ObjectProperty ;
+    rdfs:subPropertyOf dbnary:topNymProperty ;
+    rdfs:comment
+                       "An underspecified synonymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
+
+dbnary:topNymProperty
+    rdf:type    owl:ObjectProperty ;
+    rdfs:domain [ rdf:type    owl:Class ;
+                  owl:unionOf ( dbnary:Page
+                                ontolex:LexicalEntry
+                                ontolex:LexicalSense ) ] ;
+    rdfs:range  [ rdf:type    owl:Class ;
+                  owl:unionOf ( dbnary:Page
+                                ontolex:LexicalEntry
+                                ontolex:LexicalSense ) ] ;
+    rdfs:comment
+                "An underspecified lexico semantic relation between LexicalEntities (Lexical entry OR Lexical Sense). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
+
+
+dbnary:troponym
+    rdf:type           owl:ObjectProperty ;
+    rdfs:subPropertyOf dbnary:topNymProperty ;
+    rdfs:comment
+                       "A verb that indicates more precisely the manner of doing something by replacing a verb of a more generalized meaning. E.g.: \"Stroll\" is a troponym of \"walk\", since it involves a slow and relaxed sort of walking."@en .
+
+## LIME (Metamodel description)
+##-----------------------------
+
+dbnary:extractorVersion
+    rdf:type owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:comment
+             "The version number of the extraction program used to produce this DBnary dataset from the wiktionary dumps."@en .
+
+
+## Observations
+##-------------------
+
+# -- Translation Statistics dataset --------------------------
+
+dbnary:translationGlossesCube
+    a     qb:DataSet ;
+    qb:structure dbnary:translationGlossesDataStructure ;
+    rdfs:comment
+                 "The Data Cube containing observations of translations and their associated glosses."@en .
+
+# -- Translation Statistics Data Structure Definition --------------------------
+
+dbnary:translationGlossesDataStructure
+    a qb:DataStructureDefinition ;
+    qb:component ## dimensions
+        [ qb:dimension
+                dbnary:observationLanguage ], [ qb:dimension
+                dbnary:wiktionaryDumpVersion ], ## Measures
+        [ qb:measure dbnary:translationsWithNoGloss ], [ qb:measure
+                dbnary:translationsWithSenseNumberAndTextualGloss ], [ qb:measure
+                dbnary:translationsWithSenseNumber ], [ qb:measure
+                dbnary:translationsWithTextualGloss ] ;
+    rdfs:comment
+        "The DataStructure of the DataCube describing the translations and their associated glosses."@en .
+
+# -- Enhancement performance dataset --------------------------
+
+dbnary:enhancementConfidenceDataset
+    a     qb:DataSet ;
+    qb:structure dbnary:enhancementConfidenceDataStructure ;
+    rdfs:comment
+                 "The Data Cube containing the confidence measures of the enhancement process for each wiktionary dump. Both effective confidence and random baselines are given."@en .
+
+# -- Enhancement performance data structure --------------------------
+
+dbnary:enhancementConfidenceDataStructure
+    rdf:type qb:DataStructureDefinition ;
+    rdfs:comment
+        "Performance of the Enhancement Process by Dump version and extractor version."@en ;
+    qb:component ## dimensions
+        [ qb:dimension
+                dbnary:observationLanguage ], [ qb:dimension
+                dbnary:wiktionaryDumpVersion ], [ qb:dimension
+                dbnary:enhancementMethod ], ## Measures
+        [ qb:measure
+                dbnary:f1Measure ], [ qb:measure
+                dbnary:precisionMeasure ], [ qb:measure dbnary:recallMeasure ] .
+
+
+# -- Dimensions and measures  ----------------------------
+
+dbnary:observationLanguage
+    a            owl:ObjectProperty, qb:DimensionProperty ;
+    rdfs:label   "Observation Language"@en ;
+    rdfs:comment "The language dimension of an observation"@en ;
+    rdfs:range   dcterms:LinguisticSystem .
+
+dbnary:wiktionaryDumpVersion
+    a          owl:DatatypeProperty, qb:DimensionProperty ;
+    rdfs:label "Wiktionary Dump Version"@en ;
+    rdfs:comment
+               "version number of the wiktionary dump from which the lexical data is extracted."@en ;
+    rdfs:range xsd:string .
+
+dbnary:translationsWithNoGloss
+    rdf:type     owl:DatatypeProperty, qb:MeasureProperty ;
+    rdfs:label   "Translations with no gloss"@en ;
+    rdfs:comment "count of the number of translation that is not associated to a gloss."@en ;
+    rdfs:range   xsd:int .
+
+dbnary:translationsWithSenseNumberAndTextualGloss
+    rdf:type   owl:DatatypeProperty, qb:MeasureProperty ;
+    rdfs:label "Translations with a sense number and textual gloss"@en ;
+    rdfs:comment
+               "count of the number of translations that are associated to a gloss containing both a sense number and a textual description"@en ;
+    rdfs:range xsd:int .
+
+dbnary:translationsWithSenseNumber
+    rdf:type   owl:DatatypeProperty, qb:MeasureProperty ;
+    rdfs:label "Translations with a sense number but no textual gloss"@en ;
+    rdfs:comment
+               "count of the number of translations that are associated to a gloss containing only a sense number."@en ;
+    rdfs:range xsd:int .
+
+dbnary:translationsWithTextualGloss
+    rdf:type   owl:DatatypeProperty, qb:MeasureProperty ;
+    rdfs:label "Translations with a textual gloss but no sense number"@en ;
+    rdfs:comment
+               "count of the number of translations that are associated with a gloss containing only a textual description."@en ;
+    rdfs:range xsd:int .
+
+dbnary:enhancementMethod
+    rdf:type   owl:DatatypeProperty, qb:DimensionProperty ;
+    rdfs:label "Name of the enhancement method"@en ;
+    rdfs:comment
+               "Name of the enhancement method for wich the confidence measures are given."@en ;
+    rdfs:range xsd:string .
+
+
+dbnary:f1Measure
+    rdf:type   owl:DatatypeProperty, qb:MeasureProperty ;
+    rdfs:label "F1 Measure"@en ;
+    rdfs:comment "The F1 confidence value as calculated by (2xPrecxRecall)/(Prec+Recall)"@en ;
+    rdfs:range xsd:double .
+
+
+dbnary:precisionMeasure
+    rdf:type   owl:DatatypeProperty, qb:MeasureProperty ;
+    rdfs:label "Precision"@en ;
+    rdfs:comment "The number of correct guesses among the computed guesses"@en ;
+    rdfs:range xsd:double .
+
+
+dbnary:recallMeasure
+    rdf:type   owl:DatatypeProperty, qb:MeasureProperty ;
+    rdfs:label "Recall"@en ;
+    rdfs:comment "The fraction of relevant instances that were actually retrieved"@en ;
+    rdfs:range xsd:double .
+

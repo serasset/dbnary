@@ -25,33 +25,24 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.WiktionaryIndexerException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class UpdateAndExtractDumps {
+public class UpdateAndExtractDumps extends DBnaryCommandLine {
 
   private static final String FOREIGN_PREFIX = "_x";
-  private static Options options = null; // Command line options
 
   private static final String SERVER_URL_OPTION = "s";
   private static final String DEFAULT_SERVER_URL = "http://dumps.wikimedia.org/";
@@ -77,11 +68,8 @@ public class UpdateAndExtractDumps {
 
   private static final String FETCH_DATE_OPTION = "D";
 
-  private static final String VERBOSE_OPTION = "v";
-
   private static final String ENABLE_FEATURE_OPTION = "enable";
 
-  private CommandLine cmd = null; // Command Line arguments
 
   private String outputDir;
   private String extractDir;
@@ -93,8 +81,6 @@ public class UpdateAndExtractDumps {
   private String model = DEFAULT_MODEL;
   private List<String> features = null;
   private String fetchDate = null;
-  private boolean verbose = false;
-
 
   String[] remainingArgs;
 
@@ -102,7 +88,6 @@ public class UpdateAndExtractDumps {
 
 
   static {
-    options = new Options();
     options.addOption("h", false, "Prints usage and exits. ");
     options.addOption(SERVER_URL_OPTION, true,
         "give the URL pointing to a wikimedia mirror. " + DEFAULT_SERVER_URL + " by default.");
@@ -123,12 +108,17 @@ public class UpdateAndExtractDumps {
         "Do not use the ftp network, but decompress and extract.");
     options.addOption(FETCH_DATE_OPTION, true,
         "force the dump date to be retreived. latest dump by default ");
-    options.addOption(Option.builder().longOpt(ENABLE_FEATURE_OPTION)
-        .desc("Enable additional extraction features (e.g. morpho,etymology,foreign).").hasArg()
-        .argName("feature").build());
+    options.addOption(Option.builder().longOpt(ENABLE_FEATURE_OPTION).desc(
+        "Enable additional extraction features (e.g. morphology,etymology,lime,enhancement,foreign).")
+        .hasArg().argName("feature").build());
     options.addOption(Option.builder().longOpt(TDB_OPTION).desc(
         "Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
         .build());
+  }
+
+  public UpdateAndExtractDumps(String[] args) {
+    super(args);
+    this.loadArgs();
   }
 
   private static class LanguageConfiguration {
@@ -160,8 +150,7 @@ public class UpdateAndExtractDumps {
   }
 
   public static void main(String[] args) throws WiktionaryIndexerException, IOException {
-    UpdateAndExtractDumps cliProg = new UpdateAndExtractDumps();
-    cliProg.loadArgs(args);
+    UpdateAndExtractDumps cliProg = new UpdateAndExtractDumps(args);
     cliProg.updateAndExtract();
   }
 
@@ -176,24 +165,7 @@ public class UpdateAndExtractDumps {
    *
    * @param args String[] args as featured in public static void main()
    */
-  private void loadArgs(String[] args) {
-    CommandLineParser parser = new DefaultParser();
-    try {
-      cmd = parser.parse(options, args);
-    } catch (ParseException e) {
-      System.err.println("Error parsing arguments: " + e.getLocalizedMessage());
-      printUsage();
-      System.exit(1);
-    }
-
-    // Check for args
-    if (cmd.hasOption("h")) {
-      printUsage();
-      System.exit(0);
-    }
-
-    // Check for verbosity
-    verbose = cmd.hasOption(VERBOSE_OPTION);
+  private void loadArgs() {
 
     String h = cmd.getOptionValue(HISTORY_SIZE_OPTION, DEFAULT_HISTORY_SIZE);
     historySize = Integer.parseInt(h);
@@ -223,6 +195,16 @@ public class UpdateAndExtractDumps {
       for (String v : vs) {
         features.addAll(Arrays.asList(v.split("[,;]")));
       }
+
+      ArrayList<String> fCopy = new ArrayList<>(features);
+      for (ExtractionFeature f : ExtractionFeature.values()) {
+        fCopy.remove(f.toString());
+      }
+      if (!fCopy.isEmpty()) {
+        System.err.println("Unknown feature(s) : " + fCopy);
+        printUsage();
+        System.exit(1);
+      }
     }
 
     if (cmd.hasOption(MODEL_OPTION)) {
@@ -250,8 +232,8 @@ public class UpdateAndExtractDumps {
     List<LanguageConfiguration> confs =
         Arrays.stream(remainingArgs).sequential().map(this::retrieveLastDump)
             .map(this::uncompressRetrievedDump).collect(Collectors.toList());
-    confs = confs.stream().sequential().map(this::extract).peek(this::removeOldDumps)
-        .peek(this::linkToLatestExtractedFiles).collect(Collectors.toList());
+    confs.stream().sequential().map(this::extract).peek(this::removeOldDumps)
+        .forEach(this::linkToLatestExtractedFiles);
     // String[] dirs = updateDumpFiles(remainingArgs);
     // uncompressDumpFiles(remainingArgs, dirs);
     // extractDumpFiles(remainingArgs, dirs);
@@ -790,14 +772,23 @@ public class UpdateAndExtractDumps {
     // TODO: correctly test for compressed file if compress is enabled
     String extractFile =
         odir + "/" + lang + prefix + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
-    String morphoFile = odir + "/" + lang + prefix + "_dbnary_morpho_" + dir + ".ttl";
-    String etymologyFile = odir + "/" + lang + prefix + "_dbnary_etymology_" + dir + ".ttl";
-    String limeFile = odir + "/" + lang + prefix + "_dbnary_lime_" + dir + ".ttl";
+    String morphoFile = odir + "/" + lang + prefix + "_dbnary_"
+        + ExtractionFeature.MORPHOLOGY.toString() + "_" + dir + ".ttl";
+    String etymologyFile = odir + "/" + lang + prefix + "_dbnary_"
+        + ExtractionFeature.ETYMOLOGY.toString() + "_" + dir + ".ttl";
+    String limeFile = odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.LIME.toString()
+        + "_" + dir + ".ttl";
+    String enhancementFile = odir + "/" + lang + prefix + "_dbnary_"
+        + ExtractionFeature.ENHANCEMENT.toString() + "_" + dir + ".ttl";
+    String statsFile = odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.STATS.toString()
+        + "_" + dir + ".ttl";
     if (compress) {
       extractFile = extractFile + ".bz2";
       morphoFile = morphoFile + ".bz2";
       etymologyFile = etymologyFile + ".bz2";
       limeFile = limeFile + ".bz2";
+      enhancementFile = enhancementFile + ".bz2";
+      statsFile = statsFile + ".bz2";
     }
 
     File file = new File(extractFile);
@@ -814,12 +805,10 @@ public class UpdateAndExtractDumps {
     a.add(lang);
     a.add("-o");
     a.add(extractFile);
-    // a.add("-m");
-    // a.add(model);
     a.add("-z");
     a.add(compress ? "yes" : "no");
-    if (features.contains("morpho")) {
-      a.add("--morpho");
+    if (features.contains("morphology")) {
+      a.add("--morphology");
       a.add(morphoFile);
     }
     if (features.contains("etymology")) {
@@ -830,10 +819,18 @@ public class UpdateAndExtractDumps {
       a.add("--lime");
       a.add(limeFile);
     }
-
+    if (features.contains("enhancement")) {
+      a.add("--enhancement");
+      a.add(enhancementFile);
+    }
+    if (features.contains("stats")) {
+      a.add("--stats");
+      a.add(statsFile);
+    }
     if (features.contains("foreign")) {
       a.add("-x");
     }
+
     if (tdbDir) {
       a.add("--tdb");
     }
@@ -858,7 +855,7 @@ public class UpdateAndExtractDumps {
       status = false;
     } catch (IOException e) {
       System.err.println(
-          "Caught IOExcetion while extracting dump file: " + uncompressDumpFileName(lang, dir));
+          "Caught IOException while extracting dump file: " + uncompressDumpFileName(lang, dir));
       System.err.println(e.getLocalizedMessage());
       e.printStackTrace();
       status = false;
@@ -867,8 +864,8 @@ public class UpdateAndExtractDumps {
     return status;
   }
 
-
-  public static void printUsage() {
+  @Override
+  protected void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(
         "java -cp /path/to/dbnary.jar " + UpdateAndExtractDumps.class.getName()

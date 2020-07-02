@@ -2,6 +2,8 @@ package org.getalp.dbnary;
 
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -9,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -22,13 +25,16 @@ import org.apache.jena.rdf.model.ReifiedStatement;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.XSD;
 import org.getalp.LangTools;
+import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
 import org.getalp.dbnary.tools.CounterSet;
+import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +57,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   private final String tdbDir;
   protected Model aBox;
-  protected Map<Feature, Model> featureBoxes;
+
+  private Map<ExtractionFeature, Model> featureBoxes;
 
   // States used for processing
   protected Resource currentLexEntry;
@@ -130,14 +137,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     aBox = createAndInitializeABox(lang);
 
     featureBoxes = new HashMap<>();
-    featureBoxes.put(Feature.MAIN, aBox);
+    featureBoxes.put(ExtractionFeature.MAIN, aBox);
   }
 
   private Model createAndInitializeABox(String lang) {
-    return this.createAndInitializeABox(lang, Feature.MAIN);
+    return this.createAndInitializeABox(lang, ExtractionFeature.MAIN);
   }
 
-  private Model createAndInitializeABox(String lang, Feature f) {
+  private Model createAndInitializeABox(String lang, ExtractionFeature f) {
     // Create aBox
     Model aBox;
     if (null != dataset) {
@@ -148,7 +155,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     aBox.setNsPrefix(lang, NS);
     aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
     aBox.setNsPrefix("dbetym", DBnaryEtymologyOnt.getURI());
-    // aBox.setNsPrefix("lemon", LemonOnt.getURI());
     aBox.setNsPrefix("lexinfo", LexinfoOnt.getURI());
     aBox.setNsPrefix("rdfs", RDFS.getURI());
     aBox.setNsPrefix("dcterms", DCTerms.getURI());
@@ -164,6 +170,10 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     aBox.setNsPrefix("xs", XSD.getURI());
     aBox.setNsPrefix("wikt", WIKT);
 
+    if (f == ExtractionFeature.STATS)
+      aBox.setNsPrefix("qb", DataCubeOnt.getURI());
+
+
     return aBox;
   }
 
@@ -178,6 +188,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
+
   public void closeDataset() {
     if (null != dataset) {
       dataset.close();
@@ -185,7 +196,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void enableFeature(Feature f) {
+  public void enableFeature(ExtractionFeature f) {
     // TODO : keep the 3 letter code as the correct language for prefixes (wktLanguageEdition
     // is the 2 letter code).
     Model box = createAndInitializeABox(wktLanguageEdition, f);
@@ -194,7 +205,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public boolean isDisabled(Feature f) {
+  public Model getFeatureBox(ExtractionFeature f) {
+    return featureBoxes.get(f);
+  }
+
+  @Override
+  public boolean isDisabled(ExtractionFeature f) {
     return !featureBoxes.containsKey(f);
   }
 
@@ -271,12 +287,18 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void populateMetadata(String dumpFilename, String extractorVersion) {
-    if (isDisabled(Feature.LIME))
+    if (isDisabled(ExtractionFeature.LIME))
       return;
-    Model limeBox = featureBoxes.get(Feature.LIME);
+    Model limeBox = this.getFeatureBox(ExtractionFeature.LIME);
     Resource creator = limeBox.createResource("http://serasset.bitbucket.io/");
     Resource lexicon = limeBox.createResource(
         getPrefix() + "___" + wktLanguageEdition + "_dbnary_dataset", LimeOnt.Lexicon);
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.title,
+        ISO639_3.sharedInstance.getLanguageNameInEnglish(wktLanguageEdition) + " DBnary Dataset",
+        "en"));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.title,
+        "Dataset DBnary " + ISO639_3.sharedInstance.getLanguageNameInFrench(wktLanguageEdition),
+        "fr"));
     limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
         "This lexicon is extracted from the original wiktionary data that can be found"
             + " in http://" + wktLanguageEdition + ".wiktionary.org/ by the DBnary Extractor.",
@@ -288,6 +310,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     limeBox.add(limeBox.createStatement(lexicon, DCTerms.creator, creator));
     limeBox.add(limeBox.createLiteralStatement(lexicon, DCTerms.created,
         limeBox.createTypedLiteral(GregorianCalendar.getInstance())));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.source,
+        "http://" + wktLanguageEdition + ".wiktionary.org/"));
+
+
+    limeBox.add(
+        limeBox.createStatement(lexicon, FOAF.homepage, "http://kaiko.getalp.org/about-dbnary"));
+    limeBox.add(limeBox.createStatement(lexicon, FOAF.page,
+        "http://kaiko.getalp.org/static/ontolex/" + wktLanguageEdition));
 
     limeBox.add(limeBox.createStatement(lexicon, LimeOnt.language, wktLanguageEdition));
     limeBox.add(limeBox.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
@@ -295,6 +325,38 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, LexinfoOnt.getURI()));
     limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, OliaOnt.getURI()));
 
+  }
+
+  @Override
+  public void addTranslationGlossesStats(Entry<String, TranslationGlossesStat> e,
+      String dumpFileVersion) {
+    if (isDisabled(ExtractionFeature.ENHANCEMENT) || isDisabled(ExtractionFeature.STATS))
+      return;
+    Model statsBox = this.getFeatureBox(ExtractionFeature.STATS);
+
+    Resource obs = statsBox.createResource(
+        getPrefix() + "___obs__" + wktLanguageEdition + "__" + date() + "_" + dumpFileVersion);
+    statsBox.add(statsBox.createStatement(obs, RDF.type, DataCubeOnt.Observation));
+    statsBox
+        .add(statsBox.createStatement(obs, DataCubeOnt.dataSet, DBnaryOnt.translationGlossesCube));
+    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.wiktionaryDumpVersion,
+        statsBox.createTypedLiteral(dumpFileVersion)));
+    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.observationLanguage, e.getKey()));
+
+    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.translationsWithNoGloss,
+        statsBox.createTypedLiteral(e.getValue().getTranslationsWithoutGlosses())));
+    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.translationsWithSenseNumber,
+        statsBox.createTypedLiteral(e.getValue().getNbGlossesWithSenseNumberOnly())));
+    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.translationsWithTextualGloss,
+        statsBox.createTypedLiteral(e.getValue().getNbGlossesWithTextOnly())));
+    statsBox.add(statsBox.createStatement(obs, DBnaryOnt.translationsWithSenseNumberAndTextualGloss,
+        statsBox.createTypedLiteral(e.getValue().getNbGlossesWithSensNumberAndText())));
+  }
+
+  private String date() {
+    LocalDateTime d = LocalDateTime.now();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd'T'HH_mm_ss_SSS");
+    return formatter.format(d);
   }
 
   public Resource addPartOfSpeech(String originalPOS, Resource normalizedPOS,
@@ -603,7 +665,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   protected void addOtherFormPropertiesToLexicalEntry(Resource lexEntry,
       HashSet<PropertyObjectPair> properties) {
     boolean foundCompatible = false;
-    Model morphoBox = featureBoxes.get(Feature.MORPHOLOGY);
+    Model morphoBox = this.getFeatureBox(ExtractionFeature.MORPHOLOGY);
 
     if (null == morphoBox) {
       return;
@@ -954,8 +1016,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void dump(Feature f, OutputStream out, String format) {
-    Model box = featureBoxes.get(f);
+  public void dump(ExtractionFeature f, OutputStream out, String format) {
+    Model box = this.getFeatureBox(f);
     if (null != box) {
       box.write(out, format);
     }

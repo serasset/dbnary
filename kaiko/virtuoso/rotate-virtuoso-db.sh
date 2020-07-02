@@ -14,18 +14,18 @@ askpass=false
 password=''
 verbose=false
 DBNARY_USER_CONFIG_DIR="$HOME/.dbnary/"
-DBNARYLATEST=$HOME/develop/wiktionary/extracts/ontolex/latest
+DBNARY_ONTOLEX=$HOME/develop/wiktionary/extracts/ontolex
 VIRTUOSODBLOCATION=/var/lib/virtuoso
 TEMPORARYPREFIX=/var/tmp/
 
 function show_help() {
-  echo "USAGE: $0 [-hvP] [-p password] [-P] [-d dir] [-c config] [-l latestdir] [-t tmp]"
+  echo "USAGE: $0 [-hvP] [-p password] [-P] [-d dir] [-c config] [-e ontolexdir] [-t tmp]"
   echo "OPTIONS:"
   echo "      h: display this help message."
   echo "      c: use provided value as the configuration directory (default value = $DBNARY_USER_CONFIG_DIR)."
   echo "         This directory should contain config and virtuoso.ini.tmpl files."
   echo "      d: use provided value as the virtuoso database location (default value = $VIRTUOSODBLOCATION)."
-  echo "      l: use provided value as the dbnary folder containing all latest data (default value = $DBNARYLATEST)."
+  echo "      e: use provided value as the dbnary folder containing all extraction data (older and latest ones. default value = $DBNARY_ONTOLEX)."
   echo "      t: use provided value as the prefix for temp folders (default value = $TEMPORARYPREFIX)."
   echo "      p: use provided password as the db password (default: password will be provided by DBPASSWD)."
   echo "      P: asks for a db password interactively (default: true if password is not provided)."
@@ -50,8 +50,8 @@ while getopts "h?p:Pvc:l:t:d:" opt; do
   c)
     DBNARY_USER_CONFIG_DIR=$OPTARG
     ;;
-  l)
-    DBNARYLATEST=$OPTARG
+  e)
+    DBNARY_ONTOLEX=$OPTARG
     ;;
   d)
     VIRTUOSODBLOCATION=$OPTARG
@@ -61,6 +61,7 @@ while getopts "h?p:Pvc:l:t:d:" opt; do
     ;;
   esac
 done
+DBNARYLATEST=${DBNARY_ONTOLEX}/latest
 
 shift $((OPTIND - 1))
 
@@ -172,13 +173,15 @@ fi
 # TODO: use a fixed dataset dir for dataset outside of dbnary latest folder.
 (
   shopt -s nullglob
-  files=($DATASETDIR/*.ttl)
+  files=(${DATASETDIR}/*.ttl)
   if [[ "${#files[@]}" -gt 0 ]]; then
     echo >&2 "Dataset already exists and is not empty, assuming its content is up to date."
   else
     echo >&2 "Copying and expanding latest extracts."
     ## Ontolex normal dumps
-    cp $DBNARYLATEST/*.ttl.bz2 "$DATASETDIR"
+    cp ${DBNARYLATEST}/*.ttl.bz2 "$DATASETDIR"
+    ## Add all (including older) statistics files so that the whole datacube is available in the DB.
+    cp ${DBNARY_ONTOLEX}/??/??_dbnary_statistics_*.ttl.bz2 "$DATASETDIR"
     ## TODO: expand Disambiguated translations + foreign data ? + etymology
     pushd "$DATASETDIR"
     bunzip2 ./*.ttl.bz2
@@ -188,8 +191,12 @@ fi
 ## create the .graph files for all files in datasetdir
 langRegex2='(..)_([^_]*)_(.*)'
 langRegex3='(...)_([^_]*)_(.*)'
+statsRegex2='(.{2,3})_([^_]*)_statistics(.*)'
 for f in $DATASETDIR/*.ttl; do
-  if [[ $f =~ $langRegex2 ]]; then
+  if [[ $f =~ statsRegex2 ]]; then
+    lg2=${BASH_REMATCH[1]}
+    echo "http://kaiko.getalp.org/stats/" >"$f.graph"
+  elif [[ $f =~ $langRegex2 ]]; then
     lg2=${BASH_REMATCH[1]}
     graph=${BASH_REMATCH[2]}
     lg3=${iso3Lang[$lg2]}

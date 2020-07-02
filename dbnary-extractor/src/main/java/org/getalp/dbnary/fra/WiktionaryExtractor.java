@@ -14,6 +14,7 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.PronunciationPair;
@@ -1305,7 +1306,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractOtherForms(int start, int end) {
     // TODO: only when we are extracting morphology ?
-    if (wdh.isDisabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) {
+    if (wdh.isDisabled(ExtractionFeature.MORPHOLOGY)) {
       return;
     }
 

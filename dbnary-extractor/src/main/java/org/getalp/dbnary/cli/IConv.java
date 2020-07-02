@@ -35,7 +35,7 @@ public class IConv {
 
 
   public static void convert(File infile, Charset from, File outfile, Charset to)
-      throws IOException, UnsupportedEncodingException {
+      throws IOException {
     InputStream in;
     if (infile != null) {
       in = new FileInputStream(infile);

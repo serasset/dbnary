@@ -29,7 +29,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.getalp.LangTools;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
-import org.getalp.dbnary.enhancer.preprocessing.StatsModule;
+import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStatsModule;
 
 public class EnhanceLatestExtracts {
 
@@ -61,7 +61,7 @@ public class EnhanceLatestExtracts {
   }
 
   String[] remainingArgs;
-  private StatsModule stats;
+  private TranslationGlossesStatsModule stats;
   private EvaluationStats evaluator;
   private TranslationSourcesDisambiguator disambiguator;
 
@@ -94,7 +94,7 @@ public class EnhanceLatestExtracts {
     rdfFormat = cmd.getOptionValue(RDF_FORMAT_OPTION, DEFAULT_RDF_FORMAT);
     rdfFormat = rdfFormat.toUpperCase();
 
-    stats = new StatsModule();
+    stats = new TranslationGlossesStatsModule();
     evaluator = new EvaluationStats();
     disambiguator = new TranslationSourcesDisambiguator(0.1, 0.9, 0.05, true, stats, evaluator);
 
@@ -180,7 +180,8 @@ public class EnhanceLatestExtracts {
     // TODO: stats should be written after each language so that already computed languages will be
     // correctly ignored at next launch.
     writeStats(enhConfidence, "Language,MD5," + EvaluationStats.getHeaders(), enhConfidenceFile);
-    writeStats(glossStats, "Language," + StatsModule.getHeaders(), glossStatsFile);
+    writeStats(glossStats, "Language," + TranslationGlossesStatsModule.getHeaders(),
+        glossStatsFile);
 
   }
 

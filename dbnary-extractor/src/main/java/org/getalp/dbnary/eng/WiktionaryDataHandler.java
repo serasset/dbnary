@@ -16,6 +16,7 @@ import org.apache.jena.vocabulary.RDFS;
 import org.getalp.LangTools;
 import org.getalp.dbnary.DBnaryEtymologyOnt;
 import org.getalp.dbnary.DBnaryOnt;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
@@ -23,6 +24,7 @@ import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.PronunciationPair;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.SkosOnt;
+import org.getalp.dbnary.model.NymRelation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,7 +135,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return null;
     }
     Model eBox = null;
-    if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) != null) {
+    if ((eBox = this.getFeatureBox(ExtractionFeature.ETYMOLOGY)) != null) {
       // TODO : should I check that getPrefix returns null ?
       lang = EnglishLangToCode.threeLettersCode(lang);
       Resource r =
@@ -162,7 +164,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return;
     }
     Model eBox = null;
-    if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) == null) {
+    if ((eBox = this.getFeatureBox(ExtractionFeature.ETYMOLOGY)) == null) {
       return;
     }
     if (currentEtymologyEntry == null) { // there is no etymology section
@@ -223,7 +225,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void registerDerived(Etymology etymology) {
     Model eBox = null;
-    if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) == null) {
+    if ((eBox = this.getFeatureBox(ExtractionFeature.ETYMOLOGY)) == null) {
       return;
     }
 
@@ -271,7 +273,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void registerCurrentEtymologyEntry(String lang) {
     Model eBox = null;
-    if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) == null) {
+    if ((eBox = this.getFeatureBox(ExtractionFeature.ETYMOLOGY)) == null) {
       return;
     }
 
@@ -295,7 +297,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void registerEtymology(Etymology etymology) {
     Model eBox = null;
-    if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) == null) {
+    if ((eBox = this.getFeatureBox(ExtractionFeature.ETYMOLOGY)) == null) {
       return;
     }
 
@@ -385,7 +387,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void addAncestorsAndRegisterDescendants(Etymology etymology) {
     Model eBox = null;
-    if ((eBox = featureBoxes.get(Feature.ETYMOLOGY)) == null) {
+    if ((eBox = this.getFeatureBox(ExtractionFeature.ETYMOLOGY)) == null) {
       return;
     }
 
@@ -458,7 +460,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // Do not try to merge new form with an existing compatible one in English.
     // This would lead to a Past becoming a PastParticiple when registering the past participle
     // form.
-    Model morphoBox = featureBoxes.get(Feature.MORPHOLOGY);
+    Model morphoBox = this.getFeatureBox(ExtractionFeature.MORPHOLOGY);
 
     if (null == morphoBox) {
       return;
@@ -566,34 +568,37 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     if (null == currentNym || "".equals(currentNym.trim())) {
       log.debug("null nym in Wikisaurus:{}", currentWiktionaryPageName);
     }
-    Property nymProperty = nymPropertyMap.get(currentNym);
-    if (null == nymProperty) {
+
+    try {
+      Property nymProperty = NymRelation.of(currentNym).getProperty();
+      // Property nymProperty = nymPropertyMap.get(currentNym);
+
+      Statement nymR = aBox.createStatement(currentMainLexEntry, nymProperty, getPageResource(s));
+      aBox.add(nymR);
+
+      if (currentWS == null && currentPOS == null) {
+        return;
+      }
+      String gloss = currentNym + currentPOS + currentWS;
+      gloss =
+          DatatypeConverter.printBase64Binary(BigInteger.valueOf(gloss.hashCode()).toByteArray())
+              .replaceAll("[/=\\+]", "-");
+      Resource glossResource = getGlossForWikisaurus(gloss);
+      Resource pos = posResource(currentPOS);
+      if (null != pos) {
+        aBox.add(aBox.createStatement(glossResource, DBnaryOnt.partOfSpeech, pos));
+      }
+      if (null != currentWS) {
+        aBox.add(glossResource, RDF.value, currentWS, getCurrentEntryLanguage());
+      }
+
+      ReifiedStatement rnymR = nymR
+          .createReifiedStatement(computeNymId(currentNym, uriEncode(currentWiktionaryPageName)));
+      if (glossResource != null) {
+        rnymR.addProperty(DBnaryOnt.gloss, glossResource);
+      }
+    } catch (NullPointerException npe) {
       log.debug("Unknown Nym Property in Wikisaurus:{}", currentNym);
-      return;
-    }
-
-    Statement nymR = aBox.createStatement(currentMainLexEntry, nymProperty, getPageResource(s));
-    aBox.add(nymR);
-
-    if (currentWS == null && currentPOS == null) {
-      return;
-    }
-    String gloss = currentNym + currentPOS + currentWS;
-    gloss = DatatypeConverter.printBase64Binary(BigInteger.valueOf(gloss.hashCode()).toByteArray())
-        .replaceAll("[/=\\+]", "-");
-    Resource glossResource = getGlossForWikisaurus(gloss);
-    Resource pos = posResource(currentPOS);
-    if (null != pos) {
-      aBox.add(aBox.createStatement(glossResource, DBnaryOnt.partOfSpeech, pos));
-    }
-    if (null != currentWS) {
-      aBox.add(glossResource, RDF.value, currentWS, getCurrentEntryLanguage());
-    }
-
-    ReifiedStatement rnymR =
-        nymR.createReifiedStatement(computeNymId(currentNym, uriEncode(currentWiktionaryPageName)));
-    if (glossResource != null) {
-      rnymR.addProperty(DBnaryOnt.gloss, glossResource);
     }
   }
 }

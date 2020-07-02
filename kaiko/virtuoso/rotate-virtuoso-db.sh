@@ -98,7 +98,7 @@ if [ ! -d $DBNARYLATEST ]; then
 fi
 
 if [[ ! -w $VIRTUOSODBLOCATION ]]; then
-  echo >&2 "Virtuoso database location is not writable."
+  >&2 echo "Virtuoso database location '$VIRTUOSODBLOCATION' is not writable."
   exit 1
 fi
 
@@ -186,7 +186,6 @@ fi
 )
 
 ## create the .graph files for all files in datasetdir
-## DONE: detect the graph (dbnary or dilaf ?)
 langRegex2='(..)_([^_]*)_(.*)'
 langRegex3='(...)_([^_]*)_(.*)'
 for f in $DATASETDIR/*.ttl; do
@@ -268,6 +267,8 @@ END
 ## rdfs_rule_set('etymology_ontology','http://kaiko.getalp.org/dbnaryetymology');
 ## And then in queries I use
 ## define input:inference "etymology_ontology";
+
+## (TODO: Load all statistics from the current extracts AND from all previous ones).
 
 ## index strings for faceted browsing
 isql $SERVERPORT dba "$password" <<END

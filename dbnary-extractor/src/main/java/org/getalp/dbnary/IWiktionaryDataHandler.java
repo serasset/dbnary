@@ -3,12 +3,12 @@ package org.getalp.dbnary;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.getalp.dbnary.enhancer.evaluation.EvaluationStats.Stat;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
 
 public interface IWiktionaryDataHandler {
@@ -151,5 +151,8 @@ public interface IWiktionaryDataHandler {
 
   void populateMetadata(String dumpFilename, String extractorVersion);
 
-  void addTranslationGlossesStats(Entry<String, TranslationGlossesStat> e, String dumpFileName);
+  void buildDatacubeObservations(String l, TranslationGlossesStat translationGlossesStat, Stat stat,
+      String dumpFileVersion);
+
+  void computeStatistics(String dumpVersion);
 }

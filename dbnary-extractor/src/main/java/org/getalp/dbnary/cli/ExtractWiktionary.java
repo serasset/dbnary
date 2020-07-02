@@ -16,16 +16,13 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.ParseException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.LangTools;
-import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.model.DbnaryModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.IWiktionaryExtractor;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
@@ -327,7 +324,7 @@ public class ExtractWiktionary extends DBnaryCommandLine {
     }
 
     if (statsOutputFile != null) {
-      wdh.enableFeature(ExtractionFeature.STATS);
+      wdh.enableFeature(ExtractionFeature.STATISTICS);
     }
 
     if (null == we) {
@@ -426,6 +423,7 @@ public class ExtractWiktionary extends DBnaryCommandLine {
         if (verbose)
           System.out.println("Postprocessing extracted entries.");
         we.postProcessData(getDumpVersion(dumpFile.getName()));
+        we.computeStatistics(getDumpVersion(dumpFile.getName()));
         we.populateMetadata(getDumpVersion(dumpFile.getName()), extractorVersion);
 
         saveBox(ExtractionFeature.MAIN, outputFile);
@@ -444,7 +442,7 @@ public class ExtractWiktionary extends DBnaryCommandLine {
         }
 
         if (null != statsOutputFile) {
-          saveBox(ExtractionFeature.STATS, statsOutputFile);
+          saveBox(ExtractionFeature.STATISTICS, statsOutputFile);
         }
 
 

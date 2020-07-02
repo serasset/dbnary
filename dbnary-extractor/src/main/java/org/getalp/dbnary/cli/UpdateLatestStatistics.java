@@ -21,11 +21,15 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.getalp.LangTools;
-import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.model.DbnaryModel;
 import org.getalp.dbnary.stats.GeneralStatistics;
 import org.getalp.dbnary.stats.NymStatistics;
 import org.getalp.dbnary.stats.TranslationsStatistics;
 
+/**
+ * @Deprecated
+ */
+@Deprecated
 public class UpdateLatestStatistics extends DbnaryModel {
 
 

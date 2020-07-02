@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>2.2.3-SNAPSHOT</version>
+    <version>2.2.3-integrated-enhancement-SNAPSHOT</version>
   </parent>
   <groupId>org.getalp</groupId>
   <artifactId>dbnary-ontology</artifactId>
@@ -23,14 +23,13 @@
     <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>jena-cmds</artifactId>
-      <version>${jena.version}</version>
+      <!-- keep in test scope so that it is not required when the module is used as a dependency-->
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.getalp</groupId>
-      <artifactId>dbnary-commons</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>apache-jena-libs</artifactId>
+      <type>pom</type>
     </dependency>
   </dependencies>
   <build>
@@ -57,7 +56,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/dbnary.owl</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/dbnary.ttl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
@@ -317,6 +316,34 @@
                 <argument>${project.build.directory}/generated-sources/java</argument>
                 <argument>-n</argument>
                 <argument>SkosOnt</argument>
+                <argument>--owl</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>datacube</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>
+                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
+                </argument>
+                <argument>jena.schemagen</argument>
+                <argument>-i</argument>
+                <argument>${basedir}/src/main/resources/org/getalp/dbnary/cube.ttl</argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>-n</argument>
+                <argument>DataCubeOnt</argument>
                 <argument>--owl</argument>
               </arguments>
             </configuration>

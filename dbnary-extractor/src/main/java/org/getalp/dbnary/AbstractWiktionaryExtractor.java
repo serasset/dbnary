@@ -4,6 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.getalp.LangTools;
+import org.getalp.dbnary.enhancer.TranslationSourcesDisambiguator;
+import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
+import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStatsModule;
 import org.getalp.dbnary.wiki.WikiPatterns;
 
 public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtractor {
@@ -496,8 +499,27 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   }
 
   @Override
-  public void postProcessData() {
-    // do nothing
+  public void postProcessData(String dumpFileVersion) {
+    if (wdh.isDisabled(ExtractionFeature.ENHANCEMENT))
+      return;
+    TranslationGlossesStatsModule stats = new TranslationGlossesStatsModule();
+    EvaluationStats evaluator = new EvaluationStats();
+    TranslationSourcesDisambiguator disambiguator =
+        new TranslationSourcesDisambiguator(0.1, 0.9, 0.05, true, stats, evaluator);
+    // TODO: getCurrentEntryLanguage may be incorrect in DataHandler refinements...
+    disambiguator.processTranslations(wdh.getFeatureBox(ExtractionFeature.MAIN),
+        wdh.getFeatureBox(ExtractionFeature.ENHANCEMENT), wdh.getCurrentEntryLanguage());
+
+    // add stats results in the Stats box
+    for (String l : stats.getStatsMap().keySet()) {
+      wdh.buildDatacubeObservations(l, stats.getStatsMap().get(l),
+          evaluator.getConfidenceMap().get(l), dumpFileVersion);
+    }
+  }
+
+  @Override
+  public void computeStatistics(String dumpVersion) {
+    wdh.computeStatistics(dumpVersion);
   }
 
   @Override

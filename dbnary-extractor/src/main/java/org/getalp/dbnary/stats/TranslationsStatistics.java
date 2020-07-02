@@ -16,7 +16,7 @@ import org.getalp.dbnary.DBnaryOnt;
 
 public class TranslationsStatistics {
 
-  protected static class IncrementableInt {
+  private static class IncrementableInt {
 
     int val;
 

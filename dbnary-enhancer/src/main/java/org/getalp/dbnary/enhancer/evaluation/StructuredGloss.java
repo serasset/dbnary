@@ -1,4 +1,4 @@
-package org.getalp.dbnary.enhancer.preprocessing;
+package org.getalp.dbnary.enhancer.evaluation;
 
 public class StructuredGloss {
 

@@ -6,27 +6,26 @@ if [[ "${BASH_VERSINFO:-0}" -lt 4 ]]; then
   exit 1
 fi
 
-
 ## Parse command line options
-OPTIND=1         # Reset in case getopts has been used previously in the shell.
+OPTIND=1 # Reset in case getopts has been used previously in the shell.
 
 # Initialize our own variables:
 askpass=false
 password=''
 verbose=false
 DBNARY_USER_CONFIG_DIR="$HOME/.dbnary/"
-DBNARYLATEST=$HOME/develop/wiktionary/extracts/ontolex/latest
+DBNARY_ONTOLEX=$HOME/develop/wiktionary/extracts/ontolex
 VIRTUOSODBLOCATION=/var/lib/virtuoso
 TEMPORARYPREFIX=/var/tmp/
 
-function show_help {
-  echo "USAGE: $0 [-hvP] [-p password] [-P] [-d dir] [-c config] [-l latestdir] [-t tmp]"
+function show_help() {
+  echo "USAGE: $0 [-hvP] [-p password] [-P] [-d dir] [-c config] [-e ontolexdir] [-t tmp]"
   echo "OPTIONS:"
   echo "      h: display this help message."
   echo "      c: use provided value as the configuration directory (default value = $DBNARY_USER_CONFIG_DIR)."
   echo "         This directory should contain config and virtuoso.ini.tmpl files."
   echo "      d: use provided value as the virtuoso database location (default value = $VIRTUOSODBLOCATION)."
-  echo "      l: use provided value as the dbnary folder containing all latest data (default value = $DBNARYLATEST)."
+  echo "      e: use provided value as the dbnary folder containing all extraction data (older and latest ones. default value = $DBNARY_ONTOLEX)."
   echo "      t: use provided value as the prefix for temp folders (default value = $TEMPORARYPREFIX)."
   echo "      p: use provided password as the db password (default: password will be provided by DBPASSWD)."
   echo "      P: asks for a db password interactively (default: true if password is not provided)."
@@ -34,29 +33,37 @@ function show_help {
 }
 
 while getopts "h?p:Pvc:l:t:d:" opt; do
-    case "$opt" in
-    h|\?)
-        show_help
-        exit 0
-        ;;
-    v)  verbose=true
-        ;;
-    p)  password=$OPTARG
-        ;;
-    P)  askpass=true
-        ;;
-    c)  DBNARY_USER_CONFIG_DIR=$OPTARG
-        ;;
-    l)  DBNARYLATEST=$OPTARG
-        ;;
-    d)  VIRTUOSODBLOCATION=$OPTARG
-        ;;
-    t)  TEMPORARYPREFIX=$OPTARG
-        ;;
-    esac
+  case "$opt" in
+  h | \?)
+    show_help
+    exit 0
+    ;;
+  v)
+    verbose=true
+    ;;
+  p)
+    password=$OPTARG
+    ;;
+  P)
+    askpass=true
+    ;;
+  c)
+    DBNARY_USER_CONFIG_DIR=$OPTARG
+    ;;
+  e)
+    DBNARY_ONTOLEX=$OPTARG
+    ;;
+  d)
+    VIRTUOSODBLOCATION=$OPTARG
+    ;;
+  t)
+    TEMPORARYPREFIX=$OPTARG
+    ;;
+  esac
 done
+DBNARYLATEST=${DBNARY_ONTOLEX}/latest
 
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
 [ "$1" = "--" ] && shift
 
@@ -75,7 +82,7 @@ prod_ini=virtuoso.ini.prod.tmpl
 [[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL=$DBNARY_USER_CONFIG_DIR/$bootstrap_ini
 [[ -f $VIRTUOSOINITMPL ]] || VIRTUOSOINITMPL=$script_dir/$bootstrap_ini
 if [[ ! -f $VIRTUOSOINITMPL ]]; then
-  >&2 echo "Could not find virtuoso.ini template file."
+  echo >&2 "Could not find virtuoso.ini template file."
   exit 1
 fi
 
@@ -86,19 +93,18 @@ if [ ! -x $VIRTUOSODAEMON ]; then
   exit 1
 fi
 
-if [ ! -d $DBNARYLATEST ] ; then
+if [ ! -d $DBNARYLATEST ]; then
   echo >&2 "Latest turtle data not available. $DBNARYLATEST does not exist."
   exit 1
 fi
 
 if [[ ! -w $VIRTUOSODBLOCATION ]]; then
-  >&2 echo "Virtuoso database location is not writable."
+  >&2 echo "Virtuoso database location '$VIRTUOSODBLOCATION' is not writable."
   exit 1
 fi
 
 ## READING DB PASSWORD
-if [[ $askpass == "true" || ${password}x == 'x'  ]]
-then
+if [[ $askpass == "true" || ${password}x == 'x' ]]; then
   echo "Enter your bootstrap database password : "
   IFS= read -s -p Password: password
 fi
@@ -132,21 +138,21 @@ iso3Lang[bm]=bam
 SAVETMPDIR=$TMPDIR
 export TMPDIR=$TEMPORARYPREFIX
 DATASETDIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'dbnary-dataset' || exit 1)
-[[ "$verbose" == "true" ]] && >&2 echo "Creating dataset directory : $DATASETDIR"
+[[ "$verbose" == "true" ]] && echo >&2 "Creating dataset directory : $DATASETDIR"
 if [ ! -d "$DATASETDIR" ]; then
-  >&2 echo "Could not create temporary dir. Aborting."
+  echo >&2 "Could not create temporary dir. Aborting."
   exit 1
 fi
 DBBOOTSTRAPFOLDER=$(mktemp -d 2>/dev/null || mktemp -d -t 'dbnary-db' || exit 1)
-[[ "$verbose" == "true" ]] && >&2 echo "Creating bootstrap database directory : $DBBOOTSTRAPFOLDER"
+[[ "$verbose" == "true" ]] && echo >&2 "Creating bootstrap database directory : $DBBOOTSTRAPFOLDER"
 if [ ! -d "$DBBOOTSTRAPFOLDER" ]; then
-  >&2 echo "Could not create temporary dir. Aborting."
+  echo >&2 "Could not create temporary dir. Aborting."
   exit 1
 fi
 TMPDIR=$SAVETMPDIR
 
 # deletes the temp directory
-function cleanup {
+function cleanup() {
   rm -rf "$DATASETDIR"
   echo "Deleted temp working directory $DATASETDIR"
   rm -rf "$DBBOOTSTRAPFOLDER"
@@ -167,13 +173,15 @@ fi
 # TODO: use a fixed dataset dir for dataset outside of dbnary latest folder.
 (
   shopt -s nullglob
-  files=($DATASETDIR/*.ttl)
+  files=(${DATASETDIR}/*.ttl)
   if [[ "${#files[@]}" -gt 0 ]]; then
-    >&2 echo "Dataset already exists and is not empty, assuming its content is up to date."
+    echo >&2 "Dataset already exists and is not empty, assuming its content is up to date."
   else
-    >&2 echo "Copying and expanding latest extracts."
+    echo >&2 "Copying and expanding latest extracts."
     ## Ontolex normal dumps
-    cp $DBNARYLATEST/*.ttl.bz2 "$DATASETDIR"
+    cp ${DBNARYLATEST}/*.ttl.bz2 "$DATASETDIR"
+    ## Add all (including older) statistics files so that the whole datacube is available in the DB.
+    cp ${DBNARY_ONTOLEX}/??/??_dbnary_statistics_*.ttl.bz2 "$DATASETDIR"
     ## TODO: expand Disambiguated translations + foreign data ? + etymology
     pushd "$DATASETDIR"
     bunzip2 ./*.ttl.bz2
@@ -181,11 +189,14 @@ fi
 )
 
 ## create the .graph files for all files in datasetdir
-## DONE: detect the graph (dbnary or dilaf ?)
 langRegex2='(..)_([^_]*)_(.*)'
 langRegex3='(...)_([^_]*)_(.*)'
+statsRegex2='(.{2,3})_([^_]*)_statistics(.*)'
 for f in $DATASETDIR/*.ttl; do
-  if [[ $f =~ $langRegex2 ]]; then
+  if [[ $f =~ statsRegex2 ]]; then
+    lg2=${BASH_REMATCH[1]}
+    echo "http://kaiko.getalp.org/stats/" >"$f.graph"
+  elif [[ $f =~ $langRegex2 ]]; then
     lg2=${BASH_REMATCH[1]}
     graph=${BASH_REMATCH[2]}
     lg3=${iso3Lang[$lg2]}
@@ -201,16 +212,15 @@ done
 if [ ! -d "$DBBOOTSTRAPFOLDER" ]; then
   mkdir -p $DBBOOTSTRAPFOLDER
 elif [ "$(ls -A $DBBOOTSTRAPFOLDER)" ]; then
-  >&2 echo "Database Folder $DBBOOTSTRAPFOLDER exists but is not empty. Aborting."
+  echo >&2 "Database Folder $DBBOOTSTRAPFOLDER exists but is not empty. Aborting."
   exit 1
 fi
 
-sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <$VIRTUOSOINITMPL |
-    sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
-    sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
-    sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
-    sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" >"$DBBOOTSTRAPFOLDER"/virtuoso.ini
-
+sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$VIRTUOSOINITMPL" |
+  sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
+  sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
+  sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
+  sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" >"$DBBOOTSTRAPFOLDER"/virtuoso.ini
 
 ## CREATING A NEW EMPTY DATABASE WITH NECESSARY SETTINGS
 
@@ -221,7 +231,7 @@ $VIRTUOSODAEMON -c virtuoso +wait &
 daemon_pid=$!
 echo launched deamon
 wait
-echo deamon aunched and initialized
+echo deamon launched and initialized
 
 ## connect to isql to load the different configurations
 echo isql $SERVERPORT dba dba $BOOTSTRAPSQL
@@ -235,13 +245,7 @@ user_change_password('dav','dav', '$password');
 exit();
 END
 
-## LOADING DATA IN DB.
-## Launch virtuoso to load the data into DB
-echo "Launching daemon."
-pushd "$DBBOOTSTRAPFOLDER" || exit 1
-$VIRTUOSODAEMON -c virtuoso +wait &
-wait
-
+echo "Reconnecting to the DB to load all data."
 isql $SERVERPORT dba "$password" <<END
 ld_dir ('$DATASETDIR', '*.ttl', 'http://kaiko.getalp.org/dbnary');
 
@@ -270,6 +274,8 @@ END
 ## rdfs_rule_set('etymology_ontology','http://kaiko.getalp.org/dbnaryetymology');
 ## And then in queries I use
 ## define input:inference "etymology_ontology";
+
+## (TODO: Load all statistics from the current extracts AND from all previous ones).
 
 ## index strings for faceted browsing
 isql $SERVERPORT dba "$password" <<END
@@ -300,6 +306,8 @@ echoln "=== Indexing done                                    ===" ;
 END
 
 ## Expand data by linking lexical entries when there is no homonymy
+## TODO: do it at extraction post processing using JENA on the TDB, so that it may be possible
+#        to also link in ambiguous cases ?
 isql $SERVERPORT dba "$password" <<END
 -- turn off transaction isolation to avoid reaching limits in transaction log
 log_enable(2);
@@ -338,7 +346,7 @@ shutdown();
 END
 
 ## COPY THE DATABASE NEAR THE VIRTUOSO DB
-CURRENTDATETIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
+CURRENTDATETIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
 NEWDBFOLDER=${VIRTUOSODBLOCATION}/db.$CURRENTDATETIMESTAMP
 echo "Moving database to $NEWDBFOLDER"
 mv $DBBOOTSTRAPFOLDER $NEWDBFOLDER

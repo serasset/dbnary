@@ -28,7 +28,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
-import org.getalp.dbnary.enhancer.preprocessing.StatsModule;
+import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStatsModule;
 import org.getalp.iso639.ISO639_3;
 
 /**
@@ -57,7 +57,7 @@ public class DBnaryEnhancer {
   protected Map<String, String> languages = new TreeMap<>(); // I want the map to be sorted by
   // language code.
   protected PrintStream statsOutput = null;
-  protected StatsModule stats = null;
+  protected TranslationGlossesStatsModule stats = null;
   protected String rdfFormat;
   protected PrintStream confidenceOutput;
   protected EvaluationStats evaluator = null;
@@ -251,7 +251,7 @@ public class DBnaryEnhancer {
         e.printStackTrace();
         System.exit(1);
       }
-      stats = new StatsModule();
+      stats = new TranslationGlossesStatsModule();
     }
 
     if (cmd.hasOption(CONFIDENCE_FILE_OPTION)) {

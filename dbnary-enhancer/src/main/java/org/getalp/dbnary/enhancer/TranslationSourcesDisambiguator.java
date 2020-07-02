@@ -1,6 +1,6 @@
 package org.getalp.dbnary.enhancer;
 
-import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.jena.rdf.model.Model;
@@ -16,7 +16,9 @@ import org.getalp.dbnary.enhancer.disambiguation.InvalidEntryException;
 import org.getalp.dbnary.enhancer.disambiguation.SenseNumberBasedTranslationDisambiguationMethod;
 import org.getalp.dbnary.enhancer.disambiguation.TverskyBasedTranslationDisambiguationMethod;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
-import org.getalp.dbnary.enhancer.preprocessing.StatsModule;
+import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStatsModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class TranslationSourcesDisambiguator {
@@ -25,11 +27,13 @@ public class TranslationSourcesDisambiguator {
   private double beta;
   private double delta;
   private boolean useGlosses;
-  private StatsModule stats;
+  private TranslationGlossesStatsModule stats;
   private EvaluationStats evaluator;
 
+  private Logger log = LoggerFactory.getLogger(TranslationSourcesDisambiguator.class);
+
   public TranslationSourcesDisambiguator(double alpha, double beta, double delta,
-      boolean useGlosses, StatsModule stats, EvaluationStats evaluator) {
+      boolean useGlosses, TranslationGlossesStatsModule stats, EvaluationStats evaluator) {
     this.alpha = alpha;
     this.beta = beta;
     this.delta = delta;
@@ -38,8 +42,7 @@ public class TranslationSourcesDisambiguator {
     this.evaluator = evaluator;
   }
 
-  protected void processTranslations(Model inputModel, Model outputModel, String lang)
-      throws FileNotFoundException {
+  public void processTranslations(Model inputModel, Model outputModel, String lang) {
 
     if (null != evaluator) {
       evaluator.reset(lang);
@@ -56,6 +59,7 @@ public class TranslationSourcesDisambiguator {
     StmtIterator translations =
         inputModel.listStatements(null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 
+    HashMap<Resource, Set<Resource>> translationToWSMap = new HashMap<>();
     while (translations.hasNext()) {
       Statement next = translations.next();
 
@@ -66,6 +70,9 @@ public class TranslationSourcesDisambiguator {
           || lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
           || lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
         try {
+          log.debug("Enhancing translation resource {} for entry {}", trans.getLocalName(),
+              lexicalEntry.getLocalName());
+
           if (null != stats) {
             stats.registerTranslation(trans);
           }
@@ -96,11 +103,10 @@ public class TranslationSourcesDisambiguator {
 
           Set<Resource> res = (resSenseNum.isEmpty()) ? resSim : resSenseNum;
 
+          // register links that will be created in enhancement model after the iteration
+          // as dataset should not be modified and read at the same time when back by a TDB.
           if (res != null && !res.isEmpty()) {
-            for (Resource ws : res) {
-              outputModel.add(outputModel.createStatement(translation, DBnaryOnt.isTranslationOf,
-                  outputModel.createResource(ws.getURI())));
-            }
+            translationToWSMap.put(translation, res);
           }
 
         } catch (InvalidContextException e) {
@@ -112,6 +118,10 @@ public class TranslationSourcesDisambiguator {
         }
       }
     }
+
+    translationToWSMap.forEach((t, wss) -> wss.forEach(ws -> outputModel.add(outputModel
+        .createStatement(t, DBnaryOnt.isTranslationOf, outputModel.createResource(ws.getURI())))));
+
   }
 
   private int getNumberOfSenses(Resource lexicalEntry) {

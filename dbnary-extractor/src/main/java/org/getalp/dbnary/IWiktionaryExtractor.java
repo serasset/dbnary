@@ -6,7 +6,9 @@ public interface IWiktionaryExtractor {
 
   void extractData(String wiktionaryPageName, String pageContent);
 
-  void postProcessData();
+  void postProcessData(String dumpFileName);
 
   void populateMetadata(String dumpFileName, String extractorVersion);
+
+  void computeStatistics(String dumpVersion);
 }

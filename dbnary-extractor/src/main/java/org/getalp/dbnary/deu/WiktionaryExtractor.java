@@ -1,6 +1,6 @@
 package org.getalp.dbnary.deu;
 
-import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
+import org.getalp.dbnary.ExtractionFeature;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -477,7 +477,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractInflections(int startOffset, int endOffset) {
-    if (wdh.isDisabled(Feature.MORPHOLOGY)) {
+    if (wdh.isDisabled(ExtractionFeature.MORPHOLOGY)) {
       return;
     }
     parseInflectionTables(startOffset, endOffset);

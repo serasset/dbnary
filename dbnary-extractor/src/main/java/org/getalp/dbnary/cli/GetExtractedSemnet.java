@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.getalp.LangTools;
-import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.model.DbnaryModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.IWiktionaryExtractor;

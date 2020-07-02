@@ -22,7 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.LangTools;
-import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.model.DbnaryModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.IWiktionaryExtractor;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
@@ -423,6 +423,7 @@ public class ExtractWiktionary extends DBnaryCommandLine {
         if (verbose)
           System.out.println("Postprocessing extracted entries.");
         we.postProcessData(getDumpVersion(dumpFile.getName()));
+        we.computeStatistics(getDumpVersion(dumpFile.getName()));
         we.populateMetadata(getDumpVersion(dumpFile.getName()), extractorVersion);
 
         saveBox(ExtractionFeature.MAIN, outputFile);

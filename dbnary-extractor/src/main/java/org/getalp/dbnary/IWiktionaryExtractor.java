@@ -9,4 +9,6 @@ public interface IWiktionaryExtractor {
   void postProcessData(String dumpFileName);
 
   void populateMetadata(String dumpFileName, String extractorVersion);
+
+  void computeStatistics(String dumpVersion);
 }

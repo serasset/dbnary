@@ -3,7 +3,6 @@ package org.getalp.dbnary;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
@@ -154,4 +153,6 @@ public interface IWiktionaryDataHandler {
 
   void buildDatacubeObservations(String l, TranslationGlossesStat translationGlossesStat, Stat stat,
       String dumpFileVersion);
+
+  void computeStatistics(String dumpVersion);
 }

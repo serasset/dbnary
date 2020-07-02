@@ -1,5 +1,8 @@
 package org.getalp.dbnary;
 
+import static org.getalp.dbnary.stats.Statistics.countRelations;
+import static org.getalp.dbnary.stats.Statistics.countResourcesOfType;
+
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -32,6 +35,9 @@ import org.apache.jena.vocabulary.XSD;
 import org.getalp.LangTools;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
+import org.getalp.dbnary.model.DbnaryModel;
+import org.getalp.dbnary.model.NymRelation;
+import org.getalp.dbnary.stats.Statistics;
 import org.getalp.dbnary.tools.CounterSet;
 import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
@@ -70,6 +76,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   protected CounterSet translationCount = new CounterSet();
   private CounterSet reifiedNymCount = new CounterSet();
   protected String wktLanguageEdition;
+  protected String longLanguageCode;
 
   protected Resource lexvoLanguageEdition;
   protected Resource lexvoExtractedLanguage;
@@ -93,20 +100,20 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   private HashMap<SimpleImmutableEntry<String, String>, HashSet<HashSet<PropertyObjectPair>>> heldBackOtherForms =
       new HashMap<SimpleImmutableEntry<String, String>, HashSet<HashSet<PropertyObjectPair>>>();
 
-  protected static HashMap<String, Property> nymPropertyMap = new HashMap<String, Property>();
+  // protected static HashMap<String, Property> nymPropertyMap = new HashMap<String, Property>();
   protected static HashMap<String, PosAndType> posAndTypeValueMap =
       new HashMap<String, PosAndType>();
 
   static {
 
-    nymPropertyMap.put("syn", DBnaryOnt.synonym);
-    nymPropertyMap.put("ant", DBnaryOnt.antonym);
-    nymPropertyMap.put("hypo", DBnaryOnt.hyponym);
-    nymPropertyMap.put("hyper", DBnaryOnt.hypernym);
-    nymPropertyMap.put("mero", DBnaryOnt.meronym);
-    nymPropertyMap.put("holo", DBnaryOnt.holonym);
-    nymPropertyMap.put("qsyn", DBnaryOnt.approximateSynonym);
-    nymPropertyMap.put("tropo", DBnaryOnt.troponym);
+    // nymPropertyMap.put("syn", DBnaryOnt.synonym);
+    // nymPropertyMap.put("ant", DBnaryOnt.antonym);
+    // nymPropertyMap.put("hypo", DBnaryOnt.hyponym);
+    // nymPropertyMap.put("hyper", DBnaryOnt.hypernym);
+    // nymPropertyMap.put("mero", DBnaryOnt.meronym);
+    // nymPropertyMap.put("holo", DBnaryOnt.holonym);
+    // nymPropertyMap.put("qsyn", DBnaryOnt.approximateSynonym);
+    // nymPropertyMap.put("tropo", DBnaryOnt.troponym);
 
     // posAndTypeValueMap.put("", new PosAndType(null, LemonOnt.LexicalEntry)); // other Part of
     // Speech
@@ -128,6 +135,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     NS = DBNARY_NS_PREFIX + "/" + lang + "/";
 
+    longLanguageCode = lang;
     wktLanguageEdition = LangTools.getPart1OrId(lang);
     WIKT = "https://" + wktLanguageEdition + ".wiktionary.org/wiki/";
     lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
@@ -196,9 +204,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void enableFeature(ExtractionFeature f) {
-    // TODO : keep the 3 letter code as the correct language for prefixes (wktLanguageEdition
-    // is the 2 letter code).
-    Model box = createAndInitializeABox(wktLanguageEdition, f);
+    Model box = createAndInitializeABox(longLanguageCode, f);
     // fillInPrefixes(aBox, box);
     featureBoxes.put(f, box);
   }
@@ -393,7 +399,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   }
 
-  private String date() {
+  private static String date() {
     LocalDateTime d = LocalDateTime.now();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd'T'HH_mm_ss_SSS");
     return formatter.format(d);
@@ -868,7 +874,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       // aBox.add(nym, isAnnotatedBy, target.substring(hash));
     }
 
-    Property nymProperty = nymPropertyMap.get(synRelation);
+    Property nymProperty = NymRelation.of(synRelation).getProperty();
+    // Property nymProperty = nymPropertyMap.get(synRelation);
 
     Resource targetResource = getPageResource(target);
 
@@ -895,7 +902,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       // TODO: keep additional intra-page href
       // aBox.add(nym, isAnnotatedBy, target.substring(hash));
     }
-    Property nymProperty = nymPropertyMap.get(synRelation);
+    Property nymProperty = NymRelation.of(synRelation).getProperty();
+    // Property nymProperty = nymPropertyMap.get(synRelation);
 
     Resource targetResource = getPageResource(target);
 
@@ -997,7 +1005,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       // aBox.add(nym, isAnnotatedBy, target.substring(hash));
     }
 
-    Property nymProperty = nymPropertyMap.get(synRelation);
+    Property nymProperty = NymRelation.of(synRelation).getProperty();
+    // Property nymProperty = nymPropertyMap.get(synRelation);
 
     Resource targetResource = getPageResource(target);
 
@@ -1035,7 +1044,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       if (senses.size() == 1) {
         Resource s = senses.get(0).getResource();
         HashSet<Property> alreadyProcessedNyms = new HashSet<Property>();
-        for (Property nymProp : nymPropertyMap.values()) {
+        for (NymRelation nymR : NymRelation.values()) {
+          Property nymProp = nymR.getProperty();
           if (alreadyProcessedNyms.contains(nymProp)) {
             continue;
           }
@@ -1101,6 +1111,95 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
     aBox.add(aBox.createStatement(currentSense, SkosOnt.example, example));
     return example;
-
   }
+
+  @Override
+  public void computeStatistics(String dumpVersion) {
+    if (isDisabled(ExtractionFeature.STATISTICS)) {
+      return;
+    }
+
+    Model statsBox = getFeatureBox(ExtractionFeature.STATISTICS);
+
+    {
+      long ct = countResourcesOfType(DBnaryOnt.Translation, aBox);
+      long ce = countResourcesOfType(OntolexOnt.LexicalEntry, aBox);
+      long cp = countResourcesOfType(DBnaryOnt.Page, aBox);
+      long cs = countResourcesOfType(OntolexOnt.LexicalSense, aBox);
+
+      createGeneralStatisticsObservation(statsBox, dumpVersion, getPrefix(), longLanguageCode, ct,
+          cp, ce, cs);
+    }
+
+    for (NymRelation nym : NymRelation.values()) {
+      long cr = countRelations(nym.getProperty(), aBox);
+      createNymRelationObservation(statsBox, dumpVersion, getPrefix(), longLanguageCode, nym, cr);
+    }
+
+    Map<String, Long> counts = Statistics.translationCounts(aBox);
+    counts.forEach((l, c) -> this.createTranslationObservation(statsBox, dumpVersion, getPrefix(),
+        longLanguageCode, l, c));
+  }
+
+  public static void createGeneralStatisticsObservation(Model statsBox, String dumpVersion,
+      String prefix, String lang, long translationCount, long pageCount, long entryCount,
+      long senseCount) {
+    String lg2 = LangTools.getPart1OrId(lang);
+
+    Resource classesObs = statsBox
+        .createResource(prefix + "___mainClassesObs__" + lang + "__" + date() + "_" + dumpVersion);
+    statsBox.add(statsBox.createStatement(classesObs, RDF.type, DataCubeOnt.Observation));
+    statsBox.add(
+        statsBox.createStatement(classesObs, DataCubeOnt.dataSet, DBnaryOnt.dbnaryStatisticsCube));
+    statsBox.add(statsBox.createStatement(classesObs, DBnaryOnt.wiktionaryDumpVersion,
+        statsBox.createTypedLiteral(dumpVersion)));
+    statsBox.add(statsBox.createStatement(classesObs, DBnaryOnt.observationLanguage, lg2));
+
+    statsBox.add(statsBox.createStatement(classesObs, DBnaryOnt.translationsCount,
+        statsBox.createTypedLiteral(translationCount)));
+    statsBox.add(statsBox.createStatement(classesObs, DBnaryOnt.pageCount,
+        statsBox.createTypedLiteral(pageCount)));
+    statsBox.add(statsBox.createStatement(classesObs, DBnaryOnt.lexicalEntryCount,
+        statsBox.createTypedLiteral(entryCount)));
+    statsBox.add(statsBox.createStatement(classesObs, DBnaryOnt.lexicalSenseCount,
+        statsBox.createTypedLiteral(senseCount)));
+  }
+
+  public static void createNymRelationObservation(Model box, String dumpVersion, String prefix,
+      String lang, NymRelation nym, long cr) {
+    String lg2 = LangTools.getPart1OrId(lang);
+
+    Resource nymObs = box.createResource(prefix + "___nymObs__" + lang + "__"
+        + nym.name().toLowerCase() + "__" + date() + "_" + dumpVersion);
+    box.add(box.createStatement(nymObs, RDF.type, DataCubeOnt.Observation));
+    box.add(box.createStatement(nymObs, DataCubeOnt.dataSet, DBnaryOnt.dbnaryNymRelationsCube));
+    box.add(box.createStatement(nymObs, DBnaryOnt.wiktionaryDumpVersion,
+        box.createTypedLiteral(dumpVersion)));
+    box.add(box.createStatement(nymObs, DBnaryOnt.observationLanguage, lg2));
+    box.add(box.createStatement(nymObs, DBnaryOnt.nymRelation, nym.getProperty()));
+
+    box.add(box.createStatement(nymObs, DBnaryOnt.count, box.createTypedLiteral(cr)));
+  }
+
+  public static void createTranslationObservation(Model statsBox, String dumpVersion, String prefix,
+      String sourceLanguage, String targetLanguage, Long c) {
+    // languages should be kept in 2 letter code if available.
+    String slg2 = LangTools.getPart1OrId(sourceLanguage);
+    String tlg2 = LangTools.getPart1OrId(targetLanguage);
+    tlg2 = (null != tlg2) ? tlg2 : targetLanguage;
+
+    Resource transObs = statsBox.createResource(prefix + "___transObs__" + sourceLanguage + "__"
+        + targetLanguage + "__" + date() + "_" + dumpVersion);
+    statsBox.add(statsBox.createStatement(transObs, RDF.type, DataCubeOnt.Observation));
+    statsBox.add(
+        statsBox.createStatement(transObs, DataCubeOnt.dataSet, DBnaryOnt.dbnaryTranslationsCube));
+    statsBox.add(statsBox.createStatement(transObs, DBnaryOnt.wiktionaryDumpVersion,
+        statsBox.createTypedLiteral(dumpVersion)));
+    statsBox.add(statsBox.createStatement(transObs, DBnaryOnt.observationLanguage, slg2));
+    statsBox.add(statsBox.createStatement(transObs, LimeOnt.language, tlg2));
+
+    statsBox
+        .add(statsBox.createStatement(transObs, DBnaryOnt.count, statsBox.createTypedLiteral(c)));
+  }
+
 }

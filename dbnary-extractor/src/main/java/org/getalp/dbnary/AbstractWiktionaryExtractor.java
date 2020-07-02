@@ -518,6 +518,11 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   }
 
   @Override
+  public void computeStatistics(String dumpVersion) {
+    wdh.computeStatistics(dumpVersion);
+  }
+
+  @Override
   public void populateMetadata(String dumpFilename, String extractorVersion) {
     this.wdh.populateMetadata(dumpFilename, extractorVersion);
   }

@@ -244,7 +244,6 @@ dbnary:synonym
 
 dbnary:NymProperty
     a               rdfs:Class ;
-    rdfs:subClassOf owl:ObjectProperty ;
     rdfs:comment
                     "The class lexico-semantic relation between LexicalEntities (Lexical entry OR Lexical Sense). Individuals are properties used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding Ontolex relation. "@en .
 

@@ -1,4 +1,4 @@
-package org.getalp.dbnary;
+package org.getalp.dbnary.model;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

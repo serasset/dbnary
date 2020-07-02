@@ -11,7 +11,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.getalp.LangTools;
 import org.getalp.dbnary.DBnaryOnt;
-import org.getalp.dbnary.DbnaryModel;
+import org.getalp.dbnary.model.DbnaryModel;
 import org.getalp.dbnary.DecompOnt;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.LimeOnt;

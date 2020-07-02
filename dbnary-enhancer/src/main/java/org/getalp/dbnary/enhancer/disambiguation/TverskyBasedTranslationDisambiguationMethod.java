@@ -47,7 +47,7 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
     if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
         && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
         && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
-      throw new InvalidEntryException("Expecting a LEMON Lexical Entry.");
+      throw new InvalidEntryException("Expecting an ontolex Lexical Entry.");
     }
     if (context instanceof Resource) {
       Resource trans = (Resource) context;

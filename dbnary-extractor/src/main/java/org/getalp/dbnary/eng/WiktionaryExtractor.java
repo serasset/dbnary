@@ -3,7 +3,7 @@
  */
 package org.getalp.dbnary.eng;
 
-import static org.getalp.dbnary.IWiktionaryDataHandler.Feature;
+import org.getalp.dbnary.ExtractionFeature;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -388,7 +388,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: check correct parsing of From ''[[semel#Latin|semel]]'' + ''[[pro#Latin|pro]]'' +
   // ''[[semper#Latin|semper]]''
   protected void extractEtymology(int blockStart, int end) {
-    if (wdh.isDisabled(Feature.ETYMOLOGY)) {
+    if (wdh.isDisabled(ExtractionFeature.ETYMOLOGY)) {
       return;
     }
     if (wiktionaryPageName.trim().split("\\s+").length >= 3) {
@@ -582,7 +582,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // senses
     // TODO: Handle such cases (by creating another lexical entry ?) // Similar to reflexiveness in
     // French wiktionary
-    if (ewdh.isDisabled(IWiktionaryDataHandler.Feature.MORPHOLOGY)) {
+    if (ewdh.isDisabled(ExtractionFeature.MORPHOLOGY)) {
       return;
     }
 

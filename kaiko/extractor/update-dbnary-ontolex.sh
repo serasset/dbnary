@@ -8,15 +8,15 @@ fi
 
 DIR=$HOME/develop/wiktionary
 LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la"
-TLANGS="fra,eng,por,deu,ell,rus,ita,fin,tur,jpn"
+#TLANGS="fra,eng,por,deu,ell,rus,ita,fin,tur,jpn"
 JAVA=java
-VERS=2.2.2
+VERS=2.3.0
 MIRROR=http://dumps.wikimedia.org/
 #MIRROR=http://dumps.wikimedia.your.org/
 #MIRROR=http://wikipedia.c3sl.ufpr.br/
 #MIRROR=ftp://ftpmirror.your.org/pub/wikimedia/dumps/
 EXTRACTOR=dbnary-extractor
-ENHANCER=dbnary-enhancer
+#ENHANCER=dbnary-enhancer
 OPTIONS="--tdb -v"
 
 # Change tmp dir on debian systems (as the default /tmp partition may niot be sufficient to cope with TDBs)
@@ -30,7 +30,7 @@ then
 fi
 
   echo "==============================================="
-  echo -n "  Updating DBnary dumps - "
+  echo -n "  Updating and extracting DBnary dumps - "
   date 
   echo "==============================================="
 
@@ -42,29 +42,26 @@ fi
   echo "==============================================="
 
   # Enhancing translation (source disambiguation)
-  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${ENHANCER}/$VERS/${ENHANCER}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.enhancer.EnhanceLatestExtracts -d ${DIR}/extracts -z
+  #$JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${ENHANCER}/$VERS/${ENHANCER}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.enhancer.EnhanceLatestExtracts -d ${DIR}/extracts -z
 
-  echo "==============================================="
-  echo -n "  DBnary dumps - enhanced "
-  date 
-  echo "==============================================="
+  #echo "==============================================="
+  #echo -n "  DBnary dumps - enhanced "
+  #date
+  #echo "==============================================="
 
   # Updating latest extractions stats
-  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateLatestStatistics  -d $DIR/extracts -c $TLANGS
+  #$JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateLatestStatistics  -d $DIR/extracts -c $TLANGS
 
   # Updating archived extraction stats
-  for lg in $LANGS
-  do
-    $JAVA -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateDiachronicStatistics -d $DIR/extracts -c $TLANGS $lg
-  done
+  #for lg in $LANGS
+  #do
+  #  $JAVA -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateDiachronicStatistics -d $DIR/extracts -c $TLANGS $lg
+  #done
 
-  echo "==============================================="
-  echo -n "  Stats updated -  "
-  date 
-  echo "==============================================="
-
-  #cd /home/serasset/bin/parrot/
-  #$JAVA -jar parrot-jar-with-dependencies.jar -i http://kaiko.getalp.org/dbnary -o /home/serasset/dev/wiktionary/extracts/lemon/dbnary-doc/index.html -t html/dbnarytemplate.vm -s report/css/custom.css -b ./
+  #echo "==============================================="
+  #echo -n "  Stats updated -  "
+  #date
+  #echo "==============================================="
 
   rsync -avz $DIR/extracts/ serasset@lig-getalp.imag.fr:/opt/dbnary/static/
 

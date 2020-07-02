@@ -234,23 +234,6 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
             .map(this::uncompressRetrievedDump).collect(Collectors.toList());
     confs.stream().sequential().map(this::extract).peek(this::removeOldDumps)
         .forEach(this::linkToLatestExtractedFiles);
-    // String[] dirs = updateDumpFiles(remainingArgs);
-    // uncompressDumpFiles(remainingArgs, dirs);
-    // extractDumpFiles(remainingArgs, dirs);
-    // cleanUpDumpFiles(remainingArgs, dirs);
-    // cleanUpExtractFiles(remainingArgs, dirs);
-    // linkToLatestExtractFiles(remainingArgs, dirs);
-  }
-
-  private void linkToLatestExtractFiles(String[] langs, String[] dirs) {
-    // link to the extracted file
-    System.err.println("==> Linking to latest versions.");
-    for (int i = 0; i < langs.length; i++) {
-      linkToLatestExtractFile(langs[i], dirs[i], model.toLowerCase());
-      for (String f : features) {
-        linkToLatestExtractFile(langs[i], dirs[i], f);
-      }
-    }
   }
 
   private void linkToLatestExtractedFiles(LanguageConfiguration conf) {
@@ -307,19 +290,6 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       System.err.println(
           "Error while trying to link to latest extract: " + latestFile + "->" + extractFile);
       e.printStackTrace(System.err);
-    }
-  }
-
-
-  private void cleanUpExtractFiles(String[] langs, String[] dirs) {
-    // Keep all for now...
-  }
-
-
-  private void cleanUpDumpFiles(String[] langs, String[] dirs) {
-    // keep at most "historySize" number of compressed dumps and only 1 uncompressed dump
-    for (int i = 0; i < langs.length; i++) {
-      cleanUpDumps(langs[i], dirs[i]);
     }
   }
 
@@ -601,17 +571,6 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     return res;
   }
 
-
-  private void uncompressDumpFiles(String[] langs, String[] dirs) {
-    boolean status;
-    for (int i = 0; i < langs.length; i++) {
-      status = uncompressDumpFile(langs[i], dirs[i]);
-      if (!status) {
-        dirs[i] = null;
-      }
-    }
-  }
-
   private LanguageConfiguration uncompressRetrievedDump(LanguageConfiguration conf) {
     boolean status = uncompressDumpFile(conf.lang, conf.dumpDir);
     conf.setUncompressed(status);
@@ -692,17 +651,6 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     return outputDir + "/" + lang + "/" + dir + "/" + lang + "wkt-" + dir + ".xml";
   }
 
-
-  private String[] updateDumpFiles(String[] langs) {
-    String[] res = new String[langs.length];
-    int i = 0;
-    for (String prefix : remainingArgs) {
-      res[i] = updateDumpFile(prefix);
-      i++;
-    }
-    return res;
-  }
-
   private LanguageConfiguration extract(LanguageConfiguration conf) {
     if (conf.isUncompressed()) {
       boolean ok = extractDumpFile(conf.lang, conf.dumpDir);
@@ -716,19 +664,6 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       }
     }
     return conf;
-  }
-
-  private void extractDumpFiles(String[] langs, String[] dirs) {
-    for (int i = 0; i < langs.length; i++) {
-      boolean ok = extractDumpFile(langs[i], dirs[i]);
-      if (!ok) {
-        // Sometimes the dump is incomplete and finishes in the middle of the xml file,
-        // leading to IOException or IndexException from Extractor.
-        deleteDump(langs[i], dirs[i]);
-        deleteUncompressedDump(langs[i], dirs[i]);
-        deleteDumpDir(langs[i], dirs[i]);
-      }
-    }
   }
 
   private static void displayMemoryUsage() {
@@ -780,8 +715,8 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
         + "_" + dir + ".ttl";
     String enhancementFile = odir + "/" + lang + prefix + "_dbnary_"
         + ExtractionFeature.ENHANCEMENT.toString() + "_" + dir + ".ttl";
-    String statsFile = odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.STATS.toString()
-        + "_" + dir + ".ttl";
+    String statsFile = odir + "/" + lang + prefix + "_dbnary_"
+        + ExtractionFeature.STATISTICS.toString() + "_" + dir + ".ttl";
     if (compress) {
       extractFile = extractFile + ".bz2";
       morphoFile = morphoFile + ".bz2";
@@ -823,8 +758,8 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       a.add("--enhancement");
       a.add(enhancementFile);
     }
-    if (features.contains("stats")) {
-      a.add("--stats");
+    if (features.contains("statistics")) {
+      a.add("--statistics");
       a.add(statsFile);
     }
     if (features.contains("foreign")) {

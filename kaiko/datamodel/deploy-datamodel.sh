@@ -87,4 +87,4 @@ popd
 echo Should I deploy the generated files to the public web server [y/N]
 IFS= read continue
 [[ "$continue" == "y" ]] || exit 0;
-rsynx -avz $PREFIXDIR/datamodel lig-getalp.imag.fr:/opt/dbnary/static/datamodel
+rsync -avz $PREFIXDIR/datamodel lig-getalp.imag.fr:/opt/dbnary/static/datamodel

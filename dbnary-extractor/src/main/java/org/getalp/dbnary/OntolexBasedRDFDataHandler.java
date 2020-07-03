@@ -1147,7 +1147,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     String lg2 = LangTools.getPart1OrId(lang);
 
     Resource classesObs = statsBox
-        .createResource(prefix + "___mainClassesObs__" + lang + "__" + date() + "_" + dumpVersion);
+        .createResource(prefix + "___mainClassesObs__" + lang + "__" + dumpVersion);
     statsBox.add(statsBox.createStatement(classesObs, RDF.type, DataCubeOnt.Observation));
     statsBox.add(
         statsBox.createStatement(classesObs, DataCubeOnt.dataSet, DBnaryOnt.dbnaryStatisticsCube));
@@ -1170,7 +1170,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     String lg2 = LangTools.getPart1OrId(lang);
 
     Resource nymObs = box.createResource(prefix + "___nymObs__" + lang + "__"
-        + nym.name().toLowerCase() + "__" + date() + "_" + dumpVersion);
+        + nym.name().toLowerCase() + "__" + dumpVersion);
     box.add(box.createStatement(nymObs, RDF.type, DataCubeOnt.Observation));
     box.add(box.createStatement(nymObs, DataCubeOnt.dataSet, DBnaryOnt.dbnaryNymRelationsCube));
     box.add(box.createStatement(nymObs, DBnaryOnt.wiktionaryDumpVersion,
@@ -1189,7 +1189,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     tlg2 = (null != tlg2) ? tlg2 : targetLanguage;
 
     Resource transObs = statsBox.createResource(prefix + "___transObs__" + sourceLanguage + "__"
-        + targetLanguage + "__" + date() + "_" + dumpVersion);
+        + targetLanguage + "__" + dumpVersion);
     statsBox.add(statsBox.createStatement(transObs, RDF.type, DataCubeOnt.Observation));
     statsBox.add(
         statsBox.createStatement(transObs, DataCubeOnt.dataSet, DBnaryOnt.dbnaryTranslationsCube));

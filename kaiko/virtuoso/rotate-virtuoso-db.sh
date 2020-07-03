@@ -191,9 +191,9 @@ fi
 ## create the .graph files for all files in datasetdir
 langRegex2='(..)_([^_]*)_(.*)'
 langRegex3='(...)_([^_]*)_(.*)'
-statsRegex2='(.{2,3})_([^_]*)_statistics(.*)'
+statsRegex2='(..)_([^_]*)_statistics(.*)'
 for f in $DATASETDIR/*.ttl; do
-  if [[ $f =~ statsRegex2 ]]; then
+  if [[ $f =~ $statsRegex2 ]]; then
     lg2=${BASH_REMATCH[1]}
     echo "http://kaiko.getalp.org/stats/" >"$f.graph"
   elif [[ $f =~ $langRegex2 ]]; then

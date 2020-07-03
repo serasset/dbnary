@@ -7,6 +7,8 @@ if [ ! -t 0 ]; then
 fi
 
 DIR=$HOME/develop/wiktionary
+#LANGS="fr en"
+#LANGS="pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la"
 LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la"
 #TLANGS="fra,eng,por,deu,ell,rus,ita,fin,tur,jpn"
 JAVA=java
@@ -34,7 +36,7 @@ fi
   date 
   echo "==============================================="
 
-  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateAndExtractDumps $OPTIONS -d $DIR -m ontolex -s $MIRROR -k 1 -z --enable morphology --enable etymology --enable lime --enable statistics --enable enhancement -n  $LANGS
+  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateAndExtractDumps $OPTIONS -d $DIR -m ontolex -s $MIRROR -k 1 -z --enable morphology --enable etymology --enable lime --enable statistics --enable enhancement  $LANGS
 
   echo "==============================================="
   echo -n "  DBnary dumps updated - "

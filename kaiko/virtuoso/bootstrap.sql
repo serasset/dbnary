@@ -22,66 +22,67 @@ DB.DBA.VHOST_DEFINE (
 
 DB.DBA.URLREWRITE_CREATE_RULELIST (
 'http_rule_list_1', 1,
-vector ('datamodel_200_rule', 'datamodel_210_rule','datamodel_current', 'sparql_describe_for_known_formats', 'sparql_describe_for_ntriples', 'faceted_browsing'));
+vector ('datamodel_200_rule', 'datamodel_210_rule', 'datamodel_current', 'sparql_describe_for_known_formats', 'sparql_describe_for_ntriples', 'faceted_browsing'));
 
 -- send back all request to the versioned datamodel url to apache (which will make content negociation)
 DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
-'datamodel_200_rule', 1,
-    '^/dbnary/2.0.0/*$',
-vector (),
-0,
+  'datamodel_200_rule', 
+  1,
+  '^/dbnary/2.0.0/*\$',
+  vector (),
+  0,
   '/static/datamodel/2.0.0',
-vector (),
-NULL,
-NULL,
-1,
-303,
-''
+  vector (),
+  NULL,
+  NULL,
+  1,
+  303,
+  ''
 );
 
 -- send back all request to the versioned datamodel url to apache (which will make content negociation)
 DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
-'datamodel_210_rule', 1,
-    '^/dbnary/2.1.0/*$',
-vector (),
-0,
+  'datamodel_210_rule', 1,
+  '^/dbnary/2.1.0/*\$',
+  vector (),
+  0,
   '/static/datamodel/2.1.0',
-vector (),
-NULL,
-NULL,
-1,
-303,
-''
+  vector (),
+  NULL,
+  NULL,
+  1,
+  303,
+  ''
 );
 
 -- send back all request to the datamodel url to apache (which will make content negociation)
 DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
-'datamodel_current', 1,
-    '^/dbnary/*$',
-vector (),
-0,
+  'datamodel_current', 1,
+  '^/dbnary/*\$',
+  vector (),
+  0,
   '/static/datamodel/current/',
-vector (),
-NULL,
-NULL,
-1,
-303,
-''
+  vector (),
+  NULL,
+  NULL,
+  1,
+  303,
+  ''
 );
 
 -- Send all request to dbanry IRI to SPARQL DESCRIBE for various response formats
 DB.DBA.URLREWRITE_CREATE_REGEX_RULE (
-'sparql_describe_for_known_formats', 1,
-    '^/(.*)\$',
-vector ('par_1'),
-1,
+  'sparql_describe_for_known_formats', 1,
+  '^/(.*)\$',
+  vector ('par_1'),
+  1,
   '/sparql?query=DESCRIBE%%20%%3Chttp%%3A%%2F%%2Fkaiko.getalp.org%%2F%U%%3E&format=%U',
-vector ('par_1', '*accept*'),
-NULL,
-'(text/rdf.n3)|(application/rdf.xml)|(text/n3)|(text/turtle)|(application/x-turtle)|(application/x-trig)|(application/ld.json)|(text/rdf.nt)|(text/csv)|(application/odata.json)|(application/microdata.json)|(application/rdf.json)|(application/x-json.ld)|(application/atom.xml)|(application/xhtml.xml)|(application/rdf.json)',
-2,
-303,
-''
+  vector ('par_1', '*accept*'),
+  NULL,
+  '(text/rdf.n3)|(application/rdf.xml)|(text/n3)|(text/turtle)|(application/x-turtle)|(application/x-trig)|(application/ld.json)|(text/rdf.nt)|(text/csv)|(application/odata.json)|(application/microdata.json)|(application/rdf.json)|(application/x-json.ld)|(application/atom.xml)|(application/xhtml.xml)|(application/rdf.json)',
+  2,
+  303,
+  ''
 );
 
 DB.DBA.URLREWRITE_CREATE_REGEX_RULE (

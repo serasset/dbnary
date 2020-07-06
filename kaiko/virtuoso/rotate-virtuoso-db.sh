@@ -107,6 +107,7 @@ fi
 if [[ $askpass == "true" || ${password}x == 'x' ]]; then
   echo "Enter your bootstrap database password : "
   IFS= read -s -p Password: password
+  echo
 fi
 
 ## Prepare the dataset directory
@@ -350,3 +351,6 @@ CURRENTDATETIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
 NEWDBFOLDER=${VIRTUOSODBLOCATION}/db.$CURRENTDATETIMESTAMP
 echo "Moving database to $NEWDBFOLDER"
 mv $DBBOOTSTRAPFOLDER $NEWDBFOLDER
+
+# TODO: Generate a production ready virtuoso.ini file
+# TODO: stop virtuoso daemon and rotate db folders then restart virtuoso daemon

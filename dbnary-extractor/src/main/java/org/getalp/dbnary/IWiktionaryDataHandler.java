@@ -10,6 +10,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats.Stat;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
+import org.getalp.dbnary.morphology.InflectionData;
 
 public interface IWiktionaryDataHandler {
 

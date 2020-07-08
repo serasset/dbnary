@@ -37,6 +37,7 @@ import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
 import org.getalp.dbnary.model.DbnaryModel;
 import org.getalp.dbnary.model.NymRelation;
+import org.getalp.dbnary.morphology.InflectionData;
 import org.getalp.dbnary.stats.Statistics;
 import org.getalp.dbnary.tools.CounterSet;
 import org.getalp.iso639.ISO639_3;

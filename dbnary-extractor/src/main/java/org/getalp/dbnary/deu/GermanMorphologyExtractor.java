@@ -11,8 +11,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.morphology.InflectedFormSet;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.morphology.InflectionData;
 import org.getalp.dbnary.tools.StringDistance;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Template;
@@ -260,7 +262,7 @@ public class GermanMorphologyExtractor {
   }
 
   private void registerAllForms(InflectedFormSet forms) {
-    for (Entry<GermanInflectionData, Set<String>> form : forms) {
+    for (Entry<InflectionData, Set<String>> form : forms) {
       wdh.registerInflection(form.getKey(), form.getValue());
     }
   }

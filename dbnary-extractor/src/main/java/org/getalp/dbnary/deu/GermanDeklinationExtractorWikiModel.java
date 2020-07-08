@@ -21,93 +21,9 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
 
   public GermanDeklinationExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi,
       Locale locale, String imageBaseURL, String linkBaseURL) {
-    super(wi, locale, imageBaseURL, linkBaseURL, wdh);
+    super(wi, locale, imageBaseURL, linkBaseURL, wdh, new GermanDeklinationTableExtractor(wdh.currentLexEntry()));
   }
 
-  @Override
-  protected GermanInflectionData getInflectionDataFromCellContext(List<String> context) {
-    GermanInflectionData inflection = new GermanInflectionData();
-    boolean isArticleColumn = false;
-    // log.debug("== getInflectionDataFromCellContext for {} ==", wdh.currentLexEntry());
-    for (String h : context) {
-      h = h.trim();
-      // log.debug(" h = {}", h);
-      switch (h) {
-        case "Positiv":
-          inflection.degree = Degree.POSITIVE;
-          break;
-        case "Komparativ":
-          inflection.degree = Degree.COMPARATIVE;
-          break;
-        case "Superlativ":
-          inflection.degree = Degree.SUPERLATIVE;
-          break;
-        case "Starke Deklination":
-          inflection.inflectionType = InflectionType.STRONG;
-          break;
-        case "Schwache Deklination":
-          inflection.inflectionType = InflectionType.WEAK;
-          break;
-        case "Gemischte Deklination":
-          inflection.inflectionType = InflectionType.MIXED;
-          break;
-        case "Prädikativ":
-          inflection.inflectionType = InflectionType.NOTHING;
-          inflection.note.add("Prädikativ");
-          break;
-        case "Singular":
-          inflection.number = GNumber.SINGULAR;
-          break;
-        case "Plural":
-          inflection.number = GNumber.PLURAL;
-          break;
-        case "Maskulinum":
-          inflection.genre = Genre.MASCULIN;
-          break;
-        case "Femininum":
-          inflection.genre = Genre.FEMININ;
-          break;
-        case "Neutrum":
-          inflection.genre = Genre.NEUTRUM;
-          break;
-        case "Artikel":
-          isArticleColumn = true;
-          break;
-        case "Wortform":
-          isArticleColumn = false;
-          break;
-        case "Nominativ":
-          inflection.cas = Cas.NOMINATIF;
-          break;
-        case "Genitiv":
-          inflection.cas = Cas.GENITIF;
-          break;
-        case "Dativ":
-          inflection.cas = Cas.DATIF;
-          break;
-        case "Akkusativ":
-          inflection.cas = Cas.ACCUSATIF;
-          break;
-        case "—":
-        case "":
-        case " ":
-          break;
-        default:
-          log.debug("Deklination Extraction: Unhandled header {} in {}", h, wdh.currentLexEntry());
-      }
-    }
-    if (isArticleColumn) {
-      return null;
-    }
-    return inflection;
-  }
-
-  private static HashSet<String> declinatedFormMarker;
-
-  static {
-    declinatedFormMarker = new HashSet<>();
-    declinatedFormMarker.add("adjektivische Deklination");
-  }
 
 
   // FIXME: check if remaining code is dead code...

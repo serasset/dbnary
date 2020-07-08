@@ -1,0 +1,7 @@
+SELECT ?cl, ?cs, ?cp, ?ct WHERE {
+  ?o a qb:Observation ;
+     qb:dataSet dbnary:dbnaryStatisticsCube ;
+     dbnary:lexicalEntryCount ?cl ;
+     dbnary:lexicalSenseCount ?cs ;
+     dbnary:pageCount ?cp ;
+     dbnary:translationsCount ?ct . }

@@ -70,7 +70,7 @@ public class TranslationSourcesDisambiguator {
           || lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
           || lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
         try {
-          log.debug("Enhancing translation resource {} for entry {}", trans.getLocalName(),
+          log.trace("Enhancing translation resource {} for entry {}", trans.getLocalName(),
               lexicalEntry.getLocalName());
 
           if (null != stats) {

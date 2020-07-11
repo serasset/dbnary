@@ -127,6 +127,7 @@ public class DbnaryWikiModel extends WikiModel {
   @Override
   public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
       throws WikiModelContentException {
+    log.trace("resolving {} in {}", parsedPagename.fullPagename(), this.getPageName());
     String result = super.getRawWikiContent(parsedPagename, map);
     if (result != null) {
       // found magic word template

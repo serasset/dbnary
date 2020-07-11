@@ -5,10 +5,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import org.getalp.dbnary.deu.GermanInflectionData;
-import org.getalp.dbnary.deu.GermanTableExtractor;
-import org.getalp.dbnary.morphology.InflectedFormSet;
-import org.getalp.dbnary.morphology.InflectionData;
 import org.getalp.dbnary.tools.ArrayMatrix;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,18 +17,17 @@ public abstract class TableExtractor {
 
   protected Set<Element> alreadyParsedTables = new HashSet<Element>();
   protected String currentEntry;
-  private Logger log = LoggerFactory.getLogger(GermanTableExtractor.class);
+  private Logger log = LoggerFactory.getLogger(TableExtractor.class);
 
-  public TableExtractor(
-      String currentEntry) {
+  public TableExtractor(String currentEntry) {
     this.currentEntry = currentEntry;
   }
 
   /**
    * returns the inflection data that correspond to current celle context
    *
-   * The cell context is a list of String that corresponds to all column and row headers +
-   * section headers in which the cell appears.
+   * The cell context is a list of String that corresponds to all column and row headers + section
+   * headers in which the cell appears.
    *
    * @param context a list of Strings that represent the celle context
    * @return The InflexionData corresponding to the context
@@ -86,9 +81,7 @@ public abstract class TableExtractor {
       } else if (elt.tagName().equalsIgnoreCase("h2")) {
         if (shouldIgnoreCurrentH2(elt)) {
           processCurrentH2sSection = false;
-          log
-              .debug("Breaking flexion parse due to header {} --in-- {}", elt.text(),
-                  currentEntry);
+          log.debug("Breaking flexion parse due to header {} --in-- {}", elt.text(), currentEntry);
           // return forms;
         } else {
           processCurrentH2sSection = true;
@@ -102,9 +95,7 @@ public abstract class TableExtractor {
           continue;
         }
         if (alreadyParsedTables.contains(elt)) {
-          log
-              .debug("Ignoring already parsed table {} in {}", elt.html(),
-                  currentEntry);
+          log.debug("Ignoring already parsed table {} in {}", elt.html(), currentEntry);
           continue;
         }
         if (elt.id().equalsIgnoreCase("toc")) {
@@ -124,7 +115,7 @@ public abstract class TableExtractor {
     InflectedFormSet forms = new InflectedFormSet();
     alreadyParsedTables.add(table);
     Elements rows = table.select("tr");
-    ArrayMatrix<String> columnHeaders = new ArrayMatrix<String>();
+    ArrayMatrix<Element> columnHeaders = new ArrayMatrix<>();
     int nrow = 0;
     for (Element row : rows) {
       // Filter out rows that belong to nested tables
@@ -154,7 +145,7 @@ public abstract class TableExtractor {
 
           for (int i = 0; i < cspan; i++) {
             for (int j = 0; j < rspan; j++) {
-              columnHeaders.set(nrow + j, ncol, cell.text());
+              columnHeaders.set(nrow + j, ncol, cell);
             }
             ncol++;
           }
@@ -169,9 +160,7 @@ public abstract class TableExtractor {
           int rspan =
               (null != rowspan && rowspan.trim().length() != 0) ? Integer.parseInt(rowspan) : 1;
           if (rspan != 1) {
-            log
-                .debug("Non null rowspan in data cell ({},{}) for {}", nrow, ncol,
-                    currentEntry);
+            log.debug("Non null rowspan in data cell ({},{}) for {}", nrow, ncol, currentEntry);
           }
 
           for (int i = 0; i < cspan; i++) {
@@ -183,7 +172,7 @@ public abstract class TableExtractor {
               // only get inflection for cells without bgcolour!
 
               if (cell.attr("bgcolor").isEmpty()) {
-                GermanInflectionData inflection = (GermanInflectionData) getInflectionDataFromCellContext(context);
+                InflectionData inflection = getInflectionDataFromCellContext(context);
                 if (null != inflection) {
                   forms.add(inflection, getInflectedForms(cell));
                 }
@@ -193,9 +182,7 @@ public abstract class TableExtractor {
               Elements tables = cell.select("table");
               for (Element nestedTable : tables) {
                 if (alreadyParsedTables.contains(nestedTable)) {
-                  log
-                      .debug("Ignoring already parsed nested table in {}",
-                          currentEntry);
+                  log.debug("Ignoring already parsed nested table in {}", currentEntry);
                   continue;
                 }
                 if (nestedTable.id().equalsIgnoreCase("toc")) {
@@ -207,8 +194,7 @@ public abstract class TableExtractor {
             ncol++;
           }
         } else {
-          log.debug("Row child \"{}\"is not a cell in {}", cell.tagName(),
-              currentEntry);
+          log.debug("Row child \"{}\"is not a cell in {}", cell.tagName(), currentEntry);
         }
       }
       nrow++;
@@ -258,69 +244,33 @@ public abstract class TableExtractor {
     return cell.tagName().equalsIgnoreCase("th");
   }
 
-  private List<String> getRowAndColumnContext(int nrow, int ncol,
-      ArrayMatrix<String> columnHeaders) {
+  protected List<String> getRowAndColumnContext(int nrow, int ncol,
+      ArrayMatrix<Element> columnHeaders) {
     LinkedList<String> res = new LinkedList<String>();
     for (int i = 0; i < nrow; i++) {
-      String header = columnHeaders.get(i, ncol);
-      if (null != header && (header.trim().length() != 0)) {
-        res.add(header);
-      }
+      addToContext(columnHeaders, i, ncol, res);
     }
     for (int i = 0; i < ncol; i++) {
-      String header = columnHeaders.get(nrow, i);
-      if (null != header && (header.trim().length() != 0)) {
-        res.add(header);
-      }
+      addToContext(columnHeaders, nrow, i, res);
     }
     return res;
   }
 
+  private void addToContext(ArrayMatrix<Element> columnHeaders, int i, int j,
+      LinkedList<String> res) {
+    Element headerCell = columnHeaders.get(i, j);
+    String header;
+    if (null != headerCell && (header = headerCell.text()) != null && header.trim().length() != 0) {
+      res.add(header);
+    }
+  }
+
   /**
-   * Extract wordforms from table cell<br> Splits cell content by &lt;br\&gt; or comma and removes
-   * HTML formatting
+   * Extract wordforms from table cell<br>
+   * Splits cell content by &lt;br\&gt; or comma and removes HTML formatting
    *
    * @param cell the current cell in the inflection table
    * @return Set of wordforms (Strings) from this cell
    */
-  protected Set<String> getInflectedForms(Element cell) {
-    // there are cells with <br> and commas to separate different values: split them
-    // get rid of spurious html-formatting (<nbsp> <small> <i> etc.)
-    Set<String> forms = new HashSet<String>();
-    Elements anchors = cell.select("a");
-
-    if (anchors.isEmpty()) {
-      String cellText = cell.html();
-      // check for <br>
-      Elements linebreaks = cell.select("br");
-      if (!linebreaks.isEmpty()) {
-        log.debug("cell contains <br> : {}", cell.html());
-        // replace <br> by ","
-        cellText = cellText.replaceAll("<br/?>", ",");
-      }
-      cellText = cellText.replaceAll("&nbsp;", " ");
-      cellText = cellText.replaceAll("</?small>", "");
-      cellText = cellText.replaceAll("</?i>", "");
-      cellText = cellText.replaceAll("</?strong.*?>", "");
-
-      String[] atomicForms = cellText.split("[,;]");
-      for (int i = 0; i < atomicForms.length; i++) {
-        String trimmedText = atomicForms[i].trim();
-        // log.debug(" was split into : {}", trimmedText);
-        if (!trimmedText.isEmpty()) {
-          forms.add(trimmedText);
-        }
-      }
-    } else {
-      for (Element anchor : anchors) {
-        forms.add(anchor.text());
-      }
-    }
-    for (String form : forms) {
-      if (form.contains(",")) {
-        log.trace("Comma found in morphological value: {}", form);
-      }
-    }
-    return forms;
-  }
+  protected abstract Set<String> getInflectedForms(Element cell);
 }

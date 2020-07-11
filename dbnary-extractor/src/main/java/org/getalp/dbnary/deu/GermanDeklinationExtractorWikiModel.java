@@ -21,7 +21,8 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
 
   public GermanDeklinationExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi,
       Locale locale, String imageBaseURL, String linkBaseURL) {
-    super(wi, locale, imageBaseURL, linkBaseURL, wdh, new GermanDeklinationTableExtractor(wdh.currentLexEntry()));
+    super(wi, locale, imageBaseURL, linkBaseURL, wdh,
+        new GermanDeklinationTableExtractor(wdh.currentLexEntry()));
   }
 
 

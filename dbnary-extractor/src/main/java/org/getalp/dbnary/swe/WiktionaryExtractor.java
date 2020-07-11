@@ -9,7 +9,11 @@ import org.getalp.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.StructuredGloss;
+import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +42,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String nymPatternString;
 
   protected final static String nymAndUsagePatternString;
+
+  protected SwedishMorphologyExtractor morphologyExtractor;
 
 
   private enum Block {
@@ -90,6 +96,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private String currentNym = null;
 
+  @Override
+  public void setWiktionaryIndex(WiktionaryIndex wi) {
+    super.setWiktionaryIndex(wi);
+    morphologyExtractor = new SwedishMorphologyExtractor(wdh, wi);
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -122,11 +134,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int swedenSectionEndOffset =
         languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
-    extractSwedenData(swedenSectionStartOffset, swedenSectionEndOffset);
+    extractSwedishData(swedenSectionStartOffset, swedenSectionEndOffset);
     wdh.finalizePageExtraction();
   }
 
-  protected void extractSwedenData(int startOffset, int endOffset) {
+  protected void extractSwedishData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     wdh.initializeEntryExtraction(wiktionaryPageName);
@@ -212,6 +224,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
       case DEFBLOCK:
         extractDefinitions(blockStart, end);
+        extractMorphology(blockStart, end);
         break;
       case TRADBLOCK:
         extractTranslations(blockStart, end);
@@ -231,6 +244,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     blockStart = -1;
   }
 
+  private void extractMorphology(int blockStart, int end) {
+    WikiText txt = new WikiText(pageContent.substring(blockStart, end));
+
+    txt.templatesOnUpperLevel().stream().map(Token::asTemplate)
+        .filter(WiktionaryExtractor::isMorphologyTableTemplate).forEach(tmpl -> morphologyExtractor
+            .extractMorphologicalData(tmpl.toString(), wiktionaryPageName));
+  }
+
+  private static boolean isMorphologyTableTemplate(Template template) {
+    String name = template.getName();
+    return name.startsWith("sv-subst") || name.startsWith("sv-adj") || name.startsWith(("sv-verb"))
+        || name.startsWith("sv-adv") || name.startsWith("sv-artikel") || name.startsWith("sv-pron");
+  }
 
   private void extractTranslations(int startOffset, int endOffset) {
     Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
@@ -284,8 +310,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     Matcher defOrExampleMatcher = defOrExamplePattern.matcher(pageContent);
     defOrExampleMatcher.region(startOffset, endOffset);
     // TODO : Swedish definition that contain ordered sublists are indeed mathematical definitions
-    // where
-    // sublists are part of the definition
+    // where sublists are part of the definition
     while (defOrExampleMatcher.find()) {
       if (null != defOrExampleMatcher.group(1)) { // extraire les definitions
         extractDefinition(defOrExampleMatcher);

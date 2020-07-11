@@ -28,12 +28,16 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
   private boolean extractsMorpho = false;
   private boolean extractsEtymology = false;
   private boolean extractsStats = false;
+  private boolean enhanceData = false;
 
 
   private static final String FOREIGN_EXTRACTION_OPTION = "x";
 
-  private static final String MORPHOLOGY_OUTPUT_FILE_LONG_OPTION = "morpho";
+  private static final String MORPHOLOGY_OUTPUT_FILE_LONG_OPTION = "morphology";
   private static final String MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION = "M";
+
+  private static final String ENHANCEMENT_OUTPUT_FILE_LONG_OPTION = "enhancement";
+  private static final String ENHANCEMENT_OUTPUT_FILE_SHORT_OPTION = "X";
 
   protected static final String ETYMOLOGY_OUTPUT_FILE_LONG_OPTION = "etymology";
   protected static final String ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION = "E";
@@ -55,6 +59,9 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
         .longOpt(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION).desc("extract morphology data.").build());
     options.addOption(Option.builder(ETYMOLOGY_OUTPUT_FILE_SHORT_OPTION)
         .longOpt(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION).desc("extract etymology data.").build());
+    options.addOption(Option.builder(ENHANCEMENT_OUTPUT_FILE_SHORT_OPTION)
+        .longOpt(ENHANCEMENT_OUTPUT_FILE_LONG_OPTION)
+        .desc("Output file for ENHANCED (disambiguated) data. Undefined by default.").build());
     options.addOption(
         Option.builder(STATS_OUTPUT_FILE_SHORT_OPTION).longOpt(STATS_OUTPUT_FILE_LONG_OPTION)
             .desc("extract statistics from data processing (enhancement, sizes, etc.).").build());
@@ -92,6 +99,7 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
     extractsMorpho = cmd.hasOption(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION);
     extractsEtymology = cmd.hasOption(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION);
     extractsStats = cmd.hasOption(STATS_OUTPUT_FILE_LONG_OPTION);
+    enhanceData = cmd.hasOption(ENHANCEMENT_OUTPUT_FILE_LONG_OPTION);
 
     if (cmd.hasOption(URI_PREFIX_LONG_OPTION)) {
       DbnaryModel.setGlobalDbnaryPrefix(cmd.getOptionValue(URI_PREFIX_SHORT_OPTION));
@@ -112,7 +120,9 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
       } else {
         wdh = WiktionaryDataHandlerFactory.getDataHandler(language, null);
       }
-      wdh.enableFeature(ExtractionFeature.ENHANCEMENT);
+      if (enhanceData) {
+        wdh.enableFeature(ExtractionFeature.ENHANCEMENT);
+      }
       if (extractsMorpho) {
         wdh.enableFeature(ExtractionFeature.MORPHOLOGY);
       }

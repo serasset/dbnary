@@ -164,31 +164,16 @@ public abstract class TableExtractor {
           }
 
           for (int i = 0; i < cspan; i++) {
-            List<String> context = getRowAndColumnContext(nrow, ncol, columnHeaders);
-            // prepend global context
-            context.addAll(0, globalContext);
-            if (cell.select("table").isEmpty()) {
-              // No nested table in current cell.
-              // only get inflection for cells without bgcolour!
-
-              if (cell.attr("bgcolor").isEmpty()) {
-                InflectionData inflection = getInflectionDataFromCellContext(context);
-                if (null != inflection) {
-                  forms.add(inflection, getInflectedForms(cell));
-                }
-              }
-            } else {
-              // handle tables that are nested in cells
-              Elements tables = cell.select("table");
-              for (Element nestedTable : tables) {
-                if (alreadyParsedTables.contains(nestedTable)) {
-                  log.debug("Ignoring already parsed nested table in {}", currentEntry);
-                  continue;
-                }
-                if (nestedTable.id().equalsIgnoreCase("toc")) {
-                  continue;
-                }
-                forms.addAll(parseTable(nestedTable, context));
+            if (shouldProcessCell(cell)) {
+              List<String> context = getRowAndColumnContext(nrow, ncol, columnHeaders);
+              // prepend global context
+              context.addAll(0, globalContext);
+              if (cell.select("table").isEmpty()) {
+                // No nested table in current cell.
+                // only get inflection for cells without bgcolour!
+                handleSimpleCell(cell, context, forms);
+              } else {
+                handleNestedTables(cell, context, forms);
               }
             }
             ncol++;
@@ -200,6 +185,36 @@ public abstract class TableExtractor {
       nrow++;
     }
     return forms;
+  }
+
+  protected boolean shouldProcessCell(Element cell) {
+    return true;
+  }
+
+  protected void handleSimpleCell(Element cell, List<String> context,
+      InflectedFormSet forms) {
+    if (cell.attr("bgcolor").isEmpty()) {
+      InflectionData inflection = getInflectionDataFromCellContext(context);
+      if (null != inflection) {
+        forms.add(inflection, getInflectedForms(cell));
+      }
+    }
+  }
+
+  protected void handleNestedTables(Element cell, List<String> context,
+      InflectedFormSet forms) {
+    // handle tables that are nested in cells
+    Elements tables = cell.select("table");
+    for (Element nestedTable : tables) {
+      if (alreadyParsedTables.contains(nestedTable)) {
+        log.debug("Ignoring already parsed nested table in {}", currentEntry);
+        continue;
+      }
+      if (nestedTable.id().equalsIgnoreCase("toc")) {
+        continue;
+      }
+      forms.addAll(parseTable(nestedTable, context));
+    }
   }
 
   private boolean isInCurrentTable(Element table, Element row) {
@@ -256,8 +271,8 @@ public abstract class TableExtractor {
     return res;
   }
 
-  private void addToContext(ArrayMatrix<Element> columnHeaders, int i, int j,
-      LinkedList<String> res) {
+  protected void addToContext(ArrayMatrix<Element> columnHeaders, int i, int j,
+      List<String> res) {
     Element headerCell = columnHeaders.get(i, j);
     String header;
     if (null != headerCell && (header = headerCell.text()) != null && header.trim().length() != 0) {
@@ -272,5 +287,47 @@ public abstract class TableExtractor {
    * @param cell the current cell in the inflection table
    * @return Set of wordforms (Strings) from this cell
    */
-  protected abstract Set<String> getInflectedForms(Element cell);
+  protected Set<String> getInflectedForms(Element cell) {
+    // there are cells with <br> and commas to separate different values: split them
+    // get rid of spurious html-formatting (<nbsp> <small> <i> etc.)
+    Set<String> forms = new HashSet<String>();
+    Elements anchors = cell.select("a");
+
+    if (anchors.isEmpty()) {
+      String cellText = cell.html();
+      // check for <br>
+      Elements linebreaks = cell.select("br");
+      if (!linebreaks.isEmpty()) {
+        log.debug("cell contains <br> : {}", cell.html());
+        // replace <br> by ","
+        cellText = cellText.replaceAll("<br/?>", ",");
+      }
+      cellText = cellText.replaceAll("&nbsp;", " ");
+      cellText = cellText.replaceAll("</?small>", "");
+      cellText = cellText.replaceAll("</?i>", "");
+      cellText = cellText.replaceAll("</?strong.*?>", "");
+      cellText = cellText.replaceAll("</?span.*?>", "");
+      cellText = cellText.replaceAll("</?b.*?>", "");
+
+      String[] atomicForms = cellText.split("[,;]");
+      for (int i = 0; i < atomicForms.length; i++) {
+        String trimmedText = atomicForms[i].trim();
+        // log.debug(" was split into : {}", trimmedText);
+        if (!trimmedText.isEmpty()) {
+          forms.add(trimmedText);
+        }
+      }
+    } else {
+      for (Element anchor : anchors) {
+        forms.add(anchor.text());
+      }
+    }
+    for (String form : forms) {
+      if (form.contains(",")) {
+        log.trace("Comma found in morphological value: {}", form);
+      }
+    }
+    return forms;
+  }
+
 }

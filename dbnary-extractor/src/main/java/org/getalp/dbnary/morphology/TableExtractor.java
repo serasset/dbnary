@@ -191,8 +191,7 @@ public abstract class TableExtractor {
     return true;
   }
 
-  protected void handleSimpleCell(Element cell, List<String> context,
-      InflectedFormSet forms) {
+  protected void handleSimpleCell(Element cell, List<String> context, InflectedFormSet forms) {
     if (cell.attr("bgcolor").isEmpty()) {
       InflectionData inflection = getInflectionDataFromCellContext(context);
       if (null != inflection) {
@@ -201,8 +200,7 @@ public abstract class TableExtractor {
     }
   }
 
-  protected void handleNestedTables(Element cell, List<String> context,
-      InflectedFormSet forms) {
+  protected void handleNestedTables(Element cell, List<String> context, InflectedFormSet forms) {
     // handle tables that are nested in cells
     Elements tables = cell.select("table");
     for (Element nestedTable : tables) {
@@ -271,8 +269,7 @@ public abstract class TableExtractor {
     return res;
   }
 
-  protected void addToContext(ArrayMatrix<Element> columnHeaders, int i, int j,
-      List<String> res) {
+  protected void addToContext(ArrayMatrix<Element> columnHeaders, int i, int j, List<String> res) {
     Element headerCell = columnHeaders.get(i, j);
     String header;
     if (null != headerCell && (header = headerCell.text()) != null && header.trim().length() != 0) {

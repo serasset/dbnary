@@ -51,15 +51,18 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
   public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
       throws WikiModelContentException {
     String result;
-    // There modules uses the obsolete arg magik variable which is not supported anymore by lua > 5.1
-    if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY) && parsedPagename.pagename.equals("grammar-table")) {
+    // There modules uses the obsolete arg magik variable which is not supported anymore by lua >
+    // 5.1
+    if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.equals("grammar-table")) {
       result = loadModuleResource("grammar-table");
     } else {
       result = super.getRawWikiContent(parsedPagename, map);
     }
     if (log.isDebugEnabled()) {
       if (result.contains("(...)"))
-        log.debug("{} contains a vararg. Check if it's use is correct.", parsedPagename.fullPagename());
+        log.debug("{} contains a vararg. Check if it's use is correct.",
+            parsedPagename.fullPagename());
     }
     return result;
   }
@@ -73,18 +76,18 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
       return null;
     }
     if (log.isDebugEnabled()) {
-      log.error("loading "+name);
+      log.error("loading " + name);
     }
     try (InputStream is = getClass().getResourceAsStream(name)) {
       return is == null ? null : IOUtils.toString(is, StandardCharsets.UTF_8);
     } catch (IOException e) {
-      logger.error("error loading "+name, e);
+      logger.error("error loading " + name, e);
       throw new RuntimeException(e);
     }
   }
 
   private String resourceNameFromModuleName(String name) {
-    return name + ".lua" ;
+    return name + ".lua";
   }
 
 

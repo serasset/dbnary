@@ -149,17 +149,19 @@
           <artifactId>commons-compress</artifactId>
           <groupId>org.apache.commons</groupId>
         </exclusion>
-        <exclusion>
+        <!--exclusion>
           <groupId>org.luaj</groupId>
           <artifactId>luaj-jse</artifactId>
-        </exclusion>
+        </exclusion-->
       </exclusions>
     </dependency>
+    <!-- This dependency is local only and only useful to have a luaj jar with line numbers that
+    makes it easier to debug - - >
     <dependency>
       <groupId>org.luaj</groupId>
       <artifactId>luaj-jse</artifactId>
       <version>3.0.2</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>

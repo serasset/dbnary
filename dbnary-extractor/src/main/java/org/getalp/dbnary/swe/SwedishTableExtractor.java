@@ -29,18 +29,20 @@ public class SwedishTableExtractor extends TableExtractor {
   @Override
   protected List<String> getRowAndColumnContext(int nrow, int ncol,
       ArrayMatrix<Element> columnHeaders) {
-    List<String> rowAndColumnContext  = new LinkedList<>();
+    List<String> rowAndColumnContext = new LinkedList<>();
     boolean previousRowHasHeader = false;
     for (int i = nrow - 1; i >= 0; i--) {
       Element headerCell = columnHeaders.get(i, ncol);
       String header;
-      if (null != headerCell && (header = headerCell.text()) != null && header.trim().length() != 0) {
+      if (null != headerCell && (header = headerCell.text()) != null
+          && header.trim().length() != 0) {
         rowAndColumnContext.add(header);
         previousRowHasHeader = true;
       } else {
         // Current row contains a value, break if the previous contained a header
         // so that higher row's headers are voided.
-        if (previousRowHasHeader) break;
+        if (previousRowHasHeader)
+          break;
       }
     }
     for (int i = 0; i < ncol; i++) {
@@ -60,13 +62,12 @@ public class SwedishTableExtractor extends TableExtractor {
         }
       }
     }
-    rowAndColumnContext = rowAndColumnContext.stream()
-        .map(c -> c.startsWith("|") ? c.substring(1) : c)
-        .map(c -> c.toLowerCase().startsWith("böjningar av") ? c.replaceAll(" ", "_") : c)
-        .map(c -> c.toLowerCase().startsWith("kompareras inte") ? c.replaceAll(" ", "_") : c)
-        .flatMap(c -> Arrays.stream(c.split(" ")))
-        .filter(c -> c.trim().length() > 0)
-        .collect(Collectors.toList());
+    rowAndColumnContext =
+        rowAndColumnContext.stream().map(c -> c.startsWith("|") ? c.substring(1) : c)
+            .map(c -> c.toLowerCase().startsWith("böjningar av") ? c.replaceAll(" ", "_") : c)
+            .map(c -> c.toLowerCase().startsWith("kompareras inte") ? c.replaceAll(" ", "_") : c)
+            .flatMap(c -> Arrays.stream(c.split(" "))).filter(c -> c.trim().length() > 0)
+            .collect(Collectors.toList());
     return rowAndColumnContext;
   }
 
@@ -110,7 +111,8 @@ public class SwedishTableExtractor extends TableExtractor {
     SwedishInflectionData inflection = new SwedishInflectionData();
     context = context.stream().map(String::toLowerCase).collect(Collectors.toList());
 
-    context.stream().filter(s -> s.startsWith("böjningar_av")).forEach(s -> inflection.note(s.replaceAll("_", " ")));
+    context.stream().filter(s -> s.startsWith("böjningar_av"))
+        .forEach(s -> inflection.note(s.replaceAll("_", " ")));
     context.removeIf(s -> s.startsWith("böjningar_av"));
     if (context.contains("particip")) {
       if (context.contains("presens")) {

@@ -298,10 +298,12 @@ public class SwedishInflectionData extends InflectionData {
     }
     switch (this.subClass) {
       case ATTRIBUTIVE:
-        inflections.add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.AttributiveAdjective));
+        inflections
+            .add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.AttributiveAdjective));
         break;
       case PREDICATIVE:
-        inflections.add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.PredicativeAdjective));
+        inflections
+            .add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.PredicativeAdjective));
         break;
       case NOTHING:
         break;

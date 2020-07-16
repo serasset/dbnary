@@ -149,7 +149,16 @@
           <artifactId>commons-compress</artifactId>
           <groupId>org.apache.commons</groupId>
         </exclusion>
+        <exclusion>
+          <groupId>org.luaj</groupId>
+          <artifactId>luaj-jse</artifactId>
+        </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.luaj</groupId>
+      <artifactId>luaj-jse</artifactId>
+      <version>3.0.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>

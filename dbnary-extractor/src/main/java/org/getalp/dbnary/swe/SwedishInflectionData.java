@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.SkosOnt;
@@ -16,11 +17,11 @@ public class SwedishInflectionData extends InflectionData {
   private Logger log = LoggerFactory.getLogger(SwedishInflectionData.class);
 
   public enum Gender {
-    MASCULIN, FEMININ, NEUTRUM, COMMON, NOTHING
+    MASCULINE, FEMININE, NEUTRUM, COMMON, NOTHING
   }
 
   public enum GNumber {
-    SINGULAR, PLURAL, NOTHING
+    SINGULAR, PLURAL, UNCOUNTABLE, NOTHING
   }
 
   public enum Definiteness {
@@ -31,10 +32,18 @@ public class SwedishInflectionData extends InflectionData {
     NOMINATIVE, GENITIVE, ACCUSATIVE, DATIVE, NOTHING
   }
 
+  public enum SubClass {
+    ATTRIBUTIVE, PREDICATIVE, NOTHING
+  }
+
+  public enum SyntacticFunction {
+    ADVERBIAL, NOMINAL, ADJECTIVAL, VERBAL, NOTHING
+  }
+
 
   // -- kept from German
   public enum Mode {
-    INFINITIV, ZU_INFINITIV, PARTIZIPIEN, GERUNDIVUM, IMPERATIV, INDICATIV, KONJUNKTIV2, KONJUNKTIV1, NOTHING
+    INFINITIV, ZU_INFINITIV, PRESENT_PARTICIPLE, PAST_PARTICIPLE, GERUNDIVUM, IMPERATIV, INDICATIV, KONJUNKTIV2, KONJUNKTIV1, NOTHING
   }
 
   public enum Voice {
@@ -42,7 +51,7 @@ public class SwedishInflectionData extends InflectionData {
   }
 
   public enum Tense {
-    PRÄSENS, PRÄTERITUM, PERFEKT, FUTURE1, FUTURE2, PLUSQUAMPERFEKT, NOTHING
+    PRESENT, PRETERIT, PERFEKT, SUPINUM, FUTURE1, FUTURE2, PLUSQUAMPERFEKT, NOTHING
   }
 
   public enum Degree {
@@ -66,6 +75,8 @@ public class SwedishInflectionData extends InflectionData {
   public Gender gender = Gender.NOTHING;
   public Definiteness definiteness = Definiteness.NOTHING;
   public Set<String> note = new HashSet<>();
+  public SubClass subClass = SubClass.NOTHING;
+  public SyntacticFunction function = SyntacticFunction.NOTHING;
 
   public Degree degree = Degree.NOTHING;
   public Mode mode = Mode.NOTHING;
@@ -83,6 +94,10 @@ public class SwedishInflectionData extends InflectionData {
 
   public void plural() {
     this.number = GNumber.PLURAL;
+  }
+
+  public void uncountable() {
+    this.number = GNumber.UNCOUNTABLE;
   }
 
   public void neutrum() {
@@ -113,6 +128,73 @@ public class SwedishInflectionData extends InflectionData {
     this.note.add(note);
   }
 
+  public void active() {
+    this.voice = Voice.AKTIV;
+  }
+
+  public void passive() {
+    this.voice = Voice.PASSIV;
+  }
+
+  public void present() {
+    this.tense = Tense.PRESENT;
+  }
+
+  public void infinitive() {
+    this.mode = Mode.INFINITIV;
+  }
+
+  public void preterit() {
+    this.tense = Tense.PRETERIT;
+  }
+
+  public void imperative() {
+    this.mode = Mode.IMPERATIV;
+  }
+
+  public void supinum() {
+    this.tense = Tense.SUPINUM;
+  }
+
+  public void presentParticiple() {
+    this.mode = Mode.PRESENT_PARTICIPLE;
+  }
+
+  public void pastParticiple() {
+    this.mode = Mode.PAST_PARTICIPLE;
+  }
+
+  public void attributive() {
+    this.subClass = SubClass.ATTRIBUTIVE;
+  }
+
+  public void predicative() {
+    this.subClass = SubClass.PREDICATIVE;
+  }
+
+  public void positive() {
+    this.degree = Degree.POSITIVE;
+  }
+
+  public void comparative() {
+    this.degree = Degree.COMPARATIVE;
+  }
+
+  public void superlative() {
+    this.degree = Degree.SUPERLATIVE;
+  }
+
+  public void masculine() {
+    this.gender = Gender.MASCULINE;
+  }
+
+  public void feminine() {
+    this.gender = Gender.FEMININE;
+  }
+
+  public void adverbial() {
+    this.function = SyntacticFunction.ADVERBIAL;
+  }
 
   public static Model model = ModelFactory.createDefaultModel();
 
@@ -120,10 +202,10 @@ public class SwedishInflectionData extends InflectionData {
   public HashSet<PropertyObjectPair> toPropertyObjectMap() {
     HashSet<PropertyObjectPair> inflections = new HashSet<>();
     switch (this.gender) {
-      case MASCULIN:
+      case MASCULINE:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasGender, OliaOnt.Masculine));
         break;
-      case FEMININ:
+      case FEMININE:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasGender, OliaOnt.Feminine));
         break;
       case NEUTRUM:
@@ -145,6 +227,9 @@ public class SwedishInflectionData extends InflectionData {
       case PLURAL:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasNumber, OliaOnt.Plural));
         break;
+      case UNCOUNTABLE:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasNumber, OliaOnt.Uncountable));
+        break;
       case NOTHING:
         break;
       default:
@@ -163,6 +248,7 @@ public class SwedishInflectionData extends InflectionData {
         break;
       case DATIVE:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasCase, OliaOnt.DativeCase));
+        break;
       case NOTHING:
         break;
       default:
@@ -180,6 +266,57 @@ public class SwedishInflectionData extends InflectionData {
         break;
       default:
         log.debug("Unexpected value {} for case", this.grammaticalCase);
+        break;
+    }
+    switch (this.tense) {
+      case PRETERIT:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Past));
+        break;
+      case PRESENT:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Present));
+        break;
+      case PERFEKT:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Perfect));
+        break;
+      case PLUSQUAMPERFEKT:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.PastPerfectTense));
+        break;
+      case FUTURE1:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Future));
+        break;
+      case FUTURE2:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.FuturePerfect));
+        break;
+      case SUPINUM:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Supine));
+        break;
+      case NOTHING:
+        break;
+      default:
+        log.debug("Unexpected value {} for tense", this.tense);
+        break;
+    }
+    switch (this.subClass) {
+      case ATTRIBUTIVE:
+        inflections.add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.AttributiveAdjective));
+        break;
+      case PREDICATIVE:
+        inflections.add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.PredicativeAdjective));
+        break;
+      case NOTHING:
+        break;
+      default:
+        log.debug("Unexpected value {} for subClass", this.subClass);
+        break;
+    }
+    switch (this.function) {
+      case ADVERBIAL:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasSyntacticFunction, OliaOnt.Adverbial));
+        break;
+      case NOTHING:
+        break;
+      default:
+        log.debug("Unexpected value {} for Syntactic function", this.function);
         break;
     }
 
@@ -200,33 +337,6 @@ public class SwedishInflectionData extends InflectionData {
         log.debug("Unexpected value {} for degree", this.degree);
         break;
     }
-    switch (this.tense) {
-      case PRÄTERITUM:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Past));
-        break;
-      case PRÄSENS:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Present));
-        break;
-      case PERFEKT:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Perfect));
-        break;
-      case PLUSQUAMPERFEKT:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.PastPerfectTense));
-        break;
-      case FUTURE1:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Future));
-        break;
-      case FUTURE2:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.FuturePerfect)); // Confirmed
-        // by Ch.
-        // Chiarcos...
-        break;
-      case NOTHING:
-        break;
-      default:
-        log.debug("Unexpected value {} for tense", this.tense);
-        break;
-    }
     switch (this.mode) {
       case IMPERATIV:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.ImperativeMood));
@@ -240,13 +350,11 @@ public class SwedishInflectionData extends InflectionData {
       case KONJUNKTIV2:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.SubjunctiveMood));
         break;
-      case PARTIZIPIEN:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.Participle)); // TODO:
-        // Participle
-        // is a part
-        // of speech,
-        // not a
-        // mood...
+      case PAST_PARTICIPLE:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.PastParticiple));
+        break;
+      case PRESENT_PARTICIPLE:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.PresentParticiple));
         break;
       case INFINITIV:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.Infinitive)); // TODO:
@@ -257,16 +365,8 @@ public class SwedishInflectionData extends InflectionData {
         // mood...
         break;
       case GERUNDIVUM:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.AdverbialParticiple)); // TODO:
-        // AdverbialParticiple
-        // is
-        // a
-        // part
-        // of
-        // speech,
-        // not
-        // a
-        // mood...
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.AdverbialParticiple));
+        // TODO: AdverbialParticiple is a part of speech, not a mood...
         break;
       case ZU_INFINITIV:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.Infinitive));

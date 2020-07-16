@@ -1,21 +1,20 @@
 package org.getalp.dbnary.swe;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import org.getalp.dbnary.morphology.InflectedFormSet;
 import org.getalp.dbnary.morphology.TableExtractor;
-import org.getalp.dbnary.swe.SwedishInflectionData.Definiteness;
-import org.getalp.dbnary.swe.SwedishInflectionData.Degree;
-import org.getalp.dbnary.swe.SwedishInflectionData.GNumber;
-import org.getalp.dbnary.swe.SwedishInflectionData.Gender;
-import org.getalp.dbnary.swe.SwedishInflectionData.GrammaticalCase;
-import org.getalp.dbnary.swe.SwedishInflectionData.InflectionType;
 import org.getalp.dbnary.tools.ArrayMatrix;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +29,25 @@ public class SwedishTableExtractor extends TableExtractor {
   @Override
   protected List<String> getRowAndColumnContext(int nrow, int ncol,
       ArrayMatrix<Element> columnHeaders) {
-    List<String> rowAndColumnContext = super.getRowAndColumnContext(nrow, ncol, columnHeaders);
+    List<String> rowAndColumnContext  = new LinkedList<>();
+    boolean previousRowHasHeader = false;
+    for (int i = nrow - 1; i >= 0; i--) {
+      Element headerCell = columnHeaders.get(i, ncol);
+      String header;
+      if (null != headerCell && (header = headerCell.text()) != null && header.trim().length() != 0) {
+        rowAndColumnContext.add(header);
+        previousRowHasHeader = true;
+      } else {
+        // Current row contains a value, break if the previous contained a header
+        // so that higher row's headers are voided.
+        if (previousRowHasHeader) break;
+      }
+    }
+    for (int i = 0; i < ncol; i++) {
+      addToContext(columnHeaders, nrow, i, rowAndColumnContext);
+    }
 
+    // Collect all bold header cells that are supposed to apply to all cells.
     for (int i = 0; i < nrow; i++) {
       for (int j = 0; j < ncol; j++) {
         Element headerCell = columnHeaders.get(i, j);
@@ -44,6 +60,13 @@ public class SwedishTableExtractor extends TableExtractor {
         }
       }
     }
+    rowAndColumnContext = rowAndColumnContext.stream()
+        .map(c -> c.startsWith("|") ? c.substring(1) : c)
+        .map(c -> c.toLowerCase().startsWith("böjningar av") ? c.replaceAll(" ", "_") : c)
+        .map(c -> c.toLowerCase().startsWith("kompareras inte") ? c.replaceAll(" ", "_") : c)
+        .flatMap(c -> Arrays.stream(c.split(" ")))
+        .filter(c -> c.trim().length() > 0)
+        .collect(Collectors.toList());
     return rowAndColumnContext;
   }
 
@@ -54,10 +77,29 @@ public class SwedishTableExtractor extends TableExtractor {
     actions.put("plural", SwedishInflectionData::plural);
     actions.put("neutrum", SwedishInflectionData::neutrum);
     actions.put("utrum", SwedishInflectionData::common);
+    actions.put("maskulinum", SwedishInflectionData::masculine);
+
+
     actions.put("nominativ", SwedishInflectionData::nominative);
     actions.put("genitiv", SwedishInflectionData::genitive);
     actions.put("obestämd", SwedishInflectionData::indefinite);
     actions.put("bestämd", SwedishInflectionData::definite);
+    actions.put("oräknebart", SwedishInflectionData::uncountable);
+    actions.put("aktiv", SwedishInflectionData::active);
+    actions.put("passiv", SwedishInflectionData::passive);
+    actions.put("infinitiv", SwedishInflectionData::infinitive);
+    actions.put("presens", SwedishInflectionData::present);
+    actions.put("preteritum", SwedishInflectionData::preterit);
+    actions.put("supinum", SwedishInflectionData::supinum);
+    actions.put("imperativ", SwedishInflectionData::imperative);
+
+    actions.put("attributivt", SwedishInflectionData::attributive);
+    actions.put("predikativt", SwedishInflectionData::predicative);
+    actions.put("adverbavledning", SwedishInflectionData::adverbial);
+
+    actions.put("positiv", SwedishInflectionData::positive);
+    actions.put("komparativ", SwedishInflectionData::comparative);
+    actions.put("superlativ", SwedishInflectionData::superlative);
 
     assert actions.keySet().stream().filter(s -> !s.toLowerCase().equals(s)).findFirst()
         .equals(Optional.empty());
@@ -66,10 +108,24 @@ public class SwedishTableExtractor extends TableExtractor {
   @Override
   protected SwedishInflectionData getInflectionDataFromCellContext(List<String> context) {
     SwedishInflectionData inflection = new SwedishInflectionData();
+    context = context.stream().map(String::toLowerCase).collect(Collectors.toList());
 
-    context.stream().map(String::toLowerCase).filter(s -> s.startsWith("böjningar av"))
-        .forEach(s -> inflection.note(s));
-    context.removeIf(s -> s.toLowerCase().startsWith("böjningar av"));
+    context.stream().filter(s -> s.startsWith("böjningar_av")).forEach(s -> inflection.note(s.replaceAll("_", " ")));
+    context.removeIf(s -> s.startsWith("böjningar_av"));
+    if (context.contains("particip")) {
+      if (context.contains("presens")) {
+        inflection.presentParticiple();
+        context.removeIf(c -> "presens".equals(c));
+      } else if (context.contains("perfekt")) {
+        inflection.pastParticiple();
+        context.removeIf(c -> "perfekt".equals(c));
+      }
+      context.removeIf(c -> "particip".equals(c));
+      // The table context also contains Aktiv and Passiv as the headers
+    }
+
+
+
     context.stream().map(String::toLowerCase)
         .map(s -> actions.getOrDefault(s,
             infl -> log.debug("Unused context value {} while extracting Swedish morphology in {}",
@@ -79,91 +135,29 @@ public class SwedishTableExtractor extends TableExtractor {
     return inflection;
   }
 
-  protected SwedishInflectionData getInflectionDataFromCellContextOld(List<String> context) {
-    SwedishInflectionData inflection = new SwedishInflectionData();
-    for (String h : context) {
-      h = h.trim();
-      switch (h) {
-        case "Singular":
-          inflection.number = GNumber.SINGULAR;
-          break;
-        case "Plural":
-          inflection.number = GNumber.PLURAL;
-          break;
-        case "Neutrum":
-          inflection.gender = Gender.NEUTRUM;
-          break;
-        case "Nominativ":
-          inflection.grammaticalCase = GrammaticalCase.NOMINATIVE;
-          break;
-        case "Genitiv":
-          inflection.grammaticalCase = GrammaticalCase.GENITIVE;
-          break;
-        case "Obestämd":
-          inflection.definiteness = Definiteness.INDEFINITE;
-          break;
-        case "Bestämd":
-          inflection.definiteness = Definiteness.DEFINITE;
-          break;
-
-        case "Positiv":
-          inflection.degree = Degree.POSITIVE;
-          break;
-        case "Komparativ":
-          inflection.degree = Degree.COMPARATIVE;
-          break;
-        case "Superlativ":
-          inflection.degree = Degree.SUPERLATIVE;
-          break;
-        case "Starke Deklination":
-          inflection.inflectionType = InflectionType.STRONG;
-          break;
-        case "Schwache Deklination":
-          inflection.inflectionType = InflectionType.WEAK;
-          break;
-        case "Gemischte Deklination":
-          inflection.inflectionType = InflectionType.MIXED;
-          break;
-        case "Prädikativ":
-          inflection.inflectionType = InflectionType.NOTHING;
-          inflection.note.add("Prädikativ");
-          break;
-        case "Maskulinum":
-          inflection.gender = Gender.MASCULIN;
-          break;
-        case "Femininum":
-          inflection.gender = Gender.FEMININ;
-          break;
-        case "Dativ":
-          inflection.grammaticalCase = GrammaticalCase.DATIVE;
-          break;
-        case "Akkusativ":
-          inflection.grammaticalCase = GrammaticalCase.ACCUSATIVE;
-          break;
-        case "—":
-        case "":
-        case " ":
-          break;
-        default:
-          log.debug("Swedish Inflection Extraction: Unhandled header {} in {}", h, currentEntry);
-      }
-    }
-
-    return inflection;
+  @Override
+  protected Set<String> getInflectedForms(Element cell) {
+    Set<String> forms = super.getInflectedForms(cell);
+    forms.removeIf(""::equals);
+    forms.removeIf("-"::equals);
+    forms.removeIf("–"::equals);
+    forms.removeIf("—"::equals);
+    return forms;
   }
 
   @Override
-  protected Set<String> getInflectedForms(Element cell) {
-    // there are cells with <br> and commas to separate different values: split them
-    // get rid of spurious html-formatting (<nbsp> <small> <i> etc.)
-    Set<String> forms = new HashSet<>();
-    forms.add(cell.text());
-
-    for (String form : forms) {
-      if (form.contains(",")) {
-        log.trace("Comma found in morphological value: {}", form);
+  protected boolean shouldProcessCell(Element cell) {
+    // Ignore note cells in morphology tables
+    String clazz = cell.attr("class");
+    if ("note".equals(clazz)) {
+      // The cell should be ignored and nested tables should be marked as already processed.
+      Elements tables = cell.select("table");
+      for (Element nestedTable : tables) {
+        alreadyParsedTables.add(nestedTable);
       }
+      return false;
+    } else {
+      return super.shouldProcessCell(cell);
     }
-    return forms;
   }
 }

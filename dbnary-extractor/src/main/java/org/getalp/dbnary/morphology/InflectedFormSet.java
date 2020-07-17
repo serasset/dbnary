@@ -3,12 +3,25 @@ package org.getalp.dbnary.morphology;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 public class InflectedFormSet implements Iterable<Map.Entry<InflectionData, Set<String>>> {
   private Map<InflectionData, Set<String>> map = new HashMap<>();
+
+  /**
+   * Add all values in the current Inflected Forms Set for given key
+   *
+   * @param keys the list of inflections for which the set of values are added
+   * @param values the set of values to add to the map.
+   */
+  public void add(List<? extends InflectionData> keys, Set<String> values) {
+    for (InflectionData key : keys) {
+      this.add(key, values);
+    }
+  }
 
   /**
    * Add all values in the current Inflected Forms Set for given key

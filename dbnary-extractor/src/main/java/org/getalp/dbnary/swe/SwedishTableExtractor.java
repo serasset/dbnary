@@ -1,8 +1,8 @@
 package org.getalp.dbnary.swe;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import org.getalp.dbnary.morphology.InflectedFormSet;
 import org.getalp.dbnary.morphology.TableExtractor;
 import org.getalp.dbnary.tools.ArrayMatrix;
 import org.jsoup.nodes.Element;
@@ -66,6 +65,8 @@ public class SwedishTableExtractor extends TableExtractor {
         rowAndColumnContext.stream().map(c -> c.startsWith("|") ? c.substring(1) : c)
             .map(c -> c.toLowerCase().startsWith("böjningar av") ? c.replaceAll(" ", "_") : c)
             .map(c -> c.toLowerCase().startsWith("kompareras inte") ? c.replaceAll(" ", "_") : c)
+            .map(c -> c.toLowerCase().endsWith("pronomen") ? c.replaceAll(" ", "_") : c)
+            .map(c -> c.toLowerCase().startsWith("ackusativ /") ? c.replaceAll(" ", "_") : c)
             .flatMap(c -> Arrays.stream(c.split(" "))).filter(c -> c.trim().length() > 0)
             .collect(Collectors.toList());
     return rowAndColumnContext;
@@ -75,11 +76,12 @@ public class SwedishTableExtractor extends TableExtractor {
 
   static {
     actions.put("singular", SwedishInflectionData::singular);
+    actions.put("sing.", SwedishInflectionData::singular);
     actions.put("plural", SwedishInflectionData::plural);
     actions.put("neutrum", SwedishInflectionData::neutrum);
     actions.put("utrum", SwedishInflectionData::common);
     actions.put("maskulinum", SwedishInflectionData::masculine);
-
+    actions.put("femininum", SwedishInflectionData::feminine);
 
     actions.put("nominativ", SwedishInflectionData::nominative);
     actions.put("genitiv", SwedishInflectionData::genitive);
@@ -102,39 +104,64 @@ public class SwedishTableExtractor extends TableExtractor {
     actions.put("komparativ", SwedishInflectionData::comparative);
     actions.put("superlativ", SwedishInflectionData::superlative);
 
+    actions.put("ackusativ", SwedishInflectionData::accusative);
+    actions.put("dativ", SwedishInflectionData::dative);
+
+    actions.put("1:a", SwedishInflectionData::firstPerson);
+    actions.put("2:a", SwedishInflectionData::secondPerson);
+    actions.put("3:e", SwedishInflectionData::thirdPerson);
+
+    actions.put("possessiva_pronomen", SwedishInflectionData::possessive);
+    actions.put("reflexiva_pronomen", SwedishInflectionData::reflexive);
+    actions.put("personliga_pronomen", SwedishInflectionData::personnal);
+    actions.put("reflexiva_possessiva_pronomen", SwedishInflectionData::possessive);
+
     assert actions.keySet().stream().filter(s -> !s.toLowerCase().equals(s)).findFirst()
         .equals(Optional.empty());
   }
 
   @Override
-  protected SwedishInflectionData getInflectionDataFromCellContext(List<String> context) {
-    SwedishInflectionData inflection = new SwedishInflectionData();
+  protected List<SwedishInflectionData> getInflectionDataFromCellContext(List<String> context) {
+    List<SwedishInflectionData> inflections = new ArrayList<>();
+    inflections.add(new SwedishInflectionData());
+
     context = context.stream().map(String::toLowerCase).collect(Collectors.toList());
 
+    // remove unused context to avoid warning while debugging
+    context.removeIf("person"::equals);
+    context.removeIf("p."::equals);
+
+    if (context.contains("ackusativ_/_dativ")) {
+      // We should generate 2 inflection data, one accusative, the other dativ
+      inflections.get(0).accusative();
+      SwedishInflectionData dativInflection = new SwedishInflectionData();
+      dativInflection.dative();
+      inflections.add(dativInflection);
+      context.removeIf("ackusativ_/_dativ"::equals);
+    }
+
     context.stream().filter(s -> s.startsWith("böjningar_av"))
-        .forEach(s -> inflection.note(s.replaceAll("_", " ")));
+        .forEach(s -> inflections.forEach(i -> i.note(s.replaceAll("_", " "))));
     context.removeIf(s -> s.startsWith("böjningar_av"));
     if (context.contains("particip")) {
       if (context.contains("presens")) {
-        inflection.presentParticiple();
-        context.removeIf(c -> "presens".equals(c));
+        inflections.forEach(SwedishInflectionData::presentParticiple);
+        context.removeIf("presens"::equals);
       } else if (context.contains("perfekt")) {
-        inflection.pastParticiple();
-        context.removeIf(c -> "perfekt".equals(c));
+        inflections.forEach(SwedishInflectionData::pastParticiple);
+        context.removeIf("perfekt"::equals);
       }
       context.removeIf(c -> "particip".equals(c));
       // The table context also contains Aktiv and Passiv as the headers
     }
 
-
-
     context.stream().map(String::toLowerCase)
         .map(s -> actions.getOrDefault(s,
             infl -> log.debug("Unused context value {} while extracting Swedish morphology in {}",
                 s, currentEntry)))
-        .forEach(a -> a.accept(inflection));
+        .forEach(a -> inflections.forEach(a::accept));
 
-    return inflection;
+    return inflections;
   }
 
   @Override

@@ -1,5 +1,6 @@
 package org.getalp.dbnary.deu;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.getalp.dbnary.deu.GermanInflectionData.Person;
 import org.getalp.dbnary.deu.GermanInflectionData.Tense;
 import org.getalp.dbnary.deu.GermanInflectionData.Valency;
 import org.getalp.dbnary.deu.GermanInflectionData.Voice;
+import org.getalp.dbnary.morphology.InflectionData;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +56,7 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
   }
 
   @Override
-  protected GermanInflectionData getInflectionDataFromCellContext(List<String> context) {
+  protected List<InflectionData> getInflectionDataFromCellContext(List<String> context) {
     GermanInflectionData inflection = new GermanInflectionData();
     boolean isArticleColumn = false;
     for (String h : context) {
@@ -265,7 +267,9 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
     if (isArticleColumn) {
       return null;
     }
-    return inflection;
+    List<InflectionData> inflections = new ArrayList<>();
+    inflections.add(inflection);
+    return inflections;
   }
 
   private static final Pattern reflexive = Pattern.compile("\\breflexiv\\b");

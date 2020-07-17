@@ -1,9 +1,11 @@
 package org.getalp.dbnary.deu;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.getalp.dbnary.deu.GermanInflectionData.Cas;
 import org.getalp.dbnary.deu.GermanInflectionData.GNumber;
 import org.getalp.dbnary.deu.GermanInflectionData.Genre;
+import org.getalp.dbnary.morphology.InflectionData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +17,7 @@ public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtra
   }
 
   @Override
-  protected GermanInflectionData getInflectionDataFromCellContext(List<String> context) {
+  protected List<InflectionData> getInflectionDataFromCellContext(List<String> context) {
     GermanInflectionData inflection = new GermanInflectionData();
     boolean isArticleColumn = false;
     boolean hasGender = false;
@@ -110,7 +112,9 @@ public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtra
     if (!hasGender) {
       log.debug("Warning: no gender in Substantive entry.");
     }
-    return inflection;
+    List<InflectionData> inflections = new ArrayList<>();
+    inflections.add(inflection);
+    return inflections;
   }
 
   // brutal: get number by removing all non-numbers

@@ -60,8 +60,11 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
       result = super.getRawWikiContent(parsedPagename, map);
     }
     if (log.isDebugEnabled()) {
-      if (result.contains("(...)"))
-        log.debug("{} contains a vararg. Check if it's use is correct.",
+      if (null == result) {
+        log.debug("null result when getting raw wiki content for {}",
+            parsedPagename.fullPagename());
+      } else if (result.contains("(...)"))
+        log.debug("{} contains a vararg. Check if its use is correct.",
             parsedPagename.fullPagename());
     }
     return result;

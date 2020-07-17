@@ -33,11 +33,15 @@ public class SwedishInflectionData extends InflectionData {
   }
 
   public enum SubClass {
-    ATTRIBUTIVE, PREDICATIVE, NOTHING
+    ATTRIBUTIVE, PREDICATIVE, REFLEXIVE, NOTHING
   }
 
   public enum SyntacticFunction {
     ADVERBIAL, NOMINAL, ADJECTIVAL, VERBAL, NOTHING
+  }
+
+  public enum ReferentType {
+    PERSONAL, POSSESSIVE, NOTHING
   }
 
 
@@ -77,6 +81,7 @@ public class SwedishInflectionData extends InflectionData {
   public Set<String> note = new HashSet<>();
   public SubClass subClass = SubClass.NOTHING;
   public SyntacticFunction function = SyntacticFunction.NOTHING;
+  public ReferentType referentType = ReferentType.NOTHING;
 
   public Degree degree = Degree.NOTHING;
   public Mode mode = Mode.NOTHING;
@@ -100,6 +105,14 @@ public class SwedishInflectionData extends InflectionData {
     this.number = GNumber.UNCOUNTABLE;
   }
 
+  public void masculine() {
+    this.gender = Gender.MASCULINE;
+  }
+
+  public void feminine() {
+    this.gender = Gender.FEMININE;
+  }
+
   public void neutrum() {
     this.gender = Gender.NEUTRUM;
   }
@@ -110,6 +123,14 @@ public class SwedishInflectionData extends InflectionData {
 
   public void nominative() {
     this.grammaticalCase = GrammaticalCase.NOMINATIVE;
+  }
+
+  public void accusative() {
+    this.grammaticalCase = GrammaticalCase.ACCUSATIVE;
+  }
+
+  public void dative() {
+    this.grammaticalCase = GrammaticalCase.DATIVE;
   }
 
   public void genitive() {
@@ -128,6 +149,18 @@ public class SwedishInflectionData extends InflectionData {
     this.note.add(note);
   }
 
+  public void firstPerson() {
+    this.person = Person.FIRST;
+  }
+
+  public void secondPerson() {
+    this.person = Person.SECOND;
+  }
+
+  public void thirdPerson() {
+    this.person = Person.THIRD;
+  }
+
   public void active() {
     this.voice = Voice.AKTIV;
   }
@@ -140,20 +173,20 @@ public class SwedishInflectionData extends InflectionData {
     this.tense = Tense.PRESENT;
   }
 
-  public void infinitive() {
-    this.mode = Mode.INFINITIV;
-  }
-
   public void preterit() {
     this.tense = Tense.PRETERIT;
   }
 
-  public void imperative() {
-    this.mode = Mode.IMPERATIV;
-  }
-
   public void supinum() {
     this.tense = Tense.SUPINUM;
+  }
+
+  public void infinitive() {
+    this.mode = Mode.INFINITIV;
+  }
+
+  public void imperative() {
+    this.mode = Mode.IMPERATIV;
   }
 
   public void presentParticiple() {
@@ -172,6 +205,10 @@ public class SwedishInflectionData extends InflectionData {
     this.subClass = SubClass.PREDICATIVE;
   }
 
+  public void reflexive() {
+    this.subClass = SubClass.REFLEXIVE;
+  }
+
   public void positive() {
     this.degree = Degree.POSITIVE;
   }
@@ -184,17 +221,19 @@ public class SwedishInflectionData extends InflectionData {
     this.degree = Degree.SUPERLATIVE;
   }
 
-  public void masculine() {
-    this.gender = Gender.MASCULINE;
-  }
-
-  public void feminine() {
-    this.gender = Gender.FEMININE;
-  }
-
   public void adverbial() {
     this.function = SyntacticFunction.ADVERBIAL;
   }
+
+  public void personnal() {
+    this.referentType = ReferentType.PERSONAL;
+  }
+
+  public void possessive() {
+    this.referentType = ReferentType.POSSESSIVE;
+  }
+
+
 
   public static Model model = ModelFactory.createDefaultModel();
 
@@ -305,6 +344,9 @@ public class SwedishInflectionData extends InflectionData {
         inflections
             .add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.PredicativeAdjective));
         break;
+      case REFLEXIVE:
+        inflections.add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.ReflexivePronoun));
+        break;
       case NOTHING:
         break;
       default:
@@ -321,7 +363,19 @@ public class SwedishInflectionData extends InflectionData {
         log.debug("Unexpected value {} for Syntactic function", this.function);
         break;
     }
-
+    switch (this.referentType) {
+      case PERSONAL:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasReferentType, OliaOnt.Personal));
+        break;
+      case POSSESSIVE:
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasReferentType, OliaOnt.Possessive));
+        break;
+      case NOTHING:
+        break;
+      default:
+        log.debug("Unexpected value {} for Syntactic function", this.function);
+        break;
+    }
 
     switch (this.degree) {
       case POSITIVE:

@@ -1,5 +1,6 @@
 package org.getalp.dbnary.deu;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import org.getalp.dbnary.deu.GermanInflectionData.Cas;
@@ -7,6 +8,7 @@ import org.getalp.dbnary.deu.GermanInflectionData.Degree;
 import org.getalp.dbnary.deu.GermanInflectionData.GNumber;
 import org.getalp.dbnary.deu.GermanInflectionData.Genre;
 import org.getalp.dbnary.deu.GermanInflectionData.InflectionType;
+import org.getalp.dbnary.morphology.InflectionData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +20,7 @@ public class GermanDeklinationTableExtractor extends GermanTableExtractor {
   }
 
   @Override
-  protected GermanInflectionData getInflectionDataFromCellContext(List<String> context) {
+  protected List<InflectionData> getInflectionDataFromCellContext(List<String> context) {
     GermanInflectionData inflection = new GermanInflectionData();
     boolean isArticleColumn = false;
     // log.debug("== getInflectionDataFromCellContext for {} ==", wdh.currentLexEntry());
@@ -92,7 +94,9 @@ public class GermanDeklinationTableExtractor extends GermanTableExtractor {
     if (isArticleColumn) {
       return null;
     }
-    return inflection;
+    List<InflectionData> inflections = new ArrayList<>();
+    inflections.add(inflection);
+    return inflections;
   }
 
   private static HashSet<String> declinatedFormMarker;

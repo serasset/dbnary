@@ -32,7 +32,8 @@ public abstract class TableExtractor {
    * @param context a list of Strings that represent the celle context
    * @return The InflexionData corresponding to the context
    */
-  protected abstract InflectionData getInflectionDataFromCellContext(List<String> context);
+  protected abstract List<? extends InflectionData> getInflectionDataFromCellContext(
+      List<String> context);
 
   /**
    * returns true if the current H2 element should be ignore while extracting morphological tables
@@ -193,9 +194,9 @@ public abstract class TableExtractor {
 
   protected void handleSimpleCell(Element cell, List<String> context, InflectedFormSet forms) {
     if (cell.attr("bgcolor").isEmpty()) {
-      InflectionData inflection = getInflectionDataFromCellContext(context);
-      if (null != inflection) {
-        forms.add(inflection, getInflectedForms(cell));
+      List<? extends InflectionData> inflections = getInflectionDataFromCellContext(context);
+      if (null != inflections) {
+        forms.add(inflections, getInflectedForms(cell));
       }
     }
   }

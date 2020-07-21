@@ -37,6 +37,7 @@ import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
 import org.getalp.dbnary.model.DbnaryModel;
 import org.getalp.dbnary.model.NymRelation;
+import org.getalp.dbnary.morphology.InflectionData;
 import org.getalp.dbnary.stats.Statistics;
 import org.getalp.dbnary.tools.CounterSet;
 import org.getalp.iso639.ISO639_3;
@@ -1146,8 +1147,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       long senseCount) {
     String lg2 = LangTools.getPart1OrId(lang);
 
-    Resource classesObs = statsBox
-        .createResource(prefix + "___mainClassesObs__" + lang + "__" + date() + "_" + dumpVersion);
+    Resource classesObs =
+        statsBox.createResource(prefix + "___mainClassesObs__" + lang + "__" + dumpVersion);
     statsBox.add(statsBox.createStatement(classesObs, RDF.type, DataCubeOnt.Observation));
     statsBox.add(
         statsBox.createStatement(classesObs, DataCubeOnt.dataSet, DBnaryOnt.dbnaryStatisticsCube));
@@ -1169,8 +1170,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       String lang, NymRelation nym, long cr) {
     String lg2 = LangTools.getPart1OrId(lang);
 
-    Resource nymObs = box.createResource(prefix + "___nymObs__" + lang + "__"
-        + nym.name().toLowerCase() + "__" + date() + "_" + dumpVersion);
+    Resource nymObs = box.createResource(
+        prefix + "___nymObs__" + lang + "__" + nym.name().toLowerCase() + "__" + dumpVersion);
     box.add(box.createStatement(nymObs, RDF.type, DataCubeOnt.Observation));
     box.add(box.createStatement(nymObs, DataCubeOnt.dataSet, DBnaryOnt.dbnaryNymRelationsCube));
     box.add(box.createStatement(nymObs, DBnaryOnt.wiktionaryDumpVersion,
@@ -1188,8 +1189,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     String tlg2 = LangTools.getPart1OrId(targetLanguage);
     tlg2 = (null != tlg2) ? tlg2 : targetLanguage;
 
-    Resource transObs = statsBox.createResource(prefix + "___transObs__" + sourceLanguage + "__"
-        + targetLanguage + "__" + date() + "_" + dumpVersion);
+    Resource transObs = statsBox.createResource(
+        prefix + "___transObs__" + sourceLanguage + "__" + targetLanguage + "__" + dumpVersion);
     statsBox.add(statsBox.createStatement(transObs, RDF.type, DataCubeOnt.Observation));
     statsBox.add(
         statsBox.createStatement(transObs, DataCubeOnt.dataSet, DBnaryOnt.dbnaryTranslationsCube));

@@ -16,6 +16,7 @@ import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Indentation;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Token;
@@ -260,15 +261,32 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
+  private static Pattern senseNumPattern = Pattern.compile("\\[(\\d+)\\]");
+
   protected void extractDefinitions(WikiContent wk) {
-    WikiEventsSequence indentations = wk.filteredTokens(new ClassBasedFilter().allowIndentedItem());
-    for (Token indent : indentations) {
+    WikiEventsSequence indentationsOrTemplates =
+        wk.filteredTokens(new ClassBasedFilter().allowIndentedItem().allowTemplates());
+    for (Token indent : indentationsOrTemplates) {
       if (indent instanceof NumberedListItem) {
-        log.debug("Def[{}] = {}", wiktionaryPageName, ((NumberedListItem) indent).getContent());
         wdh.registerNewDefinition(indent.asNumberedListItem().getContent().toString());
+      } else if (indent instanceof Indentation) {
+        String def = indent.asIndentation().getContent().toString();
+        Matcher m = senseNumPattern.matcher(def);
+        if (m.lookingAt()) {
+          wdh.registerNewDefinition(def.substring(m.end()), m.group(1));
+        } else {
+          // TODO: it's usually an example given after a definition.
+        }
+      } else if (indent instanceof Template) {
+        String tname = indent.asTemplate().getName();
+        if ("Resmi Adı".equals(tname) || "Resmî Adı".equals(tname)) {
+          break;
+        } else {
+          log.debug("In Def[{}] - got template {}", wiktionaryPageName, tname);
+        }
       } else {
         // TODO: test and handle these !
-        log.debug("Unhandle indented item in definition: {}", indent.toString());
+        log.debug("Unhandled indented item in def[{}]: {}", wiktionaryPageName, indent.toString());
       }
     }
   }

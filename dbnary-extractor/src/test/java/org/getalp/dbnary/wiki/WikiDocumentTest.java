@@ -43,44 +43,7 @@ public class WikiDocumentTest {
     assertTrue("First WikiSection should have title containing \"French\".",
         h.getContent().toString().contains("French"));
 
-    printDocumentTree(doc);
-  }
-
-  public static void printDocumentTree(WikiDocument doc) {
-    IndentPrinter printer = new IndentPrinter();
-    printer.println("Document :");
-    printer.incrementIndent();
-    printContentForrest(printer, doc.getContent());
-    printer.decrementIndent();
-    printer.flush();
-  }
-
-  private static void printContentForrest(IndentPrinter printer, WikiContent content) {
-    content.tokens().stream().forEach(t -> printToken(printer, t));
-  }
-
-  public static void printToken(IndentPrinter printer, Token token) {
-    if (token instanceof WikiSection) {
-      printSectionTree(printer, token.asWikiSection());
-    } else {
-      printer.printIndent();
-      printer.print("+ ");
-      printer.print(token.getClass().getCanonicalName());
-      printer.print(" : ");
-      printer.println(WordUtils.abbreviate(token.toString().trim(), 10, 20, "..."));
-    }
-  }
-
-  public static void printSectionTree(IndentPrinter printer, WikiSection section) {
-    printer.printIndent();
-    printer.print("+ Section Heading [");
-    printer.print(String.valueOf(section.getHeading().getLevel()));
-    printer.print("] :");
-    printer
-        .println(WordUtils.abbreviate(section.getHeading().getContent().toString(), 10, 20, "..."));
-    printer.incrementIndent();
-    printContentForrest(printer, section.getContent());
-    printer.decrementIndent();
+    WikiTextPrinter.printDocumentTree(doc);
   }
 
 }

@@ -54,7 +54,7 @@ public class WikiTextOnRealWikiPagesTest {
 
     assertThat(h3FromWikiText, is(h3Headings));
 
-    WikiDocumentTest.printDocumentTree(text.asStructuredDocument());
+    WikiTextPrinter.printDocumentTree(text.asStructuredDocument());
 
   }
 

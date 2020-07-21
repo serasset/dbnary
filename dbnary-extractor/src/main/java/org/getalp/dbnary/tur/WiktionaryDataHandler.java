@@ -68,7 +68,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Zamir", posAndTypeValueMap.get("Adıl"));
     posAndTypeValueMap.put("Zarf", posAndTypeValueMap.get("Belirteç"));
 
-    // Other POS found in wiktioary data
+    // Other POS found in wiktionary data
     posAndTypeValueMap.put("Ek", new PosAndType(LexinfoOnt.affix, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Eylem (basit)",
         new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
@@ -94,6 +94,5 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     }
     addPartOfSpeech(pos, posResource(pat), typeResource(pat));
   }
-
 
 }

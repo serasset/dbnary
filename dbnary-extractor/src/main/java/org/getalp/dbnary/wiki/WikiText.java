@@ -662,6 +662,7 @@ public class WikiText {
 
     private int level;
     private WikiContent content;
+    private WikiSection section = null;
 
     private Heading(int position, int level) {
       this.level = level;
@@ -692,6 +693,17 @@ public class WikiText {
 
     public int getLevel() {
       return level;
+    }
+
+    public WikiSection getSection() {
+      if (null == section) {
+        getWikiText().asStructuredDocument();
+      }
+      return section;
+    }
+
+    public void setSection(WikiSection section) {
+      this.section = section;
     }
 
     @Override
@@ -901,6 +913,7 @@ public class WikiText {
           top.setEndOffset(h.offset.start);
         }
         WikiSection ws = new WikiSection(h.asHeading());
+        h.asHeading().setSection(ws);
         stack.peek().addToken(ws);
         stack.push(ws);
       } else {

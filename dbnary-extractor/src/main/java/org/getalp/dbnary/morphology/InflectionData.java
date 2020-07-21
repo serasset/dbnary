@@ -1,6 +1,7 @@
-package org.getalp.dbnary;
+package org.getalp.dbnary.morphology;
 
 import java.util.HashSet;
+import org.getalp.dbnary.PropertyObjectPair;
 
 public abstract class InflectionData {
 

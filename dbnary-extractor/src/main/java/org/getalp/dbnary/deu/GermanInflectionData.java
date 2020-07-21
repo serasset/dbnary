@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.getalp.dbnary.InflectionData;
+import org.getalp.dbnary.morphology.InflectionData;
 import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.SkosOnt;

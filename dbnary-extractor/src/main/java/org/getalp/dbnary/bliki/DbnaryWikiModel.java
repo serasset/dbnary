@@ -1,5 +1,8 @@
 package org.getalp.dbnary.bliki;
 
+import info.bliki.extensions.scribunto.engine.ScribuntoEngine;
+import info.bliki.extensions.scribunto.engine.lua.CompiledScriptCache;
+import info.bliki.extensions.scribunto.engine.lua.ScribuntoLuaEngine;
 import info.bliki.wiki.filter.HTMLConverter;
 import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.Configuration;
@@ -27,6 +30,7 @@ public class DbnaryWikiModel extends WikiModel {
   private static Logger log = LoggerFactory.getLogger(DbnaryWikiModel.class);
 
   protected WiktionaryIndex wi = null;
+  private CompiledScriptCache compiledScriptCache = new CompiledScriptCache();
 
 
   public DbnaryWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
@@ -125,8 +129,15 @@ public class DbnaryWikiModel extends WikiModel {
   }
 
   @Override
+  public ScribuntoEngine createScribuntoEngine() {
+    // Allow debugging of lua model if bdebug is enabled
+    return new ScribuntoLuaEngine(this, compiledScriptCache, log.isDebugEnabled());
+  }
+
+  @Override
   public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
       throws WikiModelContentException {
+    log.trace("resolving {} in {}", parsedPagename.fullPagename(), this.getPageName());
     String result = super.getRawWikiContent(parsedPagename, map);
     if (result != null) {
       // found magic word template

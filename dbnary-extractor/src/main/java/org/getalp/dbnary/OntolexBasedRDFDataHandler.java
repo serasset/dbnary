@@ -330,6 +330,10 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     limeBox.add(limeBox.createLiteralStatement(lexicon, LimeOnt.lexicalEntries, nbEntries()));
     limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, LexinfoOnt.getURI()));
     limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, OliaOnt.getURI()));
+    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, LEXVO));
+
+    // TODO: Add extractor version for the current dump
+    limeBox.add(limeBox.createStatement(lexicon, DBnaryOnt.wiktionaryDumpVersion, dumpFilename));
 
   }
 

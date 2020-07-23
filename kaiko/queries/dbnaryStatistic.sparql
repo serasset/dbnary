@@ -5,3 +5,18 @@ SELECT ?cl, ?cs, ?cp, ?ct WHERE {
      dbnary:lexicalSenseCount ?cs ;
      dbnary:pageCount ?cp ;
      dbnary:translationsCount ?ct . }
+
+     SELECT ?slanguage ?count
+     WHERE {
+       ?observation a qb:Observation.
+       ?observation qb:dataSet ?translationsDataCube.
+       ?observation dbnary:wiktionaryDumpVersion ?version.
+       ?observation dbnary:observationLanguage ?slanguage.
+       ?observation lime:language "Total".
+       ?observation dbnary:count ?count.
+      }
+
+SELECT ?s ?o
+WHERE {
+  ?s dbnary:wiktionaryDumpVersion ?o.
+ }

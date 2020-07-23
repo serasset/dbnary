@@ -201,6 +201,9 @@ public class TranslateDiachronicStatisticsToDataCubes {
           Long.valueOf(map.get("# of lang")));
       map.remove("# of lang");
       map.remove("Date");
+      createTranslationObservation(model, dumpVersion, NS, lg3, "mul",
+          Long.valueOf(map.get("Total")));
+      map.remove("Total");
       map.forEach(
           (k, v) -> createTranslationObservation(model, dumpVersion, NS, lg3, k, Long.valueOf(v)));
     } else if (map.containsKey("Entries")) {

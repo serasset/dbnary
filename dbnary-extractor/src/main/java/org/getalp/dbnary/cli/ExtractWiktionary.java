@@ -350,6 +350,7 @@ public class ExtractWiktionary extends DBnaryCommandLine {
       System.err.println("  Morphology : " + morphoOutputFile);
       System.err.println("  LIME : " + limeOutputFile);
       System.err.println("  Enhancement : " + enhancementOutputFile);
+      System.err.println("  Statistics : " + statsOutputFile);
       System.err.println("  Format : " + outputFormat);
     }
   }

@@ -337,12 +337,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     // TODO: Add VOID description : see https://www.w3.org/TR/void/#access
     // :DBpedia a void:Dataset;
-    //    void:sparqlEndpoint <http://dbpedia.org/sparql>;
+    // void:sparqlEndpoint <http://dbpedia.org/sparql>;
     // :NYTimes a void:Dataset;
-    //    void:dataDump <http://data.nytimes.com/people.rdf>;
-    //    void:dataDump <http://data.nytimes.com/organizations.rdf>;
-    //    void:dataDump <http://data.nytimes.com/locations.rdf>;
-    //    void:dataDump <http://data.nytimes.com/descriptors.rdf>;
+    // void:dataDump <http://data.nytimes.com/people.rdf>;
+    // void:dataDump <http://data.nytimes.com/organizations.rdf>;
+    // void:dataDump <http://data.nytimes.com/locations.rdf>;
+    // void:dataDump <http://data.nytimes.com/descriptors.rdf>;
   }
 
   @Override
@@ -379,7 +379,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
           + wktLanguageEdition + "__" + date() + "_" + dumpFileVersion);
       statsBox.add(statsBox.createStatement(enhObsRandom, RDF.type, DataCubeOnt.Observation));
       statsBox.add(statsBox.createStatement(enhObsRandom, DataCubeOnt.dataSet,
-          DBnaryOnt.enhancementConfidenceDataset));
+          DBnaryOnt.enhancementConfidenceDataCube));
       statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.wiktionaryDumpVersion,
           statsBox.createTypedLiteral(dumpFileVersion)));
       statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.observationLanguage, l));
@@ -397,7 +397,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
           getPrefix() + "___enhObs__" + wktLanguageEdition + "__" + date() + "_" + dumpFileVersion);
       statsBox.add(statsBox.createStatement(enhObs, RDF.type, DataCubeOnt.Observation));
       statsBox.add(statsBox.createStatement(enhObs, DataCubeOnt.dataSet,
-          DBnaryOnt.enhancementConfidenceDataset));
+          DBnaryOnt.enhancementConfidenceDataCube));
       statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.wiktionaryDumpVersion,
           statsBox.createTypedLiteral(dumpFileVersion)));
       statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.observationLanguage, l));

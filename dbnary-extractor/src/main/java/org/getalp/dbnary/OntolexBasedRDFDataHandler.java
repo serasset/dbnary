@@ -162,6 +162,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
     aBox.setNsPrefix(lang, NS);
     aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
+    aBox.setNsPrefix("dbstats", DBNARY_NS_PREFIX + "/statistics/"); 
     aBox.setNsPrefix("dbetym", DBnaryEtymologyOnt.getURI());
     aBox.setNsPrefix("lexinfo", LexinfoOnt.getURI());
     aBox.setNsPrefix("rdfs", RDFS.getURI());

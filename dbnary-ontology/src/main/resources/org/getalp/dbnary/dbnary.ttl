@@ -11,6 +11,7 @@
 @prefix vann:     <http://purl.org/vocab/vann/> .
 @prefix void:     <http://rdfs.org/ns/void#> .
 @prefix dbnary:   <http://kaiko.getalp.org/dbnary#> .
+@prefix dbcubes:   <http://kaiko.getalp.org/dbnary/statistics/> .
 @prefix dcterms:  <http://purl.org/dc/terms/> .
 @prefix ontolex:  <http://www.w3.org/ns/lemon/ontolex#> .
 @prefix vartrans: <http://www.w3.org/ns/lemon/vartrans#> .
@@ -19,9 +20,9 @@
 
 <http://kaiko.getalp.org/dbnary>
     rdf:type                      owl:Ontology ;
-    owl:versionIRI                <http://kaiko.getalp.org/dbnary/2.1.0> ;
-    owl:versionInfo               "2.1.0" ;
-    owl:priorVersion              <http://kaiko.getalp.org/dbnary/2.0.0> ;
+    owl:versionIRI                <http://kaiko.getalp.org/dbnary/2.1.1> ;
+    owl:versionInfo               "2.1.1" ;
+    owl:priorVersion              <http://kaiko.getalp.org/dbnary/2.1.0> ;
     owl:imports                   <http://purl.org/linked-data/cube>, rdf:,
                                   <http://www.w3.org/ns/lemon/ontolex> ;
     dcterms:license               <http://creativecommons.org/licenses/by-sa/4.0/> ;
@@ -275,7 +276,7 @@ dbnary:extractorVersion
 
 # -- Translation Statistics dataset --------------------------
 
-dbnary:translationGlossesCube
+dbcubes:translationGlossesCube
     a            qb:DataSet ;
     qb:structure dbnary:translationGlossesDataStructure ;
     rdfs:comment "The Data Cube containing observations on glosses attached to translations."@en .
@@ -297,7 +298,7 @@ dbnary:translationGlossesDataStructure
 
 # -- Enhancement performance dataset --------------------------
 
-dbnary:enhancementConfidenceDataset
+dbcubes:enhancementConfidenceDataCube
     a            qb:DataSet ;
     qb:structure dbnary:enhancementConfidenceDataStructure ;
     rdfs:comment
@@ -320,7 +321,7 @@ dbnary:enhancementConfidenceDataStructure
 
 # -- General Statistics dataset --------------------------
 
-dbnary:dbnaryStatisticsCube
+dbcubes:dbnaryStatisticsCube
     a            qb:DataSet ;
     qb:structure dbnary:dbnaryStatisticsDataStructure ;
     rdfs:comment "The Data Cube containing general observations on a specific DBnary extract."@en .
@@ -342,7 +343,7 @@ dbnary:dbnaryStatisticsDataStructure
 
 # -- Nym Statistics dataset --------------------------
 
-dbnary:dbnaryNymRelationsCube
+dbcubes:dbnaryNymRelationsCube
     a            qb:DataSet ;
     qb:structure dbnary:dbnaryNymRelationsDataStructure ;
     rdfs:comment
@@ -362,7 +363,7 @@ dbnary:dbnaryNymRelationsDataStructure
 
 # -- Translations Statistics dataset --------------------------
 
-dbnary:dbnaryTranslationsCube
+dbcubes:dbnaryTranslationsCube
     a            qb:DataSet ;
     qb:structure dbnary:dbnaryTranslationsDataStructure ;
     rdfs:comment

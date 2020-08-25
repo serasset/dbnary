@@ -61,6 +61,8 @@
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
                 <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>--include</argument>
+                <argument>http://kaiko.getalp.org/dbnary/</argument>
                 <argument>-n</argument>
                 <argument>DBnaryOnt</argument>
                 <argument>--owl</argument>

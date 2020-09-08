@@ -252,7 +252,7 @@ SPARQL LOAD <http://www.w3.org/ns/lemon/decomp> into graph <http://kaiko.getalp.
 SPARQL LOAD <http://purl.org/olia/olia.owl> into graph <http://kaiko.getalp.org/datamodel>;
 SPARQL LOAD <http://purl.org/linked-data/cube> into graph <http://kaiko.getalp.org/datamodel>;
 -- Load dbnary ontology from latest version (be sure to deploy the latest version to the public server before rotating)
-SPARQL LOAD <http://purl.org/linked-data/cube> into graph <http://kaiko.getalp.org/datamodel>;
+SPARQL LOAD <http://kaiko.getalp.org/dbnary> into graph <http://kaiko.getalp.org/datamodel>;
 
 commit WORK;
 checkpoint;

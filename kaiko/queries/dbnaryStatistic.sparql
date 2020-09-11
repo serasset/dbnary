@@ -1,3 +1,4 @@
+PREFIX dbnstats: <http://kaiko.getalp.org/dbnary/statistics/>
 SELECT ?cl, ?cs, ?cp, ?ct WHERE {
   ?o a qb:Observation ;
      qb:dataSet dbnary:dbnaryStatisticsCube ;

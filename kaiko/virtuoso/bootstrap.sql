@@ -239,6 +239,8 @@ DB.DBA.XML_SET_NS_DECL ('dbnary-tur', 'http://kaiko.getalp.org/dbnary/tur/', 2);
 DB.DBA.XML_SET_NS_DECL ('dilaf-bam', 'http://kaiko.getalp.org/dilaf/bam/', 2);
 DB.DBA.XML_SET_NS_DECL ('jdm-ont', 'http://kaiko.getalp.org/jdm#', 2);
 DB.DBA.XML_SET_NS_DECL ('jdm', 'http://kaiko.getalp.org/jdm/', 2);
+DB.DBA.XML_SET_NS_DECL ('dbnstats', 'http://kaiko.getalp.org/dbnary/statistics/', 2);
+
 checkpoint;
 -- Load Core ontologies
 SPARQL LOAD <http://www.lexinfo.net/ontology/2.0/lexinfo#> into graph <http://kaiko.getalp.org/datamodel>;

@@ -1,0 +1,26 @@
+SELECT ?Language
+        (sample(?maxversion) as ?Version)
+        (sample(?num_entries) as ?Entries)
+        (sample(?num_pages) as ?Vocables)
+        (sample(?num_senses) as ?Senses)
+        (sample(?num_translations) as ?Translations)
+WHERE
+{
+    {
+     # Select the latest version
+     SELECT distinct(?version) as ?maxversion
+     WHERE { ?s dbnary:wiktionaryDumpVersion ?version . }
+     ORDER BY DESC(?version) LIMIT 1
+    }
+
+    ?obs
+        qb:dataSet dbnstats:dbnaryStatisticsCube ;
+        dbnary:observationLanguage ?Language ;
+        dbnary:lexicalEntryCount ?num_entries ;
+        dbnary:pageCount ?num_pages ;
+        dbnary:lexicalSenseCount ?num_senses ;
+        dbnary:translationsCount ?num_translations ;
+        dbnary:wiktionaryDumpVersion ?maxversion .
+}
+GROUP BY ?Language
+ORDER BY ?Language

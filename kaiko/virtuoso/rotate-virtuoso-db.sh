@@ -15,7 +15,7 @@ password=''
 verbose=false
 DBNARY_USER_CONFIG_DIR="$HOME/.dbnary/"
 DBNARY_ONTOLEX=$HOME/develop/wiktionary/extracts/ontolex
-VIRTUOSODBLOCATION=/var/lib/virtuoso
+VIRTUOSODBLOCATION=/var/lib/virtuoso-opensource-7/
 TEMPORARYPREFIX=/var/tmp/
 
 function show_help() {
@@ -92,7 +92,7 @@ fi
 
 BOOTSTRAPSQL=$script_dir/bootstrap.sql
 
-if [ ! -x $VIRTUOSODAEMON ]; then
+if ! command -v $VIRTUOSODAEMON ; then
   echo >&2 "Could not find virtuoso-t bin"
   exit 1
 fi

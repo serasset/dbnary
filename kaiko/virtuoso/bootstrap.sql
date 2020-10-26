@@ -2,8 +2,8 @@
 
 -- noinspection SqlNoDataSourceInspectionForFile
 
-DB.DBA.VAD_INSTALL('/opt/virtuoso-opensource/share/virtuoso/vad/isparql_dav.vad', 0);
-DB.DBA.VAD_INSTALL('/opt/virtuoso-opensource/share/virtuoso/vad/fct_dav.vad', 0);
+DB.DBA.VAD_INSTALL('@@VAD_INSTALL_DIR@@/isparql_dav.vad', 0);
+DB.DBA.VAD_INSTALL('@@VAD_INSTALL_DIR@@/fct_dav.vad', 0);
 DB.DBA.VHOST_REMOVE ( lhost=>'*ini*', vhost=>'*ini*', lpath=>'/dbnary' );
 
 DB.DBA.VHOST_DEFINE (

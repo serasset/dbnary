@@ -69,10 +69,14 @@ shift $((OPTIND - 1))
 
 ## Default values that will be overriden by configuration file
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
-VIRTUOSODAEMON=/opt/virtuoso-opensource/bin/virtuoso-t
+VIRTUOSODAEMON=virtuoso-t
 SERVERPORT=1112
 SSLSERVERPORT=2112
 WEBSERVERPORT=8899
+VIRTUOSO_PLUGINS_HOSTING=/usr/lib/virtuoso-opensource-7/hosting
+VAD_INSTALL_DIR=/usr/share/virtuoso-opensource-7/vad/
+VSP_INSTALL_DIR=/var/lib/virtuoso-opensource-7/vsp/
+
 
 script_dir=$(dirname $(realpath $0))
 bootstrap_ini=virtuoso.ini.bootstrap.tmpl

@@ -1,9 +1,8 @@
-/.classpath
-/.project
-/.settings
+.classpath
+.project
+.settings
 .idea
 *.iml
-/target
 target/
 pom.xml.tag
 pom.xml.releaseBackup

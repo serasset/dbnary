@@ -1,0 +1,9 @@
+version: '3.3'
+services:
+    jupyter:
+        image: jupyter/scipy-notebook:latest
+        volumes:
+            - ./notebooks:/home/jovyan
+        ports:
+            - "8888:8888"
+        restart: always

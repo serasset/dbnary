@@ -1,0 +1,33 @@
+SELECT ?Language (sample(?maxversion) as ?Version)
+        (sample(?synCount) as ?syn)
+        (sample(?qsynCount) as ?qsyn)
+        (sample(?antCount) as ?ant)
+        (sample(?hyperCount) as ?hyper)
+        (sample(?hypoCount) as ?hypo)
+        (sample(?meroCount) as ?mero)
+        (sample(?holoCount) as ?holo)
+        (sample(?tropoCount) as ?tropo)
+WHERE {
+    {
+     # Select the latest version
+     SELECT distinct(?version) as ?maxversion
+     WHERE { ?s dbnary:wiktionaryDumpVersion ?version ; qb:dataSet dbnstats:dbnaryNymRelationsCube . }
+     ORDER BY DESC(?version) LIMIT 1
+    }
+
+    ?obs
+        qb:dataSet dbnstats:dbnaryNymRelationsCube ;
+        dbnary:observationLanguage ?Language ;
+        dbnary:wiktionaryDumpVersion ?maxversion .
+
+        { ?obs dbnary:nymRelation dbnary:synonym ; dbnary:count ?synCount. }
+        UNION { ?obs dbnary:nymRelation dbnary:approximateSynonym ; dbnary:count ?qsynCount. }
+        UNION { ?obs dbnary:nymRelation dbnary:antonym ; dbnary:count ?antCount. }
+        UNION { ?obs dbnary:nymRelation dbnary:hypernym ; dbnary:count ?hyperCount. }
+        UNION { ?obs dbnary:nymRelation dbnary:hyponym ; dbnary:count ?hypoCount. }
+        UNION { ?obs dbnary:nymRelation dbnary:meronym ; dbnary:count ?meroCount. }
+        UNION { ?obs dbnary:nymRelation dbnary:holonym ; dbnary:count ?holoCount. }
+        UNION { ?obs dbnary:nymRelation dbnary:troponym ; dbnary:count ?tropoCount. }
+
+} GROUP by ?Language
+ORDER BY ?Language

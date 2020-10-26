@@ -1,17 +1,25 @@
 #!/bin/bash
 
-SEDSCRIPT=~/develop/dbnary/kaiko/misc/fix_stats.sed
-pushd "$HOME/develop/wiktionary/extracts/ontolex"
-mkdir ~/stats.saved
-cp "./??/??_dbnary_stat*" ~/stats.saved
+SEDSCRIPT="$HOME/develop/dbnary/kaiko/misc/$1"
+if [[ ! -f $SEDSCRIPT ]] ; then
+	>&2 echo "usage : fix_all_stats.sh sed-file-name"
+	exit 1
+fi
+
+SAVEDIR="$HOME/stats.saved/`date +%F_%H-%M-%S`/"
+DATADIR="$HOME/develop/wiktionary/extracts/ontolex"
+mkdir -p $SAVEDIR
+rsync --include='??' --include='??/??_dbnary_stat*.ttl.bz2' --exclude='*.ttl*' -a $DATADIR/ $SAVEDIR/
+
+pushd $DATADIR
 for lg in ??; do
-  echo ${lg}
-  pushd "${lg}"
-  # iterate over all dates...
-  for f in ${lg}_dbnary_stat*.ttl.bz2; do
-    echo $f
-    bzcat "$f" | sed -f "${SEDSCRIPT}" | bzip2 > "$f.new"
-  done
-  popd
+	pushd $lg
+	# iterate over all dates...
+	for f in ${lg}_dbnary_stat*.ttl.bz2 ; do
+		bzcat $f | sed -f ${SEDSCRIPT} | bzip2 > $f.new
+		mv $f $f.old
+		mv $f.new $f
+	done
+	popd
 done
 

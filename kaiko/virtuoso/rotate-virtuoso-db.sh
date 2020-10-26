@@ -15,7 +15,7 @@ password=''
 verbose=false
 DBNARY_USER_CONFIG_DIR="$HOME/.dbnary/"
 DBNARY_ONTOLEX=$HOME/develop/wiktionary/extracts/ontolex
-VIRTUOSODBLOCATION=/var/lib/virtuoso
+VIRTUOSODBLOCATION=/var/lib/virtuoso-opensource-7/
 TEMPORARYPREFIX=/var/tmp/
 
 function show_help() {
@@ -69,12 +69,16 @@ shift $((OPTIND - 1))
 
 ## Default values that will be overriden by configuration file
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
-VIRTUOSODAEMON=/opt/virtuoso-opensource/bin/virtuoso-t
+VIRTUOSODAEMON=virtuoso-t
 SERVERPORT=1112
 SSLSERVERPORT=2112
 WEBSERVERPORT=8899
+VIRTUOSO_PLUGINS_HOSTING=/usr/lib/virtuoso-opensource-7/hosting
+VAD_INSTALL_DIR=/usr/share/virtuoso-opensource-7/vad/
+VSP_INSTALL_DIR=/var/lib/virtuoso-opensource-7/vsp/
 
 script_dir=$(dirname $(realpath $0))
+BOOTSTRAPSQLTMPL=$script_dir/bootstrap.sql.tmpl
 bootstrap_ini=virtuoso.ini.bootstrap.tmpl
 prod_ini=virtuoso.ini.prod.tmpl
 ## Read values from configuration file
@@ -86,9 +90,8 @@ if [[ ! -f $VIRTUOSOINITMPL ]]; then
   exit 1
 fi
 
-BOOTSTRAPSQL=$script_dir/bootstrap.sql
 
-if [ ! -x $VIRTUOSODAEMON ]; then
+if ! command -v $VIRTUOSODAEMON ; then
   echo >&2 "Could not find virtuoso-t bin"
   exit 1
 fi
@@ -163,12 +166,26 @@ function cleanup() {
 # register the cleanup function to be called on the EXIT signal
 trap cleanup EXIT
 
+## Prepare bootstrap.sql file
+BOOTSTRAPSQL="$DBBOOTSTRAPFOLDER"/bootstrap.sql
+echo "$BOOTSTRAPSQLTMPL"
+cat "$BOOTSTRAPSQLTMPL"
+sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$BOOTSTRAPSQLTMPL" |
+  sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
+  sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
+  sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
+  sed "s|@@VAD_INSTALL_DIR@@|$VAD_INSTALL_DIR|g" |
+  sed "s|@@VSP_INSTALL_DIR@@|$VSP_INSTALL_DIR|g" |
+  sed "s|@@VIRTUOSO_PLUGINS_HOSTING@@|$VIRTUOSO_PLUGINS_HOSTING|g" |
+  sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" > $BOOTSTRAPSQL
+
 if [[ $verbose == "true" ]]; then
   echo "Virtuoso Daemon: $VIRTUOSODAEMON"
   echo "Latest extracts: $DBNARYLATEST"
   echo "Virtuoso ini template: $VIRTUOSOINITMPL"
   echo "Temporary dataset folder: $DATASETDIR"
   echo "Temporary bootstrap folder: $DBBOOTSTRAPFOLDER"
+  echo "bootstrap sql file: $BOOTSTRAPSQL"
 fi
 
 # TODO: use a fixed dataset dir for dataset outside of dbnary latest folder.
@@ -196,7 +213,7 @@ statsRegex2='(..)_([^_]*)_statistics(.*)'
 for f in $DATASETDIR/*.ttl; do
   if [[ $f =~ $statsRegex2 ]]; then
     lg2=${BASH_REMATCH[1]}
-    echo "http://kaiko.getalp.org/stats/" >"$f.graph"
+    echo "http://kaiko.getalp.org/statistics/" >"$f.graph"
   elif [[ $f =~ $langRegex2 ]]; then
     lg2=${BASH_REMATCH[1]}
     graph=${BASH_REMATCH[2]}
@@ -210,17 +227,20 @@ for f in $DATASETDIR/*.ttl; do
 done
 
 # TODO: the folder is now a new temporary folder
-if [ ! -d "$DBBOOTSTRAPFOLDER" ]; then
-  mkdir -p $DBBOOTSTRAPFOLDER
-elif [ "$(ls -A $DBBOOTSTRAPFOLDER)" ]; then
-  echo >&2 "Database Folder $DBBOOTSTRAPFOLDER exists but is not empty. Aborting."
-  exit 1
-fi
+#if [ ! -d "$DBBOOTSTRAPFOLDER" ]; then
+#  mkdir -p $DBBOOTSTRAPFOLDER
+#elif [ "$(ls -A $DBBOOTSTRAPFOLDER)" ]; then
+#  echo >&2 "Database Folder $DBBOOTSTRAPFOLDER exists but is not empty. Aborting."
+#  exit 1
+#fi
 
 sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$VIRTUOSOINITMPL" |
   sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
   sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
   sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
+  sed "s|@@VAD_INSTALL_DIR@@|$VAD_INSTALL_DIR|g" |
+  sed "s|@@VSP_INSTALL_DIR@@|$VSP_INSTALL_DIR|g" |
+  sed "s|@@VIRTUOSO_PLUGINS_HOSTING@@|$VIRTUOSO_PLUGINS_HOSTING|g" |
   sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" >"$DBBOOTSTRAPFOLDER"/virtuoso.ini
 
 ## CREATING A NEW EMPTY DATABASE WITH NECESSARY SETTINGS

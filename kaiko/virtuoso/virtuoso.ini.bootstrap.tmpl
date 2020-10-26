@@ -17,7 +17,6 @@
 ;
 ;      technical.support@openlinksw.com
 ;
-
 ;
 ;  Database setup
 ;
@@ -63,13 +62,13 @@ MaxStaticCursorRows		= 5000
 CheckpointAuditTrail		= 0
 AllowOSCalls			= 0
 SchedulerInterval		= 10
-DirsAllowed			= ., /opt/virtuoso-opensource/share/virtuoso/vad,/opt/datasets/dbnary, @@DATASETDIR@@
+DirsAllowed			= ., @@VAD_INSTALL_DIR@@,/opt/datasets/dbnary, @@DATASETDIR@@
 ThreadCleanupInterval		= 0
 ThreadThreshold			= 10
 ResourcesCleanupInterval	= 0
 FreeTextBatchSize		= 100000
 SingleCPU			= 0
-VADInstallDir			= /opt/virtuoso-opensource/share/virtuoso/vad/
+VADInstallDir			= @@VAD_INSTALL_DIR@@
 PrefixResultNames               = 0
 RdfFreeTextRulesSize		= 100
 IndexTreeMaps			= 256
@@ -119,7 +118,7 @@ MaxDirtyBuffers          = 2000000
 
 [HTTPServer]
 ServerPort			= @@WEBSERVERPORT@@
-ServerRoot			= /opt/virtuoso-opensource/var/lib/virtuoso/vsp
+ServerRoot			= @@VSP_INSTALL_DIR@@
 MaxClientConnections		= 10
 DavRoot				= DAV
 EnabledDavVSP			= 0
@@ -245,7 +244,7 @@ DeferInferenceRulesInit    	= 0  ; controls inference rules loading
 ShortenLongURIs = 1
 
 [Plugins]
-LoadPath			= /opt/virtuoso-opensource/lib/virtuoso/hosting
+LoadPath			= @@VIRTUOSO_PLUGINS_HOSTING@@
 Load1				= plain, wikiv
 Load2				= plain, mediawiki
 Load3				= plain, creolewiki

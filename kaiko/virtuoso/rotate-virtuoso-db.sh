@@ -76,10 +76,9 @@ WEBSERVERPORT=8899
 VIRTUOSO_PLUGINS_HOSTING=/usr/lib/virtuoso-opensource-7/hosting
 VAD_INSTALL_DIR=/usr/share/virtuoso-opensource-7/vad/
 VSP_INSTALL_DIR=/var/lib/virtuoso-opensource-7/vsp/
-BOOTSTRAPSQLTMPL=$script_dir/bootstrap.sql.tmpl
-
 
 script_dir=$(dirname $(realpath $0))
+BOOTSTRAPSQLTMPL=$script_dir/bootstrap.sql.tmpl
 bootstrap_ini=virtuoso.ini.bootstrap.tmpl
 prod_ini=virtuoso.ini.prod.tmpl
 ## Read values from configuration file
@@ -169,6 +168,7 @@ trap cleanup EXIT
 
 ## Prepare bootstrap.sql file
 BOOTSTRAPSQL="$DBBOOTSTRAPFOLDER"/bootstrap.sql
+echo "$BOOTSTRAPSQLTMPL"
 cat "$BOOTSTRAPSQLTMPL"
 sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$BOOTSTRAPSQLTMPL" |
   sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
@@ -227,12 +227,12 @@ for f in $DATASETDIR/*.ttl; do
 done
 
 # TODO: the folder is now a new temporary folder
-if [ ! -d "$DBBOOTSTRAPFOLDER" ]; then
-  mkdir -p $DBBOOTSTRAPFOLDER
-elif [ "$(ls -A $DBBOOTSTRAPFOLDER)" ]; then
-  echo >&2 "Database Folder $DBBOOTSTRAPFOLDER exists but is not empty. Aborting."
-  exit 1
-fi
+#if [ ! -d "$DBBOOTSTRAPFOLDER" ]; then
+#  mkdir -p $DBBOOTSTRAPFOLDER
+#elif [ "$(ls -A $DBBOOTSTRAPFOLDER)" ]; then
+#  echo >&2 "Database Folder $DBBOOTSTRAPFOLDER exists but is not empty. Aborting."
+#  exit 1
+#fi
 
 sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$VIRTUOSOINITMPL" |
   sed "s|@@DATASETDIR@@|$DATASETDIR|g" |

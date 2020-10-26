@@ -13,7 +13,7 @@ fi
 
 VIRTUOSOINITMPL=./virtuoso.ini.tmpl
 #VIRTUOSOINIPRODUCTIONTMPL=./virtuoso.ini.prod.tmpl
-BOOTSTRAPSQL=./bootstrap.sql
+#BOOTSTRAPSQLTMPL=./bootstrap.sql.tmpl
 
 DBFOLDER=$PREFIX/virtuoso/db.bootstrap
 EMPTYDBFOLDER=$PREFIX/virtuoso/db.empty

@@ -76,6 +76,7 @@ WEBSERVERPORT=8899
 VIRTUOSO_PLUGINS_HOSTING=/usr/lib/virtuoso-opensource-7/hosting
 VAD_INSTALL_DIR=/usr/share/virtuoso-opensource-7/vad/
 VSP_INSTALL_DIR=/var/lib/virtuoso-opensource-7/vsp/
+BOOTSTRAPSQLTMPL=$script_dir/bootstrap.sql.tmpl
 
 
 script_dir=$(dirname $(realpath $0))
@@ -90,7 +91,6 @@ if [[ ! -f $VIRTUOSOINITMPL ]]; then
   exit 1
 fi
 
-BOOTSTRAPSQL=$script_dir/bootstrap.sql
 
 if ! command -v $VIRTUOSODAEMON ; then
   echo >&2 "Could not find virtuoso-t bin"
@@ -221,10 +221,25 @@ elif [ "$(ls -A $DBBOOTSTRAPFOLDER)" ]; then
   exit 1
 fi
 
+## Prepare bootstrap.sql file
+BOOTSTRAPSQL="$DBBOOTSTRAPFOLDER"/bootstrap.sql
+sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$BOOTSTRAPSQLTMPL" |
+  sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
+  sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
+  sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
+  sed "s|@@VAD_INSTALL_DIR@@|$VAD_INSTALL_DIR|g" |
+  sed "s|@@VSP_INSTALL_DIR@@|$VSP_INSTALL_DIR|g" |
+  sed "s|@@VIRTUOSO_PLUGINS_HOSTING@@|$VIRTUOSO_PLUGINS_HOSTING|g" |
+  sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" > $BOOTSTRAPSQL
+
+
 sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$VIRTUOSOINITMPL" |
   sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
   sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
   sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
+  sed "s|@@VAD_INSTALL_DIR@@|$VAD_INSTALL_DIR|g" |
+  sed "s|@@VSP_INSTALL_DIR@@|$VSP_INSTALL_DIR|g" |
+  sed "s|@@VIRTUOSO_PLUGINS_HOSTING@@|$VIRTUOSO_PLUGINS_HOSTING|g" |
   sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" >"$DBBOOTSTRAPFOLDER"/virtuoso.ini
 
 ## CREATING A NEW EMPTY DATABASE WITH NECESSARY SETTINGS

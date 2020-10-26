@@ -15,7 +15,7 @@ password=''
 verbose=false
 DBNARY_USER_CONFIG_DIR="$HOME/.dbnary/"
 DBNARY_ONTOLEX=$HOME/develop/wiktionary/extracts/ontolex
-VIRTUOSODBLOCATION=/var/lib/virtuoso
+VIRTUOSODBLOCATION=/var/lib/virtuoso-opensource-7/
 TEMPORARYPREFIX=/var/tmp/
 
 function show_help() {
@@ -69,7 +69,7 @@ shift $((OPTIND - 1))
 
 ## Default values that will be overriden by configuration file
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
-VIRTUOSODAEMON=/opt/virtuoso-opensource/bin/virtuoso-t
+VIRTUOSODAEMON=virtuoso-t
 SERVERPORT=1112
 SSLSERVERPORT=2112
 WEBSERVERPORT=8899
@@ -88,7 +88,7 @@ fi
 
 BOOTSTRAPSQL=$script_dir/bootstrap.sql
 
-if [ ! -x $VIRTUOSODAEMON ]; then
+if ! command -v $VIRTUOSODAEMON ; then
   echo >&2 "Could not find virtuoso-t bin"
   exit 1
 fi

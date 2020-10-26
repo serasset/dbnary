@@ -167,12 +167,25 @@ function cleanup() {
 # register the cleanup function to be called on the EXIT signal
 trap cleanup EXIT
 
+## Prepare bootstrap.sql file
+BOOTSTRAPSQL="$DBBOOTSTRAPFOLDER"/bootstrap.sql
+cat "$BOOTSTRAPSQLTMPL"
+sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$BOOTSTRAPSQLTMPL" |
+  sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
+  sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
+  sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
+  sed "s|@@VAD_INSTALL_DIR@@|$VAD_INSTALL_DIR|g" |
+  sed "s|@@VSP_INSTALL_DIR@@|$VSP_INSTALL_DIR|g" |
+  sed "s|@@VIRTUOSO_PLUGINS_HOSTING@@|$VIRTUOSO_PLUGINS_HOSTING|g" |
+  sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" > $BOOTSTRAPSQL
+
 if [[ $verbose == "true" ]]; then
   echo "Virtuoso Daemon: $VIRTUOSODAEMON"
   echo "Latest extracts: $DBNARYLATEST"
   echo "Virtuoso ini template: $VIRTUOSOINITMPL"
   echo "Temporary dataset folder: $DATASETDIR"
   echo "Temporary bootstrap folder: $DBBOOTSTRAPFOLDER"
+  echo "bootstrap sql file: $BOOTSTRAPSQL"
 fi
 
 # TODO: use a fixed dataset dir for dataset outside of dbnary latest folder.
@@ -220,18 +233,6 @@ elif [ "$(ls -A $DBBOOTSTRAPFOLDER)" ]; then
   echo >&2 "Database Folder $DBBOOTSTRAPFOLDER exists but is not empty. Aborting."
   exit 1
 fi
-
-## Prepare bootstrap.sql file
-BOOTSTRAPSQL="$DBBOOTSTRAPFOLDER"/bootstrap.sql
-sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$BOOTSTRAPSQLTMPL" |
-  sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
-  sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
-  sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
-  sed "s|@@VAD_INSTALL_DIR@@|$VAD_INSTALL_DIR|g" |
-  sed "s|@@VSP_INSTALL_DIR@@|$VSP_INSTALL_DIR|g" |
-  sed "s|@@VIRTUOSO_PLUGINS_HOSTING@@|$VIRTUOSO_PLUGINS_HOSTING|g" |
-  sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" > $BOOTSTRAPSQL
-
 
 sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$VIRTUOSOINITMPL" |
   sed "s|@@DATASETDIR@@|$DATASETDIR|g" |

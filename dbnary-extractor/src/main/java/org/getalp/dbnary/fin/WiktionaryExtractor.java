@@ -55,6 +55,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     sectionPattern2 = Pattern.compile(sectionPatternString2);
     sectionPattern = Pattern.compile(sectionPatternString, Pattern.DOTALL);
 
+    // TODO : use the posmap from WiktionnaryDataHandler
     posMarkers = new HashSet<>(20);
     posMarkers.add("Substantiivi");
     posMarkers.add("Adjektiivi");
@@ -64,6 +65,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     posMarkers.add("Adverbi");
     posMarkers.add("Verbi");
     posMarkers.add("Erisnimi");
+    posMarkers.add("Interjektio");
+    posMarkers.add("Postpositio");
+    posMarkers.add("Prepositio");
+    posMarkers.add("Partikkeli");
+    posMarkers.add("Suffiksi");
+    posMarkers.add("Prefiksi");
+    posMarkers.add("Konjunktio");
+    posMarkers.add("Aakkonen");
+    posMarkers.add("Kirjoitusmerkki");
+    posMarkers.add("Numeraali");
+    posMarkers.add("Pronomini");
+    posMarkers.add("Lyhenne");
 
     nymMarkers = new HashSet<>(20);
     nymMarkers.add("syn");

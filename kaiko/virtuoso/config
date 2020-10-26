@@ -13,7 +13,7 @@ fi
 
 VIRTUOSOINITMPL=./virtuoso.ini.tmpl
 #VIRTUOSOINIPRODUCTIONTMPL=./virtuoso.ini.prod.tmpl
-BOOTSTRAPSQL=./bootstrap.sql
+#BOOTSTRAPSQLTMPL=./bootstrap.sql.tmpl
 
 DBFOLDER=$PREFIX/virtuoso/db.bootstrap
 EMPTYDBFOLDER=$PREFIX/virtuoso/db.empty
@@ -21,6 +21,10 @@ DATASETDIR=$PREFIX/virtuoso/dataset
 SERVERPORT=1112
 SSLSERVERPORT=2112
 WEBSERVERPORT=8899
+
+VIRTUOSO_PLUGINS_HOSTING=/usr/lib/virtuoso-opensource-7/hosting
+VAD_INSTALL_DIR=/usr/share/virtuoso-opensource-7/vad/
+VSP_INSTALL_DIR=/var/lib/virtuoso-opensource-7/vsp/
 
 # Virtuoso installation variables
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin

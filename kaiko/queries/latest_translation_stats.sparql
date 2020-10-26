@@ -1,0 +1,45 @@
+SELECT ?Language
+      (sample(?maxversion) as ?Version)
+        (sample(?deuCount) as ?deu)
+        (sample(?ellCount) as ?ell)
+        (sample(?engCount) as ?eng)
+        (sample(?finCount) as ?fin)
+        (sample(?fraCount) as ?fra)
+        (sample(?itaCount) as ?ita)
+        (sample(?jpnCount) as ?jpn)
+        (sample(?porCount) as ?por)
+        (sample(?rusCount) as ?rus)
+        (sample(?turCount) as ?tur)
+        (sample(?othersCount) as ?others)
+        (sample(?totalCount) as ?total)
+        (sample(?langCount) as ?number_of_languages)
+WHERE {
+    {
+     # Select the latest version
+     SELECT distinct(?version) as ?maxversion
+     WHERE { ?s dbnary:wiktionaryDumpVersion ?version ; qb:dataSet dbnstats:dbnaryNymRelationsCube . }
+     ORDER BY DESC(?version) LIMIT 1
+    }
+
+    ?obs
+        qb:dataSet dbnstats:dbnaryTranslationsCube ;
+        dbnary:observationLanguage ?Language ;
+        dbnary:wiktionaryDumpVersion ?maxversion .
+
+        { ?obs dbnary:nymRelation dbnary:synonym ; dbnary:count ?synCount. }
+        UNION { ?obs lime:language "de" ; dbnary:count ?deuCount . }
+        UNION { ?obs lime:language "el" ; dbnary:count ?ellCount . }
+        UNION { ?obs lime:language "en" ; dbnary:count ?engCount . }
+        UNION { ?obs lime:language "fi" ; dbnary:count ?finCount . }
+        UNION { ?obs lime:language "fr" ; dbnary:count ?fraCount . }
+        UNION { ?obs lime:language "it" ; dbnary:count ?itaCount . }
+        UNION { ?obs lime:language "ja" ; dbnary:count ?jpnCount . }
+        UNION { ?obs lime:language "pt" ; dbnary:count ?porCount . }
+        UNION { ?obs lime:language "ru" ; dbnary:count ?rusCount . }
+        UNION { ?obs lime:language "tr" ; dbnary:count ?turCount . }
+        UNION { ?obs lime:language "others" ; dbnary:count ?othersCount . }
+        UNION { ?obs lime:language "mul" ; dbnary:count ?totalCount . }
+        UNION { ?obs lime:language "number_of_languages" ; dbnary:count ?langCount . }
+
+} GROUP by ?Language
+ORDER BY ?Language

@@ -680,7 +680,7 @@ extractor/src/test/java/org/getalp/dbnary/wiki/WikiTextTest.java -text
 extractor/src/test/java/org/getalp/dbnary/wiki/WikiToolTest.java -text
 extractor/src/test/java/org/getalp/iso639/ISO639Test.java -text
 kaiko/bootstrap-virtuoso-db.sh -text
-kaiko/bootstrap.sql -text
+kaiko/bootstrap.sql.tmpl -text
 kaiko/update-dbnary.sh -text
 kaiko/virtuoso.ini.tmpl -text
 ontology/pom.xml -text

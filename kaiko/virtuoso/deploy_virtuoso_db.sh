@@ -95,8 +95,6 @@ function rotate_and_link() {
 ## Default values that will be overriden by configuration file
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
 
-script_dir=$(dirname $(realpath $0))
-
 cd "$VIRTUOSODBLOCATION"
 nextfile=$(db_file_with_suffix next)
 if [ "x${nextfile}" = "x" ]; then

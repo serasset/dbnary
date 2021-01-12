@@ -12,13 +12,14 @@ OPTIND=1 # Reset in case getopts has been used previously in the shell.
 askpass=false
 password=''
 verbose=false
+FORCE=false
 DBNARY_USER_CONFIG_DIR="$HOME/.dbnary/"
 DBNARY_ONTOLEX=$HOME/develop/wiktionary/extracts/ontolex
 VIRTUOSODBLOCATION=/var/lib/virtuoso-opensource-7/
 TEMPORARYPREFIX=/var/tmp/
 
 function show_help() {
-  echo "USAGE: $0 [-hvP] [-p password] [-P] [-d dir] [-c config] [-e ontolexdir] [-t tmp]"
+  echo "USAGE: $0 [-hvPf] [-p password] [-P] [-d dir] [-c config] [-e ontolexdir] [-t tmp]"
   echo "OPTIONS:"
   echo "      h: display this help message."
   echo "      c: use provided value as the configuration directory (default value = $DBNARY_USER_CONFIG_DIR)."
@@ -28,10 +29,11 @@ function show_help() {
   echo "      t: use provided value as the prefix for temp folders (default value = $TEMPORARYPREFIX)."
   echo "      p: use provided password as the db password (default: password will be provided by DBPASSWD)."
   echo "      P: asks for a db password interactively (default: true if password is not provided)."
+  echo "      f: force the database preparation even if the current dump is already deployed."
   echo "      v: uses verbose output."
 }
 
-while getopts "h?p:Pvc:l:t:d:" opt; do
+while getopts "h?fp:Pvc:l:t:d:" opt; do
   case "$opt" in
   h | \?)
     show_help
@@ -58,6 +60,8 @@ while getopts "h?p:Pvc:l:t:d:" opt; do
   t)
     TEMPORARYPREFIX=$OPTARG
     ;;
+  f)
+    FORCE=true
   esac
 done
 DBNARYLATEST=${DBNARY_ONTOLEX}/latest
@@ -164,7 +168,9 @@ virtuosoversion=$(virtuoso_latest_version ${VIRTUOSODBLOCATION})
 echo >&2 Latest full extraction version: ${extractversion}
 echo >&2 Current virtuoso version: ${virtuosoversion}
 
-if [ x${extractversion} == x ]; then
+if [[ ${FORCE} == true ]] ; then
+  echo >&2 "Forcibly creating new DB folder."
+elif [ x${extractversion} == x ]; then
   echo >&2 "The extracted versions are incoherent. Aborting rotation."
   exit
 elif [ ${extractversion} == ${virtuosoversion} ]; then
@@ -425,6 +431,10 @@ isql $SERVERPORT dba "$password" <<END
 checkpoint;
 shutdown();
 END
+
+## PREPARE THE DB FOLDER FOR PROD.
+VIRTUOSOINIPROD=$script_dir/virtuoso.prod.ini
+cp ${VIRTUOSOINIPROD} ${DBBOOTSTRAPFOLDER}/virtuoso.ini
 
 ## COPY THE DATABASE NEAR THE VIRTUOSO DB
 CURRENTDATETIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")

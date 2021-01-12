@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
 if [[ $(id -u) -ne 0 ]]; then
-  echo "Please run as root"
+  echo >&2 "Please run as root"
   exit 1
 fi
+
+if [ ! -t 0 ]; then
+  exec 1>> /var/log/dbnary/dbnary.log 2>&1
+fi
+
 ## Parse command line options
 OPTIND=1 # Reset in case getopts has been used previously in the shell.
 
@@ -35,10 +40,6 @@ shift $((OPTIND - 1))
 # exit when any command fails
 set -e
 
-# keep track of the last executed command
-trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
-# echo an error message before exiting
-trap 'echo "\"${last_command}\" command filed with exit code $?."' EXIT
 
 function stop_virtuoso() {
   systemctl stop virtuoso-opensource-7.service
@@ -57,6 +58,16 @@ function fix_owner() {
   done
 }
 
+function db_file_with_suffix() {
+  suffix=$1
+  file=""
+  for d in db.*.${suffix} ; do
+    [ -e "$d" ] && file="$d"
+    break
+  done
+  echo ${file}
+}
+
 function rotate_and_link() {
   if [ -d "db" ]
   then
@@ -67,26 +78,18 @@ function rotate_and_link() {
       exit
     fi
   fi
-  nextfile=""
-  for d in db.*.next; do
-    nextfile="$d"
-    break
-  done
-  previous=""
-  for d in db.*.previous; do
-    previous="$d"
-    break
-  done
-  current=""
-  for d in db.*.current; do
-    current="$d"
-    break
-  done
-  target=${next%.next}.current
-  mv ${previous} db.delete
+  nextfile=$(db_file_with_suffix next)
+  previous=$(db_file_with_suffix previous)
+  current=$(db_file_with_suffix current)
+  target=${nextfile%.next}.current
+
+  CURRENTDATETIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
+  mv ${previous} db.delete.${CURRENTDATETIMESTAMP}
   mv ${current} ${current%.current}.previous
   mv ${nextfile} ${target}
   ln -s ${target} db
+
+  rm -rf db.delete.${CURRENTDATETIMESTAMP}
 }
 
 ## Default values that will be overriden by configuration file
@@ -95,17 +98,20 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
 script_dir=$(dirname $(realpath $0))
 
 cd "$VIRTUOSODBLOCATION"
-nextfile=""
-for d in db.*.next; do
-  nextfile="$d"
-  break
-done
-if [ "x${nextfile}" = "x" ]; fi
-  >&2 echo No next database available to deploy. Exiting.
+nextfile=$(db_file_with_suffix next)
+if [ "x${nextfile}" = "x" ]; then
+  >&2 echo Deploy Virtuoso DB : No next database available to deploy. Exiting.
   exit
 fi
+
+# keep track of the last executed command
+trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
+# echo an error message before exiting
+trap 'echo "\"${last_command}\" command failed with exit code $?."' EXIT
 
 stop_virtuoso
 fix_owner
 rotate_and_link
 start_virtuoso
+
+trap - EXIT

@@ -116,15 +116,15 @@ fi
 ## Utility functions
 function virtuoso_db_versions() {
   for dump_folder in $1/db.*; do
-    dump_folder=$(basename ${dump_folder})
-    dump_version=${dump_folder%%.{next,current,previous}}
+    dump_version=$(basename ${dump_folder})
     dump_version=${dump_version##db.}
+    dump_version=${dump_version%%.*}
     echo "${dump_version}"
   done
 }
 
 function virtuoso_latest_version() {
-  latest_versions $1 | sort -r | head -n 1
+  virtuoso_db_versions $1 | sort -r | head -n 1
 }
 
 function latest_versions() {
@@ -161,6 +161,9 @@ function latest_full_extraction_version() {
 extractversion=$(latest_full_extraction_version ${DBNARYLATEST})
 virtuosoversion=$(virtuoso_latest_version ${VIRTUOSODBLOCATION})
 
+echo ${extractversion}
+echo ${virtuosoversion}
+
 if [ x${extractversion} == x ]; then
   echo >&2 "The extracted versions are incoherent. Aborting rotation."
   exit
@@ -169,7 +172,8 @@ elif [ ${extractversion} == ${virtuosoversion} ]; then
   exit
 fi
 
-## Prepare the dataset directory
+
+# Prepare the dataset directory
 ## Converting language codes
 declare -A iso3Lang
 iso3Lang[bg]=bul

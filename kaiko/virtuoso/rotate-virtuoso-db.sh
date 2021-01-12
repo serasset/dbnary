@@ -89,7 +89,9 @@ if [[ ! -f $VIRTUOSOINITMPL ]]; then
   exit 1
 fi
 
-if ! command -v $VIRTUOSODAEMON; then
+BOOTSTRAPSQL=$script_dir/bootstrap.sql
+
+if ! command -v $VIRTUOSODAEMON ; then
   echo >&2 "Could not find virtuoso-t bin"
   exit 1
 fi

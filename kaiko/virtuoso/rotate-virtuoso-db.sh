@@ -83,7 +83,7 @@ VSP_INSTALL_DIR=/var/lib/virtuoso-opensource-7/vsp/
 script_dir=$(dirname $(realpath $0))
 BOOTSTRAPSQLTMPL=$script_dir/bootstrap.sql.tmpl
 bootstrap_ini=virtuoso.ini.bootstrap.tmpl
-prod_ini=virtuoso.ini.prod.tmpl
+#prod_ini=virtuoso.ini.prod.tmpl
 ## Read values from configuration file
 [[ -f $DBNARY_USER_CONFIG_DIR/config ]] && source $DBNARY_USER_CONFIG_DIR/config
 [[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL=$DBNARY_USER_CONFIG_DIR/$bootstrap_ini
@@ -100,12 +100,12 @@ if ! command -v $VIRTUOSODAEMON ; then
   exit 1
 fi
 
-if [ ! -d $DBNARYLATEST ]; then
+if [ ! -d "$DBNARYLATEST" ]; then
   echo >&2 "Latest turtle data not available. $DBNARYLATEST does not exist."
   exit 1
 fi
 
-if [[ ! -w $VIRTUOSODBLOCATION ]]; then
+if [[ ! -w "$VIRTUOSODBLOCATION" ]]; then
   echo >&2 "Virtuoso database location '$VIRTUOSODBLOCATION' is not writable."
   exit 1
 fi
@@ -120,7 +120,7 @@ fi
 ## Utility functions
 function virtuoso_db_versions() {
   for dump_folder in $1/db.*; do
-    dump_version=$(basename ${dump_folder})
+    dump_version=$(basename "${dump_folder}")
     dump_version=${dump_version##db.}
     dump_version=${dump_version%%.*}
     echo "${dump_version}"
@@ -128,12 +128,12 @@ function virtuoso_db_versions() {
 }
 
 function virtuoso_latest_version() {
-  virtuoso_db_versions $1 | sort -r | head -n 1
+  virtuoso_db_versions "$1" | sort -r | head -n 1
 }
 
 function latest_versions() {
   for ontolex_extract in $1/??_dbnary_ontolex.ttl.bz2; do
-    target=$(readlink $ontolex_extract)
+    target=$(readlink "$ontolex_extract")
     if [ x$target != x ]; then
       target=$(basename $target)
       target=${target%%.*}
@@ -146,7 +146,7 @@ function latest_versions() {
 }
 
 function all_unique_extraction_version() {
-  latest_versions $1 | sort | uniq
+  latest_versions "$1" | sort | uniq
 }
 
 # latest_full_extraction_version returns the date part of the dump (e.g. 20201201) if ALL
@@ -154,26 +154,26 @@ function all_unique_extraction_version() {
 # other, the function returns an empty string.
 function latest_full_extraction_version() {
   nvers=$(all_unique_extraction_version $1 | wc -l)
-  if [ $nvers -eq 1 ]; then
-    version=$(all_unique_extraction_version $1)
+  if [ "$nvers" -eq 1 ]; then
+    version=$(all_unique_extraction_version "$1")
   else
     version=""
   fi
-  echo $version
+  echo "$version"
 }
 
-extractversion=$(latest_full_extraction_version ${DBNARYLATEST})
-virtuosoversion=$(virtuoso_latest_version ${VIRTUOSODBLOCATION})
+extractversion=$(latest_full_extraction_version "${DBNARYLATEST}")
+virtuosoversion=$(virtuoso_latest_version "${VIRTUOSODBLOCATION}")
 
-echo >&2 Latest full extraction version: ${extractversion}
-echo >&2 Current virtuoso version: ${virtuosoversion}
+echo >&2 "Latest full extraction version: ${extractversion}"
+echo >&2 "Current virtuoso version: ${virtuosoversion}"
 
 if [[ ${FORCE} == true ]] ; then
   echo >&2 "Forcibly creating new DB folder."
-elif [ x${extractversion} == x ]; then
+elif [ "x${extractversion}" == "x" ]; then
   echo >&2 "The extracted versions are incoherent. Aborting rotation."
   exit
-elif [ ${extractversion} == ${virtuosoversion} ]; then
+elif [ "${extractversion}" == "${virtuosoversion}" ]; then
   echo >&2 "Current extracted version is already active. Aborting rotation."
   exit
 fi

@@ -161,8 +161,8 @@ function latest_full_extraction_version() {
 extractversion=$(latest_full_extraction_version ${DBNARYLATEST})
 virtuosoversion=$(virtuoso_latest_version ${VIRTUOSODBLOCATION})
 
-echo ${extractversion}
-echo ${virtuosoversion}
+echo >&2 Latest full extraction version: ${extractversion}
+echo >&2 Current virtuoso version: ${virtuosoversion}
 
 if [ x${extractversion} == x ]; then
   echo >&2 "The extracted versions are incoherent. Aborting rotation."
@@ -427,10 +427,12 @@ shutdown();
 END
 
 ## COPY THE DATABASE NEAR THE VIRTUOSO DB
-#CURRENTDATETIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
-NEWDBFOLDER=${VIRTUOSODBLOCATION}/db.${extractversion}
+CURRENTDATETIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
+NEWDBFOLDER=${VIRTUOSODBLOCATION}/db.${CURRENTDATETIMESTAMP}
 echo "Moving database to $NEWDBFOLDER"
 mv $DBBOOTSTRAPFOLDER $NEWDBFOLDER
+# renaming the new DB folder so that it will be deployed
+mv $NEWDBFOLDER ${VIRTUOSODBLOCATION}/db.${extractversion}.next
 
 # TODO: Generate a production ready virtuoso.ini file
 # TODO: stop virtuoso daemon and rotate db folders then restart virtuoso daemon

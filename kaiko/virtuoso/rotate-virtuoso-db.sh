@@ -9,7 +9,6 @@ fi
 ## Parse command line options
 OPTIND=1 # Reset in case getopts has been used previously in the shell.
 
-# Initialize our own variables:
 askpass=false
 password=''
 verbose=false
@@ -90,8 +89,7 @@ if [[ ! -f $VIRTUOSOINITMPL ]]; then
   exit 1
 fi
 
-
-if ! command -v $VIRTUOSODAEMON ; then
+if ! command -v $VIRTUOSODAEMON; then
   echo >&2 "Could not find virtuoso-t bin"
   exit 1
 fi
@@ -102,7 +100,7 @@ if [ ! -d $DBNARYLATEST ]; then
 fi
 
 if [[ ! -w $VIRTUOSODBLOCATION ]]; then
-  >&2 echo "Virtuoso database location '$VIRTUOSODBLOCATION' is not writable."
+  echo >&2 "Virtuoso database location '$VIRTUOSODBLOCATION' is not writable."
   exit 1
 fi
 
@@ -111,6 +109,62 @@ if [[ $askpass == "true" || ${password}x == 'x' ]]; then
   echo "Enter your bootstrap database password : "
   IFS= read -s -p Password: password
   echo
+fi
+
+## Utility functions
+function virtuoso_db_versions() {
+  for dump_folder in $1/db.*; do
+    dump_folder=$(basename ${dump_folder})
+    dump_version=${dump_folder%%.{next,current,previous}}
+    dump_version=${dump_version##db.}
+    echo "${dump_version}"
+  done
+}
+
+function virtuoso_latest_version() {
+  latest_versions $1 | sort -r | head -n 1
+}
+
+function latest_versions() {
+  for ontolex_extract in $1/??_dbnary_ontolex.ttl.bz2; do
+    target=$(readlink $ontolex_extract)
+    if [ x$target != x ]; then
+      target=$(basename $target)
+      target=${target%%.*}
+      target=${target##*_}
+      echo "${target}"
+    else
+      echo X
+    fi
+  done
+}
+
+function all_unique_extraction_version() {
+  latest_versions $1 | sort | uniq
+}
+
+# latest_full_extraction_version returns the date part of the dump (e.g. 20201201) if ALL
+# latest extracted data links to this dump version. If some extracted data is out of sync with the
+# other, the function returns an empty string.
+function latest_full_extraction_version() {
+  nvers=$(all_unique_extraction_version $1 | wc -l)
+  if [ $nvers -eq 1 ]; then
+    version=$(all_unique_extraction_version $1)
+  else
+    version=""
+  fi
+  echo $version
+}
+
+extractversion=$(latest_full_extraction_version ${DBNARYLATEST})
+virtuosoversion=$(virtuoso_latest_version ${VIRTUOSODBLOCATION})
+
+if [ x${extractversion} == x ]; then
+  echo >&2 "The extracted versions are incoherent. Aborting rotation."
+  exit
+elif [ ${extractversion} == ${virtuosoversion} ]; then
+  echo >&2 "Current extracted version is already active. Aborting rotation."
+  exit
 fi
 
 ## Prepare the dataset directory
@@ -177,7 +231,7 @@ sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$BOOTSTRAPSQLTMPL" |
   sed "s|@@VAD_INSTALL_DIR@@|$VAD_INSTALL_DIR|g" |
   sed "s|@@VSP_INSTALL_DIR@@|$VSP_INSTALL_DIR|g" |
   sed "s|@@VIRTUOSO_PLUGINS_HOSTING@@|$VIRTUOSO_PLUGINS_HOSTING|g" |
-  sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" > $BOOTSTRAPSQL
+  sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" >$BOOTSTRAPSQL
 
 if [[ $verbose == "true" ]]; then
   echo "Virtuoso Daemon: $VIRTUOSODAEMON"
@@ -367,8 +421,8 @@ shutdown();
 END
 
 ## COPY THE DATABASE NEAR THE VIRTUOSO DB
-CURRENTDATETIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
-NEWDBFOLDER=${VIRTUOSODBLOCATION}/db.$CURRENTDATETIMESTAMP
+#CURRENTDATETIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
+NEWDBFOLDER=${VIRTUOSODBLOCATION}/db.${extractversion}
 echo "Moving database to $NEWDBFOLDER"
 mv $DBBOOTSTRAPFOLDER $NEWDBFOLDER
 

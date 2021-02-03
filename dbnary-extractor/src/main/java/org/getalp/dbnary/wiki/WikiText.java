@@ -1185,11 +1185,11 @@ public class WikiText {
   private static final Pattern lexerPattern;
 
   // TODO: Fichier, File, Image sont des préfixes de liens qui autorisent visiblement les retours à
-  // la ligne…
+  //  la ligne…
   // TODO: Lorsqu'un [ ouvre un lien externe dans un template, les arguments du template qui suivent
-  // ne seront pas analysés correctement
-  // TODO: déterminer si un lien interne peut contenir des retours à la ligne (dans la partie titre
-  // ou cible)
+  //  ne seront pas analysés correctement
+  // DONE: déterminer si un lien interne peut contenir des retours à la ligne (dans la partie titre
+  //  ou cible) --> oui, donc on les accepte.
   static {
     lexerCode.append("(?<OT>").append("\\{\\{").append(")|");
     lexerCode.append("(?<OIL>").append("\\[\\[").append(")|");
@@ -1358,13 +1358,21 @@ public class WikiText {
           t.setEndOffset(pos);
           stack.peek().addToken(t);
         } else if (null != (g = lexer.group("CH"))) {
-          int level = g.length();
-          if (stack.peek() instanceof Heading) {
-            Heading h = stack.peek().asHeading();
-            if (level != h.level) {
-              log.trace("HEADING LEVELS MISMATCH | {} | '{}' [{}]", h, this.pagename, lineno);
+          if (stackWillCloseHeading(stack)) {
+            int level = g.length();
+            while (stack.peek() instanceof Link) {
+              invalidateHypothesis(stack.pop(), stack);
             }
-            closeHeading(pos, stack, level);
+            if (stack.peek() instanceof Heading) {
+              Heading h = stack.peek().asHeading();
+              if (level != h.level) {
+                log.trace("HEADING LEVELS MISMATCH | {} | '{}' [{}]", h, this.pagename, lineno);
+              }
+              closeHeading(pos, stack, level);
+            } else {
+              log.error("UNEXPECTED TOKEN IN HEADING\t{}\t '{}' [{}]\n", stack.peek(), this.pagename, lineno);
+              assert false;
+            }
           }
           pos += lexer.group().length(); // The CH capture extra spaces that should be ignored.
         } else if (null != (g = lexer.group("OH"))) {
@@ -1414,17 +1422,21 @@ public class WikiText {
           pos += g.length();
         } else if (null != (g = lexer.group("NL"))) {
           // First close and void any token that cannot contain a newline
+          // TODO: Close lower priority elements (e.g. Links when contained in IndentedItem)
+          boolean closeInternalLinks = stackWillCloseIndentedItem(stack);
           while (true) {
             Token t = stack.peek();
             if (t instanceof Heading) {
               log.trace("UNCLOSED HEADING | {} | '{}' [{}]", t, this.pagename, lineno);
               invalidateHypothesis(stack.pop(), stack);
-              // stack.peek().addFlattenedTokens(stack.pop());
               continue;
             } else if (t instanceof ExternalLink) {
               log.trace("UNCLOSED LINK | {} | '{}' [{}]", t, this.pagename, lineno);
               invalidateHypothesis(stack.pop(), stack);
-              // stack.peek().addFlattenedTokens(t);
+              continue;
+            } else if (closeInternalLinks && t instanceof Link) {
+              log.trace("UNCLOSED LINK | {} | '{}' [{}]", t, this.pagename, lineno);
+              invalidateHypothesis(stack.pop(), stack);
               continue;
             } else {
               break;
@@ -1435,6 +1447,7 @@ public class WikiText {
           if (t instanceof IndentedItem) {
             closeIndentedItem(pos, stack);
           }
+
           pos += g.length();
           newlineFlag = true;
           lineno++;
@@ -1479,6 +1492,37 @@ public class WikiText {
     return (WikiContent) parsedRoot;
   }
 
+  /** check if the stack contains an indented item that will be closed by the end of line token
+   * For this to be true, there must be an indented item in the stack containing only pending tokens
+   * less priority (i.e. pending Links, but not pending templates)
+   * @param stack the stack to be inspected
+   * @return true iff the current token will close the top most indented item
+   */
+  private boolean stackWillCloseIndentedItem(Stack<Token> stack) {
+    for (int i = stack.size() - 1; i >= 0; i--) {
+      if (stack.get(i) instanceof Link) continue;
+      if (stack.get(i) instanceof Heading) continue;
+      if (stack.get(i) instanceof IndentedItem) return true;
+      return false;
+    }
+    return false;
+  }
+
+  /** check if the stack contains a heading that will be closed by the end of heading token
+   * For this to be true, there must be a heading in the stack containing only pending tokens with
+   * less priority (i.e. pending Links, but not pending templates)
+   * @param stack the stack to be inspected
+   * @return true iff the current token will close the top most heading
+   */
+  private boolean stackWillCloseHeading(Stack<Token> stack) {
+    for (int i = stack.size() - 1; i >= 0; i--) {
+      if (stack.get(i) instanceof Link) continue;
+      if (stack.get(i) instanceof Heading) return true;
+      return false;
+    }
+    return false;
+  }
+
   private static final Pattern newlinePattern = Pattern.compile("\r?\n|\r");
   private static final Pattern closingHeadingPattern =
       Pattern.compile("\\={2,6}(?:\\s|<!--.*?-->)*$");
@@ -1519,9 +1563,9 @@ public class WikiText {
             fillContentWithTokensFrom(innerTokens, i, remainingContent);
             invalidateHypothesis(remainingContent, stack);
             break;
-          } else {
-            stack.peek().addToken(inner);
           }
+        } else {
+          stack.peek().addToken(inner);
         }
       }
     } else if (stack.peek() instanceof Heading) {

@@ -187,7 +187,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else if ("Deyimler".equals(h4) || "Atasözleri".equals(h4)) {
               // Idioms or proverbs
             } else if ("Köken".equals(h4)) {
-              // Idioms or proverbs
+              // Etymology
             } else if (ignoreHeadings.contains(h4)) {
               // Just ignore
             } else {
@@ -268,6 +268,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         wk.filteredTokens(new ClassBasedFilter().allowIndentedItem().allowTemplates());
     for (Token indent : indentationsOrTemplates) {
       if (indent instanceof NumberedListItem) {
+        // Do not extract numbered list items that begin with ":" as they are indeed examples.
+        if (indent.asNumberedListItem().getContent().getText().startsWith(":")) continue;
+        // TODO : handle {{t|çıplaklık|truc|dil=tr}} which leads to (çıplaklık, truc) (as links)
         wdh.registerNewDefinition(indent.asNumberedListItem().getContent().toString());
       } else if (indent instanceof Indentation) {
         String def = indent.asIndentation().getContent().toString();

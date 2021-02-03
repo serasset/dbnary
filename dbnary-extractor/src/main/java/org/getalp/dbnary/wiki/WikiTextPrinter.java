@@ -11,11 +11,29 @@ import org.getalp.dbnary.wiki.WikiText.WikiSection;
 public class WikiTextPrinter {
 
   public static void printDocumentTree(WikiDocument doc) {
-    IndentPrinter printer = new IndentPrinter();
+    printDocumentTree(System.out, doc);
+  }
+
+  public static void printDocumentTree(PrintStream out, WikiDocument doc) {
+    IndentPrinter printer = new IndentPrinter(out);
     printer.println("Document :");
     printer.incrementIndent();
     printContentForrest(printer, doc.getContent());
     printer.decrementIndent();
+    printer.flush();
+  }
+
+  public static void printTextTree(WikiText text) {
+    printTextTree(System.out, text);
+  }
+
+  public static void printTextTree(PrintStream out, WikiText text) {
+    IndentPrinter printer = new IndentPrinter(out);
+    printer.println("[Content :");
+    printer.incrementIndent();
+    printContentForrest(printer, text.content());
+    printer.decrementIndent();
+    printer.println("]");
     printer.flush();
   }
 
@@ -24,9 +42,7 @@ public class WikiTextPrinter {
   }
 
   public static void printContentForrest(PrintWriter stream, WikiContent content) {
-    IndentPrinter printer = new IndentPrinter(stream);
-    content.tokens().stream().forEach(t -> printToken(printer, t));
-    printer.flush();
+    printContentForrest(new IndentPrinter(stream), content);
   }
 
   private static void printContentForrest(IndentPrinter printer, WikiContent content) {
@@ -64,7 +80,11 @@ public class WikiTextPrinter {
     private PrintWriter out;
 
     public IndentPrinter() {
-      this(new PrintWriter(System.out), "  ");
+      this(System.out);
+    }
+
+    public IndentPrinter(PrintStream out) {
+      this(new PrintWriter(out), "  ");
     }
 
     public IndentPrinter(PrintWriter out) {

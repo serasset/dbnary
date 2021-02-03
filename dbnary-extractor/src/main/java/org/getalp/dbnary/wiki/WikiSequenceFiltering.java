@@ -1,7 +1,9 @@
 package org.getalp.dbnary.wiki;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
+import org.getalp.dbnary.wiki.WikiText.Token;
 
 /**
  * Created by serasset on 17/02/17.
@@ -14,13 +16,13 @@ public interface WikiSequenceFiltering {
 
   class Content extends Action {
 
-    final Function<WikiText.Token, ArrayList<WikiText.Token>> getter;
+    final Function<WikiText.Token, List<WikiText.Token>> getter;
 
     private Content() {
       getter = null;
     }
 
-    public Content(Function<WikiText.Token, ArrayList<WikiText.Token>> getContent) {
+    public Content(Function<Token, List<Token>> getContent) {
       getter = getContent;
     }
   }
@@ -35,7 +37,7 @@ public interface WikiSequenceFiltering {
       super();
     }
 
-    public OpenContentClose(Function<WikiText.Token, ArrayList<WikiText.Token>> getContent) {
+    public OpenContentClose(Function<Token, List<Token>> getContent) {
       super(getContent);
     }
   }

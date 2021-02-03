@@ -2,17 +2,20 @@ package org.getalp.dbnary.wiki;
 
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.KEEP;
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,10 +29,12 @@ public class WikiText {
   private final int startOffset;
   private final int endOffset;
   private WikiContent root;
-  private final Matcher protocolsMatcher;
+  private final Matcher protocolsOrTemplateMatcher;
+  private final Matcher strictProtocolsMatcher;
+  private final Matcher invalidCharsMatcher;
   private final Matcher lexer;
 
-  private Logger log = LoggerFactory.getLogger(WikiText.class);
+  private final Logger log = LoggerFactory.getLogger(WikiText.class);
 
   public int getStartOffset() {
     return startOffset;
@@ -45,10 +50,10 @@ public class WikiText {
    */
   public class Segment {
 
-    int start = -1, end = -1;
+    int start, end;
 
     public Segment(int start) {
-      this.start = start;
+      this(start, -1);
     }
 
     public Segment(int start, int end) {
@@ -66,7 +71,7 @@ public class WikiText {
         if (start + 10 < c.length()) {
           return c.substring(start, start + 10) + "...";
         } else {
-          return c.substring(start, c.length());
+          return c.substring(start);
         }
       } else {
         return c.substring(start, end);
@@ -85,6 +90,8 @@ public class WikiText {
     }
 
     protected void addFlattenedTokens(Token t) {
+      // TODO: the flattened token may contain text that is of importance to this. Override this
+      // method to handle such cases. The token that will receive elements of the flatten one do
       if (t instanceof WikiContent) {
         WikiContent wc = (WikiContent) t;
         for (Token token : wc.tokens) {
@@ -107,6 +114,7 @@ public class WikiText {
         this.addFlattenedTokens(l.target);
         this.addFlattenedTokens(l.text);
       }
+      // know what are the elements to consider
     }
 
     public WikiText getWikiText() {
@@ -116,6 +124,22 @@ public class WikiText {
     public String toString() {
       return (null == offset) ? super.toString() : this.offset.toString();
     }
+
+    /**
+     * returns the content as a String. All tokens will be rendered as their source text, without
+     * any html comments that were present in the wiki source. NOTE: the toString() method will
+     * return the wikiSource WITH comments.
+     *
+     * @return a list of tokens (either text or wikiTokens)
+     */
+    public String getText() {
+      StringBuilder r = new StringBuilder(
+          (-1 == this.offset.end ? sourceContent.length() : this.offset.end) - this.offset.start);
+      this.fillText(r);
+      return r.toString();
+    }
+
+    protected abstract void fillText(StringBuilder s);
 
     /**
      * returns the full source content that support the wikiText as its specified offsets.
@@ -144,7 +168,7 @@ public class WikiText {
     }
 
     public Link asLink() {
-      throw new IllegalStateException("Not an Link.");
+      throw new IllegalStateException("Not a Link.");
     }
 
     public IndentedItem asIndentedItem() {
@@ -160,27 +184,27 @@ public class WikiText {
     }
 
     public ListItem asListItem() {
-      throw new IllegalStateException("Not an ListItem.");
+      throw new IllegalStateException("Not a ListItem.");
     }
 
     public NumberedListItem asNumberedListItem() {
-      throw new IllegalStateException("Not an NumberedListItem.");
+      throw new IllegalStateException("Not a NumberedListItem.");
     }
 
     public Template asTemplate() {
-      throw new IllegalStateException("Not an Template.");
+      throw new IllegalStateException("Not a Template.");
     }
 
     public Text asText() {
-      throw new IllegalStateException("Not an Text.");
+      throw new IllegalStateException("Not a Text.");
     }
 
     public WikiContent asWikiContent() {
-      throw new IllegalStateException("Not an WikiContent.");
+      throw new IllegalStateException("Not a WikiContent.");
     }
 
     public WikiSection asWikiSection() {
-      throw new IllegalStateException("Not an WikiSection.");
+      throw new IllegalStateException("Not a WikiSection.");
     }
   }
 
@@ -190,6 +214,8 @@ public class WikiText {
   public final class WikiContent extends Token {
 
     private ArrayList<Token> tokens = new ArrayList<>();
+    private List<Token> wikiTokensNoComments = null;
+    private ArrayList<Token> tokensAndText = null;
 
     private WikiContent(int startOffset) {
       this.offset = new Segment(startOffset);
@@ -201,24 +227,57 @@ public class WikiText {
     }
 
     /**
-     * returns an List of wikiTokens ignoring Text tokens that may be intertwined.
+     * returns all wikiTokens in the wikiText, that is all special media wiki constructs, excluding
+     * html comments.
      *
-     * @return a List of wikiTokens (any wiki token but texts
+     * @return a sequence of Tokens
      */
-    public ArrayList<Token> wikiTokens() {
+    public List<Token> wikiTokens() {
+      if (wikiTokensNoComments == null) {
+        wikiTokensNoComments =
+            tokens.stream().filter(t -> !(t instanceof HTMLComment)).collect(Collectors.toList());
+      }
+      return wikiTokensNoComments;
+    }
+
+    /**
+     * returns all wikiTokens in the wikiText, that is all special media wiki constructs, including
+     * html comments.
+     *
+     * @return a sequence of Tokens
+     */
+    public List<Token> wikiTokensWithHtmlComments() {
       return tokens;
     }
 
     /**
-     * returns an List of wikiTokens including Text tokens that may be intertwined.
+     * returns an List of wikiTokens including Text tokens that may be intertwined. HTML comments
+     * are ignored and 2 successive Texts may be found if a comment was present in the wiki source.
      *
      * @return a list of tokens (either text or wikiTokens)
      */
-    public ArrayList<Token> tokens() {
-      return tokens(this.offset.start);
+    public List<Token> tokens() {
+      return tokens(this.offset.start, false);
     }
 
-    protected ArrayList<Token> tokens(int start) {
+    /**
+     * returns an List of wikiTokens including Text tokens that may be intertwined. HTML comments
+     * are included in the list.
+     *
+     * @return a list of tokens (either text or wikiTokens)
+     */
+    public List<Token> tokensWithHtmlComments() {
+      return tokens(this.offset.start, true);
+    }
+
+    @Override
+    public void fillText(StringBuilder r) {
+      for (Token t : this.tokens()) {
+        t.fillText(r);
+      }
+    }
+
+    protected List<Token> tokens(int start, boolean withComments) {
       int size = tokens.size();
       ArrayList<Token> toks = new ArrayList<>(size * 2);
       int tindex = start;
@@ -226,7 +285,8 @@ public class WikiText {
         if (token.offset.start > tindex) {
           toks.add(new Text(tindex, token.offset.start));
         }
-        toks.add(token);
+        if (withComments || !(token instanceof HTMLComment))
+          toks.add(token);
         tindex = token.offset.end;
       }
       if (tindex < this.offset.end) {
@@ -323,8 +383,9 @@ public class WikiText {
       throw new RuntimeException("Cannot add flatened tokens to Text");
     }
 
-    public String getText() {
-      return sourceContent.substring(this.offset.start, this.offset.end);
+    @Override
+    public void fillText(StringBuilder s) {
+      s.append(sourceContent, this.offset.start, this.offset.end);
     }
 
     public Text subText(int startOffset, int endOffset) {
@@ -355,7 +416,12 @@ public class WikiText {
 
     @Override
     protected void addFlattenedTokens(Token t) {
-      throw new RuntimeException("Cannot add flatened tokens to HTML Comment");
+      throw new RuntimeException("Cannot add flattened tokens to HTML Comment");
+    }
+
+    @Override
+    public void fillText(StringBuilder s) {
+      ;
     }
 
     @Override
@@ -419,21 +485,43 @@ public class WikiText {
       }
     }
 
-    public String getName() {
-      return name.toString();
+    @Override
+    public void fillText(StringBuilder r) {
+      r.append("{{");
+      r.append(this.name.getText());
+      if (null != this.args) {
+        this.args.stream().map(WikiContent::getText).forEach(s -> {
+          r.append('|');
+          r.append(s);
+        });
+      }
+      r.append("}}");
     }
+
+    public String getName() {
+      return name.getText();
+    }
+
+    /**
+     * return the argName/argValue Map. argName being a String and argValue a String.
+     *
+     * When iterated, the map will provide values or entries in insertion order, hence iterating
+     * over the map will give args in the order they were defined.
+     *
+     * @return the argName/argVal map
+     */
 
     public Map<String, String> getParsedArgs() {
       Map<String, WikiContent> args = getArgs();
-      Map<String, String> argsAsString = new HashMap<>();
+      Map<String, String> argsAsString = new LinkedHashMap<>();
       for (Map.Entry<String, WikiContent> e : args.entrySet()) {
-        argsAsString.put(e.getKey(), e.getValue().toString());
+        argsAsString.put(e.getKey(), e.getValue().getText());
       }
       return argsAsString;
     }
 
     /**
-     * return the argName/argValue Map. argNae being a String and argValue a WikiContent. When
+     * return the argName/argValue Map. argName being a String and argValue a WikiContent. When
      * iterated, the map will provide values or entries in insertion order, hence iterating over the
      * map will give args in the order they were defined.
      *
@@ -441,7 +529,7 @@ public class WikiText {
      */
     public Map<String, WikiContent> getArgs() {
       if (parsedArgs == null) {
-        parsedArgs = new LinkedHashMap<String, WikiContent>();
+        parsedArgs = new LinkedHashMap<>();
         if (null != args) {
           int n = 1; // number for positional args.
           for (int i = 0; i < args.size(); i++) {
@@ -449,29 +537,53 @@ public class WikiText {
             if (null == arg) {
               continue;
             }
-            int spos = arg.offset.start;
-            int epos = arg.offset.end;
-            if (arg.tokens.size() > 0) {
-              epos = arg.tokens.get(0).offset.start;
+            // find the arg title in the leading text tokens (ignoring HTML comments)
+            List<Token> argTokens = arg.tokensWithHtmlComments();
+            StringBuilder key = new StringBuilder();
+            WikiContent value = null;
+            int j, l = argTokens.size();
+            int equalSignPosition = -1;
+            for (j = 0; j < l; j++) {
+              Token t = argTokens.get(j);
+              if (t instanceof Text) {
+                int spos = t.offset.start;
+                int epos = t.offset.end;
+                int p = spos;
+                while (p < epos && sourceContent.charAt(p) != '=') {
+                  p++;
+                }
+                key.append(sourceContent, spos, p);
+                if (p < epos) {
+                  // we found an equal sign
+                  equalSignPosition = p;
+                  value = new WikiContent(p + 1);
+                  value.setEndOffset(arg.offset.end);
+                  break;
+                }
+              } else if (!(t instanceof HTMLComment)) {
+                // We found a token that cannot belong to the arg name, there is no argname
+                break;
+              }
             }
-            int p = spos;
-            while (p < epos && sourceContent.charAt(p) != '=') {
-              p++;
-            }
-            if (p == epos) {
-              // There is no argument name.
-              parsedArgs.put("" + n, arg);
-              n++;
-            } else {
-              arg.offset.start = p + 1; // start after the = sign
-              String key = sourceContent.substring(spos, p).trim();
-              if (parsedArgs.containsKey(key)) {
-                log.debug("Duplicate arg name | {} | in [ {} ] entry : {}", key, this.name,
+            if (value != null) {
+              String argname = key.toString().trim();
+              if (parsedArgs.containsKey(argname)) {
+                log.debug("Duplicate arg name | {} | in [ {} ] entry : {}", argname, this.name,
                     pagename);
                 // Keep the first version of the arg
               } else {
-                parsedArgs.put(key, arg);
+                for (; j < l; j++) {
+                  Token t = argTokens.get(j);
+                  if (!(t instanceof Text)) {
+                    value.addToken(t);
+                  }
+                }
+                parsedArgs.put(argname, value);
               }
+            } else {
+              // There is no argument name.
+              parsedArgs.put("" + n, arg);
+              n++;
             }
           }
         }
@@ -588,6 +700,19 @@ public class WikiText {
       return this.suffix;
     }
 
+    @Override
+    public void fillText(StringBuilder r) {
+      r.append("[[");
+      r.append(this.target.getText());
+      if (null != this.text) {
+        r.append("|");
+        r.append(this.text.getText());
+      }
+      r.append("]]");
+      if (null != suffix)
+        r.append(this.suffix.getText());
+    }
+
     /**
      * sets the end offset of the link to the given position (should point to the first char of the
      * closing "]]")
@@ -600,6 +725,21 @@ public class WikiText {
       } else {
         this.text.setEndOffset(position);
       }
+    }
+
+    /**
+     * Wikitext parser considers an internal link as invalid if it contains curly brace Here, we
+     * authorize templates but no "free" curly braces or other token.
+     *
+     * @return true iff the this is a VALID internal link
+     */
+    public boolean isValidInternalLink() {
+      // Only allow Templates and texts without curly braces in the target
+      // Force sequencial filtering as the Matcher is a singleton
+      boolean targetIsValid = target.tokens().stream().sequential()
+          .filter(t -> !(t instanceof Template)).allMatch(t -> t instanceof Text
+              && !invalidCharsMatcher.region(t.offset.start, t.offset.end).find());
+      return targetIsValid;
     }
 
     @Override
@@ -618,6 +758,17 @@ public class WikiText {
     private ExternalLink(int startOffset) {
       this.offset = new Segment(startOffset);
       this.target = new WikiContent(startOffset + 1);
+    }
+
+    @Override
+    public void fillText(StringBuilder r) {
+      r.append("[");
+      r.append(this.target.getText());
+      if (null != this.text) {
+        r.append(" ");
+        r.append(this.text.getText());
+      }
+      r.append("]");
     }
 
     /**
@@ -642,11 +793,6 @@ public class WikiText {
       }
     }
 
-    private boolean isCorrectExternalLink() {
-      protocolsMatcher.region(this.target.offset.start, this.target.offset.end);
-      return protocolsMatcher.lookingAt();
-    }
-
     @Override
     public void accept(Visitor visitor) {
       visitor.visit(this);
@@ -668,6 +814,13 @@ public class WikiText {
       this.level = level;
       this.offset = new Segment(position);
       this.content = new WikiContent(position + level);
+    }
+
+    @Override
+    public void fillText(StringBuilder r) {
+      r.append(StringUtils.repeat("=", this.level));
+      r.append(this.content.getText());
+      r.append(StringUtils.repeat("=", this.level));
     }
 
     /**
@@ -730,15 +883,16 @@ public class WikiText {
       this.content = new WikiContent(position + listPrefix.length());
     }
 
-    /**
-     * sets the end offset to the given position (should point to the first char of the closing "]")
-     *
-     * @param position the position of the first character of the enclosing "]"
-     */
     @Override
     protected void setEndOffset(int position) {
       super.setEndOffset(position);
       this.content.setEndOffset(position);
+    }
+
+    @Override
+    public void fillText(StringBuilder r) {
+      r.append(this.listPrefix);
+      r.append(this.content.getText());
     }
 
     @Override
@@ -862,6 +1016,12 @@ public class WikiText {
     }
 
     @Override
+    public void fillText(StringBuilder r) {
+      r.append(this.heading.getText());
+      r.append(this.content.getText());
+    }
+
+    @Override
     protected void addToken(Token t) {
       this.content.addToken(t);
     }
@@ -944,6 +1104,10 @@ public class WikiText {
     }
   }
 
+
+  private static String invalidCharsInLink = "[\\{\\}]";
+  private static Pattern invalidCharsPattern = Pattern.compile(invalidCharsInLink);
+
   ////////////////////////////////////////////////////////////////////////
   /// WikiText external methods
   ////////////////////////////////////////////////////////////////////////
@@ -970,48 +1134,81 @@ public class WikiText {
     this.sourceContent = sourceContent;
     this.startOffset = startOffset;
     this.endOffset = endOffset;
-    protocolsMatcher = protocolPattern.matcher(sourceContent);
+    protocolsOrTemplateMatcher = protocolOrTemplatePattern.matcher(sourceContent);
+    strictProtocolsMatcher = strictProtocolPattern.matcher(sourceContent);
+    invalidCharsMatcher = invalidCharsPattern.matcher(sourceContent);
     lexer = lexerPattern.matcher(sourceContent);
 
   }
 
-  private static StringBuffer protocols = new StringBuffer();
-  private static final Pattern protocolPattern;
+  private static StringBuilder protocols = new StringBuilder();
+  private static final Pattern protocolOrTemplatePattern;
+  private static final Pattern strictProtocolPattern;
 
   static {
-    protocols.append("^(?:").append("bitcoin:").append("|").append("ftp://").append("|")
-        .append("ftps://").append("|").append("geo:").append("|").append("git://").append("|")
-        .append("gopher://").append("|").append("http://").append("|").append("https://")
-        .append("|").append("irc://").append("|").append("ircs://").append("|").append("magnet:")
-        .append("|").append("mailto:").append("|").append("mms://").append("|").append("news:")
-        .append("|").append("nntp://").append("|").append("redis://").append("|").append("sftp://")
-        .append("|").append("sip:").append("|").append("sips:").append("|").append("sms:")
-        .append("|").append("ssh://").append("|").append("svn://").append("|").append("tel:")
-        .append("|").append("telnet://").append("|").append("urn:").append("|")
-        .append("worldwind://").append("|").append("xmpp:").append("|").append("//").append(")");
+    protocols.append("^(?:").append("bitcoin:").append("|");
+    protocols.append("ftp://").append("|");
+    protocols.append("ftps://").append("|");
+    protocols.append("geo:").append("|");
+    protocols.append("git://").append("|");
+    protocols.append("gopher://").append("|");
+    protocols.append("http://").append("|");
+    protocols.append("https://").append("|");
+    protocols.append("irc://").append("|");
+    protocols.append("ircs://").append("|");
+    protocols.append("magnet:").append("|");
+    protocols.append("mailto:").append("|");
+    protocols.append("mms://").append("|");
+    protocols.append("news:").append("|");
+    protocols.append("nntp://").append("|");
+    protocols.append("redis://").append("|");
+    protocols.append("sftp://").append("|");
+    protocols.append("sip:").append("|");
+    protocols.append("sips:").append("|");
+    protocols.append("sms:").append("|");
+    protocols.append("ssh://").append("|");
+    protocols.append("svn://").append("|");
+    protocols.append("tel:").append("|");
+    protocols.append("telnet://").append("|");
+    protocols.append("urn:").append("|");
+    protocols.append("worldwind://").append("|");
+    protocols.append("xmpp:").append("|");
+    protocols.append("//").append(")");
 
-    protocolPattern = Pattern.compile(protocols.toString());
+    strictProtocolPattern = Pattern.compile(protocols.toString());
+    // We assume that a template call will generate a valid protocol
+    protocols.insert(protocols.length() - 1, "|\\{\\{");
+    protocolOrTemplatePattern = Pattern.compile(protocols.toString());
   }
 
   private static StringBuffer lexerCode = new StringBuffer();
   private static final Pattern lexerPattern;
 
+  // TODO: Fichier, File, Image sont des préfixes de liens qui autorisent visiblement les retours à
+  // la ligne…
+  // TODO: Lorsqu'un [ ouvre un lien externe dans un template, les arguments du template qui suivent
+  // ne seront pas analysés correctement
+  // TODO: déterminer si un lien interne peut contenir des retours à la ligne (dans la partie titre
+  // ou cible)
   static {
-    lexerCode.append("(?<").append("OT").append(">").append("\\{\\{").append(")|").append("(?<")
-        .append("OIL").append(">").append("\\[\\[").append(")|").append("(?<").append("OEL")
-        .append(">").append("\\[").append(")|").append("(?<").append("CT").append(">")
-        .append("\\}\\}").append(")|").append("(?<").append("CIL").append(">").append("\\]\\]")
-        .append(")|").append("(?<").append("CEL").append(">").append("\\]").append(")|")
-        .append("(?<").append("OXC").append(">").append("<!--").append(")|").append("(?<")
-        .append("CH").append(">").append("\\={2,6}$").append(")|").append("(?<").append("OH")
-        .append(">").append("={2,6}").append(")|").append("(?<").append("OLIST").append(">")
-        .append("\\*+").append(")|").append("(?<").append("OINDENT").append(">").append(":+")
-        .append(")|").append("(?<").append("ONUMLIST").append(">").append("\\#+").append(")|")
-        .append("(?<").append("OITEM").append(">").append(";").append(")|").append("(?<")
-        .append("PIPE").append(">").append("\\|").append(")|").append("(?<").append("SPACE")
-        .append(">").append(" ").append(")|").append("(?<").append("NL").append(">")
-        .append("\r?\n|\r").append(")|").append("(?<").append("CHAR").append(">").append(".")
-        .append(")");
+    lexerCode.append("(?<OT>").append("\\{\\{").append(")|");
+    lexerCode.append("(?<OIL>").append("\\[\\[").append(")|");
+    lexerCode.append("(?<OEL>").append("\\[").append(")|");
+    lexerCode.append("(?<CT>").append("\\}\\}").append(")|");
+    lexerCode.append("(?<CIEL>").append("\\]\\]\\]").append(")|");
+    lexerCode.append("(?<CIL>").append("\\]\\]").append(")|");
+    lexerCode.append("(?<CEL>").append("\\]").append(")|");
+    lexerCode.append("(?<OXC>").append("<!--").append(")|");
+    lexerCode.append("(?<CH>").append("\\={2,6})(?:\\s|<!--.*?-->)*$").append("|");
+    lexerCode.append("(?<OH>").append("={2,6}").append(")|");
+    lexerCode.append("(?<OLIST>").append("\\*+").append(")|");
+    lexerCode.append("(?<OINDENT>").append(":+").append(")|");
+    lexerCode.append("(?<ONUMLIST>").append("\\#+").append(")|");
+    lexerCode.append("(?<OITEM>").append(";").append(")|");
+    lexerCode.append("(?<PIPE>").append("\\|").append(")|");
+    lexerCode.append("(?<SPACE>").append(" ").append(")|");
+    lexerCode.append("(?<NL>").append("\r?\n|\r").append(")|");
+    lexerCode.append("(?<CHAR>").append(".").append(")");
 
     lexerPattern = Pattern.compile(lexerCode.toString(), Pattern.MULTILINE | Pattern.DOTALL);
   }
@@ -1021,39 +1218,61 @@ public class WikiText {
     int end = this.endOffset;
     boolean atLineBeginning = true;
     boolean newlineFlag = false;
+    int lineno = 1;
 
     Stack<Token> stack = new Stack<>();
     stack.push(new WikiContent(pos));
 
+    // TODO Handle nowiki tags
+    // TODO: lexical analysis check if we could use matcher.find (and not consider normal chars)
     while (pos < end) {
       lexer.region(pos, end);
       if (lexer.lookingAt()) {
         String g;
-        if (null != (g = lexer.group("OT"))) {
+        if (null != (g = lexer.group("CHAR"))) {
+          // Normal characters, just advance...
+          pos++;
+        } else if (null != (g = lexer.group("OT"))) {
           // Template Start
           stack.push(new Template(pos));
           pos += g.length();
         } else if (null != (g = lexer.group("OIL"))) {
           // InternalLink start
-          stack.push(new InternalLink(pos));
+          // Warn: When the internal link contains a valid url, it is considered as an
+          // external link preceded by a textual square bracket
+          strictProtocolsMatcher.region(lexer.end(), end);
+          if (strictProtocolsMatcher.lookingAt()) {
+            stack.push(new ExternalLink(pos + 1));
+          } else {
+            stack.push(new InternalLink(pos));
+          }
           pos += g.length();
         } else if (null != (g = lexer.group("OEL"))) {
-          // External Link
-          stack.push(new ExternalLink(pos));
+          // External links cannot be nested, The second external link can not be valid if the first
+          // is not.
+          if (findHighestClosableExternalLink(stack) == -1) {
+            // External Link is starting only if we peek a valid protocol after the bracket
+            protocolsOrTemplateMatcher.region(lexer.end(), end);
+            if (protocolsOrTemplateMatcher.lookingAt()) {
+              stack.push(new ExternalLink(pos));
+            }
+          }
           pos += g.length();
         } else if (null != (g = lexer.group("CT"))) {
           // Template End
           // If there is a list item nested in Template, close it before ending the template
           int height = findHighestClosableTemplate(stack);
           if (height != -1) {
+            int top = stack.size();
             for (int i = stack.size() - 1; i > height; i--) {
               if (stack.peek() instanceof Link) {
                 Link t = (Link) stack.pop();
+                log.trace("UNCLOSED LINK | {}  IN TEMPLATE {} | '{}' [{}]", t,
+                    stack.get(height).asTemplate().getName(), this.pagename, lineno);
+                // Can the link contain a pipe that is to be used by template ?
                 stack.peek().addFlattenedTokens(t);
-              } else if (stack.peek() instanceof ListItem) {
-                ListItem li = (ListItem) stack.pop();
-                li.setEndOffset(pos);
-                stack.peek().addToken(li);
+              } else if (stack.peek() instanceof IndentedItem) {
+                closeIndentedItem(pos, stack);
               }
             }
             assert stack.peek() instanceof Template;
@@ -1064,36 +1283,57 @@ public class WikiText {
             // consider the closing element as a simple text
           }
           pos += g.length();
-        } else if (null != (g = lexer.group("CIL")) || null != (g = lexer.group("CEL"))) {
-          // InternalLink end
-          if (stack.peek() instanceof InternalLink && null != lexer.group("CIL")) {
-            InternalLink t = (InternalLink) stack.pop();
-            t.setLinkEnd(pos);
-            pos += 2;
-            int linkEnd = pos;
-            while (pos != end && Character.isLetter(sourceContent.charAt(pos))) {
-              pos++;
-            }
-            if (pos != linkEnd) {
-              WikiContent suffixContent = new WikiContent(linkEnd);
-              suffixContent.setEndOffset(pos);
-              t.setSuffix(suffixContent);
-            }
-            t.setEndOffset(pos);
-            stack.peek().addToken(t);
-          } else if (stack.peek() instanceof ExternalLink) {
-            ExternalLink t = (ExternalLink) stack.pop();
-            // check if the link is indeed an external link
-            t.setEndOffset(pos);
-            // if external link is not an URL, consider it as a text
-            if (t.isCorrectExternalLink()) {
-              stack.peek().addToken(t);
+        } else if (null != (g = lexer.group("CIEL"))) {
+          // Internal AND External Link end
+          int height;
+          if ((height = findHighestClosableLink(stack)) != -1) {
+            // Flatten pending token on top of links
+            flattenStackToHeight(stack, height, lineno);
+            assert stack.peek() instanceof Link;
+            // Valid closing of internal link
+            if (stack.peek() instanceof InternalLink) {
+              pos = closeInternalLink(pos, end, stack, lineno);
+            } else if (stack.peek() instanceof ExternalLink) {
+              pos = closeExternalLink(pos, stack);
             } else {
-              stack.peek().addFlattenedTokens(t);
+              // Just a text
+              // consider the closing element as a simple text
+              pos += g.length();
             }
-            pos += 1;
           } else {
+            // Just a text
             // consider the closing element as a simple text
+            pos += g.length();
+          }
+        } else if (null != (g = lexer.group("CIL"))) {
+          // InternalLink end
+          int height;
+          if ((height = findHighestClosableInternalLink(stack)) != -1) {
+            // Flatten pending token on top of links
+            flattenStackToHeight(stack, height, lineno);
+            assert stack.peek() instanceof InternalLink;
+            // Valid closing of internal link
+            pos = closeInternalLink(pos, end, stack, lineno);
+          } else if ((height = findHighestClosableExternalLink(stack)) != -1) {
+            // Flatten pending token on top of the external link
+            flattenStackToHeight(stack, height, lineno);
+            assert stack.peek() instanceof ExternalLink;
+            // Valid closing of internal link
+            pos = closeExternalLink(pos, stack);
+          } else {
+            // Just a text
+            // consider the closing element as a simple text
+            pos += g.length();
+          }
+        } else if (null != (g = lexer.group("CEL"))) {
+          int height;
+          if ((height = findHighestClosableExternalLink(stack)) != -1) {
+            // Flatten pending token on top of the external link
+            flattenStackToHeight(stack, height, lineno);
+            assert stack.peek() instanceof ExternalLink;
+            // Valid closing of internal link
+            pos = closeExternalLink(pos, stack);
+          } else {
             pos += g.length();
           }
         } else if (null != (g = lexer.group("OXC"))) {
@@ -1101,51 +1341,65 @@ public class WikiText {
           HTMLComment t = new HTMLComment(pos);
           pos = pos + 4;
           while (pos != end && (null == peekString(pos, "-->"))) {
+            char cc = sourceContent.charAt(pos);
+            if (cc == '\n') {
+              lineno++;
+            } else if (cc == '\r') {
+              if (pos + 1 < end && sourceContent.charAt(pos + 1) == '\n') {
+                pos++;
+              }
+              lineno++;
+            }
             pos++;
           }
           if (pos != end) {
             pos = pos + 3;
           }
-          t.setEndOffset(pos + 1);
+          t.setEndOffset(pos);
           stack.peek().addToken(t);
         } else if (null != (g = lexer.group("CH"))) {
           int level = g.length();
           if (stack.peek() instanceof Heading) {
-            Heading h = (Heading) stack.pop();
-            int ldiff = h.level - level;
-            if (ldiff > 0) {
-              h.level = level;
-              h.content.offset.start = h.content.offset.start - ldiff;
+            Heading h = stack.peek().asHeading();
+            if (level != h.level) {
+              log.trace("HEADING LEVELS MISMATCH | {} | '{}' [{}]", h, this.pagename, lineno);
             }
-            h.setEndOffset(pos + level);
-            stack.peek().addToken(h);
+            closeHeading(pos, stack, level);
+          }
+          pos += lexer.group().length(); // The CH capture extra spaces that should be ignored.
+        } else if (null != (g = lexer.group("OH"))) {
+          int level = g.length();
+          if (atLineBeginning) {
+            stack.push(new Heading(pos, level));
           }
           pos += level;
-        } else if (null != (g = lexer.group("OH")) && atLineBeginning) {
-          int level = g.length();
-          stack.push(new Heading(pos, level));
-          pos += level;
-        } else if (null != (g = lexer.group("OLIST")) && atLineBeginning) {
-          stack.push(new ListItem(pos, g));
+        } else if (null != (g = lexer.group("OLIST"))) {
+          if (atLineBeginning) {
+            stack.push(new ListItem(pos, g));
+          }
           pos += g.length();
-        } else if (null != (g = lexer.group("OINDENT")) && atLineBeginning) {
-          stack.push(new Indentation(pos, g));
+        } else if (null != (g = lexer.group("OINDENT"))) {
+          if (atLineBeginning) {
+            stack.push(new Indentation(pos, g));
+          }
           pos += g.length();
-        } else if (null != (g = lexer.group("ONUMLIST")) && atLineBeginning) {
-          stack.push(new NumberedListItem(pos, g));
+        } else if (null != (g = lexer.group("ONUMLIST"))) {
+          if (atLineBeginning) {
+            stack.push(new NumberedListItem(pos, g));
+          }
           pos += g.length();
-        } else if (null != (g = lexer.group("OITEM")) && atLineBeginning) {
-          stack.push(new Item(pos, g));
+        } else if (null != (g = lexer.group("OITEM"))) {
+          if (atLineBeginning) {
+            stack.push(new Item(pos, g));
+          }
           pos += g.length();
         } else if (null != (g = lexer.group("PIPE"))) {
           // if in Template or InternalLink, it's a special char
           Token t = stack.peek();
           if (t instanceof Template) {
-            Template template = (Template) t;
-            template.gotAPipe(pos);
+            t.asTemplate().gotAPipe(pos);
           } else if (t instanceof InternalLink) {
-            InternalLink template = (InternalLink) t;
-            template.gotAPipe(pos);
+            t.asInternalLink().gotAPipe(pos);
           } else {
             ; // It is a normal character
           }
@@ -1158,33 +1412,36 @@ public class WikiText {
             template.gotASpace(pos);
           }
           pos += g.length();
-          // TODO Handle nowiki tags
         } else if (null != (g = lexer.group("NL"))) {
           // First close and void any token that cannot contain a newline
           while (true) {
             Token t = stack.peek();
-            if (t instanceof Heading || t instanceof Link) {
-              stack.pop();
-              stack.peek().addFlattenedTokens(t);
+            if (t instanceof Heading) {
+              log.trace("UNCLOSED HEADING | {} | '{}' [{}]", t, this.pagename, lineno);
+              invalidateHypothesis(stack.pop(), stack);
+              // stack.peek().addFlattenedTokens(stack.pop());
+              continue;
+            } else if (t instanceof ExternalLink) {
+              log.trace("UNCLOSED LINK | {} | '{}' [{}]", t, this.pagename, lineno);
+              invalidateHypothesis(stack.pop(), stack);
+              // stack.peek().addFlattenedTokens(t);
               continue;
             } else {
               break;
             }
           }
-          // if in ListItem, it's a closing char
+          // if in IndentedItem, it's a closing char
           Token t = stack.peek();
           if (t instanceof IndentedItem) {
-            IndentedItem li = (IndentedItem) stack.pop();
-            li.setEndOffset(pos);
-            stack.peek().addToken(t);
+            closeIndentedItem(pos, stack);
           }
-          // TODO Handle nowiki tags
           pos += g.length();
           newlineFlag = true;
-          // TODO Handle nowiki tags
+          lineno++;
         } else {
-          // Normal characters, just advance...
-          pos++;
+          // Fallback that should never happen if case analysis is correct...
+          assert false;
+          break;
         }
       } else {
         assert false; // Avoid infinite loop
@@ -1199,29 +1456,168 @@ public class WikiText {
     // if in ListItem, it's a closing char
     while (stack.size() > 1) {
       Token t = stack.peek();
-      if (t instanceof Heading || t instanceof Link) {
-        stack.pop();
-        stack.peek().addFlattenedTokens(t);
-        continue;
+      if (t instanceof Heading) {
+        log.trace("UNCLOSED HEADING | {} | '{}' [{}]", t, this.pagename, lineno);
+        invalidateHypothesis(stack.pop(), stack);
+        // stack.peek().addFlattenedTokens(t);
+      } else if (t instanceof Link) {
+        log.trace("UNCLOSED LINK | {} | '{}' [{}]", t, this.pagename, lineno);
+        invalidateHypothesis(stack.pop(), stack);
+        // stack.peek().addFlattenedTokens(t);
       } else if (t instanceof Template) {
-        stack.pop();
-        stack.peek().addFlattenedTokens(t);
+        log.trace("UNCLOSED TEMPLATE | {} | '{}' [{}]", t, this.pagename, lineno);
+        invalidateHypothesis(stack.pop(), stack);
+        // stack.peek().addFlattenedTokens(t);
       } else if (t instanceof IndentedItem) {
-        IndentedItem li = (IndentedItem) stack.pop();
-        li.setEndOffset(pos);
-        stack.peek().addToken(t);
+        closeIndentedItem(pos, stack);
       }
     }
 
-    Token root = stack.pop();
+    Token parsedRoot = stack.pop();
 
-    ((WikiContent) root).setEndOffset(end);
-    return (WikiContent) root;
-
+    ((WikiContent) parsedRoot).setEndOffset(end);
+    return (WikiContent) parsedRoot;
   }
 
-  private void handleNL(Stack<Token> stack, int pos) {
+  private static final Pattern newlinePattern = Pattern.compile("\r?\n|\r");
+  private static final Pattern closingHeadingPattern =
+      Pattern.compile("\\={2,6}(?:\\s|<!--.*?-->)*$");
+  private Matcher closeHeadingMatcher = closingHeadingPattern.matcher("");
+  private Matcher newlineMatcher = newlinePattern.matcher("");
 
+  /**
+   * Invalidate the hypothesis in the stack The Hypothesis is a Token that has been created and for
+   * which we determine that it is broken. To avoid backtracking as much as possible, we use the
+   * elements that were already parsed in this hypothesis. These elements should now be associated
+   * with the hypothesis at the top of the stack. As the top of the stack may find a closing element
+   * in the invalidated hypothesis, it may itself be completed (or invalidated) and popped from the
+   * stack.
+   *
+   * @param hypothesis the token that is invalidated
+   * @param stack the stack on which this token's inner elements should be added.
+   */
+  private void invalidateHypothesis(Token hypothesis, Stack<Token> stack) {
+    // Create a WikiContent to hold all inner tokens
+    WikiContent tokens = new WikiContent(hypothesis.offset.start);
+    tokens.addFlattenedTokens(hypothesis);
+    invalidateHypothesis(tokens, stack);
+  }
+
+  private void invalidateHypothesis(WikiContent content, Stack<Token> stack) {
+    if (stack.peek() instanceof IndentedItem) {
+      List<Token> innerTokens = content.tokens();
+      int i;
+      for (i = 0; i < innerTokens.size(); i++) {
+        Token inner = innerTokens.get(i);
+        if (inner instanceof Text) {
+          newlineMatcher.reset(inner.asText().getText());
+          if (newlineMatcher.find()) {
+            // The newline closes the IndentedItem.
+            closeIndentedItem(newlineMatcher.start() + inner.offset.start, stack);
+            WikiContent remainingContent =
+                new WikiContent(newlineMatcher.end() + inner.offset.start);
+            fillContentWithTokensFrom(innerTokens, i, remainingContent);
+            invalidateHypothesis(remainingContent, stack);
+            break;
+          } else {
+            stack.peek().addToken(inner);
+          }
+        }
+      }
+    } else if (stack.peek() instanceof Heading) {
+      List<Token> innerTokens = content.tokens();
+      int i;
+      for (i = 0; i < innerTokens.size(); i++) {
+        Token inner = innerTokens.get(i);
+        if (inner instanceof Text) {
+          closeHeadingMatcher.reset(inner.asText().getText());
+          if (closeHeadingMatcher.find()) {
+            // The newline closes the IndentedItem.
+            closeHeading(closeHeadingMatcher.start() + inner.offset.start, stack,
+                closeHeadingMatcher.group(0).length());
+            WikiContent remainingContent =
+                new WikiContent(closeHeadingMatcher.end() + inner.offset.start);
+            fillContentWithTokensFrom(innerTokens, i, remainingContent);
+            invalidateHypothesis(remainingContent, stack);
+            break;
+          } else {
+            stack.peek().addToken(inner);
+          }
+        }
+      }
+    } else {
+      for (Token inner : content.wikiTokens()) {
+        stack.peek().addToken(inner);
+      }
+    }
+  }
+
+  private void fillContentWithTokensFrom(List<Token> innerTokens, int i,
+      WikiContent remainingContent) {
+    Token inner;
+    for (i++; i < innerTokens.size(); i++) {
+      inner = innerTokens.get(i);
+      if (!(inner instanceof Text))
+        remainingContent.addToken(inner);
+    }
+  }
+
+  private void closeHeading(int pos, Stack<Token> stack, int level) {
+    Heading h = stack.pop().asHeading();
+    int ldiff = h.level - level;
+    if (ldiff > 0) {
+      h.level = level;
+      h.content.offset.start = h.content.offset.start - ldiff;
+    }
+    h.setEndOffset(pos + level);
+    stack.peek().addToken(h);
+  }
+
+  private int closeExternalLink(int pos, Stack<Token> stack) {
+    ExternalLink t = (ExternalLink) stack.pop();
+    t.setEndOffset(pos);
+    stack.peek().addToken(t);
+    pos += 1;
+    return pos;
+  }
+
+  private void flattenStackToHeight(Stack<Token> stack, int height, int lineno) {
+    for (int i = stack.size() - 1; i > height; i--) {
+      Token t = stack.pop();
+      log.trace("UNCLOSED TOKEN | {}  IN LINK {} | '{}' [{}]", t, stack.get(height), this.pagename,
+          lineno);
+      stack.peek().addFlattenedTokens(t);
+    }
+  }
+
+  private int closeInternalLink(int pos, int end, Stack<Token> stack, int lineno) {
+    InternalLink t = (InternalLink) stack.pop();
+    t.setLinkEnd(pos);
+    pos += 2;
+    if (t.isValidInternalLink()) {
+      int linkEnd = pos;
+      while (pos != end && Character.isLetter(sourceContent.charAt(pos))) {
+        pos++;
+      }
+      if (pos != linkEnd) {
+        WikiContent suffixContent = new WikiContent(linkEnd);
+        suffixContent.setEndOffset(pos);
+        t.setSuffix(suffixContent);
+      }
+      t.setEndOffset(pos);
+      stack.peek().addToken(t);
+    } else {
+      // The link is invalid, consider it as a text
+      log.trace("INVALID INTERNAL LINK | {} | '{}' [{}]", t, this.pagename, lineno);
+      stack.peek().addFlattenedTokens(t);
+    }
+    return pos;
+  }
+
+  private void closeIndentedItem(int pos, Stack<Token> stack) {
+    IndentedItem li = (IndentedItem) stack.pop();
+    li.setEndOffset(pos);
+    stack.peek().addToken(li);
   }
 
   /**
@@ -1229,7 +1625,7 @@ public class WikiText {
    */
   private int findHighestClosableTemplate(Stack<Token> stack) {
     for (int i = stack.size() - 1; i > 0; i--) {
-      if (stack.get(i) instanceof ListItem || stack.get(i) instanceof Link) {
+      if (stack.get(i) instanceof IndentedItem || stack.get(i) instanceof Link) {
         continue;
       } else if (stack.get(i) instanceof Template) {
         return i;
@@ -1240,6 +1636,38 @@ public class WikiText {
     return -1;
   }
 
+  /**
+   * Return the height of the highest template that may be closed (other tokens may be closed before
+   */
+  private int findHighestClosableInternalLink(Stack<Token> stack) {
+    for (int i = stack.size() - 1; i >= 0; i--) {
+      if (stack.get(i) instanceof InternalLink) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  private int findHighestClosableExternalLink(Stack<Token> stack) {
+    for (int i = stack.size() - 1; i >= 0; i--) {
+      if (stack.get(i) instanceof Template) {
+        return -1; // A template has always priority over a link
+      }
+      if (stack.get(i) instanceof ExternalLink) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  private int findHighestClosableLink(Stack<Token> stack) {
+    for (int i = stack.size() - 1; i >= 0; i--) {
+      if (stack.get(i) instanceof Link) {
+        return i;
+      }
+    }
+    return -1;
+  }
 
   private String peekString(int pos, String s) {
     int i = 0;
@@ -1264,12 +1692,23 @@ public class WikiText {
   }
 
   /**
-   * returns all wikiTokens in the wikiText, that is all special media wiki constructs.
+   * returns all wikiTokens in the wikiText, that is all special media wiki constructs, excluding
+   * html comments.
    *
    * @return a sequence of Tokens
    */
-  public ArrayList<Token> wikiTokens() {
+  public List<Token> wikiTokens() {
     return content().wikiTokens();
+  }
+
+  /**
+   * returns all wikiTokens in the wikiText, that is all special media wiki constructs, including
+   * html comments.
+   *
+   * @return a sequence of Tokens
+   */
+  public List<Token> wikiTokensWithHtmlComments() {
+    return content().wikiTokensWithHtmlComments();
   }
 
   /**
@@ -1278,8 +1717,18 @@ public class WikiText {
    *
    * @return a sequence of Tokens (including Text tokens)
    */
-  public ArrayList<Token> tokens() {
+  public List<Token> tokens() {
     return content().tokens();
+  }
+
+  /**
+   * returns all tokens in the wikiText, that is all special media wiki constructs, along with
+   * special Text tokens containing textual content. The List will include Html Comments
+   *
+   * @return a sequence of Tokens (including Text tokens)
+   */
+  public List<Token> tokensWithHtmlComments() {
+    return content().tokensWithHtmlComments();
   }
 
   public Text endOfContent() {
@@ -1353,7 +1802,6 @@ public class WikiText {
     Token currentToken = null;
 
     /**
-     *
      * @param content the content from which we get the sections
      * @param level the expected level
      * @deprecated

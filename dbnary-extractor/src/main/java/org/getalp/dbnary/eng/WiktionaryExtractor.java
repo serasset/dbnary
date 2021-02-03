@@ -3,6 +3,7 @@
  */
 package org.getalp.dbnary.eng;
 
+import java.util.List;
 import org.getalp.dbnary.ExtractionFeature;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -316,7 +317,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private static final String[] heads = {"head", "head1", "head2"};
   private static ClassBasedSequenceFilter linkResolver = new ClassBasedSequenceFilter();
 
-  private static ArrayList<WikiText.Token> getMyTemplateContent(WikiText.Token t) {
+  private static List<Token> getMyTemplateContent(WikiText.Token t) {
     if (t instanceof WikiText.Template) {
       WikiText.Template tt = (WikiText.Template) t;
       if (tt.getName().equals("vern") || tt.getName().equals("w") || tt.getName().equals("pedlink")
@@ -398,11 +399,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     log.trace("ETYM {}: {}", ewdh.getCurrentEntryLanguage(),
         pageContent.substring(blockStart, end));
-    Etymology etymology =
+    try {
+      Etymology etymology =
         new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
 
-    etymology.fromDefinitionToSymbols();
-    try {
+      etymology.fromDefinitionToSymbols();
+
       ewdh.registerEtymology(etymology);
     } catch (RuntimeException e) {
       log.error("Caught {} while registering etymology in {}", e, wiktionaryPageName);

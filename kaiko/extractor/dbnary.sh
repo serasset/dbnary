@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DIR=${HOME}/dev/wiktionary/tmp
-VERSION=2.3.2
+VERSION=2.3.3-SNAPSHOT
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
 LANGS="fr"
 

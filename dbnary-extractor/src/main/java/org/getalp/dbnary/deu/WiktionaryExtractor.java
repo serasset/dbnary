@@ -1,5 +1,6 @@
 package org.getalp.dbnary.deu;
 
+import java.util.List;
 import org.getalp.dbnary.ExtractionFeature;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiPattern;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -503,7 +505,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractTranslations(int startOffset, int endOffset) {
     WikiText wt = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
-    ArrayList<? extends WikiText.Token> toks = wt.wikiTokens();
+    List<? extends WikiText.Token> toks = wt.wikiTokens();
 
     for (WikiText.Token t : toks) {
       if (t instanceof WikiText.Template
@@ -523,10 +525,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (null == wc) {
       return;
     }
-    ArrayList<? extends WikiText.Token> toks = wc.wikiTokens();
+    List<? extends Token> toks = wc.wikiTokens();
 
-    // TODO : faire une analyse plus poussée des traduction, car il y a des entrées comme cela :
-    // se {{Ü|fr|mettre}} {{Ü|fr|à}} {{Ü|fr|couler}} qui est extrait en 3 traductions différentes
     for (WikiText.Token li : toks) {
       if (li instanceof WikiText.IndentedItem) {
         extractTranslationFromItem(li.asIndentedItem());
@@ -545,6 +545,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           + "(?<SPECIALPARENS>\\(.*?\\))|" + "\\[(?<GLOSS>\\P{Reserved}*?)\\]|"
           + "(?<TMPL>\\p{Template})|" + "(?<LINK>\\p{InternalLink})";
 
+  // TODO: faire une analyse plus poussée des traduction, car il y a des entrées comme cela :
+  //  se {{Ü|fr|mettre}} {{Ü|fr|à}} {{Ü|fr|couler}} qui est extrait en 3 traductions différentes
+  // TODO: Certains liens sont entre crochet pour annoter la traduction suivante ou précédente
+  //  comme dans la traduction anglais de ‘Präsidentin’ ([female] chairperson),
+  //  où female ne doit pas être extrait.
   private void extractTranslationsFromListContent(WikiText.WikiContent content) {
 
     // log.trace("Translation line = {}", content);

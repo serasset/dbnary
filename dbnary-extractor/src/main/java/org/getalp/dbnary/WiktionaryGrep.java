@@ -6,6 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import org.apache.commons.text.TextStringBuilder;
+import org.apache.commons.text.WordUtils;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 
@@ -51,7 +53,8 @@ public class WiktionaryGrep {
           String text = xmlr.getElementText();
           match.reset(text);
           if (match.find()) {
-            out.write(title + "\n");
+            out.write(title + ": ");
+            out.write(showMatchInContext(text, match.start(), match.end()));
             out.flush();
           }
         }
@@ -73,6 +76,21 @@ public class WiktionaryGrep {
         ex.printStackTrace();
       }
     }
+  }
+
+  private static String showMatchInContext(String text, int start, int end) {
+    TextStringBuilder res = new TextStringBuilder(120);
+    int before = start - 40;
+    int after = end + 40;
+    int from = before < 0 ? 0 : before;
+    int to = after > text.length() ? text.length() : after;
+    res.appendFixedWidthPadLeft(text.substring(from, start).replace('\n', '\u23CE'), 40, ' ');
+    res.append("___");
+    res.appendFixedWidthPadRight(text.substring(start, end).replace('\n', '\u23CE'), 10, ' ');
+    res.append("___");
+    res.appendFixedWidthPadRight(text.substring(end, to).replace('\n', '\u23CE'), 40, ' ');
+    res.appendNewLine();
+    return res.toString();
   }
 
 }

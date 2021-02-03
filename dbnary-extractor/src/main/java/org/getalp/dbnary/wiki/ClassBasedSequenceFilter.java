@@ -1,16 +1,34 @@
 package org.getalp.dbnary.wiki;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
+import org.getalp.dbnary.wiki.WikiSequenceFiltering.Action;
+import org.getalp.dbnary.wiki.WikiSequenceFiltering.Atomize;
+import org.getalp.dbnary.wiki.WikiSequenceFiltering.Content;
+import org.getalp.dbnary.wiki.WikiSequenceFiltering.KeepAsis;
+import org.getalp.dbnary.wiki.WikiSequenceFiltering.OpenContentClose;
+import org.getalp.dbnary.wiki.WikiText.ExternalLink;
+import org.getalp.dbnary.wiki.WikiText.HTMLComment;
+import org.getalp.dbnary.wiki.WikiText.Heading;
+import org.getalp.dbnary.wiki.WikiText.Indentation;
+import org.getalp.dbnary.wiki.WikiText.IndentedItem;
+import org.getalp.dbnary.wiki.WikiText.InternalLink;
+import org.getalp.dbnary.wiki.WikiText.Item;
+import org.getalp.dbnary.wiki.WikiText.Link;
+import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Text;
+import org.getalp.dbnary.wiki.WikiText.Token;
+import org.getalp.dbnary.wiki.WikiText.WikiContent;
 
 /**
  * Created by serasset on 27/02/17.
  */
-public class ClassBasedSequenceFilter
-    implements Function<WikiText.Token, WikiSequenceFiltering.Action> {
+public class ClassBasedSequenceFilter implements Function<Token, Action> {
 
-  private HashMap<Class, WikiSequenceFiltering.Action> actions = new HashMap<>();
+  private HashMap<Class, Action> actions = new HashMap<>();
 
   /**
    * Creates a default Class based filter that :
@@ -36,57 +54,57 @@ public class ClassBasedSequenceFilter
   // ======================
 
   public ClassBasedSequenceFilter atomizeTemplates() {
-    actions.put(WikiText.Template.class, new WikiSequenceFiltering.Atomize());
+    actions.put(Template.class, new Atomize());
     return this;
   }
 
   public ClassBasedSequenceFilter atomizeInternalLink() {
-    actions.put(WikiText.InternalLink.class, new WikiSequenceFiltering.Atomize());
+    actions.put(InternalLink.class, new Atomize());
     return this;
   }
 
   public ClassBasedSequenceFilter atomizeLink() {
-    actions.put(WikiText.Link.class, new WikiSequenceFiltering.Atomize());
+    actions.put(Link.class, new Atomize());
     return this;
   }
 
   public ClassBasedSequenceFilter atomizeExternalLink() {
-    actions.put(WikiText.ExternalLink.class, new WikiSequenceFiltering.Atomize());
+    actions.put(ExternalLink.class, new Atomize());
     return this;
   }
 
   public ClassBasedSequenceFilter atomizeHTMLComment() {
-    actions.put(WikiText.HTMLComment.class, new WikiSequenceFiltering.Atomize());
+    actions.put(HTMLComment.class, new Atomize());
     return this;
   }
 
   public ClassBasedSequenceFilter atomizeIndentedItem() {
-    actions.put(WikiText.IndentedItem.class, new WikiSequenceFiltering.Atomize());
+    actions.put(IndentedItem.class, new Atomize());
     return this;
   }
 
   public ClassBasedSequenceFilter atomizeIndentation() {
-    actions.put(WikiText.Indentation.class, new WikiSequenceFiltering.Atomize());
+    actions.put(Indentation.class, new Atomize());
     return this;
   }
 
   public ClassBasedSequenceFilter atomizeItem() {
-    actions.put(WikiText.Item.class, new WikiSequenceFiltering.Atomize());
+    actions.put(Item.class, new Atomize());
     return this;
   }
 
   public ClassBasedSequenceFilter atomizeNumberedListItem() {
-    actions.put(WikiText.NumberedListItem.class, new WikiSequenceFiltering.Atomize());
+    actions.put(NumberedListItem.class, new Atomize());
     return this;
   }
 
   public ClassBasedSequenceFilter atomizeListItem() {
-    actions.put(WikiText.ListItem.class, new WikiSequenceFiltering.Atomize());
+    actions.put(ListItem.class, new Atomize());
     return this;
   }
 
   public ClassBasedSequenceFilter atomizeHeading() {
-    actions.put(WikiText.Heading.class, new WikiSequenceFiltering.Atomize());
+    actions.put(Heading.class, new Atomize());
     return this;
   }
 
@@ -96,7 +114,7 @@ public class ClassBasedSequenceFilter
   }
 
   public ClassBasedSequenceFilter atomizeText() {
-    actions.put(WikiText.Text.class, new WikiSequenceFiltering.Atomize());
+    actions.put(Text.class, new Atomize());
     return this;
   }
 
@@ -111,57 +129,57 @@ public class ClassBasedSequenceFilter
   // ======================
 
   public ClassBasedSequenceFilter voidTemplates() {
-    actions.put(WikiText.Template.class, new WikiSequenceFiltering.Void());
+    actions.put(Template.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
   public ClassBasedSequenceFilter voidInternalLink() {
-    actions.put(WikiText.InternalLink.class, new WikiSequenceFiltering.Void());
+    actions.put(InternalLink.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
   public ClassBasedSequenceFilter voidLink() {
-    actions.put(WikiText.Link.class, new WikiSequenceFiltering.Void());
+    actions.put(Link.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
   public ClassBasedSequenceFilter voidExternalLink() {
-    actions.put(WikiText.ExternalLink.class, new WikiSequenceFiltering.Void());
+    actions.put(ExternalLink.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
   public ClassBasedSequenceFilter voidHTMLComment() {
-    actions.put(WikiText.HTMLComment.class, new WikiSequenceFiltering.Void());
+    actions.put(HTMLComment.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
   public ClassBasedSequenceFilter voidIndentedItem() {
-    actions.put(WikiText.IndentedItem.class, new WikiSequenceFiltering.Void());
+    actions.put(IndentedItem.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
   public ClassBasedSequenceFilter voidIndentation() {
-    actions.put(WikiText.Indentation.class, new WikiSequenceFiltering.Void());
+    actions.put(Indentation.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
   public ClassBasedSequenceFilter voidItem() {
-    actions.put(WikiText.Item.class, new WikiSequenceFiltering.Void());
+    actions.put(Item.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
   public ClassBasedSequenceFilter voidNumberedListItem() {
-    actions.put(WikiText.NumberedListItem.class, new WikiSequenceFiltering.Void());
+    actions.put(NumberedListItem.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
   public ClassBasedSequenceFilter voidListItem() {
-    actions.put(WikiText.ListItem.class, new WikiSequenceFiltering.Void());
+    actions.put(ListItem.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
   public ClassBasedSequenceFilter voidHeading() {
-    actions.put(WikiText.Heading.class, new WikiSequenceFiltering.Void());
+    actions.put(Heading.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
@@ -171,7 +189,7 @@ public class ClassBasedSequenceFilter
   }
 
   public ClassBasedSequenceFilter voidText() {
-    actions.put(WikiText.Text.class, new WikiSequenceFiltering.Void());
+    actions.put(Text.class, new WikiSequenceFiltering.Void());
     return this;
   }
 
@@ -181,43 +199,43 @@ public class ClassBasedSequenceFilter
     return this;
   }
 
-  public static ArrayList<WikiText.Token> collectAllParameterContent(WikiText.Token t) {
-    if (t instanceof WikiText.Template) {
-      WikiText.Template tt = (WikiText.Template) t;
+  public static List<Token> collectAllParameterContent(Token t) {
+    if (t instanceof Template) {
+      Template tt = (Template) t;
       return tt.getContent().tokens();
     } else {
       throw new RuntimeException("Cannot collect parameter contents on a non Template token");
     }
   }
 
-  public static ArrayList<WikiText.Token> getTarget(WikiText.Token t) {
-    if (t instanceof WikiText.InternalLink) {
-      WikiText.InternalLink il = (WikiText.InternalLink) t;
+  public static List<Token> getTarget(Token t) {
+    if (t instanceof InternalLink) {
+      InternalLink il = (InternalLink) t;
       return il.getTarget().tokens();
-    } else if (t instanceof WikiText.ExternalLink) {
-      WikiText.ExternalLink el = (WikiText.ExternalLink) t;
+    } else if (t instanceof ExternalLink) {
+      ExternalLink el = (ExternalLink) t;
       return el.getTarget().tokens();
     } else {
       throw new RuntimeException("Cannot collect parameter contents on a non Link token");
     }
   }
 
-  public static ArrayList<WikiText.Token> getContent(WikiText.Token t) {
-    if (t instanceof WikiText.Heading) {
-      WikiText.Heading h = (WikiText.Heading) t;
+  public static List<Token> getContent(Token t) {
+    if (t instanceof Heading) {
+      Heading h = (Heading) t;
       return h.getContent().tokens();
-    } else if (t instanceof WikiText.IndentedItem) {
+    } else if (t instanceof IndentedItem) {
       return t.asIndentedItem().getContent().tokens();
-    } else if (t instanceof WikiText.InternalLink) {
-      WikiText.InternalLink li = (WikiText.InternalLink) t;
-      ArrayList<WikiText.Token> toks = li.getLink().tokens();
-      WikiText.WikiContent suf = li.getSuffix();
+    } else if (t instanceof InternalLink) {
+      InternalLink li = (InternalLink) t;
+      List<Token> toks = li.getLink().tokens();
+      WikiContent suf = li.getSuffix();
       if (null != suf) {
         toks.addAll(suf.tokens());
       }
       return toks;
-    } else if (t instanceof WikiText.ExternalLink) {
-      WikiText.ExternalLink li = (WikiText.ExternalLink) t;
+    } else if (t instanceof ExternalLink) {
+      ExternalLink li = (ExternalLink) t;
       return li.getLink().tokens();
     } else {
       throw new RuntimeException("Cannot collect parameter contents on a content less token");
@@ -229,50 +247,43 @@ public class ClassBasedSequenceFilter
   // ======================
 
   public ClassBasedSequenceFilter keepContentOfTemplates() {
-    actions.put(WikiText.Template.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::collectAllParameterContent));
+    actions.put(Template.class, new Content(ClassBasedSequenceFilter::collectAllParameterContent));
     return this;
   }
 
   public ClassBasedSequenceFilter keepContentOfTemplates(
-      Function<WikiText.Token, ArrayList<WikiText.Token>> contentGetter) {
-    actions.put(WikiText.Template.class, new WikiSequenceFiltering.Content(contentGetter));
+      Function<Token, List<Token>> contentGetter) {
+    actions.put(Template.class, new Content(contentGetter));
     return this;
   }
 
   public ClassBasedSequenceFilter keepTargetOfInternalLink() {
-    actions.put(WikiText.InternalLink.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getTarget));
+    actions.put(InternalLink.class, new Content(ClassBasedSequenceFilter::getTarget));
     return this;
   }
 
   public ClassBasedSequenceFilter keepTargetOfLink() {
-    actions.put(WikiText.Link.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getTarget));
+    actions.put(Link.class, new Content(ClassBasedSequenceFilter::getTarget));
     return this;
   }
 
   public ClassBasedSequenceFilter keepTargetOfExternalLink() {
-    actions.put(WikiText.ExternalLink.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getTarget));
+    actions.put(ExternalLink.class, new Content(ClassBasedSequenceFilter::getTarget));
     return this;
   }
 
   public ClassBasedSequenceFilter keepContentOfInternalLink() {
-    actions.put(WikiText.InternalLink.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    actions.put(InternalLink.class, new Content(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
   public ClassBasedSequenceFilter keepContentOfLink() {
-    actions.put(WikiText.Link.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    actions.put(Link.class, new Content(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
   public ClassBasedSequenceFilter keepContentOfExternalLink() {
-    actions.put(WikiText.ExternalLink.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    actions.put(ExternalLink.class, new Content(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
@@ -282,38 +293,32 @@ public class ClassBasedSequenceFilter
   // }
 
   public ClassBasedSequenceFilter keepContentOfIndentedItem() {
-    actions.put(WikiText.IndentedItem.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    actions.put(IndentedItem.class, new Content(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
   public ClassBasedSequenceFilter keepContentOfListItem() {
-    actions.put(WikiText.ListItem.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    actions.put(ListItem.class, new Content(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
   public ClassBasedSequenceFilter keepContentOfIndentation() {
-    actions.put(WikiText.Indentation.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    actions.put(Indentation.class, new Content(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
   public ClassBasedSequenceFilter keepContentOfItem() {
-    actions.put(WikiText.Item.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    actions.put(Item.class, new Content(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
   public ClassBasedSequenceFilter keepContentOfNumberedListItem() {
-    actions.put(WikiText.NumberedListItem.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    actions.put(NumberedListItem.class, new Content(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
   public ClassBasedSequenceFilter keepContentOfHeading() {
-    actions.put(WikiText.Heading.class,
-        new WikiSequenceFiltering.Content(ClassBasedSequenceFilter::getContent));
+    actions.put(Heading.class, new Content(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
@@ -338,26 +343,23 @@ public class ClassBasedSequenceFilter
   // Open/content/close content
   // ======================
   public ClassBasedSequenceFilter openCloseTemplates() {
-    actions.put(WikiText.Template.class, new WikiSequenceFiltering.OpenContentClose(
-        ClassBasedSequenceFilter::collectAllParameterContent));
+    actions.put(Template.class,
+        new OpenContentClose(ClassBasedSequenceFilter::collectAllParameterContent));
     return this;
   }
 
   public ClassBasedSequenceFilter openCloseInternalLink() {
-    actions.put(WikiText.InternalLink.class,
-        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getTarget));
+    actions.put(InternalLink.class, new OpenContentClose(ClassBasedSequenceFilter::getTarget));
     return this;
   }
 
   public ClassBasedSequenceFilter openCloseLink() {
-    actions.put(WikiText.Link.class,
-        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getTarget));
+    actions.put(Link.class, new OpenContentClose(ClassBasedSequenceFilter::getTarget));
     return this;
   }
 
   public ClassBasedSequenceFilter openCloseExternalLink() {
-    actions.put(WikiText.ExternalLink.class,
-        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getTarget));
+    actions.put(ExternalLink.class, new OpenContentClose(ClassBasedSequenceFilter::getTarget));
     return this;
   }
 
@@ -367,38 +369,32 @@ public class ClassBasedSequenceFilter
   // }
 
   public ClassBasedSequenceFilter openCloseIndentedItem() {
-    actions.put(WikiText.IndentedItem.class,
-        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
+    actions.put(IndentedItem.class, new OpenContentClose(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
   public ClassBasedSequenceFilter openCloseListItem() {
-    actions.put(WikiText.ListItem.class,
-        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
+    actions.put(ListItem.class, new OpenContentClose(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
   public ClassBasedSequenceFilter openCloseIndentation() {
-    actions.put(WikiText.Indentation.class,
-        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
+    actions.put(Indentation.class, new OpenContentClose(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
   public ClassBasedSequenceFilter openCloseItem() {
-    actions.put(WikiText.Item.class,
-        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
+    actions.put(Item.class, new OpenContentClose(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
   public ClassBasedSequenceFilter openCloseNumberedListItem() {
-    actions.put(WikiText.NumberedListItem.class,
-        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
+    actions.put(NumberedListItem.class, new OpenContentClose(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
   public ClassBasedSequenceFilter openCloseHeading() {
-    actions.put(WikiText.Heading.class,
-        new WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
+    actions.put(Heading.class, new OpenContentClose(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
@@ -424,57 +420,57 @@ public class ClassBasedSequenceFilter
   // ======================
 
   public ClassBasedSequenceFilter sourceTemplates() {
-    actions.put(WikiText.Template.class, new WikiSequenceFiltering.KeepAsis());
+    actions.put(Template.class, new KeepAsis());
     return this;
   }
 
   public ClassBasedSequenceFilter sourceInternalLink() {
-    actions.put(WikiText.InternalLink.class, new WikiSequenceFiltering.KeepAsis());
+    actions.put(InternalLink.class, new KeepAsis());
     return this;
   }
 
   public ClassBasedSequenceFilter sourceLink() {
-    actions.put(WikiText.Link.class, new WikiSequenceFiltering.KeepAsis());
+    actions.put(Link.class, new KeepAsis());
     return this;
   }
 
   public ClassBasedSequenceFilter sourceExternalLink() {
-    actions.put(WikiText.ExternalLink.class, new WikiSequenceFiltering.KeepAsis());
+    actions.put(ExternalLink.class, new KeepAsis());
     return this;
   }
 
   public ClassBasedSequenceFilter sourceHTMLComment() {
-    actions.put(WikiText.HTMLComment.class, new WikiSequenceFiltering.KeepAsis());
+    actions.put(HTMLComment.class, new KeepAsis());
     return this;
   }
 
   public ClassBasedSequenceFilter sourceIndentedItem() {
-    actions.put(WikiText.IndentedItem.class, new WikiSequenceFiltering.KeepAsis());
+    actions.put(IndentedItem.class, new KeepAsis());
     return this;
   }
 
   public ClassBasedSequenceFilter sourceListItem() {
-    actions.put(WikiText.ListItem.class, new WikiSequenceFiltering.KeepAsis());
+    actions.put(ListItem.class, new KeepAsis());
     return this;
   }
 
   public ClassBasedSequenceFilter sourceIndentation() {
-    actions.put(WikiText.Indentation.class, new WikiSequenceFiltering.KeepAsis());
+    actions.put(Indentation.class, new KeepAsis());
     return this;
   }
 
   public ClassBasedSequenceFilter sourceItem() {
-    actions.put(WikiText.Item.class, new WikiSequenceFiltering.KeepAsis());
+    actions.put(Item.class, new KeepAsis());
     return this;
   }
 
   public ClassBasedSequenceFilter sourceNumberedListItem() {
-    actions.put(WikiText.NumberedListItem.class, new WikiSequenceFiltering.KeepAsis());
+    actions.put(NumberedListItem.class, new KeepAsis());
     return this;
   }
 
   public ClassBasedSequenceFilter sourceHeading() {
-    actions.put(WikiText.Heading.class, new WikiSequenceFiltering.KeepAsis());
+    actions.put(Heading.class, new KeepAsis());
     return this;
   }
 
@@ -484,7 +480,7 @@ public class ClassBasedSequenceFilter
   }
 
   public ClassBasedSequenceFilter sourceText() {
-    actions.put(WikiText.Text.class, new WikiSequenceFiltering.KeepAsis());
+    actions.put(Text.class, new KeepAsis());
     return this;
   }
 
@@ -496,10 +492,10 @@ public class ClassBasedSequenceFilter
 
 
   @Override
-  public WikiSequenceFiltering.Action apply(WikiText.Token tok) {
+  public Action apply(Token tok) {
     Class clazz = tok.getClass();
-    WikiSequenceFiltering.Action action = null;
-    while (clazz != WikiText.Token.class && (action = actions.get(clazz)) == null) {
+    Action action = null;
+    while (clazz != Token.class && (action = actions.get(clazz)) == null) {
       clazz = clazz.getSuperclass();
     }
     return (action == null) ? new WikiSequenceFiltering.Void() : action;

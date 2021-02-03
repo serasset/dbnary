@@ -5,6 +5,7 @@ package org.getalp.dbnary.ita;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -16,6 +17,12 @@ import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Heading;
+import org.getalp.dbnary.wiki.WikiText.IndentedItem;
+import org.getalp.dbnary.wiki.WikiText.Link;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Token;
+import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -250,23 +257,23 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
 
-  // TODO: do not create the gloss resource in the model if no translation is conatined in the group
+  // TODO: do not create the gloss resource in the model if no translation is contained in the group
   // (some kind of lazy construction ?)
   private void extractTranslations(int startOffset, int endOffset) {
     WikiText wt = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
-    ArrayList<? extends WikiText.Token> toks = wt.wikiTokens();
+    List<? extends Token> toks = wt.wikiTokens();
 
     String currentGloss = null;
     Resource currentStructuredGloss = null;
     int glossRank = 1;
     int ti = 0;
     while (ti < toks.size()) {
-      WikiText.Token t = toks.get(ti);
-      if (t instanceof WikiText.Template) {
-        WikiText.Template tmpl = (WikiText.Template) t;
+      Token t = toks.get(ti);
+      if (t instanceof Template) {
+        Template tmpl = (Template) t;
         String tmplName = tmpl.getName().trim();
         if (tmplName.equalsIgnoreCase("trad1") || tmplName.equals("(")) {
-          Map<String, WikiText.WikiContent> args = ((WikiText.Template) t).getArgs();
+          Map<String, WikiContent> args = ((Template) t).getArgs();
           currentGloss = (args.get("1") == null) ? null : args.get("1").toString().trim();
           if (isIgnorable(currentGloss)) {
             // Ignore the full translation block
@@ -285,17 +292,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // Noetim comes in place of an etymology section and ends the translation section.
           ti = toks.size();
         }
-      } else if (t instanceof WikiText.IndentedItem) {
+      } else if (t instanceof IndentedItem) {
         // line of translations
         processTranslationLine(currentStructuredGloss, t.asIndentedItem());
-      } else if (t instanceof WikiText.Heading) {
+      } else if (t instanceof Heading) {
         // Headings indicate the unexpected end of the translation section (error in the page or
         // specific headings)
         // Ignore the remaining data
         ti = toks.size();
-      } else if (t instanceof WikiText.Link) {
+      } else if (t instanceof Link) {
         // This only captures the links that are outside of an indentation
-        WikiText.Link l = (WikiText.Link) t;
+        Link l = (Link) t;
         String target = l.getFullTargetText();
         if (target.startsWith("Categoria:") || target.startsWith("File:")
             || target.startsWith("Image:")) {
@@ -317,7 +324,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return wdh.createGlossResource(glossFilter.extractGlossStructure(currentGloss), i);
   }
 
-  private void processTranslationLine(Resource gloss, WikiText.IndentedItem t) {
+  private void processTranslationLine(Resource gloss, IndentedItem t) {
     log.trace("Translation line: {} ||| {}", t.toString(), wiktionaryPageName);
     WikiCharSequence line = new WikiCharSequence(t.getContent());
     TranslationLineParser tp = new TranslationLineParser(wiktionaryPageName);
@@ -345,9 +352,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  private boolean isClosingTranslationBlock(WikiText.Token token) {
-    if (token instanceof WikiText.Template) {
-      String n = ((WikiText.Template) token).getName().trim();
+  private boolean isClosingTranslationBlock(Token token) {
+    if (token instanceof Template) {
+      String n = ((Template) token).getName().trim();
       return n.equalsIgnoreCase("trad2") || n.equals(")");
     }
     return false;

@@ -91,7 +91,7 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
       writer.append(givenName(parameterMap));
     } else if (templateName.equals("quote-book")) {
       // TODO: example cannot be registered while transcluding as the lexical sense is not available
-      // yet.
+      //  yet.
       // StringWriter quotation = new StringWriter();
       // super.substituteTemplateCall(templateName, parameterMap, quotation);
       // delegate.registerExample(quotation.toString(), null);
@@ -100,7 +100,7 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
         || "rfclarify".equals(templateName) || "rfquote".equals(templateName)
         || "rfquotek".equals(templateName) || "rfv-sense".equals(templateName)
         || "rfc-sense".equals(templateName) || "rfquote-sense".equals(templateName)
-        || "rfdef".equals(templateName)) {
+        || "rfdef".equals(templateName) || "tea room sense".equals(templateName)) {
       // Request for examples or request for discussion on sense :
       // -> just ignore the template as it raises a Lua Exception
       // rfdef : request for definition, -> just return an empty def.

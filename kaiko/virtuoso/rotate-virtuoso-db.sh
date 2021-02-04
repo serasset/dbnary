@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [ ! -t 0 ]; then
+  exec 1>> /var/log/dbnary/dbnary.log 2>&1
+fi
+
 ## Test if bash version 4 as we need associative arrays.
 if [[ "${BASH_VERSINFO:-0}" -lt 4 ]]; then
   echo >&2 "Need bash 4 version. Exiting."

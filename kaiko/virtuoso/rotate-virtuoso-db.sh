@@ -6,6 +6,8 @@ if [[ "${BASH_VERSINFO:-0}" -lt 4 ]]; then
   exit 1
 fi
 
+echo "====== Rotating VIRTUOSO DB ========="
+
 ## Parse command line options
 OPTIND=1 # Reset in case getopts has been used previously in the shell.
 
@@ -445,5 +447,6 @@ mv $DBBOOTSTRAPFOLDER $NEWDBFOLDER
 echo "Renaming database folder $NEWDBFOLDER -->  ${VIRTUOSODBLOCATION}/db.${extractversion}.next"
 mv $NEWDBFOLDER ${VIRTUOSODBLOCATION}/db.${extractversion}.next
 
+echo "====== /END/ Rotating VIRTUOSO DB ========="
 # TODO: Generate a production ready virtuoso.ini file
 # TODO: stop virtuoso daemon and rotate db folders then restart virtuoso daemon

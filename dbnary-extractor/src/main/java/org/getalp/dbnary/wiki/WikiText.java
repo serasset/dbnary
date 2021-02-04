@@ -1185,11 +1185,11 @@ public class WikiText {
   private static final Pattern lexerPattern;
 
   // TODO: Fichier, File, Image sont des préfixes de liens qui autorisent visiblement les retours à
-  //  la ligne…
+  // la ligne…
   // TODO: Lorsqu'un [ ouvre un lien externe dans un template, les arguments du template qui suivent
-  //  ne seront pas analysés correctement
+  // ne seront pas analysés correctement
   // DONE: déterminer si un lien interne peut contenir des retours à la ligne (dans la partie titre
-  //  ou cible) --> oui, donc on les accepte.
+  // ou cible) --> oui, donc on les accepte.
   static {
     lexerCode.append("(?<OT>").append("\\{\\{").append(")|");
     lexerCode.append("(?<OIL>").append("\\[\\[").append(")|");
@@ -1370,7 +1370,8 @@ public class WikiText {
               }
               closeHeading(pos, stack, level);
             } else {
-              log.error("UNEXPECTED TOKEN IN HEADING\t{}\t '{}' [{}]\n", stack.peek(), this.pagename, lineno);
+              log.error("UNEXPECTED TOKEN IN HEADING\t{}\t '{}' [{}]\n", stack.peek(),
+                  this.pagename, lineno);
               assert false;
             }
           }
@@ -1492,32 +1493,41 @@ public class WikiText {
     return (WikiContent) parsedRoot;
   }
 
-  /** check if the stack contains an indented item that will be closed by the end of line token
-   * For this to be true, there must be an indented item in the stack containing only pending tokens
+  /**
+   * check if the stack contains an indented item that will be closed by the end of line token For
+   * this to be true, there must be an indented item in the stack containing only pending tokens
    * less priority (i.e. pending Links, but not pending templates)
+   * 
    * @param stack the stack to be inspected
    * @return true iff the current token will close the top most indented item
    */
   private boolean stackWillCloseIndentedItem(Stack<Token> stack) {
     for (int i = stack.size() - 1; i >= 0; i--) {
-      if (stack.get(i) instanceof Link) continue;
-      if (stack.get(i) instanceof Heading) continue;
-      if (stack.get(i) instanceof IndentedItem) return true;
+      if (stack.get(i) instanceof Link)
+        continue;
+      if (stack.get(i) instanceof Heading)
+        continue;
+      if (stack.get(i) instanceof IndentedItem)
+        return true;
       return false;
     }
     return false;
   }
 
-  /** check if the stack contains a heading that will be closed by the end of heading token
-   * For this to be true, there must be a heading in the stack containing only pending tokens with
-   * less priority (i.e. pending Links, but not pending templates)
+  /**
+   * check if the stack contains a heading that will be closed by the end of heading token For this
+   * to be true, there must be a heading in the stack containing only pending tokens with less
+   * priority (i.e. pending Links, but not pending templates)
+   * 
    * @param stack the stack to be inspected
    * @return true iff the current token will close the top most heading
    */
   private boolean stackWillCloseHeading(Stack<Token> stack) {
     for (int i = stack.size() - 1; i >= 0; i--) {
-      if (stack.get(i) instanceof Link) continue;
-      if (stack.get(i) instanceof Heading) return true;
+      if (stack.get(i) instanceof Link)
+        continue;
+      if (stack.get(i) instanceof Heading)
+        return true;
       return false;
     }
     return false;

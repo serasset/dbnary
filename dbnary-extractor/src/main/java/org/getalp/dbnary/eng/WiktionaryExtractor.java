@@ -401,7 +401,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         pageContent.substring(blockStart, end));
     try {
       Etymology etymology =
-        new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
+          new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
 
       etymology.fromDefinitionToSymbols();
 

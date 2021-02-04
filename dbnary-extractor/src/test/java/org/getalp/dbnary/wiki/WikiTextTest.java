@@ -565,8 +565,7 @@ public class WikiTextTest {
   @Test
   public void testInternalLinkPriority() {
     WikiText text = new WikiText("[[principle]], [[cause], [[origin]]");
-    assertEquals("There should be 2 recognized internal links", 2,
-        text.wikiTokens().size());
+    assertEquals("There should be 2 recognized internal links", 2, text.wikiTokens().size());
     assertTrue("The first item should be an internal link",
         text.wikiTokens().get(0) instanceof InternalLink);
     assertEquals("The parsed link title should be a square bracket", "principle",
@@ -577,8 +576,7 @@ public class WikiTextTest {
         text.wikiTokens().get(1).asInternalLink().getLinkText());
 
     text = new WikiText(":* {{en}}: [[principle]], [[cause], [[origin]]\n");
-    assertEquals("There should be 1 IndentedItem", 1,
-        text.wikiTokens().size());
+    assertEquals("There should be 1 IndentedItem", 1, text.wikiTokens().size());
     assertTrue("The first item should be an IndentedItem",
         text.wikiTokens().get(0) instanceof IndentedItem);
     WikiContent content = text.wikiTokens().get(0).asIndentedItem().getContent();
@@ -598,18 +596,14 @@ public class WikiTextTest {
         content.wikiTokens().get(2).asInternalLink().getLinkText());
 
     text = new WikiText("[[toto, [[titi]] ]]");
-    assertEquals("There should be 1 recognized internal links", 1,
-        text.wikiTokens().size());
+    assertEquals("There should be 1 recognized internal links", 1, text.wikiTokens().size());
     assertTrue("The first item should be an internal link",
         text.wikiTokens().get(0) instanceof InternalLink);
     assertEquals("The parsed link title should be the internal most prioritary one.", "titi",
         text.wikiTokens().get(0).asInternalLink().getLinkText());
 
-    text = new WikiText("[[toto\n"
-        + "*: test\n"
-        + "]]\n");
-    assertEquals("There should be 1 recognized indented item", 1,
-        text.wikiTokens().size());
+    text = new WikiText("[[toto\n" + "*: test\n" + "]]\n");
+    assertEquals("There should be 1 recognized indented item", 1, text.wikiTokens().size());
     assertTrue("The first item should be an internal link",
         text.wikiTokens().get(0) instanceof IndentedItem);
     assertEquals("The indented item should be correctly created.", "*: test",
@@ -618,10 +612,8 @@ public class WikiTextTest {
 
   @Test
   public void testInternalLinkHasLowerPriorityThanIndentedItemOnNewlines() {
-    WikiText text = new WikiText("*: [[toto\n"
-        + "]]\n");
-    assertEquals("There should be 1 recognized indented item", 1,
-        text.wikiTokens().size());
+    WikiText text = new WikiText("*: [[toto\n" + "]]\n");
+    assertEquals("There should be 1 recognized indented item", 1, text.wikiTokens().size());
     assertTrue("The first item should be an indented item",
         text.wikiTokens().get(0) instanceof IndentedItem);
     assertEquals("The indented item should be correctly created.", "*: [[toto",
@@ -630,10 +622,8 @@ public class WikiTextTest {
 
   @Test
   public void testInternalLinkHasLowerPriorityThanClosingHeader() {
-    WikiText text = new WikiText("== test [[titi ==\n"
-        + "]]\n");
-    assertEquals("There should be 1 recognized Heading", 1,
-        text.wikiTokens().size());
+    WikiText text = new WikiText("== test [[titi ==\n" + "]]\n");
+    assertEquals("There should be 1 recognized Heading", 1, text.wikiTokens().size());
     assertTrue("The first item should be an internal link",
         text.wikiTokens().get(0) instanceof Heading);
     assertEquals("The indented item should be correctly created.", " test [[titi ",
@@ -813,10 +803,11 @@ public class WikiTextTest {
     assertEquals("All Indentations should be attach to the root.", 5, text.wikiTokens().size());
     assertTrue(text.wikiTokens().stream().allMatch(t -> (t instanceof IndentedItem)));
 
-    text = new WikiText("=== Text With incorrect {{Template|   ===\n" + "# A male [[sheep]], a [[ram]].\n"
-        + "# The head of a [[hammer]], and particularly of a steam-driven hammer.\n"
-        + "#* Note that this external link is incorrect {{FakeTemplate|toto|arg=  \n"
-        + "#* This Indentation should be a child of root\n" + "#*: This one also.\n");
+    text = new WikiText(
+        "=== Text With incorrect {{Template|   ===\n" + "# A male [[sheep]], a [[ram]].\n"
+            + "# The head of a [[hammer]], and particularly of a steam-driven hammer.\n"
+            + "#* Note that this external link is incorrect {{FakeTemplate|toto|arg=  \n"
+            + "#* This Indentation should be a child of root\n" + "#*: This one also.\n");
     assertEquals("The Heading should be correctly closed.", 6, text.wikiTokens().size());
     assertTrue(text.wikiTokens().get(0) instanceof Heading);
     assertTrue(text.wikiTokens().get(1) instanceof IndentedItem);

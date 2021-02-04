@@ -91,7 +91,7 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
       writer.append(givenName(parameterMap));
     } else if (templateName.equals("quote-book")) {
       // TODO: example cannot be registered while transcluding as the lexical sense is not available
-      //  yet.
+      // yet.
       // StringWriter quotation = new StringWriter();
       // super.substituteTemplateCall(templateName, parameterMap, quotation);
       // delegate.registerExample(quotation.toString(), null);

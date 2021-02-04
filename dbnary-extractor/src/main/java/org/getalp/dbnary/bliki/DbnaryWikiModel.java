@@ -128,10 +128,13 @@ public class DbnaryWikiModel extends WikiModel {
     trace.logCounters(log);
   }
 
+  private ScribuntoLuaEngine scribuntoEngine =
+      new ScribuntoLuaEngine(this, compiledScriptCache, log.isDebugEnabled());
+
   @Override
   public ScribuntoEngine createScribuntoEngine() {
-    // Allow debugging of lua model if bdebug is enabled
-    return new ScribuntoLuaEngine(this, compiledScriptCache, log.isDebugEnabled());
+    // Allow debugging of lua model if debug is enabled
+    return scribuntoEngine;
   }
 
   @Override

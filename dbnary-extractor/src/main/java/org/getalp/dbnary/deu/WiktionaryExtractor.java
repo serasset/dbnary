@@ -546,10 +546,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           + "(?<TMPL>\\p{Template})|" + "(?<LINK>\\p{InternalLink})";
 
   // TODO: faire une analyse plus poussée des traduction, car il y a des entrées comme cela :
-  //  se {{Ü|fr|mettre}} {{Ü|fr|à}} {{Ü|fr|couler}} qui est extrait en 3 traductions différentes
+  // se {{Ü|fr|mettre}} {{Ü|fr|à}} {{Ü|fr|couler}} qui est extrait en 3 traductions différentes
   // TODO: Certains liens sont entre crochet pour annoter la traduction suivante ou précédente
-  //  comme dans la traduction anglais de ‘Präsidentin’ ([female] chairperson),
-  //  où female ne doit pas être extrait.
+  // comme dans la traduction anglais de ‘Präsidentin’ ([female] chairperson),
+  // où female ne doit pas être extrait.
   private void extractTranslationsFromListContent(WikiText.WikiContent content) {
 
     // log.trace("Translation line = {}", content);

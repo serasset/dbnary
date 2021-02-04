@@ -269,7 +269,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token indent : indentationsOrTemplates) {
       if (indent instanceof NumberedListItem) {
         // Do not extract numbered list items that begin with ":" as they are indeed examples.
-        if (indent.asNumberedListItem().getContent().getText().startsWith(":")) continue;
+        if (indent.asNumberedListItem().getContent().getText().startsWith(":"))
+          continue;
         // TODO : handle {{t|çıplaklık|truc|dil=tr}} which leads to (çıplaklık, truc) (as links)
         wdh.registerNewDefinition(indent.asNumberedListItem().getContent().toString());
       } else if (indent instanceof Indentation) {

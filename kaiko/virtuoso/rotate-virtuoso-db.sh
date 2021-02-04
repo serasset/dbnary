@@ -27,7 +27,7 @@ function show_help() {
   echo "      d: use provided value as the virtuoso database location (default value = $VIRTUOSODBLOCATION)."
   echo "      e: use provided value as the dbnary folder containing all extraction data (older and latest ones. default value = $DBNARY_ONTOLEX)."
   echo "      t: use provided value as the prefix for temp folders (default value = $TEMPORARYPREFIX)."
-  echo "      p: use provided password as the db password (default: password will be provided by DBPASSWD)."
+  echo "      p: use provided password as the db password (default: password will be asked interactively)."
   echo "      P: asks for a db password interactively (default: true if password is not provided)."
   echo "      f: force the database preparation even if the current dump is already deployed."
   echo "      v: uses verbose output."
@@ -110,12 +110,6 @@ if [[ ! -w "$VIRTUOSODBLOCATION" ]]; then
   exit 1
 fi
 
-## READING DB PASSWORD
-if [[ $askpass == "true" || ${password}x == 'x' ]]; then
-  echo "Enter your bootstrap database password : "
-  IFS= read -s -p Password: password
-  echo
-fi
 
 ## Utility functions
 function virtuoso_db_versions() {
@@ -178,6 +172,12 @@ elif [ "${extractversion}" == "${virtuosoversion}" ]; then
   exit
 fi
 
+## READING DB PASSWORD
+if [[ $askpass == "true" || ${password}x == 'x' ]]; then
+  echo "Enter your bootstrap database password : "
+  IFS= read -s -p Password: password
+  echo
+fi
 
 # Prepare the dataset directory
 ## Converting language codes
@@ -442,6 +442,7 @@ NEWDBFOLDER=${VIRTUOSODBLOCATION}/db.${CURRENTDATETIMESTAMP}
 echo "Moving database to $NEWDBFOLDER"
 mv $DBBOOTSTRAPFOLDER $NEWDBFOLDER
 # renaming the new DB folder so that it will be deployed
+echo "Renaming database folder $NEWDBFOLDER -->  ${VIRTUOSODBLOCATION}/db.${extractversion}.next"
 mv $NEWDBFOLDER ${VIRTUOSODBLOCATION}/db.${extractversion}.next
 
 # TODO: Generate a production ready virtuoso.ini file

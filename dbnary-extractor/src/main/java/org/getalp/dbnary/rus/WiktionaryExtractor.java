@@ -49,8 +49,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
     translationExtractor = new RussianTranslationExtractorWikiModel(wdh, wi, new Locale("ru"),
         "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "", glossFilter);
-    morphoExtractor = new RussianMorphoExtractorWikiModel(this.wdh,
-        this.wi, new Locale("ru"), "/${image}", "/${title}");
+    morphoExtractor = new RussianMorphoExtractorWikiModel(this.wdh, this.wi, new Locale("ru"),
+        "/${image}", "/${title}");
   }
 
   // protected final static Pattern languageSectionPattern;

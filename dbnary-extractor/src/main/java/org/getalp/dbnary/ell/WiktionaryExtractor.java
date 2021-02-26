@@ -171,7 +171,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     // System.out.println(pageContent);
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (isnotgreek(languageFilter)) {
@@ -248,7 +248,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractGreekData(int startOffset, int endOffset) {
     Matcher m = SectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     gotoNoData(m);
 
     while (m.find()) {
@@ -364,7 +364,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         leavePronBlock(m);
         break;
       default:
-        assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected state while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
     wdh.finalizeEntryExtraction();
   }

@@ -105,6 +105,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wikisaurusExtractor = new WikisaurusExtractor(this.ewdh);
   }
 
+  @Override
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    super.setWiktionaryPageName(wiktionaryPageName);
+    wikiExpander.setPageName(wiktionaryPageName);
+    definitionExpander.setPageName(wiktionaryPageName);
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -114,7 +121,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void extractData() {
     // TODO: adapt extractor to allow extraction of foreign data.
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher languageFilter = sectionPattern.matcher(pageContent);
     while (languageFilter.find() && !languageFilter.group(1).equals("English")) {
       // NOP
@@ -163,17 +170,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected void extractEnglishData(int startOffset, int endOffset) {
-    if (isWikisaurus(wiktionaryPageName)) {
-      wiktionaryPageName = cutNamespace(wiktionaryPageName);
-      wdh.initializeEntryExtraction(wiktionaryPageName);
-      wikisaurusExtractor.extractWikisaurusSection(wiktionaryPageName,
+    if (isWikisaurus(getWiktionaryPageName())) {
+      setWiktionaryPageName(cutNamespace(getWiktionaryPageName()));
+      wdh.initializeEntryExtraction(getWiktionaryPageName());
+      wikisaurusExtractor.extractWikisaurusSection(getWiktionaryPageName(),
           pageContent.substring(startOffset, endOffset));
       return;
     }
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wikiExpander.setPageName(wiktionaryPageName);
+    wikiExpander.setPageName(getWiktionaryPageName());
     currentBlock = Block.NOBLOCK;
 
     HashMap<String, Object> previousContext = new HashMap<>();
@@ -225,7 +232,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       context.put("nym", nym);
       return Block.NYMBLOCK;
     } else {
-      log.debug("Ignoring content of section {} in {}", title, this.wiktionaryPageName);
+      log.debug("Ignoring content of section {} in {}", title, this.getWiktionaryPageName());
       return Block.NOBLOCK;
     }
   }
@@ -258,7 +265,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case ETYMOLOGYBLOCK:
         break;
       default:
-        assert false : "Unexpected block while parsing: " + wiktionaryPageName;
+        assert false : "Unexpected block while parsing: " + getWiktionaryPageName();
     }
 
   }
@@ -277,9 +284,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case DEFBLOCK:
         String pos = (String) context.get("pos");
         wdh.addPartOfSpeech(pos);
-        ewdh.registerEtymologyPos(wiktionaryPageName);
+        ewdh.registerEtymologyPos(getWiktionaryPageName());
         extractMorphology(blockStart, end);
         extractHeadInformation(blockStart, end);
+        // TODO: English definition comes along examples and nyms, extract these also.
         extractDefinitions(blockStart, end);
         break;
       case TRADBLOCK:
@@ -308,7 +316,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractDescendants(blockStart, end);
         break;
       default:
-        assert false : "Unexpected block while parsing: " + wiktionaryPageName;
+        assert false : "Unexpected block while parsing: " + getWiktionaryPageName();
     }
 
     blockStart = -1;
@@ -344,7 +352,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractHeadInformation(int start, int end) {
-    WikiText text = new WikiText(wiktionaryPageName, pageContent, start, end);
+    WikiText text = new WikiText(getWiktionaryPageName(), pageContent, start, end);
     for (WikiText.Token t : text.templatesOnUpperLevel()) {
       WikiText.Template tmpl = (WikiText.Template) t;
       if (tmpl.getName().equals("head") || tmpl.getName().startsWith("en-")) {
@@ -360,9 +368,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (null != head && head.toString().trim().length() != 0) {
             WikiCharSequence s = new WikiCharSequence(head, linkResolver);
             String headword = s.toString();
-            if (isSignificantlyDifferent(headword, wiktionaryPageName)) {
+            if (isSignificantlyDifferent(headword, getWiktionaryPageName())) {
               log.debug("Found {} template with head {} // '{}' in '{}'", tmpl.getName(), head,
-                  headword, wiktionaryPageName);
+                  headword, getWiktionaryPageName());
               wdh.registerAlternateSpelling(headword);
             }
           }
@@ -392,8 +400,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (wdh.isDisabled(ExtractionFeature.ETYMOLOGY)) {
       return;
     }
-    if (wiktionaryPageName.trim().split("\\s+").length >= 3) {
-      log.trace("Ignoring etymology for: {}", wiktionaryPageName);
+    if (getWiktionaryPageName().trim().split("\\s+").length >= 3) {
+      log.trace("Ignoring etymology for: {}", getWiktionaryPageName());
       return;
     }
 
@@ -407,7 +415,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
       ewdh.registerEtymology(etymology);
     } catch (RuntimeException e) {
-      log.error("Caught {} while registering etymology in {}", e, wiktionaryPageName);
+      log.error("Caught {} while registering etymology in {}", e, getWiktionaryPageName());
       if (log.isDebugEnabled()) {
         e.printStackTrace(System.err);
       }
@@ -419,7 +427,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // DONE: process {{der4|title=Terms derived from ''free'' | [[freeball]], [[free-ball]] |
   // [[freebooter]] }}
   protected void extractDerived(int blockStart, int end) {
-    if (wiktionaryPageName.trim().split("\\s+").length >= 3) {
+    if (getWiktionaryPageName().trim().split("\\s+").length >= 3) {
       return;
     }
 
@@ -431,7 +439,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected void extractDescendants(int blockStart, int end) {
-    if (wiktionaryPageName.trim().split("\\s+").length >= 3) {
+    if (getWiktionaryPageName().trim().split("\\s+").length >= 3) {
       return;
     }
 
@@ -549,7 +557,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (b.values != null && b.values.get(0).equals("ETYMTREE") && b.args.get("lang") != null) {
         String page = b.args.get("page");
         if (b.args.get("word1") == null) {
-          page = page + this.wiktionaryPageName;
+          page = page + this.getWiktionaryPageName();
         }
         if (ewdh.etymtreeHashSet.add(page)) {// if etymtree hasn't been saved already
           String etymtreePageContent = wi.getTextOfPage(page);
@@ -566,7 +574,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractConjugation(int startOffset, int endOffset) {
-    log.debug("Conjugation extraction not yet implemented in:\t{}", wiktionaryPageName);
+    log.debug("Conjugation extraction not yet implemented in:\t{}", getWiktionaryPageName());
   }
 
   private EnglishInflectionData plural = new EnglishInflectionData().plural();
@@ -588,7 +596,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
 
-    WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
+    WikiText text = new WikiText(getWiktionaryPageName(), pageContent, startOffset, endOffset);
 
     WikiEventsSequence wikiTemplates = text.templatesOnUpperLevel();
 
@@ -628,7 +636,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
         if (!args.isEmpty()) {
           log.debug("en-plural noun macro: Non handled parameters : \t{}\tin\t{}", args,
-              this.wiktionaryPageName);
+              this.getWiktionaryPageName());
         }
 
       } else if (g1.equals("en-adj") || g1.equals("en-adv") || g1.equals("en-adjective")
@@ -649,20 +657,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
       } else if (g1.equals("en-abbr")) {
         // TODO: extract abbreviation morphology
-        log.debug("Use of deprecated en-abbr template in\t{}", wiktionaryPageName);
+        log.debug("Use of deprecated en-abbr template in\t{}", getWiktionaryPageName());
       } else if (g1.equals("en-acronym")) {
         // TODO: extract acronym morphology
-        log.debug("Use of deprecated en-acronym template in\t{}", wiktionaryPageName);
+        log.debug("Use of deprecated en-acronym template in\t{}", getWiktionaryPageName());
       } else if (g1.equals("en-con")) {
         // nothing to extract...
       } else if (g1.equals("en-cont")) {
         // contraction
-        log.debug("Use of deprecated en-cont (contraction) template in\t{}", wiktionaryPageName);
+        log.debug("Use of deprecated en-cont (contraction) template in\t{}",
+            getWiktionaryPageName());
       } else if (g1.equals("en-det")) {
         // nothing to extract
       } else if (g1.equals("en-initialism")) {
         // TODO: extract initialism morphology
-        log.debug("Use of deprecated en-initialism template in\t{}", wiktionaryPageName);
+        log.debug("Use of deprecated en-initialism template in\t{}", getWiktionaryPageName());
       } else if (g1.equals("en-interj")) {
         // nothing to extract
       } else if (g1.equals("en-part") || g1.equals("en-particle")) {
@@ -674,7 +683,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Map<String, String> args = tmpl.getParsedArgs();
         args.remove("sort");
         if (!args.isEmpty()) {
-          log.debug("other args in en-suffix template\t{}\tin\t{}", args, wiktionaryPageName);
+          log.debug("other args in en-suffix template\t{}\tin\t{}", args, getWiktionaryPageName());
         }
       } else if (g1.equals("en-prep")) {
         // nothing to extract
@@ -684,11 +693,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // TODO: extract part morphology
         Map<String, String> args = tmpl.getParsedArgs();
         if (null != args.get("desc")) {
-          log.debug("desc argument in en-pron template in\t{}", wiktionaryPageName);
+          log.debug("desc argument in en-pron template in\t{}", getWiktionaryPageName());
           args.remove("desc");
         }
         if (!args.isEmpty()) {
-          log.debug("other args in en-pron template\t{}\tin\t{}", args, wiktionaryPageName);
+          log.debug("other args in en-pron template\t{}\tin\t{}", args, getWiktionaryPageName());
         }
       } else if (g1.equals("en-proverb")) {
         // TODO: the first argument (or head argument) is the head if different from pagename...
@@ -699,7 +708,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Map<String, String> args = tmpl.getParsedArgs();
         args.remove("sort");
         if (!args.isEmpty()) {
-          log.debug("other args in en-suffix template\t{}\tin\t{}", args, wiktionaryPageName);
+          log.debug("other args in en-suffix template\t{}\tin\t{}", args, getWiktionaryPageName());
         }
       } else if (g1.equals("en-symbol")) {
         // TODO: the first argument is the head if different from pagename...
@@ -713,7 +722,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // TODO: Check if the inflected form is available in the base word morphology.
         } else {
           log.debug("MORPH: direct call to head\t{}\tin\t{}", tmpl.toString(),
-              this.wiktionaryPageName);
+              this.getWiktionaryPageName());
         }
       } else {
         // log.debug("NOMORPH PATTERN:\t {}\t in:\t{}", g1, wiktionaryPageName);
@@ -721,7 +730,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
     }
     if (nbTempl > 1) {
-      log.debug("MORPHTEMPLATE: more than 1 morph template in\t{}", this.wiktionaryPageName);
+      log.debug("MORPHTEMPLATE: more than 1 morph template in\t{}", this.getWiktionaryPageName());
     }
   }
 
@@ -738,7 +747,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       headword = wikiExpander.expandAll(head, null); // Expand everything in the head value and
       // provide a text only version.
     } else {
-      headword = wiktionaryPageName;
+      headword = getWiktionaryPageName();
     }
     args.remove("head");
     int argnum = 1;
@@ -794,7 +803,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     if (!args.isEmpty()) {
       log.debug("en-noun macro: Non handled parameters : \t{}\tin\t{}", args,
-          this.wiktionaryPageName);
+          this.getWiktionaryPageName());
     }
   }
 
@@ -808,7 +817,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       headword = wikiExpander.expandAll(h, null); // Expand everything in the head value and provide
       // a text only version.
     } else {
-      headword = wiktionaryPageName;
+      headword = getWiktionaryPageName();
     }
     args.remove("head");
     if (args.containsKey("sup")) {
@@ -826,24 +835,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       arg = "more";
     }
     while (arg != null) {
-      if (arg.equals("more") && !"many".equals(wiktionaryPageName)
-          && !"much".equals(wiktionaryPageName)) {
+      if (arg.equals("more") && !"many".equals(getWiktionaryPageName())
+          && !"much".equals(getWiktionaryPageName())) {
         if (!notComparable) {
           ewdh.comparable();
         }
         addForm(comparative.toPropertyObjectMap(), "more " + headword);
         if (null != args.get("sup" + argnum)) {
-          log.debug("Irregular superlative with comparative with more in\t{}", wiktionaryPageName);
+          log.debug("Irregular superlative with comparative with more in\t{}",
+              getWiktionaryPageName());
         }
         addForm(superlative.toPropertyObjectMap(), "most " + headword);
-      } else if (arg.equals("further") && !"far".equals(wiktionaryPageName)) {
+      } else if (arg.equals("further") && !"far".equals(getWiktionaryPageName())) {
         if (!notComparable) {
           ewdh.comparable();
         }
         addForm(comparative.toPropertyObjectMap(), "further " + headword);
         if (null != args.get("sup" + argnum)) {
           log.debug("Irregular superlative with comparative with further in\t{}",
-              wiktionaryPageName);
+              getWiktionaryPageName());
         }
         addForm(superlative.toPropertyObjectMap(), "furthest " + headword);
       } else if (arg.equals("er")) {
@@ -890,7 +900,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     if (!args.isEmpty()) {
       log.debug("en-adj macro: Non handled parameters : \t{}\tin\t{}", args,
-          this.wiktionaryPageName);
+          this.getWiktionaryPageName());
     }
   }
 
@@ -902,30 +912,31 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String par3 = args.get("3");
     String par4 = args.get("4");
 
-    String pres3sgForm = (null != par1) ? par1 : this.wiktionaryPageName + "s";
-    String presPtcForm = (null != par2) ? par2 : this.wiktionaryPageName + "ing";
-    String pastForm = (null != par3) ? par3 : this.wiktionaryPageName + "ed";
+    String pres3sgForm = (null != par1) ? par1 : this.getWiktionaryPageName() + "s";
+    String presPtcForm = (null != par2) ? par2 : this.getWiktionaryPageName() + "ing";
+    String pastForm = (null != par3) ? par3 : this.getWiktionaryPageName() + "ed";
     String pastPtcForm = null;
 
     if (null != par1 && null == par2 && null == par3) {
       // This is the "new" format, which uses only the first parameter.
       if ("es".equals(par1)) {
-        pres3sgForm = this.wiktionaryPageName + "es";
+        pres3sgForm = this.getWiktionaryPageName() + "es";
       } else if ("ies".equals(par1)) {
-        if (!this.wiktionaryPageName.endsWith("y")) {
+        if (!this.getWiktionaryPageName().endsWith("y")) {
           log.debug("VERBMORPH : Incorrect en-verb parameter \"ies\" on non y ending verb\t{}",
-              this.wiktionaryPageName);
+              this.getWiktionaryPageName());
         }
-        String stem = this.wiktionaryPageName.substring(0, this.wiktionaryPageName.length() - 1);
+        String stem =
+            this.getWiktionaryPageName().substring(0, this.getWiktionaryPageName().length() - 1);
         pres3sgForm = stem + "ies";
         presPtcForm = stem + "ying";
         pastForm = stem + "ied";
       } else if ("d".equals(par1)) {
-        pres3sgForm = this.wiktionaryPageName + "s";
-        presPtcForm = this.wiktionaryPageName + "ing";
-        pastForm = this.wiktionaryPageName + "d";
+        pres3sgForm = this.getWiktionaryPageName() + "s";
+        presPtcForm = this.getWiktionaryPageName() + "ing";
+        pastForm = this.getWiktionaryPageName() + "d";
       } else {
-        pres3sgForm = this.wiktionaryPageName + "s";
+        pres3sgForm = this.getWiktionaryPageName() + "s";
         presPtcForm = par1 + "ing";
         pastForm = par1 + "ed";
       }
@@ -938,25 +949,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           presPtcForm = par1 + par2 + "ing";
           pastForm = par1 + par2 + "ed";
         } else if ("ing".equals(par3)) {
-          pres3sgForm = this.wiktionaryPageName + "s";
+          pres3sgForm = this.getWiktionaryPageName() + "s";
           presPtcForm = par1 + par2 + "ing";
 
           if ("y".equals(par2)) {
-            pastForm = this.wiktionaryPageName + "d";
+            pastForm = this.getWiktionaryPageName() + "d";
           } else {
             pastForm = par1 + par2 + "ed";
           }
         } else if ("ed".equals(par3)) {
           if ("i".equals(par2)) {
             pres3sgForm = par1 + par2 + "es";
-            presPtcForm = this.wiktionaryPageName + "ing";
+            presPtcForm = this.getWiktionaryPageName() + "ing";
           } else {
-            pres3sgForm = this.wiktionaryPageName + "s";
+            pres3sgForm = this.getWiktionaryPageName() + "s";
             presPtcForm = par1 + par2 + "ing";
           }
           pastForm = par1 + par2 + "ed";
         } else if ("d".equals(par3)) {
-          pres3sgForm = this.wiktionaryPageName + "s";
+          pres3sgForm = this.getWiktionaryPageName() + "s";
           presPtcForm = par1 + par2 + "ing";
           pastForm = par1 + par2 + "d";
         } else {
@@ -970,34 +981,34 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             presPtcForm = par1 + "ing";
             pastForm = par1 + "ed";
           } else if ("ies".equals(par2)) {
-            if (!(par1 + "y").equals(this.wiktionaryPageName)) {
+            if (!(par1 + "y").equals(this.getWiktionaryPageName())) {
               log.debug(
                   "VERBMORPH : Incorrect en-verb 2rd parameter ies  with stem different to pagename on verb\t{}",
-                  this.wiktionaryPageName);
+                  this.getWiktionaryPageName());
             }
             pres3sgForm = par1 + "ies";
             presPtcForm = par1 + "ying";
             pastForm = par1 + "ied";
           } else if ("ing".equals(par2)) {
-            pres3sgForm = this.wiktionaryPageName + "s";
+            pres3sgForm = this.getWiktionaryPageName() + "s";
             presPtcForm = par1 + "ing";
             pastForm = par1 + "ed";
           } else if ("ed".equals(par2)) {
-            pres3sgForm = this.wiktionaryPageName + "s";
+            pres3sgForm = this.getWiktionaryPageName() + "s";
             presPtcForm = par1 + "ing";
             pastForm = par1 + "ed";
           } else if ("d".equals(par2)) {
-            if (!this.wiktionaryPageName.equals(par1)) {
+            if (!this.getWiktionaryPageName().equals(par1)) {
               log.debug(
                   "VERBMORPH : Incorrect en-verb 2rd parameter d with par1 different to pagename on verb\t{}",
-                  this.wiktionaryPageName);
+                  this.getWiktionaryPageName());
             }
-            pres3sgForm = this.wiktionaryPageName + "s";
+            pres3sgForm = this.getWiktionaryPageName() + "s";
             presPtcForm = par1 + "ing";
             pastForm = par1 + "d";
           } else {
             log.debug("VERBMORPH : unexpected 2rd parameter \"{}\" on verb\t{}", par2,
-                this.wiktionaryPageName);
+                this.getWiktionaryPageName());
           }
         }
       }
@@ -1080,7 +1091,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (comp.endsWith("er")) {
         sup = comp.replaceAll("er$", "est");
       } else if (!"-".equals(sup)) {
-        log.debug("Missing superlative for irregular comparative in\t{}", wiktionaryPageName);
+        log.debug("Missing superlative for irregular comparative in\t{}", getWiktionaryPageName());
       }
     }
     if ("-".equals(sup)) {
@@ -1120,7 +1131,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         WikiContent usageContent = t.getArgs().get("3");
         String usage = (usageContent == null) ? "" : usageContent.toString();
         if (word == null) {
-          log.debug("No (required) translation in {} : {}", t, wiktionaryPageName);
+          log.debug("No (required) translation in {} : {}", t, getWiktionaryPageName());
           continue;
         }
         Map<String, WikiContent> args = new HashMap<>(t.getArgs()); // clone the args map so that
@@ -1144,7 +1155,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           lang = LangTools.normalize(l.toString());
         } else {
           log.debug("null language (first positional arg) in {} > {}", t.toString(),
-              wiktionaryPageName);
+              getWiktionaryPageName());
         }
         lang = EnglishLangToCode.threeLettersCode(lang);
         if (lang != null) {
@@ -1172,7 +1183,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentGloss = null;
       } else if (tName.equals("section link")) {
         WikiContent g2 = t.getArgs().get("1");
-        log.debug("Section link: {} for entry {}", g2, wiktionaryPageName);
+        log.debug("Section link: {} for entry {}", g2, getWiktionaryPageName());
         if (g2 != null) {
           String translationContent = getTranslationContentForLink(g2.toString());
           if (null != translationContent)
@@ -1180,7 +1191,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
       } else if (log.isDebugEnabled()) {
         log.debug("Ignored template: {} in translation section for entry {}", t.toString(),
-            wiktionaryPageName);
+            getWiktionaryPageName());
       }
     }
   }
@@ -1210,7 +1221,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return s.getContent().toString();
     }
     log.debug("Could not find appropriate section {} in translation section link target for {}",
-        translationSection, wiktionaryPageName);
+        translationSection, getWiktionaryPageName());
     return translationPageContent;
   }
 
@@ -1218,13 +1229,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractTranslations(int startOffset, int endOffset) {
     processedLinks.clear();
-    processedLinks.add(wiktionaryPageName);
+    processedLinks.add(getWiktionaryPageName());
     extractTranslations(pageContent.substring(startOffset, endOffset));
   }
 
   @Override
   protected void extractNyms(String synRelation, int startOffset, int endOffset) {
-    WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
+    WikiText text = new WikiText(getWiktionaryPageName(), pageContent, startOffset, endOffset);
     ClassBasedFilter filter = new ClassBasedFilter();
     filter.allowListItem().allowIndentation();
     // TODO ! For now I mimick the previous behaviour by
@@ -1275,7 +1286,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             args.remove("1");
             if (!args.isEmpty()) {
               log.debug("Unhandled remaining args {} in {}", args.entrySet().toString(),
-                  this.wiktionaryPageName);
+                  this.getWiktionaryPageName());
             }
             wdh.registerNymRelation(target, synRelation, currentGloss);
           }
@@ -1308,7 +1319,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       Map<String, String> args = WikiTool.parseArgs(pron);
       pron = args.get("2");
       if (!"en".equals(args.get("1"))) {
-        log.debug("Non English ({}) pronunciation in page {}.", this.wiktionaryPageName);
+        log.debug("Non English ({}) pronunciation in page {}.", this.getWiktionaryPageName());
       }
 
       if (null == pron || pron.equals("")) {
@@ -1323,7 +1334,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void extractDefinition(String definition, int defLevel) {
     // TODO: properly handle macros in definitions.
-    definitionExpander.setPageName(this.wiktionaryPageName);
+    definitionExpander.setPageName(this.getWiktionaryPageName());
     definitionExpander.parseDefinition(definition, defLevel);
   }
 }

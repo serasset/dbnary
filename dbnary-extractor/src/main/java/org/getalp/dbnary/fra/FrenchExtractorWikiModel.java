@@ -49,7 +49,6 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
       String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = wdh;
-    setPageName(wdh.currentLexEntry());
   }
 
   private static ArrayList<String> explode(char sep, String str) {

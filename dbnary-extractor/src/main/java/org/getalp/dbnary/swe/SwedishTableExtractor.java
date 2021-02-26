@@ -25,8 +25,9 @@ public class SwedishTableExtractor extends TableExtractor {
     super(currentEntry);
   }
 
-  @Override
-  protected List<String> getRowAndColumnContext(int nrow, int ncol,
+  // FIXME: The higher header "Positiv" is not collected because we
+  // @Override
+  protected List<String> XXgetRowAndColumnContext(int nrow, int ncol,
       ArrayMatrix<Element> columnHeaders) {
     List<String> rowAndColumnContext = new LinkedList<>();
     boolean previousRowHasHeader = false;
@@ -44,6 +45,38 @@ public class SwedishTableExtractor extends TableExtractor {
           break;
       }
     }
+    for (int i = 0; i < ncol; i++) {
+      addToContext(columnHeaders, nrow, i, rowAndColumnContext);
+    }
+
+    // Collect all bold header cells that are supposed to apply to all cells.
+    for (int i = 0; i < nrow; i++) {
+      for (int j = 0; j < ncol; j++) {
+        Element headerCell = columnHeaders.get(i, j);
+        if (headerCell != null) {
+          String clazz = headerCell.attr("class");
+          if (null != clazz && (clazz.trim().equals("main"))) {
+            // Headers with class "main" are global headers applying to all cells.
+            rowAndColumnContext.add(headerCell.text());
+          }
+        }
+      }
+    }
+    rowAndColumnContext =
+        rowAndColumnContext.stream().map(c -> c.startsWith("|") ? c.substring(1) : c)
+            .map(c -> c.toLowerCase().startsWith("böjningar av") ? c.replaceAll(" ", "_") : c)
+            .map(c -> c.toLowerCase().startsWith("kompareras inte") ? c.replaceAll(" ", "_") : c)
+            .map(c -> c.toLowerCase().endsWith("pronomen") ? c.replaceAll(" ", "_") : c)
+            .map(c -> c.toLowerCase().startsWith("ackusativ /") ? c.replaceAll(" ", "_") : c)
+            .flatMap(c -> Arrays.stream(c.split(" "))).filter(c -> c.trim().length() > 0)
+            .collect(Collectors.toList());
+    return rowAndColumnContext;
+  }
+
+  @Override
+  protected List<String> getRowAndColumnContext(int nrow, int ncol,
+      ArrayMatrix<Element> columnHeaders) {
+    List<String> rowAndColumnContext = super.getRowAndColumnContext(nrow, ncol, columnHeaders);
     for (int i = 0; i < ncol; i++) {
       addToContext(columnHeaders, nrow, i, rowAndColumnContext);
     }

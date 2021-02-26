@@ -51,7 +51,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     int startSection = -1;
 
@@ -175,7 +175,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private Block getBlock(String blockString) {
     Block res;
     if ((res = blockValue.get(blockString)) == null) {
-      log.debug("Unknown block {} --in-- {}", blockString, this.wiktionaryPageName);
+      log.debug("Unknown block {} --in-- {}", blockString, this.getWiktionaryPageName());
       res = Block.NOBLOCK;
     }
     return res;
@@ -197,7 +197,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         blockString = "";
       }
       if ((res = blockName.get(blockString)) == null) {
-        log.debug("Unknown blockName {} --in-- {}", blockString, this.wiktionaryPageName);
+        log.debug("Unknown blockName {} --in-- {}", blockString, this.getWiktionaryPageName());
       }
     }
     return res;
@@ -208,11 +208,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
     if (lang.equals("mg")) {
-      wdh.initializeEntryExtraction(wiktionaryPageName);
+      wdh.initializeEntryExtraction(getWiktionaryPageName());
     } else {
-      // log.debug("Unused lang {} --in-- {}", lang, this.wiktionaryPageName);
+      // log.debug("Unused lang {} --in-- {}", lang, this.getWiktionaryPageName());
       return;
-      // wdh.initializeEntryExtraction(wiktionaryPageName, lang);
+      // wdh.initializeEntryExtraction(getWiktionaryPageName(), lang);
     }
 
     Matcher m = blockPattern.matcher(pageContent);
@@ -279,7 +279,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractTranslations(startOffset, endOffset);
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected block while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
   }
 

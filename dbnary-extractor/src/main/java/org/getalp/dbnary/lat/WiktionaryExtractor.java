@@ -175,6 +175,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         "/${image}", "/${title}");
   }
 
+  @Override
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    super.setWiktionaryPageName(wiktionaryPageName);
+    exampleExpander.setPageName(this.getWiktionaryPageName());
+    definitionExpander.setPageName(this.getWiktionaryPageName());
+  }
+
   private Set<String> defTemplates = null;
 
   public String getLanguageInHeader(Matcher m) {
@@ -191,7 +198,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected void extractData(boolean extractForeignData) {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     int startSection = -1;
 
@@ -225,13 +232,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return;
       }
 
-      wdh.initializeEntryExtraction(wiktionaryPageName, lang);
+      wdh.initializeEntryExtraction(getWiktionaryPageName(), lang);
     } else {
       if (!"la".equals(lang)) {
         return;
       }
 
-      wdh.initializeEntryExtraction(wiktionaryPageName);
+      wdh.initializeEntryExtraction(getWiktionaryPageName());
     }
     Matcher m = entrySectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
@@ -286,11 +293,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (ignorableSectionMarkers.contains(sectionTitle)) {
         return Block.NOBLOCK;
       } else {
-        log.debug("Unknown section title {} in {}", sectionTitle, this.wiktionaryPageName);
+        log.debug("Unknown section title {} in {}", sectionTitle, this.getWiktionaryPageName());
         return Block.NOBLOCK;
       }
     } else {
-      log.debug("Null section title in {}", sectionTitle, this.wiktionaryPageName);
+      log.debug("Null section title in {}", sectionTitle, this.getWiktionaryPageName());
       return Block.NOBLOCK;
     }
   }
@@ -320,7 +327,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentNym = (String) context.get("nym");
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected block while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
 
   }
@@ -352,7 +360,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentNym = null;
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected block while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
 
     blockStart = -1;
@@ -445,7 +454,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // this a a language identifier, just ignore it as we get the language id from the trad
         // macro parameter.
       } else {
-        log.debug("Unexpected template {} in translations for {}", g1, wiktionaryPageName);
+        log.debug("Unexpected template {} in translations for {}", g1, getWiktionaryPageName());
       }
     }
   }

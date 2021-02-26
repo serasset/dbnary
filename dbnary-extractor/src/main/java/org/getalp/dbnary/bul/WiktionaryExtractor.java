@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    */
   @Override
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (languageFilter.find() && !isBulgarianLanguageHeader(languageFilter)) {
       // nop
@@ -88,7 +89,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public void startExtraction() {
     isCurrentlyExtracting = true;
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
   }
 
   public void stopExtraction() {
@@ -125,7 +126,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractBulgarianData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     while (m.find()) {
       switch (state) {
         case NODATA:
@@ -156,16 +157,28 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         leaveBulgarianBlock(m);
         break;
       default:
-        assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected state while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
     wdh.finalizeEntryExtraction();
   }
 
-  private BulgarianWikiModel dbnmodel = new BulgarianWikiModel(this.wdh, this.wi, new Locale("bg"),
-      "/${image}", "/${title}", this.glossFilter);
+  private BulgarianWikiModel dbnmodel;
+
+  @Override
+  public void setWiktionaryIndex(WiktionaryIndex wi) {
+    super.setWiktionaryIndex(wi);
+    dbnmodel = new BulgarianWikiModel(this.wdh, this.wi, new Locale("bg"), "/${image}", "/${title}",
+        this.glossFilter);
+  }
+
+  @Override
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    super.setWiktionaryPageName(wiktionaryPageName);
+    dbnmodel.setPageName(this.getWiktionaryPageName());
+  }
 
   private void extractMorpho(int startOffset, int endOffset) {
-    dbnmodel.setPageName(this.wiktionaryPageName);
     dbnmodel.parseBulgarianBlock(pageContent.substring(startOffset, endOffset));
     if (log.isDebugEnabled()) {
       dbnmodel.displayUsedTemplates();

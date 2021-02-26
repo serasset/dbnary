@@ -5,6 +5,7 @@ package org.getalp.dbnary.tur;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -13,6 +14,8 @@ import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiText;
@@ -44,6 +47,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static HashMap<String, String> nymMarkerToNymName;
 
   private static final Set<String> ignoreHeadings = new HashSet<>();
+  private ExpandAllWikiModel definitionExpander;
 
   static {
 
@@ -129,8 +133,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   }
 
+  @Override
+  public void setWiktionaryIndex(WiktionaryIndex wi) {
+    super.setWiktionaryIndex(wi);
+    definitionExpander = new ExpandAllWikiModel(wi, Locale.forLanguageTag("tr"), "/images", "/link");
+  }
+
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     // System.out.println(pageContent);
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (languageFilter.find() && !languageFilter.group(1).equals("Türkçe")) {
@@ -158,14 +168,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: section Yan Kavramlar gives related concepts (apparently not synonyms).
   private void extractTurkishData(int startOffset, int endOffset) {
     WikiText txt = new WikiText(pageContent.substring(startOffset, endOffset));
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     for (WikiText.Token evt : txt.headers(3)) {
       WikiSection section = evt.asHeading().getSection();
       String header = section.getHeading().getContent().toString().trim();
       // log.debug("Header = {}", header);
       if (header.equals("Köken")) {
         // Etymology
-        log.debug("Etymology section ignored in {}", wiktionaryPageName);
+        log.debug("Etymology section ignored in {}", getWiktionaryPageName());
       } else if ("Söyleniş".equals(header)) {
         extractPron(section.getContent());
       } else if (partOfSpeechMarkers.contains(header)) {
@@ -183,7 +193,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               extractPron(ws.getContent());
             } else if (nymMarkerToNymName.containsKey(h4)) {
               // Nym block
-              log.debug("Nym section {} ignored in {}", h4, wiktionaryPageName);
+              log.debug("Nym section {} ignored in {}", h4, getWiktionaryPageName());
             } else if ("Deyimler".equals(h4) || "Atasözleri".equals(h4)) {
               // Idioms or proverbs
             } else if ("Köken".equals(h4)) {
@@ -191,12 +201,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else if (ignoreHeadings.contains(h4)) {
               // Just ignore
             } else {
-              log.debug("Unhandled sub section {} in {}", h4, wiktionaryPageName);
+              log.debug("Unhandled sub section {} in {}", h4, getWiktionaryPageName());
             }
           }
         }
       } else {
-        log.debug("Unexpected header {} in {}", header, wiktionaryPageName);
+        log.debug("Unexpected header {} in {}", header, getWiktionaryPageName());
       }
     }
     wdh.finalizeEntryExtraction();
@@ -271,8 +281,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // Do not extract numbered list items that begin with ":" as they are indeed examples.
         if (indent.asNumberedListItem().getContent().getText().startsWith(":"))
           continue;
-        // TODO : handle {{t|çıplaklık|truc|dil=tr}} which leads to (çıplaklık, truc) (as links)
-        wdh.registerNewDefinition(indent.asNumberedListItem().getContent().toString());
+        String expandedDefinition = definitionExpander.expandAll(indent.asNumberedListItem().getContent().toString(), null);
+        wdh.registerNewDefinition(expandedDefinition.replace("\n", ""));
       } else if (indent instanceof Indentation) {
         String def = indent.asIndentation().getContent().toString();
         Matcher m = senseNumPattern.matcher(def);
@@ -286,11 +296,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if ("Resmi Adı".equals(tname) || "Resmî Adı".equals(tname)) {
           break;
         } else {
-          log.debug("In Def[{}] - got template {}", wiktionaryPageName, tname);
+          log.debug("In Def[{}] - got template {}", getWiktionaryPageName(), tname);
         }
       } else {
         // TODO: test and handle these !
-        log.debug("Unhandled indented item in def[{}]: {}", wiktionaryPageName, indent.toString());
+        log.debug("Unhandled indented item in def[{}]: {}", getWiktionaryPageName(),
+            indent.toString());
       }
     }
   }

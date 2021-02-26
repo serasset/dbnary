@@ -14,6 +14,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
@@ -110,7 +111,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void extractData() {
     Matcher l1 = level2HeaderPattern.matcher(pageContent);
     int itaStart = -1;
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     while (l1.find()) {
       // System.err.println(l1.group());
       if (-1 != itaStart) {
@@ -140,7 +141,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractItalianData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(this.getWiktionaryPageName());
     currentBlock = Block.NOBLOCK;
     while (m.find()) {
       HashMap<String, Object> context = new HashMap<>();
@@ -190,7 +191,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return Block.PRONBLOCK;
     } else {
       // WARN: in previous implementation, L2 headers where considered as ignoredpos.
-      log.debug("Ignoring content of section {} in {}", title, this.wiktionaryPageName);
+      log.debug("Ignoring content of section {} in {}", title, this.getWiktionaryPageName());
       return Block.NOBLOCK;
     }
   }
@@ -217,7 +218,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case PRONBLOCK:
         break;
       default:
-        assert false : "Unexpected block while parsing: " + wiktionaryPageName;
+        assert false : "Unexpected block while parsing: " + this.getWiktionaryPageName();
     }
 
   }
@@ -250,7 +251,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractPron(blockStart, end);
         break;
       default:
-        assert false : "Unexpected block while parsing: " + wiktionaryPageName;
+        assert false : "Unexpected block while parsing: " + this.getWiktionaryPageName();
     }
 
     blockStart = -1;
@@ -260,7 +261,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: do not create the gloss resource in the model if no translation is contained in the group
   // (some kind of lazy construction ?)
   private void extractTranslations(int startOffset, int endOffset) {
-    WikiText wt = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
+    WikiText wt = new WikiText(this.getWiktionaryPageName(), pageContent, startOffset, endOffset);
     List<? extends Token> toks = wt.wikiTokens();
 
     String currentGloss = null;
@@ -310,10 +311,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           ti = toks.size();
         } else {
           // Links outside indentation are simply ignored
-          log.trace("Unexpected link {} in {}", t, wiktionaryPageName);
+          log.trace("Unexpected link {} in {}", t, this.getWiktionaryPageName());
         }
       } else {
-        log.debug("Unexpected token {} in {}", t, wiktionaryPageName);
+        log.debug("Unexpected token {} in {}", t, this.getWiktionaryPageName());
       }
       // TODO : check if entries are using other arguments
       ti++;
@@ -325,9 +326,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void processTranslationLine(Resource gloss, IndentedItem t) {
-    log.trace("Translation line: {} ||| {}", t.toString(), wiktionaryPageName);
+    log.trace("Translation line: {} ||| {}", t.toString(), this.getWiktionaryPageName());
     WikiCharSequence line = new WikiCharSequence(t.getContent());
-    TranslationLineParser tp = new TranslationLineParser(wiktionaryPageName);
+    TranslationLineParser tp = new TranslationLineParser(this.getWiktionaryPageName());
     tp.extractTranslationLine(line, gloss, wdh, glossFilter);
   }
 
@@ -344,10 +345,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     ignorableGloss.reset(gloss);
     if (ignorableGloss.lookingAt()) {
-      log.debug("Ignoring gloss {} in {}", gloss, wiktionaryPageName);
+      log.debug("Ignoring gloss {} in {}", gloss, this.getWiktionaryPageName());
       return true;
     } else {
-      log.debug("Considering gloss {} in {}", gloss, wiktionaryPageName);
+      log.debug("Considering gloss {} in {}", gloss, this.getWiktionaryPageName());
       return false;
     }
   }
@@ -593,35 +594,42 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  // TODO: try to use gwtwiki to extract translations
-  // private void extractTranslations(int startOffset, int endOffset) {
-  // String transCode = pageContent.substring(startOffset, endOffset);
-  // ItalianTranslationExtractorWikiModel dbnmodel = new
-  // ItalianTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"),
-  // "/${image}/"+wiktionaryPageName, "/${title}");
-  // dbnmodel.parseTranslationBlock(transCode);
-  // }
-
   private void extractPron(int startOffset, int endOffset) {
     String pronCode = pageContent.substring(startOffset, endOffset);
-    ItalianPronunciationExtractorWikiModel dbnmodel = new ItalianPronunciationExtractorWikiModel(
-        this.wdh, this.wi, new Locale("it"), "/${image}", "/${title}");
-    dbnmodel.parsePronunciation(pronCode);
+    italianPronunciationExtractorWikiModel.parsePronunciation(pronCode);
   }
 
   @Override
   public void extractDefinition(String definition, int defLevel) {
     // TODO: properly handle macros in definitions.
-    ItalianDefinitionExtractorWikiModel dbnmodel = new ItalianDefinitionExtractorWikiModel(this.wdh,
-        this.wi, new Locale("it"), "/${image}", "/${title}");
-    dbnmodel.parseDefinition(definition, defLevel);
+    italianDefinitionExtractorWikiModel.parseDefinition(definition, defLevel);
   }
 
   @Override
   public void extractExample(String example) {
-    ItalianExampleExtractorWikiModel dbnmodel = new ItalianExampleExtractorWikiModel(this.wdh,
-        this.wi, new Locale("it"), "/${image}", "/${title}", this.wiktionaryPageName);
-    dbnmodel.parseExample(example);
+    italianExampleExtractorWikiModel.parseExample(example);
   }
 
+  private ItalianDefinitionExtractorWikiModel italianDefinitionExtractorWikiModel;
+  private ItalianExampleExtractorWikiModel italianExampleExtractorWikiModel;
+  private ItalianPronunciationExtractorWikiModel italianPronunciationExtractorWikiModel;
+
+  @Override
+  public void setWiktionaryIndex(WiktionaryIndex wi) {
+    super.setWiktionaryIndex(wi);
+    italianDefinitionExtractorWikiModel = new ItalianDefinitionExtractorWikiModel(this.wdh, this.wi,
+        new Locale("it"), "/${image}", "/${title}");
+    italianExampleExtractorWikiModel = new ItalianExampleExtractorWikiModel(this.wdh, this.wi,
+        new Locale("it"), "/${image}", "/${title}");
+    italianPronunciationExtractorWikiModel = new ItalianPronunciationExtractorWikiModel(this.wdh,
+        this.wi, new Locale("it"), "/${image}", "/${title}");
+  }
+
+  @Override
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    super.setWiktionaryPageName(wiktionaryPageName);
+    italianDefinitionExtractorWikiModel.setPageName(this.getWiktionaryPageName());
+    italianExampleExtractorWikiModel.setPageName(this.getWiktionaryPageName());
+    italianPronunciationExtractorWikiModel.setPageName(this.getWiktionaryPageName());
+  }
 }

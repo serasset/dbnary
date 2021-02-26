@@ -603,8 +603,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // }
 
     Resource defNode = aBox.createResource();
-    // TODO: no definition relation in Ontolex, Lexical Concepts use skos:definition, but not
-    // lexical senses, or do they ?
     aBox.add(currentSense, SkosOnt.definition, defNode);
     // Keep a human readable version of the definition, removing all links annotations.
     aBox.add(defNode, RDF.value, AbstractWiktionaryExtractor.cleanUpMarkup(def, true),

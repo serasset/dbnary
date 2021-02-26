@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.WiktionaryIndex;
 
 /**
  * @author serasset
@@ -114,7 +115,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     // System.out.println(pageContent);
     Matcher languageFilter = languagePattern.matcher(pageContent);
     while (languageFilter.find() && !languageFilter.group(1).equals("Suomi")) {
@@ -134,7 +135,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int suomiSectionEndOffset =
         languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
-    extractSuomihData(suomiSectionStartOffset, suomiSectionEndOffset);
+    extractSuomiData(suomiSectionStartOffset, suomiSectionEndOffset);
     wdh.finalizePageExtraction();
   }
 
@@ -210,11 +211,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
 
-  private void extractSuomihData(int startOffset, int endOffset) {
+  private void extractSuomiData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     // System.err.println(pageContent.substring(startOffset,endOffset));
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     gotoNoData(m);
     // WONTDO: should I use a macroOrLink pattern to detect translations that are not macro based ?
     // DONE: (priority: top) link the definition node with the current Part of Speech
@@ -351,16 +352,29 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         leaveNymBlock(m);
         break;
       default:
-        assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected state while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
     wdh.finalizeEntryExtraction();
   }
 
+  private FinnishTranslationExtractorWikiModel dbnmodel;
+
+  @Override
+  public void setWiktionaryIndex(WiktionaryIndex wi) {
+    super.setWiktionaryIndex(wi);
+    dbnmodel = new FinnishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("ru"),
+        "/${image}", "/${title}", glossFilter);
+  }
+
+  @Override
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    super.setWiktionaryPageName(wiktionaryPageName);
+    dbnmodel.setPageName(wiktionaryPageName);
+  }
 
   private void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    FinnishTranslationExtractorWikiModel dbnmodel = new FinnishTranslationExtractorWikiModel(
-        this.wdh, this.wi, new Locale("ru"), "/${image}", "/${title}", glossFilter);
     dbnmodel.parseTranslationBlock(transCode);
   }
 

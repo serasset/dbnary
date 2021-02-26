@@ -164,21 +164,23 @@ public abstract class TableExtractor {
             log.debug("Non null rowspan in data cell ({},{}) for {}", nrow, ncol, currentEntry);
           }
 
-          for (int i = 0; i < cspan; i++) {
-            if (shouldProcessCell(cell)) {
-              List<String> context = getRowAndColumnContext(nrow, ncol, columnHeaders);
-              // prepend global context
-              context.addAll(0, globalContext);
-              if (cell.select("table").isEmpty()) {
-                // No nested table in current cell.
-                // only get inflection for cells without bgcolour!
-                handleSimpleCell(cell, context, forms);
-              } else {
-                handleNestedTables(cell, context, forms);
+          for (int j = 0; j < rspan; j++) {
+            for (int i = 0; i < cspan; i++) {
+              if (shouldProcessCell(cell)) {
+                List<String> context = getRowAndColumnContext(nrow + j, ncol + i, columnHeaders);
+                // prepend global context
+                context.addAll(0, globalContext);
+                if (cell.select("table").isEmpty()) {
+                  // No nested table in current cell.
+                  // only get inflection for cells without bgcolour!
+                  handleSimpleCell(cell, context, forms);
+                } else {
+                  handleNestedTables(cell, context, forms);
+                }
               }
             }
-            ncol++;
           }
+          ncol += cspan;
         } else {
           log.debug("Row child \"{}\"is not a cell in {}", cell.tagName(), currentEntry);
         }

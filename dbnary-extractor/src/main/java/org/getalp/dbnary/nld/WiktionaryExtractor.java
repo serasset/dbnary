@@ -100,7 +100,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected void extractData(boolean foreignExtraction) {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
 
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
 
@@ -134,7 +134,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractNetherlandData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     currentBlock = Block.NOBLOCK;
     while (m.find()) {
 
@@ -175,7 +175,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       context.put("nym", nym);
       return Block.NYMBLOCK;
     } else {
-      log.debug("Ignoring content of section {} in {}", title, this.wiktionaryPageName);
+      log.debug("Ignoring content of section {} in {}", title, this.getWiktionaryPageName());
       return Block.NOBLOCK;
     }
   }
@@ -202,7 +202,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case PRONBLOCK:
         break;
       default:
-        assert false : "Unexpected block while parsing: " + wiktionaryPageName;
+        assert false : "Unexpected block while parsing: " + getWiktionaryPageName();
     }
 
   }
@@ -235,7 +235,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractPron(blockStart, end);
         break;
       default:
-        assert false : "Unexpected block while parsing: " + wiktionaryPageName;
+        assert false : "Unexpected block while parsing: " + getWiktionaryPageName();
     }
 
     blockStart = -1;
@@ -322,7 +322,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO : should be the default behavour for all languages.
   @Override
   public void extractDefinition(String definition, int defLevel) {
-    defOrExampleExpander.setPageName(wiktionaryPageName);
+    defOrExampleExpander.setPageName(getWiktionaryPageName());
     String def = defOrExampleExpander.expandAll(definition, null);
     if (def != null && !def.equals("")) {
       wdh.registerNewDefinition(def, defLevel);
@@ -338,7 +338,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO : should be the default behavour for all languages.
   @Override
   public void extractExample(String example) {
-    defOrExampleExpander.setPageName(wiktionaryPageName);
+    defOrExampleExpander.setPageName(getWiktionaryPageName());
     String ex = defOrExampleExpander.expandAll(example, null);
     if (ex != null && !ex.equals("")) {
       wdh.registerExample(ex, null);

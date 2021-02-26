@@ -171,10 +171,12 @@ public class SwedishInflectionData extends InflectionData {
 
   public void present() {
     this.tense = Tense.PRESENT;
+    this.mode = Mode.INDICATIV;
   }
 
   public void preterit() {
     this.tense = Tense.PRETERIT;
+    this.mode = Mode.INDICATIV;
   }
 
   public void supinum() {

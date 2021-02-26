@@ -19,7 +19,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   protected String pageContent;
   protected IWiktionaryDataHandler wdh;
-  protected String wiktionaryPageName;
+
+  private String wiktionaryPageName;
   protected final AbstractGlossFilter glossFilter;
 
   protected WiktionaryIndex wi = null;
@@ -35,6 +36,13 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     this.wi = wi;
   }
 
+  protected String getWiktionaryPageName() {
+    return wiktionaryPageName;
+  }
+
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    this.wiktionaryPageName = wiktionaryPageName;
+  }
   // Suppression des commentaires XML d'un texte
 
   protected final static String debutOrfinDecomPatternString;
@@ -128,8 +136,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     if (filterOutPage(wiktionaryPageName)) {
       return;
     }
-    this.wiktionaryPageName = wiktionaryPageName;
-
+    this.setWiktionaryPageName(wiktionaryPageName);
     this.pageContent = removeXMLComments(pageContent);
 
     if (pageContent == null) {
@@ -138,8 +145,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     try {
       extractData();
     } catch (RuntimeException e) {
-      System.err
-          .println("Caught RuntimeException while parsing entry [" + this.wiktionaryPageName + "]");
+      System.err.println(
+          "Caught RuntimeException while parsing entry [" + this.getWiktionaryPageName() + "]");
       throw e;
     }
   }

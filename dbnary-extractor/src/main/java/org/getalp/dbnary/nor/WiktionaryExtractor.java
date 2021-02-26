@@ -59,7 +59,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     int startSection = -1;
 
@@ -167,7 +167,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     if (lang.equals("Norsk")) {
-      wdh.initializeEntryExtraction(wiktionaryPageName);
+      wdh.initializeEntryExtraction(getWiktionaryPageName());
     } else { // unused lang
       return;
     }
@@ -234,7 +234,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case MORPHOBLOCK:
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected block while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
   }
 
@@ -285,7 +286,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         case "etyl":
           break;
         default:
-          log.debug("Unknown pron info {} --in-- {}", m.group(1), this.wiktionaryPageName);
+          log.debug("Unknown pron info {} --in-- {}", m.group(1), this.getWiktionaryPageName());
       }
     }
   }

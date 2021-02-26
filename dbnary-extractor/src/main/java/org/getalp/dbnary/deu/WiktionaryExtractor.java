@@ -201,7 +201,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    */
   @Override
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (languageFilter.find() && !isGermanLanguageHeader(languageFilter)) {
       // nop
@@ -245,7 +245,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractGermanData(int startOffset, int endOffset) {
     Matcher m = macroOrPOSPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     currentBlock = Block.IGNOREPOS;
 
     while (m.find()) {
@@ -376,7 +376,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case PRONBLOCK:
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected block while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
 
   }
@@ -415,7 +416,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         blockStart = end;
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected block while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
 
     blockStart = -1;
@@ -438,7 +440,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         switch (template) {
           case "Wortart":
             if (null == args.get("1")) {
-              log.error("No part of speech in Wortart macro in {}", this.wiktionaryPageName);
+              log.error("No part of speech in Wortart macro in {}", this.getWiktionaryPageName());
             }
             partOfSpeeches.add(args.get("1"));
             break;
@@ -487,7 +489,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void parseInflectionTables(int startOffset, int endOffset) {
     String region = pageContent.substring(startOffset, endOffset);
-    morphologyExtractor.extractMorphologicalData(region, wiktionaryPageName);
+    morphologyExtractor.extractMorphologicalData(region, getWiktionaryPageName());
   }
 
   static final String glossOrMacroPatternString;
@@ -504,7 +506,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractTranslations(int startOffset, int endOffset) {
-    WikiText wt = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
+    WikiText wt = new WikiText(getWiktionaryPageName(), pageContent, startOffset, endOffset);
     List<? extends WikiText.Token> toks = wt.wikiTokens();
 
     for (WikiText.Token t : toks) {
@@ -539,11 +541,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   // TODO: handle dialekts and translations as links
-  private static String translationTokenizer =
-      "(?<TMPLLANG>^\\p{Template}\\s*:\\s*)|" + "(?<CTLANG>^(?<LANG>.*)\\s*:\\s*)|"
-          + "(?<ITALICS>'{2,3}.*?'{2,3})|" + "(?<PARENS>\\(\\P{Reserved}*?\\))|"
-          + "(?<SPECIALPARENS>\\(.*?\\))|" + "\\[(?<GLOSS>\\P{Reserved}*?)\\]|"
-          + "(?<TMPL>\\p{Template})|" + "(?<LINK>\\p{InternalLink})";
+  private static String translationTokenizer = "(?<TMPLLANG>^\\p{Template}\\s*:\\s*)|" //
+      + "(?<CTLANG>^(?<LANG>.*)\\s*:\\s*)|" //
+      + "(?<ITALICS>'{2,3}.*?'{2,3})|" //
+      + "(?<PARENS>\\(\\P{Reserved}*?\\))|" //
+      + "(?<SPECIALPARENS>\\(.*?\\))|" //
+      + "\\[(?<GLOSS>\\P{Reserved}*?)\\]|" //
+      + "(?<TMPL>\\p{Template})|" //
+      + "(?<LINK>\\p{InternalLink})";
+
+  private static final Pattern tokenizer = WikiPattern.compile(translationTokenizer);
+
 
   // TODO: faire une analyse plus poussée des traduction, car il y a des entrées comme cela :
   // se {{Ü|fr|mettre}} {{Ü|fr|à}} {{Ü|fr|couler}} qui est extrait en 3 traductions différentes
@@ -555,9 +563,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // log.trace("Translation line = {}", content);
 
     WikiCharSequence line = new WikiCharSequence(content);
-    Pattern pattern = WikiPattern.compile(translationTokenizer);
 
-    Matcher lexer = pattern.matcher(line);
+    Matcher lexer = tokenizer.matcher(line);
     Resource currentGloss = null;
 
     int rank = 1;
@@ -683,7 +690,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (nymLineMatcher.group().length() >= 3 && nymLineMatcher.group().charAt(2) == ':') {
             // Level 3
             log.debug("Level 3 definition: \"{}\" in entry {}", nymLineMatcher.group(),
-                this.wiktionaryPageName);
+                this.getWiktionaryPageName());
             if (!senseNum.startsWith(currentLevel2SenseNumber)) {
               senseNum = currentLevel2SenseNumber + senseNum;
             }
@@ -762,7 +769,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       String senseNum = definitionMatcher.group(1);
       if (null == senseNum) {
         log.debug("Null sense number in definition\"{}\" for entry {}", def,
-            this.wiktionaryPageName);
+            this.getWiktionaryPageName());
       } else {
         senseNum = senseNum.trim();
         senseNum = senseNum.replaceAll("<[^>]*>", "");
@@ -771,7 +778,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               && definitionMatcher.group().charAt(2) == ':') {
             // Level 3
             log.debug("Level 3 definition: \"{}\" in entry {}", definitionMatcher.group(),
-                this.wiktionaryPageName);
+                this.getWiktionaryPageName());
             if (!senseNum.startsWith(currentLevel2SenseNumber)) {
               senseNum = currentLevel2SenseNumber + senseNum;
             }

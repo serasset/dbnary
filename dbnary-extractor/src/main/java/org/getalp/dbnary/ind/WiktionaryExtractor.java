@@ -49,7 +49,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     int startSection = -1;
 
@@ -222,7 +222,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     blockS = cleanBlockName(blockS, blockString);
     if ((res = blockValue.get(blockS)) == null) {
-      log.debug("Unknown block {} --in-- {}", blockString, this.wiktionaryPageName);
+      log.debug("Unknown block {} --in-- {}", blockString, this.getWiktionaryPageName());
       res = Block.NOBLOCK;
     }
     return res;
@@ -333,11 +333,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
     if (lang.contains("indonesia") || lang.equalsIgnoreCase("id")) {
-      wdh.initializeEntryExtraction(wiktionaryPageName);
+      wdh.initializeEntryExtraction(getWiktionaryPageName());
     } else {
       // log.debug("Unused lang {}", lang);
       return;
-      // wdh.initializeEntryExtraction(wiktionaryPageName, lang);
+      // wdh.initializeEntryExtraction(getWiktionaryPageName(), lang);
     }
 
     Matcher m = blockPattern.matcher(pageContent);
@@ -394,7 +394,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractTranslations(startOffset, endOffset);
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected block while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
   }
 

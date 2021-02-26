@@ -24,7 +24,7 @@ public class RussianMorphoExtractorWikiModel extends DbnaryWikiModel {
     russianPOS.add("мест");
     russianPOS.add("числ");
     russianPOS.add("Фам");
-    russianPOS.add("interj ");
+    russianPOS.add("interj");
     russianPOS.add("suffix ");
     russianPOS.add("conj ");
     russianPOS.add("prep ");

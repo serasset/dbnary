@@ -136,7 +136,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryIndex wi) {
     super.setWiktionaryIndex(wi);
-    definitionExpander = new ExpandAllWikiModel(wi, Locale.forLanguageTag("tr"), "/images", "/link");
+    definitionExpander =
+        new ExpandAllWikiModel(wi, Locale.forLanguageTag("tr"), "/images", "/link");
   }
 
   public void extractData() {
@@ -281,7 +282,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // Do not extract numbered list items that begin with ":" as they are indeed examples.
         if (indent.asNumberedListItem().getContent().getText().startsWith(":"))
           continue;
-        String expandedDefinition = definitionExpander.expandAll(indent.asNumberedListItem().getContent().toString(), null);
+        String expandedDefinition =
+            definitionExpander.expandAll(indent.asNumberedListItem().getContent().toString(), null);
         wdh.registerNewDefinition(expandedDefinition.replace("\n", ""));
       } else if (indent instanceof Indentation) {
         String def = indent.asIndentation().getContent().toString();

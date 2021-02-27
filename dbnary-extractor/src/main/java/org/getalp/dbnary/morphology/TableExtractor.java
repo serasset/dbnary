@@ -112,11 +112,16 @@ public abstract class TableExtractor {
     return new LinkedList<String>();
   }
 
-  protected InflectedFormSet parseTable(Element table, List<String> globalContext) {
-    InflectedFormSet forms = new InflectedFormSet();
-    alreadyParsedTables.add(table);
+  /**
+   * Explode the HTMLTable into an array matrix where all cells are contained in Matrix cells. If a
+   * cell spans several rows/columns, it is duplicated in the different Matric cell.
+   * 
+   * @param table the HTML Table to be exploded
+   * @return
+   */
+  protected ArrayMatrix<Element> explodeTable(Element table) {
     Elements rows = table.select("tr");
-    ArrayMatrix<Element> columnHeaders = new ArrayMatrix<>();
+    ArrayMatrix<Element> result = new ArrayMatrix<>();
     int nrow = 0;
     for (Element row : rows) {
       // Filter out rows that belong to nested tables
@@ -127,65 +132,61 @@ public abstract class TableExtractor {
       String rowbgcolor = getBackgroundColor(row);
       int ncol = 0;
       for (Element cell : row.children()) {
-        // transmit row background color to cell as it is useful to decide if it is an header cell
+        // transmit row background color to cells as it is useful to decide if it is an header cell
         // or not.
         if (rowbgcolor != null && cell.attr("bgcolor").length() == 0) {
           cell.attr("bgcolor", rowbgcolor);
         }
-        if (isHeaderCell(cell)) {
-          // Advance if current column spans from a previous row
-          while (columnHeaders.get(nrow, ncol) != null) {
-            ncol++;
-          }
-          String colspan = cell.attr("colspan");
-          String rowspan = cell.attr("rowspan");
-          int cspan =
-              (null != colspan && colspan.trim().length() != 0) ? Integer.parseInt(colspan) : 1;
-          int rspan =
-              (null != rowspan && rowspan.trim().length() != 0) ? Integer.parseInt(rowspan) : 1;
+        // Advance if current column spans from a previous row
+        while (result.get(nrow, ncol) != null) {
+          ncol++;
+        }
+        String colspan = cell.attr("colspan");
+        String rowspan = cell.attr("rowspan");
+        int cspan =
+            (null != colspan && colspan.trim().length() != 0) ? Integer.parseInt(colspan) : 1;
+        int rspan =
+            (null != rowspan && rowspan.trim().length() != 0) ? Integer.parseInt(rowspan) : 1;
 
-          for (int i = 0; i < cspan; i++) {
-            for (int j = 0; j < rspan; j++) {
-              columnHeaders.set(nrow + j, ncol, cell);
-            }
-            ncol++;
-          }
-        } else if (isNormalCell(cell)) {
-          while (columnHeaders.get(nrow, ncol) != null) {
-            ncol++;
-          }
-          String colspan = cell.attr("colspan");
-          String rowspan = cell.attr("rowspan");
-          int cspan =
-              (null != colspan && colspan.trim().length() != 0) ? Integer.parseInt(colspan) : 1;
-          int rspan =
-              (null != rowspan && rowspan.trim().length() != 0) ? Integer.parseInt(rowspan) : 1;
-          if (rspan != 1) {
-            log.debug("Non null rowspan in data cell ({},{}) for {}", nrow, ncol, currentEntry);
-          }
-
+        for (int i = 0; i < cspan; i++) {
           for (int j = 0; j < rspan; j++) {
-            for (int i = 0; i < cspan; i++) {
-              if (shouldProcessCell(cell)) {
-                List<String> context = getRowAndColumnContext(nrow + j, ncol + i, columnHeaders);
-                // prepend global context
-                context.addAll(0, globalContext);
-                if (cell.select("table").isEmpty()) {
-                  // No nested table in current cell.
-                  // only get inflection for cells without bgcolour!
-                  handleSimpleCell(cell, context, forms);
-                } else {
-                  handleNestedTables(cell, context, forms);
-                }
-              }
-            }
+            result.set(nrow + j, ncol, cell);
           }
-          ncol += cspan;
-        } else {
-          log.debug("Row child \"{}\"is not a cell in {}", cell.tagName(), currentEntry);
+          ncol++;
         }
       }
       nrow++;
+    }
+    return result;
+  }
+
+  protected InflectedFormSet parseTable(Element table, List<String> globalContext) {
+
+    InflectedFormSet forms = new InflectedFormSet();
+    alreadyParsedTables.add(table);
+
+    ArrayMatrix<Element> explodedTable = explodeTable(table);
+
+    for (int i = 0; i < explodedTable.nlines(); i++) {
+      for (int j = 0; j < explodedTable.ncolumns(); j++) {
+        Element cell = explodedTable.get(i, j);
+        if (null == cell)
+          continue;
+        if (isHeaderCell(cell))
+          continue;
+        if (isNormalCell(cell) && shouldProcessCell(cell)) {
+          List<String> context = getRowAndColumnContext(i, j, explodedTable);
+          // prepend global context
+          context.addAll(0, globalContext);
+          if (cell.select("table").isEmpty()) {
+            // No nested table in current cell.
+            // only get inflection for cells without bgcolour!
+            handleSimpleCell(cell, context, forms);
+          } else {
+            handleNestedTables(cell, context, forms);
+          }
+        }
+      }
     }
     return forms;
   }
@@ -273,9 +274,10 @@ public abstract class TableExtractor {
   }
 
   protected void addToContext(ArrayMatrix<Element> columnHeaders, int i, int j, List<String> res) {
-    Element headerCell = columnHeaders.get(i, j);
+    Element cell = columnHeaders.get(i, j);
     String header;
-    if (null != headerCell && (header = headerCell.text()) != null && header.trim().length() != 0) {
+    if (null != cell && isHeaderCell(cell) && (header = cell.text()) != null
+        && header.trim().length() != 0) {
       res.add(header);
     }
   }

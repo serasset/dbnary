@@ -873,7 +873,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     blockStart = -1;
   }
 
-  private final static String FrenchConjugationPagePrefix = "Annexe:Conjugaison en français/";
+  //
+  private final static String FrenchConjugationPagePrefix = "Conjugaison:français/";
 
   private void extractConjugationPage() {
     log.trace("Extracting conjugation page in {}", this.getWiktionaryPageName());
@@ -884,7 +885,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           wi.getTextOfPage(FrenchConjugationPagePrefix + wdh.currentLexEntry());
 
       if (conjugationPageContent == null) {
-        // log.debug("Cannot get conjugation page for '" + currentLexEntry() + "'");
+        // log.debug("Cannot get conjugation page for '" + wdh.currentLexEntry() + "'");
       } else {
 
         int curPos = -1;

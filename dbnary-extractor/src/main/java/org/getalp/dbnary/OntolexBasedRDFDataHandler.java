@@ -732,7 +732,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     lexEntry = lexEntry.inModel(morphoBox);
 
-    // DONE: Add other forms to a morphology dedicated model.
     StmtIterator otherForms = lexEntry.listProperties(OntolexOnt.otherForm);
 
     while (otherForms.hasNext()) {
@@ -740,6 +739,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       if (isResourceCompatible(otherForm, properties)) {
         mergePropertiesIntoResource(properties, otherForm);
         foundCompatible = true;
+        log.debug("Found a compatible property {} for {} in {}", otherForm, properties,
+            currentLexEntry);
         break;
       }
     }

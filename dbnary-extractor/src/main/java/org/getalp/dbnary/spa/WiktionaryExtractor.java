@@ -149,10 +149,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher l1 = languageSectionPattern.matcher(pageContent);
     int spaStart = -1;
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     while (l1.find()) {
       if (-1 != spaStart) {
         extractSpanishData(spaStart, l1.start());
@@ -416,14 +416,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case IGNOREPOS:
         break;
       default:
-        assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected state while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
   }
 
 
   private void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    translationExtractor.setPageName(wiktionaryPageName);
+    translationExtractor.setPageName(getWiktionaryPageName());
     translationExtractor.parseTranslationBlock(transCode);
   }
 
@@ -443,14 +444,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String term = definitionMatcher.group(1);
         if (null == term || term.length() == 0) {
           log.debug("Null sense number in definition\"{}\" for entry {}", def,
-              this.wiktionaryPageName);
+              this.getWiktionaryPageName());
         } else {
           term = term.trim();
           Matcher s = senseNumPattern.matcher(term);
           if (s.find()) {
             if (s.start() != 0) {
               log.debug("Sense number match after beginning of region \"{}\" for entry {}", term,
-                  this.wiktionaryPageName);
+                  this.getWiktionaryPageName());
               def = term + "| " + def;
             } else {
               senseNumber = s.group(1);
@@ -462,7 +463,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
           } else {
             log.debug("No sense number in region \"{}\" for entry {}", term,
-                this.wiktionaryPageName);
+                this.getWiktionaryPageName());
             def = term + "| " + def;
           }
 
@@ -484,7 +485,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               wdh.registerNymRelationOnCurrentSense(val, nym);
               if (null != nota || null != alt) {
                 log.debug("Non null alternate/nota \"{}/{}\"on nym relation for entry {}", nota,
-                    alt, this.wiktionaryPageName);
+                    alt, this.getWiktionaryPageName());
               }
             }
           }
@@ -514,7 +515,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   public void extractDefinition(String definition, String senseNumber) {
-    definitionExpander.setPageName(wiktionaryPageName);
+    definitionExpander.setPageName(getWiktionaryPageName());
     definitionExpander.parseDefinition(definition, senseNumber);
   }
 
@@ -537,7 +538,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractHeaderInfo(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    headerExtractor.setPageName(wiktionaryPageName);
+    headerExtractor.setPageName(getWiktionaryPageName());
     headerExtractor.parseHeaderBlock(transCode);
   }
 

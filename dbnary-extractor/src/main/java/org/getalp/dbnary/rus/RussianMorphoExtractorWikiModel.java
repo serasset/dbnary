@@ -17,10 +17,21 @@ public class RussianMorphoExtractorWikiModel extends DbnaryWikiModel {
   static {
     russianPOS.add("сущ");
     russianPOS.add("прил");
+    russianPOS.add("прич");
+    russianPOS.add("деепр");
     russianPOS.add("гл");
     russianPOS.add("adv");
     russianPOS.add("мест");
     russianPOS.add("числ");
+    russianPOS.add("Фам");
+    russianPOS.add("interj");
+    russianPOS.add("suffix ");
+    russianPOS.add("conj ");
+    russianPOS.add("prep ");
+    russianPOS.add("part ");
+    russianPOS.add("predic "); // predicative ?
+    russianPOS.add("intro "); // introductory word ?
+    russianPOS.add("onomatop "); // introductory word ?
   }
 
   private IWiktionaryDataHandler delegate;
@@ -67,7 +78,7 @@ public class RussianMorphoExtractorWikiModel extends DbnaryWikiModel {
   private String getPOS(String templateName) {
     for (String p : russianPOS) {
       if (templateName.startsWith(p)) {
-        return p;
+        return p.trim();
       }
     }
     return null;

@@ -2,9 +2,22 @@ package org.getalp.dbnary.wiki;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import org.getalp.dbnary.tools.CharRange;
+import org.getalp.dbnary.wiki.WikiSequenceFiltering.Action;
+import org.getalp.dbnary.wiki.WikiSequenceFiltering.Atomize;
+import org.getalp.dbnary.wiki.WikiSequenceFiltering.Content;
+import org.getalp.dbnary.wiki.WikiSequenceFiltering.KeepAsis;
+import org.getalp.dbnary.wiki.WikiSequenceFiltering.OpenContentClose;
+import org.getalp.dbnary.wiki.WikiText.ExternalLink;
+import org.getalp.dbnary.wiki.WikiText.Heading;
+import org.getalp.dbnary.wiki.WikiText.IndentedItem;
+import org.getalp.dbnary.wiki.WikiText.InternalLink;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Token;
+import org.getalp.dbnary.wiki.WikiText.WikiContent;
 
 /**
  * A WikiCharSequence is a special character sequence that transforms a mediawiki code according to
@@ -29,11 +42,11 @@ public class WikiCharSequence implements CharSequence {
   public static final CharRange HEADERS_RANGE = new CharRange('\uF400', '\uF8FF');
 
   private final StringBuffer chars;
-  private final WikiText.WikiContent content;
+  private final WikiContent content;
 
-  private final Map<Character, WikiText.Token> characterTokenMap;
+  private final Map<Character, Token> characterTokenMap;
 
-  private final Function<WikiText.Token, WikiSequenceFiltering.Action> filter;
+  private final Function<Token, Action> filter;
 
   private int currentOffset = 0;
   private final int subSequenceStart;
@@ -49,8 +62,7 @@ public class WikiCharSequence implements CharSequence {
     this(new WikiText(source));
   }
 
-  public WikiCharSequence(String source,
-      Function<WikiText.Token, WikiSequenceFiltering.Action> filter) {
+  public WikiCharSequence(String source, Function<Token, Action> filter) {
     this(new WikiText(source), filter);
   }
 
@@ -59,23 +71,20 @@ public class WikiCharSequence implements CharSequence {
     this(wt.content());
   }
 
-  public WikiCharSequence(WikiText wt,
-      Function<WikiText.Token, WikiSequenceFiltering.Action> filter) {
+  public WikiCharSequence(WikiText wt, Function<Token, Action> filter) {
     this(wt.content(), filter);
   }
 
-  public WikiCharSequence(WikiText.WikiContent content) {
+  public WikiCharSequence(WikiContent content) {
     this(content, new StringBuffer(), new HashMap<>(), new ClassBasedSequenceFilter());
   }
 
-  public WikiCharSequence(WikiText.WikiContent content,
-      Function<WikiText.Token, WikiSequenceFiltering.Action> filter) {
+  public WikiCharSequence(WikiContent content, Function<Token, Action> filter) {
     this(content, new StringBuffer(), new HashMap<>(), filter);
   }
 
-  private WikiCharSequence(WikiText.WikiContent content, StringBuffer chars,
-      Map<Character, WikiText.Token> characterTokenMap,
-      Function<WikiText.Token, WikiSequenceFiltering.Action> filter) {
+  private WikiCharSequence(WikiContent content, StringBuffer chars,
+      Map<Character, Token> characterTokenMap, Function<Token, Action> filter) {
     this.content = content;
     this.chars = chars;
     this.characterTokenMap = characterTokenMap;
@@ -98,30 +107,30 @@ public class WikiCharSequence implements CharSequence {
   }
 
 
-  private char allocateCharacterFor(WikiText.Token tok) {
+  private char allocateCharacterFor(Token tok) {
     // Assign a new char to the token
     char ch;
-    if (tok instanceof WikiText.Template) {
+    if (tok instanceof Template) {
       ch = firstAvailableTemplateChar++;
       if (ch > TEMPLATES_RANGE.getEnd()) {
         throw new RuntimeException("Too many templates in current WikiText");
       }
-    } else if (tok instanceof WikiText.ExternalLink) {
+    } else if (tok instanceof ExternalLink) {
       ch = firstAvailableExternalLinkChar++;
       if (ch > EXTERNAL_LINKS_RANGE.getEnd()) {
         throw new RuntimeException("Too many external links in current WikiText");
       }
-    } else if (tok instanceof WikiText.InternalLink) {
+    } else if (tok instanceof InternalLink) {
       ch = firstAvailableInternalLinkChar++;
       if (ch > INTERNAL_LINKS_RANGE.getEnd()) {
         throw new RuntimeException("Too many internal links in current WikiText");
       }
-    } else if (tok instanceof WikiText.Heading) {
+    } else if (tok instanceof Heading) {
       ch = firstAvailableHeaderChar++;
       if (ch > HEADERS_RANGE.getEnd()) {
         throw new RuntimeException("Too many headings in current WikiText");
       }
-    } else if (tok instanceof WikiText.IndentedItem) {
+    } else if (tok instanceof IndentedItem) {
       ch = firstAvailableListChar++;
       if (ch > LISTS_RANGE.getEnd()) {
         throw new RuntimeException("Too many indented items in current WikiText");
@@ -137,12 +146,12 @@ public class WikiCharSequence implements CharSequence {
     fillChars(content);
   }
 
-  private void fillChars(WikiText.WikiContent content) {
+  private void fillChars(WikiContent content) {
     fillChars(content.tokens());
   }
 
-  private void fillChars(ArrayList<WikiText.Token> tokens) {
-    for (WikiText.Token token : tokens) {
+  private void fillChars(List<Token> tokens) {
+    for (Token token : tokens) {
       fillChars(token);
     }
   }
@@ -152,26 +161,24 @@ public class WikiCharSequence implements CharSequence {
     currentOffset += s.length();
   }
 
-  private void fillChars(WikiText.Token token) {
-    WikiSequenceFiltering.Action a = filter.apply(token);
+  private void fillChars(Token token) {
+    Action a = filter.apply(token);
 
-    if (a instanceof WikiSequenceFiltering.OpenContentClose) {
-      Function<WikiText.Token, ArrayList<WikiText.Token>> contentSelector =
-          ((WikiSequenceFiltering.Content) a).getter;
+    if (a instanceof OpenContentClose) {
+      Function<Token, List<Token>> contentSelector = ((Content) a).getter;
 
       char o = allocateCharacterFor(token);
       fillChars("〔" + o); // LEFT TORTOISE SHELL BRACKET (\u3014)
       fillChars(contentSelector.apply(token));
       fillChars(o + "〕"); // RIGHT TORTOISE SHELL BRACKET (\u3015)
 
-    } else if (a instanceof WikiSequenceFiltering.Content) {
-      Function<WikiText.Token, ArrayList<WikiText.Token>> contentSelector =
-          ((WikiSequenceFiltering.Content) a).getter;
+    } else if (a instanceof Content) {
+      Function<Token, List<Token>> contentSelector = ((Content) a).getter;
       fillChars(contentSelector.apply(token));
-    } else if (a instanceof WikiSequenceFiltering.KeepAsis) {
+    } else if (a instanceof KeepAsis) {
       chars.append(token.getFullContent(), token.offset.start, token.offset.end);
       currentOffset += (token.offset.end - token.offset.start);
-    } else if (a instanceof WikiSequenceFiltering.Atomize) {
+    } else if (a instanceof Atomize) {
       char o = allocateCharacterFor(token);
       fillChars("" + o);
     } else if (a instanceof WikiSequenceFiltering.Void) {
@@ -249,14 +256,14 @@ public class WikiCharSequence implements CharSequence {
     return this.getSourceContent(this);
   }
 
-  public WikiText.Token getToken(String c) {
+  public Token getToken(String c) {
     if (c.length() != 1) {
       throw new RuntimeException("A token name must be a single character.");
     }
     return this.getToken(c.charAt(0));
   }
 
-  public WikiText.Token getToken(char c) {
+  public Token getToken(char c) {
     return this.characterTokenMap.get(c);
   }
 }

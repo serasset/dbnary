@@ -1,8 +1,5 @@
 package org.getalp.dbnary.bliki;
 
-import info.bliki.extensions.scribunto.engine.ScribuntoEngine;
-import info.bliki.extensions.scribunto.engine.lua.CompiledScriptCache;
-import info.bliki.extensions.scribunto.engine.lua.ScribuntoLuaEngine;
 import info.bliki.wiki.filter.HTMLConverter;
 import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.Configuration;
@@ -30,8 +27,6 @@ public class DbnaryWikiModel extends WikiModel {
   private static Logger log = LoggerFactory.getLogger(DbnaryWikiModel.class);
 
   protected WiktionaryIndex wi = null;
-  private CompiledScriptCache compiledScriptCache = new CompiledScriptCache();
-
 
   public DbnaryWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
     this((WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
@@ -45,42 +40,6 @@ public class DbnaryWikiModel extends WikiModel {
 
   private static DocumentBuilder docBuilder = null;
   private static InputSource docSource = null;
-
-
-  /*
-   * @Override public void addCategory(String categoryName, String sortKey) {
-   * System.err.println("Called addCategory : " + categoryName); super.addCategory(categoryName,
-   * sortKey); }
-   * 
-   * @Override public void addLink(String topicName) { System.err.println("Called addLink: " +
-   * topicName); super.addLink(topicName); }
-   * 
-   * @Override public boolean addSemanticAttribute(String attribute, String attributeValue) {
-   * System.err.println("Called addSemanticAttribute : " + attribute); return
-   * super.addSemanticAttribute(attribute, attributeValue); }
-   * 
-   * @Override public boolean addSemanticRelation(String relation, String relationValue) {
-   * System.err.println("Called addSemanticRelation"); return super.addSemanticRelation(relation,
-   * relationValue); }
-   * 
-   * @Override public void addTemplate(String template) { System.err.println("Called addTemplate: "
-   * + template); super.addTemplate(template); }
-   * 
-   * @Override public void appendInternalLink(String topic, String hashSection, String
-   * topicDescription, String cssClass, boolean parseRecursive) {
-   * System.err.println("Called appendInternalLink: " + topic + "#" + hashSection);
-   * super.appendInternalLink(topic, hashSection, topicDescription, cssClass, parseRecursive); }
-   * 
-   * 
-   * @Override public void parseInternalImageLink(String imageNamespace, String rawImageLink) {
-   * System.err.println("Called parseInternalImageLink");
-   * super.parseInternalImageLink(imageNamespace, rawImageLink); }
-   * 
-   * @Override public boolean replaceColon() { System.err.println("Called replaceColon"); return
-   * super.replaceColon(); }
-   * 
-   * @Override public void setUp() { System.err.println("Called setUp"); super.setUp(); }
-   */
 
   // get the DOM representation of the HTML code corresponding
   // to the wikicode given in arguments
@@ -126,12 +85,6 @@ public class DbnaryWikiModel extends WikiModel {
 
   public static void logCounters() {
     trace.logCounters(log);
-  }
-
-  @Override
-  public ScribuntoEngine createScribuntoEngine() {
-    // Allow debugging of lua model if bdebug is enabled
-    return new ScribuntoLuaEngine(this, compiledScriptCache, log.isDebugEnabled());
   }
 
   @Override

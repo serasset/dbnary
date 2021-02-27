@@ -17,61 +17,218 @@ public class SwedishInflectionData extends InflectionData {
   private Logger log = LoggerFactory.getLogger(SwedishInflectionData.class);
 
   public enum Gender {
-    MASCULINE, FEMININE, NEUTRUM, COMMON, NOTHING
+    MASCULINE("m"), FEMININE("f"), NEUTRUM("n"), COMMON("u"), NOTHING("_");
+
+    private final String shortForm;
+
+    Gender(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
+
   }
 
   public enum GNumber {
-    SINGULAR, PLURAL, UNCOUNTABLE, NOTHING
+    SINGULAR("s"), PLURAL("p"), UNCOUNTABLE("u"), NOTHING("_");
+
+    private final String shortForm;
+
+    GNumber(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
   }
 
   public enum Definiteness {
-    DEFINITE, INDEFINITE, NOTHING
+    DEFINITE("d"), INDEFINITE("i"), NOTHING("_");
+
+    private final String shortForm;
+
+    Definiteness(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
   }
 
   public enum GrammaticalCase {
-    NOMINATIVE, GENITIVE, ACCUSATIVE, DATIVE, NOTHING
+    NOMINATIVE("N"), GENITIVE("G"), ACCUSATIVE("A"), DATIVE("D"), NOTHING("_");
+
+    private final String shortForm;
+
+    GrammaticalCase(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
   }
 
   public enum SubClass {
-    ATTRIBUTIVE, PREDICATIVE, REFLEXIVE, NOTHING
+    ATTRIBUTIVE("a"), PREDICATIVE("p"), REFLEXIVE("r"), NOTHING("_");
+
+    private final String shortForm;
+
+    SubClass(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
   }
 
   public enum SyntacticFunction {
-    ADVERBIAL, NOMINAL, ADJECTIVAL, VERBAL, NOTHING
+    ADVERBIAL("A"), NOMINAL("N"), ADJECTIVAL("J"), VERBAL("V"), NOTHING("_");
+
+    private final String shortForm;
+
+    SyntacticFunction(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
   }
 
   public enum ReferentType {
-    PERSONAL, POSSESSIVE, NOTHING
-  }
+    PERSONAL("p"), POSSESSIVE("P"), NOTHING("_");
 
+    private final String shortForm;
+
+    ReferentType(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
+  }
 
   // -- kept from German
   public enum Mode {
-    INFINITIV, ZU_INFINITIV, PRESENT_PARTICIPLE, PAST_PARTICIPLE, GERUNDIVUM, IMPERATIV, INDICATIV, KONJUNKTIV2, KONJUNKTIV1, NOTHING
+    INFINITIV("i"), ZU_INFINITIV("z"), PRESENT_PARTICIPLE("p"), PAST_PARTICIPLE("P"), GERUNDIVUM(
+        "g"), IMPERATIV("I"), INDICATIV("i"), KONJUNKTIV2("K"), KONJUNKTIV1("k"), NOTHING("_");
+
+    private final String shortForm;
+
+    Mode(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
   }
 
   public enum Voice {
-    AKTIV, VORGANGSPASSIV, ZUSTANDSPASSIV, PASSIV, ZUSTANDSREFLEXIVEPASSIV, REFLEXIV, NOTHING
+    AKTIV("a"), VORGANGSPASSIV("v"), ZUSTANDSPASSIV("P"), PASSIV("p"), ZUSTANDSREFLEXIVEPASSIV(
+        "R"), REFLEXIV("r"), NOTHING("_");
+
+    private final String shortForm;
+
+    Voice(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
   }
 
   public enum Tense {
-    PRESENT, PRETERIT, PERFEKT, SUPINUM, FUTURE1, FUTURE2, PLUSQUAMPERFEKT, NOTHING
+    PRESENT("p"), PRETERIT("P"), PERFEKT("k"), SUPINUM("s"), FUTURE1("f"), FUTURE2(
+        "F"), PLUSQUAMPERFEKT("q"), NOTHING("_");
+
+    private final String shortForm;
+
+    Tense(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
   }
 
   public enum Degree {
-    POSITIVE, COMPARATIVE, SUPERLATIVE, NOTHING
+    POSITIVE("p"), COMPARATIVE("c"), SUPERLATIVE("s"), NOTHING("_");
+
+    private final String shortForm;
+
+    Degree(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
   }
 
   public enum Person {
-    FIRST, SECOND, THIRD, HÖFLICHKEITSFORM, NOTHING
+    FIRST("1"), SECOND("2"), THIRD("3"), HÖFLICHKEITSFORM("h"), NOTHING("_");
+
+    private final String shortForm;
+
+    Person(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
   }
 
   public enum InflectionType {
-    STRONG, WEAK, MIXED, NOTHING
+    STRONG("+"), WEAK("-"), MIXED("±"), NOTHING("_");
+
+    private final String shortForm;
+
+    InflectionType(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
   }
 
   public enum Valency {
-    TRANSITIVE, INTRANSITIVE, NOTHING
+    TRANSITIVE("t"), INTRANSITIVE("i"), NOTHING("_");
+
+    private final String shortForm;
+
+    Valency(String s) {
+      this.shortForm = s;
+    }
+
+    @Override
+    public String toString() {
+      return shortForm;
+    }
   }
 
   public GNumber number = GNumber.NOTHING;
@@ -171,10 +328,12 @@ public class SwedishInflectionData extends InflectionData {
 
   public void present() {
     this.tense = Tense.PRESENT;
+    this.mode = Mode.INDICATIV;
   }
 
   public void preterit() {
     this.tense = Tense.PRETERIT;
+    this.mode = Mode.INDICATIV;
   }
 
   public void supinum() {
@@ -521,5 +680,26 @@ public class SwedishInflectionData extends InflectionData {
       inflections.add(PropertyObjectPair.get(SkosOnt.note, model.createTypedLiteral(tval)));
     }
     return inflections;
+  }
+
+  @Override
+  public String toString() {
+    return "infl{" + //
+        grammaticalCase + //
+        gender + //
+        number + //
+        definiteness + //
+        subClass + //
+        function + //
+        referentType + //
+        degree + //
+        mode + //
+        voice + //
+        tense + //
+        person + //
+        inflectionType + //
+        valency + //
+        // how to render the set of notes ?
+        '}';
   }
 }

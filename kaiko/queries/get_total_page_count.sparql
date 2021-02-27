@@ -1,0 +1,48 @@
+# Get the total count for each version (summing all languages)
+select ?version, sum(?pages) as ?count where {
+  ?obs qb:dataSet dbnstats:dbnaryStatisticsCube ;
+       dbnary:wiktionaryDumpVersion ?version ;
+       dbnary:pageCount ?pages
+  }
+GROUP BY ?version
+ORDER BY ?version
+
+# Get all count for a specific version
+select ?obs, ?pages as ?count where {
+  ?obs qb:dataSet dbnstats:dbnaryStatisticsCube ;
+       dbnary:wiktionaryDumpVersion "20120827" ;
+       dbnary:pageCount ?pages
+  }
+
+# Get the latest total count for each version (summing all languages, using lime information for English as "latest")
+select ?version, sum(?pages) as ?count where {
+  ?obs qb:dataSet dbnstats:dbnaryStatisticsCube ;
+       dbnary:wiktionaryDumpVersion ?version ;
+       dbnary:pageCount ?pages.
+  dbnary-eng:___en_dbnary_dataset dbnary:wiktionaryDumpVersion ?version
+  }
+GROUP BY ?version
+ORDER BY ?version
+
+# Get the total counts for the 2 latest versions (summing all languages)
+select  ?latestversions as ?version, sum(?pages) as ?pageCount,
+        sum(?translations) as ?translationCount,
+        sum(?lexicalSenses) as ?senseCount,
+        sum(?lexicalEntries) as ?entryCount
+        where {
+            {
+             # Select the 2 latest versions
+             SELECT distinct(?version) as ?latestversions
+             WHERE { ?s dbnary:wiktionaryDumpVersion ?version . }
+             ORDER BY DESC(?version) LIMIT 2
+            }
+
+            ?obs qb:dataSet dbnstats:dbnaryStatisticsCube ;
+                dbnary:wiktionaryDumpVersion ?latestversions ;
+                dbnary:pageCount ?pages;
+                dbnary:translationsCount ?translations;
+                dbnary:lexicalSenseCount ?lexicalSenses;
+                dbnary:lexicalEntryCount ?lexicalEntries.
+      }
+GROUP BY ?latestversions
+ORDER BY desc(?latestversions)

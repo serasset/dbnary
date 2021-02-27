@@ -124,8 +124,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    */
   @Override
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
-    definitionExpander.setPageName(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
+    definitionExpander.setPageName(getWiktionaryPageName());
     // System.out.println(pageContent);
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
 
@@ -222,7 +222,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     gotoNoData(m);
     while (m.find()) {
       SectionType t = getSectionType(m.group(1));
@@ -602,7 +602,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String senseNum = definitionMatcher.group(1);
         if (null == senseNum) {
           log.debug("Null sense number in definition\"{}\" for entry {}", def,
-              this.wiktionaryPageName);
+              this.getWiktionaryPageName());
           if (def != null && !def.equals("")) {
             wdh.registerNewDefinition(def);
           }
@@ -619,7 +619,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (definitionMatcher.group(4) != null
           && definitionMatcher.group(4).trim().length() > 0) {
         log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", definitionMatcher.group(4),
-            this.wiktionaryPageName);
+            this.getWiktionaryPageName());
       }
     }
   }
@@ -634,7 +634,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String senseNum = nymLineMatcher.group(1);
         if (null == senseNum) {
           log.debug("Null sense number in nym line\"{}\" for entry {}", nymLineMatcher.group(),
-              this.wiktionaryPageName);
+              this.getWiktionaryPageName());
           // TODO: attach the nym to the Vocable
         } else {
           senseNum = senseNum.trim();
@@ -652,7 +652,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
       } else if (nymLineMatcher.group(3) != null && nymLineMatcher.group(3).trim().length() > 0) {
         log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", nymLineMatcher.group(3),
-            this.wiktionaryPageName);
+            this.getWiktionaryPageName());
       }
     }
 
@@ -672,11 +672,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           }
         }
         if (args.get("6") != null) {
-          log.debug("More than 5 pronunciations: {} in {}", args, this.wiktionaryPageName);
+          log.debug("More than 5 pronunciations: {} in {}", args, this.getWiktionaryPageName());
         }
       } else {
         log.debug("UNKNOWN PRONOUNCIATION MACRO: \"{}\" in \"{}\"", macroMatcher.group(1),
-            this.wiktionaryPageName);
+            this.getWiktionaryPageName());
       }
     }
   }

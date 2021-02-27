@@ -25,8 +25,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: handle pronounciation
   protected final static String pronounciationPatternString = "\\{\\{pron\\|([^\\|\\}]*)(.*)\\}\\}";
 
-  protected static RussianDefinitionExtractorWikiModel definitionExtractor;
-  protected static RussianTranslationExtractorWikiModel translationExtractor;
+  protected RussianDefinitionExtractorWikiModel definitionExtractor;
+  protected RussianTranslationExtractorWikiModel translationExtractor;
+  protected RussianMorphoExtractorWikiModel morphoExtractor;
 
   private final int NODATA = 0;
   private final int TRADBLOCK = 1;
@@ -48,6 +49,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
     translationExtractor = new RussianTranslationExtractorWikiModel(wdh, wi, new Locale("ru"),
         "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "", glossFilter);
+    morphoExtractor = new RussianMorphoExtractorWikiModel(this.wdh, this.wi, new Locale("ru"),
+        "/${image}", "/${title}");
   }
 
   // protected final static Pattern languageSectionPattern;
@@ -106,7 +109,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    */
   @Override
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (languageFilter.find() && !isRussianLanguageHeader(languageFilter)) {
       ;
@@ -132,7 +135,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public void startExtraction() {
     isCurrentlyExtracting = true;
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
   }
 
   public void stopExtraction() {
@@ -227,7 +230,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractRussianData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     gotoIgnorePos();
     while (m.find()) {
       switch (state) {
@@ -456,14 +459,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case IGNOREPOS:
         break;
       default:
-        assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected state while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
     wdh.finalizeEntryExtraction();
   }
 
   private void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    translationExtractor.setPageName(wiktionaryPageName);
+    translationExtractor.setPageName(getWiktionaryPageName());
     translationExtractor.parseTranslationBlock(transCode);
   }
 
@@ -474,14 +478,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void extractDefinition(String definition, int defLevel) {
     // TODO: properly handle macros in definitions.
-    definitionExtractor.setPageName(wiktionaryPageName);
+    definitionExtractor.setPageName(getWiktionaryPageName());
     definitionExtractor.parseDefinition(definition, defLevel);
   }
 
   private boolean extractMorpho(int startOffset, int endOffset) {
-    RussianMorphoExtractorWikiModel dbnmodel = new RussianMorphoExtractorWikiModel(this.wdh,
-        this.wi, new Locale("ru"), "/${image}", "/${title}");
-    return dbnmodel.parseMorphoBlock(pageContent.substring(startOffset, endOffset));
+    morphoExtractor.setPageName(this.getWiktionaryPageName());
+    return morphoExtractor.parseMorphoBlock(pageContent.substring(startOffset, endOffset));
   }
 
 }

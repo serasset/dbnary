@@ -123,7 +123,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     unkownHeaders = new HashSet<String>();
 
     int chineseStart = -1;
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     while (filter.find()) {
       if (-1 != chineseStart) {
         extractData(chineseStart, filter.start());
@@ -333,7 +333,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   private void extractData(int startOffset, int endOffset) {
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     Matcher m = wikiSectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     gotoNoData(m);
@@ -595,7 +595,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case IGNOREPOS:
         break;
       default:
-        assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected state while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
     wdh.finalizeEntryExtraction();
   }
@@ -624,7 +625,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String transCode = pageContent.substring(startOffset, endOffset);
     ChineseTranslationExtractorWikiModel dbnmodel =
         new ChineseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"),
-            "/${image}/" + wiktionaryPageName, "/${title}", glossFilter);
+            "/${image}/" + getWiktionaryPageName(), "/${title}", glossFilter);
     dbnmodel.parseTranslationBlock(transCode);
   }
 

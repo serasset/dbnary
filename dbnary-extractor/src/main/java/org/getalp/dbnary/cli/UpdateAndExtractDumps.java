@@ -163,7 +163,6 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
   /**
    * Validate and set command line arguments. Exit after printing usage if anything is astray
    *
-   * @param args String[] args as featured in public static void main()
    */
   private void loadArgs() {
 
@@ -229,9 +228,10 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
   }
 
   public void updateAndExtract() throws WiktionaryIndexerException, IOException {
-    List<LanguageConfiguration> confs =
-        Arrays.stream(remainingArgs).sequential().map(this::retrieveLastDump)
-            .map(this::uncompressRetrievedDump).collect(Collectors.toList());
+    List<LanguageConfiguration> confs = Arrays.stream(remainingArgs).distinct().sequential()
+        .map(this::retrieveLastDump).collect(Collectors.toList());
+    confs =
+        confs.stream().parallel().map(this::uncompressRetrievedDump).collect(Collectors.toList());
     confs.stream().sequential().map(this::extract).peek(this::removeOldDumps)
         .forEach(this::linkToLatestExtractedFiles);
   }

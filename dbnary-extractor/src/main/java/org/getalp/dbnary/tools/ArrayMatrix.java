@@ -1,6 +1,7 @@
 package org.getalp.dbnary.tools;
 
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 /**
  * Created by serasset on 07/01/15.
@@ -9,30 +10,37 @@ public class ArrayMatrix<T> {
 
   private ArrayList<ArrayList<T>> matrix = new ArrayList<>();
 
-  public void set(int i, int j, T val) {
-    if (matrix.size() <= i) {
-      for (int k = matrix.size(); k <= i; k++) {
+  public void set(int nrow, int ncol, T val) {
+    if (matrix.size() <= nrow) {
+      for (int k = matrix.size(); k <= nrow; k++) {
         matrix.add(new ArrayList<T>());
       }
     }
-    ArrayList<T> row = matrix.get(i);
-    if (row.size() <= j) {
-      for (int k = row.size(); k <= j; k++) {
+    ArrayList<T> row = matrix.get(nrow);
+    if (row.size() <= ncol) {
+      for (int k = row.size(); k <= ncol; k++) {
         row.add(null);
       }
     }
-    row.set(j, val);
+    row.set(ncol, val);
   }
 
-  public T get(int i, int j) {
-    if (matrix.size() <= i) {
+  public T get(int nrow, int ncol) {
+    if (matrix.size() <= nrow) {
       return null;
     }
-    ArrayList<T> row = matrix.get(i);
-    if (row.size() <= j) {
+    ArrayList<T> row = matrix.get(nrow);
+    if (row.size() <= ncol) {
       return null;
     }
-    return row.get(j);
+    return row.get(ncol);
   }
 
+  public int nlines() {
+    return matrix.size();
+  }
+
+  public int ncolumns() {
+    return matrix.stream().map(l -> l.size()).max(Integer::compareTo).orElse(0);
+  }
 }

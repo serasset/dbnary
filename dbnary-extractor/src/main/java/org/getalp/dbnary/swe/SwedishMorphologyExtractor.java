@@ -13,13 +13,11 @@ import org.slf4j.LoggerFactory;
 public class SwedishMorphologyExtractor {
   private Logger log = LoggerFactory.getLogger(SwedishMorphologyExtractor.class);
 
-  private final WiktionaryIndex wi;
   private final IWiktionaryDataHandler wdh;
   protected final SwedishTableExtractorWikiModel tableExtractor;
 
   public SwedishMorphologyExtractor(IWiktionaryDataHandler wdh, WiktionaryIndex wi) {
     this.wdh = wdh;
-    this.wi = wi;
     tableExtractor = new SwedishTableExtractorWikiModel(wi, "/${Bild}", "/${Titel}");
   }
 

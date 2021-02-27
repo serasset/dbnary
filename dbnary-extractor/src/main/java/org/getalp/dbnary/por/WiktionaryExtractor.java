@@ -96,12 +96,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private boolean isCorrectPOS;
 
   protected PortugueseDefinitionExtractorWikiModel definitionExtractor;
+  protected PortugueseTranslationExtractorWikiModel translationExtractor;
 
   @Override
   public void setWiktionaryIndex(WiktionaryIndex wi) {
     super.setWiktionaryIndex(wi);
     definitionExtractor = new PortugueseDefinitionExtractorWikiModel(this.wdh, this.wi,
         Locale.forLanguageTag("pt"), "/${image}", "/${title}");
+    translationExtractor = new PortugueseTranslationExtractorWikiModel(this.wdh, this.wi,
+        new Locale("pt"), "/${image}/" + getWiktionaryPageName(), "/${title}", glossFilter);
   }
 
   public boolean isCurrentlyExtracting() {
@@ -116,10 +119,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    */
   @Override
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher l1 = level1HeaderPattern.matcher(pageContent);
     int porStart = -1;
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     while (l1.find()) {
       // System.err.println(l1.group());
       if (-1 != porStart) {
@@ -398,7 +401,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case IGNOREPOS:
         break;
       default:
-        assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected state while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
   }
 
@@ -409,10 +413,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    PortugueseTranslationExtractorWikiModel dbnmodel =
-        new PortugueseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"),
-            "/${image}/" + wiktionaryPageName, "/${title}", glossFilter);
-    dbnmodel.parseTranslationBlock(transCode);
+    translationExtractor.setPageName(this.getWiktionaryPageName());
+    translationExtractor.parseTranslationBlock(transCode);
   }
 
   private void extractPron(int startOffset, int endOffset) {
@@ -422,7 +424,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void extractDefinition(String definition, int defLevel) {
     // TODO: properly handle macros in definitions.
-    definitionExtractor.setPageName(this.wiktionaryPageName);
+    definitionExtractor.setPageName(this.getWiktionaryPageName());
     definitionExtractor.parseDefinition(definition, defLevel);
   }
 

@@ -100,10 +100,17 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
         || "rfclarify".equals(templateName) || "rfquote".equals(templateName)
         || "rfquotek".equals(templateName) || "rfv-sense".equals(templateName)
         || "rfc-sense".equals(templateName) || "rfquote-sense".equals(templateName)
-        || "rfdef".equals(templateName)) {
+        || "rfdef".equals(templateName) || "tea room sense".equals(templateName)) {
       // Request for examples or request for discussion on sense :
       // -> just ignore the template as it raises a Lua Exception
       // rfdef : request for definition, -> just return an empty def.
+      ;
+    } else if ("wikipedia".equals(templateName) || "wp".equals(templateName)
+        || "slim-wikipedia".equals(templateName) || "swp".equals(templateName)
+        || "slim-wp".equals(templateName)) {
+      // These templates only add a box linking to wikipedia, they should be ignored if part of
+      // a definition. Maybe link to the proper wikipedia page for the current sense ?
+      // super.substituteTemplateCall(templateName, parameterMap, writer);
       ;
     } else {
       // log.debug("BEGIN >>> Subtituting template {} in page {}", templateName,

@@ -88,7 +88,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void extractData() {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     int startSection = -1;
 
@@ -185,7 +185,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         res = Block.IGNOREPOS;
         break;
       default:
-        log.debug("Unknown block {} --in-- {}", blockString, this.wiktionaryPageName);
+        log.debug("Unknown block {} --in-- {}", blockString, this.getWiktionaryPageName());
     }
     return res;
   }
@@ -197,10 +197,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     lang = lang.trim();
 
     if (lang.toLowerCase().equals("srpskohrvatski") || lang.equals("sh")) {
-      wdh.initializeEntryExtraction(wiktionaryPageName);
+      wdh.initializeEntryExtraction(getWiktionaryPageName());
     } else {
       return;
-      // wdh.initializeEntryExtraction(wiktionaryPageName, lang);
+      // wdh.initializeEntryExtraction(getWiktionaryPageName(), lang);
     }
 
     Matcher m = blockPattern.matcher(pageContent);
@@ -297,7 +297,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           wdh.addPartOfSpeech("Imenica");
           return;
         default:
-          log.debug("Unknown blockPos {} --in-- {}", tmp, this.wiktionaryPageName);
+          log.debug("Unknown blockPos {} --in-- {}", tmp, this.getWiktionaryPageName());
       }
     }
     if (blockString != null) {
@@ -385,7 +385,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (lang != null) {
         wdh.registerTranslation(lang, currentGloss, null, word);
       } else {
-        log.debug("Unknown lang {} --in-- {}", trad.group(1), this.wiktionaryPageName);
+        log.debug("Unknown lang {} --in-- {}", trad.group(1), this.getWiktionaryPageName());
       }
 
     }
@@ -396,10 +396,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (wdh.currentWiktionaryPos() != null) {
       SerboCroatianMorphoExtractorWikiModel morpho = new SerboCroatianMorphoExtractorWikiModel(wdh,
           wi, new Locale("sh"), "/${Bild}", "/${Titel}");
-      morpho.setPageName(wiktionaryPageName);
+      morpho.setPageName(getWiktionaryPageName());
       morpho.extractOtherForm(pageContent.substring(start, end));
     } else {
-      log.debug("currentWiktionaryPos is null --in-- {}", this.wiktionaryPageName);
+      log.debug("currentWiktionaryPos is null --in-- {}", this.getWiktionaryPageName());
     }
   }
 
@@ -413,7 +413,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             1, inf.toPropertyObjectMap());
       }
     } else {
-      log.debug("currentWiktionaryPos is null --in-- {}", this.wiktionaryPageName);
+      log.debug("currentWiktionaryPos is null --in-- {}", this.getWiktionaryPageName());
     }
   }
 
@@ -426,17 +426,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (m.find()) {
       if (dwdh.alreadyRegisteredFlexion.containsKey(m.group(2))) {
         ArrayList<String> alreadyList = dwdh.alreadyRegisteredFlexion.get(m.group(2));
-        if (!alreadyList.contains(wiktionaryPageName)) {
+        if (!alreadyList.contains(getWiktionaryPageName())) {
           SerboCroatianMorphoExtractorWikiModel morpho = new SerboCroatianMorphoExtractorWikiModel(
               wdh, wi, new Locale("sh"), "/${Bild}", "/${Titel}");
-          morpho.add(m.group(2), wiktionaryPageName, m.group(1));
+          morpho.add(m.group(2), getWiktionaryPageName(), m.group(1));
         }
       } else {
         HashMap<String, String> toberegister = new HashMap<>();
         if (dwdh.toBeRegisterFlexion.containsKey(m.group(2))) {
           toberegister = dwdh.toBeRegisterFlexion.get(m.group(2));
         }
-        toberegister.put(wiktionaryPageName, m.group(1));
+        toberegister.put(getWiktionaryPageName(), m.group(1));
         dwdh.toBeRegisterFlexion.put(m.group(2), toberegister);
       }
     }
@@ -490,7 +490,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractFlektirani(startOffset, endOffset);
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected block while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
   }
 

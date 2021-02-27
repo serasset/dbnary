@@ -495,6 +495,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     glossExtractor = new ExpandAllWikiModel(this.wi, new Locale("fr"), "/${image}", "/${title}");
   }
 
+  @Override
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    super.setWiktionaryPageName(wiktionaryPageName);
+    exampleExpander.setPageName(this.getWiktionaryPageName());
+    definitionExpander.setPageName(this.getWiktionaryPageName());
+    conjugationExtractor.setPageName(this.getWiktionaryPageName());
+    glossExtractor.setPageName(this.getWiktionaryPageName());
+  }
+
   private Set<String> defTemplates = null;
 
   protected boolean isFrenchLanguageHeader(Matcher m) {
@@ -520,12 +529,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected void extractData(boolean extractForeignData) {
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     int startSection = -1;
 
     // exampleExpander = new ExampleExpanderWikiModel(wi, frLocale, this.wiktionaryPageName, "");
-    exampleExpander.setPageName(this.wiktionaryPageName);
+    exampleExpander.setPageName(this.getWiktionaryPageName());
 
     String nextLang = null, lang = null;
 
@@ -709,18 +718,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return;
       }
 
-      wdh.initializeEntryExtraction(wiktionaryPageName, lang);
+      wdh.initializeEntryExtraction(getWiktionaryPageName(), lang);
     } else {
       if (!"fr".equals(lang)) {
         return;
       }
 
-      wdh.initializeEntryExtraction(wiktionaryPageName);
+      wdh.initializeEntryExtraction(getWiktionaryPageName());
     }
     Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
 
-    log.trace("Extracting page \t{}", this.wiktionaryPageName);
+    log.trace("Extracting page \t{}", this.getWiktionaryPageName());
 
     // WONTDO: (priority: low) should I use a macroOrLink pattern to detect translations that are
     // not macro based ?
@@ -779,11 +788,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (isValidSection(m, sectionTitle)) {
         return Block.NOBLOCK;
       } else {
-        log.debug("Invalid section title {} in {}", sectionTitle, this.wiktionaryPageName);
+        log.debug("Invalid section title {} in {}", sectionTitle, this.getWiktionaryPageName());
         return Block.NOBLOCK;
       }
     } else {
-      log.debug("Null section title in {}", sectionTitle, this.wiktionaryPageName);
+      log.debug("Null section title in {}", sectionTitle, this.getWiktionaryPageName());
       return Block.NOBLOCK;
     }
   }
@@ -815,7 +824,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentNym = (String) context.get("nym");
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected block while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
 
   }
@@ -828,7 +838,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int end = computeRegionEnd(blockStart, m);
 
     log.trace("Leaving block {} while parsing entry {}", currentBlock.name(),
-        this.wiktionaryPageName);
+        this.getWiktionaryPageName());
     switch (currentBlock) {
       case NOBLOCK:
       case IGNOREPOS:
@@ -856,24 +866,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentNym = null;
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected block while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
 
     blockStart = -1;
   }
 
-  private final static String FrenchConjugationPagePrefix = "Annexe:Conjugaison en français/";
+  //
+  private final static String FrenchConjugationPagePrefix = "Conjugaison:français/";
 
   private void extractConjugationPage() {
-    log.trace("Extracting conjugation page in {}", this.wiktionaryPageName);
-    conjugationExtractor.setPageName(this.wiktionaryPageName);
+    log.trace("Extracting conjugation page in {}", this.getWiktionaryPageName());
+    conjugationExtractor.setPageName(this.getWiktionaryPageName());
     Resource pos = wdh.currentLexinfoPos();
     if (null != pos && pos.equals(LexinfoOnt.verb)) {
       String conjugationPageContent =
           wi.getTextOfPage(FrenchConjugationPagePrefix + wdh.currentLexEntry());
 
       if (conjugationPageContent == null) {
-        // log.debug("Cannot get conjugation page for '" + currentLexEntry() + "'");
+        // log.debug("Cannot get conjugation page for '" + wdh.currentLexEntry() + "'");
       } else {
 
         int curPos = -1;
@@ -937,7 +949,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   private void extractInflections(int blockStart, int end) {
-    log.trace("extracting inflections in {}", this.wiktionaryPageName);
+    log.trace("extracting inflections in {}", this.getWiktionaryPageName());
     Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
     m.region(blockStart, end);
 
@@ -948,7 +960,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // CHECK: do we ever go into this loop ?
           // an infection macro can have several morphological information parameter
           log.trace("Having more than 3 args in inflection template for {} in {}", m.group(),
-              this.wiktionaryPageName);
+              this.getWiktionaryPageName());
           addInflectionMorphologicalSet(wdh.currentWiktionaryPos(), m.group(2),
               m.group(i).substring(0, m.group(i).indexOf('=')));
         }
@@ -1103,14 +1115,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       + "(?<PARENS>\\(\\P{Reserved}*?\\))|" + "(?<SPECIALPARENS>\\(.*?\\))|"
       + "(?<TMPL>\\p{Template})|" + "(?<LINK>\\p{InternalLink})";
 
+  private static final Pattern tokenizer = WikiPattern.compile(translationTokenizer); // match all
+                                                                                      // templates
+
   private void extractTranslations(int startOffset, int endOffset) {
     // log.debug("Translation section: " + pageContent.substring(startOffset, endOffset));
 
-    WikiText text = new WikiText(wiktionaryPageName, pageContent, startOffset, endOffset);
+    WikiText text = new WikiText(getWiktionaryPageName(), pageContent, startOffset, endOffset);
     WikiCharSequence line = new WikiCharSequence(text);
-    Pattern pattern = WikiPattern.compile(translationTokenizer); // match all templates
 
-    Matcher lexer = pattern.matcher(line);
+    Matcher lexer = tokenizer.matcher(line);
     Resource currentGloss = null;
     int rank = 1;
 
@@ -1119,13 +1133,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       String g;
       if (null != (g = lexer.group("ITALICS"))) {
         // TODO: keep as usage and add current translation object when finding a comma
-        log.debug("Found italics | {} | in translation for {}", g, wiktionaryPageName);
+        log.debug("Found italics | {} | in translation for {}", g, getWiktionaryPageName());
       } else if (null != (g = lexer.group("PARENS"))) {
         // TODO: keep as usage and add current translation object when finding a comma
-        log.debug("Found parenthesis | {} | in translation for {}", g, wiktionaryPageName);
+        log.debug("Found parenthesis | {} | in translation for {}", g, getWiktionaryPageName());
       } else if (null != (g = lexer.group("SPECIALPARENS"))) {
         log.debug("Template or link inside parens: | {} | for [ {} ]",
-            line.getSourceContent(lexer.group("SPECIALPARENS")), wiktionaryPageName);
+            line.getSourceContent(lexer.group("SPECIALPARENS")), getWiktionaryPageName());
         // TODO: some are only additional usage notes, other are alternate translation, decide
         // between them and handle the translation cases.
       } else if (null != (g = lexer.group("LINK"))) {
@@ -1173,7 +1187,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               gloss = (g1 == null || g1.equals("") ? "" : g1)
                   + (g2 == null || g2.equals("") ? "" : "|" + g2);
             }
-            glossExtractor.setPageName(wiktionaryPageName);
+            glossExtractor.setPageName(getWiktionaryPageName());
             if (null != gloss) {
               gloss = glossExtractor.expandAll(gloss, null);
             }
@@ -1314,7 +1328,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     otherFormMatcher.region(start, end);
 
     while (otherFormMatcher.find()) {
-      conjugationExtractor.setPageName(this.wiktionaryPageName);
+      // conjugationExtractor.setPageName(this.getWiktionaryPageName());
       conjugationExtractor.parseOtherForm(otherFormMatcher.group());
     }
   }
@@ -1322,7 +1336,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void extractDefinition(String definition, int defLevel) {
     // TODO: properly handle macros in definitions.
-    definitionExpander.setPageName(this.wiktionaryPageName);
+    // definitionExpander.setPageName(this.getWiktionaryPageName());
     definitionExpander.parseDefinition(definition, defLevel);
   }
 

@@ -115,7 +115,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractData(boolean foreignExtraction) {
 
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher languageFilter = sectionPattern.matcher(pageContent);
     while (languageFilter.find() && !languageFilter.group(1).equals("Svenska")) {
       ;
@@ -141,7 +141,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractSwedishData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     currentBlock = Block.NOBLOCK;
     while (m.find()) {
 
@@ -179,7 +179,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       context.put("nym", nym);
       return Block.NYMBLOCK;
     } else {
-      log.debug("Ignoring content of section {} in {}", title, this.wiktionaryPageName);
+      log.debug("Ignoring content of section {} in {}", title, this.getWiktionaryPageName());
       return Block.NOBLOCK;
     }
   }
@@ -206,7 +206,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case PRONBLOCK:
         break;
       default:
-        assert false : "Unexpected block while parsing: " + wiktionaryPageName;
+        assert false : "Unexpected block while parsing: " + getWiktionaryPageName();
     }
 
   }
@@ -238,7 +238,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
 
       default:
-        assert false : "Unexpected block while parsing: " + wiktionaryPageName;
+        assert false : "Unexpected block while parsing: " + getWiktionaryPageName();
     }
 
     blockStart = -1;
@@ -249,7 +249,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     txt.templatesOnUpperLevel().stream().map(Token::asTemplate)
         .filter(WiktionaryExtractor::isMorphologyTableTemplate).forEach(tmpl -> morphologyExtractor
-            .extractMorphologicalData(tmpl.toString(), wiktionaryPageName));
+            .extractMorphologicalData(tmpl.toString(), getWiktionaryPageName()));
   }
 
   private static boolean isMorphologyTableTemplate(Template template) {

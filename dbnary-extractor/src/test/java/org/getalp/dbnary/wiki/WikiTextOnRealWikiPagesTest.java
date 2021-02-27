@@ -1,6 +1,7 @@
 package org.getalp.dbnary.wiki;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -55,6 +56,10 @@ public class WikiTextOnRealWikiPagesTest {
     assertThat(h3FromWikiText, is(h3Headings));
 
     WikiTextPrinter.printDocumentTree(text.asStructuredDocument());
+
+    if (!text.sourceContent.contains("<!--"))
+      assertEquals("Regenerated text should be equal to source text when there are no comments",
+          text.sourceContent, text.content().getText());
 
   }
 

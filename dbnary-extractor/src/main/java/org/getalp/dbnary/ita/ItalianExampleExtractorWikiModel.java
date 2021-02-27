@@ -10,19 +10,12 @@ import org.getalp.dbnary.bliki.DbnaryWikiModel;
 
 public class ItalianExampleExtractorWikiModel extends DbnaryWikiModel {
 
-  // static Set<String> ignoredTemplates = new TreeSet<String>();
-  // static {
-  // ignoredTemplates.add("Wikipedia");
-  // ignoredTemplates.add("Incorrect");
-  // }
-
   private IWiktionaryDataHandler delegate;
 
-  public ItalianExampleExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi,
-      Locale locale, String imageBaseURL, String linkBaseURL, String pageName) {
+  public ItalianExampleExtractorWikiModel(IWiktionaryDataHandler dataHandler, WiktionaryIndex wi,
+      Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
-    this.setPageName(pageName);
-    this.delegate = we;
+    this.delegate = dataHandler;
   }
 
   public void parseExample(String example) {

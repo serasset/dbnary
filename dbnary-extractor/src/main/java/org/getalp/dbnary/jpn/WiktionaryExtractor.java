@@ -97,9 +97,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     unknownHeaders = new HashSet<>();
     Matcher l1 = level2HeaderPattern.matcher(pageContent);
     int jpnStart = -1;
-    wdh.initializePageExtraction(wiktionaryPageName);
+    wdh.initializePageExtraction(getWiktionaryPageName());
     // TODO: should I initialize the entry in the japanese extraction method ?
-    wdh.initializeEntryExtraction(wiktionaryPageName);
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     while (l1.find()) {
       if (-1 != jpnStart) {
         extractJapaneseData(jpnStart, l1.start());
@@ -164,7 +164,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // Heuristic is used: if entry length <= 2 then idiom is not a POS.
     String head = m.group(1).trim();
 
-    return WiktionaryDataHandler.getValidPOS(head, wiktionaryPageName);
+    return WiktionaryDataHandler.getValidPOS(head, getWiktionaryPageName());
   }
 
   void gotoDefBlock(Matcher m, String pos) {
@@ -564,7 +564,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case IGNOREPOS:
         break;
       default:
-        assert false : "Unexpected state while ending extraction of entry: " + wiktionaryPageName;
+        assert false : "Unexpected state while ending extraction of entry: "
+            + getWiktionaryPageName();
     }
   }
 
@@ -597,7 +598,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void extractDefinition(String definition, int defLevel) {
     // TODO: properly handle macros in definitions.
-    definitionExtractor.setPageName(this.wiktionaryPageName);
+    definitionExtractor.setPageName(this.getWiktionaryPageName());
     definitionExtractor.parseDefinition(definition, defLevel);
   }
 

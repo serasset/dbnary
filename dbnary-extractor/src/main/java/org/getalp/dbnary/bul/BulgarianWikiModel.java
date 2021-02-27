@@ -76,7 +76,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
   private IWiktionaryDataHandler delegate;
   private boolean hasAPOS = false;
 
-  private DefinitionsWikiModel expander;
+  private final DefinitionsWikiModel definitionExpander;
   Set<String> templates = null;
   private AbstractGlossFilter glossFilter;
 
@@ -93,14 +93,14 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
       templates = new HashSet<>();
     }
     this.glossFilter = glossFilter;
-    this.expander = new DefinitionsWikiModel(wi, this.fLocale, this.getImageBaseURL(),
+    this.definitionExpander = new DefinitionsWikiModel(wi, this.fLocale, this.getImageBaseURL(),
         this.getWikiBaseURL(), templates);
   }
 
   @Override
   public void setPageName(String pageTitle) {
     super.setPageName(pageTitle);
-    this.expander.setPageName(pageTitle);
+    this.definitionExpander.setPageName(pageTitle);
   }
 
   public boolean parseBulgarianBlock(String block) {
@@ -195,7 +195,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
 
   private void extractDefinitions(String defSection) {
     String protectedDefs = defSection.replaceAll("(?m)^(#{1,2})", "__$1__");
-    String def = expander.expandAll(protectedDefs);
+    String def = definitionExpander.expandAll(protectedDefs);
     def = def.replaceAll("(?m)^__(#{1,2})__", "$1");
     Matcher definitionMatcher = WikiPatterns.definitionPattern.matcher(def);
     while (definitionMatcher.find()) {

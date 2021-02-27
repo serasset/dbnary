@@ -603,8 +603,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // }
 
     Resource defNode = aBox.createResource();
-    // TODO: no definition relation in Ontolex, Lexical Concepts use skos:definition, but not
-    // lexical senses, or do they ?
     aBox.add(currentSense, SkosOnt.definition, defNode);
     // Keep a human readable version of the definition, removing all links annotations.
     aBox.add(defNode, RDF.value, AbstractWiktionaryExtractor.cleanUpMarkup(def, true),
@@ -734,7 +732,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     lexEntry = lexEntry.inModel(morphoBox);
 
-    // DONE: Add other forms to a morphology dedicated model.
     StmtIterator otherForms = lexEntry.listProperties(OntolexOnt.otherForm);
 
     while (otherForms.hasNext()) {
@@ -742,6 +739,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       if (isResourceCompatible(otherForm, properties)) {
         mergePropertiesIntoResource(properties, otherForm);
         foundCompatible = true;
+        log.debug("Found a compatible property {} for {} in {}", otherForm, properties,
+            currentLexEntry);
         break;
       }
     }

@@ -74,18 +74,17 @@ public class WikiPattern {
     return Pattern.compile(correctedRegex);
   }
 
-  private static String reserveWikiPatternWords = "(?<" + "TMPL" + ">"
-      + "\\\\(?<TMATCH>[pP])\\{Template\\}" + ")|(?<" + "RESERVED" + ">"
-      + "\\\\(?<RMATCH>[pP])\\{Reserved\\}" + ")|(?<" + "L" + ">" + "\\\\(?<LMATCH>[pP])\\{Link\\}"
-      + ")|(?<" + "IL" + ">" + "\\\\(?<ILMATCH>[pP])\\{InternalLink\\}" + ")|(?<" + "EL" + ">"
-      + "\\\\(?<ELMATCH>[pP])\\{ExternalLink\\}" + ")|(?<" + "OPEN" + ">"
-      + "\\(_(?<ONAME>\\p{Alpha}\\p{Alnum}*)?_" + ")|(?<" + "CLOSE" + ">"
-      + "_(?<CNAME>\\p{Alpha}\\p{Alnum}*)?_\\)" + ")|(?<" + "WHITESPACE" + ">"
-      + "\\\\(?<WPMATCH>[pP])\\{White_Space\\}"
-      // .append(")|(?<")
-      // .append("EL")
-      // .append(">").append("\\\\p\\{ExternalLink\\}")
-      + ")";
+  private static final String reserveWikiPatternWords = "(?<TMPL>\\\\(?<TMATCH>[pP])\\{Template\\})" // \p{Template}
+                                                                                                     // to
+                                                                                                     // match
+                                                                                                     // templates
+      + "|(?<RESERVED>\\\\(?<RMATCH>[pP])\\{Reserved\\})" // \p{Reserved} to match reserved
+      + "|(?<L>\\\\(?<LMATCH>[pP])\\{Link\\})" // \p{Link} to match a link
+      + "|(?<IL>\\\\(?<ILMATCH>[pP])\\{InternalLink\\})" // \p{InternalLink} for internal link
+      + "|(?<EL>\\\\(?<ELMATCH>[pP])\\{ExternalLink\\})" // \p{ExternalLink} for external link
+      + "|(?<OPEN>\\(_(?<ONAME>\\p{Alpha}\\p{Alnum}*)?_)" // (_
+      + "|(?<CLOSE>_(?<CNAME>\\p{Alpha}\\p{Alnum}*)?_\\))"
+      + "|(?<WHITESPACE>\\\\(?<WPMATCH>[pP])\\{White_Space\\})";
 
   private static final Pattern lexerPatern = Pattern.compile(reserveWikiPatternWords);
 
@@ -97,7 +96,7 @@ public class WikiPattern {
   public static final String LINKS = INTERNAL_LINKS + EXTERNAL_LINKS;
   public static final String RESERVED = TEMPLATES + LINKS + HEADERS + LIST_ITEMS;
 
-  private static String whitespace_chars = "" /* dummy empty string for homogeneity */
+  private static final String whitespace_chars = "" /* dummy empty string for homogeneity */
       + "\\u0009" // CHARACTER TABULATION
       + "\\u000A" // LINE FEED (LF)
       + "\\u000B" // LINE TABULATION

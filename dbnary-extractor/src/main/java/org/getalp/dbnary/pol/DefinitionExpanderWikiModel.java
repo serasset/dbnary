@@ -1,10 +1,13 @@
 package org.getalp.dbnary.pol;
 
+import info.bliki.wiki.filter.ParsedPageName;
+import info.bliki.wiki.model.WikiModelContentException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.WikiTool;
@@ -39,7 +42,16 @@ public class DefinitionExpanderWikiModel extends ExpandAllWikiModel {
       // nop
     } else if ("skrót".equals(templateName)) {
       writer.append("(").append(parameterMap.get("2")).append(")");
+    } else if ("reg-pl".equals(templateName) || "gw-pl".equals(templateName)) {
+      // This template shows that there is a regionalism or dialectal word sense
+      // This template leads to a systematic Lua error when called in definitions.
+      logger.trace("{} called with {}", templateName, parameterMap.entrySet().stream()
+          .map(e -> e.getKey() + ":" + e.getValue()).collect(Collectors.joining()));
+      writer.append("(").append(parameterMap.get("1")).append(")");
+      if (null != parameterMap.get("2"))
+        writer.append(" ").append(parameterMap.get("2"));
     } else {
+      logger.trace("Calling {}", templateName);
       super.substituteTemplateCall(templateName, parameterMap, writer);
     }
   }

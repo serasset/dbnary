@@ -49,6 +49,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     } else if (currentWiktionaryPageName.contains(" ")) {
       typeR = OntolexOnt.MultiWordExpression;
     }
+    // reset the sense number.
+    currentSenseNumber = 0;
+    currentSubSenseNumber = 0;
     addPartOfSpeech(pos, posResource(pat), typeR);
   }
 

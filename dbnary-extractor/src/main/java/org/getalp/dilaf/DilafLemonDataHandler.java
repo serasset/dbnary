@@ -135,13 +135,14 @@ public class DilafLemonDataHandler extends DbnaryModel {
             "Old written representation is null or different from current representation.");
       }
       Statement oldPronunciation =
-          aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), LexinfoOnt.pronunciation);
+          aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), OntolexOnt.phoneticRep);
       if (oldPronunciation == null || !oldPronunciation.getString().equals(pron)) {
         System.err.println("Old pronunciation is null or different from current representation.");
       }
     } else {
       Resource lexForm = aBox.createResource();
       aBox.add(aBox.createStatement(lexForm, OntolexOnt.writtenRep, lemma, twoLetterLanguageCode));
+      aBox.add(aBox.createStatement(lexForm, OntolexOnt.phoneticRep, pron));
       aBox.add(aBox.createStatement(lexForm, LexinfoOnt.pronunciation, pron));
       aBox.add(aBox.createStatement(lexEntry, OntolexOnt.canonicalForm, lexForm));
     }

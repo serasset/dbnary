@@ -3,8 +3,10 @@ package org.getalp.dbnary.fra;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,6 +18,8 @@ import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
+import org.getalp.dbnary.morphology.InflectedFormSet;
+import org.getalp.dbnary.morphology.InflectionData;
 import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -615,8 +619,33 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
     }
   }
 
-  public void parseOtherForm(String templateCall) {
-    log.trace("extracting other forms in {}", this.getPageName());
+  public void parseOtherForm(String templateCall, List<String> context) {
+    log.trace("Extracting other forms in {}", this.getPageName());
+    log.trace("Other form template call : {}", templateCall);
+    log.trace("Global context = [[{}]]", String.join("|", context));
+
+    String html = expandWikiCode(templateCall);
+
+    if (html == null) {
+      return; // failing silently: error message already given.
+    }
+
+    FrenchAccordsTableExtractor declinationExtractor =
+        new FrenchAccordsTableExtractor(this.getPageName(), context);
+
+    InflectedFormSet forms = declinationExtractor.parseHTML(html);
+    registerAllForms(forms);
+  }
+
+  private void registerAllForms(InflectedFormSet forms) {
+    for (Entry<InflectionData, Set<String>> form : forms) {
+      delegate.registerInflection(form.getKey(), form.getValue());
+    }
+  }
+
+  public void parseOtherFormOriginal(String templateCall) {
+    log.trace("Extracting other forms in {}", this.getPageName());
+    log.trace("Other form template call : {}", templateCall);
     Document doc = wikicodeToHtmlDOM(templateCall);
 
     // TODO [URGENT] What is this "fr-accord" meaning ? Supress ?
@@ -698,9 +727,9 @@ public class FrenchExtractorWikiModel extends DbnaryWikiModel {
       // catch this template call as it resolves in a non useful very heavy Lua processing.
       writer.append("\\").append(parameterMap.get("1")).append("\\");
     } else {
-      log.trace("substituting template %s with parameters [[%s]]", templateName,
-          parameterMap.entrySet().stream().map(e -> "<" + e.getKey() + " --> " + e.getValue() + ">")
-              .collect(Collectors.joining(", ")));
+      // log.trace("substituting template {} with parameters [[{}]]", templateName,
+      // parameterMap.entrySet().stream().map(e -> "<" + e.getKey() + " --> " + e.getValue() + ">")
+      // .collect(Collectors.joining(", ")));
       super.substituteTemplateCall(templateName, parameterMap, writer);
     }
   }

@@ -3,8 +3,10 @@
  */
 package org.getalp.dbnary.fra;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -849,11 +851,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractInflections(blockStart, end);
         break;
       case DEFBLOCK:
+        List<String> context = extractMorphologicalData(blockStart, end);
         extractConjugationPage();
         extractDefinitions(blockStart, end);
         extractPronunciation(blockStart, end);
-        extractOtherForms(blockStart, end);
-        extractMorphologicalData(blockStart, end);
+        extractOtherForms(blockStart, end, context);
         break;
       case TRADBLOCK:
         extractTranslations(blockStart, end);
@@ -1268,45 +1270,32 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   /**
    * Extracts morphological information on the lexical entry itself.
+   * 
+   * @return
    */
-  private void extractMorphologicalData(int blockStart, int end) {
+  private List<String> extractMorphologicalData(int blockStart, int end) {
+    List<String> context = new ArrayList<>();
     String block = pageContent.substring(blockStart, end);
 
     if (block.matches("[\\s\\S]*\\{\\{m\\}\\}(?! *:)[\\s\\S]*")
         || block.matches("[\\s\\S]*\\{\\{mf\\}\\}(?! *:)[\\s\\S]*")) {
       wdh.registerPropertyOnCanonicalForm(LexinfoOnt.gender, LexinfoOnt.masculine);
+      context.add("Masculin");
     }
 
     if (block.matches("[\\s\\S]*\\{\\{f\\}\\}(?! *:)[\\s\\S]*")
         || block.matches("[\\s\\S]*\\{\\{mf\\}\\}(?! *:)[\\s\\S]*")) {
       wdh.registerPropertyOnCanonicalForm(LexinfoOnt.gender, LexinfoOnt.feminine);
+      context.add("Féminin");
     }
 
     if (block.matches("[\\s\\S]*\\{\\{plurale tantum|fr\\}\\}(?! *:)[\\s\\S]*")) {
       // plural-only word
       wdh.registerPropertyOnCanonicalForm(LexinfoOnt.number, LexinfoOnt.plural);
+      context.add("Pluriel");
     }
+    return context;
   }
-  // TODO extract correct morphological/syntactical information from verbs
-  // (Warning: this should certainly be done while parsing definitions).
-
-  //
-  // // if (block.indexOf("{{t|fr}}") != -1) {
-  // // //FIXME check conformance
-  // // wdh.registerPropertyOnCanonicalForm(LexinfoOnt.property, LexinfoOnt.TransitiveFrame);
-  // // }
-  // //
-  // // if (block.indexOf("{{i|fr}}") {
-  // // //FIXME check conformance
-  // // wdh.registerPropertyOnCanonicalForm(LexinfoOnt.property, LexinfoOnt.IntransitiveFrame);
-  // // }
-  // //
-  // // Matcher m = conjugationGroup.matcher(block)
-  // // if (m.find()) {
-  // // //FIXME check conformance
-  // // wdh.registerPropertyOnCanonicalForm(DBnaryOnt.conjugationGroup, m.group(1));
-  // // }
-  // }
 
   public void extractExample(String example) {
     Map<Property, String> context = new HashMap<>();
@@ -1318,7 +1307,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  private void extractOtherForms(int start, int end) {
+  private void extractOtherForms(int start, int end, List<String> context) {
     // TODO: only when we are extracting morphology ?
     if (wdh.isDisabled(ExtractionFeature.MORPHOLOGY)) {
       return;
@@ -1328,8 +1317,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     otherFormMatcher.region(start, end);
 
     while (otherFormMatcher.find()) {
+      String templateCall = otherFormMatcher.group();
+      if (templateCall.startsWith("{{fr-verbe"))
+        continue;
       // conjugationExtractor.setPageName(this.getWiktionaryPageName());
-      conjugationExtractor.parseOtherForm(otherFormMatcher.group());
+      conjugationExtractor.parseOtherForm(otherFormMatcher.group(), context);
     }
   }
 

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+VERSION=2.3.4-SNAPSHOT
+JAVA=java
+
+$JAVA -Djava.net.useSystemProxies=true \
+-cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
+    org.getalp.dbnary.cli.Sed "$@"
+
+

@@ -769,7 +769,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     if (pronunciations != null) {
       for (PronunciationPair pronunciation : pronunciations) {
         // TODO: deprecating lexinfo:pronunciation in favour of ontolex:phoneticRep, remove
-        //  the former after a certain period.
+        // the former after a certain period.
         props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation,
             aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
         props.add(PropertyObjectPair.get(OntolexOnt.phoneticRep,

@@ -84,7 +84,8 @@ public class FrenchDefinitionExtractorWikiModel extends DbnaryWikiModel {
         writer.append("").append(String.valueOf(i + 1));
       }
     } else if (templateName.contains("langues")) {
-      log.debug("Got template {}\tin\t{}", templateName, this.getPageName());
+      // Generates (Linguistique) and registers the entry as a language name. Takes too long (?)
+      writer.append("(Linguistique)");
     } else if ("pron".equals(templateName)) {
       // Ignore it as pronunciation is extracted independantly.
     } else {

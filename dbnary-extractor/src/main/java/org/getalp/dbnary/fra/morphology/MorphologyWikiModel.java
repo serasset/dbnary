@@ -1,4 +1,4 @@
-package org.getalp.dbnary.fra;
+package org.getalp.dbnary.fra.morphology;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -58,8 +58,8 @@ public abstract class MorphologyWikiModel extends DbnaryWikiModel {
       } else if ("s$".equals(pattern) && null == repl) {
         writer.append(s.replaceAll(pattern, ""));
       } else {
-        log.debug("gsub {} | {} | {}", parameterMap.get("1"), parameterMap.get("2"),
-            parameterMap.get("3"));
+        // log.trace("gsub {} | {} | {}", parameterMap.get("1"), parameterMap.get("2"),
+        // parameterMap.get("3"));
         super.substituteTemplateCall(templateName, parameterMap, writer);
       }
     } else if ("str find".equals(templateName) || "str_find".equals(templateName)) {
@@ -78,6 +78,9 @@ public abstract class MorphologyWikiModel extends DbnaryWikiModel {
         writer.append("—");
       else
         writer.append(parameterMap.get("1"));
+    } else if (templateName.equals("param1ou2")) {
+      // This template generates incomplete links xxx]] ou [[xxx which breaks the bliki parser
+      writer.append(parameterMap.get("1")).append(" ou ").append(parameterMap.get("2"));
     } else {
       // log.trace("substituting template {} with parameters [[{}]]", templateName,
       // parameterMap.entrySet().stream().map(e -> "<" + e.getKey() + " --> " + e.getValue() + ">")

@@ -1,5 +1,6 @@
-package org.getalp.dbnary.fra;
+package org.getalp.dbnary.fra.morphology;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,12 +13,15 @@ import org.getalp.dbnary.morphology.InflectionScheme;
 import org.getalp.dbnary.morphology.MorphoSyntacticFeature;
 import org.getalp.dbnary.morphology.RefactoredTableExtractor;
 import org.getalp.dbnary.morphology.RelaxInflexionScheme;
+import org.getalp.lexinfo.model.Frequency;
 import org.getalp.lexinfo.model.Mood;
 import org.getalp.lexinfo.model.Number;
 import org.getalp.lexinfo.model.Person;
 import org.getalp.lexinfo.model.Tense;
 import org.getalp.ontolex.model.LexicalForm;
 import org.getalp.ontolex.model.PhoneticRepresentation;
+import org.getalp.ontolex.model.Representation;
+import org.getalp.ontolex.model.WrittenRepresentation;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +39,10 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
     InflectionScheme inflection = new RelaxInflexionScheme();
     for (String h : context) {
       h = h.trim();
+      if (h.endsWith(" (rare)")) {
+        h = h.substring(0, h.length() - 7);
+        inflection.add(Frequency.RARE);
+      }
       switch (h) {
         case "Présent":
           inflection.add(Tense.PRESENT);
@@ -103,7 +111,7 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
       }
       Set<LexicalForm> lexFormsOnTheLeft = results.get(i, j - 2);
       if (null != lexFormsOnTheLeft) {
-        String pron = fixPronunciationValue(standardizeValue(cell.text().trim()));
+        String pron = Utils.standardizePronunciation(standardizeValue(cell.text()));
         lexFormsOnTheLeft.forEach(f -> f.addValue(new PhoneticRepresentation(pron, language)));
       }
       return new LinkedHashSet<>();
@@ -113,11 +121,21 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
       // available in cells' headers. We get the info from grammatical context cell on the left.
       Element leftContext = cells.get(i, j - 1);
       forms.forEach(f -> handleGrammaticalContext(f, leftContext));
+      forms.forEach(f -> {
+        for (Representation v : f.getValues()) {
+          if (v instanceof WrittenRepresentation && v.getValue().contains(" ou ")) {
+            f.removeValue(v);
+            Arrays.stream(v.getValue().split(" ou "))
+                .forEach(wr -> f.addValue(new WrittenRepresentation(wr, v.getLanguage())));
+          }
+        }
+      });
       return forms;
     }
   }
 
-  private static Map<Pattern, Consumer<Set<MorphoSyntacticFeature>>> actions = new LinkedHashMap<>();
+  private final static Map<Pattern, Consumer<Set<MorphoSyntacticFeature>>> actions =
+      new LinkedHashMap<>();
   static {
     actions.put(Pattern.compile("^(?:je|j’)"), Person.first.andThen(Number.singular));
     actions.put(Pattern.compile("^tu"), Person.second.andThen(Number.singular));
@@ -138,46 +156,8 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
         action.accept(f.getFeature());
       }
     }
-    if (noneMatch) log.warn("Unexpected grammatical context {} in {}", c, this.entryName);
-  }
-
-  private void handleGrammaticalContextOld(LexicalForm f, Element leftContext) {
-    String c = standardizeValue(leftContext.text().trim()).replaceAll("^(?:que |qu’)", "");
-    switch (c) {
-      case "je":
-      case "j’":
-        f.getFeature().add(Number.SINGULAR);
-        f.getFeature().add(Person.FIRST);
-        break;
-      case "tu":
-        f.getFeature().add(Number.SINGULAR);
-        f.getFeature().add(Person.SECOND);
-        break;
-      case "il/elle/on":
-        f.getFeature().add(Number.SINGULAR);
-        f.getFeature().add(Person.THIRD);
-        break;
-      case "nous":
-        f.getFeature().add(Number.PLURAL);
-        f.getFeature().add(Person.FIRST);
-        break;
-      case "vous":
-        f.getFeature().add(Number.PLURAL);
-        f.getFeature().add(Person.SECOND);
-        break;
-      case "ils/elles":
-        f.getFeature().add(Number.PLURAL);
-        f.getFeature().add(Person.THIRD);
-        break;
-      default:
-        log.warn("Unexpected grammatical context {} in {}", c, this.entryName);
-    }
-  }
-
-  private String fixPronunciationValue(String value) {
-    if (!value.startsWith("\\"))
-      value = "\\" + value;
-    return value;
+    if (noneMatch)
+      log.warn("Unexpected grammatical context {} in {}", c, this.entryName);
   }
 
   private boolean isInflectedFormPronunciation(Element cell) {

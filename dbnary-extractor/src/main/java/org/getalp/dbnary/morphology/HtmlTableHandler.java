@@ -13,7 +13,7 @@ public class HtmlTableHandler {
    * @param table the HTML Table to be exploded
    * @return
    */
-  protected ArrayMatrix<Element> explodeTable(Element table) {
+  public static ArrayMatrix<Element> explodeTable(Element table) {
     Elements rows = table.select("tr");
     ArrayMatrix<Element> result = new ArrayMatrix<>();
     int nrow = 0;
@@ -54,7 +54,7 @@ public class HtmlTableHandler {
     return result;
   }
 
-  private boolean isInCurrentTable(Element table, Element row) {
+  private static boolean isInCurrentTable(Element table, Element row) {
     Elements parents = row.parents();
     for (Element parent : parents) {
       if (parent.tagName().equalsIgnoreCase("table")) {
@@ -64,10 +64,10 @@ public class HtmlTableHandler {
     return false;
   }
 
-  protected String getBackgroundColor(Element row) {
-    String bgcolor = row.attr("bgcolor");
+  public static String getBackgroundColor(Element element) {
+    String bgcolor = element.attr("bgcolor");
     if (null == bgcolor || bgcolor.equals("")) {
-      String style = row.attr("style");
+      String style = element.attr("style");
       if (null != style && style.length() != 0) {
         int bgpos = style.indexOf("background:");
         if (bgpos != -1) {

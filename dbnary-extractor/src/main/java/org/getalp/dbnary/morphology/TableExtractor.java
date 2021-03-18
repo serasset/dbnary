@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.getalp.dbnary.tools.ArrayMatrix;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,7 +14,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class TableExtractor {
+public abstract class TableExtractor extends HtmlTableHandler {
 
   protected Set<Element> alreadyParsedTables = new HashSet<Element>();
   protected String currentEntry;
@@ -112,54 +113,6 @@ public abstract class TableExtractor {
     return new LinkedList<String>();
   }
 
-  /**
-   * Explode the HTMLTable into an array matrix where all cells are contained in Matrix cells. If a
-   * cell spans several rows/columns, it is duplicated in the different Matric cell.
-   * 
-   * @param table the HTML Table to be exploded
-   * @return
-   */
-  protected ArrayMatrix<Element> explodeTable(Element table) {
-    Elements rows = table.select("tr");
-    ArrayMatrix<Element> result = new ArrayMatrix<>();
-    int nrow = 0;
-    for (Element row : rows) {
-      // Filter out rows that belong to nested tables
-      if (!isInCurrentTable(table, row)) {
-        continue;
-      }
-
-      String rowbgcolor = getBackgroundColor(row);
-      int ncol = 0;
-      for (Element cell : row.children()) {
-        // transmit row background color to cells as it is useful to decide if it is an header cell
-        // or not.
-        if (rowbgcolor != null && cell.attr("bgcolor").length() == 0) {
-          cell.attr("bgcolor", rowbgcolor);
-        }
-        // Advance if current column spans from a previous row
-        while (result.get(nrow, ncol) != null) {
-          ncol++;
-        }
-        String colspan = cell.attr("colspan");
-        String rowspan = cell.attr("rowspan");
-        int cspan =
-            (null != colspan && colspan.trim().length() != 0) ? Integer.parseInt(colspan) : 1;
-        int rspan =
-            (null != rowspan && rowspan.trim().length() != 0) ? Integer.parseInt(rowspan) : 1;
-
-        for (int i = 0; i < cspan; i++) {
-          for (int j = 0; j < rspan; j++) {
-            result.set(nrow + j, ncol, cell);
-          }
-          ncol++;
-        }
-      }
-      nrow++;
-    }
-    return result;
-  }
-
   protected InflectedFormSet parseTable(Element table, List<String> globalContext) {
 
     InflectedFormSet forms = new InflectedFormSet();
@@ -180,7 +133,6 @@ public abstract class TableExtractor {
           context.addAll(0, globalContext);
           if (cell.select("table").isEmpty()) {
             // No nested table in current cell.
-            // only get inflection for cells without bgcolour!
             handleSimpleCell(cell, context, forms);
           } else {
             handleNestedTables(cell, context, forms);
@@ -217,40 +169,6 @@ public abstract class TableExtractor {
       }
       forms.addAll(parseTable(nestedTable, context));
     }
-  }
-
-  private boolean isInCurrentTable(Element table, Element row) {
-    Elements parents = row.parents();
-    for (Element parent : parents) {
-      if (parent.tagName().equalsIgnoreCase("table")) {
-        return parent == table;
-      }
-    }
-    return false;
-  }
-
-  protected String getBackgroundColor(Element row) {
-    String bgcolor = row.attr("bgcolor");
-    if (null == bgcolor || bgcolor.equals("")) {
-      String style = row.attr("style");
-      if (null != style && style.length() != 0) {
-        int bgpos = style.indexOf("background:");
-        if (bgpos != -1) {
-          style = style.substring(bgpos + 11);
-          bgcolor = style.split("[,;]")[0];
-        } else {
-          bgpos = style.indexOf("background-color:");
-          if (bgpos != -1) {
-            style = style.substring(bgpos + 17);
-            bgcolor = style.split("[,;]")[0];
-          }
-        }
-      }
-    }
-    if (bgcolor.equals("")) {
-      bgcolor = null;
-    }
-    return bgcolor;
   }
 
   protected boolean isNormalCell(Element cell) {
@@ -324,6 +242,7 @@ public abstract class TableExtractor {
         forms.add(anchor.text());
       }
     }
+    forms = forms.stream().map(s -> s.replaceAll("&nbsp;", " ")).collect(Collectors.toSet());
     for (String form : forms) {
       if (form.contains(",")) {
         log.trace("Comma found in morphological value: {}", form);

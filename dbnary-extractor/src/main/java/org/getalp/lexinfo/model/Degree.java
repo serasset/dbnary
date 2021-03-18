@@ -1,4 +1,4 @@
-package org.getalp.lexinfo.model.morphoSyntax;
+package org.getalp.lexinfo.model;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -7,7 +7,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.morphology.MorphoSyntacticFeature;
 
-public abstract class Degree implements MorphoSyntacticFeature {
+public abstract class Degree extends MorphoSyntacticFeature {
   public Property property() {
     return LexinfoOnt.degree;
   }

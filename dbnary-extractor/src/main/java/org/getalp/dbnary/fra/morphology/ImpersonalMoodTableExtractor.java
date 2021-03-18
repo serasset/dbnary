@@ -1,5 +1,6 @@
-package org.getalp.dbnary.fra;
+package org.getalp.dbnary.fra.morphology;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +13,8 @@ import org.getalp.lexinfo.model.Person;
 import org.getalp.lexinfo.model.Tense;
 import org.getalp.ontolex.model.LexicalForm;
 import org.getalp.ontolex.model.PhoneticRepresentation;
+import org.getalp.ontolex.model.Representation;
+import org.getalp.ontolex.model.WrittenRepresentation;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +81,7 @@ public class ImpersonalMoodTableExtractor extends RefactoredTableExtractor {
     if (isIsolatedPronunciation(cell)) {
       Set<LexicalForm> lexFormsOnTheLeft = results.get(i, j - 1);
       if (null != lexFormsOnTheLeft) {
-        String pron = standardizeValue(cell.text().trim());
+        String pron = Utils.standardizePronunciation(standardizeValue(cell.text()));
         lexFormsOnTheLeft.forEach(f -> f.addValue(new PhoneticRepresentation(pron, language)));
       }
       return new LinkedHashSet<>();
@@ -88,6 +91,16 @@ public class ImpersonalMoodTableExtractor extends RefactoredTableExtractor {
         // we have to specify the Number and Person from the cell position for imperative mood.
         forms.forEach(f -> handleNumberPerson(f, i, j));
       }
+      // some forms may have several orthographies, separated by " ou "
+      forms.forEach(f -> {
+        for (Representation v : f.getValues()) {
+          if (v instanceof WrittenRepresentation && v.getValue().contains(" ou ")) {
+            f.removeValue(v);
+            Arrays.stream(v.getValue().split(" ou "))
+                .forEach(wr -> f.addValue(new WrittenRepresentation(wr, v.getLanguage())));
+          }
+        }
+      });
       return forms;
     }
 

@@ -695,7 +695,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     return incompatibleProperties(p1, p2, true);
   }
 
-  private boolean isResourceCompatible(Resource r, HashSet<PropertyObjectPair> properties) {
+  protected boolean isResourceCompatible(Resource r, HashSet<PropertyObjectPair> properties) {
     for (PropertyObjectPair pr : properties) {
       Property p = pr.getKey();
 
@@ -768,10 +768,10 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     if (pronunciations != null) {
       for (PronunciationPair pronunciation : pronunciations) {
-        // TODO: deprecating lexinfo:pronunciation in favour of ontolex:phoneticRep, remove
+        // DONE: deprecating lexinfo:pronunciation in favour of ontolex:phoneticRep, remove
         // the former after a certain period.
-        props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation,
-            aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+        // props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation,
+        // aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
         props.add(PropertyObjectPair.get(OntolexOnt.phoneticRep,
             aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
       }

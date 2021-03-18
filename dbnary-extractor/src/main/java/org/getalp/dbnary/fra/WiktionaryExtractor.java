@@ -23,6 +23,8 @@ import org.getalp.dbnary.PronunciationPair;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
+import org.getalp.dbnary.fra.morphology.InflectionExtractorWikiModel;
+import org.getalp.dbnary.fra.morphology.VerbalInflexionExtractorWikiModel;
 import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiPattern;
 import org.getalp.dbnary.wiki.WikiPatterns;
@@ -483,6 +485,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected ExampleExpanderWikiModel exampleExpander;
   protected FrenchDefinitionExtractorWikiModel definitionExpander;
   protected FrenchExtractorWikiModel conjugationExtractor;
+  protected InflectionExtractorWikiModel morphologyExtractor;
+  protected VerbalInflexionExtractorWikiModel verbalInflectionExtractor;
   protected ExpandAllWikiModel glossExtractor;
 
   @Override
@@ -494,6 +498,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         "/${image}", "/${title}");
     conjugationExtractor =
         new FrenchExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
+    verbalInflectionExtractor = new VerbalInflexionExtractorWikiModel(this.wdh, this.wi,
+        new Locale("fr"), "/${image}", "/${title}");
+    morphologyExtractor = new InflectionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"),
+        "/${image}", "/${title}");
     glossExtractor = new ExpandAllWikiModel(this.wi, new Locale("fr"), "/${image}", "/${title}");
   }
 
@@ -503,6 +511,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     exampleExpander.setPageName(this.getWiktionaryPageName());
     definitionExpander.setPageName(this.getWiktionaryPageName());
     conjugationExtractor.setPageName(this.getWiktionaryPageName());
+    morphologyExtractor.setPageName(this.getWiktionaryPageName());
+    verbalInflectionExtractor.setPageName(this.getWiktionaryPageName());
     glossExtractor.setPageName(this.getWiktionaryPageName());
   }
 
@@ -552,161 +562,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       extractData(startSection, pageContent.length(), lang, extractForeignData);
     }
     wdh.finalizePageExtraction();
-  }
-
-  // TODO: move to the data hanlder ?
-  public HashSet<PropertyObjectPair> morphologicalPropertiesFromWikicode(String wikicodeMophology) {
-    HashSet<PropertyObjectPair> infl = new HashSet<>();
-
-    switch (wikicodeMophology) {
-      case "ppr":
-        infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
-        // participe présent.
-        break;
-      case "ppms":
-      case "ppm":
-      case "pp":
-        infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-        // past participle masculine singular (or invariable).
-        break;
-      case "ppfs":
-      case "ppf":
-        infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-        // past participle au féminin singulier.
-        break;
-      case "ppmp":
-        infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-        // past participle au masculin pluriel.
-        break;
-      case "ppfp":
-        infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.participle));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-        infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-        // past participle au féminin pluriel.
-        break;
-
-      // FIXME: we ignore these morphological informations which describe the entire verb, not only
-      // this inflection.
-      case "impers": // if verb is pronominal
-        return null;
-      case "réfl": // if verb is pronominal
-        return null;
-      case "'": // if "je" is to be written "j'".
-        return null;
-
-      default:
-        String[] infos = wikicodeMophology.split(".");
-
-        // See http://fr.wiktionary.org/wiki/Mod%C3%A8le:fr-verbe-flexion for documentation about
-        // this stuff.
-        if (infos.length < 3) {
-          log.error("wikicode morphology was not recognized for "
-              + commonInflectionInformations.partOfSpeech + " form in article "
-              + wdh.currentLexEntry());
-          return null;
-        }
-
-        // Mood
-        switch (infos[0]) {
-          case "ind":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.indicative));
-            break;
-          case "cond":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.conditional));
-            break;
-          case "imp":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.imperative));
-            break;
-          case "sub":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.verbFormMood, LexinfoOnt.subjunctive));
-            break;
-          default:
-            log.error("wikicode's mood part was not recognized for "
-                + commonInflectionInformations.partOfSpeech + " form in article "
-                + wdh.currentLexEntry());
-            return null;
-        }
-
-        // Tense
-        switch (infos[1]) {
-          case "p":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
-            break;
-          case "f":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.future));
-            break;
-          case "i":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.imperfect));
-            break;
-          case "ps":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.past));
-            break;
-          default:
-            log.error("wikicode's tense part was not recognized for "
-                + commonInflectionInformations.partOfSpeech + " form in article "
-                + wdh.currentLexEntry());
-            return null;
-        }
-
-        // Person
-        switch (infos[2]) {
-          case "1s":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.firstPerson));
-            infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-            break;
-          case "2s":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.secondPerson));
-            infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-            break;
-          case "3s":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.thirdPerson));
-            infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.singular));
-            break;
-          case "1p":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.firstPerson));
-            infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-            break;
-          case "2p":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.secondPerson));
-            infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-            break;
-          case "3p":
-            infl.add(PropertyObjectPair.get(LexinfoOnt.person, LexinfoOnt.thirdPerson));
-            infl.add(PropertyObjectPair.get(LexinfoOnt.number, LexinfoOnt.plural));
-            break;
-          default:
-            log.error("wikicode's person part was not recognized for "
-                + commonInflectionInformations.partOfSpeech + " form in article "
-                + wdh.currentLexEntry());
-            return null;
-        }
-    }
-
-    return infl;
-  }
-
-  public void addInflectionMorphologicalSet(String pos, String canonicalForm,
-      String wikicodeMophology) {
-    if (!"verb".equals(pos)) {
-      log.error(
-          "inflection macro not handled for " + pos + " form in article " + wdh.currentLexEntry());
-      return;
-    }
-
-    HashSet<PropertyObjectPair> infl = morphologicalPropertiesFromWikicode(wikicodeMophology);
-
-    commonInflectionInformations.inflections.add(infl);
   }
 
   protected void extractData(int startOffset, int endOffset, String lang,
@@ -848,14 +703,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case INFLECTIONBLOCK:
         commonInflectionInformations.pronunciation = extractPronunciation(blockStart, end, false);
         // TODO : check if extracting inflections from form pages gives additional information.
-        extractInflections(blockStart, end);
+        // TODO: currently extracting inflections is the only way to get the inflected past
+        // participle forms
+        // extractInflections(blockStart, end);
         break;
       case DEFBLOCK:
-        List<String> context = extractMorphologicalData(blockStart, end);
-        extractConjugationPage();
+        List<String> morphologicalFeatures = extractMorphologicalData(blockStart, end);
+        extractConjugationPage(morphologicalFeatures);
         extractDefinitions(blockStart, end);
         extractPronunciation(blockStart, end);
-        extractOtherForms(blockStart, end, context);
+        extractOtherForms(blockStart, end, morphologicalFeatures);
         break;
       case TRADBLOCK:
         extractTranslations(blockStart, end);
@@ -875,81 +732,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     blockStart = -1;
   }
 
-  //
-  private final static String FrenchConjugationPagePrefix = "Conjugaison:français/";
-
-  private void extractConjugationPage() {
-    log.trace("Extracting conjugation page in {}", this.getWiktionaryPageName());
-    conjugationExtractor.setPageName(this.getWiktionaryPageName());
+  private void extractConjugationPage(List<String> context) {
     Resource pos = wdh.currentLexinfoPos();
     if (null != pos && pos.equals(LexinfoOnt.verb)) {
-      String conjugationPageContent =
-          wi.getTextOfPage(FrenchConjugationPagePrefix + wdh.currentLexEntry());
-
-      if (conjugationPageContent == null) {
-        // log.debug("Cannot get conjugation page for '" + wdh.currentLexEntry() + "'");
-      } else {
-
-        int curPos = -1;
-        do {
-          curPos++;
-          curPos = conjugationPageContent.indexOf("{{fr-conj", curPos);
-          if (curPos != -1 && !conjugationPageContent.startsWith("{{fr-conj-intro", curPos)) {
-            String templateCall = getTemplateCall(conjugationPageContent, curPos);
-
-            if (templateCall.startsWith("{{fr-conj/Tableau-impersonnels")) {
-              conjugationExtractor.parseImpersonnalTableConjugation(templateCall);
-            } else {
-              conjugationExtractor.parseConjugation(templateCall);
-            }
-          }
-        } while (curPos != -1);
-      }
+      verbalInflectionExtractor.extractConjugations(context);
     }
   }
 
-  private static String getTemplateCall(String page, int beginPos) {
-    // precondition: page.charAt(beginPos) is the first '{' of the template call
-
-    int openedBrackets = 0, len = page.length(), curPos = beginPos;
-
-    do {
-      if (page.charAt(curPos) == '}') {
-        if (page.charAt(curPos + 1) == '}') {
-          openedBrackets--;
-          curPos++;
-        }
-      } else if (page.charAt(curPos) == '{') {
-        if (page.charAt(curPos + 1) == '{') {
-          openedBrackets++;
-          curPos++;
-        }
-      } else if (page.charAt(curPos) == '<' && curPos + 3 < len && page.charAt(curPos + 1) == '!'
-          && page.charAt(curPos + 2) == '-' && page.charAt(curPos + 3) == '-') {
-        curPos += 4;
-        while (curPos + 2 < len) {
-          if (page.charAt(curPos) == '-' && page.charAt(curPos + 1) == '-'
-              && page.charAt(curPos + 2) == '>') {
-            break;
-          }
-          curPos++;
-        }
-
-        if (curPos + 2 < len) {
-          // comment found
-          curPos += 2;
-        } else {
-          // comment not found
-          curPos--;
-        }
-      }
-      curPos++;
-    } while (openedBrackets > 0 && curPos + 1 < len);
-
-    return page.substring(beginPos, curPos);
-  }
-
-
+  /**
+   * Extract inflections from "pseudo" PoS sections, like "Forme de Verbe", etc.
+   *
+   * This information is redundant with the original description of inflected forms that is supposed
+   * to be present in the original lexical entry.
+   *
+   * SHOULD WE KEEP EXTRACTING THESE ???
+   *
+   * This is the only place where we find inflected forms of past participle ?
+   *
+   * @param blockStart
+   * @param end
+   */
   private void extractInflections(int blockStart, int end) {
     log.trace("extracting inflections in {}", this.getWiktionaryPageName());
     Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
@@ -957,16 +759,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     while (m.find()) {
 
-      if (m.group(1).startsWith("fr-")) {
-        for (int i = 3; i <= m.groupCount(); i++) {
-          // CHECK: do we ever go into this loop ?
-          // an infection macro can have several morphological information parameter
-          log.trace("Having more than 3 args in inflection template for {} in {}", m.group(),
-              this.getWiktionaryPageName());
-          addInflectionMorphologicalSet(wdh.currentWiktionaryPos(), m.group(2),
-              m.group(i).substring(0, m.group(i).indexOf('=')));
-        }
-      }
       if ("m".equals(m.group(1)) || "mf".equals(m.group(1))) {
         HashSet<PropertyObjectPair> infl = new HashSet<>();
         infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
@@ -1049,8 +841,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private boolean isValidSection(Matcher m, String sectionTitle) {
     return sectionTitle != null || sectionMarkers.contains(m.group(1));
   }
-
-  private boolean posIsInflection;
 
   private class InflectionSection {
 
@@ -1294,6 +1084,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       wdh.registerPropertyOnCanonicalForm(LexinfoOnt.number, LexinfoOnt.plural);
       context.add("Pluriel");
     }
+
+    // Pour les verbes :
+    // Transitivité
+    // {{t}}
+    // {{i}}
+    // Autres
+    // {{impersonnel}}
+    // {{prnl}} /!\ Ne pas confondre avec {{pronl}} (contexte) /!\
+
     return context;
   }
 
@@ -1308,7 +1107,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractOtherForms(int start, int end, List<String> context) {
-    // TODO: only when we are extracting morphology ?
     if (wdh.isDisabled(ExtractionFeature.MORPHOLOGY)) {
       return;
     }
@@ -1320,8 +1118,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       String templateCall = otherFormMatcher.group();
       if (templateCall.startsWith("{{fr-verbe"))
         continue;
-      // conjugationExtractor.setPageName(this.getWiktionaryPageName());
-      conjugationExtractor.parseOtherForm(otherFormMatcher.group(), context);
+      morphologyExtractor.parseOtherForm(otherFormMatcher.group(), context);
     }
   }
 

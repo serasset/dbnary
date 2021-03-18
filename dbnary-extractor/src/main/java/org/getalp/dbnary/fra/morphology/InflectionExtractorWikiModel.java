@@ -1,10 +1,11 @@
-package org.getalp.dbnary.fra;
+package org.getalp.dbnary.fra.morphology;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.fra.WiktionaryDataHandler;
 import org.getalp.ontolex.model.LexicalForm;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

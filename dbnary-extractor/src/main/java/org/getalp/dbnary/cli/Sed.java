@@ -33,5 +33,7 @@ public class Sed {
     while ((length = modifyingReader.read(buf)) > 0) {
       out.write(buf, 0, length);
     }
+    out.flush();
+    out.close();
   }
 }

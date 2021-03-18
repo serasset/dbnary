@@ -1,12 +1,11 @@
-package org.getalp.dbnary.fra;
+package org.getalp.dbnary.morphology;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import org.getalp.dbnary.morphology.HtmlTableHandler;
-import org.getalp.dbnary.morphology.InflectionScheme;
 import org.getalp.dbnary.tools.ArrayMatrix;
 import org.getalp.ontolex.model.LexicalForm;
 import org.getalp.ontolex.model.WrittenRepresentation;
@@ -18,7 +17,7 @@ import org.slf4j.LoggerFactory;
 public abstract class RefactoredTableExtractor implements Cloneable {
 
   private final HashSet<Element> alreadyParsedTables;
-  private final String language;
+  protected final String language;
   protected String entryName;
   protected List<String> globalContext;
   protected ArrayMatrix<Element> cells = null;
@@ -26,14 +25,13 @@ public abstract class RefactoredTableExtractor implements Cloneable {
 
   private final Logger log = LoggerFactory.getLogger(RefactoredTableExtractor.class);
 
-  public RefactoredTableExtractor(String entryName, String language,
-      Element table, List<String> context) {
-    this(entryName, language, table, context, new HashSet<>());
+  public RefactoredTableExtractor(String entryName, String language, List<String> context) {
+    this(entryName, language, context, new HashSet<>());
   }
 
   /* private constructor for nested table extraction */
-  private RefactoredTableExtractor(String entryName, String language, Element table,
-      List<String> context, HashSet<Element> alreadyParsedTables) {
+  private RefactoredTableExtractor(String entryName, String language, List<String> context,
+      HashSet<Element> alreadyParsedTables) {
     this.entryName = entryName;
     this.language = language;
     this.globalContext = context;
@@ -63,7 +61,9 @@ public abstract class RefactoredTableExtractor implements Cloneable {
       return results.get(i, j);
   }
 
-  protected Set<LexicalForm> parseTable(Element tableElement) {
+  public Set<LexicalForm> parseTable(Element tableElement) {
+    if (alreadyParsedTables.contains(tableElement))
+      return new HashSet<>();
     alreadyParsedTables.add(tableElement);
 
     Set<LexicalForm> forms = new LinkedHashSet<>();
@@ -78,17 +78,17 @@ public abstract class RefactoredTableExtractor implements Cloneable {
           continue;
         if (isHeaderCell(cell))
           continue;
-        if (isNormalCell(cell) && shouldProcessCell(cell)) {
+        if (shouldProcessCell(cell)) {
           List<String> cellContext = getRowAndColumnContext(i, j, cells);
           // prepend global context
           cellContext.addAll(0, globalContext);
           if (cell.select("table").isEmpty()) {
             // No nested table in current cell.
-            Set<LexicalForm> lexForms = handleSimpleCell(cell, cellContext);
+            Set<LexicalForm> lexForms = handleSimpleCell(i, j, cell, cellContext);
             results.set(i, j, lexForms);
             forms.addAll(lexForms);
           } else {
-            Set<LexicalForm> lexForms = handleNestedTables(cell, cellContext);
+            Set<LexicalForm> lexForms = handleNestedTables(i, j, cell, cellContext);
             results.set(i, j, lexForms);
             forms.addAll(lexForms);
           }
@@ -99,9 +99,10 @@ public abstract class RefactoredTableExtractor implements Cloneable {
   }
 
   /**
-   * true if the cell should be processed by the extractor.
-   * This is called for a normal cell and not for a header cell, it allows specific subclasses
-   * to further filter out cells based on their content.
+   * true if the cell should be processed by the extractor. This is called for a normal cell and not
+   * for a header cell, it allows specific subclasses to further filter out cells based on their
+   * content.
+   * 
    * @param cell
    * @return
    */
@@ -109,15 +110,15 @@ public abstract class RefactoredTableExtractor implements Cloneable {
     return true;
   }
 
-  protected Set<LexicalForm> handleSimpleCell(Element cell, List<String> context) {
+  protected Set<LexicalForm> handleSimpleCell(int i, int j, Element cell, List<String> context) {
     // Do not process cell that have a background color (these are usually not valid values)
     if (cell.attr("bgcolor").isEmpty()) {
-      return getLexicalFormsFromCell(cell, context);
+      return getLexicalFormsFromCell(i, j, cell, context);
     }
     return new HashSet<>();
   }
 
-  protected Set<LexicalForm> handleNestedTables(Element cell, List<String> context) {
+  protected Set<LexicalForm> handleNestedTables(int i, int j, Element cell, List<String> context) {
     // handle tables that are nested in cells
     Elements tables = cell.select("table");
     Set<LexicalForm> forms = new LinkedHashSet<>();
@@ -131,6 +132,8 @@ public abstract class RefactoredTableExtractor implements Cloneable {
       }
       try {
         RefactoredTableExtractor nestedExtractor = (RefactoredTableExtractor) this.clone();
+        nestedExtractor.globalContext = new ArrayList<>(nestedExtractor.globalContext);
+        nestedExtractor.globalContext.addAll(0, context);
         forms.addAll(nestedExtractor.parseTable(nestedTable));
       } catch (CloneNotSupportedException e) {
         log.error("Could not clone the Table Extractor for nested table extraction.");
@@ -138,10 +141,6 @@ public abstract class RefactoredTableExtractor implements Cloneable {
       }
     }
     return forms;
-  }
-
-  protected boolean isNormalCell(Element cell) {
-    return cell.tagName().equalsIgnoreCase("td");
   }
 
   protected boolean isHeaderCell(Element cell) {
@@ -177,10 +176,13 @@ public abstract class RefactoredTableExtractor implements Cloneable {
    *
    *
    *
+   *
+   * @param i the line number of the cell in the table
+   * @param j the column number of the cell in the table
    * @param context a list of Strings that represent the celle context
    * @return The set of lexical forms corresponding to the context
    */
-  protected Set<LexicalForm> getLexicalFormsFromCell(Element cell,
+  protected Set<LexicalForm> getLexicalFormsFromCell(int i, int j, Element cell,
       List<String> context) {
     InflectionScheme infl = getInflectionSchemeFromContext(context);
     return getInflectedForms(cell, infl);
@@ -195,8 +197,7 @@ public abstract class RefactoredTableExtractor implements Cloneable {
    * @param context a list of Strings that represent the celle context
    * @return The set of lexical forms corresponding to the context
    */
-  protected abstract InflectionScheme getInflectionSchemeFromContext(
-      List<String> context);
+  protected abstract InflectionScheme getInflectionSchemeFromContext(List<String> context);
 
 
   /**
@@ -211,14 +212,30 @@ public abstract class RefactoredTableExtractor implements Cloneable {
     // there are cells with <br> and commas to separate different values: split them
     // get rid of spurious html-formatting (<nbsp> <small> <i> etc.)
     Set<LexicalForm> forms = new HashSet<LexicalForm>();
-    Elements anchors = cell.select("a");
+    // if the inflection is null, there is no inflected form to build
+    if (null == infl)
+      return forms;
 
-    if (anchors.isEmpty()) {
-      String cellText = cell.html();
+    Elements elements = cell.select("a");
+
+    if (!(elements = cell.select("a")).isEmpty()) {
+      for (Element anchor : elements) {
+        LexicalForm form = new LexicalForm(infl);
+        form.addValue(new WrittenRepresentation(standardizeValue(anchor.text()), language));
+        forms.add(form);
+      }
+    } else if (!(elements = cell.select("strong.selflink")).isEmpty()) {
+      for (Element selflink : elements) {
+        LexicalForm form = new LexicalForm(infl);
+        form.addValue(new WrittenRepresentation(standardizeValue(selflink.text()), language));
+        forms.add(form);
+      }
+    } else {
+      String cellText = cell.text();
       // check for <br>
       Elements linebreaks = cell.select("br");
       if (!linebreaks.isEmpty()) {
-        log.debug("cell contains <br> : {}", cell.html());
+        log.debug("cell contains <br> : {}", cell.text());
         // replace <br> by ","
         cellText = cellText.replaceAll("<br/?>", ",");
       }
@@ -233,17 +250,11 @@ public abstract class RefactoredTableExtractor implements Cloneable {
           forms.add(form);
         }
       }
-    } else {
-      for (Element anchor : anchors) {
-        LexicalForm form = new LexicalForm(infl);
-        form.addValue(new WrittenRepresentation(standardizeValue(anchor.text()), language));
-        forms.add(form);
-      }
     }
     return forms;
   }
 
-  protected static String standardizeValue(String value) {
+  protected String standardizeValue(String value) {
     value = value.replaceAll("&nbsp;", " ");
     value = value.replaceAll("</?small>", "");
     value = value.replaceAll("</?i>", "");

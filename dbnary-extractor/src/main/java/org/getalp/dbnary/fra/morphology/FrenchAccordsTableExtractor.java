@@ -1,31 +1,31 @@
 package org.getalp.dbnary.fra;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-import org.getalp.dbnary.fra.FrenchInflectionData.GNumber;
-import org.getalp.dbnary.fra.FrenchInflectionData.Genre;
-import org.getalp.dbnary.fra.FrenchInflectionData.Person;
-import org.getalp.dbnary.morphology.InflectionData;
-import org.getalp.dbnary.morphology.TableExtractor;
+import java.util.Set;
+import org.getalp.dbnary.morphology.InflectionScheme;
+import org.getalp.dbnary.morphology.RefactoredTableExtractor;
+import org.getalp.dbnary.morphology.RelaxInflexionScheme;
+import org.getalp.lexinfo.model.Gender;
+import org.getalp.lexinfo.model.Number;
+import org.getalp.lexinfo.model.Person;
+import org.getalp.ontolex.model.LexicalForm;
+import org.getalp.ontolex.model.PhoneticRepresentation;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FrenchAccordsTableExtractor extends TableExtractor {
+public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
 
-  private final List<String> entryContext;
   private Logger log = LoggerFactory.getLogger(FrenchAccordsTableExtractor.class);
 
-  public FrenchAccordsTableExtractor(String currentEntry, List<String> context) {
-    super(currentEntry);
-    this.entryContext = context;
+  public FrenchAccordsTableExtractor(String currentEntry, String language, List<String> context) {
+    super(currentEntry, language, context);
   }
 
   @Override
-  protected List<InflectionData> getInflectionDataFromCellContext(List<String> context) {
-    if (null != entryContext) {
-      context.addAll(0, entryContext);
-    }
-    FrenchInflectionData inflection = new FrenchInflectionData();
+  protected InflectionScheme getInflectionSchemeFromContext(List<String> context) {
+    InflectionScheme inflection = new RelaxInflexionScheme();
     boolean hasGender = false;
     for (String h : context) {
       h = h.trim();
@@ -41,7 +41,7 @@ public class FrenchAccordsTableExtractor extends TableExtractor {
         case "Singulare tantum":
         case "singulare tantum":
         case "Uniquement au singulier":
-          inflection.number = GNumber.SINGULIER;
+          inflection.add(Number.SINGULAR);
           break;
         case "Pluriel":
         case "pluriel":
@@ -52,68 +52,72 @@ public class FrenchAccordsTableExtractor extends TableExtractor {
         case "plurale tantum":
         case "Sigle (au pluriel)":
         case "Nom propre au pluriel":
-          inflection.number = GNumber.PLURIEL;
+          inflection.add(Number.PLURAL);
           break;
         case "Singulier et pluriel":
         case "Singulier ou pluriel":
         case "singulier ou pluriel":
         case "Singulier et pluriel identiques":
-          inflection.number = GNumber.SINGULIER_ET_PLURIEL;
+          inflection.add(Number.SINGULAR);
+          inflection.add(Number.PLURAL);
           break;
         case "Indénombrable":
         case "indénombrable":
         case "Singulare tantum, indénombrable":
-          inflection.number = GNumber.INDENOMBRABLE;
+          // TODO: UNCOUNTABLE is not in LexInfo, see if we add olia uncountable (to the form) ?
+          inflection.add(Number.SINGULAR);
+          // inflection.add(Number.UNCOUNTABLE);
           break;
         case "Masculin":
         case "masculin":
-          inflection.genre = Genre.MASCULIN;
+          inflection.add(Gender.MASCULINE);
           hasGender = true;
           break;
         case "Masculin singulier":
         case "masculin singulier":
         case "Masculin singulier invariable":
-          inflection.genre = Genre.MASCULIN;
-          inflection.number = GNumber.SINGULIER;
+          inflection.add(Gender.MASCULINE);
+          inflection.add(Number.SINGULAR);
           hasGender = true;
           break;
         case "Masculin pluriel":
         case "masculin pluriel":
-          inflection.genre = Genre.MASCULIN;
-          inflection.number = GNumber.PLURIEL;
+          inflection.add(Gender.MASCULINE);
+          inflection.add(Number.PLURAL);
           hasGender = true;
           break;
         case "Féminin":
         case "féminin":
-          inflection.genre = Genre.FEMININ;
+          inflection.add(Gender.FEMININE);
           hasGender = true;
           break;
         case "Féminin pluriel":
         case "féminin pluriel":
-          inflection.genre = Genre.FEMININ;
-          inflection.number = GNumber.PLURIEL;
+          inflection.add(Gender.FEMININE);
+          inflection.add(Number.PLURAL);
           hasGender = true;
           break;
         case "Féminin singulier":
         case "féminin singulier":
         case "Féminin singulier invariable":
         case "Féminin singulier, invariable":
-          inflection.genre = Genre.FEMININ;
-          inflection.number = GNumber.SINGULIER;
+          inflection.add(Gender.FEMININE);
+          inflection.add(Number.SINGULAR);
           hasGender = true;
           break;
         case "Masculin et féminin":
-          inflection.genre = Genre.MASCULIN_ET_FEMININ;
+          inflection.add(Gender.FEMININE);
+          inflection.add(Gender.MASCULINE);
           hasGender = true;
           break;
         case "1e personne":
-          inflection.person = Person.PREMIÈRE;
+          inflection.add(Person.FIRST);
           break;
         case "2e personne":
-          inflection.person = Person.SECONDE;
+          inflection.add(Person.SECOND);
           break;
         case "3e personne":
-          inflection.person = Person.TROISIÈME;
+          inflection.add(Person.THIRD);
           break;
         case "—":
         case "":
@@ -155,7 +159,7 @@ public class FrenchAccordsTableExtractor extends TableExtractor {
           // these mean invariable... Don't register anything
           break;
         default:
-          log.debug("Unhandled header {} in {}", h, currentEntry);
+          log.debug("Unhandled header {} in {}", h, this.entryName);
       }
     }
     // check whether Substantive does have a gender - warn otherwise
@@ -163,8 +167,37 @@ public class FrenchAccordsTableExtractor extends TableExtractor {
     if (!hasGender) {
       log.debug("Warning: no gender in Substantive entry.");
     }
-    List<InflectionData> inflections = new ArrayList<>();
-    inflections.add(inflection);
-    return inflections;
+    return inflection;
+  }
+
+  // TODO : remove the other word form that correspond to the canonical form...
+  // TODO: les formes extraites à partir des définitions de formes fléchies sont en double
+  @Override
+  protected Set<LexicalForm> getLexicalFormsFromCell(int i, int j, Element cell,
+      List<String> context) {
+    // In the French language edition, pronunciation are often given in independant cells below
+    // the lexical Form written rep. In case of a pronunication information, we attach the
+    // ponounciation to the lexicalForm that were extracted from the cell above.
+    if (isIsolatedPronunciation(cell)) {
+      Set<LexicalForm> lexFormsAbove = results.get(i - 1, j);
+      if (null != lexFormsAbove) {
+        String pron = cell.text().trim();
+        lexFormsAbove
+            .forEach(f -> f.addValue(new PhoneticRepresentation(standardizeValue(pron), language)));
+      } else {
+        log.warn("No lexical form above as we have an isolated pronunciation in {}",
+            this.entryName);
+      }
+      return new LinkedHashSet<>();
+    } else {
+      return super.getLexicalFormsFromCell(i, j, cell, context);
+    }
+
+  }
+
+  private boolean isIsolatedPronunciation(Element cell) {
+    // The expander does not produce an anchor, but only the pronunciation text around '\'
+    String pron = cell.text().trim();
+    return pron.startsWith("\\") && pron.endsWith("\\");
   }
 }

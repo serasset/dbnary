@@ -1,9 +1,20 @@
 package org.getalp.dbnary.fra;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.ArrayList;
+import java.util.HashSet;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.getalp.dbnary.DBnaryOnt;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
+import org.getalp.dbnary.PronunciationPair;
+import org.getalp.dbnary.PropertyObjectPair;
+import org.getalp.dbnary.morphology.InflectionScheme;
+import org.getalp.ontolex.model.LexicalForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,4 +76,17 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     }
     return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? "" : s);
   }
+
+  public void addLexicalForm(LexicalForm form) {
+    // TODO: should we check if the lexical form exists ?
+    // TODO: should we check if a compatible lexical form exists ?
+    Model morphoBox = this.getFeatureBox(ExtractionFeature.MORPHOLOGY);
+
+    if (null == morphoBox) {
+      return;
+    }
+
+    form.attachTo(currentLexEntry.inModel(morphoBox));
+  }
+
 }

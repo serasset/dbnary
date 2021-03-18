@@ -1,4 +1,4 @@
-package org.getalp.dbnary.fra;
+package org.getalp.dbnary.fra.morphology;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -55,6 +55,7 @@ public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
           inflection.add(Number.PLURAL);
           break;
         case "Singulier et pluriel":
+        case "singulier et pluriel":
         case "Singulier ou pluriel":
         case "singulier ou pluriel":
         case "Singulier et pluriel identiques":
@@ -181,7 +182,7 @@ public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
     if (isIsolatedPronunciation(cell)) {
       Set<LexicalForm> lexFormsAbove = results.get(i - 1, j);
       if (null != lexFormsAbove) {
-        String pron = cell.text().trim();
+        String pron = Utils.standardizePronunciation(cell.text());
         lexFormsAbove
             .forEach(f -> f.addValue(new PhoneticRepresentation(standardizeValue(pron), language)));
       } else {

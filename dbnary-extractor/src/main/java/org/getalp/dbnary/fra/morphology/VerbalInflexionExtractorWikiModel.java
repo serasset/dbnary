@@ -1,4 +1,4 @@
-package org.getalp.dbnary.fra;
+package org.getalp.dbnary.fra.morphology;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Set;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.fra.WiktionaryDataHandler;
 import org.getalp.dbnary.morphology.RefactoredTableExtractor;
 import org.getalp.ontolex.model.LexicalForm;
 import org.jsoup.Jsoup;
@@ -67,6 +68,12 @@ public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
 
     for (Element h3 : sectionTitles) {
       String sectionTitle = h3.text().trim();
+
+      if ("Futur simple et conditionnel présent avant 1976 (et prononciation du XIXe siècle)"
+          .equals(sectionTitle)) {
+        log.debug("Ignoring inflections from pré-1976 tables in {}", this.getPageName());
+        continue;
+      }
       List<String> sectionContext = (new ArrayList<>(context));
       sectionContext.add(sectionTitle);
       RefactoredTableExtractor verbalTableExtractor;

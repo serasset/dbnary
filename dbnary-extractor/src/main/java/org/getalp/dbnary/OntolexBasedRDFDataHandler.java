@@ -470,9 +470,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     aBox.add(currentLexEntry, OntolexOnt.canonicalForm, currentCanonicalForm);
     aBox.add(currentCanonicalForm, OntolexOnt.writtenRep, currentWiktionaryPageName,
         getCurrentEntryLanguage());
-    // TODO : why should I register a label here when I have a writtenRep ?
-    // aBox.add(currentCanonicalForm, RDFS.label, currentWiktionaryPageName,
-    // getCurrentEntryLanguage());
+    aBox.add(currentLexEntry, RDFS.label, currentWiktionaryPageName, getCurrentEntryLanguage());
     aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
     if (null != currentLexinfoPos) {
       aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);
@@ -639,7 +637,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // Ensure language is in its standard form.
     String tl = LangTools.getPart1OrId(lang);
     lang = LangTools.normalize(lang);
-
     Resource trans = aBox.createResource(computeTransId(lang, entity), DBnaryOnt.Translation);
     aBox.add(trans, DBnaryOnt.isTranslationOf, entity);
     aBox.add(createTargetLanguageProperty(trans, lang));
@@ -697,7 +694,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     return incompatibleProperties(p1, p2, true);
   }
 
-  private boolean isResourceCompatible(Resource r, HashSet<PropertyObjectPair> properties) {
+  protected boolean isResourceCompatible(Resource r, HashSet<PropertyObjectPair> properties) {
     for (PropertyObjectPair pr : properties) {
       Property p = pr.getKey();
 
@@ -770,7 +767,11 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     if (pronunciations != null) {
       for (PronunciationPair pronunciation : pronunciations) {
-        props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation,
+        // DONE: deprecating lexinfo:pronunciation in favour of ontolex:phoneticRep, remove
+        // the former after a certain period.
+        // props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation,
+        // aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+        props.add(PropertyObjectPair.get(OntolexOnt.phoneticRep,
             aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
       }
     }

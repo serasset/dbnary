@@ -183,8 +183,9 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   }
 
   public void extractDefinition(Matcher definitionMatcher) {
-    // TODO: properly handle macros in definitions.
-    String definition = definitionMatcher.group(1);
+    // Remove at least the leading spaces from definition as they are meaningless (just a separator
+    // from the list item) and may be interpreted as pre content when taken out of context.
+    String definition = definitionMatcher.group(1).trim();
     int defLevel = 1;
     if (definitionMatcher.group().charAt(1) == '#') {
       defLevel = 2;

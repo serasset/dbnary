@@ -122,7 +122,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher l1 = level1HeaderPattern.matcher(pageContent);
     int porStart = -1;
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
     while (l1.find()) {
       // System.err.println(l1.group());
       if (-1 != porStart) {
@@ -138,7 +137,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       // System.err.println("Parsing previous portuguese entry");
       extractPortugueseData(porStart, pageContent.length());
     }
-    wdh.finalizeEntryExtraction();
     wdh.finalizePageExtraction();
   }
 
@@ -219,6 +217,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractPortugueseData(int startOffset, int endOffset) {
+    wdh.initializeEntryExtraction(getWiktionaryPageName());
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     gotoIgnorePos();
@@ -404,6 +403,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         assert false : "Unexpected state while ending extraction of entry: "
             + getWiktionaryPageName();
     }
+    wdh.finalizeEntryExtraction();
   }
 
   private boolean isLevel2Header(Matcher m) {

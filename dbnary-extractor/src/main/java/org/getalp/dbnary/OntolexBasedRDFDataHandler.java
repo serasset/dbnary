@@ -637,7 +637,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // Ensure language is in its standard form.
     String tl = LangTools.getPart1OrId(lang);
     lang = LangTools.normalize(lang);
-
     Resource trans = aBox.createResource(computeTransId(lang, entity), DBnaryOnt.Translation);
     aBox.add(trans, DBnaryOnt.isTranslationOf, entity);
     aBox.add(createTargetLanguageProperty(trans, lang));

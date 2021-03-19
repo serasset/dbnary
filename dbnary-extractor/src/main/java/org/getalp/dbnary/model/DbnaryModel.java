@@ -46,7 +46,7 @@ public class DbnaryModel {
       } else if ((c >= '\u00A0' && c <= '\u00BF') || (c == '<') || (c == '>') || (c == '%')
           || (c == '"') || (c == '#') || (c == '[') || (c == ']') || (c == '\\') || (c == '^')
           || (c == '`') || (c == '{') || (c == '|') || (c == '}') || (c == '\u00D7')
-          || (c == '\u00F7')) {
+          || (c == '\u00F7') || (c == ':')) {
         try {
           res.append(URLEncoder.encode("" + c, "UTF-8"));
         } catch (UnsupportedEncodingException e) {

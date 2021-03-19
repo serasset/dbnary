@@ -17,4 +17,9 @@ public class PhoneticRepresentation extends Representation {
     return lexForm;
   }
 
+  @Override
+  public String toString() {
+    return "PhoneticRepresentation{" + super.toString() + "}";
+  }
+
 }

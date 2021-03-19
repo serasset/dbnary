@@ -26,11 +26,9 @@ import org.w3c.dom.NodeList;
  * @author jakse
  */
 
-public class FrenchExtractorWikiModel extends MorphologyWikiModel {
+public class FrenchExtractorWikiModel {
 
   private static Logger log = LoggerFactory.getLogger(FrenchExtractorWikiModel.class);
-
-  private IWiktionaryDataHandler delegate;
 
   public static final Literal trueLiteral = DbnaryModel.tBox.createTypedLiteral(true);
 
@@ -42,12 +40,6 @@ public class FrenchExtractorWikiModel extends MorphologyWikiModel {
   // DbnaryModel.tBox.createProperty(DBnaryOnt.getURI() + "extractedFromInflectionTable");
 
   private static Pattern frAccordPattern = Pattern.compile("^\\{\\{(?:fr-accord|fr-rég)");
-
-  public FrenchExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
-    super(wi, locale, imageBaseURL, linkBaseURL);
-    this.delegate = wdh;
-  }
 
   private static ArrayList<String> explode(char sep, String str) {
     int lastI = 0;

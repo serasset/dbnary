@@ -24,7 +24,8 @@ import org.slf4j.LoggerFactory;
  * @author serasset
  */
 public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
-
+  // TODODODODODODODODOOD : change the way pronounciations are rendered, add an span with a class
+  // and use it to detect pronunciations.
   private static Logger log = LoggerFactory.getLogger(VerbalInflexionExtractorWikiModel.class);
 
   private WiktionaryDataHandler delegate;

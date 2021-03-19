@@ -484,7 +484,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected ExampleExpanderWikiModel exampleExpander;
   protected FrenchDefinitionExtractorWikiModel definitionExpander;
-  protected FrenchExtractorWikiModel conjugationExtractor;
+  // protected FrenchExtractorWikiModel conjugationExtractor;
   protected InflectionExtractorWikiModel morphologyExtractor;
   protected VerbalInflexionExtractorWikiModel verbalInflectionExtractor;
   protected ExpandAllWikiModel glossExtractor;
@@ -496,8 +496,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
     definitionExpander = new FrenchDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"),
         "/${image}", "/${title}");
-    conjugationExtractor =
-        new FrenchExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
+    // conjugationExtractor =
+    // new FrenchExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
     verbalInflectionExtractor = new VerbalInflexionExtractorWikiModel(this.wdh, this.wi,
         new Locale("fr"), "/${image}", "/${title}");
     morphologyExtractor = new InflectionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"),
@@ -510,7 +510,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super.setWiktionaryPageName(wiktionaryPageName);
     exampleExpander.setPageName(this.getWiktionaryPageName());
     definitionExpander.setPageName(this.getWiktionaryPageName());
-    conjugationExtractor.setPageName(this.getWiktionaryPageName());
+    // conjugationExtractor.setPageName(this.getWiktionaryPageName());
     morphologyExtractor.setPageName(this.getWiktionaryPageName());
     verbalInflectionExtractor.setPageName(this.getWiktionaryPageName());
     glossExtractor.setPageName(this.getWiktionaryPageName());
@@ -1109,6 +1109,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractOtherForms(int start, int end, List<String> context) {
     if (wdh.isDisabled(ExtractionFeature.MORPHOLOGY)) {
       return;
+    }
+    // In French Wiktionary, many adjective "main entry" (the lemma) is marked as masculine
+    // so remove any genre from adjective otherForm extraction.
+    if ("-adj-".equals(wdh.currentWiktionaryPos())) {
+      context.removeIf("Masculin"::equals);
+      context.removeIf("Féminin"::equals);
     }
 
     Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);

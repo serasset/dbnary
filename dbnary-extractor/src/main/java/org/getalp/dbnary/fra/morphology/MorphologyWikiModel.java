@@ -70,14 +70,13 @@ public abstract class MorphologyWikiModel extends DbnaryWikiModel {
         writer.append("").append(String.valueOf(i + 1));
       }
     } else if (templateName.equals("pron")) {
-      // catch this template call as it resolves in a non useful link.
-      writer.append("\\").append(parameterMap.get("1")).append("\\");
+      // catch this template call to mark the pronunciation with a specific anchor.
+      writer.append("<span class=\"pron\">\\").append(parameterMap.get("1")).append("\\</span>");
     } else if (templateName.equals("pron-brut")) {
-      // catch this template call as it resolves into a non usefull link.
       if (null == parameterMap.get("1"))
         writer.append("—");
       else
-        writer.append(parameterMap.get("1"));
+        writer.append("<span class=\"pron\">").append(parameterMap.get("1")).append("</span>");
     } else if (templateName.equals("param1ou2")) {
       // This template generates incomplete links xxx]] ou [[xxx which breaks the bliki parser
       writer.append(parameterMap.get("1")).append(" ou ").append(parameterMap.get("2"));

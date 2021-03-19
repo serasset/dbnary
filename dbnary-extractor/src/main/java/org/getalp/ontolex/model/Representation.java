@@ -23,4 +23,15 @@ public abstract class Representation {
   public void setLanguage(String language) {
     this.language = language;
   }
+
+  @Override
+  public String toString() {
+    return "\"" + value + "\"@" + language;
+  }
+
+  @Override
+  public int hashCode() {
+    return this.toString().hashCode();
+  }
+
 }

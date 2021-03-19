@@ -16,4 +16,9 @@ public class WrittenRepresentation extends Representation {
     box.add(lexForm, OntolexOnt.writtenRep, box.createLiteral(value, language));
     return lexForm;
   }
+
+  @Override
+  public String toString() {
+    return "WrittenRepresentation{" + super.toString() + "}";
+  }
 }

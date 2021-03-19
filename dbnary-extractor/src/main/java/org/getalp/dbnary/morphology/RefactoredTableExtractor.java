@@ -6,8 +6,10 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import org.getalp.dbnary.fra.morphology.Utils;
 import org.getalp.dbnary.tools.ArrayMatrix;
 import org.getalp.ontolex.model.LexicalForm;
+import org.getalp.ontolex.model.PhoneticRepresentation;
 import org.getalp.ontolex.model.WrittenRepresentation;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -216,19 +218,19 @@ public abstract class RefactoredTableExtractor implements Cloneable {
     if (null == infl)
       return forms;
 
-    Elements elements = cell.select("a");
+    Elements elements;
 
-    if (!(elements = cell.select("a")).isEmpty()) {
+    if (!(elements = cell.select("a, strong.selflink")).isEmpty()) {
       for (Element anchor : elements) {
         LexicalForm form = new LexicalForm(infl);
         form.addValue(new WrittenRepresentation(standardizeValue(anchor.text()), language));
         forms.add(form);
       }
-    } else if (!(elements = cell.select("strong.selflink")).isEmpty()) {
-      for (Element selflink : elements) {
-        LexicalForm form = new LexicalForm(infl);
-        form.addValue(new WrittenRepresentation(standardizeValue(selflink.text()), language));
-        forms.add(form);
+      Elements prons = cell.select("span.pron");
+      for (Element pron : prons) {
+        String pronValue = Utils.standardizePronunciation(pron.text());
+        if (pronValue.length() > 0)
+          forms.forEach(f -> f.addValue(new PhoneticRepresentation(pronValue, language)));
       }
     } else {
       String cellText = cell.text();

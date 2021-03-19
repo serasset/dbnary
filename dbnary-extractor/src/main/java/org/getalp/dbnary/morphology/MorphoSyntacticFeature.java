@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.RDFNode;
 
 public abstract class MorphoSyntacticFeature implements Comparable<MorphoSyntacticFeature> {
   public abstract Property property();
+
   public abstract RDFNode value();
 
   @Override

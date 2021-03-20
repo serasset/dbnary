@@ -1,12 +1,10 @@
 package org.getalp.ontolex.model;
 
-import com.github.andrewoma.dexx.collection.List;
 import java.math.BigInteger;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.util.SplitIRI;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.morphology.InflectionScheme;
 

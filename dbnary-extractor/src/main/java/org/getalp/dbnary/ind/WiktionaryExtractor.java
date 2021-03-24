@@ -333,11 +333,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
     if (lang.contains("indonesia") || lang.equalsIgnoreCase("id")) {
-      wdh.initializeEntryExtraction(getWiktionaryPageName());
+      wdh.initializeLanguageSection(getWiktionaryPageName());
     } else {
       // log.debug("Unused lang {}", lang);
       return;
-      // wdh.initializeEntryExtraction(getWiktionaryPageName(), lang);
+      // wdh.initializeLanguageSection(getWiktionaryPageName(), lang);
     }
 
     Matcher m = blockPattern.matcher(pageContent);
@@ -369,7 +369,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     extractDataBlock(start, endOffset, block, blockString);
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,
@@ -409,7 +409,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       blockS = blockString;
     }
     blockS = cleanBlockName(blockS, blockString);
-    dwdh.addPartOfSpeech(blockS);
+    dwdh.initializeLexicalEntry(blockS);
     dwdh.addExtraPOSInfo(blockS);
   }
 

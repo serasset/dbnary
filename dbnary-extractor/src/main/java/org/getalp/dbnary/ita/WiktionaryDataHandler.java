@@ -132,8 +132,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeEntryExtraction(String wiktionaryPageName) {
-    super.initializeEntryExtraction(wiktionaryPageName);
+  public void initializeLanguageSection(String wiktionaryPageName) {
+    super.initializeLanguageSection(wiktionaryPageName);
     lexEntries.clear();
     encodedWiktionaryPageName = uriEncode(currentWiktionaryPageName);
   }
@@ -144,8 +144,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void finalizeEntryExtraction() {
-    super.finalizeEntryExtraction();
+  public void finalizeLanguageSection() {
+    super.finalizeLanguageSection();
     encodedWiktionaryPageName = null;
   }
 
@@ -228,13 +228,13 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void addPartOfSpeech(String pos) {
+  public void initializeLexicalEntry(String pos) {
     // TODO: Italian sometimes define translations for noun forms. If an entry is ambiguous,
     // TODO: then translations could be wrongly attached. The forms should be kept in lex entries
     // TODO: but not correspond to a valid resource. This will be usefull for later
     // drop of non useful translations.
     PosAndType pat = posAndTypeValueMap.get(pos);
-    Resource entry = addPartOfSpeech(pos, posResource(pat), typeResource(pat));
+    Resource entry = initializeLexicalEntry(pos, posResource(pat), typeResource(pat));
     addLexEntry(posResource(pat), entry);
   }
 

@@ -178,11 +178,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
     if (lang.equals("ltv")) {
-      wdh.initializeEntryExtraction(getWiktionaryPageName());
+      wdh.initializeLanguageSection(getWiktionaryPageName());
     } else {
       // log.debug("Unused lang {} --in-- {}", lang, this.wiktionaryPageName);
       return;
-      // wdh.initializeEntryExtraction(wiktionaryPageName, lang);
+      // wdh.initializeLanguageSection(wiktionaryPageName, lang);
     }
 
     Matcher m = blockPattern.matcher(pageContent);
@@ -214,7 +214,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     extractDataBlock(start, endOffset, block, blockString);
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,
@@ -253,7 +253,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
 
-    dwdh.addPartOfSpeech(blockString);
+    dwdh.initializeLexicalEntry(blockString);
     if (m.find()) {
       if (m.group(1).contains("vikipedija")) {
         if (m.find()) {

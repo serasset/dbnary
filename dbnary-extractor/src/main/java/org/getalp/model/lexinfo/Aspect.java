@@ -1,4 +1,4 @@
-package org.getalp.lexinfo.model;
+package org.getalp.model.lexinfo;
 
 import java.util.Set;
 import java.util.function.Consumer;

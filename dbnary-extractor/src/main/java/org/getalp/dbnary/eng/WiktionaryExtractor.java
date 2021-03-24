@@ -18,7 +18,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.Pair;
+import org.getalp.dbnary.Span;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
@@ -172,12 +172,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractEnglishData(int startOffset, int endOffset) {
     if (isWikisaurus(getWiktionaryPageName())) {
       setWiktionaryPageName(cutNamespace(getWiktionaryPageName()));
-      wdh.initializeEntryExtraction(getWiktionaryPageName());
+      wdh.initializeLanguageSection(getWiktionaryPageName());
       wikisaurusExtractor.extractWikisaurusSection(getWiktionaryPageName(),
           pageContent.substring(startOffset, endOffset));
       return;
     }
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
+    wdh.initializeLanguageSection(getWiktionaryPageName());
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     wikiExpander.setPageName(getWiktionaryPageName());
@@ -202,7 +202,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     // Finalize the entry parsing
     leaveCurrentBlock(m, previousContext);
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   private Block computeNextBlock(Matcher m, Map<String, Object> context) {
@@ -283,7 +283,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
       case DEFBLOCK:
         String pos = (String) context.get("pos");
-        wdh.addPartOfSpeech(pos);
+        wdh.initializeLexicalEntry(pos);
         ewdh.registerEtymologyPos(getWiktionaryPageName());
         extractMorphology(blockStart, end);
         extractHeadInformation(blockStart, end);
@@ -454,7 +454,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractTable(String s, String lang) {
-    for (Pair l : WikiTool.locateEnclosedString(s, "{{", "}}")) {
+    for (Span l : WikiTool.locateEnclosedString(s, "{{", "}}")) {
       String t = s.substring(l.start + 2, l.start + 6);
       int start = l.start;
       if (t.equals("der2") || t.equals("der3") || t.equals("der4")) {
@@ -552,7 +552,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractEtymtree(String s, String lang) {
-    for (Pair template : WikiTool.locateEnclosedString(s, "{{", "}}")) {
+    for (Span template : WikiTool.locateEnclosedString(s, "{{", "}}")) {
       Symbols b = new Symbols(s.substring(template.start + 2, template.end - 2), lang, "TEMPLATE");
       if (b.values != null && b.values.get(0).equals("ETYMTREE") && b.args.get("lang") != null) {
         String page = b.args.get("page");

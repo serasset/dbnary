@@ -1,4 +1,4 @@
-package org.getalp.ontolex.model;
+package org.getalp.model.ontolex;
 
 import org.apache.jena.rdf.model.Resource;
 

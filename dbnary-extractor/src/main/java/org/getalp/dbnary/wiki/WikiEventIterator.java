@@ -1,10 +1,12 @@
 package org.getalp.dbnary.wiki;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Stack;
 import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.Token;
+import org.getalp.dbnary.wiki.WikiText.WikiSection;
 
 /**
  * Created by serasset on 28/01/16.
@@ -47,6 +49,11 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
         } else if (t instanceof Heading) {
           Heading h = (Heading) t;
           iterators.push(h.getContent().tokens().iterator());
+          return nextTokenToReturn();
+        } else if (t instanceof WikiSection) {
+          WikiSection s = t.asWikiSection();
+          iterators.push(s.getContent().tokens().iterator());
+          iterators.push(Collections.singletonList((Token) s.getHeading()).iterator());
           return nextTokenToReturn();
         } else {
           // treat an incorrect ENTER action as a VOID

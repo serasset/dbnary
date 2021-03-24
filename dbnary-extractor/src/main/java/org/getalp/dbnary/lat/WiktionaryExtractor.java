@@ -232,13 +232,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return;
       }
 
-      wdh.initializeEntryExtraction(getWiktionaryPageName(), lang);
+      wdh.initializeLanguageSection(getWiktionaryPageName(), lang);
     } else {
       if (!"la".equals(lang)) {
         return;
       }
 
-      wdh.initializeEntryExtraction(getWiktionaryPageName());
+      wdh.initializeLanguageSection(getWiktionaryPageName());
     }
     Matcher m = entrySectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
@@ -269,7 +269,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // Finalize the entry parsing
     leaveCurrentBlock(m);
 
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   private Block computeNextBlock(Matcher m, Map<String, Object> context) {
@@ -314,7 +314,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
       case DEFBLOCK:
         String pos = (String) context.get("pos");
-        wdh.addPartOfSpeech(pos);
+        wdh.initializeLexicalEntry(pos);
         // if ("-verb-".equals(pos)) {
         // wdh.registerPropertyOnCanonicalForm(LexinfoOnt.verbFormMood, LexinfoOnt.infinitive);
         // }

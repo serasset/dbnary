@@ -162,9 +162,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     state = DEFBLOCK;
     definitionBlockStart = m.end();
     if (m.group(1) != null) {
-      wdh.addPartOfSpeech(m.group(1));
+      wdh.initializeLexicalEntry(m.group(1));
     } else if (m.group(2) != null) {
-      wdh.addPartOfSpeech(m.group(2));
+      wdh.initializeLexicalEntry(m.group(2));
     }
 
   }
@@ -215,7 +215,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     // System.err.println(pageContent.substring(startOffset,endOffset));
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
+    wdh.initializeLanguageSection(getWiktionaryPageName());
     gotoNoData(m);
     // WONTDO: should I use a macroOrLink pattern to detect translations that are not macro based ?
     // DONE: (priority: top) link the definition node with the current Part of Speech
@@ -355,7 +355,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         assert false : "Unexpected state while ending extraction of entry: "
             + getWiktionaryPageName();
     }
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   private FinnishTranslationExtractorWikiModel dbnmodel;

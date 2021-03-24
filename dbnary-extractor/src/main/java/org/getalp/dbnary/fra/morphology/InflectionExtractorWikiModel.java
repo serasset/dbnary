@@ -6,7 +6,7 @@ import java.util.Set;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.fra.WiktionaryDataHandler;
-import org.getalp.ontolex.model.LexicalForm;
+import org.getalp.model.ontolex.LexicalForm;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

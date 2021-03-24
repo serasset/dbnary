@@ -99,7 +99,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int jpnStart = -1;
     wdh.initializePageExtraction(getWiktionaryPageName());
     // TODO: should I initialize the entry in the japanese extraction method ?
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
+    wdh.initializeLanguageSection(getWiktionaryPageName());
     while (l1.find()) {
       if (-1 != jpnStart) {
         extractJapaneseData(jpnStart, l1.start());
@@ -113,7 +113,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       extractJapaneseData(jpnStart, pageContent.length());
     }
 
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
     wdh.finalizePageExtraction();
     for (String h : unknownHeaders) {
       log.debug("--> {}", h);
@@ -170,7 +170,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   void gotoDefBlock(Matcher m, String pos) {
     state = DEFBLOCK;
     definitionBlockStart = m.end();
-    wdh.addPartOfSpeech(pos);
+    wdh.initializeLexicalEntry(pos);
   }
 
   void leaveDefBlock(Matcher m) {

@@ -3,7 +3,6 @@
  */
 package org.getalp.dbnary.ita;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -141,7 +140,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractItalianData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(this.getWiktionaryPageName());
+    wdh.initializeLanguageSection(this.getWiktionaryPageName());
     currentBlock = Block.NOBLOCK;
     while (m.find()) {
       HashMap<String, Object> context = new HashMap<>();
@@ -160,7 +159,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     // Finalize the entry parsing
     leaveCurrentBlock(m);
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   private Block computeNextBlock(Matcher m, Map<String, Object> context) {
@@ -206,7 +205,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
       case DEFBLOCK:
         String pos = (String) context.get("pos");
-        wdh.addPartOfSpeech(pos);
+        wdh.initializeLexicalEntry(pos);
         break;
       case TRADBLOCK:
         break;

@@ -6,11 +6,11 @@ import java.util.Set;
 import org.getalp.dbnary.morphology.InflectionScheme;
 import org.getalp.dbnary.morphology.RefactoredTableExtractor;
 import org.getalp.dbnary.morphology.RelaxInflexionScheme;
-import org.getalp.lexinfo.model.Gender;
-import org.getalp.lexinfo.model.Number;
-import org.getalp.lexinfo.model.Person;
-import org.getalp.ontolex.model.LexicalForm;
-import org.getalp.ontolex.model.PhoneticRepresentation;
+import org.getalp.model.lexinfo.Gender;
+import org.getalp.model.lexinfo.Number;
+import org.getalp.model.lexinfo.Person;
+import org.getalp.model.ontolex.LexicalForm;
+import org.getalp.model.ontolex.PhoneticRepresentation;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +107,7 @@ public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
           hasGender = true;
           break;
         case "Masculin et féminin":
+        case "Masculin et féminin identiques":
           inflection.add(Gender.FEMININE);
           inflection.add(Gender.MASCULINE);
           hasGender = true;

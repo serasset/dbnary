@@ -3,6 +3,7 @@ package org.getalp.dbnary.wiki;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import org.getalp.dbnary.tools.CharRange;
@@ -27,9 +28,9 @@ import org.getalp.dbnary.wiki.WikiText.WikiContent;
  *
  * Created by serasset on 28/01/16.
  */
-public class WikiCharSequence implements CharSequence {
+public class WikiCharSequence implements CharSequence, Cloneable {
 
-  // FIXME: there are already 2 pages in English wiktionray which hits the limits in the number of
+  // FIXED: there are already 2 pages in English wiktionary which hits the limits in the number of
   // allowed templates (number of different private use chars in range. Find a way to overpass this
   // limit
   // (using upper plane private chars or using a private char sequence).
@@ -66,7 +67,6 @@ public class WikiCharSequence implements CharSequence {
     this(new WikiText(source), filter);
   }
 
-
   public WikiCharSequence(WikiText wt) {
     this(wt.content());
   }
@@ -94,6 +94,24 @@ public class WikiCharSequence implements CharSequence {
     this.subSequenceStart = 0;
   }
 
+  /**
+   * A private clone like constructor
+   * @param content
+   * @param string
+   * @param characterTokenMap
+   * @param filter
+   * @param subSequenceStart
+   * @param subSequenceEnd
+   */
+  private WikiCharSequence(WikiCharSequence seq, String string) {
+    this.content = seq.content;
+    this.chars = new StringBuffer(string);
+    this.characterTokenMap = seq.characterTokenMap;
+    this.filter = seq.filter;
+    this.subSequenceEnd = string.length();
+    this.subSequenceStart = 0;
+  }
+
   // Only used for sub sequences construction
   // Subsequences share the full sequence data but change their offset relative to subsequence
   // bounds
@@ -105,6 +123,7 @@ public class WikiCharSequence implements CharSequence {
     this.subSequenceStart = subSequenceStart;
     this.subSequenceEnd = subSequenceEnd;
   }
+
 
 
   private char allocateCharacterFor(Token tok) {
@@ -265,5 +284,12 @@ public class WikiCharSequence implements CharSequence {
 
   public Token getToken(char c) {
     return this.characterTokenMap.get(c);
+  }
+
+  ////// UTILITY FUNCTIONS //////////////////
+
+  public WikiCharSequence mutateString(Function<String, String> mutator) {
+    String str = mutator.apply(this.toString());
+    return new WikiCharSequence(this, str);
   }
 }

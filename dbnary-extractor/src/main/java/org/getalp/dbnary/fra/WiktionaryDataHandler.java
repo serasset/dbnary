@@ -1,20 +1,20 @@
 package org.getalp.dbnary.fra;
 
-import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.rdf.model.Statement;
+import org.getalp.LangTools;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
-import org.getalp.dbnary.PronunciationPair;
-import org.getalp.dbnary.PropertyObjectPair;
-import org.getalp.dbnary.morphology.InflectionScheme;
-import org.getalp.ontolex.model.LexicalForm;
+import org.getalp.model.ontolex.LexicalForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +24,9 @@ import org.slf4j.LoggerFactory;
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+
+  private HashMap<Pair<String, String>, Set<LexicalForm>> heldBackOtherForms =
+      new HashMap<>();
 
   static {
 
@@ -49,7 +52,19 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void addPartOfSpeech(String pos) {
+  public void initializeLanguageSection(String wiktionaryPageName, String language) {
+    language = LangTools.getPart1OrId(language);
+    if (null != language && language.equals(wktLanguageEdition)) {
+      super.initializeLanguageSection(wiktionaryPageName);
+    } else {
+      super.initializeLanguageSection(wiktionaryPageName, language);
+    }
+  }
+
+
+
+  @Override
+  public void initializeLexicalEntry(String pos) {
     // DONE: compute if the entry is a phrase or a word.
     PosAndType pat = posAndTypeValueMap.get(pos);
     Resource typeR = typeResource(pat);
@@ -63,7 +78,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // reset the sense number.
     currentSenseNumber = 0;
     currentSubSenseNumber = 0;
-    addPartOfSpeech(pos, posResource(pat), typeR);
+    initializeLexicalEntry(pos, posResource(pat), typeR);
   }
 
   protected String computeSenseNum() {
@@ -87,6 +102,30 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     }
 
     form.attachTo(currentLexEntry.inModel(morphoBox));
+  }
+
+  public void registerInflection(LexicalForm form,
+      String onLexicalEntry, String languageCode, String pos) {
+
+    Resource posResource = posResource(pos);
+
+    // First, we store the other form for all the existing entries
+    Resource page = getPageResource(onLexicalEntry, true);
+
+    page.listProperties(DBnaryOnt.describes).toList().stream()
+        .map(Statement::getResource)
+        .filter(r -> aBox.contains(r, LexinfoOnt.partOfSpeech, posResource))
+        .forEach(form::attachTo);
+
+    // Second, we store the other form for future possible matching entries
+    Pair<String, String> key =
+        new ImmutablePair<>(onLexicalEntry, pos);
+
+
+    Set<LexicalForm> otherForms =
+        heldBackOtherForms.computeIfAbsent(key, k -> new HashSet<>());
+
+    otherForms.add(form);
   }
 
 }

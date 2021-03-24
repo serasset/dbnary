@@ -1,4 +1,4 @@
-package org.getalp.ontolex.model;
+package org.getalp.model.ontolex;
 
 import java.math.BigInteger;
 import java.util.LinkedHashSet;

@@ -469,6 +469,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   WiktionaryDataHandler frwdh;
+
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
     frwdh = (WiktionaryDataHandler) wdh;
@@ -552,8 +553,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.initializePageExtraction(getWiktionaryPageName());
     WikiText page = new WikiText(pageContent);
     WikiDocument doc = page.asStructuredDocument();
-    doc.getContent().wikiTokens().stream()
-        .filter(t -> t instanceof WikiSection)
+    doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection)
         .map(Token::asWikiSection)
         .forEach(wikiSection -> extractSection(wikiSection, extractForeignData));
     wdh.finalizePageExtraction();
@@ -565,7 +565,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       extractLanguageSection(section, language.get());
     } else {
       log.trace("TODO: extracting information from section {} in {}",
-          section.getHeading().getText(), getWiktionaryPageName());
+          section.getHeading().getText().trim(), getWiktionaryPageName());
     }
   }
 
@@ -573,7 +573,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // The language is always defined when arriving here
     wdh.initializeLanguageSection(getWiktionaryPageName(), language);
 
-    for(Token t : languageSection.getContent().sections()) {
+    for (Token t : languageSection.getContent().sections()) {
       WikiSection section = t.asWikiSection();
       Template title = sectionTitle(section);
       if (title != null && "S".equals(title.getName())) {
@@ -583,7 +583,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // NOTHING YET
         } else if ((pos = posMarkers.get(arg1)) != null) {
           log.debug("Extracting LexicalEntry {} in {}", pos, getWiktionaryPageName());
-        //} else if (ignorablePosMarkers.contains(arg1)) {
+          // } else if (ignorablePosMarkers.contains(arg1)) {
           // IGNORE
         } else {
           log.debug("Unexpected title {} in {}", title.getText(), getWiktionaryPageName());
@@ -602,12 +602,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return null;
     }
     if (titleTemplate.size() > 1) {
-      log.debug("Unexpected multi title {} in {}",
-          section.getHeading().getText(), getWiktionaryPageName());
+      log.debug("Unexpected multi title {} in {}", section.getHeading().getText(),
+          getWiktionaryPageName());
     }
-    if (! (titleTemplate.get(0) instanceof Template)) {
-      log.debug("Unexpected non template title {} in {}",
-          section.getHeading().getText(), getWiktionaryPageName());
+    if (!(titleTemplate.get(0) instanceof Template)) {
+      log.debug("Unexpected non template title {} in {}", section.getHeading().getText(),
+          getWiktionaryPageName());
       return null;
     }
     return titleTemplate.get(0).asTemplate();
@@ -616,19 +616,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private Optional<String> sectionLanguage(WikiSection section) {
     if (section.getHeading().getLevel() == 2) {
       return section.getHeading().getContent().templatesOnUpperLevel().stream()
-          .map(Token::asTemplate)
-          .filter(t -> "langue".equals(t.getName()))
-          .map(t -> t.getParsedArg("1"))
-          .findFirst();
+          .map(Token::asTemplate).filter(t -> "langue".equals(t.getName()))
+          .map(t -> t.getParsedArg("1")).findFirst();
     }
     return Optional.empty();
   }
 
-  private boolean isCharacterDescription (WikiSection section) {
+  private boolean isCharacterDescription(WikiSection section) {
     if (section.getHeading().getLevel() == 2) {
       return section.getHeading().getContent().templatesOnUpperLevel().stream()
-          .map(Token::asTemplate)
-          .anyMatch(t -> "caractère".equals(t.getName()));
+          .map(Token::asTemplate).anyMatch(t -> "caractère".equals(t.getName()));
     }
     return false;
   }
@@ -854,33 +851,28 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String source = pageContent.substring(blockStart, end);
     WikiText inflectionSection = new WikiText(source);
 
-    String pronunciation = inflectionSection.templatesOnUpperLevel().stream()
-        .map(Token::asTemplate)
-        .filter(t -> t.getName().equals("pron"))
-        .findFirst()
-        .map(t -> t.getParsedArgs().get("1").trim())
-        .orElse(null);
+    String pronunciation = inflectionSection.templatesOnUpperLevel().stream().map(Token::asTemplate)
+        .filter(t -> t.getName().equals("pron")).findFirst()
+        .map(t -> t.getParsedArgs().get("1").trim()).orElse(null);
 
     Pair<String, String> langAndPoS = inflectionSection.templatesOnUpperLevel().stream()
-        .map(Token::asTemplate)
-        .filter(t -> t.getName().equals("S"))
-        .findFirst()
-        .map(t -> new ImmutablePair<>(
-            t.getParsedArgs().get("2").trim(),
+        .map(Token::asTemplate).filter(t -> t.getName().equals("S")).findFirst()
+        .map(t -> new ImmutablePair<>(t.getParsedArgs().get("2").trim(),
             posMarkers.get(t.getParsedArgs().get("1").trim())))
         .orElse(null);
 
     ClassBasedFilter filter = new ClassBasedFilter();
     filter.denyAll().allowIndentedItem(); // Only parse indented item
-    List<Pair<InternalLink, LexicalForm>> forms = inflectionSection.filteredTokens(filter).stream()
-        .map(Token::asIndentedItem)
-        .flatMap(ident -> FrenchExtractorWikiModel.getOtherForms(ident, pronunciation))
-        .collect(Collectors.toList());
+    List<Pair<InternalLink, LexicalForm>> forms =
+        inflectionSection.filteredTokens(filter).stream().map(Token::asIndentedItem)
+            .flatMap(ident -> FrenchExtractorWikiModel.getOtherForms(ident, pronunciation))
+            .collect(Collectors.toList());
     forms.forEach(pair -> {
-      pair.getRight().addValue(new WrittenRepresentation(wdh.currentLexEntry(), wdh.getCurrentEntryLanguage()));
+      pair.getRight().addValue(
+          new WrittenRepresentation(wdh.currentLexEntry(), wdh.getCurrentEntryLanguage()));
       if (null != pronunciation && pronunciation.length() > 0)
-        pair.getRight().addValue(new PhoneticRepresentation(pronunciation,
-            wdh.getCurrentEntryLanguage() + "-fonipa"));
+        pair.getRight().addValue(
+            new PhoneticRepresentation(pronunciation, wdh.getCurrentEntryLanguage() + "-fonipa"));
     });
 
     forms.forEach(pair -> frwdh.registerInflection(pair.getRight(), pair.getLeft().getTargetText(),

@@ -25,8 +25,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
-  private HashMap<Pair<String, String>, Set<LexicalForm>> heldBackOtherForms =
-      new HashMap<>();
+  private HashMap<Pair<String, String>, Set<LexicalForm>> heldBackOtherForms = new HashMap<>();
 
   static {
 
@@ -104,26 +103,23 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     form.attachTo(currentLexEntry.inModel(morphoBox));
   }
 
-  public void registerInflection(LexicalForm form,
-      String onLexicalEntry, String languageCode, String pos) {
+  public void registerInflection(LexicalForm form, String onLexicalEntry, String languageCode,
+      String pos) {
 
     Resource posResource = posResource(pos);
 
     // First, we store the other form for all the existing entries
     Resource page = getPageResource(onLexicalEntry, true);
 
-    page.listProperties(DBnaryOnt.describes).toList().stream()
-        .map(Statement::getResource)
+    page.listProperties(DBnaryOnt.describes).toList().stream().map(Statement::getResource)
         .filter(r -> aBox.contains(r, LexinfoOnt.partOfSpeech, posResource))
         .forEach(form::attachTo);
 
     // Second, we store the other form for future possible matching entries
-    Pair<String, String> key =
-        new ImmutablePair<>(onLexicalEntry, pos);
+    Pair<String, String> key = new ImmutablePair<>(onLexicalEntry, pos);
 
 
-    Set<LexicalForm> otherForms =
-        heldBackOtherForms.computeIfAbsent(key, k -> new HashSet<>());
+    Set<LexicalForm> otherForms = heldBackOtherForms.computeIfAbsent(key, k -> new HashSet<>());
 
     otherForms.add(form);
   }

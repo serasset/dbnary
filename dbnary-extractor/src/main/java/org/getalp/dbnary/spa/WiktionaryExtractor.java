@@ -152,7 +152,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher l1 = languageSectionPattern.matcher(pageContent);
     int spaStart = -1;
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
+    wdh.initializeLanguageSection(getWiktionaryPageName());
     while (l1.find()) {
       if (-1 != spaStart) {
         extractSpanishData(spaStart, l1.start());
@@ -166,7 +166,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       extractSpanishData(spaStart, pageContent.length());
     }
 
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
     wdh.finalizePageExtraction();
   }
 
@@ -252,7 +252,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   void gotoDefBlock(Matcher m, String pos) {
     state = DEFBLOCK;
     definitionBlockStart = m.end();
-    wdh.addPartOfSpeech(pos);
+    wdh.initializeLexicalEntry(pos);
   }
 
   void leaveDefBlock(Matcher m) {

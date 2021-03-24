@@ -168,7 +168,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   void registerNewPartOfSpeech(Matcher m) {
-    wdh.addPartOfSpeech(m.group(3));
+    wdh.initializeLexicalEntry(m.group(3));
   }
 
   void gotoDefBlock(Matcher m) {
@@ -222,7 +222,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
+    wdh.initializeLanguageSection(getWiktionaryPageName());
     gotoNoData(m);
     while (m.find()) {
       SectionType t = getSectionType(m.group(1));
@@ -463,7 +463,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       default:
         assert false : "Unexpected state while extracting translations from dictionary.";
     }
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
 
@@ -615,7 +615,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
       } else if (definitionMatcher.group(3) != null) {
         // It's a part of speech
-        wdh.addPartOfSpeech(definitionMatcher.group(3));
+        wdh.initializeLexicalEntry(definitionMatcher.group(3));
       } else if (definitionMatcher.group(4) != null
           && definitionMatcher.group(4).trim().length() > 0) {
         log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", definitionMatcher.group(4),

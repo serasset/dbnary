@@ -141,7 +141,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractSwedishData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
+    wdh.initializeLanguageSection(getWiktionaryPageName());
     currentBlock = Block.NOBLOCK;
     while (m.find()) {
 
@@ -161,7 +161,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     // Finalize the entry parsing
     leaveCurrentBlock(m);
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   private Block computeNextBlock(Matcher m, Map<String, Object> context) {
@@ -194,7 +194,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
       case DEFBLOCK:
         String pos = (String) context.get("pos");
-        wdh.addPartOfSpeech(pos);
+        wdh.initializeLexicalEntry(pos);
         break;
       case TRADBLOCK:
         break;

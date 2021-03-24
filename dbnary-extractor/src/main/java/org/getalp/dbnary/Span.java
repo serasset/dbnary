@@ -5,11 +5,11 @@ import java.util.ArrayList;
 /**
  * @author pantaleo
  */
-public class Pair {
+public class Span {
 
   public int start, end;
 
-  public Pair(int start, int end) {
+  public Span(int start, int end) {
     this.start = start;
     this.end = end;
   }
@@ -21,7 +21,7 @@ public class Pair {
    * 
    * @return true if the given Pair is contained in the input Pair p, false otherwise
    */
-  public boolean containedIn(Pair p) {
+  public boolean containedIn(Span p) {
     return (p.start <= start && p.end >= end);
   }
 
@@ -32,7 +32,7 @@ public class Pair {
    * 
    * @return true if the given Pair is contained in any of the input Pair-s, false otherwise
    */
-  public boolean containedIn(ArrayList<Pair> a) {
+  public boolean containedIn(ArrayList<Span> a) {
     for (int i = 0; i < a.size(); i++) {
       if (this.containedIn(a.get(i))) {
         return true;

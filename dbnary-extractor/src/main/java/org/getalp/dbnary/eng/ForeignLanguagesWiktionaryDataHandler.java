@@ -20,8 +20,8 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
   }
 
   @Override
-  public void initializeEntryExtraction(String wiktionaryPageName) {
-    super.initializeEntryExtraction(wiktionaryPageName, currentEntryLanguage,
+  public void initializeLanguageSection(String wiktionaryPageName) {
+    super.initializeLanguageSection(wiktionaryPageName, currentEntryLanguage,
         currentEntryLanguageName);
   }
 
@@ -40,7 +40,7 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
     return currentEntryLanguage;
   }
 
-  public void finalizeEntryExtraction() {
+  public void finalizeLanguageSection() {
     currentPrefix = null;
   }
 

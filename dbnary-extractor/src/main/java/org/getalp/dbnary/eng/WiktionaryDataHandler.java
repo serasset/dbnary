@@ -116,18 +116,18 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeEntryExtraction(String wiktionaryPageName) {
+  public void initializeLanguageSection(String wiktionaryPageName) {
     currentEntryLanguage = "en";
     currentEntryLanguageName = "English";
-    initializeEntryExtraction(wiktionaryPageName, currentEntryLanguage, currentEntryLanguageName);
+    initializeLanguageSection(wiktionaryPageName, currentEntryLanguage, currentEntryLanguageName);
   }
 
-  public void initializeEntryExtraction(String wiktionaryPageName, String lang,
+  public void initializeLanguageSection(String wiktionaryPageName, String lang,
       String languageName) {
     currentEtymologyNumber = 0;
     currentEtymologyEntry = null;
     currentGlobalEtymologyEntry = createGlobalEtymologyResource(wiktionaryPageName, lang);
-    super.initializeEntryExtraction(wiktionaryPageName);
+    super.initializeLanguageSection(wiktionaryPageName);
   }
 
   private Resource createGlobalEtymologyResource(String wiktionaryPageName, String lang) {
@@ -180,9 +180,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public Resource addPartOfSpeech(String originalPOS, Resource normalizedPOS,
+  public Resource initializeLexicalEntry(String originalPOS, Resource normalizedPOS,
       Resource normalizedType) {
-    Resource lexEntry = super.addPartOfSpeech(originalPOS, normalizedPOS, normalizedType);
+    Resource lexEntry = super.initializeLexicalEntry(originalPOS, normalizedPOS, normalizedType);
     return lexEntry;
   }
 

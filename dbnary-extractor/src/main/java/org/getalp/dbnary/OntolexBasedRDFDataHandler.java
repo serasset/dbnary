@@ -232,7 +232,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void initializeEntryExtraction(String wiktionaryPageName) {
+  public void initializeLanguageSection(String wiktionaryPageName) {
     currentSense = null;
     currentSenseNumber = 0;
     currentSubSenseNumber = 0;
@@ -256,7 +256,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void finalizeEntryExtraction() {
+  public void finalizeLanguageSection() {
     // Clear currentStatements. If statemenents do exist-s in it, it is because, there is no
     // extractable part of speech in the entry.
     heldBackStatements.clear();
@@ -419,9 +419,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     return formatter.format(d);
   }
 
-  public Resource addPartOfSpeech(String originalPOS, Resource normalizedPOS,
+  public Resource initializeLexicalEntry(String originalPOS, Resource normalizedPOS,
       Resource normalizedType) {
     // DONE: create a LexicalEntry for this part of speech only and attach info to it.
+    currentSense = null;
+    currentSenseNumber = 0;
+    currentSubSenseNumber = 0;
     currentWiktionaryPos = originalPOS;
     currentLexinfoPos = normalizedPOS;
 
@@ -505,9 +508,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void addPartOfSpeech(String pos) {
+  public void initializeLexicalEntry(String pos) {
     PosAndType pat = posAndTypeValueMap.get(pos);
-    addPartOfSpeech(pos, posResource(pat), typeResource(pat));
+    initializeLexicalEntry(pos, posResource(pat), typeResource(pat));
   }
 
   @Override
@@ -1103,7 +1106,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void initializeEntryExtraction(String wiktionaryPageName, String lang) {
+  public void initializeLanguageSection(String wiktionaryPageName, String lang) {
     // TODO Auto-generated method stub
     throw new RuntimeException("Cannot initialize a foreign language entry.");
   }

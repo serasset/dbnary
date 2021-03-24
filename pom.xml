@@ -91,7 +91,7 @@
         <version>3.2.0</version>
         <configuration>
           <failOnError>false</failOnError>
-          <source>8</source>
+          <source>11</source>
           <!--doclint>none</doclint-->
         </configuration>
       </plugin>
@@ -277,8 +277,8 @@
         </executions>
         <configuration>
           <fork>true</fork>
-          <source>8</source>
-          <target>8</target>
+          <source>11</source>
+          <target>11</target>
           <compilerArgs>
             <!-- arg>-Werror</arg-->
             <arg>-Xlint:all</arg>

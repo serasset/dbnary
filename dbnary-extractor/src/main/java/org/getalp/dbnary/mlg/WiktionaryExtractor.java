@@ -208,11 +208,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
     if (lang.equals("mg")) {
-      wdh.initializeEntryExtraction(getWiktionaryPageName());
+      wdh.initializeLanguageSection(getWiktionaryPageName());
     } else {
       // log.debug("Unused lang {} --in-- {}", lang, this.getWiktionaryPageName());
       return;
-      // wdh.initializeEntryExtraction(getWiktionaryPageName(), lang);
+      // wdh.initializeLanguageSection(getWiktionaryPageName(), lang);
     }
 
     Matcher m = blockPattern.matcher(pageContent);
@@ -252,7 +252,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     extractDataBlock(start, endOffset, block, blockString);
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,
@@ -287,7 +287,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractPOS(String blockString) {
     WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
 
-    dwdh.addPartOfSpeech(blockString);
+    dwdh.initializeLexicalEntry(blockString);
     dwdh.addExtraPartOfSpeech(blockString);
   }
 

@@ -59,8 +59,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeEntryExtraction(String wiktionaryPageName) {
-    super.initializeEntryExtraction(wiktionaryPageName);
+  public void initializeLanguageSection(String wiktionaryPageName) {
+    super.initializeLanguageSection(wiktionaryPageName);
 
     currentWordsenses.clear();
   }
@@ -405,14 +405,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void addPartOfSpeech(String pos) {
+  public void initializeLexicalEntry(String pos) {
     // TODO: normalize POS and register a new lexical entry using abbreviated pos id.
     // TODO: extract simplified POS then register all category informations
     // DONE: register the normalized POS.
     DecodedPOS dpos = decodePOS(pos);
 
     if (dpos != null) {
-      super.addPartOfSpeech(dpos.simplePOSName, dpos.lexinfoPOS, dpos.entryType);
+      super.initializeLexicalEntry(dpos.simplePOSName, dpos.lexinfoPOS, dpos.entryType);
     } else {
       this.voidPartOfSpeech();
       log.debug("Could not register a POS for {}", pos);

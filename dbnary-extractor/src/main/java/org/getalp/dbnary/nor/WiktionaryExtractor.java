@@ -167,7 +167,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     if (lang.equals("Norsk")) {
-      wdh.initializeEntryExtraction(getWiktionaryPageName());
+      wdh.initializeLanguageSection(getWiktionaryPageName());
     } else { // unused lang
       return;
     }
@@ -196,7 +196,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     extractDataBlock(start, endOffset, block, blockString);
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,
@@ -459,7 +459,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
 
-    dwdh.addPartOfSpeech(blockString);
+    dwdh.initializeLexicalEntry(blockString);
 
     int startSample = start;
     if (m.find()) {

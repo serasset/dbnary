@@ -329,14 +329,19 @@ public class WikiText {
 
     public WikiEventsSequence headers() {
       ClassBasedFilter filter = new ClassBasedFilter();
-      filter.allowHeading();
+      // By default, enter sections so that we get headers even on a WikiDocument
+      filter.allowHeading().enterSections();
+      return filteredTokens(filter);
+    }
+
+    public WikiEventsSequence sections() {
+      ClassBasedFilter filter = new ClassBasedFilter();
+      filter.allowSections();
       return filteredTokens(filter);
     }
 
     public WikiEventsSequence headers(int level) {
       return headers().and(tok -> (((Heading) tok).getLevel() == level) ? KEEP : VOID);
-      // return filteredTokens(tok -> (tok instanceof Heading && ((Heading) tok).getLevel() ==
-      // level));
     }
 
     public WikiEventsSequence headersMatching(Pattern pattern) {
@@ -519,6 +524,11 @@ public class WikiText {
       }
       return argsAsString;
     }
+
+    public String getParsedArg(String key) {
+      return this.getParsedArgs().get(key);
+    }
+
 
     /**
      * return the argName/argValue Map. argName being a String and argValue a WikiContent. When

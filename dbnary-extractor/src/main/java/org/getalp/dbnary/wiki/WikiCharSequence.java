@@ -96,6 +96,7 @@ public class WikiCharSequence implements CharSequence, Cloneable {
 
   /**
    * A private clone like constructor
+   * 
    * @param content
    * @param string
    * @param characterTokenMap

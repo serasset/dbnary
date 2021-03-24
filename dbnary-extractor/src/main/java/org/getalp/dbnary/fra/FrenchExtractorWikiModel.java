@@ -179,9 +179,11 @@ public class FrenchExtractorWikiModel {
     }
   }
 
-  private static final Pattern inflectionPattern =
-      WikiPattern.compile("^(.*(?:de|d\\’|du verbe|du nom|de l’adjectif))\\s*(\\p{InternalLink}).\\s*$");
-  public static Stream<Pair<InternalLink, LexicalForm>> getOtherForms(IndentedItem ident, String pronunciation) {
+  private static final Pattern inflectionPattern = WikiPattern
+      .compile("^(.*(?:de|d\\’|du verbe|du nom|de l’adjectif))\\s*(\\p{InternalLink}).\\s*$");
+
+  public static Stream<Pair<InternalLink, LexicalForm>> getOtherForms(IndentedItem ident,
+      String pronunciation) {
     List<Pair<InternalLink, LexicalForm>> result = new LinkedList<>();
     WikiCharSequence inflectionSource = new WikiCharSequence(ident.asIndentedItem().getContent())
         .mutateString(s -> s.toLowerCase().replaceAll("''+", "").trim());
@@ -191,7 +193,7 @@ public class FrenchExtractorWikiModel {
       InternalLink target = inflectionSource.getToken(m.group(2)).asInternalLink();
       InflectionScheme infl = new StrictInflexionScheme();
       Arrays.stream(inflectionDescription.split("de l’|du|de"))
-        .forEach(w -> addAtomicMorphologicalInfo(infl, w.trim()));
+          .forEach(w -> addAtomicMorphologicalInfo(infl, w.trim()));
       LexicalForm form = new LexicalForm(infl);
       result.add(new ImmutablePair<>(target, form));
     }

@@ -81,7 +81,7 @@ public class WikiText {
 
   public abstract class Token implements Visitable {
 
-    Segment offset;
+    protected Segment offset;
 
     protected abstract void addToken(Token t);
 
@@ -148,6 +148,24 @@ public class WikiText {
      */
     public String getFullContent() {
       return sourceContent;
+    }
+
+    /**
+     * get the index at which this token starts in its WikiText FullContent.
+     * 
+     * @return the begin index, relative to the WikiText source content
+     */
+    public int getBeginIndex() {
+      return offset.start;
+    }
+
+    /**
+     * get the index at which this token ends in its WikiText FullContent.
+     * 
+     * @return the end index, relative to the WikiText source content
+     */
+    public int getEndIndex() {
+      return offset.end;
     }
 
     // Simplifying typeCasting in Streams
@@ -1025,6 +1043,25 @@ public class WikiText {
       return content;
     }
 
+    /**
+     * returns the prologue, i.e. the part of the section content that precedes the first sub
+     * section.
+     * 
+     * @return a wikicontent containing all elements of the prologue
+     */
+    public WikiText.WikiContent getPrologue() {
+      WikiContent result = new WikiContent(this.getHeading().getEndIndex());
+      for (Token t : this.getContent().wikiTokensWithHtmlComments()) {
+        if (t instanceof WikiSection) {
+          result.setEndOffset(t.getBeginIndex());
+          return result;
+        }
+        result.addToken(t);
+      }
+      result.setEndOffset(this.getContent().getEndIndex());
+      return result;
+    }
+
     @Override
     public void fillText(StringBuilder r) {
       r.append(this.heading.getText());
@@ -1048,8 +1085,7 @@ public class WikiText {
 
     @Override
     public String toString() {
-      return "WikiSection{" + "offset=" + offset + ", heading=" + heading + ", content=" + content
-          + '}';
+      return "WikiSection{heading=\n" + heading + "\n, content=\n" + content + '}';
     }
 
     @Override

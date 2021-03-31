@@ -25,7 +25,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
-  private HashMap<Pair<String, String>, Set<LexicalForm>> heldBackOtherForms = new HashMap<>();
+  // A entry -> pos -> set of lexical forms hashmap used to store the inflected form which have
+  // to be registered chen the main lexical entry is processed.
+  private HashMap<String, HashMap<String, Set<LexicalForm>>> heldBackOtherForms = new HashMap<>();
 
   static {
 
@@ -78,6 +80,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     currentSenseNumber = 0;
     currentSubSenseNumber = 0;
     initializeLexicalEntry(pos, posResource(pat), typeR);
+    Model morphoBox = getFeatureBox(ExtractionFeature.MORPHOLOGY);
+    if (null != morphoBox) {
+      HashMap<String, Set<LexicalForm>> pos2forms = heldBackOtherForms
+          .getOrDefault(currentWiktionaryPageName, new HashMap<>());
+      Set<LexicalForm> forms = pos2forms
+          .getOrDefault(pos, new HashSet<>());
+      forms.forEach(f -> f.attachTo(currentLexEntry.inModel(morphoBox)));
+    }
   }
 
   protected String computeSenseNum() {
@@ -111,17 +121,29 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // First, we store the other form for all the existing entries
     Resource page = getPageResource(onLexicalEntry, true);
 
-    page.listProperties(DBnaryOnt.describes).toList().stream().map(Statement::getResource)
-        .filter(r -> aBox.contains(r, LexinfoOnt.partOfSpeech, posResource))
-        .forEach(form::attachTo);
+    Model morphoBox = this.getFeatureBox(ExtractionFeature.MORPHOLOGY);
+    if (null != morphoBox) {
+      page.listProperties(DBnaryOnt.describes).toList().stream().map(Statement::getResource)
+          .filter(r -> aBox.contains(r, LexinfoOnt.partOfSpeech, posResource))
+          .map(r -> r.inModel(morphoBox)).forEach(form::attachTo);
+    }
 
     // Second, we store the other form for future possible matching entries
     Pair<String, String> key = new ImmutablePair<>(onLexicalEntry, pos);
 
 
-    Set<LexicalForm> otherForms = heldBackOtherForms.computeIfAbsent(key, k -> new HashSet<>());
+    HashMap<String, Set<LexicalForm>> pos2forms =
+        heldBackOtherForms.computeIfAbsent(onLexicalEntry, k -> new HashMap<>());
+    Set<LexicalForm> otherForms = pos2forms.computeIfAbsent(pos, k -> new HashSet<>());
 
     otherForms.add(form);
   }
 
+  @Override
+  public void finalizePageExtraction() {
+    super.finalizePageExtraction();
+    // Remove all inflections related to the current page as they cannot be attach to
+    // another page anymore.
+    heldBackOtherForms.remove(currentWiktionaryPageName);
+  }
 }

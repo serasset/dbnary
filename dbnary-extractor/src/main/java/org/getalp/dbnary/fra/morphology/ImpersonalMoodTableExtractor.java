@@ -7,6 +7,7 @@ import java.util.Set;
 import org.getalp.dbnary.morphology.InflectionScheme;
 import org.getalp.dbnary.morphology.RefactoredTableExtractor;
 import org.getalp.dbnary.morphology.RelaxInflexionScheme;
+import org.getalp.model.lexinfo.Gender;
 import org.getalp.model.lexinfo.Mood;
 import org.getalp.model.lexinfo.Number;
 import org.getalp.model.lexinfo.Person;
@@ -99,6 +100,13 @@ public class ImpersonalMoodTableExtractor extends RefactoredTableExtractor {
             Arrays.stream(v.getValue().split(" ou "))
                 .forEach(wr -> f.addValue(new WrittenRepresentation(wr, v.getLanguage())));
           }
+        }
+      });
+      // Specify the past participle form as being masculine and singular by default
+      forms.forEach(f -> {
+        if (f.getFeature().contains(Tense.PAST) && f.getFeature().contains(Mood.PARTICIPLE)) {
+          f.getFeature().add(Gender.MASCULINE);
+          f.getFeature().add(Number.SINGULAR);
         }
       });
       return forms;

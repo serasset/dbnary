@@ -1,12 +1,9 @@
-package org.getalp.dbnary.fra;
+package org.getalp.dbnary.fra.morphology;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -14,10 +11,9 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Literal;
 import org.getalp.dbnary.model.DbnaryModel;
-import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.morphology.InflectionScheme;
 import org.getalp.dbnary.morphology.StrictInflexionScheme;
+import org.getalp.dbnary.morphology.StrictInflexionScheme.INCOHERENT_INFLECTION_SCHEME;
 import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiPattern;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
@@ -191,11 +187,17 @@ public class FrenchExtractorWikiModel {
     if (m.matches()) {
       String inflectionDescription = m.group(1);
       InternalLink target = inflectionSource.getToken(m.group(2)).asInternalLink();
-      InflectionScheme infl = new StrictInflexionScheme();
-      Arrays.stream(inflectionDescription.split("de l’|du|de"))
-          .forEach(w -> addAtomicMorphologicalInfo(infl, w.trim()));
-      LexicalForm form = new LexicalForm(infl);
-      result.add(new ImmutablePair<>(target, form));
+      try {
+        InflectionScheme infl = new StrictInflexionScheme();
+        Arrays.stream(inflectionDescription.split("de l’|du|de"))
+            .forEach(w -> addAtomicMorphologicalInfo(infl, w.trim()));
+        LexicalForm form = new LexicalForm(infl);
+        result.add(new ImmutablePair<>(target, form));
+      } catch (INCOHERENT_INFLECTION_SCHEME e) {
+        // An incoherent inflection scheme has been detected, just ignore it.
+        log.debug("Incoherent inflection scheme while extracting {}",
+            inflectionSource.getSourceContent(m.group()));
+      }
     }
     return result.stream();
   }

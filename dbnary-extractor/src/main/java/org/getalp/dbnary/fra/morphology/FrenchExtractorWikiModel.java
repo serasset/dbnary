@@ -62,6 +62,17 @@ public class FrenchExtractorWikiModel {
   }
 
   static void addAtomicMorphologicalInfo(InflectionScheme infos, String word) {
+    word = word.replaceAll("passé simple", "passé_simple");
+    word = word.replaceAll("première personne", "première_personne");
+    word = word.replaceAll("deuxième personne", "deuxième_personne");
+    word = word.replaceAll("troisième personne", "troisième_personne");
+    word = word.replaceAll("futur simple", "futur_simple");
+    word = word.replaceAll("participe passé", "participe_passé");
+    word = word.replaceAll("participe présent", "participe_présent");
+    decodeMorphologicalInfo(infos, word);
+  }
+
+  static void decodeMorphologicalInfo(InflectionScheme infos, String word) {
     switch (word) {
       case "singulier":
         infos.add(Number.SINGULAR);
@@ -84,7 +95,7 @@ public class FrenchExtractorWikiModel {
         infos.add(Tense.IMPERFECT);
         break;
       case "passé":
-        infos.add(Tense.PAST);
+        infos.add(Tense.PAST); // ???
         break;
       case "futur":
         infos.add(Tense.FUTURE);
@@ -104,21 +115,21 @@ public class FrenchExtractorWikiModel {
       case "participe":
         infos.add(Mood.PARTICIPLE);
         break;
-      case "première personne":
+      case "première_personne":
         infos.add(Person.FIRST);
         break;
-      case "deuxième personne":
+      case "deuxième_personne":
         infos.add(Person.SECOND);
         break;
-      case "troisième personne":
+      case "troisième_personne":
         infos.add(Person.THIRD);
         break;
-      case "futur simple":
+      case "futur_simple":
         infos.add(Tense.FUTURE);
         infos.add(Mood.INDICATIVE);
         break;
-      case "passé simple":
-        infos.add(Tense.PAST);
+      case "passé_simple":
+        infos.add(Tense.PRETERITE);
         infos.add(Mood.INDICATIVE);
         break;
       case "masculin singulier":
@@ -137,31 +148,32 @@ public class FrenchExtractorWikiModel {
         infos.add(Gender.FEMININE);
         infos.add(Number.PLURAL);
         break;
-      case "participe passé masculin singulier":
+      case "participe_passé":
+      case "participe_passé masculin singulier":
         infos.add(Mood.PARTICIPLE);
         infos.add(Tense.PAST);
         infos.add(Gender.MASCULINE);
         infos.add(Number.SINGULAR);
         break;
-      case "participe passé féminin singulier":
+      case "participe_passé féminin singulier":
         infos.add(Mood.PARTICIPLE);
         infos.add(Tense.PAST);
         infos.add(Gender.FEMININE);
         infos.add(Number.SINGULAR);
         break;
-      case "participe passé masculin pluriel":
+      case "participe_passé masculin pluriel":
         infos.add(Mood.PARTICIPLE);
         infos.add(Tense.PAST);
         infos.add(Gender.MASCULINE);
         infos.add(Number.PLURAL);
         break;
-      case "participe passé féminin pluriel":
+      case "participe_passé féminin pluriel":
         infos.add(Mood.PARTICIPLE);
         infos.add(Tense.PAST);
         infos.add(Gender.FEMININE);
         infos.add(Number.PLURAL);
         break;
-      case "participe présent":
+      case "participe_présent":
         infos.add(Mood.PARTICIPLE);
         infos.add(Tense.PRESENT);
         break;
@@ -169,7 +181,7 @@ public class FrenchExtractorWikiModel {
         ArrayList<String> multiwords = explode(' ', word);
         if (multiwords.size() > 1) {
           for (String w : multiwords) {
-            addAtomicMorphologicalInfo(infos, w);
+            decodeMorphologicalInfo(infos, w);
           }
         }
     }
@@ -189,7 +201,7 @@ public class FrenchExtractorWikiModel {
       InternalLink target = inflectionSource.getToken(m.group(2)).asInternalLink();
       try {
         InflectionScheme infl = new StrictInflexionScheme();
-        Arrays.stream(inflectionDescription.split("de l’|du|de"))
+        Arrays.stream(inflectionDescription.split("\\bde l’|\\bdu\\b|\\bde\\b"))
             .forEach(w -> addAtomicMorphologicalInfo(infl, w.trim()));
         LexicalForm form = new LexicalForm(infl);
         result.add(new ImmutablePair<>(target, form));

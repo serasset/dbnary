@@ -111,22 +111,21 @@ public class ImpersonalMoodTableExtractor extends RefactoredTableExtractor {
       });
       return forms;
     }
-
   }
 
   private void handleNumberPerson(LexicalForm f, int i, int j) {
     switch (i) {
       case 1:
         f.getFeature().add(Number.SINGULAR);
-        f.getFeature().add(Person.THIRD);
+        f.getFeature().add(Person.SECOND);
         break;
       case 2:
         f.getFeature().add(Number.PLURAL);
-        f.getFeature().add(Person.SECOND);
+        f.getFeature().add(Person.FIRST);
         break;
       case 3:
         f.getFeature().add(Number.PLURAL);
-        f.getFeature().add(Person.THIRD);
+        f.getFeature().add(Person.SECOND);
         break;
       default:
         log.warn("Unexpected cell position {} in Imperative table in {}", i, this.entryName);

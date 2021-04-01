@@ -82,10 +82,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     initializeLexicalEntry(pos, posResource(pat), typeR);
     Model morphoBox = getFeatureBox(ExtractionFeature.MORPHOLOGY);
     if (null != morphoBox) {
-      HashMap<String, Set<LexicalForm>> pos2forms = heldBackOtherForms
-          .getOrDefault(currentWiktionaryPageName, new HashMap<>());
-      Set<LexicalForm> forms = pos2forms
-          .getOrDefault(pos, new HashSet<>());
+      HashMap<String, Set<LexicalForm>> pos2forms =
+          heldBackOtherForms.getOrDefault(currentWiktionaryPageName, new HashMap<>());
+      Set<LexicalForm> forms = pos2forms.getOrDefault(pos, new HashSet<>());
       forms.forEach(f -> f.attachTo(currentLexEntry.inModel(morphoBox)));
     }
   }

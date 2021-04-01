@@ -184,8 +184,9 @@ public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
       Set<LexicalForm> lexFormsAbove = results.get(i - 1, j);
       if (null != lexFormsAbove) {
         String pron = Utils.standardizePronunciation(cell.text());
-        lexFormsAbove
-            .forEach(f -> f.addValue(new PhoneticRepresentation(standardizeValue(pron), language)));
+        if (pron.length() > 0 && !"Prononciation ?".equalsIgnoreCase(pron))
+          lexFormsAbove
+              .forEach(f -> f.addValue(new PhoneticRepresentation(standardizeValue(pron), language)));
       } else {
         log.warn("No lexical form above as we have an isolated pronunciation in {}",
             this.entryName);
@@ -201,5 +202,10 @@ public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
     // The expander does not produce an anchor, but only the pronunciation text around '\'
     String pron = cell.text().trim();
     return pron.startsWith("\\") && pron.endsWith("\\");
+  }
+
+  @Override
+  protected boolean shouldProcessCell(Element cell) {
+    return !cell.classNames().contains("invisible") && super.shouldProcessCell(cell);
   }
 }

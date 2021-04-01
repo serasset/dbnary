@@ -23,7 +23,7 @@ import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.PronunciationPair;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
-import org.getalp.dbnary.fra.morphology.FrenchExtractorWikiModel;
+import org.getalp.dbnary.fra.morphology.FrenchInflectionDecoder;
 import org.getalp.dbnary.fra.morphology.InflectionExtractorWikiModel;
 import org.getalp.dbnary.fra.morphology.VerbalInflexionExtractorWikiModel;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
@@ -480,7 +480,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractData(boolean extractForeignData) {
     wdh.initializePageExtraction(getWiktionaryPageName());
-    WikiText page = new WikiText(pageContent);
+    WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
     WikiDocument doc = page.asStructuredDocument();
     doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection)
         .map(Token::asWikiSection)
@@ -569,7 +569,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     filter.denyAll().allowIndentedItem(); // Only parse indented item
     List<Pair<InternalLink, LexicalForm>> forms =
         content.filteredTokens(filter).stream().map(Token::asIndentedItem)
-            .flatMap(ident -> FrenchExtractorWikiModel.getOtherForms(ident, pronunciation))
+            .flatMap(ident -> FrenchInflectionDecoder.getOtherForms(ident, pronunciation))
             .collect(Collectors.toList());
     forms.forEach(pair -> {
       pair.getRight().addValue(
@@ -625,6 +625,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractOrthoAlt(subsection.getContent().getBeginIndex(),
             subsection.getPrologue().getEndIndex());
       } else if (null != (nym = nymMarkerToNymName.get(sectionName))) {
+        if (log.isDebugEnabled()
+            && section.getContent().sections().stream().findFirst().isPresent())
+          log.debug("Subsection under nym section in {}", getWiktionaryPageName());
         extractNyms(nym, subsection.getContent().getBeginIndex(),
             subsection.getPrologue().getEndIndex());
       } else {
@@ -923,6 +926,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
+  // TODO: all canonical forms are also available as otherForm, process other forms to remove
+  // the one corresponding to canonical forms.
   private void extractOtherForms(int start, int end, List<String> context) {
     if (wdh.isDisabled(ExtractionFeature.MORPHOLOGY)) {
       return;
@@ -931,7 +936,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // so remove any genre from adjective otherForm extraction.
     if ("-adj-".equals(wdh.currentWiktionaryPos())) {
       context.removeIf("Masculin"::equals);
-      context.removeIf("Féminin"::equals);
+      // I consider that an adjective which is marked as feminine is in fact defective.
+      // context.removeIf("Féminin"::equals);
     }
 
     Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);

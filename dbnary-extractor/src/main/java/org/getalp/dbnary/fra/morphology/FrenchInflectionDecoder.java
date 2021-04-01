@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
  * @author jakse
  */
 
-public class FrenchExtractorWikiModel {
+public class FrenchInflectionDecoder {
 
-  private static Logger log = LoggerFactory.getLogger(FrenchExtractorWikiModel.class);
+  private static Logger log = LoggerFactory.getLogger(FrenchInflectionDecoder.class);
 
   public static final Literal trueLiteral = DbnaryModel.tBox.createTypedLiteral(true);
 

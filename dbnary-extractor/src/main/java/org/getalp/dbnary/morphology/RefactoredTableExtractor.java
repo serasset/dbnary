@@ -176,9 +176,6 @@ public abstract class RefactoredTableExtractor implements Cloneable {
    * The context is a list of String that corresponds to all column and row headers + section
    * headers in which the cell appears.
    *
-   *
-   *
-   *
    * @param i the line number of the cell in the table
    * @param j the column number of the cell in the table
    * @param context a list of Strings that represent the celle context
@@ -222,11 +219,16 @@ public abstract class RefactoredTableExtractor implements Cloneable {
 
     if (!(elements = cell.select("a, strong.selflink")).isEmpty()) {
       for (Element anchor : elements) {
+        // Ignore links to pronunciation pages
+        if (anchor.tagName().equals("a") &&
+            ( anchor.attr("href").contains("Annexe:Prononciation")) ||
+              anchor.attr("href").contains("action=edit"))
+          continue;
         LexicalForm form = new LexicalForm(infl);
         form.addValue(new WrittenRepresentation(standardizeValue(anchor.text()), language));
         forms.add(form);
       }
-      Elements prons = cell.select("span.pron");
+      Elements prons = cell.select("span.API");
       for (Element pron : prons) {
         String pronValue = Utils.standardizePronunciation(pron.text());
         if (pronValue.length() > 0)

@@ -185,8 +185,8 @@ public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
       if (null != lexFormsAbove) {
         String pron = Utils.standardizePronunciation(cell.text());
         if (pron.length() > 0 && !"Prononciation ?".equalsIgnoreCase(pron))
-          lexFormsAbove
-              .forEach(f -> f.addValue(new PhoneticRepresentation(standardizeValue(pron), language)));
+          lexFormsAbove.forEach(
+              f -> f.addValue(new PhoneticRepresentation(standardizeValue(pron), language)));
       } else {
         log.warn("No lexical form above as we have an isolated pronunciation in {}",
             this.entryName);

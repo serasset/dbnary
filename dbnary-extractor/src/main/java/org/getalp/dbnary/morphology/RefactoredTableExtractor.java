@@ -220,8 +220,9 @@ public abstract class RefactoredTableExtractor implements Cloneable {
     if (!(elements = cell.select("a, strong.selflink")).isEmpty()) {
       for (Element anchor : elements) {
         // Ignore links to pronunciation pages
-        if (anchor.tagName().equals("a") && (anchor.attr("href").contains("Annexe:Prononciation"))
-            || anchor.attr("href").contains("action=edit"))
+        if (anchor.tagName().equals("a") && (anchor.attr("href").contains("Annexe:Prononciation")
+            || anchor.attr("href").contains("action=edit")
+            || anchor.attr("href").contains("/H_aspir%C3%A9")))
           continue;
         LexicalForm form = new LexicalForm(infl);
         form.addValue(new WrittenRepresentation(standardizeValue(anchor.text()), language));

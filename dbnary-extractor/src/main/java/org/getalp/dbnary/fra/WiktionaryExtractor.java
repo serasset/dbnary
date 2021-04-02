@@ -456,23 +456,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private Set<String> defTemplates = null;
 
-  protected boolean isFrenchLanguageHeader(Matcher m) {
-    return (null != m.group(1) && m.group(1).equals("fr"))
-        || (null != m.group(2) && m.group(2).equals("fr"));
-  }
-
-  public String getLanguageInHeader(Matcher m) {
-    if (null != m.group(1)) {
-      return m.group(1);
-    }
-
-    if (null != m.group(2)) {
-      return m.group(2);
-    }
-
-    return null;
-  }
-
   @Override
   public void extractData() {
     extractData(false);
@@ -555,15 +538,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractInflections(WikiSection section) {
     WikiContent content = section.getPrologue();
     WikiContent heading = section.getHeading().getContent();
-    String pronunciation = content.templatesOnUpperLevel().stream().map(Token::asTemplate)
-        .filter(t -> t.getName().equals("pron")).findFirst()
-        .map(t -> t.getParsedArgs().get("1").trim()).orElse(null);
 
     Pair<String, String> langAndPoS = heading.templatesOnUpperLevel().stream()
         .map(Token::asTemplate).filter(t -> t.getName().equals("S")).findFirst()
         .map(t -> new ImmutablePair<>(t.getParsedArgs().get("2").trim(),
             posMarkers.get(t.getParsedArgs().get("1").trim())))
         .orElse(null);
+
+    // Only get inflections for verbs so that we capture the missing inflected past participles.
+    if (!langAndPoS.getRight().equals("-verb-"))
+      return;
+
+    String pronunciation = content.templatesOnUpperLevel().stream().map(Token::asTemplate)
+        .filter(t -> t.getName().equals("pron")).findFirst()
+        .map(t -> t.getParsedArgs().get("1").trim()).orElse(null);
 
     ClassBasedFilter filter = new ClassBasedFilter();
     filter.denyAll().allowIndentedItem(); // Only parse indented item
@@ -599,14 +587,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // First we extract morphological features, conjugations, definitions, etc. that are described
     // BEFORE other subsections.
     int blockStart = section.getHeading().getBeginIndex();
-    Optional<Token> firstSubsection = section.getContent().sections().stream().findFirst();
-    int end =
-        firstSubsection.isPresent() ? firstSubsection.get().getBeginIndex() : section.getEndIndex();
+    int end = section.getPrologue().getEndIndex();
     List<String> morphologicalFeatures = extractMorphologicalData(blockStart, end);
     extractConjugationPage(morphologicalFeatures);
     extractDefinitions(blockStart, end);
     extractPronunciation(section.getPrologue());
-    extractOtherForms(blockStart, end, morphologicalFeatures);
+    extractOtherForms(section.getPrologue(), morphologicalFeatures);
 
     // Then, we extract sub sections
     handleLexicalEntrySubSections(section);
@@ -928,7 +914,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // TODO: all canonical forms are also available as otherForm, process other forms to remove
   // the one corresponding to canonical forms.
-  private void extractOtherForms(int start, int end, List<String> context) {
+  private void extractOtherForms(WikiContent content, List<String> context) {
     if (wdh.isDisabled(ExtractionFeature.MORPHOLOGY)) {
       return;
     }
@@ -940,15 +926,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       // context.removeIf("Féminin"::equals);
     }
 
-    Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
-    otherFormMatcher.region(start, end);
-
-    while (otherFormMatcher.find()) {
-      String templateCall = otherFormMatcher.group();
-      if (templateCall.startsWith("{{fr-verbe"))
-        continue;
-      morphologyExtractor.parseOtherForm(otherFormMatcher.group(), context);
-    }
+    content.templatesOnUpperLevel().stream().map(Token::asTemplate)
+        .filter(t -> t.getName().startsWith("fr-")).filter(t -> !t.getName().startsWith("fr-verbe"))
+        .forEach(t -> morphologyExtractor.parseOtherForm(t.getText(), context));
   }
 
   @Override

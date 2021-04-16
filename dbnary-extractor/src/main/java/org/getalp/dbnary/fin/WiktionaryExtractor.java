@@ -352,8 +352,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         leaveNymBlock(m);
         break;
       default:
-        assert false : "Unexpected state while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
     wdh.finalizeLanguageSection();
   }

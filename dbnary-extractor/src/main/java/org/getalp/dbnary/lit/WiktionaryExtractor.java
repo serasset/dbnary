@@ -242,8 +242,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractTranslations(startOffset, endOffset);
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
   }
 

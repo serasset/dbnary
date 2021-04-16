@@ -234,8 +234,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case MORPHOBLOCK:
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
   }
 

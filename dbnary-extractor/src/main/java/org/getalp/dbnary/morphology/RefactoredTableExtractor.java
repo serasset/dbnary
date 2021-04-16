@@ -220,13 +220,11 @@ public abstract class RefactoredTableExtractor implements Cloneable {
     if (!(elements = cell.select("a, strong.selflink")).isEmpty()) {
       for (Element anchor : elements) {
         // Ignore links to pronunciation pages
-        if (anchor.tagName().equals("a") && (anchor.attr("href").contains("Annexe:Prononciation")
-            || anchor.attr("href").contains("action=edit")
-            || anchor.attr("href").contains("/H_aspir%C3%A9")))
-          continue;
-        LexicalForm form = new LexicalForm(infl);
-        form.addValue(new WrittenRepresentation(standardizeValue(anchor.text()), language));
-        forms.add(form);
+        if (elementIsAValidForm(anchor)) {
+          LexicalForm form = new LexicalForm(infl);
+          form.addValue(new WrittenRepresentation(standardizeValue(anchor.text()), language));
+          forms.add(form);
+        }
       }
       Elements prons = cell.select("span.API");
       for (Element pron : prons) {
@@ -258,6 +256,10 @@ public abstract class RefactoredTableExtractor implements Cloneable {
     return forms;
   }
 
+  protected boolean elementIsAValidForm(Element anchor) {
+    return true;
+  }
+
   protected String standardizeValue(String value) {
     value = value.replaceAll("&nbsp;", " ");
     value = value.replaceAll("</?small>", "");
@@ -265,6 +267,7 @@ public abstract class RefactoredTableExtractor implements Cloneable {
     value = value.replaceAll("</?strong.*?>", "");
     value = value.replaceAll("</?span.*?>", "");
     value = value.replaceAll("</?b.*?>", "");
+    value = value.replaceAll("</?sup.*?>", "");
     return value.trim();
   }
 

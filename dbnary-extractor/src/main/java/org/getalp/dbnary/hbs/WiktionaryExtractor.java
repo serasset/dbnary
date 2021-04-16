@@ -490,8 +490,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractFlektirani(startOffset, endOffset);
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
   }
 

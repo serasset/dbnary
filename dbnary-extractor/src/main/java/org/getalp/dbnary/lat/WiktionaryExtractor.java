@@ -327,8 +327,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentNym = (String) context.get("nym");
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
 
   }
@@ -360,8 +360,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentNym = null;
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
 
     blockStart = -1;

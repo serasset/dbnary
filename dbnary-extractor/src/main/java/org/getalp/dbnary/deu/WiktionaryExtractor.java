@@ -376,8 +376,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case PRONBLOCK:
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
 
   }
@@ -416,8 +416,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         blockStart = end;
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
 
     blockStart = -1;

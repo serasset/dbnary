@@ -1,8 +1,10 @@
 package org.getalp.dbnary.fra.morphology;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.getalp.dbnary.morphology.InflectionScheme;
 import org.getalp.dbnary.morphology.RefactoredTableExtractor;
 import org.getalp.dbnary.morphology.RelaxInflexionScheme;
@@ -180,13 +182,14 @@ public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
     // In the French language edition, pronunciation are often given in independant cells below
     // the lexical Form written rep. In case of a pronunication information, we attach the
     // ponounciation to the lexicalForm that were extracted from the cell above.
-    if (isIsolatedPronunciation(cell)) {
+    String pron;
+    if ((pron = isIsolatedPronunciation(cell)) != null) {
       Set<LexicalForm> lexFormsAbove = results.get(i - 1, j);
       if (null != lexFormsAbove) {
-        String pron = Utils.standardizePronunciation(cell.text());
-        if (pron.length() > 0 && !"Prononciation ?".equalsIgnoreCase(pron))
-          lexFormsAbove.forEach(
-              f -> f.addValue(new PhoneticRepresentation(standardizeValue(pron), language)));
+        Arrays.stream(pron.split("\\\\ ou \\\\")).map(Utils::standardizePronunciation)
+            .filter(s -> s.length() > 0 && !"Prononciation ?".equalsIgnoreCase(s))
+            .forEach(p -> lexFormsAbove.forEach(
+                f -> f.addValue(new PhoneticRepresentation(standardizeValue(p), language))));
       } else {
         log.warn("No lexical form above as we have an isolated pronunciation in {}",
             this.entryName);
@@ -195,13 +198,32 @@ public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
     } else {
       return super.getLexicalFormsFromCell(i, j, cell, context);
     }
-
   }
 
-  private boolean isIsolatedPronunciation(Element cell) {
+  @Override
+  protected boolean elementIsAValidForm(Element anchor) {
+    return !(anchor.attr("href").contains("Annexe:Prononciation")
+        || anchor.attr("href").contains("action=edit")
+        || anchor.attr("href").contains("/H_aspir%C3%A9")
+        || anchor.attr("href").contains("/H_muet"));
+  }
+
+  /**
+   * returns a pronunciation string iff the cell is a pronunciation only cell returns
+   * 
+   * @param cell a table cell
+   * @return null or a string
+   */
+  private String isIsolatedPronunciation(Element cell) {
     // The expander does not produce an anchor, but only the pronunciation text around '\'
-    String pron = cell.text().trim();
-    return pron.startsWith("\\") && pron.endsWith("\\");
+    String pron = cell.text();
+    pron = pron.replaceAll("\\(h muet\\)", "");
+    pron = pron.replaceAll("\\(h aspiré\\)", "");
+    pron = pron.trim();
+    if (pron.startsWith("\\") && pron.endsWith("\\"))
+      return pron;
+    else
+      return null;
   }
 
   @Override

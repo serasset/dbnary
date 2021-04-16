@@ -34,6 +34,8 @@
  	  <javax.activation.version>1.2.0</javax.activation.version>
     <jena.version>3.13.1</jena.version>
     <scalaBinaryVersion>2.12</scalaBinaryVersion>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
   </properties>
 
   <issueManagement>
@@ -91,7 +93,7 @@
         <version>3.2.0</version>
         <configuration>
           <failOnError>false</failOnError>
-          <source>11</source>
+          <source>${maven.compiler.source}</source>
           <!--doclint>none</doclint-->
         </configuration>
       </plugin>
@@ -277,8 +279,8 @@
         </executions>
         <configuration>
           <fork>true</fork>
-          <source>11</source>
-          <target>11</target>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
           <compilerArgs>
             <!-- arg>-Werror</arg-->
             <arg>-Xlint:all</arg>
@@ -294,37 +296,6 @@
           <verbose>true</verbose>
         </configuration>
       </plugin>
-      <!--plugin>
-        <groupId>external.atlassian.jgitflow</groupId>
-        <artifactId>jgitflow-maven-plugin</artifactId>
-        <version>1.0-m5.1</version>
-        <configuration>
-          <!- - Enable this to push to origin using SSH keys - ->
-          <!- -enableSshAgent>true</enableSshAgent- ->
-          <!- - Keep your maven submodules at the same version as the parent POM - ->
-          <autoVersionSubmodules>true</autoVersionSubmodules>
-          <!- -
-            Pusing in-development features to origin allows all devs to see what each other
-            are working on
-           - ->
-          <pushFeatures>true</pushFeatures>
-          <!- -
-            This allows the CI server (e.g. Jenkins) to automatically push new releases to
-            origin; you can then either manually deploy them or, if you are doing Continuous
-            Deployments, auto-deploy them to prod
-           - ->
-          <pushReleases>true</pushReleases>
-          <!- -
-            Hot Fixes should be pushed to origin as well so that any dev can pick them up
-           - ->
-          <!- -pushHotfixes>true</pushHotfixes- ->
-          <!- -
-            Prevents deployments from dev workstations so that they can be done by a CI
-            server
-           - ->
-          <!- -noDeploy>true</noDeploy- ->
-        </configuration>
-      </plugin-->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>native2ascii-maven-plugin</artifactId>
@@ -461,7 +432,7 @@
         <plugin>
           <groupId>net.revelc.code.formatter</groupId>
           <artifactId>formatter-maven-plugin</artifactId>
-          <version>2.12.0</version>
+          <version>2.15.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

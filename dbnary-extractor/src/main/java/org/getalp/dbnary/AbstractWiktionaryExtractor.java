@@ -126,8 +126,6 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   // DONE: filter out pages that are in specific Namespaces (Wiktionary:, Categories:, ...)
   // TODO: take Redirect page into account as alternate spelling.
-  // TODO: take homography into account (ex: mousse) and separate different definitions for the same
-  // pos.
   // DONE: some xml comments may be in the string values. Remove them.
   public void extractData(String wiktionaryPageName, String pageContent) {
     // Entries containing the special char ":" are pages belonging to specific

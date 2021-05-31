@@ -9,9 +9,10 @@ import org.getalp.dbnary.rdfutils.URI;
 public class LexicalEntry {
   private String name;
   private String partOfSpeech;
+  private int entryNumber;
+
   private Set<Resource> types;
   private Set<Resource> partOfSpeeches;
-  private int entryNumber;
 
   LexicalForm canonicalForm;
   Set<LexicalForm> otherForms;
@@ -36,5 +37,6 @@ public class LexicalEntry {
 
     return lexEntryPrefix + canonicalForm + "__" + partOfSpeech + "__" + entryNumber;
   }
+
 
 }

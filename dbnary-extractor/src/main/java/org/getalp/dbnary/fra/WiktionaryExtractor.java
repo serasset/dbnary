@@ -399,13 +399,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // affixesToDiscardFromLinks.add("s");
   }
 
-  WiktionaryDataHandler frwdh;
-
-  public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
-    super(wdh);
-    frwdh = (WiktionaryDataHandler) wdh;
-  }
-
   protected final static Pattern pronunciationPattern;
   protected final static Pattern otherFormPattern;
 
@@ -414,15 +407,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     otherFormPattern = Pattern.compile(otherFormPatternString);
   }
 
-  private enum Block {
-    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK
+  WiktionaryDataHandler frwdh;
+
+  public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
+    super(wdh);
+    frwdh = (WiktionaryDataHandler) wdh;
   }
-
-  private Block currentBlock = Block.NOBLOCK;
-  private int blockStart = -1;
-  private int blocktitleStart = -1;
-
-  private String currentNym = null;
 
   protected ExampleExpanderWikiModel exampleExpander;
   protected FrenchDefinitionExtractorWikiModel definitionExpander;
@@ -458,27 +448,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void extractData() {
-    extractData(false);
-  }
-
-  protected void extractData(boolean extractForeignData) {
-    wdh.initializePageExtraction(getWiktionaryPageName());
+    frwdh.initializePageExtraction(getWiktionaryPageName());
     WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
     WikiDocument doc = page.asStructuredDocument();
     doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection)
         .map(Token::asWikiSection)
-        .forEach(wikiSection -> extractSection(wikiSection, extractForeignData));
-    wdh.finalizePageExtraction();
+        .forEach(wikiSection -> extractSection(wikiSection));
+    frwdh.finalizePageExtraction();
   }
 
-  private void extractSection(WikiSection section, boolean extractForeignData) {
+  private void extractSection(WikiSection section) {
     Optional<String> language = sectionLanguage(section);
-    if (language.filter(l -> extractForeignData || "fr".equals(l)).isPresent()) {
-      extractLanguageSection(section, language.get());
-    } else {
-      log.trace("TODO: extracting information from section {} in {}",
-          section.getHeading().getText().trim(), getWiktionaryPageName());
-    }
+    language.ifPresent(l -> extractLanguageSection(section, l));
   }
 
   private void extractLanguageSection(WikiSection languageSection, String language) {
@@ -808,57 +789,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           }
         });
   }
-
-
-  private HashSet<PronunciationPair> extractPronunciation(int startOffset, int endOffset,
-      boolean registerPronunciation) {
-    Matcher pronMatcher = pronunciationPattern.matcher(pageContent);
-    pronMatcher.region(startOffset, endOffset);
-
-
-    // TODO [URGENT]: what is this registerPronounciation boolean ?
-    HashSet<PronunciationPair> res = registerPronunciation ? null : new HashSet<>();
-
-    while (pronMatcher.find()) {
-      String pron = pronMatcher.group(1);
-      String lang = pronMatcher.group(2);
-
-      if (pron == null || pron.equals("")) {
-        return null;
-      }
-      // TODO [URGENT]: check when language is not present and display log debug information
-      if (lang == null || lang.equals("")) {
-        return null;
-      }
-
-      if (pron.startsWith("1=")) {
-        pron = pron.substring(2);
-      }
-
-      if (lang.startsWith("|2=")) {
-        lang = lang.substring(3);
-      } else if (lang.startsWith("|lang=")) {
-        lang = lang.substring(6);
-      } else if (lang.startsWith("lang=")) {
-        lang = lang.substring(5);
-      }
-
-      lang = LangTools.getPart1OrId(lang.trim());
-
-      if (lang != null && !lang.equals("") && !pron.equals("")) {
-        if (registerPronunciation) {
-          wdh.registerPronunciation(pron, lang + "-fonipa");
-        } else {
-          res.add(new PronunciationPair(pron, lang + "-fonipa"));
-        }
-      }
-    }
-
-    return res;
-  }
-
-  // static Pattern conjugationGroup =
-  // Pattern.compile("\\{\\{conjugaison\\|fr\\|groupe=(\\d)\\}\\}");
 
   /**
    * Extracts morphological information on the lexical entry itself.

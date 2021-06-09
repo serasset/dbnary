@@ -263,6 +263,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     promoteNymProperties();
   }
 
+  @Override
+  public void initializeLanguageSection(String wiktionaryPageName, String lang) {
+    // TODO Auto-generated method stub
+    throw new RuntimeException("Cannot initialize a foreign language entry.");
+  }
+
   public static String getEncodedPageName(String pageName, String pos, int defNumber) {
     return uriEncode(pageName, pos) + "__" + defNumber;
   }
@@ -1103,12 +1109,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   public String getPrefix() {
     return NS;
-  }
-
-  @Override
-  public void initializeLanguageSection(String wiktionaryPageName, String lang) {
-    // TODO Auto-generated method stub
-    throw new RuntimeException("Cannot initialize a foreign language entry.");
   }
 
   @Override

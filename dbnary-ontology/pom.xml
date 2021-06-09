@@ -7,16 +7,15 @@
     <artifactId>dbnary</artifactId>
     <version>2.3.5-SNAPSHOT</version>
   </parent>
-  <groupId>org.getalp</groupId>
   <artifactId>dbnary-ontology</artifactId>
 
   <packaging>jar</packaging>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <log4jprops>${project.basedir}/src/main/resources/log4j.properties</log4jprops>
-    <onto.source.dir>${project.basedir}/src/main/resources/org/getalp/dbnary/</onto.source.dir>
-    <onto.target.dir>${project.build.directory}/generated-sources/java</onto.target.dir>
+    <log4jprops>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}log4j.properties</log4jprops>
+    <onto.source.dir>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}org${file.separator}getalp${file.separator}dbnary</onto.source.dir>
+    <onto.target.dir>${project.build.directory}${file.separator}generated-sources${file.separator}java</onto.target.dir>
   </properties>
 
   <name>DBnary Ontology API</name>
@@ -59,7 +58,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}/dbnary.ttl</argument>
+                <argument>${onto.source.dir}${file.separator}dbnary.ttl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
@@ -89,7 +88,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}/lexinfo.owl</argument>
+                <argument>${onto.source.dir}${file.separator}lexinfo.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
@@ -117,7 +116,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}/olia.owl</argument>
+                <argument>${onto.source.dir}${file.separator}olia.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
@@ -145,7 +144,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}/dbnary_etymology.owl
+                <argument>${onto.source.dir}${file.separator}dbnary_etymology.owl
                 </argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
@@ -174,7 +173,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}/ontolex.owl</argument>
+                <argument>${onto.source.dir}${file.separator}ontolex.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
@@ -202,7 +201,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}/vartrans.owl</argument>
+                <argument>${onto.source.dir}${file.separator}vartrans.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
@@ -230,7 +229,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}/lime.owl</argument>
+                <argument>${onto.source.dir}${file.separator}lime.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
@@ -258,7 +257,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}/decomp.owl</argument>
+                <argument>${onto.source.dir}${file.separator}decomp.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
@@ -286,7 +285,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}/synsem.owl</argument>
+                <argument>${onto.source.dir}${file.separator}synsem.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
@@ -314,7 +313,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}/skos.rdf</argument>
+                <argument>${onto.source.dir}${file.separator}skos.rdf</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
@@ -342,7 +341,7 @@
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}/cube.ttl</argument>
+                <argument>${onto.source.dir}${file.separator}cube.ttl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>

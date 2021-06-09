@@ -54,8 +54,9 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
                 <argument>${onto.source.dir}${file.separator}dbnary.ttl</argument>
@@ -84,8 +85,9 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
                 <argument>${onto.source.dir}${file.separator}lexinfo.owl</argument>
@@ -112,8 +114,9 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
                 <argument>${onto.source.dir}${file.separator}olia.owl</argument>
@@ -140,8 +143,9 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
                 <argument>${onto.source.dir}${file.separator}dbnary_etymology.owl
@@ -169,8 +173,9 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
                 <argument>${onto.source.dir}${file.separator}ontolex.owl</argument>
@@ -197,8 +202,9 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
                 <argument>${onto.source.dir}${file.separator}vartrans.owl</argument>
@@ -225,8 +231,9 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
                 <argument>${onto.source.dir}${file.separator}lime.owl</argument>
@@ -253,8 +260,9 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
                 <argument>${onto.source.dir}${file.separator}decomp.owl</argument>
@@ -280,9 +288,8 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
                 <argument>${onto.source.dir}${file.separator}synsem.owl</argument>
@@ -309,8 +316,9 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
                 <argument>${onto.source.dir}${file.separator}skos.rdf</argument>
@@ -337,8 +345,9 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
                 <argument>${onto.source.dir}${file.separator}cube.ttl</argument>

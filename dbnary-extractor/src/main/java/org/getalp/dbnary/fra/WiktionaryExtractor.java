@@ -452,8 +452,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
     WikiDocument doc = page.asStructuredDocument();
     doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection)
-        .map(Token::asWikiSection)
-        .forEach(wikiSection -> extractSection(wikiSection));
+        .map(Token::asWikiSection).forEach(wikiSection -> extractSection(wikiSection));
     frwdh.finalizePageExtraction();
   }
 
@@ -463,6 +462,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractLanguageSection(WikiSection languageSection, String language) {
+    if (null == language)
+      return;
+    if (wdh.isDisabled(ExtractionFeature.FOREIGN_LANGUAGES) && !"fr".equals(language))
+      return;
+
     // The language is always defined when arriving here
     wdh.initializeLanguageSection(getWiktionaryPageName(), language);
 

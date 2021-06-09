@@ -206,6 +206,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
           }
         }
+      } else if (ignoreHeadings.contains(header)) {
+        // just ignore
       } else {
         log.debug("Unexpected header {} in {}", header, getWiktionaryPageName());
       }

@@ -707,16 +707,16 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     // TODO: correctly test for compressed file if compress is enabled
     String extractFile =
         odir + "/" + lang + prefix + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
-    String morphoFile = odir + "/" + lang + prefix + "_dbnary_"
-        + ExtractionFeature.MORPHOLOGY + "_" + dir + ".ttl";
-    String etymologyFile = odir + "/" + lang + prefix + "_dbnary_"
-        + ExtractionFeature.ETYMOLOGY + "_" + dir + ".ttl";
-    String limeFile = odir + "/" + lang + prefix + "_dbnary_"
-        + ExtractionFeature.LIME + "_" + dir + ".ttl";
-    String enhancementFile = odir + "/" + lang + prefix + "_dbnary_"
-        + ExtractionFeature.ENHANCEMENT + "_" + dir + ".ttl";
-    String statsFile = odir + "/" + lang + prefix + "_dbnary_"
-        + ExtractionFeature.STATISTICS + "_" + dir + ".ttl";
+    String morphoFile =
+        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.MORPHOLOGY + "_" + dir + ".ttl";
+    String etymologyFile =
+        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.ETYMOLOGY + "_" + dir + ".ttl";
+    String limeFile =
+        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.LIME + "_" + dir + ".ttl";
+    String enhancementFile = odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.ENHANCEMENT
+        + "_" + dir + ".ttl";
+    String statsFile =
+        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.STATISTICS + "_" + dir + ".ttl";
     String foreignFile = odir + "/" + lang + prefix + "_dbnary_"
         + ExtractionFeature.FOREIGN_LANGUAGES + "_" + dir + ".ttl";
     if (compress) {

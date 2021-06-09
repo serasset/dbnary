@@ -150,11 +150,10 @@ public class ExtractWiktionary extends DBnaryCommandLine {
         .desc("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
         .hasArg().argName("uri").build());
-    options.addOption(
-        Option.builder(FOREIGN_LANGUAGES_OUTPUT_FILE_SHORT_OPTION)
-            .longOpt(FOREIGN_LANGUAGES_OUTPUT_FILE_LONG_OPTION)
-            .desc("Output file for foreign languages data. Undefined by default.").hasArg()
-            .argName("file").build());
+    options.addOption(Option.builder(FOREIGN_LANGUAGES_OUTPUT_FILE_SHORT_OPTION)
+        .longOpt(FOREIGN_LANGUAGES_OUTPUT_FILE_LONG_OPTION)
+        .desc("Output file for foreign languages data. Undefined by default.").hasArg()
+        .argName("file").build());
     options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign Languages");
     options.addOption(Option.builder(FROM_PAGE_SHORT_OPTION).longOpt(FROM_PAGE_LONG_OPTION)
         .desc("Do not process pages before the nth one. 0 by default.").hasArg().argName("num")

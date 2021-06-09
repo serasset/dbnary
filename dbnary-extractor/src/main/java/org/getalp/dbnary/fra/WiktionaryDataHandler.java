@@ -151,7 +151,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   @Override
   public void initializePageExtraction(String wiktionaryPageName) {
-    Page currentPage = new Page("fra", wiktionaryPageName);  // <-- HERE
+    Page currentPage = new Page("fra", wiktionaryPageName); // <-- HERE
     super.initializePageExtraction(wiktionaryPageName);
   }
 

@@ -54,7 +54,7 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -84,7 +84,7 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -112,7 +112,7 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -140,7 +140,7 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -169,7 +169,7 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -197,7 +197,7 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -225,7 +225,7 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -253,7 +253,7 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -281,7 +281,7 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -309,7 +309,7 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -337,7 +337,7 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>
-                  -Dlog4j.configurationFile="${log4jprops}"
+                  -Dlog4j.configurationFile=\"${log4jprops}\"
                 </argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>

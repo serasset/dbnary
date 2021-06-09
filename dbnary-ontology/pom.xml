@@ -53,9 +53,7 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile=\"${log4jprops}\"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -84,9 +82,7 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile=\"${log4jprops}\"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -113,9 +109,7 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile=\"${log4jprops}\"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -142,9 +136,7 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile=\"${log4jprops}\"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -172,9 +164,7 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile=\"${log4jprops}\"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -201,9 +191,7 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile=\"${log4jprops}\"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -230,9 +218,7 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile=\"${log4jprops}\"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -259,9 +245,7 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile=\"${log4jprops}\"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -315,9 +299,7 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile=\"${log4jprops}\"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
@@ -344,9 +326,7 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile=\"${log4jprops}\"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>

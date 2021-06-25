@@ -178,7 +178,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
     if (lang.equals("ltv")) {
-      wdh.initializeLanguageSection(getWiktionaryPageName());
+      wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     } else {
       // log.debug("Unused lang {} --in-- {}", lang, this.wiktionaryPageName);
       return;

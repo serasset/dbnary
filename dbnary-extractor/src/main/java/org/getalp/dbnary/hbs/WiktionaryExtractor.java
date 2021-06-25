@@ -197,7 +197,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     lang = lang.trim();
 
     if (lang.toLowerCase().equals("srpskohrvatski") || lang.equals("sh")) {
-      wdh.initializeLanguageSection(getWiktionaryPageName());
+      wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     } else {
       return;
       // wdh.initializeLanguageSection(getWiktionaryPageName(), lang);

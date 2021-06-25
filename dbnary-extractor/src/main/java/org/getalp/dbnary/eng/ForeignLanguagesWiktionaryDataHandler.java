@@ -6,6 +6,9 @@ import org.getalp.dbnary.PronunciationPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @deprecated Do not use this subclass, not compatible with Model based extraction.
+ */
 public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler {
 
   private Logger log = LoggerFactory.getLogger(ForeignLanguagesWiktionaryDataHandler.class);
@@ -20,8 +23,8 @@ public class ForeignLanguagesWiktionaryDataHandler extends WiktionaryDataHandler
   }
 
   @Override
-  public void initializeLanguageSection(String wiktionaryPageName) {
-    super.initializeLanguageSection(wiktionaryPageName, currentEntryLanguage,
+  public void initializeLanguageSection__noModel(String wiktionaryPageName) {
+    super.initializeLanguageSection__noModel(wiktionaryPageName, currentEntryLanguage,
         currentEntryLanguageName);
   }
 

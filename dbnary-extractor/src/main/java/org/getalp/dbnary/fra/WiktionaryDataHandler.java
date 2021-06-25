@@ -24,7 +24,6 @@ import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats.Stat;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
 import org.getalp.dbnary.morphology.InflectionData;
-import org.getalp.model.dbnary.Page;
 import org.getalp.model.ontolex.LexicalForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,12 +63,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeLanguageSection(String wiktionaryPageName, String language) {
+  public void initializeLanguageSection__noModel(String wiktionaryPageName, String language) {
     language = LangTools.getPart1OrId(language);
-    if (null != language && language.equals(wktLanguageEdition)) {
-      super.initializeLanguageSection(wiktionaryPageName);
+    if (null != language && language.equals(shortEditionLanguageCode)) {
+      super.initializeLanguageSection__noModel(wiktionaryPageName);
     } else {
-      super.initializeLanguageSection(wiktionaryPageName, language);
+      super.initializeLanguageSection__noModel(wiktionaryPageName, language);
     }
   }
 
@@ -151,17 +150,16 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   @Override
   public void initializePageExtraction(String wiktionaryPageName) {
-    Page currentPage = new Page("fra", wiktionaryPageName); // <-- HERE
     super.initializePageExtraction(wiktionaryPageName);
   }
 
 
   @Override
   public void finalizePageExtraction() {
-    super.finalizePageExtraction();
     // Remove all inflections related to the current page as they cannot be attach to
     // another page anymore.
     heldBackOtherForms.remove(currentWiktionaryPageName);
+    super.finalizePageExtraction();
   }
 
 
@@ -178,8 +176,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeLanguageSection(String wiktionaryPageName) {
-    super.initializeLanguageSection(wiktionaryPageName);
+  public void initializeLanguageSection__noModel(String wiktionaryPageName) {
+    super.initializeLanguageSection__noModel(wiktionaryPageName);
   }
 
   @Override
@@ -301,8 +299,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public Resource getPageResource(String vocable) {
-    return super.getPageResource(vocable);
+  public Resource getPageResource(String page) {
+    return super.getPageResource(page);
   }
 
   @Override

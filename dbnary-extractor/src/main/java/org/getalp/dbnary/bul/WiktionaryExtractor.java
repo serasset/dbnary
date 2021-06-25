@@ -87,16 +87,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return (null != m.group(1) && m.group(1).startsWith("{{-bg-"));
   }
 
-  public void startExtraction() {
-    isCurrentlyExtracting = true;
-    wdh.initializeLanguageSection(getWiktionaryPageName());
-  }
-
-  public void stopExtraction() {
-    isCurrentlyExtracting = false;
-  }
-
-
   // private HashSet<String> unsupportedSections = new HashSet<String>(100);
   void gotoNoData(Matcher m) {
     state = NODATA;
@@ -126,7 +116,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractBulgarianData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     while (m.find()) {
       switch (state) {
         case NODATA:

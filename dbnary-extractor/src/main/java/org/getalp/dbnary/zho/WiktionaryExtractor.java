@@ -333,7 +333,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   private void extractData(int startOffset, int endOffset) {
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     Matcher m = wikiSectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     gotoNoData(m);

@@ -41,9 +41,12 @@ import org.getalp.dbnary.morphology.InflectionData;
 import org.getalp.dbnary.stats.Statistics;
 import org.getalp.dbnary.tools.CounterSet;
 import org.getalp.iso639.ISO639_3;
+import org.getalp.model.dbnary.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO : MAYBE separate Etymology/Translation/Definition/etc. sections extraction in separate
+// classes ?
 public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktionaryDataHandler {
 
   private final Dataset dataset;
@@ -59,12 +62,11 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
   }
 
-  private Logger log = LoggerFactory.getLogger(OntolexBasedRDFDataHandler.class);
+  private final Logger log = LoggerFactory.getLogger(OntolexBasedRDFDataHandler.class);
 
-  private final String tdbDir;
   protected Model aBox;
 
-  private Map<ExtractionFeature, Model> featureBoxes;
+  private final Map<ExtractionFeature, Model> featureBoxes;
 
   // States used for processing
   protected Resource currentLexEntry;
@@ -76,22 +78,31 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   protected int currentSubSenseNumber;
   protected CounterSet translationCount = new CounterSet();
   private CounterSet reifiedNymCount = new CounterSet();
-  protected String wktLanguageEdition;
-  protected String longLanguageCode;
+  protected final String shortEditionLanguageCode;
+  protected final String longEditionLanguageCode;
+  protected String shortSectionLanguageCode;
+  protected String longSectionLanguageCode;
 
-  protected Resource lexvoLanguageEdition;
+
   protected Resource lexvoExtractedLanguage;
+
 
   private Set<Statement> heldBackStatements = new HashSet<Statement>();
 
   protected int nbEntries = 0;
   private String NS;
   protected String WIKT;
-  protected String currentEncodedPageName;
   protected String currentEncodedLexicalEntryName;
+  /**
+   * @deprecated use currentPage.getName()
+   */
   protected String currentWiktionaryPageName;
   protected CounterSet currentLexieCount = new CounterSet();
+  /**
+   * @deprecated should rely on currentPage (not a Resource anymore
+   */
   protected Resource currentMainLexEntry;
+  protected Page currentPage;
   protected Resource currentCanonicalForm;
 
   protected Set<PronunciationPair> currentSharedPronunciations;
@@ -105,44 +116,27 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   protected static HashMap<String, PosAndType> posAndTypeValueMap =
       new HashMap<String, PosAndType>();
 
-  static {
-
-    // nymPropertyMap.put("syn", DBnaryOnt.synonym);
-    // nymPropertyMap.put("ant", DBnaryOnt.antonym);
-    // nymPropertyMap.put("hypo", DBnaryOnt.hyponym);
-    // nymPropertyMap.put("hyper", DBnaryOnt.hypernym);
-    // nymPropertyMap.put("mero", DBnaryOnt.meronym);
-    // nymPropertyMap.put("holo", DBnaryOnt.holonym);
-    // nymPropertyMap.put("qsyn", DBnaryOnt.approximateSynonym);
-    // nymPropertyMap.put("tropo", DBnaryOnt.troponym);
-
-    // posAndTypeValueMap.put("", new PosAndType(null, LemonOnt.LexicalEntry)); // other Part of
-    // Speech
-
-  }
-
   // Map of the String to lexvo language entity
   private HashMap<String, Resource> languages = new HashMap<String, Resource>();
 
-  public OntolexBasedRDFDataHandler(String lang, String tdbDir) {
+  public OntolexBasedRDFDataHandler(String longEditionLanguageCode, String tdbDir) {
     super();
 
-    this.tdbDir = tdbDir;
     if (null != tdbDir) {
       dataset = TDBFactory.createDataset(tdbDir);
     } else {
       dataset = null;
     }
 
-    NS = DBNARY_NS_PREFIX + "/" + lang + "/";
+    NS = DBNARY_NS_PREFIX + "/" + longEditionLanguageCode + "/";
 
-    longLanguageCode = lang;
-    wktLanguageEdition = LangTools.getPart1OrId(lang);
-    WIKT = "https://" + wktLanguageEdition + ".wiktionary.org/wiki/";
-    lexvoExtractedLanguage = tBox.createResource(LEXVO + lang);
+    this.longEditionLanguageCode = longEditionLanguageCode;
+    this.shortEditionLanguageCode = LangTools.getPart1OrId(longEditionLanguageCode);
+    WIKT = "https://" + shortEditionLanguageCode + ".wiktionary.org/wiki/";
+    lexvoExtractedLanguage = tBox.createResource(LEXVO + longEditionLanguageCode);
 
     // Create aBox
-    aBox = createAndInitializeABox(lang);
+    aBox = createAndInitializeABox(longEditionLanguageCode);
 
     featureBoxes = new HashMap<>();
     featureBoxes.put(ExtractionFeature.MAIN, aBox);
@@ -193,7 +187,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
    */
   @Override
   public String getCurrentEntryLanguage() {
-    return wktLanguageEdition;
+    return shortSectionLanguageCode;
+  }
+
+  @Override
+  public String getExtractedLanguage() {
+    return shortEditionLanguageCode;
   }
 
   @Override
@@ -206,7 +205,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void enableFeature(ExtractionFeature f) {
-    Model box = createAndInitializeABox(longLanguageCode, f);
+    Model box = createAndInitializeABox(longEditionLanguageCode, f);
     // fillInPrefixes(aBox, box);
     featureBoxes.put(f, box);
   }
@@ -223,24 +222,41 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void initializePageExtraction(String wiktionaryPageName) {
+    currentPage = new Page(longEditionLanguageCode, wiktionaryPageName);
+    currentWiktionaryPageName = wiktionaryPageName;
     currentLexieCount.resetAll();
   }
 
   @Override
   public void finalizePageExtraction() {
-
+    currentWiktionaryPageName = null;
+    currentPage = null;
   }
 
   @Override
-  public void initializeLanguageSection(String wiktionaryPageName) {
+  public void initializeLanguageSection(String language) {
+    assert currentPage != null;
+    initializeLanguageSection__noModel(currentPage.getName());
+    String longLang = LangTools.getCode(language);
+    String shortLang = LangTools.getPart1OrId(language);
+
+    longSectionLanguageCode = longLang == null ? language : longLang;
+    shortSectionLanguageCode = shortLang == null ? language : shortLang;
+  }
+
+  @Override
+  public void initializeLanguageSection__noModel(String wiktionaryPageName) {
     currentSense = null;
     currentSenseNumber = 0;
     currentSubSenseNumber = 0;
-    currentWiktionaryPageName = wiktionaryPageName;
-    currentLexinfoPos = null;
-    currentWiktionaryPos = null;
     translationCount.resetAll();
     reifiedNymCount.resetAll();
+
+    longSectionLanguageCode = currentPage.getLongLanguageCode();
+    shortSectionLanguageCode = currentPage.getShortLanguageCode();
+
+    currentLexinfoPos = null;
+    currentWiktionaryPos = null;
     currentCanonicalForm = null;
     currentSharedPronunciations = new HashSet<PronunciationPair>();
 
@@ -261,10 +277,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // extractable part of speech in the entry.
     heldBackStatements.clear();
     promoteNymProperties();
+    longSectionLanguageCode = null;
+    shortSectionLanguageCode = null;
   }
 
   @Override
-  public void initializeLanguageSection(String wiktionaryPageName, String lang) {
+  public void initializeLanguageSection__noModel(String wiktionaryPageName, String lang) {
     // TODO Auto-generated method stub
     throw new RuntimeException("Cannot initialize a foreign language entry.");
   }
@@ -298,133 +316,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     return currentLexinfoPos;
   }
 
-  @Override
-  public void populateMetadata(String dumpFilename, String extractorVersion) {
-    if (isDisabled(ExtractionFeature.LIME)) {
-      return;
-    }
-    Model limeBox = this.getFeatureBox(ExtractionFeature.LIME);
-    Resource creator = limeBox.createResource("http://serasset.bitbucket.io/");
-    Resource lexicon = limeBox.createResource(
-        getPrefix() + "___" + wktLanguageEdition + "_dbnary_dataset", LimeOnt.Lexicon);
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.title,
-        ISO639_3.sharedInstance.getLanguageNameInEnglish(wktLanguageEdition) + " DBnary Dataset",
-        "en"));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.title,
-        "Dataset DBnary " + ISO639_3.sharedInstance.getLanguageNameInFrench(wktLanguageEdition),
-        "fr"));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
-        "This lexicon is extracted from the original wiktionary data that can be found"
-            + " in http://" + wktLanguageEdition + ".wiktionary.org/ by the DBnary Extractor.",
-        "en"));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
-        "Cet ensemble de données est extrait du wiktionnaire original disponible" + " à http://"
-            + wktLanguageEdition + ".wiktionary.org/ par le programme d'extraction de DBnary.",
-        "fr"));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.creator, creator));
-    limeBox.add(limeBox.createLiteralStatement(lexicon, DCTerms.created,
-        limeBox.createTypedLiteral(GregorianCalendar.getInstance())));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.source,
-        "http://" + wktLanguageEdition + ".wiktionary.org/"));
-
-    limeBox.add(
-        limeBox.createStatement(lexicon, FOAF.homepage, "http://kaiko.getalp.org/about-dbnary"));
-    limeBox.add(limeBox.createStatement(lexicon, FOAF.page,
-        "http://kaiko.getalp.org/static/ontolex/" + wktLanguageEdition));
-
-    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.language, wktLanguageEdition));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
-    limeBox.add(limeBox.createLiteralStatement(lexicon, LimeOnt.lexicalEntries, nbEntries()));
-    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, LexinfoOnt.getURI()));
-    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, OliaOnt.getURI()));
-    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, LEXVO));
-
-    // TODO: Add extractor version for the current dump
-    limeBox.add(limeBox.createStatement(lexicon, DBnaryOnt.wiktionaryDumpVersion, dumpFilename));
-
-    // TODO: Add VOID description : see https://www.w3.org/TR/void/#access
-    // :DBpedia a void:Dataset;
-    // void:sparqlEndpoint <http://dbpedia.org/sparql>;
-    // :NYTimes a void:Dataset;
-    // void:dataDump <http://data.nytimes.com/people.rdf>;
-    // void:dataDump <http://data.nytimes.com/organizations.rdf>;
-    // void:dataDump <http://data.nytimes.com/locations.rdf>;
-    // void:dataDump <http://data.nytimes.com/descriptors.rdf>;
-  }
-
-  @Override
-  public void buildDatacubeObservations(String l, TranslationGlossesStat tgs,
-      EvaluationStats.Stat es, String dumpFileVersion) {
-    if (isDisabled(ExtractionFeature.ENHANCEMENT) || isDisabled(ExtractionFeature.STATISTICS)) {
-      return;
-    }
-    Model statsBox = this.getFeatureBox(ExtractionFeature.STATISTICS);
-
-    {
-      Resource glossObs = statsBox.createResource(getPrefix() + "___glossObs__" + wktLanguageEdition
-          + "__" + date() + "_" + dumpFileVersion);
-      statsBox.add(statsBox.createStatement(glossObs, RDF.type, DataCubeOnt.Observation));
-      statsBox.add(statsBox.createStatement(glossObs, DataCubeOnt.dataSet,
-          DBnaryOnt.translationGlossesCube));
-      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.wiktionaryDumpVersion,
-          statsBox.createTypedLiteral(dumpFileVersion)));
-      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.observationLanguage, l));
-
-      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.translationsWithNoGloss,
-          statsBox.createTypedLiteral(tgs.getTranslationsWithoutGlosses())));
-      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.translationsWithSenseNumber,
-          statsBox.createTypedLiteral(tgs.getNbGlossesWithSenseNumberOnly())));
-      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.translationsWithTextualGloss,
-          statsBox.createTypedLiteral(tgs.getNbGlossesWithTextOnly())));
-      statsBox.add(
-          statsBox.createStatement(glossObs, DBnaryOnt.translationsWithSenseNumberAndTextualGloss,
-              statsBox.createTypedLiteral(tgs.getNbGlossesWithSensNumberAndText())));
-    }
-
-    {
-      Resource enhObsRandom = statsBox.createResource(getPrefix() + "___enhObsRandom__"
-          + wktLanguageEdition + "__" + date() + "_" + dumpFileVersion);
-      statsBox.add(statsBox.createStatement(enhObsRandom, RDF.type, DataCubeOnt.Observation));
-      statsBox.add(statsBox.createStatement(enhObsRandom, DataCubeOnt.dataSet,
-          DBnaryOnt.enhancementConfidenceDataCube));
-      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.wiktionaryDumpVersion,
-          statsBox.createTypedLiteral(dumpFileVersion)));
-      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.observationLanguage, l));
-      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.enhancementMethod, "random"));
-      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.f1Measure,
-          statsBox.createTypedLiteral(es.getRandomF1Score())));
-      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.precisionMeasure,
-          statsBox.createTypedLiteral(es.getRandomPrecision())));
-      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.recallMeasure,
-          statsBox.createTypedLiteral(es.getRandomRecall())));
-    }
-
-    {
-      Resource enhObs = statsBox.createResource(
-          getPrefix() + "___enhObs__" + wktLanguageEdition + "__" + date() + "_" + dumpFileVersion);
-      statsBox.add(statsBox.createStatement(enhObs, RDF.type, DataCubeOnt.Observation));
-      statsBox.add(statsBox.createStatement(enhObs, DataCubeOnt.dataSet,
-          DBnaryOnt.enhancementConfidenceDataCube));
-      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.wiktionaryDumpVersion,
-          statsBox.createTypedLiteral(dumpFileVersion)));
-      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.observationLanguage, l));
-      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.enhancementMethod, "dbnary_tversky"));
-      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.f1Measure,
-          statsBox.createTypedLiteral(es.getF1Score())));
-      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.precisionMeasure,
-          statsBox.createTypedLiteral(es.getPrecision())));
-      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.recallMeasure,
-          statsBox.createTypedLiteral(es.getRecall())));
-    }
-
-  }
-
-  private static String date() {
-    LocalDateTime d = LocalDateTime.now();
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd'T'HH_mm_ss_SSS");
-    return formatter.format(d);
-  }
-
   public Resource initializeLexicalEntry(String originalPOS, Resource normalizedPOS,
       Resource normalizedType) {
     // DONE: create a LexicalEntry for this part of speech only and attach info to it.
@@ -436,7 +327,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     nbEntries++;
 
-    currentEncodedLexicalEntryName = getEncodedPageName(currentWiktionaryPageName, originalPOS,
+    currentEncodedLexicalEntryName = getEncodedPageName(currentPage.getName(), originalPOS,
         currentLexieCount.incr(currentWiktionaryPos));
     currentLexEntry = getLexEntry(currentEncodedLexicalEntryName, normalizedType);
 
@@ -448,7 +339,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     // import other forms
     SimpleImmutableEntry<String, String> keyOtherForms =
-        new SimpleImmutableEntry<String, String>(currentWiktionaryPageName, originalPOS);
+        new SimpleImmutableEntry<String, String>(currentPage.getName(), originalPOS);
     HashSet<HashSet<PropertyObjectPair>> otherForms = heldBackOtherForms.get(keyOtherForms);
 
     // TODO: check that other forms point to valid entries and log faulty entries for wiktionary
@@ -477,9 +368,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
 
     aBox.add(currentLexEntry, OntolexOnt.canonicalForm, currentCanonicalForm);
-    aBox.add(currentCanonicalForm, OntolexOnt.writtenRep, currentWiktionaryPageName,
+    aBox.add(currentCanonicalForm, OntolexOnt.writtenRep, currentPage.getName(),
         getCurrentEntryLanguage());
-    aBox.add(currentLexEntry, RDFS.label, currentWiktionaryPageName, getCurrentEntryLanguage());
+    aBox.add(currentLexEntry, RDFS.label, currentPage.getName(), getCurrentEntryLanguage());
     aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos);
     if (null != currentLexinfoPos) {
       aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos);
@@ -563,7 +454,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     log.debug("Registering lexical Variant: {} for entry: {}", alt, currentEncodedLexicalEntryName);
     Resource altlemma = aBox.createResource();
     aBox.add(currentLexEntry, VarTransOnt.lexicalRel, altlemma);
-    aBox.add(altlemma, OntolexOnt.writtenRep, alt, wktLanguageEdition);
+    aBox.add(altlemma, OntolexOnt.writtenRep, alt, shortEditionLanguageCode);
   }
 
   @Override
@@ -613,7 +504,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     aBox.add(currentSense, SkosOnt.definition, defNode);
     // Keep a human readable version of the definition, removing all links annotations.
     aBox.add(defNode, RDF.value, AbstractWiktionaryExtractor.cleanUpMarkup(def, true),
-        wktLanguageEdition);
+        shortEditionLanguageCode);
 
     // TODO: Extract domain/usage field from the original definition.
 
@@ -682,8 +573,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     return aBox.createResource(getVocableResourceName(vocable), DBnaryOnt.Page);
   }
 
-  public Resource getPageResource(String vocable) {
-    return getPageResource(vocable, false);
+  public Resource getPageResource(String page) {
+    return getPageResource(page, false);
   }
 
   protected void mergePropertiesIntoResource(HashSet<PropertyObjectPair> properties, Resource res) {
@@ -968,8 +859,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     Resource glossResource = aBox.createResource(getGlossResourceName(gloss), DBnaryOnt.Gloss);
     if (null != gloss.getGloss() && gloss.getGloss().trim().length() > 0) {
-      aBox.add(
-          aBox.createStatement(glossResource, RDF.value, gloss.getGloss(), wktLanguageEdition));
+      aBox.add(aBox.createStatement(glossResource, RDF.value, gloss.getGloss(),
+          shortEditionLanguageCode));
     }
     if (gloss.getSenseNumber() != null) {
       aBox.add(aBox.createStatement(glossResource, DBnaryOnt.senseNumber, gloss.getSenseNumber()));
@@ -984,7 +875,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     String key = gloss.getGloss() + gloss.getSenseNumber();
     key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray())
         .replaceAll("[/=\\+]", "-");
-    return getPrefix() + "__" + wktLanguageEdition + "_gloss_" + key + "_"
+    return getPrefix() + "__" + shortEditionLanguageCode + "_gloss_" + key + "_"
         + currentEncodedLexicalEntryName;
   }
 
@@ -1123,7 +1014,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     aBox.add(aBox.createStatement(example, RDF.value, ex, getCurrentEntryLanguage()));
     if (null != context) {
       for (Map.Entry<Property, String> c : context.entrySet()) {
-        aBox.add(aBox.createStatement(example, c.getKey(), c.getValue(), wktLanguageEdition));
+        aBox.add(aBox.createStatement(example, c.getKey(), c.getValue(), shortEditionLanguageCode));
       }
     }
     aBox.add(aBox.createStatement(currentSense, SkosOnt.example, example));
@@ -1144,18 +1035,19 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       long cp = countResourcesOfType(DBnaryOnt.Page, aBox);
       long cs = countResourcesOfType(OntolexOnt.LexicalSense, aBox);
 
-      createGeneralStatisticsObservation(statsBox, dumpVersion, getPrefix(), longLanguageCode, ct,
-          cp, ce, cs);
+      createGeneralStatisticsObservation(statsBox, dumpVersion, getPrefix(),
+          longEditionLanguageCode, ct, cp, ce, cs);
     }
 
     for (NymRelation nym : NymRelation.values()) {
       long cr = countRelations(nym.getProperty(), aBox);
-      createNymRelationObservation(statsBox, dumpVersion, getPrefix(), longLanguageCode, nym, cr);
+      createNymRelationObservation(statsBox, dumpVersion, getPrefix(), longEditionLanguageCode, nym,
+          cr);
     }
 
     Map<String, Long> counts = Statistics.translationCounts(aBox);
     counts.forEach((l, c) -> this.createTranslationObservation(statsBox, dumpVersion, getPrefix(),
-        longLanguageCode, l, c));
+        longEditionLanguageCode, l, c));
   }
 
   public static void createGeneralStatisticsObservation(Model statsBox, String dumpVersion,
@@ -1219,4 +1111,133 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         .add(statsBox.createStatement(transObs, DBnaryOnt.count, statsBox.createTypedLiteral(c)));
   }
 
+  /////// METADATA /////////
+  @Override
+  public void populateMetadata(String dumpFilename, String extractorVersion) {
+    if (isDisabled(ExtractionFeature.LIME)) {
+      return;
+    }
+    Model limeBox = this.getFeatureBox(ExtractionFeature.LIME);
+    Resource creator = limeBox.createResource("http://serasset.bitbucket.io/");
+    Resource lexicon = limeBox.createResource(
+        getPrefix() + "___" + shortEditionLanguageCode + "_dbnary_dataset", LimeOnt.Lexicon);
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.title,
+        ISO639_3.sharedInstance.getLanguageNameInEnglish(shortEditionLanguageCode)
+            + " DBnary Dataset",
+        "en"));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.title, "Dataset DBnary "
+        + ISO639_3.sharedInstance.getLanguageNameInFrench(shortEditionLanguageCode), "fr"));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
+        "This lexicon is extracted from the original wiktionary data that can be found"
+            + " in http://" + shortEditionLanguageCode
+            + ".wiktionary.org/ by the DBnary Extractor.",
+        "en"));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
+        "Cet ensemble de données est extrait du wiktionnaire original disponible" + " à http://"
+            + shortEditionLanguageCode
+            + ".wiktionary.org/ par le programme d'extraction de DBnary.",
+        "fr"));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.creator, creator));
+    limeBox.add(limeBox.createLiteralStatement(lexicon, DCTerms.created,
+        limeBox.createTypedLiteral(GregorianCalendar.getInstance())));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.source,
+        "http://" + shortEditionLanguageCode + ".wiktionary.org/"));
+
+    limeBox.add(
+        limeBox.createStatement(lexicon, FOAF.homepage, "http://kaiko.getalp.org/about-dbnary"));
+    limeBox.add(limeBox.createStatement(lexicon, FOAF.page,
+        "http://kaiko.getalp.org/static/ontolex/" + shortEditionLanguageCode));
+
+    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.language, shortEditionLanguageCode));
+    limeBox.add(limeBox.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
+    limeBox.add(limeBox.createLiteralStatement(lexicon, LimeOnt.lexicalEntries, nbEntries()));
+    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, LexinfoOnt.getURI()));
+    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, OliaOnt.getURI()));
+    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, LEXVO));
+
+    // TODO: Add extractor version for the current dump
+    limeBox.add(limeBox.createStatement(lexicon, DBnaryOnt.wiktionaryDumpVersion, dumpFilename));
+
+    // TODO: Add VOID description : see https://www.w3.org/TR/void/#access
+    // :DBpedia a void:Dataset;
+    // void:sparqlEndpoint <http://dbpedia.org/sparql>;
+    // :NYTimes a void:Dataset;
+    // void:dataDump <http://data.nytimes.com/people.rdf>;
+    // void:dataDump <http://data.nytimes.com/organizations.rdf>;
+    // void:dataDump <http://data.nytimes.com/locations.rdf>;
+    // void:dataDump <http://data.nytimes.com/descriptors.rdf>;
+  }
+
+  @Override
+  public void buildDatacubeObservations(String l, TranslationGlossesStat tgs,
+      EvaluationStats.Stat es, String dumpFileVersion) {
+    if (isDisabled(ExtractionFeature.ENHANCEMENT) || isDisabled(ExtractionFeature.STATISTICS)) {
+      return;
+    }
+    Model statsBox = this.getFeatureBox(ExtractionFeature.STATISTICS);
+
+    {
+      Resource glossObs = statsBox.createResource(getPrefix() + "___glossObs__"
+          + shortEditionLanguageCode + "__" + date() + "_" + dumpFileVersion);
+      statsBox.add(statsBox.createStatement(glossObs, RDF.type, DataCubeOnt.Observation));
+      statsBox.add(statsBox.createStatement(glossObs, DataCubeOnt.dataSet,
+          DBnaryOnt.translationGlossesCube));
+      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.wiktionaryDumpVersion,
+          statsBox.createTypedLiteral(dumpFileVersion)));
+      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.observationLanguage, l));
+
+      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.translationsWithNoGloss,
+          statsBox.createTypedLiteral(tgs.getTranslationsWithoutGlosses())));
+      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.translationsWithSenseNumber,
+          statsBox.createTypedLiteral(tgs.getNbGlossesWithSenseNumberOnly())));
+      statsBox.add(statsBox.createStatement(glossObs, DBnaryOnt.translationsWithTextualGloss,
+          statsBox.createTypedLiteral(tgs.getNbGlossesWithTextOnly())));
+      statsBox.add(
+          statsBox.createStatement(glossObs, DBnaryOnt.translationsWithSenseNumberAndTextualGloss,
+              statsBox.createTypedLiteral(tgs.getNbGlossesWithSensNumberAndText())));
+    }
+
+    {
+      Resource enhObsRandom = statsBox.createResource(getPrefix() + "___enhObsRandom__"
+          + shortEditionLanguageCode + "__" + date() + "_" + dumpFileVersion);
+      statsBox.add(statsBox.createStatement(enhObsRandom, RDF.type, DataCubeOnt.Observation));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DataCubeOnt.dataSet,
+          DBnaryOnt.enhancementConfidenceDataCube));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.wiktionaryDumpVersion,
+          statsBox.createTypedLiteral(dumpFileVersion)));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.observationLanguage, l));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.enhancementMethod, "random"));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.f1Measure,
+          statsBox.createTypedLiteral(es.getRandomF1Score())));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.precisionMeasure,
+          statsBox.createTypedLiteral(es.getRandomPrecision())));
+      statsBox.add(statsBox.createStatement(enhObsRandom, DBnaryOnt.recallMeasure,
+          statsBox.createTypedLiteral(es.getRandomRecall())));
+    }
+
+    {
+      Resource enhObs = statsBox.createResource(getPrefix() + "___enhObs__"
+          + shortEditionLanguageCode + "__" + date() + "_" + dumpFileVersion);
+      statsBox.add(statsBox.createStatement(enhObs, RDF.type, DataCubeOnt.Observation));
+      statsBox.add(statsBox.createStatement(enhObs, DataCubeOnt.dataSet,
+          DBnaryOnt.enhancementConfidenceDataCube));
+      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.wiktionaryDumpVersion,
+          statsBox.createTypedLiteral(dumpFileVersion)));
+      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.observationLanguage, l));
+      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.enhancementMethod, "dbnary_tversky"));
+      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.f1Measure,
+          statsBox.createTypedLiteral(es.getF1Score())));
+      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.precisionMeasure,
+          statsBox.createTypedLiteral(es.getPrecision())));
+      statsBox.add(statsBox.createStatement(enhObs, DBnaryOnt.recallMeasure,
+          statsBox.createTypedLiteral(es.getRecall())));
+    }
+
+  }
+
+  private static String date() {
+    LocalDateTime d = LocalDateTime.now();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd'T'HH_mm_ss_SSS");
+    return formatter.format(d);
+  }
 }

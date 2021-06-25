@@ -135,7 +135,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public void startExtraction() {
     isCurrentlyExtracting = true;
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
   }
 
   public void stopExtraction() {
@@ -230,7 +230,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractRussianData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     gotoIgnorePos();
     while (m.find()) {
       switch (state) {

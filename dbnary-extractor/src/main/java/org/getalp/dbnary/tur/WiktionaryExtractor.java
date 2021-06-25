@@ -169,7 +169,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: section Yan Kavramlar gives related concepts (apparently not synonyms).
   private void extractTurkishData(int startOffset, int endOffset) {
     WikiText txt = new WikiText(pageContent.substring(startOffset, endOffset));
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     for (WikiText.Token evt : txt.headers(3)) {
       WikiSection section = evt.asHeading().getSection();
       String header = section.getHeading().getContent().toString().trim();

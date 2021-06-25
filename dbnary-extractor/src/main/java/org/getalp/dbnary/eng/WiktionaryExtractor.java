@@ -172,12 +172,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractEnglishData(int startOffset, int endOffset) {
     if (isWikisaurus(getWiktionaryPageName())) {
       setWiktionaryPageName(cutNamespace(getWiktionaryPageName()));
-      wdh.initializeLanguageSection(getWiktionaryPageName());
+      wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
       wikisaurusExtractor.extractWikisaurusSection(getWiktionaryPageName(),
           pageContent.substring(startOffset, endOffset));
       return;
     }
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     wikiExpander.setPageName(getWiktionaryPageName());

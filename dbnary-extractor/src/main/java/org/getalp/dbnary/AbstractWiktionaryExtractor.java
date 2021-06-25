@@ -514,7 +514,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         new TranslationSourcesDisambiguator(0.1, 0.9, 0.05, true, stats, evaluator);
     // TODO: getCurrentEntryLanguage may be incorrect in DataHandler refinements...
     disambiguator.processTranslations(wdh.getFeatureBox(ExtractionFeature.MAIN),
-        wdh.getFeatureBox(ExtractionFeature.ENHANCEMENT), wdh.getCurrentEntryLanguage());
+        wdh.getFeatureBox(ExtractionFeature.ENHANCEMENT), wdh.getExtractedLanguage());
 
     // add stats results in the Stats box
     for (String l : stats.getStatsMap().keySet()) {

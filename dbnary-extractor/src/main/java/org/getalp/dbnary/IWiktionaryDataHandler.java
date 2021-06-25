@@ -36,13 +36,17 @@ public interface IWiktionaryDataHandler {
 
   void finalizePageExtraction();
 
-  void initializeLanguageSection(String wiktionaryPageName);
+  void initializeLanguageSection__noModel(String wiktionaryPageName);
 
-  void initializeLanguageSection(String wiktionaryPageName, String lang);
+  void initializeLanguageSection(String language);
+
+  void initializeLanguageSection__noModel(String wiktionaryPageName, String lang);
 
   void finalizeLanguageSection();
 
   String getCurrentEntryLanguage();
+
+  String getExtractedLanguage();
 
   void initializeLexicalEntry(String pos);
 

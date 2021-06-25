@@ -134,7 +134,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractNetherlandData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     currentBlock = Block.NOBLOCK;
     while (m.find()) {
 

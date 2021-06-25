@@ -140,7 +140,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractItalianData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection(this.getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(this.getWiktionaryPageName());
     currentBlock = Block.NOBLOCK;
     while (m.find()) {
       HashMap<String, Object> context = new HashMap<>();

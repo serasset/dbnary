@@ -20,7 +20,6 @@ import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.PronunciationPair;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.fra.morphology.FrenchInflectionDecoder;
@@ -468,7 +467,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
 
     // The language is always defined when arriving here
-    wdh.initializeLanguageSection(getWiktionaryPageName(), language);
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName(), language);
 
     for (Token t : languageSection.getContent().sections()) {
       WikiSection section = t.asWikiSection();

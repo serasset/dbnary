@@ -1,23 +1,30 @@
 PREFIX dbnstats: <http://kaiko.getalp.org/dbnary/statistics/>
-SELECT ?cl, ?cs, ?cp, ?ct WHERE {
-  ?o a qb:Observation ;
-     qb:dataSet dbnary:dbnaryStatisticsCube ;
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX dbnary: <http://kaiko.getalp.org/dbnary#>
+
+SELECT ?o ?cl ?cs ?cp ?ct WHERE {
+  ?o a qb:Observation ; qb:dataSet dbnstats:dbnaryStatisticsCube .
+  OPTIONAL {
+     ?o
      dbnary:lexicalEntryCount ?cl ;
      dbnary:lexicalSenseCount ?cs ;
      dbnary:pageCount ?cp ;
-     dbnary:translationsCount ?ct . }
+     dbnary:translationsCount ?ct .
+    }
+  }
 
-     SELECT ?slanguage ?count
-     WHERE {
-       ?observation a qb:Observation.
-       ?observation qb:dataSet ?translationsDataCube.
-       ?observation dbnary:wiktionaryDumpVersion ?version.
-       ?observation dbnary:observationLanguage ?slanguage.
-       ?observation lime:language "Total".
-       ?observation dbnary:count ?count.
-      }
 
-SELECT ?s ?o
-WHERE {
-  ?s dbnary:wiktionaryDumpVersion ?o.
- }
+#SELECT ?slanguage ?count
+#     WHERE {
+#       ?observation a qb:Observation.
+#       ?observation qb:dataSet ?translationsDataCube.
+#       ?observation dbnary:wiktionaryDumpVersion ?version.
+#       ?observation dbnary:observationLanguage ?slanguage.
+#       ?observation lime:language "Total".
+#       ?observation dbnary:count ?count.
+#      }
+
+#SELECT ?s ?o
+#WHERE {
+#  ?s dbnary:wiktionaryDumpVersion ?o.
+# }

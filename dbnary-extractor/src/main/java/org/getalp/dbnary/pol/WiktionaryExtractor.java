@@ -222,7 +222,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     gotoNoData(m);
     while (m.find()) {
       SectionType t = getSectionType(m.group(1));

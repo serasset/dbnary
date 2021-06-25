@@ -215,7 +215,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     // System.err.println(pageContent.substring(startOffset,endOffset));
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     gotoNoData(m);
     // WONTDO: should I use a macroOrLink pattern to detect translations that are not macro based ?
     // DONE: (priority: top) link the definition node with the current Part of Speech

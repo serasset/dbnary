@@ -167,7 +167,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     if (lang.equals("Norsk")) {
-      wdh.initializeLanguageSection(getWiktionaryPageName());
+      wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     } else { // unused lang
       return;
     }

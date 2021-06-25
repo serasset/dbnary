@@ -333,7 +333,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
     if (lang.contains("indonesia") || lang.equalsIgnoreCase("id")) {
-      wdh.initializeLanguageSection(getWiktionaryPageName());
+      wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     } else {
       // log.debug("Unused lang {}", lang);
       return;

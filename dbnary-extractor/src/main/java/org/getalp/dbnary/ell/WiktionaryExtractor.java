@@ -248,7 +248,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractGreekData(int startOffset, int endOffset) {
     Matcher m = SectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     gotoNoData(m);
 
     while (m.find()) {

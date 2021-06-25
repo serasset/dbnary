@@ -152,7 +152,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher l1 = languageSectionPattern.matcher(pageContent);
     int spaStart = -1;
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     while (l1.find()) {
       if (-1 != spaStart) {
         extractSpanishData(spaStart, l1.start());

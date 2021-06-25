@@ -217,7 +217,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractPortugueseData(int startOffset, int endOffset) {
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     gotoIgnorePos();

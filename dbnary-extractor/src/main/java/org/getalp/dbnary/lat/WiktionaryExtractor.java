@@ -232,13 +232,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return;
       }
 
-      wdh.initializeLanguageSection(getWiktionaryPageName(), lang);
+      wdh.initializeLanguageSection__noModel(getWiktionaryPageName(), lang);
     } else {
       if (!"la".equals(lang)) {
         return;
       }
 
-      wdh.initializeLanguageSection(getWiktionaryPageName());
+      wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     }
     Matcher m = entrySectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);

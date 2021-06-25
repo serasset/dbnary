@@ -99,7 +99,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int jpnStart = -1;
     wdh.initializePageExtraction(getWiktionaryPageName());
     // TODO: should I initialize the entry in the japanese extraction method ?
-    wdh.initializeLanguageSection(getWiktionaryPageName());
+    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     while (l1.find()) {
       if (-1 != jpnStart) {
         extractJapaneseData(jpnStart, l1.start());

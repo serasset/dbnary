@@ -21,9 +21,9 @@ public class ForeignLanguagesWiktionaryDataHandler extends OntolexBasedRDFDataHa
 
   }
 
-  public void initializeLanguageSection(String wiktionaryPageName, String lang) {
+  public void initializeLanguageSection__noModel(String wiktionaryPageName, String lang) {
     currentPrefix = getPrefix(lang);
-    super.initializeLanguageSection(wiktionaryPageName);
+    super.initializeLanguageSection__noModel(wiktionaryPageName);
   }
 
   public void setCurrentLanguage(String lang, String languageName) {

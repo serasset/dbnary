@@ -132,8 +132,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeLanguageSection(String wiktionaryPageName) {
-    super.initializeLanguageSection(wiktionaryPageName);
+  public void initializeLanguageSection__noModel(String wiktionaryPageName) {
+    super.initializeLanguageSection__noModel(wiktionaryPageName);
     lexEntries.clear();
     encodedWiktionaryPageName = uriEncode(currentWiktionaryPageName);
   }
@@ -186,7 +186,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     String key = gloss.getGloss() + gloss.getSenseNumber();
     key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray())
         .replaceAll("[/=\\+]", "-");
-    return getPrefix() + "__" + wktLanguageEdition + "_gloss_" + key + "_"
+    return getPrefix() + "__" + shortEditionLanguageCode + "_gloss_" + key + "_"
         + encodedWiktionaryPageName;
   }
 

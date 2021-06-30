@@ -3,12 +3,12 @@
  */
 package org.getalp.dbnary.kur;
 
+import info.bliki.wiki.model.WikiModel;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiText;
@@ -216,12 +216,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // WARN: this may be called from level 3 (no entry defined yet or as level 4 from inside an
     // entry)
     log.debug("Pronunciation Section : {}", wk.toString());
+    Set<String> set =  new HashSet<String>() ;
+    for (Token tok : wk.tokens()) {
+      if(!tok.toString().startsWith("\n")) {
+        set.add(tok.toString());
+      }
+    }
+    ExpandAllWikiModel expandWk = new ExpandAllWikiModel();
+    String str = expandWk.expandAll(wk.toString(), set);
     for (Token tok : wk.templates()) {
       Template template = tok.asTemplate();
       String name = template.getName();
-      if ("ku-IPA".equals(name)) {
-        String pron = template.getParsedArgs().get("1");
-        if (null != pron && pron.trim().length() > 0) {
+      if ("ku-IPA".equals(name) || "IPA".equals(name)) {
+        String pron;
+        if("ku-IPA".equals(name) ) {
+          pron = template.getParsedArgs().get("1");
+        } else{
+          pron = template.getParsedArgs().get("2");
+        }
+        if(null != pron && pron.trim().length() > 0){
           wdh.registerPronunciation(pron, "kur-fonipa");
         }
       }

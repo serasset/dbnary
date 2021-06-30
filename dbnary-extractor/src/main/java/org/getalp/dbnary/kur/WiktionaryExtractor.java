@@ -37,6 +37,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static Pattern languageSectionPattern;
   protected final static HashSet<String> partOfSpeechMarkers;
   private ExpandAllWikiModel definitionExpander;
+  private ExpandAllWikiModel pronunciationExpander;
 
   static {
 
@@ -76,10 +77,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super.setWiktionaryIndex(wi);
     definitionExpander =
         new ExpandAllWikiModel(wi, Locale.forLanguageTag("ku"), "/images", "/link");
+    pronunciationExpander =
+        new ExpandAllWikiModel(wi, Locale.forLanguageTag("ku"), "/images", "/link");
+
   }
 
   public void extractData() {
     wdh.initializePageExtraction(getWiktionaryPageName());
+    definitionExpander.setPageName(getWiktionaryPageName());
+    pronunciationExpander.setPageName(getWiktionaryPageName());
     // System.out.println(pageContent);
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (languageFilter.find() && !languageFilter.group(1).equals("ziman|ku")) {
@@ -195,6 +201,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
       } else if ("werger-bin".equals(template.getName())) {
         globalGloss = "";
+        globalGlossResource = null;
       } else if ("W".equals(template.getName())) {
         String lang = LangTools.getCode(args.get("1"));
         String word = args.get("2");
@@ -216,27 +223,33 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // WARN: this may be called from level 3 (no entry defined yet or as level 4 from inside an
     // entry)
     log.debug("Pronunciation Section : {}", wk.toString());
-    Set<String> set =  new HashSet<String>() ;
-    for (Token tok : wk.tokens()) {
-      if(!tok.toString().startsWith("\n")) {
-        set.add(tok.toString());
-      }
-    }
-    ExpandAllWikiModel expandWk = new ExpandAllWikiModel();
-    String str = expandWk.expandAll(wk.toString(), set);
     for (Token tok : wk.templates()) {
       Template template = tok.asTemplate();
       String name = template.getName();
-      if ("ku-IPA".equals(name) || "IPA".equals(name)) {
-        String pron;
-        if("ku-IPA".equals(name) ) {
-          pron = template.getParsedArgs().get("1");
-        } else{
-          pron = template.getParsedArgs().get("2");
-        }
-        if(null != pron && pron.trim().length() > 0){
-          wdh.registerPronunciation(pron, "kur-fonipa");
-        }
+      switch (name) {
+        case "ku-IPA":
+        case "IPA-ku":
+        case "IPA":
+          String pron;
+          if ("ku-IPA".equals(name)) {
+            pron = template.getParsedArgs().get("1");
+          } else {
+            pron = template.getParsedArgs().get("2");
+          }
+          if (null == pron || pron.trim().length() == 0) {
+            pron = pronunciationExpander.expandAll(template.toString(), null);
+            if (null != pron && pron.startsWith("IPA(kilîd): "))
+              pron = pron.substring("IPA(kilîd): ".length());
+          }
+          if (null != pron && pron.trim().length() > 0) {
+            for (String p : pron.split(",")) {
+              if (null != p && (p = p.trim()).length() > 0) {
+                // TODO: normalize pronunciation (remove or ensure '/' around pron)
+                wdh.registerPronunciation(p, "kur-fonipa");
+              }
+            }
+          }
+          break;
       }
     }
   }

@@ -37,9 +37,11 @@ public class DbnaryWikiModel extends WikiModel {
     super(new Configuration(), locale, imageBaseURL, linkBaseURL);
     this.wi = wi;
   }
-  public DbnaryWikiModel(String imageBaseURL, String linkBaseURL){
+
+  public DbnaryWikiModel(String imageBaseURL, String linkBaseURL) {
     super(imageBaseURL, linkBaseURL);
   }
+
   private static DocumentBuilder docBuilder = null;
   private static InputSource docSource = null;
 
@@ -73,9 +75,11 @@ public class DbnaryWikiModel extends WikiModel {
 
     return doc;
   }
-  public static String toHtml(String rawWikiText){
+
+  public static String toHtml(String rawWikiText) {
     return WikiModel.toHtml(rawWikiText);
   }
+
   protected String expandWikiCode(String wikicode) {
     try {
       return render(new HTMLConverter(), wikicode);

@@ -20,15 +20,17 @@ public class ExpandAllWikiModel extends DbnaryWikiModel {
       String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
-public ExpandAllWikiModel(){
-    super("","");
-}
+
+  public ExpandAllWikiModel() {
+    super("", "");
+  }
 
   /**
    * Convert a wiki code to plain text, while keeping track of all template calls.
    *
    * @param definition the wiki code
-   * @param templates if not null, the method will add all called templates to the set.
+   * @param templates if not null, the method will add all called templates to the set for debugging
+   *        purpose.
    * @return the expanding resulting string
    */
   public String expandAll(String definition, Set<String> templates) {

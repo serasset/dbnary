@@ -142,6 +142,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public void extractData() {
     wdh.initializePageExtraction(getWiktionaryPageName());
+    definitionExpander.setPageName(getWiktionaryPageName());
     // System.out.println(pageContent);
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (languageFilter.find() && !languageFilter.group(1).equals("Türkçe")) {

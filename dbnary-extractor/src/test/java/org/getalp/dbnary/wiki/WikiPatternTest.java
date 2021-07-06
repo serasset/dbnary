@@ -16,7 +16,7 @@ public class WikiPatternTest {
     String test = "{{en-noun}} text [[link]]s text {{template}} text [[toto]]";
     String p = "(\\p{Template})\\P{Reserved}*\\p{Link}.*";
 
-    WikiCharSequence seq = new WikiCharSequence(test);
+    WikiCharSequence seq = new WikiCharSequence(new WikiText(test));
     Pattern pat = WikiPattern.compile(p);
 
     Matcher m = pat.matcher(seq);
@@ -31,7 +31,7 @@ public class WikiPatternTest {
         "==== Header 4 ====\n" + "{{en-noun}} text [[link]]s text {{template}} text [[toto]]";
     String p = "(_H1_(.*)_H1_)";
 
-    WikiCharSequence seq = new WikiCharSequence(test);
+    WikiCharSequence seq = new WikiCharSequence(new WikiText(test));
     Pattern pat = WikiPattern.compile(p);
 
     Matcher m = pat.matcher(seq);

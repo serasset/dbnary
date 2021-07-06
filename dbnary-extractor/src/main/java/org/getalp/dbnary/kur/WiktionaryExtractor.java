@@ -1,14 +1,11 @@
-/**
- *
- */
 package org.getalp.dbnary.kur;
 
-import info.bliki.wiki.model.WikiModel;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiText;
@@ -21,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author Barry
+ * @author Deba
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
@@ -36,7 +33,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static Pattern languageSectionPattern;
   protected final static HashSet<String> partOfSpeechMarkers;
-  private ExpandAllWikiModel definitionExpander;
+  private DefinitionExpanderWikiModel definitionExpander;
   private ExpandAllWikiModel pronunciationExpander;
 
   static {
@@ -60,8 +57,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     partOfSpeechMarkers.add("Navgir");
     partOfSpeechMarkers.add("Paşgir");
     partOfSpeechMarkers.add("Pêşgir");
-    partOfSpeechMarkers.add("Reh");
-    partOfSpeechMarkers.add("Rehekî lêkerê");
+    // partOfSpeechMarkers.add("Reh");
+    // partOfSpeechMarkers.add("Rehekî lêkerê");
     partOfSpeechMarkers.add("Biwêj");
     partOfSpeechMarkers.add("Hevok");
     partOfSpeechMarkers.add("Gotineke pêşiyan");
@@ -76,7 +73,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void setWiktionaryIndex(WiktionaryIndex wi) {
     super.setWiktionaryIndex(wi);
     definitionExpander =
-        new ExpandAllWikiModel(wi, Locale.forLanguageTag("ku"), "/images", "/link");
+        new DefinitionExpanderWikiModel(wi, Locale.forLanguageTag("ku"), "/images", "/link");
     pronunciationExpander =
         new ExpandAllWikiModel(wi, Locale.forLanguageTag("ku"), "/images", "/link");
 
@@ -104,15 +101,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int kurdeSectionEndOffset =
         languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
-    extractKurdeData(kurdeSectionStartOffset, kurdeSectionEndOffset);
+    extractKurdishData(kurdeSectionStartOffset, kurdeSectionEndOffset);
     wdh.finalizePageExtraction();
   }
 
 
   // TODO: section {{Kısaltmalar}} gives abbreviations
   // TODO: section Yan Kavramlar gives related concepts (apparently not synonyms).
-  private void extractKurdeData(int startOffset, int endOffset) {
-    WikiText txt = new WikiText(pageContent.substring(startOffset, endOffset));
+  private void extractKurdishData(int startOffset, int endOffset) {
+    WikiText txt =
+        new WikiText(getWiktionaryPageName(), pageContent.substring(startOffset, endOffset));
     wdh.initializeEntryExtraction(getWiktionaryPageName());
     for (Token evt : txt.headers(3)) {
       WikiSection section = evt.asHeading().getSection();
@@ -153,21 +151,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     WikiEventsSequence indentationsOrTemplates =
         wk.filteredTokens(new ClassBasedFilter().allowIndentedItem().allowTemplates());
     for (Token indent : indentationsOrTemplates) {
-      if (indent instanceof NumberedListItem) {
-        // Do not extract numbered list items that begin with ":" as they are indeed examples.
-        if (indent.asNumberedListItem().getContent().getText().startsWith(":"))
-          continue;
+      if (isAnExample(indent)) {
+        String nli = indent.asIndentedItem().getContent().getText();
+        String expandedExample = definitionExpander.expandAll(nli, null);
+        wdh.registerExample(expandedExample.replace("\n", ""), null);
+      } else if (indent instanceof NumberedListItem) {
+        // It's a definition
+        NumberedListItem nli = indent.asNumberedListItem();
         String expandedDefinition =
-            definitionExpander.expandAll(indent.asNumberedListItem().getContent().toString(), null);
+            definitionExpander.expandAll(nli.getContent().getText().trim(), null);
         wdh.registerNewDefinition(expandedDefinition.replace("\n", ""));
-      } else if (indent instanceof Indentation) {
-        String def = indent.asIndentation().getContent().toString();
-        Matcher m = senseNumPattern.matcher(def);
-        if (m.lookingAt()) {
-          wdh.registerNewDefinition(def.substring(m.end()), m.group(1));
-        } else {
-          // TODO: it's usually an example given after a definition.
-        }
       } else if (indent instanceof Template) {
         String tname = indent.asTemplate().getName();
         log.debug("In Def[{}] - got template {}", getWiktionaryPageName(), tname);
@@ -177,6 +170,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             indent.toString());
       }
     }
+  }
+
+  /**
+   *
+   * @param indent
+   * @return true if the indented item is an example specification
+   */
+  private boolean isAnExample(Token indent) {
+    String content;
+    if (indent instanceof Indentation) {
+      return true;
+    }
+    if (indent instanceof NumberedListItem) {
+      if ((content = indent.asNumberedListItem().getContent().getText()).startsWith(":")
+          || content.startsWith("*")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public void extractTranslations(WikiContent wk) {

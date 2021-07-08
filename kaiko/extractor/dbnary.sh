@@ -12,7 +12,7 @@ ETYMOLOGY="--enable etymology"
 LIME="--enable lime"
 ENHANCE="--enable enhancement"
 STATS="--enable statistics"
-TDB=""
+TDB="--tdb"
 DATE=""
 VERBOSE=""
 
@@ -64,7 +64,7 @@ while getopts ":d:t:v:D:nmMeElLsSTVxX" opt; do
       ENHANCE=""
       ;;
     T)
-      TDB="--tdb"
+      TDB=""
       ;;
     V)
       VERBOSE="-v"
@@ -96,12 +96,12 @@ JAVA=java
 
 if [ ! -z $VERBOSE ]
 then
-echo $JAVA -Xmx16g -Djava.net.useSystemProxies=true ${DEBUG} \
+echo $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
     org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR -z  -k 1 $LANGS
 fi
 
-$JAVA -Xmx16g -Djava.net.useSystemProxies=true ${DEBUG} \
+$JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
     org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR -z  -k 1 $LANGS
 

@@ -483,7 +483,6 @@ public class ExtractWiktionary extends DBnaryCommandLine {
         } catch (XMLStreamException ex) {
           ex.printStackTrace();
         }
-
       }
     } finally {
       // Force TDB dir deletion after language extraction to avoid disk exhaustion when the main
@@ -497,6 +496,10 @@ public class ExtractWiktionary extends DBnaryCommandLine {
           System.err.println(e.getLocalizedMessage());
         }
       }
+      // cleanup fields
+      wi = null;
+      we = null;
+      wdh = null;
     }
   }
 

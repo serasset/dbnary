@@ -166,6 +166,5 @@ public class DbnaryWikiModel extends WikiModel {
       }
     }
     return rawWikiText;
-
   }
 }

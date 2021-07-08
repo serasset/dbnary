@@ -94,9 +94,10 @@ public interface IWiktionaryDataHandler {
    * Register definition def for the current lexical entry.
    * <p>
    * This method will use senseNumber as a sense number for this definition.
-   *
+   * 
    * @param def the definition string
    * @param senseNumber a string giving the sense number of the definition.
+   * @return
    */
   void registerNewDefinition(String def, String senseNumber);
 

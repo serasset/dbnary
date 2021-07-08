@@ -58,13 +58,13 @@ public class WikiCharSequence implements CharSequence {
   private char firstAvailableInternalLinkChar = INTERNAL_LINKS_RANGE.getStart();
   private char firstAvailableHeaderChar = HEADERS_RANGE.getStart();
 
-  public WikiCharSequence(String source) {
-    this(new WikiText(source));
-  }
+  // public WikiCharSequence(String source) {
+  // this(new WikiText(source));
+  // }
 
-  public WikiCharSequence(String source, Function<Token, Action> filter) {
-    this(new WikiText(source), filter);
-  }
+  // public WikiCharSequence(String source, Function<Token, Action> filter) {
+  // this(new WikiText(source), filter);
+  // }
 
 
   public WikiCharSequence(WikiText wt) {

@@ -1428,15 +1428,18 @@ public class WikiText {
           while (true) {
             Token t = stack.peek();
             if (t instanceof Heading) {
-              log.trace("UNCLOSED HEADING | {} | '{}' [{}]", t, this.pagename, lineno);
+              log.trace("UNCLOSED HEADING | {} | '{}' [{}]", t.toString().replace('\n', ' '),
+                  this.pagename, lineno);
               invalidateHypothesis(stack.pop(), stack);
               continue;
             } else if (t instanceof ExternalLink) {
-              log.trace("UNCLOSED LINK | {} | '{}' [{}]", t, this.pagename, lineno);
+              log.trace("UNCLOSED LINK | {} | '{}' [{}]", t.toString().replace('\n', ' '),
+                  this.pagename, lineno);
               invalidateHypothesis(stack.pop(), stack);
               continue;
             } else if (closeInternalLinks && t instanceof Link) {
-              log.trace("UNCLOSED LINK | {} | '{}' [{}]", t, this.pagename, lineno);
+              log.trace("UNCLOSED LINK | {} | '{}' [{}]", t.toString().replace('\n', ' '),
+                  this.pagename, lineno);
               invalidateHypothesis(stack.pop(), stack);
               continue;
             } else {
@@ -1471,15 +1474,18 @@ public class WikiText {
     while (stack.size() > 1) {
       Token t = stack.peek();
       if (t instanceof Heading) {
-        log.trace("UNCLOSED HEADING | {} | '{}' [{}]", t, this.pagename, lineno);
+        log.trace("UNCLOSED HEADING | {} | '{}' [{}]", t.toString().replace('\n', ' '),
+            this.pagename, lineno);
         invalidateHypothesis(stack.pop(), stack);
         // stack.peek().addFlattenedTokens(t);
       } else if (t instanceof Link) {
-        log.trace("UNCLOSED LINK | {} | '{}' [{}]", t, this.pagename, lineno);
+        log.trace("UNCLOSED LINK | {} | '{}' [{}]", t.toString().replace('\n', ' '), this.pagename,
+            lineno);
         invalidateHypothesis(stack.pop(), stack);
         // stack.peek().addFlattenedTokens(t);
       } else if (t instanceof Template) {
-        log.trace("UNCLOSED TEMPLATE | {} | '{}' [{}]", t, this.pagename, lineno);
+        log.trace("UNCLOSED TEMPLATE | {} | '{}' [{}]", t.toString().replace('\n', ' '),
+            this.pagename, lineno);
         invalidateHypothesis(stack.pop(), stack);
         // stack.peek().addFlattenedTokens(t);
       } else if (t instanceof IndentedItem) {
@@ -1638,8 +1644,8 @@ public class WikiText {
   private void flattenStackToHeight(Stack<Token> stack, int height, int lineno) {
     for (int i = stack.size() - 1; i > height; i--) {
       Token t = stack.pop();
-      log.trace("UNCLOSED TOKEN | {}  IN LINK {} | '{}' [{}]", t, stack.get(height), this.pagename,
-          lineno);
+      log.trace("UNCLOSED TOKEN | {}  IN LINK {} | '{}' [{}]", t.toString().replace('\n', ' '),
+          stack.get(height), this.pagename, lineno);
       stack.peek().addFlattenedTokens(t);
     }
   }
@@ -1662,7 +1668,8 @@ public class WikiText {
       stack.peek().addToken(t);
     } else {
       // The link is invalid, consider it as a text
-      log.trace("INVALID INTERNAL LINK | {} | '{}' [{}]", t, this.pagename, lineno);
+      log.trace("INVALID INTERNAL LINK | {} | '{}' [{}]", t.toString().replace('\n', ' '),
+          this.pagename, lineno);
       stack.peek().addFlattenedTokens(t);
     }
     return pos;

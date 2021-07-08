@@ -245,7 +245,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractMorphology(int blockStart, int end) {
-    WikiText txt = new WikiText(pageContent.substring(blockStart, end));
+    WikiText txt = new WikiText(getWiktionaryPageName(), pageContent.substring(blockStart, end));
 
     txt.templatesOnUpperLevel().stream().map(Token::asTemplate)
         .filter(WiktionaryExtractor::isMorphologyTableTemplate).forEach(tmpl -> morphologyExtractor

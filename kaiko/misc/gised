@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=2.3.4
+VERSION=2.3.5
 JAVA=java
 
 $JAVA -Djava.net.useSystemProxies=true \

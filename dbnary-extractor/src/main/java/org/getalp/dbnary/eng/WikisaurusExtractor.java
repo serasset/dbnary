@@ -16,7 +16,7 @@ public class WikisaurusExtractor {
 
 
   public void extractWikisaurusSection(String wiktionaryPageName, String wikisaurusSection) {
-    WikiText wtext = new WikiText(wikisaurusSection);
+    WikiText wtext = new WikiText(wiktionaryPageName, wikisaurusSection);
 
     String currentPOS = null;
     String currentWS = null;

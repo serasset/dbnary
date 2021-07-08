@@ -1114,7 +1114,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractTranslations(String wikiSource) {
-    WikiText txt = new WikiText(wikiSource);
+    WikiText txt = new WikiText(getWiktionaryPageName(), wikiSource);
     Resource currentGloss = null;
     int rank = 1;
     // TODO: there are templates called "qualifier" used to further qualify the translation check
@@ -1214,7 +1214,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     // TODO : extract the correct section from the full page.
     // Assume there is only on language and the anchor corresponds to level 3 Header (POS)
-    WikiText text = new WikiText(translationPageContent);
+    WikiText text = new WikiText(getWiktionaryPageName(), translationPageContent);
     for (WikiSection s : text.sections(3)) {
       // return the first matching section
       if (s.getHeading().getContent().toString().equals(translationSection))

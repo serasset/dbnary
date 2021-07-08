@@ -9,7 +9,7 @@ fi
 DIR=$HOME/develop/wiktionary
 #LANGS="fr en"
 #LANGS="pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la"
-LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la"
+LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"
 #TLANGS="fra,eng,por,deu,ell,rus,ita,fin,tur,jpn"
 JAVA=java
 VERS=2.3.5-wikitext-and-model-SNAPSHOT
@@ -21,7 +21,7 @@ EXTRACTOR=dbnary-extractor
 #ENHANCER=dbnary-enhancer
 OPTIONS="--tdb -v"
 
-# Change tmp dir on debian systems (as the default /tmp partition may niot be sufficient to cope with TDBs)
+# Change tmp dir on debian systems (as the default /tmp partition may not be sufficient to cope with TDBs)
 if [ -f "/etc/debian_version" ]; then
   JVM_OPTIONS="-Djava.io.tmpdir=/var/tmp/"
 fi

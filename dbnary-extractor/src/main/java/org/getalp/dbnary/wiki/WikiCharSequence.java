@@ -59,13 +59,13 @@ public class WikiCharSequence implements CharSequence, Cloneable {
   private char firstAvailableInternalLinkChar = INTERNAL_LINKS_RANGE.getStart();
   private char firstAvailableHeaderChar = HEADERS_RANGE.getStart();
 
-  public WikiCharSequence(String source) {
-    this(new WikiText(source));
-  }
+  // public WikiCharSequence(String source) {
+  // this(new WikiText(source));
+  // }
 
-  public WikiCharSequence(String source, Function<Token, Action> filter) {
-    this(new WikiText(source), filter);
-  }
+  // public WikiCharSequence(String source, Function<Token, Action> filter) {
+  // this(new WikiText(source), filter);
+  // }
 
   public WikiCharSequence(WikiText wt) {
     this(wt.content());
@@ -97,12 +97,8 @@ public class WikiCharSequence implements CharSequence, Cloneable {
   /**
    * A private clone like constructor
    * 
-   * @param content
-   * @param string
-   * @param characterTokenMap
-   * @param filter
-   * @param subSequenceStart
-   * @param subSequenceEnd
+   * @param seq the original WikiCharSequence which hold the special char to token mapping
+   * @param string the new string content of the WikiCharSequence
    */
   private WikiCharSequence(WikiCharSequence seq, String string) {
     this.content = seq.content;

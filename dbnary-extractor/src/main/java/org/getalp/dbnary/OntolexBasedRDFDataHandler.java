@@ -479,6 +479,13 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     registerNewDefinition(def, computeSenseNum());
   }
 
+  /**
+   * Register a definition with the given sense number.
+   *
+   * @param def the definition string
+   * @param senseNumber a string giving the sense number of the definition.
+   * @return the lexical sense resource
+   */
   public void registerNewDefinition(String def, String senseNumber) {
     if (def == null || def.length() == 0) {
       return;
@@ -1009,7 +1016,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       return null; // Don't register anything if current lex entry is not known.
     }
 
-    // Create new word sense + a definition element
+    // Create new example element
     Resource example = aBox.createResource();
     aBox.add(aBox.createStatement(example, RDF.value, ex, getCurrentEntryLanguage()));
     if (null != context) {

@@ -142,6 +142,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public void extractData() {
     wdh.initializePageExtraction(getWiktionaryPageName());
+    definitionExpander.setPageName(getWiktionaryPageName());
     // System.out.println(pageContent);
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (languageFilter.find() && !languageFilter.group(1).equals("Türkçe")) {
@@ -168,7 +169,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: section {{Kısaltmalar}} gives abbreviations
   // TODO: section Yan Kavramlar gives related concepts (apparently not synonyms).
   private void extractTurkishData(int startOffset, int endOffset) {
-    WikiText txt = new WikiText(pageContent.substring(startOffset, endOffset));
+    WikiText txt =
+        new WikiText(getWiktionaryPageName(), pageContent.substring(startOffset, endOffset));
     wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     for (WikiText.Token evt : txt.headers(3)) {
       WikiSection section = evt.asHeading().getSection();
@@ -206,8 +208,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
           }
         }
-      } else if (ignoreHeadings.contains(header)) {
-        // just ignore
       } else {
         log.debug("Unexpected header {} in {}", header, getWiktionaryPageName());
       }

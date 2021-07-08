@@ -9,7 +9,7 @@ fi
 DIR=$HOME/develop/wiktionary
 #LANGS="fr en"
 #LANGS="pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la"
-LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la hu"
+LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"
 #TLANGS="fra,eng,por,deu,ell,rus,ita,fin,tur,jpn"
 JAVA=java
 VERS=2.3.5-SNAPSHOT

@@ -5,15 +5,17 @@
   <parent>
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>2.3.4</version>
+    <version>2.3.5</version>
   </parent>
-  <groupId>org.getalp</groupId>
   <artifactId>dbnary-ontology</artifactId>
 
   <packaging>jar</packaging>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <log4jprops>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}log4j.properties</log4jprops>
+    <onto.source.dir>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}org${file.separator}getalp${file.separator}dbnary</onto.source.dir>
+    <onto.target.dir>${project.build.directory}${file.separator}generated-sources${file.separator}java</onto.target.dir>
   </properties>
 
   <name>DBnary Ontology API</name>
@@ -51,16 +53,15 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/dbnary.ttl</argument>
+                <argument>${onto.source.dir}${file.separator}dbnary.ttl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
-                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>${onto.target.dir}</argument>
                 <argument>--include</argument>
                 <argument>http://kaiko.getalp.org/dbnary/</argument>
                 <argument>-n</argument>
@@ -81,16 +82,15 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/lexinfo.owl</argument>
+                <argument>${onto.source.dir}${file.separator}lexinfo.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
-                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
                 <argument>LexinfoOnt</argument>
                 <argument>--owl</argument>
@@ -109,16 +109,15 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/olia.owl</argument>
+                <argument>${onto.source.dir}${file.separator}olia.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
-                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
                 <argument>OliaOnt</argument>
                 <argument>--owl</argument>
@@ -137,17 +136,16 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/dbnary_etymology.owl
+                <argument>${onto.source.dir}${file.separator}dbnary_etymology.owl
                 </argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
-                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
                 <argument>DBnaryEtymologyOnt</argument>
                 <argument>--owl</argument>
@@ -166,16 +164,15 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/ontolex.owl</argument>
+                <argument>${onto.source.dir}${file.separator}ontolex.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
-                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
                 <argument>OntolexOnt</argument>
                 <argument>--owl</argument>
@@ -194,16 +191,15 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/vartrans.owl</argument>
+                <argument>${onto.source.dir}${file.separator}vartrans.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
-                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
                 <argument>VarTransOnt</argument>
                 <argument>--owl</argument>
@@ -222,16 +218,15 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/lime.owl</argument>
+                <argument>${onto.source.dir}${file.separator}lime.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
-                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
                 <argument>LimeOnt</argument>
                 <argument>--owl</argument>
@@ -250,16 +245,15 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/decomp.owl</argument>
+                <argument>${onto.source.dir}${file.separator}decomp.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
-                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
                 <argument>DecompOnt</argument>
                 <argument>--owl</argument>
@@ -278,16 +272,15 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/synsem.owl</argument>
+                <argument>${onto.source.dir}${file.separator}synsem.owl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
-                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
                 <argument>SynSemOnt</argument>
                 <argument>--owl</argument>
@@ -306,16 +299,15 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/skos.rdf</argument>
+                <argument>${onto.source.dir}${file.separator}skos.rdf</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
-                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
                 <argument>SkosOnt</argument>
                 <argument>--owl</argument>
@@ -334,16 +326,15 @@
               <arguments>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>
-                  -Dlog4j.configurationFile="${basedir}/src/main/resources/log4j.properties"
-                </argument>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${basedir}/src/main/resources/org/getalp/dbnary/cube.ttl</argument>
+                <argument>${onto.source.dir}${file.separator}cube.ttl</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
-                <argument>${project.build.directory}/generated-sources/java</argument>
+                <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
                 <argument>DataCubeOnt</argument>
                 <argument>--owl</argument>
@@ -364,7 +355,7 @@
             </goals>
             <configuration>
               <sources>
-                <source>${project.build.directory}/generated-sources/java</source>
+                <source>${onto.target.dir}</source>
               </sources>
             </configuration>
           </execution>

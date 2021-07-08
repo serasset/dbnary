@@ -65,7 +65,7 @@ public class GermanMorphologyExtractor {
   }
 
   public void extractMorphologicalData(String wikiSourceText, String pageName) {
-    WikiText wikiText = new WikiText(wikiSourceText);
+    WikiText wikiText = new WikiText(pageName, wikiSourceText);
 
     for (WikiText.Token t : wikiText.templatesOnUpperLevel()) {
       WikiText.Template wt = (WikiText.Template) t;

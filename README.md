@@ -52,3 +52,4 @@ mvn gitflow:release-finish
 
 * Repo owner or admin
 * Other community or team contact
+* test

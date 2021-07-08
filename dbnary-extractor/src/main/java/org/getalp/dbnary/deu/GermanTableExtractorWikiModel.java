@@ -116,7 +116,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
   protected InflectedFormSet parseTables(String declinationTemplateCall) {
 
     if (log.isDebugEnabled()) {
-      WikiText txt = new WikiText(declinationTemplateCall);
+      WikiText txt = new WikiText(getPageName(), declinationTemplateCall);
       for (Token token : txt.templatesOnUpperLevel()) {
         Template tmpl = (Template) token;
         if (!ignoredTemplates.contains(tmpl.getName())) {

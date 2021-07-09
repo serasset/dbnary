@@ -70,6 +70,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
 
   private static final String ENABLE_FEATURE_OPTION = "enable";
 
+  private static final String SAMPLE_FEATURE_OPTION = "sample";
 
   private String outputDir;
   private String extractDir;
@@ -81,6 +82,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
   private String model = DEFAULT_MODEL;
   private List<String> features = null;
   private String fetchDate = null;
+  private int sample = -1;
 
   String[] remainingArgs;
 
@@ -107,7 +109,8 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     options.addOption(NETWORK_OFF_OPTION, false,
         "Do not use the ftp network, but decompress and extract.");
     options.addOption(FETCH_DATE_OPTION, true,
-        "force the dump date to be retreived. latest dump by default ");
+        "force the dump date to be retrieved. latest dump by default ");
+    options.addOption(SAMPLE_FEATURE_OPTION, true, "sample only the first N extracted entries.");
     options.addOption(Option.builder().longOpt(ENABLE_FEATURE_OPTION).desc(
         "Enable additional extraction features (e.g. morphology,etymology,lime,enhancement,foreign).")
         .hasArg().argName("feature").build());
@@ -178,6 +181,11 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
 
     if (cmd.hasOption(FETCH_DATE_OPTION)) {
       fetchDate = cmd.getOptionValue(FETCH_DATE_OPTION);
+    }
+
+    if (cmd.hasOption(SAMPLE_FEATURE_OPTION)) {
+      String sampleOtion = cmd.getOptionValue(SAMPLE_FEATURE_OPTION);
+      sample = Integer.parseInt(sampleOtion);
     }
 
     force = cmd.hasOption(FORCE_OPTION);
@@ -740,6 +748,12 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     a.add(lang);
     a.add("-o");
     a.add(extractFile);
+    if (sample > 0) {
+      a.add("frompage");
+      a.add("0");
+      a.add("topage");
+      a.add(String.valueOf(sample));
+    }
     a.add("-z");
     a.add(compress ? "yes" : "no");
     if (features.contains("morphology")) {

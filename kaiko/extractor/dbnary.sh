@@ -15,19 +15,23 @@ STATS="--enable statistics"
 TDB="--tdb"
 DATE=""
 VERBOSE=""
+FORCE=""
+CUT=""
 
 help() {
   echo "USAGE: $0 [OPTIONS] lg1 lg2..."
   echo "Update and extract wiktionary dumps with DBnary."
   echo "  By default, DBnary will fetch the latest available version on wikimedia dump mirror if it "
   echo "  is not already available on the local host."
+  echo "  By default, if the extracted data already exists, it is not re-extracted."
   echo "where:"
   echo "  lg1 lg2... are language codes (usually 2 letter codes as used in wiktionary language editions)"
   echo "  with OPTIONS in:"
   echo "    -h                : display this help message"
   echo "    -T                : use TDB to store extracted data (necessary for big wiktionaries)"
   echo "    -V                : enable verbose mode"
-  echo "    -h                : display this help message"
+  echo "    -f                : force download (if network is enabled) and extraction even if data is already available"
+  echo "    -c  <n>           : cut extraction after n lexical entries."
   echo "    -d  <package>     : enable DEBUG log level for the specified java package"
   echo "    -t  <package>     : enable TRACE log level for the specified java package"
   echo "    -v  <version>     : use the specified version of DBnary extractor"
@@ -45,7 +49,7 @@ help() {
   echo "    -X                : disable computation of data enhancement"
 }
 
-while getopts ":d:t:v:D:nmMeElLsSTVxXh" opt; do
+while getopts ":d:t:v:D:c:nmMeElLsSTVxXhf" opt; do
   case $opt in
     d)
       DEBUG="${DEBUG} -Dorg.slf4j.simpleLogger.log.${OPTARG}=debug"
@@ -58,6 +62,9 @@ while getopts ":d:t:v:D:nmMeElLsSTVxXh" opt; do
       ;;
     D)
       DATE="-D ${OPTARG}"
+      ;;
+    c)
+      CUT="-D ${OPTARG}"
       ;;
     n)
       NETWORK="-n"
@@ -98,6 +105,9 @@ while getopts ":d:t:v:D:nmMeElLsSTVxXh" opt; do
     V)
       VERBOSE="-v"
       ;;
+    f)
+      FORCE="-f"
+      ;;
     h)
       help
       exit 0
@@ -131,10 +141,10 @@ if [ ! -z $VERBOSE ]
 then
 echo $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR -z  -k 1 $LANGS
+    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR -z  -k 1 $LANGS
 fi
 
 $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR -z  -k 1 $LANGS
+    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR -z  -k 1 $LANGS
 

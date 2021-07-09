@@ -36,7 +36,7 @@ public class ForeignLanguagesWiktionaryDataHandler extends OntolexBasedRDFDataHa
   }
 
   @Override
-  public void finalizeLanguageSection() {
+  public void finalizeLanguageSection__noModel() {
     currentPrefix = null;
   }
 

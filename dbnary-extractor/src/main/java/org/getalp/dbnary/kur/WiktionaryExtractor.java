@@ -142,7 +142,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         log.debug("Unexpected header {} in {}", header, getWiktionaryPageName());
       }
     }
-    wdh.finalizeLanguageSection();
+    wdh.finalizeLanguageSection__noModel();
   }
 
   protected void extractDefinitions(WikiContent wk) {

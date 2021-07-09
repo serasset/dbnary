@@ -144,8 +144,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void finalizeLanguageSection() {
-    super.finalizeLanguageSection();
+  public void finalizeLanguageSection__noModel() {
+    super.finalizeLanguageSection__noModel();
     encodedWiktionaryPageName = null;
   }
 

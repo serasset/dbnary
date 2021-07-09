@@ -116,7 +116,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractBulgarianData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
+    wdh.initializeLanguageSection("bg");
     while (m.find()) {
       switch (state) {
         case NODATA:
@@ -150,7 +150,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         assert false
             : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
-    wdh.finalizeLanguageSection();
+    wdh.finalizeLanguageSection__noModel();
   }
 
   private BulgarianWikiModel dbnmodel;

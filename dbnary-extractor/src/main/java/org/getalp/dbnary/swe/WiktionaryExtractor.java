@@ -161,7 +161,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     // Finalize the entry parsing
     leaveCurrentBlock(m);
-    wdh.finalizeLanguageSection();
+    wdh.finalizeLanguageSection__noModel();
   }
 
   private Block computeNextBlock(Matcher m, Map<String, Object> context) {

@@ -463,7 +463,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       default:
         assert false : "Unexpected state while extracting translations from dictionary.";
     }
-    wdh.finalizeLanguageSection();
+    wdh.finalizeLanguageSection__noModel();
   }
 
 

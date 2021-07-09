@@ -196,7 +196,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     extractDataBlock(start, endOffset, block, blockString);
-    wdh.finalizeLanguageSection();
+    wdh.finalizeLanguageSection__noModel();
   }
 
   protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,

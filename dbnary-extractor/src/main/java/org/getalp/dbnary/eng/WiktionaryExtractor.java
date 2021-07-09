@@ -112,37 +112,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionExpander.setPageName(wiktionaryPageName);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
-   * org.getalp.blexisma.semnet.SemanticNetwork)
-   */
-  @Override
-  public void extractData() {
-    // TODO: adapt extractor to allow extraction of foreign data.
-    wdh.initializePageExtraction(getWiktionaryPageName());
-    Matcher languageFilter = sectionPattern.matcher(pageContent);
-    while (languageFilter.find() && !languageFilter.group(1).equals("English")) {
-      // NOP
-    }
-    // Either the filter is at end of sequence or on English language header.
-    if (languageFilter.hitEnd()) {
-      // There is no English data in this page.
-      return;
-    }
-    int englishSectionStartOffset = languageFilter.end();
-    // Advance till end of sequence or new language section
-    while (languageFilter.find() && languageFilter.group().charAt(2) == '=') {
-      // NOP
-    }
-    // languageFilter.find();
-    int englishSectionEndOffset =
-        languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
-
-    extractEnglishData(englishSectionStartOffset, englishSectionEndOffset);
-    wdh.finalizePageExtraction();
-  }
 
   @Override
   public boolean filterOutPage(String pagename) {
@@ -164,20 +133,55 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return pagename.startsWith("Wikisaurus:") || pagename.startsWith("Thesaurus:");
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
+   * org.getalp.blexisma.semnet.SemanticNetwork)
+   */
+  @Override
+  public void extractData() {
+    boolean isWikisaurus = isWikisaurus(getWiktionaryPageName());
+    if (isWikisaurus) {
+      setWiktionaryPageName(cutNamespace(getWiktionaryPageName()));
+    }
+    wdh.initializePageExtraction(getWiktionaryPageName());
+    Matcher languageFilter = sectionPattern.matcher(pageContent);
+    while (languageFilter.find() && !languageFilter.group(1).equals("English")) {
+      // NOP
+    }
+    // Either the filter is at end of sequence or on English language header.
+    if (languageFilter.hitEnd()) {
+      // There is no English data in this page.
+      return;
+    }
+    int englishSectionStartOffset = languageFilter.end();
+    // Advance till end of sequence or new language section
+    while (languageFilter.find() && languageFilter.group().charAt(2) == '=') {
+      // NOP
+    }
+    // languageFilter.find();
+    int englishSectionEndOffset =
+        languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+
+    if (isWikisaurus) {
+      wikisaurusExtractor.extractWikisaurusSection(getWiktionaryPageName(),
+          pageContent.substring(englishSectionStartOffset, englishSectionEndOffset));
+      return;
+    } else {
+      extractEnglishData(englishSectionStartOffset, englishSectionEndOffset);
+    }
+    wdh.finalizePageExtraction();
+  }
+
+
   private String cutNamespace(String pagename) {
     int p = pagename.indexOf(":");
     return pagename.substring(p + 1);
   }
 
   protected void extractEnglishData(int startOffset, int endOffset) {
-    if (isWikisaurus(getWiktionaryPageName())) {
-      setWiktionaryPageName(cutNamespace(getWiktionaryPageName()));
-      wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
-      wikisaurusExtractor.extractWikisaurusSection(getWiktionaryPageName(),
-          pageContent.substring(startOffset, endOffset));
-      return;
-    }
-    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
+    wdh.initializeLanguageSection("en");
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     wikiExpander.setPageName(getWiktionaryPageName());

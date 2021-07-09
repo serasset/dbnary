@@ -458,8 +458,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
           String dumpdir = outputDir + "/" + lang + "/" + lastDir;
           String filename = dumpdir + "/" + dumpFileName(lang, lastDir);
           File file = new File(filename);
-          if (file.exists() && !force) {
-            // System.err.println("Dump file " + filename + " already retrieved.");
+          if (file.exists()) {
             return lastDir;
           }
           File dumpFile = new File(dumpdir);
@@ -599,7 +598,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     // System.err.println("Uncompressing " + compressedDumpFile);
 
     File file = new File(uncompressedDumpFile);
-    if (file.exists() && !force) {
+    if (file.exists()) {
       if (verbose)
         System.err.println("Uncompressed dump file " + uncompressedDumpFile + " already exists.");
       return true;

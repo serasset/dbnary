@@ -64,7 +64,7 @@ while getopts ":d:t:v:D:c:nmMeElLsSTVxXhf" opt; do
       DATE="-D ${OPTARG}"
       ;;
     c)
-      CUT="-D ${OPTARG}"
+      CUT="--sample ${OPTARG}"
       ;;
     n)
       NETWORK="-n"

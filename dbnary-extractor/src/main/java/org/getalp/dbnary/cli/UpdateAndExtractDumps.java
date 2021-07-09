@@ -110,7 +110,8 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
         "Do not use the ftp network, but decompress and extract.");
     options.addOption(FETCH_DATE_OPTION, true,
         "force the dump date to be retrieved. latest dump by default ");
-    options.addOption(SAMPLE_FEATURE_OPTION, true, "sample only the first N extracted entries.");
+    options.addOption(Option.builder().longOpt(SAMPLE_FEATURE_OPTION)
+        .desc("sample only the first N extracted entries.").hasArg().argName("N").build());
     options.addOption(Option.builder().longOpt(ENABLE_FEATURE_OPTION).desc(
         "Enable additional extraction features (e.g. morphology,etymology,lime,enhancement,foreign).")
         .hasArg().argName("feature").build());
@@ -751,9 +752,9 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     a.add("-o");
     a.add(extractFile);
     if (sample > 0) {
-      a.add("frompage");
+      a.add("--frompage");
       a.add("0");
-      a.add("topage");
+      a.add("--topage");
       a.add(String.valueOf(sample));
     }
     a.add("-z");

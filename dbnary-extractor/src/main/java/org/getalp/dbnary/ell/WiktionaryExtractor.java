@@ -190,7 +190,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
     extractGreekData(greekSectionStartOffset, greekSectionEndOffset);
-    wdh.finalizeLanguageSection();
+    wdh.finalizeLanguageSection__noModel();
   }
 
 
@@ -367,7 +367,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         assert false
             : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
-    wdh.finalizeLanguageSection();
+    wdh.finalizeLanguageSection__noModel();
   }
 
 

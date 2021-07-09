@@ -40,9 +40,11 @@ public interface IWiktionaryDataHandler {
 
   void initializeLanguageSection(String language);
 
+  void finalizeLanguageSection();
+
   void initializeLanguageSection__noModel(String wiktionaryPageName, String lang);
 
-  void finalizeLanguageSection();
+  void finalizeLanguageSection__noModel();
 
   String getCurrentEntryLanguage();
 
@@ -161,4 +163,5 @@ public interface IWiktionaryDataHandler {
       String dumpFileVersion);
 
   void computeStatistics(String dumpVersion);
+
 }

@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -27,7 +28,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.vocabulary.FOAF;
-import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -123,7 +124,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     super();
 
     if (null != tdbDir) {
-      dataset = TDBFactory.createDataset(tdbDir);
+      dataset = TDB2Factory.connectDataset(tdbDir);
+      dataset.begin(ReadWrite.WRITE); // UGLY: using one LONG write transaction
     } else {
       dataset = null;
     }
@@ -149,6 +151,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   private Model createAndInitializeABox(String lang, ExtractionFeature f) {
     // Create aBox
     Model aBox;
+
     if (null != dataset) {
       aBox = dataset.getNamedModel("NS" + f.name().toLowerCase() + "/");
     } else {
@@ -199,6 +202,11 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   public void closeDataset() {
     if (null != dataset) {
+      try {
+        dataset.commit();
+      } finally {
+        dataset.end();
+      }
       dataset.close();
     }
   }
@@ -245,6 +253,13 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
+  public void finalizeLanguageSection() {
+    finalizeLanguageSection__noModel();
+    longSectionLanguageCode = null;
+    shortSectionLanguageCode = null;
+  }
+
+  @Override
   public void initializeLanguageSection__noModel(String wiktionaryPageName) {
     currentSense = null;
     currentSenseNumber = 0;
@@ -272,7 +287,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void finalizeLanguageSection() {
+  public void finalizeLanguageSection__noModel() {
     // Clear currentStatements. If statemenents do exist-s in it, it is because, there is no
     // extractable part of speech in the entry.
     heldBackStatements.clear();

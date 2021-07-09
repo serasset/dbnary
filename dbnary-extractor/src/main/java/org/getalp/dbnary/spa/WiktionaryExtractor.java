@@ -166,7 +166,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       extractSpanishData(spaStart, pageContent.length());
     }
 
-    wdh.finalizeLanguageSection();
+    wdh.finalizeLanguageSection__noModel();
     wdh.finalizePageExtraction();
   }
 

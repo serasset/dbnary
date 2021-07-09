@@ -113,7 +113,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       extractJapaneseData(jpnStart, pageContent.length());
     }
 
-    wdh.finalizeLanguageSection();
+    wdh.finalizeLanguageSection__noModel();
     wdh.finalizePageExtraction();
     for (String h : unknownHeaders) {
       log.debug("--> {}", h);

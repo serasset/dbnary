@@ -403,7 +403,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         assert false
             : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
-    wdh.finalizeLanguageSection();
+    wdh.finalizeLanguageSection__noModel();
   }
 
   private boolean isLevel2Header(Matcher m) {

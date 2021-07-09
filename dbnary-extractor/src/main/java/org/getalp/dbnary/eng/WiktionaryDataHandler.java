@@ -116,19 +116,24 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeLanguageSection__noModel(String wiktionaryPageName) {
+  public void initializePageExtraction(String wiktionaryPageName) {
+    super.initializePageExtraction(wiktionaryPageName);
+  }
+
+  @Override
+  public void initializeLanguageSection(String lang) {
     currentEntryLanguage = "en";
     currentEntryLanguageName = "English";
-    initializeLanguageSection__noModel(wiktionaryPageName, currentEntryLanguage,
+    initializeLanguageSection(currentPage.getName(), currentEntryLanguage,
         currentEntryLanguageName);
   }
 
-  public void initializeLanguageSection__noModel(String wiktionaryPageName, String lang,
+  public void initializeLanguageSection(String wiktionaryPageName, String lang,
       String languageName) {
     currentEtymologyNumber = 0;
     currentEtymologyEntry = null;
     currentGlobalEtymologyEntry = createGlobalEtymologyResource(wiktionaryPageName, lang);
-    super.initializeLanguageSection__noModel(wiktionaryPageName);
+    super.initializeLanguageSection(lang);
   }
 
   private Resource createGlobalEtymologyResource(String wiktionaryPageName, String lang) {

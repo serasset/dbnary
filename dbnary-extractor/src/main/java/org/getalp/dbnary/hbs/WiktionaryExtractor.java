@@ -196,11 +196,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     lang = lang.trim();
 
-    if (lang.toLowerCase().equals("srpskohrvatski") || lang.equals("sh")) {
-      wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
+    if (lang.equalsIgnoreCase("srpskohrvatski") || lang.equals("sh")) {
+      wdh.initializeLanguageSection("sh");
     } else {
       return;
-      // wdh.initializeLanguageSection(getWiktionaryPageName(), lang);
     }
 
     Matcher m = blockPattern.matcher(pageContent);
@@ -231,7 +230,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     extractDataBlock(start, endOffset, block, blockString);
-    wdh.finalizeLanguageSection__noModel();
+    wdh.finalizeLanguageSection();
   }
 
   protected void extractPron(int start, int end) {

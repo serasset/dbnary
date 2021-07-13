@@ -215,7 +215,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     // System.err.println(pageContent.substring(startOffset,endOffset));
-    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
+    wdh.initializeLanguageSection("fi");
     gotoNoData(m);
     // WONTDO: should I use a macroOrLink pattern to detect translations that are not macro based ?
     // DONE: (priority: top) link the definition node with the current Part of Speech
@@ -355,7 +355,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         assert false
             : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
-    wdh.finalizeLanguageSection__noModel();
+    wdh.finalizeLanguageSection();
   }
 
   private FinnishTranslationExtractorWikiModel dbnmodel;

@@ -171,7 +171,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractTurkishData(int startOffset, int endOffset) {
     WikiText txt =
         new WikiText(getWiktionaryPageName(), pageContent.substring(startOffset, endOffset));
-    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
+    wdh.initializeLanguageSection("tr");
     for (WikiText.Token evt : txt.headers(3)) {
       WikiSection section = evt.asHeading().getSection();
       String header = section.getHeading().getContent().toString().trim();
@@ -212,7 +212,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         log.debug("Unexpected header {} in {}", header, getWiktionaryPageName());
       }
     }
-    wdh.finalizeLanguageSection__noModel();
+    wdh.finalizeLanguageSection();
   }
 
   public void extractTranslations(WikiContent wk) {

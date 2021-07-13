@@ -12,7 +12,6 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.getalp.LangTools;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.LexinfoOnt;
@@ -33,11 +32,12 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
   // A entry -> pos -> set of lexical forms hashmap used to store the inflected form which have
   // to be registered chen the main lexical entry is processed.
-  private HashMap<String, HashMap<String, Set<LexicalForm>>> heldBackOtherForms = new HashMap<>();
+  private final HashMap<String, HashMap<String, Set<LexicalForm>>> heldBackOtherForms =
+      new HashMap<>();
 
   static {
 
@@ -63,27 +63,15 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeLanguageSection__noModel(String wiktionaryPageName, String language) {
-    language = LangTools.getPart1OrId(language);
-    if (null != language && language.equals(shortEditionLanguageCode)) {
-      super.initializeLanguageSection__noModel(wiktionaryPageName);
-    } else {
-      super.initializeLanguageSection__noModel(wiktionaryPageName, language);
-    }
-  }
-
-
-
-  @Override
   public void initializeLexicalEntry(String pos) {
     // DONE: compute if the entry is a phrase or a word.
     PosAndType pat = posAndTypeValueMap.get(pos);
     Resource typeR = typeResource(pat);
-    if (currentWiktionaryPageName.startsWith("se ")) {
-      if (currentWiktionaryPageName.substring(2).trim().contains(" ")) {
+    if (currentPage.getName().startsWith("se ")) {
+      if (currentPage.getName().substring(2).trim().contains(" ")) {
         typeR = OntolexOnt.MultiWordExpression;
       }
-    } else if (currentWiktionaryPageName.contains(" ")) {
+    } else if (currentPage.getName().contains(" ")) {
       typeR = OntolexOnt.MultiWordExpression;
     }
     // reset the sense number.
@@ -93,7 +81,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     Model morphoBox = getFeatureBox(ExtractionFeature.MORPHOLOGY);
     if (null != morphoBox) {
       HashMap<String, Set<LexicalForm>> pos2forms =
-          heldBackOtherForms.getOrDefault(currentWiktionaryPageName, new HashMap<>());
+          heldBackOtherForms.getOrDefault(currentPage.getName(), new HashMap<>());
       Set<LexicalForm> forms = pos2forms.getOrDefault(pos, new HashSet<>());
       forms.forEach(f -> f.attachTo(currentLexEntry.inModel(morphoBox)));
     }
@@ -173,16 +161,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   @Override
   public void closeDataset() {
     super.closeDataset();
-  }
-
-  @Override
-  public void initializeLanguageSection__noModel(String wiktionaryPageName) {
-    super.initializeLanguageSection__noModel(wiktionaryPageName);
-  }
-
-  @Override
-  public void finalizeLanguageSection__noModel() {
-    super.finalizeLanguageSection__noModel();
   }
 
   @Override

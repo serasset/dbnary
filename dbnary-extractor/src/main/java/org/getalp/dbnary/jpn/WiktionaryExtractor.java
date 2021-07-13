@@ -99,7 +99,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int jpnStart = -1;
     wdh.initializePageExtraction(getWiktionaryPageName());
     // TODO: should I initialize the entry in the japanese extraction method ?
-    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     while (l1.find()) {
       if (-1 != jpnStart) {
         extractJapaneseData(jpnStart, l1.start());
@@ -112,8 +111,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (-1 != jpnStart) {
       extractJapaneseData(jpnStart, pageContent.length());
     }
-
-    wdh.finalizeLanguageSection__noModel();
     wdh.finalizePageExtraction();
     for (String h : unknownHeaders) {
       log.debug("--> {}", h);
@@ -290,6 +287,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: variants, pronunciations and other elements are common to the different entries in the
   // page.
   private void extractJapaneseData(int startOffset, int endOffset) {
+    wdh.initializeLanguageSection("ja");
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     gotoNoData(m);
@@ -567,6 +565,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         assert false
             : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
+    wdh.finalizeLanguageSection();
   }
 
   // TODO: try to use gwtwiki to extract translations

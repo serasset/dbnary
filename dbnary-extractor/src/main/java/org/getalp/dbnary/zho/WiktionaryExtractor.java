@@ -333,7 +333,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   private void extractData(int startOffset, int endOffset) {
-    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
+    wdh.initializeLanguageSection("zh");
     Matcher m = wikiSectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     gotoNoData(m);
@@ -598,7 +598,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         assert false
             : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
-    wdh.finalizeLanguageSection__noModel();
+    wdh.finalizeLanguageSection();
   }
 
 

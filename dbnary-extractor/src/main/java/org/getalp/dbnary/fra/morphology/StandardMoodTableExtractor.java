@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 public class StandardMoodTableExtractor extends RefactoredTableExtractor {
 
-  private Logger log = LoggerFactory.getLogger(StandardMoodTableExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(StandardMoodTableExtractor.class);
 
   public StandardMoodTableExtractor(String currentEntry, String language, List<String> context) {
     super(currentEntry, language, context);
@@ -140,7 +140,7 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
     actions.put(Pattern.compile("^(?:je|j’)"), Person.first.andThen(Number.singular));
     actions.put(Pattern.compile("^tu"), Person.second.andThen(Number.singular));
     actions.put(Pattern.compile("^il/elle"), Person.third.andThen(Number.singular));
-    actions.put(Pattern.compile("^il"), Person.third.andThen(Number.singular));
+    actions.put(Pattern.compile("^il\\s*$"), Person.third.andThen(Number.singular));
     actions.put(Pattern.compile("^nous"), Person.first.andThen(Number.plural));
     actions.put(Pattern.compile("^vous"), Person.second.andThen(Number.plural));
     actions.put(Pattern.compile("^ils/elles"), Person.third.andThen(Number.plural));

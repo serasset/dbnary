@@ -227,19 +227,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
 
-    if (extractForeignData) {
-      if ("la".equals(lang)) {
-        return;
-      }
-
-      wdh.initializeLanguageSection__noModel(getWiktionaryPageName(), lang);
-    } else {
-      if (!"la".equals(lang)) {
-        return;
-      }
-
-      wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
-    }
+    wdh.initializeLanguageSection(lang);
     Matcher m = entrySectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
 
@@ -269,7 +257,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // Finalize the entry parsing
     leaveCurrentBlock(m);
 
-    wdh.finalizeLanguageSection__noModel();
+    wdh.finalizeLanguageSection();
   }
 
   private Block computeNextBlock(Matcher m, Map<String, Object> context) {

@@ -36,15 +36,9 @@ public interface IWiktionaryDataHandler {
 
   void finalizePageExtraction();
 
-  void initializeLanguageSection__noModel(String wiktionaryPageName);
-
   void initializeLanguageSection(String language);
 
   void finalizeLanguageSection();
-
-  void initializeLanguageSection__noModel(String wiktionaryPageName, String lang);
-
-  void finalizeLanguageSection__noModel();
 
   String getCurrentEntryLanguage();
 

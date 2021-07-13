@@ -259,8 +259,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     shortSectionLanguageCode = null;
   }
 
-  @Override
-  public void initializeLanguageSection__noModel(String wiktionaryPageName) {
+  private void initializeLanguageSection__noModel(String wiktionaryPageName) {
     currentSense = null;
     currentSenseNumber = 0;
     currentSubSenseNumber = 0;
@@ -286,20 +285,13 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     currentLexEntry = null;
   }
 
-  @Override
-  public void finalizeLanguageSection__noModel() {
+  private void finalizeLanguageSection__noModel() {
     // Clear currentStatements. If statemenents do exist-s in it, it is because, there is no
     // extractable part of speech in the entry.
     heldBackStatements.clear();
     promoteNymProperties();
     longSectionLanguageCode = null;
     shortSectionLanguageCode = null;
-  }
-
-  @Override
-  public void initializeLanguageSection__noModel(String wiktionaryPageName, String lang) {
-    // TODO Auto-generated method stub
-    throw new RuntimeException("Cannot initialize a foreign language entry.");
   }
 
   public static String getEncodedPageName(String pageName, String pos, int defNumber) {

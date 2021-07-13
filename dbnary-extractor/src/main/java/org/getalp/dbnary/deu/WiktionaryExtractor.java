@@ -245,7 +245,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractGermanData(int startOffset, int endOffset) {
     Matcher m = macroOrPOSPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
+    wdh.initializeLanguageSection("de");
     currentBlock = Block.IGNOREPOS;
 
     while (m.find()) {
@@ -264,7 +264,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     // Finalize the entry parsing
     leaveCurrentBlock(m);
-    wdh.finalizeLanguageSection__noModel();
+    wdh.finalizeLanguageSection();
 
   }
 

@@ -467,7 +467,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
 
     // The language is always defined when arriving here
-    wdh.initializeLanguageSection__noModel(getWiktionaryPageName(), language);
+    wdh.initializeLanguageSection(language);
 
     for (Token t : languageSection.getContent().sections()) {
       WikiSection section = t.asWikiSection();

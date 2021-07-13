@@ -152,7 +152,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher l1 = languageSectionPattern.matcher(pageContent);
     int spaStart = -1;
-    wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
     while (l1.find()) {
       if (-1 != spaStart) {
         extractSpanishData(spaStart, l1.start());
@@ -165,8 +164,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (-1 != spaStart) {
       extractSpanishData(spaStart, pageContent.length());
     }
-
-    wdh.finalizeLanguageSection__noModel();
     wdh.finalizePageExtraction();
   }
 
@@ -303,6 +300,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: variants, pronunciations and other elements are common to the different entries in the
   // page.
   private void extractSpanishData(int startOffset, int endOffset) {
+    wdh.initializeLanguageSection("es");
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     gotoHeaderBlock(m);
@@ -419,6 +417,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         assert false
             : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
+    wdh.finalizeLanguageSection();
   }
 
 

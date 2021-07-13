@@ -59,8 +59,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeLanguageSection__noModel(String wiktionaryPageName) {
-    super.initializeLanguageSection__noModel(wiktionaryPageName);
+  public void initializeLanguageSection(String language) {
+    super.initializeLanguageSection(language);
 
     currentWordsenses.clear();
   }

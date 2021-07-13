@@ -132,10 +132,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeLanguageSection__noModel(String wiktionaryPageName) {
-    super.initializeLanguageSection__noModel(wiktionaryPageName);
+  public void initializeLanguageSection(String lang) {
+    super.initializeLanguageSection(lang);
     lexEntries.clear();
-    encodedWiktionaryPageName = uriEncode(currentWiktionaryPageName);
+    encodedWiktionaryPageName = uriEncode(currentPage.getName());
   }
 
   @Override
@@ -144,8 +144,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void finalizeLanguageSection__noModel() {
-    super.finalizeLanguageSection__noModel();
+  public void finalizeLanguageSection() {
+    super.finalizeLanguageSection();
     encodedWiktionaryPageName = null;
   }
 
@@ -153,21 +153,21 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {
     if (lexEntries.size() == 0) {
       log.debug("Registering Translation when no lexical entry is defined in {}",
-          currentWiktionaryPageName);
+          currentPage.getName());
     } else if (lexEntries.size() == 1) {
       super.registerTranslation(lang, currentGloss, usage, word);
     } else if (null == currentGloss) {
       log.debug("Attaching translations to Vocable (Null gloss and several lexical entries) in {}",
-          currentWiktionaryPageName);
+          currentPage.getName());
       super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
     } else {
       // TODO: guess which translation is to be attached to which entry/sense
       List<Resource> entries = getLexicalEntryUsingPartOfSpeech(currentGloss);
       if (entries.size() != 0) {
         log.trace("Attaching translations using part of speech in gloss : {}",
-            currentWiktionaryPageName);
+            currentPage.getName());
         if (entries.size() > 1) {
-          log.trace("Attaching translations to several entries in {}", currentWiktionaryPageName);
+          log.trace("Attaching translations to several entries in {}", currentPage.getName());
         }
         for (Resource entry : entries) {
           super.registerTranslationToEntity(entry, lang, currentGloss, usage, word);
@@ -175,7 +175,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       } else {
         Statement s = currentGloss.getProperty(RDF.value);
         String g = (null == s) ? "" : s.getString();
-        log.debug("Several entries are defined in {} // {}", currentWiktionaryPageName, g);
+        log.debug("Several entries are defined in {} // {}", currentPage.getName(), g);
         // TODO: disambiguate and attach to the correct entry.
         super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
       }

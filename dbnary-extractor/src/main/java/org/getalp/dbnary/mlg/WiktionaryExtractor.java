@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -207,13 +208,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (lang == null) {
       return;
     }
-    if (lang.equals("mg")) {
-      wdh.initializeLanguageSection__noModel(getWiktionaryPageName());
-    } else {
-      // log.debug("Unused lang {} --in-- {}", lang, this.getWiktionaryPageName());
+
+    if (wdh.isDisabled(ExtractionFeature.FOREIGN_LANGUAGES) && !lang.equals("mg"))
       return;
-      // wdh.initializeLanguageSection(getWiktionaryPageName(), lang);
-    }
+
+    wdh.initializeLanguageSection(lang);
+
 
     Matcher m = blockPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
@@ -252,7 +252,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     extractDataBlock(start, endOffset, block, blockString);
-    wdh.finalizeLanguageSection__noModel();
+    wdh.finalizeLanguageSection();
   }
 
   protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,

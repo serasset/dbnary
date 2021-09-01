@@ -186,9 +186,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public Resource initializeLexicalEntry(String originalPOS, Resource normalizedPOS,
+  public Resource initializeLexicalEntry__noModel(String originalPOS, Resource normalizedPOS,
       Resource normalizedType) {
-    Resource lexEntry = super.initializeLexicalEntry(originalPOS, normalizedPOS, normalizedType);
+    Resource lexEntry = super.initializeLexicalEntry__noModel(originalPOS, normalizedPOS, normalizedType);
     return lexEntry;
   }
 

@@ -2,7 +2,10 @@ package org.getalp.model.dbnary;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 import org.getalp.LangTools;
 import org.getalp.model.ontolex.LexicalEntry;
@@ -13,7 +16,7 @@ public class Page implements Set<LexicalEntry> {
   private Logger log = LoggerFactory.getLogger(Page.class);
   protected String language;
   protected String name;
-  protected Set<LexicalEntry> delegate = new TreeSet<>();
+  protected Stack<LexicalEntry> delegate = new Stack<>();
 
   public Page(String language, String name) {
     this.language = LangTools.getCode(language);
@@ -35,6 +38,16 @@ public class Page implements Set<LexicalEntry> {
 
   public String getName() {
     return name;
+  }
+
+  public LexicalEntry newEntry(String pos) {
+    return this.newEntry(this.getName(), pos);
+  }
+
+  public LexicalEntry newEntry(String name, String pos) {
+    LexicalEntry le = new LexicalEntry(name, pos, delegate.size());
+    this.add(le);
+    return le;
   }
 
   @Override

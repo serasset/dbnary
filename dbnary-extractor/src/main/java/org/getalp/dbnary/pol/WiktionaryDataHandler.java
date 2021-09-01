@@ -412,7 +412,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     DecodedPOS dpos = decodePOS(pos);
 
     if (dpos != null) {
-      super.initializeLexicalEntry(dpos.simplePOSName, dpos.lexinfoPOS, dpos.entryType);
+      super.initializeLexicalEntry__noModel(dpos.simplePOSName, dpos.lexinfoPOS, dpos.entryType);
     } else {
       this.voidPartOfSpeech();
       log.debug("Could not register a POS for {}", pos);
@@ -421,8 +421,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void voidPartOfSpeech() {
     // DONE: create a LexicalEntry for this part of speech only and attach info to it.
-    currentWiktionaryPos = null;
-    currentLexinfoPos = null;
+    currentLexicalEntry = null;
+    // currentWiktionaryPos = null;
+    // currentLexinfoPos = null;
 
     currentEncodedLexicalEntryName = null;
     currentLexEntry = null;
@@ -431,7 +432,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   public boolean posIsValid() {
-    return currentWiktionaryPos != null;
+    return currentWiktionaryPos() != null;
   }
 
   // TODO : All lex entries precede the translation.

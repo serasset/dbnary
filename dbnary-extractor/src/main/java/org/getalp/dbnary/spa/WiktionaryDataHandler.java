@@ -76,7 +76,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         currentWiktionaryPageName);
     // PosAndType pat = posAndTypeValueMap.get(pos);
     Resource typeR = typeResource(pat);
-    initializeLexicalEntry__noModel(spos, posResource(pat), typeR);
+    initializeLexicalEntry(spos, posResource(pat), typeR);
   }
 
 

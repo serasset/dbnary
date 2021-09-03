@@ -77,7 +77,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // reset the sense number.
     currentSenseNumber = 0;
     currentSubSenseNumber = 0;
-    initializeLexicalEntry__noModel(pos, posResource(pat), typeR);
+    initializeLexicalEntry(pos, posResource(pat), typeR);
     Model morphoBox = getFeatureBox(ExtractionFeature.MORPHOLOGY);
     if (null != morphoBox) {
       HashMap<String, Set<LexicalForm>> pos2forms =

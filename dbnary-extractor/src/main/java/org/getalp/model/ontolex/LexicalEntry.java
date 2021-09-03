@@ -56,7 +56,8 @@ public class LexicalEntry {
 
   public void setPartOfSpeech(Resource pos) {
     this.partOfSpeeches.clear();
-    this.partOfSpeeches.add(pos);
+    if (pos != null)
+      this.partOfSpeeches.add(pos);
   }
 
   public void addResourceType(Resource type) {

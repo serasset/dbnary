@@ -116,11 +116,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializePageExtraction(String wiktionaryPageName) {
-    super.initializePageExtraction(wiktionaryPageName);
-  }
-
-  @Override
   public void initializeLanguageSection(String lang) {
     currentEntryLanguage = "en";
     currentEntryLanguageName = "English";
@@ -183,13 +178,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       eBox.add(currentEtymologyEntry, RDFS.label, currentWiktionaryPageName, lang);
     }
     eBox.add(currentEtymologyEntry, DBnaryOnt.describes, currentLexEntry);
-  }
-
-  @Override
-  public Resource initializeLexicalEntry__noModel(String originalPOS, Resource normalizedPOS,
-      Resource normalizedType) {
-    Resource lexEntry = super.initializeLexicalEntry__noModel(originalPOS, normalizedPOS, normalizedType);
-    return lexEntry;
   }
 
   private String computeEtymologyId(Model box, int etymologyNumber, String lang) {
@@ -602,9 +590,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         aBox.add(glossResource, RDF.value, currentWS, getCurrentEntryLanguage());
       }
 
-      ReifiedStatement rnymR = nymR
-          .createReifiedStatement(computeNymId(currentNym, uriEncode(currentWiktionaryPageName)));
       if (glossResource != null) {
+        ReifiedStatement rnymR = nymR
+            .createReifiedStatement(computeNymId(currentNym, uriEncode(currentWiktionaryPageName)));
         rnymR.addProperty(DBnaryOnt.gloss, glossResource);
       }
     } catch (NullPointerException npe) {

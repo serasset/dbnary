@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.getalp.dbnary.lit;
 
 import java.util.HashMap;
@@ -178,8 +175,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (lang == null) {
       return;
     }
-    if (wdh.isDisabled(ExtractionFeature.FOREIGN_LANGUAGES) && !lang.equals("ltv"))
+    if (wdh.isDisabled(ExtractionFeature.FOREIGN_LANGUAGES) && !"ltv".equals(lang))
       return;
+
+    // ltv is not a correct ISO language code.
+    if ("ltv".equals(lang))
+      lang = "lt";
 
     wdh.initializeLanguageSection(lang);
 

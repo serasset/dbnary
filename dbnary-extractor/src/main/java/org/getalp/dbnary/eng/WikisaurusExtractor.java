@@ -16,6 +16,7 @@ public class WikisaurusExtractor {
 
 
   public void extractWikisaurusSection(String wiktionaryPageName, String wikisaurusSection) {
+    wdh.initializeLanguageSection("en");
     WikiText wtext = new WikiText(wiktionaryPageName, wikisaurusSection);
 
     String currentPOS = null;
@@ -54,6 +55,7 @@ public class WikisaurusExtractor {
         }
       }
     }
+    wdh.finalizeLanguageSection();
   }
 
   private String getGlossString(WikiText.WikiContent content) {

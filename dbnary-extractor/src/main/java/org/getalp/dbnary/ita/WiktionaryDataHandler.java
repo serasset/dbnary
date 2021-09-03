@@ -234,7 +234,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // TODO: but not correspond to a valid resource. This will be usefull for later
     // drop of non useful translations.
     PosAndType pat = posAndTypeValueMap.get(pos);
-    Resource entry = initializeLexicalEntry__noModel(pos, posResource(pat), typeResource(pat));
+    Resource entry = initializeLexicalEntry(pos, posResource(pat), typeResource(pat));
     addLexEntry(posResource(pat), entry);
   }
 

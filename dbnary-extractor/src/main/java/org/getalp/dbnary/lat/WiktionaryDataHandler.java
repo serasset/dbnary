@@ -53,7 +53,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     } else if (currentWiktionaryPageName.contains(" ")) {
       typeR = OntolexOnt.MultiWordExpression;
     }
-    initializeLexicalEntry__noModel(pos, posResource(pat), typeR);
+    initializeLexicalEntry(pos, posResource(pat), typeR);
   }
 
 

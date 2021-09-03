@@ -71,7 +71,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   private final Map<ExtractionFeature, Model> featureBoxes;
 
   // States used for processing
-  @Deprecated protected Resource currentLexEntry;
+  @Deprecated
+  protected Resource currentLexEntry;
   // @Deprecated protected Resource currentLexinfoPos;
   // @Deprecated protected String currentWiktionaryPos;
 
@@ -102,12 +103,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   /**
    * @deprecated use currentPage.getName()
    */
-  @Deprecated protected String currentWiktionaryPageName;
+  @Deprecated
+  protected String currentWiktionaryPageName;
   protected CounterSet currentLexieCount = new CounterSet();
   /**
    * @deprecated should rely on currentPage (not a Resource anymore
    */
-  @Deprecated protected Resource currentMainLexEntry;
+  @Deprecated
+  protected Resource currentMainLexEntry;
   protected Page currentPage;
   protected Resource currentCanonicalForm;
 
@@ -256,7 +259,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     longSectionLanguageCode = longLang == null ? language : longLang;
     shortSectionLanguageCode = shortLang == null ? language : shortLang;
 
-    // assert currentLexicalEntry == null; // this is only possible when everybody finalizes lex entries correctly...
+    // assert currentLexicalEntry == null; // this is only possible when everybody finalizes lex
+    // entries correctly...
     currentLexicalEntry = null;
   }
 
@@ -323,12 +327,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public String currentWiktionaryPos() {
-    return currentLexicalEntry.getWiktionaryPartOfSpeech();
+    return currentLexicalEntry == null ? null : currentLexicalEntry.getWiktionaryPartOfSpeech();
   }
 
   @Override
   public Resource currentLexinfoPos() {
-    return currentLexicalEntry.getLexinfoPartOfSpeech();
+    return currentLexicalEntry == null ? null : currentLexicalEntry.getLexinfoPartOfSpeech();
   }
 
 
@@ -355,15 +359,21 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   @Override
   public void initializeLexicalEntry(String pos) {
     assert longSectionLanguageCode != null && shortSectionLanguageCode != null;
-    currentLexicalEntry = currentPage.newEntry(currentPage.getName(), pos);
 
     PosAndType pat = decodePartOfSpeech(pos);
-    // TODO: set/add ? should it be sets or only one value ?
-    currentLexicalEntry.setPartOfSpeech(posResource(pat));
-    currentLexicalEntry.addResourceType(typeResource(pat));
-
-    initializeLexicalEntry__noModel(pos, posResource(pat), typeResource(pat));
+    initializeLexicalEntry(pos, posResource(pat), typeResource(pat));
   }
+
+  protected Resource initializeLexicalEntry(String pos, Resource lexinfoPOS, Resource type) {
+    assert longSectionLanguageCode != null && shortSectionLanguageCode != null;
+    currentLexicalEntry = currentPage.newEntry(currentPage.getName(), pos);
+
+    currentLexicalEntry.setPartOfSpeech(lexinfoPOS);
+    currentLexicalEntry.addResourceType(type);
+
+    return initializeLexicalEntry__noModel(pos, lexinfoPOS, type);
+  }
+
 
   public Resource initializeLexicalEntry__noModel(String originalPOS, Resource normalizedPOS,
       Resource normalizedType) {
@@ -1080,8 +1090,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
 
     Map<String, Long> counts = Statistics.translationCounts(aBox);
-    counts.forEach((l, c) -> OntolexBasedRDFDataHandler.createTranslationObservation(statsBox, dumpVersion, getPrefix(),
-        longEditionLanguageCode, l, c));
+    counts.forEach((l, c) -> OntolexBasedRDFDataHandler.createTranslationObservation(statsBox,
+        dumpVersion, getPrefix(), longEditionLanguageCode, l, c));
   }
 
   public static void createGeneralStatisticsObservation(Model statsBox, String dumpVersion,

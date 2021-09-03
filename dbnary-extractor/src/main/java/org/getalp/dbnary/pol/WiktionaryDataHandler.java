@@ -412,7 +412,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     DecodedPOS dpos = decodePOS(pos);
 
     if (dpos != null) {
-      super.initializeLexicalEntry__noModel(dpos.simplePOSName, dpos.lexinfoPOS, dpos.entryType);
+      super.initializeLexicalEntry(dpos.simplePOSName, dpos.lexinfoPOS, dpos.entryType);
     } else {
       this.voidPartOfSpeech();
       log.debug("Could not register a POS for {}", pos);

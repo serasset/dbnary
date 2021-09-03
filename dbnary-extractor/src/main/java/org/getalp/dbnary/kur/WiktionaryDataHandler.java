@@ -70,7 +70,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     if (null == pat) {
       log.debug("Unknown POS : {} in {}", pos, currentWiktionaryPageName);
     }
-    initializeLexicalEntry__noModel(pos, posResource(pat), typeResource(pat));
+    initializeLexicalEntry(pos, posResource(pat), typeResource(pat));
   }
 
 }

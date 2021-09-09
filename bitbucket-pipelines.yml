@@ -34,4 +34,6 @@ pipelines:
             - pipe: atlassian/git-secrets-scan:0.4.3
       - step: 
         deployment: test
+        script:
+          - echo "testing deployment..."
 

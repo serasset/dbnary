@@ -13,6 +13,10 @@ definitions:
   steps:
     - step: &build
         name: Build
+        runs-on: 
+          - 'self.hosted'
+          - 'dbnary'
+        size: 4x
         caches:
           - maven
         script:

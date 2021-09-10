@@ -26,13 +26,25 @@ definitions:
           - "**/target/site/jacoco/jacoco.xml"
           - "**/target/site/jacoco-aggregate/jacoco.xml"
           - "**/target/**/*.class"
+    - step: &build-pr
+        name: Build pull-request
+        runs-on:
+          - 'self.hosted'
+          - 'dbnary'
+        size: 4x
+        caches:
+          - maven
+        script:
+          - mvn versions:set -B -DnewVersion=ci-${BITBUCKET_BRANCH}-SNAPSHOT
+          - mvn -B install -PcodeCoverage
+        artifacts:
+          - "**/target/site/jacoco/jacoco.xml"
+          - "**/target/site/jacoco-aggregate/jacoco.xml"
+          - "**/target/**/*.class"
 pipelines:
-  default:
-    - parallel:
+  branches:
+    '*':
       - step: *build
-      - step:
-          name: Security Scan
-          script:
-            # Run a security scan for sensitive data.
-            # See more security tools at https://bitbucket.org/product/features/pipelines/integrations?&category=security
-            - pipe: atlassian/git-secrets-scan:0.4.3
+    pull-requests:
+      "feature/*":
+        - step: *build-pr

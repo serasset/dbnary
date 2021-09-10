@@ -204,7 +204,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   void gotoDefBlock(Matcher m, String pos) {
     state = DEFBLOCK;
     definitionBlockStart = m.end();
-    wdh.addPartOfSpeech(pos);
+    wdh.initializeLexicalEntry(pos);
   }
 
   void leaveDefBlock(Matcher m) {
@@ -333,7 +333,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   private void extractData(int startOffset, int endOffset) {
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
+    wdh.initializeLanguageSection("zh");
     Matcher m = wikiSectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     gotoNoData(m);
@@ -595,10 +595,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case IGNOREPOS:
         break;
       default:
-        assert false : "Unexpected state while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
 

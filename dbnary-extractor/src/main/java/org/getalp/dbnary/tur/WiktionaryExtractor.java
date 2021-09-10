@@ -171,7 +171,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractTurkishData(int startOffset, int endOffset) {
     WikiText txt =
         new WikiText(getWiktionaryPageName(), pageContent.substring(startOffset, endOffset));
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
+    wdh.initializeLanguageSection("tr");
     for (WikiText.Token evt : txt.headers(3)) {
       WikiSection section = evt.asHeading().getSection();
       String header = section.getHeading().getContent().toString().trim();
@@ -183,7 +183,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractPron(section.getContent());
       } else if (partOfSpeechMarkers.contains(header)) {
         // Part of speech
-        wdh.addPartOfSpeech(header);
+        wdh.initializeLexicalEntry(header);
         // Extract definitions
         extractDefinitions(section.getContent());
         for (Token wikiToken : section.getContent().wikiTokens()) {
@@ -212,7 +212,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         log.debug("Unexpected header {} in {}", header, getWiktionaryPageName());
       }
     }
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   public void extractTranslations(WikiContent wk) {

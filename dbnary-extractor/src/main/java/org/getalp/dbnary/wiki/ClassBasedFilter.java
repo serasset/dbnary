@@ -9,6 +9,8 @@ import java.util.Set;
 /**
  * Created by serasset on 01/02/16.
  */
+// TODO: try to uniformize the Sequence filtering machinery with this EventFilter
+// Eventually, do rely on stream/filter functions instead...
 public class ClassBasedFilter implements WikiEventFilter {
 
   private HashSet<Class> classesToKeep = new HashSet<Class>();
@@ -94,6 +96,11 @@ public class ClassBasedFilter implements WikiEventFilter {
     return this;
   }
 
+  public ClassBasedFilter allowSections() {
+    classesToKeep.add(WikiText.WikiSection.class);
+    return this;
+  }
+
   public ClassBasedFilter allowAll() {
     this.allowExternalLink().allowHTMLComment().allowInternalLink().allowNowiki().allowTemplates()
         .allowIndentedItem().allowHeading().allowText();
@@ -160,6 +167,12 @@ public class ClassBasedFilter implements WikiEventFilter {
     return this;
   }
 
+  public ClassBasedFilter denySection() {
+    classesToKeep.remove(WikiText.WikiSection.class);
+    return this;
+  }
+
+
   public ClassBasedFilter denyAll() {
     classesToKeep.clear();
     return this;
@@ -175,8 +188,13 @@ public class ClassBasedFilter implements WikiEventFilter {
     return this;
   }
 
+  public ClassBasedFilter enterSections() {
+    classesToEnter.add(WikiText.WikiSection.class);
+    return this;
+  }
+
   public ClassBasedFilter enterAll() {
-    this.enterIndentedItem().enterHeadings();
+    this.enterIndentedItem().enterHeadings().enterSections();
     return this;
   }
 

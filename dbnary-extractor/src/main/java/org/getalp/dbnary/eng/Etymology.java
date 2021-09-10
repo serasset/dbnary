@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.getalp.dbnary.Pair;
+import org.getalp.dbnary.Span;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,7 +194,7 @@ public class Etymology {
       }
     }
 
-    ArrayList<Pair> m = findMatch(symbols, definitionSymbolsPattern);
+    ArrayList<Span> m = findMatch(symbols, definitionSymbolsPattern);
     if (m.size() == 0) {
       return;// there is no match to the definitionSymbolsPattern
     }
@@ -273,8 +273,8 @@ public class Etymology {
       return;
     }
 
-    ArrayList<Pair> templatesLocations = WikiTool.locateEnclosedString(string, "{{", "}}");
-    ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(string, "[[", "]]");
+    ArrayList<Span> templatesLocations = WikiTool.locateEnclosedString(string, "{{", "}}");
+    ArrayList<Span> linksLocations = WikiTool.locateEnclosedString(string, "[[", "]]");
 
     // match against regex pattern of symbols p
     Matcher m = p.matcher(string);
@@ -284,8 +284,8 @@ public class Etymology {
           // check if match is contained in template or link
           boolean check = false;
           // check if match is contained in a template (or is a template)
-          Pair match = new Pair(m.start(), m.end());
-          for (Pair template : templatesLocations) {
+          Span match = new Span(m.start(), m.end());
+          for (Span template : templatesLocations) {
             if (match.containedIn(template)) {// match is contained in a template
               check = true;
               if (l.get(i).equals("TEMPLATE")) {// match is a template
@@ -310,7 +310,7 @@ public class Etymology {
           // * if match "[[" is contained in link "[[...]]"
           // check if match is contained in a link (or is a link)
           if (check == false) {// if match is not contained in a template
-            for (Pair link : linksLocations) {
+            for (Span link : linksLocations) {
               if (match.containedIn(link)) {
                 check = true;
                 if (l.get(i).equals("LINK")) {// match is a link
@@ -365,7 +365,7 @@ public class Etymology {
 
     if (subs.size() == 2) {
       String bulletLang = null;
-      ArrayList<Pair> linksLocations = WikiTool.locateEnclosedString(subs.get(0), "[[", "]]");
+      ArrayList<Span> linksLocations = WikiTool.locateEnclosedString(subs.get(0), "[[", "]]");
       if (linksLocations.size() == 0) {// PARSE case "Sardinian: [[pobulu]], [[poburu]], [[populu]]"
         // also PARSE case "→ Georgian: {{l|ka|ყავა|gloss=coffee}}"
         // parse case ": {{l|el|λακωνικός|gloss=laconic, laconian}}" (i.e. the ":" only signals an
@@ -444,8 +444,8 @@ public class Etymology {
     return s.toString();
   }
 
-  public ArrayList<Pair> findMatch(ArrayList<Symbols> a, Pattern p) {
-    ArrayList<Pair> toreturn = new ArrayList<Pair>();
+  public ArrayList<Span> findMatch(ArrayList<Symbols> a, Pattern p) {
+    ArrayList<Span> toreturn = new ArrayList<Span>();
     if (a == null || a.size() == 0) {
       return toreturn;
     }
@@ -477,7 +477,7 @@ public class Etymology {
       } else if (end < 0) {
         log.debug("Error: end of match is not available\n");
       } else {
-        toreturn.add(new Pair(start, end));
+        toreturn.add(new Span(start, end));
       }
     }
     return toreturn;
@@ -489,11 +489,11 @@ public class Etymology {
    * etc
    */
   public void parseMultipleBorrowing() {
-    ArrayList<Pair> match = findMatch(symbols, multipleBorrowingSymbolsPattern);
+    ArrayList<Span> match = findMatch(symbols, multipleBorrowingSymbolsPattern);
     if (match == null || match.size() == 0 || match.size() > 1) {
       return;
     }
-    Pair m = match.get(0);
+    Span m = match.get(0);
     ArrayList<Symbols> a = new ArrayList<Symbols>();
     for (int k = m.start; k < m.end + 1; k++) {
       Symbols b = symbols.get(k);
@@ -523,12 +523,12 @@ public class Etymology {
   public void parseCompound() {
     // iterate over all matches to a compound pattern
     // starting from the last
-    ArrayList<Pair> match = findMatch(symbols, compoundSymbolsPattern);
+    ArrayList<Span> match = findMatch(symbols, compoundSymbolsPattern);
     if (match == null || match.size() == 0) {
       return;
     }
     for (int i = match.size() - 1; i >= 0; i--) {
-      Pair m = match.get(i);
+      Span m = match.get(i);
       ArrayList<Symbols> a = new ArrayList<Symbols>();
       for (int k = m.start; k < m.end + 1; k++) {
         Symbols b = symbols.get(k);

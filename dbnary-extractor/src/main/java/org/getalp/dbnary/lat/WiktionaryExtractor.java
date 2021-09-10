@@ -227,19 +227,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
 
-    if (extractForeignData) {
-      if ("la".equals(lang)) {
-        return;
-      }
-
-      wdh.initializeEntryExtraction(getWiktionaryPageName(), lang);
-    } else {
-      if (!"la".equals(lang)) {
-        return;
-      }
-
-      wdh.initializeEntryExtraction(getWiktionaryPageName());
-    }
+    wdh.initializeLanguageSection(lang);
     Matcher m = entrySectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
 
@@ -269,7 +257,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // Finalize the entry parsing
     leaveCurrentBlock(m);
 
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   private Block computeNextBlock(Matcher m, Map<String, Object> context) {
@@ -314,7 +302,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
       case DEFBLOCK:
         String pos = (String) context.get("pos");
-        wdh.addPartOfSpeech(pos);
+        wdh.initializeLexicalEntry(pos);
         // if ("-verb-".equals(pos)) {
         // wdh.registerPropertyOnCanonicalForm(LexinfoOnt.verbFormMood, LexinfoOnt.infinitive);
         // }
@@ -327,8 +315,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentNym = (String) context.get("nym");
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
 
   }
@@ -360,8 +348,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentNym = null;
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
 
     blockStart = -1;

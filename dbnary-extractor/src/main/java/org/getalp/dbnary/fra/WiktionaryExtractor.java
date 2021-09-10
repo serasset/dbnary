@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.getalp.dbnary.fra;
 
 import java.util.ArrayList;
@@ -9,9 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
@@ -19,17 +20,25 @@ import org.getalp.dbnary.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.PronunciationPair;
-import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
+import org.getalp.dbnary.fra.morphology.FrenchInflectionDecoder;
 import org.getalp.dbnary.fra.morphology.InflectionExtractorWikiModel;
 import org.getalp.dbnary.fra.morphology.VerbalInflexionExtractorWikiModel;
+import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiPattern;
-import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
-import org.getalp.dbnary.wiki.WikiTool;
+import org.getalp.dbnary.wiki.WikiText.InternalLink;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Text;
+import org.getalp.dbnary.wiki.WikiText.Token;
+import org.getalp.dbnary.wiki.WikiText.WikiContent;
+import org.getalp.dbnary.wiki.WikiText.WikiDocument;
+import org.getalp.dbnary.wiki.WikiText.WikiSection;
+import org.getalp.model.ontolex.LexicalForm;
+import org.getalp.model.ontolex.PhoneticRepresentation;
+import org.getalp.model.ontolex.WrittenRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,41 +47,18 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  // NOTE: to subclass the extractor, you need to define how a language section is recognized.
-  // then, how are sections recognized and what is their semantics.
-  // then, how to extract specific elements from the particular sections
-  protected final static String languageSectionPatternString;
+  protected final static String pronunciationPatternString = "\\{\\{pron\\|([^|}]*)\\|([^}]*)}}";
 
-  protected final static String languageSectionPatternString1 = "==\\s*\\{\\{=([^=]*)=\\}\\}\\s*==";
-  protected final static String languageSectionPatternString2 =
-      "==\\s*\\{\\{langue\\|([^\\}]*)\\}\\}\\s*==";
-  // TODO: handle morphological informations e.g. fr-rég template ?
-  protected final static String pronunciationPatternString =
-      "\\{\\{pron\\|([^\\|\\}]*)\\|([^\\}]*)\\}\\}";
+  protected final static String otherFormPatternString = "\\{\\{fr-[^}]*}}";
 
-  protected final static String otherFormPatternString = "\\{\\{fr-[^\\}]*\\}\\}";
-
-  private String lastExtractedPronunciationLang = null;
-
-  private static Pattern inflectionMacroNamePattern = Pattern.compile("^fr-");
-  protected final static String inflectionDefPatternString =
-      "^\\# ''([^\n]+) (?:de'' |d\\’''||(?:du verbe|du nom|de l’adjectif)'' )\\[\\[([^\n]+)\\]\\]\\.$";
-  protected final static Pattern inflectionDefPattern =
-      Pattern.compile(inflectionDefPatternString, Pattern.MULTILINE);
-
-  private static HashMap<String, String> posMarkers;
-  private static HashSet<String> ignorablePosMarkers;
-  private static HashSet<String> sectionMarkers;
+  private static final HashMap<String, String> posMarkers;
+  private static final HashSet<String> ignoredSectionTitles;
+  private static final HashSet<String> ignoredPosMarkers;
 
   private final static HashMap<String, String> nymMarkerToNymName;
 
-  private static HashSet<String> unsupportedMarkers = new HashSet<>();
-
-  public static final Locale frLocale = new Locale("fr");
-
-  // private static Set<String> affixesToDiscardFromLinks = null;
   private static void addPos(String pos) {
     posMarkers.put(pos, pos);
   }
@@ -82,12 +68,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   static {
-    languageSectionPatternString =
-        new StringBuilder().append("(?:").append(languageSectionPatternString1).append(")|(?:")
-            .append(languageSectionPatternString2).append(")").toString();
 
     posMarkers = new HashMap<>(130);
-    ignorablePosMarkers = new HashSet<>(130);
 
     addPos("-déf-");
     addPos("-déf-/2");
@@ -95,7 +77,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     addPos("--");
     addPos("-adj-");
     addPos("-adj-/2");
-    ignorablePosMarkers.add("-flex-adj-indéf-");
     addPos("-adj-dém-");
     addPos("-adj-excl-");
     addPos("-adj-indéf-");
@@ -108,9 +89,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     addPos("-adv-rel-");
     addPos("-aff-");
     addPos("-art-");
-    ignorablePosMarkers.add("-flex-art-déf-");
-    ignorablePosMarkers.add("-flex-art-indéf-");
-    ignorablePosMarkers.add("-flex-art-part-");
     addPos("-art-déf-");
     addPos("-art-indéf-");
     addPos("-art-part-");
@@ -125,32 +103,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     addPos("-corrélatif-");
     addPos("-erreur-");
     addPos("-faux-prov-");
-    ignorablePosMarkers.add("-flex-adj-");
-    ignorablePosMarkers.add("-flex-adj-num-");
-    ignorablePosMarkers.add("-flex-adj-pos-");
-    ignorablePosMarkers.add("-flex-adv-");
-    ignorablePosMarkers.add("-flex-art-");
-    ignorablePosMarkers.add("-flex-aux-");
-    ignorablePosMarkers.add("-flex-conj-");
-    ignorablePosMarkers.add("-flex-interj-");
-    ignorablePosMarkers.add("-flex-lettre-");
-    ignorablePosMarkers.add("-flex-loc-adj-");
-    ignorablePosMarkers.add("-flex-loc-conj-");
-    ignorablePosMarkers.add("-flex-loc-nom-");
-    ignorablePosMarkers.add("-flex-loc-verb-");
-    ignorablePosMarkers.add("-flex-nom-");
-    ignorablePosMarkers.add("-flex-nom-fam-");
-    ignorablePosMarkers.add("-flex-nom-pr-");
-    ignorablePosMarkers.add("-flex-mots-diff-");
-    ignorablePosMarkers.add("-flex-prénom-");
-    ignorablePosMarkers.add("-flex-prép-");
-    ignorablePosMarkers.add("-flex-pronom-");
-    ignorablePosMarkers.add("-flex-pronom-indéf-");
-    ignorablePosMarkers.add("-flex-pronom-int-");
-    ignorablePosMarkers.add("-flex-pronom-pers-");
-    ignorablePosMarkers.add("-flex-pronom-rel-");
-    ignorablePosMarkers.add("-flex-verb-");
-    ignorablePosMarkers.add("-inf-");
     addPos("-interf-");
     addPos("-interj-");
     addPos("-lettre-");
@@ -196,9 +148,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     addPos("-signe-");
     addPos("-sin-");
     addPos("-subst-pron-pers-");
-    ignorablePosMarkers.add("-suf-");
-    ignorablePosMarkers.add("-flex-suf-");
-    ignorablePosMarkers.add("-symb-");
     addPos("type");
     addPos("-var-typo-");
     addPos("-verb-");
@@ -374,10 +323,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     addPos("variante par contrainte typographique");
 
     // CARACTÈRES
-    ignorablePosMarkers.add("lettre");
-
-    ignorablePosMarkers.add("symbole");
-    ignorablePosMarkers.add("symb");
     addPos("classificateur");
     addPos("class");
     addPos("classif");
@@ -396,6 +341,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // Spéciaux
     addPos("gismu");
     addPos("rafsi");
+
+    ignoredSectionTitles = new HashSet<>();
+    ignoredPosMarkers = new HashSet<>();
+
+    // IGNORED SECTIONS
+    ignoredPosMarkers.add("lettre");
+    ignoredPosMarkers.add("symbole");
+    ignoredPosMarkers.add("symb");
+
+    ignoredSectionTitles.add("références");
+    ignoredSectionTitles.add("anagrammes");
+    ignoredSectionTitles.add("paronymes");
+    ignoredSectionTitles.add("prononciation");
+    ignoredSectionTitles.add("références");
+    ignoredSectionTitles.add("voir aussi");
+    ignoredSectionTitles.add("voir");
+
+
 
     nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("-méro-", "mero");
@@ -429,62 +392,29 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     // paronymes, gentillés ?
 
-    // Check if these markers still exist in new french organization...
-    sectionMarkers = new HashSet<>(200);
-    sectionMarkers.addAll(posMarkers.keySet());
-    sectionMarkers.addAll(nymMarkerToNymName.keySet());
-    sectionMarkers.add("-étym-");
-    sectionMarkers.add("-voc-");
-    sectionMarkers.add("-trad-");
-    sectionMarkers.add("-note-");
-    sectionMarkers.add("-réf-");
-    sectionMarkers.add("clé de tri");
-    sectionMarkers.add("-anagr-");
-    sectionMarkers.add("-drv-");
-    sectionMarkers.add("-voir-");
-    sectionMarkers.add("-pron-");
-    sectionMarkers.add("-gent-");
-    sectionMarkers.add("-apr-");
-    sectionMarkers.add("-paro-");
-    sectionMarkers.add("-homo-");
-    sectionMarkers.add("-exp-");
-    sectionMarkers.add("-compos-");
-    // DONE: prendre en compte la variante orthographique (différences avec -ortho-alt- ?)
-    sectionMarkers.add("-var-ortho-");
-
     // TODO trouver tous les modèles de section...
 
     // affixesToDiscardFromLinks = new HashSet<String>();
     // affixesToDiscardFromLinks.add("s");
   }
 
-  public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
-    super(wdh);
-  }
-
-
-  protected final static Pattern languageSectionPattern;
   protected final static Pattern pronunciationPattern;
   protected final static Pattern otherFormPattern;
 
   static {
-    languageSectionPattern = Pattern.compile(languageSectionPatternString);
     pronunciationPattern = Pattern.compile(pronunciationPatternString);
     otherFormPattern = Pattern.compile(otherFormPatternString);
   }
 
-  private enum Block {
-    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK
+  WiktionaryDataHandler frwdh;
+
+  public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
+    super(wdh);
+    frwdh = (WiktionaryDataHandler) wdh;
   }
-
-  private Block currentBlock = Block.NOBLOCK;
-  private int blockStart = -1;
-
-  private String currentNym = null;
 
   protected ExampleExpanderWikiModel exampleExpander;
   protected FrenchDefinitionExtractorWikiModel definitionExpander;
-  // protected FrenchExtractorWikiModel conjugationExtractor;
   protected InflectionExtractorWikiModel morphologyExtractor;
   protected VerbalInflexionExtractorWikiModel verbalInflectionExtractor;
   protected ExpandAllWikiModel glossExtractor;
@@ -496,8 +426,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
     definitionExpander = new FrenchDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"),
         "/${image}", "/${title}");
-    // conjugationExtractor =
-    // new FrenchExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
     verbalInflectionExtractor = new VerbalInflexionExtractorWikiModel(this.wdh, this.wi,
         new Locale("fr"), "/${image}", "/${title}");
     morphologyExtractor = new InflectionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"),
@@ -510,7 +438,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super.setWiktionaryPageName(wiktionaryPageName);
     exampleExpander.setPageName(this.getWiktionaryPageName());
     definitionExpander.setPageName(this.getWiktionaryPageName());
-    // conjugationExtractor.setPageName(this.getWiktionaryPageName());
     morphologyExtractor.setPageName(this.getWiktionaryPageName());
     verbalInflectionExtractor.setPageName(this.getWiktionaryPageName());
     glossExtractor.setPageName(this.getWiktionaryPageName());
@@ -518,225 +445,66 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private Set<String> defTemplates = null;
 
-  protected boolean isFrenchLanguageHeader(Matcher m) {
-    return (null != m.group(1) && m.group(1).equals("fr"))
-        || (null != m.group(2) && m.group(2).equals("fr"));
-  }
-
-  public String getLanguageInHeader(Matcher m) {
-    if (null != m.group(1)) {
-      return m.group(1);
-    }
-
-    if (null != m.group(2)) {
-      return m.group(2);
-    }
-
-    return null;
-  }
-
   @Override
   public void extractData() {
-    extractData(false);
+    frwdh.initializePageExtraction(getWiktionaryPageName());
+    WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
+    WikiDocument doc = page.asStructuredDocument();
+    doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection)
+        .map(Token::asWikiSection).forEach(wikiSection -> extractSection(wikiSection));
+    frwdh.finalizePageExtraction();
   }
 
-  protected void extractData(boolean extractForeignData) {
-    wdh.initializePageExtraction(getWiktionaryPageName());
-    Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-    int startSection = -1;
-
-    // exampleExpander = new ExampleExpanderWikiModel(wi, frLocale, this.wiktionaryPageName, "");
-    exampleExpander.setPageName(this.getWiktionaryPageName());
-
-    String nextLang = null, lang = null;
-
-    while (languageFilter.find()) {
-      nextLang = getLanguageInHeader(languageFilter);
-      extractData(startSection, languageFilter.start(), lang, extractForeignData);
-      lang = nextLang;
-      startSection = languageFilter.end();
-    }
-
-    // Either the filter is at end of sequence or on French language header.
-    if (languageFilter.hitEnd()) {
-      extractData(startSection, pageContent.length(), lang, extractForeignData);
-    }
-    wdh.finalizePageExtraction();
+  private void extractSection(WikiSection section) {
+    Optional<String> language = sectionLanguage(section);
+    language.ifPresent(l -> extractLanguageSection(section, l));
   }
 
-  protected void extractData(int startOffset, int endOffset, String lang,
-      boolean extractForeignData) {
-    if (lang == null) {
+  private void extractLanguageSection(WikiSection languageSection, String language) {
+    if (null == language)
       return;
-    }
+    if (wdh.isDisabled(ExtractionFeature.FOREIGN_LANGUAGES) && !"fr".equals(language))
+      return;
 
-    if (extractForeignData) {
-      if ("fr".equals(lang)) {
-        return;
-      }
+    // The language is always defined when arriving here
+    wdh.initializeLanguageSection(language);
 
-      wdh.initializeEntryExtraction(getWiktionaryPageName(), lang);
-    } else {
-      if (!"fr".equals(lang)) {
-        return;
-      }
-
-      wdh.initializeEntryExtraction(getWiktionaryPageName());
-    }
-    Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
-    m.region(startOffset, endOffset);
-
-    log.trace("Extracting page \t{}", this.getWiktionaryPageName());
-
-    // WONTDO: (priority: low) should I use a macroOrLink pattern to detect translations that are
-    // not macro based ?
-    // DONE: (priority: top) link the definition node with the current Part of Speech
-    // DONE: handle alternative spelling
-
-    currentBlock = Block.NOBLOCK;
-
-    while (m.find()) {
-      // Iterate until we find a new section
-      if (m.group(1).equals("S")) {
-        // We are in a new block
-        HashMap<String, Object> context = new HashMap<>();
-        Block nextBlock = computeNextBlock(m, context);
-
-        // If current block is IGNOREPOS, we should ignore everything but a new
-        // DEFBLOCK/INFLECTIONBLOCK
-        if (Block.IGNOREPOS != currentBlock
-            || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
-          leaveCurrentBlock(m);
-          gotoNextBlock(nextBlock, context);
-        }
-      }
-    }
-
-    // Finalize the entry parsing
-    leaveCurrentBlock(m);
-
-    wdh.finalizeEntryExtraction();
-  }
-
-  private Block computeNextBlock(Matcher m, Map<String, Object> context) {
-    Map<String, String> sectionArgs = WikiTool.parseArgs(m.group(2));
-    String sectionTitle = sectionArgs.get("1");
-    String pos, nym;
-    context.put("start", m.end());
-
-    if (sectionTitle != null) {
-      if (ignorablePosMarkers.contains(sectionTitle)) {
-        return Block.IGNOREPOS;
-      } else if ((pos = posMarkers.get(sectionTitle)) != null) {
-        context.put("pos", pos);
-        if ("flexion".equals(sectionArgs.get("3"))) {
-          context.put("lang", LangTools.normalize(sectionArgs.get("2")));
-          return Block.INFLECTIONBLOCK;
+    for (Token t : languageSection.getContent().sections()) {
+      WikiSection section = t.asWikiSection();
+      Pair<Template, String> titleTemplateAndSection = sectionTitle(section);
+      Template title = titleTemplateAndSection.getLeft();
+      String sectionName = titleTemplateAndSection.getRight();
+      String pos;
+      if ("étymologie".equals(sectionName)) {
+        // NOTHING YET
+      } else if ((pos = posMarkers.get(sectionName)) != null) {
+        if (title != null && "flexion".equals(title.getParsedArg("3"))) {
+          extractInflections(section);
+          // There are several entries with misplaced sub section (e.g. translations given after
+          // an inflexions section). Try to extract data from these misplaced subsections.
+          handleLexicalEntrySubSections(section);
         } else {
-          return Block.DEFBLOCK;
+          extractLexicalEntry(section, pos);
         }
-      } else if (isTranslation(m, sectionTitle)) {
-        return Block.TRADBLOCK;
-      } else if (isAlternate(m, sectionTitle)) {
-        return Block.ORTHOALTBLOCK;
-      } else if (null != (nym = getNymHeader(m, sectionTitle))) {
-        context.put("nym", nym);
-        return Block.NYMBLOCK;
-      } else if (isValidSection(m, sectionTitle)) {
-        return Block.NOBLOCK;
+      } else if (ignoredPosMarkers.contains(sectionName)) {
+        log.trace("Ignoring part of speech {} in {}",
+            title == null ? sectionName : title.getText());
+        // IGNORE
+      } else if (ignoredSectionTitles.contains(sectionName)) {
+        log.trace("Ignoring section {} in {}", title == null ? sectionName : title.getText());
+        // There are several entries with misplaced sub section (e.g. translations given after
+        // reference section). Try to extract data from these misplaced subsections.
+        handleLexicalEntrySubSections(section);
+        // IGNORE
       } else {
-        log.debug("Invalid section title {} in {}", sectionTitle, this.getWiktionaryPageName());
-        return Block.NOBLOCK;
+        log.debug("Unexpected title {} in {}", title == null ? sectionName : title.getText(),
+            getWiktionaryPageName());
+        // There are several entries with misplaced sub section (e.g. translations given after
+        // reference section). Try to extract data from these misplaced subsections.
+        handleLexicalEntrySubSections(section);
       }
-    } else {
-      log.debug("Null section title in {}", sectionTitle, this.getWiktionaryPageName());
-      return Block.NOBLOCK;
     }
-  }
-
-
-  private void gotoNextBlock(Block nextBlock, HashMap<String, Object> context) {
-    currentBlock = nextBlock;
-    Object start = context.get("start");
-    blockStart = (null == start) ? -1 : (int) start;
-    switch (nextBlock) {
-      case NOBLOCK:
-      case IGNOREPOS:
-        break;
-      case INFLECTIONBLOCK:
-        fillInflectionInformation(context);
-        break;
-      case DEFBLOCK:
-        String pos = (String) context.get("pos");
-        wdh.addPartOfSpeech(pos);
-        if ("-verb-".equals(pos)) {
-          wdh.registerPropertyOnCanonicalForm(LexinfoOnt.verbFormMood, LexinfoOnt.infinitive);
-        }
-        break;
-      case TRADBLOCK:
-        break;
-      case ORTHOALTBLOCK:
-        break;
-      case NYMBLOCK:
-        currentNym = (String) context.get("nym");
-        break;
-      default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
-    }
-
-  }
-
-  private void leaveCurrentBlock(Matcher m) {
-    if (blockStart == -1) {
-      return;
-    }
-
-    int end = computeRegionEnd(blockStart, m);
-
-    log.trace("Leaving block {} while parsing entry {}", currentBlock.name(),
-        this.getWiktionaryPageName());
-    switch (currentBlock) {
-      case NOBLOCK:
-      case IGNOREPOS:
-        break;
-      case INFLECTIONBLOCK:
-        commonInflectionInformations.pronunciation = extractPronunciation(blockStart, end, false);
-        // TODO : check if extracting inflections from form pages gives additional information.
-        // TODO: currently extracting inflections is the only way to get the inflected past
-        // participle forms
-        // extractInflections(blockStart, end);
-        break;
-      case DEFBLOCK:
-        List<String> morphologicalFeatures = extractMorphologicalData(blockStart, end);
-        extractConjugationPage(morphologicalFeatures);
-        extractDefinitions(blockStart, end);
-        extractPronunciation(blockStart, end);
-        extractOtherForms(blockStart, end, morphologicalFeatures);
-        break;
-      case TRADBLOCK:
-        extractTranslations(blockStart, end);
-        break;
-      case ORTHOALTBLOCK:
-        extractOrthoAlt(blockStart, end);
-        break;
-      case NYMBLOCK:
-        extractNyms(currentNym, blockStart, end);
-        currentNym = null;
-        break;
-      default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
-    }
-
-    blockStart = -1;
-  }
-
-  private void extractConjugationPage(List<String> context) {
-    Resource pos = wdh.currentLexinfoPos();
-    if (null != pos && pos.equals(LexinfoOnt.verb)) {
-      verbalInflectionExtractor.extractConjugations(context);
-    }
+    wdh.finalizeLanguageSection();
   }
 
   /**
@@ -749,121 +517,147 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    *
    * This is the only place where we find inflected forms of past participle ?
    *
-   * @param blockStart
-   * @param end
+   * @param section the wiki text section corresponding to an inflected forms definitions.
    */
-  private void extractInflections(int blockStart, int end) {
-    log.trace("extracting inflections in {}", this.getWiktionaryPageName());
-    Matcher m = WikiPatterns.macroPattern.matcher(pageContent);
-    m.region(blockStart, end);
+  private void extractInflections(WikiSection section) {
+    WikiContent content = section.getPrologue();
+    WikiContent heading = section.getHeading().getContent();
 
-    while (m.find()) {
+    Pair<String, String> langAndPoS = heading.templatesOnUpperLevel().stream()
+        .map(Token::asTemplate).filter(t -> t.getName().equals("S")).findFirst()
+        .map(t -> new ImmutablePair<>(t.getParsedArgs().get("2").trim(),
+            posMarkers.get(t.getParsedArgs().get("1").trim())))
+        .orElse(null);
 
-      if ("m".equals(m.group(1)) || "mf".equals(m.group(1))) {
-        HashSet<PropertyObjectPair> infl = new HashSet<>();
-        infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.masculine));
-        commonInflectionInformations.inflections.add(infl);
-      }
+    // Only get inflections for verbs so that we capture the missing inflected past participles.
+    if (!langAndPoS.getRight().equals("-verb-"))
+      return;
 
-      if ("f".equals(m.group(1)) || "mf".equals(m.group(1))) {
-        HashSet<PropertyObjectPair> infl = new HashSet<>();
-        infl.add(PropertyObjectPair.get(LexinfoOnt.gender, LexinfoOnt.feminine));
-        commonInflectionInformations.inflections.add(infl);
-      }
+    String pronunciation = content.templatesOnUpperLevel().stream().map(Token::asTemplate)
+        .filter(t -> t.getName().equals("pron")).findFirst()
+        .map(t -> t.getParsedArgs().get("1").trim()).orElse(null);
 
-    }
+    ClassBasedFilter filter = new ClassBasedFilter();
+    filter.denyAll().allowIndentedItem(); // Only parse indented item
+    List<Pair<InternalLink, LexicalForm>> forms =
+        content.filteredTokens(filter).stream().map(Token::asIndentedItem)
+            .flatMap(ident -> FrenchInflectionDecoder.getOtherForms(ident, pronunciation))
+            .collect(Collectors.toList());
+    forms.forEach(pair -> {
+      pair.getRight().addValue(
+          new WrittenRepresentation(wdh.currentLexEntry(), wdh.getCurrentEntryLanguage()));
+      if (null != pronunciation && pronunciation.length() > 0)
+        pair.getRight()
+            .addValue(new PhoneticRepresentation(pronunciation, wdh.getCurrentEntryLanguage()));
+    });
 
-    m = inflectionDefPattern.matcher(pageContent);
-    m.region(blockStart, end);
-    // TODO [URGENT]: # Masculin pluriel de '''[[criminel]]'''. n'est pas matché
-    while (m.find()) {
-      // Getting the canonical form of the inflection
-      String canonicalForm = m.group(2);
-
-      int pipePos = canonicalForm.indexOf('|');
-      if (pipePos != -1) {
-        canonicalForm = canonicalForm.substring(pipePos + 1);
-      }
-
-      Set<PropertyObjectPair> infos = new HashSet<>();
-
-      // infos.add(PropertyObjectPair.get(FrenchExtractorWikiModel.extractedFromFrenchSentence,
-      // FrenchExtractorWikiModel.trueLiteral));
-      for (String info : m.group(1).split("de l’|du|de")) {
-        FrenchExtractorWikiModel.addAtomicMorphologicalInfo(infos,
-            info.trim().toLowerCase(frLocale));
-      }
-
-      if (commonInflectionInformations.inflections.size() == 0) {
-        commonInflectionInformations.inflections.add(new HashSet<>());
-      }
-
-      for (HashSet<PropertyObjectPair> inflection : commonInflectionInformations.inflections) {
-        HashSet<PropertyObjectPair> union = new HashSet<>(infos);
-
-        protectedUnion(union, inflection);
-
-        wdh.registerInflection(commonInflectionInformations.languageCode,
-            commonInflectionInformations.partOfSpeech, wdh.currentLexEntry(), canonicalForm, 0,
-            // TODO: Where should this definition number be found ?
-            union, commonInflectionInformations.pronunciation);
-      }
-    }
+    forms.forEach(pair -> frwdh.registerInflection(pair.getRight(), pair.getLeft().getTargetText(),
+        langAndPoS.getLeft(), langAndPoS.getRight()));
   }
 
-  private void protectedUnion(HashSet<PropertyObjectPair> union,
-      HashSet<PropertyObjectPair> inflection) {
-    // Check if common inflections are compatible with extracted infos
-    for (PropertyObjectPair pair : inflection) {
-      if (union.contains(pair)) {
-        continue; // Data is already available
-      } else if (containsProperty(union, pair.getKey())) {
-        // Data does not contain the pair, but contains another... ==> incoherent ?
-        log.debug(
-            "Common morphological property info ({}) is incoherent with declared properties ({}) in {}.",
-            pair, union, wdh.currentLexEntry());
+  /**
+   * Extract the lexical entry that is described in the section.
+   * 
+   * @param section
+   * @param pos the (standardised) part of speech described by the section
+   */
+  private void extractLexicalEntry(WikiSection section, String pos) {
+    log.debug("Extracting LexicalEntry {} in {}", pos, getWiktionaryPageName());
+    wdh.initializeLexicalEntry(pos);
+
+    if ("-verb-".equals(pos)) {
+      wdh.registerPropertyOnCanonicalForm(LexinfoOnt.verbFormMood, LexinfoOnt.infinitive);
+    }
+    // First we extract morphological features, conjugations, definitions, etc. that are described
+    // BEFORE other subsections.
+    int blockStart = section.getHeading().getBeginIndex();
+    int end = section.getPrologue().getEndIndex();
+    List<String> morphologicalFeatures = extractMorphologicalData(blockStart, end);
+    extractConjugationPage(morphologicalFeatures);
+    extractDefinitions(blockStart, end);
+    extractPronunciation(section.getPrologue());
+    extractOtherForms(section.getPrologue(), morphologicalFeatures);
+
+    // Then, we extract sub sections
+    handleLexicalEntrySubSections(section);
+  }
+
+  private void handleLexicalEntrySubSections(WikiSection section) {
+    for (Token t : section.getContent().sections()) {
+      WikiSection subsection = t.asWikiSection();
+      Pair<Template, String> titleTemplateAndSection = sectionTitle(subsection);
+      Template title = titleTemplateAndSection.getLeft();
+      String sectionName = titleTemplateAndSection.getRight();
+      String nym;
+      if (sectionName.startsWith("trad")) {
+        extractTranslations(subsection.getPrologue());
+      } else if (variantSections.contains(sectionName)) {
+        extractOrthoAlt(subsection.getContent().getBeginIndex(),
+            subsection.getPrologue().getEndIndex());
+      } else if (null != (nym = nymMarkerToNymName.get(sectionName))) {
+        if (log.isDebugEnabled()
+            && section.getContent().sections().stream().findFirst().isPresent())
+          log.debug("Subsection under nym section in {}", getWiktionaryPageName());
+        extractNyms(nym, subsection.getContent().getBeginIndex(),
+            subsection.getPrologue().getEndIndex());
       } else {
-        union.add(pair);
+        log.debug("Unexpected sub section title {} in {}",
+            title == null ? sectionName : title.getText(), getWiktionaryPageName());
       }
+      // There may be a level 5 subsubsection named "traductions à trier" that contain more
+      // translations. This subsubsection is usually present at the end of the translations section,
+      // but it may appear alone, inside any other subsection. We need to handle this specific
+      // translations section separately.
+      subsection.getContent().sections().stream().map(Token::asWikiSection)
+          .filter(s -> sectionTitle(s).getRight().startsWith("trad"))
+          .forEach(s -> extractTranslations(s.getPrologue()));
     }
   }
 
-  private boolean containsProperty(HashSet<PropertyObjectPair> union, Property key) {
-    for (PropertyObjectPair pair : union) {
-      if (pair.getKey().equals(key)) {
-        return true;
-      }
+  private Pair<Template, String> sectionTitle(WikiSection section) {
+    List<Token> titleTemplate = section.getHeading().getContent().tokens().stream()
+        .filter(t -> !(t instanceof Text
+            && t.asText().getText().replaceAll("\u00A0", "").trim().equals("")))
+        .collect(Collectors.toList());
+    if (titleTemplate.size() == 0) {
+      log.debug("Unexpected empty title in {}", getWiktionaryPageName());
+      return new ImmutablePair<>(null, "");
     }
-    return false;
-  }
-
-
-  private boolean isValidSection(Matcher m, String sectionTitle) {
-    return sectionTitle != null || sectionMarkers.contains(m.group(1));
-  }
-
-  private class InflectionSection {
-
-    String partOfSpeech;
-    String languageCode;
-    HashSet<PronunciationPair> pronunciation = new HashSet<>();
-    HashSet<HashSet<PropertyObjectPair>> inflections = new HashSet<>();
-  }
-
-  private InflectionSection commonInflectionInformations;
-
-  private void fillInflectionInformation(Map<String, Object> context) {
-    commonInflectionInformations = new InflectionSection();
-    commonInflectionInformations.partOfSpeech = (String) context.get("pos");
-    commonInflectionInformations.languageCode = LangTools.normalize((String) context.get("lang"));
-  }
-
-
-  protected boolean isTranslation(Matcher m, String sectionTitle) {
-    if (sectionTitle != null) {
-      return sectionTitle.startsWith("trad");
+    if (titleTemplate.size() > 1) {
+      log.debug("Unexpected multi title {} in {}", section.getHeading().getText(),
+          getWiktionaryPageName());
     }
-    return m.group(1).equals("-trad-");
+    if (!(titleTemplate.get(0) instanceof Template)) {
+      log.debug("Unexpected non template title {} in {}", section.getHeading().getText(),
+          getWiktionaryPageName());
+      return new ImmutablePair<>(null,
+          section.getHeading().getContent().getText().toLowerCase().trim());
+    }
+    String tname = titleTemplate.get(0).asTemplate().getName().trim();
+    if (!"S".equals(tname)) {
+      log.debug("Template title is not an S: {} in {}", section.getHeading().getText(),
+          getWiktionaryPageName());
+      return new ImmutablePair<>(titleTemplate.get(0).asTemplate(), tname);
+    }
+
+    return new ImmutablePair<>(titleTemplate.get(0).asTemplate(),
+        titleTemplate.get(0).asTemplate().getParsedArg("1").toLowerCase().trim());
+  }
+
+  private Optional<String> sectionLanguage(WikiSection section) {
+    if (section.getHeading().getLevel() == 2) {
+      return section.getHeading().getContent().templatesOnUpperLevel().stream()
+          .map(Token::asTemplate).filter(t -> "langue".equals(t.getName()))
+          .map(t -> t.getParsedArg("1")).findFirst();
+    }
+    return Optional.empty();
+  }
+
+  private void extractConjugationPage(List<String> context) {
+    Resource pos = wdh.currentLexinfoPos();
+    if (null != pos && pos.equals(LexinfoOnt.verb)) {
+      verbalInflectionExtractor.extractConjugations(context);
+    }
   }
 
   private static Set<String> variantSections = new HashSet<>();
@@ -885,36 +679,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     variantSections.add("anciennes ortho");
   }
 
-  private boolean isAlternate(Matcher m, String sectionTitle) {
-    if (sectionTitle != null) {
-      return variantSections.contains(sectionTitle);
-    }
-
-    return m.group(1).equals("-ortho-alt-") || m.group(1).equals("-var-ortho-");
-  }
-
-
-  private String getNymHeader(Matcher m, String sectionTitle) {
-    if (sectionTitle != null) {
-      return nymMarkerToNymName.get(sectionTitle);
-    }
-
-    return nymMarkerToNymName.get(m.group(1));
-  }
-
-
   private static String translationTokenizer = "(?<ITALICS>'{2,3}.*?'{2,3})|"
       + "(?<PARENS>\\(\\P{Reserved}*?\\))|" + "(?<SPECIALPARENS>\\(.*?\\))|"
       + "(?<TMPL>\\p{Template})|" + "(?<LINK>\\p{InternalLink})";
 
-  private static final Pattern tokenizer = WikiPattern.compile(translationTokenizer); // match all
-                                                                                      // templates
+  private static final Pattern tokenizer = WikiPattern.compile(translationTokenizer);
 
-  private void extractTranslations(int startOffset, int endOffset) {
-    // log.debug("Translation section: " + pageContent.substring(startOffset, endOffset));
-
-    WikiText text = new WikiText(getWiktionaryPageName(), pageContent, startOffset, endOffset);
-    WikiCharSequence line = new WikiCharSequence(text);
+  private void extractTranslations(WikiContent content) {
+    WikiCharSequence line = new WikiCharSequence(content);
 
     Matcher lexer = tokenizer.matcher(line);
     Resource currentGloss = null;
@@ -1001,62 +773,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  protected void extractPronunciation(int startOffset, int endOffset) {
-    extractPronunciation(startOffset, endOffset, true);
+  protected void extractPronunciation(WikiContent content) {
+    content.templatesOnUpperLevel().stream().map(Token::asTemplate)
+        .filter(t -> t.getName().equals("pron")).forEach(p -> {
+          String pron = p.getParsedArgs().get("1");
+          String lang = p.getParsedArgs().get("2");
+          if (null == lang) {
+            lang = p.getParsedArgs().get("lang");
+          }
+          if (null != lang) {
+            lang = LangTools.getPart1OrId(lang.trim());
+          }
+          if (null == lang || lang.equals("")) {
+            lang = wdh.getCurrentEntryLanguage();
+          }
+          if (null != pron && !(pron = pron.trim()).equals("")) {
+            wdh.registerPronunciation(pron, lang + "-fonipa");
+          }
+        });
   }
-
-  private HashSet<PronunciationPair> extractPronunciation(int startOffset, int endOffset,
-      boolean registerPronunciation) {
-    Matcher pronMatcher = pronunciationPattern.matcher(pageContent);
-    pronMatcher.region(startOffset, endOffset);
-
-    lastExtractedPronunciationLang = null;
-
-    // TODO [URGENT]: what is this registerPronounciation boolean ?
-    HashSet<PronunciationPair> res = registerPronunciation ? null : new HashSet<>();
-
-    while (pronMatcher.find()) {
-      String pron = pronMatcher.group(1);
-      String lang = pronMatcher.group(2);
-
-      if (pron == null || pron.equals("")) {
-        return null;
-      }
-      // TODO [URGENT]: check when language is not present and display log debug information
-      if (lang == null || lang.equals("")) {
-        return null;
-      }
-
-      if (pron.startsWith("1=")) {
-        pron = pron.substring(2);
-      }
-
-      if (lang.startsWith("|2=")) {
-        lang = lang.substring(3);
-      } else if (lang.startsWith("|lang=")) {
-        lang = lang.substring(6);
-      } else if (lang.startsWith("lang=")) {
-        lang = lang.substring(5);
-      }
-
-      lang = LangTools.getPart1OrId(lang.trim());
-
-      lastExtractedPronunciationLang = lang;
-
-      if (lang != null && !lang.equals("") && !pron.equals("")) {
-        if (registerPronunciation) {
-          wdh.registerPronunciation(pron, lang + "-fonipa");
-        } else {
-          res.add(new PronunciationPair(pron, lang + "-fonipa"));
-        }
-      }
-    }
-
-    return res;
-  }
-
-  // static Pattern conjugationGroup =
-  // Pattern.compile("\\{\\{conjugaison\\|fr\\|groupe=(\\d)\\}\\}");
 
   /**
    * Extracts morphological information on the lexical entry itself.
@@ -1067,16 +802,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     List<String> context = new ArrayList<>();
     String block = pageContent.substring(blockStart, end);
 
-    if (block.matches("[\\s\\S]*\\{\\{m\\}\\}(?! *:)[\\s\\S]*")
-        || block.matches("[\\s\\S]*\\{\\{mf\\}\\}(?! *:)[\\s\\S]*")) {
+    if (block.matches("[\\s\\S]*\\{\\{m\\}\\}(?! *:)[\\s\\S]*")) {
       wdh.registerPropertyOnCanonicalForm(LexinfoOnt.gender, LexinfoOnt.masculine);
       context.add("Masculin");
     }
 
-    if (block.matches("[\\s\\S]*\\{\\{f\\}\\}(?! *:)[\\s\\S]*")
-        || block.matches("[\\s\\S]*\\{\\{mf\\}\\}(?! *:)[\\s\\S]*")) {
+    if (block.matches("[\\s\\S]*\\{\\{f\\}\\}(?! *:)[\\s\\S]*")) {
       wdh.registerPropertyOnCanonicalForm(LexinfoOnt.gender, LexinfoOnt.feminine);
       context.add("Féminin");
+    }
+
+    if (block.matches("[\\s\\S]*\\{\\{mf\\}\\}(?! *:)[\\s\\S]*")) {
+      wdh.registerPropertyOnCanonicalForm(LexinfoOnt.gender, LexinfoOnt.masculine);
+      wdh.registerPropertyOnCanonicalForm(LexinfoOnt.gender, LexinfoOnt.feminine);
+      context.add("Masculin et féminin identiques");
     }
 
     if (block.matches("[\\s\\S]*\\{\\{plurale tantum|fr\\}\\}(?! *:)[\\s\\S]*")) {
@@ -1106,7 +845,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  private void extractOtherForms(int start, int end, List<String> context) {
+  // TODO: all canonical forms are also available as otherForm, process other forms to remove
+  // the one corresponding to canonical forms.
+  private void extractOtherForms(WikiContent content, List<String> context) {
     if (wdh.isDisabled(ExtractionFeature.MORPHOLOGY)) {
       return;
     }
@@ -1114,18 +855,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // so remove any genre from adjective otherForm extraction.
     if ("-adj-".equals(wdh.currentWiktionaryPos())) {
       context.removeIf("Masculin"::equals);
-      context.removeIf("Féminin"::equals);
+      // I consider that an adjective which is marked as feminine is in fact defective.
+      // context.removeIf("Féminin"::equals);
     }
 
-    Matcher otherFormMatcher = otherFormPattern.matcher(pageContent);
-    otherFormMatcher.region(start, end);
-
-    while (otherFormMatcher.find()) {
-      String templateCall = otherFormMatcher.group();
-      if (templateCall.startsWith("{{fr-verbe"))
-        continue;
-      morphologyExtractor.parseOtherForm(otherFormMatcher.group(), context);
-    }
+    content.templatesOnUpperLevel().stream().map(Token::asTemplate)
+        .filter(t -> t.getName().startsWith("fr-")).filter(t -> !t.getName().startsWith("fr-verbe"))
+        .forEach(t -> morphologyExtractor.parseOtherForm(t.getText(), context));
   }
 
   @Override

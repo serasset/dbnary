@@ -132,10 +132,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeEntryExtraction(String wiktionaryPageName) {
-    super.initializeEntryExtraction(wiktionaryPageName);
+  public void initializeLanguageSection(String lang) {
+    super.initializeLanguageSection(lang);
     lexEntries.clear();
-    encodedWiktionaryPageName = uriEncode(currentWiktionaryPageName);
+    encodedWiktionaryPageName = uriEncode(currentPage.getName());
   }
 
   @Override
@@ -144,30 +144,31 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void finalizeEntryExtraction() {
-    super.finalizeEntryExtraction();
+  public void finalizeLanguageSection() {
+    super.finalizeLanguageSection();
     encodedWiktionaryPageName = null;
   }
 
   @Override
   public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {
-    if (lexEntries.size() == 0) {
+
+    if (currentPage.nbEntries() == 0) {
       log.debug("Registering Translation when no lexical entry is defined in {}",
-          currentWiktionaryPageName);
-    } else if (lexEntries.size() == 1) {
+          currentPage.getName());
+    } else if (currentPage.nbEntries() == 1) {
       super.registerTranslation(lang, currentGloss, usage, word);
     } else if (null == currentGloss) {
       log.debug("Attaching translations to Vocable (Null gloss and several lexical entries) in {}",
-          currentWiktionaryPageName);
+          currentPage.getName());
       super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
     } else {
-      // TODO: guess which translation is to be attached to which entry/sense
+      // DONE: guess which translation is to be attached to which entry/sense
       List<Resource> entries = getLexicalEntryUsingPartOfSpeech(currentGloss);
       if (entries.size() != 0) {
         log.trace("Attaching translations using part of speech in gloss : {}",
-            currentWiktionaryPageName);
+            currentPage.getName());
         if (entries.size() > 1) {
-          log.trace("Attaching translations to several entries in {}", currentWiktionaryPageName);
+          log.trace("Attaching translations to several entries in {}", currentPage.getName());
         }
         for (Resource entry : entries) {
           super.registerTranslationToEntity(entry, lang, currentGloss, usage, word);
@@ -175,7 +176,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       } else {
         Statement s = currentGloss.getProperty(RDF.value);
         String g = (null == s) ? "" : s.getString();
-        log.debug("Several entries are defined in {} // {}", currentWiktionaryPageName, g);
+        log.debug("Several entries are defined in {} // {}", currentPage.getName(), g);
         // TODO: disambiguate and attach to the correct entry.
         super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
       }
@@ -186,7 +187,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     String key = gloss.getGloss() + gloss.getSenseNumber();
     key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray())
         .replaceAll("[/=\\+]", "-");
-    return getPrefix() + "__" + wktLanguageEdition + "_gloss_" + key + "_"
+    return getPrefix() + "__" + shortEditionLanguageCode + "_gloss_" + key + "_"
         + encodedWiktionaryPageName;
   }
 
@@ -228,13 +229,13 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void addPartOfSpeech(String pos) {
+  public void initializeLexicalEntry(String pos) {
     // TODO: Italian sometimes define translations for noun forms. If an entry is ambiguous,
     // TODO: then translations could be wrongly attached. The forms should be kept in lex entries
     // TODO: but not correspond to a valid resource. This will be usefull for later
     // drop of non useful translations.
     PosAndType pat = posAndTypeValueMap.get(pos);
-    Resource entry = addPartOfSpeech(pos, posResource(pat), typeResource(pat));
+    Resource entry = initializeLexicalEntry(pos, posResource(pat), typeResource(pat));
     addLexEntry(posResource(pat), entry);
   }
 

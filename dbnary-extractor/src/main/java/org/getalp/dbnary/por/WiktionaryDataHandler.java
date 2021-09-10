@@ -29,11 +29,4 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     super(lang, tdbDir);
   }
 
-  @Override
-  public void addPartOfSpeech(String pos) {
-    // reset the sense number.
-    currentSenseNumber = 0;
-    currentSubSenseNumber = 0;
-    super.addPartOfSpeech(pos);
-  }
 }

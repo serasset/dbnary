@@ -68,7 +68,7 @@ public class RussianMorphoExtractorWikiModel extends DbnaryWikiModel {
       // This is a macro specifying the part Of Speech
       // TODO: extract other morphological information ?
       hasAPOS = true;
-      delegate.addPartOfSpeech(pos);
+      delegate.initializeLexicalEntry(pos);
     } else {
       // Just ignore the other template calls (uncomment to expand the template calls).
       // super.substituteTemplateCall(templateName, parameterMap, writer);

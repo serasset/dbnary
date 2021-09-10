@@ -1,3 +1,6 @@
+PREFIX dbnary: <http://kaiko.getalp.org/dbnary#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX dbnstats: <http://kaiko.getalp.org/dbnary/statistics/>
 SELECT ?Language
         (sample(?maxversion) as ?Version)
         (sample(?num_entries) as ?Entries)
@@ -8,7 +11,7 @@ WHERE
 {
     {
      # Select the latest version
-     SELECT distinct(?version) as ?maxversion
+     SELECT distinct (?version as ?maxversion)
      WHERE { ?s dbnary:wiktionaryDumpVersion ?version . }
      ORDER BY DESC(?version) LIMIT 1
     }

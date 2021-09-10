@@ -18,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author Deba
+ * @author Ayouba Deba
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
@@ -111,7 +111,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractKurdishData(int startOffset, int endOffset) {
     WikiText txt =
         new WikiText(getWiktionaryPageName(), pageContent.substring(startOffset, endOffset));
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
+    wdh.initializeLanguageSection("ku");
     for (Token evt : txt.headers(3)) {
       WikiSection section = evt.asHeading().getSection();
       String header = section.getHeading().getContent().toString().trim();
@@ -124,7 +124,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // ignore
       } else if (partOfSpeechMarkers.contains(header)) {
         // Part of speech
-        wdh.addPartOfSpeech(header);
+        wdh.initializeLexicalEntry(header);
         // Extract definitions
         extractDefinitions(section.getContent());
         for (Token wikiToken : section.getContent().wikiTokens()) {
@@ -142,10 +142,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         log.debug("Unexpected header {} in {}", header, getWiktionaryPageName());
       }
     }
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
-
-  private static Pattern senseNumPattern = Pattern.compile("\\[(\\d+)\\]");
 
   protected void extractDefinitions(WikiContent wk) {
     WikiEventsSequence indentationsOrTemplates =

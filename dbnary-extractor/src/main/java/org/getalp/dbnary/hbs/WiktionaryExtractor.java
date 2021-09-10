@@ -196,11 +196,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     lang = lang.trim();
 
-    if (lang.toLowerCase().equals("srpskohrvatski") || lang.equals("sh")) {
-      wdh.initializeEntryExtraction(getWiktionaryPageName());
+    if (lang.equalsIgnoreCase("srpskohrvatski") || lang.equals("sh")) {
+      wdh.initializeLanguageSection("sh");
     } else {
       return;
-      // wdh.initializeEntryExtraction(getWiktionaryPageName(), lang);
     }
 
     Matcher m = blockPattern.matcher(pageContent);
@@ -231,7 +230,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     extractDataBlock(start, endOffset, block, blockString);
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   protected void extractPron(int start, int end) {
@@ -294,7 +293,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           blockString = "Glagol";
           break;
         case "sh-imenica-deklinacija":
-          wdh.addPartOfSpeech("Imenica");
+          wdh.initializeLexicalEntry("Imenica");
           return;
         default:
           log.debug("Unknown blockPos {} --in-- {}", tmp, this.getWiktionaryPageName());
@@ -312,7 +311,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionMatcher.region(start, end);
     int startSample = -1;
     int senseNum = 1;
-    wdh.addPartOfSpeech(blockString);
+    wdh.initializeLexicalEntry(blockString);
 
     while (definitionMatcher.find()) {
       if (startSample == -1) {
@@ -490,8 +489,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractFlektirani(startOffset, endOffset);
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
   }
 

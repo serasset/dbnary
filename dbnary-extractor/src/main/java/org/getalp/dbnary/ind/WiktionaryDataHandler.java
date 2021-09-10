@@ -137,14 +137,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void addTranslation(String lang, Resource gloss, String usage, String word) {
     if (currentLexEntry == null) {
-      addPartOfSpeech("none");
+      initializeLexicalEntry("none");
     }
     registerTranslation(lang, gloss, usage, word);
   }
 
   public void addNewDefinition(String def, String sense) {
     if (currentLexEntry == null) {
-      addPartOfSpeech("none");
+      initializeLexicalEntry("none");
     }
     registerNewDefinition(def, sense);
   }

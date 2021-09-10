@@ -59,8 +59,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeEntryExtraction(String wiktionaryPageName) {
-    super.initializeEntryExtraction(wiktionaryPageName);
+  public void initializeLanguageSection(String language) {
+    super.initializeLanguageSection(language);
 
     currentWordsenses.clear();
   }
@@ -405,14 +405,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void addPartOfSpeech(String pos) {
+  public void initializeLexicalEntry(String pos) {
     // TODO: normalize POS and register a new lexical entry using abbreviated pos id.
     // TODO: extract simplified POS then register all category informations
     // DONE: register the normalized POS.
     DecodedPOS dpos = decodePOS(pos);
 
     if (dpos != null) {
-      super.addPartOfSpeech(dpos.simplePOSName, dpos.lexinfoPOS, dpos.entryType);
+      super.initializeLexicalEntry(dpos.simplePOSName, dpos.lexinfoPOS, dpos.entryType);
     } else {
       this.voidPartOfSpeech();
       log.debug("Could not register a POS for {}", pos);
@@ -421,8 +421,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void voidPartOfSpeech() {
     // DONE: create a LexicalEntry for this part of speech only and attach info to it.
-    currentWiktionaryPos = null;
-    currentLexinfoPos = null;
+    currentLexicalEntry = null;
+    // currentWiktionaryPos = null;
+    // currentLexinfoPos = null;
 
     currentEncodedLexicalEntryName = null;
     currentLexEntry = null;
@@ -431,7 +432,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   public boolean posIsValid() {
-    return currentWiktionaryPos != null;
+    return currentWiktionaryPos() != null;
   }
 
   // TODO : All lex entries precede the translation.

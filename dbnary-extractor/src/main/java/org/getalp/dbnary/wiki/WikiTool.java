@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.getalp.dbnary.Pair;
+import org.getalp.dbnary.Span;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +39,12 @@ public class WikiTool {
     String argString;
     for (int h = 0; h < argsArray.size(); h++) {// iterate over all arguments in argsArray
       argString = argsArray.get(h); // an argument in argsArray
-      ArrayList<Pair> templatesAndLinksLocation = locateEnclosedString(argString, "{{", "}}");
+      ArrayList<Span> templatesAndLinksLocation = locateEnclosedString(argString, "{{", "}}");
       templatesAndLinksLocation.addAll(locateEnclosedString(argString, "[[", "]]"));
       int j = 0;
       while (j < argString.length()) {// iterate over characters in string argString
         if (argString.charAt(j) == '=') {
-          Pair p = new Pair(j, j + 1);
+          Span p = new Span(j, j + 1);
           if (templatesAndLinksLocation.size() == 0
               || !(p.containedIn(templatesAndLinksLocation))) {
             if (j == argString.length() - 1) {
@@ -103,7 +103,7 @@ public class WikiTool {
 
   public static String removeTablesIn(String s) {
     String toreturn = "";
-    for (Pair p : WikiTool.locateEnclosedString(s, "{|", "|}")) {
+    for (Span p : WikiTool.locateEnclosedString(s, "{|", "|}")) {
       toreturn = toreturn + s.substring(0, p.start) + s.substring(p.end, s.length());
     }
     if (toreturn.equals("")) {
@@ -117,14 +117,14 @@ public class WikiTool {
   // This function is only used by /eng/Etymology.java
   public static String removeTextWithinParenthesesIn(String s) {
     // locate templates {{}} and links [[]]
-    ArrayList<Pair> templatesAndLinksLocations = locateEnclosedString(s, "{{", "}}");
+    ArrayList<Span> templatesAndLinksLocations = locateEnclosedString(s, "{{", "}}");
     templatesAndLinksLocations.addAll(locateEnclosedString(s, "[[", "]]"));
     // locate parentheses ()
-    ArrayList<Pair> parenthesesLocations = locateEnclosedString(s, "(", ")");
+    ArrayList<Span> parenthesesLocations = locateEnclosedString(s, "(", ")");
     // ignore location of parentheses if they fall inside a link or a template
     int parenthesesLocationsLength = parenthesesLocations.size();
     for (int i = 0; i < parenthesesLocationsLength; i++) {
-      Pair p = parenthesesLocations.get(parenthesesLocationsLength - i - 1);
+      Span p = parenthesesLocations.get(parenthesesLocationsLength - i - 1);
       // check if parentheses are inside links [[ () ]]
       if (!p.containedIn(templatesAndLinksLocations)) {
         log.debug("Removing string {} in Etymology section", s.substring(p.start, p.end));
@@ -150,12 +150,12 @@ public class WikiTool {
    * @return an ArrayList with the start and ens positions of the enclosing Strings in input String
    *         s
    */
-  public static ArrayList<Pair> locateEnclosedString(String s, String enclosingStringStart,
+  public static ArrayList<Span> locateEnclosedString(String s, String enclosingStringStart,
       String enclosingStringEnd) {
     int eSS = enclosingStringStart.length();
     int eSE = enclosingStringEnd.length();
     int numberOfEnclosings = 0, start = -1, end = -1;
-    ArrayList<Pair> toreturn = new ArrayList<Pair>();
+    ArrayList<Span> toreturn = new ArrayList<Span>();
     for (int i = 0; i + eSE <= s.length(); i++) {
       if (i + eSS + eSE <= s.length()) {
         if (s.substring(i, i + eSS).equals(enclosingStringStart)) {
@@ -170,7 +170,7 @@ public class WikiTool {
         numberOfEnclosings--;
         if (numberOfEnclosings == 0 && start != -1) {
           end = i + eSE;
-          toreturn.add(new Pair(start, end));
+          toreturn.add(new Span(start, end));
           start = -1;// initialize start
         }
         i += eSE - 1;
@@ -188,14 +188,14 @@ public class WikiTool {
    */
   public static ArrayList<String> splitUnlessInTemplateOrLink(String s, char c) {
     // locate wiki templates and links in input string
-    ArrayList<Pair> templatesAndLinksLocation = locateEnclosedString(s, "{{", "}}");
+    ArrayList<Span> templatesAndLinksLocation = locateEnclosedString(s, "{{", "}}");
     templatesAndLinksLocation.addAll(locateEnclosedString(s, "[[", "]]"));
 
     ArrayList<String> a = new ArrayList<String>();
     int i = 0, j = 0;// iterate over characters in string s
     while (j < s.length() - 1) {
       if (s.charAt(j) == c) {
-        Pair p = new Pair(j, j + 1);
+        Span p = new Span(j, j + 1);
         if (templatesAndLinksLocation.size() == 0
             || (!(p.containedIn(templatesAndLinksLocation)))) {
           a.add(s.substring(i, j).trim());

@@ -133,16 +133,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return (null != m.group(1) && m.group(1).startsWith("{{-ru-"));
   }
 
-  public void startExtraction() {
-    isCurrentlyExtracting = true;
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
-  }
-
-  public void stopExtraction() {
-    isCurrentlyExtracting = false;
-  }
-
-
   // private HashSet<String> unsupportedSections = new HashSet<String>(100);
   void gotoNoData(Matcher m) {
     state = NODATA;
@@ -230,7 +220,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractRussianData(int startOffset, int endOffset) {
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
+    wdh.initializeLanguageSection("ru");
     gotoIgnorePos();
     while (m.find()) {
       switch (state) {
@@ -459,10 +449,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case IGNOREPOS:
         break;
       default:
-        assert false : "Unexpected state while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
   private void extractTranslations(int startOffset, int endOffset) {

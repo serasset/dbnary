@@ -12,7 +12,7 @@ ETYMOLOGY="--enable etymology"
 LIME="--enable lime"
 ENHANCE="--enable enhancement"
 STATS="--enable statistics"
-TDB="--tdb"
+TDB=""
 DATE=""
 VERBOSE=""
 FORCE=""
@@ -100,7 +100,7 @@ while getopts ":d:t:v:D:c:nmMeElLsSTVxXhf" opt; do
       ENHANCE=""
       ;;
     T)
-      TDB=""
+      TDB="--tdb"
       ;;
     V)
       VERBOSE="-v"

@@ -13,22 +13,22 @@ import org.getalp.dbnary.morphology.InflectionScheme;
 import org.getalp.dbnary.morphology.MorphoSyntacticFeature;
 import org.getalp.dbnary.morphology.RefactoredTableExtractor;
 import org.getalp.dbnary.morphology.RelaxInflexionScheme;
-import org.getalp.lexinfo.model.Frequency;
-import org.getalp.lexinfo.model.Mood;
-import org.getalp.lexinfo.model.Number;
-import org.getalp.lexinfo.model.Person;
-import org.getalp.lexinfo.model.Tense;
-import org.getalp.ontolex.model.LexicalForm;
-import org.getalp.ontolex.model.PhoneticRepresentation;
-import org.getalp.ontolex.model.Representation;
-import org.getalp.ontolex.model.WrittenRepresentation;
+import org.getalp.model.lexinfo.Frequency;
+import org.getalp.model.lexinfo.Mood;
+import org.getalp.model.lexinfo.Number;
+import org.getalp.model.lexinfo.Person;
+import org.getalp.model.lexinfo.Tense;
+import org.getalp.model.ontolex.LexicalForm;
+import org.getalp.model.ontolex.PhoneticRepresentation;
+import org.getalp.model.ontolex.Representation;
+import org.getalp.model.ontolex.WrittenRepresentation;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StandardMoodTableExtractor extends RefactoredTableExtractor {
 
-  private Logger log = LoggerFactory.getLogger(StandardMoodTableExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(StandardMoodTableExtractor.class);
 
   public StandardMoodTableExtractor(String currentEntry, String language, List<String> context) {
     super(currentEntry, language, context);
@@ -140,6 +140,7 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
     actions.put(Pattern.compile("^(?:je|j’)"), Person.first.andThen(Number.singular));
     actions.put(Pattern.compile("^tu"), Person.second.andThen(Number.singular));
     actions.put(Pattern.compile("^il/elle"), Person.third.andThen(Number.singular));
+    actions.put(Pattern.compile("^il\\s*$"), Person.third.andThen(Number.singular));
     actions.put(Pattern.compile("^nous"), Person.first.andThen(Number.plural));
     actions.put(Pattern.compile("^vous"), Person.second.andThen(Number.plural));
     actions.put(Pattern.compile("^ils/elles"), Person.third.andThen(Number.plural));

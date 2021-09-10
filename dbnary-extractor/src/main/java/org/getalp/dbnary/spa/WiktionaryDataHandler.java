@@ -19,7 +19,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void addPartOfSpeech(String pos) {
+  public void initializeLexicalEntry(String pos) {
     if (pos.startsWith("{{")) {
       pos = pos.substring(2).trim();
     }
@@ -76,7 +76,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         currentWiktionaryPageName);
     // PosAndType pat = posAndTypeValueMap.get(pos);
     Resource typeR = typeResource(pat);
-    addPartOfSpeech(spos, posResource(pat), typeR);
+    initializeLexicalEntry(spos, posResource(pat), typeR);
   }
 
 

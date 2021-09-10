@@ -476,7 +476,7 @@
     <repository>
       <!-- Getalp third party stuff -->
       <id>getalp.repository</id>
-      <url>https://getalp.imag.fr/m2/</url>
+      <url>https://lig-getalp.imag.fr/m2/</url>
     </repository>
     <repository>
       <id>ukp-oss-releases</id>

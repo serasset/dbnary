@@ -29,8 +29,8 @@ definitions:
           - "**/target/site/jacoco/jacoco.xml"
           - "**/target/site/jacoco-aggregate/jacoco.xml"
           - "**/target/**/*.class"
-    - step: &build-test-sonarcloud
-        name: Build, test and analyze on SonarCloud
+    - step: &sonar
+        name: Sonar scan
         runs-on:
           - 'self.hosted'
           - 'dbnary'
@@ -39,9 +39,7 @@ definitions:
           - maven
           - sonar
         script:
-          - mvn -B org.jacoco:jacoco-maven-plugin:prepare-agent verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-        artifacts:
-          - target/**
+          - mvn -B sonar:sonar -Dsonar.java.coveragePlugin=jacoco
     - step: &build-pr
         name: Build pull-request
         runs-on:
@@ -60,7 +58,8 @@ definitions:
 pipelines:
   branches:
     '*':
-      - step: *build-test-sonarcloud
+      - step: *build
+      - step: *sonar
     pull-requests:
       "feature/*":
         - step: *build-pr

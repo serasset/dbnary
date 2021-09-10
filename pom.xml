@@ -47,7 +47,7 @@
 
     <!-- Sonar -->
     <sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
-    <sonar.projectName>bitbucket-ci-example</sonar.projectName>
+    <sonar.projectName>dbnary</sonar.projectName>
     <sonar.coverage.jacoco.xmlReportPaths>
       ${project.build.directory}/site/jacoco/jacoco.xml,${project.build.directory}/site/jacoco-aggregate/jacoco.xml
     </sonar.coverage.jacoco.xmlReportPaths>
@@ -486,6 +486,11 @@
               <phase>verify</phase>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.sonarsource.scanner.maven</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <version>${sonar-maven-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>

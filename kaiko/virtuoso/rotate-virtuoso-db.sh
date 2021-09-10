@@ -1,25 +1,31 @@
 #!/usr/bin/env bash
 
+if [ ! -t 0 ]; then
+  exec 1>> /var/log/dbnary/dbnary.log 2>&1
+fi
+
 ## Test if bash version 4 as we need associative arrays.
 if [[ "${BASH_VERSINFO:-0}" -lt 4 ]]; then
   echo >&2 "Need bash 4 version. Exiting."
   exit 1
 fi
 
+echo "====== Rotating VIRTUOSO DB ========="
+
 ## Parse command line options
 OPTIND=1 # Reset in case getopts has been used previously in the shell.
 
-# Initialize our own variables:
 askpass=false
 password=''
 verbose=false
+FORCE=false
 DBNARY_USER_CONFIG_DIR="$HOME/.dbnary/"
 DBNARY_ONTOLEX=$HOME/develop/wiktionary/extracts/ontolex
 VIRTUOSODBLOCATION=/var/lib/virtuoso-opensource-7/
 TEMPORARYPREFIX=/var/tmp/
 
 function show_help() {
-  echo "USAGE: $0 [-hvP] [-p password] [-P] [-d dir] [-c config] [-e ontolexdir] [-t tmp]"
+  echo "USAGE: $0 [-hvPf] [-p password] [-P] [-d dir] [-c config] [-e ontolexdir] [-t tmp]"
   echo "OPTIONS:"
   echo "      h: display this help message."
   echo "      c: use provided value as the configuration directory (default value = $DBNARY_USER_CONFIG_DIR)."
@@ -27,12 +33,13 @@ function show_help() {
   echo "      d: use provided value as the virtuoso database location (default value = $VIRTUOSODBLOCATION)."
   echo "      e: use provided value as the dbnary folder containing all extraction data (older and latest ones. default value = $DBNARY_ONTOLEX)."
   echo "      t: use provided value as the prefix for temp folders (default value = $TEMPORARYPREFIX)."
-  echo "      p: use provided password as the db password (default: password will be provided by DBPASSWD)."
+  echo "      p: use provided password as the db password (default: password will be asked interactively)."
   echo "      P: asks for a db password interactively (default: true if password is not provided)."
+  echo "      f: force the database preparation even if the current dump is already deployed."
   echo "      v: uses verbose output."
 }
 
-while getopts "h?p:Pvc:l:t:d:" opt; do
+while getopts "h?fp:Pvc:l:t:d:" opt; do
   case "$opt" in
   h | \?)
     show_help
@@ -59,6 +66,8 @@ while getopts "h?p:Pvc:l:t:d:" opt; do
   t)
     TEMPORARYPREFIX=$OPTARG
     ;;
+  f)
+    FORCE=true
   esac
 done
 DBNARYLATEST=${DBNARY_ONTOLEX}/latest
@@ -80,7 +89,7 @@ VSP_INSTALL_DIR=/var/lib/virtuoso-opensource-7/vsp/
 script_dir=$(dirname $(realpath $0))
 BOOTSTRAPSQLTMPL=$script_dir/bootstrap.sql.tmpl
 bootstrap_ini=virtuoso.ini.bootstrap.tmpl
-prod_ini=virtuoso.ini.prod.tmpl
+#prod_ini=virtuoso.ini.prod.tmpl
 ## Read values from configuration file
 [[ -f $DBNARY_USER_CONFIG_DIR/config ]] && source $DBNARY_USER_CONFIG_DIR/config
 [[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL=$DBNARY_USER_CONFIG_DIR/$bootstrap_ini
@@ -90,20 +99,83 @@ if [[ ! -f $VIRTUOSOINITMPL ]]; then
   exit 1
 fi
 
+BOOTSTRAPSQL=$script_dir/bootstrap.sql
 
 if ! command -v $VIRTUOSODAEMON ; then
   echo >&2 "Could not find virtuoso-t bin"
   exit 1
 fi
 
-if [ ! -d $DBNARYLATEST ]; then
+if [ ! -d "$DBNARYLATEST" ]; then
   echo >&2 "Latest turtle data not available. $DBNARYLATEST does not exist."
   exit 1
 fi
 
-if [[ ! -w $VIRTUOSODBLOCATION ]]; then
-  >&2 echo "Virtuoso database location '$VIRTUOSODBLOCATION' is not writable."
+if [[ ! -w "$VIRTUOSODBLOCATION" ]]; then
+  echo >&2 "Virtuoso database location '$VIRTUOSODBLOCATION' is not writable."
   exit 1
+fi
+
+
+## Utility functions
+function virtuoso_db_versions() {
+  for dump_folder in $1/db.*; do
+    dump_version=$(basename "${dump_folder}")
+    dump_version=${dump_version##db.}
+    dump_version=${dump_version%%.*}
+    echo "${dump_version}"
+  done
+}
+
+function virtuoso_latest_version() {
+  virtuoso_db_versions "$1" | sort -r | head -n 1
+}
+
+function latest_versions() {
+  for ontolex_extract in $1/??_dbnary_ontolex.ttl.bz2; do
+    target=$(readlink "$ontolex_extract")
+    if [ x$target != x ]; then
+      target=$(basename $target)
+      target=${target%%.*}
+      target=${target##*_}
+      echo "${target}"
+    else
+      echo X
+    fi
+  done
+}
+
+function all_unique_extraction_version() {
+  latest_versions "$1" | sort | uniq
+}
+
+# latest_full_extraction_version returns the date part of the dump (e.g. 20201201) if ALL
+# latest extracted data links to this dump version. If some extracted data is out of sync with the
+# other, the function returns an empty string.
+function latest_full_extraction_version() {
+  nvers=$(all_unique_extraction_version $1 | wc -l)
+  if [ "$nvers" -eq 1 ]; then
+    version=$(all_unique_extraction_version "$1")
+  else
+    version=""
+  fi
+  echo "$version"
+}
+
+extractversion=$(latest_full_extraction_version "${DBNARYLATEST}")
+virtuosoversion=$(virtuoso_latest_version "${VIRTUOSODBLOCATION}")
+
+echo >&2 "Latest full extraction version: ${extractversion}"
+echo >&2 "Current virtuoso version: ${virtuosoversion}"
+
+if [[ ${FORCE} == true ]] ; then
+  echo >&2 "Forcibly creating new DB folder."
+elif [ "x${extractversion}" == "x" ]; then
+  echo >&2 "The extracted versions are incoherent. Aborting rotation."
+  exit
+elif [ "${extractversion}" == "${virtuosoversion}" ]; then
+  echo >&2 "Current extracted version is already active. Aborting rotation."
+  exit
 fi
 
 ## READING DB PASSWORD
@@ -113,7 +185,7 @@ if [[ $askpass == "true" || ${password}x == 'x' ]]; then
   echo
 fi
 
-## Prepare the dataset directory
+# Prepare the dataset directory
 ## Converting language codes
 declare -A iso3Lang
 iso3Lang[bg]=bul
@@ -177,7 +249,7 @@ sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$BOOTSTRAPSQLTMPL" |
   sed "s|@@VAD_INSTALL_DIR@@|$VAD_INSTALL_DIR|g" |
   sed "s|@@VSP_INSTALL_DIR@@|$VSP_INSTALL_DIR|g" |
   sed "s|@@VIRTUOSO_PLUGINS_HOSTING@@|$VIRTUOSO_PLUGINS_HOSTING|g" |
-  sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" > $BOOTSTRAPSQL
+  sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" >$BOOTSTRAPSQL
 
 if [[ $verbose == "true" ]]; then
   echo "Virtuoso Daemon: $VIRTUOSODAEMON"
@@ -366,11 +438,19 @@ checkpoint;
 shutdown();
 END
 
+## PREPARE THE DB FOLDER FOR PROD.
+VIRTUOSOINIPROD=$script_dir/virtuoso.prod.ini
+cp ${VIRTUOSOINIPROD} ${DBBOOTSTRAPFOLDER}/virtuoso.ini
+
 ## COPY THE DATABASE NEAR THE VIRTUOSO DB
 CURRENTDATETIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
-NEWDBFOLDER=${VIRTUOSODBLOCATION}/db.$CURRENTDATETIMESTAMP
+NEWDBFOLDER=${VIRTUOSODBLOCATION}/db.${CURRENTDATETIMESTAMP}
 echo "Moving database to $NEWDBFOLDER"
 mv $DBBOOTSTRAPFOLDER $NEWDBFOLDER
+# renaming the new DB folder so that it will be deployed
+echo "Renaming database folder $NEWDBFOLDER -->  ${VIRTUOSODBLOCATION}/db.${extractversion}.next"
+mv $NEWDBFOLDER ${VIRTUOSODBLOCATION}/db.${extractversion}.next
 
+echo "====== /END/ Rotating VIRTUOSO DB ========="
 # TODO: Generate a production ready virtuoso.ini file
 # TODO: stop virtuoso daemon and rotate db folders then restart virtuoso daemon

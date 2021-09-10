@@ -7,6 +7,9 @@
 
 image: maven:3.6.3-adoptopenjdk-14
 
+clone:
+  depth: full    # SonarCloud scanner needs the full history to assign issues properly
+
 definitions:
   caches:
     sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
@@ -26,6 +29,19 @@ definitions:
           - "**/target/site/jacoco/jacoco.xml"
           - "**/target/site/jacoco-aggregate/jacoco.xml"
           - "**/target/**/*.class"
+    - step: &build-test-sonarcloud
+        name: Build, test and analyze on SonarCloud
+        runs-on:
+          - 'self.hosted'
+          - 'dbnary'
+        size: 4x
+        caches:
+          - maven
+          - sonar
+        script:
+          - mvn -B org.jacoco:jacoco-maven-plugin:prepare-agent verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        artifacts:
+          - target/**
     - step: &build-pr
         name: Build pull-request
         runs-on:
@@ -44,7 +60,7 @@ definitions:
 pipelines:
   branches:
     '*':
-      - step: *build
+      - step: *build-test-sonarcloud
     pull-requests:
       "feature/*":
         - step: *build-pr

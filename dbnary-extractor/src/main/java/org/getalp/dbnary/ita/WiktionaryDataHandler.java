@@ -151,17 +151,18 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   @Override
   public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {
-    if (lexEntries.size() == 0) {
+
+    if (currentPage.nbEntries() == 0) {
       log.debug("Registering Translation when no lexical entry is defined in {}",
           currentPage.getName());
-    } else if (lexEntries.size() == 1) {
+    } else if (currentPage.nbEntries() == 1) {
       super.registerTranslation(lang, currentGloss, usage, word);
     } else if (null == currentGloss) {
       log.debug("Attaching translations to Vocable (Null gloss and several lexical entries) in {}",
           currentPage.getName());
       super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
     } else {
-      // TODO: guess which translation is to be attached to which entry/sense
+      // DONE: guess which translation is to be attached to which entry/sense
       List<Resource> entries = getLexicalEntryUsingPartOfSpeech(currentGloss);
       if (entries.size() != 0) {
         log.trace("Attaching translations using part of speech in gloss : {}",

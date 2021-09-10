@@ -145,8 +145,6 @@ public interface IWiktionaryDataHandler {
 
   void registerInflection(InflectionData key, Set<String> value);
 
-  int currentDefinitionNumber();
-
   String currentWiktionaryPos();
 
   Resource currentLexinfoPos();

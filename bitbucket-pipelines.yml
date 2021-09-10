@@ -1,0 +1,38 @@
+#  Template maven-build
+
+#  This template allows you to test and build your Java project with Maven.
+#  The workflow allows running tests, code checkstyle and security scans on the default branch.
+
+# Prerequisites: pom.xml and appropriate project structure should exist in the repository.
+
+image: maven:3.6.3-adoptopenjdk-14
+
+definitions:
+  caches:
+    sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
+  steps:
+    - step: &build
+        name: Build
+        runs-on: 
+          - 'self.hosted'
+          - 'dbnary'
+        size: 4x
+        caches:
+          - maven
+        script:
+          - mvn -B verify --file pom.xml
+          - mvn -B install -PcodeCoverage
+        artifacts:
+          - "**/target/site/jacoco/jacoco.xml"
+          - "**/target/site/jacoco-aggregate/jacoco.xml"
+          - "**/target/**/*.class"
+pipelines:
+  default:
+    - parallel:
+      - step: *build
+      - step:
+          name: Security Scan
+          script:
+            # Run a security scan for sensitive data.
+            # See more security tools at https://bitbucket.org/product/features/pipelines/integrations?&category=security
+            - pipe: atlassian/git-secrets-scan:0.4.3

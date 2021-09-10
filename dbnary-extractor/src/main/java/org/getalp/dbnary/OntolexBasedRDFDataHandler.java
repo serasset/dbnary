@@ -105,6 +105,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
    */
   @Deprecated
   protected String currentWiktionaryPageName;
+  @Deprecated
   protected CounterSet currentLexieCount = new CounterSet();
   /**
    * @deprecated should rely on currentPage (not a Resource anymore
@@ -278,9 +279,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     translationCount.resetAll();
     reifiedNymCount.resetAll();
 
-    longSectionLanguageCode = currentPage.getLongLanguageCode();
-    shortSectionLanguageCode = currentPage.getShortLanguageCode();
-
     // currentLexinfoPos = null;
     // currentWiktionaryPos = null;
     currentCanonicalForm = null;
@@ -302,8 +300,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // extractable part of speech in the entry.
     heldBackStatements.clear();
     promoteNymProperties();
-    longSectionLanguageCode = null;
-    shortSectionLanguageCode = null;
   }
 
   public static String getEncodedPageName(String pageName, String pos, int defNumber) {
@@ -319,10 +315,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   public Resource getLexEntry(String encodedPageName, Resource typeResource) {
     return aBox.createResource(getPrefix() + encodedPageName, typeResource);
-  }
-
-  public int currentDefinitionNumber() {
-    return currentLexieCount.get(currentLexicalEntry.getWiktionaryPartOfSpeech());
   }
 
   @Override

@@ -74,6 +74,6 @@ pipelines:
     '*':
       - step: *build
       - step: *sonar
-    pull-requests:
-      "feature/*":
-        - step: *build-pr
+  pull-requests:
+    "feature/*":
+      - step: *build-pr

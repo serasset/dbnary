@@ -60,14 +60,14 @@ definitions:
         runs-on:
           - 'self.hosted'
           - 'dbnary'
-          size: 4x
-          caches:
-            - maven
-          script:
-            - echo "BITBUCKET_BRANCH= $BITBUCKET_BRANCH"
-            - echo "BITBUCKET_PR_DESTINATION_BRANCH= $BITBUCKET_PR_DESTINATION_BRANCH"
-            - echo "---------"
-            - printenv
+        size: 4x
+        caches:
+          - maven
+        script:
+          - echo "BITBUCKET_BRANCH= $BITBUCKET_BRANCH"
+          - echo "BITBUCKET_PR_DESTINATION_BRANCH= $BITBUCKET_PR_DESTINATION_BRANCH"
+          - echo "---------"
+          - printenv
 
 pipelines:
   branches:

@@ -76,4 +76,4 @@ pipelines:
       - step: *sonar
   pull-requests:
     "feature/*":
-      - step: *build-pr
+      - step: *test-pr

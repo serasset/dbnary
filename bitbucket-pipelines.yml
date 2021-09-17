@@ -55,6 +55,20 @@ definitions:
           - "**/target/site/jacoco/jacoco.xml"
           - "**/target/site/jacoco-aggregate/jacoco.xml"
           - "**/target/**/*.class"
+    - step: &test-pr
+        name: Test env for Pull Requests
+        runs-on:
+          - 'self.hosted'
+          - 'dbnary'
+        size: 4x
+        caches:
+          - maven
+        script:
+          - echo "BITBUCKET_BRANCH= $BITBUCKET_BRANCH"
+          - echo "BITBUCKET_PR_DESTINATION_BRANCH= $BITBUCKET_PR_DESTINATION_BRANCH"
+          - echo "---------"
+          - printenv
+
 pipelines:
   branches:
     '*':

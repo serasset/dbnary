@@ -71,9 +71,12 @@ definitions:
 
 pipelines:
   branches:
-    '*':
+    'master':
       - step: *build
       - step: *sonar
-    pull-requests:
-      "feature/*":
-        - step: *build-pr
+    '*':
+      - step:
+          *test-pr
+  pull-requests:
+    "feature/*":
+      - step: *test-pr

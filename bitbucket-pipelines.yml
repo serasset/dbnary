@@ -68,6 +68,9 @@ definitions:
           - echo "BITBUCKET_PR_DESTINATION_BRANCH= $BITBUCKET_PR_DESTINATION_BRANCH"
           - echo "---------"
           - printenv
+          - ls
+          - pwd
+          - w
 
 pipelines:
   branches:

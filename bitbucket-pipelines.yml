@@ -66,11 +66,10 @@ definitions:
         script:
           - echo "BITBUCKET_BRANCH= $BITBUCKET_BRANCH"
           - echo "BITBUCKET_PR_DESTINATION_BRANCH= $BITBUCKET_PR_DESTINATION_BRANCH"
-          - echo "---------"
           - printenv
-          - ls
-          - pwd
-          - w
+          - mvn versions:set -B -DnewVersion=ci-${BITBUCKET_BRANCH}-SNAPSHOT
+          - mvn install
+          - ls $HOME/.m2/repository/
 
 pipelines:
   branches:

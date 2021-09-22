@@ -66,8 +66,10 @@ definitions:
         script:
           - echo "BITBUCKET_BRANCH= $BITBUCKET_BRANCH"
           - echo "BITBUCKET_PR_DESTINATION_BRANCH= $BITBUCKET_PR_DESTINATION_BRANCH"
-          - echo "---------"
           - printenv
+          - chmod +x ./kaiko/cicd/*.sh
+          - ./kaiko/cicd/install-both-versions.sh
+          - ls $HOME/.m2/repository/org/getalp/
 
 pipelines:
   branches:

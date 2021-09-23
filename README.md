@@ -40,6 +40,13 @@ mvn deploy site:site site:deploy
 mvn gitflow:release-finish 
 ```
 
+### USing CI/CD to validate changes in the extractors ###
+
+As DBnary now extracts 22 different languages editions which use very diverse microstructure for their 
+entry descriptions, it is very likely that a change (especially one at the DataHandler level) breaks 
+the extraction of another language.
+
+Hence it is essential to be able to evaluate the impact of a set of changes to t
 
 ### Contribution guidelines ###
 

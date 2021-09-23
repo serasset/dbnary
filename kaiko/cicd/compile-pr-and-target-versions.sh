@@ -18,6 +18,13 @@ else
 fi
 
 # Prepare directory layout
-mkdir -p /tmp/$NEXT_VERSION-extracts/
-mkdir -p /tmp/$PREVIOUS_VERSION-extracts/
+mkdir -p /tmp/$NEXT_VERSION/
+mkdir -p /tmp/$PREVIOUS_VERSION/
 mkdir -p $DIFFS
+
+# Share the dumps directory between both versions to avoid reloading the dumps for each version
+mkdir -p /tmp/$PREVIOUS_VERSION/dumps
+ln -s /tmp/$NEXT_VERSION/dumps ../$PREVIOUS_VERSION/dumps
+
+ls -al /tmp/$NEXT_VERSION /tmp/$PREVIOUS_VERSION
+

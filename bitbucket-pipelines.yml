@@ -68,17 +68,16 @@ definitions:
           - echo "BITBUCKET_PR_DESTINATION_BRANCH= $BITBUCKET_PR_DESTINATION_BRANCH"
           - printenv
           - chmod +x ./kaiko/cicd/*.sh
-          - ./kaiko/cicd/install-both-versions.sh
+          - ./kaiko/cicd/evaluate-pr-impact.sh
           - ls $HOME/.m2/repository/org/getalp/
+        artifacts:
+          - "/tmp/diffs/*.ttl"
 
 pipelines:
   branches:
     'master':
       - step: *build
       - step: *sonar
-    '*':
-      - step:
-          *test-pr
   pull-requests:
     "feature/*":
       - step: *test-pr

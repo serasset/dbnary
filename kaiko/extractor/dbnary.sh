@@ -17,6 +17,7 @@ DATE=""
 VERBOSE=""
 FORCE=""
 CUT=""
+COMPRESS="-z"
 
 help() {
   echo "USAGE: $0 [OPTIONS] lg1 lg2..."
@@ -47,9 +48,11 @@ help() {
   echo "    -E                : disable extraction of etymology"
   echo "    -x                : enable computation of data enhancement (e.g. translation source disambiguation, enabled by default)"
   echo "    -X                : disable computation of data enhancement"
+  echo "    -z                : compress output using bz2 (enabled by default)"
+  echo "    -Z                : do not compress output"
 }
 
-while getopts ":d:t:v:D:c:nmMeElLsSTVxXhf" opt; do
+while getopts ":d:t:v:D:c:nmMeElLsSTVxXhfzZ" opt; do
   case $opt in
     d)
       DEBUG="${DEBUG} -Dorg.slf4j.simpleLogger.log.${OPTARG}=debug"
@@ -99,6 +102,12 @@ while getopts ":d:t:v:D:c:nmMeElLsSTVxXhf" opt; do
     X)
       ENHANCE=""
       ;;
+    z)
+      COMPRESS="-z"
+      ;;
+    Z)
+      COMPRESS=""
+      ;;
     T)
       TDB="--tdb"
       ;;
@@ -139,10 +148,10 @@ if [ ! -z $VERBOSE ]
 then
 echo $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR -z  -k 1 $LANGS
+    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR $COMPRESS  -k 1 $LANGS
 fi
 
 $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR -z  -k 1 $LANGS
+    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR $COMPRESS  -k 1 $LANGS
 

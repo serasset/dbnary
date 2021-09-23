@@ -48,7 +48,14 @@ As DBnary now extracts 22 different languages editions which use very diverse mi
 entry descriptions, it is very likely that a change (especially one at the DataHandler level) breaks 
 the extraction of another language.
 
-Hence it is essential to be able to evaluate the impact of a set of changes to t
+Hence it is essential to be able to evaluate the impact of a set of changes to the extraction of all 
+laguages. In oder to evaluate this, a CI/CD setup has been created that will launch the extraction
+of a SAMPLE of 10000 pages from each languages and compute the diffs between the new and previous 
+versions.
+
+This CI/CD pipeline is triggered when a Pull Request is created on the bitbucket platform.
+
+To use this pipeline, create a pull request and wait for the extraction to be evaluated.
 
 ### Contribution guidelines ###
 

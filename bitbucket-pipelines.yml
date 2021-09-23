@@ -65,6 +65,7 @@ definitions:
           - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
+          - ls -al ./kaiko/cicd/* ./kaiko/extractor/*
           - ./kaiko/cicd/compile-pr-and-target-versions.sh
           - ./kaiko/cicd/extract_with_next.sh
           - ./kaiko/cicd/extract_with_previous.sh

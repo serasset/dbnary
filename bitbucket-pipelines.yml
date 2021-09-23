@@ -64,18 +64,18 @@ definitions:
         caches:
           - maven
         script:
-          - echo "BITBUCKET_BRANCH= $BITBUCKET_BRANCH"
-          - echo "BITBUCKET_PR_DESTINATION_BRANCH= $BITBUCKET_PR_DESTINATION_BRANCH"
-          - printenv
-          - chmod +x ./kaiko/cicd/*.sh
-          - ./kaiko/cicd/evaluate-pr-impact.sh
-          - ls $HOME/.m2/repository/org/getalp/
+          - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
+          - ./kaiko/cicd/compile-pr-and-target-versions.sh
+          - ./kaiko/cicd/extract_with_next.sh
+          - ./kaiko/cicd/extract_with_previous.sh
+          - ./kaiko/cicd/compute_differences.sh
+          - ./kaiko/cicd/cleanup_cache.sh
         artifacts:
           - "/tmp/diffs/*.ttl"
 
 pipelines:
   branches:
-    'master':
+    'develop':
       - step: *build
       - step: *sonar
   pull-requests:

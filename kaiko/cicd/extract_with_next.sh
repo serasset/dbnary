@@ -6,4 +6,4 @@ echo "Sourcing settings from: ${SCRIPT_DIR}/settings"
 source ${SCRIPT_DIR}/settings
 
 # Extract data using Target branch version
-DBNARY_DIR=/tmp/$PREVIOUS_VERSION/ ${SCRIPT_DIR}/../extractor/dbnary.sh -V -v $PREVIOUS_VERSION -c $SAMPLE_SIZE $LANGS
+DBNARY_DIR=/tmp/$PREVIOUS_VERSION/ ${SCRIPT_DIR}/../extractor/dbnary.sh -V -Z -v $PREVIOUS_VERSION -c $SAMPLE_SIZE $LANGS

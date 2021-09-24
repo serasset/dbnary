@@ -70,6 +70,7 @@ definitions:
           - ./kaiko/cicd/extract_with_next.sh
           - ./kaiko/cicd/extract_with_previous.sh
           - ./kaiko/cicd/compute_differences.sh
+          - ls -al /tmp/diffs/
           - ./kaiko/cicd/cleanup_cache.sh
         artifacts:
           - "/tmp/diffs/*.ttl"

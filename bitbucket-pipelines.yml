@@ -73,7 +73,7 @@ definitions:
           - ls -al /tmp/diffs/
           - ./kaiko/cicd/cleanup_cache.sh
         artifacts:
-          - "/tmp/diffs/*.ttl"
+          - "target/diffs/*.ttl"
 
 pipelines:
   branches:

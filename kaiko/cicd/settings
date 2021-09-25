@@ -1,5 +1,5 @@
 SAMPLE_SIZE=10000
-LANGS="no bg"
+LANGS=$VALIDATION_LANGUAGES
 #LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"
 PREVIOUS_VERSION=ci-previous-version
 NEXT_VERSION=ci-next-version

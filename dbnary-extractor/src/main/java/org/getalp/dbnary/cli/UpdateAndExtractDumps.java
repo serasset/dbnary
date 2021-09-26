@@ -70,6 +70,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
 
   private static final String ENABLE_FEATURE_OPTION = "enable";
 
+  private static final String SAMPLE_FEATURE_OPTION = "sample";
 
   private String outputDir;
   private String extractDir;
@@ -81,6 +82,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
   private String model = DEFAULT_MODEL;
   private List<String> features = null;
   private String fetchDate = null;
+  private int sample = -1;
 
   String[] remainingArgs;
 
@@ -107,7 +109,9 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     options.addOption(NETWORK_OFF_OPTION, false,
         "Do not use the ftp network, but decompress and extract.");
     options.addOption(FETCH_DATE_OPTION, true,
-        "force the dump date to be retreived. latest dump by default ");
+        "force the dump date to be retrieved. latest dump by default ");
+    options.addOption(Option.builder().longOpt(SAMPLE_FEATURE_OPTION)
+        .desc("sample only the first N extracted entries.").hasArg().argName("N").build());
     options.addOption(Option.builder().longOpt(ENABLE_FEATURE_OPTION).desc(
         "Enable additional extraction features (e.g. morphology,etymology,lime,enhancement,foreign).")
         .hasArg().argName("feature").build());
@@ -178,6 +182,11 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
 
     if (cmd.hasOption(FETCH_DATE_OPTION)) {
       fetchDate = cmd.getOptionValue(FETCH_DATE_OPTION);
+    }
+
+    if (cmd.hasOption(SAMPLE_FEATURE_OPTION)) {
+      String sampleOtion = cmd.getOptionValue(SAMPLE_FEATURE_OPTION);
+      sample = Integer.parseInt(sampleOtion);
     }
 
     force = cmd.hasOption(FORCE_OPTION);
@@ -450,7 +459,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
           String dumpdir = outputDir + "/" + lang + "/" + lastDir;
           String filename = dumpdir + "/" + dumpFileName(lang, lastDir);
           File file = new File(filename);
-          if (file.exists() && !force) {
+          if (file.exists()) {
             // System.err.println("Dump file " + filename + " already retrieved.");
             return lastDir;
           }
@@ -591,7 +600,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     // System.err.println("Uncompressing " + compressedDumpFile);
 
     File file = new File(uncompressedDumpFile);
-    if (file.exists() && !force) {
+    if (file.exists()) {
       if (verbose)
         System.err.println("Uncompressed dump file " + uncompressedDumpFile + " already exists.");
       return true;
@@ -683,7 +692,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     sb.append("total free memory: "
         + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024) + "\n");
     System.err.println("--------------------------------");
-    System.err.println(sb.toString());
+    System.err.println(sb);
     System.err.println("--------------------------------");
   }
 
@@ -707,16 +716,18 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     // TODO: correctly test for compressed file if compress is enabled
     String extractFile =
         odir + "/" + lang + prefix + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
-    String morphoFile = odir + "/" + lang + prefix + "_dbnary_"
-        + ExtractionFeature.MORPHOLOGY.toString() + "_" + dir + ".ttl";
-    String etymologyFile = odir + "/" + lang + prefix + "_dbnary_"
-        + ExtractionFeature.ETYMOLOGY.toString() + "_" + dir + ".ttl";
-    String limeFile = odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.LIME.toString()
+    String morphoFile =
+        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.MORPHOLOGY + "_" + dir + ".ttl";
+    String etymologyFile =
+        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.ETYMOLOGY + "_" + dir + ".ttl";
+    String limeFile =
+        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.LIME + "_" + dir + ".ttl";
+    String enhancementFile = odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.ENHANCEMENT
         + "_" + dir + ".ttl";
-    String enhancementFile = odir + "/" + lang + prefix + "_dbnary_"
-        + ExtractionFeature.ENHANCEMENT.toString() + "_" + dir + ".ttl";
-    String statsFile = odir + "/" + lang + prefix + "_dbnary_"
-        + ExtractionFeature.STATISTICS.toString() + "_" + dir + ".ttl";
+    String statsFile =
+        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.STATISTICS + "_" + dir + ".ttl";
+    String foreignFile = odir + "/" + lang + prefix + "_dbnary_"
+        + ExtractionFeature.FOREIGN_LANGUAGES + "_" + dir + ".ttl";
     if (compress) {
       extractFile = extractFile + ".bz2";
       morphoFile = morphoFile + ".bz2";
@@ -724,6 +735,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       limeFile = limeFile + ".bz2";
       enhancementFile = enhancementFile + ".bz2";
       statsFile = statsFile + ".bz2";
+      foreignFile = foreignFile + ".bz2";
     }
 
     File file = new File(extractFile);
@@ -740,6 +752,12 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     a.add(lang);
     a.add("-o");
     a.add(extractFile);
+    if (sample > 0) {
+      a.add("--frompage");
+      a.add("0");
+      a.add("--topage");
+      a.add(String.valueOf(sample));
+    }
     a.add("-z");
     a.add(compress ? "yes" : "no");
     if (features.contains("morphology")) {
@@ -764,6 +782,8 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     }
     if (features.contains("foreign")) {
       a.add("-x");
+      a.add("--foreign");
+      a.add(foreignFile);
     }
 
     if (tdbDir) {

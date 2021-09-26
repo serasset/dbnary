@@ -24,6 +24,8 @@ However, you are free (and encouraged) to compile and enhance the extractors.
 * Dependencies should be taken care of by maven
 * There is no database to configure, the extractor directly uses the dump files
 
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/dashboard?id=serasset_dbnary)
+
 ### How do I use the extractor? ###
 
 Easiest way is to use the Command Line Interfaces found in the org.getalp.dbnary.cli package.

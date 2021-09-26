@@ -6,13 +6,11 @@ if [ ! -t 0 ]; then
   exec 1>> /var/log/dbnary/dbnary.log 2>&1
 fi
 
-DIR=$HOME/develop/wiktionary
-#LANGS="fr en"
-#LANGS="pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la"
+DIR=${DBNARY_DIR:-$HOME/develop/wiktionary}
 LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"
 #TLANGS="fra,eng,por,deu,ell,rus,ita,fin,tur,jpn"
 JAVA=java
-VERS=2.3.5
+VERS=2.3.6-SNAPSHOT
 MIRROR=http://dumps.wikimedia.org/
 #MIRROR=http://dumps.wikimedia.your.org/
 #MIRROR=http://wikipedia.c3sl.ufpr.br/

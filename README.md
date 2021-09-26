@@ -46,14 +46,24 @@ As DBnary now extracts 22 different languages editions which use very diverse mi
 entry descriptions, it is very likely that a change (especially one at the DataHandler level) breaks 
 the extraction of another language.
 
-Hence it is essential to be able to evaluate the impact of a set of changes to the extraction of all 
-laguages. In oder to evaluate this, a CI/CD setup has been created that will launch the extraction
+Hence, it is essential to be able to evaluate the impact of a set of changes to the extraction of all 
+languages. In oder to evaluate this, a CI/CD setup has been created that will launch the extraction
 of a SAMPLE of 10000 pages from each languages and compute the diffs between the new and previous 
 versions.
 
 This CI/CD pipeline is triggered when a Pull Request is created on the bitbucket platform.
 
-To use this pipeline, create a pull request and wait for the extraction to be evaluated.
+As we are using the gitflow strategy, here are the different steps to be performed :
+
+- Features
+  - ```mvn gitflow:feature-start -DpushRemote=true```
+  - Develop the feature on its branch (don't forget to push the feature branch)
+  - Create a Pull Request to develop branch on bitbucket (this will trigger CI/CD evaluation of the pull request, the pipeline extracts a sample of pages from latest wiktionary dumps and compares these. The ttl files are available as an artefact in the pipeline, available for 14 days after evaluation, please keep in mind that evaluation can take a very long time (several hours))
+  - When the PR has been evaluated, checked and approved, then finnish it using gitflow plugin
+  - ```mvn gitflow:feature-finnish```
+  - OR, merge it using the PR on bitbucket (and delete the feature branch).
+- Releases
+  - TDB
 
 ### Contribution guidelines ###
 

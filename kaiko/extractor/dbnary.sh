@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DIR=${DBNARY_DIR:-$HOME/dev/wiktionary/tmp}
+DIR=${DBNARY_DIR:-${HOME}/dev/wiktionary/tmp}
 VERSION=2.3.6-SNAPSHOT
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
 LANGS="fr"
@@ -137,8 +137,6 @@ if [ $# -gt 0 ]
     LANGS=$*
 fi
 
-
-TLANGS="fra,eng,por,deu,ell,rus,ita,fin,tur,jpn"
 JAVA=java
 
 #-Dorg.slf4j.simpleLogger.log.info.bliki.extensions.scribunto.engine.lua=trace

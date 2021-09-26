@@ -2,7 +2,6 @@
 .project
 .settings
 .idea
-*.iml
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -232,10 +231,6 @@ TSWLatexianTemp*
 log.*
 out.*
 raw.*
-
-# local documentation
-README_*
-extract*.sh 
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks

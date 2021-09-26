@@ -75,6 +75,9 @@ public class ExtractWiktionary extends DBnaryCommandLine {
   private static final String STATS_OUTPUT_FILE_LONG_OPTION = "statistics";
   private static final String STATS_OUTPUT_FILE_SHORT_OPTION = "S";
 
+  private static final String FOREIGN_LANGUAGES_OUTPUT_FILE_LONG_OPTION = "foreign";
+  private static final String FOREIGN_LANGUAGES_OUTPUT_FILE_SHORT_OPTION = "";
+
   protected static final String URI_PREFIX_LONG_OPTION = "prefix";
   protected static final String URI_PREFIX_SHORT_OPTION = "p";
 
@@ -93,6 +96,7 @@ public class ExtractWiktionary extends DBnaryCommandLine {
   private String limeOutputFile = null;
   private String enhancementOutputFile = null;
   private String statsOutputFile = null;
+  private String foreignDataOutputFile = null;
   private String outputFormat = DEFAULT_OUTPUT_FORMAT;
   private String model = DEFAULT_MODEL;
   private boolean compress;
@@ -146,6 +150,10 @@ public class ExtractWiktionary extends DBnaryCommandLine {
         .desc("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
         .hasArg().argName("uri").build());
+    options.addOption(Option.builder(FOREIGN_LANGUAGES_OUTPUT_FILE_SHORT_OPTION)
+        .longOpt(FOREIGN_LANGUAGES_OUTPUT_FILE_LONG_OPTION)
+        .desc("Output file for foreign languages data. Undefined by default.").hasArg()
+        .argName("file").build());
     options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign Languages");
     options.addOption(Option.builder(FROM_PAGE_SHORT_OPTION).longOpt(FROM_PAGE_LONG_OPTION)
         .desc("Do not process pages before the nth one. 0 by default.").hasArg().argName("num")
@@ -275,6 +283,10 @@ public class ExtractWiktionary extends DBnaryCommandLine {
       statsOutputFile = cmd.getOptionValue(STATS_OUTPUT_FILE_LONG_OPTION);
     }
 
+    if (cmd.hasOption(FOREIGN_LANGUAGES_OUTPUT_FILE_LONG_OPTION)) {
+      foreignDataOutputFile = cmd.getOptionValue(FOREIGN_LANGUAGES_OUTPUT_FILE_LONG_OPTION);
+    }
+
     if (cmd.hasOption(LANGUAGE_OPTION)) {
       language = cmd.getOptionValue(LANGUAGE_OPTION);
       language = LangTools.getCode(language);
@@ -327,6 +339,10 @@ public class ExtractWiktionary extends DBnaryCommandLine {
       wdh.enableFeature(ExtractionFeature.STATISTICS);
     }
 
+    if (foreignDataOutputFile != null) {
+      wdh.enableFeature(ExtractionFeature.FOREIGN_LANGUAGES);
+    }
+
     if (null == we) {
       System.err
           .println("Wiktionary Extraction not yet available for " + LangTools.inEnglish(language));
@@ -351,6 +367,7 @@ public class ExtractWiktionary extends DBnaryCommandLine {
       System.err.println("  LIME : " + limeOutputFile);
       System.err.println("  Enhancement : " + enhancementOutputFile);
       System.err.println("  Statistics : " + statsOutputFile);
+      System.err.println("  Foreign languages : " + foreignDataOutputFile);
       System.err.println("  Format : " + outputFormat);
     }
   }
@@ -441,11 +458,12 @@ public class ExtractWiktionary extends DBnaryCommandLine {
         if (null != enhancementOutputFile) {
           saveBox(ExtractionFeature.ENHANCEMENT, enhancementOutputFile);
         }
-
         if (null != statsOutputFile) {
           saveBox(ExtractionFeature.STATISTICS, statsOutputFile);
         }
-
+        if (null != foreignDataOutputFile) {
+          saveBox(ExtractionFeature.FOREIGN_LANGUAGES, foreignDataOutputFile);
+        }
 
       } catch (XMLStreamException ex) {
         System.out.println(ex.getMessage());

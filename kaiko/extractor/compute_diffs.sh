@@ -1,15 +1,27 @@
 #!/bin/bash
 
-DIR=${HOME}/dev/wiktionary/tmp
-VERSION=2.3.5
+DIR=${DBNARY_DIR:-$HOME/dev/wiktionary/tmp}
+VERSION=2.3.6-SNAPSHOT
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
 LANGS="fr"
 MODEL="ontolex"
+PREVIOUS_VERSION=latest.before
+NEXT_VERSION=latest.now
+DIFFS=diffs
 
-while getopts ":m:v:" opt; do
+while getopts ":m:v:f:t:d:" opt; do
   case $opt in
     m)
       MODEL=$OPTARG
+      ;;
+    f)
+      PREVIOUS_VERSION=$OPTARG
+      ;;
+    t)
+      NEXT_VERSION=$OPTARG
+      ;;
+    d)
+      DIFFS=$OPTARG
       ;;
     v)
       VERSION="${OPTARG}"
@@ -56,11 +68,11 @@ prepareTDBifTooBig() {
 
 for l in $LANGS
 do
-    before=$(prepareTDBifTooBig latest.before/${l}_dbnary_${MODEL}*.ttl)
-    now=$(prepareTDBifTooBig latest.now/${l}_dbnary_${MODEL}*.ttl)
+    before=$(prepareTDBifTooBig $PREVIOUS_VERSION/${l}_dbnary_${MODEL}*.ttl)
+    now=$(prepareTDBifTooBig $NEXT_VERSION/${l}_dbnary_${MODEL}*.ttl)
     >&2 echo Comparing ${before} and ${now}
   java -Xmx16G -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.RDFDiff ${before} ${now} > diffs/${l}_lost_${MODEL}.ttl ;
+    org.getalp.dbnary.cli.RDFDiff ${before} ${now} > $DIFFS/${l}_lost_${MODEL}.ttl ;
   java -Xmx16G -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.RDFDiff ${now} ${before} > diffs/${l}_gain_${MODEL}.ttl ;
+    org.getalp.dbnary.cli.RDFDiff ${now} ${before} > $DIFFS/${l}_gain_${MODEL}.ttl ;
 done

@@ -7,6 +7,9 @@
 
 image: maven:3.6.3-adoptopenjdk-14
 
+clone:
+  depth: full    # SonarCloud scanner needs the full history to assign issues properly
+
 definitions:
   caches:
     sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
@@ -26,13 +29,56 @@ definitions:
           - "**/target/site/jacoco/jacoco.xml"
           - "**/target/site/jacoco-aggregate/jacoco.xml"
           - "**/target/**/*.class"
+    - step: &sonar
+        name: Sonar scan
+        runs-on:
+          - 'self.hosted'
+          - 'dbnary'
+        size: 4x
+        caches:
+          - maven
+          - sonar
+        script:
+          - mvn -B sonar:sonar -Dsonar.java.coveragePlugin=jacoco
+    - step: &build-pr
+        name: Build pull-request
+        runs-on:
+          - 'self.hosted'
+          - 'dbnary'
+        size: 4x
+        caches:
+          - maven
+        script:
+          - mvn versions:set -B -DnewVersion=ci-${BITBUCKET_BRANCH}-SNAPSHOT
+          - mvn -B install -PcodeCoverage
+        artifacts:
+          - "**/target/site/jacoco/jacoco.xml"
+          - "**/target/site/jacoco-aggregate/jacoco.xml"
+          - "**/target/**/*.class"
+    - step: &test-pr
+        name: Test env for Pull Requests
+        runs-on:
+          - 'self.hosted'
+          - 'dbnary'
+        size: 4x
+        caches:
+          - maven
+        script:
+          - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
+          - ls -al ./kaiko/cicd/* ./kaiko/extractor/*
+          - ./kaiko/cicd/compile-pr-and-target-versions.sh
+          - ./kaiko/cicd/extract_with_next.sh
+          - ./kaiko/cicd/extract_with_previous.sh
+          - ./kaiko/cicd/compute_differences.sh
+          - ./kaiko/cicd/cleanup_cache.sh
+        artifacts:
+          - "target/diffs/*.ttl"
+
 pipelines:
-  default:
-    - parallel:
+  branches:
+    'develop':
       - step: *build
-      - step:
-          name: Security Scan
-          script:
-            # Run a security scan for sensitive data.
-            # See more security tools at https://bitbucket.org/product/features/pipelines/integrations?&category=security
-            - pipe: atlassian/git-secrets-scan:0.4.3
+      - step: *sonar
+  pull-requests:
+    "*":
+      - step: *test-pr

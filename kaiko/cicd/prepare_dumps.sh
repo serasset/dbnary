@@ -4,6 +4,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 echo "Sourcing settings from: ${SCRIPT_DIR}/settings"
 source ${SCRIPT_DIR}/settings
+set -x
 
 # Prepare for proper SSH connection to the dumps host.
 mkdir -p ~/.ssh
@@ -22,6 +23,7 @@ ls -al /tmp/$NEXT_VERSION /tmp/$PREVIOUS_VERSION
 # Fetching all uncompressed dumps directories from kopi
 for lg in $LANGS;
 do
+  echo "Fetching uncompressed dumps for $lg"
   scp -r ${WIKTIONARY_DUMPS_USER}@${WIKTIONARY_DUMPS_HOST}:${WIKTIONARY_DUMPS_DIR}/${lg} /tmp/$PREVIOUS_VERSION/dumps/
 done
 

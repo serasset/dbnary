@@ -72,8 +72,10 @@ definitions:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ls -al target/dbnary-maven-repository/org/getalp/*
           - ls -al ${HOME}/.m2/repository/org/
+          # Cleanup maven repo to remove dbnary artifacts that should not be cached.
           - mkdir -p ${HOME}/.m2/repository/org/
-          - cp -r target/dbnary-maven-repository/org/getalp ${HOME}/.m2/repository/org/getalp
+          - rm -rf ${HOME}/.m2/repository/org/getalp
+          - cp -r target/dbnary-maven-repository/org/getalp ${HOME}/.m2/repository/org/
           - ls -al ${HOME}/.m2/repository/org/getalp
         #          - ./kaiko/cicd/compile-pr-and-target-versions.sh
 #          - ./kaiko/cicd/extract_with_next.sh

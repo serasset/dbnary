@@ -86,7 +86,8 @@ pipelines:
   branches:
     'develop':
       - step: *build-pr
-#      - step: *sonar
+      - step: *test-pr
+  #      - step: *sonar
   pull-requests:
     "*":
       - step: *build-pr

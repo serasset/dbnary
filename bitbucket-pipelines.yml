@@ -49,12 +49,17 @@ definitions:
         caches:
           - maven
         script:
-          - mvn versions:set -B -DnewVersion=ci-${BITBUCKET_BRANCH}-SNAPSHOT
-          - mvn -B install -PcodeCoverage
+          - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
+#          - ./kaiko/cicd/compile-pr-and-target-versions.sh
+          - mvn -B install
+          - mkdir -p target/dbnary-maven-repository/org
+          - cp -r ${HOME}/.m2/repository/org/getalp target/dbnary-maven-repository/org/getalp
+          - ./kaiko/cicd/cleanup_cache.sh
         artifacts:
           - "**/target/site/jacoco/jacoco.xml"
           - "**/target/site/jacoco-aggregate/jacoco.xml"
           - "**/target/**/*.class"
+          - "target/dbnary-maven-repository/org/**/*.*"
     - step: &test-pr
         name: Test env for Pull Requests
         runs-on:
@@ -65,20 +70,24 @@ definitions:
           - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
-          - ls -al ./kaiko/cicd/* ./kaiko/extractor/*
-          - ./kaiko/cicd/compile-pr-and-target-versions.sh
-          - ./kaiko/cicd/extract_with_next.sh
-          - ./kaiko/cicd/extract_with_previous.sh
-          - ./kaiko/cicd/compute_differences.sh
-          - ./kaiko/cicd/cleanup_cache.sh
+          - ls -al target/dbnary-maven-repository/org/getalp/*
+          - ls -al ${HOME}/.m2/repository/org/
+          - mkdir -p ${HOME}/.m2/repository/org/
+          - cp -r target/dbnary-maven-repository/org/getalp ${HOME}/.m2/repository/org/getalp
+          - ls -al ${HOME}/.m2/repository/org/getalp
+        #          - ./kaiko/cicd/compile-pr-and-target-versions.sh
+#          - ./kaiko/cicd/extract_with_next.sh
+#          - ./kaiko/cicd/extract_with_previous.sh
+#          - ./kaiko/cicd/compute_differences.sh
         artifacts:
           - "target/diffs/*.ttl"
 
 pipelines:
   branches:
     'develop':
-      - step: *build
-      - step: *sonar
+      - step: *build-pr
+#      - step: *sonar
   pull-requests:
     "*":
+      - step: *build-pr
       - step: *test-pr

@@ -51,6 +51,8 @@ definitions:
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/compile-pr-and-target-versions.sh
+          # The previous command checked out another branch that may also have executable rights issues.
+          - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - mkdir -p target/dbnary-maven-repository/org
           - cp -r ${HOME}/.m2/repository/org/getalp target/dbnary-maven-repository/org/getalp
           - ./kaiko/cicd/cleanup_cache.sh
@@ -66,7 +68,7 @@ definitions:
           - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
-          # Cleanup maven repo to remove dbnary artifacts that should not be cached.
+          # Cleanup maven repo to remove dbnary artifacts that may be downloaded from cached.
           - mkdir -p ${HOME}/.m2/repository/org/
           - rm -rf ${HOME}/.m2/repository/org/getalp
           - cp -r target/dbnary-maven-repository/org/getalp ${HOME}/.m2/repository/org/

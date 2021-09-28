@@ -81,7 +81,7 @@ definitions:
 
 pipelines:
   branches:
-    'disabled':
+    '*':
       - step: *build
       - step: *sonar
   pull-requests:

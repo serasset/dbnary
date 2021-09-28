@@ -10,14 +10,17 @@ echo "Commit Message = $COMMIT_MESSAGE"
 echo "Validating on languages : $LANGS"
 
 # Compile PR and DESTINATION versions
-if [ x$BITBUCKET_PR_DESTINATION_BRANCH != x ]; then
-    mvn versions:set -B -DnewVersion=$NEXT_VERSION
-    mvn install
-    git stash -u
-    git checkout $BITBUCKET_PR_DESTINATION_BRANCH
-    mvn versions:set -B -DnewVersion=$PREVIOUS_VERSION
-    mvn install
-else
-    echo "No Pull Request destination branch, is this really a Pull Request ?"
+if [ x$BITBUCKET_PR_DESTINATION_BRANCH == x ]; then
+  echo "Not a Pull Request, I will compare branch with develop"
+  BITBUCKET_PR_DESTINATION_BRANCH=develop
+  if [ x$BITBUCKET_BRANCH == x || $BITBUCKET_BRANCH == develop ]; then
+    echo "Source branch undefined or already develop."
     exit 1
 fi
+
+mvn versions:set -B -DnewVersion=$NEXT_VERSION
+mvn install
+git stash -u
+git checkout $BITBUCKET_PR_DESTINATION_BRANCH
+mvn versions:set -B -DnewVersion=$PREVIOUS_VERSION
+mvn install

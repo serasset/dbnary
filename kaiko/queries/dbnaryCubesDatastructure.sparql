@@ -1,0 +1,10 @@
+PREFIX dbnstats: <http://kaiko.getalp.org/dbnary/statistics/>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+PREFIX dbnary: <http://kaiko.getalp.org/dbnary#>
+PREFIX dcterm: <http://purl.org/dc/terms/>
+
+DESCRIBE ?ds WHERE {
+  dbnstats:dbnaryStatisticsCube a qb:Observation ;
+    qb:structure ?ds .
+}

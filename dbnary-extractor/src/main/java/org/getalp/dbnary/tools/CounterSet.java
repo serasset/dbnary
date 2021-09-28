@@ -44,9 +44,7 @@ public class CounterSet {
   }
 
   public void resetAll() {
-    for (MutableInteger i : counters.values()) {
-      i.reset();
-    }
+    clear();
   }
 
   public void reset(String key) {

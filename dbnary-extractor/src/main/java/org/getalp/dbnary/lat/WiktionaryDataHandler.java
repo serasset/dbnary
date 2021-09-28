@@ -42,7 +42,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void addPartOfSpeech(String pos) {
+  public void initializeLexicalEntry(String pos) {
     // DONE: compute if the entry is a phrase or a word.
     PosAndType pat = posAndTypeValueMap.get(pos);
     Resource typeR = typeResource(pat);
@@ -53,7 +53,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     } else if (currentWiktionaryPageName.contains(" ")) {
       typeR = OntolexOnt.MultiWordExpression;
     }
-    addPartOfSpeech(pos, posResource(pat), typeR);
+    initializeLexicalEntry(pos, posResource(pat), typeR);
   }
 
 

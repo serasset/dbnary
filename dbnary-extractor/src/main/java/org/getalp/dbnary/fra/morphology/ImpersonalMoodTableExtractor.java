@@ -7,14 +7,15 @@ import java.util.Set;
 import org.getalp.dbnary.morphology.InflectionScheme;
 import org.getalp.dbnary.morphology.RefactoredTableExtractor;
 import org.getalp.dbnary.morphology.RelaxInflexionScheme;
-import org.getalp.lexinfo.model.Mood;
-import org.getalp.lexinfo.model.Number;
-import org.getalp.lexinfo.model.Person;
-import org.getalp.lexinfo.model.Tense;
-import org.getalp.ontolex.model.LexicalForm;
-import org.getalp.ontolex.model.PhoneticRepresentation;
-import org.getalp.ontolex.model.Representation;
-import org.getalp.ontolex.model.WrittenRepresentation;
+import org.getalp.model.lexinfo.Gender;
+import org.getalp.model.lexinfo.Mood;
+import org.getalp.model.lexinfo.Number;
+import org.getalp.model.lexinfo.Person;
+import org.getalp.model.lexinfo.Tense;
+import org.getalp.model.ontolex.LexicalForm;
+import org.getalp.model.ontolex.PhoneticRepresentation;
+import org.getalp.model.ontolex.Representation;
+import org.getalp.model.ontolex.WrittenRepresentation;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,24 +102,30 @@ public class ImpersonalMoodTableExtractor extends RefactoredTableExtractor {
           }
         }
       });
+      // Specify the past participle form as being masculine and singular by default
+      forms.forEach(f -> {
+        if (f.getFeature().contains(Tense.PAST) && f.getFeature().contains(Mood.PARTICIPLE)) {
+          f.getFeature().add(Gender.MASCULINE);
+          f.getFeature().add(Number.SINGULAR);
+        }
+      });
       return forms;
     }
-
   }
 
   private void handleNumberPerson(LexicalForm f, int i, int j) {
     switch (i) {
       case 1:
         f.getFeature().add(Number.SINGULAR);
-        f.getFeature().add(Person.THIRD);
+        f.getFeature().add(Person.SECOND);
         break;
       case 2:
         f.getFeature().add(Number.PLURAL);
-        f.getFeature().add(Person.SECOND);
+        f.getFeature().add(Person.FIRST);
         break;
       case 3:
         f.getFeature().add(Number.PLURAL);
-        f.getFeature().add(Person.THIRD);
+        f.getFeature().add(Person.SECOND);
         break;
       default:
         log.warn("Unexpected cell position {} in Imperative table in {}", i, this.entryName);

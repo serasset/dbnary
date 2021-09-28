@@ -48,7 +48,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void addTranslation(String lang, Resource gloss, String usage, String word) {
     if (currentLexEntry == null) {
-      addPartOfSpeech("none");
+      initializeLexicalEntry("none");
     }
     registerTranslation(lang, gloss, usage, word);
   }

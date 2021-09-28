@@ -24,6 +24,8 @@ However, you are free (and encouraged) to compile and enhance the extractors.
 * Dependencies should be taken care of by maven
 * There is no database to configure, the extractor directly uses the dump files
 
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/dashboard?id=serasset_dbnary)
+
 ### How do I use the extractor? ###
 
 Easiest way is to use the Command Line Interfaces found in the org.getalp.dbnary.cli package.
@@ -40,6 +42,39 @@ mvn deploy site:site site:deploy
 mvn gitflow:release-finish 
 ```
 
+### Using CI/CD to validate changes in the extractors ###
+
+As DBnary now extracts 22 different languages editions which use very diverse microstructure for their 
+entry descriptions, it is very likely that a change (especially one at the DataHandler level) breaks 
+the extraction of another language.
+
+Hence, it is essential to be able to evaluate the impact of a set of changes to the extraction of all 
+languages. In oder to evaluate this, a CI/CD setup has been created that will launch the extraction
+of a SAMPLE of 10000 pages from each languages and compute the diffs between the new and previous 
+versions.
+
+This CI/CD pipeline is triggered when a Pull Request is created on the bitbucket platform.
+
+As we are using the gitflow strategy, here are the different steps to be performed :
+
+- Features
+  - ```mvn gitflow:feature-start -DpushRemote=true```
+  - Develop the feature on its branch (don't forget to push the feature branch)
+  - Create a Pull Request to develop branch on bitbucket (this will trigger CI/CD evaluation of the pull request, the pipeline extracts a sample of pages from latest wiktionary dumps and compares these. The ttl files are available as an artefact in the pipeline, available for 14 days after evaluation, please keep in mind that evaluation can take a very long time (several hours))
+  - When the PR has been evaluated, checked and approved, then finnish it using gitflow plugin
+  - ```mvn gitflow:feature-finnish```
+  - OR, merge it using the PR on bitbucket (and delete the feature branch).
+- Releases
+  - TDB
+
+#### Controlling extractors validation ####
+
+In order to avoid all languages to be re-evaluated when it is not necessary, it is possible to contraol the validation process in 2 different manners :
+
+1. Globally setting VALIDATION_LANGUAGES variable on the repository (see repository variables on bitbucket)
+2. Specifying the languages in the COMMIT MESSAGE
+   - The commit message THAT TRIGGERS THE EVALUATION (the last message of the PR), should contain the string : `VALIDATION_LANGUAGES="la es fr"` (note that the quotes are mandatory)
+   
 
 ### Contribution guidelines ###
 

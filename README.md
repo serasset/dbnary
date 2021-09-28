@@ -1,3 +1,6 @@
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/dashboard?id=serasset_dbnary)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/265a93f83eca46609ba21f3ff03285cf)](https://www.codacy.com/bb/serasset/dbnary/dashboard?utm_source=serasset@bitbucket.org&amp;utm_medium=referral&amp;utm_content=serasset/dbnary&amp;utm_campaign=Badge_Grade)
+
 # DBnary extractor #
 
 DBnary is an attempt to extract as many lexical data as possible from Wiktionary language Edition as possible, in a structured (RDF) way, using standard lexicon ontology vocabulary (ontolex).
@@ -24,7 +27,6 @@ However, you are free (and encouraged) to compile and enhance the extractors.
 * Dependencies should be taken care of by maven
 * There is no database to configure, the extractor directly uses the dump files
 
-[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/dashboard?id=serasset_dbnary)
 
 ### How do I use the extractor? ###
 

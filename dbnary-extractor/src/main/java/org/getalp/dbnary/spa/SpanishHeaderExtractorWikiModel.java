@@ -51,7 +51,7 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
-    if ("pronunciación".equals(templateName)) {
+    if ("pronunciación".equalsIgnoreCase(templateName)) {
       String p1;
       if ((p1 = parameterMap.get("1")) != null && p1.length() > 0) {
         if (isApi(parameterMap.get("2"))) {

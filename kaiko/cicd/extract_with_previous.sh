@@ -8,4 +8,4 @@ source ${SCRIPT_DIR}/settings
 set -x
 
 # Extract data using PR version
-DBNARY_DIR=/tmp/$PREVIOUS_VERSION/ ${SCRIPT_DIR}/../extractor/dbnary.sh -V -Z -v $PREVIOUS_VERSION -c $SAMPLE_SIZE $LANGS
+DBNARY_DIR=/tmp/$PREVIOUS_VERSION/ ${SCRIPT_DIR}/../extractor/dbnary.sh -V -Z -n -v $PREVIOUS_VERSION -c $SAMPLE_SIZE $LANGS

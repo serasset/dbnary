@@ -6,6 +6,9 @@ echo "Sourcing settings from: ${SCRIPT_DIR}/settings"
 source ${SCRIPT_DIR}/settings
 set -x
 
+echo "Commit Message = $COMMIT_MESSAGE"
+echo "Validating on languages : $LANGS"
+
 # Compile PR and DESTINATION versions
 if [ x$BITBUCKET_PR_DESTINATION_BRANCH != x ]; then
     mvn versions:set -B -DnewVersion=$NEXT_VERSION

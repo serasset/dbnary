@@ -2,7 +2,7 @@ SAMPLE_SIZE=${VALIDATION_SAMPLE_SIZE:-10000}
 COMMIT_MESSAGE=`git log --format=%B -n 1 $BITBUCKET_COMMIT`
 LANGS=${VALIDATION_LANGUAGES:-"fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"}
 # Override validation languages if given in the bitbucket commit message
-if [[ $1 =~ 'VALIDATION_LANGUAGES="'([^\"]*)'"' ]]
+if [[ $COMMIT_MESSAGE =~ 'VALIDATION_LANGUAGES="'([^\"]*)'"' ]]
 then
   LANGS=${BASH_REMATCH[0]}
 fi

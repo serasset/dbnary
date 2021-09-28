@@ -42,7 +42,7 @@ mvn deploy site:site site:deploy
 mvn gitflow:release-finish 
 ```
 
-### USing CI/CD to validate changes in the extractors ###
+### Using CI/CD to validate changes in the extractors ###
 
 As DBnary now extracts 22 different languages editions which use very diverse microstructure for their 
 entry descriptions, it is very likely that a change (especially one at the DataHandler level) breaks 
@@ -66,6 +66,15 @@ As we are using the gitflow strategy, here are the different steps to be perform
   - OR, merge it using the PR on bitbucket (and delete the feature branch).
 - Releases
   - TDB
+
+#### Controlling extractors validation ####
+
+In order to avoid all languages to be re-evaluated when it is not necessary, it is possible to contraol the validation process in 2 different manners :
+
+1. Globally setting VALIDATION_LANGUAGES variable on the repository (see repository variables on bitbucket)
+2. Specifying the languages in the COMMIT MESSAGE
+   - The commit message THAT TRIGGERS THE EVALUATION (the last message of the PR), should contain the string : `VALIDATION_LANGUAGES="la es fr"` (note that the quotes are mandatory)
+   
 
 ### Contribution guidelines ###
 

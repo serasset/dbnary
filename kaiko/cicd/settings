@@ -4,7 +4,7 @@ LANGS=${VALIDATION_LANGUAGES:-"fr en de pt it fi ru el tr ja es bg pl nl sh sv l
 # Override validation languages if given in the bitbucket commit message
 if [[ $COMMIT_MESSAGE =~ 'VALIDATION_LANGUAGES="'([^\"]*)'"' ]]
 then
-  LANGS=${BASH_REMATCH[0]}
+  LANGS=${BASH_REMATCH[1]}
 fi
 PREVIOUS_VERSION=ci-previous-version
 NEXT_VERSION=ci-next-version

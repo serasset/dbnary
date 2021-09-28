@@ -79,5 +79,4 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
       }
     }
   }
-
 }

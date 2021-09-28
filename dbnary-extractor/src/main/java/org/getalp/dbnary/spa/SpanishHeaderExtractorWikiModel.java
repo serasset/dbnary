@@ -49,6 +49,7 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
+  // TODO: handle pronunciation that use the pron-graf template.
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
     if ("pronunciación".equalsIgnoreCase(templateName)) {

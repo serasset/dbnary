@@ -245,7 +245,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractGermanData(int startOffset, int endOffset) {
     Matcher m = macroOrPOSPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
+    wdh.initializeLanguageSection("de");
     currentBlock = Block.IGNOREPOS;
 
     while (m.find()) {
@@ -264,7 +264,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     // Finalize the entry parsing
     leaveCurrentBlock(m);
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
 
   }
 
@@ -376,8 +376,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case PRONBLOCK:
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
 
   }
@@ -416,8 +416,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         blockStart = end;
         break;
       default:
-        assert false : "Unexpected block while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
 
     blockStart = -1;
@@ -460,7 +460,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       log.debug("Unhandled POS data: ", m.toString());
     }
     // TODO: maybe use all POS instead of the first one to create the entry label...
-    wdh.addPartOfSpeech(partOfSpeeches.remove(0));
+    wdh.initializeLexicalEntry(partOfSpeeches.remove(0));
     // TODO register other POS links + additional information
     WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
     for (String pos : partOfSpeeches) {

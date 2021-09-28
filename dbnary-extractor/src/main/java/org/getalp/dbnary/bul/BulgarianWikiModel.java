@@ -121,7 +121,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
     String pos = getPOS(templateName);
     if (null != pos) {
       hasAPOS = true;
-      delegate.addPartOfSpeech(pos);
+      delegate.initializeLexicalEntry(pos);
 
       for (String section : parameterMap.keySet()) {
         if (section.contains("ЗНАЧЕНИЕ")) {

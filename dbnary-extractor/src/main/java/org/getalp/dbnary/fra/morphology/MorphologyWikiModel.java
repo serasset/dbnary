@@ -71,15 +71,21 @@ public abstract class MorphologyWikiModel extends DbnaryWikiModel {
       }
     } else if (templateName.equals("pron")) {
       // catch this template call to mark the pronunciation with a specific anchor.
-      writer.append("<span class=\"pron\">\\").append(parameterMap.get("1")).append("\\</span>");
+      writer.append("<span class=\"API\">\\").append(parameterMap.get("1")).append("\\</span>");
     } else if (templateName.equals("pron-brut")) {
       if (null == parameterMap.get("1"))
         writer.append("—");
       else
-        writer.append("<span class=\"pron\">").append(parameterMap.get("1")).append("</span>");
+        writer.append("<span class=\"API\">").append(parameterMap.get("1")).append("</span>");
     } else if (templateName.equals("param1ou2")) {
       // This template generates incomplete links xxx]] ou [[xxx which breaks the bliki parser
       writer.append(parameterMap.get("1")).append(" ou ").append(parameterMap.get("2"));
+    } else if ("e".equals(templateName)) {
+      // Workaround bug in bliki where <sup style=... is parsed as a named arg
+      String t = parameterMap.get("1");
+      if (null != t) {
+        writer.append("<sup>").append(t).append("</sup>");
+      }
     } else {
       // log.trace("substituting template {} with parameters [[{}]]", templateName,
       // parameterMap.entrySet().stream().map(e -> "<" + e.getKey() + " --> " + e.getValue() + ">")

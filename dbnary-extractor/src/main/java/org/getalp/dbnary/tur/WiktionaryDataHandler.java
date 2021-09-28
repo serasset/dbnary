@@ -82,7 +82,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void addPartOfSpeech(String pos) {
+  public void initializeLexicalEntry(String pos) {
     pos = pos.trim();
     if (pos.contains("çekim") || pos.contains("çekilmiş")) {
       return; // ignore inflected forms
@@ -92,7 +92,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     if (null == pat) {
       log.debug("Unknown POS : {} in {}", pos, currentWiktionaryPageName);
     }
-    addPartOfSpeech(pos, posResource(pat), typeResource(pat));
+    initializeLexicalEntry(pos, posResource(pat), typeResource(pat));
   }
 
 }

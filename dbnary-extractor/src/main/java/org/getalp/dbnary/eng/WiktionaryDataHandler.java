@@ -116,18 +116,19 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void initializeEntryExtraction(String wiktionaryPageName) {
+  public void initializeLanguageSection(String lang) {
     currentEntryLanguage = "en";
     currentEntryLanguageName = "English";
-    initializeEntryExtraction(wiktionaryPageName, currentEntryLanguage, currentEntryLanguageName);
+    initializeLanguageSection(currentPage.getName(), currentEntryLanguage,
+        currentEntryLanguageName);
   }
 
-  public void initializeEntryExtraction(String wiktionaryPageName, String lang,
+  public void initializeLanguageSection(String wiktionaryPageName, String lang,
       String languageName) {
     currentEtymologyNumber = 0;
     currentEtymologyEntry = null;
     currentGlobalEtymologyEntry = createGlobalEtymologyResource(wiktionaryPageName, lang);
-    super.initializeEntryExtraction(wiktionaryPageName);
+    super.initializeLanguageSection(lang);
   }
 
   private Resource createGlobalEtymologyResource(String wiktionaryPageName, String lang) {
@@ -177,13 +178,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       eBox.add(currentEtymologyEntry, RDFS.label, currentWiktionaryPageName, lang);
     }
     eBox.add(currentEtymologyEntry, DBnaryOnt.describes, currentLexEntry);
-  }
-
-  @Override
-  public Resource addPartOfSpeech(String originalPOS, Resource normalizedPOS,
-      Resource normalizedType) {
-    Resource lexEntry = super.addPartOfSpeech(originalPOS, normalizedPOS, normalizedType);
-    return lexEntry;
   }
 
   private String computeEtymologyId(Model box, int etymologyNumber, String lang) {
@@ -485,7 +479,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // Keep it simple for english: register forms on the current lexical entry
     if (null != note) {
       PropertyObjectPair p =
-          PropertyObjectPair.get(SkosOnt.note, aBox.createLiteral(note, wktLanguageEdition));
+          PropertyObjectPair.get(SkosOnt.note, aBox.createLiteral(note, shortEditionLanguageCode));
       props.add(p);
     }
     PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep,
@@ -560,7 +554,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   public String getGlossURI(String id) {
-    return getPrefix() + "__" + wktLanguageEdition + "_gloss_" + id + "_"
+    return getPrefix() + "__" + shortEditionLanguageCode + "_gloss_" + id + "_"
         + uriEncode(currentWiktionaryPageName);
   }
 
@@ -596,9 +590,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         aBox.add(glossResource, RDF.value, currentWS, getCurrentEntryLanguage());
       }
 
-      ReifiedStatement rnymR = nymR
-          .createReifiedStatement(computeNymId(currentNym, uriEncode(currentWiktionaryPageName)));
       if (glossResource != null) {
+        ReifiedStatement rnymR = nymR
+            .createReifiedStatement(computeNymId(currentNym, uriEncode(currentWiktionaryPageName)));
         rnymR.addProperty(DBnaryOnt.gloss, glossResource);
       }
     } catch (NullPointerException npe) {

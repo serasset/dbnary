@@ -190,7 +190,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
     extractGreekData(greekSectionStartOffset, greekSectionEndOffset);
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
 
@@ -212,7 +212,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   void gotoDefBlock(Matcher m) {
     state = DEFBLOCK;
     definitionBlockStart = m.end();
-    wdh.addPartOfSpeech(m.group(1));
+    wdh.initializeLexicalEntry(m.group(1));
   }
 
 
@@ -248,7 +248,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractGreekData(int startOffset, int endOffset) {
     Matcher m = SectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeEntryExtraction(getWiktionaryPageName());
+    wdh.initializeLanguageSection("el");
     gotoNoData(m);
 
     while (m.find()) {
@@ -364,10 +364,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         leavePronBlock(m);
         break;
       default:
-        assert false : "Unexpected state while ending extraction of entry: "
-            + getWiktionaryPageName();
+        assert false
+            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
-    wdh.finalizeEntryExtraction();
+    wdh.finalizeLanguageSection();
   }
 
 

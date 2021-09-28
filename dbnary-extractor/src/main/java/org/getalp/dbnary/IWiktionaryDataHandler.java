@@ -36,15 +36,15 @@ public interface IWiktionaryDataHandler {
 
   void finalizePageExtraction();
 
-  void initializeEntryExtraction(String wiktionaryPageName);
+  void initializeLanguageSection(String language);
 
-  void initializeEntryExtraction(String wiktionaryPageName, String lang);
-
-  void finalizeEntryExtraction();
+  void finalizeLanguageSection();
 
   String getCurrentEntryLanguage();
 
-  void addPartOfSpeech(String pos);
+  String getExtractedLanguage();
+
+  void initializeLexicalEntry(String pos);
 
   /**
    *
@@ -145,8 +145,6 @@ public interface IWiktionaryDataHandler {
 
   void registerInflection(InflectionData key, Set<String> value);
 
-  int currentDefinitionNumber();
-
   String currentWiktionaryPos();
 
   Resource currentLexinfoPos();
@@ -157,4 +155,5 @@ public interface IWiktionaryDataHandler {
       String dumpFileVersion);
 
   void computeStatistics(String dumpVersion);
+
 }

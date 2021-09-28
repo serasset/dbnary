@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.fra.ExampleExpanderWikiModel;
@@ -226,6 +227,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (lang == null) {
       return;
     }
+
+    if (wdh.isDisabled(ExtractionFeature.FOREIGN_LANGUAGES) && !"la".equals(lang))
+      return;
 
     wdh.initializeLanguageSection(lang);
     Matcher m = entrySectionPattern.matcher(pageContent);

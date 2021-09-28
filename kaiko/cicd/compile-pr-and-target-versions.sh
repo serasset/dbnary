@@ -13,9 +13,10 @@ echo "Validating on languages : $LANGS"
 if [ x$BITBUCKET_PR_DESTINATION_BRANCH == x ]; then
   echo "Not a Pull Request, I will compare branch with develop"
   BITBUCKET_PR_DESTINATION_BRANCH=develop
-  if [ x$BITBUCKET_BRANCH == x || $BITBUCKET_BRANCH == develop ]; then
+  if [ x$BITBUCKET_BRANCH == x -o $BITBUCKET_BRANCH == develop ]; then
     echo "Source branch undefined or already develop."
     exit 1
+  fi
 fi
 
 mvn versions:set -B -DnewVersion=$NEXT_VERSION

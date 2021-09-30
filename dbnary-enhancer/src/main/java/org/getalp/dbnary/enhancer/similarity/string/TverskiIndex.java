@@ -137,14 +137,14 @@ public class TverskiIndex implements SimilarityMeasure {
     for (String a : la) {
       for (String b : lb) {
         double score = 0;
-        double lcss = longestSubString(a, b);
-        double md = Math.max(Math.abs(lcss / a.length()), Math.abs(lcss / b.length()));
+        double lssl = longestSubString(a, b);
+        double md = Math.max(Math.abs(lssl / a.length()), Math.abs(lssl / b.length()));
         if (!this.lcss) {
           score = distance.score(distance.prepare(a), distance.prepare(b));
         } else {
           score = md;
         }
-        if (score > 0.999 || score < 1.0 && ((lcssConstraint && lcss >= 3) || !lcssConstraint)) {
+        if (score > 0.999 || score < 1.0 && ((lcssConstraint && lssl >= 3) || !lcssConstraint)) {
 
           if (!this.lcss) {
             if (lcssConstraint) {

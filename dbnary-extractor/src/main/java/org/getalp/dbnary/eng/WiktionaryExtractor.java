@@ -51,9 +51,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: attach multiple pronounciation correctly
   static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String languageSectionPatternString = "==\\s*([^=]*)\\s*==";
-  protected final static String sectionPatternString = "={2,5}\\s*([^=]*)\\s*={2,5}";
-  protected final static String pronPatternString = "\\{\\{IPA\\|([^\\}]*)\\}\\}";
+  protected final static String LANGUAGE_SECTION_PATTERN_STRING = "==\\s*([^=]*)\\s*==";
+  protected final static String SECTION_PATTERN_STRING = "={2,5}\\s*([^=]*)\\s*={2,5}";
+  protected final static String PRON_PATTERN_STRING = "\\{\\{IPA\\|([^\\}]*)\\}\\}";
 
   private enum Block {
     NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, CONJUGATIONBLOCK, ETYMOLOGYBLOCK, DERIVEDBLOCK, DESCENDANTSBLOCK, PRONBLOCK
@@ -75,10 +75,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static Pattern pronPattern;
 
   static {
-    languageSectionPattern = Pattern.compile(languageSectionPatternString);
+    languageSectionPattern = Pattern.compile(LANGUAGE_SECTION_PATTERN_STRING);
 
-    sectionPattern = Pattern.compile(sectionPatternString);
-    pronPattern = Pattern.compile(pronPatternString);
+    sectionPattern = Pattern.compile(SECTION_PATTERN_STRING);
+    pronPattern = Pattern.compile(PRON_PATTERN_STRING);
 
     // TODO: Treat Abbreviations and Acronyms and contractions and Initialisms
     // TODO: Alternative forms
@@ -409,7 +409,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
 
-    log.trace("ETYM {}: {}", ewdh.getCurrentEntryLanguage(),
+    if (log.isTraceEnabled())
+      log.trace("ETYM {}: {}", ewdh.getCurrentEntryLanguage(),
         pageContent.substring(blockStart, end));
     try {
       Etymology etymology =
@@ -687,7 +688,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Map<String, String> args = tmpl.getParsedArgs();
         args.remove("sort");
         if (!args.isEmpty()) {
-          log.debug("other args in en-suffix template\t{}\tin\t{}", args, getWiktionaryPageName());
+          log.debug("other args in en-prefix template\t{}\tin\t{}", args, getWiktionaryPageName());
         }
       } else if (g1.equals("en-prep")) {
         // nothing to extract
@@ -1323,7 +1324,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       Map<String, String> args = WikiTool.parseArgs(pron);
       pron = args.get("2");
       if (!"en".equals(args.get("1"))) {
-        log.debug("Non English ({}) pronunciation in page {}.", this.getWiktionaryPageName());
+        log.debug("Non English ({}) pronunciation in page {}.", args.get("1"),
+            this.getWiktionaryPageName());
       }
 
       if (null == pron || pron.equals("")) {

@@ -179,10 +179,9 @@ public class EnhanceLatestExtracts {
 
     // TODO: stats should be written after each language so that already computed languages will be
     // correctly ignored at next launch.
-    writeStats(enhConfidence, "Language,MD5," + EvaluationStats.getHeaders(), enhConfidenceFile);
+    writeStats(enhConfidence, "Language,MD5," + EvaluationStats.HEADERS, enhConfidenceFile);
     writeStats(glossStats, "Language," + TranslationGlossesStatsModule.getHeaders(),
         glossStatsFile);
-
   }
 
   protected void outputAndLink(String lang, String modelFile, Model m) {

@@ -1,6 +1,7 @@
 package org.getalp.dbnary.enhancer.encoding;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Iterates over the UTF-16 Codepoints of a String
@@ -20,11 +21,15 @@ public final class CodePointIterator implements Iterator<Integer> {
   }
 
   public Integer next() {
-    int codePoint = sequence.codePointAt(index++);
-    if (Character.charCount(codePoint) == 2) {
-      index++;
+    try {
+      int codePoint = sequence.codePointAt(index++);
+      if (Character.charCount(codePoint) == 2) {
+        index++;
+      }
+      return codePoint;
+    } catch (IndexOutOfBoundsException e) {
+      throw new NoSuchElementException(e.getMessage());
     }
-    return codePoint;
   }
 
   @Override

@@ -12,44 +12,44 @@ public abstract class Tense extends MorphoSyntacticFeature {
     return LexinfoOnt.tense;
   }
 
-  public static Tense PRESENT = new Tense() {
+  public static final Tense PRESENT = new Tense() {
     public RDFNode value() {
       return LexinfoOnt.present;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> present = s -> s.add(PRESENT);
+  public static final Consumer<Set<MorphoSyntacticFeature>> present = s -> s.add(PRESENT);
 
-  public static Tense PAST = new Tense() {
+  public static final Tense PAST = new Tense() {
     public RDFNode value() {
       return LexinfoOnt.past;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> past = s -> s.add(PAST);
+  public static final Consumer<Set<MorphoSyntacticFeature>> past = s -> s.add(PAST);
 
-  public static Tense PRETERITE = new Tense() {
+  public static final Tense PRETERITE = new Tense() {
     public RDFNode value() {
       return LexinfoOnt.preterite;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> preterite = s -> s.add(PRETERITE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> preterite = s -> s.add(PRETERITE);
 
-  public static Tense IMPERFECT = new Tense() {
+  public static final Tense IMPERFECT = new Tense() {
     public RDFNode value() {
       return LexinfoOnt.imperfect;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> imperfect = s -> s.add(IMPERFECT);
+  public static final Consumer<Set<MorphoSyntacticFeature>> imperfect = s -> s.add(IMPERFECT);
 
-  public static Tense FUTURE = new Tense() {
+  public static final Tense FUTURE = new Tense() {
     public RDFNode value() {
       return LexinfoOnt.future;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> future = s -> s.add(FUTURE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> future = s -> s.add(FUTURE);
 
 }

@@ -1,6 +1,7 @@
 package org.getalp.dbnary.cli;
 
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -16,7 +17,7 @@ import org.apache.jena.util.iterator.ExtendedIterator;
 
 public class RDFDiff {
 
-  private static boolean verbose = true;
+  private static boolean verbose = false;
 
   public static void main(String args[]) {
     Model m1, m2;
@@ -101,7 +102,7 @@ public class RDFDiff {
             Triple t = it.next();
             signature.add(t.getPredicate().toString() + "+" + t.getObject().toString());
           }
-          StringBuffer b = new StringBuffer();
+          StringBuilder b = new StringBuilder();
           for (String r : signature) {
             b.append(r).append("|");
           }
@@ -200,7 +201,7 @@ public class RDFDiff {
     if (n2.isBlank()) {
       String k1 = anodes2id.get(n1.getBlankNodeLabel());
       String k2 = anodes2id.get(n2.getBlankNodeLabel());
-      return k1 == k2 || (k1 != null && k1.equals(k2));
+      return Objects.equals(k1, k2);
     }
     return false;
   }

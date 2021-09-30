@@ -42,6 +42,7 @@ public abstract class Definiteness extends MorphoSyntacticFeature {
     }
   };
 
-  public static final Consumer<Set<MorphoSyntacticFeature>> shortArticle = s -> s.add(SHORT_ARTICLE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> shortArticle =
+      s -> s.add(SHORT_ARTICLE);
 
 }

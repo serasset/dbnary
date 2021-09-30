@@ -44,7 +44,7 @@ public class ExtractWiktionary extends DBnaryCommandLine {
   private static final String OUTPUT_FORMAT_OPTION = "f";
   private static final String DEFAULT_OUTPUT_FORMAT = "ttl";
 
-  @Deprecated
+  @Deprecated(since = "2.3.5", forRemoval = true)
   private static final String MODEL_OPTION = "m";
   private static final String DEFAULT_MODEL = "ontolex";
 
@@ -124,7 +124,6 @@ public class ExtractWiktionary extends DBnaryCommandLine {
     options.addOption(COMPRESS_OPTION, true,
         "Compress the output using bzip2 (value: yes/no or true/false). " + DEFAULT_COMPRESS
             + " by default.");
-    options.addOption(MODEL_OPTION, true, "(Deprecated) the model will always be " + DEFAULT_MODEL);
     options.addOption(OUTPUT_FILE_OPTION, true,
         "Output file. " + DEFAULT_OUTPUT_FILE + " by default ");
     options.addOption(Option.builder(MORPHOLOGY_OUTPUT_FILE_SHORT_OPTION)
@@ -249,12 +248,6 @@ public class ExtractWiktionary extends DBnaryCommandLine {
     if (cmd.hasOption(URI_PREFIX_LONG_OPTION)) {
       DbnaryModel.setGlobalDbnaryPrefix(cmd.getOptionValue(URI_PREFIX_SHORT_OPTION));
     }
-    if (cmd.hasOption(MODEL_OPTION)) {
-      System.err.println("WARN: the " + MODEL_OPTION
-          + " option is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
-      // model = cmd.getOptionValue(MODEL_OPTION);
-    }
-    model = model.toUpperCase();
 
     String compress_value = cmd.getOptionValue(COMPRESS_OPTION, DEFAULT_COMPRESS);
     compress = "true".startsWith(compress_value) || "yes".startsWith(compress_value);
@@ -513,14 +506,8 @@ public class ExtractWiktionary extends DBnaryCommandLine {
   }
 
   public void saveBox(ExtractionFeature f, String of) throws IOException {
-    OutputStream ostream;
-    if (compress) {
-      // outputFile = outputFile + ".bz2";
-      ostream = new BZip2CompressorOutputStream(new FileOutputStream(of));
-    } else {
-      ostream = new FileOutputStream(of);
-    }
-    try {
+    try (OutputStream ostream = compress ? new BZip2CompressorOutputStream(new FileOutputStream(of))
+        : new FileOutputStream(of)) {
       System.err.println("Dumping " + outputFormat + " representation of " + f.name() + ".");
       if (outputFormat.equals("RDF")) {
         wdh.dump(f, new PrintStream(ostream, false, "UTF-8"), null);
@@ -532,10 +519,6 @@ public class ExtractWiktionary extends DBnaryCommandLine {
           "Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
       e.printStackTrace(System.err);
       throw e;
-    } finally {
-
-      ostream.flush();
-      ostream.close();
     }
   }
 

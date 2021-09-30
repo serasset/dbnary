@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author serasset
  */
 public class WiktionaryIndex implements Map<String, String> {
-  private static Logger log = LoggerFactory.getLogger(WiktionaryIndex.class);
+  private static final Logger log = LoggerFactory.getLogger(WiktionaryIndex.class);
 
   private static final CacheManager cacheManager = CacheManager.newInstance();
   private static final Ehcache cache = cacheManager.getEhcache("wiktcache");
@@ -38,7 +38,6 @@ public class WiktionaryIndex implements Map<String, String> {
   /**
    *
    */
-  private static final long serialVersionUID = 7658718925280104333L;
   private static final double AVERAGE_PAGE_SIZE = 730.; // figure taken from French Wiktionary
   private static final String INDEX_SIGNATURE = "Wkt!01";
 
@@ -104,7 +103,7 @@ public class WiktionaryIndex implements Map<String, String> {
   // WONTDO: check if index content is up to date ?
   public boolean isAValidIndexFile() {
     if (indexFile.canRead()) {
-      try (RandomAccessFile in = new RandomAccessFile(indexFile, "r");) {
+      try (RandomAccessFile in = new RandomAccessFile(indexFile, "r")) {
 
         FileChannel fc = in.getChannel();
 
@@ -141,7 +140,7 @@ public class WiktionaryIndex implements Map<String, String> {
         // but it seems that it is not possible in jdk1.5... has to wait for jdk 1.6
         byte[] bk = entry.getKey().getBytes(StandardCharsets.UTF_8);
         OffsetValue v = entry.getValue();
-        // I serialize 1 int, the string, 1 long and 1 int --> bk.length + 16 bytes;
+        // I serialize 1 int, the string, 1 long and 1 int --> bk.length + 16 bytes
         // If there is not enough room left in the buffer, first write it out, then proceed
         if (buf.remaining() < bk.length + 16) {
           buf.flip();

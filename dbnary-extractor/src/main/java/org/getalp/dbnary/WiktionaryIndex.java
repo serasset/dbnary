@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,6 +18,8 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * WiktionaryIndex is a Persistent HashMap designed to hold an index on a Wiktionary dump file.
@@ -23,28 +27,24 @@ import org.getalp.dbnary.wiki.WikiPatterns;
  * @author serasset
  */
 public class WiktionaryIndex implements Map<String, String> {
+  private static Logger log = LoggerFactory.getLogger(WiktionaryIndex.class);
 
   private static final CacheManager cacheManager = CacheManager.newInstance();
   private static final Ehcache cache = cacheManager.getEhcache("wiktcache");
 
   // TODO: Create a static map to hold shared instances (1 per dump file) and avoid allocating more
-  // than one
-  // WiktionaryIndexer per wiktionary language.
+  // than one WiktionaryIndexer per wiktionary language.
 
   /**
    *
    */
   private static final long serialVersionUID = 7658718925280104333L;
-  private static final int AVERAGE_PAGE_SIZE = 730; // figure taken from French Wiktionary
-  private static final String UTF_16 = "UTF-16";
-  private static final String UTF_16BE = "UTF-16BE";
-  private static final String UTF_16LE = "UTF-16LE";
-  private static final String UTF_8 = "UTF-8";
+  private static final double AVERAGE_PAGE_SIZE = 730.; // figure taken from French Wiktionary
   private static final String INDEX_SIGNATURE = "Wkt!01";
 
   File dumpFile;
   File indexFile;
-  String encoding;
+  Charset encoding;
   HashMap<String, OffsetValue> map;
   RandomAccessFile xmlf;
 
@@ -87,13 +87,13 @@ public class WiktionaryIndex implements Map<String, String> {
       xmlf.readFully(bom);
       if (bom[0] == (byte) 0xFE && bom[1] == (byte) 0xFF) {
         // Big Endian
-        encoding = UTF_16BE;
+        encoding = StandardCharsets.UTF_16BE;
       } else if (bom[0] == (byte) 0xFF && bom[1] == (byte) 0xFE) {
         // Little endian
-        encoding = UTF_16LE;
+        encoding = StandardCharsets.UTF_16LE;
       } else {
         // no BOM, use UTF-16
-        encoding = UTF_16;
+        encoding = StandardCharsets.UTF_16;
       }
     } catch (IOException ex) {
       throw new WiktionaryIndexerException(
@@ -104,51 +104,42 @@ public class WiktionaryIndex implements Map<String, String> {
   // WONTDO: check if index content is up to date ?
   public boolean isAValidIndexFile() {
     if (indexFile.canRead()) {
-      RandomAccessFile in = null;
-      try {
-        in = new RandomAccessFile(indexFile, "r");
+      try (RandomAccessFile in = new RandomAccessFile(indexFile, "r");) {
+
         FileChannel fc = in.getChannel();
 
         ByteBuffer buf = ByteBuffer.allocate(4098);
 
         fc.read(buf);
         buf.flip();
-        byte[] signature = INDEX_SIGNATURE.getBytes(UTF_8); // Hence the byte array has the exact
-        // expected size;
+
+        byte[] signature = INDEX_SIGNATURE.getBytes(StandardCharsets.UTF_8);
         buf.get(signature, 0, signature.length);
-        String signatureString = new String(signature, UTF_8);
+        String signatureString = new String(signature, StandardCharsets.UTF_8);
         if (signatureString.equals(INDEX_SIGNATURE)) {
           return true;
         }
       } catch (IOException e) {
         return false;
-      } finally {
-        if (in != null) {
-          try {
-            in.close();
-          } catch (IOException e) {
-            // Just ignore the exception
-          }
-        }
       }
     }
     return false;
   }
 
   public void dumpIndex() throws WiktionaryIndexerException {
-    try {
-      RandomAccessFile out = new RandomAccessFile(indexFile, "rw");
+    try (RandomAccessFile out = new RandomAccessFile(indexFile, "rw")) {
+
       FileChannel fc = out.getChannel();
 
       ByteBuffer buf = ByteBuffer.allocate(4098);
 
       // Write index signature out.write(...)
-      buf.put(INDEX_SIGNATURE.getBytes(UTF_8));
+      buf.put(INDEX_SIGNATURE.getBytes(StandardCharsets.UTF_8));
       buf.putInt(map.size());
       for (Map.Entry<String, OffsetValue> entry : map.entrySet()) {
         // TODO: it may be more efficient to create a Charset decoder or use a reusable byte[]
         // but it seems that it is not possible in jdk1.5... has to wait for jdk 1.6
-        byte[] bk = entry.getKey().getBytes(UTF_8);
+        byte[] bk = entry.getKey().getBytes(StandardCharsets.UTF_8);
         OffsetValue v = entry.getValue();
         // I serialize 1 int, the string, 1 long and 1 int --> bk.length + 16 bytes;
         // If there is not enough room left in the buffer, first write it out, then proceed
@@ -165,33 +156,30 @@ public class WiktionaryIndex implements Map<String, String> {
       }
       buf.flip();
       fc.write(buf);
-      out.close();
     } catch (IOException e) {
       throw new WiktionaryIndexerException("IOException when writing map to index file", e);
     }
   }
 
   public void loadIndex() throws WiktionaryIndexerException {
-    RandomAccessFile in = null;
-    try {
-      in = new RandomAccessFile(indexFile, "r");
+    try (RandomAccessFile in = new RandomAccessFile(indexFile, "r")){
+
       FileChannel fc = in.getChannel();
 
       ByteBuffer buf = ByteBuffer.allocate(4098);
 
       fc.read(buf);
       buf.flip();
-      byte[] signature = INDEX_SIGNATURE.getBytes(UTF_8); // Hence the byte array has the exact
-      // expected size;
+      byte[] signature = INDEX_SIGNATURE.getBytes(StandardCharsets.UTF_8);
       buf.get(signature, 0, signature.length);
-      String signatureString = new String(signature, UTF_8);
+      String signatureString = new String(signature, StandardCharsets.UTF_8);
       if (!signatureString.equals(INDEX_SIGNATURE)) {
         throw new WiktionaryIndexerException("Index file seems to be corrupted", null);
       }
 
       int mapSize = buf.getInt();
 
-      map = new HashMap<String, OffsetValue>((int) (mapSize / .75));
+      map = new HashMap<>((int) (mapSize / .75));
       byte[] bk = new byte[2048]; // We assume that no entry title is longer than 2048
 
       for (int i = 0; i < mapSize; i++) {
@@ -206,7 +194,7 @@ public class WiktionaryIndex implements Map<String, String> {
         }
         // read the entry
         buf.get(bk, 0, kSize);
-        String key = new String(bk, 0, kSize, UTF_8);
+        String key = new String(bk, 0, kSize, StandardCharsets.UTF_8);
         long vstart = buf.getLong();
         int vlength = buf.getInt();
         map.put(key, new OffsetValue(vstart, vlength));
@@ -214,14 +202,6 @@ public class WiktionaryIndex implements Map<String, String> {
 
     } catch (IOException e) {
       throw new WiktionaryIndexerException("IOException when reading map from index file", e);
-    } finally {
-      if (in != null) {
-        try {
-          in.close();
-        } catch (IOException e) {
-          // Just ignore the exception
-        }
-      }
     }
   }
 
@@ -236,17 +216,17 @@ public class WiktionaryIndex implements Map<String, String> {
 
   public void initIndex() throws WiktionaryIndexerException {
     int initialCapacity = (int) ((this.dumpFile.length() / AVERAGE_PAGE_SIZE) / .75);
-    map = new HashMap<String, OffsetValue>(initialCapacity);
+    map = new HashMap<>(initialCapacity);
     WiktionaryIndexer.createIndex(dumpFile, map);
     long starttime = System.currentTimeMillis();
-    System.out.println("Dumping index...");
+    log.info("Dumping index...");
     this.dumpIndex();
     long endtime = System.currentTimeMillis();
-    System.out.println(" Dumping index Time = " + (endtime - starttime) + "; ");
+    log.info(" Dumping index Time = {}; ", (endtime - starttime));
   }
 
   public void clear() {
-    throw new RuntimeException("put: unsupported method (a WiktionaryIndex is read/only.");
+    throw new UnsupportedOperationException("put: unsupported method (a WiktionaryIndex is read/only.");
   }
 
   public boolean containsKey(Object key) {
@@ -254,11 +234,11 @@ public class WiktionaryIndex implements Map<String, String> {
   }
 
   public boolean containsValue(Object value) {
-    throw new RuntimeException("containsValue: unsupported method.");
+    throw new UnsupportedOperationException("containsValue: unsupported method.");
   }
 
   public Set<Map.Entry<String, String>> entrySet() {
-    throw new RuntimeException("entrySet: unsupported method.");
+    throw new UnsupportedOperationException("entrySet: unsupported method.");
   }
 
   /*
@@ -293,15 +273,15 @@ public class WiktionaryIndex implements Map<String, String> {
   }
 
   public String put(String key, String value) {
-    throw new RuntimeException("put: unsupported method (a WiktionaryIndex is read/only).");
+    throw new UnsupportedOperationException("put: unsupported method (a WiktionaryIndex is read/only).");
   }
 
   public void putAll(Map<? extends String, ? extends String> t) {
-    throw new RuntimeException("putAll: unsupported method (a WiktionaryIndex is read/only).");
+    throw new UnsupportedOperationException("putAll: unsupported method (a WiktionaryIndex is read/only).");
   }
 
   public String remove(Object key) {
-    throw new RuntimeException("remove: unsupported method (a WiktionaryIndex is read/only).");
+    throw new UnsupportedOperationException("remove: unsupported method (a WiktionaryIndex is read/only).");
   }
 
   public int size() {
@@ -309,7 +289,7 @@ public class WiktionaryIndex implements Map<String, String> {
   }
 
   public Collection<String> values() {
-    throw new RuntimeException("values: unsupported method.");
+    throw new UnsupportedOperationException("values: unsupported method.");
   }
 
   private static List<String> redirects =
@@ -318,10 +298,10 @@ public class WiktionaryIndex implements Map<String, String> {
   public String getTextOfPageWithRedirects(String key) {
     String text = getTextOfPage(key);
     if (null == text) {
-      text = getTextOfPage(key.replaceAll(" ", "_"));
+      text = getTextOfPage(key.replace(" ", "_"));
     }
     if (null == text) {
-      text = getTextOfPage(key.replaceAll("_", " "));
+      text = getTextOfPage(key.replace("_", " "));
     }
     if (null != text) {
       for (String redirect : redirects) {
@@ -338,7 +318,7 @@ public class WiktionaryIndex implements Map<String, String> {
   }
 
   public String getTextOfPage(String key) {
-    String skey = (String) key;
+    String skey = key;
     boolean notMainSpace = skey.contains(":");
     Element element = cache.get(skey);
     if (element != null && notMainSpace) {

@@ -3,12 +3,14 @@ package org.getalp.dbnary.cli;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -109,7 +111,7 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
 
   }
 
-  private void updateStats() throws Exception {
+  private void updateStats() throws IOException, NoSuchAlgorithmException {
 
     File d = new File(extractsDir);
     File ds = new File(statsDir);
@@ -149,11 +151,10 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
         System.err.println("Computing stats for: " + e.getName());
         try {
           m1 = ModelFactory.createDefaultModel();
-          InputStream in = new FileInputStream(e);
-          if (e.getName().endsWith(".bz2")) {
-            in = new BZip2CompressorInputStream(in);
+          try (InputStream flat = new FileInputStream(e);
+          InputStream in = (e.getName().endsWith(".bz2")) ? new BZip2CompressorInputStream(flat) : flat) {
+            m1.read(in, DbnaryModel.DBNARY_NS_PREFIX + "/" + language + "/", "TURTLE");
           }
-          m1.read(in, DbnaryModel.DBNARY_NS_PREFIX + "/" + language + "/", "TURTLE");
 
           System.err.println("Used memory: "
               + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
@@ -224,16 +225,16 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
     File gs = new File(gstatFile);
 
     if (gs.isFile() && gs.canRead()) {
-      BufferedReader br =
-          new BufferedReader(new InputStreamReader(new FileInputStream(gs), "UTF-8"));
-      String h = br.readLine(); // reading header
-      String s = br.readLine();
-      while (s != null) {
-        String line[] = s.split(",");
-        m.put(line[0], s);
-        s = br.readLine();
+      try (BufferedReader br = new BufferedReader(
+          new InputStreamReader(new FileInputStream(gs), "UTF-8"))) {
+        String h = br.readLine(); // reading header
+        String s = br.readLine();
+        while (s != null) {
+          String line[] = s.split(",");
+          m.put(line[0], s);
+          s = br.readLine();
+        }
       }
-      br.close();
     }
     return m;
   }
@@ -247,27 +248,28 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
         "With OPTIONS in:", options, help, false);
   }
 
-  public static byte[] createChecksum(File file) throws Exception {
-    InputStream fis = new FileInputStream(file);
+  public static byte[] createChecksum(File file)
+      throws IOException, NoSuchAlgorithmException {
+    MessageDigest complete;
+    try (InputStream fis = new FileInputStream(file)) {
 
-    byte[] buffer = new byte[4096];
-    MessageDigest complete = MessageDigest.getInstance("MD5");
-    int numRead;
+      byte[] buffer = new byte[4096];
+      complete = MessageDigest.getInstance("MD5");
+      int numRead;
 
-    do {
-      numRead = fis.read(buffer);
-      if (numRead > 0) {
-        complete.update(buffer, 0, numRead);
-      }
-    } while (numRead != -1);
-
-    fis.close();
+      do {
+        numRead = fis.read(buffer);
+        if (numRead > 0) {
+          complete.update(buffer, 0, numRead);
+        }
+      } while (numRead != -1);
+    }
     return complete.digest();
   }
 
   // see this How-to for a faster way to convert
   // a byte array to a HEX string
-  public static String getMD5Checksum(File file) throws Exception {
+  public static String getMD5Checksum(File file) throws IOException, NoSuchAlgorithmException {
     byte[] b = createChecksum(file);
     StringBuilder result = new StringBuilder();
 

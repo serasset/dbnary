@@ -12,28 +12,28 @@ public abstract class Person extends MorphoSyntacticFeature {
     return LexinfoOnt.person;
   }
 
-  public static Person FIRST = new Person() {
+  public static final Person FIRST = new Person() {
     public RDFNode value() {
       return LexinfoOnt.firstPerson;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> first = s -> s.add(FIRST);
+  public static final Consumer<Set<MorphoSyntacticFeature>> first = s -> s.add(FIRST);
 
-  public static Person SECOND = new Person() {
+  public static final Person SECOND = new Person() {
     public RDFNode value() {
       return LexinfoOnt.secondPerson;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> second = s -> s.add(SECOND);
+  public static final Consumer<Set<MorphoSyntacticFeature>> second = s -> s.add(SECOND);
 
-  public static Person THIRD = new Person() {
+  public static final Person THIRD = new Person() {
     public RDFNode value() {
       return LexinfoOnt.thirdPerson;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> third = s -> s.add(THIRD);
+  public static final Consumer<Set<MorphoSyntacticFeature>> third = s -> s.add(THIRD);
 
 }

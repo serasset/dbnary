@@ -12,20 +12,20 @@ public abstract class Finiteness extends MorphoSyntacticFeature {
     return LexinfoOnt.finiteness;
   }
 
-  public static Finiteness FINITE = new Finiteness() {
+  public static final Finiteness FINITE = new Finiteness() {
     public RDFNode value() {
       return LexinfoOnt.finite;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> finite = s -> s.add(FINITE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> finite = s -> s.add(FINITE);
 
-  public static Finiteness NON_FINITE = new Finiteness() {
+  public static final Finiteness NON_FINITE = new Finiteness() {
     public RDFNode value() {
       return LexinfoOnt.nonFinite;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> nonFinite = s -> s.add(NON_FINITE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> nonFinite = s -> s.add(NON_FINITE);
 
 }

@@ -11,11 +11,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -48,7 +51,6 @@ public class EnhanceLatestExtracts {
   private String statsDir = null;
   private boolean doCompress;
   protected String rdfFormat;
-  private String prefixDir = null;
 
   static {
     options = new Options();
@@ -83,7 +85,7 @@ public class EnhanceLatestExtracts {
       System.exit(0);
     }
 
-    prefixDir = DEFAULT_PREFIX_DIR;
+    String prefixDir = DEFAULT_PREFIX_DIR;
     if (cmd.hasOption(PREFIX_DIR_OPTION)) {
       prefixDir = cmd.getOptionValue(PREFIX_DIR_OPTION);
     }
@@ -100,14 +102,14 @@ public class EnhanceLatestExtracts {
 
   }
 
-  public static void main(String args[]) throws Exception {
+  public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
     EnhanceLatestExtracts cliProg = new EnhanceLatestExtracts();
     cliProg.loadArgs(args);
     cliProg.enhanceExtract();
 
   }
 
-  private void enhanceExtract() throws Exception {
+  private void enhanceExtract() throws IOException, NoSuchAlgorithmException {
 
     File d = new File(extractsDir);
     File ds = new File(statsDir);
@@ -125,7 +127,8 @@ public class EnhanceLatestExtracts {
     String glossStatsFile = statsDir + File.separator + "latest_glosses_stats.csv";
     Map<String, String> glossStats = readAndParseStats(glossStatsFile);
 
-    for (File e : d.listFiles((dir, name) -> name.matches(".._dbnary_ontolex\\..*"))) {
+    for (File e : Objects.requireNonNull(
+        d.listFiles((dir, name) -> name.matches(".._dbnary_ontolex\\..*")))) {
       String l2 = e.getName().substring(0, 2);
       String language = LangTools.getCode(l2);
       String elang = LangTools.inEnglish(language);
@@ -139,12 +142,10 @@ public class EnhanceLatestExtracts {
 
       System.err.println("Enhancing: " + e.getName());
 
-      try {
+      try (InputStream flat = new FileInputStream(e);
+          InputStream in = (e.getName().endsWith(".bz2")) ? new BZip2CompressorInputStream(flat) : flat
+      ) {
         Model inputModel = ModelFactory.createDefaultModel();
-        InputStream in = new FileInputStream(e);
-        if (e.getName().endsWith(".bz2")) {
-          in = new BZip2CompressorInputStream(in);
-        }
         inputModel.read(in, null, this.rdfFormat);
 
         Model outputModel = ModelFactory.createDefaultModel();
@@ -174,7 +175,6 @@ public class EnhanceLatestExtracts {
         System.err.println(ex.getLocalizedMessage());
         ex.printStackTrace(System.err);
       }
-
     }
 
     // TODO: stats should be written after each language so that already computed languages will be
@@ -211,19 +211,14 @@ public class EnhanceLatestExtracts {
     if (filename.endsWith(".bz2")) {
       filename = filename.substring(0, filename.length() - 4);
     }
-    outputModelFileName = effectiveDir.resolve(filename.replaceAll("_ontolex", "_enhancement"))
+    outputModelFileName = effectiveDir.resolve(filename.replace("_ontolex", "_enhancement"))
         .normalize().toString();
 
-    OutputStream outputModelStream = null;
-
-    try {
-      if (doCompress) {
-        outputModelFileName = outputModelFileName + ".bz2";
-        outputModelStream = new FileOutputStream(outputModelFileName);
-        outputModelStream = new BZip2CompressorOutputStream(outputModelStream);
-      } else {
-        outputModelStream = new FileOutputStream(outputModelFileName);
-      }
+    if (doCompress) outputModelFileName = outputModelFileName + ".bz2";
+    try (
+        OutputStream flatOutputStream = new FileOutputStream(outputModelFileName);
+        OutputStream outputModelStream = doCompress ? new BZip2CompressorOutputStream(flatOutputStream) : flatOutputStream
+      ) {
       m.write(outputModelStream, this.rdfFormat);
 
       // Linking effective outputfile into latest folder
@@ -232,19 +227,9 @@ public class EnhanceLatestExtracts {
     } catch (FileNotFoundException e) {
       System.err.println("Could not create output stream: " + e.getLocalizedMessage());
       e.printStackTrace(System.err);
-      return;
     } catch (IOException e) {
       System.err.println("IOException while creating output stream: " + e.getLocalizedMessage());
       e.printStackTrace();
-      return;
-    } finally {
-      if (null != outputModelStream) {
-        try {
-          outputModelStream.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
     }
   }
 
@@ -294,14 +279,14 @@ public class EnhanceLatestExtracts {
     File gs = new File(gstatFile);
 
     if (!gs.exists() || (gs.isFile() && gs.canWrite())) {
-      PrintWriter stats = new PrintWriter(gs, "UTF-8");
+      PrintWriter statsWriter = new PrintWriter(gs, StandardCharsets.UTF_8);
       // Print Header
-      stats.println(headers);
+      statsWriter.println(headers);
       for (String s : gstats.values()) {
-        stats.println(s);
+        statsWriter.println(s);
       }
-      stats.flush();
-      stats.close();
+      statsWriter.flush();
+      statsWriter.close();
     }
   }
 
@@ -310,21 +295,21 @@ public class EnhanceLatestExtracts {
   }
 
   private Map<String, String> readAndParseStats(String gstatFile) throws IOException {
-    TreeMap<String, String> m = new TreeMap<String, String>();
+    TreeMap<String, String> m = new TreeMap<>();
 
     File gs = new File(gstatFile);
 
     if (gs.isFile() && gs.canRead()) {
-      BufferedReader br =
-          new BufferedReader(new InputStreamReader(new FileInputStream(gs), "UTF-8"));
-      String h = br.readLine(); // reading header
-      String s = br.readLine();
-      while (s != null) {
-        String line[] = s.split(",");
-        m.put(line[0], s);
+      try (BufferedReader br =
+          new BufferedReader(new InputStreamReader(new FileInputStream(gs), StandardCharsets.UTF_8))) {
+        String s = br.readLine();
         s = br.readLine();
+        while (s != null) {
+          String[] line = s.split(",");
+          m.put(line[0], s);
+          s = br.readLine();
+        }
       }
-      br.close();
     }
     return m;
   }
@@ -337,34 +322,34 @@ public class EnhanceLatestExtracts {
         help, false);
   }
 
-  public static byte[] createChecksum(File file) throws Exception {
-    InputStream fis = new FileInputStream(file);
+  public static byte[] createChecksum(File file) throws IOException, NoSuchAlgorithmException {
+    MessageDigest complete;
+    try (InputStream fis = new FileInputStream(file)) {
 
-    byte[] buffer = new byte[4096];
-    MessageDigest complete = MessageDigest.getInstance("MD5");
-    int numRead;
+      byte[] buffer = new byte[4096];
+      complete = MessageDigest.getInstance("MD5");
+      int numRead;
 
-    do {
-      numRead = fis.read(buffer);
-      if (numRead > 0) {
-        complete.update(buffer, 0, numRead);
-      }
-    } while (numRead != -1);
-
-    fis.close();
+      do {
+        numRead = fis.read(buffer);
+        if (numRead > 0) {
+          complete.update(buffer, 0, numRead);
+        }
+      } while (numRead != -1);
+    }
     return complete.digest();
   }
 
   // see this How-to for a faster way to convert
   // a byte array to a HEX string
-  public static String getMD5Checksum(File file) throws Exception {
+  public static String getMD5Checksum(File file) throws IOException, NoSuchAlgorithmException {
     byte[] b = createChecksum(file);
-    String result = "";
+    StringBuilder result = new StringBuilder();
 
-    for (int i = 0; i < b.length; i++) {
-      result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
+    for (byte value : b) {
+      result.append(Integer.toString((value & 0xff) + 0x100, 16).substring(1));
     }
-    return result;
+    return result.toString();
   }
 
 }

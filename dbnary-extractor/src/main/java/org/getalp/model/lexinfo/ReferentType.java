@@ -12,20 +12,20 @@ public abstract class ReferentType extends MorphoSyntacticFeature {
     return LexinfoOnt.referentType;
   }
 
-  public static ReferentType PERSONAL = new ReferentType() {
+  public static final ReferentType PERSONAL = new ReferentType() {
     public RDFNode value() {
       return LexinfoOnt.personal;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> personal = s -> s.add(PERSONAL);
+  public static final Consumer<Set<MorphoSyntacticFeature>> personal = s -> s.add(PERSONAL);
 
-  public static ReferentType POSSESSIVE = new ReferentType() {
+  public static final ReferentType POSSESSIVE = new ReferentType() {
     public RDFNode value() {
       return LexinfoOnt.possessive;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> possessive = s -> s.add(POSSESSIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> possessive = s -> s.add(POSSESSIVE);
 
 }

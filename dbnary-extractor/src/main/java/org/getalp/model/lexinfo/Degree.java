@@ -12,28 +12,28 @@ public abstract class Degree extends MorphoSyntacticFeature {
     return LexinfoOnt.degree;
   }
 
-  public static Degree COMPARATIVE = new Degree() {
+  public static final Degree COMPARATIVE = new Degree() {
     public RDFNode value() {
       return LexinfoOnt.comparative;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> comparative = s -> s.add(COMPARATIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> comparative = s -> s.add(COMPARATIVE);
 
-  public static Degree POSITIVE = new Degree() {
+  public static final Degree POSITIVE = new Degree() {
     public RDFNode value() {
       return LexinfoOnt.positive;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> positive = s -> s.add(POSITIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> positive = s -> s.add(POSITIVE);
 
-  public static Degree SUPERLATIVE = new Degree() {
+  public static final Degree SUPERLATIVE = new Degree() {
     public RDFNode value() {
       return LexinfoOnt.superlative;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> superlative = s -> s.add(SUPERLATIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> superlative = s -> s.add(SUPERLATIVE);
 
 }

@@ -12,28 +12,28 @@ public abstract class Voice extends MorphoSyntacticFeature {
     return LexinfoOnt.voice;
   }
 
-  public static Voice ACTIVE = new Voice() {
+  public static final Voice ACTIVE = new Voice() {
     public RDFNode value() {
       return LexinfoOnt.activeVoice;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> active = s -> s.add(ACTIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> active = s -> s.add(ACTIVE);
 
-  public static Voice MIDDLE = new Voice() {
+  public static final Voice MIDDLE = new Voice() {
     public RDFNode value() {
       return LexinfoOnt.middleVoice;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> middle = s -> s.add(MIDDLE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> middle = s -> s.add(MIDDLE);
 
-  public static Voice PASSIVE = new Voice() {
+  public static final Voice PASSIVE = new Voice() {
     public RDFNode value() {
       return LexinfoOnt.passiveVoice;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> passive = s -> s.add(PASSIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> passive = s -> s.add(PASSIVE);
 
 }

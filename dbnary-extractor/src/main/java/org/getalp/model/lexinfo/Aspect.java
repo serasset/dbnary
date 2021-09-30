@@ -50,5 +50,6 @@ public abstract class Aspect extends MorphoSyntacticFeature {
     }
   };
 
-  public static final Consumer<Set<MorphoSyntacticFeature>> unaccomplished = s -> s.add(UNACCOMPLISHED);
+  public static final Consumer<Set<MorphoSyntacticFeature>> unaccomplished =
+      s -> s.add(UNACCOMPLISHED);
 }

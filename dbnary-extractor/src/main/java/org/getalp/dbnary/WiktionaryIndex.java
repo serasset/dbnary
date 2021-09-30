@@ -161,7 +161,7 @@ public class WiktionaryIndex implements Map<String, String> {
   }
 
   public void loadIndex() throws WiktionaryIndexerException {
-    try (RandomAccessFile in = new RandomAccessFile(indexFile, "r")){
+    try (RandomAccessFile in = new RandomAccessFile(indexFile, "r")) {
 
       FileChannel fc = in.getChannel();
 
@@ -225,7 +225,8 @@ public class WiktionaryIndex implements Map<String, String> {
   }
 
   public void clear() {
-    throw new UnsupportedOperationException("put: unsupported method (a WiktionaryIndex is read/only.");
+    throw new UnsupportedOperationException(
+        "put: unsupported method (a WiktionaryIndex is read/only.");
   }
 
   public boolean containsKey(Object key) {
@@ -272,15 +273,18 @@ public class WiktionaryIndex implements Map<String, String> {
   }
 
   public String put(String key, String value) {
-    throw new UnsupportedOperationException("put: unsupported method (a WiktionaryIndex is read/only).");
+    throw new UnsupportedOperationException(
+        "put: unsupported method (a WiktionaryIndex is read/only).");
   }
 
   public void putAll(Map<? extends String, ? extends String> t) {
-    throw new UnsupportedOperationException("putAll: unsupported method (a WiktionaryIndex is read/only).");
+    throw new UnsupportedOperationException(
+        "putAll: unsupported method (a WiktionaryIndex is read/only).");
   }
 
   public String remove(Object key) {
-    throw new UnsupportedOperationException("remove: unsupported method (a WiktionaryIndex is read/only).");
+    throw new UnsupportedOperationException(
+        "remove: unsupported method (a WiktionaryIndex is read/only).");
   }
 
   public int size() {

@@ -1290,7 +1290,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             args.remove("2");
             args.remove("1");
             if (!args.isEmpty()) {
-              log.debug("Unhandled remaining args {} in {}", args.entrySet().toString(),
+              log.debug("Unhandled remaining args {} in {}", args.entrySet(),
                   this.getWiktionaryPageName());
             }
             wdh.registerNymRelation(target, synRelation, currentGloss);

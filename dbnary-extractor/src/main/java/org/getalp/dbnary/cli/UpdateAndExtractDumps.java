@@ -13,6 +13,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,7 +58,6 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
   private static final String PREFIX_DIR_OPTION = "d";
   private static final String DEFAULT_PREFIX_DIR = ".";
 
-  private static final String MODEL_OPTION = "m";
   private static final String DEFAULT_MODEL = "ontolex";
 
   private static final String HISTORY_SIZE_OPTION = "k";
@@ -102,8 +102,6 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     options.addOption(PREFIX_DIR_OPTION, true,
         "directory containing the wiktionary dumps and extracts. " + DEFAULT_PREFIX_DIR
             + " by default ");
-    options.addOption(MODEL_OPTION, true,
-        "model of the extracts (LEMON or ONTOLEX) extracts. " + DEFAULT_MODEL + " by default ");
     options.addOption(COMPRESS_OPTION, false,
         "compress the output file using bzip2." + DEFAULT_COMPRESS + " by default ");
     options.addOption(NETWORK_OFF_OPTION, false,
@@ -215,12 +213,6 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       }
     }
 
-    if (cmd.hasOption(MODEL_OPTION)) {
-      System.err.println("WARN: the " + MODEL_OPTION
-          + " option is now deprecated. Forcibly using model: " + DEFAULT_MODEL);
-      // model = cmd.getOptionValue(MODEL_OPTION);
-    }
-
     String prefixDir = DEFAULT_PREFIX_DIR;
     if (cmd.hasOption(PREFIX_DIR_OPTION)) {
       prefixDir = cmd.getOptionValue(PREFIX_DIR_OPTION);
@@ -236,7 +228,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
 
   }
 
-  public void updateAndExtract() throws WiktionaryIndexerException, IOException {
+  public void updateAndExtract() {
     List<LanguageConfiguration> confs = Arrays.stream(remainingArgs).distinct().sequential()
         .map(this::retrieveLastDump).collect(Collectors.toList());
     confs =
@@ -384,7 +376,8 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
 
   private void deleteDump(String lang, String dir) {
     String dumpdir = outputDir + "/" + lang + "/" + dir;
-    String filename = dumpdir + "/" + dumpFileName(lang, dir);
+    String filename = dumpdir + "/"
+        + dumpFileName(lang, dir);
 
     File f = new File(filename);
 
@@ -457,8 +450,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
 
         try {
           String dumpdir = outputDir + "/" + lang + "/" + lastDir;
-          String filename = dumpdir + "/" + dumpFileName(lang, lastDir);
-          File file = new File(filename);
+          File file = new File(dumpdir, dumpFileName(lang, lastDir));
           if (file.exists()) {
             // System.err.println("Dump file " + filename + " already retrieved.");
             return lastDir;
@@ -484,7 +476,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
                 long s = System.currentTimeMillis();
                 entity.writeTo(dfile);
                 System.err.println(
-                    "Retreived " + filename + "[" + (System.currentTimeMillis() - s) + " ms]");
+                    "Retreived " + file.getName() + "[" + (System.currentTimeMillis() - s) + " ms]");
               }
             }
           }
@@ -508,7 +500,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
   }
 
   private SortedSet<String> getFolderSetFromIndex(HttpEntity entity, String url) {
-    SortedSet<String> folders = new TreeSet<String>();
+    SortedSet<String> folders = new TreeSet<>();
     InputStream is = null;
     try {
       is = entity.getContent();
@@ -548,7 +540,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       return null;
     }
 
-    SortedSet<String> versions = new TreeSet<String>();
+    SortedSet<String> versions = new TreeSet<>();
     for (File dir : dirs) {
       if (dir.isDirectory()) {
         versions.add(dir.getName());
@@ -592,9 +584,6 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       return false;
     }
 
-    Reader r = null;
-    Writer w = null;
-
     String compressedDumpFile = outputDir + "/" + lang + "/" + dir + "/" + dumpFileName(lang, dir);
     String uncompressedDumpFile = uncompressDumpFileName(lang, dir);
     // System.err.println("Uncompressing " + compressedDumpFile);
@@ -609,21 +598,20 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     System.err
         .println("uncompressing file : " + compressedDumpFile + " to " + uncompressedDumpFile);
 
-    try {
-      BZip2CompressorInputStream bzIn =
-          new BZip2CompressorInputStream(new FileInputStream(compressedDumpFile));
-      r = new BufferedReader(new InputStreamReader(bzIn, "UTF-8"));
+    try (BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(
+          new FileInputStream(compressedDumpFile));
+        Reader r = new BufferedReader(new InputStreamReader(bzIn, StandardCharsets.UTF_8));
+        FileOutputStream out = new FileOutputStream(uncompressedDumpFile);
+        Writer w = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_16));
+    ) {
 
-      FileOutputStream out = new FileOutputStream(uncompressedDumpFile);
-      w = new BufferedWriter(new OutputStreamWriter(out, "UTF-16"));
+
 
       final char[] buffer = new char[4096];
       int len;
       while ((len = r.read(buffer)) != -1) {
         w.write(buffer, 0, len);
       }
-      r.close();
-      w.close();
       System.err.println("Correctly uncompressed file : " + uncompressedDumpFile);
 
     } catch (IOException e) {
@@ -637,21 +625,6 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
         f.delete();
       }
       status = false;
-    } finally {
-      if (null != r) {
-        try {
-          r.close();
-        } catch (IOException e) {
-          // nop
-        }
-      }
-      if (null != w) {
-        try {
-          w.close();
-        } catch (IOException e) {
-          // nop
-        }
-      }
     }
     return status;
   }

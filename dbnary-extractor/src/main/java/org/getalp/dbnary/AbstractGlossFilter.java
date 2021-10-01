@@ -7,8 +7,8 @@ public abstract class AbstractGlossFilter {
   public static String normalize(String rawGloss) {
     String res = rawGloss.trim();
     res = res.replaceAll("\\s{2,}", " ");
-    res = res.replaceAll("'''", "");
-    res = res.replaceAll("''", "");
+    res = res.replace("'''", "");
+    res = res.replace("''", "");
 
     return res;
   }

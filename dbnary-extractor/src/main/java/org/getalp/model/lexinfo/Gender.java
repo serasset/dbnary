@@ -12,43 +12,43 @@ public abstract class Gender extends MorphoSyntacticFeature {
     return LexinfoOnt.gender;
   }
 
-  public static Gender MASCULINE = new Gender() {
+  public static final Gender MASCULINE = new Gender() {
     public RDFNode value() {
       return LexinfoOnt.masculine;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> masculine = s -> s.add(MASCULINE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> masculine = s -> s.add(MASCULINE);
 
-  public static Gender FEMININE = new Gender() {
+  public static final Gender FEMININE = new Gender() {
     public RDFNode value() {
       return LexinfoOnt.feminine;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> feminine = s -> s.add(FEMININE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> feminine = s -> s.add(FEMININE);
 
-  public static Gender NEUTER = new Gender() {
+  public static final Gender NEUTER = new Gender() {
     public RDFNode value() {
       return LexinfoOnt.neuter;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> neuter = s -> s.add(NEUTER);
+  public static final Consumer<Set<MorphoSyntacticFeature>> neuter = s -> s.add(NEUTER);
 
-  public static Gender COMMON = new Gender() {
+  public static final Gender COMMON = new Gender() {
     public RDFNode value() {
       return LexinfoOnt.commonGender;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> common = s -> s.add(COMMON);
+  public static final Consumer<Set<MorphoSyntacticFeature>> common = s -> s.add(COMMON);
 
-  public static Gender OTHER = new Gender() {
+  public static final Gender OTHER = new Gender() {
     public RDFNode value() {
       return LexinfoOnt.otherGender;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> other = s -> s.add(OTHER);
+  public static final Consumer<Set<MorphoSyntacticFeature>> other = s -> s.add(OTHER);
 }

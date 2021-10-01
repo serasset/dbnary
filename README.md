@@ -40,6 +40,7 @@ branching model. To successfully release the code using maven, we use the
  
 ```bash
 mvn gitflow:release-start
+# edit all scripts in kaiko/ to use the correct (non SNAPSHOT) version.
 mvn deploy site:site site:deploy
 mvn gitflow:release-finish 
 ```

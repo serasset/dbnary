@@ -151,11 +151,11 @@ public class UpdateDiachronicStatistics extends DbnaryModel {
         System.err.println("Computing stats for: " + e.getName());
         try {
           m1 = ModelFactory.createDefaultModel();
-          try (InputStream flat = new FileInputStream(e);
-              InputStream in =
-                  (e.getName().endsWith(".bz2")) ? new BZip2CompressorInputStream(flat) : flat) {
-            m1.read(in, DbnaryModel.DBNARY_NS_PREFIX + "/" + language + "/", "TURTLE");
+          InputStream in = new FileInputStream(e);
+          if (e.getName().endsWith(".bz2")) {
+            in = new BZip2CompressorInputStream(in);
           }
+          m1.read(in, DbnaryModel.DBNARY_NS_PREFIX + "/" + language + "/", "TURTLE");
 
           System.err.println("Used memory: "
               + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));

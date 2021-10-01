@@ -44,6 +44,15 @@ public class IConv {
       if (to == null) {
         to = Charset.forName(System.getProperty("file.encoding"));
       }
+    try (InputStream in = (infile != null)  ? new FileInputStream(infile) : System.in;
+        OutputStream out= (outfile != null) ? new FileOutputStream(outfile): System.out
+    ) {
+      if (from == null) {
+        from = Charset.forName(System.getProperty("file.encoding"));
+      }
+      if (to == null) {
+        to = Charset.forName(System.getProperty("file.encoding"));
+      }
 
       // Set up character streams.
       Reader r = new BufferedReader(new InputStreamReader(in, from));

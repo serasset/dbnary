@@ -14,7 +14,7 @@ definitions:
   caches:
     sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
   steps:
-    - step: &build
+    - step: &build-and-sonar
         name: Build
         runs-on: 
           - 'self.hosted'
@@ -25,21 +25,11 @@ definitions:
         script:
           - mvn -B verify --file pom.xml
           - mvn -B install -PcodeCoverage
+          - mvn -B sonar:sonar -Dsonar.java.coveragePlugin=jacoco
         artifacts:
           - "**/target/site/jacoco/jacoco.xml"
           - "**/target/site/jacoco-aggregate/jacoco.xml"
           - "**/target/**/*.class"
-    - step: &sonar
-        name: Sonar scan
-        runs-on:
-          - 'self.hosted'
-          - 'dbnary'
-        size: 4x
-        caches:
-          - maven
-          - sonar
-        script:
-          - mvn -B sonar:sonar -Dsonar.java.coveragePlugin=jacoco
     - step: &build-pr
         name: Build pull-request
         runs-on:
@@ -82,11 +72,14 @@ definitions:
 pipelines:
   branches:
     '*':
-      - step: *build
-      - step: *sonar
+      - step: *build-and-sonar
     'feature/*':
         - step: *build-pr
         - step: *test-pr
+    'release/*':
+      - step: *build-and-sonar
+      - step: *build-pr
+      - step: *test-pr
   pull-requests:
     "*":
       - step: *build-pr

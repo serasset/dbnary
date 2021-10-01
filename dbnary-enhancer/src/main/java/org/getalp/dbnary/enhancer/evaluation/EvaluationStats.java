@@ -8,12 +8,11 @@ import java.util.TreeMap;
 
 public class EvaluationStats {
 
-  private Map<String, Stat> confidenceMap = new TreeMap<String, Stat>();
+  private Map<String, Stat> confidenceMap = new TreeMap<>();
   private Stat currentStat;
 
-  public static String getHeaders() {
-    return "Similarity Precision,Similarity Recall, Similarity F1, Random Precision, Random Recall";
-  }
+  public static final String HEADERS =
+      "Similarity Precision,Similarity Recall, Similarity F1, Random Precision, Random Recall";
 
   public void reset(String lang) {
     confidenceMap.put(lang, new Stat());
@@ -40,9 +39,8 @@ public class EvaluationStats {
   }
 
   public void printConfidenceStats(PrintStream out) {
-    out.println("Language," + getHeaders());
+    out.println("Language," + HEADERS);
     for (String lang : confidenceMap.keySet()) {
-      // System.err.println(lstat);
       printStat(lang, out);
       out.println();
     }
@@ -56,7 +54,7 @@ public class EvaluationStats {
     private double randRecall;
     private int randPrec;
 
-    {
+    public Stat() {
       sumPrec = 0;
       sumRecall = 0;
       nbReq = 0;
@@ -66,9 +64,9 @@ public class EvaluationStats {
 
     public double getPrecision() {
       if (0 == nbReq) {
-        return 0;
+        return 0.;
       } else {
-        return ((double) sumPrec) / ((double) nbReq);
+        return sumPrec / (nbReq);
       }
     }
 
@@ -76,7 +74,7 @@ public class EvaluationStats {
       if (0 == nbReq) {
         return 0;
       } else {
-        return ((double) sumRecall) / (double) (nbReq);
+        return sumRecall / (nbReq);
       }
     }
 
@@ -106,7 +104,7 @@ public class EvaluationStats {
         sumPrec += numRel / numRet;
       }
       if (nbAlternatives > 0 && numExp > 0) {
-        randRecall += 1 / (nbAlternatives);
+        randRecall += 1. / (nbAlternatives);
       }
       if (nbAlternatives > 0) {
         randPrec += numExp / (nbAlternatives);
@@ -134,7 +132,7 @@ public class EvaluationStats {
       if (0 == nbReq) {
         return 0;
       } else {
-        return ((double) randRecall) / (double) (nbReq);
+        return randRecall / (nbReq);
       }
     }
 

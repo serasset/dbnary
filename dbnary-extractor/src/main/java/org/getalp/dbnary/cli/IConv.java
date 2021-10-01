@@ -36,19 +36,6 @@ public class IConv {
 
   public static void convert(File infile, Charset from, File outfile, Charset to)
       throws IOException {
-    InputStream in;
-    if (infile != null) {
-      in = new FileInputStream(infile);
-    } else {
-      in = System.in;
-    }
-    OutputStream out;
-    if (outfile != null) {
-      out = new FileOutputStream(outfile);
-    } else {
-      out = System.out;
-    }
-
     if (from == null) {
       from = Charset.forName(System.getProperty("file.encoding"));
     }
@@ -56,17 +43,17 @@ public class IConv {
       to = Charset.forName(System.getProperty("file.encoding"));
     }
 
-    // Set up character streams.
-    Reader r = new BufferedReader(new InputStreamReader(in, from));
-    Writer w = new BufferedWriter(new OutputStreamWriter(out, to));
+    try (InputStream in = (infile != null) ? new FileInputStream(infile) : System.in;
+        OutputStream out = (outfile != null) ? new FileOutputStream(outfile) : System.out;
+        Reader r = new BufferedReader(new InputStreamReader(in, from));
+        Writer w = new BufferedWriter(new OutputStreamWriter(out, to))) {
 
-    char[] buffer = new char[4096];
-    int len;
-    while ((len = r.read(buffer)) != -1) {
-      w.write(buffer, 0, len);
+      char[] buffer = new char[4096];
+      int len;
+      while ((len = r.read(buffer)) != -1) {
+        w.write(buffer, 0, len);
+      }
     }
-    r.close();
-    w.close();
   }
 
   public static void main(String[] args) {

@@ -12,60 +12,60 @@ public abstract class Mood extends MorphoSyntacticFeature {
     return LexinfoOnt.verbFormMood;
   }
 
-  public static Mood INDICATIVE = new Mood() {
+  public static final Mood INDICATIVE = new Mood() {
     public RDFNode value() {
       return LexinfoOnt.indicative;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> indicative = s -> s.add(INDICATIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> indicative = s -> s.add(INDICATIVE);
 
-  public static Mood INFINITIVE = new Mood() {
+  public static final Mood INFINITIVE = new Mood() {
     public RDFNode value() {
       return LexinfoOnt.infinitive;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> infinitive = s -> s.add(INFINITIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> infinitive = s -> s.add(INFINITIVE);
 
-  public static Mood IMPERATIVE = new Mood() {
+  public static final Mood IMPERATIVE = new Mood() {
     public RDFNode value() {
       return LexinfoOnt.imperative;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> imperative = s -> s.add(IMPERATIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> imperative = s -> s.add(IMPERATIVE);
 
-  public static Mood PARTICIPLE = new Mood() {
+  public static final Mood PARTICIPLE = new Mood() {
     public RDFNode value() {
       return LexinfoOnt.participle;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> participle = s -> s.add(PARTICIPLE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> participle = s -> s.add(PARTICIPLE);
 
-  public static Mood CONDITIONAL = new Mood() {
+  public static final Mood CONDITIONAL = new Mood() {
     public RDFNode value() {
       return LexinfoOnt.conditional;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> conditional = s -> s.add(CONDITIONAL);
+  public static final Consumer<Set<MorphoSyntacticFeature>> conditional = s -> s.add(CONDITIONAL);
 
-  public static Mood SUBJUNCTIVE = new Mood() {
+  public static final Mood SUBJUNCTIVE = new Mood() {
     public RDFNode value() {
       return LexinfoOnt.subjunctive;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> subjunctive = s -> s.add(SUBJUNCTIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> subjunctive = s -> s.add(SUBJUNCTIVE);
 
-  public static Mood GERUNDIVE = new Mood() {
+  public static final Mood GERUNDIVE = new Mood() {
     public RDFNode value() {
       return LexinfoOnt.gerundive;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> gerundive = s -> s.add(GERUNDIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> gerundive = s -> s.add(GERUNDIVE);
 
 }

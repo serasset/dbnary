@@ -30,6 +30,9 @@ import org.getalp.dbnary.stats.GeneralStatistics;
 import org.getalp.dbnary.stats.NymStatistics;
 import org.getalp.dbnary.stats.TranslationsStatistics;
 
+/**
+ * @deprecated This command line should not be used anymore.
+ */
 public class UpdateDiachronicStatistics extends DbnaryModel {
 
 

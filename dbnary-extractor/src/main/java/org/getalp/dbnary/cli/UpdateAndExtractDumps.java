@@ -316,7 +316,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       return;
     }
 
-    SortedSet<String> versions = new TreeSet<String>();
+    SortedSet<String> versions = new TreeSet<>();
     for (File dir : dirs) {
       if (dir.isDirectory()) {
         versions.add(dir.getName());
@@ -594,13 +594,13 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     System.err
         .println("uncompressing file : " + compressedDumpFile + " to " + uncompressedDumpFile);
 
-    try {
+    try (
       BZip2CompressorInputStream bzIn =
           new BZip2CompressorInputStream(new FileInputStream(compressedDumpFile));
-      r = new BufferedReader(new InputStreamReader(bzIn, "UTF-8"));
+      Reader r = new BufferedReader(new InputStreamReader(bzIn, StandardCharsets.UTF_8));
 
       FileOutputStream out = new FileOutputStream(uncompressedDumpFile);
-      w = new BufferedWriter(new OutputStreamWriter(out, "UTF-16"));
+      Writer w = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_16))) {
 
       final char[] buffer = new char[4096];
       int len;

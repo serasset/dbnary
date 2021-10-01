@@ -12,9 +12,13 @@ echo "Validating on languages : $LANGS"
 # Compile PR and DESTINATION versions
 if [ x$BITBUCKET_PR_DESTINATION_BRANCH == x ]; then
   echo "Not a Pull Request, I will compare branch with develop"
-  BITBUCKET_PR_DESTINATION_BRANCH=develop
-  if [ x$BITBUCKET_BRANCH == x -o $BITBUCKET_BRANCH == develop ]; then
-    echo "Source branch undefined or already develop."
+  if [[ "$BITBUCKET_BRANCH" =~ "^feature/.*$" ]]; then
+    BITBUCKET_PR_DESTINATION_BRANCH=develop
+  else
+    BITBUCKET_PR_DESTINATION_BRANCH=master
+  fi
+  if [ "x$BITBUCKET_BRANCH" == "x" -o "$BITBUCKET_BRANCH" == "$BITBUCKET_PR_DESTINATION_BRANCH" ]; then
+    echo "Source branch and target branches are the same."
     exit 1
   fi
 fi

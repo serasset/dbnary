@@ -45,8 +45,8 @@ public class IConv {
 
     try (InputStream in = (infile != null) ? new FileInputStream(infile) : System.in;
         OutputStream out = (outfile != null) ? new FileOutputStream(outfile) : System.out;
-      Reader r = new BufferedReader(new InputStreamReader(in, from));
-      Writer w = new BufferedWriter(new OutputStreamWriter(out, to))) {
+        Reader r = new BufferedReader(new InputStreamReader(in, from));
+        Writer w = new BufferedWriter(new OutputStreamWriter(out, to))) {
 
       char[] buffer = new char[4096];
       int len;

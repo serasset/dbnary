@@ -36,35 +36,23 @@ public class IConv {
 
   public static void convert(File infile, Charset from, File outfile, Charset to)
       throws IOException {
-    try (InputStream in = (infile != null) ? new FileInputStream(infile) : System.in;
-        OutputStream out = (outfile != null) ? new FileOutputStream(outfile) : System.out) {
-      if (from == null) {
-        from = Charset.forName(System.getProperty("file.encoding"));
-      }
-      if (to == null) {
-        to = Charset.forName(System.getProperty("file.encoding"));
-      }
-    try (InputStream in = (infile != null)  ? new FileInputStream(infile) : System.in;
-        OutputStream out= (outfile != null) ? new FileOutputStream(outfile): System.out
-    ) {
-      if (from == null) {
-        from = Charset.forName(System.getProperty("file.encoding"));
-      }
-      if (to == null) {
-        to = Charset.forName(System.getProperty("file.encoding"));
-      }
+    if (from == null) {
+      from = Charset.forName(System.getProperty("file.encoding"));
+    }
+    if (to == null) {
+      to = Charset.forName(System.getProperty("file.encoding"));
+    }
 
-      // Set up character streams.
+    try (InputStream in = (infile != null) ? new FileInputStream(infile) : System.in;
+        OutputStream out = (outfile != null) ? new FileOutputStream(outfile) : System.out;
       Reader r = new BufferedReader(new InputStreamReader(in, from));
-      Writer w = new BufferedWriter(new OutputStreamWriter(out, to));
+      Writer w = new BufferedWriter(new OutputStreamWriter(out, to))) {
 
       char[] buffer = new char[4096];
       int len;
       while ((len = r.read(buffer)) != -1) {
         w.write(buffer, 0, len);
       }
-      r.close();
-      w.close();
     }
   }
 

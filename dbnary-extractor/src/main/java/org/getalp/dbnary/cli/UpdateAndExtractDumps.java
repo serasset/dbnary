@@ -595,12 +595,12 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
         .println("uncompressing file : " + compressedDumpFile + " to " + uncompressedDumpFile);
 
     try (
-      BZip2CompressorInputStream bzIn =
-          new BZip2CompressorInputStream(new FileInputStream(compressedDumpFile));
-      Reader r = new BufferedReader(new InputStreamReader(bzIn, StandardCharsets.UTF_8));
+        BZip2CompressorInputStream bzIn =
+            new BZip2CompressorInputStream(new FileInputStream(compressedDumpFile));
+        Reader r = new BufferedReader(new InputStreamReader(bzIn, StandardCharsets.UTF_8));
 
-      FileOutputStream out = new FileOutputStream(uncompressedDumpFile);
-      Writer w = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_16))) {
+        FileOutputStream out = new FileOutputStream(uncompressedDumpFile);
+        Writer w = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_16))) {
 
       final char[] buffer = new char[4096];
       int len;

@@ -31,8 +31,8 @@ function checkEnvironment() {
 }
 
 function getOntologyVersion() {
-echo Reading version from $1
-  ONTOLOGY_VERSION=$(sed -ne 's/^.*owl:versionIRI.*\<http:\/\/kaiko\.getalp\.org\/dbnary\/\(.*\)\>.*$/\1/p' < $1)
+echo "Reading version from $1"
+  ONTOLOGY_VERSION="$(sed -ne 's/^.*owl:versionIRI.*\<http:\/\/kaiko\.getalp\.org\/dbnary\/\(.*\)\>.*$/\1/p' < $1)"
 }
 
 while getopts "h?vd:" opt; do
@@ -67,7 +67,7 @@ IFS= read continue
 
 if [[ -d $OUTPUTDIR ]]
 then
-  echo $OUTPUTDIR already exists. Delete it and continue [y/N]
+  echo "$OUTPUTDIR already exists. Delete it and continue [y/N]"
   IFS= read continue
   [[ "$continue" == "y" ]] || exit 0;
   rm -rf $OUTPUTDIR
@@ -79,12 +79,12 @@ $JAVA -jar $WIDOCOJAR -ontFile $ONTOLOGY \
   -outFolder $OUTPUTDIR -getOntologyMetadata -oops -rewriteAll -htaccess -uniteSections \
   -rewriteBase /static/datamodel/
 
-pushd $PREFIXDIR/datamodel
+pushd "$PREFIXDIR/datamodel"
 [[ -L current ]] && rm current
-ln -s $ONTOLOGY_VERSION current
+ln -s "$ONTOLOGY_VERSION" current
 popd
 
-echo Should I deploy the generated files to the public web server [y/N]
+echo "Should I deploy the generated files to the public web server [y/N]"
 IFS= read continue
 [[ "$continue" == "y" ]] || exit 0;
-rsync -avz $PREFIXDIR/datamodel lig-getalp.imag.fr:/opt/dbnary/static/datamodel
+rsync -avz "$PREFIXDIR/datamodel" "lig-getalp.imag.fr:/opt/dbnary/static/datamodel"

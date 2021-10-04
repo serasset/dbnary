@@ -44,35 +44,35 @@ fi
 
 prepareTDBifTooBig() {
   local ttlfile=$1
-  if [ -f $1 ]
+  if [ -f "$1" ]
   then
-    fsize=$(wc -c <"$ttlfile")
-    if [ $fsize -gt 1000000000 ]
+    fsize="$(wc -c <"$ttlfile")"
+    if [ "$fsize" -gt 1000000000 ]
     then
         #More than 1G -> TDB
-        >&2 echo "Preparing TDB from big ttl : " ${ttlfile}
+        >&2 echo "Preparing TDB from big ttl :  ${ttlfile}"
         tdbfile=${ttlfile}.tdb
-        if [ -d $tdbfile ]
+        if [ -d "$tdbfile" ]
         then
-            >&2 echo "TDB directory alrady exists, assuming it's OK: " $tdbfile
+            >&2 echo "TDB directory alrady exists, assuming it's OK:  $tdbfile"
             >&2 echo "If not, remove directory and relaunch command."
         else
-            >&2 tdbloader2 --loc $tdbfile $ttlfile
+            >&2 tdbloader2 --loc "$tdbfile" "$ttlfile"
         fi
-        echo $tdbfile
+        echo "$tdbfile"
         return
     fi
   fi
-  echo $ttlfile
+  echo "$ttlfile"
 }
 
 for l in $LANGS
 do
-    before=$(prepareTDBifTooBig $PREVIOUS_VERSION/${l}_dbnary_${MODEL}*.ttl)
-    now=$(prepareTDBifTooBig $NEXT_VERSION/${l}_dbnary_${MODEL}*.ttl)
-    >&2 echo Comparing ${before} and ${now}
-  java -Xmx16G -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.RDFDiff ${before} ${now} > $DIFFS/${l}_lost_${MODEL}.ttl ;
-  java -Xmx16G -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.RDFDiff ${now} ${before} > $DIFFS/${l}_gain_${MODEL}.ttl ;
+    before="$(prepareTDBifTooBig $PREVIOUS_VERSION/${l}_dbnary_${MODEL}*.ttl)"
+    now="$(prepareTDBifTooBig $NEXT_VERSION/${l}_dbnary_${MODEL}*.ttl)"
+    >&2 "echo Comparing ${before} and ${now}"
+  java -Xmx16G -cp "${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar" \
+    org.getalp.dbnary.cli.RDFDiff "${before}" "${now}" > "$DIFFS/${l}_lost_${MODEL}.ttl" ;
+  java -Xmx16G -cp "${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar" \
+    org.getalp.dbnary.cli.RDFDiff "${now}" "${before}" > "$DIFFS/${l}_gain_${MODEL}.ttl" ;
 done

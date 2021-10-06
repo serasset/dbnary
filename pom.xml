@@ -102,6 +102,7 @@
     <module>dbnary-enhancer</module>
     <module>dbnary-commons</module>
     <module>build-tools</module>
+    <module>rdf-utils</module>
   </modules>
 
   <reporting>

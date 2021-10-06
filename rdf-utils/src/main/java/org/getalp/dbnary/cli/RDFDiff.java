@@ -5,6 +5,8 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.jena.graph.GraphUtil;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
@@ -12,85 +14,120 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
-public class RDFDiff {
+public class RDFDiff extends VerboseCommand {
 
-  private static boolean verbose = false;
+  private static final TreeMap<String, String> anodes2id = new TreeMap<>();
+  public static final Resource me = ResourceFactory.createResource("#me");
+  public static final Property diffRate = ResourceFactory.createProperty("", "diffRate");
 
-  public static void main(String args[]) {
-    Model m1, m2;
-    Dataset dataset1 = null, dataset2 = null;
+  public RDFDiff(String[] args) {
+    this.loadArgs(args);
+  }
 
-    if (args.length != 2) {
-      usage();
+  @Override
+  protected void loadArgs(CommandLine cmd) {
+    if (remainingArgs.length != 2) {
+      printUsage();
       System.exit(1);
     }
+  }
 
-    if (args[0].endsWith(".tdb")) {
+  @Override
+  protected void printUsage() {
+    HelpFormatter formatter = new HelpFormatter();
+    formatter.printHelp(
+        "java -cp /path/to/dbnary.jar " + this.getClass().getCanonicalName()
+            + " [OPTIONS] from.ttl to.ttl",
+        "With OPTIONS in:", options,
+        "Computes the difference between from.ttl and to.ttl. The command will output the "
+            + "model resulting from the removal of to.ttl to the model from.ttl in stdout.",
+        false);
+  }
+
+  public static void main(String[] args) {
+    RDFDiff cli = new RDFDiff(args);
+    cli.diff();
+  }
+
+  public void diff() {
+    Model fromModel;
+    Model toModel;
+    Dataset dataset1 = null;
+    Dataset dataset2 = null;
+
+    if (remainingArgs[0].endsWith(".tdb")) {
       // read the RDF/XML files
-      System.err.println("Handling first model from TDB database: " + args[0]);
-      dataset1 = TDBFactory.createDataset(args[0]);
+      if (verbose)
+        System.err.println("Handling first model from TDB database: " + remainingArgs[0]);
+      dataset1 = TDBFactory.createDataset(remainingArgs[0]);
       dataset1.begin(ReadWrite.READ);
       // Get model inside the transaction
-      m1 = dataset1.getDefaultModel();
+      fromModel = dataset1.getDefaultModel();
     } else {
-      System.err.println("Handling first model from turtle: " + args[0]);
-      m1 = ModelFactory.createDefaultModel();
-      m1.read(args[0], "TURTLE");
+      if (verbose)
+        System.err.println("Handling first model from turtle: " + remainingArgs[0]);
+      fromModel = ModelFactory.createDefaultModel();
+      RDFDataMgr.read(fromModel, remainingArgs[0]);
     }
 
-    if (args[1].endsWith(".tdb")) {
+    if (remainingArgs[1].endsWith(".tdb")) {
       // read the RDF/XML files
-      System.err.println("Handling second model from TDB database: " + args[1]);
-      dataset2 = TDBFactory.createDataset(args[1]);
+      if (verbose)
+        System.err.println("Handling second model from TDB database: " + remainingArgs[1]);
+      dataset2 = TDBFactory.createDataset(remainingArgs[1]);
       dataset2.begin(ReadWrite.READ);
       // Get model inside the transaction
-      m2 = dataset2.getDefaultModel();
+      toModel = dataset2.getDefaultModel();
     } else {
-      System.err.println("Handling second model from turtle: " + args[1]);
-      m2 = ModelFactory.createDefaultModel();
-      m2.read(args[1], "TURTLE");
+      if (verbose)
+        System.err.println("Handling second model from turtle: " + remainingArgs[1]);
+      toModel = ModelFactory.createDefaultModel();
+      RDFDataMgr.read(toModel, remainingArgs[0]);
     }
 
-    System.err.println("Building bindings.");
-    buildBinding(m1, m2);
+    if (verbose)
+      System.err.println("Building bindings.");
+    buildBinding(fromModel, toModel);
 
-    System.err.println("Computing differences.");
+    if (verbose)
+      System.err.println("Computing differences.");
 
     // merge the Models
-    Model model = difference(m1, m2);
+    Model model = difference(fromModel, toModel);
 
     if (null != dataset1)
       dataset1.end();
     if (null != dataset2)
       dataset2.end();
 
-    for (Entry<String, String> e : m1.getNsPrefixMap().entrySet()) {
+    for (Entry<String, String> e : fromModel.getNsPrefixMap().entrySet()) {
       model.setNsPrefix(e.getKey(), e.getValue());
     }
     // print the Model as RDF/XML
-    model.write(System.out, "TURTLE");
+    RDFDataMgr.write(System.out, model, Lang.TURTLE);
   }
 
-  static TreeMap<String, String> anodes2id = new TreeMap<>();
-
-
-  public static void buildBinding(Model m1, Model m2) {
-    // Creates a binding between equivalent blank nodes in m1 and m2;
-    ExtendedIterator<Node> iter = null;
-    Node s;
+  public void buildBinding(Model m1, Model m2) {
+    // Creates a binding between equivalent blank nodes in m1 and m2
     indexBlankNodes(m1);
     indexBlankNodes(m2);
   }
 
-  private static void indexBlankNodes(Model m) {
+  private void indexBlankNodes(Model m) {
     Node s;
     ExtendedIterator<Node> iter = null;
     try {
       iter = GraphUtil.listSubjects(m.getGraph(), Node.ANY, Node.ANY);
-      int nbtriple = 0, nbBlank = 0;
+      int nbtriple = 0;
+      int nbBlank = 0;
       while (iter.hasNext()) {
         s = iter.next();
         nbtriple++;
@@ -123,33 +160,34 @@ public class RDFDiff {
     }
   }
 
-  private static Model difference(Model m1, Model m2) {
-    Model resultModel = ModelFactory.createDefaultModel();
+  private Model difference(Model from, Model to) {
+    Model diff = ModelFactory.createDefaultModel();
     ExtendedIterator<Triple> iter = null;
     Triple triple;
-    int nbprocessed = 0, nbdiffs = 0;
+    int nbprocessed = 0;
+    int nbdiffs = 0;
     try {
-      iter = GraphUtil.findAll(m1.getGraph());
+      iter = GraphUtil.findAll(from.getGraph());
       while (iter.hasNext()) {
         triple = iter.next();
         nbprocessed++;
         if (triple.getSubject().isBlank() && triple.getObject().isBlank()) {
-          // TODO
+          // We assume this is not the case.
         } else if (triple.getSubject().isBlank()) {
           ExtendedIterator<Node> it = null;
           try {
-            it = GraphUtil.listSubjects(m2.getGraph(), triple.getPredicate(), triple.getObject());
+            it = GraphUtil.listSubjects(to.getGraph(), triple.getPredicate(), triple.getObject());
             if (it.hasNext()) {
               Node ec = it.next();
               while (it.hasNext() && !bound(triple.getSubject(), ec)) {
                 ec = it.next();
               }
               if (!bound(triple.getSubject(), ec)) {
-                resultModel.getGraph().add(triple);
+                diff.getGraph().add(triple);
                 nbdiffs++;
               }
             } else {
-              resultModel.getGraph().add(triple);
+              diff.getGraph().add(triple);
               nbdiffs++;
             }
           } finally {
@@ -161,18 +199,18 @@ public class RDFDiff {
         } else if (triple.getObject().isBlank()) {
           ExtendedIterator<Node> it = null;
           try {
-            it = GraphUtil.listObjects(m2.getGraph(), triple.getSubject(), triple.getPredicate());
+            it = GraphUtil.listObjects(to.getGraph(), triple.getSubject(), triple.getPredicate());
             if (it.hasNext()) {
               Node ec = it.next();
               while (it.hasNext() && !bound(triple.getObject(), ec)) {
                 ec = it.next();
               }
               if (!bound(triple.getObject(), ec)) {
-                resultModel.getGraph().add(triple);
+                diff.getGraph().add(triple);
                 nbdiffs++;
               }
             } else {
-              resultModel.getGraph().add(triple);
+              diff.getGraph().add(triple);
               nbdiffs++;
             }
           } finally {
@@ -181,8 +219,8 @@ public class RDFDiff {
             }
           }
 
-        } else if (!m2.getGraph().contains(triple)) {
-          resultModel.getGraph().add(triple);
+        } else if (!to.getGraph().contains(triple)) {
+          diff.getGraph().add(triple);
           nbdiffs++;
         }
         if (verbose && nbprocessed % 1000 == 0)
@@ -193,7 +231,12 @@ public class RDFDiff {
     } finally {
       iter.close();
     }
-    return resultModel;
+
+    // Add statistics about the diff
+    diff.add(diff.createStatement(me, diffRate,
+        diff.createTypedLiteral(nbdiffs / (double) nbprocessed)));
+
+    return diff;
   }
 
 
@@ -206,7 +249,4 @@ public class RDFDiff {
     return false;
   }
 
-  private static void usage() {
-    System.err.println("Usage: java -Xmx8G " + RDFDiff.class.getCanonicalName() + " url1 url2");
-  }
 }

@@ -199,6 +199,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <!-- This is included so that it will be jared with the other dependencies -->
+      <groupId>org.getalp</groupId>
+      <artifactId>rdf-utils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
       <version>2.10.6</version>

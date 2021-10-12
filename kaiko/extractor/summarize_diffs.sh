@@ -1,0 +1,33 @@
+#!/bin/bash
+
+VERSION=2.3.7-SNAPSHOT
+#LANGS="fr en de pt it fi ru el tr ja es bg pl"
+DIFFS=diffs
+VERBOSE=""
+
+while getopts "v:d:V" opt; do
+  case $opt in
+    d)
+      DIFFS=$OPTARG
+      ;;
+    v)
+      VERSION="${OPTARG}"
+      ;;
+    V)
+      VERBOSE="-v"
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+shift $((OPTIND-1))
+
+  set -v
+  >&2 echo "Summarizing diffs in $DIFFS"
+  java -Xmx16G -cp "${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar" \
+    org.getalp.dbnary.cli.SummarizeDifferences $DIFFS

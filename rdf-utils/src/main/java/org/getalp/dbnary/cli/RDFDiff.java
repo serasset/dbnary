@@ -1,5 +1,6 @@
 package org.getalp.dbnary.cli;
 
+import java.io.PrintWriter;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.SortedSet;
@@ -43,13 +44,16 @@ public class RDFDiff extends VerboseCommand {
   @Override
   protected void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(
-        "java -cp /path/to/dbnary.jar " + this.getClass().getCanonicalName()
-            + " [OPTIONS] from.ttl to.ttl",
-        "With OPTIONS in:", options,
-        "Computes the difference between from.ttl and to.ttl. The command will output the "
-            + "model resulting from the removal of to.ttl to the model from.ttl in stdout.",
-        false);
+    PrintWriter pw = new PrintWriter(System.err);
+    formatter
+        .printHelp(pw, formatter.getWidth(),
+            "java -cp /path/to/dbnary.jar " + this.getClass().getCanonicalName()
+                + " [OPTIONS] from.ttl to.ttl",
+            "With OPTIONS in:", options, formatter.getLeftPadding(), formatter.getDescPadding(),
+            "Computes the difference between from.ttl and to.ttl. The command will output the "
+                + "model resulting from the removal of to.ttl to the model from.ttl in stdout.",
+            false);
+    pw.flush();
   }
 
   public static void main(String[] args) {
@@ -58,6 +62,8 @@ public class RDFDiff extends VerboseCommand {
   }
 
   public void diff() {
+    String fromFile = remainingArgs[0];
+    String toFile = remainingArgs[1];
     Model fromModel;
     Model toModel;
     Dataset dataset1 = null;
@@ -66,31 +72,31 @@ public class RDFDiff extends VerboseCommand {
     if (remainingArgs[0].endsWith(".tdb")) {
       // read the RDF/XML files
       if (verbose)
-        System.err.println("Handling first model from TDB database: " + remainingArgs[0]);
-      dataset1 = TDBFactory.createDataset(remainingArgs[0]);
+        System.err.println("Handling first model from TDB database: " + fromFile);
+      dataset1 = TDBFactory.createDataset(fromFile);
       dataset1.begin(ReadWrite.READ);
       // Get model inside the transaction
       fromModel = dataset1.getDefaultModel();
     } else {
       if (verbose)
-        System.err.println("Handling first model from turtle: " + remainingArgs[0]);
+        System.err.println("Handling first model from turtle: " + fromFile);
       fromModel = ModelFactory.createDefaultModel();
-      RDFDataMgr.read(fromModel, remainingArgs[0]);
+      RDFDataMgr.read(fromModel, fromFile);
     }
 
     if (remainingArgs[1].endsWith(".tdb")) {
       // read the RDF/XML files
       if (verbose)
-        System.err.println("Handling second model from TDB database: " + remainingArgs[1]);
-      dataset2 = TDBFactory.createDataset(remainingArgs[1]);
+        System.err.println("Handling second model from TDB database: " + toFile);
+      dataset2 = TDBFactory.createDataset(toFile);
       dataset2.begin(ReadWrite.READ);
       // Get model inside the transaction
       toModel = dataset2.getDefaultModel();
     } else {
       if (verbose)
-        System.err.println("Handling second model from turtle: " + remainingArgs[1]);
+        System.err.println("Handling second model from turtle: " + toFile);
       toModel = ModelFactory.createDefaultModel();
-      RDFDataMgr.read(toModel, remainingArgs[0]);
+      RDFDataMgr.read(toModel, toFile);
     }
 
     if (verbose)

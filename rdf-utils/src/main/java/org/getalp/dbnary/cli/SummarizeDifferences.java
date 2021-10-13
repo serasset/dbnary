@@ -77,23 +77,16 @@ public class SummarizeDifferences extends VerboseCommand {
       try {
         Slack slack = Slack.getInstance();
 
-        System.getenv().forEach((k, v) -> System.err.println(k + "=" + v));
-
-        // Load an env variable
         // If the token is a bot token, it starts with `xoxb-` while if it's a user token, it starts
         // with `xoxp-`
         String token = System.getenv("SLACK_BOT_TOKEN");
         String channelID = System.getenv("SLACK_CHANNEL_ID");
-
-        System.err.println("Token = " + token);
-        System.err.println("Channel ID = " + channelID);
 
         String originalBranch = System.getenv("BITBUCKET_BRANCH");
         String destinationBranch = System.getenv("BITBUCKET_PR_DESTINATION_BRANCH");
 
         // Initialize an API Methods client with the given token
         MethodsClient methods = slack.methods(token);
-        System.err.println(methods);
 
         // Build a request object
         ChatPostMessageRequest request =
@@ -105,11 +98,18 @@ public class SummarizeDifferences extends VerboseCommand {
         // Get a response as a Java object
         System.err.println("Posting message : " + request);
         ChatPostMessageResponse response = methods.chatPostMessage(request);
-        System.err.println("Response : " + response);
+        if (! response.isOk()) {
+          System.err.println("Error received from Slack API.");
+          System.err.println(response.getError());
+        }
 
       } catch(SlackApiException e){
+        System.err.println("Slack API exception.");
+        System.err.println(e.getLocalizedMessage());
         e.printStackTrace();
       } catch(IOException e){
+        System.err.println("IOException while accessing Slack API.");
+        System.err.println(e.getLocalizedMessage());
         e.printStackTrace();
       }
     } else {

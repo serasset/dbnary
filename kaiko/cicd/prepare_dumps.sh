@@ -4,11 +4,12 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 echo "Sourcing settings from: ${SCRIPT_DIR}/settings"
 source "${SCRIPT_DIR}/settings"
-set -x
 
 # Prepare for proper SSH connection to the dumps host.
 mkdir -p ~/.ssh
 cat ./kaiko/cicd/my_known_hosts >> ~/.ssh/known_hosts
+
+set -x
 
 # Prepare directory layout
 mkdir -p "/tmp/$NEXT_VERSION/"
@@ -24,8 +25,16 @@ ls -al "/tmp/$NEXT_VERSION" "/tmp/$PREVIOUS_VERSION"
 for lg in $LANGS;
 do
   echo "Fetching uncompressed dumps for $lg"
+  # This will be usable (need tests) when I will use an image that contains rsync (not the case of the usual maven image.
+  #   rsync -a --include='*.idx' --include='*.xml' --include='*/' --exclude='*' "${WIKTIONARY_DUMPS_USER}@${WIKTIONARY_DUMPS_HOST}:${WIKTIONARY_DUMPS_DIR}/${lg}" "/tmp/$PREVIOUS_VERSION/dumps/"
   scp -r "${WIKTIONARY_DUMPS_USER}@${WIKTIONARY_DUMPS_HOST}:${WIKTIONARY_DUMPS_DIR}/${lg}" "/tmp/$PREVIOUS_VERSION/dumps/"
+  df -h
+  ls -al "/tmp/$PREVIOUS_VERSION/dumps/${lg}"
+  ls -al "/tmp/$NEXT_VERSION/dumps/${lg}"
 done
 
-ls -al "/tmp/$NEXT_VERSION/dumps/*"
+ls -al "/tmp/$NEXT_VERSION/"
+ls -al "/tmp/$NEXT_VERSION/dumps/"
+ls -al "/tmp/$NEXT_VERSION/dumps"/*
+ls -al "/tmp/$NEXT_VERSION/dumps"/*/*
 

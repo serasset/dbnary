@@ -2,7 +2,6 @@ package org.getalp.dbnary.cli;
 
 import static com.slack.api.model.block.Blocks.*;
 import static com.slack.api.model.block.composition.BlockCompositions.*;
-import static com.slack.api.model.block.element.BlockElements.*;
 
 import com.slack.api.Slack;
 import com.slack.api.methods.MethodsClient;
@@ -25,21 +24,28 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
-import org.getalp.iso639.ISO639_1;
 
 public class SummarizeDifferences extends VerboseCommand {
+  protected final static String SLACK_OPTION="slack";
+  static {
+    options.addOption(Option.builder().longOpt(SLACK_OPTION)
+        .desc("Display summary on Slack (using $SLACK_BOT_TOKEN and $SLACK_CHANNEL_ID environment variables).")
+        .build());  }
 
+  boolean useSlack = false;
   public SummarizeDifferences(String[] args) {
     this.loadArgs(args);
   }
 
   @Override
   protected void loadArgs(CommandLine cmd) {
+    useSlack = cmd.hasOption(SLACK_OPTION);
     if (remainingArgs.length != 1) {
       printUsage();
       System.exit(1);
@@ -63,52 +69,71 @@ public class SummarizeDifferences extends VerboseCommand {
   public static void main(String[] args) {
     SummarizeDifferences cli = new SummarizeDifferences(args);
     cli.summarize();
-    cli.pushToSlack();
+    cli.publishSummary();
   }
 
-  private void pushToSlack() {
-    try {
-      Slack slack = Slack.getInstance();
+  private void publishSummary() {
+    if (useSlack) {
+      try {
+        Slack slack = Slack.getInstance();
 
-      System.getenv().forEach((k, v) -> System.err.println(k + "=" + v));
+        // If the token is a bot token, it starts with `xoxb-` while if it's a user token, it starts
+        // with `xoxp-`
+        String token = System.getenv("SLACK_BOT_TOKEN");
+        String channelID = System.getenv("SLACK_CHANNEL_ID");
 
-      // Load an env variable
-      // If the token is a bot token, it starts with `xoxb-` while if it's a user token, it starts
-      // with `xoxp-`
-      String token = System.getenv("SLACK_BOT_TOKEN");
-      String channelID = System.getenv("SLACK_CHANNEL_ID");
+        String originalBranch = System.getenv("BITBUCKET_BRANCH");
+        String destinationBranch = System.getenv("BITBUCKET_PR_DESTINATION_BRANCH");
 
-      System.err.println("Token = " + token);
-      System.err.println("Channel ID = " + channelID);
+        // Initialize an API Methods client with the given token
+        MethodsClient methods = slack.methods(token);
 
-      // Initialize an API Methods client with the given token
-      MethodsClient methods = slack.methods(token);
-      System.err.println(methods);
+        // Build a request object
+        ChatPostMessageRequest request =
+            ChatPostMessageRequest.builder().channel(channelID)
+                .text("I evaluated dbnary " + destinationBranch + " vs " + originalBranch)
+                .blocks(createSlackMessage())
+                .build();
 
-      // Build a request object
-      ChatPostMessageRequest request = ChatPostMessageRequest.builder().channel(channelID)
-          .blocks(createSlackMessage()).build();
+        // Get a response as a Java object
+        System.err.println("Posting message : " + request);
+        ChatPostMessageResponse response = methods.chatPostMessage(request);
+        if (! response.isOk()) {
+          System.err.println("Error received from Slack API.");
+          System.err.println(response.getError());
+        }
 
-      // Get a response as a Java object
-      System.err.println("Posting message : " + request);
-      ChatPostMessageResponse response = methods.chatPostMessage(request);
-      System.err.println("Response : " + response);
-
-    } catch (SlackApiException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
+      } catch(SlackApiException e){
+        System.err.println("Slack API exception.");
+        System.err.println(e.getLocalizedMessage());
+        e.printStackTrace();
+      } catch(IOException e){
+        System.err.println("IOException while accessing Slack API.");
+        System.err.println(e.getLocalizedMessage());
+        e.printStackTrace();
+      }
+    } else {
+      System.out.println(createConsoleMessage());
     }
   }
 
   private List<LayoutBlock> createSlackMessage() {
     List<LayoutBlock> blocks = new ArrayList<>();
-    SectionBlock mainBlock = section(
-        section -> section.text(markdownText("*Results of extraction sample evaluation*")).fields(new ArrayList<>()));
-    data.forEach((model, modelData) -> mainBlock.getFields().add(markdownText(modelData.toMarkdownString())));
+    SectionBlock mainBlock = section(section -> section
+        .text(markdownText("*Results of extraction sample evaluation*")).fields(new ArrayList<>()));
+    data.forEach((model, modelData) -> mainBlock.getFields()
+        .add(markdownText(modelData.toMarkdownString())));
     blocks.add(mainBlock);
     return blocks;
   }
+
+  private String createConsoleMessage() {
+    StringBuilder out = new StringBuilder();
+    out.append("*Results of extraction sample evaluation*\n");
+    data.forEach((model, modelData) -> out.append(modelData.toMarkdownString()));
+    return out.toString();
+  }
+
 
   private class Diff {
     double gain;
@@ -161,8 +186,7 @@ public class SummarizeDifferences extends VerboseCommand {
 
     public String toMarkdownString() {
       StringBuilder s = new StringBuilder();
-      s.append("*").append(capitalize(model))
-          .append("*:\n");
+      s.append("*").append(capitalize(model)).append("*:\n");
       diffs.forEach((k, v) -> {
         s.append(">*").append(k).append("*: \t");
         long max = Math.max(v.getGainCount(), v.getLossCount());
@@ -180,16 +204,15 @@ public class SummarizeDifferences extends VerboseCommand {
         } else {
           s.append(":small_red_triangle_down: ");
         }
-        s.append("\t +").append(v.getGainCount()).append("(")
-            .append(v.getGain()).append(") / -").append(v.getLossCount()).append("(")
-            .append(v.getLoss()).append(")\n");
+        s.append("\t +").append(v.getGainCount()).append("(").append(v.getGain()).append(") / -")
+            .append(v.getLossCount()).append("(").append(v.getLoss()).append(")\n");
       });
       return s.toString();
     }
   }
 
-  private static String capitalize (String str) {
-    if(str == null || str.isEmpty()) {
+  private static String capitalize(String str) {
+    if (str == null || str.isEmpty()) {
       return str;
     }
     return str.substring(0, 1).toUpperCase() + str.substring(1);
@@ -216,7 +239,8 @@ public class SummarizeDifferences extends VerboseCommand {
     StmtIterator it = m.listStatements();
     while (it.hasNext()) {
       Statement current = it.next();
-      if (! RDFDiff.diffRate.equals(current.getPredicate())) count++;
+      if (!RDFDiff.diffRate.getLocalName().equals(current.getPredicate().getLocalName()))
+        count++;
     }
     return count;
   }
@@ -235,7 +259,7 @@ public class SummarizeDifferences extends VerboseCommand {
           .map(Statement::getLiteral).map(Literal::getDouble).orElse(Double.NaN);
       long nbStatements = countStatements(m);
 
-      // System.err.println("" + lg + "/" + direction + "/" + model + "  -> " + rate);
+      // System.err.println("" + lg + "/" + direction + "/" + model + " -> " + rate);
       ModelData md = data.getOrDefault(model, new ModelData(model));
       data.put(model, md);
       Diff d = md.getDiff(lg).orElse(new Diff());

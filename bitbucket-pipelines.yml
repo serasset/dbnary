@@ -67,7 +67,7 @@ definitions:
           - ./kaiko/cicd/extract_with_next.sh
           - ./kaiko/cicd/extract_with_previous.sh
           - ./kaiko/cicd/compute_differences.sh
-          - ./kaiko/cicd/summarize_diffs.sh -d target/diffs
+          - ./kaiko/cicd/summarize_on_slack.sh
         artifacts:
           - "target/diffs/*.ttl"
 

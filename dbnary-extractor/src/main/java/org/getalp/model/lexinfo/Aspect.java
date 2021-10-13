@@ -12,43 +12,44 @@ public abstract class Aspect extends MorphoSyntacticFeature {
     return LexinfoOnt.aspect;
   }
 
-  public static Aspect CESSATIVE = new Aspect() {
+  public static final Aspect CESSATIVE = new Aspect() {
     public RDFNode value() {
       return LexinfoOnt.cessative;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> cessative = s -> s.add(CESSATIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> cessative = s -> s.add(CESSATIVE);
 
-  public static Aspect IMPERFECTIVE = new Aspect() {
+  public static final Aspect IMPERFECTIVE = new Aspect() {
     public RDFNode value() {
       return LexinfoOnt.imperfective;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> imperfective = s -> s.add(IMPERFECTIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> imperfective = s -> s.add(IMPERFECTIVE);
 
-  public static Aspect INCHOATIVE = new Aspect() {
+  public static final Aspect INCHOATIVE = new Aspect() {
     public RDFNode value() {
       return LexinfoOnt.inchoative;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> inchoative = s -> s.add(INCHOATIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> inchoative = s -> s.add(INCHOATIVE);
 
-  public static Aspect PERFECTIVE = new Aspect() {
+  public static final Aspect PERFECTIVE = new Aspect() {
     public RDFNode value() {
       return LexinfoOnt.perfective;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> perfective = s -> s.add(PERFECTIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> perfective = s -> s.add(PERFECTIVE);
 
-  public static Aspect UNACCOMPLISHED = new Aspect() {
+  public static final Aspect UNACCOMPLISHED = new Aspect() {
     public RDFNode value() {
       return LexinfoOnt.unaccomplished;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> unaccomplished = s -> s.add(UNACCOMPLISHED);
+  public static final Consumer<Set<MorphoSyntacticFeature>> unaccomplished =
+      s -> s.add(UNACCOMPLISHED);
 }

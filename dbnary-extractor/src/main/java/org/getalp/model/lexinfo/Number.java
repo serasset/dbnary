@@ -12,76 +12,76 @@ public abstract class Number extends MorphoSyntacticFeature {
     return LexinfoOnt.number;
   }
 
-  public static Number SINGULAR = new Number() {
+  public static final Number SINGULAR = new Number() {
     public RDFNode value() {
       return LexinfoOnt.singular;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> singular = s -> s.add(SINGULAR);
+  public static final Consumer<Set<MorphoSyntacticFeature>> singular = s -> s.add(SINGULAR);
 
-  public static Number PLURAL = new Number() {
+  public static final Number PLURAL = new Number() {
     public RDFNode value() {
       return LexinfoOnt.plural;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> plural = s -> s.add(PLURAL);
+  public static final Consumer<Set<MorphoSyntacticFeature>> plural = s -> s.add(PLURAL);
 
-  public static Number DUAL = new Number() {
+  public static final Number DUAL = new Number() {
     public RDFNode value() {
       return LexinfoOnt.dual;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> dual = s -> s.add(DUAL);
+  public static final Consumer<Set<MorphoSyntacticFeature>> dual = s -> s.add(DUAL);
 
-  public static Number TRIAL = new Number() {
+  public static final Number TRIAL = new Number() {
     public RDFNode value() {
       return LexinfoOnt.trial;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> trial = s -> s.add(TRIAL);
+  public static final Consumer<Set<MorphoSyntacticFeature>> trial = s -> s.add(TRIAL);
 
-  public static Number QUADRIAL = new Number() {
+  public static final Number QUADRIAL = new Number() {
     public RDFNode value() {
       return LexinfoOnt.quadrial;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> quadrial = s -> s.add(QUADRIAL);
+  public static final Consumer<Set<MorphoSyntacticFeature>> quadrial = s -> s.add(QUADRIAL);
 
-  public static Number MASS_NOUN = new Number() {
+  public static final Number MASS_NOUN = new Number() {
     public RDFNode value() {
       return LexinfoOnt.massNoun;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> massNoun = s -> s.add(MASS_NOUN);
+  public static final Consumer<Set<MorphoSyntacticFeature>> massNoun = s -> s.add(MASS_NOUN);
 
-  public static Number COLLECTIVE = new Number() {
+  public static final Number COLLECTIVE = new Number() {
     public RDFNode value() {
       return LexinfoOnt.collective;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> collective = s -> s.add(COLLECTIVE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> collective = s -> s.add(COLLECTIVE);
 
-  public static Number PAUCAL = new Number() {
+  public static final Number PAUCAL = new Number() {
     public RDFNode value() {
       return LexinfoOnt.paucal;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> paucal = s -> s.add(PAUCAL);
+  public static final Consumer<Set<MorphoSyntacticFeature>> paucal = s -> s.add(PAUCAL);
 
-  public static Number OTHER = new Number() {
+  public static final Number OTHER = new Number() {
     public RDFNode value() {
       return LexinfoOnt.otherGender;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> other = s -> s.add(OTHER);
+  public static final Consumer<Set<MorphoSyntacticFeature>> other = s -> s.add(OTHER);
 
 }

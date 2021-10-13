@@ -5,7 +5,7 @@
 
   <groupId>org.getalp</groupId>
   <artifactId>dbnary</artifactId>
-  <version>2.3.6</version>
+  <version>2.4.0</version>
   <packaging>pom</packaging>
 
   <inceptionYear>2010</inceptionYear>
@@ -43,10 +43,10 @@
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     <maven-failsafe-plugin.version>3.0.0-M4</maven-failsafe-plugin.version>
     <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
-    <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
 
     <!-- Sonar -->
-    <sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
+    <sonar-maven-plugin.version>3.9.0.2155</sonar-maven-plugin.version>
     <sonar.projectName>dbnary</sonar.projectName>
     <sonar.coverage.jacoco.xmlReportPaths>
       ${project.build.directory}/site/jacoco/jacoco.xml,${project.build.directory}/site/jacoco-aggregate/jacoco.xml
@@ -102,6 +102,7 @@
     <module>dbnary-enhancer</module>
     <module>dbnary-commons</module>
     <module>build-tools</module>
+    <module>rdf-utils</module>
   </modules>
 
   <reporting>
@@ -109,7 +110,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.3.1</version>
         <configuration>
           <failOnError>false</failOnError>
           <source>${maven.compiler.source}</source>
@@ -309,7 +310,7 @@
       <plugin>
         <groupId>com.amashchenko.maven.plugin</groupId>
         <artifactId>gitflow-maven-plugin</artifactId>
-        <version>1.14.0</version>
+        <version>1.16.0</version>
         <configuration>
           <allowSnapshots>true</allowSnapshots>
           <verbose>true</verbose>
@@ -368,7 +369,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -381,7 +382,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>1.20</version>
+        <version>2.0.0</version>
         <configuration>
           <verbose>true</verbose>
           <copyrightOwners>Gilles Sérasset, Université Grenoble Alpes</copyrightOwners>
@@ -399,6 +400,26 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>enforce-maven</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>[3.5.4,)</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -411,7 +432,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>2.9</version>
+          <version>3.1.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -426,7 +447,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.9.0</version>
+          <version>3.9.1</version>
           <configuration>
             <outputEncoding>UTF-8</outputEncoding>
           </configuration>
@@ -441,17 +462,17 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
-          <version>1.6.0</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.2.3</version>
+          <version>3.2.4</version>
         </plugin>
         <plugin>
           <groupId>net.revelc.code.formatter</groupId>
           <artifactId>formatter-maven-plugin</artifactId>
-          <version>2.15.0</version>
+          <version>2.16.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

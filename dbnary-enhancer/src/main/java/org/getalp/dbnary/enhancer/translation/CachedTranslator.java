@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 public class CachedTranslator implements Translator {
 
-  private String dir;
   private Connection db;
   private Translator t;
   private boolean doUpdate;
@@ -28,12 +27,11 @@ public class CachedTranslator implements Translator {
     try {
       if (!dir.startsWith("jdbc:h2:")) {
         dir = "jdbc:h2:" + dir;
-      } ;
-      this.dir = dir + ";CACHE_SIZE=4000000";
+      }
+      dir = dir + ";CACHE_SIZE=4000000";
       Class.forName("org.h2.Driver");
       db = DriverManager.getConnection(dir, "dbnary", "");
 
-      // System.err.println("Checking if tm table exists.");
       boolean tmTableExists = false;
       DatabaseMetaData meta = db.getMetaData();
       ResultSet res = meta.getTables(null, null, null, new String[] {"TABLE"});
@@ -77,8 +75,7 @@ public class CachedTranslator implements Translator {
   public String translate(String source, String slang, String tlang) {
 
     String target;
-    try {
-      PreparedStatement getCachedTranslation = db.prepareStatement(getTranslationMemory);
+    try (PreparedStatement getCachedTranslation = db.prepareStatement(getTranslationMemory)) {
       getCachedTranslation.setString(1, source);
       getCachedTranslation.setString(2, slang);
       getCachedTranslation.setString(3, tlang);
@@ -93,15 +90,15 @@ public class CachedTranslator implements Translator {
         log.debug("Computed translation:[{}] {}", tlang, target);
 
         if (target != null && doUpdate) {
-          PreparedStatement cacheTranslation = db.prepareStatement(setTranslationMemory);
-          cacheTranslation.setString(1, source);
-          cacheTranslation.setString(2, slang);
-          cacheTranslation.setString(3, target);
-          cacheTranslation.setString(4, tlang);
+          try (PreparedStatement cacheTranslation = db.prepareStatement(setTranslationMemory)) {
+            cacheTranslation.setString(1, source);
+            cacheTranslation.setString(2, slang);
+            cacheTranslation.setString(3, target);
+            cacheTranslation.setString(4, tlang);
 
-          cacheTranslation.executeUpdate();
-          log.debug("Updated cached translation:[{}] {}", slang, target);
-
+            cacheTranslation.executeUpdate();
+            log.debug("Updated cached translation:[{}] {}", slang, target);
+          }
         }
       }
     } catch (SQLException e) {

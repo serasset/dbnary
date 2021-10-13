@@ -12,27 +12,27 @@ public abstract class Animacy extends MorphoSyntacticFeature {
     return LexinfoOnt.animacy;
   }
 
-  public static Animacy ANIMATE = new Animacy() {
+  public static final Animacy ANIMATE = new Animacy() {
     public RDFNode value() {
       return LexinfoOnt.animate;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> animate = s -> s.add(ANIMATE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> animate = s -> s.add(ANIMATE);
 
-  public static Animacy INANIMATE = new Animacy() {
+  public static final Animacy INANIMATE = new Animacy() {
     public RDFNode value() {
       return LexinfoOnt.inanimate;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> inanimate = s -> s.add(INANIMATE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> inanimate = s -> s.add(INANIMATE);
 
-  public static Animacy OTHER = new Animacy() {
+  public static final Animacy OTHER = new Animacy() {
     public RDFNode value() {
       return LexinfoOnt.otherAnimacy;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> other = s -> s.add(OTHER);
+  public static final Consumer<Set<MorphoSyntacticFeature>> other = s -> s.add(OTHER);
 }

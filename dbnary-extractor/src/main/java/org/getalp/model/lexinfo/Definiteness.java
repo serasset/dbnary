@@ -12,36 +12,37 @@ public abstract class Definiteness extends MorphoSyntacticFeature {
     return LexinfoOnt.definiteness;
   }
 
-  public static Definiteness DEFINITE = new Definiteness() {
+  public static final Definiteness DEFINITE = new Definiteness() {
     public RDFNode value() {
       return LexinfoOnt.definite;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> definite = s -> s.add(DEFINITE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> definite = s -> s.add(DEFINITE);
 
-  public static Definiteness INDEFINITE = new Definiteness() {
+  public static final Definiteness INDEFINITE = new Definiteness() {
     public RDFNode value() {
       return LexinfoOnt.indefinite;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> indefinite = s -> s.add(INDEFINITE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> indefinite = s -> s.add(INDEFINITE);
 
-  public static Definiteness FULL_ARTICLE = new Definiteness() {
+  public static final Definiteness FULL_ARTICLE = new Definiteness() {
     public RDFNode value() {
       return LexinfoOnt.fullArticle;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> fullArticle = s -> s.add(FULL_ARTICLE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> fullArticle = s -> s.add(FULL_ARTICLE);
 
-  public static Definiteness SHORT_ARTICLE = new Definiteness() {
+  public static final Definiteness SHORT_ARTICLE = new Definiteness() {
     public RDFNode value() {
       return LexinfoOnt.shortArticle;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> shortArticle = s -> s.add(SHORT_ARTICLE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> shortArticle =
+      s -> s.add(SHORT_ARTICLE);
 
 }

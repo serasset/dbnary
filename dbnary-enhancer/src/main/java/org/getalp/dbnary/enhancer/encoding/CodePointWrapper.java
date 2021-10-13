@@ -22,7 +22,7 @@ public class CodePointWrapper implements Iterable<Integer> {
   }
 
   public List<Integer> asList() {
-    List<Integer> l = new ArrayList<Integer>();
+    List<Integer> l = new ArrayList<>();
     for (int v : this) {
       l.add(v);
     }

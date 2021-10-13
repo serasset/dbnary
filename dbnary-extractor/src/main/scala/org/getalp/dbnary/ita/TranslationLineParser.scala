@@ -85,7 +85,7 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
     } | template("zh-tradsem") ^^ {
       // {{zh-tradsem|[[英語]]|[[英语]]}} (yīngyǔ);
       // TODO: Should I create 2 translations (one for traditional chinese, one for simplified ?)
-      // TODO: Or else ?
+      //  Or else ?
       case tmpl => List(getTranslation(tmpl.getArgs.get("1")), getTranslation(tmpl.getArgs.get("2")))
     } | simpleStrings ^^ {
       case s =>
@@ -207,8 +207,6 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
     delegate.createGlossResource(filter.extractGlossStructure(getGlossString(globalGloss) + "|" + localGloss))
 
 }
-
-// case class Translations(trans: List[Translation])
 
 case class Translation(var language: String, writtenRep: String, var gloss: String, var usage: String) {
   def addUsage(u: String): Translation = {

@@ -12,28 +12,28 @@ public abstract class Frequency extends MorphoSyntacticFeature {
     return LexinfoOnt.frequency;
   }
 
-  public static Frequency RARE = new Frequency() {
+  public static final Frequency RARE = new Frequency() {
     public RDFNode value() {
       return LexinfoOnt.rarelyUsed;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> rare = s -> s.add(RARE);
+  public static final Consumer<Set<MorphoSyntacticFeature>> rare = s -> s.add(RARE);
 
-  public static Frequency COMMON = new Frequency() {
+  public static final Frequency COMMON = new Frequency() {
     public RDFNode value() {
       return LexinfoOnt.commonlyUsed;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> common = s -> s.add(COMMON);
+  public static final Consumer<Set<MorphoSyntacticFeature>> common = s -> s.add(COMMON);
 
-  public static Frequency INFREQUENT = new Frequency() {
+  public static final Frequency INFREQUENT = new Frequency() {
     public RDFNode value() {
       return LexinfoOnt.infrequentlyUsed;
     }
   };
 
-  public static Consumer<Set<MorphoSyntacticFeature>> infrequent = s -> s.add(INFREQUENT);
+  public static final Consumer<Set<MorphoSyntacticFeature>> infrequent = s -> s.add(INFREQUENT);
 
 }

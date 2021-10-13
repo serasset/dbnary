@@ -9,6 +9,8 @@ source "${SCRIPT_DIR}/settings"
 mkdir -p ~/.ssh
 cat ./kaiko/cicd/my_known_hosts >> ~/.ssh/known_hosts
 
+set -x
+
 # Prepare directory layout
 mkdir -p "/tmp/$NEXT_VERSION/"
 mkdir -p "/tmp/$PREVIOUS_VERSION/"
@@ -29,5 +31,7 @@ do
   ls -al "/tmp/$NEXT_VERSION/dumps/${lg}"
 done
 
+ls -al "/tmp/$NEXT_VERSION/"
+ls -al "/tmp/$NEXT_VERSION/dumps/"
 ls -al "/tmp/$NEXT_VERSION/dumps/*"
 

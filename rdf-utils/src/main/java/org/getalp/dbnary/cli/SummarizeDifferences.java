@@ -32,13 +32,15 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
 
 public class SummarizeDifferences extends VerboseCommand {
-  protected final static String SLACK_OPTION="slack";
+  protected final static String SLACK_OPTION = "slack";
   static {
-    options.addOption(Option.builder().longOpt(SLACK_OPTION)
-        .desc("Display summary on Slack (using $SLACK_BOT_TOKEN and $SLACK_CHANNEL_ID environment variables).")
-        .build());  }
+    options.addOption(Option.builder().longOpt(SLACK_OPTION).desc(
+        "Display summary on Slack (using $SLACK_BOT_TOKEN and $SLACK_CHANNEL_ID environment variables).")
+        .build());
+  }
 
   boolean useSlack = false;
+
   public SummarizeDifferences(String[] args) {
     this.loadArgs(args);
   }
@@ -89,25 +91,23 @@ public class SummarizeDifferences extends VerboseCommand {
         MethodsClient methods = slack.methods(token);
 
         // Build a request object
-        ChatPostMessageRequest request =
-            ChatPostMessageRequest.builder().channel(channelID)
-                .text("I evaluated dbnary " + destinationBranch + " vs " + originalBranch)
-                .blocks(createSlackMessage())
-                .build();
+        ChatPostMessageRequest request = ChatPostMessageRequest.builder().channel(channelID)
+            .text("I evaluated dbnary " + destinationBranch + " vs " + originalBranch)
+            .blocks(createSlackMessage()).build();
 
         // Get a response as a Java object
         System.err.println("Posting message : " + request);
         ChatPostMessageResponse response = methods.chatPostMessage(request);
-        if (! response.isOk()) {
+        if (!response.isOk()) {
           System.err.println("Error received from Slack API.");
           System.err.println(response.getError());
         }
 
-      } catch(SlackApiException e){
+      } catch (SlackApiException e) {
         System.err.println("Slack API exception.");
         System.err.println(e.getLocalizedMessage());
         e.printStackTrace();
-      } catch(IOException e){
+      } catch (IOException e) {
         System.err.println("IOException while accessing Slack API.");
         System.err.println(e.getLocalizedMessage());
         e.printStackTrace();

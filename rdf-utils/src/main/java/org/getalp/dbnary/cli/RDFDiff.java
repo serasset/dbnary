@@ -27,7 +27,8 @@ public class RDFDiff extends VerboseCommand {
 
   private static final TreeMap<String, String> anodes2id = new TreeMap<>();
   public static final Resource me = ResourceFactory.createResource("#me");
-  public static final Property diffRate = ResourceFactory.createProperty("http://kaiko.getalp.org/dbnary/diffs/", "diffRate");
+  public static final Property diffRate =
+      ResourceFactory.createProperty("http://kaiko.getalp.org/dbnary/diffs/", "diffRate");
 
   public RDFDiff(String[] args) {
     this.loadArgs(args);

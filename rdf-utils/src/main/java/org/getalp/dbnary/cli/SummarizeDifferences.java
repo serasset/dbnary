@@ -88,13 +88,18 @@ public class SummarizeDifferences extends VerboseCommand {
         System.err.println("Token = " + token);
         System.err.println("Channel ID = " + channelID);
 
+        String originalBranch = System.getenv("BITBUCKET_BRANCH");
+        String destinationBranch = System.getenv("BITBUCKET_PR_DESTINATION_BRANCH");
+
         // Initialize an API Methods client with the given token
         MethodsClient methods = slack.methods(token);
         System.err.println(methods);
 
         // Build a request object
         ChatPostMessageRequest request =
-            ChatPostMessageRequest.builder().channel(channelID).blocks(createSlackMessage())
+            ChatPostMessageRequest.builder().channel(channelID)
+                .text("I evaluated dbnary " + destinationBranch + " vs " + originalBranch)
+                .blocks(createSlackMessage())
                 .build();
 
         // Get a response as a Java object

@@ -86,8 +86,8 @@ public class SummarizeDifferences extends VerboseCommand {
       System.err.println(methods);
 
       // Build a request object
-      ChatPostMessageRequest request = ChatPostMessageRequest.builder().channel(channelID)
-          .blocks(createSlackMessage()).build();
+      ChatPostMessageRequest request =
+          ChatPostMessageRequest.builder().channel(channelID).blocks(createSlackMessage()).build();
 
       // Get a response as a Java object
       System.err.println("Posting message : " + request);
@@ -103,9 +103,10 @@ public class SummarizeDifferences extends VerboseCommand {
 
   private List<LayoutBlock> createSlackMessage() {
     List<LayoutBlock> blocks = new ArrayList<>();
-    SectionBlock mainBlock = section(
-        section -> section.text(markdownText("*Results of extraction sample evaluation*")).fields(new ArrayList<>()));
-    data.forEach((model, modelData) -> mainBlock.getFields().add(markdownText(modelData.toMarkdownString())));
+    SectionBlock mainBlock = section(section -> section
+        .text(markdownText("*Results of extraction sample evaluation*")).fields(new ArrayList<>()));
+    data.forEach((model, modelData) -> mainBlock.getFields()
+        .add(markdownText(modelData.toMarkdownString())));
     blocks.add(mainBlock);
     return blocks;
   }
@@ -161,8 +162,7 @@ public class SummarizeDifferences extends VerboseCommand {
 
     public String toMarkdownString() {
       StringBuilder s = new StringBuilder();
-      s.append("*").append(capitalize(model))
-          .append("*:\n");
+      s.append("*").append(capitalize(model)).append("*:\n");
       diffs.forEach((k, v) -> {
         s.append(">*").append(k).append("*: \t");
         long max = Math.max(v.getGainCount(), v.getLossCount());
@@ -180,16 +180,15 @@ public class SummarizeDifferences extends VerboseCommand {
         } else {
           s.append(":small_red_triangle_down: ");
         }
-        s.append("\t +").append(v.getGainCount()).append("(")
-            .append(v.getGain()).append(") / -").append(v.getLossCount()).append("(")
-            .append(v.getLoss()).append(")\n");
+        s.append("\t +").append(v.getGainCount()).append("(").append(v.getGain()).append(") / -")
+            .append(v.getLossCount()).append("(").append(v.getLoss()).append(")\n");
       });
       return s.toString();
     }
   }
 
-  private static String capitalize (String str) {
-    if(str == null || str.isEmpty()) {
+  private static String capitalize(String str) {
+    if (str == null || str.isEmpty()) {
       return str;
     }
     return str.substring(0, 1).toUpperCase() + str.substring(1);
@@ -216,7 +215,8 @@ public class SummarizeDifferences extends VerboseCommand {
     StmtIterator it = m.listStatements();
     while (it.hasNext()) {
       Statement current = it.next();
-      if (! RDFDiff.diffRate.equals(current.getPredicate())) count++;
+      if (!RDFDiff.diffRate.equals(current.getPredicate()))
+        count++;
     }
     return count;
   }
@@ -235,7 +235,7 @@ public class SummarizeDifferences extends VerboseCommand {
           .map(Statement::getLiteral).map(Literal::getDouble).orElse(Double.NaN);
       long nbStatements = countStatements(m);
 
-      // System.err.println("" + lg + "/" + direction + "/" + model + "  -> " + rate);
+      // System.err.println("" + lg + "/" + direction + "/" + model + " -> " + rate);
       ModelData md = data.getOrDefault(model, new ModelData(model));
       data.put(model, md);
       Diff d = md.getDiff(lg).orElse(new Diff());

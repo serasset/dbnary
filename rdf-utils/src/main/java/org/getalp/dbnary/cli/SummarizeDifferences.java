@@ -2,7 +2,6 @@ package org.getalp.dbnary.cli;
 
 import static com.slack.api.model.block.Blocks.*;
 import static com.slack.api.model.block.composition.BlockCompositions.*;
-import static com.slack.api.model.block.element.BlockElements.*;
 
 import com.slack.api.Slack;
 import com.slack.api.methods.MethodsClient;
@@ -25,21 +24,28 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
-import org.getalp.iso639.ISO639_1;
 
 public class SummarizeDifferences extends VerboseCommand {
+  protected final static String SLACK_OPTION="slack";
+  static {
+    options.addOption(Option.builder().longOpt(SLACK_OPTION)
+        .desc("Display summary on Slack (using $SLACK_BOT_TOKEN and $SLACK_CHANNEL_ID environment variables).")
+        .build());  }
 
+  boolean useSlack = false;
   public SummarizeDifferences(String[] args) {
     this.loadArgs(args);
   }
 
   @Override
   protected void loadArgs(CommandLine cmd) {
+    useSlack = cmd.hasOption(SLACK_OPTION);
     if (remainingArgs.length != 1) {
       printUsage();
       System.exit(1);
@@ -63,41 +69,46 @@ public class SummarizeDifferences extends VerboseCommand {
   public static void main(String[] args) {
     SummarizeDifferences cli = new SummarizeDifferences(args);
     cli.summarize();
-    cli.pushToSlack();
+    cli.publishSummary();
   }
 
-  private void pushToSlack() {
-    try {
-      Slack slack = Slack.getInstance();
+  private void publishSummary() {
+    if (useSlack) {
+      try {
+        Slack slack = Slack.getInstance();
 
-      System.getenv().forEach((k, v) -> System.err.println(k + "=" + v));
+        System.getenv().forEach((k, v) -> System.err.println(k + "=" + v));
 
-      // Load an env variable
-      // If the token is a bot token, it starts with `xoxb-` while if it's a user token, it starts
-      // with `xoxp-`
-      String token = System.getenv("SLACK_BOT_TOKEN");
-      String channelID = System.getenv("SLACK_CHANNEL_ID");
+        // Load an env variable
+        // If the token is a bot token, it starts with `xoxb-` while if it's a user token, it starts
+        // with `xoxp-`
+        String token = System.getenv("SLACK_BOT_TOKEN");
+        String channelID = System.getenv("SLACK_CHANNEL_ID");
 
-      System.err.println("Token = " + token);
-      System.err.println("Channel ID = " + channelID);
+        System.err.println("Token = " + token);
+        System.err.println("Channel ID = " + channelID);
 
-      // Initialize an API Methods client with the given token
-      MethodsClient methods = slack.methods(token);
-      System.err.println(methods);
+        // Initialize an API Methods client with the given token
+        MethodsClient methods = slack.methods(token);
+        System.err.println(methods);
 
-      // Build a request object
-      ChatPostMessageRequest request =
-          ChatPostMessageRequest.builder().channel(channelID).blocks(createSlackMessage()).build();
+        // Build a request object
+        ChatPostMessageRequest request =
+            ChatPostMessageRequest.builder().channel(channelID).blocks(createSlackMessage())
+                .build();
 
-      // Get a response as a Java object
-      System.err.println("Posting message : " + request);
-      ChatPostMessageResponse response = methods.chatPostMessage(request);
-      System.err.println("Response : " + response);
+        // Get a response as a Java object
+        System.err.println("Posting message : " + request);
+        ChatPostMessageResponse response = methods.chatPostMessage(request);
+        System.err.println("Response : " + response);
 
-    } catch (SlackApiException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
+      } catch(SlackApiException e){
+        e.printStackTrace();
+      } catch(IOException e){
+        e.printStackTrace();
+      }
+    } else {
+      System.out.println(createConsoleMessage());
     }
   }
 
@@ -110,6 +121,14 @@ public class SummarizeDifferences extends VerboseCommand {
     blocks.add(mainBlock);
     return blocks;
   }
+
+  private String createConsoleMessage() {
+    StringBuilder out = new StringBuilder();
+    out.append("*Results of extraction sample evaluation*\n");
+    data.forEach((model, modelData) -> out.append(modelData.toMarkdownString()));
+    return out.toString();
+  }
+
 
   private class Diff {
     double gain;

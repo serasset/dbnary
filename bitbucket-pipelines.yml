@@ -40,6 +40,7 @@ definitions:
           - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
+          - - ./kaiko/cicd/cleanup_cache.sh # We don't need maven cache for the dbnary libraries.
           - ./kaiko/cicd/compile-pr-and-target-versions.sh
           # The previous command checked out another branch that may also have executable rights issues.
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh

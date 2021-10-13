@@ -78,7 +78,7 @@ pipelines:
         - step: *build-pr
         - step: *test-pr
     'release/*':
-      - step: *build-and-sonar
+      #- step: *build-and-sonar
       - step: *build-pr
       - step: *test-pr
   pull-requests:

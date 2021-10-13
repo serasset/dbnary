@@ -6,4 +6,4 @@ echo "Sourcing settings from: ${SCRIPT_DIR}/settings"
 source "${SCRIPT_DIR}/settings"
 
 # Extract data using PR version
-"${SCRIPT_DIR}/../extractor/summarize_diffs.sh" -v "$NEXT_VERSION" -d target/diffs
+"${SCRIPT_DIR}/../extractor/summarize_diffs.sh" -v "$NEXT_VERSION" -d target/diffs -s

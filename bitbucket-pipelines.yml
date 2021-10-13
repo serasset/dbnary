@@ -40,6 +40,7 @@ definitions:
           - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
+          - ./kaiko/cicd/cleanup_cache.sh # We don't need maven cache for the dbnary libraries.
           - ./kaiko/cicd/compile-pr-and-target-versions.sh
           # The previous command checked out another branch that may also have executable rights issues.
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
@@ -66,6 +67,7 @@ definitions:
           - ./kaiko/cicd/extract_with_next.sh
           - ./kaiko/cicd/extract_with_previous.sh
           - ./kaiko/cicd/compute_differences.sh
+          - ./kaiko/cicd/summarize_on_slack.sh
         artifacts:
           - "target/diffs/*.ttl"
 
@@ -77,7 +79,7 @@ pipelines:
         - step: *build-pr
         - step: *test-pr
     'release/*':
-      - step: *build-and-sonar
+      #- step: *build-and-sonar
       - step: *build-pr
       - step: *test-pr
   pull-requests:

@@ -10,7 +10,7 @@ DIR=${DBNARY_DIR:-$HOME/develop/wiktionary}
 LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"
 #TLANGS="fra,eng,por,deu,ell,rus,ita,fin,tur,jpn"
 JAVA=java
-VERS=2.3.6
+VERS=2.4.0
 MIRROR=http://dumps.wikimedia.org/
 #MIRROR=http://dumps.wikimedia.your.org/
 #MIRROR=http://wikipedia.c3sl.ufpr.br/
@@ -34,7 +34,7 @@ fi
   date 
   echo "==============================================="
 
-  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateAndExtractDumps $OPTIONS -d $DIR -m ontolex -s $MIRROR -k 1 -z --enable morphology --enable etymology --enable lime --enable statistics --enable enhancement  $LANGS
+  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateAndExtractDumps $OPTIONS -d $DIR -s $MIRROR -k 1 -z --enable morphology --enable etymology --enable lime --enable statistics --enable enhancement  $LANGS
 
   echo "==============================================="
   echo -n "  DBnary dumps updated - "

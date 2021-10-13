@@ -234,7 +234,7 @@ public class SummarizeDifferences extends VerboseCommand {
     StmtIterator it = m.listStatements();
     while (it.hasNext()) {
       Statement current = it.next();
-      if (!RDFDiff.diffRate.equals(current.getPredicate()))
+      if (!RDFDiff.diffRate.getLocalName().equals(current.getPredicate().getLocalName()))
         count++;
     }
     return count;

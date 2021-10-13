@@ -33,5 +33,6 @@ done
 
 ls -al "/tmp/$NEXT_VERSION/"
 ls -al "/tmp/$NEXT_VERSION/dumps/"
-ls -al "/tmp/$NEXT_VERSION/dumps/*"
+ls -al "/tmp/$NEXT_VERSION/dumps"/*
+ls -al "/tmp/$NEXT_VERSION/dumps"/*/*
 

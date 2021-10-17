@@ -32,12 +32,13 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
     if (block == null) {
       return;
     }
+    log.trace("[{}] HEADER = {}", getPageName(), block);
     WikipediaParser.parse(block, this, true, null);
     initialize();
   }
 
 
-  String[] pronunciationVariants = new String[] {"s", "c", "ll", "y", "yc", "ys", "lls", "llc"};
+  static final String[] pronunciationVariants = new String[] {"s", "c", "ll", "y", "yc", "ys", "lls", "llc"};
 
 
   private boolean isApi(String s) {
@@ -76,6 +77,19 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
         } else {
           log.debug("Unknown pronunciation transcription {} in {}", parameterMap.get("2"),
               this.getImageBaseURL());
+        }
+      }
+    } else if ("pron-graf".equalsIgnoreCase(templateName)) {
+      String fone;
+      fone = parameterMap.get("1");
+      if (null == fone) fone = parameterMap.get("fone");
+      if (fone != null && fone.length() > 0) {
+        parameterMap.remove("1");
+        parameterMap.remove("fone");
+        parameterMap.remove("leng");
+        parameterMap.remove("lang");
+        if (parameterMap.size() != 0) {
+          log.debug("Remaining args in pron-graf : {} in {}", parameterMap, getPageName());
         }
       }
     }

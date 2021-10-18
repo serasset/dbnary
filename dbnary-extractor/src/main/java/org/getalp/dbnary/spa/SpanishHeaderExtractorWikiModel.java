@@ -38,7 +38,8 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
   }
 
 
-  static final String[] pronunciationVariants = new String[] {"s", "c", "ll", "y", "yc", "ys", "lls", "llc"};
+  static final String[] pronunciationVariants =
+      new String[] {"s", "c", "ll", "y", "yc", "ys", "lls", "llc"};
 
 
   private boolean isApi(String s) {
@@ -58,7 +59,7 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
       if ((p1 = parameterMap.get("1")) != null && p1.length() > 0) {
         if (isApi(parameterMap.get("2"))) {
           if (!p1.equals("-") && !p1.equals("&nbsp;")) {
-            delegate.registerPronunciation(parameterMap.get("1"), "es-ipa");
+            delegate.registerPronunciation(p1, "es-ipa");
           }
           parameterMap.remove("1");
           parameterMap.remove("2");
@@ -82,8 +83,12 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
     } else if ("pron-graf".equalsIgnoreCase(templateName)) {
       String fone;
       fone = parameterMap.get("1");
-      if (null == fone) fone = parameterMap.get("fone");
+      if (null == fone)
+        fone = parameterMap.get("fone");
       if (fone != null && fone.length() > 0) {
+        if (!fone.equals("-") && !fone.equals("&nbsp;")) {
+          delegate.registerPronunciation(fone, "es-ipa");
+        }
         parameterMap.remove("1");
         parameterMap.remove("fone");
         parameterMap.remove("leng");

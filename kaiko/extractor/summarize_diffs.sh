@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=2.4.1-SNAPSHOT
+VERSION=2.4.1-spannish-pronunciation-SNAPSHOT
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
 DIFFS=diffs
 VERBOSE=""

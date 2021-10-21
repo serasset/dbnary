@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>2.4.1-spannish-pronunciation-SNAPSHOT</version>
+    <version>2.4.1-SNAPSHOT</version>
   </parent>
   <artifactId>dbnary-extractor</artifactId>
   <packaging>jar</packaging>

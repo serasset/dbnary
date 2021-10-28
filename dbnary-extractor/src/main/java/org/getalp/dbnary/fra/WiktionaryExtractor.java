@@ -526,7 +526,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     Pair<String, String> langAndPoS = heading.templatesOnUpperLevel().stream()
         .map(Token::asTemplate).filter(t -> t.getName().equals("S")).findFirst()
         .map(t -> new ImmutablePair<>(t.getParsedArgs().get("2").trim(),
-            posMarkers.get(t.getParsedArgs().get("1").trim())))
+            posMarkers.get(t.getParsedArgs().get("1").trim().toLowerCase())))
         .orElse(null);
 
     // Only get inflections for verbs so that we capture the missing inflected past participles.

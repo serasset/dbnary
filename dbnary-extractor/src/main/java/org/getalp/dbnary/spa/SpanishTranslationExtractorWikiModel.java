@@ -118,8 +118,8 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
             usage = usage.substring(1);
           }
           if (null != trans) {
-            delegate.registerTranslation(lang, delegate.createGlossResource(merge(currentGloss, globalGloss)), usage,
-                trans);
+            delegate.registerTranslation(lang,
+                delegate.createGlossResource(merge(currentGloss, globalGloss)), usage, trans);
           }
           trans = null;
           usage = "";
@@ -133,8 +133,8 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
             } else {
               usage = usage.substring(1);
             }
-            delegate.registerTranslation(lang, delegate.createGlossResource(merge(currentGloss, globalGloss)), usage,
-                trans);
+            delegate.registerTranslation(lang,
+                delegate.createGlossResource(merge(currentGloss, globalGloss)), usage, trans);
             trans = null;
             usage = "";
           }
@@ -180,8 +180,8 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
         } else {
           usage = usage.substring(1);
         }
-        delegate.registerTranslation(lang, delegate.createGlossResource(merge(currentGloss, globalGloss)), usage,
-            trans);
+        delegate.registerTranslation(lang,
+            delegate.createGlossResource(merge(currentGloss, globalGloss)), usage, trans);
       }
     } else if ("trad-arriba".equals(templateName)) {
       // TODO : extract the parameter (gloss and POS specification)

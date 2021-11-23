@@ -18,7 +18,11 @@ public class GlossFilter extends AbstractGlossFilter {
     if (null == rawGloss) {
       return null;
     }
-
+    // ? is frequently found in translation glosses in Spanish and should be ignored as it leads
+    // to incorrect enhancement
+    if ("?".equals(rawGloss.trim())) {
+      return null;
+    }
     simpleNumListMatcher.reset(rawGloss);
     if (simpleNumListMatcher.matches()) {
       return new StructuredGloss(simpleNumListMatcher.group(1), null);

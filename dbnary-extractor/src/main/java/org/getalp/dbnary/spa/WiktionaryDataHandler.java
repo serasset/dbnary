@@ -95,9 +95,9 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
   }
 
   private final static String posPatternString = "(?:verbo|sustantivo|adjetivo|adverbio)";
-  private final static String glossWithPosValue = "(?:^\\s*(?:como\\s+)?(" + posPatternString + ")\\s*$|"
-      + "^.*\\((" + posPatternString + ")\\)\\s*$|"
-      + "^\\s*(" + posPatternString + "):.*$)";
+  private final static String glossWithPosValue =
+      "(?:^\\s*(?:como\\s+)?(" + posPatternString + ")\\s*$|" + "^.*\\((" + posPatternString
+          + ")\\)\\s*$|" + "^\\s*(" + posPatternString + "):.*$)";
   private Pattern glossWithPossPattern = Pattern.compile(glossWithPosValue);
   private Matcher glossWithPos = glossWithPossPattern.matcher("");
 
@@ -105,7 +105,7 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
   protected List<Resource> getLexicalEntryUsingGloss(Resource structuredGloss) {
     ArrayList<Resource> res = new ArrayList<>();
     // TODO: Should I take the sense Number into account, as it should be correctly processed by
-    //  the extractor ?
+    // the extractor ?
     Statement s = structuredGloss.getProperty(RDF.value);
     if (null == s) {
       return res;
@@ -116,19 +116,24 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     }
     glossWithPos.reset(gloss.trim());
     if (glossWithPos.matches()) {
-      String pos = Stream.of(glossWithPos.group(1), glossWithPos.group(2), glossWithPos.group(3)).filter(
-          Objects::nonNull).findFirst().orElse(null);
+      String pos = Stream.of(glossWithPos.group(1), glossWithPos.group(2), glossWithPos.group(3))
+          .filter(Objects::nonNull).findFirst().orElse(null);
       addAllResourceOfPoS(res, getPosResource(pos));
     }
     return res;
   }
 
   private Resource getPosResource(String pos) {
-    if ("verbo".equals(pos)) return LexinfoOnt.verb;
-    else if ("sustantivo".equals(pos)) return LexinfoOnt.noun;
-    else if ("adjetivo".equals(pos)) return LexinfoOnt.adjective;
-    else if ("adverbio".equals(pos)) return LexinfoOnt.adverb;
-    else return null;
+    if ("verbo".equals(pos))
+      return LexinfoOnt.verb;
+    else if ("sustantivo".equals(pos))
+      return LexinfoOnt.noun;
+    else if ("adjetivo".equals(pos))
+      return LexinfoOnt.adjective;
+    else if ("adverbio".equals(pos))
+      return LexinfoOnt.adverb;
+    else
+      return null;
   }
 
 }

@@ -6,8 +6,9 @@ import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.rdfutils.URI;
+import org.getalp.model.dbnary.AcceptTranslation;
 
-public class LexicalEntry {
+public class LexicalEntry implements AcceptTranslation {
   private String name;
   private String wiktionaryPartOfSpeech;
   private int entryNumber = 0;

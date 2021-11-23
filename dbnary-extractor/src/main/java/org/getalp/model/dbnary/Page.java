@@ -9,8 +9,8 @@ import org.getalp.model.ontolex.LexicalEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Page {
-  private Logger log = LoggerFactory.getLogger(Page.class);
+public class Page implements AcceptTranslation {
+  private static final Logger log = LoggerFactory.getLogger(Page.class);
   protected String language;
   protected String name;
   protected Stack<LexicalEntry> entries = new Stack<>();

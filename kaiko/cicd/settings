@@ -8,4 +8,4 @@ then
 fi
 PREVIOUS_VERSION=ci-previous-version
 NEXT_VERSION=ci-next-version
-DIFFS=/tmp/diffs
+DIFFS=target/diffs

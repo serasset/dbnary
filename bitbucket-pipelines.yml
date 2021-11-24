@@ -77,9 +77,7 @@ definitions:
         caches:
           - maven
         script:
-          - ls -al .
-          - ls -al target/
-          - ls -al target/extracts/
+          - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/compute_differences.sh
           - ./kaiko/cicd/summarize_on_slack.sh
         artifacts:

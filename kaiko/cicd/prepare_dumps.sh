@@ -28,13 +28,13 @@ do
   # This will be usable (need tests) when I will use an image that contains rsync (not the case of the usual maven image.
   #   rsync -a --include='*.idx' --include='*.xml' --include='*/' --exclude='*' "${WIKTIONARY_DUMPS_USER}@${WIKTIONARY_DUMPS_HOST}:${WIKTIONARY_DUMPS_DIR}/${lg}" "/tmp/$PREVIOUS_VERSION/dumps/"
   scp -r "${WIKTIONARY_DUMPS_USER}@${WIKTIONARY_DUMPS_HOST}:${WIKTIONARY_DUMPS_DIR}/${lg}" "/tmp/$PREVIOUS_VERSION/dumps/"
-  df -h
-  ls -al "/tmp/$PREVIOUS_VERSION/dumps/${lg}"
-  ls -al "/tmp/$NEXT_VERSION/dumps/${lg}"
+  # df -h
+  # ls -al "/tmp/$PREVIOUS_VERSION/dumps/${lg}"
+  # ls -al "/tmp/$NEXT_VERSION/dumps/${lg}"
 done
 
-ls -al "/tmp/$NEXT_VERSION/"
-ls -al "/tmp/$NEXT_VERSION/dumps/"
-ls -al "/tmp/$NEXT_VERSION/dumps"/*
-ls -al "/tmp/$NEXT_VERSION/dumps"/*/*
+# ls -al "/tmp/$NEXT_VERSION/"
+# ls -al "/tmp/$NEXT_VERSION/dumps/"
+# ls -al "/tmp/$NEXT_VERSION/dumps"/*
+# ls -al "/tmp/$NEXT_VERSION/dumps"/*/*
 

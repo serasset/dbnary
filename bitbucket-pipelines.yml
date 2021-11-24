@@ -79,7 +79,7 @@ definitions:
         script:
           - ls -al .
           - ls -al target/
-          - ls -al target/diffs
+          - ls -al target/extracts/
           - ./kaiko/cicd/compute_differences.sh
           - ./kaiko/cicd/summarize_on_slack.sh
         artifacts:

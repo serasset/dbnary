@@ -10,6 +10,6 @@ mkdir -p $DIFFS
 for model in ontolex morphology etymology enhancement
 do
   # compute differences
-  echo "${SCRIPT_DIR}/../extractor/compute_diffs.sh -v $NEXT_VERSION -f target/extracts/$PREVIOUS_VERSION/extracts/ontolex/latest/ -t target/extracts/$NEXT_VERSION/extracts/ontolex/latest/ -d $DIFFS $LANGS"
-  "${SCRIPT_DIR}/../extractor/compute_diffs.sh" -v "$NEXT_VERSION" -f "target/extracts/$PREVIOUS_VERSION/extracts/ontolex/latest/" -t "target/extracts/$NEXT_VERSION/extracts/ontolex/latest/" -d "$DIFFS" $LANGS
+  echo "${SCRIPT_DIR}/../extractor/compute_diffs.sh -v $NEXT_VERSION -f target/extracts/$PREVIOUS_VERSION/latest/ -t target/extracts/$NEXT_VERSION/latest/ -d $DIFFS $LANGS"
+  "${SCRIPT_DIR}/../extractor/compute_diffs.sh" -v "$NEXT_VERSION" -f "target/extracts/$PREVIOUS_VERSION/latest/" -t "target/extracts/$NEXT_VERSION/latest/" -d "$DIFFS" $LANGS
 done

@@ -81,6 +81,10 @@ definitions:
           - mkdir -p ${HOME}/.m2/repository/org/
           - rm -rf ${HOME}/.m2/repository/org/getalp
           - cp -r target/dbnary-maven-repository/org/getalp ${HOME}/.m2/repository/org/
+          - ls -al target/extracts/
+          - ls -al target/extracts/*
+          - ls -al target/extracts/*/*
+          - ls -al target/extracts/*/*/
           - ./kaiko/cicd/compute_differences.sh
           - ./kaiko/cicd/summarize_on_slack.sh
         artifacts:

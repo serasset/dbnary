@@ -84,7 +84,6 @@ definitions:
           - ls -al target/extracts/
           - ls -al target/extracts/*
           - ls -al target/extracts/*/*
-          - ls -al target/extracts/*/*/
           - ./kaiko/cicd/compute_differences.sh
           - ./kaiko/cicd/summarize_on_slack.sh
         artifacts:

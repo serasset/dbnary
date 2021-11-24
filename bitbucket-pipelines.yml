@@ -78,6 +78,9 @@ definitions:
           - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
+          - mkdir -p ${HOME}/.m2/repository/org/
+          - rm -rf ${HOME}/.m2/repository/org/getalp
+          - cp -r target/dbnary-maven-repository/org/getalp ${HOME}/.m2/repository/org/
           - ./kaiko/cicd/compute_differences.sh
           - ./kaiko/cicd/summarize_on_slack.sh
         artifacts:

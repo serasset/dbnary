@@ -49,8 +49,8 @@ definitions:
           - ./kaiko/cicd/cleanup_cache.sh
         artifacts:
           - "target/dbnary-maven-repository/org/**/*.*"
-    - step: &test-pr
-        name: Test env for Pull Requests
+    - step: &extract-for-pr
+        name: Extracting samples with both version
         runs-on:
           - 'self.hosted'
           - 'dbnary'
@@ -66,23 +66,40 @@ definitions:
           - ./kaiko/cicd/prepare_dumps.sh
           - ./kaiko/cicd/extract_with_next.sh
           - ./kaiko/cicd/extract_with_previous.sh
+        artifacts:
+          - "target/extracts/**/*.ttl"
+    - step: &evaluate-pr
+        name: Summarizing differences in both versions
+        runs-on:
+          - 'self.hosted'
+          - 'dbnary'
+        size: 4x
+        caches:
+          - maven
+        script:
+          - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
+          - mkdir -p ${HOME}/.m2/repository/org/
+          - rm -rf ${HOME}/.m2/repository/org/getalp
+          - cp -r target/dbnary-maven-repository/org/getalp ${HOME}/.m2/repository/org/
           - ./kaiko/cicd/compute_differences.sh
           - ./kaiko/cicd/summarize_on_slack.sh
         artifacts:
           - "target/diffs/*.ttl"
-
 pipelines:
   branches:
     '*':
       - step: *build-and-sonar
     'feature/*':
         - step: *build-pr
-        - step: *test-pr
+        - step: *extract-for-pr
+        - step: *evaluate-pr
     'release/*':
       #- step: *build-and-sonar
       - step: *build-pr
-      - step: *test-pr
+      - step: *extract-for-pr
+      - step: *evaluate-pr
   pull-requests:
     "*":
       - step: *build-pr
-      - step: *test-pr
+      - step: *extract-for-pr
+      - step: *evaluate-pr

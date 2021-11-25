@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -68,7 +69,8 @@ public class TranslationSourcesDisambiguator {
       Resource lexicalEntry = next.getResource();
       if (lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
           || lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
-          || lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
+          || lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)
+          || lexicalEntry.hasProperty(RDF.type, DBnaryOnt.Page)) {
         try {
           log.trace("Enhancing translation resource {} for entry {}", trans.getLocalName(),
               lexicalEntry.getLocalName());
@@ -98,15 +100,12 @@ public class TranslationSourcesDisambiguator {
             }
           }
 
-          // Register results in output Model
-          Resource translation = outputModel.createResource(trans.getURI());
-
           Set<Resource> res = (resSenseNum.isEmpty()) ? resSim : resSenseNum;
 
           // register links that will be created in enhancement model after the iteration
           // as dataset should not be modified and read at the same time when back by a TDB.
           if (res != null && !res.isEmpty()) {
-            translationToWSMap.put(translation, res);
+            translationToWSMap.put(trans, res);
           }
 
         } catch (InvalidContextException e) {
@@ -119,8 +118,20 @@ public class TranslationSourcesDisambiguator {
       }
     }
 
-    translationToWSMap.forEach((t, wss) -> wss.forEach(ws -> outputModel.add(outputModel
-        .createStatement(t, DBnaryOnt.isTranslationOf, outputModel.createResource(ws.getURI())))));
+    translationToWSMap.forEach((t, wss) -> wss.forEach(ws -> {
+      outputModel.add(outputModel.createStatement(t, DBnaryOnt.isTranslationOf, ws));
+      // Also add the lexical entry if not already available (case of a translation linked to a page
+      ResIterator lexentries = inputModel.listResourcesWithProperty(OntolexOnt.sense, ws);
+      while (lexentries.hasNext()) {
+        Resource le = lexentries.next();
+        if (!t.hasProperty(DBnaryOnt.isTranslationOf, le)) {
+          log.debug(
+              "Adding LexEntry {} to Page related translation {} while registering WordSense {}",
+              le.getLocalName(), t.getLocalName(), ws.getLocalName());
+          outputModel.add(outputModel.createStatement(t, DBnaryOnt.isTranslationOf, le));
+        }
+      }
+    }));
 
   }
 

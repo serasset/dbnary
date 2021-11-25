@@ -9,10 +9,14 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.OntolexOnt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SenseNumberBasedTranslationDisambiguationMethod implements DisambiguationMethod {
 
   public static int NUMSN = 0;
+  private static final Logger log =
+      LoggerFactory.getLogger(SenseNumberBasedTranslationDisambiguationMethod.class);
 
   public SenseNumberBasedTranslationDisambiguationMethod() {
     // TODO Auto-generated constructor stub
@@ -23,8 +27,9 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements Disambig
       throws InvalidContextException, InvalidEntryException {
     if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
         && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
-        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
-      throw new InvalidEntryException("Expecting an ontolex Lexical Entry.");
+        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)
+        && !lexicalEntry.hasProperty(RDF.type, DBnaryOnt.Page)) {
+      throw new InvalidEntryException("Expecting an ontolex Lexical Entry or DBnary page.");
     }
     if (context instanceof Resource) {
       Resource trans = (Resource) context;
@@ -63,13 +68,23 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements Disambig
   }
 
   private void addNumberedWordSenseToResult(Set<Resource> res, Resource lexicalEntry, String n) {
-    StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
-    while (senses.hasNext()) {
-      Resource sense = senses.next().getResource();
-      Statement senseNumStatement = sense.getProperty(DBnaryOnt.senseNumber);
-      if (n.equalsIgnoreCase(senseNumStatement.getString())) {
-        // System.err.println(n+" | "+senseNumStatement.getString());
-        res.add(sense);
+    if (lexicalEntry.hasProperty(RDF.type, DBnaryOnt.Page)) {
+      int previousSize = res.size();
+      StmtIterator entries = lexicalEntry.listProperties(DBnaryOnt.describes);
+      while (entries.hasNext()) {
+        addNumberedWordSenseToResult(res, entries.next().getResource(), n);
+      }
+      if (res.size() - previousSize > 1)
+        log.debug("ENHANCER: more than 1 word sense for number {} while enhancing {}", n,
+            lexicalEntry);
+    } else {
+      StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
+      while (senses.hasNext()) {
+        Resource sense = senses.next().getResource();
+        Statement senseNumStatement = sense.getProperty(DBnaryOnt.senseNumber);
+        if (n.equalsIgnoreCase(senseNumStatement.getString())) {
+          res.add(sense);
+        }
       }
     }
   }
@@ -86,28 +101,28 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements Disambig
     } else if (nums.contains("-") || nums.contains("—") || nums.contains("–")) {
       String[] ni = nums.split("[-—–]");
       if (ni.length != 2) {
-        System.err.append("Strange split on dash: " + nums);
+        log.debug("Strange split on dash: {}", nums);
       } else {
         try {
           int s = Integer.parseInt(ni[0].trim());
           int e = Integer.parseInt(ni[1].trim());
 
           if (e <= s) {
-            System.err.println("end of range is lower than beginning in: " + nums);
+            log.debug("end of range is lower than beginning in: {}", nums);
           } else {
             for (int i = s; i <= e; i++) {
               ns.add(Integer.toString(i));
             }
           }
         } catch (NumberFormatException e) {
-          System.err.println(e.getLocalizedMessage());
+          log.error(e.getLocalizedMessage());
         }
       }
     } else {
       try {
         ns.add(nums.trim());
       } catch (NumberFormatException e) {
-        System.err.println(e.getLocalizedMessage() + ": " + nums);
+        log.error(e.getLocalizedMessage() + ": " + nums);
       }
     }
     return ns;

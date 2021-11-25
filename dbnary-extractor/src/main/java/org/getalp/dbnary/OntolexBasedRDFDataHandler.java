@@ -513,7 +513,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
    *
    * @param def the definition string
    * @param senseNumber a string giving the sense number of the definition.
-   * @return the lexical sense resource
    */
   public void registerNewDefinition(String def, String senseNumber) {
     if (def == null || def.length() == 0) {

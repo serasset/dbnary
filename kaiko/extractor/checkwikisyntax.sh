@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DIR=${DBNARY_DIR:-${HOME}/dev/wiktionary/tmp}
-VERSION=2.4.1
+VERSION=2.4.2-SNAPSHOT
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
 LANGS="fr"
 

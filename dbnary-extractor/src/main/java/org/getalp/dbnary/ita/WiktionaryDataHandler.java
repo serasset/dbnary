@@ -15,13 +15,14 @@ import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.StructuredGloss;
+import org.getalp.dbnary.commons.PostTranslationDataHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
+public class WiktionaryDataHandler extends PostTranslationDataHandler {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+  private static final Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
   static {
 
@@ -113,85 +114,15 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   }
 
-  private String encodedWiktionaryPageName;
-
   public static boolean isValidPOS(String pos) {
     return posAndTypeValueMap.containsKey(pos);
   }
-
-  Map<Resource, Set<Resource>> lexEntries = new HashMap<>();
 
   public WiktionaryDataHandler(String lang, String tdbDir) {
     super(lang, tdbDir);
   }
 
-  @Override
-  public void initializePageExtraction(String wiktionaryPageName) {
-    super.initializePageExtraction(wiktionaryPageName);
-
-  }
-
-  @Override
-  public void initializeLanguageSection(String lang) {
-    super.initializeLanguageSection(lang);
-    lexEntries.clear();
-    encodedWiktionaryPageName = uriEncode(currentPage.getName());
-  }
-
-  @Override
-  public void finalizePageExtraction() {
-    super.finalizePageExtraction();
-  }
-
-  @Override
-  public void finalizeLanguageSection() {
-    super.finalizeLanguageSection();
-    encodedWiktionaryPageName = null;
-  }
-
-  @Override
-  public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {
-
-    if (currentPage.nbEntries() == 0) {
-      log.debug("Registering Translation when no lexical entry is defined in {}",
-          currentPage.getName());
-    } else if (currentPage.nbEntries() == 1) {
-      super.registerTranslation(lang, currentGloss, usage, word);
-    } else if (null == currentGloss) {
-      log.debug("Attaching translations to Vocable (Null gloss and several lexical entries) in {}",
-          currentPage.getName());
-      super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
-    } else {
-      // DONE: guess which translation is to be attached to which entry/sense
-      List<Resource> entries = getLexicalEntryUsingPartOfSpeech(currentGloss);
-      if (entries.size() != 0) {
-        log.trace("Attaching translations using part of speech in gloss : {}",
-            currentPage.getName());
-        if (entries.size() > 1) {
-          log.trace("Attaching translations to several entries in {}", currentPage.getName());
-        }
-        for (Resource entry : entries) {
-          super.registerTranslationToEntity(entry, lang, currentGloss, usage, word);
-        }
-      } else {
-        Statement s = currentGloss.getProperty(RDF.value);
-        String g = (null == s) ? "" : s.getString();
-        log.debug("Several entries are defined in {} // {}", currentPage.getName(), g);
-        // TODO: disambiguate and attach to the correct entry.
-        super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
-      }
-    }
-  }
-
-  protected String getGlossResourceName(StructuredGloss gloss) {
-    String key = gloss.getGloss() + gloss.getSenseNumber();
-    key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray())
-        .replaceAll("[/=\\+]", "-");
-    return getPrefix() + "__" + shortEditionLanguageCode + "_gloss_" + key + "_"
-        + encodedWiktionaryPageName;
-  }
-
-  private List<Resource> getLexicalEntryUsingPartOfSpeech(Resource structuredGloss) {
+  protected List<Resource> getLexicalEntryUsingGloss(Resource structuredGloss) {
     ArrayList<Resource> res = new ArrayList<>();
     Statement s = structuredGloss.getProperty(RDF.value);
     if (null == s) {
@@ -219,34 +150,5 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       addAllResourceOfPoS(res, LexinfoOnt.noun);
     }
     return res;
-  }
-
-  private void addAllResourceOfPoS(ArrayList<Resource> res, Resource pos) {
-    Set<Resource> ares = lexEntries.get(pos);
-    if (ares != null) {
-      res.addAll(ares);
-    }
-  }
-
-  @Override
-  public void initializeLexicalEntry(String pos) {
-    // TODO: Italian sometimes define translations for noun forms. If an entry is ambiguous,
-    // TODO: then translations could be wrongly attached. The forms should be kept in lex entries
-    // TODO: but not correspond to a valid resource. This will be usefull for later
-    // drop of non useful translations.
-    PosAndType pat = posAndTypeValueMap.get(pos);
-    Resource entry = initializeLexicalEntry(pos, posResource(pat), typeResource(pat));
-    addLexEntry(posResource(pat), entry);
-  }
-
-  private void addLexEntry(Resource pos, Resource entry) {
-    Set<Resource> entrySet;
-    if (null != (entrySet = lexEntries.get(pos))) {
-      entrySet.add(entry);
-    } else {
-      entrySet = new HashSet<>();
-      entrySet.add(entry);
-      lexEntries.put(pos, entrySet);
-    }
   }
 }

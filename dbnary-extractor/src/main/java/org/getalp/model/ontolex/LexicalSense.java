@@ -4,8 +4,9 @@ import java.util.Set;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.rdfutils.URI;
+import org.getalp.model.dbnary.AcceptTranslation;
 
-public class LexicalSense {
+public class LexicalSense implements AcceptTranslation {
   private int senseNumber;
 
   String definition;

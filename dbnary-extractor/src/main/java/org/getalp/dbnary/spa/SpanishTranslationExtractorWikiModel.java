@@ -12,6 +12,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.AbstractGlossFilter;
 import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
     if (block == null) {
       return;
     }
+    globalGloss = null;
     WikipediaParser.parse(block, this, true, null);
     initialize();
   }
@@ -84,6 +86,12 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
     pos.add("sust y verb");
   }
 
+  StructuredGloss globalGloss = null;
+
+  @Override
+  public void setPageName(String pageTitle) {
+    super.setPageName(pageTitle);
+  }
 
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
@@ -94,7 +102,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
       int i = 2;
       String s = null;
       String usage = "", trans = null;
-      Resource currentGloss = null;
+      StructuredGloss currentGloss = null;
       if (parameterMap.get("tr") != null) {
         usage = usage + "|tr=" + parameterMap.get("tr");
       }
@@ -110,7 +118,8 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
             usage = usage.substring(1);
           }
           if (null != trans) {
-            delegate.registerTranslation(lang, currentGloss, usage, trans);
+            delegate.registerTranslation(lang,
+                delegate.createGlossResource(merge(currentGloss, globalGloss)), usage, trans);
           }
           trans = null;
           usage = "";
@@ -124,11 +133,12 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
             } else {
               usage = usage.substring(1);
             }
-            delegate.registerTranslation(lang, currentGloss, usage, trans);
+            delegate.registerTranslation(lang,
+                delegate.createGlossResource(merge(currentGloss, globalGloss)), usage, trans);
             trans = null;
             usage = "";
           }
-          currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(s));
+          currentGloss = glossFilter.extractGlossStructure(s);
         } else if (gender.contains(s)) {
           usage = usage + "|" + s;
         } else if ("p".equals(s)) {
@@ -170,14 +180,24 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
         } else {
           usage = usage.substring(1);
         }
-        delegate.registerTranslation(lang, currentGloss, usage, trans);
+        delegate.registerTranslation(lang,
+            delegate.createGlossResource(merge(currentGloss, globalGloss)), usage, trans);
       }
     } else if ("trad-arriba".equals(templateName)) {
-      // nop
+      // TODO : extract the parameter (gloss and POS specification)
+      if (log.isTraceEnabled() && !parameterMap.isEmpty()) {
+        log.trace("trad-arriba with params:" + parameterMap + "||" + this.getPageName());
+      }
+      if (!parameterMap.isEmpty()) {
+        String globalGlossValue = parameterMap.get("1");
+        globalGloss = glossFilter.extractGlossStructure(globalGlossValue);
+      } else {
+        globalGloss = null;
+      }
     } else if ("trad-centro".equals(templateName)) {
       // nop
     } else if ("trad-abajo".equals(templateName)) {
-      // nop
+      globalGloss = null;
     } else if ("l".equals(templateName)) {
       // Catch l template and expand it correctly as the template is now expanded before the
       // enclosing template
@@ -198,9 +218,35 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
       writer.append(text);
     } else {
       log.debug("Called template: {} while parsing translations of: {}", templateName,
-          this.getImageBaseURL());
+          this.getPageName());
       // Just ignore the other template calls (uncomment to expand the template calls).
       // super.substituteTemplateCall(templateName, parameterMap, writer);
     }
+  }
+
+  private StructuredGloss merge(StructuredGloss localGloss, StructuredGloss globalGloss) {
+    if (null == localGloss)
+      return globalGloss;
+    if (null == globalGloss)
+      return localGloss;
+
+    StructuredGloss result = new StructuredGloss();
+    result.setSenseNumber(localGloss.getSenseNumber());
+    if (null == localGloss.getSenseNumber())
+      result.setSenseNumber(globalGloss.getSenseNumber());
+    else {
+      String localGlossValue = localGloss.getSenseNumber();
+      String globalGlossValue = globalGloss.getSenseNumber();
+      if (null != globalGlossValue && !localGlossValue.equals(globalGloss.getSenseNumber()))
+        log.debug("incompatible senseNumbers : [" + localGloss.getSenseNumber() + "] vs ["
+            + globalGloss.getSenseNumber() + "] in: " + this.getPageName());
+    }
+
+    result.setGloss(localGloss.getGloss());
+    if (null == localGloss.getGloss())
+      result.setGloss(globalGloss.getGloss());
+    else if (null != globalGloss.getGloss())
+      result.setGloss(globalGloss.getGloss() + "|" + localGloss.getGloss());
+    return result;
   }
 }

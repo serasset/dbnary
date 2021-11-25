@@ -13,18 +13,17 @@ public class WikiPattern {
    *
    * <h3><a id="sum">Summary of regular-expression extension</a></h3>
    *
-   * <table border="0" cellpadding="1" cellspacing="0" summary="Regular expression constructs, and
-   * what they match">
-   *
-   * <tr align="left">
-   * <th align="left" id="construct">Construct</th>
-   * <th align="left" id="matches">Matches</th>
+   * <table style="border: 0px; border-collapse: collapse; border-spacing: 0; padding: 5px;">
+   * <caption>Regular expression constructs, and what they match</caption>
+   * <tr style="text-align: left;">
+   * <th style="text-align: left;" id="construct">Construct</th>
+   * <th style="text-align: left;" id="matches">Matches</th>
    * </tr>
    *
    * <tr>
    * <th>&nbsp;</th>
    * </tr>
-   * <tr align="left">
+   * <tr style="text-align: left;">
    * <th colspan="2" id="classes">Character classes</th>
    * </tr>
    *
@@ -49,18 +48,18 @@ public class WikiPattern {
    * <tr>
    * <th>&nbsp;</th>
    * </tr>
-   * <tr align="left">
+   * <tr style="text-align: left;">
    * <th colspan="2" id="events">Open/Close events</th>
    * </tr>
    *
    * <tr>
-   * <td valign="top"><tt>(_</tt><i>xxx</i><tt>_</tt></td>
+   * <td valign="top"><code>(_</code><i>xxx</i><code>_</code></td>
    * <td headers="matches">the opening of an event, where <i>xxx</i> is identifies the event (xxx is
    * a sequence of characters, possibly empty). If present, xxx will represent a group name (take it
    * into account when playing with group count.</td>
    * </tr>
    * <tr>
-   * <td valign="top"><tt>_</tt><i>xxx</i><tt>_)</tt></td>
+   * <td valign="top"><code>_</code><i>xxx</i><code>_)</code></td>
    * <td headers="matches">the closing of an event which was given name <i>xxx</i> on opening. If
    * <i>xxx</i> is empty, matches any closing event.</td>
    * </tr>

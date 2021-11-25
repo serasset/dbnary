@@ -46,7 +46,8 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
 
     if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
         && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
-        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)) {
+        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)
+        && !lexicalEntry.hasProperty(RDF.type, DBnaryOnt.Page)) {
       throw new InvalidEntryException("Expecting an ontolex Lexical Entry.");
     }
     if (context instanceof Resource) {
@@ -64,10 +65,10 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
           ArrayList<WeigthedSense> weightedList = new ArrayList<WeigthedSense>();
 
           // get a list of wordsenses, sorted by decreasing similarity.
-          StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
-          while (senses.hasNext()) {
-            Statement nextSense = senses.next();
-            Resource wordsense = nextSense.getResource();
+          ArrayList<Resource> senses = new ArrayList<>();
+          fillInSenseOf(senses, lexicalEntry);
+
+          for (Resource wordsense : senses) {
             Statement dRef = wordsense.getProperty(SkosOnt.definition);
             Statement dVal = dRef.getProperty(RDF.value);
             String deftext = dVal.getObject().toString();
@@ -94,6 +95,20 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
     }
 
     return res;
+  }
+
+  private void fillInSenseOf(ArrayList<Resource> senses, Resource pageOrLexEntry) {
+    if (pageOrLexEntry.hasProperty(RDF.type, DBnaryOnt.Page)) {
+      StmtIterator entries = pageOrLexEntry.listProperties(DBnaryOnt.describes);
+      while (entries.hasNext()) {
+        fillInSenseOf(senses, entries.next().getResource());
+      }
+    } else {
+      StmtIterator lexEntrySenses = pageOrLexEntry.listProperties(OntolexOnt.sense);
+      while (lexEntrySenses.hasNext()) {
+        senses.add(lexEntrySenses.next().getResource());
+      }
+    }
   }
 
   private void insert(ArrayList<WeigthedSense> weightedList, Resource wordsense, double sim) {

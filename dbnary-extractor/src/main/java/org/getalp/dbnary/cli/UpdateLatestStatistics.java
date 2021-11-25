@@ -27,7 +27,7 @@ import org.getalp.dbnary.stats.NymStatistics;
 import org.getalp.dbnary.stats.TranslationsStatistics;
 
 /**
- * @Deprecated
+ * @deprecated
  */
 @Deprecated
 public class UpdateLatestStatistics extends DbnaryModel {

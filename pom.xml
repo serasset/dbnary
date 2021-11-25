@@ -121,10 +121,10 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
       </plugin>
-      <plugin>
+      <!--plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-      </plugin>
+      </plugin-->
     </plugins>
   </reporting>
 
@@ -393,8 +393,6 @@
             <id>first</id>
             <goals>
               <goal>update-project-license</goal>
-              <!--goal>check-file-header</goal-->
-              <!--goal>update-file-header</goal-->
             </goals>
             <phase>process-sources</phase>
           </execution>

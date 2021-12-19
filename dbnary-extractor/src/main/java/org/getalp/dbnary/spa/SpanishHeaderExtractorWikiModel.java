@@ -18,7 +18,7 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
 
   public SpanishHeaderExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
       String imageBaseURL, String linkBaseURL) {
-    this(we, (WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+    this(we,null, locale, imageBaseURL, linkBaseURL);
   }
 
   public SpanishHeaderExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi,
@@ -130,6 +130,8 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
       if (null != parameterMap.get("fone")) {
         log.warn("fone arg and first args are both given in pron-graf template in {}",
             getPageName());
+        // Use the fone parameter value as it is usually the correct one.
+        fone = parameterMap.get("fone");
       }
       parameterMap.remove("1");
       parameterMap.put("fone", fone);

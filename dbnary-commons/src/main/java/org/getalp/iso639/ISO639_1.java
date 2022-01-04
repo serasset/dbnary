@@ -28,8 +28,8 @@ public final class ISO639_1 {
 
   private ISO639_1() {
     try (InputStream fis = this.getClass().getResourceAsStream("ISO639.data");
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))
-    ) {
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
 
       Matcher matcher = linePattern.matcher("");
 
@@ -62,7 +62,8 @@ public final class ISO639_1 {
     }
 
     try (InputStream fis = this.getClass().getResourceAsStream("ISO639-eponym.tab");
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
 
       Matcher matcher = epolinePattern.matcher("");
 

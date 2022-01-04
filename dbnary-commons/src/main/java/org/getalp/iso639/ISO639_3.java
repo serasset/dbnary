@@ -94,7 +94,8 @@ public class ISO639_3 {
     // another element of langMap has key "it"
     // and value {id: "ita", part2b: "ita", part2t: "ita", part1: "it", en: "Italian"}
     try (InputStream fis = this.getClass().getResourceAsStream("iso-639-3.tab");
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
 
       Matcher matcher = linePattern.matcher("");
 
@@ -138,8 +139,8 @@ public class ISO639_3 {
     // Get eponym language names
     // TODO: do it lazily.
     try (InputStream fis = this.getClass().getResourceAsStream("ISO639-eponym.tab");
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))
-    ) {
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
 
       Matcher matcher = epolinePattern.matcher("");
 
@@ -164,8 +165,8 @@ public class ISO639_3 {
     // Get French names
     // TODO: do this lazily
     try (InputStream fis = this.getClass().getResourceAsStream("ISO639-fr.tab");
-      BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))
-    ) {
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
       Matcher matcher = epolinePattern.matcher("");
 
       String s = br.readLine();

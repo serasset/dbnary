@@ -18,7 +18,7 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
 
   public SpanishHeaderExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
       String imageBaseURL, String linkBaseURL) {
-    this(we,null, locale, imageBaseURL, linkBaseURL);
+    this(we, null, locale, imageBaseURL, linkBaseURL);
   }
 
   public SpanishHeaderExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryIndex wi,

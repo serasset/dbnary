@@ -49,13 +49,11 @@ JAVA=java
 #-Dorg.slf4j.simpleLogger.log.org.getalp.dbnary.OntolexBasedRDFDataHandler
 
 if [ ! -z $VERBOSE ]; then
-  echo "$JAVA -Xmx16g -Djava.net.useSystemProxies=true ${DEBUG} \
-  -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
-    org.getalp.dbnary.cli.CheckWiktionarySyntaxQuality $VERBOSE $DATE $lg 2> $lg.err.txt"
+  set -v
 fi
 
 for lg in $LANGS; do
   $JAVA -Xmx16g -Djava.net.useSystemProxies=true ${DEBUG} \
-    -cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
+    -cp "${HOME}"/.m2/repository/org/getalp/dbnary-commands/"$VERSION"/dbnary-commands-"$VERSION"-uber-jar.jar \
     org.getalp.dbnary.cli.CheckWiktionarySyntaxQuality ${VERBOSE} dumps/${lg}/${DATE}/${lg}wkt-${DATE}.xml 2>$lg.err.txt
 done

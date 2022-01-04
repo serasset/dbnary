@@ -15,8 +15,7 @@ MIRROR=http://dumps.wikimedia.org/
 #MIRROR=http://dumps.wikimedia.your.org/
 #MIRROR=http://wikipedia.c3sl.ufpr.br/
 #MIRROR=ftp://ftpmirror.your.org/pub/wikimedia/dumps/
-EXTRACTOR=dbnary-extractor
-#ENHANCER=dbnary-enhancer
+EXTRACTOR=dbnary-commands
 OPTIONS="--tdb -v"
 
 # Change tmp dir on debian systems (as the default /tmp partition may not be sufficient to cope with TDBs)
@@ -34,7 +33,7 @@ fi
   date 
   echo "==============================================="
 
-  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-jar-with-dependencies.jar org.getalp.dbnary.cli.UpdateAndExtractDumps $OPTIONS -d $DIR -s $MIRROR -k 1 -z --enable morphology --enable etymology --enable lime --enable statistics --enable enhancement  $LANGS
+  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-uber-jar.jar org.getalp.dbnary.cli.UpdateAndExtractDumps $OPTIONS -d $DIR -s $MIRROR -k 1 -z --enable morphology --enable etymology --enable lime --enable statistics --enable enhancement  $LANGS
 
   echo "==============================================="
   echo -n "  DBnary dumps updated - "

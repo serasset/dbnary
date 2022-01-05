@@ -155,4 +155,5 @@ public interface IWiktionaryDataHandler {
 
   void computeStatistics(String dumpVersion);
 
+  void dumpAllAsHDT(OutputStream ostream);
 }

@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>2.4.1</version>
+    <version>2.4.2</version>
   </parent>
   <artifactId>dbnary-ontology</artifactId>
 
@@ -16,6 +16,28 @@
     <log4jprops>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}log4j.properties</log4jprops>
     <onto.source.dir>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}org${file.separator}getalp${file.separator}dbnary</onto.source.dir>
     <onto.target.dir>${project.build.directory}${file.separator}generated-sources${file.separator}java</onto.target.dir>
+    <dbnary.source>${onto.source.dir}${file.separator}dbnary.ttl</dbnary.source>
+    <dbnary.class>DBnaryOnt</dbnary.class>
+    <lexinfo.source>${onto.source.dir}${file.separator}lexinfo.owl</lexinfo.source>
+    <lexinfo.class>LexinfoOnt</lexinfo.class>
+    <olia.source>${onto.source.dir}${file.separator}olia.owl</olia.source>
+    <olia.class>OliaOnt</olia.class>
+    <dbnary.etymology.source>${onto.source.dir}${file.separator}dbnary_etymology.owl</dbnary.etymology.source>
+    <dbnary.etymology.class>DBnaryEtymologyOnt</dbnary.etymology.class>
+    <ontolex.source>${onto.source.dir}${file.separator}ontolex.owl</ontolex.source>
+    <ontolex.class>OntolexOnt</ontolex.class>
+    <vartrans.source>${onto.source.dir}${file.separator}vartrans.owl</vartrans.source>
+    <vartrans.class>VarTransOnt</vartrans.class>
+    <lime.source>${onto.source.dir}${file.separator}lime.owl</lime.source>
+    <lime.class>LimeOnt</lime.class>
+    <decomp.source>${onto.source.dir}${file.separator}decomp.owl</decomp.source>
+    <decomp.class>DecompOnt</decomp.class>
+    <synsem.source>${onto.source.dir}${file.separator}synsem.owl</synsem.source>
+    <synsem.class>SynSemOnt</synsem.class>
+    <skos.source>${onto.source.dir}${file.separator}skos.rdf</skos.source>
+    <skos.class>SkosOnt</skos.class>
+    <datacube.source>${onto.source.dir}${file.separator}cube.ttl</datacube.source>
+    <datacube.class>DataCubeOnt</datacube.class>
   </properties>
 
   <name>DBnary Ontology API</name>
@@ -29,6 +51,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <!-- keep in test scope so that it is not required when the module is used as a dependency-->
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>apache-jena-libs</artifactId>
       <type>pom</type>
@@ -36,6 +64,24 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${onto.target.dir}</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -56,7 +102,9 @@
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}${file.separator}dbnary.ttl</argument>
+                <argument>${dbnary.source}</argument>
+                <argument>-e</argument>
+                <argument>TURTLE</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
@@ -64,7 +112,7 @@
                 <argument>--include</argument>
                 <argument>http://kaiko.getalp.org/dbnary/</argument>
                 <argument>-n</argument>
-                <argument>DBnaryOnt</argument>
+                <argument>${dbnary.class}</argument>
                 <argument>--owl</argument>
               </arguments>
             </configuration>
@@ -85,13 +133,13 @@
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}${file.separator}lexinfo.owl</argument>
+                <argument>${lexinfo.source}</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
                 <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
-                <argument>LexinfoOnt</argument>
+                <argument>${lexinfo.class}</argument>
                 <argument>--owl</argument>
               </arguments>
             </configuration>
@@ -112,13 +160,13 @@
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}${file.separator}olia.owl</argument>
+                <argument>${olia.source}</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
                 <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
-                <argument>OliaOnt</argument>
+                <argument>${olia.class}</argument>
                 <argument>--owl</argument>
               </arguments>
             </configuration>
@@ -139,14 +187,13 @@
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}${file.separator}dbnary_etymology.owl
-                </argument>
+                <argument>${dbnary.etymology.source}</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
                 <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
-                <argument>DBnaryEtymologyOnt</argument>
+                <argument>${dbnary.etymology.class}</argument>
                 <argument>--owl</argument>
               </arguments>
             </configuration>
@@ -167,13 +214,13 @@
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}${file.separator}ontolex.owl</argument>
+                <argument>${ontolex.source}</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
                 <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
-                <argument>OntolexOnt</argument>
+                <argument>${ontolex.class}</argument>
                 <argument>--owl</argument>
               </arguments>
             </configuration>
@@ -194,13 +241,13 @@
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}${file.separator}vartrans.owl</argument>
+                <argument>${vartrans.source}</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
                 <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
-                <argument>VarTransOnt</argument>
+                <argument>${vartrans.class}</argument>
                 <argument>--owl</argument>
               </arguments>
             </configuration>
@@ -221,13 +268,13 @@
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}${file.separator}lime.owl</argument>
+                <argument>${lime.source}</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
                 <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
-                <argument>LimeOnt</argument>
+                <argument>${lime.class}</argument>
                 <argument>--owl</argument>
               </arguments>
             </configuration>
@@ -248,13 +295,13 @@
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}${file.separator}decomp.owl</argument>
+                <argument>${decomp.source}</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
                 <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
-                <argument>DecompOnt</argument>
+                <argument>${decomp.class}</argument>
                 <argument>--owl</argument>
               </arguments>
             </configuration>
@@ -275,13 +322,13 @@
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}${file.separator}synsem.owl</argument>
+                <argument>${synsem.source}</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
                 <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
-                <argument>SynSemOnt</argument>
+                <argument>${synsem.class}</argument>
                 <argument>--owl</argument>
               </arguments>
             </configuration>
@@ -302,13 +349,13 @@
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}${file.separator}skos.rdf</argument>
+                <argument>${skos.source}</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
                 <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
-                <argument>SkosOnt</argument>
+                <argument>${skos.class}</argument>
                 <argument>--owl</argument>
               </arguments>
             </configuration>
@@ -329,33 +376,17 @@
                 <argument>-Dfile.encoding=UTF-8</argument>
                 <argument>jena.schemagen</argument>
                 <argument>-i</argument>
-                <argument>${onto.source.dir}${file.separator}cube.ttl</argument>
+                <argument>${datacube.source}</argument>
+                <argument>-e</argument>
+                <argument>TURTLE</argument>
                 <argument>--package</argument>
                 <argument>org.getalp.dbnary</argument>
                 <argument>-o</argument>
                 <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
-                <argument>DataCubeOnt</argument>
+                <argument>${datacube.class}</argument>
                 <argument>--owl</argument>
               </arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.2.0</version>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${onto.target.dir}</source>
-              </sources>
             </configuration>
           </execution>
         </executions>

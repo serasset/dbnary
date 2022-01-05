@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=2.4.1
+VERSION=2.4.2
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
 LANGS="fr"
 MODEL="ontolex"
@@ -75,8 +75,8 @@ do
     before="$(prepareTDBifTooBig $PREVIOUS_VERSION/${l}_dbnary_${MODEL}*.ttl)"
     now="$(prepareTDBifTooBig $NEXT_VERSION/${l}_dbnary_${MODEL}*.ttl)"
     >&2 echo "Comparing ${before} and ${now}"
-  java -Xmx16G -cp "${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar" \
+  java -Xmx16G -cp "${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar" \
     org.getalp.dbnary.cli.RDFDiff $VERBOSE "${before}" "${now}" > "$DIFFS/${l}_lost_${MODEL}.ttl" ;
-  java -Xmx16G -cp "${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar" \
+  java -Xmx16G -cp "${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar" \
     org.getalp.dbnary.cli.RDFDiff $VERBOSE "${now}" "${before}" > "$DIFFS/${l}_gain_${MODEL}.ttl" ;
 done

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DIR=${DBNARY_DIR:-.}
-VERSION=2.4.1
+VERSION=2.4.2
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
 LANGS="fr"
 
@@ -147,11 +147,11 @@ JAVA=java
 if [ ! -z $VERBOSE ]
 then
 echo $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
--cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
+-cp ${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar \
     org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR $COMPRESS  -k 1 $LANGS
 fi
 
 $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
--cp ${HOME}/.m2/repository/org/getalp/dbnary-extractor/$VERSION/dbnary-extractor-$VERSION-jar-with-dependencies.jar \
+-cp ${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar \
     org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR $COMPRESS  -k 1 $LANGS
 

@@ -42,7 +42,7 @@ public class WikiDocumentTest {
     assertTrue("First WikiSection should have title containing \"French\".",
         h.getContent().toString().contains("French"));
 
-    WikiTextPrinter.printDocumentTree(doc);
+    // WikiTextPrinter.printDocumentTree(doc);
   }
 
 }

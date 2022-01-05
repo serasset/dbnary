@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>dbnary</artifactId>
+    <groupId>org.getalp</groupId>
+    <version>2.4.2</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>dbnary-hdt</artifactId>
+  <packaging>jar</packaging>
+
+  <properties>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.rdfhdt</groupId>
+      <artifactId>hdt-java-core</artifactId>
+      <version>2.1.2</version>
+      <exclusions>
+        <!-- older commons-compress is used in 3.13.1 version of jena -->
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-compress</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.jena</groupId>
+          <artifactId>jena-arq</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.jena</groupId>
+          <artifactId>jena-base</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.jena</groupId>
+          <artifactId>jena-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Force non vulnerable version of common compress (HDT comes with 1.20) -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-core</artifactId>
+      <version>${jena.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-arq</artifactId>
+      <version>${jena.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-base</artifactId>
+      <version>${jena.version}</version>
+    </dependency>
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>net.revelc.code.formatter</groupId>
+        <artifactId>formatter-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -173,10 +173,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
 
-  int state = NODATA;
-  int definitionBlockStart = -1;
-  int orthBlockStart = -1;
-  int translationBlockStart = -1;
+  private int state = NODATA;
+  private int definitionBlockStart = -1;
+  private int orthBlockStart = -1;
+  private int translationBlockStart = -1;
+  private int translationLevel = -1;
   private int headerBlockStart = -1;
 
 
@@ -266,7 +267,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     int lvl = getHeaderLevel(m);
     if (lvl != 2 && lvl != 3 && lvl != 4) {
-      return false; // Only keep lvl 2 headings...
+      return false;
     }
     head = head.trim().toLowerCase();
     return "traducciones".equals(head) || "traducción".equals(head);
@@ -274,12 +275,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   void gotoTradBlock(Matcher m) {
     translationBlockStart = m.end();
+    translationLevel = getHeaderLevel(m);
     state = TRADBLOCK;
   }
 
   void leaveTradBlock(Matcher m) {
-    extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m));
+    extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m),
+        translationLevel);
     translationBlockStart = -1;
+    translationLevel = -1;
   }
 
   private void gotoHeaderBlock(Matcher m) {
@@ -421,7 +425,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
 
-  private void extractTranslations(int startOffset, int endOffset) {
+  private void extractTranslations(int startOffset, int endOffset, int translationLevel) {
+    if (log.isTraceEnabled())
+      log.trace("TranslationLevel = {} in {}", translationLevel, getWiktionaryPageName());
+    // TODO: maybe take the translation level into account (see issue #87)
     String transCode = pageContent.substring(startOffset, endOffset);
     translationExtractor.setPageName(getWiktionaryPageName());
     translationExtractor.parseTranslationBlock(transCode);

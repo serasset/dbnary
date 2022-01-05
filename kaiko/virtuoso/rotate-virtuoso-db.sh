@@ -210,6 +210,7 @@ iso3Lang[la]=lat
 iso3Lang[mg]=mlg
 iso3Lang[no]=nor
 iso3Lang[bm]=bam
+iso3Lang[ku]=kur
 
 SAVETMPDIR=$TMPDIR
 export TMPDIR=$TEMPORARYPREFIX

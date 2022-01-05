@@ -76,7 +76,8 @@ public class ExtractWiktionary extends DBnaryCommandLine {
   private static final String STATS_OUTPUT_FILE_SHORT_OPTION = "S";
 
   private static final String FOREIGN_LANGUAGES_OUTPUT_FILE_LONG_OPTION = "foreign";
-  private static final String FOREIGN_LANGUAGES_OUTPUT_FILE_SHORT_OPTION = "";
+
+  private static final String HDT_OUTPUT_FILE_LONG_OPTION = "hdt";
 
   protected static final String URI_PREFIX_LONG_OPTION = "prefix";
   protected static final String URI_PREFIX_SHORT_OPTION = "p";
@@ -97,8 +98,8 @@ public class ExtractWiktionary extends DBnaryCommandLine {
   private String enhancementOutputFile = null;
   private String statsOutputFile = null;
   private String foreignDataOutputFile = null;
+  private String hdtOutputFile = null;
   private String outputFormat = DEFAULT_OUTPUT_FORMAT;
-  private String model = DEFAULT_MODEL;
   private boolean compress;
   private String tdbDir = null;
   private String language = DEFAULT_LANGUAGE;
@@ -149,9 +150,11 @@ public class ExtractWiktionary extends DBnaryCommandLine {
         .desc("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
         .hasArg().argName("uri").build());
-    options.addOption(Option.builder(FOREIGN_LANGUAGES_OUTPUT_FILE_SHORT_OPTION)
-        .longOpt(FOREIGN_LANGUAGES_OUTPUT_FILE_LONG_OPTION)
+    options.addOption(Option.builder().longOpt(FOREIGN_LANGUAGES_OUTPUT_FILE_LONG_OPTION)
         .desc("Output file for foreign languages data. Undefined by default.").hasArg()
+        .argName("file").build());
+    options.addOption(Option.builder().longOpt(HDT_OUTPUT_FILE_LONG_OPTION)
+        .desc("Output file for all data in HDT format. Undefined by default.").hasArg()
         .argName("file").build());
     options.addOption(FOREIGN_EXTRACTION_OPTION, false, "Extract foreign Languages");
     options.addOption(Option.builder(FROM_PAGE_SHORT_OPTION).longOpt(FROM_PAGE_LONG_OPTION)
@@ -280,6 +283,10 @@ public class ExtractWiktionary extends DBnaryCommandLine {
       foreignDataOutputFile = cmd.getOptionValue(FOREIGN_LANGUAGES_OUTPUT_FILE_LONG_OPTION);
     }
 
+    if (cmd.hasOption(HDT_OUTPUT_FILE_LONG_OPTION)) {
+      hdtOutputFile = cmd.getOptionValue(HDT_OUTPUT_FILE_LONG_OPTION);
+    }
+
     if (cmd.hasOption(LANGUAGE_OPTION)) {
       language = cmd.getOptionValue(LANGUAGE_OPTION);
       language = LangTools.getCode(language);
@@ -362,6 +369,7 @@ public class ExtractWiktionary extends DBnaryCommandLine {
       System.err.println("  Statistics : " + statsOutputFile);
       System.err.println("  Foreign languages : " + foreignDataOutputFile);
       System.err.println("  Format : " + outputFormat);
+      System.err.println("  HDT : " + hdtOutputFile);
     }
   }
 
@@ -458,6 +466,9 @@ public class ExtractWiktionary extends DBnaryCommandLine {
           saveBox(ExtractionFeature.FOREIGN_LANGUAGES, foreignDataOutputFile);
         }
 
+        if (null != hdtOutputFile) {
+          saveAllAsHDT(hdtOutputFile);
+        }
       } catch (XMLStreamException ex) {
         System.out.println(ex.getMessage());
 
@@ -505,7 +516,7 @@ public class ExtractWiktionary extends DBnaryCommandLine {
     return String.format("%d:%2d:%2d", h, m, s);
   }
 
-  public void saveBox(ExtractionFeature f, String of) throws IOException {
+  private void saveBox(ExtractionFeature f, String of) throws IOException {
     try (OutputStream ostream = compress ? new BZip2CompressorOutputStream(new FileOutputStream(of))
         : new FileOutputStream(of)) {
       System.err.println("Dumping " + outputFormat + " representation of " + f.name() + ".");
@@ -517,6 +528,22 @@ public class ExtractWiktionary extends DBnaryCommandLine {
     } catch (IOException e) {
       System.err.println(
           "Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
+      e.printStackTrace(System.err);
+      throw e;
+    }
+  }
+
+
+  private void saveAllAsHDT(String hdtOutputFile) throws IOException {
+    boolean compress = hdtOutputFile.endsWith(".bz2");
+    try (OutputStream ostream =
+        compress ? new BZip2CompressorOutputStream(new FileOutputStream(hdtOutputFile))
+            : new FileOutputStream(hdtOutputFile)) {
+      System.err.format("Dumping all features as a single HDT file in %s.%n", hdtOutputFile);
+      wdh.dumpAllAsHDT(ostream);
+    } catch (IOException e) {
+      System.err
+          .println("Caught IOException while producing HDT file: \n" + e.getLocalizedMessage());
       e.printStackTrace(System.err);
       throw e;
     }

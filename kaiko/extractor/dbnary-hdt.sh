@@ -2,23 +2,24 @@
 
 VERSION=2.4.2
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
-DIFFS=diffs
+DIR=${DBNARY_DIR:-$HOME/develop/wiktionary}
+LATEST=${DIR}/extracts/ontolex/latest
 VERBOSE=""
-SLACK=""
+HELP=""
 
-while getopts "v:d:Vs" opt; do
+while getopts "v:d:Vh" opt; do
   case $opt in
     d)
-      DIFFS=$OPTARG
+      LATEST=$OPTARG
       ;;
     v)
       VERSION="${OPTARG}"
       ;;
     V)
-      VERBOSE="-v"
+      VERBOSE="-V"
       ;;
-    s)
-      SLACK="--slack"
+    h)
+      HELP="-h"
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -31,7 +32,5 @@ while getopts "v:d:Vs" opt; do
 done
 shift $((OPTIND-1))
 
-  set -v
-  >&2 echo "Summarizing diffs in $DIFFS"
   java -Xmx16G -cp "${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar" \
-    org.getalp.dbnary.cli.SummarizeDifferences $VERBOSE $SLACK $DIFFS
+    org.getalp.dbnary.cli.CreateHDTVersions $VERBOSE $HELP $LATEST $@

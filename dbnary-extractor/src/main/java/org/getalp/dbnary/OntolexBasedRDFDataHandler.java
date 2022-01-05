@@ -1023,6 +1023,11 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
+  public void dumpAllAsHDT(OutputStream ostream) {
+
+  }
+
+  @Override
   public int nbEntries() {
     return nbEntries;
   }

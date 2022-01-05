@@ -21,6 +21,7 @@ git branch
 git checkout "$BITBUCKET_PR_DESTINATION_BRANCH" -- kaiko
 git checkout master
 echo "=========="
+chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
 
 # Extract data using PR version
 DBNARY_DIR="/tmp/$PREVIOUS_VERSION/" "${SCRIPT_DIR}/../extractor/dbnary.sh" -V -Z -n -v "$PREVIOUS_VERSION" -c "$SAMPLE_SIZE" $LANGS

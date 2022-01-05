@@ -25,7 +25,11 @@ set -x
 
 mvn versions:set -B -DnewVersion="$NEXT_VERSION"
 mvn install
+pwd
+git branch
 git stash -u
+pwd
+git branch
 git checkout "$BITBUCKET_PR_DESTINATION_BRANCH"
 mvn versions:set -B -DnewVersion="$PREVIOUS_VERSION"
 mvn install

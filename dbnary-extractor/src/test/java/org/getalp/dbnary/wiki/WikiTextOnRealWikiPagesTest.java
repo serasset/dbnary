@@ -55,7 +55,7 @@ public class WikiTextOnRealWikiPagesTest {
 
     assertThat(h3FromWikiText, is(h3Headings));
 
-    WikiTextPrinter.printDocumentTree(text.asStructuredDocument());
+    // WikiTextPrinter.printDocumentTree(text.asStructuredDocument());
 
     if (!text.sourceContent.contains("<!--"))
       assertEquals("Regenerated text should be equal to source text when there are no comments",

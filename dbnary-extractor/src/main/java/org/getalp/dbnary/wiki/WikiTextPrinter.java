@@ -10,10 +10,21 @@ import org.getalp.dbnary.wiki.WikiText.WikiSection;
 
 public class WikiTextPrinter {
 
+  /**
+   * Prints a textual representation of the Wiki Document Tree in standard output
+   * 
+   * @param doc the document to be printed out
+   */
   public static void printDocumentTree(WikiDocument doc) {
     printDocumentTree(System.out, doc);
   }
 
+  /**
+   * Prints a textual representation of the Wiki Document Tree in the given print stream
+   * 
+   * @param out the print stream to print into
+   * @param doc the document to be printed out
+   */
   public static void printDocumentTree(PrintStream out, WikiDocument doc) {
     IndentPrinter printer = new IndentPrinter(out);
     printer.println("Document :");

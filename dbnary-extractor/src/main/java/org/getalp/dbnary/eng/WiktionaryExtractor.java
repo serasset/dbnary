@@ -1186,16 +1186,23 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (tName.equals("trans-bottom")) {
         // Forget the current glose
         currentGloss = null;
-      } else if (tName.equals("section link")) {
-        WikiContent g2 = t.getArgs().get("1");
-        log.debug("Section link: {} for entry {}", g2, getWiktionaryPageName());
-        if (g2 != null) {
-          String translationContent = getTranslationContentForLink(g2.toString());
+      } else if (tName.equals("section link") || tName.equals("see translation subpage")) {
+        String link;
+        if (tName.equals("section link")) {
+          link = t.getParsedArgs().get("1");
+        } else {
+          String section = t.getParsedArgs().getOrDefault("1", "English");
+          String page = t.getParsedArgs().getOrDefault("2", getWiktionaryPageName());
+          link = page + "/translations#" + section;
+        }
+        log.debug("Section link: {} for entry {}", link, getWiktionaryPageName());
+        if (link != null) {
+          String translationContent = getTranslationContentForLink(link);
           if (null != translationContent)
             extractTranslations(translationContent);
         }
       } else if (log.isDebugEnabled()) {
-        log.debug("Ignored template: {} in translation section for entry {}", t.toString(),
+        log.debug("Ignored template: {} in translation section for entry {}", t,
             getWiktionaryPageName());
       }
     }

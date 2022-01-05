@@ -20,12 +20,12 @@
     <dependency>
       <groupId>org.getalp</groupId>
       <artifactId>dbnary-hdt</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.getalp</groupId>
       <artifactId>dbnary-extractor</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>info.picocli</groupId>

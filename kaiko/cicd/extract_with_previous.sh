@@ -16,11 +16,8 @@ if [ "x$BITBUCKET_PR_DESTINATION_BRANCH" == "x" ]; then
   echo "Not a Pull Request, I will compare branch with $BITBUCKET_PR_DESTINATION_BRANCH"
 fi
 
-pwd
-git branch
-git checkout "$BITBUCKET_PR_DESTINATION_BRANCH" -- kaiko
+git stash -u
 git checkout master
-echo "=========="
 chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
 
 # Extract data using PR version

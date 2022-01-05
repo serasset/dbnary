@@ -16,7 +16,10 @@ if [ "x$BITBUCKET_PR_DESTINATION_BRANCH" == "x" ]; then
   echo "Not a Pull Request, I will compare branch with $BITBUCKET_PR_DESTINATION_BRANCH"
 fi
 
+pwd
+git branch
 git checkout "$BITBUCKET_PR_DESTINATION_BRANCH" -- kaiko
+git checkout master
 
 # Extract data using PR version
 DBNARY_DIR="/tmp/$PREVIOUS_VERSION/" "${SCRIPT_DIR}/../extractor/dbnary.sh" -V -Z -n -v "$PREVIOUS_VERSION" -c "$SAMPLE_SIZE" $LANGS

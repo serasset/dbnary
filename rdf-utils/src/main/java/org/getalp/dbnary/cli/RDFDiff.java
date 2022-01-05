@@ -110,14 +110,15 @@ public class RDFDiff extends VerboseCommand {
     // merge the Models
     Model model = difference(fromModel, toModel);
 
+    for (Entry<String, String> e : fromModel.getNsPrefixMap().entrySet()) {
+      model.setNsPrefix(e.getKey(), e.getValue());
+    }
+
     if (null != dataset1)
       dataset1.end();
     if (null != dataset2)
       dataset2.end();
 
-    for (Entry<String, String> e : fromModel.getNsPrefixMap().entrySet()) {
-      model.setNsPrefix(e.getKey(), e.getValue());
-    }
     // print the Model as RDF/XML
     RDFDataMgr.write(System.out, model, Lang.TURTLE);
   }

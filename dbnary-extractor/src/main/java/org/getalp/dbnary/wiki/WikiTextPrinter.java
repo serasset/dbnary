@@ -12,6 +12,7 @@ public class WikiTextPrinter {
 
   /**
    * Prints a textual representation of the Wiki Document Tree in standard output
+   * 
    * @param doc the document to be printed out
    */
   public static void printDocumentTree(WikiDocument doc) {
@@ -20,6 +21,7 @@ public class WikiTextPrinter {
 
   /**
    * Prints a textual representation of the Wiki Document Tree in the given print stream
+   * 
    * @param out the print stream to print into
    * @param doc the document to be printed out
    */

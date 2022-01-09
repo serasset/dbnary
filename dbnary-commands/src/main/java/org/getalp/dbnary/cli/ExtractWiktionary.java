@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.LangTools;
+import org.getalp.dbnary.cli.utils.DBnaryCommandLine;
 import org.getalp.dbnary.model.DbnaryModel;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.IWiktionaryExtractor;

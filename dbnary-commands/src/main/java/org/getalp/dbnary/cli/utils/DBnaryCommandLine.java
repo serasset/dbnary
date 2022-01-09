@@ -1,4 +1,4 @@
-package org.getalp.dbnary.cli;
+package org.getalp.dbnary.cli.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

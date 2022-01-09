@@ -36,6 +36,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.dbnary.cli.utils.DBnaryCommandLine;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

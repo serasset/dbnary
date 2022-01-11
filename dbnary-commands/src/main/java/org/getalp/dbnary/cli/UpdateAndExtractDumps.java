@@ -727,8 +727,10 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       a.add("--topage");
       a.add(String.valueOf(sample));
     }
-    a.add("-z");
-    a.add(compress ? "yes" : "no");
+    if (compress)
+      a.add("--compress");
+    else
+      a.add("--no-compress");
     if (features.contains("morphology")) {
       a.add("--morphology");
       a.add(morphoFile);

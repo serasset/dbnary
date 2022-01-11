@@ -67,8 +67,10 @@ public class WiktionaryIndexer {
       if (ex.getNestedException() != null) {
         ex.getNestedException().printStackTrace();
       }
+      throw new WiktionaryIndexerException("XML Stream Exception", ex);
     } catch (Exception ex) {
       ex.printStackTrace();
+      throw new WiktionaryIndexerException("XML Stream Exception", ex);
     } finally {
       try {
         if (xmlr != null) {

@@ -11,4 +11,7 @@ public class WiktionaryIndexerException extends Exception {
     super(string, ex);
   }
 
+  public WiktionaryIndexerException(Exception ex) {
+    super(ex);
+  }
 }

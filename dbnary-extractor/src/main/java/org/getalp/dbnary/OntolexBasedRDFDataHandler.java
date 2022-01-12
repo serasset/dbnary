@@ -278,7 +278,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     longSectionLanguageCode = null;
     shortSectionLanguageCode = null;
     lexvoSectionLanguage = null;
-    aBox = null;
+    aBox = getFeatureBox(ExtractionFeature.MAIN);
   }
 
   private void initializeLanguageSection__noModel(String wiktionaryPageName) {
@@ -313,7 +313,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   public String getEncodedPageName(String pageName, String pos, int defNumber) {
     StringBuilder nameBuilder = new StringBuilder();
-    if (! this.longEditionLanguageCode.equals(this.longSectionLanguageCode)) {
+    if (!this.longEditionLanguageCode.equals(this.longSectionLanguageCode)) {
       nameBuilder.append("_").append(longSectionLanguageCode).append("__");
     }
     nameBuilder.append(uriEncode(pageName, pos) + "__" + defNumber);

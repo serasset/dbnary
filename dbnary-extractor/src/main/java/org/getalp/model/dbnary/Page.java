@@ -42,6 +42,10 @@ public class Page implements AcceptTranslation {
   }
 
   public LexicalEntry newEntry(String name, String pos) {
+    return this.newEntry(name, pos, this.language);
+  }
+
+  public LexicalEntry newEntry(String name, String pos, String language) {
     LexicalEntry le = new LexicalEntry(name, pos, entries.size());
     entries.add(le);
     return le;

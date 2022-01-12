@@ -93,6 +93,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
 
   protected Resource lexvoExtractedLanguage;
+  protected Resource lexvoSectionLanguage;
 
   private Set<Statement> heldBackStatements = new HashSet<Statement>();
 
@@ -253,16 +254,22 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   @Override
   public void initializeLanguageSection(String language) {
     assert currentPage != null;
-    initializeLanguageSection__noModel(currentPage.getName());
     String longLang = LangTools.getCode(language);
     String shortLang = LangTools.getPart1OrId(language);
 
     longSectionLanguageCode = longLang == null ? language : longLang;
     shortSectionLanguageCode = shortLang == null ? language : shortLang;
+    lexvoSectionLanguage = tBox.createResource(LEXVO + longSectionLanguageCode);
 
     // assert currentLexicalEntry == null; // this is only possible when everybody finalizes lex
     // entries correctly...
     currentLexicalEntry = null;
+    if (longEditionLanguageCode.equals(longSectionLanguageCode)) {
+      aBox = getFeatureBox(ExtractionFeature.MAIN);
+    } else {
+      aBox = getFeatureBox(ExtractionFeature.FOREIGN_LANGUAGES);
+    }
+    initializeLanguageSection__noModel(currentPage.getName());
   }
 
   @Override
@@ -270,6 +277,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     finalizeLanguageSection__noModel();
     longSectionLanguageCode = null;
     shortSectionLanguageCode = null;
+    lexvoSectionLanguage = null;
+    aBox = null;
   }
 
   private void initializeLanguageSection__noModel(String wiktionaryPageName) {
@@ -302,8 +311,13 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     promoteNymProperties();
   }
 
-  public static String getEncodedPageName(String pageName, String pos, int defNumber) {
-    return uriEncode(pageName, pos) + "__" + defNumber;
+  public String getEncodedPageName(String pageName, String pos, int defNumber) {
+    StringBuilder nameBuilder = new StringBuilder();
+    if (! this.longEditionLanguageCode.equals(this.longSectionLanguageCode)) {
+      nameBuilder.append("_").append(longSectionLanguageCode).append("__");
+    }
+    nameBuilder.append(uriEncode(pageName, pos) + "__" + defNumber);
+    return nameBuilder.toString();
   }
 
   public Resource getLexEntry(String languageCode, String pageName, String pos, int defNumber) {
@@ -362,6 +376,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     currentLexicalEntry.setPartOfSpeech(lexinfoPOS);
     currentLexicalEntry.addResourceType(type);
+    currentLexicalEntry.setLanguage(shortSectionLanguageCode);
 
     return initializeLexicalEntry__noModel(pos, lexinfoPOS, type);
   }
@@ -379,7 +394,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     nbEntries++;
 
     currentEncodedLexicalEntryName = getEncodedPageName(currentPage.getName(), originalPOS,
-        currentLexieCount.incr(currentWiktionaryPos()));
+        currentLexieCount.incr(shortSectionLanguageCode + "-" + currentWiktionaryPos()));
     currentLexEntry = getLexEntry(currentEncodedLexicalEntryName, normalizedType);
 
     if (!normalizedType.equals(OntolexOnt.LexicalEntry)) {
@@ -428,7 +443,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
 
     aBox.add(currentLexEntry, LimeOnt.language, getCurrentEntryLanguage());
-    aBox.add(currentLexEntry, DCTerms.language, lexvoExtractedLanguage);
+    aBox.add(currentLexEntry, DCTerms.language, lexvoSectionLanguage);
 
     // Register the pending statements.
     for (Statement s : heldBackStatements) {

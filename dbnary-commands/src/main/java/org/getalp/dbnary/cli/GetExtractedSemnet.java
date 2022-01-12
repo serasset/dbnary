@@ -29,6 +29,7 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
   private boolean extractsMorpho = false;
   private boolean extractsEtymology = false;
   private boolean extractsStats = false;
+  private boolean extractsForeign = false;
   private boolean enhanceData = false;
 
 
@@ -45,6 +46,8 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
 
   protected static final String STATS_OUTPUT_FILE_LONG_OPTION = "stats";
   protected static final String STATS_OUTPUT_FILE_SHORT_OPTION = "S";
+
+  private static final String FOREIGN_OUTPUT_FILE_LONG_OPTION = "foreign";
 
   protected static final String URI_PREFIX_LONG_OPTION = "prefix";
   protected static final String URI_PREFIX_SHORT_OPTION = "p";
@@ -66,6 +69,9 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
     options.addOption(
         Option.builder(STATS_OUTPUT_FILE_SHORT_OPTION).longOpt(STATS_OUTPUT_FILE_LONG_OPTION)
             .desc("extract statistics from data processing (enhancement, sizes, etc.).").build());
+    options.addOption(
+        Option.builder().longOpt(FOREIGN_OUTPUT_FILE_LONG_OPTION)
+            .desc("extract foreign entries from current language edition.").build());
     options.addOption(Option.builder(URI_PREFIX_SHORT_OPTION).longOpt(URI_PREFIX_LONG_OPTION)
         .desc("set the URI prefix used in the extracted dataset. Default: "
             + DbnaryModel.DBNARY_NS_PREFIX)
@@ -100,6 +106,7 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
     extractsMorpho = cmd.hasOption(MORPHOLOGY_OUTPUT_FILE_LONG_OPTION);
     extractsEtymology = cmd.hasOption(ETYMOLOGY_OUTPUT_FILE_LONG_OPTION);
     extractsStats = cmd.hasOption(STATS_OUTPUT_FILE_LONG_OPTION);
+    extractsForeign = cmd.hasOption(FOREIGN_OUTPUT_FILE_LONG_OPTION);
     enhanceData = cmd.hasOption(ENHANCEMENT_OUTPUT_FILE_LONG_OPTION);
 
     if (cmd.hasOption(URI_PREFIX_LONG_OPTION)) {
@@ -132,6 +139,9 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
       }
       if (extractsStats) {
         wdh.enableFeature(ExtractionFeature.STATISTICS);
+      }
+      if (extractsForeign) {
+        wdh.enableFeature(ExtractionFeature.FOREIGN_LANGUAGES);
       }
     } else {
       System.err.println("unsupported format :" + outputFormat);
@@ -188,6 +198,10 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
       dumpBox(ExtractionFeature.STATISTICS);
     }
 
+    if (extractsForeign) {
+      System.out.println("----------- FOREIGN LANGUAGES ----------");
+      dumpBox(ExtractionFeature.FOREIGN_LANGUAGES);
+    }
   }
 
   public void dumpBox(ExtractionFeature f) throws IOException {

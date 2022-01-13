@@ -188,9 +188,8 @@ public class ExtractWiktionary implements Callable<Integer> {
    * @throws IOException ...
    * @throws WiktionaryIndexerException ...
    */
-  public static int main(String[] args) throws WiktionaryIndexerException, IOException {
-    int exitCode = new CommandLine(new ExtractWiktionary()).execute(args);
-    return exitCode;
+  public static void main(String[] args) throws WiktionaryIndexerException, IOException {
+    new CommandLine(new ExtractWiktionary()).execute(args);
   }
 
   @Override
@@ -470,5 +469,6 @@ public class ExtractWiktionary implements Callable<Integer> {
       throw e;
     }
   }
+
 
 }

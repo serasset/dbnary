@@ -745,7 +745,6 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       a.add(statsFile);
     }
     if (features.contains("exolexicon")) {
-      a.add("-x");
       a.add("--foreign");
       a.add(foreignFile);
     }

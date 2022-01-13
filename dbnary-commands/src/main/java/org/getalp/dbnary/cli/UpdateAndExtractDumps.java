@@ -112,7 +112,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     options.addOption(Option.builder().longOpt(SAMPLE_FEATURE_OPTION)
         .desc("sample only the first N extracted entries.").hasArg().argName("N").build());
     options.addOption(Option.builder().longOpt(ENABLE_FEATURE_OPTION).desc(
-        "Enable additional extraction features (e.g. morphology,etymology,lime,enhancement,foreign).")
+        "Enable additional extraction features (e.g. morphology,etymology,lime,enhancement,exolexicon).")
         .hasArg().argName("feature").build());
     options.addOption(Option.builder().longOpt(TDB_OPTION).desc(
         "Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
@@ -677,26 +677,19 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     File d = new File(odir);
     d.mkdirs();
 
-    String prefix = "";
-    if (features.contains("foreign")) {
-      prefix = FOREIGN_PREFIX;
-    }
-
     // TODO: correctly test for compressed file if compress is enabled
-    String extractFile =
-        odir + "/" + lang + prefix + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
+    String extractFile = odir + "/" + lang + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
     String morphoFile =
-        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.MORPHOLOGY + "_" + dir + ".ttl";
+        odir + "/" + lang + "_dbnary_" + ExtractionFeature.MORPHOLOGY + "_" + dir + ".ttl";
     String etymologyFile =
-        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.ETYMOLOGY + "_" + dir + ".ttl";
-    String limeFile =
-        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.LIME + "_" + dir + ".ttl";
-    String enhancementFile = odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.ENHANCEMENT
-        + "_" + dir + ".ttl";
+        odir + "/" + lang + "_dbnary_" + ExtractionFeature.ETYMOLOGY + "_" + dir + ".ttl";
+    String limeFile = odir + "/" + lang + "_dbnary_" + ExtractionFeature.LIME + "_" + dir + ".ttl";
+    String enhancementFile =
+        odir + "/" + lang + "_dbnary_" + ExtractionFeature.ENHANCEMENT + "_" + dir + ".ttl";
     String statsFile =
-        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.STATISTICS + "_" + dir + ".ttl";
-    String foreignFile = odir + "/" + lang + prefix + "_dbnary_"
-        + ExtractionFeature.FOREIGN_LANGUAGES + "_" + dir + ".ttl";
+        odir + "/" + lang + "_dbnary_" + ExtractionFeature.STATISTICS + "_" + dir + ".ttl";
+    String foreignFile =
+        odir + "/" + lang + "_dbnary_" + ExtractionFeature.EXOLEXICON + "_" + dir + ".ttl";
     if (compress) {
       extractFile = extractFile + ".bz2";
       morphoFile = morphoFile + ".bz2";
@@ -751,7 +744,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       a.add("--statistics");
       a.add(statsFile);
     }
-    if (features.contains("foreign")) {
+    if (features.contains("exolexicon")) {
       a.add("-x");
       a.add("--foreign");
       a.add(foreignFile);

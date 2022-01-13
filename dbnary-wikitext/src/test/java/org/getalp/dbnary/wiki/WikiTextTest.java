@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import java.util.ArrayList;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ import org.junit.Test;
 public class WikiTextTest {
 
   @Test
-  public void testParse() throws Exception {
+  public void testParse() {
     String test =
         "text {{f1|x=ccc|z={{toto}}}} text <!-- [[un lien caché]] {{ --> encore [[lien#bidule]] [[Category:English|text]] [http://kaiko.getalp.org/about-dbnary about DBnary]   [[lien|]]";
     WikiText text = new WikiText(test);
@@ -40,7 +40,7 @@ public class WikiTextTest {
 
     WikiText.InternalLink l = (WikiText.InternalLink) text.wikiTokens().get(2);
     assertEquals("Category:English", l.target.toString());
-    assertEquals("text", l.text.toString());
+    assertEquals("text", l.linkTextContent.toString());
     assertEquals("text", l.getLinkText());
     assertEquals("Category:English", l.getFullTargetText());
 
@@ -54,14 +54,14 @@ public class WikiTextTest {
     assertTrue(text.wikiTokens().get(3) instanceof WikiText.ExternalLink);
     WikiText.ExternalLink l2 = (WikiText.ExternalLink) text.wikiTokens().get(3);
     assertEquals("http://kaiko.getalp.org/about-dbnary", l2.target.toString());
-    assertEquals("about DBnary", l2.text.toString());
+    assertEquals("about DBnary", l2.linkTextContent.toString());
 
     assertTrue(text.wikiTokens().get(4) instanceof WikiText.InternalLink);
 
   }
 
   @Test
-  public void testParseWithTextTokens() throws Exception {
+  public void testParseWithTextTokens() {
     String test =
         "text {{f1|x=ccc|z={{toto}}}} text <!-- [[un lien caché]] {{ --> encore [[lien]] [[Category:English|text]] [http://kaiko.getalp.org/about-dbnary about DBnary]   [[lien|]]";
     WikiText text = new WikiText(test);
@@ -81,7 +81,7 @@ public class WikiTextTest {
 
     WikiText.InternalLink l = (WikiText.InternalLink) toks.get(6);
     assertEquals("Category:English", l.target.toString());
-    assertEquals("text", l.text.toString());
+    assertEquals("text", l.linkTextContent.toString());
     assertEquals("text", l.getLinkText());
     assertEquals("Category:English", l.getFullTargetText());
 
@@ -92,7 +92,7 @@ public class WikiTextTest {
     assertTrue(toks.get(8) instanceof WikiText.ExternalLink);
     WikiText.ExternalLink l2 = (WikiText.ExternalLink) toks.get(8);
     assertEquals("http://kaiko.getalp.org/about-dbnary", l2.target.toString());
-    assertEquals("about DBnary", l2.text.toString());
+    assertEquals("about DBnary", l2.linkTextContent.toString());
 
     assertTrue(toks.get(10) instanceof WikiText.InternalLink);
 
@@ -105,7 +105,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testParseOnlyOneTemplate() throws Exception {
+  public void testParseOnlyOneTemplate() {
     String test = "{{en-noun|head=[[araneomorph]] {{vern|funnel-web spider|pedia=1}}}}";
     WikiText text = new WikiText(test);
 
@@ -117,7 +117,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testParseWithBoundaries() throws Exception {
+  public void testParseWithBoundaries() {
     String test =
         "{{f1|x=[[ccc]]}} text <!-- [[un lien caché]] {{ --> encore [[lien]] {{f2|[[text]]|]   [[lien|}}";
     WikiText text = new WikiText(null, test, 17, 90);
@@ -139,7 +139,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testParseWithUnclosedTemplate() throws Exception {
+  public void testParseWithUnclosedTemplate() {
     String test = "{{en-noun|head=[[araneomorph]] {{vern|funnel-web spider|pedia=1}}";
     WikiText text = new WikiText(test);
 
@@ -153,7 +153,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testWikiTextIterator() throws Exception {
+  public void testWikiTextIterator() {
     String test = "{{en-noun}} text [[link]] text {{template}} text ";
     WikiText text = new WikiText(test);
 
@@ -178,7 +178,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testWikiTextIterator2() throws Exception {
+  public void testWikiTextIterator2() {
     String test = "{{en-noun}} text [[link]] text {{template}} text [[toto]]";
     WikiText text = new WikiText(test);
 
@@ -199,7 +199,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testWikiTextIteratorWithEmbedding() throws Exception {
+  public void testWikiTextIteratorWithEmbedding() {
     String test = "{{en-noun|text [[link]]}} text {{template}} text [[toto]]";
     WikiText text = new WikiText(test);
 
@@ -220,7 +220,7 @@ public class WikiTextTest {
 
 
   @Test
-  public void testList() throws Exception {
+  public void testList() {
     String test = "* {{l|en|thalamus}}\n" + "* {{l|en|hypothalamus}} * toto\n"
         + "* {{l|en|prethalamus}}\n" + ": toto\n" + ": titi";
     WikiText text = new WikiText(test);
@@ -247,7 +247,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testParseTemplateArgs() throws Exception {
+  public void testParseTemplateArgs() {
     String test =
         "{{en-noun|head=[[araneomorph]] {{vern|funnel-web spider|pedia=1}}|v1|xx=vxx|v2}}";
     WikiText text = new WikiText(test);
@@ -280,7 +280,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testExternalLinks() throws Exception {
+  public void testExternalLinks() {
     String test = "[http://this.is.a link] [1,2] [sms:thisonealso] [http://this.one.also]]";
     WikiText text = new WikiText(test);
 
@@ -289,23 +289,23 @@ public class WikiTextTest {
     assertTrue(text.wikiTokens().get(0) instanceof WikiText.ExternalLink);
     WikiText.ExternalLink el = (WikiText.ExternalLink) text.wikiTokens().get(0);
     assertEquals("http://this.is.a", el.target.toString());
-    assertEquals("link", el.text.toString());
+    assertEquals("link", el.linkTextContent.toString());
 
     // [1,2] is not a link
     assertTrue(text.wikiTokens().get(1) instanceof WikiText.ExternalLink);
     el = (WikiText.ExternalLink) text.wikiTokens().get(1);
     assertEquals("sms:thisonealso", el.target.toString());
-    assertNull(el.text);
+    assertNull(el.linkTextContent);
 
     assertTrue(text.wikiTokens().get(2) instanceof WikiText.ExternalLink);
     el = (WikiText.ExternalLink) text.wikiTokens().get(2);
     assertEquals("http://this.one.also", el.target.toString());
-    assertNull(el.text);
+    assertNull(el.linkTextContent);
 
   }
 
   @Test
-  public void testInternalLinks() throws Exception {
+  public void testInternalLinks() {
     String test = "[[Help]] [[Help|text]] [[Help]]s [[Help|text]]s";
     WikiText text = new WikiText(test);
 
@@ -338,7 +338,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testHeading() throws Exception {
+  public void testHeading() {
     String test = "=== Simple Heading ===\n" + "=== Heading level 2 ==\n"
         + "=== Heading level 3 ====\n" + " === not an heading ===\n"
         + "=== spaces are accepted after equals === \n" + "=== nor this one \n"
@@ -432,7 +432,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testWikiTextEndOfFileHandling() throws Exception {
+  public void testWikiTextEndOfFileHandling() {
     WikiText text = new WikiText("{{en-noun}}");
     assertEquals("Bad handling of end of file for correct template", 1, text.wikiTokens().size());
     assertTrue("Bad handling of end of file for correct template",
@@ -471,7 +471,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testWikiTextTemplatesWithNewLines() throws Exception {
+  public void testWikiTextTemplatesWithNewLines() {
     WikiText text = new WikiText("{{en-noun\n}}");
     assertEquals("Bad handling of end of file for correct template", 1, text.wikiTokens().size());
     assertTrue("Bad handling of end of file for correct template",
@@ -510,7 +510,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testInternalLinkWithBracket() throws Exception {
+  public void testInternalLinkWithBracket() {
     WikiText text =
         new WikiText("utiliser [[Titres non pris en charge/Crochet gauche|[]]. Unicode : U+005B. ");
     assertEquals("Internal link with bracket should be parsed entirely", 1,
@@ -523,7 +523,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testInternalLinkWithValidExternalLink() throws Exception {
+  public void testInternalLinkWithValidExternalLink() {
     // Valid internal link with valid external link inside : (external link should not be
     // interpreted)
     WikiText text = new WikiText("[[Internal Link|[http://mediawiki.org/|dbnary]]]");
@@ -537,7 +537,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testInternalLinkWithInvalidExternalLink() throws Exception {
+  public void testInternalLinkWithInvalidExternalLink() {
     // Valid internal link with invalid external link inside :
     WikiText text = new WikiText("[[Internal Link|[toto]]]");
     assertEquals("Internal link with bracket should be parsed entirely", 1,
@@ -550,7 +550,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testInternalLinkWithOpeningBracket() throws Exception {
+  public void testInternalLinkWithOpeningBracket() {
     // Valid internal link with opening square bracket inside :
     WikiText text = new WikiText("[[Internal Link|[]]");
     assertEquals("Internal link with bracket should be parsed entirely", 1,
@@ -631,7 +631,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testValideExternalLinkClosedByDoubleBrackets() throws Exception {
+  public void testValideExternalLinkClosedByDoubleBrackets() {
     // Invalid internal link with valid external link inside :
     WikiText text = new WikiText("[http://kaiko.getalp.org/ dbnary]]");
     assertEquals("External link with extra bracket should be parsed entirely", 1,
@@ -643,7 +643,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testValidExternalLinkOpenedByDoubleBrackets() throws Exception {
+  public void testValidExternalLinkOpenedByDoubleBrackets() {
     // Invalid internal link with valid external link inside :
     WikiText text = new WikiText("[[http://kaiko.getalp.org/ dbnary]");
     assertEquals("External link with extra bracket should be parsed entirely", 1,
@@ -655,7 +655,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testInternalLinkWithValidUnclosedExternalLink() throws Exception {
+  public void testInternalLinkWithValidUnclosedExternalLink() {
     // Invalid internal link with valid external link inside :
     WikiText text = new WikiText("[[Internal Link|[http://kaiko.getalp.org/ dbnary]]");
     assertEquals("Internal link with bracket should be parsed entirely", 1,
@@ -700,7 +700,7 @@ public class WikiTextTest {
   }
 
   @Test
-  public void testWikiTextIncoherentLinkInTemplate() throws Exception {
+  public void testWikiTextIncoherentLinkInTemplate() {
     WikiText text = new WikiText("{{template|var=[[toto] \n" + "titi}}");
     assertEquals("Incoherent template should be parsed", 1, text.wikiTokens().size());
     assertTrue("The first Template has not been correctly parsed",

@@ -228,7 +228,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
 
-    if (wdh.isDisabled(ExtractionFeature.FOREIGN_LANGUAGES) && !"la".equals(lang))
+    if (wdh.isDisabled(ExtractionFeature.EXOLEXICON) && !"la".equals(lang))
       return;
 
     wdh.initializeLanguageSection(lang);

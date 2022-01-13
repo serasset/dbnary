@@ -1,7 +1,5 @@
 package org.getalp.dbnary.cli;
 
-import static org.slf4j.impl.SimpleLogger.LOG_KEY_PREFIX;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -268,7 +266,7 @@ public class ExtractWiktionary implements Callable<Integer> {
     }
 
     if (foreignDataOutputFile != null) {
-      wdh.enableFeature(ExtractionFeature.FOREIGN_LANGUAGES);
+      wdh.enableFeature(ExtractionFeature.EXOLEXICON);
     }
 
     wi = new WiktionaryIndex(dumpFile);
@@ -385,7 +383,7 @@ public class ExtractWiktionary implements Callable<Integer> {
           saveBox(ExtractionFeature.STATISTICS, statsOutputFile);
         }
         if (null != foreignDataOutputFile) {
-          saveBox(ExtractionFeature.FOREIGN_LANGUAGES, foreignDataOutputFile);
+          saveBox(ExtractionFeature.EXOLEXICON, foreignDataOutputFile);
         }
 
         if (null != hdtOutputFile) {

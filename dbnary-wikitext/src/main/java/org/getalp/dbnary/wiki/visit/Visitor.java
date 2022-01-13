@@ -1,4 +1,4 @@
-package org.getalp.dbnary.wiki;
+package org.getalp.dbnary.wiki.visit;
 
 import org.getalp.dbnary.wiki.WikiText.ExternalLink;
 import org.getalp.dbnary.wiki.WikiText.HTMLComment;

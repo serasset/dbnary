@@ -1,10 +1,9 @@
-package org.getalp.dbnary.wiki;
+package org.getalp.dbnary.wiki.visit;
 
 import org.getalp.dbnary.wiki.WikiText.ExternalLink;
 import org.getalp.dbnary.wiki.WikiText.HTMLComment;
 import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.Indentation;
-import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.Item;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
@@ -20,16 +19,16 @@ public abstract class BaseWikiTextVisitor implements Visitor {
 
   @Override
   public void visit(ExternalLink externalLink) {
-    externalLink.target.accept(this);
-    if (null != externalLink.text)
-      externalLink.text.accept(this);
+    externalLink.getTarget().accept(this);
+    if (null != externalLink.getLinkContent())
+      externalLink.getLinkContent().accept(this);
   }
 
   @Override
   public void visit(InternalLink internalLink) {
-    internalLink.target.accept(this);
-    if (null != internalLink.text)
-      internalLink.text.accept(this);
+    internalLink.getTarget().accept(this);
+    if (null != internalLink.getLinkContent())
+      internalLink.getLinkContent().accept(this);
   }
 
   @Override

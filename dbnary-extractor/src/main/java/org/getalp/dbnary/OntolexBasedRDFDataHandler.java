@@ -36,6 +36,7 @@ import org.apache.jena.vocabulary.XSD;
 import org.getalp.LangTools;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
+import org.getalp.dbnary.hdt.Models2HDT;
 import org.getalp.dbnary.model.DbnaryModel;
 import org.getalp.dbnary.model.NymRelation;
 import org.getalp.dbnary.morphology.InflectionData;
@@ -267,7 +268,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     if (longEditionLanguageCode.equals(longSectionLanguageCode)) {
       aBox = getFeatureBox(ExtractionFeature.MAIN);
     } else {
-      aBox = getFeatureBox(ExtractionFeature.FOREIGN_LANGUAGES);
+      aBox = getFeatureBox(ExtractionFeature.EXOLEXICON);
     }
     initializeLanguageSection__noModel(currentPage.getName());
   }
@@ -1039,7 +1040,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void dumpAllAsHDT(OutputStream ostream) {
-
+    Model[] boxes = featureBoxes.values().toArray(new Model[0]);
+    new Models2HDT().models2hdt(ostream, getPrefix(), boxes);
   }
 
   @Override

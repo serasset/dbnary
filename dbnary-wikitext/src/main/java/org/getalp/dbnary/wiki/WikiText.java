@@ -16,6 +16,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.getalp.dbnary.wiki.visit.Visitable;
+import org.getalp.dbnary.wiki.visit.Visitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,11 +110,11 @@ public class WikiText {
       } else if (t instanceof InternalLink) {
         InternalLink l = (InternalLink) t;
         this.addFlattenedTokens(l.target);
-        this.addFlattenedTokens(l.text);
+        this.addFlattenedTokens(l.linkTextContent);
       } else if (t instanceof ExternalLink) {
         ExternalLink l = (ExternalLink) t;
         this.addFlattenedTokens(l.target);
-        this.addFlattenedTokens(l.text);
+        this.addFlattenedTokens(l.linkTextContent);
       }
       // know what are the elements to consider
     }
@@ -645,14 +647,14 @@ public class WikiText {
   public abstract class Link extends Token {
 
     protected WikiContent target;
-    protected WikiContent text;
+    protected WikiContent linkTextContent;
 
     @Override
     protected void addToken(WikiText.Token t) {
-      if (null == this.text) {
+      if (null == this.linkTextContent) {
         this.target.addToken(t);
       } else {
-        this.text.addToken(t);
+        this.linkTextContent.addToken(t);
       }
     }
 
@@ -663,6 +665,9 @@ public class WikiText {
 
     public WikiContent getTarget() {
       return target;
+    }
+    public WikiContent getLinkContent() {
+      return linkTextContent;
     }
 
     public boolean hasAnchor() {
@@ -682,15 +687,15 @@ public class WikiText {
     }
 
     public String getLinkText() {
-      if (null == this.text) {
+      if (null == this.linkTextContent) {
         return target.toString();
       } else {
-        return text.toString();
+        return linkTextContent.toString();
       }
     }
 
     public WikiContent getLink() {
-      return (null == this.text) ? target : text;
+      return (null == this.linkTextContent) ? target : linkTextContent;
     }
 
     @Override
@@ -709,9 +714,9 @@ public class WikiText {
     }
 
     protected void gotAPipe(int position) {
-      if (null == this.text) {
+      if (null == this.linkTextContent) {
         this.target.setEndOffset(position);
-        this.text = new WikiContent(position + 1);
+        this.linkTextContent = new WikiContent(position + 1);
       }
     }
 
@@ -732,9 +737,9 @@ public class WikiText {
     public void fillText(StringBuilder r) {
       r.append("[[");
       r.append(this.target.getText());
-      if (null != this.text) {
+      if (null != this.linkTextContent) {
         r.append("|");
-        r.append(this.text.getText());
+        r.append(this.linkTextContent.getText());
       }
       r.append("]]");
       if (null != suffix)
@@ -748,10 +753,10 @@ public class WikiText {
      * @param position the position of the first character of the enclosing "]]"
      */
     private void setLinkEnd(int position) {
-      if (null == this.text) {
+      if (null == this.linkTextContent) {
         this.target.setEndOffset(position);
       } else {
-        this.text.setEndOffset(position);
+        this.linkTextContent.setEndOffset(position);
       }
     }
 
@@ -792,9 +797,9 @@ public class WikiText {
     public void fillText(StringBuilder r) {
       r.append("[");
       r.append(this.target.getText());
-      if (null != this.text) {
+      if (null != this.linkTextContent) {
         r.append(" ");
-        r.append(this.text.getText());
+        r.append(this.linkTextContent.getText());
       }
       r.append("]");
     }
@@ -807,17 +812,17 @@ public class WikiText {
     @Override
     protected void setEndOffset(int position) {
       super.setEndOffset(position + 1);
-      if (null == this.text) {
+      if (null == this.linkTextContent) {
         this.target.setEndOffset(position);
       } else {
-        this.text.setEndOffset(position);
+        this.linkTextContent.setEndOffset(position);
       }
     }
 
     private void gotASpace(int position) {
-      if (null == this.text) {
+      if (null == this.linkTextContent) {
         this.target.setEndOffset(position);
-        this.text = new WikiContent(position + 1);
+        this.linkTextContent = new WikiContent(position + 1);
       }
     }
 

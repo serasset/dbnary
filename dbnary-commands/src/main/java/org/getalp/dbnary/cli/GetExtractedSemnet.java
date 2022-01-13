@@ -140,7 +140,7 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
         wdh.enableFeature(ExtractionFeature.STATISTICS);
       }
       if (extractsForeign) {
-        wdh.enableFeature(ExtractionFeature.FOREIGN_LANGUAGES);
+        wdh.enableFeature(ExtractionFeature.EXOLEXICON);
       }
     } else {
       System.err.println("unsupported format :" + outputFormat);
@@ -199,7 +199,7 @@ public class GetExtractedSemnet extends DBnaryCommandLine {
 
     if (extractsForeign) {
       System.out.println("----------- FOREIGN LANGUAGES ----------");
-      dumpBox(ExtractionFeature.FOREIGN_LANGUAGES);
+      dumpBox(ExtractionFeature.EXOLEXICON);
     }
   }
 

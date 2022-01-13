@@ -13,7 +13,7 @@ import org.junit.Test;
 public class WikiCharSequenceTest {
 
   @Test
-  public void testWikiWikiCharSequence2() throws Exception {
+  public void testWikiWikiCharSequence2() {
     String test = "{{en-noun}} text [[link]]s text {{template}} text [[toto]]";
     WikiText text = new WikiText(test);
 
@@ -32,7 +32,7 @@ public class WikiCharSequenceTest {
   }
 
   @Test
-  public void testWikiCharSequence() throws Exception {
+  public void testWikiCharSequence() {
     String test = "{{en-noun}} text [[link]]s text {{template}} text [[toto]]";
     WikiText text = new WikiText(test);
 
@@ -56,14 +56,14 @@ public class WikiCharSequenceTest {
   }
 
   @Test
-  public void testWikiCharSequenceWithFiltering() throws Exception {
+  public void testWikiCharSequenceWithFiltering() {
     String test = "{{en-noun}} text [[link]]s text {{template}} text [[toto]]";
     WikiText text = new WikiText(test);
 
     ClassBasedSequenceFilter filter = new ClassBasedSequenceFilter();
     filter.voidTemplates();
     CharSequence seq = new WikiCharSequence(text, filter);
-    System.out.println(seq.toString());
+    System.out.println(seq);
 
     assertEquals(20, seq.length());
     Pattern pattern = Pattern.compile("^\\p{Co}.*$");
@@ -72,7 +72,7 @@ public class WikiCharSequenceTest {
     pattern = Pattern.compile("^\\p{Alpha}.*$");
     assertFalse(pattern.matcher(seq).matches()); // the first char is a space, not an alpha
     assertEquals(' ', seq.charAt(0));
-    pattern = Pattern.compile("[" + WikiCharSequence.INTERNAL_LINKS_RANGE.toString() + "]");
+    pattern = Pattern.compile("[" + WikiCharSequence.INTERNAL_LINKS_RANGE + "]");
     Matcher m = pattern.matcher(seq);
     assertTrue(m.find());
     assertEquals(' ', seq.charAt(m.end())); // the s is art of the link, hence it has been atomised
@@ -86,14 +86,14 @@ public class WikiCharSequenceTest {
   }
 
   @Test
-  public void testWikiCharSequenceWithKeepContent() throws Exception {
+  public void testWikiCharSequenceWithKeepContent() {
     String test = "{{en-noun}} text [[link]]s text {{template}} text [[toto]]";
     WikiText text = new WikiText(test);
 
     ClassBasedSequenceFilter filter = new ClassBasedSequenceFilter();
     filter.clearAction().atomizeTemplates().sourceText().keepContentOfInternalLink();
     CharSequence seq = new WikiCharSequence(text, filter);
-    System.out.println(seq.toString());
+    System.out.println(seq);
 
     assertEquals(29, seq.length());
     Pattern pattern = Pattern.compile("^\\p{Co}.*$");
@@ -113,7 +113,7 @@ public class WikiCharSequenceTest {
   }
 
   @Test
-  public void testWikiCharSequenceWithLinkKeepTarget() throws Exception {
+  public void testWikiCharSequenceWithLinkKeepTarget() {
     String test = "text [[link]]s text";
     WikiText text = new WikiText(test);
 
@@ -168,7 +168,7 @@ public class WikiCharSequenceTest {
   }
 
   @Test
-  public void testWikiCharSequenceWithKeepAsis() throws Exception {
+  public void testWikiCharSequenceWithKeepAsis() {
     String test = "{{en-noun}} text [[link]]s text {{template}} text [[toto]]";
     WikiText text = new WikiText(test);
 

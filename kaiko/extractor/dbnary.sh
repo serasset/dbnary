@@ -12,6 +12,7 @@ ETYMOLOGY="--enable etymology"
 LIME="--enable lime"
 ENHANCE="--enable enhancement"
 STATS="--enable statistics"
+FOREIGN="--enable exolexicon"
 TDB=""
 DATE=""
 VERBOSE=""
@@ -48,6 +49,8 @@ help() {
   echo "    -E                : disable extraction of etymology"
   echo "    -x                : enable computation of data enhancement (e.g. translation source disambiguation, enabled by default)"
   echo "    -X                : disable computation of data enhancement"
+  echo "    -w                : enable extraction of exolexicon entries (enabled by default)"
+  echo "    -W                : disable extraction of exolexicon entries"
   echo "    -z                : compress output using bz2 (enabled by default)"
   echo "    -Z                : do not compress output"
 }
@@ -102,6 +105,12 @@ while getopts ":d:t:v:D:c:nmMeElLsSTVxXhfzZ" opt; do
     X)
       ENHANCE=""
       ;;
+    w)
+      ENHANCE="--enable exolexicon"
+      ;;
+    W)
+      ENHANCE=""
+      ;;
     z)
       COMPRESS="-z"
       ;;
@@ -148,10 +157,10 @@ if [ ! -z $VERBOSE ]
 then
 echo $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR $COMPRESS  -k 1 $LANGS
+    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $FOREIGN $STATS $TDB -d $DIR $COMPRESS  -k 1 $LANGS
 fi
 
 $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR $COMPRESS  -k 1 $LANGS
+    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $FOREIGN $STATS $TDB -d $DIR $COMPRESS  -k 1 $LANGS
 

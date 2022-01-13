@@ -463,7 +463,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractLanguageSection(WikiSection languageSection, String language) {
     if (null == language)
       return;
-    if (wdh.isDisabled(ExtractionFeature.FOREIGN_LANGUAGES) && !"fr".equals(language))
+    if (wdh.isDisabled(ExtractionFeature.EXOLEXICON) && !"fr".equals(language))
       return;
 
     // The language is always defined when arriving here

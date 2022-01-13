@@ -13,8 +13,8 @@ import java.util.Set;
 // Eventually, do rely on stream/filter functions instead...
 public class ClassBasedFilter implements WikiEventFilter {
 
-  private HashSet<Class> classesToKeep = new HashSet<Class>();
-  private HashSet<Class> classesToEnter = new HashSet<Class>();
+  private HashSet<Class> classesToKeep = new HashSet<>();
+  private HashSet<Class> classesToEnter = new HashSet<>();
 
   public ClassBasedFilter() {
     super();

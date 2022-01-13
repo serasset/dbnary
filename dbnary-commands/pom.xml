@@ -19,7 +19,7 @@
   <dependencies>
     <dependency>
       <groupId>org.getalp</groupId>
-      <artifactId>dbnary-hdt</artifactId>
+      <artifactId>rdf-utils</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

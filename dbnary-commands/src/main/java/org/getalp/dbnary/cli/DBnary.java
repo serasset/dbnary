@@ -23,6 +23,9 @@ public class DBnary {
   @Spec
   private CommandSpec spec;
 
+  @Option(names = "--dir", scope = ScopeType.INHERIT, defaultValue = ".")
+  public File dbnaryDir;
+
   @Option(names = "--trace", scope = ScopeType.INHERIT) // option is shared with subcommands
   public void setTrace(String[] classes) {
     // Configure the slf4j-simple logger level for the specified parameters
@@ -42,9 +45,6 @@ public class DBnary {
       System.setProperty(SimpleLogger.LOG_FILE_KEY + clazz, "debug");
     }
   }
-
-  @Option(names = "--dir", scope = ScopeType.INHERIT, defaultValue = ".")
-  public File dbnaryDir;
 
   public static void main(String[] args) {
     CommandLine cmd = new CommandLine(new DBnary());

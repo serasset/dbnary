@@ -1,6 +1,9 @@
 package org.getalp.dbnary.cli;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.SortedSet;
@@ -8,6 +11,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.graph.GraphUtil;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
@@ -21,6 +25,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
 public class RDFDiff extends VerboseCommand {
@@ -67,17 +72,21 @@ public class RDFDiff extends VerboseCommand {
     String toFile = remainingArgs[1];
     Model fromModel;
     Model toModel;
+    Model diffModel;
     Dataset dataset1 = null;
     Dataset dataset2 = null;
+    Dataset diffDataset = null;
+    boolean useTDB = false;
 
     if (remainingArgs[0].endsWith(".tdb")) {
       // read the RDF/XML files
       if (verbose)
         System.err.println("Handling first model from TDB database: " + fromFile);
-      dataset1 = TDBFactory.createDataset(fromFile);
+      dataset1 = TDB2Factory.connectDataset(fromFile);
       dataset1.begin(ReadWrite.READ);
       // Get model inside the transaction
       fromModel = dataset1.getDefaultModel();
+      useTDB = true;
     } else {
       if (verbose)
         System.err.println("Handling first model from turtle: " + fromFile);
@@ -89,15 +98,47 @@ public class RDFDiff extends VerboseCommand {
       // read the RDF/XML files
       if (verbose)
         System.err.println("Handling second model from TDB database: " + toFile);
-      dataset2 = TDBFactory.createDataset(toFile);
+      dataset2 = TDB2Factory.connectDataset(toFile);
       dataset2.begin(ReadWrite.READ);
       // Get model inside the transaction
       toModel = dataset2.getDefaultModel();
+      useTDB = true;
     } else {
       if (verbose)
         System.err.println("Handling second model from turtle: " + toFile);
       toModel = ModelFactory.createDefaultModel();
       RDFDataMgr.read(toModel, toFile);
+    }
+
+    String tdbDir = null;
+    if (useTDB) {
+      try {
+        Path temp = Files.createTempDirectory("dbnary-diff");
+        temp.toFile().deleteOnExit();
+        tdbDir = temp.toAbsolutePath().toString();
+        if (verbose) {
+          System.err.println("Using temp TDB at " + tdbDir);
+        }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+          try {
+            FileUtils.deleteDirectory(temp.toFile());
+          } catch (IOException e) {
+            System.err.println("Caught " + e.getClass()
+                + " when attempting to delete the temporary TDB directory " + temp);
+            System.err.println(e.getLocalizedMessage());
+          }
+        }));
+      } catch (IOException e) {
+        System.err.println("Could not create temporary TDB directory. Exiting...");
+        System.exit(-1);
+      }
+    }
+    if (null != tdbDir) {
+      diffDataset = TDB2Factory.connectDataset(tdbDir);
+      diffDataset.begin(ReadWrite.WRITE); // UGLY: using one LONG write transaction
+      diffModel = diffDataset.getDefaultModel();
+    } else {
+      diffModel = ModelFactory.createDefaultModel();
     }
 
     if (verbose)
@@ -108,19 +149,28 @@ public class RDFDiff extends VerboseCommand {
       System.err.println("Computing differences.");
 
     // merge the Models
-    Model model = difference(fromModel, toModel);
+    difference(fromModel, toModel, diffModel);
 
     for (Entry<String, String> e : fromModel.getNsPrefixMap().entrySet()) {
-      model.setNsPrefix(e.getKey(), e.getValue());
+      diffModel.setNsPrefix(e.getKey(), e.getValue());
     }
+    if (null != diffDataset)
+      diffDataset.commit();
 
     if (null != dataset1)
       dataset1.end();
     if (null != dataset2)
       dataset2.end();
+    if (null != diffDataset)
+      diffDataset.end();
 
+
+    if (null != diffDataset)
+      diffDataset.begin(ReadWrite.READ);
     // print the Model as RDF/XML
-    RDFDataMgr.write(System.out, model, Lang.TURTLE);
+    RDFDataMgr.write(System.out, diffModel, Lang.TURTLE);
+    if (null != diffDataset)
+      diffDataset.end();
   }
 
   public void buildBinding(Model m1, Model m2) {
@@ -168,8 +218,7 @@ public class RDFDiff extends VerboseCommand {
     }
   }
 
-  private Model difference(Model from, Model to) {
-    Model diff = ModelFactory.createDefaultModel();
+  private Model difference(Model from, Model to, Model diff) {
     ExtendedIterator<Triple> iter = null;
     Triple triple;
     int nbprocessed = 0;

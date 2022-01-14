@@ -14,8 +14,11 @@ import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.morphology.InflectionScheme;
 import org.getalp.dbnary.morphology.MorphoSyntacticFeature;
 import org.getalp.dbnary.rdfutils.URI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LexicalForm {
+  private static final Logger log = LoggerFactory.getLogger(LexicalForm.class);
   InflectionScheme features;
   Set<Representation> values = new LinkedHashSet<>();
 
@@ -137,7 +140,7 @@ public class LexicalForm {
     String lexEntryLocalName = URI.getLocalName(lexEntry);
     String lexEntryPrefix = URI.getNameSpace(lexEntry);
     if (!lexEntry.getURI().equals(lexEntryPrefix + lexEntryLocalName)) {
-      System.err.println("ERROR: getNameSpace and getLocalName did not work !!!");
+      log.error("ERROR: getNameSpace and getLocalName did not work !!!");
     }
     String compactProperties = DatatypeConverter
         .printBase64Binary(

@@ -46,6 +46,7 @@ definitions:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - mkdir -p target/dbnary-maven-repository/org
           - cp -r ${HOME}/.m2/repository/org/getalp target/dbnary-maven-repository/org/getalp
+          - ln -s target/dbnary-maven-repository/org/getalp/dbnary-commands/ci-previous-version/dbnary-commands-ci-previous-version-uber-jar.jar target/dbnary-maven-repository/org/getalp/
           - ./kaiko/cicd/cleanup_cache.sh
         artifacts:
           - "target/dbnary-maven-repository/org/**/*.*"

@@ -19,6 +19,9 @@ fi
 git stash -u
 git checkout master
 chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
+cat ${SCRIPT_DIR}/../extractor/dbnary.sh
+ls -al target/dbnary-maven-repository/org/getalp/dbnary-commands/ci-previous-version/
+ls -al target/dbnary-maven-repository/org/getalp/dbnary-extractor/ci-previous-version/
 
 # Extract data using PR version
 DBNARY_DIR="/tmp/$PREVIOUS_VERSION/" "${SCRIPT_DIR}/../extractor/dbnary.sh" -V -Z -n -v "$PREVIOUS_VERSION" -c "$SAMPLE_SIZE" $LANGS

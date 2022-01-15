@@ -8,6 +8,7 @@ import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.fra.WiktionaryDataHandler;
 import org.getalp.dbnary.morphology.RefactoredTableExtractor;
+import org.getalp.iso639.ISO639_3;
 import org.getalp.model.ontolex.LexicalForm;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -40,14 +41,23 @@ public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
           "Invalid delegate class, expecting French Wiktionary Data Handler");
   }
 
-  private final static String FrenchConjugationPagePrefix = "Conjugaison:français/";
+  private String getConjugationPageName() {
+    String frName = FrenchLanguageNames.getName(delegate.getCurrentEntryLanguage(), wi);
+    if (null == frName)
+      return null;
+    return "Conjugaison:" + frName + "/" + delegate.currentLexEntry();
+  }
 
   public void extractConjugations(List<String> context) {
-    String conjugationPageContent =
-        wi.getTextOfPage(FrenchConjugationPagePrefix + delegate.currentLexEntry());
+    String conjugationPagename = getConjugationPageName();
+    if (null == conjugationPagename)
+      return;
+
+    String conjugationPageContent = wi.getTextOfPage(conjugationPagename);
 
     if (conjugationPageContent == null) {
-      log.debug("No conjugation page for '" + delegate.currentLexEntry() + "'");
+      log.debug("No conjugation page for '" + delegate.currentLexEntry() + "/"
+          + delegate.getCurrentEntryLanguage() + "'");
       return;
     }
     log.trace("Extracting conjugation page in {}", this.getPageName());

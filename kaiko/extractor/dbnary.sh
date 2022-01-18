@@ -18,7 +18,7 @@ DATE=""
 VERBOSE=""
 FORCE=""
 CUT=""
-COMPRESS="--compress"
+COMPRESS="--no-compress"
 
 help() {
   echo "USAGE: $0 [OPTIONS] lg1 lg2..."
@@ -115,7 +115,7 @@ while getopts ":d:t:v:D:c:nmMeElLsSTVxXhfzZ" opt; do
       COMPRESS="--compress"
       ;;
     Z)
-      COMPRESS=""
+      COMPRESS="--no-compress"
       ;;
     T)
       TDB="--tdb"

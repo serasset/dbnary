@@ -1,15 +1,11 @@
 package org.getalp.dbnary.fra;
 
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.getalp.dbnary.DBnaryOnt;
@@ -17,12 +13,6 @@ import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
-import org.getalp.dbnary.PronunciationPair;
-import org.getalp.dbnary.PropertyObjectPair;
-import org.getalp.dbnary.StructuredGloss;
-import org.getalp.dbnary.enhancer.evaluation.EvaluationStats.Stat;
-import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
-import org.getalp.dbnary.morphology.InflectionData;
 import org.getalp.model.ontolex.LexicalForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

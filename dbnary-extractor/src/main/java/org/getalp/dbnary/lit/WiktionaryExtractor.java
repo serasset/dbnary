@@ -175,7 +175,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (lang == null) {
       return;
     }
-    if (wdh.isDisabled(ExtractionFeature.EXOLEXICON) && !"ltv".equals(lang))
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !"ltv".equals(lang))
       return;
 
     // ltv is not a correct ISO language code.

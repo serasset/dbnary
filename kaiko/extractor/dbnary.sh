@@ -7,18 +7,18 @@ LANGS="fr"
 
 DEBUG=""
 NETWORK=""
-MORPHO="--enable morphology"
-ETYMOLOGY="--enable etymology"
-LIME="--enable lime"
-ENHANCE="--enable enhancement"
-STATS="--enable statistics"
-FOREIGN="--enable exolexicon"
+MORPHO="--endolex morphology"
+ETYMOLOGY="--endolex etymology"
+LIME="--endolex lime"
+ENHANCE="--endolex enhancement"
+STATS="--endolex statistics"
+FOREIGN="--exolex ontolex"
 TDB=""
 DATE=""
 VERBOSE=""
 FORCE=""
 CUT=""
-COMPRESS="-z"
+COMPRESS="--compress"
 
 help() {
   echo "USAGE: $0 [OPTIONS] lg1 lg2..."
@@ -73,46 +73,46 @@ while getopts ":d:t:v:D:c:nmMeElLsSTVxXhfzZ" opt; do
       CUT="--sample ${OPTARG}"
       ;;
     n)
-      NETWORK="-n"
+      NETWORK="--no-network"
       ;;
     m)
-      MORPHO="--enable morphology"
+      MORPHO="--endolex morphology"
       ;;
     M)
       MORPHO=""
       ;;
     l)
-      LIME="--enable lime"
+      LIME="--endolex lime"
       ;;
     L)
       LIME=""
       ;;
     s)
-      STATS="--enable statistics"
+      STATS="--endolex statistics"
       ;;
     S)
       STATS=""
       ;;
     e)
-      ETYMOLOGY="--enable etymology"
+      ETYMOLOGY="--endolex etymology"
       ;;
     E)
       ETYMOLOGY=""
       ;;
     x)
-      ENHANCE="--enable enhancer"
+      ENHANCE="--endolex enhancer"
       ;;
     X)
       ENHANCE=""
       ;;
     w)
-      ENHANCE="--enable exolexicon"
+      FOREIGN="--exolex ontolex"
       ;;
     W)
-      ENHANCE=""
+      FOREIGN=""
       ;;
     z)
-      COMPRESS="-z"
+      COMPRESS="--compress"
       ;;
     Z)
       COMPRESS=""
@@ -124,7 +124,7 @@ while getopts ":d:t:v:D:c:nmMeElLsSTVxXhfzZ" opt; do
       VERBOSE="-v"
       ;;
     f)
-      FORCE="-f"
+      FORCE="--force"
       ;;
     h)
       help
@@ -157,10 +157,10 @@ if [ ! -z $VERBOSE ]
 then
 echo $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $FOREIGN $STATS $TDB -d $DIR $COMPRESS  -k 1 $LANGS
+    org.getalp.dbnary.cli.DBnary update $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $FOREIGN $STATS $TDB --dir $DIR $COMPRESS  -k 1 $LANGS
 fi
 
 $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $FOREIGN $STATS $TDB -d $DIR $COMPRESS  -k 1 $LANGS
+    org.getalp.dbnary.cli.DBnary update $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $FOREIGN $STATS $TDB --dir $DIR $COMPRESS  -k 1 $LANGS
 

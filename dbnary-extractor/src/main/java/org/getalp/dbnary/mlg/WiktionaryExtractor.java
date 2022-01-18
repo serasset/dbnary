@@ -209,7 +209,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
 
-    if (wdh.isDisabled(ExtractionFeature.EXOLEXICON) && !lang.equals("mg"))
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !lang.equals("mg"))
       return;
 
     wdh.initializeLanguageSection(lang);

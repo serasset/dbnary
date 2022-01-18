@@ -8,18 +8,18 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.getalp.LangTools;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexer;
 import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.dbnary.cli.mixins.BatchExtractorMixin;
 import org.getalp.dbnary.wiki.WikiText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.ParameterException;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParentCommand;
 import picocli.CommandLine.Spec;
 
 
@@ -34,39 +34,13 @@ public class CheckWiktionarySyntaxQuality implements Callable<Integer> {
   private final Logger log = LoggerFactory.getLogger(CheckWiktionarySyntaxQuality.class);
 
   private static final XMLInputFactory2 xmlif;
-  private static final String DEFAULT_LANGUAGE = "en";
-  private static final String DEFAULT_OUTPUT_FILE = "extract";
 
   @Spec
   CommandSpec spec; // injected by picocli
-
-  @Option(names = {"-o", "--output"}, paramLabel = "OUTPUT-FILE",
-      defaultValue = DEFAULT_OUTPUT_FILE,
-      description = "file in which the result of the check is written; Default: ${DEFAULT-VALUE}")
-  private String outputFile = DEFAULT_OUTPUT_FILE;
-
-  private String language = DEFAULT_LANGUAGE;
-
-  @Option(names = {"-l", "--language"}, paramLabel = "LANGUAGE", defaultValue = DEFAULT_LANGUAGE,
-      description = "language code of the wiki to be checked; Default: ${DEFAULT-VALUE}")
-  public void setLanguage(String language) {
-    this.language = LangTools.getCode(language);
-    if (null == this.language) {
-      throw new ParameterException(spec.commandLine(), String.format(
-          "Invalid language '%s' for option '--language': " + "unknown language code.", language));
-    }
-  }
-
-  @Option(names = {"-F", "--frompage"}, paramLabel = "NUMBER",
-      description = "Begin the check at the specified page number")
-  private int fromPage = 0;
-
-  @Option(names = {"-T", "--topage"}, paramLabel = "NUMBER",
-      description = "Stop the check at the specified page number")
-  private int toPage = Integer.MAX_VALUE;
-
-  @Option(names = {"-v"}, description = "Print extra information before checking")
-  private boolean verbose;
+  @ParentCommand
+  protected DBnary parent; // picocli injects reference to parent command
+  @Mixin
+  private BatchExtractorMixin batch;
 
   @Parameters(index = "0", description = "The dump file of the wiki to be checked.", arity = "1")
   private File dumpFile;
@@ -93,12 +67,6 @@ public class CheckWiktionarySyntaxQuality implements Callable<Integer> {
 
   public Integer call() throws IOException, WiktionaryIndexerException {
     wi = new WiktionaryIndex(dumpFile);
-    if (verbose) {
-      System.err.println("Checking Syntax Quality on Wiktionary Dump:");
-      System.err.println("  Language: " + language);
-      System.err.println("  Dump: " + dumpFile);
-      System.err.println("  Ontolex : " + outputFile);
-    }
 
     // create new XMLStreamReader
     long startTime = System.currentTimeMillis();
@@ -130,10 +98,10 @@ public class CheckWiktionarySyntaxQuality implements Callable<Integer> {
             if (title.contains(":"))
               continue;
             nbPages++;
-            if (nbPages < fromPage) {
+            if (nbPages < batch.fromPage()) {
               continue;
             }
-            if (nbPages > toPage) {
+            if (nbPages > batch.toPage()) {
               break;
             }
             try {

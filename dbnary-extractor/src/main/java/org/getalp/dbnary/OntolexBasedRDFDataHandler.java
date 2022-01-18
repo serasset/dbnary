@@ -69,7 +69,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   protected Model aBox;
 
-  private final Map<ExtractionFeature, Model> featureBoxes;
+  private final Map<ExtractionFeature, Model> endolexFeatureBoxes;
+  private final Map<ExtractionFeature, Model> exolexFeatureBoxes;
 
   // States used for processing
   @Deprecated
@@ -151,8 +152,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // Create aBox
     aBox = createAndInitializeABox(longEditionLanguageCode);
 
-    featureBoxes = new HashMap<>();
-    featureBoxes.put(ExtractionFeature.MAIN, aBox);
+    endolexFeatureBoxes = new HashMap<>();
+    endolexFeatureBoxes.put(ExtractionFeature.MAIN, aBox);
+    exolexFeatureBoxes = new HashMap<>();
   }
 
   private Model createAndInitializeABox(String lang) {
@@ -210,7 +212,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-
   public void closeDataset() {
     if (null != dataset) {
       try {
@@ -223,20 +224,48 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void enableFeature(ExtractionFeature f) {
+  public void enableEndolexFeatures(ExtractionFeature f) {
     Model box = createAndInitializeABox(longEditionLanguageCode, f);
     // fillInPrefixes(aBox, box);
-    featureBoxes.put(f, box);
+    endolexFeatureBoxes.put(f, box);
   }
 
   @Override
   public Model getFeatureBox(ExtractionFeature f) {
-    return featureBoxes.get(f);
+    Map<ExtractionFeature, Model> features;
+    if (null == getCurrentEntryLanguage()) {
+      features = endolexFeatureBoxes;
+    } else if (getExtractedLanguage().equals(getCurrentEntryLanguage())) {
+      features = endolexFeatureBoxes;
+    } else {
+      features = exolexFeatureBoxes;
+    }
+    return features.get(f);
   }
 
   @Override
+  public Model getEndolexFeatureBox(ExtractionFeature f) {
+    return endolexFeatureBoxes.get(f);
+  }
+
+  @Override
+  public Model getExolexFeatureBox(ExtractionFeature f) {
+    return exolexFeatureBoxes.get(f);
+  }
+
+  @Override
+  public void enableExolexFeatures(ExtractionFeature f) {
+    Model box = createAndInitializeABox(longEditionLanguageCode, f);
+    exolexFeatureBoxes.put(f, box);
+  }
+
+
+  @Override
   public boolean isDisabled(ExtractionFeature f) {
-    return !featureBoxes.containsKey(f);
+    Map<ExtractionFeature, Model> features =
+        getExtractedLanguage().equals(getCurrentEntryLanguage()) ? endolexFeatureBoxes
+            : exolexFeatureBoxes;
+    return !features.containsKey(f);
   }
 
   @Override
@@ -266,9 +295,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // entries correctly...
     currentLexicalEntry = null;
     if (longEditionLanguageCode.equals(longSectionLanguageCode)) {
-      aBox = getFeatureBox(ExtractionFeature.MAIN);
+      aBox = getEndolexFeatureBox(ExtractionFeature.MAIN);
     } else {
-      aBox = getFeatureBox(ExtractionFeature.EXOLEXICON);
+      aBox = getExolexFeatureBox(ExtractionFeature.MAIN);
     }
     initializeLanguageSection__noModel(currentPage.getName());
   }
@@ -1031,16 +1060,16 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void dump(ExtractionFeature f, OutputStream out, String format) {
-    Model box = this.getFeatureBox(f);
+  public void dump(Model box, OutputStream out, String format) {
     if (null != box) {
       box.write(out, format);
     }
   }
 
   @Override
-  public void dumpAllAsHDT(OutputStream ostream) {
-    Model[] boxes = featureBoxes.values().toArray(new Model[0]);
+  public void dumpAllFeaturesAsHDT(OutputStream ostream, boolean isExolex) {
+    Map<ExtractionFeature, Model> features = isExolex ? exolexFeatureBoxes : endolexFeatureBoxes;
+    Model[] boxes = features.values().toArray(new Model[0]);
     new Models2HDT().models2hdt(ostream, getPrefix(), boxes);
   }
 

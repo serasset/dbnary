@@ -6,170 +6,47 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Locale;
 import java.util.concurrent.Callable;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.jena.rdf.model.Model;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.getalp.LangTools;
 import org.getalp.dbnary.ExtractionFeature;
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.IWiktionaryExtractor;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
-import org.getalp.dbnary.WiktionaryDataHandlerFactory;
-import org.getalp.dbnary.WiktionaryExtractorFactory;
-import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexer;
 import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.dbnary.cli.mixins.BatchExtractorMixin;
+import org.getalp.dbnary.cli.mixins.Extractor;
+import org.getalp.dbnary.cli.utils.ExtractionPreferences;
 import org.getalp.dbnary.cli.utils.VersionProvider;
-import org.getalp.dbnary.model.DbnaryModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.ParameterException;
-import picocli.CommandLine.Parameters;
-import picocli.CommandLine.ParentCommand;
-import picocli.CommandLine.Spec;
 
 @Command(name = "extract", mixinStandardHelpOptions = true,
     header = "extract all pages from a dump and write resulting RDF files.",
-    description = "Process all pages and extract lescial data according to options that are passed "
+    description = "Process all pages and extract lexical data according to options that are passed "
         + "to the program. The extracted lexical data is encoded as RDF graphs using ontolex, "
         + "lexinfo, olia and other standard vocabularies.")
-public class ExtractWiktionary implements Callable<Integer> {
+public class ExtractWiktionary extends Extractor implements Callable<Integer> {
 
-  private static Logger log = LoggerFactory.getLogger(OntolexBasedRDFDataHandler.class);
+  private static final Logger log = LoggerFactory.getLogger(OntolexBasedRDFDataHandler.class);
 
-  // CommandLine specification
-  @Spec
-  private CommandSpec spec;
-  @ParentCommand
-  private DBnary parent; // picocli injects reference to parent command
+  private ExtractionPreferences prefs;
+  @Mixin
+  BatchExtractorMixin batch;
 
-
-  private static final String DEFAULT_LANGUAGE = "en";
-  private static final String DEFAULT_OUTPUT_FORMAT = "ttl";
-  private static final String DEFAULT_OUTPUT_FILE = "extract";
+  @Option(names = {"--date", "--suffix"})
+  protected String suffix;
 
   public static final XMLInputFactory2 xmlif;
-
-  // Options
-
-  private String language = DEFAULT_LANGUAGE;
-
-  @Option(names = {"-l", "--language"}, paramLabel = "LANGUAGE", defaultValue = DEFAULT_LANGUAGE,
-      description = "language edition of the dump to be extracted; uses a 2 or 3 iso letter code;"
-          + " Default: ${DEFAULT-VALUE}.")
-  public void setLanguage(String language) {
-    this.language = LangTools.getCode(language);
-    if (null == this.language) {
-      throw new ParameterException(spec.commandLine(), String.format(
-          "Invalid language '%s' for option '--language': unknown language code.", language));
-    }
-  }
-
-  private String outputFormat;
-
-  @Option(names = {"-f", "--format"}, paramLabel = "OUTPUT-FORMAT",
-      defaultValue = DEFAULT_OUTPUT_FORMAT,
-      description = "format used for all models (valid values: ttl, turtle, rdf, ntriple, n3,"
-          + " rdfabbrev); Default: ${DEFAULT-VALUE}.")
-  public void setOutputFormat(String format) {
-    this.outputFormat = format.toUpperCase(Locale.ROOT);
-    if (!outputFormat.equals("RDF") && !outputFormat.equals("TURTLE")
-        && !outputFormat.equals("NTRIPLE") && !outputFormat.equals("N3")
-        && !outputFormat.equals("TTL") && !outputFormat.equals("RDFABBREV")) {
-      throw new ParameterException(spec.commandLine(),
-          String.format("Invalid format '%s' for option '--format': unknown format.", format));
-    }
-  }
-
-  @Option(names = {"-o", "--output"}, paramLabel = "ONTOLEX-OUTPUT-FILE",
-      defaultValue = DEFAULT_OUTPUT_FILE,
-      description = "file in which extracted core (ontolex) model will be written; "
-          + "Default: ${DEFAULT-VALUE}.")
-  private File outputFile;
-
-  @Option(names = {"-M", "--morphology"}, paramLabel = "MORPHOLOGY-OUTPUT-FILE",
-      description = "file in which extracted morphology model will be written.")
-  private File morphoOutputFile = null;
-
-  @Option(names = {"-E", "--etymology"}, paramLabel = "ETYMOLOGY-OUTPUT-FILE",
-      description = "file in which extracted etymology model will be written.")
-  private File etymologyOutputFile = null;
-
-  @Option(names = {"-L", "--lime"}, paramLabel = "LIME-OUTPUT-FILE",
-      description = "file in which extracted lime model will be written.")
-  private File limeOutputFile = null;
-
-  @Option(names = {"-X", "--enhancement"}, paramLabel = "ENHANCEMENT-OUTPUT-FILE",
-      description = "file in which extracted enhancement model will be written.")
-  private File enhancementOutputFile = null;
-
-
-  @Option(names = {"-S", "--statistics"}, paramLabel = "STATISTICS-OUTPUT-FILE",
-      description = "file in which extracted statistics model will be written.")
-  private File statsOutputFile = null;
-
-  @Option(names = {"--foreign"}, paramLabel = "FOREIGN-OUTPUT-FILE",
-      description = "file in which extracted foreign data model will be written.")
-  private File foreignDataOutputFile = null;
-
-  @Option(names = {"--hdt"}, paramLabel = "HDT-OUTPUT-FILE",
-      description = "file in which the HDT version of all data models will be written.")
-  private File hdtOutputFile = null;
-
-  @Option(names = {"-p", "--prefix"}, paramLabel = "DBNARY-URI-PREFIX",
-      description = "Use the specified prefix for all URIs. (use with care).")
-  private void setDBnaryURIPrefix(String prefix) {
-    DbnaryModel.setGlobalDbnaryPrefix(prefix);
-  }
-
-  // TODO: rationalize the foreign extraction logic (either boolean or as a model (prefered)
-  @Option(names = {"-x"}, defaultValue = "false",
-      description = "Extract foreign entries from the language dump. False by default.")
-  private boolean extractForeignEntries = false;
-
-  @Option(names = {"--tdb"}, negatable = true, defaultValue = "false",
-      description = "Compress the resulting extracted files using BZip2. False by default.")
-  private boolean useTdb = false;
-
-  @Option(names = {"--no-compress"}, negatable = true,
-      description = "Compress the resulting extracted files using BZip2. True by default.")
-  private boolean compress = true;
-
-  @Option(names = {"-F", "--frompage"}, paramLabel = "NUMBER",
-      description = "Begin the extraction at the specified page number.")
-  private int fromPage = 0;
-
-  @Option(names = {"-T", "--topage"}, paramLabel = "NUMBER",
-      description = "Stop the extraction at the specified page number.")
-  private int toPage = Integer.MAX_VALUE;
-
-  @Option(names = {"-v"}, description = "Print extra information before checking.")
-  private boolean verbose;
-
-  // Parameter
-  @Parameters(index = "0", description = "The dump file of the wiki to be extracted.", arity = "1")
-  private File dumpFile;
-
-  // non parameters
-  private String tdbDir = null;
-
-
-  WiktionaryIndex wi;
-  IWiktionaryExtractor we;
-
-  private IWiktionaryDataHandler wdh;
 
   static {
     try {
@@ -183,109 +60,53 @@ public class ExtractWiktionary implements Callable<Integer> {
     }
   }
 
-  /**
-   * @param args arguments
-   * @throws IOException ...
-   * @throws WiktionaryIndexerException ...
-   */
-  public static void main(String[] args) throws WiktionaryIndexerException, IOException {
-    new CommandLine(new ExtractWiktionary()).execute(args);
-  }
-
   @Override
-  public Integer call() throws Exception {
-    Integer returnCode = prepareExtraction();
-    if (returnCode != 0)
-      return returnCode;
-    return extract();
-  }
-
-  /**
-   * Analyse command line arguments to prepare processing.
-   *
-   * @throws WiktionaryIndexerException ..
-   */
-  private Integer prepareExtraction() throws WiktionaryIndexerException {
-
-    // System.setProperty(LOG_KEY_PREFIX + "org.getalp.dbnary.ita", "trace");
-    if (useTdb) {
-      try {
-        Path temp = Files.createTempDirectory("dbnary");
-        temp.toFile().deleteOnExit();
-        tdbDir = temp.toAbsolutePath().toString();
-        if (verbose) {
-          spec.commandLine().getErr().println("Using temp TDB at " + tdbDir);
-        }
-        log.debug("Using TDB in {}", tdbDir);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-          try {
-            FileUtils.deleteDirectory(temp.toFile());
-          } catch (IOException e) {
-            spec.commandLine().getErr().println("Caught " + e.getClass()
-                + " when attempting to delete the temporary TDB directory " + tdbDir);
-            spec.commandLine().getErr().println(e.getLocalizedMessage());
-          }
-        }));
-      } catch (IOException e) {
-        spec.commandLine().getErr().println("Could not create temporary TDB directory. Exiting...");
-        return -1;
-      }
-    }
-
-    we = null;
-
-    if (extractForeignEntries) {
-      wdh = WiktionaryDataHandlerFactory.getForeignDataHandler(language, tdbDir);
-      we = WiktionaryExtractorFactory.getForeignExtractor(language, wdh);
-    } else {
-      wdh = WiktionaryDataHandlerFactory.getDataHandler(language, tdbDir);
-      we = WiktionaryExtractorFactory.getExtractor(language, wdh);
-    }
-    if (null == we) {
-      spec.commandLine().getErr()
-          .println("Wiktionary Extraction not yet available for " + LangTools.inEnglish(language));
+  public Integer call() {
+    Integer returnCode = null;
+    try {
+      returnCode = prepareExtraction();
+    } catch (WiktionaryIndexerException e) {
+      spec.commandLine().getErr().println("Could not read dump.");
+      e.printStackTrace(spec.commandLine().getErr());
+      return -1;
+    } catch (IOException e) {
+      spec.commandLine().getErr().println("IOException while preparing extraction, aborting.");
+      e.printStackTrace(spec.commandLine().getErr());
       return -1;
     }
+    if (returnCode != 0)
+      return returnCode;
+    try {
+      return extract();
+    } catch (IOException e) {
+      spec.commandLine().getErr().format("IOException while extracting, stopping: %s%n",
+          e.getLocalizedMessage());
+      // e.printStackTrace(spec.commandLine().getErr());
+      return -1;
+    }
+  }
 
-    if (morphoOutputFile != null) {
-      wdh.enableFeature(ExtractionFeature.MORPHOLOGY);
-    }
-    if (etymologyOutputFile != null) {
-      wdh.enableFeature(ExtractionFeature.ETYMOLOGY);
-    }
-    if (limeOutputFile != null) {
-      wdh.enableFeature(ExtractionFeature.LIME);
-    }
-    if (enhancementOutputFile != null) {
-      wdh.enableFeature(ExtractionFeature.ENHANCEMENT);
-    }
+  protected Integer prepareExtraction() throws WiktionaryIndexerException, IOException {
+    prefs = new ExtractionPreferences(parent.dbnaryDir);
 
-    if (statsOutputFile != null) {
-      wdh.enableFeature(ExtractionFeature.STATISTICS);
-    }
+    if (batch.useTdb())
+      batch.createTDBTempDirectory();
+    setupHandlers(batch.tdbDir());
 
-    if (foreignDataOutputFile != null) {
-      wdh.enableFeature(ExtractionFeature.EXOLEXICON);
-    }
-
-    wi = new WiktionaryIndex(dumpFile);
-    we.setWiktionaryIndex(wi);
-
-    if (verbose) {
+    if (parent.isVerbose()) {
       PrintWriter err = spec.commandLine().getErr();
       err.println("Extracting Wiktionary Dump:");
       err.println("  Language: " + language);
       err.println("  Dump: " + dumpFile);
-      err.println("  TDB : " + tdbDir);
-      err.println("  Ontolex : " + outputFile);
-      err.println("  Etymology : " + etymologyOutputFile);
-      err.println("  Morphology : " + morphoOutputFile);
-      err.println("  LIME : " + limeOutputFile);
-      err.println("  Enhancement : " + enhancementOutputFile);
-      err.println("  Statistics : " + statsOutputFile);
-      err.println("  Foreign languages : " + foreignDataOutputFile);
-      err.println("  Format : " + outputFormat);
-      err.println("  HDT : " + hdtOutputFile);
+      err.println("  TDB : " + batch.tdbDir());
+      err.println("  Format : " + features.getOutputFormat());
+      features.getEndolexFeatures()
+          .forEach(f -> err.format("  %s : %s%n", f.toString(), prefs.outputFileForFeature(f,
+              language, suffix, features.getOutputFormat(), batch.doCompress(), false)));
+      if (null != features.getExolexFeatures())
+        features.getExolexFeatures()
+            .forEach(f -> err.format("  %s : %s%n", f.toString(), prefs.outputFileForFeature(f,
+                language, suffix, features.getOutputFormat(), batch.doCompress(), true)));
     }
     return 0;
   }
@@ -322,10 +143,10 @@ public class ExtractWiktionary implements Callable<Integer> {
             if (!title.equals("")) {
               nbPages++;
               int nbnodes = wdh.nbEntries();
-              if (nbPages < fromPage) {
+              if (nbPages < batch.fromPage()) {
                 continue;
               }
-              if (nbPages > toPage) {
+              if (nbPages > batch.toPage()) {
                 break;
               }
               try {
@@ -353,41 +174,6 @@ public class ExtractWiktionary implements Callable<Integer> {
             }
           }
         }
-        spec.commandLine().getErr().println("Extracted " + nbRelevantPages + " pages in: "
-            + formatHMS(totalRelevantTime) + " (" + nbPages + " scanned Pages)");
-
-        // TODO : enable post processing after extraction ?
-        if (verbose)
-          spec.commandLine().getErr().println("Postprocessing extracted entries.");
-        we.postProcessData(VersionProvider.getDumpVersion(dumpFile.getName()));
-        we.computeStatistics(VersionProvider.getDumpVersion(dumpFile.getName()));
-        we.populateMetadata(VersionProvider.getDumpVersion(dumpFile.getName()),
-            new VersionProvider().getExtractorVersion());
-
-        saveBox(ExtractionFeature.MAIN, outputFile);
-
-        if (null != morphoOutputFile) {
-          saveBox(ExtractionFeature.MORPHOLOGY, morphoOutputFile);
-        }
-        if (null != etymologyOutputFile) {
-          saveBox(ExtractionFeature.ETYMOLOGY, etymologyOutputFile);
-        }
-        if (null != limeOutputFile) {
-          saveBox(ExtractionFeature.LIME, limeOutputFile);
-        }
-        if (null != enhancementOutputFile) {
-          saveBox(ExtractionFeature.ENHANCEMENT, enhancementOutputFile);
-        }
-        if (null != statsOutputFile) {
-          saveBox(ExtractionFeature.STATISTICS, statsOutputFile);
-        }
-        if (null != foreignDataOutputFile) {
-          saveBox(ExtractionFeature.EXOLEXICON, foreignDataOutputFile);
-        }
-
-        if (null != hdtOutputFile) {
-          saveAllAsHDT(hdtOutputFile);
-        }
       } catch (XMLStreamException ex) {
         spec.commandLine().getErr().println(ex.getMessage());
 
@@ -407,15 +193,41 @@ public class ExtractWiktionary implements Callable<Integer> {
           ex.printStackTrace();
         }
       }
+
+      spec.commandLine().getErr().println("Extracted " + nbRelevantPages + " pages in: "
+          + formatHMS(totalRelevantTime) + " (" + nbPages + " scanned Pages)");
+
+      postProcessAfterExtraction(VersionProvider.getDumpVersion(dumpFile.getName()));
+
+      for (ExtractionFeature f : features.getEndolexFeatures()) {
+        if (!f.equals(ExtractionFeature.HDT)) {
+          saveBox(f, false);
+        }
+      }
+
+      if (null != features.getExolexFeatures()) {
+        for (ExtractionFeature f : features.getExolexFeatures()) {
+          if (!f.equals(ExtractionFeature.HDT)) {
+            saveBox(f, true);
+          }
+        }
+      }
+
+      if (wdh.getEndolexFeatureBox(ExtractionFeature.HDT) != null) {
+        saveAllAsHDT(false);
+      }
+      if (wdh.getExolexFeatureBox(ExtractionFeature.HDT) != null) {
+        saveAllAsHDT(true);
+      }
     } finally {
       // Force TDB dir deletion after language extraction to avoid disk exhaustion when the main
       // method is called by UpdateAndExtractDumps (in the same JDK instance).
-      if (null != tdbDir) {
+      if (null != batch.tdbDir()) {
         try {
-          FileUtils.deleteDirectory(new File(tdbDir));
+          FileUtils.deleteDirectory(new File(batch.tdbDir()));
         } catch (IOException e) {
           spec.commandLine().getErr().println("Caught " + e.getClass()
-              + " when attempting to delete the temporary TDB directory " + tdbDir);
+              + " when attempting to delete the temporary TDB directory " + batch.tdbDir());
           spec.commandLine().getErr().println(e.getLocalizedMessage());
         }
       }
@@ -436,16 +248,16 @@ public class ExtractWiktionary implements Callable<Integer> {
     return String.format("%d:%2d:%2d", h, m, s);
   }
 
-  private void saveBox(ExtractionFeature f, File of) throws IOException {
-    try (OutputStream ostream = compress ? new BZip2CompressorOutputStream(new FileOutputStream(of))
-        : new FileOutputStream(of)) {
-      spec.commandLine().getErr()
-          .println("Dumping " + outputFormat + " representation of " + f.name() + ".");
-      if (outputFormat.equals("RDF")) {
-        wdh.dump(f, new PrintStream(ostream, false, "UTF-8"), null);
-      } else {
-        wdh.dump(f, new PrintStream(ostream, false, "UTF-8"), outputFormat);
-      }
+  private void saveBox(ExtractionFeature f, boolean isExolex) throws IOException {
+    File of = prefs.outputFileForFeature(f, language, suffix, features.getOutputFormat(),
+        batch.doCompress(), isExolex);
+    Model model = isExolex ? wdh.getExolexFeatureBox(f) : wdh.getEndolexFeatureBox(f);
+    try (OutputStream ostream =
+        batch.doCompress() ? new BZip2CompressorOutputStream(new FileOutputStream(of))
+            : new FileOutputStream(of)) {
+      spec.commandLine().getErr().println(
+          "Dumping " + features.getOutputFormat() + " representation of " + f.toString() + ".");
+      wdh.dump(model, new PrintStream(ostream, false, "UTF-8"), features.getOutputFormat());
     } catch (IOException e) {
       spec.commandLine().getErr().println(
           "Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
@@ -454,14 +266,15 @@ public class ExtractWiktionary implements Callable<Integer> {
     }
   }
 
-
-  private void saveAllAsHDT(File hdtOutputFile) throws IOException {
+  private void saveAllAsHDT(boolean isExolex) throws IOException {
+    File hdtOutputFile = prefs.outputFileForFeature(ExtractionFeature.HDT, language, suffix,
+        features.getOutputFormat(), batch.doCompress(), isExolex);
     try (OutputStream ostream =
-        compress ? new BZip2CompressorOutputStream(new FileOutputStream(hdtOutputFile))
+        batch.doCompress() ? new BZip2CompressorOutputStream(new FileOutputStream(hdtOutputFile))
             : new FileOutputStream(hdtOutputFile)) {
       spec.commandLine().getErr().format("Dumping all features as a single HDT file in %s.%n",
           hdtOutputFile);
-      wdh.dumpAllAsHDT(ostream);
+      wdh.dumpAllFeaturesAsHDT(ostream, isExolex);
     } catch (IOException e) {
       spec.commandLine().getErr()
           .println("Caught IOException while producing HDT file: \n" + e.getLocalizedMessage());
@@ -470,5 +283,12 @@ public class ExtractWiktionary implements Callable<Integer> {
     }
   }
 
-
+  /**
+   * @param args arguments
+   * @throws IOException ...
+   * @throws WiktionaryIndexerException ...
+   */
+  public static void main(String[] args) {
+    new CommandLine(new ExtractWiktionary()).execute(args);
+  }
 }

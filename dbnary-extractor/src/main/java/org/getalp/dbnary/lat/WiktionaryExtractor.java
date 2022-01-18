@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.getalp.dbnary.lat;
 
 import java.util.HashMap;
@@ -228,7 +225,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
 
-    if (wdh.isDisabled(ExtractionFeature.EXOLEXICON) && !"la".equals(lang))
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !"la".equals(lang))
       return;
 
     wdh.initializeLanguageSection(lang);

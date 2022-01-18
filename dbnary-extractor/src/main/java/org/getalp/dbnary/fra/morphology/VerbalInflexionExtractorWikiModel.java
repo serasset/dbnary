@@ -98,7 +98,11 @@ public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
       Element sectionContent = h3.nextElementSibling();
       // get the tables that do not contain any embedded tables
       Elements tables = sectionContent.select("table");
-      tables.forEach(t -> registerAllForms(verbalTableExtractor.parseTable(t)));
+      if (null != tables)
+        tables.forEach(t -> registerAllForms(verbalTableExtractor.parseTable(t)));
+      else
+        log.debug("No table in the conjugation page for {} ({})", delegate.currentLexEntry(),
+            delegate.getCurrentEntryLanguage());
     }
   }
 

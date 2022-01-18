@@ -26,9 +26,15 @@ public interface IWiktionaryDataHandler {
    *
    * @param f Feature
    */
-  void enableFeature(ExtractionFeature f);
+  void enableEndolexFeatures(ExtractionFeature f);
+
+  void enableExolexFeatures(ExtractionFeature f);
 
   Model getFeatureBox(ExtractionFeature f);
+
+  Model getEndolexFeatureBox(ExtractionFeature f);
+
+  Model getExolexFeatureBox(ExtractionFeature f);
 
   boolean isDisabled(ExtractionFeature f);
 
@@ -123,11 +129,11 @@ public interface IWiktionaryDataHandler {
    * "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3". The default value, represented by
    * null, is "RDF/XML".
    *
-   * @param f a Feature
+   * @param model the Model to be dumped
    * @param out an OutputStream
    * @param format a String
    */
-  void dump(ExtractionFeature f, OutputStream out, String format);
+  void dump(Model model, OutputStream out, String format);
 
   void registerNymRelationOnCurrentSense(String target, String synRelation);
 
@@ -155,5 +161,5 @@ public interface IWiktionaryDataHandler {
 
   void computeStatistics(String dumpVersion);
 
-  void dumpAllAsHDT(OutputStream ostream);
+  void dumpAllFeaturesAsHDT(OutputStream ostream, boolean isExolex);
 }

@@ -162,38 +162,38 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   private Model createAndInitializeABox(String lang, ExtractionFeature f) {
-    // Create aBox
-    Model aBox;
+    // Create box
+    Model box;
 
     if (null != dataset) {
-      aBox = dataset.getNamedModel("NS" + f.name().toLowerCase() + "/");
+      box = dataset.getNamedModel("NS" + f.name().toLowerCase() + "/");
     } else {
-      aBox = ModelFactory.createDefaultModel();
+      box = ModelFactory.createDefaultModel();
     }
-    aBox.setNsPrefix(lang, NS);
-    aBox.setNsPrefix("dbnary", DBnaryOnt.getURI());
-    aBox.setNsPrefix("dbstats", DBNARY_NS_PREFIX + "/statistics/");
-    aBox.setNsPrefix("dbetym", DBnaryEtymologyOnt.getURI());
-    aBox.setNsPrefix("lexinfo", LexinfoOnt.getURI());
-    aBox.setNsPrefix("rdfs", RDFS.getURI());
-    aBox.setNsPrefix("dcterms", DCTerms.getURI());
-    aBox.setNsPrefix("lexvo", LEXVO);
-    aBox.setNsPrefix("rdf", RDF.getURI());
-    aBox.setNsPrefix("olia", OliaOnt.getURI());
-    aBox.setNsPrefix("ontolex", OntolexOnt.getURI());
-    aBox.setNsPrefix("vartrans", VarTransOnt.getURI());
-    aBox.setNsPrefix("synsem", SynSemOnt.getURI());
-    aBox.setNsPrefix("lime", LimeOnt.getURI());
-    aBox.setNsPrefix("decomp", DecompOnt.getURI());
-    aBox.setNsPrefix("skos", SkosOnt.getURI());
-    aBox.setNsPrefix("xs", XSD.getURI());
-    aBox.setNsPrefix("wikt", WIKT);
+    box.setNsPrefix(lang, NS);
+    box.setNsPrefix("dbnary", DBnaryOnt.getURI());
+    box.setNsPrefix("dbstats", DBNARY_NS_PREFIX + "/statistics/");
+    box.setNsPrefix("dbetym", DBnaryEtymologyOnt.getURI());
+    box.setNsPrefix("lexinfo", LexinfoOnt.getURI());
+    box.setNsPrefix("rdfs", RDFS.getURI());
+    box.setNsPrefix("dcterms", DCTerms.getURI());
+    box.setNsPrefix("lexvo", LEXVO);
+    box.setNsPrefix("rdf", RDF.getURI());
+    box.setNsPrefix("olia", OliaOnt.getURI());
+    box.setNsPrefix("ontolex", OntolexOnt.getURI());
+    box.setNsPrefix("vartrans", VarTransOnt.getURI());
+    box.setNsPrefix("synsem", SynSemOnt.getURI());
+    box.setNsPrefix("lime", LimeOnt.getURI());
+    box.setNsPrefix("decomp", DecompOnt.getURI());
+    box.setNsPrefix("skos", SkosOnt.getURI());
+    box.setNsPrefix("xs", XSD.getURI());
+    box.setNsPrefix("wikt", WIKT);
 
     if (f == ExtractionFeature.STATISTICS) {
-      aBox.setNsPrefix("qb", DataCubeOnt.getURI());
+      box.setNsPrefix("qb", DataCubeOnt.getURI());
     }
 
-    return aBox;
+    return box;
   }
 
   /**
@@ -1108,31 +1108,29 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void computeStatistics(String dumpVersion) {
-    if (isDisabled(ExtractionFeature.STATISTICS)) {
+  public void computeStatistics(Model statsModel, Model sourceModel, String dumpVersion) {
+    if (null == statsModel) {
       return;
     }
 
-    Model statsBox = getFeatureBox(ExtractionFeature.STATISTICS);
-
     {
-      long ct = countResourcesOfType(DBnaryOnt.Translation, aBox);
-      long ce = countResourcesOfType(OntolexOnt.LexicalEntry, aBox);
-      long cp = countResourcesOfType(DBnaryOnt.Page, aBox);
-      long cs = countResourcesOfType(OntolexOnt.LexicalSense, aBox);
+      long ct = countResourcesOfType(DBnaryOnt.Translation, sourceModel);
+      long ce = countResourcesOfType(OntolexOnt.LexicalEntry, sourceModel);
+      long cp = countResourcesOfType(DBnaryOnt.Page, sourceModel);
+      long cs = countResourcesOfType(OntolexOnt.LexicalSense, sourceModel);
 
-      createGeneralStatisticsObservation(statsBox, dumpVersion, getPrefix(),
+      createGeneralStatisticsObservation(statsModel, dumpVersion, getPrefix(),
           longEditionLanguageCode, ct, cp, ce, cs);
     }
 
     for (NymRelation nym : NymRelation.values()) {
-      long cr = countRelations(nym.getProperty(), aBox);
-      createNymRelationObservation(statsBox, dumpVersion, getPrefix(), longEditionLanguageCode, nym,
-          cr);
+      long cr = countRelations(nym.getProperty(), sourceModel);
+      createNymRelationObservation(statsModel, dumpVersion, getPrefix(), longEditionLanguageCode,
+          nym, cr);
     }
 
-    Map<String, Long> counts = Statistics.translationCounts(aBox);
-    counts.forEach((l, c) -> OntolexBasedRDFDataHandler.createTranslationObservation(statsBox,
+    Map<String, Long> counts = Statistics.translationCounts(sourceModel);
+    counts.forEach((l, c) -> OntolexBasedRDFDataHandler.createTranslationObservation(statsModel,
         dumpVersion, getPrefix(), longEditionLanguageCode, l, c));
   }
 
@@ -1199,50 +1197,56 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   /////// METADATA /////////
   @Override
-  public void populateMetadata(String dumpFilename, String extractorVersion) {
-    if (isDisabled(ExtractionFeature.LIME)) {
+  public void populateMetadata(Model metadataModel, Model sourceModel, String dumpFilename,
+      String extractorVersion) {
+    if (null == metadataModel) {
       return;
     }
-    Model limeBox = this.getFeatureBox(ExtractionFeature.LIME);
-    Resource creator = limeBox.createResource("http://serasset.bitbucket.io/");
-    Resource lexicon = limeBox.createResource(
+    Resource creator = metadataModel.createResource("http://serasset.bitbucket.io/");
+    Resource lexicon = metadataModel.createResource(
         getPrefix() + "___" + shortEditionLanguageCode + "_dbnary_dataset", LimeOnt.Lexicon);
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.title,
+    metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.title,
         ISO639_3.sharedInstance.getLanguageNameInEnglish(shortEditionLanguageCode)
             + " DBnary Dataset",
         "en"));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.title, "Dataset DBnary "
+    metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.title, "Dataset DBnary "
         + ISO639_3.sharedInstance.getLanguageNameInFrench(shortEditionLanguageCode), "fr"));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
+    metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.description,
         "This lexicon is extracted from the original wiktionary data that can be found"
             + " in http://" + shortEditionLanguageCode
             + ".wiktionary.org/ by the DBnary Extractor.",
         "en"));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.description,
+    metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.description,
         "Cet ensemble de données est extrait du wiktionnaire original disponible" + " à http://"
             + shortEditionLanguageCode
             + ".wiktionary.org/ par le programme d'extraction de DBnary.",
         "fr"));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.creator, creator));
-    limeBox.add(limeBox.createLiteralStatement(lexicon, DCTerms.created,
-        limeBox.createTypedLiteral(GregorianCalendar.getInstance())));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.source,
+    metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.creator, creator));
+    metadataModel.add(metadataModel.createLiteralStatement(lexicon, DCTerms.created,
+        metadataModel.createTypedLiteral(GregorianCalendar.getInstance())));
+    metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.source,
         "http://" + shortEditionLanguageCode + ".wiktionary.org/"));
 
-    limeBox.add(
-        limeBox.createStatement(lexicon, FOAF.homepage, "http://kaiko.getalp.org/about-dbnary"));
-    limeBox.add(limeBox.createStatement(lexicon, FOAF.page,
+    metadataModel.add(metadataModel.createStatement(lexicon, FOAF.homepage,
+        "http://kaiko.getalp.org/about-dbnary"));
+    metadataModel.add(metadataModel.createStatement(lexicon, FOAF.page,
         "http://kaiko.getalp.org/static/ontolex/" + shortEditionLanguageCode));
 
-    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.language, shortEditionLanguageCode));
-    limeBox.add(limeBox.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
-    limeBox.add(limeBox.createLiteralStatement(lexicon, LimeOnt.lexicalEntries, nbEntries()));
-    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, LexinfoOnt.getURI()));
-    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, OliaOnt.getURI()));
-    limeBox.add(limeBox.createStatement(lexicon, LimeOnt.linguisticCatalog, LEXVO));
+    metadataModel
+        .add(metadataModel.createStatement(lexicon, LimeOnt.language, shortEditionLanguageCode));
+    metadataModel
+        .add(metadataModel.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
+    metadataModel
+        .add(metadataModel.createLiteralStatement(lexicon, LimeOnt.lexicalEntries, nbEntries()));
+    metadataModel.add(
+        metadataModel.createStatement(lexicon, LimeOnt.linguisticCatalog, LexinfoOnt.getURI()));
+    metadataModel
+        .add(metadataModel.createStatement(lexicon, LimeOnt.linguisticCatalog, OliaOnt.getURI()));
+    metadataModel.add(metadataModel.createStatement(lexicon, LimeOnt.linguisticCatalog, LEXVO));
 
     // TODO: Add extractor version for the current dump
-    limeBox.add(limeBox.createStatement(lexicon, DBnaryOnt.wiktionaryDumpVersion, dumpFilename));
+    metadataModel
+        .add(metadataModel.createStatement(lexicon, DBnaryOnt.wiktionaryDumpVersion, dumpFilename));
 
     // TODO: Add VOID description : see https://www.w3.org/TR/void/#access
     // :DBpedia a void:Dataset;

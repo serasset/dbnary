@@ -80,5 +80,11 @@ public class Extractor {
     we.populateMetadata(version, new VersionProvider().getExtractorVersion());
   }
 
+  protected void cleanupHandlers() {
+    wdh.closeDataset();
+    wi = null;
+    we = null;
+    wdh = null;
+  }
 
 }

@@ -3,6 +3,7 @@ package org.getalp.dbnary;
 import java.lang.reflect.InvocationTargetException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.jena.rdf.model.Model;
 import org.getalp.LangTools;
 import org.getalp.dbnary.enhancer.TranslationSourcesDisambiguator;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
@@ -506,15 +507,21 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   @Override
   public void postProcessData(String dumpFileVersion) {
-    if (wdh.isDisabled(ExtractionFeature.ENHANCEMENT))
+    postProcessModel(wdh.getEndolexFeatureBox(ExtractionFeature.ENHANCEMENT),
+        wdh.getEndolexFeatureBox(ExtractionFeature.MAIN), dumpFileVersion);
+    postProcessModel(wdh.getExolexFeatureBox(ExtractionFeature.ENHANCEMENT),
+        wdh.getExolexFeatureBox(ExtractionFeature.MAIN), dumpFileVersion);
+  }
+
+  public void postProcessModel(Model enhancementModel, Model sourceModel, String dumpFileVersion) {
+    if (null == enhancementModel)
       return;
     TranslationGlossesStatsModule stats = new TranslationGlossesStatsModule();
     EvaluationStats evaluator = new EvaluationStats();
     TranslationSourcesDisambiguator disambiguator =
         new TranslationSourcesDisambiguator(0.1, 0.9, 0.05, true, stats, evaluator);
     // TODO: getCurrentEntryLanguage may be incorrect in DataHandler refinements...
-    disambiguator.processTranslations(wdh.getFeatureBox(ExtractionFeature.MAIN),
-        wdh.getFeatureBox(ExtractionFeature.ENHANCEMENT), wdh.getExtractedLanguage());
+    disambiguator.processTranslations(sourceModel, enhancementModel, wdh.getExtractedLanguage());
 
     // add stats results in the Stats box
     for (String l : stats.getStatsMap().keySet()) {
@@ -525,12 +532,17 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   @Override
   public void computeStatistics(String dumpVersion) {
-    wdh.computeStatistics(dumpVersion);
+    wdh.computeStatistics(wdh.getEndolexFeatureBox(ExtractionFeature.STATISTICS),
+        wdh.getEndolexFeatureBox(ExtractionFeature.MAIN), dumpVersion);
+    wdh.computeStatistics(wdh.getExolexFeatureBox(ExtractionFeature.ENHANCEMENT),
+        wdh.getExolexFeatureBox(ExtractionFeature.MAIN), dumpVersion);
   }
 
   @Override
   public void populateMetadata(String dumpFilename, String extractorVersion) {
-    this.wdh.populateMetadata(dumpFilename, extractorVersion);
+    // LIME is global to endolexicon and exolexicon
+    wdh.populateMetadata(wdh.getEndolexFeatureBox(ExtractionFeature.LIME),
+        wdh.getEndolexFeatureBox(ExtractionFeature.MAIN), dumpFilename, extractorVersion);
   }
 
 }

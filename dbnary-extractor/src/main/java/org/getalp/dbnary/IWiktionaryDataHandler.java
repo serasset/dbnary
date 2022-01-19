@@ -154,12 +154,13 @@ public interface IWiktionaryDataHandler {
 
   Resource currentLexinfoPos();
 
-  void populateMetadata(String dumpFilename, String extractorVersion);
+  void populateMetadata(Model metadataModel, Model sourceModel, String dumpFilename,
+      String extractorVersion);
 
   void buildDatacubeObservations(String l, TranslationGlossesStat translationGlossesStat, Stat stat,
       String dumpFileVersion);
 
-  void computeStatistics(String dumpVersion);
+  void computeStatistics(Model statsModel, Model sourceModel, String dumpVersion);
 
   void dumpAllFeaturesAsHDT(OutputStream ostream, boolean isExolex);
 }

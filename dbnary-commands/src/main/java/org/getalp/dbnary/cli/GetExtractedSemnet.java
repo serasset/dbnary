@@ -72,6 +72,7 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
         }
       }
     }
+    cleanupHandlers();
     return 0;
   }
 

@@ -184,7 +184,6 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
       } catch (Exception ex) {
         ex.printStackTrace();
       } finally {
-        wdh.closeDataset();
         try {
           if (xmlr != null) {
             xmlr.close();
@@ -220,6 +219,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
         saveAllAsHDT(true);
       }
     } finally {
+      cleanupHandlers();
       // Force TDB dir deletion after language extraction to avoid disk exhaustion when the main
       // method is called by UpdateAndExtractDumps (in the same JDK instance).
       if (null != batch.tdbDir()) {
@@ -231,10 +231,6 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
           spec.commandLine().getErr().println(e.getLocalizedMessage());
         }
       }
-      // cleanup fields
-      wi = null;
-      we = null;
-      wdh = null;
     }
     return 0;
   }

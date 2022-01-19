@@ -39,7 +39,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public WiktionaryDataHandler(String lang, String tdbDir) {
     super(lang, tdbDir);
-    aBox.setNsPrefix("olia", OliaOnt.getURI());
   }
 
   public void extractPOSandExtraInfos(String posInfos) {

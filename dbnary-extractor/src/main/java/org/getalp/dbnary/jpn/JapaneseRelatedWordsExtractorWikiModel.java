@@ -118,10 +118,10 @@ public class JapaneseRelatedWordsExtractorWikiModel {
         case INIT:
           if (macro != null) {
             log.debug("RELWORDS: Got {} macro while in INIT state. for page: {}", macro,
-                this.delegate.currentLexEntry());
+                this.delegate.currentPagename());
           } else if (link != null) {
             log.debug("RELWORDS: Unexpected link {} while in INIT state. for page: {}", link,
-                this.delegate.currentLexEntry());
+                this.delegate.currentPagename());
           } else if (star != null) {
             ETAT = RELATION;
           } else if (term != null) {
@@ -163,7 +163,7 @@ public class JapaneseRelatedWordsExtractorWikiModel {
               currentNym = relMarkerToRelName.get(currentNym);
               if (null == currentNym) {
                 log.debug("RELWORDS: Unknown relation: {} in page {}", currentRelation,
-                    this.delegate.currentLexEntry());
+                    this.delegate.currentPagename());
               }
               currentRelation = "";
               ETAT = VALUES;
@@ -189,7 +189,7 @@ public class JapaneseRelatedWordsExtractorWikiModel {
               registerRelation(word, currentNym);
             } else {
               log.debug("RELWORDS: Got macro {} while in VALUE state in page {}", macro,
-                  this.delegate.currentLexEntry());
+                  this.delegate.currentPagename());
             }
           } else if (link != null) {
             if (!isAnExternalLink(link)) {

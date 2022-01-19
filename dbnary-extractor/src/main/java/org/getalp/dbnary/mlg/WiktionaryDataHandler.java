@@ -36,7 +36,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public void addExtraPartOfSpeech(String pos) {
     PosAndType pat = posAndTypeValueMap.get(pos);
     if (null == pat) {
-      log.debug("Unknown Part Of Speech value {} --in-- {}", pos, this.currentLexEntry());
+      log.debug("Unknown Part Of Speech value {} --in-- {}", pos, this.currentPagename());
     }
     if (null != typeResource(pat)) {
       aBox.add(aBox.createStatement(currentLexEntry, RDF.type, typeResource(pat)));

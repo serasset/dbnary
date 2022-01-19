@@ -46,11 +46,11 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // DONE: compute if the entry is a phrase or a word.
     PosAndType pat = posAndTypeValueMap.get(pos);
     Resource typeR = typeResource(pat);
-    if (currentWiktionaryPageName.startsWith("se ")) {
-      if (currentWiktionaryPageName.substring(2).trim().contains(" ")) {
+    if (currentPagename().startsWith("se ")) {
+      if (currentPagename().substring(2).trim().contains(" ")) {
         typeR = OntolexOnt.MultiWordExpression;
       }
-    } else if (currentWiktionaryPageName.contains(" ")) {
+    } else if (currentPagename().contains(" ")) {
       typeR = OntolexOnt.MultiWordExpression;
     }
     initializeLexicalEntry(pos, posResource(pat), typeR);

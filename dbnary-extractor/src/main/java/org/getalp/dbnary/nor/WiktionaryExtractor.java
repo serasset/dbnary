@@ -603,7 +603,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               extractDefinitions(trad.end(), end);
               return;
             default:
-              log.debug("Unknown Trad value {} --in-- {}", tTrad[0], wdh.currentLexEntry());
+              log.debug("Unknown Trad value {} --in-- {}", tTrad[0], wdh.currentPagename());
           }
         }
       }

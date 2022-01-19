@@ -136,7 +136,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public void finalizePageExtraction() {
     // Remove all inflections related to the current page as they cannot be attach to
     // another page anymore.
-    heldBackOtherForms.remove(currentWiktionaryPageName);
+    heldBackOtherForms.remove(currentPagename());
     super.finalizePageExtraction();
   }
 

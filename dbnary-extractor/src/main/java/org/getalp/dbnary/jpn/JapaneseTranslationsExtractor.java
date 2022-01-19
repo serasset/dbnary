@@ -146,11 +146,11 @@ public class JapaneseTranslationsExtractor {
               // ignore
             } else {
               log.debug("Got {} macro while in INIT state. for page: {}", macro,
-                  this.delegate.currentLexEntry());
+                  this.delegate.currentPagename());
             }
           } else if (link != null) {
             log.debug("Unexpected link {} while in INIT state. for page: {}", link,
-                this.delegate.currentLexEntry());
+                this.delegate.currentPagename());
           } else if (star != null) {
             ETAT = LANGUE;
           } else if (term != null) {
@@ -218,7 +218,7 @@ public class JapaneseTranslationsExtractor {
               lang = AbstractWiktionaryExtractor.stripParentheses(lang);
               lang = JapaneseLangtoCode.threeLettersCode(lang);
               if (null == lang) {
-                log.debug("Unknown language {} : {}", langname, this.delegate.currentLexEntry());
+                log.debug("Unknown language {} : {}", langname, this.delegate.currentPagename());
               }
               langname = "";
               ETAT = TRAD;
@@ -323,7 +323,7 @@ public class JapaneseTranslationsExtractor {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               if (null != word && word.length() != 0) {
                 log.debug("Word is not null ({}) when handling t+- macro in {}", word,
-                    this.delegate.currentLexEntry());
+                    this.delegate.currentPagename());
               }
               String l = argmap.get("1");
               if (null != l && (null != lang) && !lang.equals(LangTools.getCode(l))) {
@@ -340,7 +340,7 @@ public class JapaneseTranslationsExtractor {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               if (null != word && word.length() != 0) {
                 log.debug("Word is not null ({}) when handling lang macro in {}", word,
-                    this.delegate.currentLexEntry());
+                    this.delegate.currentPagename());
               }
               String l = argmap.get("1");
               if (null != l && (null != lang) && !lang.equals(LangTools.getCode(l))) {

@@ -96,10 +96,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    */
   @Override
   public void extractData() {
-    extractData(false);
-  }
-
-  protected void extractData(boolean foreignExtraction) {
     wdh.initializePageExtraction(getWiktionaryPageName());
 
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);

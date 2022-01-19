@@ -1,12 +1,6 @@
 package org.getalp.dbnary.deu;
 
-import static org.getalp.dbnary.deu.GermanInflectionData.Cas;
-import static org.getalp.dbnary.deu.GermanInflectionData.Degree;
-import static org.getalp.dbnary.deu.GermanInflectionData.GNumber;
-import static org.getalp.dbnary.deu.GermanInflectionData.Genre;
-import static org.getalp.dbnary.deu.GermanInflectionData.InflectionType;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.PropertyObjectPair;
@@ -22,7 +16,7 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
   public GermanDeklinationExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi,
       Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL, wdh,
-        new GermanDeklinationTableExtractor(wdh.currentLexEntry()));
+        new GermanDeklinationTableExtractor(wdh.currentPagename()));
   }
 
 
@@ -34,7 +28,7 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
       return;
     }
 
-    wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 1, infl);
+    wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentPagename(), 1, infl);
   }
 
   // extract a String in s between start and end

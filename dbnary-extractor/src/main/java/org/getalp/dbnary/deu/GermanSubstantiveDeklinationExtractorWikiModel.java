@@ -1,9 +1,5 @@
 package org.getalp.dbnary.deu;
 
-import static org.getalp.dbnary.deu.GermanInflectionData.Cas;
-import static org.getalp.dbnary.deu.GermanInflectionData.GNumber;
-import static org.getalp.dbnary.deu.GermanInflectionData.Genre;
-import java.util.List;
 import java.util.Locale;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
@@ -19,7 +15,7 @@ public class GermanSubstantiveDeklinationExtractorWikiModel extends GermanTableE
   public GermanSubstantiveDeklinationExtractorWikiModel(IWiktionaryDataHandler wdh,
       WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL, wdh,
-        new GermanSubstantiveDeklinationTableExtractor(wdh.currentLexEntry()));
+        new GermanSubstantiveDeklinationTableExtractor(wdh.currentPagename()));
   }
 
 }

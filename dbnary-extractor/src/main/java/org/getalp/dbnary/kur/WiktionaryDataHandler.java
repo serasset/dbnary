@@ -68,7 +68,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     PosAndType pat = posAndTypeValueMap.get(pos);
     if (null == pat) {
-      log.debug("Unknown POS : {} in {}", pos, currentWiktionaryPageName);
+      log.debug("Unknown POS : {} in {}", pos, currentPagename());
     }
     initializeLexicalEntry(pos, posResource(pat), typeResource(pat));
   }

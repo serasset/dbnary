@@ -545,7 +545,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             .collect(Collectors.toList());
     forms.forEach(pair -> {
       pair.getRight().addValue(
-          new WrittenRepresentation(wdh.currentLexEntry(), wdh.getCurrentEntryLanguage()));
+          new WrittenRepresentation(wdh.currentPagename(), wdh.getCurrentEntryLanguage()));
       if (null != pronunciation && pronunciation.length() > 0)
         pair.getRight()
             .addValue(new PhoneticRepresentation(pronunciation, wdh.getCurrentEntryLanguage()));

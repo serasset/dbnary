@@ -98,7 +98,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
       super.substituteTemplateCall(templateName, parameterMap, writer);
     } else {
       log.debug("Called template: {} while parsing translations of: {}", templateName,
-          delegate.currentLexEntry());
+          delegate.currentPagename());
       // Just ignore the other template calls (uncomment to expand the template calls).
       // super.substituteTemplateCall(templateName, parameterMap, writer);
     }
@@ -379,12 +379,12 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               if (null != word && word.length() != 0) {
                 log.debug("Word is not null ({}) when handling käännös macro in {}", word,
-                    this.delegate.currentLexEntry());
+                    this.delegate.currentPagename());
               }
               String l = argmap.get("1");
               if (null != l && (null != lang) && !lang.equals(LangTools.getCode(l))) {
                 log.debug("Language in käännös macro does not map language in list in {}",
-                    this.delegate.currentLexEntry());
+                    this.delegate.currentPagename());
               }
               word = argmap.get("2");
               argmap.remove("1");
@@ -412,7 +412,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
                 }
               } else if (usage.length() != 0) {
                 log.debug("Non empty usage ({}) while word is null in: {}", usage,
-                    delegate.currentLexEntry());
+                    delegate.currentPagename());
               }
               previousLang = lang;
               lang = null;

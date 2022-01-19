@@ -82,7 +82,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                 if (pair[1].length() > 5) {
                   addGender(pair[1].substring(2, 5));
                 } else {
-                  log.debug("Unknown Gim:gender {} --in-- {}", pair[1], this.currentLexEntry());
+                  log.debug("Unknown Gim:gender {} --in-- {}", pair[1], this.currentPagename());
                 }
                 break;
               case "vnsdgst": // Gnumber : singular or plural
@@ -156,7 +156,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               default:
                 if (!pair[0].startsWith("v") && !pair[0].startsWith("d")) {
                   log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0],
-                      this.currentLexEntry());
+                      this.currentPagename());
                 }
             }
           }
@@ -177,7 +177,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public void addExtraPartOfSpeech(String pos) {
     PosAndType pat = posAndTypeValueMap.get(pos);
     if (null == pat) {
-      log.debug("Unknown Part Of Speech value {} --in-- {}", pos, this.currentLexEntry());
+      log.debug("Unknown Part Of Speech value {} --in-- {}", pos, this.currentPagename());
     }
     if (null != typeResource(pat)) {
       aBox.add(aBox.createStatement(currentLexEntry, RDF.type, typeResource(pat)));
@@ -200,7 +200,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         aBox.add(aBox.createStatement(currentLexEntry, LexinfoOnt.gender, LexinfoOnt.neuter));
         break;
       default:
-        log.debug("Unknown gender {} --in-- {}", info, this.currentLexEntry());
+        log.debug("Unknown gender {} --in-- {}", info, this.currentPagename());
     }
   }
 
@@ -209,7 +209,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       if (tNyms[1].equals("lt")) {
         registerNymRelation(tNyms[2], nymRel, gloss);
       } else {
-        log.debug("Unused Nyms:lang {} --in-- {}", tNyms[1], this.currentLexEntry());
+        log.debug("Unused Nyms:lang {} --in-- {}", tNyms[1], this.currentPagename());
       }
     }
   }
@@ -219,7 +219,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       if (tRel[1].equals("lt")) {
         aBox.add(LexinfoOnt.relatedTerm, LexinfoOnt.relatedTerm, tRel[2]);
       } else {
-        log.debug("Unused RelatedTerm:lang {} --in-- {}", tRel[1], this.currentLexEntry());
+        log.debug("Unused RelatedTerm:lang {} --in-- {}", tRel[1], this.currentPagename());
       }
     }
   }

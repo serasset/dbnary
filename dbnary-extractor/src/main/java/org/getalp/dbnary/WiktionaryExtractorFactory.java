@@ -9,11 +9,6 @@ public class WiktionaryExtractorFactory {
     return getExtractor("WiktionaryExtractor", language, wdh);
   }
 
-  public static IWiktionaryExtractor getForeignExtractor(String language,
-      IWiktionaryDataHandler wdh) {
-    return getExtractor("ForeignLanguagesWiktionaryExtractor", language, wdh);
-  }
-
   public static IWiktionaryExtractor getExtractor(String className, String language,
       IWiktionaryDataHandler wdh) {
     IWiktionaryExtractor we = null;

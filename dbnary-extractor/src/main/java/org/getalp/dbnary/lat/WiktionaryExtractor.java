@@ -192,10 +192,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void extractData() {
-    extractData(false);
-  }
-
-  protected void extractData(boolean extractForeignData) {
     wdh.initializePageExtraction(getWiktionaryPageName());
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     int startSection = -1;
@@ -206,21 +202,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     while (languageFilter.find()) {
       nextLang = getLanguageInHeader(languageFilter);
-      extractData(startSection, languageFilter.start(), lang, extractForeignData);
+      extractData(startSection, languageFilter.start(), lang);
       lang = nextLang;
       startSection = languageFilter.end();
     }
 
     // Either the filter is at end of sequence or on French language header.
     if (languageFilter.hitEnd() && startSection != -1) {
-      extractData(startSection, pageContent.length(), lang, extractForeignData);
+      extractData(startSection, pageContent.length(), lang);
     }
     wdh.finalizePageExtraction();
   }
 
 
-  protected void extractData(int startOffset, int endOffset, String lang,
-      boolean extractForeignData) {
+  protected void extractData(int startOffset, int endOffset, String lang) {
     if (lang == null) {
       return;
     }

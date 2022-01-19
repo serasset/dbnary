@@ -13,10 +13,6 @@ public class WiktionaryDataHandlerFactory {
     return getDataHandler("WiktionaryDataHandler", language, tdbDir);
   }
 
-  public static IWiktionaryDataHandler getForeignDataHandler(String language, String tdbDir) {
-    return getDataHandler("ForeignLanguagesWiktionaryDataHandler", language, tdbDir);
-  }
-
   private static IWiktionaryDataHandler getDataHandler(String className, String language,
       String tdbDir) {
     IWiktionaryDataHandler wdh = null;

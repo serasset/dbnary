@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
 import org.slf4j.Logger;
@@ -69,7 +68,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         case "PAGENAME":
           return;
         default:
-          log.debug("Unknown posMaccro {} --in-- {}", t[0], this.currentLexEntry());
+          log.debug("Unknown posMaccro {} --in-- {}", t[0], this.currentPagename());
           return;
       }
       addExtraPartOfSpeech(t[0]);
@@ -79,7 +78,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public void addExtraPartOfSpeech(String pos) {
     PosAndType pat = posAndTypeValueMap.get(pos);
     if (null == pat) {
-      log.debug("Unknown Part Of Speech value {} --in-- {}", pos, this.currentLexEntry());
+      log.debug("Unknown Part Of Speech value {} --in-- {}", pos, this.currentPagename());
     }
     if (null != typeResource(pat)) {
       aBox.add(aBox.createStatement(currentLexEntry, RDF.type, typeResource(pat)));
@@ -113,19 +112,19 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                 switch (pair[1]) {
                   case "e":
                     log.debug("Pronunciation ekavski unused in {} --in-- {}", infos[i], infos[0],
-                        this.currentLexEntry());
+                        this.currentPagename());
                     break;
                   case "ije":
                     log.debug("Pronunciation ijekavski unused in {} --in-- {}", infos[i], infos[0],
-                        this.currentLexEntry());
+                        this.currentPagename());
                     break;
                   case "i":
                     log.debug("Pronunciation ikavski unused in {} --in-- {}", infos[i], infos[0],
-                        this.currentLexEntry());
+                        this.currentPagename());
                     break;
                   default:
                     log.debug("Pronunciation unused : {} in {} --in-- {}", infos[i], infos[0],
-                        this.currentLexEntry());
+                        this.currentPagename());
                 }
               } else {
                 addGender(pair[1]);
@@ -141,7 +140,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               break;
             case "p":
               log.debug("Paradigme unused : {} in {} --in-- {}", infos[i], infos[0],
-                  this.currentLexEntry());
+                  this.currentPagename());
               break;
             case "def":
             case "def_a":
@@ -153,7 +152,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               break;
             default:
               log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0],
-                  this.currentLexEntry());
+                  this.currentPagename());
           }
         }
       } else {
@@ -170,12 +169,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                 aBox.add(currentLexEntry, OntolexOnt.writtenRep, cirilica,
                     getCurrentEntryLanguage());
               } else {
-                log.debug("r (Cirilica) unused in {} --in-- {}", infos[0], this.currentLexEntry());
+                log.debug("r (Cirilica) unused in {} --in-- {}", infos[0], this.currentPagename());
               }
               break;
             default:
               log.debug("Unused info {} in {} --in-- {}", infos[i], infos[0],
-                  this.currentLexEntry());
+                  this.currentPagename());
           }
         }
       }
@@ -207,7 +206,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         aBox.add(aBox.createStatement(currentLexEntry, LexinfoOnt.gender, LexinfoOnt.neuter));
         break;
       default:
-        log.debug("Unknown gender {} --in-- {}", info, this.currentLexEntry());
+        log.debug("Unknown gender {} --in-- {}", info, this.currentPagename());
     }
   }
 }

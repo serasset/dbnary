@@ -70,8 +70,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     initializeLexicalEntry(pos, posResource(pat), typeR);
     Model morphoBox = getFeatureBox(ExtractionFeature.MORPHOLOGY);
     if (null != morphoBox) {
+      String heldBackKey = currentPage.getName() + "___/___" + shortSectionLanguageCode;
       HashMap<String, Set<LexicalForm>> pos2forms =
-          heldBackOtherForms.getOrDefault(currentPage.getName(), new HashMap<>());
+          heldBackOtherForms.getOrDefault(heldBackKey, new HashMap<>());
       Set<LexicalForm> forms = pos2forms.getOrDefault(pos, new HashSet<>());
       forms.forEach(f -> f.attachTo(currentLexEntry.inModel(morphoBox)));
     }
@@ -118,9 +119,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // Second, we store the other form for future possible matching entries
     Pair<String, String> key = new ImmutablePair<>(onLexicalEntry, pos);
 
-
+    String heldBackKey = onLexicalEntry + "___/___"+ languageCode;
     HashMap<String, Set<LexicalForm>> pos2forms =
-        heldBackOtherForms.computeIfAbsent(onLexicalEntry, k -> new HashMap<>());
+        heldBackOtherForms.computeIfAbsent(heldBackKey, k -> new HashMap<>());
     Set<LexicalForm> otherForms = pos2forms.computeIfAbsent(pos, k -> new HashSet<>());
 
     otherForms.add(form);

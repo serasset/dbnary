@@ -218,7 +218,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
 
   public void displayUsedTemplates() {
     if (templates != null && templates.size() > 0) {
-      log.debug("in {}: template used : {}", this.delegate.currentLexEntry(), templates.toString());
+      log.debug("in {}: template used : {}", this.delegate.currentPagename(), templates.toString());
     }
   }
 }

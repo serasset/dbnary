@@ -87,7 +87,7 @@ public class GermanMorphologyExtractor {
         // DONE fetch and expand deklination page and parse all tables.
         // TODO: check if such template may be used on substantivs
         if (wdh.currentWiktionaryPos().equals("Substantiv")) {
-          log.debug("Adjectiv ubersicht in noun : {} ", wdh.currentLexEntry());
+          log.debug("Adjectiv ubersicht in noun : {} ", wdh.currentPagename());
         }
         // DONE: Extract comparative/Superlative from parametermap before fetching the full flexion
         // page.
@@ -181,7 +181,7 @@ public class GermanMorphologyExtractor {
     signature.setLength(signature.length() - 1);
     // TODO: treat defective cases (kein plural, etc.)
 
-    log.debug("SUBSTANTIVE MORPHOLOGY @ {} >SIGNATURE: {}", wdh.currentLexEntry(),
+    log.debug("SUBSTANTIVE MORPHOLOGY @ {} >SIGNATURE: {}", wdh.currentPagename(),
         signature.toString());
   }
 
@@ -190,7 +190,7 @@ public class GermanMorphologyExtractor {
     if (arg.length() == 1 && ('-' == (c = arg.charAt(0)) || ('\u2010' <= c && c <= '\u2015'))) {
       signature.append("X");
     } else {
-      signature.append(StringDistance.suffixChange(wdh.currentLexEntry(), arg.trim()));
+      signature.append(StringDistance.suffixChange(wdh.currentPagename(), arg.trim()));
     }
 
   }
@@ -219,7 +219,7 @@ public class GermanMorphologyExtractor {
         inflection.degree = SUPERLATIVE;
       } else {
         log.debug("no known degree, neither singular in Substantiv Ubersicht: {} | {}", key,
-            wdh.currentLexEntry());
+            wdh.currentPagename());
       }
 
       value = value.replaceAll("<(?:/)?small>", "");
@@ -234,7 +234,7 @@ public class GermanMorphologyExtractor {
     if (s.length() == 0 || s.equals("—") || s.equals("-")) {
       return;
     }
-    wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentLexEntry(), 1, infl);
+    wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentPagename(), 1, infl);
   }
 
   private void extractFormsPageWithModel(String formsPageName, String pageName,

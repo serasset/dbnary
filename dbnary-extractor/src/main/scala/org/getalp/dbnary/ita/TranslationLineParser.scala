@@ -183,7 +183,7 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
   }
 
   def extractTranslationLine(input: WikiCharSequence, gloss: Resource, delegate: IWiktionaryDataHandler, filter: AbstractGlossFilter): Unit = {
-    parseTranslationLine(input, delegate.currentLexEntry()).foreach {
+    parseTranslationLine(input, delegate.currentPagename()).foreach {
       case Translation(lg, wr, null, use) => delegate.registerTranslation(lg, gloss, use, wr)
       case Translation(lg, wr, localGloss, use) => {
         val g2 = createGloss(gloss, localGloss, delegate, filter)

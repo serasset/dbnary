@@ -185,7 +185,7 @@ class TranslationsParser extends RegexParsers with PackratParsers {
   val TBracket = """\[([^\]]*)\]""".r
 
   def extractTranslations(input: String, delegate: IWiktionaryDataHandler, filter: AbstractGlossFilter): Unit =
-    parseTranslations(input, delegate.currentLexEntry()).foreach {
+    parseTranslations(input, delegate.currentPagename()).foreach {
       t => {
         t.writtenRep match {
           case TBracket(v) => delegate.registerTranslation(t.language, createGloss(t.gloss, delegate, filter), t.usage, v)

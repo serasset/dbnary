@@ -82,7 +82,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       Resource[] senseAndEntry = currentWordsenses.get(n);
       if (null == senseAndEntry) {
         log.debug("Could not fetch sense resource for nym property of {} in {}", n,
-            currentLexEntry());
+            currentPagename());
         StructuredGloss sg = new StructuredGloss(n, "");
         Resource g = super.createGlossResource(sg);
         super.registerNymRelation(target, synRelation, g);
@@ -447,7 +447,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       } else {
         // Forget this translation.
         log.debug("No gloss for a translation in a multi entry page: {}, {} : {} / {}",
-            currentLexEntry(), lang, word, usage);
+            currentPagename(), lang, word, usage);
       }
     } else {
       // parse the gloss to get the sense number(s)
@@ -458,7 +458,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       for (String n : numlist) {
         Resource[] se = currentWordsenses.get(n);
         if (se == null) {
-          log.debug("Could not fetch sense resource for {} in {}", n, currentLexEntry());
+          log.debug("Could not fetch sense resource for {} in {}", n, currentPagename());
         } else {
           senseAndEntries.add(se);
         }
@@ -531,7 +531,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
             ns.add(n1 + "." + i);
           }
         } else {
-          log.debug("Invalid range: {} in {}", nums, currentLexEntry());
+          log.debug("Invalid range: {} in {}", nums, currentPagename());
           ns.add(nums);
         }
       } catch (NumberFormatException e) {
@@ -557,7 +557,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
             }
           }
         } else {
-          log.debug("Invalide range: {} in {}", nums, currentLexEntry());
+          log.debug("Invalide range: {} in {}", nums, currentPagename());
           ns.add(nums);
         }
       } catch (NumberFormatException e) {

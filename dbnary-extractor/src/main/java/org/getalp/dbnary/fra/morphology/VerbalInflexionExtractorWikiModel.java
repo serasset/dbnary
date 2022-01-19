@@ -8,7 +8,6 @@ import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.fra.WiktionaryDataHandler;
 import org.getalp.dbnary.morphology.RefactoredTableExtractor;
-import org.getalp.iso639.ISO639_3;
 import org.getalp.model.ontolex.LexicalForm;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -45,7 +44,7 @@ public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
     String frName = FrenchLanguageNames.getName(delegate.getCurrentEntryLanguage(), wi);
     if (null == frName)
       return null;
-    return "Conjugaison:" + frName + "/" + delegate.currentLexEntry();
+    return "Conjugaison:" + frName + "/" + delegate.currentPagename();
   }
 
   public void extractConjugations(List<String> context) {
@@ -56,7 +55,7 @@ public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
     String conjugationPageContent = wi.getTextOfPage(conjugationPagename);
 
     if (conjugationPageContent == null) {
-      log.debug("No conjugation page for '" + delegate.currentLexEntry() + "/"
+      log.debug("No conjugation page for '" + delegate.currentPagename() + "/"
           + delegate.getCurrentEntryLanguage() + "'");
       return;
     }
@@ -101,7 +100,7 @@ public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
       if (null != tables)
         tables.forEach(t -> registerAllForms(verbalTableExtractor.parseTable(t)));
       else
-        log.debug("No table in the conjugation page for {} ({})", delegate.currentLexEntry(),
+        log.debug("No table in the conjugation page for {} ({})", delegate.currentPagename(),
             delegate.getCurrentEntryLanguage());
     }
   }

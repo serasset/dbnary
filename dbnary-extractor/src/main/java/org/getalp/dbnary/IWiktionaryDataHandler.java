@@ -121,7 +121,7 @@ public interface IWiktionaryDataHandler {
 
   int nbEntries();
 
-  String currentLexEntry();
+  String currentPagename();
 
   /**
    * Write a serialized represention of this model in a specified language. The language in which to

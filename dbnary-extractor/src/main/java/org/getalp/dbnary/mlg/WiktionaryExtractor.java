@@ -310,7 +310,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               || trad.group(1).startsWith("vang") || trad.group(1).startsWith("Tsofoka")) {
             continue;
           }
-          log.debug("Unknown Trad value {} --in-- {}", trad.group(1), wdh.currentLexEntry());
+          log.debug("Unknown Trad value {} --in-- {}", trad.group(1), wdh.currentPagename());
         }
       } else if (trad.group(2) != null) {
         if (trad.group(2).startsWith("fototeny")) {
@@ -334,7 +334,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (trad.group(2).contains("...")) {
             continue;
           }
-          log.debug("Unknown Trad2 lang value {} --in-- {}", lang, wdh.currentLexEntry());
+          log.debug("Unknown Trad2 lang value {} --in-- {}", lang, wdh.currentPagename());
         }
       } else if (trad.group(4) != null) {
         mlgwdh.addTranslation(trad.group(4), currentGloss, null, trad.group(5));

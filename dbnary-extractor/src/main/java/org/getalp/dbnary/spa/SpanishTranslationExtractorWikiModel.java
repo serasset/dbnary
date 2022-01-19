@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.AbstractGlossFilter;
 import org.getalp.dbnary.IWiktionaryDataHandler;
@@ -127,7 +126,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
           // the current item is a senseNumber or range
           if (null != trans && null != currentGloss) {
             log.debug("Missing Comma after translation (was {}) when parsing a new gloss in {}",
-                trans, delegate.currentLexEntry());
+                trans, delegate.currentPagename());
             if (usage.length() == 0) {
               usage = null;
             } else {
@@ -168,7 +167,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
           // translation
           if (null != trans) {
             log.debug("Non null translation (was {}) when registering new translation {} in {}",
-                trans, s, delegate.currentLexEntry());
+                trans, s, delegate.currentPagename());
           }
           trans = s;
         }

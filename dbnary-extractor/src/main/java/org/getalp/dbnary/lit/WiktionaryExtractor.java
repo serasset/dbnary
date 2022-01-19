@@ -352,7 +352,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
           } else if (!tTrad[0].contains("1") && !tTrad[0].contains("2")
               && !tTrad[0].contains("3")) {
-            log.debug("Unknown Trad value {} --in-- {}", tTrad[0], wdh.currentLexEntry());
+            log.debug("Unknown Trad value {} --in-- {}", tTrad[0], wdh.currentPagename());
           }
       }
     }
@@ -372,7 +372,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
     } else {
       if (c == null) {
-        log.debug("Content null : {} --in-- {}", template, wdh.currentLexEntry());
+        log.debug("Content null : {} --in-- {}", template, wdh.currentPagename());
       }
       res = c;
     }
@@ -428,7 +428,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               nymRel = "ant";
               break;
             default:
-              log.debug("Unknown Nyms level {} --in-- {}", tNyms[0], wdh.currentLexEntry());
+              log.debug("Unknown Nyms level {} --in-- {}", tNyms[0], wdh.currentPagename());
               return;
           }
           gloss = createGloss(tNyms, rank++);
@@ -452,7 +452,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             // search and extract sinoniai block in url tNyms[0]
             parseNyms(wi.getTextOfPage(tNyms[0]), blockString);
           } else {
-            log.debug("Unknown Nyms level {} --in-- {}", tNyms[0], wdh.currentLexEntry());
+            log.debug("Unknown Nyms level {} --in-- {}", tNyms[0], wdh.currentPagename());
           }
       }
     }
@@ -489,7 +489,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         case "rel-bottom":
           break;
         default:
-          log.debug("Unknown Related Term info {} --in-- {}", tRel[0], wdh.currentLexEntry());
+          log.debug("Unknown Related Term info {} --in-- {}", tRel[0], wdh.currentPagename());
       }
     }
   }
@@ -505,7 +505,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             wdh.registerPronunciation(pron.group(2), "lt-fonipa");
             break;
           default:
-            log.debug("Unknown Pron {} --in-- {}", pron.group(1), wdh.currentLexEntry());
+            log.debug("Unknown Pron {} --in-- {}", pron.group(1), wdh.currentPagename());
         }
       }
     }

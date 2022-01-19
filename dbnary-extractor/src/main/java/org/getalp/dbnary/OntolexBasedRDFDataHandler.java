@@ -103,11 +103,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   private String NS;
   protected String WIKT;
   protected String currentEncodedLexicalEntryName;
-  /**
-   * @deprecated use currentPage.getName()
-   */
-  @Deprecated
-  protected String currentWiktionaryPageName;
+
   @Deprecated
   protected CounterSet currentLexieCount = new CounterSet();
   /**
@@ -269,13 +265,11 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   @Override
   public void initializePageExtraction(String wiktionaryPageName) {
     currentPage = new Page(longEditionLanguageCode, wiktionaryPageName);
-    currentWiktionaryPageName = wiktionaryPageName;
     currentLexieCount.resetAll();
   }
 
   @Override
   public void finalizePageExtraction() {
-    currentWiktionaryPageName = null;
     currentPage = null;
   }
 
@@ -1077,9 +1071,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public String currentLexEntry() {
-    // TODO Auto-generated method stub
-    return currentWiktionaryPageName;
+  public String currentPagename() {
+    return currentPage.getName();
   }
 
   public String getPrefix() {

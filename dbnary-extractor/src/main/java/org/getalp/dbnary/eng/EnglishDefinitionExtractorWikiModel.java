@@ -38,7 +38,7 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
   public void parseDefinition(String definition, int defLevel) {
     // Render the definition to plain text, while ignoring the example template
     // log.trace("extracting definitions in {}", this.getPageName());
-    log.debug("Parsing definition : ||| {} ||| in {}", definition, delegate.currentLexEntry());
+    log.debug("Parsing definition : ||| {} ||| in {}", definition, delegate.currentPagename());
     String def = null;
     try {
       def = render(new PlainTextConverter(), definition).trim();

@@ -350,7 +350,7 @@ public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
       case "Padež":
         break;
       default:
-        log.debug("Unknown contextHeader {} --in-- {}", contextHeader, wdh.currentLexEntry());
+        log.debug("Unknown contextHeader {} --in-- {}", contextHeader, wdh.currentPagename());
     }
 
     switch (contextTop) {
@@ -392,13 +392,13 @@ public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
         inflectionData.genre = SerboCroatianInflectionData.Genre.NEUTER;
         break;
       default:
-        log.debug("Unknown contextTop {} --in-- {}", contextTop, wdh.currentLexEntry());
+        log.debug("Unknown contextTop {} --in-- {}", contextTop, wdh.currentPagename());
     }
 
     if (word != null && !word.equals(("")) && !word.contains("1   Standardni hrvatski zapis;")
         && !word.contains("2   Za muški rod; u slučaju vršitelja radnje")) {
       word = word.replaceAll("\\d", "");
-      wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), word, wdh.currentLexEntry(), 1,
+      wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), word, wdh.currentPagename(), 1,
           inflectionData.toPropertyObjectMap());
     }
   }
@@ -424,7 +424,7 @@ public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
         inflectionData.deg = SerboCroatianInflectionData.Degree.SUPERLATIVE;
         break;
       default:
-        log.debug("Unknown contextDiv {} --in-- {}", contextDiv, wdh.currentLexEntry());
+        log.debug("Unknown contextDiv {} --in-- {}", contextDiv, wdh.currentPagename());
     }
   }
 
@@ -512,7 +512,7 @@ public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
         case "neživo živo": // ignored here
           break;
         default:
-          log.debug("Unknown contextLeft {} --in-- {}", ctxtLeft, wdh.currentLexEntry());
+          log.debug("Unknown contextLeft {} --in-- {}", ctxtLeft, wdh.currentPagename());
       }
     }
   }

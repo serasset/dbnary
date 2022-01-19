@@ -408,7 +408,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       m.region(start, end);
       SerboCroatianInflectionData inf = new SerboCroatianInflectionData();
       while (m.find()) {
-        wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), m.group(1), wdh.currentLexEntry(),
+        wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), m.group(1), wdh.currentPagename(),
             1, inf.toPropertyObjectMap());
       }
     } else {

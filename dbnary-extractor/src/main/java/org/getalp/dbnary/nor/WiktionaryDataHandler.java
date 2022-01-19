@@ -60,7 +60,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     }
     PosAndType pat = posAndTypeValueMap.get(pos);
     if (null == pat) {
-      log.debug("Unknown Part Of Speech value {} --in-- {}", pos, this.currentLexEntry());
+      log.debug("Unknown Part Of Speech value {} --in-- {}", pos, this.currentPagename());
     }
     if (null != typeResource(pat)) {
       aBox.add(aBox.createStatement(currentLexEntry, RDF.type, typeResource(pat)));
@@ -82,7 +82,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           case "norm":
             break;
           default:
-            log.debug("Unknown infl Info {} --in-- {}", t, this.currentLexEntry());
+            log.debug("Unknown infl Info {} --in-- {}", t, this.currentPagename());
         }
         continue;
       }
@@ -124,7 +124,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                 case "ja":
                   break;
                 default:
-                  log.debug("Unknown ref Info {} --in-- {}", infos[1], this.currentLexEntry());
+                  log.debug("Unknown ref Info {} --in-- {}", infos[1], this.currentPagename());
               }
               break;
             case "unormert":
@@ -157,7 +157,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
             case "riksmål":
               break;
             default:
-              log.debug("Unknown POS Info {} --in-- {}", infos[1], this.currentLexEntry());
+              log.debug("Unknown POS Info {} --in-- {}", infos[1], this.currentPagename());
           }
         } else {
           if (infos[1].replaceAll("\\d", "").equals("")) {
@@ -301,7 +301,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         aBox.add(aBox.createStatement(currentLexEntry, LexinfoOnt.gender, LexinfoOnt.neuter));
         break;
       default:
-        log.debug("Unknown gender {} --in-- {}", s, this.currentLexEntry());
+        log.debug("Unknown gender {} --in-- {}", s, this.currentPagename());
     }
   }
 

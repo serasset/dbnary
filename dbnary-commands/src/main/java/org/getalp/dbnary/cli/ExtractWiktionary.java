@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.Callable;
 import javax.xml.stream.XMLInputFactory;
@@ -62,7 +63,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
 
   @Override
   public Integer call() {
-    Integer returnCode = null;
+    Integer returnCode;
     try {
       returnCode = prepareExtraction();
     } catch (WiktionaryIndexerException e) {
@@ -237,7 +238,6 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
 
   private String formatHMS(long durationInMillis) {
     Duration d = Duration.ofMillis(durationInMillis);
-    StringBuffer b = new StringBuffer();
     long h = d.toHours();
     long m = d.toMinutes() % 60;
     long s = d.getSeconds() % 60;
@@ -253,7 +253,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
             : new FileOutputStream(of)) {
       spec.commandLine().getErr().println(
           "Dumping " + features.getOutputFormat() + " representation of " + f.toString() + ".");
-      wdh.dump(model, new PrintStream(ostream, false, "UTF-8"), features.getOutputFormat());
+      wdh.dump(model, ostream, features.getOutputFormat());
     } catch (IOException e) {
       spec.commandLine().getErr().println(
           "Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
@@ -279,11 +279,6 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
     }
   }
 
-  /**
-   * @param args arguments
-   * @throws IOException ...
-   * @throws WiktionaryIndexerException ...
-   */
   public static void main(String[] args) {
     new CommandLine(new ExtractWiktionary()).execute(args);
   }

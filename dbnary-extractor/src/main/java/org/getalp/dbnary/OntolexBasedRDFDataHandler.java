@@ -97,7 +97,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   protected Resource lexvoExtractedLanguage;
   protected Resource lexvoSectionLanguage;
 
-  private Set<Statement> heldBackStatements = new HashSet<Statement>();
+  private Set<Statement> heldBackStatements = new HashSet<>();
 
   protected int nbEntries = 0;
   private String NS;
@@ -262,10 +262,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public boolean isDisabled(ExtractionFeature f) {
-    Map<ExtractionFeature, Model> features =
-        getExtractedLanguage().equals(getCurrentEntryLanguage()) ? endolexFeatureBoxes
-            : exolexFeatureBoxes;
-    return !features.containsKey(f);
+    Model features = getFeatureBox(f);
+    return null == features;
   }
 
   @Override

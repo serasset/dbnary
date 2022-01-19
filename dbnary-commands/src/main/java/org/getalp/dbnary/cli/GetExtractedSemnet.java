@@ -3,6 +3,7 @@ package org.getalp.dbnary.cli;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.concurrent.Callable;
 import org.apache.jena.rdf.model.Model;
 import org.getalp.dbnary.ExtractionFeature;
@@ -41,16 +42,16 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
 
     for (ExtractionFeature f : features.getEndolexFeatures()) {
       if (!f.equals(ExtractionFeature.HDT)) {
-        spec.commandLine().getErr().println("----------- " + f + " ----------");
-        dumpBox(f, false);
+        System.out.println("----------- " + f + " ----------");
+        dumpBox(f, false, System.out);
       }
     }
 
     if (null != features.getExolexFeatures()) {
       for (ExtractionFeature f : features.getExolexFeatures()) {
         if (!f.equals(ExtractionFeature.HDT)) {
-          spec.commandLine().getErr().println("----------- EXOLEX: " + f + " ----------");
-          dumpBox(f, true);
+          System.out.println("----------- EXOLEX: " + f + " ----------");
+          dumpBox(f, true, System.out);
         }
       }
     }
@@ -58,29 +59,20 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
     return 0;
   }
 
-  public void dumpBox(ExtractionFeature f, boolean isExolex) {
-    OutputStream ostream = System.out;
+  public void dumpBox(ExtractionFeature f, boolean isExolex, PrintStream ostream) {
     Model model = isExolex ? wdh.getExolexFeatureBox(f) : wdh.getEndolexFeatureBox(f);
     try {
-      wdh.dump(model, new PrintStream(ostream, false, "UTF-8"), features.getOutputFormat());
-    } catch (IOException e) {
-      System.err.println(
-          "Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
-      e.printStackTrace(System.err);
+      wdh.dump(model, ostream, features.getOutputFormat());
     } finally {
       if (null != ostream) {
-        try {
-          ostream.flush();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
+        ostream.flush();
       }
     }
   }
 
 
   public Integer call() {
-    Integer returnCode = null;
+    Integer returnCode;
     try {
       returnCode = prepareExtraction();
     } catch (WiktionaryIndexerException e) {

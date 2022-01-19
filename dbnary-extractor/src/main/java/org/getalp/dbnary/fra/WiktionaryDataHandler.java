@@ -70,7 +70,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     initializeLexicalEntry(pos, posResource(pat), typeR);
     Model morphoBox = getFeatureBox(ExtractionFeature.MORPHOLOGY);
     if (null != morphoBox) {
-      String heldBackKey = currentPage.getName() + "___/___" + shortSectionLanguageCode;
+      String heldBackKey = computeLanguageSectionKey();
       HashMap<String, Set<LexicalForm>> pos2forms =
           heldBackOtherForms.getOrDefault(heldBackKey, new HashMap<>());
       Set<LexicalForm> forms = pos2forms.getOrDefault(pos, new HashSet<>());
@@ -101,6 +101,18 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     form.attachTo(currentLexEntry.inModel(morphoBox));
   }
 
+  private String computeLanguageSectionKey() {
+    return computeLanguageSectionKey(longSectionLanguageCode);
+  }
+
+  private String computeLanguageSectionKey(String language) {
+    return computeLanguageSectionKey(currentPage.getName(), language);
+  }
+
+  private String computeLanguageSectionKey(String pagename, String language) {
+    return pagename + "___/___" + language;
+  }
+
   public void registerInflection(LexicalForm form, String onLexicalEntry, String languageCode,
       String pos) {
 
@@ -119,7 +131,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // Second, we store the other form for future possible matching entries
     Pair<String, String> key = new ImmutablePair<>(onLexicalEntry, pos);
 
-    String heldBackKey = onLexicalEntry + "___/___"+ languageCode;
+    String heldBackKey = computeLanguageSectionKey(onLexicalEntry, languageCode);
     HashMap<String, Set<LexicalForm>> pos2forms =
         heldBackOtherForms.computeIfAbsent(heldBackKey, k -> new HashMap<>());
     Set<LexicalForm> otherForms = pos2forms.computeIfAbsent(pos, k -> new HashSet<>());
@@ -127,8 +139,11 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     otherForms.add(form);
   }
 
+  private Set<String> languagesOfCurrentPage = new HashSet<>();
+
   @Override
   public void initializePageExtraction(String wiktionaryPageName) {
+    languagesOfCurrentPage.clear();
     super.initializePageExtraction(wiktionaryPageName);
   }
 
@@ -137,8 +152,13 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public void finalizePageExtraction() {
     // Remove all inflections related to the current page as they cannot be attach to
     // another page anymore.
-    heldBackOtherForms.remove(currentPagename());
+    languagesOfCurrentPage.forEach(l -> heldBackOtherForms.remove(computeLanguageSectionKey(l)));
     super.finalizePageExtraction();
   }
 
+  @Override
+  public void initializeLanguageSection(String language) {
+    super.initializeLanguageSection(language);
+    languagesOfCurrentPage.add(longSectionLanguageCode);
+  }
 }

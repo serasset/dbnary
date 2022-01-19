@@ -34,7 +34,7 @@ public class BatchExtractorMixin {
 
   @Option(names = {"--no-tdb"}, negatable = true,
       description = "Use TDB2 (temporary file storage for extracted models, usefull/necessary for big dumps. set by default.")
-  private boolean useTdb = false;
+  private boolean useTdb = true;
 
   // non parameters
   private String tdbDir = null;

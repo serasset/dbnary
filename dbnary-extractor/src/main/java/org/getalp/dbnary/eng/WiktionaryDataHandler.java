@@ -169,9 +169,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return;
     }
     if (currentEtymologyEntry == null) { // there is no etymology section
-      currentEtymologyEntry = eBox.createResource(
-          getPrefix(eBox, lang) + "__ee_" + uriEncode(currentPagename()),
-          DBnaryEtymologyOnt.EtymologyEntry);
+      currentEtymologyEntry =
+          eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(currentPagename()),
+              DBnaryEtymologyOnt.EtymologyEntry);
       Resource w = ResourceFactory.createResource(
           WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
       eBox.add(currentEtymologyEntry, RDFS.seeAlso, w);
@@ -181,8 +181,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   private String computeEtymologyId(Model box, int etymologyNumber, String lang) {
-    return getPrefix(box, lang) + "__ee_" + etymologyNumber + "_"
-        + uriEncode(currentPagename());
+    return getPrefix(box, lang) + "__ee_" + etymologyNumber + "_" + uriEncode(currentPagename());
   }
 
   // TODO : check if we should create the prefixes in the aBox or in the eBox
@@ -245,8 +244,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, currentEtymologyEntry);
           // TODO: when extracting a reconstructed word the URL of wiktionary page is not correctly
           // computed
-          Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentPagename())
-              + "#" + uriEncode(currentEntryLanguageName));
+          Resource w = ResourceFactory.createResource(
+              WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
           eBox.add(vocable0, RDFS.seeAlso, w);
           eBox.add(vocable0, RDFS.label, word, lang);
         } else {
@@ -255,8 +254,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               DBnaryEtymologyOnt.EtymologyEntry);
           eBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyRelatedTo, vocable0);
           eBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable0);
-          Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentPagename())
-              + "#" + uriEncode(currentEntryLanguageName));
+          Resource w = ResourceFactory.createResource(
+              WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
           eBox.add(vocable2, RDFS.seeAlso, w);
           eBox.add(vocable2, RDFS.label, word, lang);
         }
@@ -327,9 +326,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               vocable = createEtymologyEntryResource(eBox, word1, lang0);
               eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable);
               eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyRelatedTo, vocable);
-              Resource w =
-                  ResourceFactory.createResource(WIKT + uriEncode(currentPagename()) + "#"
-                      + uriEncode(currentEntryLanguageName));
+              Resource w = ResourceFactory.createResource(
+                  WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
               eBox.add(vocable, RDFS.seeAlso, w);
               eBox.add(vocable, RDFS.label, word1, lang0);
             } else {
@@ -338,8 +336,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           } else {
             // parse template with multiple words (word1 word2 etc., and possibly lang1, lang2 etc.)
             boolean compound = false;
-            Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentPagename())
-                + "#" + uriEncode(currentEntryLanguageName));
+            Resource w = ResourceFactory.createResource(
+                WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
             for (int kk = 1; kk < 12; kk++) {
               String word = b.args.get("word" + Integer.toString(kk));
               lang = b.args.get("lang" + Integer.toString(kk));
@@ -410,9 +408,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           if (counter == 0) {
             if (ancestor != null) {
               eBox.add(vocable, DBnaryEtymologyOnt.etymologicallyRelatedTo, ancestor);
-              Resource w =
-                  ResourceFactory.createResource(WIKT + uriEncode(currentPagename()) + "#"
-                      + uriEncode(currentEntryLanguageName));
+              Resource w = ResourceFactory.createResource(
+                  WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
               eBox.add(vocable, RDFS.seeAlso, w);
               eBox.add(vocable, RDFS.label, word, lang);
             }
@@ -422,8 +419,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                 ancestors.get(ancestors.size() - 1));
             eBox.add(vocable, DBnaryEtymologyOnt.etymologicallyRelatedTo,
                 ancestors.get(ancestors.size() - 1));
-            Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentPagename())
-                + "#" + uriEncode(currentEntryLanguageName));
+            Resource w = ResourceFactory.createResource(
+                WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
             eBox.add(vocable, RDFS.seeAlso, w);
             eBox.add(vocable, RDFS.label, word, lang);
           }
@@ -509,8 +506,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void uncountable() {
     if (currentLexEntry == null) {
-      log.debug("Registering countability on non existant lex entry in  {}",
-          currentPagename());
+      log.debug("Registering countability on non existant lex entry in  {}", currentPagename());
       return;
     }
     aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasCountability, OliaOnt.Uncountable));
@@ -518,8 +514,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void countable() {
     if (currentLexEntry == null) {
-      log.debug("Registering countability on non existant lex entry in  {}",
-          currentPagename());
+      log.debug("Registering countability on non existant lex entry in  {}", currentPagename());
       return;
     }
     aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasCountability, OliaOnt.Countable));
@@ -527,8 +522,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void comparable() {
     if (currentLexEntry == null) {
-      log.debug("Registering comparativity on non existant lex entry in  {}",
-          currentPagename());
+      log.debug("Registering comparativity on non existant lex entry in  {}", currentPagename());
       return;
     }
     // TODO: do we have a mean to say that an adjective is comparable ?
@@ -537,8 +531,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void notComparable() {
     if (currentLexEntry == null) {
-      log.debug("Registering comparativity on non existant lex entry in  {}",
-          currentPagename());
+      log.debug("Registering comparativity on non existant lex entry in  {}", currentPagename());
       return;
     }
     // TODO: do we have a mean to say that an adjective is not comparable ?
@@ -591,8 +584,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       }
 
       if (glossResource != null) {
-        ReifiedStatement rnymR = nymR
-            .createReifiedStatement(computeNymId(currentNym, uriEncode(currentPagename())));
+        ReifiedStatement rnymR =
+            nymR.createReifiedStatement(computeNymId(currentNym, uriEncode(currentPagename())));
         rnymR.addProperty(DBnaryOnt.gloss, glossResource);
       }
     } catch (NullPointerException npe) {

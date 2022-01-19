@@ -5,16 +5,12 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.concurrent.Callable;
 import org.apache.jena.rdf.model.Model;
-import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.ExtractionFeature;
-import org.getalp.dbnary.IWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.WiktionaryIndexerException;
 import org.getalp.dbnary.cli.mixins.Extractor;
 import org.getalp.dbnary.cli.utils.VersionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
@@ -30,23 +26,9 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
   @Parameters(index = "1..*", description = "The entries to be extracted.", arity = "1..*")
   String[] entries;
 
-  WiktionaryIndex wi;
-  IWiktionaryExtractor we;
-  IWiktionaryDataHandler wdh;
-
   protected Integer prepareExtraction() throws WiktionaryIndexerException {
     return setupHandlers(null);
   }
-
-  /**
-   * @param args arguments
-   * @throws IOException ...
-   * @throws WiktionaryIndexerException ...
-   */
-  public static void main(String[] args) throws WiktionaryIndexerException, IOException {
-    new CommandLine(new GetExtractedSemnet()).execute(args);
-  }
-
 
   private Integer extract() {
 

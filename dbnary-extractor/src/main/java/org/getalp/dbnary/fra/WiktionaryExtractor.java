@@ -654,6 +654,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractConjugationPage(List<String> context) {
+    if (wdh.isDisabled(ExtractionFeature.MORPHOLOGY))
+      return;
     Resource pos = wdh.currentLexinfoPos();
     if (null != pos && pos.equals(LexinfoOnt.verb)) {
       verbalInflectionExtractor.extractConjugations(context);

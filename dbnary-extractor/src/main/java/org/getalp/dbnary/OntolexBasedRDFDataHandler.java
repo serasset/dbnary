@@ -283,8 +283,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     shortSectionLanguageCode = shortLang == null ? language : shortLang;
     lexvoSectionLanguage = tBox.createResource(LEXVO + longSectionLanguageCode);
 
-    // assert currentLexicalEntry == null; // this is only possible when everybody finalizes lex
-    // entries correctly...
+    assert currentLexicalEntry == null;
     currentLexicalEntry = null;
     if (longEditionLanguageCode.equals(longSectionLanguageCode)) {
       aBox = getEndolexFeatureBox(ExtractionFeature.MAIN);

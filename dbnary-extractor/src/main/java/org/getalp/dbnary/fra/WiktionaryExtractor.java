@@ -520,7 +520,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    * @param section the wiki text section corresponding to an inflected forms definitions.
    */
   private void extractInflections(WikiSection section) {
-    if (null == wdh.getFeatureBox(ExtractionFeature.MORPHOLOGY)) return;
+    if (null == wdh.getFeatureBox(ExtractionFeature.MORPHOLOGY))
+      return;
     WikiContent content = section.getPrologue();
     WikiContent heading = section.getHeading().getContent();
 

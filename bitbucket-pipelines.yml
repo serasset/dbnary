@@ -39,6 +39,7 @@ definitions:
         caches:
           - maven
         script:
+          - echo "STEP:" $BITBUCKET_STEP_UUID "/ PIPELINE:" $BITBUCKET_PIPELINE_UUID
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/cleanup_cache.sh # We don't need maven cache for the dbnary libraries.
           - ./kaiko/cicd/compile-pr-and-target-versions.sh

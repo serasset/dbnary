@@ -37,7 +37,7 @@ ls -al "/tmp/$NEXT_VERSION" "/tmp/$PREVIOUS_VERSION"
 
 echo "==== FETCHING WIKTIONARY DUMPS ==== "
 # Fetching all uncompressed dumps directories from kopi
-for lg in $LANGS;
+for lg in ${EFFECTIVE_LANGS[@]};
 do
   echo "Fetching uncompressed dumps for $lg"
   # This will be usable (need tests) when I will use an image that contains rsync (not the case of the usual maven image.

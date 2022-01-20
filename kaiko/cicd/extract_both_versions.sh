@@ -5,7 +5,6 @@ BATCH_LANGS=$@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 echo "==== PREPARING ENVIRONMENT ==== "
-chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
 
 echo "Sourcing settings from: ${SCRIPT_DIR}/settings"
 source "${SCRIPT_DIR}/settings"

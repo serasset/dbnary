@@ -111,21 +111,24 @@ pipelines:
       - step: *build-and-sonar
     'feature/*':
         - step: *build-pr
-        - step: *extract_batch_1
-        - step: *extract_batch_2
-        - step: *extract_batch_3
+        - parallel:
+            - step: *extract_batch_1
+            - step: *extract_batch_2
+            - step: *extract_batch_3
         - step: *evaluate-pr
     'release/*':
       #- step: *build-and-sonar
       - step: *build-pr
-      - step: *extract_batch_1
-      - step: *extract_batch_2
-      - step: *extract_batch_3
+      - parallel:
+          - step: *extract_batch_1
+          - step: *extract_batch_2
+          - step: *extract_batch_3
       - step: *evaluate-pr
   pull-requests:
     "*":
       - step: *build-pr
-      - step: *extract_batch_1
-      - step: *extract_batch_2
-      - step: *extract_batch_3
+      - parallel:
+          - step: *extract_batch_1
+          - step: *extract_batch_2
+          - step: *extract_batch_3
       - step: *evaluate-pr

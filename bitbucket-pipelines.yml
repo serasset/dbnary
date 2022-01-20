@@ -58,6 +58,7 @@ definitions:
         caches:
           - maven
         script:
+          - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/extract_both_versions.sh en no id la ku
         artifacts:
           - "target/extracts/**/*.ttl"
@@ -70,6 +71,7 @@ definitions:
         caches:
           - maven
         script:
+          - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/extract_both_versions.sh fr pt it fi ru
         artifacts:
           - "target/extracts/**/*.ttl"
@@ -82,6 +84,7 @@ definitions:
         caches:
           - maven
         script:
+          - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/extract_both_versions.sh de el tr ja es bg pl nl sh sv lt mg
         artifacts:
           - "target/extracts/**/*.ttl"

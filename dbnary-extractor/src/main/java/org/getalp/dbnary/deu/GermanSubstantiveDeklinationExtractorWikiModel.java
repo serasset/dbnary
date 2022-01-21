@@ -15,7 +15,7 @@ public class GermanSubstantiveDeklinationExtractorWikiModel extends GermanTableE
   public GermanSubstantiveDeklinationExtractorWikiModel(IWiktionaryDataHandler wdh,
       WiktionaryIndex wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL, wdh,
-        new GermanSubstantiveDeklinationTableExtractor(wdh.currentPagename()));
+        new GermanSubstantiveDeklinationTableExtractor());
   }
 
 }

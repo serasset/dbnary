@@ -41,10 +41,10 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
       }
     }
 
-    SwedishTableExtractor tableExtractor = new SwedishTableExtractor(this.getPageName());
+    SwedishTableExtractor tableExtractor = new SwedishTableExtractor();
     String htmlCode = expandWikiCode(declinationTemplateCall);
     log.trace(htmlCode);
-    return tableExtractor.parseHTML(htmlCode);
+    return tableExtractor.parseHTML(htmlCode, getPageName());
   }
 
   @Override

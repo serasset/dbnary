@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 public class GermanDeklinationTableExtractor extends GermanTableExtractor {
   private Logger log = LoggerFactory.getLogger(GermanDeklinationTableExtractor.class);
 
-  public GermanDeklinationTableExtractor(String currentEntry) {
-    super(currentEntry);
+  public GermanDeklinationTableExtractor() {
+    super();
   }
 
   @Override

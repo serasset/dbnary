@@ -21,56 +21,8 @@ public class SwedishTableExtractor extends TableExtractor {
 
   private Logger log = LoggerFactory.getLogger(SwedishTableExtractor.class);
 
-  public SwedishTableExtractor(String currentEntry) {
-    super(currentEntry);
-  }
-
-  // FIXME: The higher header "Positiv" is not collected because we
-  // @Override
-  protected List<String> XXgetRowAndColumnContext(int nrow, int ncol,
-      ArrayMatrix<Element> columnHeaders) {
-    List<String> rowAndColumnContext = new LinkedList<>();
-    boolean previousRowHasHeader = false;
-    for (int i = nrow - 1; i >= 0; i--) {
-      Element headerCell = columnHeaders.get(i, ncol);
-      String header;
-      if (null != headerCell && (header = headerCell.text()) != null
-          && header.trim().length() != 0) {
-        rowAndColumnContext.add(header);
-        previousRowHasHeader = true;
-      } else {
-        // Current row contains a value, break if the previous contained a header
-        // so that higher row's headers are voided.
-        if (previousRowHasHeader)
-          break;
-      }
-    }
-    for (int i = 0; i < ncol; i++) {
-      addToContext(columnHeaders, nrow, i, rowAndColumnContext);
-    }
-
-    // Collect all bold header cells that are supposed to apply to all cells.
-    for (int i = 0; i < nrow; i++) {
-      for (int j = 0; j < ncol; j++) {
-        Element headerCell = columnHeaders.get(i, j);
-        if (headerCell != null) {
-          String clazz = headerCell.attr("class");
-          if (null != clazz && (clazz.trim().equals("main"))) {
-            // Headers with class "main" are global headers applying to all cells.
-            rowAndColumnContext.add(headerCell.text());
-          }
-        }
-      }
-    }
-    rowAndColumnContext =
-        rowAndColumnContext.stream().map(c -> c.startsWith("|") ? c.substring(1) : c)
-            .map(c -> c.toLowerCase().startsWith("böjningar av") ? c.replaceAll(" ", "_") : c)
-            .map(c -> c.toLowerCase().startsWith("kompareras inte") ? c.replaceAll(" ", "_") : c)
-            .map(c -> c.toLowerCase().endsWith("pronomen") ? c.replaceAll(" ", "_") : c)
-            .map(c -> c.toLowerCase().startsWith("ackusativ /") ? c.replaceAll(" ", "_") : c)
-            .flatMap(c -> Arrays.stream(c.split(" "))).filter(c -> c.trim().length() > 0)
-            .collect(Collectors.toList());
-    return rowAndColumnContext;
+  public SwedishTableExtractor() {
+    super();
   }
 
   @Override
@@ -87,7 +39,7 @@ public class SwedishTableExtractor extends TableExtractor {
         Element headerCell = columnHeaders.get(i, j);
         if (headerCell != null) {
           String clazz = headerCell.attr("class");
-          if (null != clazz && (clazz.trim().equals("main"))) {
+          if (clazz.trim().equals("main")) {
             // Headers with class "main" are global headers applying to all cells.
             rowAndColumnContext.add(headerCell.text());
           }
@@ -184,7 +136,7 @@ public class SwedishTableExtractor extends TableExtractor {
         inflections.forEach(SwedishInflectionData::pastParticiple);
         context.removeIf("perfekt"::equals);
       }
-      context.removeIf(c -> "particip".equals(c));
+      context.removeIf("particip"::equals);
       // The table context also contains Aktiv and Passiv as the headers
     }
 
@@ -214,9 +166,7 @@ public class SwedishTableExtractor extends TableExtractor {
     if ("note".equals(clazz)) {
       // The cell should be ignored and nested tables should be marked as already processed.
       Elements tables = cell.select("table");
-      for (Element nestedTable : tables) {
-        alreadyParsedTables.add(nestedTable);
-      }
+      alreadyParsedTables.addAll(tables);
       return false;
     } else {
       return super.shouldProcessCell(cell);

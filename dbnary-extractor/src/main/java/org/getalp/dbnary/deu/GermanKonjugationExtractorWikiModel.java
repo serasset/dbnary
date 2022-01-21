@@ -15,8 +15,7 @@ public class GermanKonjugationExtractorWikiModel extends GermanTableExtractorWik
 
   public GermanKonjugationExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryIndex wi,
       Locale locale, String imageBaseURL, String linkBaseURL) {
-    super(wi, locale, imageBaseURL, linkBaseURL, wdh,
-        new GermanKonjugationTableExtractor(wdh.currentPagename()));
+    super(wi, locale, imageBaseURL, linkBaseURL, wdh, new GermanKonjugationTableExtractor());
   }
 
   // Catch non German verb templates to avoid expanding them.

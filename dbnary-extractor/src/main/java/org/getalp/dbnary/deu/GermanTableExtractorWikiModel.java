@@ -5,10 +5,8 @@ import static java.util.stream.Collectors.toCollection;
 
 import info.bliki.wiki.template.ITemplateFunction;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -16,12 +14,9 @@ import java.util.stream.Stream;
 import org.getalp.dbnary.IWiktionaryDataHandler;
 import org.getalp.dbnary.WiktionaryIndex;
 import org.getalp.dbnary.morphology.InflectedFormSet;
-import org.getalp.dbnary.morphology.InflectionData;
-import org.getalp.dbnary.tools.ArrayMatrix;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Token;
-import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +62,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
 
   private String crop(Map<String, String> parameterMap) {
     String s = parameterMap.getOrDefault("1", "");
-    int cut = Integer.valueOf(parameterMap.getOrDefault("2", "0"));
+    int cut = Integer.parseInt(parameterMap.getOrDefault("2", "0"));
     int end = s.length() - cut;
     if (0 <= end && end <= s.length()) {
       return s.substring(0, end);
@@ -79,7 +74,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
   private String right(Map<String, String> parameterMap) {
     String text = parameterMap.getOrDefault("1", "").trim();
     String arg2 = parameterMap.get("2");
-    int start = (null == arg2 || "".equals(arg2)) ? 0 : Integer.valueOf(arg2);
+    int start = (null == arg2 || "".equals(arg2)) ? 0 : Integer.parseInt(arg2);
     if (start < 0) {
       return "";
     } else {
@@ -89,7 +84,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
 
   private String rightc(Map<String, String> parameterMap) {
     String text = parameterMap.getOrDefault("1", "").trim();
-    int posr = Integer.valueOf(parameterMap.getOrDefault("2", "1"));
+    int posr = Integer.parseInt(parameterMap.getOrDefault("2", "1"));
     int start = text.length() - posr;
     if (start >= 0) {
       return text.substring(start);
@@ -98,9 +93,9 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
     }
   }
 
-  private String subrev(Map<String, String> parameterMap) throws IOException {
+  private String subrev(Map<String, String> parameterMap) {
     String rightc = rightc(parameterMap);
-    int length = Integer.valueOf(parameterMap.getOrDefault("3", "1"));
+    int length = Integer.parseInt(parameterMap.getOrDefault("3", "1"));
     if (length <= rightc.length()) {
       return rightc.substring(0, length);
     } else {
@@ -129,7 +124,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
     }
 
     String htmlCode = expandWikiCode(declinationTemplateCall);
-    return germanTableExtractor.parseHTML(htmlCode);
+    return germanTableExtractor.parseHTML(htmlCode, getPageName());
   }
 
   private static ITemplateFunction germanInvoke = new GermanInvoke();

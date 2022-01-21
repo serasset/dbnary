@@ -154,15 +154,15 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   private Model createAndInitializeABox(String lang) {
-    return this.createAndInitializeABox(lang, ExtractionFeature.MAIN);
+    return this.createAndInitializeABox(lang, ExtractionFeature.MAIN, "");
   }
 
-  private Model createAndInitializeABox(String lang, ExtractionFeature f) {
+  private Model createAndInitializeABox(String lang, ExtractionFeature f, String graphSuffix) {
     // Create box
     Model box;
 
     if (null != dataset) {
-      box = dataset.getNamedModel("NS" + f.name().toLowerCase() + "/");
+      box = dataset.getNamedModel("NS" + f.name().toLowerCase() + "/" + graphSuffix);
     } else {
       box = ModelFactory.createDefaultModel();
     }
@@ -221,7 +221,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void enableEndolexFeatures(ExtractionFeature f) {
-    Model box = createAndInitializeABox(longEditionLanguageCode, f);
+    Model box = createAndInitializeABox(longEditionLanguageCode, f, "");
     // fillInPrefixes(aBox, box);
     endolexFeatureBoxes.put(f, box);
   }
@@ -251,7 +251,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void enableExolexFeatures(ExtractionFeature f) {
-    Model box = createAndInitializeABox(longEditionLanguageCode, f);
+    Model box = createAndInitializeABox(longEditionLanguageCode, f, "exolex");
     exolexFeatureBoxes.put(f, box);
   }
 

@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 public class GermanKonjugationTableExtractor extends GermanTableExtractor {
   private Logger log = LoggerFactory.getLogger(GermanKonjugationTableExtractor.class);
 
-  public GermanKonjugationTableExtractor(String currentEntry) {
-    super(currentEntry);
+  public GermanKonjugationTableExtractor() {
+    super();
   }
 
 
@@ -58,7 +58,6 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
   @Override
   protected List<InflectionData> getInflectionDataFromCellContext(List<String> context) {
     GermanInflectionData inflection = new GermanInflectionData();
-    boolean isArticleColumn = false;
     for (String h : context) {
       h = h.trim();
       if (h.startsWith("Gerundivum")) {
@@ -157,6 +156,7 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
           break;
         case "Zustandsreflexiv":
           inflection.voice = Voice.ZUSTANDSREFLEXIVEPASSIV;
+          break;
         case "Höflichkeitsform":
           inflection.person = Person.HÖFLICHKEITSFORM;
           break;
@@ -263,9 +263,6 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
         default:
           log.debug("Deklination Extraction: Unhandled header {} in {}", h, currentEntry);
       }
-    }
-    if (isArticleColumn) {
-      return null;
     }
     List<InflectionData> inflections = new ArrayList<>();
     inflections.add(inflection);

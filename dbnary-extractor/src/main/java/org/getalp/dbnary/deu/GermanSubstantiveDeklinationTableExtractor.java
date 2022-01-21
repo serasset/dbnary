@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtractor {
   private Logger log = LoggerFactory.getLogger(GermanSubstantiveDeklinationTableExtractor.class);
 
-  public GermanSubstantiveDeklinationTableExtractor(String currentEntry) {
-    super(currentEntry);
+  public GermanSubstantiveDeklinationTableExtractor() {
+    super();
   }
 
   @Override
@@ -21,7 +21,7 @@ public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtra
     GermanInflectionData inflection = new GermanInflectionData();
     boolean isArticleColumn = false;
     boolean hasGender = false;
-    String numberIndex = "";
+    String numberIndex;
     for (String h : context) {
       h = h.trim();
       switch (h) {

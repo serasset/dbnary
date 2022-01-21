@@ -12,8 +12,8 @@ public abstract class GermanTableExtractor extends TableExtractor {
   private Logger log = LoggerFactory.getLogger(GermanTableExtractor.class);
 
 
-  public GermanTableExtractor(String currentEntry) {
-    super(currentEntry);
+  public GermanTableExtractor() {
+    super();
   }
 
   @Override

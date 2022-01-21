@@ -1,9 +1,6 @@
 package org.getalp.dbnary.cli;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.concurrent.Callable;
 import org.apache.jena.rdf.model.Model;
 import org.getalp.dbnary.ExtractionFeature;

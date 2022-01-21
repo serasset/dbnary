@@ -24,6 +24,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RiotNotFoundException;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.util.iterator.ExtendedIterator;
@@ -91,7 +92,11 @@ public class RDFDiff extends VerboseCommand {
       if (verbose)
         System.err.println("Handling first model from turtle: " + fromFile);
       fromModel = ModelFactory.createDefaultModel();
-      RDFDataMgr.read(fromModel, fromFile);
+      try {
+        RDFDataMgr.read(fromModel, fromFile);
+      } catch (RiotNotFoundException e) {
+        // Don't do anything as the model will simply be empty
+      }
     }
 
     if (remainingArgs[1].endsWith(".tdb")) {
@@ -107,7 +112,11 @@ public class RDFDiff extends VerboseCommand {
       if (verbose)
         System.err.println("Handling second model from turtle: " + toFile);
       toModel = ModelFactory.createDefaultModel();
-      RDFDataMgr.read(toModel, toFile);
+      try {
+        RDFDataMgr.read(toModel, toFile);
+      } catch (RiotNotFoundException e) {
+        // Don't do anything as the model will simply be empty
+      }
     }
 
     String tdbDir = null;

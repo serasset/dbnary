@@ -68,9 +68,6 @@ public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
     }
 
     Document doc = Jsoup.parse(html);
-    if (null == doc) {
-      return;
-    }
 
     // TODO: get groupe, auxiliary verb and modèle de conjugaison.
 

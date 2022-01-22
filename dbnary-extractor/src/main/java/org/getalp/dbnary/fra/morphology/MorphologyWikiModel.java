@@ -86,6 +86,20 @@ public abstract class MorphologyWikiModel extends DbnaryWikiModel {
       if (null != t) {
         writer.append("<sup>").append(t).append("</sup>");
       }
+    } else if ("Onglets conjugaison".equals(templateName)) {
+      // Workaround bug in bliki where the expanded conjugation tables are broke down into
+      // wrong parameter parts due to bad handling of {| by bliki.
+      writer.append("<div>");
+      for (int i = 0; i <= 9; i++) {
+        String onglet = parameterMap.get("onglet" + i);
+        String contenu = parameterMap.get("contenu" + i);
+        if (null != contenu) {
+          writer.append("<div>");
+          if (null != onglet) writer.append("<div>").append(onglet).append("</div>\n");
+          writer.append("<div>").append(contenu).append("</div>\n");
+        }
+      }
+      writer.append("</div>");
     } else {
       // log.trace("substituting template {} with parameters [[{}]]", templateName,
       // parameterMap.entrySet().stream().map(e -> "<" + e.getKey() + " --> " + e.getValue() + ">")

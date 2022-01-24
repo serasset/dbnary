@@ -23,7 +23,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
   }
 
   private Map<Property, String> context;
-  private ExpandAllWikiModel simpleExpander;
+  private final ExpandAllWikiModel simpleExpander;
 
   public ExampleExpanderWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL,
       String linkBaseURL) {
@@ -70,7 +70,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
     } else if ("sans balise".equals(templateName) || "sans_balise".equals(templateName)) {
       String t = parameterMap.get("1");
       if (null != t) {
-        writer.append(t.replaceAll("<[^\\]]*>", "").replaceAll("'''?", ""));
+        writer.append(t.replaceAll("<[^]]*>", "").replaceAll("'''?", ""));
       }
     } else if (templateName.equals("nom langue") || templateName.endsWith(":nom langue")) {
       // intercept this template as it leads to a very inefficient Lua Script.
@@ -96,6 +96,11 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       int i = s.trim().indexOf(pattern);
       if (-1 != i) {
         writer.append("").append(String.valueOf(i + 1));
+      }
+    } else if ("example".equals(templateName)) {
+      String example = parameterMap.get("1");
+      if (null != example) {
+        super.substituteTemplateCall(templateName, parameterMap, writer);
       }
     } else {
       log.debug("Caught template call: {} --in-- {}", templateName, this.getPageName());

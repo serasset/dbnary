@@ -95,7 +95,8 @@ public abstract class MorphologyWikiModel extends DbnaryWikiModel {
         String contenu = parameterMap.get("contenu" + i);
         if (null != contenu) {
           writer.append("<div>");
-          if (null != onglet) writer.append("<div>").append(onglet).append("</div>\n");
+          if (null != onglet)
+            writer.append("<div>").append(onglet).append("</div>\n");
           writer.append("<div>").append(contenu).append("</div>\n");
         }
       }

@@ -189,8 +189,7 @@ public abstract class TableExtractor extends HtmlTableHandler {
   protected void addToContext(ArrayMatrix<Element> columnHeaders, int i, int j, List<String> res) {
     Element cell = columnHeaders.get(i, j);
     String header;
-    if (null != cell && isHeaderCell(cell)
-        && (header = cell.text()).trim().length() != 0) {
+    if (null != cell && isHeaderCell(cell) && (header = cell.text()).trim().length() != 0) {
       res.add(header);
     }
   }

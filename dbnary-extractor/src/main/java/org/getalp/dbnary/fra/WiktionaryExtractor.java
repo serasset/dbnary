@@ -479,7 +479,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // NOTHING YET
       } else if ((pos = posMarkers.get(sectionName)) != null) {
         if (title != null && "flexion".equals(title.getParsedArg("3"))) {
-          extractInflections(section);
+          // extractInflections(section);
           // There are several entries with misplaced sub section (e.g. translations given after
           // an inflexions section). Try to extract data from these misplaced subsections.
           handleLexicalEntrySubSections(section);

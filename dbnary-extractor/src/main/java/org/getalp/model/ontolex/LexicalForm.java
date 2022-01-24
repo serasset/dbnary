@@ -55,7 +55,11 @@ public class LexicalForm {
     this.values.remove(representation);
   }
 
-
+  /**
+   * Attach the Lexical Form to the given lexical entry in its model.
+   * @param lexEntry
+   * @return the lexical form resource (it may be a new resource or an already existing one).
+   */
   public Resource attachTo(Resource lexEntry) {
     // TODO: Check if a similar lexical form already exists in the model
     List<Statement> otherFormsStatements = lexEntry.listProperties(OntolexOnt.otherForm).toList();
@@ -100,9 +104,9 @@ public class LexicalForm {
 
   private enum StatementCompatibility {
     IDENTICAL, INCOMPATIBLE, MORE_PRECISE, LESS_PRECISE
-  };
+  }
 
-  private static Set<Property> ignoredPredicates = new HashSet<>();
+  private static final Set<Property> ignoredPredicates = new HashSet<>();
   static {
     ignoredPredicates.add(RDF.type);
     ignoredPredicates.add(OntolexOnt.writtenRep);
@@ -120,7 +124,7 @@ public class LexicalForm {
         .filter(p -> !ignoredPredicates.contains(p.getPredicate()))
         .collect(Collectors.groupingBy(Statement::getPredicate));
     StatementCompatibility result = StatementCompatibility.IDENTICAL;
-    for (Map.Entry ps : properties.entrySet()) {
+    for (Map.Entry<Property,List<Statement>> ps : properties.entrySet()) {
       switch (compatibilityOf(ps)) {
         case INCOMPATIBLE:
           return StatementCompatibility.INCOMPATIBLE;
@@ -184,7 +188,7 @@ public class LexicalForm {
     String compactProperties = DatatypeConverter
         .printBase64Binary(
             BigInteger.valueOf(features.hashCode() + values.hashCode()).toByteArray())
-        .replaceAll("[/=\\+]", "-");
+        .replaceAll("[/=+]", "-");
 
     return lexEntryPrefix + "__wf_" + compactProperties + "_" + lexEntryLocalName;
   }

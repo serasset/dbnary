@@ -7,6 +7,7 @@ import info.bliki.wiki.model.WikiModel;
 import info.bliki.wiki.model.WikiModelContentException;
 import info.bliki.wiki.namespaces.INamespace;
 import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
+import info.bliki.wiki.tags.HTMLTag;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Locale;
@@ -36,6 +37,8 @@ public class DbnaryWikiModel extends WikiModel {
       String linkBaseURL) {
     super(new Configuration(), locale, imageBaseURL, linkBaseURL);
     this.wi = wi;
+    // This tag is used at least in French Morphology templates.
+    this.addTokenTag("bdi", new HTMLTag("bdi"));
   }
 
   private static DocumentBuilder docBuilder = null;

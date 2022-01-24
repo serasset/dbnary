@@ -97,7 +97,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       if (-1 != i) {
         writer.append("").append(String.valueOf(i + 1));
       }
-    } else if ("example".equals(templateName)) {
+    } else if ("exemple".equals(templateName)) {
       String example = parameterMap.get("1");
       if (null != example) {
         super.substituteTemplateCall(templateName, parameterMap, writer);

@@ -1,8 +1,13 @@
 package org.getalp.dbnary.swe;
 
+import java.util.HashSet;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
+import org.getalp.dbnary.PropertyObjectPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +88,27 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public static boolean isValidPOS(String pos) {
     return posAndTypeValueMap.containsKey(pos);
+  }
+
+  @Override
+  protected void addOtherFormPropertiesToLexicalEntry(Resource lexEntry,
+      HashSet<PropertyObjectPair> properties) {
+    // Do not try to merge new form with an existing compatible one in English.
+    // This would lead to a Past becoming a PastParticiple when registering the past participle
+    // form.
+    Model morphoBox = this.getFeatureBox(ExtractionFeature.MORPHOLOGY);
+
+    if (null == morphoBox) {
+      return;
+    }
+
+    lexEntry = lexEntry.inModel(morphoBox);
+
+    String otherFormNodeName = computeOtherFormResourceName(lexEntry, properties);
+    Resource otherForm = morphoBox.createResource(getPrefix() + otherFormNodeName, OntolexOnt.Form);
+    morphoBox.add(lexEntry, OntolexOnt.otherForm, otherForm);
+    mergePropertiesIntoResource(properties, otherForm);
+
   }
 
 }

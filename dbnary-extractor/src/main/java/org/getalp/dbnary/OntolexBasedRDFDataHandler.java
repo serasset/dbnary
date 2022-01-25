@@ -85,7 +85,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   protected int currentSenseNumber;
   protected int currentSubSenseNumber;
   protected CounterSet translationCount = new CounterSet();
-  private CounterSet reifiedNymCount = new CounterSet();
+  protected CounterSet reifiedNymCount = new CounterSet();
 
   // Language identification (edition and current section)
   protected final String shortEditionLanguageCode;
@@ -691,7 +691,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   protected void addOtherFormPropertiesToLexicalEntry(Resource lexEntry,
       HashSet<PropertyObjectPair> properties) {
-    boolean foundCompatible = false;
     Model morphoBox = this.getFeatureBox(ExtractionFeature.MORPHOLOGY);
 
     if (null == morphoBox) {
@@ -702,6 +701,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     StmtIterator otherForms = lexEntry.listProperties(OntolexOnt.otherForm);
 
+    boolean foundCompatible = false;
     while (otherForms.hasNext()) {
       Resource otherForm = otherForms.next().getResource();
       if (isResourceCompatible(otherForm, properties)) {

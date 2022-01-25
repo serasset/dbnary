@@ -1,20 +1,17 @@
 package org.getalp.dbnary.cli.mixins;
 
-import java.io.File;
 import org.getalp.LangTools;
-import org.getalp.dbnary.IWiktionaryDataHandler;
-import org.getalp.dbnary.IWiktionaryExtractor;
-import org.getalp.dbnary.WiktionaryDataHandlerFactory;
-import org.getalp.dbnary.WiktionaryExtractorFactory;
-import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.dbnary.api.IWiktionaryDataHandler;
+import org.getalp.dbnary.api.IWiktionaryExtractor;
+import org.getalp.dbnary.languages.WiktionaryDataHandlerFactory;
+import org.getalp.dbnary.languages.WiktionaryExtractorFactory;
+import org.getalp.wiktionary.WiktionaryIndexerException;
 import org.getalp.dbnary.cli.DBnary;
 import org.getalp.dbnary.cli.utils.VersionProvider;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.ParameterException;
-import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParentCommand;
 import picocli.CommandLine.Spec;
 
@@ -29,16 +26,13 @@ public class Extractor {
   protected DBnary parent; // picocli injects reference to parent command
   @Mixin
   protected ExtractionFeaturesMixin features;
+  @Mixin
+  protected WiktionaryIndexMixin wi;
 
   // Options
   protected String language = DEFAULT_LANGUAGE;
-  protected WiktionaryIndex wi;
   protected IWiktionaryExtractor we;
   protected IWiktionaryDataHandler wdh;
-
-  // Parameter
-  @Parameters(index = "0", description = "The dump file of the wiki to be extracted.", arity = "1")
-  protected File dumpFile;
 
   @Option(names = {"-l", "--language"}, paramLabel = "LANGUAGE", defaultValue = DEFAULT_LANGUAGE,
       description = "language edition of the dump to be extracted; uses a 2 or 3 iso letter code;"
@@ -62,7 +56,6 @@ public class Extractor {
           .println("Wiktionary Extraction not yet available for " + LangTools.inEnglish(language));
       return -1;
     }
-    wi = new WiktionaryIndex(dumpFile);
     we.setWiktionaryIndex(wi);
 
     features.getEndolexFeatures().forEach(f -> wdh.enableEndolexFeatures(f));
@@ -82,6 +75,8 @@ public class Extractor {
 
   protected void cleanupHandlers() {
     wdh.closeDataset();
+    if (null != wi)
+      wi.close();
     wi = null;
     we = null;
     wdh = null;

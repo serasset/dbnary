@@ -33,7 +33,7 @@ fi
   date 
   echo "==============================================="
 
-  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-uber-jar.jar org.getalp.dbnary.cli.UpdateAndExtractDumps $OPTIONS -d $DIR -s $MIRROR -k 1 -z --enable morphology --enable etymology --enable lime --enable statistics --enable enhancement  $LANGS
+  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-uber-jar.jar org.getalp.dbnary.cli.DBnary update $OPTIONS --dir $DIR -s $MIRROR -k 1 --compress --endolex=ontolex,morphology,etymology,lime,statistics,enhancement --exolex=ontolex $LANGS
 
   echo "==============================================="
   echo -n "  DBnary dumps updated - "

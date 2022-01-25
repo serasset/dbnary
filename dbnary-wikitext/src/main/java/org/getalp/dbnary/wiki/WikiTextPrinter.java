@@ -29,7 +29,7 @@ public class WikiTextPrinter {
     IndentPrinter printer = new IndentPrinter(out);
     printer.println("Document :");
     printer.incrementIndent();
-    printContentForrest(printer, doc.getContent());
+    printContentForest(printer, doc.getContent());
     printer.decrementIndent();
     printer.flush();
   }
@@ -42,21 +42,21 @@ public class WikiTextPrinter {
     IndentPrinter printer = new IndentPrinter(out);
     printer.println("[Content :");
     printer.incrementIndent();
-    printContentForrest(printer, text.content());
+    printContentForest(printer, text.content());
     printer.decrementIndent();
     printer.println("]");
     printer.flush();
   }
 
-  public static void printContentForrest(WikiContent content) {
-    printContentForrest(new PrintWriter(System.out), content);
+  public static void printContentForest(WikiContent content) {
+    printContentForest(new PrintWriter(System.out), content);
   }
 
-  public static void printContentForrest(PrintWriter stream, WikiContent content) {
-    printContentForrest(new IndentPrinter(stream), content);
+  public static void printContentForest(PrintWriter stream, WikiContent content) {
+    printContentForest(new IndentPrinter(stream), content);
   }
 
-  private static void printContentForrest(IndentPrinter printer, WikiContent content) {
+  private static void printContentForest(IndentPrinter printer, WikiContent content) {
     content.tokens().stream().forEach(t -> printToken(printer, t));
   }
 
@@ -66,9 +66,9 @@ public class WikiTextPrinter {
     } else {
       printer.printIndent();
       printer.print("+ ");
-      printer.print(token.getClass().getCanonicalName());
+      printer.print(token.getClass().getSimpleName());
       printer.print(" : ");
-      printer.println(WordUtils.abbreviate(token.toString().trim(), 10, 20, "..."));
+      printer.println(WordUtils.abbreviate(token.toString().trim(), 50, 60, "..."));
     }
   }
 
@@ -78,9 +78,9 @@ public class WikiTextPrinter {
     printer.print(String.valueOf(section.getHeading().getLevel()));
     printer.print("] :");
     printer
-        .println(WordUtils.abbreviate(section.getHeading().getContent().toString(), 10, 20, "..."));
+        .println(WordUtils.abbreviate(section.getHeading().getContent().toString(), 50, 20, "..."));
     printer.incrementIndent();
-    printContentForrest(printer, section.getContent());
+    printContentForest(printer, section.getContent());
     printer.decrementIndent();
   }
 

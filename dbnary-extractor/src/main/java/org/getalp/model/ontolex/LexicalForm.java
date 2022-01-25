@@ -57,6 +57,7 @@ public class LexicalForm {
 
   /**
    * Attach the Lexical Form to the given lexical entry in its model.
+   * 
    * @param lexEntry
    * @return the lexical form resource (it may be a new resource or an already existing one).
    */
@@ -124,7 +125,7 @@ public class LexicalForm {
         .filter(p -> !ignoredPredicates.contains(p.getPredicate()))
         .collect(Collectors.groupingBy(Statement::getPredicate));
     StatementCompatibility result = StatementCompatibility.IDENTICAL;
-    for (Map.Entry<Property,List<Statement>> ps : properties.entrySet()) {
+    for (Map.Entry<Property, List<Statement>> ps : properties.entrySet()) {
       switch (compatibilityOf(ps)) {
         case INCOMPATIBLE:
           return StatementCompatibility.INCOMPATIBLE;

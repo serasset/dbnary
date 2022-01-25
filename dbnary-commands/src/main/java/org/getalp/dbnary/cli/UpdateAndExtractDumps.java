@@ -36,7 +36,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.getalp.dbnary.ExtractionFeature;
-import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.wiktionary.WiktionaryIndexerException;
 import org.getalp.dbnary.cli.mixins.BatchExtractorMixin;
 import org.getalp.dbnary.cli.mixins.ExtractionFeaturesMixin;
 import org.getalp.dbnary.cli.utils.ExtractionPreferences;
@@ -619,7 +619,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
     a.add("-l");
     a.add(lang);
     a.add("--dir");
-    a.add(parent.dbnaryDir.toString());
+    a.add(parent.getDbnaryDir().toString());
     a.add("--suffix");
     a.add(dir);
     if (sample > 0) {

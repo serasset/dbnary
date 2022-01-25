@@ -43,7 +43,7 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
 
     SwedishTableExtractor tableExtractor = new SwedishTableExtractor();
     String htmlCode = expandWikiCode(declinationTemplateCall);
-    log.trace(htmlCode);
+    // log.trace(htmlCode);
     return tableExtractor.parseHTML(htmlCode, getPageName());
   }
 
@@ -53,6 +53,7 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
     String result;
     // There modules uses the obsolete arg magik variable which is not supported anymore by lua >
     // 5.1
+    // Check if Swedish has changed its definition of grammar-table
     if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
         && parsedPagename.pagename.equals("grammar-table")) {
       result = loadModuleResource("grammar-table");

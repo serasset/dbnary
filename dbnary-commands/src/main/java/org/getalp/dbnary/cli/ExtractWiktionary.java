@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.Callable;
 import javax.xml.stream.XMLInputFactory;
@@ -17,9 +15,9 @@ import org.apache.jena.rdf.model.Model;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.dbnary.ExtractionFeature;
-import org.getalp.dbnary.OntolexBasedRDFDataHandler;
-import org.getalp.dbnary.WiktionaryIndexer;
-import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
+import org.getalp.wiktionary.WiktionaryIndexer;
+import org.getalp.wiktionary.WiktionaryIndexerException;
 import org.getalp.dbnary.cli.mixins.BatchExtractorMixin;
 import org.getalp.dbnary.cli.mixins.Extractor;
 import org.getalp.dbnary.cli.utils.ExtractionPreferences;
@@ -98,7 +96,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
       PrintWriter err = spec.commandLine().getErr();
       err.println("Extracting Wiktionary Dump:");
       err.println("  Language: " + language);
-      err.println("  Dump: " + dumpFile);
+      err.println("  Dump: " + wi.getDumpFile());
       err.println("  TDB : " + batch.tdbDir());
       err.println("  Format : " + features.getOutputFormat());
       features.getEndolexFeatures()
@@ -125,7 +123,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
       try {
         // pass the file name. all relative entity references will be
         // resolved against this as base URI.
-        xmlr = xmlif.createXMLStreamReader(dumpFile);
+        xmlr = xmlif.createXMLStreamReader(wi.getDumpFile());
 
         // check if there are more events in the input stream
         String title = "";
@@ -197,7 +195,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
       spec.commandLine().getErr().println("Extracted " + nbRelevantPages + " pages in: "
           + formatHMS(totalRelevantTime) + " (" + nbPages + " scanned Pages)");
 
-      postProcessAfterExtraction(VersionProvider.getDumpVersion(dumpFile.getName()));
+      postProcessAfterExtraction(VersionProvider.getDumpVersion(wi.getDumpFile().getName()));
 
       for (ExtractionFeature f : features.getEndolexFeatures()) {
         if (!f.equals(ExtractionFeature.HDT)) {

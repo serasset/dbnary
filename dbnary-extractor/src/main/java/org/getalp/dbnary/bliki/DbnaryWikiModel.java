@@ -15,7 +15,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.tools.CounterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +27,13 @@ public class DbnaryWikiModel extends WikiModel {
 
   private static Logger log = LoggerFactory.getLogger(DbnaryWikiModel.class);
 
-  protected WiktionaryIndex wi = null;
+  protected WiktionaryPageSource wi = null;
 
   public DbnaryWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
-    this((WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+    this((WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public DbnaryWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL,
+  public DbnaryWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
       String linkBaseURL) {
     super(new Configuration(), locale, imageBaseURL, linkBaseURL);
     this.wi = wi;

@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.regex.Pattern;
-import org.getalp.dbnary.WiktionaryGrep;
-import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.wiktionary.WiktionaryGrep;
+import org.getalp.wiktionary.WiktionaryIndexerException;
 
 public class GrepInWiktionary {
 

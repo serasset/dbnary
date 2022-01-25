@@ -137,24 +137,12 @@
           <extraJvmArguments>-Xmx8g</extraJvmArguments>
           <programs>
             <program>
-              <mainClass>org.getalp.dbnary.cli.UpdateAndExtractDumps</mainClass>
-              <id>dbnary-extract</id>
-            </program>
-            <program>
               <mainClass>org.getalp.dbnary.cli.DBnary</mainClass>
               <id>dbnary</id>
             </program>
             <program>
-              <mainClass>org.getalp.dbnary.cli.GetExtractedSemnet</mainClass>
-              <id>dbnary-extract-entry</id>
-            </program>
-            <program>
               <mainClass>org.getalp.dbnary.cli.GrepInWiktionary</mainClass>
               <id>dbnary-grep</id>
-            </program>
-            <program>
-              <mainClass>org.getalp.dbnary.cli.ExtractWiktionary</mainClass>
-              <id>dbnary-extract-dump</id>
             </program>
             <program>
               <mainClass>org.getalp.dbnary.cli.RDFDiff</mainClass>

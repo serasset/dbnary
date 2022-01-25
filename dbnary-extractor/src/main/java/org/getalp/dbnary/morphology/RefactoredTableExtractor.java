@@ -6,7 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import org.getalp.dbnary.fra.morphology.Utils;
+import org.getalp.dbnary.languages.fra.morphology.Utils;
 import org.getalp.dbnary.tools.ArrayMatrix;
 import org.getalp.model.ontolex.LexicalForm;
 import org.getalp.model.ontolex.PhoneticRepresentation;

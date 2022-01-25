@@ -1,6 +1,5 @@
 package org.getalp.dbnary.cli;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.concurrent.Callable;
@@ -8,17 +7,16 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
-import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.dbnary.WiktionaryIndexer;
-import org.getalp.dbnary.WiktionaryIndexerException;
 import org.getalp.dbnary.cli.mixins.BatchExtractorMixin;
+import org.getalp.dbnary.cli.mixins.WiktionaryIndexMixin;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.wiktionary.WiktionaryIndexer;
+import org.getalp.wiktionary.WiktionaryIndexerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParentCommand;
 import picocli.CommandLine.Spec;
 
@@ -41,11 +39,8 @@ public class CheckWiktionarySyntaxQuality implements Callable<Integer> {
   protected DBnary parent; // picocli injects reference to parent command
   @Mixin
   private BatchExtractorMixin batch;
-
-  @Parameters(index = "0", description = "The dump file of the wiki to be checked.", arity = "1")
-  private File dumpFile;
-
-  WiktionaryIndex wi;
+  @Mixin
+  WiktionaryIndexMixin wi;
 
   static {
     try {
@@ -65,8 +60,7 @@ public class CheckWiktionarySyntaxQuality implements Callable<Integer> {
    * @throws WiktionaryIndexerException ..
    */
 
-  public Integer call() throws IOException, WiktionaryIndexerException {
-    wi = new WiktionaryIndex(dumpFile);
+  public Integer call() throws IOException {
 
     // create new XMLStreamReader
     long startTime = System.currentTimeMillis();
@@ -78,7 +72,7 @@ public class CheckWiktionarySyntaxQuality implements Callable<Integer> {
     try {
       // pass the file name. all relative entity references will be
       // resolved against this as base URI.
-      xmlr = xmlif.createXMLStreamReader(dumpFile);
+      xmlr = xmlif.createXMLStreamReader(wi.getDumpFile());
 
       // check if there are more events in the input stream
       String title = "";

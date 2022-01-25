@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.util.concurrent.Callable;
 import org.apache.jena.rdf.model.Model;
 import org.getalp.dbnary.ExtractionFeature;
-import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.wiktionary.WiktionaryIndexerException;
 import org.getalp.dbnary.cli.mixins.Extractor;
 import org.getalp.dbnary.cli.utils.VersionProvider;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
       we.extractData(entry, pageContent);
     }
 
-    postProcessAfterExtraction(VersionProvider.getDumpVersion(dumpFile.getName()));
+    postProcessAfterExtraction(VersionProvider.getDumpVersion(wi.getDumpFile().getName()));
 
     for (ExtractionFeature f : features.getEndolexFeatures()) {
       if (!f.equals(ExtractionFeature.HDT)) {

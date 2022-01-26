@@ -1,7 +1,4 @@
-#  Template maven-build
-
-#  This template allows you to test and build your Java project with Maven.
-#  The workflow allows running tests, code checkstyle and security scans on the default branch.
+#  DBNARY Testing on bitbucket
 
 # Prerequisites: pom.xml and appropriate project structure should exist in the repository.
 
@@ -49,8 +46,8 @@ definitions:
           - ./kaiko/cicd/cleanup_cache.sh
         artifacts:
           - "target/dbnary-maven-repository/org/**/*.*"
-    - step: &extract-for-pr
-        name: Extracting samples with both version
+    - step: &extract_batch_1
+        name: Extracting batch 1
         runs-on:
           - 'self.hosted'
           - 'dbnary'
@@ -59,13 +56,33 @@ definitions:
           - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
-          # Cleanup maven repo to remove dbnary artifacts that may be downloaded from cached.
-          - mkdir -p ${HOME}/.m2/repository/org/
-          - rm -rf ${HOME}/.m2/repository/org/getalp
-          - cp -r target/dbnary-maven-repository/org/getalp ${HOME}/.m2/repository/org/
-          - ./kaiko/cicd/prepare_dumps.sh
-          - ./kaiko/cicd/extract_with_next.sh
-          - ./kaiko/cicd/extract_with_previous.sh
+          - ./kaiko/cicd/extract_both_versions.sh en no id la ku
+        artifacts:
+          - "target/extracts/**/*.ttl"
+    - step: &extract_batch_2
+        name: Extracting batch 2
+        runs-on:
+          - 'self.hosted'
+          - 'dbnary'
+        size: 4x
+        caches:
+          - maven
+        script:
+          - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
+          - ./kaiko/cicd/extract_both_versions.sh fr pt it fi ru
+        artifacts:
+          - "target/extracts/**/*.ttl"
+    - step: &extract_batch_3
+        name: Extracting batch 3
+        runs-on:
+          - 'self.hosted'
+          - 'dbnary'
+        size: 4x
+        caches:
+          - maven
+        script:
+          - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
+          - ./kaiko/cicd/extract_both_versions.sh de el tr ja es bg pl nl sh sv lt mg
         artifacts:
           - "target/extracts/**/*.ttl"
     - step: &evaluate-pr
@@ -91,15 +108,24 @@ pipelines:
       - step: *build-and-sonar
     'feature/*':
         - step: *build-pr
-        - step: *extract-for-pr
+        - parallel:
+            - step: *extract_batch_1
+            - step: *extract_batch_2
+            - step: *extract_batch_3
         - step: *evaluate-pr
     'release/*':
       #- step: *build-and-sonar
       - step: *build-pr
-      - step: *extract-for-pr
+      - parallel:
+          - step: *extract_batch_1
+          - step: *extract_batch_2
+          - step: *extract_batch_3
       - step: *evaluate-pr
   pull-requests:
     "*":
       - step: *build-pr
-      - step: *extract-for-pr
+      - parallel:
+          - step: *extract_batch_1
+          - step: *extract_batch_2
+          - step: *extract_batch_3
       - step: *evaluate-pr

@@ -5,17 +5,17 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.api.WiktionaryPageSource;
 
 public class ExpandAllWikiModel extends DbnaryWikiModel {
 
   protected Set<String> templates = null;
 
   public ExpandAllWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
-    this((WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+    this((WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public ExpandAllWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL,
+  public ExpandAllWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
       String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }

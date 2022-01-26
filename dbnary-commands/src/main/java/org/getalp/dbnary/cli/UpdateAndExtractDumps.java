@@ -1,5 +1,7 @@
 package org.getalp.dbnary.cli;
 
+import static org.getalp.dbnary.ExtractionFeature.MAIN;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,11 +25,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -35,93 +36,76 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.getalp.dbnary.ExtractionFeature;
-import org.getalp.dbnary.WiktionaryIndexerException;
+import org.getalp.wiktionary.WiktionaryIndexerException;
+import org.getalp.dbnary.cli.mixins.BatchExtractorMixin;
+import org.getalp.dbnary.cli.mixins.ExtractionFeaturesMixin;
+import org.getalp.dbnary.cli.utils.ExtractionPreferences;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParentCommand;
 
-public class UpdateAndExtractDumps extends DBnaryCommandLine {
+@Command(name = "update", mixinStandardHelpOptions = true,
+    header = "Update dumps for all specified languages, then extract them.",
+    description = "Update/Downloads dumps from mediawiki mirrors, then process all pages and "
+        + "extract lexical data according to options that are passed "
+        + "to the program. The extracted lexical data is encoded as RDF graphs using ontolex, "
+        + "lexinfo, olia and other standard vocabularies.")
+public class UpdateAndExtractDumps implements Callable<Integer> {
 
-  private static final String FOREIGN_PREFIX = "_x";
+  @ParentCommand
+  protected DBnary parent; // picocli injects reference to parent command
+  @Mixin
+  private BatchExtractorMixin batch; // injected by picocli
+  @Mixin
+  private ExtractionFeaturesMixin features; // injected by picocli
 
-  private static final String SERVER_URL_OPTION = "s";
   private static final String DEFAULT_SERVER_URL = "http://dumps.wikimedia.org/";
+  private String server;
 
-  private static final String NETWORK_OFF_OPTION = "n";
+  @CommandLine.Option(names = {"-s", "--server"}, paramLabel = "WIKTIONARY-DUMP_MIRROR URL",
+      defaultValue = DEFAULT_SERVER_URL,
+      description = "Use the specify URL to download dumps (Default: ${DEFAULT-VALUE}).")
+  private void setServerUrl(String url) {
+    if (!url.endsWith("/")) {
+      url = url + "/";
+    }
+    this.server = url;
+  }
 
-  private static final String TDB_OPTION = "tdb";
+  @CommandLine.Option(names = {"--no-network"}, negatable = true,
+      description = "Do not connect to network (no dump update/download) but extract available dumps.")
+  private boolean networkIsOff;
 
-  private static final String FORCE_OPTION = "f";
-  private static final boolean DEFAULT_FORCE = false;
+  @CommandLine.Option(names = {"--force"},
+      description = "Force extraction even if extract already exists.")
+  private boolean force;
 
-  private static final String PREFIX_DIR_OPTION = "d";
-  private static final String DEFAULT_PREFIX_DIR = ".";
-
-  private static final String DEFAULT_MODEL = "ontolex";
-
-  private static final String HISTORY_SIZE_OPTION = "k";
-  private static final String DEFAULT_HISTORY_SIZE = "5";
-
-  private static final String COMPRESS_OPTION = "z";
-  private static final boolean DEFAULT_COMPRESS = true;
-
-  private static final String FETCH_DATE_OPTION = "D";
-
-  private static final String ENABLE_FEATURE_OPTION = "enable";
-
-  private static final String SAMPLE_FEATURE_OPTION = "sample";
-
-  private String outputDir;
-  private String extractDir;
-  private boolean tdbDir;
+  @CommandLine.Option(names = {"-k", "--keep"}, paramLabel = "N", defaultValue = "1",
+      description = "Keep up to N previous dumps in the dumps folder (Default: ${DEFAULT-VALUE}).")
   private int historySize;
-  private boolean force = DEFAULT_FORCE;
-  private boolean compress = DEFAULT_COMPRESS;
-  private String server = DEFAULT_SERVER_URL;
-  private String model = DEFAULT_MODEL;
-  private List<String> features = null;
+
+  @CommandLine.Option(names = {"-D", "--date"}, paramLabel = "YYYYMMDD",
+      description = "Fetch/use the dump from given date instead of the latest one.")
   private String fetchDate = null;
+
+  @CommandLine.Option(names = {"--sample"}, paramLabel = "N", defaultValue = "-1",
+      description = "sample only the first N extracted entries.")
   private int sample = -1;
 
-  String[] remainingArgs;
 
-  private boolean networkIsOff = false;
+  private Path dumpsDir;
+  private Path extractDir;
+  private ExtractionPreferences prefs;
 
-
-  static {
-    options.addOption("h", false, "Prints usage and exits. ");
-    options.addOption(SERVER_URL_OPTION, true,
-        "give the URL pointing to a wikimedia mirror. " + DEFAULT_SERVER_URL + " by default.");
-    options.addOption(FORCE_OPTION, false,
-        "force the updating even if a file with the same name already exists in the output directory. "
-            + DEFAULT_FORCE + " by default.");
-    options.addOption(VERBOSE_OPTION, false, "Print more info while processing.");
-    options.addOption(HISTORY_SIZE_OPTION, true,
-        "number of dumps to be kept in output directory. " + DEFAULT_HISTORY_SIZE + " by default ");
-    options.addOption(PREFIX_DIR_OPTION, true,
-        "directory containing the wiktionary dumps and extracts. " + DEFAULT_PREFIX_DIR
-            + " by default ");
-    options.addOption(COMPRESS_OPTION, false,
-        "compress the output file using bzip2." + DEFAULT_COMPRESS + " by default ");
-    options.addOption(NETWORK_OFF_OPTION, false,
-        "Do not use the ftp network, but decompress and extract.");
-    options.addOption(FETCH_DATE_OPTION, true,
-        "force the dump date to be retrieved. latest dump by default ");
-    options.addOption(Option.builder().longOpt(SAMPLE_FEATURE_OPTION)
-        .desc("sample only the first N extracted entries.").hasArg().argName("N").build());
-    options.addOption(Option.builder().longOpt(ENABLE_FEATURE_OPTION).desc(
-        "Enable additional extraction features (e.g. morphology,etymology,lime,enhancement,foreign).")
-        .hasArg().argName("feature").build());
-    options.addOption(Option.builder().longOpt(TDB_OPTION).desc(
-        "Use the specified dir as a TDB to back the extractors models (use only for big extractions).")
-        .build());
-  }
-
-  public UpdateAndExtractDumps(String[] args) {
-    super(args);
-    this.loadArgs();
-  }
+  @Parameters(index = "0..*", description = "The languages to be updated and extracted.",
+      arity = "1..*")
+  String[] languages;
 
   private static class LanguageConfiguration {
     String lang;
@@ -152,8 +136,16 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
   }
 
   public static void main(String[] args) throws WiktionaryIndexerException, IOException {
-    UpdateAndExtractDumps cliProg = new UpdateAndExtractDumps(args);
-    cliProg.updateAndExtract();
+    new CommandLine(new UpdateAndExtractDumps()).execute(args);
+  }
+
+  @Override
+  public Integer call() {
+    prefs = new ExtractionPreferences(parent.dbnaryDir);
+    dumpsDir = prefs.getDumpDir();
+    extractDir = prefs.getExtractionDir();
+    updateAndExtract();
+    return 0;
   }
 
   // TODO: Handle proxy parameter
@@ -162,74 +154,8 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
     return lang + "wiktionary-" + date + "-pages-articles.xml.bz2";
   }
 
-  /**
-   * Validate and set command line arguments. Exit after printing usage if anything is astray
-   *
-   */
-  private void loadArgs() {
-
-    String h = cmd.getOptionValue(HISTORY_SIZE_OPTION, DEFAULT_HISTORY_SIZE);
-    historySize = Integer.parseInt(h);
-
-    if (cmd.hasOption(SERVER_URL_OPTION)) {
-      server = cmd.getOptionValue(SERVER_URL_OPTION);
-      if (!server.endsWith("/")) {
-        server = server + "/";
-      }
-    }
-
-    if (cmd.hasOption(FETCH_DATE_OPTION)) {
-      fetchDate = cmd.getOptionValue(FETCH_DATE_OPTION);
-    }
-
-    if (cmd.hasOption(SAMPLE_FEATURE_OPTION)) {
-      String sampleOtion = cmd.getOptionValue(SAMPLE_FEATURE_OPTION);
-      sample = Integer.parseInt(sampleOtion);
-    }
-
-    force = cmd.hasOption(FORCE_OPTION);
-
-    compress = cmd.hasOption(COMPRESS_OPTION);
-
-    networkIsOff = cmd.hasOption(NETWORK_OFF_OPTION);
-
-    tdbDir = cmd.hasOption(TDB_OPTION);
-
-    features = new ArrayList<>();
-    if (cmd.hasOption(ENABLE_FEATURE_OPTION)) {
-      String[] vs = cmd.getOptionValues(ENABLE_FEATURE_OPTION);
-      for (String v : vs) {
-        features.addAll(Arrays.asList(v.split("[,;]")));
-      }
-
-      ArrayList<String> fCopy = new ArrayList<>(features);
-      for (ExtractionFeature f : ExtractionFeature.values()) {
-        fCopy.remove(f.toString());
-      }
-      if (!fCopy.isEmpty()) {
-        System.err.println("Unknown feature(s) : " + fCopy);
-        printUsage();
-        System.exit(1);
-      }
-    }
-
-    String prefixDir = DEFAULT_PREFIX_DIR;
-    if (cmd.hasOption(PREFIX_DIR_OPTION)) {
-      prefixDir = cmd.getOptionValue(PREFIX_DIR_OPTION);
-    }
-    outputDir = prefixDir + "/dumps";
-    extractDir = prefixDir + "/extracts";
-
-    remainingArgs = cmd.getArgs();
-    if (remainingArgs.length == 0) {
-      printUsage();
-      System.exit(1);
-    }
-
-  }
-
   public void updateAndExtract() {
-    List<LanguageConfiguration> confs = Arrays.stream(remainingArgs).distinct().sequential()
+    List<LanguageConfiguration> confs = Arrays.stream(languages).distinct().sequential()
         .map(this::retrieveLastDump).collect(Collectors.toList());
     confs =
         confs.stream().parallel().map(this::uncompressRetrievedDump).collect(Collectors.toList());
@@ -240,56 +166,52 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
   private void linkToLatestExtractedFiles(LanguageConfiguration conf) {
     if (conf.isExtracted()) {
       System.err.format("[%s] ==> Linking to latest versions.%n", conf.lang);
-      linkToLatestExtractFile(conf.lang, conf.dumpDir, model.toLowerCase());
-      for (String f : features) {
-        linkToLatestExtractFile(conf.lang, conf.dumpDir, f);
-      }
+      features.getEndolexFeatures()
+          .forEach(f -> linkToLatestExtractFile(conf.lang, conf.dumpDir, f, false));
+      if (null != features.getExolexFeatures())
+        features.getExolexFeatures()
+            .forEach(f -> linkToLatestExtractFile(conf.lang, conf.dumpDir, f, true));
     }
   }
 
-  private void linkToLatestExtractFile(String lang, String dir, String feature) {
+  private void linkToLatestExtractFile(String lang, String dir, ExtractionFeature feature,
+      boolean isExolex) {
     if (null == dir || dir.equals("")) {
       return;
     }
 
-    String latestdir = extractDir + "/" + model.toLowerCase() + "/latest";
-    String odir = extractDir + "/" + model.toLowerCase() + "/" + lang;
-    File d = new File(latestdir);
-    d.mkdirs();
-
-    String extractFile = odir + "/" + lang + "_dbnary_" + feature + "_" + dir + ".ttl";
-    if (compress) {
-      extractFile = extractFile + ".bz2";
-    }
-    File extractedFile = new File(extractFile);
-    if (!extractedFile.exists()) {
-      System.err.println("Extracted wiktionary file " + extractFile
-          + " does not exists. I will not link to this version.");
+    Path latestdir = extractDir.resolve("latest");
+    Path odir = extractDir.resolve(lang);
+    try {
+      Files.createDirectories(latestdir);
+    } catch (IOException e) {
+      System.err.format("Could not create directory '%s'.%n", latestdir);
+      e.printStackTrace(System.err);
       return;
     }
 
-    String latestFile = latestdir + "/" + lang + "_dbnary_" + feature + ".ttl";
-    if (compress) {
-      latestFile = latestFile + ".bz2";
+    Path extractedFile = odir.resolve(ExtractionPreferences.outputFilename(feature, lang, dir,
+        features.getOutputFormat(), batch.doCompress(), isExolex));
+    if (!Files.exists(extractedFile)) {
+      System.err.format(
+          "Extracted wiktionary file %s does not exists. " + "I will not link to this version.%n",
+          extractedFile);
+      return;
     }
-    Path lf = Paths.get(latestFile);
-    try {
-      Files.deleteIfExists(lf);
-    } catch (IOException e) {
-      System.err.format("IOException while attempting to delete file '%s'.", lf);
-    }
-    try {
-      String linkTo = "../" + lang + "/" + extractedFile.getName();
-      String linkName = lang + "_dbnary_" + feature + ".ttl";
-      if (compress) {
-        linkName = linkName + ".bz2";
-      }
 
-      String[] args = {"ln", "-s", linkTo, linkName};
-      Runtime.getRuntime().exec(args, null, d);
+    Path latestFile = latestdir.resolve(ExtractionPreferences.outputFilename(feature, lang,
+        features.getOutputFormat(), batch.doCompress(), isExolex));
+    try {
+      Files.deleteIfExists(latestFile);
     } catch (IOException e) {
-      System.err.println(
-          "Error while trying to link to latest extract: " + latestFile + "->" + extractFile);
+      System.err.format("IOException while attempting to delete file '%s'.%n", latestFile);
+    }
+    Path linkTo = Paths.get("..", lang).resolve(extractedFile.getFileName());
+    try {
+      Files.createSymbolicLink(latestFile, linkTo);
+    } catch (IOException e) {
+      System.err.format("Error while trying to link to latest extract: %s -> %s%n", latestFile,
+          linkTo);
       e.printStackTrace(System.err);
     }
   }
@@ -297,7 +219,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
   private LanguageConfiguration removeOldDumps(LanguageConfiguration conf) {
     if (conf.isExtracted())
       cleanUpDumps(conf.lang, conf.dumpDir);
-    else if (verbose)
+    else if (parent.isVerbose())
       System.err.println("Older dumps cleanup aborted as extraction did not succeed.");
     return conf;
   }
@@ -309,7 +231,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       return;
     }
 
-    String langDir = outputDir + "/" + lang;
+    String langDir = dumpsDir + "/" + lang;
     File[] dirs = new File(langDir).listFiles();
 
     if (null == dirs || dirs.length == 0) {
@@ -345,7 +267,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
 
 
   private void deleteDumpDir(String lang, String dir) {
-    String dumpdir = outputDir + "/" + lang + "/" + dir;
+    String dumpdir = dumpsDir + "/" + lang + "/" + dir;
     File f = new File(dumpdir);
 
     if (f.listFiles().length == 0) {
@@ -376,7 +298,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
 
 
   private void deleteDump(String lang, String dir) {
-    String dumpdir = outputDir + "/" + lang + "/" + dir;
+    String dumpdir = dumpsDir + "/" + lang + "/" + dir;
     String filename = dumpdir + "/" + dumpFileName(lang, dir);
 
     File f = new File(filename);
@@ -394,7 +316,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
   private String updateDumpFile(String lang) {
     String defaultRes = getLastLocalDumpDir(lang);
     if (networkIsOff) {
-      if (verbose) {
+      if (parent.isVerbose()) {
         System.err.println("Using already existing dump : " + defaultRes);
       }
       return defaultRes;
@@ -415,7 +337,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
         SortedSet<String> dirs = null;
 
         if (null != fetchDate) {
-          if (verbose) {
+          if (parent.isVerbose()) {
             System.err.println("Using specified version date : " + fetchDate);
           }
           lastDir = fetchDate;
@@ -429,11 +351,11 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
           return defaultRes;
         }
 
-        if (verbose) {
+        if (parent.isVerbose()) {
           System.err.println("Fetching latest version : " + lastDir);
         }
 
-        String dumpdir = outputDir + "/" + lang + "/" + lastDir;
+        String dumpdir = dumpsDir + "/" + lang + "/" + lastDir;
         File file = new File(dumpdir, dumpFileName(lang, lastDir));
         if (file.exists()) {
           return lastDir;
@@ -442,7 +364,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
         dumpFile.mkdirs();
 
         String dumpFileUrl = languageDumpFolder + "/" + lastDir + "/" + dumpFileName(lang, lastDir);
-        if (verbose) {
+        if (parent.isVerbose()) {
           System.err.println("Fetching dump from " + dumpFileUrl);
         }
         HttpGet request = new HttpGet(dumpFileUrl);
@@ -450,7 +372,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
           HttpEntity entity = response.getEntity();
 
           if (entity != null) {
-            if (verbose) {
+            if (parent.isVerbose()) {
               System.err.println("Retrieving data from : " + dumpFileUrl);
             }
             try (FileOutputStream dfile = new FileOutputStream(file)) {
@@ -529,7 +451,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
   }
 
   private String getLastLocalDumpDir(String lang) {
-    String langDir = outputDir + "/" + lang;
+    String langDir = dumpsDir + "/" + lang;
     File[] dirs = new File(langDir).listFiles();
 
     if (null == dirs || dirs.length == 0) {
@@ -580,13 +502,13 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       return false;
     }
 
-    String compressedDumpFile = outputDir + "/" + lang + "/" + dir + "/" + dumpFileName(lang, dir);
+    String compressedDumpFile = dumpsDir + "/" + lang + "/" + dir + "/" + dumpFileName(lang, dir);
     String uncompressedDumpFile = uncompressDumpFileName(lang, dir);
     // System.err.println("Uncompressing " + compressedDumpFile);
 
     File file = new File(uncompressedDumpFile);
     if (file.exists()) {
-      if (verbose)
+      if (parent.isVerbose())
         System.err.println("Uncompressed dump file " + uncompressedDumpFile + " already exists.");
       return true;
     }
@@ -625,7 +547,7 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
   }
 
   private String uncompressDumpFileName(String lang, String dir) {
-    return outputDir + "/" + lang + "/" + dir + "/" + lang + "wkt-" + dir + ".xml";
+    return dumpsDir + "/" + lang + "/" + dir + "/" + lang + "wkt-" + dir + ".xml";
   }
 
   private LanguageConfiguration extract(LanguageConfiguration conf) {
@@ -670,131 +592,81 @@ public class UpdateAndExtractDumps extends DBnaryCommandLine {
       return true;
     }
 
-    // TODO: GC and show used memory.
     displayMemoryUsage();
-    String odir = extractDir + "/" + model.toLowerCase() + "/" + lang;
-    File d = new File(odir);
-    d.mkdirs();
-
-    String prefix = "";
-    if (features.contains("foreign")) {
-      prefix = FOREIGN_PREFIX;
+    Path odir = extractDir.resolve(lang);
+    try {
+      Files.createDirectories(odir);
+    } catch (IOException e) {
+      System.err.format("Could not create directory '%s'.%n", odir);
+      e.printStackTrace(System.err);
+      return false;
     }
 
+    Path extractedFile = odir.resolve(ExtractionPreferences.outputFilename(MAIN, lang, dir,
+        features.getOutputFormat(), batch.doCompress(), false));
     // TODO: correctly test for compressed file if compress is enabled
-    String extractFile =
-        odir + "/" + lang + prefix + "_dbnary_" + model.toLowerCase() + "_" + dir + ".ttl";
-    String morphoFile =
-        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.MORPHOLOGY + "_" + dir + ".ttl";
-    String etymologyFile =
-        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.ETYMOLOGY + "_" + dir + ".ttl";
-    String limeFile =
-        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.LIME + "_" + dir + ".ttl";
-    String enhancementFile = odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.ENHANCEMENT
-        + "_" + dir + ".ttl";
-    String statsFile =
-        odir + "/" + lang + prefix + "_dbnary_" + ExtractionFeature.STATISTICS + "_" + dir + ".ttl";
-    String foreignFile = odir + "/" + lang + prefix + "_dbnary_"
-        + ExtractionFeature.FOREIGN_LANGUAGES + "_" + dir + ".ttl";
-    if (compress) {
-      extractFile = extractFile + ".bz2";
-      morphoFile = morphoFile + ".bz2";
-      etymologyFile = etymologyFile + ".bz2";
-      limeFile = limeFile + ".bz2";
-      enhancementFile = enhancementFile + ".bz2";
-      statsFile = statsFile + ".bz2";
-      foreignFile = foreignFile + ".bz2";
-    }
 
-    File file = new File(extractFile);
-    if (file.exists() && !force) {
+    if (Files.exists(extractedFile) && !force) {
       // System.err.println("Extracted wiktionary file " + extractFile + " already exists.");
       return true;
     }
-    System.err.println("========= EXTRACTING file " + extractFile + " ===========");
+    System.err.println("========= EXTRACTING file " + extractedFile + " ===========");
 
     ArrayList<String> a = new ArrayList<>();
+    a.add("extract");
     a.add("-f");
-    a.add("turtle");
+    a.add(features.getOutputFormat());
     a.add("-l");
     a.add(lang);
-    a.add("-o");
-    a.add(extractFile);
+    a.add("--dir");
+    a.add(parent.getDbnaryDir().toString());
+    a.add("--suffix");
+    a.add(dir);
     if (sample > 0) {
       a.add("--frompage");
       a.add("0");
       a.add("--topage");
       a.add(String.valueOf(sample));
+    } else {
+      if (batch.fromPage() > 0) {
+        a.add("--frompage");
+        a.add(String.valueOf(batch.fromPage()));
+      }
+      if (batch.toPage() != Integer.MAX_VALUE) {
+        a.add("--topage");
+        a.add(String.valueOf(batch.toPage()));
+      }
     }
-    a.add("-z");
-    a.add(compress ? "yes" : "no");
-    if (features.contains("morphology")) {
-      a.add("--morphology");
-      a.add(morphoFile);
+    if (batch.doCompress())
+      a.add("--compress");
+    else
+      a.add("--no-compress");
+    a.add("--endolex");
+    a.add(String.join(",", features.getEndolexFeatures().stream().map(ExtractionFeature::toString)
+        .toArray(String[]::new)));
+    if (null != features.getExolexFeatures()) {
+      a.add("--exolex");
+      a.add(String.join(",", features.getExolexFeatures().stream().map(ExtractionFeature::toString)
+          .toArray(String[]::new)));
     }
-    if (features.contains("etymology")) {
-      a.add("--etymology");
-      a.add(etymologyFile);
-    }
-    if (features.contains("lime")) {
-      a.add("--lime");
-      a.add(limeFile);
-    }
-    if (features.contains("enhancement")) {
-      a.add("--enhancement");
-      a.add(enhancementFile);
-    }
-    if (features.contains("statistics")) {
-      a.add("--statistics");
-      a.add(statsFile);
-    }
-    if (features.contains("foreign")) {
-      a.add("-x");
-      a.add("--foreign");
-      a.add(foreignFile);
-    }
-
-    if (tdbDir) {
+    if (batch.useTdb()) {
       a.add("--tdb");
     }
-    if (verbose) {
+    if (parent.isVerbose()) {
       a.add("-v");
     }
     a.add(uncompressDumpFileName(lang, dir));
 
     String[] args = a.toArray(new String[0]);
 
-    if (verbose) {
+    if (parent.isVerbose()) {
       System.err.println("Launching ExtractWiktionary with args : ");
       System.err.println(Arrays.stream(args).collect(Collectors.joining(" ")));
     }
-    try {
-      ExtractWiktionary.main(args);
-    } catch (WiktionaryIndexerException e) {
-      System.err.println("Caught IndexerException while extracting dump file: "
-          + uncompressDumpFileName(lang, dir));
-      System.err.println(e.getLocalizedMessage());
-      e.printStackTrace();
-      status = false;
-    } catch (IOException e) {
-      System.err.println(
-          "Caught IOException while extracting dump file: " + uncompressDumpFileName(lang, dir));
-      System.err.println(e.getLocalizedMessage());
-      e.printStackTrace();
-      status = false;
-    }
+
+    DBnary.main(args);
     displayMemoryUsage();
     return status;
-  }
-
-  @Override
-  protected void printUsage() {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(
-        "java -cp /path/to/dbnary.jar " + UpdateAndExtractDumps.class.getName()
-            + " [OPTIONS] languageCode...",
-        "With OPTIONS in:", options,
-        "languageCode is the wiktionary code for a language (usually a 2 letter code).", false);
   }
 
 }

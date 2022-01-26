@@ -1,57 +1,41 @@
 package org.getalp.dbnary.cli;
 
-import org.getalp.dbnary.WiktionaryIndex;
-import org.getalp.dbnary.WiktionaryIndexerException;
+import java.util.concurrent.Callable;
+import org.getalp.dbnary.cli.mixins.WiktionaryIndexMixin;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
-public class GetRawEntry {
+@Command(name = "source", mixinStandardHelpOptions = true,
+    header = "get the wikitext source of the specified pages.",
+    description = "The wikitext of specified pages is retrieved from the dump and written "
+        + "to stdout.")
+public class GetRawEntry implements Callable<Integer> {
 
-  /**
-   * @param args arguments of the command line
-   * @throws WiktionaryIndexerException if any error occurs with indexer.
-   */
-  public static void main(String[] args) throws WiktionaryIndexerException {
-    if (args.length == 0) {
-      printUsage();
-      System.exit(1);
-    }
-    Boolean allxml = false;
-    int startIndex = 0;
-    while (args[startIndex].startsWith("-")) {
-      if (args[startIndex].equals("--all") || args[startIndex].equals("-a")) {
-        allxml = true;
-        startIndex++;
-      } else if (args[0].equals("--")) {
-        startIndex++;
-        break;
+  @Mixin
+  protected WiktionaryIndexMixin wi;
+
+  @Option(names = {"--all"}, description = "dump the whole xml structure of the page.")
+  private boolean all;
+
+  @Option(names = {"--redirect"}, description = "process redirects to get the target page.")
+  private boolean redirect;
+
+  @Parameters(index = "1..*", description = "The entries to be extracted.", arity = "1..*")
+  String[] entries;
+
+  @Override
+  public Integer call() {
+    for (String entry : entries) {
+      if (all) {
+        System.out.println(wi.getFullXmlForPage(entry));
+      } else if (redirect) {
+        System.out.println(wi.getTextOfPageWithRedirects(entry));
       } else {
-        printUsage();
-        System.exit(1);
+        System.out.println(wi.getTextOfPage(entry));
       }
     }
-
-    WiktionaryIndex wi = new WiktionaryIndex(args[startIndex]);
-    startIndex++;
-
-    for (int i = startIndex; i < args.length; i++) {
-      if (allxml) {
-        System.out.println(wi.get(args[i]));
-      } else {
-        System.out.println(wi.getTextOfPage(args[i]));
-      }
-    }
-  }
-
-
-  public static void printUsage() {
-    System.err.println("Usage: ");
-    System.err.println(
-        "  java org.getalp.dbnary.cli.GetRawEntry [OPTIONS] wiktionaryDumpFile entryname ...");
-    System.err.println("Displays the raw text of the wiktionary page named \"entryname\".");
-    System.err.println("OPTIONS:");
-    System.err.println("  --all (-a): Display all the xml elements defining the page.");
-    System.err.println(
-        "  --        : Stops the sequence of options and start the sequence of entrynames.");
-    System.err.println(
-        "              This option is usefull when the wiktionaryDumpFile begins with a \"-\".");
+    return 0;
   }
 }

@@ -3,6 +3,8 @@ package org.getalp.dbnary.wiki;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,7 +77,7 @@ public class WikiTextOnRealWikiPagesTest extends CommonWikiTextLoader {
     WikiText text = getWikiTextFor("bleu_extract_definitions_fr");
 
     // test standard WikiText structure
-    assert !text.wikiTokens().isEmpty();
+    assertFalse(text.wikiTokens().isEmpty());
 
   }
 

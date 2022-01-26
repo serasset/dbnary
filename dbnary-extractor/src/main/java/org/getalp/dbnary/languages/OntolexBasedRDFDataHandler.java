@@ -607,7 +607,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   protected Resource registerTranslationToEntity(Resource entity, String lang,
-      Resource currentGlose, String usage, String word) {
+      Resource currentGloss, String usage, String word) {
     if (null == entity) {
       log.debug("Registering Translation when lex entry is null in \"{}\".",
           this.currentMainLexEntry);
@@ -634,8 +634,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       aBox.add(trans, DBnaryOnt.writtenForm, word, tl);
     }
 
-    if (currentGlose != null && !currentGlose.equals("")) {
-      aBox.add(trans, DBnaryOnt.gloss, currentGlose);
+    if (currentGloss != null) {
+      aBox.add(trans, DBnaryOnt.gloss, currentGloss);
     }
 
     if (usage != null && usage.length() > 0) {
@@ -645,8 +645,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void registerTranslation(String lang, Resource currentGlose, String usage, String word) {
-    registerTranslationToEntity(currentLexEntry, lang, currentGlose, usage, word);
+  public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {
+    registerTranslationToEntity(currentLexEntry, lang, currentGloss, usage, word);
   }
 
   public String getVocableResourceName(String vocable) {

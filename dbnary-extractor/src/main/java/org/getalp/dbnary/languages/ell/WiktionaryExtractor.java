@@ -23,7 +23,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String languageSectionPatternString = "==\\s*\\{\\{-([^-]*)-\\}\\}\\s*==";
   protected final static String definitionPatternString =
-      "(?:^#{1,2}([^\\*#:].*))|(?:^\\*([^\\*#:].*))$";
+      // "(?:^#{1,2}([^\\*#:].*))|(?:^\\*([^\\*#:].*))$";
+      "^(?:#{1,2}([^\\*#:].*)|\\*([^\\*#:].*))$";
 
   protected final static String pronPatternString = "\\{\\{ΔΦΑ\\|([^\\|\\}]*)(.*)\\}\\}";
 

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author pantaleo
  */
+@SuppressWarnings("ALL")
 public class Etymology {
 
   static Logger log = LoggerFactory.getLogger(Etymology.class);
@@ -47,7 +48,7 @@ public class Etymology {
   private static final HashMap<String, List<String>> mappings;
 
   static {
-    HashMap<String, List<String>> tmp = new HashMap<String, List<String>>();
+    HashMap<String, List<String>> tmp = new HashMap<>();
     tmp.put("FROM",
         Arrays.asList("[Ff]rom", "[Bb]ack-formation (?:from)?",
             "[Aa]bbreviat(?:ion|ed)? (?:of|from)?", "[Cc]oined from",
@@ -57,10 +58,10 @@ public class Etymology {
             "[Pp]articiple of", "[Aa]lteration of", "[Vv]ia", "[Dd]iminutive (?:form )?of",
             "[Uu]ltimately of", "[Vv]ariant of", "[Pp]lural of", "[Ff]orm of",
             "[Aa]phetic variation of", "\\<", "[Aa] \\[\\[calque\\]\\] of", "[Ff]ormed as"));
-    tmp.put("TEMPLATE", Arrays.asList("\\{\\{"));
-    tmp.put("LINK", Arrays.asList("\\[\\["));// removed (?:'') as this causes an error in
+    tmp.put("TEMPLATE", List.of("\\{\\{"));
+    tmp.put("LINK", List.of("\\[\\["));// removed (?:'') as this causes an error in
     // WiktinaryExtractor and function containedIn
-    tmp.put("ABOVE", Arrays.asList("[Ss]ee above"));// this should precede cognateWith which matches
+    tmp.put("ABOVE", List.of("[Ss]ee above"));// this should precede cognateWith which matches
     // against "[Ss]ee"
     tmp.put("COGNATE_WITH",
         Arrays.asList("[Rr]elated(?: also)? to",
@@ -72,22 +73,22 @@ public class Etymology {
         Arrays.asList("[Cc]ompound(?:ed)? (?:of|from) ",
             "[Mm]erg(?:ing |er )(?:of |with )?(?: earlier )?", "[Uu]niverbation of ",
             "[Ff]usion of ", "[Cc]orruption of "));
-    tmp.put("UNCERTAIN", Arrays.asList("[Oo]rigin uncertain"));
-    tmp.put("COMMA", Arrays.asList(","));
-    tmp.put("YEAR", Arrays.asList(
+    tmp.put("UNCERTAIN", List.of("[Oo]rigin uncertain"));
+    tmp.put("COMMA", List.of(","));
+    tmp.put("YEAR", List.of(
         "(?:[Aa].\\s*?[Cc].?|[Bb].?\\s*[Cc].?)?\\s*\\d++\\s*(?:[Aa].?\\s*[Cc].?|[Bb].?\\s*[Cc].?|th century|\\{\\{C\\.E\\.\\}\\})?"));
     tmp.put("AND", Arrays.asList("\\s+and\\s+", "with suffix "));
-    tmp.put("PLUS", Arrays.asList("\\+"));
+    tmp.put("PLUS", List.of("\\+"));
     tmp.put("DOT", Arrays.asList("\\.", ";"));
-    tmp.put("OR", Arrays.asList("[^a-zA-Z0-9]or[^a-zA-Z0-9]"));
-    tmp.put("WITH", Arrays.asList("[^a-zA-Z0-9]with[^a-zA-Z0-9]"));
+    tmp.put("OR", List.of("[^a-zA-Z0-9]or[^a-zA-Z0-9]"));
+    tmp.put("WITH", List.of("[^a-zA-Z0-9]with[^a-zA-Z0-9]"));
     tmp.put("STOP",
         Arrays.asList("[Ss]uperseded", "[Dd]isplaced(?: native)?", "[Rr]eplaced",
             "[Mm]ode(?:l)?led on", "[Rr]eplacing", "[Cc]oined by",
             "equivalent to\\s*\\{\\{[^\\}]+\\}\\}"));// this icludes two types of patterns:
     // superseded and equivalent to
-    tmp.put("COLON", Arrays.asList(":"));
-    tmp.put("SLASH", Arrays.asList("/"));
+    tmp.put("COLON", List.of(":"));
+    tmp.put("SLASH", List.of("/"));
     mappings = new HashMap<>(tmp);
   }
 
@@ -119,7 +120,7 @@ public class Etymology {
   public Etymology(String s, String l) {
     string = s;
     lang = l;
-    symbols = new ArrayList<Symbols>();
+    symbols = new ArrayList<>();
   }
 
   public void fromTableToSymbols() {
@@ -128,7 +129,7 @@ public class Etymology {
     string = WikiTool.removeTextWithinParenthesesIn(string);
     string = string.trim();
 
-    if (string == null || string.equals("")) {
+    if (string.equals("")) {
       return;
     }
 
@@ -379,7 +380,7 @@ public class Etymology {
       } else if (linksLocations.size() == 1) {// PARSE case "[[Asturian]]: {{l|ast|águila}}"
         bulletLang = subs.get(0).substring(2, subs.get(0).length() - 2).trim();
       }
-      if (!bulletLang.startsWith("{{") && !bulletLang.startsWith("adjective")
+      if (null != bulletLang && !bulletLang.startsWith("{{") && !bulletLang.startsWith("adjective")
           && !bulletLang.startsWith("noun") && !bulletLang.startsWith("verb")
           && !bulletLang.startsWith("prefix") && !bulletLang.startsWith("phrase")
           && !bulletLang.startsWith("idiom") && !bulletLang.startsWith("antonym")
@@ -445,12 +446,12 @@ public class Etymology {
   }
 
   public ArrayList<Span> findMatch(ArrayList<Symbols> a, Pattern p) {
-    ArrayList<Span> toreturn = new ArrayList<Span>();
+    ArrayList<Span> toreturn = new ArrayList<>();
     if (a == null || a.size() == 0) {
       return toreturn;
     }
-    ArrayList<Integer> arrayListInteger = new ArrayList<Integer>();
-    ArrayList<Integer> arrayListPosition = new ArrayList<Integer>();
+    ArrayList<Integer> arrayListInteger = new ArrayList<>();
+    ArrayList<Integer> arrayListPosition = new ArrayList<>();
     int c = 0;
     arrayListPosition.add(c);
     for (int i = 0; i < a.size(); i++) {
@@ -494,7 +495,7 @@ public class Etymology {
       return;
     }
     Span m = match.get(0);
-    ArrayList<Symbols> a = new ArrayList<Symbols>();
+    ArrayList<Symbols> a = new ArrayList<>();
     for (int k = m.start; k < m.end + 1; k++) {
       Symbols b = symbols.get(k);
       for (String values : b.values) {
@@ -529,7 +530,7 @@ public class Etymology {
     }
     for (int i = match.size() - 1; i >= 0; i--) {
       Span m = match.get(i);
-      ArrayList<Symbols> a = new ArrayList<Symbols>();
+      ArrayList<Symbols> a = new ArrayList<>();
       for (int k = m.start; k < m.end + 1; k++) {
         Symbols b = symbols.get(k);
         for (String values : b.values) {

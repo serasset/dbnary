@@ -7,9 +7,11 @@ import java.util.Map;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ItalianPronunciationExtractorWikiModel extends DbnaryWikiModel {
-
+  private static final Logger log = LoggerFactory.getLogger(ItalianPronunciationExtractorWikiModel.class);
   private IWiktionaryDataHandler delegate;
 
   public ItalianPronunciationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
@@ -50,10 +52,9 @@ public class ItalianPronunciationExtractorWikiModel extends DbnaryWikiModel {
       }
     }
     if ("SAMPA".equals(templateName)) {
-      // TODO !
+      log.debug("SAMPA pronunciation is not handled yet !");
     } else {
-      // System.err.println("Called template: " + templateName + " while parsing translations of: "
-      // + this.getImageBaseURL());
+      log.debug("Translation parsing: ignoring template: {} || {}", templateName, getPageName());
       // Just ignore the other template calls (uncomment to expand the template calls).
       // super.substituteTemplateCall(templateName, parameterMap, writer);
     }

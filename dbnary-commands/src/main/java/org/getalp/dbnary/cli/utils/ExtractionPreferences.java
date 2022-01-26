@@ -85,8 +85,7 @@ public class ExtractionPreferences {
   }
 
   public Path originalDump(String language, String date) {
-    return this.getDumpDir(language).resolve(date).
-        resolve(originalDumpFilename(language, date));
+    return this.getDumpDir(language).resolve(date).resolve(originalDumpFilename(language, date));
   }
 
   public static String expandedDumpFilename(String language, String date) {
@@ -94,8 +93,7 @@ public class ExtractionPreferences {
   }
 
   public Path expandedDump(String language, String date) {
-    return this.getDumpDir(language).resolve(date)
-        .resolve(expandedDumpFilename(language, date));
+    return this.getDumpDir(language).resolve(date).resolve(expandedDumpFilename(language, date));
   }
 
   private static String shortLanguage(String language) {

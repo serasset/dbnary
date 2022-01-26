@@ -8,15 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author pantaleo
- */
-
-/**
  * Symbols is an object that contains data about a Wiktionary template (e.g.: {{m|en|door}}) or a
  * Wiktionary link (e.g.: [[door]]). It has properties .values an ArrayList&lt;String&gt;, e.g.,
  * {"LANGUAGE", "LEMMA"} .args a Map&lt;String, String&gt;, e.g., {("1", "m"), ("lang", "eng"),
  * ("word1", "door")} .string, e.g., "m|en|door"
+ * @author pantaleo
  */
+@SuppressWarnings("ALL")
 public class Symbols {
 
   public ArrayList<String> values;
@@ -38,7 +36,7 @@ public class Symbols {
   public void parseOther(String group, String value) {
     string = group;
     args = null;
-    values = new ArrayList<String>();
+    values = new ArrayList<>();
     values.add(value);
   }
 
@@ -52,7 +50,7 @@ public class Symbols {
             String k = key.replace("lang", "word");
             if (k.equals("word")) {
               for (int h = 1; h < 12; h++) {
-                k = "word" + Integer.toString(h);
+                k = "word" + h;
                 String word = a.get(k);
                 if (word != null) {
                   String[] macrons = {"ā", "ē", "ī", "ō", "ū", "ȳ"};
@@ -103,7 +101,7 @@ public class Symbols {
         }
       }
       string = compound.toString();
-      values = new ArrayList<String>();
+      values = new ArrayList<>();
       values.add("LEMMA");
       args = WikiTool.parseArgs(string);
     } else if (type.equals("mult")) {
@@ -121,7 +119,7 @@ public class Symbols {
       }
       log.debug("multistring {}", mult.toString());
       string = mult.toString();
-      values = new ArrayList<String>();
+      values = new ArrayList<>();
       values.add("LEMMA");
       args = WikiTool.parseArgs(string);
     }
@@ -129,7 +127,7 @@ public class Symbols {
 
   public void parseTemplate(String group, String lang) {
     string = group;
-    values = new ArrayList<String>();
+    values = new ArrayList<>();
     args = WikiTool.parseArgs(string);
     if (args.get("1").equals("rel-top")) {
       if (args.get("2").equals("cognates") || args.get("2").equals("detailed etymology")
@@ -570,7 +568,7 @@ public class Symbols {
       if (language == null) {
         offset = 1;
         language = args.get("2");
-        if (language != null && language != "") {
+        if (!"".equals(language)) {
           args.remove("2");
         } else {
           language = lang;
@@ -929,9 +927,9 @@ public class Symbols {
   }
 
   public void parseLink(String group, String lang) {
-    args = new HashMap<String, String>();
+    args = new HashMap<>();
     string = group;
-    values = new ArrayList<String>();
+    values = new ArrayList<>();
 
     ArrayList<String> splitArgs = WikiTool.splitUnlessInTemplateOrLink(string, '|');
     ArrayList<String> splitColumn = WikiTool.splitUnlessInTemplateOrLink(splitArgs.get(0), ':');

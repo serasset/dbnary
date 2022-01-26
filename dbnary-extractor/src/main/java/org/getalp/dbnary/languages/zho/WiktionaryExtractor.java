@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private static final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
 
   protected final static String wikiSectionPatternString = "^={3,}\\s*([^=]*)\\s*={3,}\\s*$";
@@ -171,13 +171,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       pos = posMarkers.get(h[0]);
     }
 
-    String wiktionaryPageName = null;
     if (null != pos && pos.equals("idiom"))
     // When idiom is found on a 1 or 2 char entry, it is assumed to be a section giving the idioms
     // build from the entry.
     // Other idiom it is believed to be a Part Of Speech.
     {
-      if (wiktionaryPageName.length() <= 2) {
+      if (getWiktionaryPageName().length() <= 2) {
         pos = null;
       } else {
         pos = "idiom";

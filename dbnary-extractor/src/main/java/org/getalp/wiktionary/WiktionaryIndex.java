@@ -50,6 +50,7 @@ public class WiktionaryIndex implements WiktionaryPageSource {
 
   /**
    * returns Path of the index file corresponding to passed dump.
+   * 
    * @param dump Path refering to the dump file.
    * @return the Path refering to the index file.
    */
@@ -91,8 +92,7 @@ public class WiktionaryIndex implements WiktionaryPageSource {
         encoding = StandardCharsets.UTF_16;
       }
     } catch (IOException ex) {
-      throw new WiktionaryIndexerException(
-          "Could not open wiktionary dump file " + dump, ex);
+      throw new WiktionaryIndexerException("Could not open wiktionary dump file " + dump, ex);
     }
   }
 
@@ -166,6 +166,7 @@ public class WiktionaryIndex implements WiktionaryPageSource {
   /**
    * Load the index from the VALID index file (validity and readability should be checked before
    * call to this method)
+   * 
    * @throws WiktionaryIndexerException if any exception arise during index load
    */
   private void loadIndex() throws WiktionaryIndexerException {
@@ -241,7 +242,7 @@ public class WiktionaryIndex implements WiktionaryPageSource {
       xmlf.position(ofs.start * 2 + 2); // in utf-16, 2 first bytes for the BOM
       ByteBuffer b = ByteBuffer.allocate(ofs.length * 2);
 
-      //byte[] b = new byte[ofs.length * 2];
+      // byte[] b = new byte[ofs.length * 2];
       xmlf.read(b);
       res = encoding.decode(b).toString();
     } catch (IOException ex) {

@@ -547,8 +547,8 @@
           <configuration>
             <append>true</append>
             <excludes>
-              <exclude>**/deprecated/**/*.class</exclude>
-              <exclude>**/deprecated/*.class</exclude>
+              <exclude>**/deprecated/**/*.java</exclude>
+              <exclude>**/deprecated/*.java</exclude>
             </excludes>
           </configuration>
           <executions>

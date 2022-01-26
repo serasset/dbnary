@@ -1,6 +1,7 @@
 package org.getalp.dbnary.cli.mixins;
 
 import java.io.File;
+import java.nio.file.Path;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.wiktionary.WiktionaryIndex;
 import org.getalp.wiktionary.WiktionaryIndexerException;
@@ -18,14 +19,14 @@ public class WiktionaryIndexMixin implements WiktionaryPageSource {
   protected File dumpFile;
 
   @Parameters(index = "0", description = "The dump file of the wiki to be extracted.", arity = "1")
-  protected void setDumpFile(File dump) {
-    this.dumpFile = dump;
+  protected void setDumpFile(Path dump) {
+    this.dumpFile = dump.toFile();
     try {
-      this.wi = new WiktionaryIndex(dumpFile);
+      this.wi = new WiktionaryIndex(dump);
     } catch (WiktionaryIndexerException e) {
       e.printStackTrace();
       throw new ParameterException(mixee.commandLine(),
-          String.format("Could not use dump file '%s'", dump.toString()));
+          String.format("Could not use dump file '%s'", dump));
     }
   }
 

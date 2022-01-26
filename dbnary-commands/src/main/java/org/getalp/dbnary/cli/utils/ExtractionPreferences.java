@@ -1,6 +1,5 @@
 package org.getalp.dbnary.cli.utils;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Objects;
 import org.getalp.LangTools;
@@ -17,17 +16,6 @@ public class ExtractionPreferences {
     dumpDir = directory.resolve("dumps");
     extractionDir = directory.resolve("extracts").resolve("ontolex");
   }
-
-  public static String outputFilename(ExtractionFeature feature, String language,
-      String outputFormat, boolean compress) {
-    return outputFilename(feature, language, null, outputFormat, compress);
-  }
-
-  public static String outputFilename(ExtractionFeature feature, String language, String suffix,
-      String outputFormat, boolean compress) {
-    return outputFilename(feature, language, suffix, outputFormat, compress, false);
-  }
-
 
   public static String outputFilename(ExtractionFeature feature, String language,
       String outputFormat, boolean compress, boolean isExolex) {
@@ -65,19 +53,49 @@ public class ExtractionPreferences {
     return dumpDir;
   }
 
+  public Path getDumpDir(String language) {
+    return getDumpDir().resolve(shortLanguage(language));
+  }
+
   public Path getExtractionDir() {
     return extractionDir;
   }
 
-  public File outputFileForFeature(ExtractionFeature feature, String language, String outputFormat,
+  public Path getExtractionDir(String language) {
+    return getExtractionDir().resolve(shortLanguage(language));
+  }
+
+  public Path getLatestExtractionDir() {
+    return getExtractionDir().resolve(shortLanguage("latest"));
+  }
+
+  public Path outputFileForFeature(ExtractionFeature feature, String language, String outputFormat,
       boolean compress, boolean isExolex) {
     return outputFileForFeature(feature, language, null, outputFormat, compress, isExolex);
   }
 
-  public File outputFileForFeature(ExtractionFeature feature, String language, String suffix,
+  public Path outputFileForFeature(ExtractionFeature feature, String language, String suffix,
       String outputFormat, boolean compress, boolean isExolex) {
     String fn = outputFilename(feature, language, suffix, outputFormat, compress, isExolex);
-    return getExtractionDir().resolve(shortLanguage(language)).resolve(fn).toFile();
+    return getExtractionDir(language).resolve(fn);
+  }
+
+  public static String originalDumpFilename(String language, String date) {
+    return language + "wiktionary-" + date + "-pages-articles.xml.bz2";
+  }
+
+  public Path originalDump(String language, String date) {
+    return this.getDumpDir(language).resolve(date).
+        resolve(originalDumpFilename(language, date));
+  }
+
+  public static String expandedDumpFilename(String language, String date) {
+    return language + "wkt-" + date + ".xml";
+  }
+
+  public Path expandedDump(String language, String date) {
+    return this.getDumpDir(language).resolve(date)
+        .resolve(expandedDumpFilename(language, date));
   }
 
   private static String shortLanguage(String language) {

@@ -10,7 +10,7 @@ import org.getalp.dbnary.bliki.DbnaryWikiModel;
 
 public class DefinitionsWikiModel extends DbnaryWikiModel {
 
-  private Set<String> templates = null;
+  private Set<String> usedTemplates = null;
 
   public DefinitionsWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
     this((WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
@@ -22,9 +22,9 @@ public class DefinitionsWikiModel extends DbnaryWikiModel {
   }
 
   public DefinitionsWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL, Set<String> templates) {
+      String linkBaseURL, Set<String> usedTemplates) {
     super(wi, locale, imageBaseURL, linkBaseURL);
-    this.templates = templates;
+    this.usedTemplates = usedTemplates;
   }
 
   /**
@@ -43,14 +43,14 @@ public class DefinitionsWikiModel extends DbnaryWikiModel {
   }
 
   public Set<String> getTemplates() {
-    return templates;
+    return usedTemplates;
   }
 
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
-    if (templates != null) {
-      templates.add(templateName);
+    if (usedTemplates != null) {
+      usedTemplates.add(templateName);
     }
     if ("Noun".equalsIgnoreCase(templateName)) {
       return;

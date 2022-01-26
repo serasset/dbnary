@@ -11,7 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ItalianPronunciationExtractorWikiModel extends DbnaryWikiModel {
-  private static final Logger log = LoggerFactory.getLogger(ItalianPronunciationExtractorWikiModel.class);
+  private static final Logger log =
+      LoggerFactory.getLogger(ItalianPronunciationExtractorWikiModel.class);
   private IWiktionaryDataHandler delegate;
 
   public ItalianPronunciationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,

@@ -30,7 +30,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String polishDefinitionPatternString =
       "^:{1,3}\\s*(?:\\((" + senseNumberRegExp + ")\\))?\\s*([^\n\r]*)$";
 
-  protected WiktionaryDataHandler wdh;
+  protected WiktionaryDataHandler polwdh;
 
   private final int NODATA = 0;
   private final int TRADBLOCK = 1;
@@ -48,7 +48,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
-    this.wdh = (WiktionaryDataHandler) wdh;
+    this.polwdh = (WiktionaryDataHandler) wdh;
 
   }
 
@@ -124,7 +124,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    */
   @Override
   public void extractData() {
-    wdh.initializePageExtraction(getWiktionaryPageName());
+    polwdh.initializePageExtraction(getWiktionaryPageName());
     definitionExpander.setPageName(getWiktionaryPageName());
     // System.out.println(pageContent);
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
@@ -146,7 +146,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
     extractPolishData(polishSectionStartOffset, polishSectionEndOffset);
-    wdh.finalizePageExtraction();
+    polwdh.finalizePageExtraction();
   }
 
   int state = NODATA;
@@ -168,7 +168,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   void registerNewPartOfSpeech(Matcher m) {
-    wdh.initializeLexicalEntry(m.group(3));
+    polwdh.initializeLexicalEntry(m.group(3));
   }
 
   void gotoDefBlock(Matcher m) {
@@ -222,7 +222,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection("pl");
+    polwdh.initializeLanguageSection("pl");
     gotoNoData(m);
     while (m.find()) {
       SectionType t = getSectionType(m.group(1));
@@ -463,7 +463,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       default:
         assert false : "Unexpected state while extracting translations from dictionary.";
     }
-    wdh.finalizeLanguageSection();
+    polwdh.finalizeLanguageSection();
   }
 
 
@@ -565,7 +565,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String character = lexer.group(7);
 
         if (character.equals(",") || character.equals(";")) {
-          wdh.registerTranslation(lang, currentGloss, currentUsage.trim(),
+          polwdh.registerTranslation(lang, currentGloss, currentUsage.trim(),
               currentTranslation.trim());
           currentTranslation = "";
           currentUsage = "";
@@ -582,7 +582,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     Matcher definitionMatcher = polishDefinitionPattern.matcher(this.pageContent);
     definitionMatcher.region(startOffset, endOffset);
     while (definitionMatcher.find()) {
-      if (definitionMatcher.group(2) != null && wdh.posIsValid()) {
+      if (definitionMatcher.group(2) != null && polwdh.posIsValid()) {
         // It's a definition
         HashSet<String> defTemplates = null;
         if (log.isTraceEnabled()) {
@@ -604,18 +604,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           log.debug("Null sense number in definition\"{}\" for entry {}", def,
               this.getWiktionaryPageName());
           if (def != null && !def.equals("")) {
-            wdh.registerNewDefinition(def);
+            polwdh.registerNewDefinition(def);
           }
         } else {
           senseNum = senseNum.trim();
           senseNum = senseNum.replaceAll("<[^>]*>", "");
           if (def != null && !def.equals("")) {
-            wdh.registerNewDefinition(def, senseNum);
+            polwdh.registerNewDefinition(def, senseNum);
           }
         }
       } else if (definitionMatcher.group(3) != null) {
         // It's a part of speech
-        wdh.initializeLexicalEntry(definitionMatcher.group(3));
+        polwdh.initializeLexicalEntry(definitionMatcher.group(3));
       } else if (definitionMatcher.group(4) != null
           && definitionMatcher.group(4).trim().length() > 0) {
         log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", definitionMatcher.group(4),
@@ -646,7 +646,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             String leftGroup = linkMatcher.group(1);
             if (leftGroup != null && !leftGroup.equals("") && !leftGroup.startsWith("Wikisaurus:")
                 && !leftGroup.startsWith("Catégorie:") && !leftGroup.startsWith("#")) {
-              wdh.registerNymRelation(leftGroup, synRelation, senseNum);
+              polwdh.registerNymRelation(leftGroup, synRelation, senseNum);
             }
           }
         }
@@ -668,7 +668,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Map<String, String> args = WikiTool.parseArgs(macroMatcher.group(2));
         for (int i = 1; i <= 5; i++) {
           if (null != args.get(Integer.toString(i))) {
-            wdh.registerPronunciation(args.get(Integer.toString(i)), "pl-ipa");
+            polwdh.registerPronunciation(args.get(Integer.toString(i)), "pl-ipa");
           }
         }
         if (args.get("6") != null) {

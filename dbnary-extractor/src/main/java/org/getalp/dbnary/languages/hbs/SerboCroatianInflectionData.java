@@ -173,6 +173,7 @@ public class SerboCroatianInflectionData {
     switch (subTense) {
       case PREZENT:
         inflections.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.present));
+        break;
       case FUTUR1:
       case FUTUR2:
         inflections.add(PropertyObjectPair.get(LexinfoOnt.tense, LexinfoOnt.future));

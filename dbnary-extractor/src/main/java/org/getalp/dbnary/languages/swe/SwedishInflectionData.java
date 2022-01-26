@@ -231,22 +231,22 @@ public class SwedishInflectionData extends InflectionData {
     }
   }
 
-  public GNumber number = GNumber.NOTHING;
-  public GrammaticalCase grammaticalCase = GrammaticalCase.NOTHING;
-  public Gender gender = Gender.NOTHING;
-  public Definiteness definiteness = Definiteness.NOTHING;
-  public Set<String> note = new HashSet<>();
-  public SubClass subClass = SubClass.NOTHING;
-  public SyntacticFunction function = SyntacticFunction.NOTHING;
-  public ReferentType referentType = ReferentType.NOTHING;
+  private GNumber number = GNumber.NOTHING;
+  private GrammaticalCase grammaticalCase = GrammaticalCase.NOTHING;
+  private Gender gender = Gender.NOTHING;
+  private Definiteness definiteness = Definiteness.NOTHING;
+  private Set<String> note = new HashSet<>();
+  private SubClass subClass = SubClass.NOTHING;
+  private SyntacticFunction function = SyntacticFunction.NOTHING;
+  private ReferentType referentType = ReferentType.NOTHING;
 
-  public Degree degree = Degree.NOTHING;
-  public Mode mode = Mode.NOTHING;
-  public Voice voice = Voice.NOTHING;
-  public Tense tense = Tense.NOTHING;
-  public Person person = Person.NOTHING;
-  public InflectionType inflectionType = InflectionType.NOTHING;
-  public Valency valency = Valency.NOTHING;
+  private Degree degree = Degree.NOTHING;
+  private Mode mode = Mode.NOTHING;
+  private Voice voice = Voice.NOTHING;
+  private Tense tense = Tense.NOTHING;
+  private Person person = Person.NOTHING;
+  private InflectionType inflectionType = InflectionType.NOTHING;
+  private Valency valency = Valency.NOTHING;
 
 
   // ######### SETTERS ##########
@@ -302,7 +302,7 @@ public class SwedishInflectionData extends InflectionData {
     this.definiteness = Definiteness.DEFINITE;
   }
 
-  public void note(String note) {
+  public void addNote(String note) {
     this.note.add(note);
   }
 

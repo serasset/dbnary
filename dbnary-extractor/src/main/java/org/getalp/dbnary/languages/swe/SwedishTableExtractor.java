@@ -125,7 +125,7 @@ public class SwedishTableExtractor extends TableExtractor {
     }
 
     context.stream().filter(s -> s.startsWith("böjningar_av"))
-        .forEach(s -> inflections.forEach(i -> i.note(s.replaceAll("_", " "))));
+        .forEach(s -> inflections.forEach(i -> i.addNote(s.replaceAll("_", " "))));
     context.removeIf(s -> s.startsWith("böjningar_av"));
     if (context.contains("particip")) {
       if (context.contains("presens")) {

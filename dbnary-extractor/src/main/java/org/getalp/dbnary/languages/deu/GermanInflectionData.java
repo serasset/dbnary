@@ -102,6 +102,7 @@ public class GermanInflectionData extends InflectionData {
         break;
       case DATIF:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasCase, OliaOnt.DativeCase));
+        break;
       case NOTHING:
         break;
       default:
@@ -154,9 +155,8 @@ public class GermanInflectionData extends InflectionData {
         inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.Future));
         break;
       case FUTURE2:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.FuturePerfect)); // Confirmed
-        // by Ch.
-        // Chiarcos...
+        // Confirmed by Ch. Chiarcos...
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasTense, OliaOnt.FuturePerfect));
         break;
       case NOTHING:
         break;
@@ -178,42 +178,21 @@ public class GermanInflectionData extends InflectionData {
         inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.SubjunctiveMood));
         break;
       case PARTIZIPIEN:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.Participle)); // TODO:
-        // Participle
-        // is a part
-        // of speech,
-        // not a
-        // mood...
+        // TODO: Participle is a part of speech, not a mood...
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.Participle));
         break;
       case INFINITIV:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.Infinitive)); // TODO:
-        // Infinitive
-        // is a part
-        // of speech,
-        // not a
-        // mood...
+        // TODO: Infinitive is a part of speech, not a mood...
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.Infinitive));
         break;
       case GERUNDIVUM:
-        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.AdverbialParticiple)); // TODO:
-        // AdverbialParticiple
-        // is
-        // a
-        // part
-        // of
-        // speech,
-        // not
-        // a
-        // mood...
+        // TODO: AdverbialParticiple is a part of speech, not a mood...
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.AdverbialParticiple));
         break;
       case ZU_INFINITIV:
+        // TODO: Infinitive is a part of speech, not a mood...
         inflections.add(PropertyObjectPair.get(OliaOnt.hasMood, OliaOnt.Infinitive));
-        note.add("Zu-Infinitive"); // TODO:
-        // Infinitive
-        // is a part
-        // of speech,
-        // not a
-        // mood...
-
+        note.add("Zu-Infinitive");
         break;
       case NOTHING:
         break;

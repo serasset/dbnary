@@ -44,11 +44,10 @@ public class ChineseRelatedWordsExtractorWikiModel {
     carPatternString = "(.)";
 
     // We should suppress multiline xml comments even if macros or line are to be on a single line.
-    macroOrLinkOrcarPatternString =
-        "(?:" + WikiPatterns.macroPatternString + ")|(?:"
-            + WikiPatterns.linkPatternString + ")|(?:" + "(:*\\*)" // sub list
-            + ")|(?:" + "^;([^:\\n\\r]*)" // Term definition
-            + ")|(?:" + carPatternString + ")";
+    macroOrLinkOrcarPatternString = "(?:" + WikiPatterns.macroPatternString + ")|(?:"
+        + WikiPatterns.linkPatternString + ")|(?:" + "(:*\\*)" // sub list
+        + ")|(?:" + "^;([^:\\n\\r]*)" // Term definition
+        + ")|(?:" + carPatternString + ")";
   }
 
 

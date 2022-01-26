@@ -82,7 +82,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
 
   public BulgarianWikiModel(IWiktionaryDataHandler wdh, Locale locale, String imageBaseURL,
       String linkBaseURL, AbstractGlossFilter glossFilter) {
-    this(wdh, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL, glossFilter);
+    this(wdh, null, locale, imageBaseURL, linkBaseURL, glossFilter);
   }
 
   public BulgarianWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi, Locale locale,

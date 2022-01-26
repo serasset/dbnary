@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
  * Wiktionary link (e.g.: [[door]]). It has properties .values an ArrayList&lt;String&gt;, e.g.,
  * {"LANGUAGE", "LEMMA"} .args a Map&lt;String, String&gt;, e.g., {("1", "m"), ("lang", "eng"),
  * ("word1", "door")} .string, e.g., "m|en|door"
+ * 
  * @author pantaleo
  */
 @SuppressWarnings("ALL")

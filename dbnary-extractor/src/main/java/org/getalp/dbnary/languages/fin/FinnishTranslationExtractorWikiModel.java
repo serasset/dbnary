@@ -147,10 +147,9 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
     // line.
     macroOrLinkOrcarPatternString = "(?:"
         // Macro-modified for translation extractions
-        + "\\{\\-" + "([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?" + "\\-\\}"
-        + ")|(?:" + WikiPatterns.macroPatternString + ")|(?:"
-        + WikiPatterns.linkPatternString + ")|(?:" + "(:*\\*)" + ")|(?:"
-        + "(\\*:)" + ")|(?:" + carPatternString + ")";
+        + "\\{\\-" + "([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?" + "\\-\\}" + ")|(?:"
+        + WikiPatterns.macroPatternString + ")|(?:" + WikiPatterns.linkPatternString + ")|(?:"
+        + "(:*\\*)" + ")|(?:" + "(\\*:)" + ")|(?:" + carPatternString + ")";
 
 
   }

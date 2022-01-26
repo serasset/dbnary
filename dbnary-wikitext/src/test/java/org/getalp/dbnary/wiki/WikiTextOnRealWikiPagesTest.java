@@ -14,20 +14,7 @@ import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
 import org.junit.Test;
 
-public class WikiTextOnRealWikiPagesTest {
-
-  private WikiText getWikiTextFor(String pagename) throws IOException {
-    InputStream inputStream =
-        WikiTextOnRealWikiPagesTest.class.getResourceAsStream(pagename + ".wiki");
-    ByteArrayOutputStream result = new ByteArrayOutputStream();
-    byte[] buffer = new byte[1024];
-    int length;
-    while ((length = inputStream.read(buffer)) != -1) {
-      result.write(buffer, 0, length);
-    }
-    String pageContent = result.toString(StandardCharsets.UTF_8.name());
-    return new WikiText(pagename, pageContent);
-  }
+public class WikiTextOnRealWikiPagesTest extends CommonWikiTextLoader {
 
   private void testWith(String pagename) throws IOException {
     WikiText text = getWikiTextFor(pagename);

@@ -63,7 +63,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   @Mixin
   private ExtractionFeaturesMixin features; // injected by picocli
 
-  private static final String DEFAULT_SERVER_URL = "https://dumps.wikimedia.org/";
+  private static final String DEFAULT_SERVER_URL = "http://dumps.wikimedia.org/";
   private String server;
 
   @CommandLine.Option(names = {"-s", "--server"}, paramLabel = "WIKTIONARY-DUMP_MIRROR URL",

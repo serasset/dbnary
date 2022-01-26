@@ -70,7 +70,7 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
       returnCode = prepareExtraction();
     } catch (WiktionaryIndexerException e) {
       spec.commandLine().getErr().println("Could not read dump.");
-      e.printStackTrace(spec.commandLine().getErr());
+      // e.printStackTrace(spec.commandLine().getErr());
       return -1;
     }
     if (returnCode != 0)

@@ -66,11 +66,11 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
       returnCode = prepareExtraction();
     } catch (WiktionaryIndexerException e) {
       spec.commandLine().getErr().println("Could not read dump.");
-      e.printStackTrace(spec.commandLine().getErr());
+      // e.printStackTrace(spec.commandLine().getErr());
       return -1;
     } catch (IOException e) {
       spec.commandLine().getErr().println("IOException while preparing extraction, aborting.");
-      e.printStackTrace(spec.commandLine().getErr());
+      // e.printStackTrace(spec.commandLine().getErr());
       return -1;
     }
     if (returnCode != 0)
@@ -154,7 +154,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
                 spec.commandLine().getErr().println("Runtime exception while extracting  page<<"
                     + title + ">>, proceeding to next pages.");
                 spec.commandLine().getErr().println(e.getMessage());
-                e.printStackTrace();
+                // e.printStackTrace();
               }
               if (nbnodes != wdh.nbEntries()) {
                 totalRelevantTime = (System.currentTimeMillis() - startTime);
@@ -177,18 +177,20 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
         spec.commandLine().getErr().println(ex.getMessage());
 
         if (ex.getNestedException() != null) {
-          ex.getNestedException().printStackTrace();
+          spec.commandLine().getErr().println("  Nested Exception: " +
+              ex.getNestedException().getMessage());
         }
         throw new IOException("XML Stream Exception while reading dump", ex);
       } catch (Exception ex) {
-        ex.printStackTrace();
+        spec.commandLine().getErr().println(ex.getMessage());
+        // ex.printStackTrace();
       } finally {
         try {
           if (xmlr != null) {
             xmlr.close();
           }
         } catch (XMLStreamException ex) {
-          ex.printStackTrace();
+          spec.commandLine().getErr().println(ex.getMessage());
         }
       }
 
@@ -254,8 +256,8 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
       wdh.dump(model, ostream, features.getOutputFormat());
     } catch (IOException e) {
       spec.commandLine().getErr().println(
-          "Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
-      e.printStackTrace(spec.commandLine().getErr());
+          "Caught IOException while printing extracted data: " + e.getLocalizedMessage());
+      // e.printStackTrace(spec.commandLine().getErr());
       throw e;
     }
   }
@@ -272,7 +274,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
     } catch (IOException e) {
       spec.commandLine().getErr()
           .println("Caught IOException while producing HDT file: \n" + e.getLocalizedMessage());
-      e.printStackTrace(spec.commandLine().getErr());
+      // e.printStackTrace(spec.commandLine().getErr());
       throw e;
     }
   }

@@ -171,7 +171,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       Files.createDirectories(latest);
     } catch (IOException e) {
       System.err.format("Could not create directory '%s'.%n", latest);
-      e.printStackTrace(System.err);
+      // e.printStackTrace(System.err);
       return;
     }
 
@@ -197,7 +197,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
     } catch (IOException e) {
       System.err.format("Error while trying to link to latest extract: %s -> %s%n", latestFile,
           linkTo);
-      e.printStackTrace(System.err);
+      // e.printStackTrace(System.err);
     }
   }
 
@@ -365,7 +365,8 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
           }
         }
       } catch (IOException e) {
-        e.printStackTrace();
+        System.err.println("IOException while retrieving dump: " + e.getLocalizedMessage());
+        // e.printStackTrace();
         return null;
       }
 
@@ -373,7 +374,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
     } catch (MalformedURLException e) {
       System.err.format("Malformed dump server URL: %s", server);
       System.err.format("Using locally available dump.");
-      e.printStackTrace();
+      // e.printStackTrace();
       return defaultRes;
     }
   }
@@ -533,7 +534,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       Files.createDirectories(odir);
     } catch (IOException e) {
       System.err.format("Could not create directory '%s'.%n", odir);
-      e.printStackTrace(System.err);
+      // e.printStackTrace(System.err);
       return false;
     }
 

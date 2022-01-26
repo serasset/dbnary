@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.getalp.dbnary.cli.utils.VersionProvider;
 import org.getalp.dbnary.hdt.RDF2HDT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -20,6 +22,8 @@ import picocli.CommandLine.Parameters;
 @Command(name = "dbnary-hdt", mixinStandardHelpOptions = true, helpCommand = true,
     versionProvider = VersionProvider.class)
 public class CreateHDTVersions implements Callable<Integer> {
+  private static final Logger log = LoggerFactory.getLogger(CreateHDTVersions.class);
+
   @Parameters(index = "0",
       description = "directory containing the latest extracts that need to be converted to HDT.")
   Path latestDir;
@@ -57,7 +61,7 @@ public class CreateHDTVersions implements Callable<Integer> {
     try {
       return Optional.of(path.toRealPath());
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Could not get real path.", e);
       return Optional.empty();
     }
   }

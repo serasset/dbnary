@@ -6,9 +6,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExpandAllWikiModel extends DbnaryWikiModel {
-
+  private static final Logger log = LoggerFactory.getLogger(ExpandAllWikiModel.class);
   protected Set<String> templates = null;
 
   public ExpandAllWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
@@ -32,7 +34,8 @@ public class ExpandAllWikiModel extends DbnaryWikiModel {
     try {
       return render(new PlainTextConverter(), definition).trim();
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Error while rendering page.", e);
+      // e.printStackTrace();
     }
     return null;
   }

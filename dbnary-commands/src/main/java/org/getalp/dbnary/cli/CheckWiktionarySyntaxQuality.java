@@ -106,7 +106,7 @@ public class CheckWiktionarySyntaxQuality implements Callable<Integer> {
               System.err.println("Runtime exception while extracting  page<<" + title
                   + ">>, proceeding to next pages.");
               System.err.println(e.getMessage());
-              e.printStackTrace();
+              // e.printStackTrace();
             }
             totalRelevantTime = (System.currentTimeMillis() - startTime);
             nbRelevantPages++;
@@ -126,21 +126,21 @@ public class CheckWiktionarySyntaxQuality implements Callable<Integer> {
           + formatHMS(totalRelevantTime) + " (" + nbPages + " scanned Pages)");
 
     } catch (XMLStreamException ex) {
-      System.out.println(ex.getMessage());
+      log.error(ex.getLocalizedMessage());
 
       if (ex.getNestedException() != null) {
-        ex.getNestedException().printStackTrace();
+        log.error("  Nested Exception: " + ex.getNestedException().getLocalizedMessage());
       }
       throw new IOException("XML Stream Exception while reading dump", ex);
     } catch (Exception ex) {
-      ex.printStackTrace();
+      log.error("Unexpected Exception: ", ex);
     } finally {
       try {
         if (xmlr != null) {
           xmlr.close();
         }
       } catch (XMLStreamException ex) {
-        ex.printStackTrace();
+        log.error("Exception while closing xml stream. ", ex);
       }
 
     }

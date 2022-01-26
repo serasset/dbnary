@@ -157,14 +157,20 @@ public class JapaneseTranslationsExtractor {
             currentGloss =
                 delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
           } else if (car != null) {
-            if (car.equals(":")) {
-              // System.err.println("Skipping ':' while in INIT state.");
-            } else if (car.equals("\n") || car.equals("\r")) {
+            switch (car) {
+              case ":":
+                log.debug("Skipping ':' while in INIT state.");
+                break;
+              case "\n":
+              case "\r":
 
-            } else if (car.equals(",")) {
-              // System.err.println("Skipping ',' while in INIT state.");
-            } else {
-              // System.err.println("Skipping " + g5 + " while in INIT state.");
+                break;
+              case ",":
+                log.debug("Skipping ',' while in INIT state.");
+                break;
+              default:
+                log.debug("Skipping {} while in INIT state.", car);
+                break;
             }
           }
 

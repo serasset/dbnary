@@ -41,14 +41,14 @@ public class ChineseRelatedWordsExtractorWikiModel {
 
   static {
     // les caractères visible
-    carPatternString = new StringBuilder().append("(.)").toString();
+    carPatternString = "(.)";
 
     // We should suppress multiline xml comments even if macros or line are to be on a single line.
     macroOrLinkOrcarPatternString =
-        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
-            .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)") // sub list
-            .append(")|(?:").append("^;([^:\\n\\r]*)") // Term definition
-            .append(")|(?:").append(carPatternString).append(")").toString();
+        "(?:" + WikiPatterns.macroPatternString + ")|(?:"
+            + WikiPatterns.linkPatternString + ")|(?:" + "(:*\\*)" // sub list
+            + ")|(?:" + "^;([^:\\n\\r]*)" // Term definition
+            + ")|(?:" + carPatternString + ")";
   }
 
 
@@ -83,12 +83,9 @@ public class ChineseRelatedWordsExtractorWikiModel {
   protected static final int RELATION = 2;
   protected static final int VALUES = 3;
 
-  private static final Pattern macroOrLinkOrcarMatcherPattern = null;
-
-
   private void extractRelatedWords(String relatedWords) {
 
-    Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarMatcherPattern.matcher(relatedWords);
+    Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(relatedWords);
     int ETAT = INIT;
 
     String currentGlose = null;
@@ -118,14 +115,20 @@ public class ChineseRelatedWordsExtractorWikiModel {
           } else if (term != null) {
             currentGlose = term;
           } else if (car != null) {
-            if (car.equals(":")) {
+            switch (car) {
+              case ":":
+                log.debug("Skipping ':' while in INIT state.");
+                break;
+              case "\n":
+              case "\r":
 
-            } else if (car.equals("\n") || car.equals("\r")) {
-
-            } else if (car.equals(",")) {
-
-            } else {
-
+                break;
+              case ",":
+                log.debug("Skipping ',' while in INIT state.");
+                break;
+              default:
+                log.debug("Skipping {} while in INIT state.", car);
+                break;
             }
           }
 

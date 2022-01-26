@@ -23,13 +23,13 @@ import org.slf4j.LoggerFactory;
 public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
   private final AbstractGlossFilter glossFilter;
-  private IWiktionaryDataHandler delegate;
-  private Logger log = LoggerFactory.getLogger(FinnishTranslationExtractorWikiModel.class);
-  private int rank = 1;
+  private final IWiktionaryDataHandler delegate;
+  private final Logger log = LoggerFactory.getLogger(FinnishTranslationExtractorWikiModel.class);
+  private int rank;
 
   public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
       String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
-    this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL, glossFilter);
+    this(we, null, locale, imageBaseURL, linkBaseURL, glossFilter);
   }
 
   public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
@@ -61,14 +61,6 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
     }
     WikipediaParser.parse(block, this, true, null);
     initialize();
-  }
-
-  private static final HashSet<String> transMacroWithNotes = new HashSet<>();
-
-  static {
-    transMacroWithNotes.add("xlatio");
-    transMacroWithNotes.add("trad-");
-
   }
 
   @Override
@@ -149,16 +141,16 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
     // DONE: for this, evaluate the difference in extraction !
 
     // les caractères visible
-    carPatternString = new StringBuilder().append("(.)").toString();
+    carPatternString = "(.)";
 
     // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
     // line.
-    macroOrLinkOrcarPatternString = new StringBuilder().append("(?:")
+    macroOrLinkOrcarPatternString = "(?:"
         // Macro-modified for translation extractions
-        .append("\\{\\-").append("([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?").append("\\-\\}")
-        .append(")|(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
-        .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)").append(")|(?:")
-        .append("(\\*:)").append(")|(?:").append(carPatternString).append(")").toString();
+        + "\\{\\-" + "([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?" + "\\-\\}"
+        + ")|(?:" + WikiPatterns.macroPatternString + ")|(?:"
+        + WikiPatterns.linkPatternString + ")|(?:" + "(:*\\*)" + ")|(?:"
+        + "(\\*:)" + ")|(?:" + carPatternString + ")";
 
 
   }
@@ -265,13 +257,13 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
             ETAT = LANGUE;
           } else if (character != null) {
             if (character.equals(":")) {
-              // System.err.println("Skipping ':' while in INIT state.");
+              log.debug("Skipping ':' while in INIT state.");
             } else if (character.equals("\n") || character.equals("\r")) {
-
+              // nop
             } else if (character.equals(",")) {
-              // System.err.println("Skipping ',' while in INIT state.");
+              log.debug("Skipping ',' while in INIT state.");
             } else {
-              // System.err.println("Skipping " + g5 + " while in INIT state.");
+              log.debug("Skipping {} while in INIT state.", character);
             }
           }
 

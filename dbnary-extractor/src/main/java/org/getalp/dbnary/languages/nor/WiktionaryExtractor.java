@@ -174,7 +174,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     Matcher m = blockPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    String blockString = null;
+    String blockString = "";
     Block block = Block.IGNOREPOS;
     int start = startOffset;
 

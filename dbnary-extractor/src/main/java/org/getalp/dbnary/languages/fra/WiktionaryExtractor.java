@@ -533,7 +533,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         .orElse(null);
 
     // Only get inflections for verbs so that we capture the missing inflected past participles.
-    if (!langAndPoS.getRight().equals("-verb-"))
+    if (null == langAndPoS || !langAndPoS.getRight().equals("-verb-"))
       return;
 
     String pronunciation = content.templatesOnUpperLevel().stream().map(Token::asTemplate)

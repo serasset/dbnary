@@ -433,7 +433,7 @@ public class ChineseLangtoCode {
 
 
   public static String triletterCode(String s) {
-    if (s != null && s != "") {
+    if (s != null && !"".equals(s)) {
       s = s.trim();
       s = s.toLowerCase();
       String resultat;

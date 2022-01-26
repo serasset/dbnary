@@ -4,11 +4,9 @@ import java.io.PrintStream;
 import java.util.concurrent.Callable;
 import org.apache.jena.rdf.model.Model;
 import org.getalp.dbnary.ExtractionFeature;
-import org.getalp.wiktionary.WiktionaryIndexerException;
 import org.getalp.dbnary.cli.mixins.Extractor;
 import org.getalp.dbnary.cli.utils.VersionProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.getalp.wiktionary.WiktionaryIndexerException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
@@ -18,8 +16,6 @@ import picocli.CommandLine.Parameters;
         + "are passed to the program. The extracted lexical data is encoded as RDF graphs using "
         + "ontolex, lexinfo, olia and other standard vocabularies.")
 public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
-
-  private static final Logger log = LoggerFactory.getLogger(GetExtractedSemnet.class);
 
   @Parameters(index = "1..*", description = "The entries to be extracted.", arity = "1..*")
   String[] entries;

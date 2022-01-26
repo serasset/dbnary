@@ -2,6 +2,7 @@ package org.getalp.wiktionary;
 
 import java.io.File;
 import java.io.StringReader;
+import java.nio.file.Path;
 import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -29,7 +30,7 @@ public class WiktionaryIndexer {
     }
   }
 
-  public static void createIndex(File dumpFile, Map<String, OffsetValue> map)
+  public static void createIndex(Path dump, Map<String, OffsetValue> map)
       throws WiktionaryIndexerException {
 
     // create new XMLStreamReader
@@ -41,22 +42,21 @@ public class WiktionaryIndexer {
     try {
       // pass the file name. all relative entity references will be
       // resolved against this as base URI.
-      xmlr = xmlif.createXMLStreamReader(dumpFile);
+      xmlr = xmlif.createXMLStreamReader(dump.toFile());
 
       // check if there are more events in the input stream
-      long boffset = 0, eoffset = 0;
+      long boffset = 0;
       String title = "";
       while (xmlr.hasNext()) {
         xmlr.next();
         if (xmlr.isStartElement() && xmlr.getLocalName().equals(pageTag)) {
           boffset = xmlr.getLocationInfo().getStartingCharOffset();
           title = "";
-          eoffset = 0;
           nbPages++;
         } else if (xmlr.isStartElement() && xmlr.getLocalName().equals(titleTag)) {
           title = xmlr.getElementText();
         } else if (xmlr.isEndElement() && xmlr.getLocalName().equals(pageTag)) {
-          eoffset = xmlr.getLocationInfo().getEndingCharOffset();
+          long eoffset = xmlr.getLocationInfo().getEndingCharOffset();
           if (!title.equals("")) {
             map.put(title, new OffsetValue(boffset, (int) (eoffset - boffset)));
           }

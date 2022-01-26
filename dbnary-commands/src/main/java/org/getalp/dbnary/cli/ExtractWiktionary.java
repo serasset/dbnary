@@ -244,7 +244,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
 
   private void saveBox(ExtractionFeature f, boolean isExolex) throws IOException {
     File of = prefs.outputFileForFeature(f, language, suffix, features.getOutputFormat(),
-        batch.doCompress(), isExolex);
+        batch.doCompress(), isExolex).toFile();
     Model model = isExolex ? wdh.getExolexFeatureBox(f) : wdh.getEndolexFeatureBox(f);
     try (OutputStream ostream =
         batch.doCompress() ? new BZip2CompressorOutputStream(new FileOutputStream(of))
@@ -262,7 +262,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
 
   private void saveAllAsHDT(boolean isExolex) throws IOException {
     File hdtOutputFile = prefs.outputFileForFeature(ExtractionFeature.HDT, language, suffix,
-        features.getOutputFormat(), batch.doCompress(), isExolex);
+        features.getOutputFormat(), batch.doCompress(), isExolex).toFile();
     try (OutputStream ostream =
         batch.doCompress() ? new BZip2CompressorOutputStream(new FileOutputStream(hdtOutputFile))
             : new FileOutputStream(hdtOutputFile)) {

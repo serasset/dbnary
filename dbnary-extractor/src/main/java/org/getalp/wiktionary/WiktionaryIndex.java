@@ -1,12 +1,16 @@
 package org.getalp.wiktionary;
 
-import java.io.File;
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.WRITE;
+
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -38,53 +42,48 @@ public class WiktionaryIndex implements WiktionaryPageSource {
   private static final double AVERAGE_PAGE_SIZE = 730.; // figure taken from French Wiktionary
   private static final String INDEX_SIGNATURE = "Wkt!01";
 
-  File dumpFile;
-  File indexFile;
+  Path dump;
+  Path index;
   Charset encoding;
   HashMap<String, OffsetValue> map;
-  RandomAccessFile xmlf;
+  SeekableByteChannel xmlf;
 
-  public static String indexFilename(String dumpFilename) {
-    return dumpFilename + ".idx";
-  }
-
-  public static File indexFile(File dumpFile) {
-    return new File(indexFilename(dumpFile.getPath()));
+  /**
+   * returns Path of the index file corresponding to passed dump.
+   * @param dump Path refering to the dump file.
+   * @return the Path refering to the index file.
+   */
+  public static Path indexFile(Path dump) {
+    return dump.resolveSibling(dump.getFileName() + ".idx");
   }
 
   /**
-   * Creates a WiktionaryIndex for the wiktionary dump whose filename is passed as a parameter
+   * Creates a WiktionaryIndex for the wiktionary dump whose path is passed as a parameter
    *
-   * @param filename the name of the file containing the wiktionary dump
+   * @param dump the path to file containing the wiktionary dump.
    * @throws WiktionaryIndexerException thrown if any error occur during index initialization
    */
-  public WiktionaryIndex(String filename) throws WiktionaryIndexerException {
-    this(new File(filename));
-  }
-
-  /**
-   * Creates a WiktionaryIndex for the wiktionary dump whose filename is passed as a parameter
-   *
-   * @param file the file containing the wiktionary dump.
-   * @throws WiktionaryIndexerException thrown if any error occur during index initialization
-   */
-  public WiktionaryIndex(File file) throws WiktionaryIndexerException {
-    dumpFile = file;
-    indexFile = indexFile(file);
+  public WiktionaryIndex(Path dump) throws WiktionaryIndexerException {
+    this.dump = dump;
+    index = indexFile(dump);
     if (this.isAValidIndexFile()) {
       this.loadIndex();
     } else {
       this.initIndex();
     }
     try {
-      xmlf = new RandomAccessFile(dumpFile, "r");
+      xmlf = FileChannel.open(dump, READ);
+      // xmlf = new RandomAccessFile(dumpFile, "r");
       // Read the BOM at the start of the file to determine the correct encoding.
-      byte[] bom = new byte[2];
-      xmlf.readFully(bom);
-      if (bom[0] == (byte) 0xFE && bom[1] == (byte) 0xFF) {
+      ByteBuffer bom = ByteBuffer.allocate(2);
+      xmlf.read(bom);
+      bom.flip();
+      byte b1 = bom.get();
+      byte b2 = bom.get();
+      if (b1 == (byte) 0xFE && b2 == (byte) 0xFF) {
         // Big Endian
         encoding = StandardCharsets.UTF_16BE;
-      } else if (bom[0] == (byte) 0xFF && bom[1] == (byte) 0xFE) {
+      } else if (b1 == (byte) 0xFF && b2 == (byte) 0xFE) {
         // Little endian
         encoding = StandardCharsets.UTF_16LE;
       } else {
@@ -93,7 +92,7 @@ public class WiktionaryIndex implements WiktionaryPageSource {
       }
     } catch (IOException ex) {
       throw new WiktionaryIndexerException(
-          "Could not open wiktionary dump file " + dumpFile.getPath(), ex);
+          "Could not open wiktionary dump file " + dump, ex);
     }
   }
 
@@ -113,11 +112,8 @@ public class WiktionaryIndex implements WiktionaryPageSource {
 
   // WONTDO: check if index content is up to date ?
   private boolean isAValidIndexFile() {
-    if (indexFile.canRead()) {
-      try (RandomAccessFile in = new RandomAccessFile(indexFile, "r")) {
-
-        FileChannel fc = in.getChannel();
-
+    if (Files.isReadable(index)) {
+      try (FileChannel fc = FileChannel.open(index, READ)) {
         ByteBuffer buf = ByteBuffer.allocate(4098);
 
         fc.read(buf);
@@ -137,9 +133,7 @@ public class WiktionaryIndex implements WiktionaryPageSource {
   }
 
   private void dumpIndex() throws WiktionaryIndexerException {
-    try (RandomAccessFile out = new RandomAccessFile(indexFile, "rw")) {
-
-      FileChannel fc = out.getChannel();
+    try (FileChannel fc = FileChannel.open(index, READ, WRITE)) {
 
       ByteBuffer buf = ByteBuffer.allocate(4098);
 
@@ -147,8 +141,6 @@ public class WiktionaryIndex implements WiktionaryPageSource {
       buf.put(INDEX_SIGNATURE.getBytes(StandardCharsets.UTF_8));
       buf.putInt(map.size());
       for (Map.Entry<String, OffsetValue> entry : map.entrySet()) {
-        // TODO: it may be more efficient to create a Charset decoder or use a reusable byte[]
-        // but it seems that it is not possible in jdk1.5... has to wait for jdk 1.6
         byte[] bk = entry.getKey().getBytes(StandardCharsets.UTF_8);
         OffsetValue v = entry.getValue();
         // I serialize 1 int, the string, 1 long and 1 int --> bk.length + 16 bytes
@@ -171,10 +163,13 @@ public class WiktionaryIndex implements WiktionaryPageSource {
     }
   }
 
+  /**
+   * Load the index from the VALID index file (validity and readability should be checked before
+   * call to this method)
+   * @throws WiktionaryIndexerException if any exception arise during index load
+   */
   private void loadIndex() throws WiktionaryIndexerException {
-    try (RandomAccessFile in = new RandomAccessFile(indexFile, "r")) {
-
-      FileChannel fc = in.getChannel();
+    try (FileChannel fc = FileChannel.open(index, READ)) {
 
       ByteBuffer buf = ByteBuffer.allocate(4098);
 
@@ -182,10 +177,6 @@ public class WiktionaryIndex implements WiktionaryPageSource {
       buf.flip();
       byte[] signature = INDEX_SIGNATURE.getBytes(StandardCharsets.UTF_8);
       buf.get(signature, 0, signature.length);
-      String signatureString = new String(signature, StandardCharsets.UTF_8);
-      if (!signatureString.equals(INDEX_SIGNATURE)) {
-        throw new WiktionaryIndexerException("Index file seems to be corrupted", null);
-      }
 
       int mapSize = buf.getInt();
 
@@ -225,9 +216,14 @@ public class WiktionaryIndex implements WiktionaryPageSource {
   }
 
   private void initIndex() throws WiktionaryIndexerException {
-    int initialCapacity = (int) ((this.dumpFile.length() / AVERAGE_PAGE_SIZE) / .75);
+    int initialCapacity;
+    try {
+      initialCapacity = (int) ((Files.size(dump) / AVERAGE_PAGE_SIZE) / .75);
+    } catch (IOException e) {
+      throw new WiktionaryIndexerException(e);
+    }
     map = new HashMap<>(initialCapacity);
-    WiktionaryIndexer.createIndex(dumpFile, map);
+    WiktionaryIndexer.createIndex(dump, map);
     long starttime = System.currentTimeMillis();
     log.info("Dumping index...");
     this.dumpIndex();
@@ -235,24 +231,26 @@ public class WiktionaryIndex implements WiktionaryPageSource {
     log.info(" Dumping index Time = {}; ", (endtime - starttime));
   }
 
-  public String get(Object key) {
+  public String get(String key) {
     OffsetValue ofs = map.get(key);
     if (ofs == null) {
       return null;
     }
     String res;
     try {
-      xmlf.seek(ofs.start * 2 + 2); // in utf-16, 2 first bytes for the BOM
-      byte[] b = new byte[ofs.length * 2];
-      xmlf.readFully(b);
-      res = new String(b, encoding);
+      xmlf.position(ofs.start * 2 + 2); // in utf-16, 2 first bytes for the BOM
+      ByteBuffer b = ByteBuffer.allocate(ofs.length * 2);
+
+      //byte[] b = new byte[ofs.length * 2];
+      xmlf.read(b);
+      res = encoding.decode(b).toString();
     } catch (IOException ex) {
       res = null;
     }
     return res;
   }
 
-  private static List<String> redirects =
+  private static final List<String> redirects =
       Arrays.asList("#REDIRECT", "#WEITERLEITUNG", "#REDIRECCIÓN");
 
   @Override
@@ -280,15 +278,14 @@ public class WiktionaryIndex implements WiktionaryPageSource {
 
   @Override
   public String getTextOfPage(String key) {
-    String skey = key;
-    boolean notMainSpace = skey.contains(":");
-    Element element = cache.get(skey);
+    boolean notMainSpace = key.contains(":");
+    Element element = cache.get(key);
     if (element != null && notMainSpace) {
       return (String) element.getObjectValue();
     }
     String res = WiktionaryIndexer.getTextElementContent(this.get(key));
     if (res != null && notMainSpace) {
-      element = new Element(skey, res);
+      element = new Element(key, res);
       cache.put(element);
     }
     return res;

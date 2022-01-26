@@ -62,6 +62,7 @@ public class DBnary {
   public static void main(String[] args) {
     CommandLine cmd = new CommandLine(new DBnary());
     int exitCode = cmd.execute(args);
+    System.exit(exitCode);
   }
 
 }

@@ -177,8 +177,8 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
         spec.commandLine().getErr().println(ex.getMessage());
 
         if (ex.getNestedException() != null) {
-          spec.commandLine().getErr().println("  Nested Exception: " +
-              ex.getNestedException().getMessage());
+          spec.commandLine().getErr()
+              .println("  Nested Exception: " + ex.getNestedException().getMessage());
         }
         throw new IOException("XML Stream Exception while reading dump", ex);
       } catch (Exception ex) {
@@ -255,8 +255,8 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
           "Dumping " + features.getOutputFormat() + " representation of " + f.toString() + ".");
       wdh.dump(model, ostream, features.getOutputFormat());
     } catch (IOException e) {
-      spec.commandLine().getErr().println(
-          "Caught IOException while printing extracted data: " + e.getLocalizedMessage());
+      spec.commandLine().getErr()
+          .println("Caught IOException while printing extracted data: " + e.getLocalizedMessage());
       // e.printStackTrace(spec.commandLine().getErr());
       throw e;
     }

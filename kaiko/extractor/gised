@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=2.4.4-hdt-SNAPSHOT
+VERSION=2.4.4-SNAPSHOT
 JAVA=java
 
 $JAVA -Djava.net.useSystemProxies=true \

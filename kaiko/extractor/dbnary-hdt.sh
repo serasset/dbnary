@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=2.4.4-hdt-SNAPSHOT
+VERSION=2.4.4-SNAPSHOT
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
 DIR=${DBNARY_DIR:-$HOME/develop/wiktionary}
 LATEST=${DIR}/extracts/ontolex/latest

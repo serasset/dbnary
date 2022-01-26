@@ -242,6 +242,10 @@ DB.DBA.XML_SET_NS_DECL ('jdm-ont', 'http://kaiko.getalp.org/jdm#', 2);
 DB.DBA.XML_SET_NS_DECL ('jdm', 'http://kaiko.getalp.org/jdm/', 2);
 DB.DBA.XML_SET_NS_DECL ('dbnstats', 'http://kaiko.getalp.org/dbnary/statistics/', 2);
 
+-- Allow for federated queries through DBnary end point
+grant SPARQL_LOAD_SERVICE_DATA to "SPARQL";
+grant SPARQL_SPONGE to "SPARQL";
+
 checkpoint;
 -- Load Core ontologies
 SPARQL LOAD <http://www.lexinfo.net/ontology/2.0/lexinfo#> into graph <http://kaiko.getalp.org/datamodel>;

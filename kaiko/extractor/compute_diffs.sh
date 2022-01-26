@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=2.4.3
+VERSION=2.4.4-hdt-SNAPSHOT
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
 LANGS="fr"
 MODEL="ontolex"
@@ -8,8 +8,9 @@ PREVIOUS_VERSION=latest.before
 NEXT_VERSION=latest.now
 DIFFS=diffs
 VERBOSE=""
+FORCETDB=""
 
-while getopts ":m:v:f:t:d:V" opt; do
+while getopts ":m:v:f:t:d:VT" opt; do
   case $opt in
     m)
       MODEL=$OPTARG
@@ -28,6 +29,9 @@ while getopts ":m:v:f:t:d:V" opt; do
       ;;
     V)
       VERBOSE="-v"
+      ;;
+    T)
+      FORCETDB="true"
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -50,17 +54,17 @@ prepareTDBifTooBig() {
   if [ -f "$1" ]
   then
     fsize="$(wc -c <"$ttlfile")"
-    if [ "$fsize" -gt 1000000000 ]
+    if [[ "$fsize" -gt 1000000000 || "x$FORCETDB" == "xtrue" ]]
     then
         #More than 1G -> TDB
-        >&2 echo "Preparing TDB from big ttl :  ${ttlfile}"
+        >&2 echo "Preparing TDB2 from big ttl :  ${ttlfile}"
         tdbfile=${ttlfile}.tdb
         if [ -d "$tdbfile" ]
         then
-            >&2 echo "TDB directory alrady exists, assuming it's OK:  $tdbfile"
+            >&2 echo "TDB2 directory alrady exists, assuming it's OK:  $tdbfile"
             >&2 echo "If not, remove directory and relaunch command."
         else
-            >&2 tdbloader2 --loc "$tdbfile" "$ttlfile"
+            >&2 tdb2.tdbloader --loc "$tdbfile" "$ttlfile"
         fi
         echo "$tdbfile"
         return

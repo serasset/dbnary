@@ -11,16 +11,17 @@ import org.slf4j.LoggerFactory;
 
 public class Page implements AcceptTranslation {
   private static final Logger log = LoggerFactory.getLogger(Page.class);
-  protected String language;
-  protected String name;
+  protected final String language;
+  protected final String name;
   protected Stack<LexicalEntry> entries = new Stack<>();
 
   public Page(String language, String name) {
-    this.language = LangTools.getCode(language);
-    if (this.language == null) {
+    String normalizedLanguage = LangTools.getCode(language);
+    if (normalizedLanguage == null) {
       log.warn("Unknown language {} while parsing page {}", language, name);
-      this.language = language;
+      normalizedLanguage = language;
     }
+    this.language = normalizedLanguage;
     this.name = name;
   }
 
@@ -42,6 +43,10 @@ public class Page implements AcceptTranslation {
   }
 
   public LexicalEntry newEntry(String name, String pos) {
+    return this.newEntry(name, pos, this.language);
+  }
+
+  public LexicalEntry newEntry(String name, String pos, String language) {
     LexicalEntry le = new LexicalEntry(name, pos, entries.size());
     entries.add(le);
     return le;

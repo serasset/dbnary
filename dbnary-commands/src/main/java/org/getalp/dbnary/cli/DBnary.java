@@ -61,8 +61,8 @@ public class DBnary {
   }
 
   public static void main(String[] args) {
-    CommandLine cmd = new CommandLine(new DBnary())
-        .setParameterExceptionHandler(new ShortErrorMessageHandler());
+    CommandLine cmd =
+        new CommandLine(new DBnary()).setParameterExceptionHandler(new ShortErrorMessageHandler());
     int exitCode = cmd.execute(args);
     System.exit(exitCode);
   }

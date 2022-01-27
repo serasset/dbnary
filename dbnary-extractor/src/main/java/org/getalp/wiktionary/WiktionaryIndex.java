@@ -1,5 +1,6 @@
 package org.getalp.wiktionary;
 
+import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.READ;
 import static java.nio.file.StandardOpenOption.WRITE;
 
@@ -133,7 +134,7 @@ public class WiktionaryIndex implements WiktionaryPageSource {
   }
 
   private void dumpIndex() throws WiktionaryIndexerException {
-    try (FileChannel fc = FileChannel.open(index, READ, WRITE)) {
+    try (FileChannel fc = FileChannel.open(index, WRITE, CREATE)) {
 
       ByteBuffer buf = ByteBuffer.allocate(4098);
 
@@ -159,7 +160,8 @@ public class WiktionaryIndex implements WiktionaryPageSource {
       buf.flip();
       fc.write(buf);
     } catch (IOException e) {
-      throw new WiktionaryIndexerException("IOException when writing map to index file", e);
+      throw new WiktionaryIndexerException(
+          "IOException when writing map to index file (" + index + ")", e);
     }
   }
 
@@ -244,6 +246,7 @@ public class WiktionaryIndex implements WiktionaryPageSource {
 
       // byte[] b = new byte[ofs.length * 2];
       xmlf.read(b);
+      b.flip();
       res = encoding.decode(b).toString();
     } catch (IOException ex) {
       res = null;

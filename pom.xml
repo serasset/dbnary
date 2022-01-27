@@ -5,7 +5,7 @@
 
   <groupId>org.getalp</groupId>
   <artifactId>dbnary</artifactId>
-  <version>3.0.0b1</version>
+  <version>3.0.0b2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <inceptionYear>2010</inceptionYear>

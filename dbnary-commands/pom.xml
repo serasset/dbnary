@@ -5,7 +5,7 @@
   <parent>
     <artifactId>dbnary</artifactId>
     <groupId>org.getalp</groupId>
-    <version>2.4.3</version>
+    <version>3.0.0b1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -19,7 +19,7 @@
   <dependencies>
     <dependency>
       <groupId>org.getalp</groupId>
-      <artifactId>dbnary-hdt</artifactId>
+      <artifactId>rdf-utils</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -119,6 +119,41 @@
       <plugin>
         <groupId>net.revelc.code.formatter</groupId>
         <artifactId>formatter-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <version>1.10</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>assemble</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <licenseHeaderFile>${basedir}/LICENSE.txt</licenseHeaderFile>
+          <extraJvmArguments>-Xmx8g</extraJvmArguments>
+          <programs>
+            <program>
+              <mainClass>org.getalp.dbnary.cli.DBnary</mainClass>
+              <id>dbnary</id>
+            </program>
+            <program>
+              <mainClass>org.getalp.dbnary.cli.GrepInWiktionary</mainClass>
+              <id>dbnary-grep</id>
+            </program>
+            <program>
+              <mainClass>org.getalp.dbnary.cli.RDFDiff</mainClass>
+              <id>rdfdiff</id>
+            </program>
+            <program>
+              <mainClass>org.getalp.dbnary.cli.SummarizeDifferences</mainClass>
+              <id>dbnary-diff-summary</id>
+            </program>
+          </programs>
+        </configuration>
       </plugin>
     </plugins>
   </build>

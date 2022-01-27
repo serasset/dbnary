@@ -1,7 +1,7 @@
 package org.getalp.dbnary.commons;
 
-import org.getalp.dbnary.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.IWiktionaryDataHandler;
+import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiText;
 
 public class FunctionalWiktionaryExtractor extends AbstractWiktionaryExtractor {

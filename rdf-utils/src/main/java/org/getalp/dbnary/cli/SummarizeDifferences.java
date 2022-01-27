@@ -193,7 +193,7 @@ public class SummarizeDifferences extends VerboseCommand {
         if (max == 0) {
           s.append(":ok: ");
         } else if (max < 1000) {
-          s.append(":ng: ");
+          s.append(":vs: ");
         } else {
           s.append(":sos: ");
         }

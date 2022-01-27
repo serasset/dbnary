@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>2.4.3</version>
+    <version>3.0.0b1</version>
   </parent>
   <artifactId>dbnary-extractor</artifactId>
   <packaging>jar</packaging>
@@ -76,8 +76,23 @@
     </dependency>
     <!-- Tests -->
     <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -169,6 +184,11 @@
           <artifactId>commons-logging</artifactId>
           <groupId>commons-logging</groupId>
         </exclusion>
+        <!-- a newer version is provided in jena -->
+        <exclusion>
+          <artifactId>commons-codec</artifactId>
+          <groupId>commons-codec</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -195,20 +215,24 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <!-- This is included so that it will be jared with the other dependencies -->
       <groupId>org.getalp</groupId>
-      <artifactId>rdf-utils</artifactId>
+      <artifactId>dbnary-wikitext</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.getalp</groupId>
+      <artifactId>dbnary-hdt</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
-      <version>2.10.6</version>
+      <version>2.10.9.2</version>
     </dependency>
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.13.1</version>
+      <version>1.14.3</version>
     </dependency>
     <dependency>
       <groupId>org.scala-lang</groupId>

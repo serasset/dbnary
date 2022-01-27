@@ -37,10 +37,8 @@ public class HtmlTableHandler {
         }
         String colspan = cell.attr("colspan");
         String rowspan = cell.attr("rowspan");
-        int cspan =
-            colspan.trim().length() != 0 ? Integer.parseInt(colspan) : 1;
-        int rspan =
-            rowspan.trim().length() != 0 ? Integer.parseInt(rowspan) : 1;
+        int cspan = colspan.trim().length() != 0 ? Integer.parseInt(colspan) : 1;
+        int rspan = rowspan.trim().length() != 0 ? Integer.parseInt(rowspan) : 1;
 
         for (int i = 0; i < cspan; i++) {
           for (int j = 0; j < rspan; j++) {

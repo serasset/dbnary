@@ -11,7 +11,7 @@ public class HtmlTableHandler {
    * cell spans several rows/columns, it is duplicated in the different Matric cell.
    *
    * @param table the HTML Table to be exploded
-   * @return
+   * @return An ArrayMatrix containing the exploded version of the html table.
    */
   public static ArrayMatrix<Element> explodeTable(Element table) {
     Elements rows = table.select("tr");
@@ -38,9 +38,9 @@ public class HtmlTableHandler {
         String colspan = cell.attr("colspan");
         String rowspan = cell.attr("rowspan");
         int cspan =
-            (null != colspan && colspan.trim().length() != 0) ? Integer.parseInt(colspan) : 1;
+            colspan.trim().length() != 0 ? Integer.parseInt(colspan) : 1;
         int rspan =
-            (null != rowspan && rowspan.trim().length() != 0) ? Integer.parseInt(rowspan) : 1;
+            rowspan.trim().length() != 0 ? Integer.parseInt(rowspan) : 1;
 
         for (int i = 0; i < cspan; i++) {
           for (int j = 0; j < rspan; j++) {
@@ -66,9 +66,9 @@ public class HtmlTableHandler {
 
   public static String getBackgroundColor(Element element) {
     String bgcolor = element.attr("bgcolor");
-    if (null == bgcolor || bgcolor.equals("")) {
+    if (bgcolor.equals("")) {
       String style = element.attr("style");
-      if (null != style && style.length() != 0) {
+      if (style.length() != 0) {
         int bgpos = style.indexOf("background:");
         if (bgpos != -1) {
           style = style.substring(bgpos + 11);

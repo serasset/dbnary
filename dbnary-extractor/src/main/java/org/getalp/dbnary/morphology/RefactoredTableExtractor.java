@@ -105,8 +105,8 @@ public abstract class RefactoredTableExtractor implements Cloneable {
    * for a header cell, it allows specific subclasses to further filter out cells based on their
    * content.
    * 
-   * @param cell
-   * @return
+   * @param cell the td element to be examined
+   * @return true if the cell should be processed
    */
   protected boolean shouldProcessCell(Element cell) {
     return true;
@@ -151,7 +151,7 @@ public abstract class RefactoredTableExtractor implements Cloneable {
 
   protected List<String> getRowAndColumnContext(int nrow, int ncol,
       ArrayMatrix<Element> columnHeaders) {
-    LinkedList<String> res = new LinkedList<String>();
+    LinkedList<String> res = new LinkedList<>();
     for (int i = 0; i < nrow; i++) {
       addToContext(columnHeaders, i, ncol, res);
     }
@@ -164,8 +164,8 @@ public abstract class RefactoredTableExtractor implements Cloneable {
   protected void addToContext(ArrayMatrix<Element> columnHeaders, int i, int j, List<String> res) {
     Element cell = columnHeaders.get(i, j);
     String header;
-    if (null != cell && isHeaderCell(cell) && (header = cell.text()) != null
-        && header.trim().length() != 0) {
+    if (null != cell && isHeaderCell(cell)
+        && (header = cell.text().trim()).length() != 0) {
       res.add(header);
     }
   }
@@ -210,7 +210,7 @@ public abstract class RefactoredTableExtractor implements Cloneable {
   protected Set<LexicalForm> getInflectedForms(Element cell, InflectionScheme infl) {
     // there are cells with <br> and commas to separate different values: split them
     // get rid of spurious html-formatting (<nbsp> <small> <i> etc.)
-    Set<LexicalForm> forms = new HashSet<LexicalForm>();
+    Set<LexicalForm> forms = new HashSet<>();
     // if the inflection is null, there is no inflected form to build
     if (null == infl)
       return forms;

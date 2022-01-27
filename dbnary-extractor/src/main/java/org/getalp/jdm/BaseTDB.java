@@ -14,8 +14,12 @@ import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BaseTDB {
+
+  private static final Logger log = LoggerFactory.getLogger(BaseTDB.class);
 
   public static void main(String[] args) {
 
@@ -60,7 +64,7 @@ public class BaseTDB {
           RDFFormat.TURTLE_BLOCKS);
 
     } catch (FileNotFoundException e) {
-      e.printStackTrace();
+      log.error(e.getLocalizedMessage());
     }
     tdb.close();
     System.out.println("FIN");

@@ -1,5 +1,7 @@
 package org.getalp.model.ontolex;
 
+import static org.getalp.dbnary.model.DbnaryModel.LEXVO;
+
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.jena.rdf.model.Resource;
@@ -11,6 +13,7 @@ import org.getalp.model.dbnary.AcceptTranslation;
 public class LexicalEntry implements AcceptTranslation {
   private String name;
   private String wiktionaryPartOfSpeech;
+  private String language;
   private int entryNumber = 0;
 
   private Set<Resource> types = new HashSet<>();
@@ -59,6 +62,14 @@ public class LexicalEntry implements AcceptTranslation {
     this.partOfSpeeches.clear();
     if (pos != null)
       this.partOfSpeeches.add(pos);
+  }
+
+  public String getLanguage() {
+    return language;
+  }
+
+  public void setLanguage(String language) {
+    this.language = language;
   }
 
   public void addResourceType(Resource type) {

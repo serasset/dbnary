@@ -16,13 +16,9 @@ import org.slf4j.LoggerFactory;
 
 public abstract class TableExtractor extends HtmlTableHandler {
 
-  protected Set<Element> alreadyParsedTables = new HashSet<Element>();
-  protected String currentEntry;
+  protected Set<Element> alreadyParsedTables = new HashSet<>();
+  protected String currentEntry = null;
   private Logger log = LoggerFactory.getLogger(TableExtractor.class);
-
-  public TableExtractor(String currentEntry) {
-    this.currentEntry = currentEntry;
-  }
 
   /**
    * returns the inflection data that correspond to current celle context
@@ -46,11 +42,9 @@ public abstract class TableExtractor extends HtmlTableHandler {
     return false;
   }
 
-  public InflectedFormSet parseHTML(String htmlCode) {
+  public InflectedFormSet parseHTML(String htmlCode, String pagename) {
+    currentEntry = pagename;
     Document doc = Jsoup.parse(htmlCode);
-    if (null == doc) {
-      return null;
-    }
 
     // for debug : show the body of the HTML
     // log.trace("parseTables for template {} returns body {}", declinationTemplateCall,
@@ -61,9 +55,9 @@ public abstract class TableExtractor extends HtmlTableHandler {
     // (i.e. Positiv, Komparativ, Superlativ) in h4 !
 
     Elements elts = doc.select("h2, h3, h4, table");
-    LinkedList<String> h2Context = new LinkedList<String>();
-    LinkedList<String> h3Context = new LinkedList<String>();
-    LinkedList<String> h4Context = new LinkedList<String>();
+    LinkedList<String> h2Context = new LinkedList<>();
+    LinkedList<String> h3Context = new LinkedList<>();
+    LinkedList<String> h4Context = new LinkedList<>();
     // emptying the alreadyParsedTables for the current parse
     alreadyParsedTables.clear();
     boolean processCurrentH2sSection = true;
@@ -106,11 +100,12 @@ public abstract class TableExtractor extends HtmlTableHandler {
         forms.addAll(parseTable(elt, h4Context));
       }
     }
+    currentEntry = null;
     return forms;
   }
 
   protected Collection<? extends String> decodeH2Context(String text) {
-    return new LinkedList<String>();
+    return new LinkedList<>();
   }
 
   protected InflectedFormSet parseTable(Element table, List<String> globalContext) {
@@ -181,7 +176,7 @@ public abstract class TableExtractor extends HtmlTableHandler {
 
   protected List<String> getRowAndColumnContext(int nrow, int ncol,
       ArrayMatrix<Element> columnHeaders) {
-    LinkedList<String> res = new LinkedList<String>();
+    LinkedList<String> res = new LinkedList<>();
     for (int i = 0; i < nrow; i++) {
       addToContext(columnHeaders, i, ncol, res);
     }
@@ -194,8 +189,7 @@ public abstract class TableExtractor extends HtmlTableHandler {
   protected void addToContext(ArrayMatrix<Element> columnHeaders, int i, int j, List<String> res) {
     Element cell = columnHeaders.get(i, j);
     String header;
-    if (null != cell && isHeaderCell(cell) && (header = cell.text()) != null
-        && header.trim().length() != 0) {
+    if (null != cell && isHeaderCell(cell) && (header = cell.text()).trim().length() != 0) {
       res.add(header);
     }
   }
@@ -210,7 +204,7 @@ public abstract class TableExtractor extends HtmlTableHandler {
   protected Set<String> getInflectedForms(Element cell) {
     // there are cells with <br> and commas to separate different values: split them
     // get rid of spurious html-formatting (<nbsp> <small> <i> etc.)
-    Set<String> forms = new HashSet<String>();
+    Set<String> forms = new HashSet<>();
     Elements anchors = cell.select("a");
 
     if (anchors.isEmpty()) {
@@ -230,8 +224,8 @@ public abstract class TableExtractor extends HtmlTableHandler {
       cellText = cellText.replaceAll("</?b.*?>", "");
 
       String[] atomicForms = cellText.split("[,;]");
-      for (int i = 0; i < atomicForms.length; i++) {
-        String trimmedText = atomicForms[i].trim();
+      for (String atomicForm : atomicForms) {
+        String trimmedText = atomicForm.trim();
         // log.debug(" was split into : {}", trimmedText);
         if (!trimmedText.isEmpty()) {
           forms.add(trimmedText);

@@ -5,17 +5,19 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import org.getalp.dbnary.WiktionaryIndex;
+import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExpandAllWikiModel extends DbnaryWikiModel {
-
+  private static final Logger log = LoggerFactory.getLogger(ExpandAllWikiModel.class);
   protected Set<String> templates = null;
 
   public ExpandAllWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
-    this((WiktionaryIndex) null, locale, imageBaseURL, linkBaseURL);
+    this((WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public ExpandAllWikiModel(WiktionaryIndex wi, Locale locale, String imageBaseURL,
+  public ExpandAllWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
       String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
@@ -32,7 +34,8 @@ public class ExpandAllWikiModel extends DbnaryWikiModel {
     try {
       return render(new PlainTextConverter(), definition).trim();
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Error while rendering page.", e);
+      // e.printStackTrace();
     }
     return null;
   }

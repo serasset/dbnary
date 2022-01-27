@@ -1,23 +1,24 @@
 #!/bin/sh
 
 DIR=${DBNARY_DIR:-.}
-VERSION=2.4.3
+VERSION=3.0.0b1
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
 LANGS="fr"
 
 DEBUG=""
 NETWORK=""
-MORPHO="--enable morphology"
-ETYMOLOGY="--enable etymology"
-LIME="--enable lime"
-ENHANCE="--enable enhancement"
-STATS="--enable statistics"
+MORPHO="--endolex morphology"
+ETYMOLOGY="--endolex etymology"
+LIME="--endolex lime"
+ENHANCE="--endolex enhancement"
+STATS="--endolex statistics"
+FOREIGN="--exolex ontolex"
 TDB=""
 DATE=""
 VERBOSE=""
 FORCE=""
 CUT=""
-COMPRESS="-z"
+COMPRESS="--no-compress"
 
 help() {
   echo "USAGE: $0 [OPTIONS] lg1 lg2..."
@@ -48,6 +49,8 @@ help() {
   echo "    -E                : disable extraction of etymology"
   echo "    -x                : enable computation of data enhancement (e.g. translation source disambiguation, enabled by default)"
   echo "    -X                : disable computation of data enhancement"
+  echo "    -w                : enable extraction of exolexicon entries (enabled by default)"
+  echo "    -W                : disable extraction of exolexicon entries"
   echo "    -z                : compress output using bz2 (enabled by default)"
   echo "    -Z                : do not compress output"
 }
@@ -70,43 +73,49 @@ while getopts ":d:t:v:D:c:nmMeElLsSTVxXhfzZ" opt; do
       CUT="--sample ${OPTARG}"
       ;;
     n)
-      NETWORK="-n"
+      NETWORK="--no-network"
       ;;
     m)
-      MORPHO="--enable morphology"
+      MORPHO="--endolex morphology"
       ;;
     M)
       MORPHO=""
       ;;
     l)
-      LIME="--enable lime"
+      LIME="--endolex lime"
       ;;
     L)
       LIME=""
       ;;
     s)
-      STATS="--enable statistics"
+      STATS="--endolex statistics"
       ;;
     S)
       STATS=""
       ;;
     e)
-      ETYMOLOGY="--enable etymology"
+      ETYMOLOGY="--endolex etymology"
       ;;
     E)
       ETYMOLOGY=""
       ;;
     x)
-      ENHANCE="--enable enhancer"
+      ENHANCE="--endolex enhancer"
       ;;
     X)
       ENHANCE=""
       ;;
+    w)
+      FOREIGN="--exolex ontolex"
+      ;;
+    W)
+      FOREIGN=""
+      ;;
     z)
-      COMPRESS="-z"
+      COMPRESS="--compress"
       ;;
     Z)
-      COMPRESS=""
+      COMPRESS="--no-compress"
       ;;
     T)
       TDB="--tdb"
@@ -115,7 +124,7 @@ while getopts ":d:t:v:D:c:nmMeElLsSTVxXhfzZ" opt; do
       VERBOSE="-v"
       ;;
     f)
-      FORCE="-f"
+      FORCE="--force"
       ;;
     h)
       help
@@ -148,10 +157,10 @@ if [ ! -z $VERBOSE ]
 then
 echo $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR $COMPRESS  -k 1 $LANGS
+    org.getalp.dbnary.cli.DBnary update $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $FOREIGN $STATS $TDB --dir $DIR $COMPRESS  -k 1 $LANGS
 fi
 
 $JAVA -Xmx8g -Djava.net.useSystemProxies=true ${DEBUG} \
 -cp ${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar \
-    org.getalp.dbnary.cli.UpdateAndExtractDumps $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $STATS $TDB -d $DIR $COMPRESS  -k 1 $LANGS
+    org.getalp.dbnary.cli.DBnary update $VERBOSE $FORCE $CUT $DATE $NETWORK $MORPHO $ETYMOLOGY $LIME $ENHANCE $FOREIGN $STATS $TDB --dir $DIR $COMPRESS  -k 1 $LANGS
 

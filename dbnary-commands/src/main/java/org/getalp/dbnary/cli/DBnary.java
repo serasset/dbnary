@@ -1,6 +1,7 @@
 package org.getalp.dbnary.cli;
 
 import java.nio.file.Path;
+import org.getalp.dbnary.cli.utils.ShortErrorMessageHandler;
 import org.getalp.dbnary.cli.utils.VersionProvider;
 import org.slf4j.impl.SimpleLogger;
 import picocli.CommandLine;
@@ -60,7 +61,8 @@ public class DBnary {
   }
 
   public static void main(String[] args) {
-    CommandLine cmd = new CommandLine(new DBnary());
+    CommandLine cmd = new CommandLine(new DBnary())
+        .setParameterExceptionHandler(new ShortErrorMessageHandler());
     int exitCode = cmd.execute(args);
     System.exit(exitCode);
   }

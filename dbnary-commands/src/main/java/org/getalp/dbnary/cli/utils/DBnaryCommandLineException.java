@@ -2,8 +2,7 @@ package org.getalp.dbnary.cli.utils;
 
 public class DBnaryCommandLineException extends RuntimeException {
 
-  public DBnaryCommandLineException() {
-  }
+  public DBnaryCommandLineException() {}
 
   public DBnaryCommandLineException(String message) {
     super(message);

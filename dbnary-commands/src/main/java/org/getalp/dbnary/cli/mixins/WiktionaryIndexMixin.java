@@ -3,10 +3,10 @@ package org.getalp.dbnary.cli.mixins;
 import java.io.File;
 import java.nio.file.Path;
 import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.cli.utils.DBnaryCommandLineException;
 import org.getalp.wiktionary.WiktionaryIndex;
 import org.getalp.wiktionary.WiktionaryIndexerException;
 import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.ParameterException;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
 
@@ -24,9 +24,7 @@ public class WiktionaryIndexMixin implements WiktionaryPageSource {
     try {
       this.wi = new WiktionaryIndex(dump);
     } catch (WiktionaryIndexerException e) {
-      e.printStackTrace();
-      throw new ParameterException(mixee.commandLine(),
-          String.format("Could not use dump file '%s'", dump));
+      throw new DBnaryCommandLineException(String.format("Could not use dump file '%s'", dump), e);
     }
   }
 

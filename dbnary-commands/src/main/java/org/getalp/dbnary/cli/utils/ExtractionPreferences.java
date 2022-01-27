@@ -66,7 +66,7 @@ public class ExtractionPreferences {
   }
 
   public Path getLatestExtractionDir() {
-    return getExtractionDir().resolve(shortLanguage("latest"));
+    return getExtractionDir().resolve("latest");
   }
 
   public Path outputFileForFeature(ExtractionFeature feature, String language, String outputFormat,

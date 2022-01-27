@@ -11,7 +11,6 @@ import org.getalp.dbnary.cli.mixins.BatchExtractorMixin;
 import org.getalp.dbnary.cli.mixins.WiktionaryIndexMixin;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.wiktionary.WiktionaryIndexer;
-import org.getalp.wiktionary.WiktionaryIndexerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -54,17 +53,11 @@ public class CheckWiktionarySyntaxQuality implements Callable<Integer> {
     }
   }
 
-  /**
-   * Analyse command line arguments to prepare processing.
-   *
-   * @throws WiktionaryIndexerException ..
-   */
-
   public Integer call() throws IOException {
 
     // create new XMLStreamReader
     long startTime = System.currentTimeMillis();
-    long totalRelevantTime = 0, relevantStartTime = 0, relevantTimeOfLastThousands;
+    long totalRelevantTime = 0, relevantTimeOfLastThousands;
     int nbPages = 0, nbRelevantPages = 0;
     relevantTimeOfLastThousands = System.currentTimeMillis();
 
@@ -149,7 +142,6 @@ public class CheckWiktionarySyntaxQuality implements Callable<Integer> {
 
   private String formatHMS(long durationInMillis) {
     Duration d = Duration.ofMillis(durationInMillis);
-    StringBuffer b = new StringBuffer();
     long h = d.toHours();
     long m = d.toMinutes() % 60;
     long s = d.getSeconds() % 60;

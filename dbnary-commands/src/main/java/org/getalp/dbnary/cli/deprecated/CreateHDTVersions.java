@@ -1,4 +1,4 @@
-package org.getalp.dbnary.cli;
+package org.getalp.dbnary.cli.deprecated;
 
 import java.io.IOException;
 import java.nio.file.Files;

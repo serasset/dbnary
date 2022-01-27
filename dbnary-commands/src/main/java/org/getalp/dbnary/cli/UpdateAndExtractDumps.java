@@ -37,6 +37,7 @@ import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.cli.mixins.BatchExtractorMixin;
 import org.getalp.dbnary.cli.mixins.ExtractionFeaturesMixin;
 import org.getalp.dbnary.cli.utils.ExtractionPreferences;
+import org.getalp.dbnary.cli.utils.ShortErrorMessageHandler;
 import org.getalp.wiktionary.WiktionaryIndex;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -600,7 +601,8 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       System.err.println(String.join(" ", args));
     }
 
-    int extractionReturnCode = new CommandLine(new DBnary()).execute(args);
+    int extractionReturnCode = new CommandLine(new DBnary())
+        .setParameterExceptionHandler(new ShortErrorMessageHandler()).execute(args);
 
     displayMemoryUsage();
     return extractionReturnCode == 0;

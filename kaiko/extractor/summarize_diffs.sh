@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=2.4.4-SNAPSHOT
+VERSION=3.0.0b1
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
 DIFFS=diffs
 VERBOSE=""

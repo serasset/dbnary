@@ -32,7 +32,7 @@ public class ExtractionFeaturesMixin {
 
   private Set<ExtractionFeature> exolexFeatures;
 
-  @Option(names = {"--exolex"},
+  @Option(names = {"--exolex"}, split = ",",
       description = "Enable the specified features for the exolex (foreign entries) extraction "
           + "(valid features : ${COMPLETION-CANDIDATES}).")
   private void setExolexFeatures(Set<ExtractionFeature> features) {

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DIR=${DBNARY_DIR:-.}
-VERSION=3.0.0b2
+VERSION=3.0.0b3-SNAPSHOT
 #LANGS="fr en de pt it fi ru el tr ja es bg pl"
 LANGS="fr"
 

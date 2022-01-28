@@ -56,7 +56,7 @@ definitions:
           - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
-          - ./kaiko/cicd/extract_both_versions.sh en no id la ku
+          - ./kaiko/cicd/extract_both_versions.sh en
         artifacts:
           - "target/extracts/**/*.ttl"
     - step: &extract_batch_2
@@ -69,7 +69,7 @@ definitions:
           - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
-          - ./kaiko/cicd/extract_both_versions.sh fr pt it fi ru
+          - ./kaiko/cicd/extract_both_versions.sh fr pt it fi ru no la
         artifacts:
           - "target/extracts/**/*.ttl"
     - step: &extract_batch_3
@@ -82,7 +82,7 @@ definitions:
           - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
-          - ./kaiko/cicd/extract_both_versions.sh de el tr ja es bg pl nl sh sv lt mg
+          - ./kaiko/cicd/extract_both_versions.sh de el tr ja es bg pl nl sh sv lt mg id ku
         artifacts:
           - "target/extracts/**/*.ttl"
     - step: &evaluate-pr

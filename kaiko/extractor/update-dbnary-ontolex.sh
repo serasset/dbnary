@@ -33,8 +33,7 @@ fi
   date 
   echo "==============================================="
 
-  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-uber-jar.jar org.getalp.dbnary.cli.DBnary update $OPTIONS --dir $DIR -s $MIRROR -k 1 --compress --endolex=ontolex,morphology,etymology,lime,statistics,enhancement --exolex=ontolex $LANGS
-
+  $JAVA $JVM_OPTIONS -cp $HOME/.m2/repository/org/getalp/${EXTRACTOR}/$VERS/${EXTRACTOR}-${VERS}-uber-jar.jar org.getalp.dbnary.cli.DBnary update $OPTIONS --dir $DIR -s $MIRROR -k 1 --compress --endolex=ontolex,morphology,etymology,lime,statistics,enhancement,combined --exolex=ontolex,combined $LANGS
   echo "==============================================="
   echo -n "  DBnary dumps updated - "
   date 

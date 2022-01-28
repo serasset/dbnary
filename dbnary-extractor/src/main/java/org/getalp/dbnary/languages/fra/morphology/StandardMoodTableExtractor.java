@@ -140,7 +140,8 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
     actions.put(Pattern.compile("^(?:je|j’)"), Person.first.andThen(Number.singular));
     actions.put(Pattern.compile("^tu"), Person.second.andThen(Number.singular));
     actions.put(Pattern.compile("^il/elle"), Person.third.andThen(Number.singular));
-    actions.put(Pattern.compile("^(?:il\\s*|il\\s+se\\s*)$"), Person.third.andThen(Number.singular));
+    actions.put(Pattern.compile("^(?:il\\s*|il\\s+se\\s*)$"),
+        Person.third.andThen(Number.singular));
     actions.put(Pattern.compile("^nous"), Person.first.andThen(Number.plural));
     actions.put(Pattern.compile("^vous"), Person.second.andThen(Number.plural));
     actions.put(Pattern.compile("^ils/elles"), Person.third.andThen(Number.plural));

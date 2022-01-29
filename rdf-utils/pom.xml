@@ -5,7 +5,7 @@
   <parent>
     <artifactId>dbnary</artifactId>
     <groupId>org.getalp</groupId>
-    <version>3.0.0b3</version>
+    <version>3.0.0b4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -88,7 +88,7 @@
     <dependency>
       <groupId>com.slack.api</groupId>
       <artifactId>slack-api-client</artifactId>
-      <version>1.16.1</version>
+      <version>1.17.0</version>
     </dependency>
     <dependency>
       <groupId>org.getalp</groupId>

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=3.0.0b3-SNAPSHOT
+VERSION=3.0.0b4-SNAPSHOT
 JAVA=java
 
 $JAVA -Djava.net.useSystemProxies=true \

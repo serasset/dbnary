@@ -241,8 +241,8 @@ trap cleanup EXIT
 
 ## Prepare bootstrap.sql file
 BOOTSTRAPSQL="$DBBOOTSTRAPFOLDER"/bootstrap.sql
-echo "$BOOTSTRAPSQLTMPL"
-cat "$BOOTSTRAPSQLTMPL"
+echo "Preparing $BOOTSTRAPSQLTMPL"
+#cat "$BOOTSTRAPSQLTMPL"
 sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$BOOTSTRAPSQLTMPL" |
   sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
   sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
@@ -282,7 +282,7 @@ fi
 ## create the .graph files for all files in datasetdir
 langRegex2='(..)_([^_]*)_(.*)'
 langRegex3='(...)_([^_]*)_(.*)'
-statsRegex2='(..)_.*_statistics.ttl'
+statsRegex2='(..)_(.*)_statistics(.*)'
 exolexRegex2='(..)_([^_]*)_exolex_(.*)'
 for f in $DATASETDIR/*.ttl; do
   if [[ $f =~ $statsRegex2 ]]; then
@@ -292,7 +292,7 @@ for f in $DATASETDIR/*.ttl; do
     lg2=${BASH_REMATCH[1]}
     graph=${BASH_REMATCH[2]}
     lg3=${iso3Lang[$lg2]}
-    echo "http://kaiko.getalp.org/$graph/$lg3/exolex/" >"$f.graph"
+    echo "http://kaiko.getalp.org/$graph/${lg3}_exolex/" >"$f.graph"
   elif [[ $f =~ $langRegex2 ]]; then
     lg2=${BASH_REMATCH[1]}
     graph=${BASH_REMATCH[2]}

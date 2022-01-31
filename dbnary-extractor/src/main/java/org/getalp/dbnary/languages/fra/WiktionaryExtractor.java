@@ -36,6 +36,8 @@ import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiText.WikiDocument;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
+import org.getalp.iso639.ISO639_3;
+import org.getalp.iso639.ISO639_3.Lang;
 import org.getalp.model.ontolex.LexicalForm;
 import org.getalp.model.ontolex.PhoneticRepresentation;
 import org.getalp.model.ontolex.WrittenRepresentation;
@@ -466,8 +468,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !"fr".equals(language))
       return;
 
-    // The language is always defined when arriving here
-    wdh.initializeLanguageSection(language);
+    // The language is always defined when arriving here, but we should check if we extract it
+    String normalizedLanguage = validateAndStandardizeLanguageCode(language);
+    if (normalizedLanguage == null) {
+      log.warn("Ignoring language section {} for {}", language, getWiktionaryPageName());
+      return;
+    }
+    wdh.initializeLanguageSection(normalizedLanguage);
 
     for (Token t : languageSection.getContent().sections()) {
       WikiSection section = t.asWikiSection();
@@ -506,6 +513,27 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
     }
     wdh.finalizeLanguageSection();
+  }
+
+  private static final Map<String, String> additionalLanguages = new HashMap<>();
+  static {
+    additionalLanguages.put("gallo", "fr-gallo");
+    additionalLanguages.put("normand", "fr-normand");
+    additionalLanguages.put("gaulois", "xtg");
+    additionalLanguages.put("gsw-fr", "gsw-FR");
+    additionalLanguages.put("nds-nl", "nds-NL");
+    additionalLanguages.put("igs-gls", "igs-gls");
+    additionalLanguages.put("css-mut", "css-mut");
+    additionalLanguages.put("be-tarask", "be-tarask");
+    additionalLanguages.put("ko-Hani", "ko-Hani");
+    additionalLanguages.put("vi-chunom", "vi-chunom");
+  }
+
+  private String validateAndStandardizeLanguageCode(String language) {
+    Lang languageObject = ISO639_3.sharedInstance.getLang(language);
+    if (languageObject != null)
+      return languageObject.getId();
+    return additionalLanguages.get(language);
   }
 
   /**

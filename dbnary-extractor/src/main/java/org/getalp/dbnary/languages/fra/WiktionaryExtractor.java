@@ -515,7 +515,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizeLanguageSection();
   }
 
-  private static final Map<String,String> additionalLanguages = new HashMap<>();
+  private static final Map<String, String> additionalLanguages = new HashMap<>();
   static {
     additionalLanguages.put("gallo", "fr-gallo");
     additionalLanguages.put("normand", "fr-normand");
@@ -528,6 +528,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     additionalLanguages.put("ko-Hani", "ko-Hani");
     additionalLanguages.put("vi-chunom", "vi-chunom");
   }
+
   private String validateAndStandardizeLanguageCode(String language) {
     Lang languageObject = ISO639_3.sharedInstance.getLang(language);
     if (languageObject != null)

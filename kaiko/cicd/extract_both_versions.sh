@@ -56,7 +56,7 @@ done
 echo " ==== EXTRACTING WITH NEXT VERSION ===== "
 FEATURES="--endolex=ontolex,morphology,lime,etymology,enhancement,statistics --exolex=ontolex"
 # Extract data using Target branch version
-"target/dbnary/$NEXT_VERSION/bin/dbnary" --dir "/tmp/$NEXT_VERSION/" -v --no-compress --no-network $FEATURES --sample "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
+"output/dbnary/$NEXT_VERSION/bin/dbnary" --dir "/tmp/$NEXT_VERSION/" -v --no-compress --no-network $FEATURES --sample "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
 
 mkdir -p target/extracts/$NEXT_VERSION/
 cp /tmp/$NEXT_VERSION/extracts/ontolex/latest/*.ttl target/extracts/$NEXT_VERSION/
@@ -67,7 +67,7 @@ git checkout $BITBUCKET_PR_DESTINATION_BRANCH
 chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
 
 # Extract data using PR version
-"target/dbnary/$PREVIOUS_VERSION/bin/dbnary" --dir "/tmp/$PREVIOUS_VERSION/" --no-compress --no-network $FEATURES --sample "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
+"output/dbnary/$PREVIOUS_VERSION/bin/dbnary" --dir "/tmp/$PREVIOUS_VERSION/" --no-compress --no-network $FEATURES --sample "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
 
 mkdir -p target/extracts/$PREVIOUS_VERSION/
 cp /tmp/$PREVIOUS_VERSION/extracts/ontolex/latest/*.ttl target/extracts/$PREVIOUS_VERSION/

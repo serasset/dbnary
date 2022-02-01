@@ -131,8 +131,9 @@ public class Symbols {
     values = new ArrayList<>();
     args = WikiTool.parseArgs(string, true);
     if (args.get("0").equals("rel-top")) {
-      if (null != args.get("1") && (args.get("1").equals("cognates") || args.get("1").equals("detailed etymology")
-          || args.get("1").equals("Etymology Theories"))) {
+      if (null != args.get("1")
+          && (args.get("1").equals("cognates") || args.get("1").equals("detailed etymology")
+              || args.get("1").equals("Etymology Theories"))) {
         values.add("STOP");
       } else {
         log.debug(

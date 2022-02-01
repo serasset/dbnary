@@ -14,11 +14,6 @@ echo "Effectively extracting languages : " $BATCH_LANGS "//" $LANGS "-->" ${EFFE
 
 [[ x$EFFECTIVE_LANGS == x ]] && exit 0;
 
-# Cleanup maven repo to remove dbnary artifacts that may be downloaded from cached.
-mkdir -p ${HOME}/.m2/repository/org/
-rm -rf ${HOME}/.m2/repository/org/getalp
-cp -r target/dbnary-maven-repository/org/getalp ${HOME}/.m2/repository/org/
-
 # Prepare for proper SSH connection to the dumps host.
 mkdir -p ~/.ssh
 cat ./kaiko/cicd/my_known_hosts >> ~/.ssh/known_hosts
@@ -54,8 +49,9 @@ done
 # ls -al "/tmp/$NEXT_VERSION/dumps"/*/*
 
 echo " ==== EXTRACTING WITH NEXT VERSION ===== "
+FEATURES="--endolex=ontolex,morphology,lime,etymology,enhancement,statistics --exolex=ontolex"
 # Extract data using Target branch version
-DBNARY_DIR="/tmp/$NEXT_VERSION/" "${SCRIPT_DIR}/../extractor/dbnary.sh" -V -Z -n -v "$NEXT_VERSION" -c "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
+"target/dbnary/$NEXT_VERSION/bin/dbnary" --dir "/tmp/$NEXT_VERSION/" -v --no-compress --no-network $FEATURES --sample "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
 
 mkdir -p target/extracts/$NEXT_VERSION/
 cp /tmp/$NEXT_VERSION/extracts/ontolex/latest/*.ttl target/extracts/$NEXT_VERSION/
@@ -66,7 +62,7 @@ git checkout $BITBUCKET_PR_DESTINATION_BRANCH
 chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
 
 # Extract data using PR version
-DBNARY_DIR="/tmp/$PREVIOUS_VERSION/" "${SCRIPT_DIR}/../extractor/dbnary.sh" -V -Z -n -v "$PREVIOUS_VERSION" -c "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
+"target/dbnary/$PREVIOUS_VERSION/bin/dbnary" --dir "/tmp/$PREVIOUS_VERSION/" --no-compress --no-network $FEATURES --sample "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
 
 mkdir -p target/extracts/$PREVIOUS_VERSION/
 cp /tmp/$PREVIOUS_VERSION/extracts/ontolex/latest/*.ttl target/extracts/$PREVIOUS_VERSION/

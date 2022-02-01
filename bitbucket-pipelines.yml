@@ -41,11 +41,9 @@ definitions:
           - ./kaiko/cicd/compile-pr-and-target-versions.sh
           # The previous command checked out another branch that may also have executable rights issues.
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
-          - mkdir -p target/dbnary-maven-repository/org
-          - cp -r ${HOME}/.m2/repository/org/getalp target/dbnary-maven-repository/org/getalp
           - ./kaiko/cicd/cleanup_cache.sh
         artifacts:
-          - "target/dbnary-maven-repository/org/**/*.*"
+          - "target/dbnary/**/*.*"
     - step: &extract_batch_1
         name: Extracting batch 1
         runs-on:
@@ -56,6 +54,7 @@ definitions:
           - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
+          - chmod +x target/dbnary/*/bin/*
           - ./kaiko/cicd/extract_both_versions.sh en
         artifacts:
           - "target/extracts/**/*.ttl"

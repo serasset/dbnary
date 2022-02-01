@@ -41,11 +41,9 @@ definitions:
           - ./kaiko/cicd/compile-pr-and-target-versions.sh
           # The previous command checked out another branch that may also have executable rights issues.
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
-          - cp -r out/dbnary target/dbnary
           - ./kaiko/cicd/cleanup_cache.sh
         artifacts:
-          - "target/dbnary/**/*.*"
-          - "out/dbnary/**/*.*"
+          - "out/dbnary/**"
     - step: &extract_batch_1
         name: Extracting batch 1
         runs-on:

@@ -13,7 +13,6 @@ public class WikiTool {
 
   static Logger log = LoggerFactory.getLogger(WikiTool.class);
 
-
   /**
    * @param argsString the String containing all the args (the part of a template contained after
    *        the first pipe).
@@ -24,8 +23,25 @@ public class WikiTool {
    */
   @Deprecated
   public static Map<String, String> parseArgs(String argsString) {
+    return parseArgs(argsString, false);
+  }
+
+    /**
+     * Parse the args of a Template, e.g., parses a string like xxx=yyy|zzz=ttt It can
+     * handle nested parentheses, e.g., xxx=yyy|zzz={{aaa=bbb|ccc=ddd}}|kkk=hhh and
+     * xxx=yyy|zzz=[[aaa|bbb|ccc]]|kkk=hhh.
+     * If withTemplateName is true, the first argument will be considered as the template name and
+     * added to the parseArgs under key "0"
+     * @param argsString the String containing all the args (the part of a template contained after
+     *        the first pipe).
+     * @param withTemplateName pass true if the argString starts with the template name
+     * @return a Map associating each argument name with its value.
+     * @deprecated use WikiText package
+     */
+  @Deprecated
+  public static Map<String, String> parseArgs(String argsString, boolean withTemplateName) {
     HashMap<String, String> argsMap = new HashMap<String, String>();
-    if (null == argsString || "" == argsString) {
+    if (null == argsString || "".equals(argsString)) {
       return argsMap;
     }
 
@@ -35,7 +51,7 @@ public class WikiTool {
     // split each element of argsArray (i.e. each argument arg) by "=" (unless "=" is contained in a
     // wiki template or link)
     // into argsMap, the returned map
-    int n = 1; // number for positional args.
+    int n = withTemplateName ? 0 : 1; // number for positional args.
     String argString;
     for (int h = 0; h < argsArray.size(); h++) {// iterate over all arguments in argsArray
       argString = argsArray.get(h); // an argument in argsArray
@@ -51,7 +67,7 @@ public class WikiTool {
               argsMap.put(argString.substring(0, j).trim(), "");
             } else {
               argsMap.put(argString.substring(0, j).trim(),
-                  argString.substring(j + 1, argString.length()).trim());
+                  argString.substring(j + 1).trim());
             }
             break;
           }
@@ -60,6 +76,11 @@ public class WikiTool {
       }
       if (j == argString.length()) {// "=" not found in argument argString
         argsMap.put("" + n, argString);
+        n++;
+      }
+      if (n == 0) {
+        // Having n == 0 here means that the first arg is a named arg, despite withTemplateName
+        // being passed. In such a case, we switch to standard behaviour (no template name.
         n++;
       }
     }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VERSION=3.0.0b5-SNAPSHOT
-#LANGS="fr en de pt it fi ru el tr ja es bg pl"
+RDFDIFF=rdfdiff
+
 LANGS="fr"
 MODEL="ontolex"
 PREVIOUS_VERSION=latest.before
@@ -10,7 +10,7 @@ DIFFS=diffs
 VERBOSE=""
 FORCETDB=""
 
-while getopts ":m:v:f:t:d:VT" opt; do
+while getopts ":m:f:t:d:vT" opt; do
   case $opt in
     m)
       MODEL=$OPTARG
@@ -25,9 +25,6 @@ while getopts ":m:v:f:t:d:VT" opt; do
       DIFFS=$OPTARG
       ;;
     v)
-      VERSION="${OPTARG}"
-      ;;
-    V)
       VERBOSE="-v"
       ;;
     T)
@@ -47,6 +44,11 @@ shift $((OPTIND-1))
 if [ $# -gt 0 ]
     then
     LANGS=$*
+fi
+
+if ! command -v $RDFDIFF ; then
+  echo >&2 "Could not find rdfdiff command, aborting..."
+  exit 1
 fi
 
 prepareTDBifTooBig() {
@@ -79,8 +81,6 @@ do
     before="$(prepareTDBifTooBig $PREVIOUS_VERSION/${l}_dbnary_${MODEL}*.ttl)"
     now="$(prepareTDBifTooBig $NEXT_VERSION/${l}_dbnary_${MODEL}*.ttl)"
     >&2 echo "Comparing ${before} and ${now}"
-  java -Xmx16G -cp "${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar" \
-    org.getalp.dbnary.cli.RDFDiff $VERBOSE "${before}" "${now}" > "$DIFFS/${l}_lost_${MODEL}.ttl" ;
-  java -Xmx16G -cp "${HOME}/.m2/repository/org/getalp/dbnary-commands/$VERSION/dbnary-commands-$VERSION-uber-jar.jar" \
-    org.getalp.dbnary.cli.RDFDiff $VERBOSE "${now}" "${before}" > "$DIFFS/${l}_gain_${MODEL}.ttl" ;
+  $RDFDIFF $VERBOSE "${before}" "${now}" > "$DIFFS/${l}_lost_${MODEL}.ttl" ;
+  $RDFDIFF $VERBOSE "${now}" "${before}" > "$DIFFS/${l}_gain_${MODEL}.ttl" ;
 done

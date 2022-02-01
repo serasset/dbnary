@@ -27,17 +27,20 @@ fi
 
 set -x
 
+mkdir -p target/dbnary
 mvn versions:set -B -DnewVersion="$NEXT_VERSION"
-mvn install
+mvn package
+cp -r dbnary-commands/target/appassembler target/dbnary/$NEXT_VERSION
 mvn clean
 
 git stash -u
 git checkout "$BITBUCKET_PR_DESTINATION_BRANCH"
 
 mvn versions:set -B -DnewVersion="$PREVIOUS_VERSION"
-mvn install
-
+mvn package
+cp -r dbnary-commands/target/appassembler target/dbnary/$PREVIOUS_VERSION
 mvn clean
+
 # Then, switch back to latest branch so that latest improvement in CI/CD are used.
 git stash -u
 git checkout "$BITBUCKET_BRANCH"

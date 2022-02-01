@@ -131,8 +131,8 @@ public class Symbols {
     values = new ArrayList<>();
     args = WikiTool.parseArgs(string, true);
     if (args.get("0").equals("rel-top")) {
-      if (args.get("1").equals("cognates") || args.get("1").equals("detailed etymology")
-          || args.get("1").equals("Etymology Theories")) {
+      if (null != args.get("1") && (args.get("1").equals("cognates") || args.get("1").equals("detailed etymology")
+          || args.get("1").equals("Etymology Theories"))) {
         values.add("STOP");
       } else {
         log.debug(
@@ -1019,7 +1019,13 @@ public class Symbols {
 
     // parse word
     if (word.equals("")) { // [[#English|tule]]
-      word = splitArgs.get(1).trim();
+      if (splitArgs.size() > 1) {
+        word = splitArgs.get(1);
+        if (null != word)
+          word = word.trim();
+        else
+          word = "";
+      }
     }
     args.put("word1", cleanUp(word));
 

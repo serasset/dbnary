@@ -26,8 +26,7 @@ public class WikiToolTest {
 
   @Test
   public void testParseWithTemplateNames() throws Exception {
-    Map<String, String> args = WikiTool.parseArgs("m|grc|sc=polytonic|βοῦς||ox, cow",
-        true);
+    Map<String, String> args = WikiTool.parseArgs("m|grc|sc=polytonic|βοῦς||ox, cow", true);
 
     assertEquals("m", args.get("0"));
     assertEquals("grc", args.get("1"));
@@ -41,8 +40,7 @@ public class WikiToolTest {
 
   @Test
   public void testParseWithErroneousTemplateNames() throws Exception {
-    Map<String, String> args = WikiTool.parseArgs("m=x|grc|sc=polytonic|βοῦς||ox, cow",
-        true);
+    Map<String, String> args = WikiTool.parseArgs("m=x|grc|sc=polytonic|βοῦς||ox, cow", true);
 
     assertNull(args.get("0"));
     assertEquals("x", args.get("m"));

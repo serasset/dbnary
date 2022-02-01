@@ -300,8 +300,8 @@ public class Symbols {
       int offset = 0;
       if (args.get("lang") == null) {
         offset = 1;
-        args.put("lang", args.get("1"));
-        args.remove("1");
+        args.put("lang", args.get("2"));
+        args.remove("2");
       }
 
       String key = Integer.toString(2 + offset);// first case
@@ -1023,7 +1023,7 @@ public class Symbols {
     }
     args.put("word1", cleanUp(word));
 
-    args.put("1", "l");
+    args.put("0", "l");
     args.put("lang", language);
     values.add("LEMMA");
     string = "l|" + args.get("lang") + "|" + args.get("word1");

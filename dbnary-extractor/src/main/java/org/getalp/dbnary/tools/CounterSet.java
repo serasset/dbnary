@@ -13,7 +13,7 @@ public class CounterSet implements Set<String> {
 
     int _val;
 
-     private MutableInteger(int v) {
+    private MutableInteger(int v) {
       super();
       _val = v;
     }
@@ -80,7 +80,8 @@ public class CounterSet implements Set<String> {
 
   @Override
   public boolean contains(Object o) {
-    if (o instanceof String) return counters.containsKey(o);
+    if (o instanceof String)
+      return counters.containsKey(o);
     return false;
   }
 
@@ -117,7 +118,7 @@ public class CounterSet implements Set<String> {
   @Override
   public boolean addAll(Collection<? extends String> c) {
     boolean changed = false;
-    for (String s: c) {
+    for (String s : c) {
       changed = (changed || add(s));
     }
     return changed;

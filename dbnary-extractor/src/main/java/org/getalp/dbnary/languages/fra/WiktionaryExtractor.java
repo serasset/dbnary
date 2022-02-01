@@ -25,6 +25,7 @@ import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.fra.morphology.FrenchInflectionDecoder;
 import org.getalp.dbnary.languages.fra.morphology.InflectionExtractorWikiModel;
 import org.getalp.dbnary.languages.fra.morphology.VerbalInflexionExtractorWikiModel;
+import org.getalp.dbnary.tools.CounterSet;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiPattern;
@@ -356,7 +357,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignoredSectionTitles.add("anagrammes");
     ignoredSectionTitles.add("paronymes");
     ignoredSectionTitles.add("prononciation");
-    ignoredSectionTitles.add("références");
     ignoredSectionTitles.add("voir aussi");
     ignoredSectionTitles.add("voir");
 
@@ -380,7 +380,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     nymMarkerToNymName.put("hypo", "hypo");
     nymMarkerToNymName.put("holonymes", "holo");
     nymMarkerToNymName.put("holo", "holo");
-    nymMarkerToNymName.put("-méton-", "meto");
     nymMarkerToNymName.put("synonymes", "syn");
     nymMarkerToNymName.put("syn", "syn");
     nymMarkerToNymName.put("quasi-synonymes", "qsyn");
@@ -413,6 +412,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
     frwdh = (WiktionaryDataHandler) wdh;
+    if (log.isTraceEnabled()) exampleTemplates = new CounterSet();
   }
 
   protected ExampleExpanderWikiModel exampleExpander;
@@ -445,7 +445,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     glossExtractor.setPageName(this.getWiktionaryPageName());
   }
 
-  private Set<String> defTemplates = null;
+  private Set<String> exampleTemplates = null;
 
   @Override
   public void extractData() {
@@ -471,7 +471,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // The language is always defined when arriving here, but we should check if we extract it
     String normalizedLanguage = validateAndStandardizeLanguageCode(language);
     if (normalizedLanguage == null) {
-      log.warn("Ignoring language section {} for {}", language, getWiktionaryPageName());
+      log.debug("Ignoring language section {} for {}", language, getWiktionaryPageName());
       return;
     }
     wdh.initializeLanguageSection(normalizedLanguage);
@@ -517,6 +517,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private static final Map<String, String> additionalLanguages = new HashMap<>();
   static {
+    additionalLanguages.put("conv", "mul-conv");
     additionalLanguages.put("gallo", "fr-gallo");
     additionalLanguages.put("normand", "fr-normand");
     additionalLanguages.put("gaulois", "xtg");
@@ -871,7 +872,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void extractExample(String example) {
     Map<Property, String> context = new HashMap<>();
 
-    String ex = exampleExpander.expandExample(example, defTemplates, context);
+    String ex = exampleExpander.expandExample(example, exampleTemplates, context);
     Resource exampleNode = null;
     if (ex != null && !ex.equals("")) {
       exampleNode = wdh.registerExample(ex, context);
@@ -904,4 +905,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionExpander.parseDefinition(definition, defLevel);
   }
 
+  @Override
+  public void postProcessData(String dumpFileVersion) {
+    if (log.isTraceEnabled()) {
+      // Log all definition templates
+    }
+    super.postProcessData(dumpFileVersion);
+  }
 }

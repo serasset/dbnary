@@ -67,6 +67,18 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
         }
       }
       writer.append(") ");
+    } else if (templateName.equals("glossary")) {
+      String text = parameterMap.get("2");
+      if (null == text)
+        text = parameterMap.get("1");
+      writer.append(text);
+    } else if (templateName.equals("gloss")) {
+      String text = parameterMap.get("gloss");
+      if (null == text)
+        text = parameterMap.get("1");
+      writer.append("(").append(text).append(")");
+    } else if (templateName.equals("check deprecated lang param usage")) {
+      writer.append(parameterMap.get("1"));
     } else if (templateName.equals("context") || templateName.equals("cx")) {
       log.debug("Obsolete Context template in {}", this.getPageName());
     } else if (templateName.equals("l") || templateName.equals("link") || templateName.equals("m")
@@ -76,7 +88,9 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
         l = parameterMap.get("2");
       }
       writer.append(l);
-    } else if (templateName.equals("synonym of")) {
+    } else if (templateName.equals("synonym of") || templateName.equals("ellipsis of") ||
+        templateName.equals("initialism of") || templateName.equals("init of")
+        || templateName.equals("acronym of")) {
       // TODO: handle synonym of by creating the appropriate synonymy relation.
       // catch and expand synonym of template before it is caught by next condition.
       super.substituteTemplateCall(templateName, parameterMap, writer);

@@ -26,18 +26,18 @@ public class WikiTool {
     return parseArgs(argsString, false);
   }
 
-    /**
-     * Parse the args of a Template, e.g., parses a string like xxx=yyy|zzz=ttt It can
-     * handle nested parentheses, e.g., xxx=yyy|zzz={{aaa=bbb|ccc=ddd}}|kkk=hhh and
-     * xxx=yyy|zzz=[[aaa|bbb|ccc]]|kkk=hhh.
-     * If withTemplateName is true, the first argument will be considered as the template name and
-     * added to the parseArgs under key "0"
-     * @param argsString the String containing all the args (the part of a template contained after
-     *        the first pipe).
-     * @param withTemplateName pass true if the argString starts with the template name
-     * @return a Map associating each argument name with its value.
-     * @deprecated use WikiText package
-     */
+  /**
+   * Parse the args of a Template, e.g., parses a string like xxx=yyy|zzz=ttt It can handle nested
+   * parentheses, e.g., xxx=yyy|zzz={{aaa=bbb|ccc=ddd}}|kkk=hhh and
+   * xxx=yyy|zzz=[[aaa|bbb|ccc]]|kkk=hhh. If withTemplateName is true, the first argument will be
+   * considered as the template name and added to the parseArgs under key "0"
+   * 
+   * @param argsString the String containing all the args (the part of a template contained after
+   *        the first pipe).
+   * @param withTemplateName pass true if the argString starts with the template name
+   * @return a Map associating each argument name with its value.
+   * @deprecated use WikiText package
+   */
   @Deprecated
   public static Map<String, String> parseArgs(String argsString, boolean withTemplateName) {
     HashMap<String, String> argsMap = new HashMap<String, String>();
@@ -66,8 +66,7 @@ public class WikiTool {
             if (j == argString.length() - 1) {
               argsMap.put(argString.substring(0, j).trim(), "");
             } else {
-              argsMap.put(argString.substring(0, j).trim(),
-                  argString.substring(j + 1).trim());
+              argsMap.put(argString.substring(0, j).trim(), argString.substring(j + 1).trim());
             }
             break;
           }

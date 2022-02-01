@@ -412,7 +412,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
     frwdh = (WiktionaryDataHandler) wdh;
-    if (log.isTraceEnabled()) exampleTemplates = new CounterSet();
+    if (log.isTraceEnabled())
+      exampleTemplates = new CounterSet();
   }
 
   protected ExampleExpanderWikiModel exampleExpander;

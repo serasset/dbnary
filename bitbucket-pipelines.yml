@@ -54,7 +54,6 @@ definitions:
           - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
-          - chmod +x target/dbnary/*/bin/*
           - ./kaiko/cicd/extract_both_versions.sh en
         artifacts:
           - "target/extracts/**/*.ttl"

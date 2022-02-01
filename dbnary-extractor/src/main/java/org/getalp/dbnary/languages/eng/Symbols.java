@@ -462,8 +462,10 @@ public class Symbols {
     } else if (args.get("0").equals("abbreviation of")) {
       values.add("FROM");
       values.add("LEMMA");
-      args.put("word1", cleanUp(args.get("1")));
+      args.put("lang", cleanUp(args.get("1")));
       args.remove("1");
+      args.put("word1", cleanUp(args.get("2")));
+      args.remove("2");
       if (args.get("3") != null) {
         args.put("gloss1", args.get("3").replaceAll("\\[", "").replaceAll("\\]", ""));
         args.remove("3");

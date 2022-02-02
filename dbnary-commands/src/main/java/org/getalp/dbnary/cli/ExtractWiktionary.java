@@ -115,7 +115,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
     try {
       // create new XMLStreamReader
       long startTime = System.currentTimeMillis();
-      long totalRelevantTime = 0, relevantStartTime = 0, relevantTimeOfLastThousands;
+      long totalRelevantTime = 0, relevantStartTime, relevantTimeOfLastThousands;
       int nbPages = 0, nbRelevantPages = 0;
       relevantTimeOfLastThousands = System.currentTimeMillis();
 
@@ -197,7 +197,11 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
       spec.commandLine().getErr().println("Extracted " + nbRelevantPages + " pages in: "
           + formatHMS(totalRelevantTime) + " (" + nbPages + " scanned Pages)");
 
+      relevantStartTime = System.currentTimeMillis();
       postProcessAfterExtraction(VersionProvider.getDumpVersion(wi.getDumpFile().getName()));
+      totalRelevantTime = relevantStartTime - System.currentTimeMillis();
+      spec.commandLine().getErr().format("Post processed %d entries in %s%n", nbRelevantPages,
+          formatHMS(totalRelevantTime));
 
       for (ExtractionFeature f : features.getEndolexFeatures()) {
         if (!f.equals(ExtractionFeature.HDT)) {

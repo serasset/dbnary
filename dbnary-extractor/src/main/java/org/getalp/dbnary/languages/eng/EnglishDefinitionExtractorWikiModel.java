@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
 
-  private Logger log = LoggerFactory.getLogger(EnglishDefinitionExtractorWikiModel.class);
+  private final Logger log = LoggerFactory.getLogger(EnglishDefinitionExtractorWikiModel.class);
 
   // static Set<String> ignoredTemplates = new TreeSet<String>();
   // static {
@@ -21,12 +21,12 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
   // ignoredTemplates.add("Incorrect");
   // }
 
-  private IWiktionaryDataHandler delegate;
+  private final IWiktionaryDataHandler delegate;
 
 
   public EnglishDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
       String imageBaseURL, String linkBaseURL) {
-    this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
+    this(we, null, locale, imageBaseURL, linkBaseURL);
   }
 
   public EnglishDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
@@ -88,15 +88,16 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
         l = parameterMap.get("2");
       }
       writer.append(l);
-    } else if (templateName.equals("synonym of") || templateName.equals("ellipsis of") ||
-        templateName.equals("initialism of") || templateName.equals("init of")
+    } else if (templateName.equals("synonym of") || templateName.equals("ellipsis of")
+        || templateName.equals("initialism of") || templateName.equals("init of")
         || templateName.equals("acronym of")) {
       // TODO: handle synonym of by creating the appropriate synonymy relation.
       // catch and expand synonym of template before it is caught by next condition.
       super.substituteTemplateCall(templateName, parameterMap, writer);
     } else if (templateName.endsWith(" of")) {
       log.debug("Ignoring template {} in definition of {}", templateName, this.getPageName());
-    } else if (templateName.equals("categorize") || templateName.equals("catlangname")
+    } else //noinspection StatementWithEmptyBody
+      if (templateName.equals("categorize") || templateName.equals("catlangname")
         || templateName.equals("catlangcode") || templateName.equals("senseid")) {
       // ignore
       // WARN: senseid should maybe be caught and registered to allow for id= arg in translation

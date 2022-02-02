@@ -199,7 +199,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
 
       relevantStartTime = System.currentTimeMillis();
       postProcessAfterExtraction(VersionProvider.getDumpVersion(wi.getDumpFile().getName()));
-      totalRelevantTime = relevantStartTime - System.currentTimeMillis();
+      totalRelevantTime = System.currentTimeMillis() - relevantStartTime;
       spec.commandLine().getErr().format("Post processed %d entries in %s%n", nbRelevantPages,
           formatHMS(totalRelevantTime));
 

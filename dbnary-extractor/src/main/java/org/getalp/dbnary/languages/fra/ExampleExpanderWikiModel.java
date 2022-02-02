@@ -58,13 +58,22 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       Appendable writer) throws IOException {
     if (ignoredTemplates.contains(templateName)) {
       // NOP
+    } else if ("w".equals(templateName)) {
+      String text = parameterMap.get("2");
+      if (null == text) {
+        text = parameterMap.get("1");
+      }
+      if (null == text) {
+        text = getPageName();
+      }
+      writer.append(text);
     } else if ("source".equals(templateName)) {
       if (context != null) {
         String source = simpleExpander.expandAll(parameterMap.get("1"), this.templates);
         context.put(DCTerms.bibliographicCitation, source);
         parameterMap.remove("1");
         if (!parameterMap.isEmpty()) {
-          log.debug("Non empty parameter map {} in {}", parameterMap, this.getPageName());
+          log.trace("source uses unexpected parameters {} in {}", parameterMap, this.getPageName());
         }
       }
     } else if ("sans balise".equals(templateName) || "sans_balise".equals(templateName)) {
@@ -86,7 +95,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       if ("’".equals(pattern) && "'".equals(repl)) {
         writer.append(s.replaceAll(pattern, repl));
       } else {
-        log.debug("gsub {} | {} | {}", parameterMap.get("1"), parameterMap.get("2"),
+        log.trace("gsub {} | {} | {}", parameterMap.get("1"), parameterMap.get("2"),
             parameterMap.get("3"));
         super.substituteTemplateCall(templateName, parameterMap, writer);
       }
@@ -98,19 +107,24 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
         writer.append("").append(String.valueOf(i + 1));
       }
     } else if ("exemple".equals(templateName)) {
+      String mandatoryLanguage = parameterMap.get("lang");
+      if (null == mandatoryLanguage) {
+        // Set to french, as it is required by the Module, even if we are in a exolex entry
+        parameterMap.put("lang", "fr");
+      }
       String example = parameterMap.get("1");
       if (null != example) {
         super.substituteTemplateCall(templateName, parameterMap, writer);
       }
     } else {
-      log.debug("Caught template call: {} --in-- {}", templateName, this.getPageName());
+      log.trace("Caught template call: {} --in-- {}", templateName, this.getPageName());
       super.substituteTemplateCall(templateName, parameterMap, writer);
     }
   }
 
   @Override
   public void addCategory(String categoryName, String sortKey) {
-    log.debug("Called addCategory : " + categoryName);
+    log.trace("Called addCategory : " + categoryName);
     super.addCategory(categoryName, sortKey);
   }
 }

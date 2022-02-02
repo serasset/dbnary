@@ -412,7 +412,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
     frwdh = (WiktionaryDataHandler) wdh;
-    if (log.isTraceEnabled())
+    if (log.isDebugEnabled())
       exampleTemplates = new CounterSet();
   }
 
@@ -454,7 +454,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
     WikiDocument doc = page.asStructuredDocument();
     doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection)
-        .map(Token::asWikiSection).forEach(wikiSection -> extractSection(wikiSection));
+        .map(Token::asWikiSection).forEach(this::extractSection);
     frwdh.finalizePageExtraction();
   }
 
@@ -472,7 +472,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // The language is always defined when arriving here, but we should check if we extract it
     String normalizedLanguage = validateAndStandardizeLanguageCode(language);
     if (normalizedLanguage == null) {
-      log.debug("Ignoring language section {} for {}", language, getWiktionaryPageName());
+      log.trace("Ignoring language section {} for {}", language, getWiktionaryPageName());
       return;
     }
     wdh.initializeLanguageSection(normalizedLanguage);
@@ -595,7 +595,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    * @param pos the (standardised) part of speech described by the section
    */
   private void extractLexicalEntry(WikiSection section, String pos) {
-    log.debug("Extracting LexicalEntry {} in {}", pos, getWiktionaryPageName());
+    log.trace("Extracting LexicalEntry {} in {}", pos, getWiktionaryPageName());
     wdh.initializeLexicalEntry(pos);
 
     if ("-verb-".equals(pos)) {
@@ -628,13 +628,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractOrthoAlt(subsection.getContent().getBeginIndex(),
             subsection.getPrologue().getEndIndex());
       } else if (null != (nym = nymMarkerToNymName.get(sectionName))) {
-        if (log.isDebugEnabled()
+        if (log.isTraceEnabled()
             && section.getContent().sections().stream().findFirst().isPresent())
-          log.debug("Subsection under nym section in {}", getWiktionaryPageName());
+          log.trace("Subsection under nym section in {}", getWiktionaryPageName());
         extractNyms(nym, subsection.getContent().getBeginIndex(),
             subsection.getPrologue().getEndIndex());
       } else {
-        log.debug("Unexpected sub section title {} in {}",
+        log.trace("Unexpected sub section title {} in {}",
             title == null ? sectionName : title.getText(), getWiktionaryPageName());
       }
       // There may be a level 5 subsubsection named "traductions à trier" that contain more
@@ -653,22 +653,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             && t.asText().getText().replaceAll("\u00A0", "").trim().equals("")))
         .collect(Collectors.toList());
     if (titleTemplate.size() == 0) {
-      log.debug("Unexpected empty title in {}", getWiktionaryPageName());
+      log.trace("Unexpected empty title in {}", getWiktionaryPageName());
       return new ImmutablePair<>(null, "");
     }
     if (titleTemplate.size() > 1) {
-      log.debug("Unexpected multi title {} in {}", section.getHeading().getText(),
+      log.trace("Unexpected multi title {} in {}", section.getHeading().getText(),
           getWiktionaryPageName());
     }
     if (!(titleTemplate.get(0) instanceof Template)) {
-      log.debug("Unexpected non template title {} in {}", section.getHeading().getText(),
+      log.trace("Unexpected non template title {} in {}", section.getHeading().getText(),
           getWiktionaryPageName());
       return new ImmutablePair<>(null,
           section.getHeading().getContent().getText().toLowerCase().trim());
     }
     String tname = titleTemplate.get(0).asTemplate().getName().trim();
     if (!"S".equals(tname)) {
-      log.debug("Template title is not an S: {} in {}", section.getHeading().getText(),
+      log.trace("Template title is not an S: {} in {}", section.getHeading().getText(),
           getWiktionaryPageName());
       return new ImmutablePair<>(titleTemplate.get(0).asTemplate(), tname);
     }
@@ -732,17 +732,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       String g;
       if (null != (g = lexer.group("ITALICS"))) {
         // TODO: keep as usage and add current translation object when finding a comma
-        log.debug("Found italics | {} | in translation for {}", g, getWiktionaryPageName());
+        log.trace("Found italics | {} | in translation for {}", g, getWiktionaryPageName());
       } else if (null != (g = lexer.group("PARENS"))) {
         // TODO: keep as usage and add current translation object when finding a comma
-        log.debug("Found parenthesis | {} | in translation for {}", g, getWiktionaryPageName());
+        log.trace("Found parenthesis | {} | in translation for {}", g, getWiktionaryPageName());
       } else if (null != (g = lexer.group("SPECIALPARENS"))) {
-        log.debug("Template or link inside parens: | {} | for [ {} ]",
+        log.trace("Template or link inside parens: | {} | for [ {} ]",
             line.getSourceContent(lexer.group("SPECIALPARENS")), getWiktionaryPageName());
         // TODO: some are only additional usage notes, other are alternate translation, decide
         // between them and handle the translation cases.
       } else if (null != (g = lexer.group("LINK"))) {
-        log.debug("Translation as link : {}", line.getToken(lexer.group("LINK")));
+        log.trace("Translation as link : {}", line.getToken(lexer.group("LINK")));
       } else if (null != (g = lexer.group("TMPL"))) {
         WikiText.Template t = (WikiText.Template) line.getToken(g);
         String tname = t.getName();
@@ -779,7 +779,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             args.remove("1");
             args.remove("2");
             if (args.size() > 0) {
-              log.debug("unused args in translation gloss : {}", args);
+              log.trace("unused args in translation gloss : {}", args);
             }
             String gloss = null;
             if (g1 != null || g2 != null) {
@@ -908,8 +908,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void postProcessData(String dumpFileVersion) {
-    if (log.isTraceEnabled()) {
-      // Log all definition templates
+    if (log.isDebugEnabled()) {
+      CounterSet templateStats = (CounterSet) exampleTemplates;
+      templateStats.logCounters(log);
     }
     super.postProcessData(dumpFileVersion);
   }

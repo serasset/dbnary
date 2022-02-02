@@ -263,6 +263,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   static {
     ignoredLanguage.add("m͡p");
   }
+
   private static boolean ignoreLanguage(String lang) {
     return ignoredLanguage.contains(lang);
   }

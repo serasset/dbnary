@@ -16,19 +16,19 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected final static String languageSectionPatternString =
-      "={2}\\s*\\{{2}([^\\}\\|]*)\\}{2}\\s*={2}";
-  protected final static String blockPatternString = "={2,4}([^=]*)={2,4}";
-  protected final static String posPatternString = "\\{{2}([^\\}]*)\\}{2}";
-  protected final static String defPatternString = "#\\s*([^#<]*)\\s*|\\*\\s*([^\\*<]*)\\s*";
-  protected final static String tradPatternString = "\\{{2}([^\\}]*)\\}{2}";
-  protected final static String tradContentPatternString = "\\[{2}([^\\]]*)\\]{2}";
-  protected final static String nymPatternString = "\\{{2}([^\\}]*)\\}{2}";
-  protected final static String relPatternString = "\\{{2}([^\\}]*)\\}{2}";
-  protected final static String pronPatternString = "\\{{2}([^\\|]*)\\|\\(\\[([^]]*)\\]\\)\\}{2}";
-  protected final static String examplePatternString = "\\*\\s*\\[{2}([^\\]]*)";
+      "^={2}\\h*\\{{2}([^}|]*)}{2}\\h*={2}$";
+  protected final static String blockPatternString = "^={2,4}([^=]*)={2,4}$";
+  protected final static String posPatternString = "\\{{2}([^}]*)}{2}";
+  protected final static String defPatternString = "#\\s*([^#<]*)\\s*|\\*\\s*([^*<]*)\\s*";
+  protected final static String tradPatternString = "\\{{2}([^}]*)}{2}";
+  protected final static String tradContentPatternString = "\\[{2}([^]]*)]{2}";
+  protected final static String nymPatternString = "\\{{2}([^}]*)}{2}";
+  protected final static String relPatternString = "\\{{2}([^}]*)}{2}";
+  protected final static String pronPatternString = "\\{{2}([^|]*)\\|\\(\\[([^]]*)]\\)}{2}";
+  protected final static String examplePatternString = "\\*\\s*\\[{2}([^]]*)";
 
   protected final static Pattern languageSectionPattern;
   protected final static Pattern blockPattern;
@@ -42,8 +42,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static Pattern examplePattern;
 
   static {
-    languageSectionPattern = Pattern.compile(languageSectionPatternString);
-    blockPattern = Pattern.compile(blockPatternString);
+    languageSectionPattern = Pattern.compile(languageSectionPatternString, Pattern.MULTILINE);
+    blockPattern = Pattern.compile(blockPatternString, Pattern.MULTILINE);
     posPattern = Pattern.compile(posPatternString);
     defPattern = Pattern.compile(defPatternString);
     tradPattern = Pattern.compile(tradPatternString);
@@ -162,7 +162,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     if (blockString.contains("[[")) {
       int index = blockString.indexOf("]]") + 2;
-      blockString = blockString.substring(index, blockString.length()).trim();
+      blockString = blockString.substring(index).trim();
     }
     if ((res = blockValue.get(blockString)) == null) {
       log.debug("Unknown block {} --in-- {}", blockString, this.getWiktionaryPageName());
@@ -195,9 +195,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (m.group(1) != null) {
         blockString = m.group(1).trim();
       }
-      if (blockString != null) {
-        blockString = blockString.replaceAll("\'", "").replaceAll(":", "");
-      }
+      blockString = blockString.replaceAll("'", "").replaceAll(":", "");
       block = getBlock(blockString);
     }
     while (m.find()) {
@@ -206,9 +204,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (m.group(1) != null) {
         blockString = m.group(1).trim();
       }
-      if (blockString != null) {
-        blockString = blockString.replaceAll("\'", "").replaceAll(":", "");
-      }
+      blockString = blockString.replaceAll("'", "").replaceAll(":", "");
       block = getBlock(blockString);
     }
 
@@ -282,9 +278,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
       if (!tmp.equals("")) {
         if (tmp.contains("Pvz.")) {
-          String def = tmp.substring(0, tmp.indexOf("Pvz.")).replaceAll("\'", "").trim();
+          String def = tmp.substring(0, tmp.indexOf("Pvz.")).replaceAll("'", "").trim();
           String ex =
-              tmp.substring(tmp.indexOf("Pvz.") + 4, tmp.length() - 1).replaceAll("\'", "").trim();
+              tmp.substring(tmp.indexOf("Pvz.") + 4, tmp.length() - 1).replaceAll("'", "").trim();
           wdh.registerNewDefinition(cleanUpMarkup(def), "" + senseNum);
           wdh.registerExample(ex, new HashMap<>());
           senseNum++;
@@ -331,7 +327,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (tTrad.length > 1) {
             // TODO: glosses are now structured differently. Extract the correct gloss.
             String[] tmp = tTrad[1].split("=");
-            String g = null;
+            String g;
             if (tmp.length == 2) {
               g = tmp[1];
             } else {
@@ -500,12 +496,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     while (pron.find()) {
       if (!pron.group(2).equals("")) {
-        switch (pron.group(1)) {
-          case "rtarimas":
-            wdh.registerPronunciation(pron.group(2), "lt-fonipa");
-            break;
-          default:
-            log.debug("Unknown Pron {} --in-- {}", pron.group(1), wdh.currentPagename());
+        if ("rtarimas".equals(pron.group(1))) {
+          wdh.registerPronunciation(pron.group(2), "lt-fonipa");
+        } else {
+          log.debug("Unknown Pron {} --in-- {}", pron.group(1), wdh.currentPagename());
         }
       }
     }

@@ -3,6 +3,7 @@ package org.getalp.dbnary.languages.eng;
 import info.bliki.wiki.filter.PlainTextConverter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
@@ -50,6 +51,33 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
     }
   }
 
+  private static HashSet<String> ignoredTemplates = new HashSet<>();
+  static {
+    ignoredTemplates.add("categorize");
+    ignoredTemplates.add("catlangname");
+    ignoredTemplates.add("catlangcode");
+    ignoredTemplates.add("senseid"); // Check if this template could be used to identify the sense
+    ignoredTemplates.add("rfex");
+    ignoredTemplates.add("rfd-sense");
+    ignoredTemplates.add("attention");
+    ignoredTemplates.add("attn");
+    ignoredTemplates.add("rfclarify");
+    ignoredTemplates.add("rfquote");
+    ignoredTemplates.add("rfquotek");
+    ignoredTemplates.add("rfv-sense");
+    ignoredTemplates.add("rfc-sense");
+    ignoredTemplates.add("rfquote-sense");
+    ignoredTemplates.add("rfdef");
+    ignoredTemplates.add("tea room sense");
+    ignoredTemplates.add("rfd-redundant");
+    ignoredTemplates.add("wikipedia");
+    ignoredTemplates.add("wp");
+    ignoredTemplates.add("slim-wikipedia");
+    ignoredTemplates.add("swp");
+    ignoredTemplates.add("slim-wp");
+  }
+
+  @SuppressWarnings("StatementWithEmptyBody")
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
@@ -96,12 +124,8 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
       super.substituteTemplateCall(templateName, parameterMap, writer);
     } else if (templateName.endsWith(" of")) {
       log.debug("Ignoring template {} in definition of {}", templateName, this.getPageName());
-    } else //noinspection StatementWithEmptyBody
-      if (templateName.equals("categorize") || templateName.equals("catlangname")
-        || templateName.equals("catlangcode") || templateName.equals("senseid")) {
-      // ignore
-      // WARN: senseid should maybe be caught and registered to allow for id= arg in translation
-      // table call.
+    } else if (ignoredTemplates.contains(templateName)) {
+
     } else if (templateName.equals("given name")) {
       writer.append(givenName(parameterMap));
     } else if (templateName.equals("quote-book")) {
@@ -110,23 +134,6 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
       // StringWriter quotation = new StringWriter();
       // super.substituteTemplateCall(templateName, parameterMap, quotation);
       // delegate.registerExample(quotation.toString(), null);
-    } else if ("rfex".equals(templateName) || "rfd-sense".equals(templateName)
-        || "attention".equals(templateName) || "attn".equals(templateName)
-        || "rfclarify".equals(templateName) || "rfquote".equals(templateName)
-        || "rfquotek".equals(templateName) || "rfv-sense".equals(templateName)
-        || "rfc-sense".equals(templateName) || "rfquote-sense".equals(templateName)
-        || "rfdef".equals(templateName) || "tea room sense".equals(templateName)) {
-      // Request for examples or request for discussion on sense :
-      // -> just ignore the template as it raises a Lua Exception
-      // rfdef : request for definition, -> just return an empty def.
-      ;
-    } else if ("wikipedia".equals(templateName) || "wp".equals(templateName)
-        || "slim-wikipedia".equals(templateName) || "swp".equals(templateName)
-        || "slim-wp".equals(templateName)) {
-      // These templates only add a box linking to wikipedia, they should be ignored if part of
-      // a definition. Maybe link to the proper wikipedia page for the current sense ?
-      // super.substituteTemplateCall(templateName, parameterMap, writer);
-      ;
     } else {
       // log.debug("BEGIN >>> Subtituting template {} in page {}", templateName,
       // delegate.currentLexEntry());

@@ -129,10 +129,11 @@ public class Symbols {
   public void parseTemplate(String group, String lang) {
     string = group;
     values = new ArrayList<>();
-    args = WikiTool.parseArgs(string);
-    if (args.get("1").equals("rel-top")) {
-      if (args.get("2").equals("cognates") || args.get("2").equals("detailed etymology")
-          || args.get("2").equals("Etymology Theories")) {
+    args = WikiTool.parseArgs(string, true);
+    if (args.get("0").equals("rel-top")) {
+      if (null != args.get("1")
+          && (args.get("1").equals("cognates") || args.get("1").equals("detailed etymology")
+              || args.get("1").equals("Etymology Theories"))) {
         values.add("STOP");
       } else {
         log.debug(
@@ -142,17 +143,17 @@ public class Symbols {
         string = null;
         values = null;
       }
-    } else if (args.get("1").equals("ja-r")) {// {{ja-r|宮古島|^みやこじま|[[w:Miyako Island|Miyako
+    } else if (args.get("0").equals("ja-r")) {// {{ja-r|宮古島|^みやこじま|[[w:Miyako Island|Miyako
       // Island]]; [[w:Miyakojima, Okinawa|Miyakojima,
       // Okinawa]]}}
       args.put("lang", "ja");// Japanese
-      args.put("word1", args.get("2"));
+      args.put("word1", args.get("1"));
       values.add("LEMMA");
-    } else if (args.get("1").equals("Han compound")) {
-      for (int kk = 2; kk < 12; kk++) {
+    } else if (args.get("0").equals("Han compound")) {
+      for (int kk = 1; kk < 12; kk++) {
         if (args.get(Integer.toString(kk)) != null) {
           if (!args.get(Integer.toString(kk)).equals("")) {
-            args.put("word" + Integer.toString(kk - 2), args.get(Integer.toString(kk)));
+            args.put("word" + Integer.toString(kk - 1), args.get(Integer.toString(kk)));
             args.remove(Integer.toString(kk));
           }
         } else {
@@ -163,30 +164,30 @@ public class Symbols {
       values.add("FROM");
       values.add("LEMMA");
       values.add("STOP");
-      // } else if (args.get("1").startsWith("Han ety"){//Han etyl, Han etym
+      // } else if (args.get("0").startsWith("Han ety"){//Han etyl, Han etym
       // ignore
-    } else if (args.get("1").equals("SI link")) {
+    } else if (args.get("0").equals("SI link")) {
       args.put("lang", lang);
-      args.put("word1", args.get("2"));
+      args.put("word1", args.get("1"));
       values.add("LEMMA");
-    } else if (args.get("1").equals("etymtree")) {
-      if (args.get("3") != null && args.get("4") != null) {
-        args.put("lang", args.get("3"));
-        args.remove("3");
-        args.put("word1", cleanUp(args.get("4")));
-        args.remove("4");
-      } else if (args.get("2") != null) {
+    } else if (args.get("0").equals("etymtree")) {
+      if (args.get("2") != null && args.get("3") != null) {
         args.put("lang", args.get("2"));
-        args.remove("2");
+        args.remove("3");
+        args.put("word1", cleanUp(args.get("3")));
+        args.remove("3");
+      } else if (args.get("1") != null) {
+        args.put("lang", args.get("1"));
+        args.remove("1");
         args.put("word1", "");
       }
       values.add("ETYMTREE");
       args.put("page", "Template:etymtree/" + args.get("lang") + "/" + args.get("word1"));
-    } else if (args.get("1").equals("Han simp")) {
-      if (args.get("2") != null) {
+    } else if (args.get("0").equals("Han simp")) {
+      if (args.get("1") != null) {
         args.put("lang", "hni");
-        args.put("word1", args.get("2"));
-        args.remove("2");
+        args.put("word1", args.get("1"));
+        args.remove("1");
         values.add("FROM");
         values.add("LEMMA");
       } else {
@@ -194,18 +195,18 @@ public class Symbols {
         values = null;
         log.debug("Skipping Han simp template {}", string);
       }
-    } else if (args.get("1").equals("eye dalect")) {
-      if (args.get("2") == null) {
+    } else if (args.get("0").equals("eye dalect")) {
+      if (args.get("1") == null) {
         values.add("FROM");
       } else {
-        args.put("word1", cleanUp(args.get("2")));
-        args.remove("2");
+        args.put("word1", cleanUp(args.get("1")));
+        args.remove("1");
         values.add("LEMMA");
       }
-    } else if (args.get("1").equals("sense")) {
+    } else if (args.get("0").equals("sense")) {
       log.debug("Found sense template {}", string);
       values.add("SENSE");
-    } else if (args.get("1").equals("jbo-etym")) {// TODO: this is incorrect!!!
+    } else if (args.get("0").equals("jbo-etym")) {// TODO: this is incorrect!!!
       // make a copy of args.keySet()
       ArrayList<String> tt = new ArrayList<>();
       for (String kk : args.keySet()) {
@@ -232,56 +233,56 @@ public class Symbols {
       args.put("lang", "jbo");
       values.add("FROM");
       values.add("LEMMA");
-    } else if (args.get("1").equals("cog") || args.get("1").equals("cognate")) {// e.g.:
+    } else if (args.get("0").equals("cog") || args.get("0").equals("cognate")) {// e.g.:
       // {{cog|fr|orgue}}
-      if (args.get("2") != null && args.get("3") != null && !args.get("3").equals("-")) {
+      if (args.get("1") != null && args.get("2") != null && !args.get("2").equals("-")) {
         values.add("LANGUAGE");
         values.add("LEMMA");
-        args.put("lang", args.get("2"));
-        args.put("word1", cleanUp(args.get("3")));
+        args.put("lang", args.get("1"));
+        args.put("word1", cleanUp(args.get("2")));
       } else {
         args.clear();
         values = null;
       }
-    } else if (args.get("1").equals("etymtwin")) {// e.g.: {{etymtwin|lang=en}} {{m|en|foo}}
+    } else if (args.get("0").equals("etymtwin")) {// e.g.: {{etymtwin|lang=en}} {{m|en|foo}}
       values.add("COGNATE_WITH");
-    } else if (args.get("1").equals("bor") || args.get("1").equals("borrowing")
-        || args.get("1").equals("loan")) {// borrowing
+    } else if (args.get("0").equals("bor") || args.get("0").equals("borrowing")
+        || args.get("0").equals("loan")) {// borrowing
       values.add("FROM");
       int offset = 0;
       if (args.get("lang") == null) {
         offset = 1;
-        args.put("lang", args.get("3"));
-        args.remove("3");
+        args.put("lang", args.get("2"));
+        args.remove("2");
       }
-      String word = args.get(Integer.toString(3 + offset));
+      String word = args.get(Integer.toString(2 + offset));
       if (word != null) {
         if (!word.equals("")) {
           if (!word.equals("-")) {// if lemma is not specified Wiktionary prints borrowing from
             // Language.
             values.add("LEMMA");
             args.put("word1", cleanUp(word));
-            args.remove(Integer.toString(3 + offset));
+            args.remove(Integer.toString(2 + offset));
           } else {
             values.add("LANGUAGE");
-            args.remove(Integer.toString(3 + offset));
+            args.remove(Integer.toString(2 + offset));
           }
         } else {
-          if (args.get(Integer.toString(4 + offset)) != null) {
-            word = args.get(Integer.toString(4 + offset));
+          if (args.get(Integer.toString(3 + offset)) != null) {
+            word = args.get(Integer.toString(3 + offset));
             values.add("LEMMA");
             args.put("word1", cleanUp(word));
-            args.remove(Integer.toString(4 + offset));
+            args.remove(Integer.toString(3 + offset));
           }
         }
       }
-    } else if (args.get("1").equals("lbor") || args.get("1").equals("learned borrowing")) {
+    } else if (args.get("0").equals("lbor") || args.get("0").equals("learned borrowing")) {
       // The parameter "1" is required. The parameter "2" is required.
       String language = args.get("lang");
       int offset = 0;
       if (language == null) {
-        args.put("lang", args.get("3"));
-        args.remove("3");
+        args.put("lang", args.get("2"));
+        args.remove("2");
         offset = 1;
       }
       values.add("FROM");
@@ -290,8 +291,8 @@ public class Symbols {
         args.put("word1", cleanUp(word));
         values.add("LEMMA");
       }
-    } else if (args.get("1").equals("inh") || args.get("1").equals("inherited")
-        || args.get("1").equals("der") || args.get("1").equals("derived")) {// TO DO: maybe add
+    } else if (args.get("0").equals("inh") || args.get("0").equals("inherited")
+        || args.get("0").equals("der") || args.get("0").equals("derived")) {// TO DO: maybe add
       // values.add("FROM") by
       // default;
       // e.g.:
@@ -300,11 +301,11 @@ public class Symbols {
       int offset = 0;
       if (args.get("lang") == null) {
         offset = 1;
-        args.put("lang", args.get("3"));
-        args.remove("3");
+        args.put("lang", args.get("2"));
+        args.remove("2");
       }
 
-      String key = Integer.toString(3 + offset);// first case
+      String key = Integer.toString(2 + offset);// first case
       if (args.get(key) != null && !args.get(key).equals("")) {
         if (args.get(key).equals("-")) {
           values.add("LANGUAGE");
@@ -335,7 +336,7 @@ public class Symbols {
           // }
         }
       }
-    } else if (args.get("1").equals("cal") || args.get("1").equals("calque")) {
+    } else if (args.get("0").equals("cal") || args.get("0").equals("calque")) {
       // TODO: would like to extract more info from:
       // From {{calque|el|φως|t1=light|βολίδα|t2=missile, projectile|etyl lang=de|etyl
       // term=Leuchtkugel}} -> From φως ‎(fos, “light”) +‎ βολίδα ‎(volída, “missile, projectile”),
@@ -353,96 +354,96 @@ public class Symbols {
           args.put("gloss1", args.get("etyl t").replaceAll("\\[", "").replaceAll("\\]", ""));
           args.remove("etyl t");
         }
-      } else if (args.get("3") != null) {
-        args.put("lang", args.get("3"));
-        args.remove("3");
+      } else if (args.get("2") != null) {
+        args.put("lang", args.get("2"));
+        args.remove("2");
         values.add("FROM");
         values.add("LANGUAGE");
-        if (args.get("4") != null && !args.get("4").equals("-")
-            && !args.get("4").equals("&nbsp;")) {
-          args.put("word1", cleanUp(args.get("4")));
-          args.remove("4");
+        if (args.get("3") != null && !args.get("3").equals("-")
+            && !args.get("3").equals("&nbsp;")) {
+          args.put("word1", cleanUp(args.get("3")));
+          args.remove("3");
           values.add("LEMMA");
         }
       }
-    } else if (args.get("1").equals("ko-etym-native")) {
-      if (args.get("3") != null) {
+    } else if (args.get("0").equals("ko-etym-native")) {
+      if (args.get("2") != null) {
         args.put("lang", "ko");
-        args.put("word1", args.get("3"));
-        args.remove("3");
+        args.put("word1", args.get("2"));
+        args.remove("2");
         values.add("FROM");
         values.add("LEMMA");
       } else {
         args.clear();
         values = null;
       }
-    } else if (args.get("1").startsWith("vi-l") || args.get("1").equals("zh-l")
-        || args.get("1").equals("zh-m") || args.get("1").equals("ko-l")
-        || args.get("1").equals("och-l") || args.get("1").equals("th-l")
-        || args.get("1").equals("ltc-l")) {
-      if (args.get("1").startsWith("vi-l")) {
+    } else if (args.get("0").startsWith("vi-l") || args.get("0").equals("zh-l")
+        || args.get("0").equals("zh-m") || args.get("0").equals("ko-l")
+        || args.get("0").equals("och-l") || args.get("0").equals("th-l")
+        || args.get("0").equals("ltc-l")) {
+      if (args.get("0").startsWith("vi-l")) {
         args.put("lang", "vi");
-      } else if (args.get("1").equals("zh-l") || args.get("1").equals("zh-m")) {
+      } else if (args.get("0").equals("zh-l") || args.get("0").equals("zh-m")) {
         args.put("lang", "zh");
-      } else if (args.get("1").equals("ko-l")) {// {{ko-l|대문||[[gate]]|大門}}
+      } else if (args.get("0").equals("ko-l")) {// {{ko-l|대문||[[gate]]|大門}}
         args.put("lang", "ko");
-      } else if (args.get("1").equals("och-l")) {// och-l|圈|circle
+      } else if (args.get("0").equals("och-l")) {// och-l|圈|circle
         args.put("lang", "och");
-      } else if (args.get("1").equals("th-l")) {
+      } else if (args.get("0").equals("th-l")) {
         args.put("lang", "th");
-      } else if (args.get("1").equals("ltc-l")) { // {{ltc-l|覺|to awake, get insight}}
+      } else if (args.get("0").equals("ltc-l")) { // {{ltc-l|覺|to awake, get insight}}
         args.put("lang", "zh");
       }
-      if (args.get("2") != null) {
-        args.put("word1", args.get("2"));
+      if (args.get("1") != null) {
+        args.put("word1", args.get("1"));
         values.add("LEMMA");
-        args.remove("2");
-        if (args.get("3") != null) {
-          args.put("gloss1", args.get("3").replaceAll("\\[", "").replaceAll("\\]", ""));
-          args.remove("3");
+        args.remove("1");
+        if (args.get("2") != null) {
+          args.put("gloss1", args.get("2").replaceAll("\\[", "").replaceAll("\\]", ""));
+          args.remove("2");
         }
-        if (args.get("4") != null) {
-          args.put("synonim", args.get("4"));
-          args.remove("4");
+        if (args.get("3") != null) {
+          args.put("synonim", args.get("3"));
+          args.remove("3");
         }
       } else {
         args.clear();
         values = null;
       }
-    } else if (args.get("1").equals("vi-etym-sino") || args.get("1").equals("ko-etym-Sino")
-        || args.get("1").equals("ko-etym-sino")) {// this is imprecise
+    } else if (args.get("0").equals("vi-etym-sino") || args.get("0").equals("ko-etym-Sino")
+        || args.get("0").equals("ko-etym-sino")) {// this is imprecise
       // ko-etym-sino|生物|[[organism]]|化學|[[chemistry]]
       int nWords = 0;
       args.put("lang", "zh");// TODO :check this
-      if (args.get("2") != null) {
-        args.put("word1", cleanUp(args.get("2")));
-        args.remove("2");
+      if (args.get("1") != null) {
+        args.put("word1", cleanUp(args.get("1")));
+        args.remove("1");
         nWords++;
       } else {
         values = null;
         args.clear();
       }
+      if (args.get("2") != null) {
+        args.put("gloss1", args.get("2").replaceAll("\\[", "").replaceAll("\\]", ""));
+        args.remove("2");
+      }
       if (args.get("3") != null) {
-        args.put("gloss1", args.get("3").replaceAll("\\[", "").replaceAll("\\]", ""));
+        args.put("word2", cleanUp(args.get("3")));
         args.remove("3");
+        nWords++;
       }
       if (args.get("4") != null) {
-        args.put("word2", cleanUp(args.get("4")));
+        args.put("gloss2", args.get("4").replaceAll("\\[", "").replaceAll("\\]", ""));
         args.remove("4");
-        nWords++;
       }
       if (args.get("5") != null) {
-        args.put("gloss2", args.get("5").replaceAll("\\[", "").replaceAll("\\]", ""));
+        args.put("word3", cleanUp(args.get("5")));
         args.remove("5");
-      }
-      if (args.get("6") != null) {
-        args.put("word3", cleanUp(args.get("6")));
-        args.remove("6");
         nWords++;
       }
-      if (args.get("7") != null) {
-        args.put("gloss3", args.get("7"));
-        args.remove("7");
+      if (args.get("6") != null) {
+        args.put("gloss3", args.get("6"));
+        args.remove("6");
       }
       if (nWords > 0) {
         values.add("LEMMA");
@@ -454,29 +455,31 @@ public class Symbols {
         args.clear();
         values = null;
       }
-    } else if (args.get("1").equals("got-nom form of")) {
+    } else if (args.get("0").equals("got-nom form of")) {
       values.add("LEMMA");
-      args.put("word1", cleanUp(args.get("2")));
-      args.remove("2");
+      args.put("word1", cleanUp(args.get("1")));
+      args.remove("1");
       args.put("lang", "got");
-    } else if (args.get("1").equals("abbreviation of")) {
+    } else if (args.get("0").equals("abbreviation of")) {
       values.add("FROM");
       values.add("LEMMA");
+      args.put("lang", cleanUp(args.get("1")));
+      args.remove("1");
       args.put("word1", cleanUp(args.get("2")));
       args.remove("2");
-      if (args.get("4") != null) {
-        args.put("gloss1", args.get("4").replaceAll("\\[", "").replaceAll("\\]", ""));
-        args.remove("4");
+      if (args.get("3") != null) {
+        args.put("gloss1", args.get("3").replaceAll("\\[", "").replaceAll("\\]", ""));
+        args.remove("3");
       }
-    } else if (args.get("1").equals("back-form") || args.get("1").equals("named-after")) { // 1=term,
+    } else if (args.get("0").equals("back-form") || args.get("0").equals("named-after")) { // 1=term,
       // (2=display
       // form)
       if (args.get("lang") == null) {// how to deal with {{back-form|ilu|lang=io|gloss=he,
         // him|nodot=yes}}, {{l|io|elu|gloss=she, her}} and
         // {{l|io|olu|gloss=it}}.
-        if (args.get("2") != null) {
-          args.put("lang", args.get("2"));
-          args.remove("2");
+        if (args.get("1") != null) {
+          args.put("lang", args.get("1"));
+          args.remove("1");
           values.add("FROM");
         } else {
           args.put("lang", "en");
@@ -484,79 +487,79 @@ public class Symbols {
               "Warning: no language specified for lemma {} in back-formation template, using English",
               string);
         }
-        if (args.get("3") != null) {
-          args.put("word1", cleanUp(args.get("3")));
-          args.remove("3");
-          values.add("LEMMA");
-        }
-      } else {
         if (args.get("2") != null) {
           args.put("word1", cleanUp(args.get("2")));
           args.remove("2");
+          values.add("LEMMA");
+        }
+      } else {
+        if (args.get("1") != null) {
+          args.put("word1", cleanUp(args.get("1")));
+          args.remove("1");
           values.add("FROM");
           values.add("LEMMA");
         }
       }
-    } else if (args.get("1").equals("lang")) {
-      if (args.get("2") != null) {
-        args.put("lang", args.get("2"));
+    } else if (args.get("0").equals("lang")) {
+      if (args.get("1") != null) {
+        args.put("lang", args.get("1"));
       }
-      if (args.get("3") != null) {
-        args.put("word1", cleanUp(args.get("3")));
+      if (args.get("2") != null) {
+        args.put("word1", cleanUp(args.get("2")));
         values.add("LEMMA");
       } else {
-        args.put("1", "_etyl");
+        args.put("0", "_etyl");
         values.add("LANGUAGE");
       }
-    } else if (args.get("1").equals("fi-form of")) {
+    } else if (args.get("0").equals("fi-form of")) {
       values.add("FROM");
       values.add("LEMMA");
-      args.put("word1", cleanUp(args.get("2")));
+      args.put("word1", cleanUp(args.get("1")));
       args.put("lang", "fi");
-      args.remove("2");
-    } else if (args.get("1").equals("he-m") || args.get("1").equals("m/he")) {// {{m/he|לכוא|dwv=לכֶאֹ||food}}
+      args.remove("1");
+    } else if (args.get("0").equals("he-m") || args.get("0").equals("m/he")) {// {{m/he|לכוא|dwv=לכֶאֹ||food}}
       args.put("lang", "he");
-      if (args.get("2") != null && !args.get("2").equals("")) {
+      if (args.get("1") != null && !args.get("1").equals("")) {
         values.add("LEMMA");
-        args.put("word1", cleanUp(args.get("2")));
-        args.remove("2");
+        args.put("word1", cleanUp(args.get("1")));
+        args.remove("1");
       } else {
         args.clear();
         values = null;
       }
-    } else if (args.get("1").equals("m") || args.get("1").equals("mention")
-        || args.get("1").equals("l") || args.get("1").equals("link")
-        || args.get("1").equals("_m")) {
+    } else if (args.get("0").equals("m") || args.get("0").equals("mention")
+        || args.get("0").equals("l") || args.get("0").equals("link")
+        || args.get("0").equals("_m")) {
       // The parameter "1" is required.
-      args.put("lang", args.get("2"));
+      args.put("lang", args.get("1"));
 
-      if (args.get("3") != null && !args.get("3").equals("")) {
+      if (args.get("2") != null && !args.get("2").equals("")) {
         values.add("LEMMA");
-        args.put("word1", cleanUp(args.get("3")));
-        args.remove("3");
+        args.put("word1", cleanUp(args.get("2")));
+        args.remove("2");
+        if (args.get("3") != null && !args.get("3").equals("")) {
+          args.put("alt", args.get("3"));
+          args.remove("3");
+        }
         if (args.get("4") != null && !args.get("4").equals("")) {
-          args.put("alt", args.get("4"));
+          args.put("gloss1", args.get("4").replaceAll("\\[", "").replaceAll("\\]", ""));
           args.remove("4");
         }
-        if (args.get("5") != null && !args.get("5").equals("")) {
-          args.put("gloss1", args.get("5").replaceAll("\\[", "").replaceAll("\\]", ""));
-          args.remove("5");
-        }
         // I'm commenting what follows as it is wrong for {{m|oty|tr=vēr|4=root}}
-        // } else if (args.get("4") != null && !args.get("4").equals("")) {
+        // } else if (args.get("3") != null && !args.get("3").equals("")) {
         // values.add("LEMMA");
-        // args.put("word1", cleanUp(args.get("4")));
+        // args.put("word1", cleanUp(args.get("3")));
+        // args.remove("3");
+        // if (args.get("4") != null && !args.get("4").equals("")) {
+        // args.put("gloss1", args.get("4").replaceAll("\\[", "").replaceAll("\\]", ""));
         // args.remove("4");
-        // if (args.get("5") != null && !args.get("5").equals("")) {
-        // args.put("gloss1", args.get("5").replaceAll("\\[", "").replaceAll("\\]", ""));
-        // args.remove("5");
         // }
       } else {
         args.clear();
         values = null;
       }
-    } else if (args.get("1").equals("blend") || args.get("1").equals("com")
-        || args.get("1").equals("compound")) {
+    } else if (args.get("0").equals("blend") || args.get("0").equals("com")
+        || args.get("0").equals("compound")) {
       // examples:
       // {{blend|digital|literati|lang=en}},
       // {{blend|he|תַּשְׁבֵּץ|tr1=tashbéts|t1=crossword puzzle|חֵץ|t2=arrow|tr2=chets}}
@@ -568,15 +571,15 @@ public class Symbols {
       String language = args.get("lang");
       if (language == null) {
         offset = 1;
-        language = args.get("2");
+        language = args.get("1");
         if (!"".equals(language)) {
-          args.remove("2");
+          args.remove("1");
         } else {
           language = lang;
         }
       }
       args.put("lang", language);
-      for (int kk = 2 + offset; kk < 12; kk++) {
+      for (int kk = 1 + offset; kk < 12; kk++) {
         String key = Integer.toString(kk);
         if (args.get(key) != null && !args.get(key).equals("")) {
           args.put("word" + Integer.toString(kk - 1 - offset), cleanUp(args.get(key)));
@@ -595,7 +598,7 @@ public class Symbols {
       values.add("FROM");
       values.add("LEMMA");
       values.add("STOP");
-    } else if (args.get("1").equals("etycomp")) {
+    } else if (args.get("0").equals("etycomp")) {
       // etycomp template can be given only word1
       // e.g.:
       // {{etycomp|lang1=de|inf1=|case1=|word1=dumm|trans1=dumb|lang2=|inf2=|case2=|word2=Kopf|trans2=head}}
@@ -609,19 +612,19 @@ public class Symbols {
           args.put("lang" + Integer.toString(kk), lang);
         }
       }
-      args.put("1", "_etycomp");
+      args.put("0", "_etycomp");
       values.add("FROM");
       values.add("LEMMA");
       values.add("STOP");
-    } else if (args.get("1").equals("_etycomp")) {
+    } else if (args.get("0").equals("_etycomp")) {
       values.add("FROM");
       values.add("LEMMA");
       values.add("STOP");
-    } else if (args.get("1").equals("mult")) {
+    } else if (args.get("0").equals("mult")) {
       values.add("FROM");
       values.add("LEMMA");
       values.add("STOP");
-    } else if (args.get("1").equals("infix")) {// no shortening
+    } else if (args.get("0").equals("infix")) {// no shortening
       // You must provide a base term and an infix.
       // e.g.:
       // From {{etyl|ceb|-}} {{infix|bata|in|lang=ceb}}
@@ -629,16 +632,16 @@ public class Symbols {
       int offset = 0;
       if (args.get("lang") == null) {
         offset = 1;
-        args.put("lang", args.get("2"));// if args.get("2") == "" lua gives error
-        args.remove("2");
+        args.put("lang", args.get("1"));// if args.get("1") == "" lua gives error
+        args.remove("1");
       }
-      args.put("word1", cleanUp(args.get(Integer.toString(2 + offset))));// base
+      args.put("word1", cleanUp(args.get(Integer.toString(1 + offset))));// base
+      args.remove(Integer.toString(1 + offset));
+      args.put("word2", "-" + cleanUp(args.get(Integer.toString(2 + offset))) + "-");
       args.remove(Integer.toString(2 + offset));
-      args.put("word2", "-" + cleanUp(args.get(Integer.toString(3 + offset))) + "-");
-      args.remove(Integer.toString(3 + offset));
       values.add("LEMMA");
       values.add("STOP");
-    } else if (args.get("1").equals("af") || args.get("1").equals("affix")) {// affix
+    } else if (args.get("0").equals("af") || args.get("0").equals("affix")) {// affix
       // You must provide at least one part and an affix.
       // e.g.:
       // From {{affix|en|non-|sense}}
@@ -647,46 +650,46 @@ public class Symbols {
       // {{affix|en|over-|weight}}
       // affix|he|לילה|alt1=לֵיל|tr1=leil|t1=night or evening of|כָּל|tr2=kol|t2=all
       // of|ה־|tr3=ha-|t3=the|קָדוֹשׁ|alt4=קְּדוֹשִׁים|tr4=k'doshim|t4=saints
-      if (!args.get("2").equals("")) {
-        args.put("lang", args.get("2"));
+      if (!args.get("1").equals("")) {
+        args.put("lang", args.get("1"));
       } else {
         args.put("lang", lang);
       }
+      if (args.get("2") != null && !args.get("2").equals("")) {
+        args.put("word1", cleanUp(args.get("2")));
+        args.remove("2");
+      }
       if (args.get("3") != null && !args.get("3").equals("")) {
-        args.put("word1", cleanUp(args.get("3")));
+        args.put("word2", cleanUp(args.get("3")));
         args.remove("3");
       }
       if (args.get("4") != null && !args.get("4").equals("")) {
-        args.put("word2", cleanUp(args.get("4")));
+        args.put("word3", cleanUp(args.get("4")));
         args.remove("4");
       }
       if (args.get("5") != null && !args.get("5").equals("")) {
-        args.put("word3", cleanUp(args.get("5")));
+        args.put("word4", cleanUp(args.get("5")));
         args.remove("5");
-      }
-      if (args.get("6") != null && !args.get("6").equals("")) {
-        args.put("word4", cleanUp(args.get("6")));
-        args.remove("6");
       }
       values.add("LEMMA");
       values.add("STOP");
-    } else if (args.get("1").equals("pre") || args.get("1").equals("prefix")) {// prefix
+    } else if (args.get("0").equals("pre") || args.get("0").equals("prefix")) {// prefix
       // {{prefix|poly|lang=en}} -> poly- +
       // {{prefix|poly|theism|lang=en}} -> poly- + theism
       // "You must provide at least one prefix."
       int offset = 0;
       if (args.get("lang") == null) {
         offset = 1;
-        if (!args.get("2").equals("")) {
-          args.put("lang", args.get("2"));
-          args.remove("2");
+        if (!args.get("1").equals("")) {
+          args.put("lang", args.get("1"));
+          args.remove("1");
         } else {
           args.put("lang", lang);
         }
       }
-      args.put("word1", cleanUp(args.get(Integer.toString(2 + offset))) + "-");// prefix
-      args.remove(Integer.toString(2 + offset));
-      for (int kk = 3 + offset; kk < 12; kk++) {
+      args.put("word1", cleanUp(args.get(Integer.toString(1 + offset))) + "-");// prefix
+      args.remove(Integer.toString(1 + offset));
+      for (int kk = 2 + offset; kk < 12; kk++) {
         if (args.get(Integer.toString(kk)) != null) {
           args.put("word" + Integer.toString(kk - 1 - offset), args.get(Integer.toString(kk)));
         } else {
@@ -694,41 +697,41 @@ public class Symbols {
         }
       }
       values.add("LEMMA");
-    } else if (args.get("1").equals("con") || args.get("1").equals("confix")) {// confix
+    } else if (args.get("0").equals("con") || args.get("0").equals("confix")) {// confix
       // You must specify a prefix part, an optional base term and a suffix part.
       // e.g.:
       // {{confix|atmo|sphere|lang=en}}
       int offset = 0;
       if (args.get("lang") == null) {
         offset = 1;
-        if (!args.get("2").equals("")) {
-          args.put("lang", args.get("2"));
-          args.remove("2");
+        if (!args.get("1").equals("")) {
+          args.put("lang", args.get("1"));
+          args.remove("1");
         } else {
           args.put("lang", lang);
         }
       }
-      if (args.get(Integer.toString(2 + offset)) != null
-          && !args.get(Integer.toString(2 + offset)).equals("")) {
-        args.put("word1", cleanUp(args.get(Integer.toString(2 + offset))) + "-");// prefix-
-        args.remove(Integer.toString(2 + offset));
+      if (args.get(Integer.toString(1 + offset)) != null
+          && !args.get(Integer.toString(1 + offset)).equals("")) {
+        args.put("word1", cleanUp(args.get(Integer.toString(1 + offset))) + "-");// prefix-
+        args.remove(Integer.toString(1 + offset));
       }
-      if (args.get(Integer.toString(4 + offset)) != null
-          && !args.get(Integer.toString(4 + offset)).equals("")) {
-        args.put("word3", "-" + cleanUp(args.get(Integer.toString(4 + offset))));// -suffix
-        args.remove(Integer.toString(4 + offset));
-        if (args.get(Integer.toString(3 + offset)).equals("")) {
-          args.put("word2", cleanUp(args.get(Integer.toString(3 + offset))));// base
-          args.remove(Integer.toString(3 + offset));
-        }
-      } else if (args.get(Integer.toString(3 + offset)) != null
+      if (args.get(Integer.toString(3 + offset)) != null
           && !args.get(Integer.toString(3 + offset)).equals("")) {
-        args.put("word2", "-" + cleanUp(args.get(Integer.toString(3 + offset))));// suffix
+        args.put("word3", "-" + cleanUp(args.get(Integer.toString(3 + offset))));// -suffix
         args.remove(Integer.toString(3 + offset));
+        if (args.get(Integer.toString(2 + offset)).equals("")) {
+          args.put("word2", cleanUp(args.get(Integer.toString(2 + offset))));// base
+          args.remove(Integer.toString(2 + offset));
+        }
+      } else if (args.get(Integer.toString(2 + offset)) != null
+          && !args.get(Integer.toString(2 + offset)).equals("")) {
+        args.put("word2", "-" + cleanUp(args.get(Integer.toString(2 + offset))));// suffix
+        args.remove(Integer.toString(2 + offset));
       }
       values.add("LEMMA");
       values.add("STOP");
-    } else if (args.get("1").equals("suf") || args.get("1").equals("suffix")) {// suffix
+    } else if (args.get("0").equals("suf") || args.get("0").equals("suffix")) {// suffix
       // suf: You must provide at least one suffix.
       // examples:
       // {{bor|eo|en|boycott}} {{suffix||i|lang=eo}} -> Borrowing from English boycott + -i.
@@ -738,16 +741,16 @@ public class Symbols {
       int offset = 0;
       if (args.get("lang") == null) {
         offset = 1;
-        if (!args.get("2").equals("")) {
-          args.put("lang", args.get("2"));
-          args.remove("2");
+        if (!args.get("1").equals("")) {
+          args.put("lang", args.get("1"));
+          args.remove("1");
         } else {
           args.put("lang", lang);
         }
       }
 
       boolean base = false;
-      String key = Integer.toString(2 + offset);
+      String key = Integer.toString(1 + offset);
       if (args.get(key) != null && !args.get(key).equals("")) {
         args.put("word1", cleanUp(args.get(key)));// base
         args.remove(key);
@@ -759,7 +762,7 @@ public class Symbols {
           base = true;
         }
       }
-      for (int kk = 3 + offset; kk < 12; kk++) {
+      for (int kk = 2 + offset; kk < 12; kk++) {
         key = Integer.toString(kk);
         if (args.get(key) == null) {
           key = "alt" + Integer.toString(kk - 1 - offset);
@@ -777,7 +780,7 @@ public class Symbols {
       }
       values.add("LEMMA");
       values.add("STOP");
-    } else if (args.get("1").equals("circumfix")) {// no shortening for circumfix
+    } else if (args.get("0").equals("circumfix")) {// no shortening for circumfix
       // You must specify a prefix part, a base term and a suffix part.
       // e.g.:
       // From {{circumfix|nl|be|wonder|en}}. -> From be- + wonder + -en.
@@ -785,29 +788,29 @@ public class Symbols {
       int offset = 0;
       if (args.get("lang") == null) {
         offset = 1;
-        if (!args.get("2").equals("")) {
-          args.put("lang", args.get("2"));
-          args.remove("2");
+        if (!args.get("1").equals("")) {
+          args.put("lang", args.get("1"));
+          args.remove("1");
         }
+      }
+      if (args.get(Integer.toString(1 + offset)) != null
+          && !args.get(Integer.toString(1 + offset)).equals("")) {
+        args.put("word1", cleanUp(args.get(Integer.toString(1 + offset))) + "-");// prefix
+        args.remove(Integer.toString(1 + offset));
       }
       if (args.get(Integer.toString(2 + offset)) != null
           && !args.get(Integer.toString(2 + offset)).equals("")) {
-        args.put("word1", cleanUp(args.get(Integer.toString(2 + offset))) + "-");// prefix
+        args.put("word2", cleanUp(args.get(Integer.toString(2 + offset))));// base
         args.remove(Integer.toString(2 + offset));
       }
       if (args.get(Integer.toString(3 + offset)) != null
           && !args.get(Integer.toString(3 + offset)).equals("")) {
-        args.put("word2", cleanUp(args.get(Integer.toString(3 + offset))));// base
+        args.put("word3", cleanUp("-" + args.get(Integer.toString(3 + offset))));// suffix
         args.remove(Integer.toString(3 + offset));
-      }
-      if (args.get(Integer.toString(4 + offset)) != null
-          && !args.get(Integer.toString(4 + offset)).equals("")) {
-        args.put("word3", cleanUp("-" + args.get(Integer.toString(4 + offset))));// suffix
-        args.remove(Integer.toString(4 + offset));
       }
       values.add("LEMMA");
       values.add("STOP");
-    } else if (args.get("1").equals("clipping")) {// no shortening for clipping
+    } else if (args.get("0").equals("clipping")) {// no shortening for clipping
       // e.g.:
       // {{clipping|penetration test|lang=en}} --> Clipping of penetration test
       // {{clipping|lang=en|unicycle}}
@@ -815,7 +818,7 @@ public class Symbols {
       if (args.get("lang") == null) {
         args.put("lang", lang);
       }
-      for (int kk = 2; kk < 12; kk++) {
+      for (int kk = 1; kk < 12; kk++) {
         if (args.get(Integer.toString(kk)) != null) {
           if (!args.get(Integer.toString(kk)).equals("")) {
             args.put("word" + Integer.toString(kk), cleanUp(args.get(Integer.toString(kk))));
@@ -827,81 +830,81 @@ public class Symbols {
       }
       values.add("FROM");
       values.add("LEMMA");
-    } else if (args.get("1").equals("hu-prefix")) {
-      if (args.get("2") != null && !args.get("2").equals("")) {
-        args.put("word1", cleanUp(args.get("2")) + "-");// prefix-
-        args.remove("2");
+    } else if (args.get("0").equals("hu-prefix")) {
+      if (args.get("1") != null && !args.get("1").equals("")) {
+        args.put("word1", cleanUp(args.get("1")) + "-");// prefix-
+        args.remove("1");
       }
-      if (args.get("3") != null && !args.get("3").equals("")) {
-        args.put("word2", "-" + cleanUp(args.get("3")));// base
-        args.remove("3");
+      if (args.get("2") != null && !args.get("2").equals("")) {
+        args.put("word2", "-" + cleanUp(args.get("2")));// base
+        args.remove("2");
       } else {
         values.add("PLUS");
       }
       args.put("lang", "hu");
       values.add("LEMMA");
-    } else if (args.get("1").equals("hu-suffix")) {
+    } else if (args.get("0").equals("hu-suffix")) {
       // e.g.: {{hu-suffix|barát|t1=friend|ság|pos=n}} -> barát (“friend”) + -ság
       // e.g.: {{hu-suffix|bara||pos=n}} -> base + -suffix
       // e.g.: {{hu-suffix||ság|pos=n}} -> + -ság
 
-      if (args.get("2") != null && !args.get("2").equals("")) {
-        args.put("word1", cleanUp(args.get("2")));// base
-        args.remove("2");
+      if (args.get("1") != null && !args.get("1").equals("")) {
+        args.put("word1", cleanUp(args.get("1")));// base
+        args.remove("1");
       } else {
         values.add("PLUS");
       }
-      if (args.get("3") != null && !args.get("3").equals("")) {
-        args.put("word2", "-" + cleanUp(args.get("3")) + "-");// -suffix
-        args.remove("3");
+      if (args.get("2") != null && !args.get("2").equals("")) {
+        args.put("word2", "-" + cleanUp(args.get("2")) + "-");// -suffix
+        args.remove("2");
       }
       args.put("lang", "hu");
       values.add("LEMMA");
       values.add("STOP");
-    } else if (args.get("1").equals("term")) {// e.g.: {{term|de-|di-|away}}
+    } else if (args.get("0").equals("term")) {// e.g.: {{term|de-|di-|away}}
       if (args.get("lang") == null) {
         args.put("lang", lang);
       }
-      if (args.get("2").equals("")) {
-        args.remove("2");
-        args.put("word1", cleanUp(args.get("3")));
-        args.remove("3");
-      } else {
+      if (args.get("1").equals("")) {
+        args.remove("1");
         args.put("word1", cleanUp(args.get("2")));
         args.remove("2");
+      } else {
+        args.put("word1", cleanUp(args.get("1")));
+        args.remove("1");
       }
       values.add("LEMMA");
-    } else if (args.get("1").equals("etyl") || args.get("1").equals("_etyl")) {
+    } else if (args.get("0").equals("etyl") || args.get("0").equals("_etyl")) {
       values.add("LANGUAGE");
-      if (args.get("2") != null) {
-        args.put("lang", args.get("2"));
-        args.remove("2");
+      if (args.get("1") != null) {
+        args.put("lang", args.get("1"));
+        args.remove("1");
       }
-    } else if (args.get("1").equals("etystub") || args.get("1").equals("rfe")
-        || args.get("1").equals("unk.")) {
+    } else if (args.get("0").equals("etystub") || args.get("0").equals("rfe")
+        || args.get("0").equals("unk.")) {
       values.add("EMPTY");
-    } else if (args.get("1").equals("-er")) {
-      args.put("word1", cleanUp(args.get("2")));
-      args.remove("2");
-      args.put("word2", cleanUp(args.get("1")));
-      args.put("1", "_compound");
+    } else if (args.get("0").equals("-er")) {
+      args.put("word1", cleanUp(args.get("1")));
+      args.remove("1");
+      args.put("word2", cleanUp(args.get("0")));
+      args.put("0", "_compound");
       args.put("lang", "en");
       values.add("LEMMA");
       values.add("STOP");
-    } else if (args.get("1").equals("-or")) {
-      args.put("word1", cleanUp(args.get("2")));
-      args.remove("2");
-      args.put("word2", cleanUp(args.get("1")));
-      args.put("1", "_compound");
+    } else if (args.get("0").equals("-or")) {
+      args.put("word1", cleanUp(args.get("1")));
+      args.remove("1");
+      args.put("word2", cleanUp(args.get("0")));
+      args.put("0", "_compound");
       args.put("lang", "en");
       values.add("LEMMA");
       values.add("STOP");
-    } else if (args.get("1").equals("ar-root")) {
+    } else if (args.get("0").equals("ar-root")) {
       args.put("lang", "ar");
       StringBuilder word = new StringBuilder();
-      for (int kk = 2; kk < 12; kk++) {
+      for (int kk = 1; kk < 12; kk++) {
         if (args.get(kk) != null && !args.get(kk).equals("")) {
-          if (kk > 2) {
+          if (kk > 1) {
             word.append(" ");
           }
           word.append(args.get(kk));
@@ -1017,11 +1020,17 @@ public class Symbols {
 
     // parse word
     if (word.equals("")) { // [[#English|tule]]
-      word = splitArgs.get(1).trim();
+      if (splitArgs.size() > 1) {
+        word = splitArgs.get(1);
+        if (null != word)
+          word = word.trim();
+        else
+          word = "";
+      }
     }
     args.put("word1", cleanUp(word));
 
-    args.put("1", "l");
+    args.put("0", "l");
     args.put("lang", language);
     values.add("LEMMA");
     string = "l|" + args.get("lang") + "|" + args.get("word1");

@@ -1,6 +1,7 @@
 package org.getalp.dbnary.languages.mlg;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected final static String languageSectionPatternString =
       "={2}\\s*\\{{2}=*([^\\}]+)=*\\}{2}\\s*={2}";
@@ -211,6 +212,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !lang.equals("mg"))
       return;
+    if (ignoreLanguage(lang)) {
+      return;
+    }
 
     wdh.initializeLanguageSection(lang);
 
@@ -253,6 +257,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     extractDataBlock(start, endOffset, block, blockString);
     wdh.finalizeLanguageSection();
+  }
+
+  private static final HashSet<String> ignoredLanguage = new HashSet<>();
+  static {
+    ignoredLanguage.add("m͡p");
+  }
+
+  private static boolean ignoreLanguage(String lang) {
+    return ignoredLanguage.contains(lang);
   }
 
   protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,

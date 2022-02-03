@@ -349,8 +349,8 @@ public class Etymology {
     int etylIndex = -1;
     for (int i = 0; i < symbols.size(); i++) {
       if (symbols.get(i).values != null && symbols.get(i).args != null) {
-        if (symbols.get(i).args.get("1").equals("etyl")
-            || symbols.get(i).args.get("1").equals("_etyl")) {
+        if (symbols.get(i).args.get("0").equals("etyl")
+            || symbols.get(i).args.get("0").equals("_etyl")) {
           etylLang = symbols.get(i).args.get("lang");
           etylIndex = i;
         }

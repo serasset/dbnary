@@ -9,6 +9,9 @@ fi
 PREVIOUS_VERSION=ci-previous-version
 NEXT_VERSION=ci-next-version
 DIFFS=target/diffs
+if [[ "x$BITBUCKET_BRANCH" == "x" ]]; then
+  BITBUCKET_BRANCH=develop
+fi
 if [ "x$BITBUCKET_PR_DESTINATION_BRANCH" == "x" ]; then
   if [[ "$BITBUCKET_BRANCH" =~ "^feature/" ]]; then
     BITBUCKET_PR_DESTINATION_BRANCH=develop
@@ -17,3 +20,4 @@ if [ "x$BITBUCKET_PR_DESTINATION_BRANCH" == "x" ]; then
   fi
   echo "Not a Pull Request, I will compare branch with $BITBUCKET_PR_DESTINATION_BRANCH"
 fi
+BINDIR=out/dbnary

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
+import org.apache.jena.graph.Node;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -1095,7 +1096,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public Resource registerExample(String ex, Map<Property, String> context) {
+  public Resource registerExample(String ex, Map<Property, RDFNode> context) {
     if (null == currentSense) {
       log.debug("Registering example when lex sense is null in \"{}\".", this.currentMainLexEntry);
       return null; // Don't register anything if current lex entry is not known.
@@ -1105,8 +1106,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     Resource example = aBox.createResource();
     aBox.add(aBox.createStatement(example, RDF.value, ex, getCurrentEntryLanguage()));
     if (null != context) {
-      for (Map.Entry<Property, String> c : context.entrySet()) {
-        aBox.add(aBox.createStatement(example, c.getKey(), c.getValue(), shortEditionLanguageCode));
+      for (Map.Entry<Property, RDFNode> c : context.entrySet()) {
+        aBox.add(aBox.createStatement(example, c.getKey(), c.getValue()));
       }
     }
     aBox.add(aBox.createStatement(currentSense, SkosOnt.example, example));

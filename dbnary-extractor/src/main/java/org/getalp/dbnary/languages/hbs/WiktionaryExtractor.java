@@ -259,7 +259,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (example.length > 1) {
         String ex = example[1];
         if (ex != null && !ex.equals("")) {
-          wdh.registerExample(ex, new HashMap<>());
+          wdh.registerExample(ex, null);
         }
       }
     }

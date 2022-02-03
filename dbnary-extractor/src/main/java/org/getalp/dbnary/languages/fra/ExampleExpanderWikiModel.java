@@ -66,7 +66,12 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       if (null == text) {
         text = getPageName();
       }
-      writer.append(text);
+      writer.append(text.trim());
+    } else if ("italique".equals(templateName)) {
+      String text = parameterMap.get("1");
+      if (null != text) {
+        writer.append(text.trim());
+      }
     } else if ("source".equals(templateName)) {
       if (context != null) {
         String source = simpleExpander.expandAll(parameterMap.get("1"), this.templates);

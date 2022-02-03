@@ -11,6 +11,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -27,29 +29,29 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
   // ignoredTemplates.add("Incorrect");
   // }
 
-  protected class Example {
+  protected static class Example {
 
     String value;
-    Map<Property, String> context = new HashMap<>();
+    Map<Property, RDFNode> context = new HashMap<>();
 
     protected Example(String ex) {
       value = ex;
     }
 
-    protected void put(Property p, String v) {
+    protected void put(Property p, RDFNode v) {
       context.put(p, v);
     }
   }
 
-  private ExpandAllWikiModel expander;
+  private final ExpandAllWikiModel expander;
 
-  private IWiktionaryDataHandler delegate;
-  private Set<Example> currentExamples = new HashSet<>();
-  private Logger log = LoggerFactory.getLogger(RussianDefinitionExtractorWikiModel.class);
+  private final IWiktionaryDataHandler delegate;
+  private final Set<Example> currentExamples = new HashSet<>();
+  private final Logger log = LoggerFactory.getLogger(RussianDefinitionExtractorWikiModel.class);
 
   public RussianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
       String imageBaseURL, String linkBaseURL) {
-    this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
+    this(we, null, locale, imageBaseURL, linkBaseURL);
   }
 
   public RussianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
@@ -119,13 +121,13 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
     }
   }
 
-  private String formatMap(Map<String, String> parameterMap) {
-    StringBuffer b = new StringBuffer();
+  private RDFNode formatMap(Map<String, String> parameterMap) {
+    StringBuilder b = new StringBuilder();
     for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
       b.append(entry.getKey()).append("=").append(entry.getValue()).append("|");
     }
     b.setLength(b.length() - 1);
-    return b.toString();
+    return ResourceFactory.createLangLiteral(b.toString(), "ru");
   }
 
   @Override

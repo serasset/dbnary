@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
   public WiktionaryDataHandler(String lang, String tdbDir) {
     super(lang, tdbDir);
@@ -319,7 +319,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public void registerExample(String ex) {
     if (currentSense != null) {
-      registerExample(ex, new HashMap<>());
+      registerExample(ex, null);
     }
   }
 }

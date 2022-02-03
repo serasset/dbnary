@@ -282,7 +282,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           String ex =
               tmp.substring(tmp.indexOf("Pvz.") + 4, tmp.length() - 1).replaceAll("'", "").trim();
           wdh.registerNewDefinition(cleanUpMarkup(def), "" + senseNum);
-          wdh.registerExample(ex, new HashMap<>());
+          wdh.registerExample(ex, null);
           senseNum++;
         } else {
           wdh.registerNewDefinition(cleanUpMarkup(tmp), "" + senseNum);
@@ -297,7 +297,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     Matcher ex = examplePattern.matcher(pageContent);
     ex.region(start, end);
     while (ex.find()) {
-      wdh.registerExample(ex.group(1), new HashMap<>());
+      wdh.registerExample(ex.group(1), null);
     }
   }
 

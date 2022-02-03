@@ -5,8 +5,12 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.iso639.ISO639_3;
@@ -22,7 +26,9 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
     ignoredTemplates.add("ébauche-exe");
   }
 
-  private Map<Property, String> context;
+  private Map<Property, RDFNode> context;
+  private String shortEditionLanguage;
+  private String shortSectionLanguage;
   private final ExpandAllWikiModel simpleExpander;
 
   public ExampleExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
@@ -47,9 +53,16 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
    * @return the converted wiki code
    */
   public String expandExample(String definition, Set<String> templates,
-      Map<Property, String> context) {
+      Map<Property, RDFNode> context) {
+    return expandExample(definition, templates, context, null, null);
+  }
+
+  public String expandExample(String definition, Set<String> templates,
+      Map<Property, RDFNode> context, String shortEditionLanguage, String shortSectionLanguage) {
     // log.trace("extracting examples in {}", this.getPageName());
     this.context = context;
+    this.shortEditionLanguage = shortEditionLanguage;
+    this.shortSectionLanguage = shortSectionLanguage;
     return expandAll(definition, templates);
   }
 
@@ -74,12 +87,12 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       }
     } else if ("source".equals(templateName)) {
       if (context != null) {
-        String source = simpleExpander.expandAll(parameterMap.get("1"), this.templates);
-        context.put(DCTerms.bibliographicCitation, source);
-        parameterMap.remove("1");
-        if (!parameterMap.isEmpty()) {
-          log.trace("source uses unexpected parameters {} in {}", parameterMap, this.getPageName());
-        }
+        context.put(DCTerms.bibliographicCitation,
+            rdfNode(parameterMap.get("1"), shortEditionLanguage));
+      }
+      parameterMap.remove("1");
+      if (!parameterMap.isEmpty()) {
+        log.trace("source uses unexpected parameters {} in {}", parameterMap, this.getPageName());
       }
     } else if ("sans balise".equals(templateName) || "sans_balise".equals(templateName)) {
       String t = parameterMap.get("1");
@@ -112,19 +125,42 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
         writer.append("").append(String.valueOf(i + 1));
       }
     } else if ("exemple".equals(templateName)) {
-      String mandatoryLanguage = parameterMap.get("lang");
-      if (null == mandatoryLanguage) {
-        // Set to french, as it is required by the Module, even if we are in a exolex entry
-        parameterMap.put("lang", "fr");
-      }
       String example = parameterMap.get("1");
+      String lang = parameterMap.getOrDefault("lang", shortSectionLanguage);
+      String translation = parameterMap.getOrDefault("2", parameterMap.get("sens"));
+      String transcription = parameterMap.getOrDefault("3", parameterMap.get("tr"));
+      String source = parameterMap.get("source");
       if (null != example) {
-        super.substituteTemplateCall(templateName, parameterMap, writer);
+        writer.append(example);
+      }
+      if (context != null) {
+        if (null != source)
+          context.put(DCTerms.bibliographicCitation, rdfNode(source, lang));
+        if (null != translation)
+          context.put(RDF.value, rdfNode(translation, shortEditionLanguage));
+        if (null != transcription)
+          context.put(RDF.value, rdfNode(transcription, lang + "-Latn"));
+      }
+      if (parameterMap.get("lien") != null) {
+        log.trace("Parameter <<lien>>={} in {}", parameterMap.get("lien"), getPageName());
       }
     } else {
       log.trace("Caught template call: {} --in-- {}", templateName, this.getPageName());
       super.substituteTemplateCall(templateName, parameterMap, writer);
     }
+  }
+
+  private Literal rdfNode(String value, String lang) {
+    return rdfNode(value, lang, true);
+  }
+
+  private Literal rdfNode(String value, String lang, boolean expand) {
+    return ResourceFactory.createLangLiteral(expand ? expandString(value) : value, lang);
+  }
+
+  private String expandString(String originalSource) {
+    // Expand source to properly resolve links and cosmetic markups
+    return simpleExpander.expandAll(originalSource, this.templates);
   }
 
   @Override

@@ -20,3 +20,4 @@ if [ "x$BITBUCKET_PR_DESTINATION_BRANCH" == "x" ]; then
   fi
   echo "Not a Pull Request, I will compare branch with $BITBUCKET_PR_DESTINATION_BRANCH"
 fi
+BINDIR=out/dbnary

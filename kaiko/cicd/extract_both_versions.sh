@@ -56,7 +56,7 @@ done
 echo " ==== EXTRACTING WITH NEXT VERSION ===== "
 FEATURES="--endolex=ontolex,morphology,lime,etymology,enhancement,statistics --exolex=ontolex"
 # Extract data using Target branch version
-"out/dbnary/$NEXT_VERSION/bin/dbnary" update --dir "/tmp/$NEXT_VERSION/" -v --no-compress --no-network $FEATURES --sample "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
+"$BINDIR/$NEXT_VERSION/bin/dbnary" update --dir "/tmp/$NEXT_VERSION/" -v --no-compress --no-network $FEATURES --sample "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
 
 mkdir -p target/extracts/$NEXT_VERSION/
 cp /tmp/$NEXT_VERSION/extracts/ontolex/latest/*.ttl target/extracts/$NEXT_VERSION/
@@ -64,7 +64,7 @@ cp /tmp/$NEXT_VERSION/extracts/ontolex/latest/*.ttl target/extracts/$NEXT_VERSIO
 echo " ==== EXTRACTING WITH PREVIOUS VERSION ===== "
 
 # Extract data using PR version
-"out/dbnary/$PREVIOUS_VERSION/bin/dbnary" update --dir "/tmp/$PREVIOUS_VERSION/" --no-compress --no-network $FEATURES --sample "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
+"$BINDIR/$PREVIOUS_VERSION/bin/dbnary" update --dir "/tmp/$PREVIOUS_VERSION/" --no-compress --no-network $FEATURES --sample "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
 
 mkdir -p target/extracts/$PREVIOUS_VERSION/
 cp /tmp/$PREVIOUS_VERSION/extracts/ontolex/latest/*.ttl target/extracts/$PREVIOUS_VERSION/

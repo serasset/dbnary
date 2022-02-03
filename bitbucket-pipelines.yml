@@ -50,8 +50,6 @@ definitions:
           - 'self.hosted'
           - 'dbnary'
         size: 4x
-        caches:
-          - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/extract_both_versions.sh en
@@ -63,8 +61,6 @@ definitions:
           - 'self.hosted'
           - 'dbnary'
         size: 4x
-        caches:
-          - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/extract_both_versions.sh fr pt it fi ru no la
@@ -76,8 +72,6 @@ definitions:
           - 'self.hosted'
           - 'dbnary'
         size: 4x
-        caches:
-          - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/extract_both_versions.sh de el tr ja es bg pl nl sh sv lt mg id ku
@@ -89,8 +83,6 @@ definitions:
           - 'self.hosted'
           - 'dbnary'
         size: 4x
-        caches:
-          - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/compute_differences.sh

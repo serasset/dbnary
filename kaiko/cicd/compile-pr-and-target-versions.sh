@@ -27,17 +27,24 @@ fi
 
 set -x
 
+# make sure folder is in gitignore to avoid losing the packaged app after git stash and mvn clean
+echo out >> .gitignore
+mkdir -p $BINDIR
 mvn versions:set -B -DnewVersion="$NEXT_VERSION"
-mvn install
+mvn package
+cp -r dbnary-commands/target/appassembler $BINDIR/$NEXT_VERSION
 mvn clean
 
 git stash -u
 git checkout "$BITBUCKET_PR_DESTINATION_BRANCH"
+echo out >> .gitignore
 
 mvn versions:set -B -DnewVersion="$PREVIOUS_VERSION"
-mvn install
-
+mvn package
+mkdir -p $BINDIR
+cp -r dbnary-commands/target/appassembler $BINDIR/$PREVIOUS_VERSION
 mvn clean
+
 # Then, switch back to latest branch so that latest improvement in CI/CD are used.
 git stash -u
 git checkout "$BITBUCKET_BRANCH"

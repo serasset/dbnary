@@ -1,6 +1,8 @@
 package org.getalp.dbnary.wiki;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.util.Map;
 import org.junit.Test;
 
@@ -21,6 +23,36 @@ public class WikiToolTest {
     assertEquals(5, args.size());
 
   }
+
+  @Test
+  public void testParseWithTemplateNames() throws Exception {
+    Map<String, String> args = WikiTool.parseArgs("m|grc|sc=polytonic|βοῦς||ox, cow", true);
+
+    assertEquals("m", args.get("0"));
+    assertEquals("grc", args.get("1"));
+    assertEquals("polytonic", args.get("sc"));
+    assertEquals("βοῦς", args.get("2"));
+    assertEquals("ox, cow", args.get("4"));
+    assertEquals("", args.get("3"));
+    assertEquals(6, args.size());
+
+  }
+
+  @Test
+  public void testParseWithErroneousTemplateNames() throws Exception {
+    Map<String, String> args = WikiTool.parseArgs("m=x|grc|sc=polytonic|βοῦς||ox, cow", true);
+
+    assertNull(args.get("0"));
+    assertEquals("x", args.get("m"));
+    assertEquals("grc", args.get("1"));
+    assertEquals("polytonic", args.get("sc"));
+    assertEquals("βοῦς", args.get("2"));
+    assertEquals("ox, cow", args.get("4"));
+    assertEquals("", args.get("3"));
+    assertEquals(6, args.size());
+
+  }
+
 
   @Test
   public void testRemoveReferences1() {

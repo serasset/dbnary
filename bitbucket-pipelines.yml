@@ -41,19 +41,15 @@ definitions:
           - ./kaiko/cicd/compile-pr-and-target-versions.sh
           # The previous command checked out another branch that may also have executable rights issues.
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
-          - mkdir -p target/dbnary-maven-repository/org
-          - cp -r ${HOME}/.m2/repository/org/getalp target/dbnary-maven-repository/org/getalp
           - ./kaiko/cicd/cleanup_cache.sh
         artifacts:
-          - "target/dbnary-maven-repository/org/**/*.*"
+          - "out/dbnary/**"
     - step: &extract_batch_1
         name: Extracting batch 1
         runs-on:
           - 'self.hosted'
           - 'dbnary'
         size: 4x
-        caches:
-          - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/extract_both_versions.sh en
@@ -65,8 +61,6 @@ definitions:
           - 'self.hosted'
           - 'dbnary'
         size: 4x
-        caches:
-          - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/extract_both_versions.sh fr pt it fi ru no la
@@ -78,8 +72,6 @@ definitions:
           - 'self.hosted'
           - 'dbnary'
         size: 4x
-        caches:
-          - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
           - ./kaiko/cicd/extract_both_versions.sh de el tr ja es bg pl nl sh sv lt mg id ku
@@ -91,13 +83,8 @@ definitions:
           - 'self.hosted'
           - 'dbnary'
         size: 4x
-        caches:
-          - maven
         script:
           - chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
-          - mkdir -p ${HOME}/.m2/repository/org/
-          - rm -rf ${HOME}/.m2/repository/org/getalp
-          - cp -r target/dbnary-maven-repository/org/getalp ${HOME}/.m2/repository/org/
           - ./kaiko/cicd/compute_differences.sh
           - ./kaiko/cicd/summarize_on_slack.sh
         artifacts:

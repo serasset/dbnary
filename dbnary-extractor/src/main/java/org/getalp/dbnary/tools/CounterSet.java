@@ -1,21 +1,20 @@
 package org.getalp.dbnary.tools;
 
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 import org.slf4j.Logger;
 
-public class CounterSet {
+public class CounterSet implements Set<String> {
 
-  class MutableInteger {
+  static class MutableInteger {
 
-    int _val = 0;
+    int _val;
 
-    MutableInteger(int v) {
+    private MutableInteger(int v) {
       super();
-      _val = v;
-    }
-
-    void set(int v) {
       _val = v;
     }
 
@@ -23,22 +22,19 @@ public class CounterSet {
       return ++_val;
     }
 
-    void reset() {
-      _val = 0;
-    }
-
     public String toString() {
       return Integer.toString(_val);
     }
   }
 
-  private HashMap<String, MutableInteger> counters;
+  private final HashMap<String, MutableInteger> counters;
 
   public CounterSet() {
     super();
-    counters = new HashMap<String, MutableInteger>();
+    counters = new HashMap<>();
   }
 
+  @Override
   public void clear() {
     counters.clear();
   }
@@ -48,10 +44,7 @@ public class CounterSet {
   }
 
   public void reset(String key) {
-    MutableInteger i = counters.get(key);
-    if (null != i) {
-      i.reset();
-    }
+    counters.remove(key);
   }
 
   public int get(String key) {
@@ -73,5 +66,71 @@ public class CounterSet {
     for (String s : counters.keySet()) {
       log.debug("{}: {}", s, counters.get(s)._val);
     }
+  }
+
+  @Override
+  public int size() {
+    return counters.size();
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return counters.isEmpty();
+  }
+
+  @Override
+  public boolean contains(Object o) {
+    if (o instanceof String)
+      return counters.containsKey(o);
+    return false;
+  }
+
+  @Override
+  public Iterator<String> iterator() {
+    return counters.keySet().iterator();
+  }
+
+  @Override
+  public Object[] toArray() {
+    return counters.keySet().toArray();
+  }
+
+  @Override
+  public <T> T[] toArray(T[] a) {
+    return counters.keySet().toArray(a);
+  }
+
+  @Override
+  public boolean add(String s) {
+    return (1 == this.incr(s));
+  }
+
+  @Override
+  public boolean remove(Object o) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean containsAll(Collection<?> c) {
+    return counters.keySet().containsAll(c);
+  }
+
+  @Override
+  public boolean addAll(Collection<? extends String> c) {
+    boolean changed = false;
+    for (String s : c) {
+      changed = (changed || add(s));
+    }
+    return changed;
+  }
+
+  @Override
+  public boolean retainAll(Collection<?> c) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean removeAll(Collection<?> c) {
+    throw new UnsupportedOperationException();
   }
 }

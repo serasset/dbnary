@@ -13,7 +13,7 @@ MIRROR=http://dumps.wikimedia.org/
 #MIRROR=http://dumps.wikimedia.your.org/
 #MIRROR=http://wikipedia.c3sl.ufpr.br/
 #MIRROR=ftp://ftpmirror.your.org/pub/wikimedia/dumps/
-OPTIONS="--tdb -v"
+OPTIONS="--tdb -v "
 
 # Change tmp dir on debian systems (as the default /tmp partition may not be sufficient to cope with TDBs)
 if [ -f "/etc/debian_version" ]; then

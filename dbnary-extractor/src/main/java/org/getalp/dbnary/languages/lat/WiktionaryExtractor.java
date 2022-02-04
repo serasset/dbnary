@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
@@ -444,7 +445,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   public void extractExample(String example) {
-    Map<Property, RDFNode> context = new HashMap<>();
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
     String ex = exampleExpander.expandExample(example, defTemplates, context,
         wdh.getExtractedLanguage(), wdh.getCurrentEntryLanguage());

@@ -2,8 +2,8 @@ package org.getalp.dbnary.api;
 
 import java.io.OutputStream;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
@@ -85,7 +85,7 @@ public interface IWiktionaryDataHandler {
    * @param context map of property + RDFNode that are to be attached to the example object.
    * @return a Resource
    */
-  Resource registerExample(String ex, Map<Property, RDFNode> context);
+  Resource registerExample(String ex, Set<Pair<Property, RDFNode>> context);
 
 
   /**
@@ -159,4 +159,6 @@ public interface IWiktionaryDataHandler {
   void computeStatistics(Model statsModel, Model sourceModel, String dumpVersion);
 
   void dumpAllFeaturesAsHDT(OutputStream ostream, boolean isExolex);
+
+  Resource addToCurrentWordSense(Set<Pair<Property, RDFNode>> context);
 }

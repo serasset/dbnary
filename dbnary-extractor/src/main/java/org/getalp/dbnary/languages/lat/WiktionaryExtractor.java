@@ -35,8 +35,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String entrySectionPatternString;
 
   // TODO: handle morphological informations e.g. fr-rég template ?
-  protected final static String pronunciationPatternString =
-      "\\{\\{pron\\|([^\\|\\}]*)\\|([^\\}]*)\\}\\}";
+  protected final static String pronunciationPatternString = "\\{\\{pron\\|([^|}]*)\\|([^}]*)}}";
 
   protected final static String otherFormPatternString = "\\{\\{fr-[^\\}]*\\}\\}";
 
@@ -447,10 +446,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void extractExample(String example) {
     Map<Property, RDFNode> context = new HashMap<>();
 
-    String ex = exampleExpander.expandExample(example, defTemplates, context);
-    Resource exampleNode = null;
+    String ex = exampleExpander.expandExample(example, defTemplates, context,
+        wdh.getExtractedLanguage(), wdh.getCurrentEntryLanguage());
     if (ex != null && !ex.equals("")) {
-      exampleNode = wdh.registerExample(ex, context);
+      wdh.registerExample(ex, context);
     }
   }
 

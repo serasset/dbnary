@@ -872,12 +872,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return context;
   }
 
+  @Override
   public void extractExample(String example) {
-    Map<Property, RDFNode> context = new HashMap<>();
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
     String ex = exampleExpander.expandExample(example, exampleTemplates, context,
         wdh.getExtractedLanguage(), wdh.getCurrentEntryLanguage());
     Resource exampleNode = null;
+    if ("".equals(ex.trim()) && !context.isEmpty()) {
+      // There is no example, it is a note that should be attached to the definition
+      wdh.addToCurrentWordSense(context);
+    }
     if (ex != null && !ex.equals("")) {
       exampleNode = wdh.registerExample(ex, context);
     }

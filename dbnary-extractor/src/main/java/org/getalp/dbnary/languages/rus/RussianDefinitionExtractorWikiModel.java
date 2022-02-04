@@ -5,11 +5,11 @@ import info.bliki.wiki.filter.PlainTextConverter;
 import info.bliki.wiki.model.WikiModelContentException;
 import info.bliki.wiki.namespaces.INamespace;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -32,14 +32,14 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
   protected static class Example {
 
     String value;
-    Map<Property, RDFNode> context = new HashMap<>();
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
     protected Example(String ex) {
       value = ex;
     }
 
-    protected void put(Property p, RDFNode v) {
-      context.put(p, v);
+    protected void add(Property p, RDFNode v) {
+      context.add(Pair.of(p, v));
     }
   }
 
@@ -99,7 +99,7 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
         if (null != ex && ex.length() != 0) {
           Example example = new Example(ex);
           parameterMap.remove("текст");
-          example.put(DCTerms.bibliographicCitation, formatMap(parameterMap));
+          example.add(DCTerms.bibliographicCitation, formatMap(parameterMap));
           currentExamples.add(example);
         }
       } else if (parameterMap.containsKey("1")) {
@@ -109,7 +109,7 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
         if (null != ex && ex.length() != 0) {
           Example example = new Example(ex);
           parameterMap.remove("1");
-          example.put(DCTerms.bibliographicCitation, formatMap(parameterMap));
+          example.add(DCTerms.bibliographicCitation, formatMap(parameterMap));
           currentExamples.add(example);
         }
       }

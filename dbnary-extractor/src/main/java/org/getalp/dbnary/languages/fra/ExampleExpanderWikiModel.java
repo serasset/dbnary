@@ -15,6 +15,7 @@ import org.apache.jena.vocabulary.SKOS;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.iso639.ISO639_3;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
     ignoredTemplates.add("ébauche-exe");
   }
 
-  private Map<Property, RDFNode> context;
+  private Set<Pair<Property, RDFNode>> context;
   private String shortEditionLanguage;
   private String shortSectionLanguage;
   private final ExpandAllWikiModel simpleExpander;
@@ -54,24 +55,26 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
    * @return the converted wiki code
    */
   public String expandExample(String definition, Set<String> templates,
-      Map<Property, RDFNode> context) {
+      Set<Pair<Property, RDFNode>> context) {
     return expandExample(definition, templates, context, null, null);
   }
 
   private static final String NOTE_SPLIT = "///NOTES///";
+
   public String expandExample(String definition, Set<String> templates,
-      Map<Property, RDFNode> context, String shortEditionLanguage, String shortSectionLanguage) {
-    // log.trace("extracting examples in {}", this.getPageName());
+      Set<Pair<Property, RDFNode>> context, String shortEditionLanguage,
+      String shortSectionLanguage) {
     this.context = context;
     this.shortEditionLanguage = shortEditionLanguage;
     this.shortSectionLanguage = shortSectionLanguage;
-    String exampleText =  expandAll(definition, templates);
+    String exampleText = expandAll(definition, templates);
     String[] textAndNote = exampleText.split(NOTE_SPLIT);
     if (textAndNote.length > 1) {
       for (int i = 1; i < textAndNote.length; i++) {
         String note;
         if (textAndNote[i] != null && !"".equals(note = textAndNote[i].trim())) {
-          context.put(SKOS.note, ResourceFactory.createLangLiteral(note, shortEditionLanguage));
+          context.add(
+              Pair.of(SKOS.note, ResourceFactory.createLangLiteral(note, shortEditionLanguage)));
         }
       }
     }
@@ -99,8 +102,8 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       }
     } else if ("source".equals(templateName)) {
       if (context != null) {
-        context.put(DCTerms.bibliographicCitation,
-            rdfNode(parameterMap.get("1"), shortEditionLanguage));
+        context.add(Pair.of(DCTerms.bibliographicCitation,
+            rdfNode(parameterMap.get("1"), shortEditionLanguage)));
       }
       parameterMap.remove("1");
       if (!parameterMap.isEmpty()) {
@@ -147,11 +150,11 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       }
       if (context != null) {
         if (null != source)
-          context.put(DCTerms.bibliographicCitation, rdfNode(source, lang));
+          context.add(Pair.of(DCTerms.bibliographicCitation, rdfNode(source, lang)));
         if (null != translation)
-          context.put(RDF.value, rdfNode(translation, shortEditionLanguage));
+          context.add(Pair.of(RDF.value, rdfNode(translation, shortEditionLanguage)));
         if (null != transcription)
-          context.put(RDF.value, rdfNode(transcription, lang + "-Latn"));
+          context.add(Pair.of(RDF.value, rdfNode(transcription, lang + "-Latn")));
       }
       if (parameterMap.get("lien") != null) {
         log.trace("Parameter <<lien>>={} in {}", parameterMap.get("lien"), getPageName());

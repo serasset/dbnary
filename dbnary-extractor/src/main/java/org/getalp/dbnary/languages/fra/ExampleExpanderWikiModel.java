@@ -11,6 +11,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.SKOS;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.iso639.ISO639_3;
@@ -57,13 +58,24 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
     return expandExample(definition, templates, context, null, null);
   }
 
+  private static final String NOTE_SPLIT = "///NOTES///";
   public String expandExample(String definition, Set<String> templates,
       Map<Property, RDFNode> context, String shortEditionLanguage, String shortSectionLanguage) {
     // log.trace("extracting examples in {}", this.getPageName());
     this.context = context;
     this.shortEditionLanguage = shortEditionLanguage;
     this.shortSectionLanguage = shortSectionLanguage;
-    return expandAll(definition, templates);
+    String exampleText =  expandAll(definition, templates);
+    String[] textAndNote = exampleText.split(NOTE_SPLIT);
+    if (textAndNote.length > 1) {
+      for (int i = 1; i < textAndNote.length; i++) {
+        String note;
+        if (textAndNote[i] != null && !"".equals(note = textAndNote[i].trim())) {
+          context.put(SKOS.note, ResourceFactory.createLangLiteral(note, shortEditionLanguage));
+        }
+      }
+    }
+    return textAndNote[0];
   }
 
   @Override
@@ -144,6 +156,8 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       if (parameterMap.get("lien") != null) {
         log.trace("Parameter <<lien>>={} in {}", parameterMap.get("lien"), getPageName());
       }
+    } else if ("note".equals(templateName)) {
+      writer.append(NOTE_SPLIT);
     } else {
       log.trace("Caught template call: {} --in-- {}", templateName, this.getPageName());
       super.substituteTemplateCall(templateName, parameterMap, writer);

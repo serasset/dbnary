@@ -135,7 +135,7 @@ public class SummarizeDifferences extends VerboseCommand {
   }
 
 
-  private class Diff {
+  private static class Diff {
     double gain;
     double loss;
     long gainCount;
@@ -168,7 +168,7 @@ public class SummarizeDifferences extends VerboseCommand {
     }
   }
 
-  private class ModelData {
+  private static class ModelData {
     String model;
     Map<String, Diff> diffs = new TreeMap<>();
 
@@ -232,7 +232,7 @@ public class SummarizeDifferences extends VerboseCommand {
   // TODO: restructure the modules to create an aggregate one and make the RDF utils module depend
   // on extractor, then iterate over aggregation features (and take an arg to control them).
 
-  Pattern fileNamePattern = Pattern.compile("(..)_(gain|lost)_([^_.]*).ttl");
+  Pattern fileNamePattern = Pattern.compile("^(..)_(gain|lost)_(.*)\\.ttl$");
 
   private long countStatements(Model m) {
     int count = 0;

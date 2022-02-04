@@ -875,7 +875,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void extractExample(String example) {
     Map<Property, RDFNode> context = new HashMap<>();
 
-    String ex = exampleExpander.expandExample(example, exampleTemplates, context);
+    String ex = exampleExpander.expandExample(example, exampleTemplates, context,
+        wdh.getExtractedLanguage(), wdh.getCurrentEntryLanguage());
     Resource exampleNode = null;
     if (ex != null && !ex.equals("")) {
       exampleNode = wdh.registerExample(ex, context);

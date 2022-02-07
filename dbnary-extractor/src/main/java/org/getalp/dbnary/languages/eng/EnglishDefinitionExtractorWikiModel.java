@@ -134,6 +134,11 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
       // StringWriter quotation = new StringWriter();
       // super.substituteTemplateCall(templateName, parameterMap, quotation);
       // delegate.registerExample(quotation.toString(), null);
+    } else if (templateName.equals("non-gloss definition") || templateName.equals("n-g")
+        || templateName.equals("ngd") || templateName.equals("non-gloss")
+        || templateName.equals("non gloss")) {
+      String def = parameterMap.getOrDefault("1", "");
+      writer.append(def);
     } else {
       // log.debug("BEGIN >>> Subtituting template {} in page {}", templateName,
       // delegate.currentLexEntry());

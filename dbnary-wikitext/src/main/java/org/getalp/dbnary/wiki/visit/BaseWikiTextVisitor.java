@@ -15,79 +15,94 @@ import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiText.WikiDocument;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
 
-public abstract class BaseWikiTextVisitor implements Visitor {
+public abstract class BaseWikiTextVisitor implements Visitor<Void> {
 
   @Override
-  public void visit(ExternalLink externalLink) {
+  public Void visit(ExternalLink externalLink) {
     externalLink.getTarget().accept(this);
     if (null != externalLink.getLinkContent())
       externalLink.getLinkContent().accept(this);
+    return null;
   }
 
   @Override
-  public void visit(InternalLink internalLink) {
+  public Void visit(InternalLink internalLink) {
     internalLink.getTarget().accept(this);
     if (null != internalLink.getLinkContent())
       internalLink.getLinkContent().accept(this);
+    return null;
   }
 
   @Override
-  public void visit(Heading heading) {
+  public Void visit(Heading heading) {
     heading.getContent().accept(this);
+    return null;
   }
 
   @Override
-  public void visit(Indentation indentation) {
+  public Void visit(Indentation indentation) {
     indentation.getContent().accept(this);
+    return null;
   }
 
   @Override
-  public void visit(Item item) {
+  public Void visit(Item item) {
     item.getContent().accept(this);
+    return null;
   }
 
   @Override
-  public void visit(ListItem listItem) {
+  public Void visit(ListItem listItem) {
     listItem.getContent().accept(this);
+    return null;
   }
 
   @Override
-  public void visit(NumberedListItem numlistItem) {
+  public Void visit(NumberedListItem numlistItem) {
     numlistItem.getContent().accept(this);
+    return null;
   }
 
   @Override
-  public void visit(Template template) {
+  public Void visit(Template template) {
     for (WikiContent value : template.getArgs().values()) {
       value.accept(this);
     }
+    return null;
   }
 
   @Override
-  public void visit(WikiContent content) {
+  public Void visit(WikiContent content) {
     for (Token token : content.tokens()) {
       token.accept(this);
     }
+    return null;
   }
 
   @Override
-  public void visit(Text text) {}
+  public Void visit(Text text) {
+    return null;
+  }
 
   @Override
-  public void visit(HTMLComment htmlComment) {}
+  public Void visit(HTMLComment htmlComment) {
+    return null;
+  }
 
   @Override
-  public void visit(WikiSection section) {
+  public Void visit(WikiSection section) {
     section.getHeading().accept(this);
     for (Token token : section.getContent().tokens()) {
       token.accept(this);
     }
+    return null;
   }
 
   @Override
-  public void visit(WikiDocument doc) {
+  public Void visit(WikiDocument doc) {
     for (Token token : doc.getContent().tokens()) {
       token.accept(this);
     }
+    return null;
   }
 }

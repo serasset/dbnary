@@ -75,6 +75,7 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
     ignoredTemplates.add("slim-wikipedia");
     ignoredTemplates.add("swp");
     ignoredTemplates.add("slim-wp");
+    ignoredTemplates.add("multiple images");
   }
 
   @SuppressWarnings("StatementWithEmptyBody")

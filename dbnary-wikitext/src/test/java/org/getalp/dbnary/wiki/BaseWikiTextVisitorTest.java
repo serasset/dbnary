@@ -25,11 +25,12 @@ public class BaseWikiTextVisitorTest extends CommonWikiTextLoader {
     }
 
     @Override
-    public void visit(InternalLink internalLink) {
+    public Void visit(InternalLink internalLink) {
       assertThat("Unexpected Header.",
           internalLink.getFullTargetText(), is(in(expectedLinkTargets)));
       expectedLinkTargets.remove(internalLink.getFullTargetText());
       super.visit(internalLink);
+      return null;
     }
 
   }
@@ -48,11 +49,12 @@ public class BaseWikiTextVisitorTest extends CommonWikiTextLoader {
     }
 
     @Override
-    public void visit(Template template) {
+    public Void visit(Template template) {
       assertThat("Unexpected Header.",
           template.getName(), is(in(expectedTemplates)));
       visitedTemplates.add(template.getName());
       super.visit(template);
+      return null;
     }
 
   }

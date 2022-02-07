@@ -14,30 +14,30 @@ import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiText.WikiDocument;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
 
-public interface Visitor {
-  void visit(ExternalLink externalLink);
+public interface Visitor<T> {
+  T visit(ExternalLink externalLink);
 
-  void visit(InternalLink internalLink);
+  T visit(InternalLink internalLink);
 
-  void visit(Heading heading);
+  T visit(Heading heading);
 
-  void visit(Indentation indentation);
+  T visit(Indentation indentation);
 
-  void visit(Item item);
+  T visit(Item item);
 
-  void visit(ListItem listItem);
+  T visit(ListItem listItem);
 
-  void visit(NumberedListItem listItem);
+  T visit(NumberedListItem listItem);
 
-  void visit(Template template);
+  T visit(Template template);
 
-  void visit(WikiContent content);
+  T visit(WikiContent content);
 
-  void visit(Text text);
+  T visit(Text text);
 
-  void visit(HTMLComment htmlComment);
+  T visit(HTMLComment htmlComment);
 
-  void visit(WikiSection section);
+  T visit(WikiSection section);
 
-  void visit(WikiDocument section);
+  T visit(WikiDocument section);
 }

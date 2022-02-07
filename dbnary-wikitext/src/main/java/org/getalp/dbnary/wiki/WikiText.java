@@ -233,9 +233,8 @@ public class WikiText {
    */
   public final class WikiContent extends Token {
 
-    private ArrayList<Token> tokens = new ArrayList<>();
+    private final ArrayList<Token> tokens = new ArrayList<>();
     private List<Token> wikiTokensNoComments = null;
-    private ArrayList<Token> tokensAndText = null;
 
     private WikiContent(int startOffset) {
       this.offset = new Segment(startOffset);
@@ -248,7 +247,8 @@ public class WikiText {
 
     /**
      * returns all wikiTokens in the wikiText, that is all special media wiki constructs, excluding
-     * html comments.
+     * html comments. This does not return the text tokens that are intertwined between the wiki
+     * tokens.
      *
      * @return a sequence of Tokens
      */
@@ -262,16 +262,17 @@ public class WikiText {
 
     /**
      * returns all wikiTokens in the wikiText, that is all special media wiki constructs, including
-     * html comments.
+     * html comments. This does not return the text tokens that are intertwined between the wiki
+     * tokens.
      *
-     * @return a sequence of Tokens
+     * @return a sequence of all Wiki Tokens
      */
     public List<Token> wikiTokensWithHtmlComments() {
       return tokens;
     }
 
     /**
-     * returns an List of wikiTokens including Text tokens that may be intertwined. HTML comments
+     * returns a List of wikiTokens including Text tokens that may be intertwined. HTML comments
      * are ignored and 2 successive Texts may be found if a comment was present in the wiki source.
      *
      * @return a list of tokens (either text or wikiTokens)
@@ -281,7 +282,7 @@ public class WikiText {
     }
 
     /**
-     * returns an List of wikiTokens including Text tokens that may be intertwined. HTML comments
+     * returns a List of wikiTokens including Text tokens that may be intertwined. HTML comments
      * are included in the list.
      *
      * @return a list of tokens (either text or wikiTokens)
@@ -297,7 +298,7 @@ public class WikiText {
       }
     }
 
-    protected List<Token> tokens(int start, boolean withComments) {
+    private List<Token> tokens(int start, boolean withComments) {
       int size = tokens.size();
       ArrayList<Token> toks = new ArrayList<>(size * 2);
       int tindex = start;
@@ -377,14 +378,15 @@ public class WikiText {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T  accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
 
     @Override
     public WikiContent asWikiContent() {
       return this;
     }
+
   }
 
   public final class Text extends Token {
@@ -418,8 +420,8 @@ public class WikiText {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T  accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
 
     @Override
@@ -446,12 +448,12 @@ public class WikiText {
 
     @Override
     public void fillText(StringBuilder s) {
-      ;
+
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
 
     @Override
@@ -462,7 +464,7 @@ public class WikiText {
 
   public final class Template extends Token {
 
-    private WikiContent name;
+    private final WikiContent name;
     private ArrayList<WikiContent> args;
     private Map<String, WikiContent> parsedArgs = null;
 
@@ -562,8 +564,7 @@ public class WikiText {
         parsedArgs = new LinkedHashMap<>();
         if (null != args) {
           int n = 1; // number for positional args.
-          for (int i = 0; i < args.size(); i++) {
-            WikiContent arg = args.get(i);
+          for (WikiContent arg : args) {
             if (null == arg) {
               continue;
             }
@@ -572,7 +573,6 @@ public class WikiText {
             StringBuilder key = new StringBuilder();
             WikiContent value = null;
             int j, l = argTokens.size();
-            int equalSignPosition = -1;
             for (j = 0; j < l; j++) {
               Token t = argTokens.get(j);
               if (t instanceof Text) {
@@ -585,7 +585,6 @@ public class WikiText {
                 key.append(sourceContent, spos, p);
                 if (p < epos) {
                   // we found an equal sign
-                  equalSignPosition = p;
                   value = new WikiContent(p + 1);
                   value.setEndOffset(arg.offset.end);
                   break;
@@ -634,8 +633,8 @@ public class WikiText {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
 
     @Override
@@ -706,21 +705,21 @@ public class WikiText {
 
   public final class InternalLink extends Link {
 
-    protected WikiContent suffix = null;
+    private WikiContent suffix = null;
 
     private InternalLink(int startOffset) {
       this.offset = new Segment(startOffset);
       this.target = new WikiContent(startOffset + 2);
     }
 
-    protected void gotAPipe(int position) {
+    private void gotAPipe(int position) {
       if (null == this.linkTextContent) {
         this.target.setEndOffset(position);
         this.linkTextContent = new WikiContent(position + 1);
       }
     }
 
-    protected void setSuffix(WikiContent suffix) {
+    private void setSuffix(WikiContent suffix) {
       this.suffix = suffix;
     }
 
@@ -769,15 +768,14 @@ public class WikiText {
     public boolean isValidInternalLink() {
       // Only allow Templates and texts without curly braces in the target
       // Force sequencial filtering as the Matcher is a singleton
-      boolean targetIsValid = target.tokens().stream().sequential()
+      return target.tokens().stream().sequential()
           .filter(t -> !(t instanceof Template)).allMatch(t -> t instanceof Text
               && !invalidCharsMatcher.region(t.offset.start, t.offset.end).find());
-      return targetIsValid;
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
 
     @Override
@@ -827,8 +825,8 @@ public class WikiText {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
 
     @Override
@@ -840,7 +838,7 @@ public class WikiText {
   public final class Heading extends Token {
 
     private int level;
-    private WikiContent content;
+    private final WikiContent content;
     private WikiSection section = null;
 
     private Heading(int position, int level) {
@@ -893,8 +891,8 @@ public class WikiText {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
 
     @Override
@@ -957,8 +955,8 @@ public class WikiText {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
 
     @Override
@@ -974,8 +972,8 @@ public class WikiText {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
 
     @Override
@@ -992,8 +990,8 @@ public class WikiText {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
 
     @Override
@@ -1009,8 +1007,8 @@ public class WikiText {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
 
     @Override
@@ -1024,8 +1022,8 @@ public class WikiText {
 
   public final class WikiSection extends Token {
 
-    private WikiText.Heading heading;
-    private WikiText.WikiContent content;
+    private final WikiText.Heading heading;
+    private final WikiText.WikiContent content;
 
     private WikiSection(WikiText.Heading heading, WikiText.WikiContent content) {
       this.heading = heading;
@@ -1094,8 +1092,8 @@ public class WikiText {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
 
     @Override
@@ -1110,14 +1108,13 @@ public class WikiText {
    */
   public final class WikiDocument implements Visitable {
 
-    private Deque<WikiSection> stack = new ArrayDeque<>();
     private WikiContent content;
 
     private WikiDocument() {
       buildDoc();
     }
 
-    private void registerToken(Token h) {
+    private void registerToken(Token h, Deque<WikiSection> stack) {
       if (h instanceof Heading) {
         while (stack.peek().getLevel() >= h.asHeading().getLevel()) {
           WikiSection top = stack.pop();
@@ -1133,9 +1130,10 @@ public class WikiText {
     }
 
     private void buildDoc() {
+      Deque<WikiSection> stack = new ArrayDeque<>();
       WikiText.this.content();
       stack.push(new WikiSection(null));
-      WikiText.this.wikiTokens().stream().forEach(this::registerToken);
+      WikiText.this.wikiTokens().forEach(t -> registerToken(t, stack));
       WikiSection top = null;
       while (!stack.isEmpty()) {
         top = stack.pop();
@@ -1150,14 +1148,14 @@ public class WikiText {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-      visitor.visit(this);
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visit(this);
     }
   }
 
 
-  private static String invalidCharsInLink = "[\\{\\}]";
-  private static Pattern invalidCharsPattern = Pattern.compile(invalidCharsInLink);
+  private static final String invalidCharsInLink = "[{}]";
+  private static final Pattern invalidCharsPattern = Pattern.compile(invalidCharsInLink);
 
   ////////////////////////////////////////////////////////////////////////
   /// WikiText external methods
@@ -1192,7 +1190,7 @@ public class WikiText {
 
   }
 
-  private static StringBuilder protocols = new StringBuilder();
+  private static final StringBuilder protocols = new StringBuilder();
   private static final Pattern protocolOrTemplatePattern;
   private static final Pattern strictProtocolPattern;
 
@@ -1232,7 +1230,7 @@ public class WikiText {
     protocolOrTemplatePattern = Pattern.compile(protocols.toString());
   }
 
-  private static StringBuffer lexerCode = new StringBuffer();
+  private static final StringBuffer lexerCode = new StringBuffer();
   private static final Pattern lexerPattern;
 
   // TODO: Fichier, File, Image sont des préfixes de liens qui autorisent visiblement les retours à

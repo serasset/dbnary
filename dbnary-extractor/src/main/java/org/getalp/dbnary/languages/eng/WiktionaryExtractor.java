@@ -3,25 +3,28 @@
  */
 package org.getalp.dbnary.languages.eng;
 
-import java.util.List;
-import org.getalp.dbnary.ExtractionFeature;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
-import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.api.IWiktionaryDataHandler;
-import org.getalp.dbnary.Span;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.PropertyObjectPair;
+import org.getalp.dbnary.Span;
+import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
+import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.ClassBasedSequenceFilter;
 import org.getalp.dbnary.wiki.WikiCharSequence;
@@ -53,7 +56,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String LANGUAGE_SECTION_PATTERN_STRING = "==\\s*([^=]*)\\s*==";
   protected final static String SECTION_PATTERN_STRING = "={2,5}\\s*([^=]*)\\s*={2,5}";
-  protected final static String PRON_PATTERN_STRING = "\\{\\{IPA\\|([^\\}]*)\\}\\}";
+  protected final static String PRON_PATTERN_STRING = "\\{\\{IPA\\|([^}]*)}}";
 
   private enum Block {
     NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, CONJUGATIONBLOCK, ETYMOLOGYBLOCK, DERIVEDBLOCK, DESCENDANTSBLOCK, PRONBLOCK
@@ -89,7 +92,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private Block currentBlock;
   private int blockStart = -1;
 
-  private String currentNym = null;
   private ExpandAllWikiModel wikiExpander;
   protected EnglishDefinitionExtractorWikiModel definitionExpander;
   private WikisaurusExtractor wikisaurusExtractor;
@@ -256,7 +258,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case ORTHOALTBLOCK:
         break;
       case NYMBLOCK:
-        currentNym = (String) context.get("nym");
         break;
       case PRONBLOCK:
         break;
@@ -302,7 +303,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
       case NYMBLOCK:
         extractNyms((String) context.get("nym"), blockStart, end);
-        currentNym = null;
         break;
       case PRONBLOCK:
         extractPron(blockStart, end);
@@ -1120,14 +1120,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractTranslations(String wikiSource) {
     WikiText txt = new WikiText(getWiktionaryPageName(), wikiSource);
-    Resource currentGloss = null;
-    int rank = 1;
+    extractTranslations(txt.content());
+  }
+
+  // TODO: the multitrans template hides all its subtemplates. Either make a stream entreirng
+  // multitrans or call the extraction recursively, BUT in this case the gloss should be external
+  // to the recursive call (gloss is defined outside and may be redefined inside...
+  private void extractTranslations(WikiContent txt) {
+    AtomicReference<Resource> currentGloss = new AtomicReference<>();
+    AtomicInteger rank = new AtomicInteger(1);
     // TODO: there are templates called "qualifier" used to further qualify the translation check
     // and evaluate if extracting its data is useful.
     // TODO: Handle trans-see links that point to the translation section of a synonym. Keep the
     // link in the extracted dataset.
-    for (Token token : txt.templates()) {
-      Template t = (Template) token;
+    templates(txt).sequential().forEach(t -> {
       String tName = t.getName();
       if (tName.equals("t+") || tName.equals("t-") || tName.equals("tø") || tName.equals("t")
           || tName.equals("t-check") || tName.equals("t+check") || tName.equals("t-simple")) {
@@ -1137,7 +1143,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String usage = (usageContent == null) ? "" : usageContent.toString();
         if (word == null) {
           log.debug("No (required) translation in {} : {}", t, getWiktionaryPageName());
-          continue;
+          return;
         }
         Map<String, WikiContent> args = new HashMap<>(t.getArgs()); // clone the args map so that
                                                                     // we can destroy it
@@ -1167,25 +1173,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // TODO: handle translations that are the result of template expansions (e.g. "anecdotal
           // evidence").
           // TODO : handle translations that are links to other entries (maybe keep those links)
-          wdh.registerTranslation(lang, currentGloss, usage, word.toString());
+          wdh.registerTranslation(lang, currentGloss.get(), usage, word.toString());
         }
       } else if (tName.equals("trans-top") || tName.equals("trans-top-also")) {
         // Get the gloss that should help disambiguate the source acception
         String g2 = t.getParsedArgs().get("1");
         // Ignore gloss if it is a macro
         if (g2 != null && !g2.startsWith("{{")) {
-          currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);
+          currentGloss.set(
+              wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank.getAndAdd(1)));
         } else {
-          currentGloss = null;
+          currentGloss.set(null);
         }
       } else if (tName.equals("checktrans-top")) {
         // forget glose.
-        currentGloss = null;
+        currentGloss.set(null);
       } else if (tName.equals("trans-mid")) {
         // just ignore it
       } else if (tName.equals("trans-bottom")) {
         // Forget the current glose
-        currentGloss = null;
+        currentGloss.set(null);
       } else if (tName.equals("section link") || tName.equals("see translation subpage")) {
         String link;
         if (tName.equals("section link")) {
@@ -1197,7 +1204,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
         log.debug("Section link: {} for entry {}", link, getWiktionaryPageName());
         if (link != null) {
-          String translationContent = getTranslationContentForLink(link);
+          WikiContent translationContent = getTranslationContentForLink(link);
           if (null != translationContent)
             extractTranslations(translationContent);
         }
@@ -1205,7 +1212,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         log.debug("Ignored template: {} in translation section for entry {}", t,
             getWiktionaryPageName());
       }
-    }
+    });
+  }
+
+  private Stream<Template> templates(WikiContent txt) {
+    return new EnglishTranslationTemplateStream().visit(txt);
   }
 
   /**
@@ -1215,7 +1226,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    * @param link
    * @return
    */
-  private String getTranslationContentForLink(String link) {
+  private WikiContent getTranslationContentForLink(String link) {
     if (!processedLinks.add(link))
       return null;
     String[] linkAndSection = link.split("#");
@@ -1223,18 +1234,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String translationSection = linkAndSection[1];
 
     String translationPageContent = wi.getTextOfPageWithRedirects(translationPage);
-
+    if (null == translationPageContent) {
+      log.debug("Translation link: Could not retrieve page {} in {}", translationPage,
+          getWiktionaryPageName());
+      return null;
+    }
     // TODO : extract the correct section from the full page.
     // Assume there is only on language and the anchor corresponds to level 3 Header (POS)
     WikiText text = new WikiText(getWiktionaryPageName(), translationPageContent);
     for (WikiSection s : text.sections(3)) {
       // return the first matching section
       if (s.getHeading().getContent().toString().equals(translationSection))
-        return s.getContent().toString();
+        return s.getContent();
     }
     log.debug("Could not find appropriate section {} in translation section link target for {}",
         translationSection, getWiktionaryPageName());
-    return translationPageContent;
+    return text.content();
   }
 
   private Set<String> processedLinks = new HashSet<>();

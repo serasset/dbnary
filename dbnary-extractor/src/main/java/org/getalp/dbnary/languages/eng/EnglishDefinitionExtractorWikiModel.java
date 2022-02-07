@@ -56,7 +56,6 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
     ignoredTemplates.add("categorize");
     ignoredTemplates.add("catlangname");
     ignoredTemplates.add("catlangcode");
-    ignoredTemplates.add("senseid"); // Check if this template could be used to identify the sense
     ignoredTemplates.add("rfex");
     ignoredTemplates.add("rfd-sense");
     ignoredTemplates.add("attention");
@@ -140,6 +139,8 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
         || templateName.equals("non gloss")) {
       String def = parameterMap.getOrDefault("1", "");
       writer.append(def);
+    } else if (templateName.equals("senseid")) {
+      // TODO: the sense is given a specific id that may be used in other steps
     } else {
       // log.debug("BEGIN >>> Subtituting template {} in page {}", templateName,
       // delegate.currentLexEntry());

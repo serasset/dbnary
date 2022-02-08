@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -113,7 +114,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   protected Resource lexvoExtractedLanguage;
   protected Resource lexvoSectionLanguage;
 
-  private Set<Statement> heldBackStatements = new HashSet<>();
+  private final Set<Statement> heldBackStatements = new HashSet<>();
 
   protected int nbEntries = 0;
   private String NS;
@@ -1094,8 +1095,24 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     return NS;
   }
 
+  public Resource addTo(Resource target, Set<Pair<Property, RDFNode>> pv) {
+    if (null == pv)
+      return target;
+    for (Pair<Property, RDFNode> p : pv) {
+      target.addProperty(p.getLeft(), p.getRight());
+    }
+    return target;
+  }
+
+  public Resource addToCurrentWordSense(Set<Pair<Property, RDFNode>> pv) {
+    if (currentSense == null) {
+      log.debug("Addition to non-existing word sense in {}", currentPagename());
+    }
+    return addTo(currentSense, pv);
+  }
+
   @Override
-  public Resource registerExample(String ex, Map<Property, String> context) {
+  public Resource registerExample(String ex, Set<Pair<Property, RDFNode>> context) {
     if (null == currentSense) {
       log.debug("Registering example when lex sense is null in \"{}\".", this.currentMainLexEntry);
       return null; // Don't register anything if current lex entry is not known.
@@ -1104,11 +1121,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // Create new example element
     Resource example = aBox.createResource();
     aBox.add(aBox.createStatement(example, RDF.value, ex, getCurrentEntryLanguage()));
-    if (null != context) {
-      for (Map.Entry<Property, String> c : context.entrySet()) {
-        aBox.add(aBox.createStatement(example, c.getKey(), c.getValue(), shortEditionLanguageCode));
-      }
-    }
+    addTo(example, context);
+
     aBox.add(aBox.createStatement(currentSense, SkosOnt.example, example));
     return example;
   }

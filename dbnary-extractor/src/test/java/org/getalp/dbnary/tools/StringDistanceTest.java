@@ -1,13 +1,12 @@
 package org.getalp.dbnary.tools;
 
 import static org.junit.Assert.assertEquals;
-import org.apache.jena.base.Sys;
 import org.junit.Test;
 
 public class StringDistanceTest {
 
   @Test
-  public void suffixTest() throws Exception {
+  public void suffixTest() {
     String s = "toto";
     String t = "totos";
 
@@ -17,7 +16,7 @@ public class StringDistanceTest {
   }
 
   @Test
-  public void simpleTest() throws Exception {
+  public void simpleTest() {
     String s = "toto";
     String t = "totos";
 

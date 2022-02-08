@@ -2,8 +2,8 @@ package org.getalp.dbnary.api;
 
 import java.io.OutputStream;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
@@ -57,14 +57,6 @@ public interface IWiktionaryDataHandler {
   void initializeLexicalEntry(String pos);
 
   /**
-   *
-   * @param def the not cleaned up version of the definition. This version contains macros (that may
-   *        represent subject fields) and links.
-   */
-  // TODO: maybe pass the cleaned up and the original def, so that the extractor takes what fits its
-  // requirements.
-
-  /**
    * Register definition def for the current lexical entry.
    * <p>
    * This method will compute a sense number based on the rank of the definition in the entry.
@@ -90,10 +82,10 @@ public interface IWiktionaryDataHandler {
    * Register example ex for the current lexical sense.
    *
    * @param ex the example string
-   * @param context map of property + object that are to be attached to the example object.
+   * @param context map of property + RDFNode that are to be attached to the example object.
    * @return a Resource
    */
-  Resource registerExample(String ex, Map<Property, String> context);
+  Resource registerExample(String ex, Set<Pair<Property, RDFNode>> context);
 
 
   /**
@@ -167,4 +159,6 @@ public interface IWiktionaryDataHandler {
   void computeStatistics(Model statsModel, Model sourceModel, String dumpVersion);
 
   void dumpAllFeaturesAsHDT(OutputStream ostream, boolean isExolex);
+
+  Resource addToCurrentWordSense(Set<Pair<Property, RDFNode>> context);
 }

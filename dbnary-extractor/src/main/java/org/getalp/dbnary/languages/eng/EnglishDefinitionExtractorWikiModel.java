@@ -56,7 +56,6 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
     ignoredTemplates.add("categorize");
     ignoredTemplates.add("catlangname");
     ignoredTemplates.add("catlangcode");
-    ignoredTemplates.add("senseid"); // Check if this template could be used to identify the sense
     ignoredTemplates.add("rfex");
     ignoredTemplates.add("rfd-sense");
     ignoredTemplates.add("attention");
@@ -75,6 +74,7 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
     ignoredTemplates.add("slim-wikipedia");
     ignoredTemplates.add("swp");
     ignoredTemplates.add("slim-wp");
+    ignoredTemplates.add("multiple images");
   }
 
   @SuppressWarnings("StatementWithEmptyBody")
@@ -134,6 +134,13 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
       // StringWriter quotation = new StringWriter();
       // super.substituteTemplateCall(templateName, parameterMap, quotation);
       // delegate.registerExample(quotation.toString(), null);
+    } else if (templateName.equals("non-gloss definition") || templateName.equals("n-g")
+        || templateName.equals("ngd") || templateName.equals("non-gloss")
+        || templateName.equals("non gloss")) {
+      String def = parameterMap.getOrDefault("1", "");
+      writer.append(def);
+    } else if (templateName.equals("senseid")) {
+      // TODO: the sense is given a specific id that may be used in other steps
     } else {
       // log.debug("BEGIN >>> Subtituting template {} in page {}", templateName,
       // delegate.currentLexEntry());

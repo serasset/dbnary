@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
@@ -496,11 +497,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           extractLexicalEntry(section, pos);
         }
       } else if (ignoredPosMarkers.contains(sectionName)) {
-        log.trace("Ignoring part of speech {} in {}",
-            title == null ? sectionName : title.getText());
+        log.trace("Ignoring part of speech {} in {}", title == null ? sectionName : title.getText(),
+            getWiktionaryPageName());
         // IGNORE
       } else if (ignoredSectionTitles.contains(sectionName)) {
-        log.trace("Ignoring section {} in {}", title == null ? sectionName : title.getText());
+        log.trace("Ignoring section {} in {}", title == null ? sectionName : title.getText(),
+            getWiktionaryPageName());
         // There are several entries with misplaced sub section (e.g. translations given after
         // reference section). Try to extract data from these misplaced subsections.
         handleLexicalEntrySubSections(section);
@@ -591,7 +593,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   /**
    * Extract the lexical entry that is described in the section.
    * 
-   * @param section
+   * @param section the wiki section describing the entry
    * @param pos the (standardised) part of speech described by the section
    */
   private void extractLexicalEntry(WikiSection section, String pos) {
@@ -695,7 +697,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  private static Set<String> variantSections = new HashSet<>();
+  private static final Set<String> variantSections = new HashSet<>();
 
   static {
     variantSections.add("variantes");
@@ -714,7 +716,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     variantSections.add("anciennes ortho");
   }
 
-  private static String translationTokenizer = "(?<ITALICS>'{2,3}.*?'{2,3})|"
+  private static final String translationTokenizer = "(?<ITALICS>'{2,3}.*?'{2,3})|"
       + "(?<PARENS>\\(\\P{Reserved}*?\\))|" + "(?<SPECIALPARENS>\\(.*?\\))|"
       + "(?<TMPL>\\p{Template})|" + "(?<LINK>\\p{InternalLink})";
 
@@ -737,12 +739,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // TODO: keep as usage and add current translation object when finding a comma
         log.trace("Found parenthesis | {} | in translation for {}", g, getWiktionaryPageName());
       } else if (null != (g = lexer.group("SPECIALPARENS"))) {
-        log.trace("Template or link inside parens: | {} | for [ {} ]",
-            line.getSourceContent(lexer.group("SPECIALPARENS")), getWiktionaryPageName());
+        log.trace("Template or link inside parens: | {} | for [ {} ]", line.getSourceContent(g),
+            getWiktionaryPageName());
         // TODO: some are only additional usage notes, other are alternate translation, decide
         // between them and handle the translation cases.
       } else if (null != (g = lexer.group("LINK"))) {
-        log.trace("Translation as link : {}", line.getToken(lexer.group("LINK")));
+        log.trace("Translation as link : {}", line.getToken(g));
       } else if (null != (g = lexer.group("TMPL"))) {
         WikiText.Template t = (WikiText.Template) line.getToken(g);
         String tname = t.getName();
@@ -831,7 +833,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   /**
    * Extracts morphological information on the lexical entry itself.
    * 
-   * @return
+   * @return a list of string used as a global context for morphology extraction
    */
   private List<String> extractMorphologicalData(int blockStart, int end) {
     List<String> context = new ArrayList<>();
@@ -870,11 +872,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return context;
   }
 
+  @Override
   public void extractExample(String example) {
-    Map<Property, String> context = new HashMap<>();
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
-    String ex = exampleExpander.expandExample(example, exampleTemplates, context);
+    String ex = exampleExpander.expandExample(example, exampleTemplates, context,
+        wdh.getExtractedLanguage(), wdh.getCurrentEntryLanguage());
     Resource exampleNode = null;
+    if ("".equals(ex.trim()) && !context.isEmpty()) {
+      // There is no example, it is a note that should be attached to the definition
+      wdh.addToCurrentWordSense(context);
+    }
     if (ex != null && !ex.equals("")) {
       exampleNode = wdh.registerExample(ex, context);
     }

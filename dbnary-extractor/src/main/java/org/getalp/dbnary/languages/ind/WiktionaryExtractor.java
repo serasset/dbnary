@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected final static String languageSectionPatternString =
       "={2}\\s*\\{{2}=*([^\\}=]+)=*\\}{2}\\s*={2}|\\{{2}\\s*-([^-]+)-\\s*\\}{2}|={2}\\s*([^=]+)={2}\n";
@@ -319,7 +319,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       blockS = "nom";
       String[] tmp = blockS.split("\\|");
       if (tmp.length == 3) {
-        String tab[] = tmp[2].split("=");
+        String[] tab = tmp[2].split("=");
         if (tab.length == 2 && tab[0].equalsIgnoreCase("kelas")) {
           blockS = tab[1];
         }
@@ -401,7 +401,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractPOS(String blockString) {
     WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
-    String tmp[] = blockString.split("\\|");
+    String[] tmp = blockString.split("\\|");
     String blockS;
     if (tmp.length > 1) {
       blockS = tmp[0];
@@ -488,7 +488,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     m.region(start, end);
 
     while (m.find()) {
-      wdh.registerExample(m.group(1), new HashMap<>());
+      wdh.registerExample(m.group(1), null);
     }
   }
 }

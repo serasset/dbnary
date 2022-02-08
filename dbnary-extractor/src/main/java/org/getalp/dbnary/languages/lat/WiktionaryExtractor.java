@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.ExtractionFeature;
@@ -25,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   // NOTE: to subclass the extractor, you need to define how a language section is recognized.
   // then, how are sections recognized and what is their semantics.
@@ -34,14 +36,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String entrySectionPatternString;
 
   // TODO: handle morphological informations e.g. fr-rég template ?
-  protected final static String pronunciationPatternString =
-      "\\{\\{pron\\|([^\\|\\}]*)\\|([^\\}]*)\\}\\}";
+  protected final static String pronunciationPatternString = "\\{\\{pron\\|([^|}]*)\\|([^}]*)}}";
 
   protected final static String otherFormPatternString = "\\{\\{fr-[^\\}]*\\}\\}";
 
-  private static HashMap<String, String> posMarkers;
-  private static HashSet<String> ignorablePosMarkers;
-  private static HashSet<String> ignorableSectionMarkers;
+  private static final HashMap<String, String> posMarkers;
+  private static final HashSet<String> ignorablePosMarkers;
+  private static final HashSet<String> ignorableSectionMarkers;
 
   private final static HashMap<String, String> nymMarkerToNymName;
 
@@ -92,7 +93,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     nymMarkerToNymName.put("hypo", "hypo");
     nymMarkerToNymName.put("holonymes", "holo");
     nymMarkerToNymName.put("holo", "holo");
-    nymMarkerToNymName.put("-méton-", "meto");
     nymMarkerToNymName.put("synonymes", "syn");
     nymMarkerToNymName.put("syn", "syn");
     nymMarkerToNymName.put("quasi-synonymes", "qsyn");
@@ -180,7 +180,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionExpander.setPageName(this.getWiktionaryPageName());
   }
 
-  private Set<String> defTemplates = null;
+  private final Set<String> defTemplates = null;
 
   public String getLanguageInHeader(Matcher m) {
     if (null != m.group(1)) {
@@ -198,7 +198,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     // exampleExpander = new ExampleExpanderWikiModel(wi, frLocale, this.wiktionaryPageName, "");
 
-    String nextLang = null, lang = null;
+    String nextLang, lang = null;
 
     while (languageFilter.find()) {
       nextLang = getLanguageInHeader(languageFilter);
@@ -281,7 +281,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return Block.NOBLOCK;
       }
     } else {
-      log.debug("Null section title in {}", sectionTitle, this.getWiktionaryPageName());
+      log.debug("Null section title in {}", this.getWiktionaryPageName());
       return Block.NOBLOCK;
     }
   }
@@ -352,7 +352,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
 
-  private static Set<String> variantSections = new HashSet<>();
+  private static final Set<String> variantSections = new HashSet<>();
 
   static {
     variantSections.add("variantes");
@@ -445,12 +445,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   public void extractExample(String example) {
-    Map<Property, String> context = new HashMap<>();
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
-    String ex = exampleExpander.expandExample(example, defTemplates, context);
-    Resource exampleNode = null;
+    String ex = exampleExpander.expandExample(example, defTemplates, context,
+        wdh.getExtractedLanguage(), wdh.getCurrentEntryLanguage());
     if (ex != null && !ex.equals("")) {
-      exampleNode = wdh.registerExample(ex, context);
+      wdh.registerExample(ex, context);
     }
   }
 

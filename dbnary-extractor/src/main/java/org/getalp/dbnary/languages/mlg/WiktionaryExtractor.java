@@ -412,7 +412,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     String ex = pageContent.substring(start, end);
     if (!ex.trim().equals("")) {
-      wdh.registerExample(ex.replaceAll("\n", ""), new HashMap<>());
+      wdh.registerExample(ex.replaceAll("\n", ""), null);
     }
   }
 }

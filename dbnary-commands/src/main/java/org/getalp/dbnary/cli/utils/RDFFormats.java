@@ -34,6 +34,6 @@ public class RDFFormats extends ArrayList<String> {
   }
 
   public static String getExtension(String model) {
-    return name2Extension.getOrDefault(model, ".ttl");
+    return name2Extension.getOrDefault(model, "ttl");
   }
 }

@@ -178,16 +178,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return Block.TRADBLOCK;
     } else if (title.equals("trad")) {
       return Block.TRADBLOCK;
-    } else if (WiktionaryDataHandler.isValidPOS(title)) {
-      context.put("pos", title);
-      return Block.DEFBLOCK;
+    } else if (title.equals("pron")) {
+      return Block.PRONBLOCK;
     } else if (title.equals("var")) {
       return Block.ORTHOALTBLOCK;
     } else if (null != (nym = nymMarkerToNymName.get(title))) {
       context.put("nym", nym);
       return Block.NYMBLOCK;
-    } else if (title.equals("pron")) {
-      return Block.PRONBLOCK;
+    } else if (WiktionaryDataHandler.isValidPOS(title)) {
+      context.put("pos", title);
+      return Block.DEFBLOCK;
     } else {
       // WARN: in previous implementation, L2 headers where considered as ignoredpos.
       log.debug("Ignoring content of section {} in {}", title, this.getWiktionaryPageName());

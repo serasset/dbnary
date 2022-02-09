@@ -95,17 +95,17 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
     if (parent.isVerbose()) {
       PrintWriter err = spec.commandLine().getErr();
       err.println("Extracting Wiktionary Dump:");
-      err.println("  Language: " + language);
+      err.println("  Language: " + lm.getLanguage());
       err.println("  Dump: " + wi.getDumpFile());
       err.println("  TDB : " + batch.tdbDir());
       err.println("  Format : " + features.getOutputFormat());
       features.getEndolexFeatures()
           .forEach(f -> err.format("  %s : %s%n", f.toString(), prefs.outputFileForFeature(f,
-              language, suffix, features.getOutputFormat(), batch.doCompress(), false)));
+              lm.getLanguage(), suffix, features.getOutputFormat(), batch.doCompress(), false)));
       if (null != features.getExolexFeatures())
         features.getExolexFeatures()
             .forEach(f -> err.format("  %s : %s%n", f.toString(), prefs.outputFileForFeature(f,
-                language, suffix, features.getOutputFormat(), batch.doCompress(), true)));
+                lm.getLanguage(), suffix, features.getOutputFormat(), batch.doCompress(), true)));
     }
     return 0;
   }
@@ -249,7 +249,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
   }
 
   private void saveBox(ExtractionFeature f, boolean isExolex) throws IOException {
-    File of = prefs.outputFileForFeature(f, language, suffix, features.getOutputFormat(),
+    File of = prefs.outputFileForFeature(f, lm.getLanguage(), suffix, features.getOutputFormat(),
         batch.doCompress(), isExolex).toFile();
     Model model = isExolex ? wdh.getExolexFeatureBox(f) : wdh.getEndolexFeatureBox(f);
     try (OutputStream ostream =
@@ -267,7 +267,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
   }
 
   private void saveAllAsHDT(boolean isExolex) throws IOException {
-    File hdtOutputFile = prefs.outputFileForFeature(ExtractionFeature.HDT, language, suffix,
+    File hdtOutputFile = prefs.outputFileForFeature(ExtractionFeature.HDT, lm.getLanguage(), suffix,
         features.getOutputFormat(), batch.doCompress(), isExolex).toFile();
     try (OutputStream ostream =
         batch.doCompress() ? new BZip2CompressorOutputStream(new FileOutputStream(hdtOutputFile))

@@ -1,6 +1,8 @@
 package org.getalp.dbnary.cli;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,13 +27,12 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RiotNotFoundException;
-import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
 public class RDFDiff extends VerboseCommand {
 
-  private static final TreeMap<String, String> anodes2id = new TreeMap<>();
+  private final TreeMap<String, String> anodes2id = new TreeMap<>();
   public static final Resource me = ResourceFactory.createResource("#me");
   public static final Property diffRate =
       ResourceFactory.createProperty("http://kaiko.getalp.org/dbnary/diffs/", "diffRate");
@@ -42,7 +43,7 @@ public class RDFDiff extends VerboseCommand {
 
   @Override
   protected void loadArgs(CommandLine cmd) {
-    if (remainingArgs.length != 2) {
+    if (remainingArgs.length < 2 || remainingArgs.length > 3) {
       printUsage();
       System.exit(1);
     }
@@ -63,14 +64,17 @@ public class RDFDiff extends VerboseCommand {
     pw.flush();
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws FileNotFoundException {
     RDFDiff cli = new RDFDiff(args);
     cli.diff();
   }
 
-  public void diff() {
+  public void diff() throws FileNotFoundException {
     String fromFile = remainingArgs[0];
     String toFile = remainingArgs[1];
+    String outFile = null;
+    if (remainingArgs.length == 3)
+      outFile = remainingArgs[2];
     Model fromModel;
     Model toModel;
     Model diffModel;
@@ -176,10 +180,16 @@ public class RDFDiff extends VerboseCommand {
 
     if (null != diffDataset)
       diffDataset.begin(ReadWrite.READ);
-    // print the Model as RDF/XML
-    RDFDataMgr.write(System.out, diffModel, Lang.TURTLE);
+    PrintStream out = System.out;
+    if (null != outFile) {
+      out = new PrintStream(outFile);
+    }
+    RDFDataMgr.write(out, diffModel, Lang.TURTLE);
+    out.flush();
     if (null != diffDataset)
       diffDataset.end();
+    if (null != outFile)
+      out.close();
   }
 
   public void buildBinding(Model m1, Model m2) {
@@ -306,7 +316,7 @@ public class RDFDiff extends VerboseCommand {
   }
 
 
-  private static boolean bound(Node n1, Node n2) {
+  private boolean bound(Node n1, Node n2) {
     if (n2.isBlank()) {
       String k1 = anodes2id.get(n1.getBlankNodeLabel());
       String k2 = anodes2id.get(n2.getBlankNodeLabel());

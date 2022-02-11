@@ -186,8 +186,8 @@ public class CompareExtracts implements Callable<Integer> {
         return null;
       }
 
-      String extractFilename =
-          ExtractionPreferences.outputFilename(f, lang, date, RDFLanguages.TURTLE.getName(), true, isExolex);
+      String extractFilename = ExtractionPreferences.outputFilename(f, lang, date,
+          RDFLanguages.TURTLE.getName(), true, isExolex);
       String fullExtractURL =
           server + "ontolex/" + ((null == date) ? "latest" : lang) + "/" + extractFilename;
       Path outputExtract = folder

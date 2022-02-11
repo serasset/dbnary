@@ -1,5 +1,5 @@
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/dashboard?id=serasset_dbnary)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/265a93f83eca46609ba21f3ff03285cf)](https://www.codacy.com/bb/serasset/dbnary/dashboard?utm_source=serasset@bitbucket.org&amp;utm_medium=referral&amp;utm_content=serasset/dbnary&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ac93a96d001346a1818b5ebeafe80213)](https://www.codacy.com/gl/gilles.serasset/dbnary/dashboard?utm_source=gitlab.com&amp;utm_medium=referral&amp;utm_content=gilles.serasset/dbnary&amp;utm_campaign=Badge_Grade)
 
 # DBnary extractor #
 

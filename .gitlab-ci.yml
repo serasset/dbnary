@@ -47,8 +47,8 @@ test:
     - 'pwd'
     - 'ls -al'
     - 'ls -al /'
-    - 'ls -al /build'
-    - 'ls -al /caches'
+    - 'ls -al /builds'
+    - 'ls -al /cache'
     - 'ls -al /dumps'
 
 # To deploy packages from CI, create a ci_settings.xml file

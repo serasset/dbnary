@@ -45,9 +45,10 @@ package:
     - linux
   script:
     - 'mvn $MAVEN_CLI_OPTS package'
+    - 'ls -al target/'
   artifacts:
     paths:
-      - target/appassembler
+      - dbnary-commands/target/appassembler
 
 # Run tests.
 test:

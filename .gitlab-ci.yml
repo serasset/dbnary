@@ -49,6 +49,7 @@ package:
   artifacts:
     paths:
       - dbnary-commands/target/appassembler
+  when: never
 
 # Run tests.
 test:
@@ -58,7 +59,7 @@ test:
     - dbnary
     - linux
   script:
-    - 'pwd'
+    - 'pwd && env'
     - 'ls -al'
     - 'ls -al /'
     - 'ls -al /builds'

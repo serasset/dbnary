@@ -45,12 +45,40 @@ package:
     - linux
   script:
     - 'mvn $MAVEN_CLI_OPTS package'
-    - 'ls -al dbnary-commands/target/appassembler/'
   artifacts:
     paths:
       - dbnary-commands/target/appassembler
 
-# Run tests.
+# Evaluate differences in extracts from current pull request vs develop or master branch
+# Make sure it only occurs on pull requests
+evaluate:sampling:
+  stage: test
+  image: openjdk:11
+  tags:
+    - dbnary
+    - linux
+  variables:
+    EVALUATE_AGAINST_BRANCH: "develop"
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_REF_NAME == develop
+      variables:
+        EVALUATE_AGAINST_BRANCH: "develop"
+    - if: $CI_COMMIT_REF_NAME =~ /feature/
+      variables:
+        EVALUATE_AGAINST_BRANCH: "develop"
+    - if: $CI_COMMIT_REF_NAME =~ /release/
+      variables:
+        EVALUATE_AGAINST_BRANCH: "main"
+  script:
+    - 'pwd'
+    - 'ls -al'
+    - 'ls -al /'
+    - 'ls -al /builds'
+    - 'ls -al /cache'
+    - 'ls -al /dumps'
+
 test:
   stage: test
   image: openjdk:11
@@ -64,6 +92,7 @@ test:
     - 'ls -al /builds'
     - 'ls -al /cache'
     - 'ls -al /dumps'
+
 
 # To deploy packages from CI, create a ci_settings.xml file
 # For deploying packages to GitLab's Maven Repository: See https://docs.gitlab.com/ee/user/packages/maven_repository/index.html#create-maven-packages-with-gitlab-cicd for more details.

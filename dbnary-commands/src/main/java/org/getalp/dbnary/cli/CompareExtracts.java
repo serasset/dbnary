@@ -9,13 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -24,10 +21,10 @@ import org.apache.jena.riot.RDFLanguages;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.cli.mixins.ExtractionFeaturesMixin;
 import org.getalp.dbnary.cli.utils.ExtractionPreferences;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParentCommand;
 import picocli.CommandLine.Spec;
@@ -48,7 +45,7 @@ public class CompareExtracts implements Callable<Integer> {
   private static final String DEFAULT_SERVER_URL = "http://kaiko.getalp.org/static/";
   private String server;
 
-  @CommandLine.Option(names = {"-s", "--server"}, paramLabel = "KAIKO_STATIC URL",
+  @Option(names = {"-s", "--server"}, paramLabel = "KAIKO_STATIC URL",
       defaultValue = DEFAULT_SERVER_URL,
       description = "Use the specify URL to download dumps (Default: ${DEFAULT-VALUE}).")
   private void setServerUrl(String url) {
@@ -58,15 +55,15 @@ public class CompareExtracts implements Callable<Integer> {
     this.server = url;
   }
 
-  @CommandLine.Option(names = {"--from", "--from-date"}, paramLabel = "YYYYMMDD", required = true,
+  @Option(names = {"--from", "--from-date"}, paramLabel = "YYYYMMDD", required = true,
       description = "Fetch and base the comparison from given date")
   private String fromDate = null;
 
-  @CommandLine.Option(names = {"--to", "--to-date"}, paramLabel = "YYYYMMDD",
+  @Option(names = {"--to", "--to-date"}, paramLabel = "YYYYMMDD",
       description = "Specify the date of the target dump. If unspecified, latest dump will be used.")
   private String toDate = null;
 
-  @CommandLine.Option(names = {"-o", "--output"}, paramLabel = "DIR", defaultValue = ".",
+  @Option(names = {"-o", "--output"}, paramLabel = "DIR", defaultValue = ".",
       description = "create files in DIR (default: ${DEFAULT-VALUE})")
   private Path output = null;
 
@@ -186,8 +183,8 @@ public class CompareExtracts implements Callable<Integer> {
         return null;
       }
 
-      String extractFilename =
-          ExtractionPreferences.outputFilename(f, lang, date, RDFLanguages.TURTLE.getName(), true, isExolex);
+      String extractFilename = ExtractionPreferences.outputFilename(f, lang, date,
+          RDFLanguages.TURTLE.getName(), true, isExolex);
       String fullExtractURL =
           server + "ontolex/" + ((null == date) ? "latest" : lang) + "/" + extractFilename;
       Path outputExtract = folder

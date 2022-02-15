@@ -47,7 +47,7 @@ package:
     - 'mvn $MAVEN_CLI_OPTS package'
   artifacts:
     paths:
-      - target/appassembly
+      - target/appassembler
 
 # Run tests.
 test:

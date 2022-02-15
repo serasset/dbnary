@@ -32,11 +32,6 @@ cache:
   paths:
     - .m2/repository
 
-stages:
-  - verify
-  - build
-  - deploy
-
 # For merge requests do not `deploy` but only run `verify`.
 # See https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
 .verify: &verify
@@ -53,7 +48,7 @@ verify:jdk11:
 
 # Run tests.
 test:
-  stage: verify
+  stage: build
   script:
     - 'pwd'
     - 'ls -al'

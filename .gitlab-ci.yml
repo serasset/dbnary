@@ -39,7 +39,8 @@ verify:jdk11:
 
 # Run tests.
 test:
-  stage: build
+  stage: test
+  image: openjdk:11
   tags:
     - dbnary
     - linux

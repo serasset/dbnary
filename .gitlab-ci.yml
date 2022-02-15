@@ -23,7 +23,7 @@ variables:
   # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
 
-# This template uses jdk8 for verifying and deploying images --> upgrade to jdk11 for DBnary
+# DBnary requires jdk11 for compiling
 image: maven:3-openjdk-11
 
 # Cache downloaded dependencies and plugins between builds.
@@ -31,6 +31,10 @@ image: maven:3-openjdk-11
 cache:
   paths:
     - .m2/repository
+
+stages:
+  - verify
+  - build
 
 # For merge requests do not `deploy` but only run `verify`.
 # See https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
@@ -42,9 +46,16 @@ cache:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-# Verify merge requests using JDK8
+# Verify merge requests using JDK11
 verify:jdk11:
   <<: *verify
+
+# Run tests.
+test:
+  stage: verify
+  script:
+    - 'pwd'
+    - 'ls -al'
 
 # To deploy packages from CI, create a ci_settings.xml file
 # For deploying packages to GitLab's Maven Repository: See https://docs.gitlab.com/ee/user/packages/maven_repository/index.html#create-maven-packages-with-gitlab-cicd for more details.

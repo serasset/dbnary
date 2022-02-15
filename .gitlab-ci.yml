@@ -49,7 +49,6 @@ package:
   artifacts:
     paths:
       - dbnary-commands/target/appassembler
-  when: never
 
 # Run tests.
 test:

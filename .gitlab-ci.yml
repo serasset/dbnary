@@ -45,7 +45,7 @@ package:
     - linux
   script:
     - 'mvn $MAVEN_CLI_OPTS package'
-    - 'ls -al target/'
+    - 'ls -al dbnary-commands/target/appassembler/'
   artifacts:
     paths:
       - dbnary-commands/target/appassembler

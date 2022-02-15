@@ -37,6 +37,18 @@ cache:
 verify:jdk11:
   <<: *verify
 
+# package the DBnary app
+package:
+  stage: build
+  tags:
+    - dbnary
+    - linux
+  script:
+    - 'mvn $MAVEN_CLI_OPTS package'
+  artifacts:
+    paths:
+      - target/appassembly
+
 # Run tests.
 test:
   stage: test

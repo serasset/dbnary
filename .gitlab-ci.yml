@@ -1,13 +1,4 @@
-# This file is a template, and might need editing before it works on your project.
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
-# This specific template is located at:
-# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Maven.gitlab-ci.yml
 
-# Build JAVA applications using Apache Maven (http://maven.apache.org)
-# For docker image tags see https://hub.docker.com/_/maven/
-#
-# For general lifecycle information see https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
 
 # This template will build and test your projects
 # * Caches downloaded dependencies and plugins between invocation.
@@ -23,7 +14,7 @@ variables:
   # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
 
-# This template uses jdk8 for verifying and deploying images --> upgrade to jdk11 for DBnary
+# DBnary requires jdk11 for compiling
 image: maven:3-openjdk-11
 
 # Cache downloaded dependencies and plugins between builds.
@@ -42,9 +33,66 @@ cache:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-# Verify merge requests using JDK8
+# Verify merge requests using JDK11
 verify:jdk11:
   <<: *verify
+
+# package the DBnary app
+package:
+  stage: build
+  tags:
+    - dbnary
+    - linux
+  script:
+    - 'mvn $MAVEN_CLI_OPTS package'
+  artifacts:
+    paths:
+      - dbnary-commands/target/appassembler
+
+# Evaluate differences in extracts from current pull request vs develop or master branch
+# Make sure it only occurs on pull requests
+evaluate:sampling:
+  stage: test
+  image: openjdk:11
+  tags:
+    - dbnary
+    - linux
+  variables:
+    EVALUATE_AGAINST_BRANCH: "develop"
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_REF_NAME == "develop"
+      variables:
+        EVALUATE_AGAINST_BRANCH: "develop"
+    - if: $CI_COMMIT_REF_NAME =~ "/feature/"
+      variables:
+        EVALUATE_AGAINST_BRANCH: "develop"
+    - if: $CI_COMMIT_REF_NAME =~ "/release/"
+      variables:
+        EVALUATE_AGAINST_BRANCH: "main"
+  script:
+    - 'pwd'
+    - 'ls -al'
+    - 'ls -al /'
+    - 'ls -al /builds'
+    - 'ls -al /cache'
+    - 'ls -al /dumps'
+
+test:
+  stage: test
+  image: openjdk:11
+  tags:
+    - dbnary
+    - linux
+  script:
+    - 'pwd && env'
+    - 'ls -al'
+    - 'ls -al /'
+    - 'ls -al /builds'
+    - 'ls -al /cache'
+    - 'ls -al /dumps'
+
 
 # To deploy packages from CI, create a ci_settings.xml file
 # For deploying packages to GitLab's Maven Repository: See https://docs.gitlab.com/ee/user/packages/maven_repository/index.html#create-maven-packages-with-gitlab-cicd for more details.

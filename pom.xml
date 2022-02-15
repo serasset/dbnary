@@ -5,7 +5,7 @@
 
   <groupId>org.getalp</groupId>
   <artifactId>dbnary</artifactId>
-  <version>3.0.2-SNAPSHOT</version>
+  <version>3.0.2</version>
   <packaging>pom</packaging>
 
   <inceptionYear>2010</inceptionYear>
@@ -85,11 +85,19 @@
   </organization>
 
   <distributionManagement>
-    <repository>
+    <!--repository>
       <id>getalp.repository</id>
       <name>Getalp Projects and third party repository</name>
       <url>scpexe://getalp.imag.fr/opt/www/m2</url>
+    </repository-->
+    <repository>
+      <id>gitlab-maven</id>
+      <url>https://gitlab.com/api/v4/projects/33561967/packages/maven</url>
     </repository>
+    <snapshotRepository>
+      <id>gitlab-maven</id>
+      <url>https://gitlab.com/api/v4/projects/33561967/packages/maven</url>
+    </snapshotRepository>
     <site>
       <id>kaiko.getalp.org</id>
       <url>scpexe://getalp.imag.fr/opt/dbnary/static/reports/${project.version}/</url>
@@ -625,6 +633,10 @@
   </profiles>
 
   <repositories>
+    <repository>
+      <id>gitlab-maven</id>
+      <url>https://gitlab.com/api/v4/projects/33561967/packages/maven</url>
+    </repository>
     <repository>
       <!-- Getalp third party stuff -->
       <id>getalp.repository</id>

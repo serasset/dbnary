@@ -32,8 +32,9 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <java.version>11</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <junit4.version>4.13.2</junit4.version>
     <junit5.version>5.8.2</junit5.version>
@@ -61,6 +62,10 @@
     <sonar.java.source>${maven.compiler.source}</sonar.java.source>
     <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+
+    <!-- Distributions -->
+    <app.main.class>org.getalp.dbnary.cli.DBnary</app.main.class>
+    <app.distribution.directory>${project.build.directory}/distributions/dbnary</app.distribution.directory>
   </properties>
 
   <issueManagement>
@@ -73,6 +78,9 @@
       <name>Gilles Sérasset</name>
       <organization>Université Grenoble Alpes, LIG Lab, GETALP team</organization>
       <url>https://serasset.bitbucket.io/</url>
+      <roles>
+        <role>author</role>
+      </roles>
     </developer>
     <developer>
       <name>Ester Pantaleo</name>
@@ -555,6 +563,11 @@
           <version>${maven-surefire-plugin.version}</version>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.3.0</version>
+        </plugin>
+        <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>${jacoco-maven-plugin.version}</version>
@@ -628,6 +641,73 @@
             <artifactId>jacoco-maven-plugin</artifactId>
           </plugin>
         </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>jreleaser</id>
+      <!--properties>
+        <jreleaser.git.root.search>true</jreleaser.git.root.search>
+      </properties-->
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.jreleaser</groupId>
+              <artifactId>jreleaser-maven-plugin</artifactId>
+              <version>1.0.0-M2</version>
+              <configuration>
+                <jreleaser>
+                  <project>
+                    <name>DBnary</name>
+                    <java>
+                      <mainClass>${app.main.class}</mainClass>
+                    </java>
+                  </project>
+                  <release>
+                    <gitlab>
+                      <owner>gilles.serasset</owner>
+                      <name>dbnary</name>
+                      <host>gitlab.com</host>
+                      <overwrite>true</overwrite>
+                      <commitAuthor>
+                        <name>gilles.serasset</name>
+                        <email>gilles.serasset@gmail.com</email>
+                      </commitAuthor>
+                    </gitlab>
+                  </release>
+                  <distributions>
+                    <dbnary>
+                      <tags>
+                        <tag>cli</tag>
+                      </tags>
+                      <artifacts>
+                        <artifact>
+                          <path>
+                            ${app.distribution.directory}/${project.artifactId}-${project.version}.zip
+                          </path>
+                        </artifact>
+                        <artifact>
+                          <path>
+                            ${app.distribution.directory}/${project.artifactId}-${project.version}.tar.gz
+                          </path>
+                        </artifact>
+                      </artifacts>
+                    </dbnary>
+                  </distributions>
+                </jreleaser>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>make-distribution</id>
+                  <phase>deploy</phase>
+                  <goals>
+                    <goal>release</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
       </build>
     </profile>
   </profiles>

@@ -87,9 +87,14 @@
         <configuration>
           <licenseHeaderFile>${basedir}/LICENSE.txt</licenseHeaderFile>
           <extraJvmArguments>-Xmx8g</extraJvmArguments>
+          <repositoryName>lib</repositoryName>
+          <repositoryLayout>flat</repositoryLayout>
+          <platforms>
+            <platform>unix</platform>
+          </platforms>
           <programs>
             <program>
-              <mainClass>org.getalp.dbnary.cli.DBnary</mainClass>
+              <mainClass>${app.main.class}</mainClass>
               <id>dbnary</id>
             </program>
             <program>
@@ -111,6 +116,39 @@
           </programs>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+          <descriptors>
+            <descriptor>src/main/assembly/bin.xml</descriptor>
+          </descriptors>
+          <tarLongFileMode>gnu</tarLongFileMode>
+          <outputDirectory>${app.distribution.directory}</outputDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>jreleaser</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jreleaser</groupId>
+            <artifactId>jreleaser-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

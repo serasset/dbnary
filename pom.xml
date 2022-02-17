@@ -65,12 +65,13 @@
 
     <!-- Distributions -->
     <app.main.class>org.getalp.dbnary.cli.DBnary</app.main.class>
-    <app.distribution.directory>${project.build.directory}/distributions/dbnary</app.distribution.directory>
+    <app.distribution.directory>${project.build.directory}/distributions/dbnary
+    </app.distribution.directory>
   </properties>
 
   <issueManagement>
-    <system>bitbucket</system>
-    <url>https://bitbucket.org/serasset/dbnary/issues</url>
+    <system>gitlab</system>
+    <url>https://gitlab.com/gilles.serasset/dbnary/-/issues</url>
   </issueManagement>
 
   <developers>
@@ -93,19 +94,11 @@
   </organization>
 
   <distributionManagement>
-    <!--repository>
+    <repository>
       <id>getalp.repository</id>
       <name>Getalp Projects and third party repository</name>
       <url>scpexe://getalp.imag.fr/opt/www/m2</url>
-    </repository-->
-    <repository>
-      <id>gitlab-maven</id>
-      <url>https://gitlab.com/api/v4/projects/33561967/packages/maven</url>
     </repository>
-    <snapshotRepository>
-      <id>gitlab-maven</id>
-      <url>https://gitlab.com/api/v4/projects/33561967/packages/maven</url>
-    </snapshotRepository>
     <site>
       <id>kaiko.getalp.org</id>
       <url>scpexe://getalp.imag.fr/opt/dbnary/static/reports/${project.version}/</url>
@@ -113,9 +106,10 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:git:ssh://git@bitbucket.org/serasset/dbnary.git</connection>
-    <developerConnection>scm:git:ssh://git@bitbucket.org/serasset/dbnary.git</developerConnection>
-    <url>https://bitbucket.org/serasset/dbnary/</url>
+    <connection>scm:git:ssh://git@gitlab.com:gilles.serasset/dbnary.git</connection>
+    <developerConnection>scm:git:ssh://git@gitlab.com:gilles.serasset/dbnary.git
+    </developerConnection>
+    <url>https://gitlab.com:gilles.serasset/dbnary</url>
   </scm>
 
   <modules>
@@ -367,11 +361,11 @@
 
   <build>
     <extensions>
-      <extension>
+      <!--extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-ssh</artifactId>
         <version>3.4.0</version>
-      </extension>
+      </extension-->
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-ssh-external</artifactId>
@@ -644,13 +638,29 @@
       </build>
     </profile>
     <profile>
-      <id>jreleaser</id>
-      <!--properties>
-        <jreleaser.git.root.search>true</jreleaser.git.root.search>
-      </properties-->
+      <id>release</id>
       <build>
         <pluginManagement>
           <plugins>
+            <!--plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>wagon-maven-plugin</artifactId>
+              <version>2.0.2</version>
+              <executions>
+                <execution>
+                  <id>upload-apps</id>
+                  <phase>deploy</phase>
+                  <goals>
+                    <goal>upload</goal>
+                  </goals>
+                  <configuration>
+                    <fromDir>${app.distribution.directory}</fromDir>
+                    <url>scpexe://getalp.imag.fr/opt/dbnary/static/releases/${project.version}/</url>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin-->
+            <!-- other plugins ... -->
             <plugin>
               <groupId>org.jreleaser</groupId>
               <artifactId>jreleaser-maven-plugin</artifactId>
@@ -664,16 +674,18 @@
                     </java>
                   </project>
                   <release>
-                    <gitlab>
-                      <owner>gilles.serasset</owner>
+                    <github>
+                      <owner>serasset</owner>
                       <name>dbnary</name>
-                      <host>gitlab.com</host>
+                      <!--host>gitlab.com</host-->
                       <overwrite>true</overwrite>
                       <commitAuthor>
-                        <name>gilles.serasset</name>
-                        <email>gilles.serasset@gmail.com</email>
+                        <name>serasset</name>
+                        <email>gilles.serasset@imag.fr</email>
                       </commitAuthor>
-                    </gitlab>
+                      <!--artifacts>false</artifacts>
+                      <files>false</files-->
+                    </github>
                   </release>
                   <distributions>
                     <dbnary>
@@ -694,6 +706,11 @@
                       </artifacts>
                     </dbnary>
                   </distributions>
+                  <packagers>
+                    <brew>
+                      <multiPlatform>true</multiPlatform>
+                    </brew>
+                  </packagers>
                 </jreleaser>
               </configuration>
               <executions>
@@ -713,12 +730,12 @@
   </profiles>
 
   <repositories>
-    <repository>
+    <!--repository>
       <id>gitlab-maven</id>
       <url>https://gitlab.com/api/v4/projects/33561967/packages/maven</url>
-    </repository>
+    </repository-->
+    <!-- Getalp third party stuff -->
     <repository>
-      <!-- Getalp third party stuff -->
       <id>getalp.repository</id>
       <url>https://lig-getalp.imag.fr/m2/</url>
     </repository>

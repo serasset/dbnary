@@ -124,6 +124,7 @@
           <descriptors>
             <descriptor>src/main/assembly/bin.xml</descriptor>
           </descriptors>
+          <attach>false</attach>
           <tarLongFileMode>gnu</tarLongFileMode>
           <outputDirectory>${app.distribution.directory}</outputDirectory>
         </configuration>
@@ -140,7 +141,7 @@
   </build>
   <profiles>
     <profile>
-      <id>jreleaser</id>
+      <id>release</id>
       <build>
         <plugins>
           <plugin>

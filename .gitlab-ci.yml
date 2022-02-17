@@ -44,6 +44,9 @@ package:
     - dbnary
     - linux
   script:
+    - 'chmod +x .gitlab-ci/*.sh'
+    - '.gitlab-ci/prepare-deployment.sh'
+    - 'scp pom.xml ${DEPLOY_HOST}:.'
     - 'mvn $MAVEN_CLI_OPTS package'
   artifacts:
     paths:

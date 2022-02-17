@@ -101,10 +101,8 @@ test:
 deploy:jdk11:
   stage: deploy
   script:
-    - if [ ! -f ci_settings.xml ];
-        then echo "CI settings missing\! If deploying to GitLab Maven Repository, please see https://docs.gitlab.com/ee/user/packages/maven_repository/index.html#create-maven-packages-with-gitlab-cicd for instructions.";
-      fi
-    - 'mvn $MAVEN_CLI_OPTS deploy -s ci_settings.xml'
+    - .gitlab-ci/prepare-deployment.sh
+    - 'mvn $MAVEN_CLI_OPTS -Prelease deploy'
   only:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

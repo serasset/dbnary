@@ -33,4 +33,11 @@ mvn clean
 
 # Then, switch back to latest branch so that latest improvement in CI/CD are used.
 git stash -u
-git checkout "$NEXT_VERSION"
+git checkout "$NEXT_VERSION_BRANCH"
+
+pushd $BINDIR/$PREVIOUS_VERSION
+tar zxvf *.tar.gz
+popd
+pushd $BINDIR/$NEXT_VERSION
+tar zxvf *.tar.gz
+popd

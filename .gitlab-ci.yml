@@ -53,6 +53,26 @@ package:
 
 # Evaluate differences in extracts from current pull request vs develop or master branch
 # Make sure it only occurs on pull requests
+compile:sampling:
+  stage: build
+  tags:
+    - dbnary
+    - linux
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+      when: manual
+    - if: $CI_COMMIT_REF_NAME =~ "/feature/"
+      when: manual
+    - if: $CI_COMMIT_REF_NAME =~ "/release/"
+      when: manual
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  script:
+    - chmod +x .gitlab-ci/*.sh
+    - .gitlab-ci/compile-pr-and-target-versions.sh
+  artifacts:
+    paths:
+      - out/dbnary
+
 evaluate:sampling:
   stage: test
   tags:
@@ -66,10 +86,11 @@ evaluate:sampling:
     - if: $CI_COMMIT_REF_NAME =~ "/release/"
       when: manual
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-
   script:
-    - chmod +x .gitlab-ci/*.sh
     - .gitlab-ci/compile-pr-and-target-versions.sh
+  artifacts:
+    paths:
+      - out/dbnary
 
 # gitlab does not accept artifacts of size > 10M in releases, and ours are 50M+
 # Hence the maven configuration will use the github mirror to perform releases.

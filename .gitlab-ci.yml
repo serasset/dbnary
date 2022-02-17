@@ -44,14 +44,10 @@ package:
     - dbnary
     - linux
   script:
-    - pwd
-    - 'chmod +x .gitlab-ci/*.sh'
-    - '.gitlab-ci/prepare-deployment.sh'
-    - 'scp -vv pom.xml ${DEPLOY_HOST}:.'
     - 'mvn $MAVEN_CLI_OPTS package'
   artifacts:
     paths:
-      - dbnary-commands/target/appassembler
+      - dbnary-commands/target/distributions/
 
 # Evaluate differences in extracts from current pull request vs develop or master branch
 # Make sure it only occurs on pull requests
@@ -103,9 +99,7 @@ test:
 deploy:jdk11:
   stage: deploy
   script:
-    - 'chmod +x .gitlab-ci/*.sh'
-    - '.gitlab-ci/prepare-deployment.sh'
-    - 'mvn $MAVEN_CLI_OPTS -Prelease deploy'
+    - 'mvn $MAVEN_CLI_OPTS -s ci_settings.xml -Prelease deploy'
   only:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

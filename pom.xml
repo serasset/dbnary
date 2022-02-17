@@ -95,10 +95,18 @@
 
   <distributionManagement>
     <repository>
+      <id>gitlab-maven</id>
+      <url>https://gitlab.com/api/v4/projects/33561967/packages/maven</url>
+    </repository>
+    <snapshotRepository>
+      <id>gitlab-maven</id>
+      <url>https://gitlab.com/api/v4/projects/33561967/packages/maven</url>
+    </snapshotRepository>
+    <!--repository>
       <id>getalp.repository</id>
       <name>Getalp Projects and third party repository</name>
       <url>scpexe://getalp.imag.fr/opt/www/m2</url>
-    </repository>
+    </repository-->
     <site>
       <id>kaiko.getalp.org</id>
       <url>scpexe://getalp.imag.fr/opt/dbnary/static/reports/${project.version}/</url>
@@ -731,10 +739,10 @@
   </profiles>
 
   <repositories>
-    <!--repository>
+    <repository>
       <id>gitlab-maven</id>
       <url>https://gitlab.com/api/v4/projects/33561967/packages/maven</url>
-    </repository-->
+    </repository>
     <!-- Getalp third party stuff -->
     <repository>
       <id>getalp.repository</id>

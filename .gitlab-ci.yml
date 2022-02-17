@@ -59,32 +59,26 @@ evaluate:sampling:
   tags:
     - dbnary
     - linux
-  variables:
-    EVALUATE_AGAINST_BRANCH: "develop"
   rules:
-    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
-      when: never
-    - if: $CI_COMMIT_REF_NAME == "develop"
-      variables:
-        EVALUATE_AGAINST_BRANCH: "develop"
+    - if: $CI_COMMIT_BRANCH == "develop"
+      when: manual
     - if: $CI_COMMIT_REF_NAME =~ "/feature/"
-      variables:
-        EVALUATE_AGAINST_BRANCH: "develop"
+      when: manual
     - if: $CI_COMMIT_REF_NAME =~ "/release/"
-      variables:
-        EVALUATE_AGAINST_BRANCH: "main"
+      when: manual
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
   script:
-    - 'pwd'
-    - 'ls -al'
-    - 'ls -al /'
-    - 'ls -al /builds'
-    - 'ls -al /cache'
-    - 'ls -al /dumps'
+    - echo I will Compare merge request with ${EVALUATE_AGAINST_BRANCH}
+    - chmod +x .gitlab-ci/*.sh
+    - ./gitlab-ci/compile-pr-and-target-versions.sh
 
 # gitlab does not accept artifacts of size > 10M in releases, and ours are 50M+
 # Hence the maven configuration will use the github mirror to perform releases.
 deploy:jdk11:
   stage: deploy
+  variables:
+    JRELEASER_DRAFT: "false"
   script:
     - 'mvn $MAVEN_CLI_OPTS -s ci_settings.xml -Prelease deploy'
   only:

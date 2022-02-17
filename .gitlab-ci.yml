@@ -85,7 +85,7 @@ evaluate:sampling:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
     - chmod +x .gitlab-ci/*.sh
-    - .gitlab-ci/extract_both_versions.sh
+    - .gitlab-ci/extract_both_versions.sh fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku
   artifacts:
     paths:
       - target/evaluation

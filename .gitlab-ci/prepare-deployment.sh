@@ -1,10 +1,11 @@
 #!/bin/bash
 
-mkdir -p .ssh
-chmod 700 .ssh
-cat $IDENTITY > .ssh/id_rsa
-chmod 600 .ssh/id_rsa
-cat $SSH_CONFIG >> .ssh/config
-chmod 644 .ssh/config
-cat $KNOWN_HOSTS >> .ssh/known_hosts
-chmod 600 .ssh/known_hosts
+SSH_DIR=${HOME}/.ssh
+mkdir -p $SSH_DIR
+chmod 700 $SSH_DIR
+cat $IDENTITY > $SSH_DIR/id_rsa
+chmod 600 $SSH_DIR/id_rsa
+cat $SSH_CONFIG >> $SSH_DIR/config
+chmod 644 $SSH_DIR/config
+cat $KNOWN_HOSTS >> $SSH_DIR/known_hosts
+chmod 600 $SSH_DIR/known_hosts

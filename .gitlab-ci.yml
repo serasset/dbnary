@@ -44,6 +44,7 @@ package:
     - dbnary
     - linux
   script:
+    - pwd
     - 'chmod +x .gitlab-ci/*.sh'
     - '.gitlab-ci/prepare-deployment.sh'
     - 'scp -vv pom.xml ${DEPLOY_HOST}:.'

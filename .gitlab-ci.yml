@@ -47,7 +47,9 @@ package:
     - 'mvn $MAVEN_CLI_OPTS package'
   artifacts:
     paths:
-      - dbnary-commands/target/appassembler
+      - dbnary-commands/target/distributions/
+  rules:
+    - if: $CI_COMMIT_TAG
 
 # Evaluate differences in extracts from current pull request vs develop or master branch
 # Make sure it only occurs on pull requests
@@ -79,32 +81,12 @@ evaluate:sampling:
     - 'ls -al /cache'
     - 'ls -al /dumps'
 
-test:
-  stage: test
-  image: openjdk:11
-  tags:
-    - dbnary
-    - linux
-  script:
-    - 'pwd && env'
-    - 'ls -al'
-    - 'ls -al /'
-    - 'ls -al /builds'
-    - 'ls -al /cache'
-    - 'ls -al /dumps'
-
-
-# To deploy packages from CI, create a ci_settings.xml file
-# For deploying packages to GitLab's Maven Repository: See https://docs.gitlab.com/ee/user/packages/maven_repository/index.html#create-maven-packages-with-gitlab-cicd for more details.
-# Please note: The GitLab Maven Repository is currently only available in GitLab Premium / Ultimate.
-# For `master` branch run `mvn deploy` automatically.
+# gitlab does not accept artifacts of size > 10M in releases, and ours are 50M+
+# Hence the maven configuration will use the github mirror to perform releases.
 deploy:jdk11:
   stage: deploy
   script:
-    - if [ ! -f ci_settings.xml ];
-        then echo "CI settings missing\! If deploying to GitLab Maven Repository, please see https://docs.gitlab.com/ee/user/packages/maven_repository/index.html#create-maven-packages-with-gitlab-cicd for instructions.";
-      fi
-    - 'mvn $MAVEN_CLI_OPTS deploy -s ci_settings.xml'
+    - 'mvn $MAVEN_CLI_OPTS -s ci_settings.xml -Prelease deploy'
   only:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

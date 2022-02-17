@@ -60,11 +60,8 @@ compile:sampling:
     - linux
   rules:
     - if: $CI_COMMIT_BRANCH == "develop"
-      when: manual
     - if: $CI_COMMIT_REF_NAME =~ "/feature/"
-      when: manual
     - if: $CI_COMMIT_REF_NAME =~ "/release/"
-      when: manual
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
     - chmod +x .gitlab-ci/*.sh
@@ -80,17 +77,18 @@ evaluate:sampling:
     - linux
   rules:
     - if: $CI_COMMIT_BRANCH == "develop"
-      when: manual
+#      when: manual
     - if: $CI_COMMIT_REF_NAME =~ "/feature/"
-      when: manual
+#      when: manual
     - if: $CI_COMMIT_REF_NAME =~ "/release/"
-      when: manual
+#      when: manual
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
-    - .gitlab-ci/compile-pr-and-target-versions.sh
+    - chmod +x .gitlab-ci/*.sh
+    - .gitlab-ci/extract_both_versions.sh
   artifacts:
     paths:
-      - out/dbnary
+      - target/evaluation
 
 # gitlab does not accept artifacts of size > 10M in releases, and ours are 50M+
 # Hence the maven configuration will use the github mirror to perform releases.

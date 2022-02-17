@@ -37,7 +37,9 @@ git checkout "$NEXT_VERSION_BRANCH"
 
 pushd $BINDIR/$PREVIOUS_VERSION
 tar zxvf *.tar.gz
+rm *.tar.gz
 popd
 pushd $BINDIR/$NEXT_VERSION
 tar zxvf *.tar.gz
+rm *.tar.gz
 popd

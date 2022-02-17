@@ -71,7 +71,7 @@ evaluate:sampling:
   script:
     - echo I will Compare merge request with ${EVALUATE_AGAINST_BRANCH}
     - chmod +x .gitlab-ci/*.sh
-    - ./gitlab-ci/compile-pr-and-target-versions.sh
+    - .gitlab-ci/compile-pr-and-target-versions.sh
 
 # gitlab does not accept artifacts of size > 10M in releases, and ours are 50M+
 # Hence the maven configuration will use the github mirror to perform releases.

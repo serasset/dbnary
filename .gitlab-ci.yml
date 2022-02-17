@@ -94,14 +94,13 @@ test:
     - 'ls -al /dumps'
 
 
-# To deploy packages from CI, create a ci_settings.xml file
-# For deploying packages to GitLab's Maven Repository: See https://docs.gitlab.com/ee/user/packages/maven_repository/index.html#create-maven-packages-with-gitlab-cicd for more details.
-# Please note: The GitLab Maven Repository is currently only available in GitLab Premium / Ultimate.
-# For `master` branch run `mvn deploy` automatically.
+# gitlab does not accept artifacts of size > 10M in releases, and ours are 50M+
+# Hence the maven configuration will use the github mirror to perform releases.
 deploy:jdk11:
   stage: deploy
   script:
-    - .gitlab-ci/prepare-deployment.sh
+    - 'chmod +x .gitlab-ci/*.sh'
+    - '.gitlab-ci/prepare-deployment.sh'
     - 'mvn $MAVEN_CLI_OPTS -Prelease deploy'
   only:
     variables:

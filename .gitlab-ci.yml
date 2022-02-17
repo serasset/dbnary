@@ -55,7 +55,6 @@ package:
 # Make sure it only occurs on pull requests
 evaluate:sampling:
   stage: test
-  image: openjdk:11
   tags:
     - dbnary
     - linux
@@ -69,7 +68,6 @@ evaluate:sampling:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
   script:
-    - echo I will Compare merge request with ${EVALUATE_AGAINST_BRANCH}
     - chmod +x .gitlab-ci/*.sh
     - .gitlab-ci/compile-pr-and-target-versions.sh
 

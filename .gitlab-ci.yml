@@ -46,7 +46,7 @@ package:
   script:
     - 'chmod +x .gitlab-ci/*.sh'
     - '.gitlab-ci/prepare-deployment.sh'
-    - 'scp pom.xml ${DEPLOY_HOST}:.'
+    - 'scp -vv pom.xml ${DEPLOY_HOST}:.'
     - 'mvn $MAVEN_CLI_OPTS package'
   artifacts:
     paths:

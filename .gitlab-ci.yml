@@ -118,9 +118,6 @@ analyse:sampling:
   stage: deploy
   script:
     - chmod +x .gitlab-ci/*.sh
-    - ls -al out/dbnary/
-    - ls -al out/dbnary/*
-    - ls -al out/dbnary/*/*
     - .gitlab-ci/compute_differences.sh
     - .gitlab-ci/summarize_on_slack.sh
   artifacts:

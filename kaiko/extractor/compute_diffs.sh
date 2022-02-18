@@ -50,7 +50,6 @@ if [ $# -gt 0 ]
 fi
 
 if ! command -v $RDFDIFF ; then
-  env
   echo >&2 "Could not find rdfdiff command, aborting..."
   exit 1
 fi

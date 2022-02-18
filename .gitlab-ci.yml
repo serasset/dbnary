@@ -72,6 +72,7 @@ compile:sampling:
   <<: *sampling
   stage: build
   script:
+    - env
     - chmod +x .gitlab-ci/*.sh
     - .gitlab-ci/compile-pr-and-target-versions.sh
   artifacts:

@@ -119,9 +119,9 @@ analyse:sampling:
     - chmod +x .gitlab-ci/*.sh
     - .gitlab-ci/compute_differences.sh
     - .gitlab-ci/summarize_on_slack.sh
-    artifacts:
-      paths:
-        - target/diffs
+  artifacts:
+    paths:
+      - target/diffs
 
 
 # gitlab does not accept artifacts of size > 10M in releases, and ours are 50M+

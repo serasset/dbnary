@@ -33,6 +33,21 @@ cache:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
+## Alias for sampling evaluation strategy
+.sampling: &sampling
+  tags:
+    - dbnary
+    - linux
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+    #      when: manual
+    - if: $CI_COMMIT_REF_NAME =~ "/feature/"
+    #      when: manual
+    - if: $CI_COMMIT_REF_NAME =~ "/release/"
+    #      when: manual
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+
 # Verify merge requests using JDK11
 verify:jdk11:
   <<: *verify
@@ -54,15 +69,8 @@ package:
 # Evaluate differences in extracts from current pull request vs develop or master branch
 # Make sure it only occurs on pull requests
 compile:sampling:
-  stage: build
-  tags:
-    - dbnary
-    - linux
-  rules:
-    - if: $CI_COMMIT_BRANCH == "develop"
-    - if: $CI_COMMIT_REF_NAME =~ "/feature/"
-    - if: $CI_COMMIT_REF_NAME =~ "/release/"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  <<: *sampling
+  stage: test
   script:
     - chmod +x .gitlab-ci/*.sh
     - .gitlab-ci/compile-pr-and-target-versions.sh
@@ -70,25 +78,42 @@ compile:sampling:
     paths:
       - out/dbnary
 
-evaluate:sampling:
-  stage: test
-  tags:
-    - dbnary
-    - linux
-  rules:
-    - if: $CI_COMMIT_BRANCH == "develop"
-#      when: manual
-    - if: $CI_COMMIT_REF_NAME =~ "/feature/"
-#      when: manual
-    - if: $CI_COMMIT_REF_NAME =~ "/release/"
-#      when: manual
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+.evaluate:sampling: &evaluate
+  <<: *sampling
+  stage: build
+  variables:
+    LANGUAGE_BATCH: "en"
   script:
     - chmod +x .gitlab-ci/*.sh
-    - .gitlab-ci/extract_both_versions.sh fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku
+    - .gitlab-ci/extract_both_versions.sh ${LANGUAGE_BATCH}
   artifacts:
     paths:
       - target/evaluation
+
+
+# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku
+evaluate:sampling:1:
+  <<: *evaluate
+  variables:
+    LANGUAGE_BATCH: "en"
+
+# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku
+evaluate:sampling:2:
+  <<: *evaluate
+  variables:
+    LANGUAGE_BATCH: "fr no mg id la ku"
+
+# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku
+evaluate:sampling:3:
+  <<: *evaluate
+  variables:
+    LANGUAGE_BATCH: "de bg pl nl sh sv lt"
+
+# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku
+evaluate:sampling:4:
+  <<: *evaluate
+  variables:
+    LANGUAGE_BATCH: "pt it fi ru el tr ja es"
 
 # gitlab does not accept artifacts of size > 10M in releases, and ours are 50M+
 # Hence the maven configuration will use the github mirror to perform releases.

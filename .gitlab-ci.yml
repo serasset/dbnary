@@ -97,23 +97,32 @@ evaluate:sampling:1:
   variables:
     LANGUAGE_BATCH: "en"
 
-# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku
 evaluate:sampling:2:
   <<: *evaluate
   variables:
     LANGUAGE_BATCH: "fr no mg id la ku"
 
-# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku
 evaluate:sampling:3:
   <<: *evaluate
   variables:
     LANGUAGE_BATCH: "de bg pl nl sh sv lt"
 
-# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku
 evaluate:sampling:4:
   <<: *evaluate
   variables:
     LANGUAGE_BATCH: "pt it fi ru el tr ja es"
+
+analyse:sampling:
+  <<: *sampling
+  stage: deploy
+  script:
+    - chmod +x .gitlab-ci/*.sh
+    - .gitlab-ci/compute_differences.sh
+    - .gitlab-ci/summarize_on_slack.sh
+    artifacts:
+      paths:
+        - target/diffs
+
 
 # gitlab does not accept artifacts of size > 10M in releases, and ours are 50M+
 # Hence the maven configuration will use the github mirror to perform releases.

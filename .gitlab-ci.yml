@@ -70,7 +70,7 @@ package:
 # Make sure it only occurs on pull requests
 compile:sampling:
   <<: *sampling
-  stage: test
+  stage: build
   script:
     - chmod +x .gitlab-ci/*.sh
     - .gitlab-ci/compile-pr-and-target-versions.sh
@@ -80,7 +80,7 @@ compile:sampling:
 
 .evaluate:sampling: &evaluate
   <<: *sampling
-  stage: build
+  stage: test
   variables:
     LANGUAGE_BATCH: "en"
   script:

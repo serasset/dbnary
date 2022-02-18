@@ -5,6 +5,9 @@ if [[ $CI_COMMIT_MESSAGE =~ 'VALIDATION_LANGUAGES="'([^\"]*)'"' ]]
 then
   LANGS=${BASH_REMATCH[1]}
 fi
+
+BINDIR=out/dbnary
+
 NEXT_VERSION=ci-next-version
 NEXT_VERSION_BRANCH=$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
 NEXT_VERSION_BIN=${CI_PROJECT_DIR}/$BINDIR/$NEXT_VERSION/dbnary-commands-${NEXT_VERSION}/bin
@@ -27,4 +30,3 @@ if [ "x$PREVIOUS_VERSION_BRANCH" == "x" -o "$PREVIOUS_VERSION_BRANCH" == "$NEXT_
     echo "Source branch and target branches are the same."
     exit 1
 fi
-BINDIR=out/dbnary

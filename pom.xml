@@ -314,7 +314,7 @@
       <dependency>
         <groupId>org.scala-lang</groupId>
         <artifactId>scala-library</artifactId>
-        <version>2.12.11</version>
+        <version>2.13.8</version>
       </dependency>
       <!-- taken from: http://github.com/scala/scala-module-dependency-sample -->
       <dependency>

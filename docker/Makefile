@@ -29,11 +29,11 @@ build/%: ## build the latest image for a stack
 build-all: $(foreach I,$(ALL_IMAGES),arch_patch/$(I) build/$(I) ) ## build all stacks
 
 pull/%: DARGS?=
-pull/%: ## pull a jupyter image
+pull/%: ## pull a docker image
 	docker pull $(DARGS) $(OWNER)/$(notdir $@)
 
 push/%: DARGS?=
-push/%: ## push all tags for a jupyter image
+push/%: ## push all tags for a docker image
 	docker push --all-tags $(DARGS) $(OWNER)/$(notdir $@)
 
 push-all: $(foreach I,$(ALL_IMAGES),push/$(I) ) ## push all tagged images

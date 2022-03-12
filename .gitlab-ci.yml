@@ -67,13 +67,13 @@ evaluate:sampling:
     - if: $CI_COMMIT_REF_NAME == "develop"
       variables:
         EVALUATE_AGAINST_BRANCH: "develop"
-    - if: $CI_COMMIT_REF_NAME =~ "/feature/"
+    - if: $CI_COMMIT_REF_NAME =~ "feature/"
       variables:
         EVALUATE_AGAINST_BRANCH: "develop"
-    - if: $CI_COMMIT_REF_NAME =~ "/release/"
+    - if: $CI_COMMIT_REF_NAME =~ "release/"
       variables:
         EVALUATE_AGAINST_BRANCH: "main"
-    - if: $CI_COMMIT_REF_NAME =~ "/hotfix/"
+    - if: $CI_COMMIT_REF_NAME =~ "hotfix/"
       variables:
         EVALUATE_AGAINST_BRANCH: "main"
   script:

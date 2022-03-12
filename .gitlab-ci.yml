@@ -73,6 +73,9 @@ evaluate:sampling:
     - if: $CI_COMMIT_REF_NAME =~ "/release/"
       variables:
         EVALUATE_AGAINST_BRANCH: "main"
+    - if: $CI_COMMIT_REF_NAME =~ "/hotfix/"
+      variables:
+        EVALUATE_AGAINST_BRANCH: "main"
   script:
     - 'pwd'
     - 'ls -al'

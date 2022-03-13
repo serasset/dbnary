@@ -1,0 +1,19 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="WikiToolTest.testParseWithTemplateNames" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+    <module name="dbnary-extractor" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.getalp.dbnary.wiki.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="PACKAGE_NAME" value="org.getalp.dbnary.wiki" />
+    <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.wiki.WikiToolTest" />
+    <option name="METHOD_NAME" value="testParseWithTemplateNames" />
+    <option name="TEST_OBJECT" value="method" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

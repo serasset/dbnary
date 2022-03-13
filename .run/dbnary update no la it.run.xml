@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="dbnary update no la it" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
+    <module name="dbnary-commands" />
+    <option name="PROGRAM_PARAMETERS" value="update --endolex=ontolex,morphology,etymology,statistics,enhancement,lime --exolex=ontolex -v --no-compress --no-tdb --topage 10000 no la it " />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/tmp" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

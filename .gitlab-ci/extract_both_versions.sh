@@ -24,7 +24,7 @@ mkdir -p "$DIFFS"
 # Share the dumps directory between both versions to avoid reloading the dumps for each version
 ln -s "/dumps" "target/evaluation/$NEXT_VERSION/dumps"
 ln -s "/dumps" "target/evaluation/$PREVIOUS_VERSION/dumps"
-ls -al "target/evaluation/$NEXT_VERSION/*" "target/evaluation/$PREVIOUS_VERSION/*"
+ls -al "target/evaluation/$NEXT_VERSION/" "target/evaluation/$PREVIOUS_VERSION/"
 
 echo " ==== EXTRACTING WITH NEXT VERSION ===== "
 FEATURES="--endolex=ontolex,morphology,lime,etymology,enhancement,statistics --exolex=ontolex"

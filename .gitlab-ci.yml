@@ -40,12 +40,12 @@ cache:
     - linux
   rules:
     - if: $CI_COMMIT_BRANCH == "develop"
-    #      when: manual
+      when: manual
     - if: $CI_COMMIT_REF_NAME =~ "/feature/"
-    #      when: manual
+      when: manual
     - if: $CI_COMMIT_REF_NAME =~ "/release/"
-    #      when: manual
-    - if: $CI_COMMIT_REF_NAME =~ "hotfix/"
+      when: manual
+    - if: $CI_COMMIT_REF_NAME =~ "/hotfix/"
       when: manual
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 

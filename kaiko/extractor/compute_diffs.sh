@@ -10,7 +10,7 @@ DIFFS=diffs
 VERBOSE=""
 FORCETDB=""
 
-while getopts ":m:f:t:d:vT" opt; do
+while getopts ":m:f:t:d:x:vT" opt; do
   case $opt in
     m)
       MODEL=$OPTARG
@@ -26,6 +26,9 @@ while getopts ":m:f:t:d:vT" opt; do
       ;;
     v)
       VERBOSE="-v"
+      ;;
+    x)
+      RDFDIFF=$OPTARG
       ;;
     T)
       FORCETDB="true"

@@ -15,31 +15,31 @@ set -x
 
 # make sure folder is in gitignore to avoid losing the packaged app after git stash and mvn clean
 echo out >> .gitignore
-mkdir -p $BINDIR/$NEXT_VERSION
+mkdir -p "$BINDIR/$NEXT_VERSION"
 mvn versions:set -B -DnewVersion="$NEXT_VERSION"
 mvn package
-cp -r dbnary-commands/target/distributions/dbnary/*.tar.gz $BINDIR/$NEXT_VERSION
+cp -r dbnary-commands/target/distributions/dbnary/*.tar.gz "$BINDIR/$NEXT_VERSION"
 mvn clean
 
 git stash -u
 git checkout "$PREVIOUS_VERSION_BRANCH"
 echo out >> .gitignore
 
-mkdir -p $BINDIR/$PREVIOUS_VERSION
+mkdir -p "$BINDIR/$PREVIOUS_VERSION"
 mvn versions:set -B -DnewVersion="$PREVIOUS_VERSION"
 mvn package
-cp -r dbnary-commands/target/distributions/dbnary/*.tar.gz $BINDIR/$PREVIOUS_VERSION
+cp -r dbnary-commands/target/distributions/dbnary/*.tar.gz "$BINDIR/$PREVIOUS_VERSION"
 mvn clean
 
 # Then, switch back to latest branch so that latest improvement in CI/CD are used.
 git stash -u
 git checkout "$NEXT_VERSION_BRANCH"
 
-pushd $BINDIR/$PREVIOUS_VERSION
-tar zxvf *.tar.gz
-rm *.tar.gz
+pushd "$BINDIR/$PREVIOUS_VERSION"
+tar zxvf ./*.tar.gz
+rm -- *.tar.gz
 popd
-pushd $BINDIR/$NEXT_VERSION
-tar zxvf *.tar.gz
-rm *.tar.gz
+pushd "$BINDIR/$NEXT_VERSION"
+tar zxvf -- ./*.tar.gz
+rm -- *.tar.gz
 popd

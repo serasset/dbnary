@@ -62,6 +62,6 @@ tar zxvf ./*.tar.gz
 rm -- *.tar.gz
 popd
 pushd "$BINDIR/$NEXT_VERSION"
-tar zxvf -- ./*.tar.gz
+tar zxvf ./*.tar.gz
 rm -- *.tar.gz
 popd

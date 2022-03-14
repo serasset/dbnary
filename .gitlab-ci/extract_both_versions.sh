@@ -16,7 +16,7 @@ mkdir -p "target/evaluation/$NEXT_VERSION/"
 mkdir -p "target/evaluation/$PREVIOUS_VERSION/"
 mkdir -p "$DIFFS"
 
-EFFECTIVE_LANGS=(`echo "$BATCH_LANGS $LANGS" | tr ' ' '\n' | sort | uniq -d`)
+EFFECTIVE_LANGS=($(echo "$BATCH_LANGS $LANGS" | tr ' ' '\n' | sort | uniq -d))
 echo "Effectively extracting languages : $BATCH_LANGS // $LANGS -->" ${EFFECTIVE_LANGS[@]}
 
 [[ x$EFFECTIVE_LANGS == x ]] && exit 0;

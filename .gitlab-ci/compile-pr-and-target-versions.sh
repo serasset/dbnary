@@ -21,7 +21,16 @@ mkdir -p "$BINDIR/$NEXT_VERSION"
 mvn versions:set -B -DnewVersion="$NEXT_VERSION"
 mvn package
 cp -r dbnary-commands/target/distributions/dbnary/*.tar.gz "$BINDIR/$NEXT_VERSION"
+
+ls -al
+ls -al out/dbnary
+tail .gitignore
+
 mvn clean
+
+ls -al
+ls -al out/dbnary
+tail .gitignore
 
 git stash -u
 git checkout "$PREVIOUS_VERSION_BRANCH"
@@ -30,7 +39,7 @@ echo .m2 >> .gitignore
 
 ls -al
 ls -al out/dbnary
-more .gitignore
+tail .gitignore
 
 mkdir -p "$BINDIR/$PREVIOUS_VERSION"
 mvn versions:set -B -DnewVersion="$PREVIOUS_VERSION"

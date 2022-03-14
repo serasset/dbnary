@@ -79,7 +79,7 @@ compile:sampling:
     - .gitlab-ci/compile-pr-and-target-versions.sh
   artifacts:
     paths:
-      - out/dbnary
+      - ../out/dbnary
 
 .evaluate:sampling: &evaluate
   <<: *sampling

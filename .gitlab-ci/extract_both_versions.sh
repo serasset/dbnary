@@ -9,17 +9,19 @@ echo "==== PREPARING ENVIRONMENT ==== "
 echo "Sourcing settings from: ${SCRIPT_DIR}/settings"
 source "${SCRIPT_DIR}/settings"
 
-EFFECTIVE_LANGS=($(echo "$BATCH_LANGS $LANGS" | tr ' ' '\n' | sort | uniq -d))
+
+# Prepare directory layout before checking for effective languages so that the resulting artifact
+# exists.
+mkdir -p "target/evaluation/$NEXT_VERSION/"
+mkdir -p "target/evaluation/$PREVIOUS_VERSION/"
+mkdir -p "$DIFFS"
+
+EFFECTIVE_LANGS=(`echo "$BATCH_LANGS $LANGS" | tr ' ' '\n' | sort | uniq -d`)
 echo "Effectively extracting languages : $BATCH_LANGS // $LANGS -->" ${EFFECTIVE_LANGS[@]}
 
 [[ x$EFFECTIVE_LANGS == x ]] && exit 0;
 
 set -x
-
-# Prepare directory layout
-mkdir -p "target/evaluation/$NEXT_VERSION/"
-mkdir -p "target/evaluation/$PREVIOUS_VERSION/"
-mkdir -p "$DIFFS"
 
 # Share the dumps directory between both versions to avoid reloading the dumps for each version
 ln -s "/dumps" "target/evaluation/$NEXT_VERSION/dumps"
@@ -34,4 +36,4 @@ FEATURES=(--endolex=ontolex,morphology,lime,etymology,enhancement,statistics --e
 echo " ==== EXTRACTING WITH PREVIOUS VERSION ===== "
 
 # Extract data using PR version
-"$BINDIR/$PREVIOUS_VERSION/dbnary-commands-${PREVIOUS_VERSION}/bin/dbnary" update --dir "target/evaluation/$PREVIOUS_VERSION/" --no-compress --no-network "${FEATURES[@]} --sample "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}
+"$BINDIR/$PREVIOUS_VERSION/dbnary-commands-${PREVIOUS_VERSION}/bin/dbnary" update --dir "target/evaluation/$PREVIOUS_VERSION/" --no-compress --no-network "${FEATURES[@]}" --sample "$SAMPLE_SIZE" ${EFFECTIVE_LANGS[@]}

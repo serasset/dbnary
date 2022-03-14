@@ -15,6 +15,8 @@ set -x
 
 # make sure folder is in gitignore to avoid losing the packaged app after git stash and mvn clean
 echo out >> .gitignore
+echo .m2 >> .gitignore
+
 mkdir -p "$BINDIR/$NEXT_VERSION"
 mvn versions:set -B -DnewVersion="$NEXT_VERSION"
 mvn package
@@ -24,6 +26,11 @@ mvn clean
 git stash -u
 git checkout "$PREVIOUS_VERSION_BRANCH"
 echo out >> .gitignore
+echo .m2 >> .gitignore
+
+ls -al
+ls -al out/dbnary
+more .gitignore
 
 mkdir -p "$BINDIR/$PREVIOUS_VERSION"
 mvn versions:set -B -DnewVersion="$PREVIOUS_VERSION"

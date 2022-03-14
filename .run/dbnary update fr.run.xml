@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="dbnary update fr" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
+    <module name="dbnary-commands" />
+    <option name="PROGRAM_PARAMETERS" value="update --endolex=ontolex,morphology,etymology,statistics,enhancement,lime --exolex=ontolex --no-compress --no-tdb --no-network --force --topage 100000 fr" />
+    <option name="VM_PARAMETERS" value="-Dorg.slf4j.simpleLogger.log.org.getalp.dbnary.languages.fra=debug" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/tmp" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

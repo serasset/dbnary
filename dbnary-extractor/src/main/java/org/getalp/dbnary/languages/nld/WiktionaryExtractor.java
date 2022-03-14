@@ -22,7 +22,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
-  protected final static String languageSectionPatternString = "\\{\\{=\\s*([^=}]*)\\s*=\\}\\}";
+  protected final static String languageSectionPatternString = "\\{\\{=\\s*([^=}]+)\\s*=\\}\\}";
 
   protected final static String sectionPatternString;
 

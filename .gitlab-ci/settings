@@ -1,0 +1,37 @@
+SAMPLE_SIZE=${VALIDATION_SAMPLE_SIZE:-10000}
+LANGS=${VALIDATION_LANGUAGES:-"fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"}
+# Override validation languages if given in the bitbucket commit message
+if [[ $CI_COMMIT_MESSAGE =~ 'VALIDATION_LANGUAGES="'([^\"]*)'"' ]]
+then
+  LANGS=${BASH_REMATCH[1]}
+fi
+# Override SAMPLE_SIZE if given in the bitbucket commit message
+if [[ $CI_COMMIT_MESSAGE =~ 'SAMPLE_SIZE='([:digit:]+) ]]
+then
+  SAMPLE_SIZE=${BASH_REMATCH[1]}
+fi
+
+BINDIR=out/dbnary
+
+NEXT_VERSION=ci-next-version
+NEXT_VERSION_BRANCH=$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+NEXT_VERSION_BIN=${CI_PROJECT_DIR}/$BINDIR/$NEXT_VERSION/dbnary-commands-${NEXT_VERSION}/bin
+PREVIOUS_VERSION=ci-previous-version
+PREVIOUS_VERSION_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+PREVIOUS_VERSION_BIN=${CI_PROJECT_DIR}/$BINDIR/$PREVIOUS_VERSION/dbnary-commands-${PREVIOUS_VERSION}/bin
+
+DIFFS=target/diffs
+
+if [ "x$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "x" ]; then
+  NEXT_VERSION_BRANCH=$CI_COMMIT_BRANCH
+  if [[ "$CI_COMMIT_BRANCH" =~ "^feature/" ]]; then
+    PREVIOUS_VERSION_BRANCH=develop
+  else
+    PREVIOUS_VERSION_BRANCH=master
+  fi
+  echo "Not a Pull Request, I will compare $NEXT_VERSION_BRANCH against $PREVIOUS_VERSION_BRANCH"
+fi
+if [ "x$PREVIOUS_VERSION_BRANCH" == "x" -o "$PREVIOUS_VERSION_BRANCH" == "$NEXT_VERSION_BRANCH" ]; then
+    echo "Source branch and target branches are the same."
+    exit 1
+fi

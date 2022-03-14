@@ -72,6 +72,8 @@ package:
 # Make sure it only occurs on pull requests
 compile:sampling:
   <<: *sampling
+  variables:
+    GIT_STRATEGY: clone
   stage: build
   script:
     - env

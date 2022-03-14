@@ -14,32 +14,54 @@ echo "Pull request destination branch : $PREVIOUS_VERSION_BRANCH"
 set -x
 
 # make sure folder is in gitignore to avoid losing the packaged app after git stash and mvn clean
+## Ensure there is an EOL at the end of the gitignore file.
+echo >> .gitignore
 echo out >> .gitignore
-mkdir -p $BINDIR/$NEXT_VERSION
+echo .m2 >> .gitignore
+
+mkdir -p "$BINDIR/$NEXT_VERSION"
 mvn versions:set -B -DnewVersion="$NEXT_VERSION"
 mvn package
-cp -r dbnary-commands/target/distributions/dbnary/*.tar.gz $BINDIR/$NEXT_VERSION
+cp -r dbnary-commands/target/distributions/dbnary/*.tar.gz "$BINDIR/$NEXT_VERSION"
+
+ls -al
+ls -al out/dbnary/ci-next-version
+tail .gitignore
+
 mvn clean
+
+ls -al
+ls -al out/dbnary/ci-next-version
+
+tail .gitignore
 
 git stash -u
 git checkout "$PREVIOUS_VERSION_BRANCH"
-echo out >> .gitignore
 
-mkdir -p $BINDIR/$PREVIOUS_VERSION
+## Ensure there is an EOL at the end of the gitignore file.
+echo >> .gitignore
+echo out >> .gitignore
+echo .m2 >> .gitignore
+
+ls -al
+ls -al out/dbnary/ci-next-version
+tail .gitignore
+
+mkdir -p "$BINDIR/$PREVIOUS_VERSION"
 mvn versions:set -B -DnewVersion="$PREVIOUS_VERSION"
 mvn package
-cp -r dbnary-commands/target/distributions/dbnary/*.tar.gz $BINDIR/$PREVIOUS_VERSION
+cp -r dbnary-commands/target/distributions/dbnary/*.tar.gz "$BINDIR/$PREVIOUS_VERSION"
 mvn clean
 
 # Then, switch back to latest branch so that latest improvement in CI/CD are used.
 git stash -u
 git checkout "$NEXT_VERSION_BRANCH"
 
-pushd $BINDIR/$PREVIOUS_VERSION
-tar zxvf *.tar.gz
-rm *.tar.gz
+pushd "$BINDIR/$PREVIOUS_VERSION"
+tar zxvf ./*.tar.gz
+rm -- *.tar.gz
 popd
-pushd $BINDIR/$NEXT_VERSION
-tar zxvf *.tar.gz
-rm *.tar.gz
+pushd "$BINDIR/$NEXT_VERSION"
+tar zxvf ./*.tar.gz
+rm -- *.tar.gz
 popd

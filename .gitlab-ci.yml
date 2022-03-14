@@ -40,11 +40,13 @@ cache:
     - linux
   rules:
     - if: $CI_COMMIT_BRANCH == "develop"
-    #      when: manual
+      when: manual
     - if: $CI_COMMIT_REF_NAME =~ "/feature/"
-    #      when: manual
+      when: manual
     - if: $CI_COMMIT_REF_NAME =~ "/release/"
-    #      when: manual
+      when: manual
+    - if: $CI_COMMIT_REF_NAME =~ "/hotfix/"
+      when: manual
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 
@@ -70,6 +72,9 @@ package:
 # Make sure it only occurs on pull requests
 compile:sampling:
   <<: *sampling
+  variables:
+    GIT_STRATEGY: clone
+    GIT_DEPTH: "0"
   stage: build
   script:
     - env

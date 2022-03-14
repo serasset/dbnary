@@ -49,7 +49,7 @@ if [ $# -gt 0 ]
     LANGS=$*
 fi
 
-if ! command -v $RDFDIFF ; then
+if ! command -v "$RDFDIFF" ; then
   echo >&2 "Could not find rdfdiff command, aborting..."
   exit 1
 fi

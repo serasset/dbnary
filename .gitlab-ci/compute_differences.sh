@@ -9,7 +9,13 @@ mkdir -p "$DIFFS"
 
 echo Checking environment
 ls -al /builds/gilles.serasset/dbnary/out/dbnary/ci-next-version/
-ls -al $NEXT_VERSION_BIN/
+ls -al "$NEXT_VERSION_BIN"
+ls -al "$NEXT_VERSION_BIN/rdfdiff"
+echo "checking command :"
+command -v rdfdiff
+echo checking command with full path
+command -v /builds/gilles.serasset/dbnary/out/dbnary/ci-next-version/dbnary-commands-ci-next-version/bin/rdfdiff
+command -v "$NEXT_VERSION_BIN/rdfdiff"
 
 for model in ontolex morphology etymology enhancement exolex_ontolex
 do

@@ -305,6 +305,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractNyms((String) context.get("nym"), blockStart, end);
         break;
       case PRONBLOCK:
+        ewdh.initializeNewEtymology();
         extractPron(blockStart, end);
         break;
       case CONJUGATIONBLOCK:

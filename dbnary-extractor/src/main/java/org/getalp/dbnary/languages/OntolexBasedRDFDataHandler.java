@@ -410,7 +410,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   protected Resource initializeLexicalEntry(String pos, Resource lexinfoPOS, Resource type) {
     assert longSectionLanguageCode != null && shortSectionLanguageCode != null;
-    currentLexicalEntry = currentPage.newEntry(currentPage.getName(), pos);
+    currentLexicalEntry = currentPage.newEntry(pos);
 
     currentLexicalEntry.setPartOfSpeech(lexinfoPOS);
     currentLexicalEntry.addResourceType(type);

@@ -592,4 +592,13 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       log.debug("Unknown Nym Property in Wikisaurus:{}", currentNym);
     }
   }
+
+  public void initializeNewEtymology() {
+    // Etymology is a top level section that finalizes previous entry, canonical forms and
+    // pronunciations
+    currentCanonicalForm = null;
+    currentLexicalEntry = null;
+    currentLexEntry = null;
+    currentSharedPronunciations.clear();
+  }
 }

@@ -250,7 +250,7 @@
     </dependency>
     <dependency>
       <groupId>com.typesafe.scala-logging</groupId>
-      <artifactId>scala-logging_2.12</artifactId>
+      <artifactId>scala-logging_${scalaBinaryVersion}</artifactId>
     </dependency>
     <dependency>
       <groupId>com.github.rwitzel.streamflyer</groupId>

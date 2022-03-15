@@ -1,6 +1,6 @@
-[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/dashboard?id=serasset_dbnary)
+<!-- [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/dashboard?id=serasset_dbnary)-->
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/ac93a96d001346a1818b5ebeafe80213)](https://www.codacy.com/gl/gilles.serasset/dbnary/dashboard?utm_source=gitlab.com&amp;utm_medium=referral&amp;utm_content=gilles.serasset/dbnary&amp;utm_campaign=Badge_Grade)
-
+[![Known Vulnerabilities](https://snyk.io/test/github/serasset/dbnay/badge.svg)](https://snyk.io/test/gitlab/gilles.serasset/dbnary)
 # DBnary extractor #
 
 DBnary is an attempt to extract as many lexical data as possible from Wiktionary language Edition as possible, in a structured (RDF) way, using standard lexicon ontology vocabulary (ontolex).

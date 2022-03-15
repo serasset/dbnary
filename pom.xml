@@ -702,6 +702,12 @@
                       <multiPlatform>true</multiPlatform>
                     </brew>
                   </packagers>
+                    <announce>
+                      <twitter>
+                        <active>ALWAYS</active>
+                        <status>🚀 {{projectNameCapitalized}} {{projectVersion}} has been released! {{releaseNotesUrl}}</status>
+                      </twitter>
+                    </announce>
                 </jreleaser>
               </configuration>
               <executions>

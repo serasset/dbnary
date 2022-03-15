@@ -48,7 +48,7 @@ if [ $# -gt 0 ]
     then
     LANGS=$*
 fi
-if [[ ! -z $(command -v $RDFDIFF) ]]
+if [[ -z $(command -v $RDFDIFF) ]]
 then
   echo >&2 "Could not find rdfdiff command, aborting..."
   exit 1

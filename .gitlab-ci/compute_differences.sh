@@ -7,6 +7,10 @@ source "${SCRIPT_DIR}/settings"
 
 mkdir -p "$DIFFS"
 
+echo Checking environment
+ls -al /builds/gilles.serasset/dbnary/out/dbnary/ci-next-version/
+ls -al $NEXT_VERSION_BIN/
+
 for model in ontolex morphology etymology enhancement exolex_ontolex
 do
   # compute differences

@@ -1,0 +1,69 @@
+## Alias for sampling evaluation strategy
+.sampling: &sampling
+  tags:
+    - dbnary
+    - linux
+
+
+# Evaluate differences in extracts from current pull request vs develop or master branch
+# Make sure it only occurs on pull requests
+compile:sampling:
+  <<: *sampling
+  variables:
+    GIT_STRATEGY: clone
+    GIT_DEPTH: "0"
+  stage: build
+  script:
+    - env
+    - chmod +x .gitlab-ci/*.sh
+    - .gitlab-ci/compile-pr-and-target-versions.sh
+  artifacts:
+    paths:
+      - out/dbnary
+
+.evaluate:sampling: &evaluate
+  <<: *sampling
+  stage: test
+  variables:
+    LANGUAGE_BATCH: "en"
+  needs: ["compile:sampling"]
+  script:
+    - chmod +x .gitlab-ci/*.sh
+    - .gitlab-ci/extract_both_versions.sh ${LANGUAGE_BATCH}
+  artifacts:
+    paths:
+      - target/evaluation
+
+
+# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku
+evaluate:sampling:1:
+  <<: *evaluate
+  variables:
+    LANGUAGE_BATCH: "en"
+
+evaluate:sampling:2:
+  <<: *evaluate
+  variables:
+    LANGUAGE_BATCH: "fr no mg id la ku"
+
+evaluate:sampling:3:
+  <<: *evaluate
+  variables:
+    LANGUAGE_BATCH: "de bg pl nl sh sv lt"
+
+evaluate:sampling:4:
+  <<: *evaluate
+  variables:
+    LANGUAGE_BATCH: "pt it fi ru el tr ja es"
+
+analyse:sampling:
+  <<: *sampling
+  stage: deploy
+  needs: ["evaluate:sampling:1", "evaluate:sampling:2", "evaluate:sampling:3", "evaluate:sampling:4"]
+  script:
+    - chmod +x .gitlab-ci/*.sh
+    - .gitlab-ci/compute_differences.sh
+    - .gitlab-ci/summarize_on_slack.sh
+  artifacts:
+    paths:
+      - target/diffs

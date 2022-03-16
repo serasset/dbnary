@@ -589,9 +589,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private final EnglishInflectionData superlative = new EnglishInflectionData().superlative();
   private final EnglishInflectionData pres3Sg =
       new EnglishInflectionData().presentTense().thirdPerson().singular();
-  private final EnglishInflectionData presPtc = new EnglishInflectionData().presentTense().participle();
+  private final EnglishInflectionData presPtc =
+      new EnglishInflectionData().presentTense().participle();
   private final EnglishInflectionData past = new EnglishInflectionData().pastTense();
-  private final EnglishInflectionData pastPtc = new EnglishInflectionData().pastTense().participle();
+  private final EnglishInflectionData pastPtc =
+      new EnglishInflectionData().pastTense().participle();
 
   private void extractMorphology(int startOffset, int endOffset) {
     // TODO: For some entries, there are several morphology information covering different word
@@ -727,8 +729,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // This is a inflected form
           // TODO: Check if the inflected form is available in the base word morphology.
         } else {
-          log.debug("MORPH: direct call to head\t{}\tin\t{}", tmpl,
-              this.getWiktionaryPageName());
+          log.debug("MORPH: direct call to head\t{}\tin\t{}", tmpl, this.getWiktionaryPageName());
         }
       } else {
         // log.debug("NOMORPH PATTERN:\t {}\t in:\t{}", g1, wiktionaryPageName);
@@ -1166,8 +1167,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (l != null) {
           lang = LangTools.normalize(l.toString());
         } else {
-          log.debug("null language (first positional arg) in {} > {}", t,
-              getWiktionaryPageName());
+          log.debug("null language (first positional arg) in {} > {}", t, getWiktionaryPageName());
         }
         lang = EnglishLangToCode.threeLettersCode(lang);
         if (lang != null) {

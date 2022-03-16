@@ -36,9 +36,12 @@ public class DBnary {
   public void setTrace(String[] classes) {
     // Configure the slf4j-simple logger level for the specified parameters
     for (String clazz : classes) {
-      spec.commandLine().getOut().println("Enabling trace for " + clazz);
-      System.setProperty(SimpleLogger.LOG_FILE_KEY + "org.getalp.dbnary." + clazz, "trace");
-      System.setProperty(SimpleLogger.LOG_FILE_KEY + clazz, "trace");
+      spec.commandLine().getOut().format("Set property %s to trace.%n ",
+          SimpleLogger.LOG_KEY_PREFIX + "org.getalp.dbnary." + clazz);
+      System.setProperty(SimpleLogger.LOG_KEY_PREFIX + "org.getalp.dbnary." + clazz, "trace");
+      spec.commandLine().getOut().format("Set property %s to trace.%n ",
+          SimpleLogger.LOG_KEY_PREFIX + clazz);
+      System.setProperty(SimpleLogger.LOG_KEY_PREFIX + clazz, "trace");
     }
   }
 

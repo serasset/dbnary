@@ -52,7 +52,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // protected final static Pattern languageSectionPattern;
 
   private static HashSet<String> posMacros;
-  private static HashSet<String> nymMarkers;
   private static HashSet<String> ignoredSection;
   protected final static Pattern languageSectionPattern;
   private final static HashMap<String, String> nymMarkerToNymName;
@@ -135,13 +134,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     posMacros.add("μεταγραφή"); // A transcription from another language...
     posMacros.add("μορφή άρθρου"); // Clitic article type...
     posMacros.add("μορφή επιθήματοςς"); // Clitic suffix...
-
-    nymMarkers = new HashSet<>(20);
-    nymMarkers.add("συνώνυμα");// Synonyms
-    nymMarkers.add("αντώνυμα");// Antonyms
-    nymMarkers.add("hyponyms");// Hyponyms
-    nymMarkers.add("hypernyms");// Hypernyms
-    nymMarkers.add("meronyms");// Meronyms
 
     nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("συνώνυμα", "syn");
@@ -259,10 +251,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if ("προφορά".equals(sectionName)) {
         // pronunciation
         extractPron(heading.getSection().getPrologue().getText());
-      } else if ((posMacros.contains(sectionName))) {
+      } else if ((posMacros.contains(sectionName)) && title != null) {
+        // Only initialize entries when title is a template ?
         wdh.initializeLexicalEntry(sectionName);
         extractDefinitions(heading.getSection().getPrologue());
-      } else if (nymMarkers.contains(sectionName)) {
+      } else if (nymMarkerToNymName.containsKey(sectionName)) {
         // Nyms
         WikiContent prologue = heading.getSection().getPrologue();
         extractNyms(nymMarkerToNymName.get(sectionName), prologue.getBeginIndex(),

@@ -53,10 +53,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String pronunciationPatternString = "\\{\\{pron\\|([^|}]*)\\|([^}]*)}}";
-
-  protected final static String otherFormPatternString = "\\{\\{fr-[^}]*}}";
-
   private static final HashMap<String, String> posMarkers;
   private static final HashSet<String> ignoredSectionTitles;
   private static final HashSet<String> ignoredPosMarkers;
@@ -400,14 +396,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // affixesToDiscardFromLinks.add("s");
   }
 
-  protected final static Pattern pronunciationPattern;
-  protected final static Pattern otherFormPattern;
-
-  static {
-    pronunciationPattern = Pattern.compile(pronunciationPatternString);
-    otherFormPattern = Pattern.compile(otherFormPatternString);
-  }
-
   WiktionaryDataHandler frwdh;
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
@@ -533,7 +521,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     additionalLanguages.put("vi-chunom", "vi-chunom");
   }
 
-  private String validateAndStandardizeLanguageCode(String language) {
+  private static String validateAndStandardizeLanguageCode(String language) {
     Lang languageObject = ISO639_3.sharedInstance.getLang(language);
     if (languageObject != null)
       return languageObject.getId();

@@ -15,7 +15,7 @@ import picocli.CommandLine.Spec;
 @Command(name = "dbnary",
     subcommands = {CheckWiktionarySyntaxQuality.class, ExtractWiktionary.class, HelpCommand.class,
         UpdateAndExtractDumps.class, GetExtractedSemnet.class, DisplayWikiTextTree.class,
-        GetRawEntry.class, CompareExtracts.class},
+        GetRawEntry.class, CompareExtracts.class, GrepInWiktionary.class},
     mixinStandardHelpOptions = true, versionProvider = VersionProvider.class,
     description = "DBnary is a set of tools used to extract lexical data from several "
         + "editions of wiktionaries. All extracted data is made available as Linked Open Data, "

@@ -97,10 +97,6 @@
               <id>dbnary</id>
             </program>
             <program>
-              <mainClass>org.getalp.dbnary.cli.GrepInWiktionary</mainClass>
-              <id>dbnary-grep</id>
-            </program>
-            <program>
               <mainClass>org.getalp.dbnary.cli.RDFDiff</mainClass>
               <id>rdfdiff</id>
             </program>

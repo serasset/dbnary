@@ -571,8 +571,29 @@ public class WikiText {
       return argsAsString;
     }
 
+    /**
+     * get the String value of the requested argument key.
+     * If the argument contain wiki tokens, the source text is returned.
+     *
+     * Use getArgs if you want to get the WikiContent associated to the key.
+     * @param key the key of the argument to be retrieved
+     * @return the value of the argument or null if the argument was not specified
+     */
     public String getParsedArg(String key) {
       return this.getParsedArgs().get(key);
+    }
+
+    /**
+     * get the String value of the requested argument key, or return default value if argument
+     * value is null. If the argument contain wiki tokens, the source text is returned.
+     *
+     * Use getArgs if you want to get the WikiContent associated to the key.
+     * @param key the key of the argument to be retrieved
+     * @param defaultValue the default value returned if the argument is undefined
+     * @return the value of the argument or defaultValue
+     */
+    public String getParsedArg(String key, String defaultValue) {
+      return this.getParsedArgs().getOrDefault(key, defaultValue);
     }
 
 
@@ -642,6 +663,16 @@ public class WikiText {
         }
       }
       return parsedArgs;
+    }
+
+    /**
+     * get the WikiContent value of the requested argument key.
+     *
+     * @param key the key of the argument to be retrieved
+     * @return the value of the argument or null if the argument was not specified
+     */
+    public WikiContent getArg(String key) {
+      return this.getArgs().get(key);
     }
 
     public WikiContent getContent() {

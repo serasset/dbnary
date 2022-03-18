@@ -40,9 +40,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String SectionPatternString; // "={2,5}\\s*\\{\\{([^=]*)([^\\}\\|\n\r]*)\\s*(?:\\|([^\\}\n\r]*))?)\\s*\\}\\}={2,5}"
-
-  protected final static String languageSectionPatternString = "==\\s*\\{\\{-([^-]*)-\\}\\}\\s*==";
   protected final static String definitionPatternString =
       // "(?:^#{1,2}([^\\*#:].*))|(?:^\\*([^\\*#:].*))$";
       "^(?:#{1,2}([^\\*#:].*)|\\*([^\\*#:].*))$";
@@ -53,15 +50,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private static HashSet<String> posMacros;
   private static HashSet<String> ignoredSection;
-  protected final static Pattern languageSectionPattern;
   private final static HashMap<String, String> nymMarkerToNymName;
 
+  private static void addPos(String pos) {
+    posMacros.add(pos);
+    if (pos.contains(" ")) {
+      posMacros.add(pos.replaceAll(" ", "_"));
+    }
+  }
 
   static {
-
-    SectionPatternString = new StringBuilder().append("={2,5}").append("\\{\\{\\s*")
-        .append("([^\\}\\|\n\r]*)(?:([^\\}\n\r]*))?").append("\\s*\\}\\}").append("={2,5}")
-        .toString();
 
     posMacros = new HashSet<>(20);
     // defMarkers.add("ουσιαστικό"); // Noun
@@ -78,82 +76,91 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // defMarkers.add("επιρρηματική έκφραση"); // adverbial expression
     // defMarkers.add("μετοχή"); // both adjective and verbs
 
-    posMacros.add("αντωνυμία");
-    posMacros.add("απαρέμφατο");
-    posMacros.add("άρθρο");
-    posMacros.add("αριθμητικό");
-    posMacros.add("γερουνδιακό");
-    posMacros.add("γερούνδιο");
-    posMacros.add("έκφραση");
-    posMacros.add("επιθετική έκφραση");
-    posMacros.add("επίθετο");
-    posMacros.add("επίθημα");
-    posMacros.add("επίρρημα");
-    posMacros.add("επιρρηματική έκφραση");
-    posMacros.add("επιφώνημα");
-    posMacros.add("κατάληξη");
-    posMacros.add("κατάληξη αρσενικών επιθέτων");
-    posMacros.add("κατάληξη αρσενικών και θηλυκών ουσιαστικών");
-    posMacros.add("κατάληξη αρσενικών ουσιαστικών");
-    posMacros.add("κατάληξη επιρρημάτων");
-    posMacros.add("κατάληξη θηλυκών ουσιαστικών");
-    posMacros.add("κατάληξη ουδέτερων ουσιαστικών");
-    posMacros.add("κατάληξη ρημάτων");
-    posMacros.add("κύριο όνομα");
-    posMacros.add("μετοχή");
-    posMacros.add("μόριο");
-    posMacros.add("μορφή αντωνυμίας");
-    posMacros.add("μορφή αριθμητικού");
-    posMacros.add("μορφή γερουνδιακού");
-    posMacros.add("μορφή επιθέτου");
-    posMacros.add("μορφή επιρρήματος");
-    posMacros.add("μορφή κυρίου ονόματος");
-    posMacros.add("μορφή μετοχής");
-    posMacros.add("μορφή ουσιαστικού");
-    posMacros.add("μορφή πολυλεκτικού όρου");
-    posMacros.add("μορφή ρήματος");
-    posMacros.add("ουσιαστικό");
-    posMacros.add("παροιμία");
-    posMacros.add("πολυλεκτικός όρος");
-    posMacros.add("πρόθεση");
-    posMacros.add("προθετική έκφραση");
-    posMacros.add("πρόθημα");
-    posMacros.add("πρόσφυμα");
-    posMacros.add("ρήμα");
-    posMacros.add("ρηματική έκφραση");
-    posMacros.add("ρίζα");
-    posMacros.add("σουπίνο");
-    posMacros.add("συγχώνευση");
-    posMacros.add("σύμβολο");
-    posMacros.add("συνδεσμική έκφραση");
-    posMacros.add("σύνδεσμος");
-    posMacros.add("συντομομορφή");
-    posMacros.add("φράση");
-    posMacros.add("χαρακτήρας");
-    posMacros.add("ένθημα");
-    posMacros.add("μεταγραφή"); // A transcription from another language...
-    posMacros.add("μορφή άρθρου"); // Clitic article type...
-    posMacros.add("μορφή επιθήματοςς"); // Clitic suffix...
+    addPos("αντωνυμία");
+    addPos("απαρέμφατο");
+    addPos("άρθρο");
+    addPos("αριθμητικό");
+    addPos("γερουνδιακό");
+    addPos("γερούνδιο");
+    addPos("έκφραση");
+    addPos("επιθετική έκφραση");
+    addPos("επίθετο");
+    addPos("επίθημα");
+    addPos("επίρρημα");
+    addPos("επιρρηματική έκφραση");
+    addPos("επιφώνημα");
+    addPos("κατάληξη");
+    addPos("κατάληξη αρσενικών επιθέτων");
+    addPos("κατάληξη αρσενικών και θηλυκών ουσιαστικών");
+    addPos("κατάληξη αρσενικών ουσιαστικών");
+    addPos("κατάληξη επιρρημάτων");
+    addPos("κατάληξη θηλυκών ουσιαστικών");
+    addPos("κατάληξη ουδέτερων ουσιαστικών");
+    addPos("κατάληξη ρημάτων");
+    addPos("κύριο όνομα");
+    addPos("μετοχή");
+    addPos("μόριο");
+    addPos("μορφή αντωνυμίας");
+    addPos("μορφή αριθμητικού");
+    addPos("μορφή γερουνδιακού");
+    addPos("μορφή επιθέτου");
+    addPos("μορφή επιρρήματος");
+    addPos("μορφή κυρίου ονόματος");
+    addPos("μορφή μετοχής");
+    addPos("μορφή ουσιαστικού");
+    addPos("μορφή πολυλεκτικού όρου");
+    addPos("μορφή ρήματος");
+    addPos("ουσιαστικό");
+    addPos("παροιμία");
+    addPos("πολυλεκτικός όρος");
+    addPos("πρόθεση");
+    addPos("προθετική έκφραση");
+    addPos("πρόθημα");
+    addPos("πρόσφυμα");
+    addPos("ρήμα");
+    addPos("ρηματική έκφραση");
+    addPos("ρίζα");
+    addPos("σουπίνο");
+    addPos("συγχώνευση");
+    addPos("σύμβολο");
+    addPos("συνδεσμική έκφραση");
+    addPos("σύνδεσμος");
+    addPos("συντομομορφή");
+    addPos("φράση");
+    addPos("χαρακτήρας");
+    addPos("ένθημα");
+    addPos("μεταγραφή"); // A transcription from another language...
+    addPos("μορφή άρθρου"); // Clitic article type...
+    addPos("μορφή επιθήματοςς"); // Clitic suffix...
+    addPos("μορφή επιθήματος"); // Clitic suffix...
 
     nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("συνώνυμα", "syn");
+    nymMarkerToNymName.put("συνώνυμο", "syn");
+    nymMarkerToNymName.put("συνων", "syn");
+    nymMarkerToNymName.put("ταυτόσημα", "syn");
     nymMarkerToNymName.put("αντώνυμα", "ant");
+    nymMarkerToNymName.put("αντώνυμο", "ant");
+    nymMarkerToNymName.put("αντών", "ant");
     nymMarkerToNymName.put("hyponyms", "hypo");
     nymMarkerToNymName.put("υπώνυμα", "hypo");
     nymMarkerToNymName.put("hypernyms", "hyper");
     nymMarkerToNymName.put("υπερώνυμα", "hyper");
     nymMarkerToNymName.put("meronyms", "mero");
+    nymMarkerToNymName.put("μερώνυμα", "mero");
+    nymMarkerToNymName.put("παρώνυμα", "paro");
 
     ignoredSection = new HashSet<>(20);
     ignoredSection.add("άλλες γραφές"); // TODO: Other forms
     ignoredSection.add("μορφές"); // TODO: Other forms
     ignoredSection.add("άλλες μορφές"); // TODO: Other forms (is there a difference with the
-                                        // previous one ?)
+    // previous one ?)
     ignoredSection.add("άλλη γραφή"); // TODO: Other forms (???)
     ignoredSection.add("αλλόγλωσσα"); // Foreign language derivatives
     ignoredSection.add("αναγραμματισμοί"); // Anagrams
     ignoredSection.add("βλέπε"); // See also
     ignoredSection.add("βλ"); // See also
+    ignoredSection.add("κοιτ"); // See also
     ignoredSection.add("εκφράσεις"); // Expressions
     ignoredSection.add("κλίση"); // TODO: Conjugations
     ignoredSection.add("υποκοριστικά"); // diminutive (?)
@@ -168,6 +175,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignoredSection.add("σημειώσεις"); // Notes
     ignoredSection.add("συγγενικά"); // Related words
     ignoredSection.add("σύνθετα"); // Compound words
+    ignoredSection.add("αναφορές"); // References
+    ignoredSection.add("παροιμίες"); // Proverbs
 
     ignoredSection.add("ρηματική φωνή"); // Forms verbales
 
@@ -179,15 +188,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super(wdh);
   }
 
-  protected final static Pattern SectionPattern;
   protected final static Pattern pronPattern;
 
   private static final Pattern definitionPattern;
 
   static {
-    SectionPattern = Pattern.compile(SectionPatternString);
     pronPattern = Pattern.compile(pronPatternString);
-    languageSectionPattern = Pattern.compile(languageSectionPatternString);
     definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
   }
 
@@ -250,9 +256,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractTranslations(heading.getSection().getPrologue().getText());
       } else if ("προφορά".equals(sectionName)) {
         // pronunciation
-        extractPron(heading.getSection().getPrologue().getText());
-      } else if ((posMacros.contains(sectionName)) && title != null) {
-        // Only initialize entries when title is a template ?
+        extractPron(heading.getSection().getPrologue());
+      } else if ((posMacros.contains(sectionName))) {
         wdh.initializeLexicalEntry(sectionName);
         extractDefinitions(heading.getSection().getPrologue());
       } else if (nymMarkerToNymName.containsKey(sectionName)) {
@@ -260,7 +265,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         WikiContent prologue = heading.getSection().getPrologue();
         extractNyms(nymMarkerToNymName.get(sectionName), prologue.getBeginIndex(),
             prologue.getEndIndex());
-      } else {
+      } else if (!ignoredSection.contains(sectionName)) {
         log.debug("Unexpected title {} in {}", title == null ? sectionName : title.getText(),
             getWiktionaryPageName());
       }
@@ -360,16 +365,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  private void extractPron(String source) {
-    Matcher pronMatcher = pronPattern.matcher(source);
-    while (pronMatcher.find()) {
-      String pron = pronMatcher.group(1);
-
-      if (null == pron || pron.equals("")) {
-        return;
-      }
-      wdh.registerPronunciation(pron, wdh.getCurrentEntryLanguage() + "-fonipa");
-    }
+  private void extractPron(WikiContent pronContent) {
+    pronContent.wikiTokens().stream().filter(t -> t instanceof Template).map(Token::asTemplate)
+        .filter(t -> "ΔΦΑ".equals(t.getName())).forEach(
+            t -> wdh.registerPronunciation(t.getParsedArgs().get("2"),
+                wdh.getCurrentEntryLanguage() + "-fonipa"));
   }
 
   @Override

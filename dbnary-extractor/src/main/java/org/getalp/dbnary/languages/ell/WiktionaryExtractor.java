@@ -6,6 +6,7 @@ package org.getalp.dbnary.languages.ell;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,8 +18,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.ExtractionFeature;
-import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
+import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.languages.fra.FrenchDefinitionExtractorWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
@@ -186,11 +189,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   }
 
-
-  public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
-    super(wdh);
-  }
-
   protected final static Pattern pronPattern;
 
   private static final Pattern definitionPattern;
@@ -198,6 +196,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   static {
     pronPattern = Pattern.compile(pronPatternString);
     definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
+  }
+
+  protected GreekDefinitionExtractorWikiModel definitionExpander;
+
+  public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
+    super(wdh);
+  }
+
+  @Override
+  public void setWiktionaryIndex(WiktionaryPageSource wi) {
+    super.setWiktionaryIndex(wi);
+    definitionExpander = new GreekDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("el"),
+        "/${image}", "/${title}");
+
+  }
+
+  @Override
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    super.setWiktionaryPageName(wiktionaryPageName);
+    definitionExpander.setPageName(this.getWiktionaryPageName());
   }
 
   public void extractData() {
@@ -389,6 +407,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           wdh.registerPronunciation(t.getParsedArgs().get("2"),
               wdh.getCurrentEntryLanguage() + "-fonipa");
         });
+  }
+
+  @Override
+  public void extractDefinition(String definition, int defLevel) {
+    definitionExpander.parseDefinition(definition, defLevel);
   }
 
 }

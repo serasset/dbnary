@@ -22,6 +22,9 @@ import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
+import org.getalp.dbnary.wiki.WikiText.IndentedItem;
+import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Text;
 import org.getalp.dbnary.wiki.WikiText.Token;
@@ -274,10 +277,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractDefinitions(WikiContent prologue) {
-    Matcher definitionMatcher = definitionPattern.matcher(prologue.getText());
-    while (definitionMatcher.find()) {
-      extractDefinition(definitionMatcher);
-    }
+    prologue.wikiTokens().forEach(t -> {
+      if (t instanceof Text) {
+        String txt;
+        if (!"".equals(txt = t.asText().getText().trim()))
+          log.trace("Dangling text inside definition {} in {}", txt, wdh.currentPagename());
+      } else if (t instanceof ListItem || t instanceof NumberedListItem) {
+        IndentedItem item = t.asIndentedItem();
+        if (item.getContent().toString().startsWith(":")) {
+          // It's an example
+          wdh.registerExample(item.getContent().getText().substring(1), null);
+        } else {
+          extractDefinition(item.getContent().getText(), item.getLevel());
+        }
+      }
+    });
   }
 
   private static final Map<String, String> additionalLanguages = new HashMap<>();
@@ -367,24 +381,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractPron(WikiContent pronContent) {
     pronContent.wikiTokens().stream().filter(t -> t instanceof Template).map(Token::asTemplate)
-        .filter(t -> "ΔΦΑ".equals(t.getName())).forEach(
-            t -> wdh.registerPronunciation(t.getParsedArgs().get("2"),
-                wdh.getCurrentEntryLanguage() + "-fonipa"));
-  }
-
-  @Override
-  public void extractDefinition(Matcher definitionMatcher) {
-    // TODO: properly handle macros in definitions.
-    String definition = definitionMatcher.group(1);
-    int defLevel = 1;
-    if (null == definition) {
-      definition = definitionMatcher.group(2);
-    } else {
-      if (definitionMatcher.group().charAt(1) == '#') {
-        defLevel = 2;
-      }
-    }
-    extractDefinition(definition, defLevel);
+        .filter(t -> "ΔΦΑ".equals(t.getName())).forEach(t -> {
+          String pronLg = t.getParsedArg("1");
+          if (!pronLg.startsWith(wdh.getCurrentEntryLanguage()))
+            log.trace("Pronunciation language incorrect in section template {} ≠ {} in {}",
+                wdh.getCurrentEntryLanguage(), pronLg, wdh.currentPagename());
+          wdh.registerPronunciation(t.getParsedArgs().get("2"),
+              wdh.getCurrentEntryLanguage() + "-fonipa");
+        });
   }
 
 }

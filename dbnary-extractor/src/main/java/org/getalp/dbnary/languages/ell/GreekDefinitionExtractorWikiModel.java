@@ -58,10 +58,10 @@ public class GreekDefinitionExtractorWikiModel extends ExpandAllWikiModel {
       throws WikiModelContentException {
     // Patch Module:labels/data as the passed labels are incorrectly trimed by bliki.
     String rawText = super.getRawWikiContent(parsedPagename, map);
-    if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY) &&
-        "labels".equals(parsedPagename.pagename) && rawText != null) {
-      rawText = rawText.replace("local alias = ''",
-          "label = mw.text.trim(label)\n\tlocal alias = ''");
+    if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && "labels".equals(parsedPagename.pagename) && rawText != null) {
+      rawText =
+          rawText.replace("local alias = ''", "label = mw.text.trim(label)\n\tlocal alias = ''");
     }
     return rawText;
   }

@@ -1,13 +1,12 @@
 package org.getalp.dbnary.languages.mlg;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
-import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
+import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -21,7 +21,6 @@ import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.languages.fra.FrenchDefinitionExtractorWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
@@ -34,8 +33,6 @@ import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiText.WikiDocument;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
-import org.getalp.iso639.ISO639_3;
-import org.getalp.iso639.ISO639_3.Lang;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,8 +183,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     ignoredSection.add("ρηματική φωνή"); // Forms verbales
 
-
   }
+
+  // Non standard language codes used in Greek edition
+  static {
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("conv", "mul-conv");
+  }
+
 
   protected final static Pattern pronPattern;
 
@@ -310,18 +312,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
       }
     });
-  }
-
-  private static final Map<String, String> additionalLanguages = new HashMap<>();
-
-  static {
-    additionalLanguages.put("conv", "mul-conv");
-  }
-
-  @Override
-  protected String validateAndStandardizeLanguageCode(String language) {
-    String validLanguage = super.validateAndStandardizeLanguageCode(language);
-    return null != validLanguage ? validLanguage : additionalLanguages.get(language);
   }
 
   private Pair<Template, String> sectionType(Heading heading) {

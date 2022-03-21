@@ -17,12 +17,12 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
-import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.ExtractionFeature;
-import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
+import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.languages.fra.morphology.FrenchInflectionDecoder;
 import org.getalp.dbnary.languages.fra.morphology.InflectionExtractorWikiModel;
 import org.getalp.dbnary.languages.fra.morphology.VerbalInflexionExtractorWikiModel;
@@ -38,8 +38,6 @@ import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiText.WikiDocument;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
-import org.getalp.iso639.ISO639_3;
-import org.getalp.iso639.ISO639_3.Lang;
 import org.getalp.model.ontolex.LexicalForm;
 import org.getalp.model.ontolex.PhoneticRepresentation;
 import org.getalp.model.ontolex.WrittenRepresentation;
@@ -396,6 +394,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // affixesToDiscardFromLinks.add("s");
   }
 
+  static {
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("conv", "mul-conv");
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("gallo", "fr-gallo");
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("normand", "fr-normand");
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("gaulois", "xtg");
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("gsw-fr", "gsw-FR");
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("nds-nl", "nds-NL");
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("igs-gls", "igs-gls");
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("css-mut", "css-mut");
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("be-tarask", "be-tarask");
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("ko-Hani", "ko-Hani");
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("vi-chunom", "vi-chunom");
+  }
+
+
   WiktionaryDataHandler frwdh;
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
@@ -506,26 +519,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizeLanguageSection();
   }
 
-  private static final Map<String, String> additionalLanguages = new HashMap<>();
-  static {
-    additionalLanguages.put("conv", "mul-conv");
-    additionalLanguages.put("gallo", "fr-gallo");
-    additionalLanguages.put("normand", "fr-normand");
-    additionalLanguages.put("gaulois", "xtg");
-    additionalLanguages.put("gsw-fr", "gsw-FR");
-    additionalLanguages.put("nds-nl", "nds-NL");
-    additionalLanguages.put("igs-gls", "igs-gls");
-    additionalLanguages.put("css-mut", "css-mut");
-    additionalLanguages.put("be-tarask", "be-tarask");
-    additionalLanguages.put("ko-Hani", "ko-Hani");
-    additionalLanguages.put("vi-chunom", "vi-chunom");
-  }
-
-  @Override
-  protected String validateAndStandardizeLanguageCode(String language) {
-    String validLanguage = super.validateAndStandardizeLanguageCode(language);
-    return null != validLanguage ? validLanguage : additionalLanguages.get(language);
-  }
   /**
    * Extract inflections from "pseudo" PoS sections, like "Forme de Verbe", etc.
    *

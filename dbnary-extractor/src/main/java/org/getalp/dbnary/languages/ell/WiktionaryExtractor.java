@@ -318,12 +318,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     additionalLanguages.put("conv", "mul-conv");
   }
 
-  private static String validateAndStandardizeLanguageCode(String language) {
-    Lang languageObject = ISO639_3.sharedInstance.getLang(language);
-    if (languageObject != null) {
-      return languageObject.getId();
-    }
-    return additionalLanguages.get(language);
+  @Override
+  protected String validateAndStandardizeLanguageCode(String language) {
+    String validLanguage = super.validateAndStandardizeLanguageCode(language);
+    return null != validLanguage ? validLanguage : additionalLanguages.get(language);
   }
 
   private Pair<Template, String> sectionType(Heading heading) {

@@ -212,7 +212,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !lang.equals("mg"))
       return;
-    if (ignoreLanguage(lang)) {
+
+    // The language is always defined when arriving here, but we should check if we extract it
+    String normalizedLanguage = validateAndStandardizeLanguageCode(lang);
+    if (normalizedLanguage == null) {
+      log.trace("Ignoring language section {} for {}", lang, getWiktionaryPageName());
       return;
     }
 
@@ -257,15 +261,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     extractDataBlock(start, endOffset, block, blockString);
     wdh.finalizeLanguageSection();
-  }
-
-  private static final HashSet<String> ignoredLanguage = new HashSet<>();
-  static {
-    ignoredLanguage.add("m͡p");
-  }
-
-  private static boolean ignoreLanguage(String lang) {
-    return ignoredLanguage.contains(lang);
   }
 
   protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,

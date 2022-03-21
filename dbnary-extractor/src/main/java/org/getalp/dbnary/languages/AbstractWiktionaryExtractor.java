@@ -12,7 +12,10 @@ import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.enhancer.TranslationSourcesDisambiguator;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStatsModule;
+import org.getalp.dbnary.languages.fra.WiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.iso639.ISO639_3;
+import org.getalp.iso639.ISO639_3.Lang;
 
 public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtractor {
 
@@ -214,6 +217,13 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   public void extractExample(Matcher definitionMatcher) {
     String example = definitionMatcher.group(2);
     extractExample(example);
+  }
+
+  protected String validateAndStandardizeLanguageCode(String language) {
+    Lang languageObject = ISO639_3.sharedInstance.getLang(language);
+    if (languageObject != null)
+      return languageObject.getId();
+    return null;
   }
 
   public void extractExample(String example) {

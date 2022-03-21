@@ -521,13 +521,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     additionalLanguages.put("vi-chunom", "vi-chunom");
   }
 
-  private static String validateAndStandardizeLanguageCode(String language) {
-    Lang languageObject = ISO639_3.sharedInstance.getLang(language);
-    if (languageObject != null)
-      return languageObject.getId();
-    return additionalLanguages.get(language);
+  @Override
+  protected String validateAndStandardizeLanguageCode(String language) {
+    String validLanguage = super.validateAndStandardizeLanguageCode(language);
+    return null != validLanguage ? validLanguage : additionalLanguages.get(language);
   }
-
   /**
    * Extract inflections from "pseudo" PoS sections, like "Forme de Verbe", etc.
    *

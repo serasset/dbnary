@@ -21,6 +21,7 @@ compile:sampling:
   artifacts:
     paths:
       - out/dbnary
+    expire_in: 4h
 
 .evaluate:sampling: &evaluate
   <<: *sampling
@@ -32,6 +33,7 @@ compile:sampling:
     - chmod +x .gitlab-ci/*.sh
     - .gitlab-ci/extract_both_versions.sh ${LANGUAGE_BATCH}
   artifacts:
+    expire_in: 2 days
     paths:
       - target/evaluation
 
@@ -66,5 +68,6 @@ analyse:sampling:
     - .gitlab-ci/compute_differences.sh
     - .gitlab-ci/summarize_on_slack.sh
   artifacts:
+    expire_in: 2 days
     paths:
       - target/diffs

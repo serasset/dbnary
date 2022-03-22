@@ -189,7 +189,9 @@ public class SummarizeDifferences extends VerboseCommand {
       s.append("*").append(capitalize(model)).append("*:\n");
       diffs.forEach((k, v) -> {
         s.append(">*").append(k).append("*: \t");
-        long max = Math.max(v.getGainCount() - 1, v.getLossCount() - 1);
+        long gainCount = v.getGainCount() - 1;
+        long lossCount = v.getLossCount() - 1;
+        long max = Math.max(gainCount, lossCount);
         if (max == -1) {
           s.append(":interrobang: ");
         } else if (max == 0) {
@@ -199,15 +201,15 @@ public class SummarizeDifferences extends VerboseCommand {
         } else {
           s.append(":sos: ");
         }
-        if (v.getGainCount() == v.getLossCount()) {
+        if (gainCount == lossCount) {
           s.append(":arrow_right: ");
-        } else if (v.getGainCount() > v.getLossCount()) {
+        } else if (gainCount > lossCount) {
           s.append(":small_red_triangle: ");
         } else {
           s.append(":small_red_triangle_down: ");
         }
-        s.append("\t +").append(v.getGainCount()).append("(").append(v.getGain()).append(") / -")
-            .append(v.getLossCount()).append("(").append(v.getLoss()).append(")\n");
+        s.append("\t +").append(gainCount).append("(").append(v.getGain()).append(") / -")
+            .append(lossCount).append("(").append(v.getLoss()).append(")\n");
       });
       return s.toString();
     }

@@ -13,7 +13,7 @@ variables:
   # when running from the command line.
   # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
-  VALIDATION_LANGUAGES: "fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"
+  VALIDATION_LANGUAGES:
     value: "fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"
     description: "Space separated list of languages for which the sampling will be performed"
   SAMPLE_SIZE:

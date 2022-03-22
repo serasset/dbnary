@@ -68,7 +68,7 @@ sampling:
     - if: $CI_COMMIT_REF_NAME =~ /^hotfix.*/
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   variables:
-    VALIDATION_LANGUAGES: $VALIDATION_LANGUAGES
+    VALIDATION_LANGUAGES: "$VALIDATION_LANGUAGES"
     SAMPLE_SIZE: $SAMPLE_SIZE
   trigger:
     include: .gitlab-ci/sampling.yml

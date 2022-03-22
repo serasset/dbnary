@@ -13,7 +13,7 @@ variables:
   # when running from the command line.
   # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
-  VALIDATION_LANGUAGES:
+  VALIDATION_LANGUAGES: "fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"
     value: "fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"
     description: "Space separated list of languages for which the sampling will be performed"
   SAMPLE_SIZE:
@@ -68,8 +68,8 @@ sampling:
     - if: $CI_COMMIT_REF_NAME =~ /^hotfix.*/
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   variables:
-    VALIDATION_LANGUAGES: "$VALIDATION_LANGUAGES"
-    SAMPLE_SIZE: $SAMPLE_SIZE
+    VALIDATION_LANGUAGES: ${VALIDATION_LANGUAGES}
+    SAMPLE_SIZE: ${SAMPLE_SIZE}
   trigger:
     include: .gitlab-ci/sampling.yml
 

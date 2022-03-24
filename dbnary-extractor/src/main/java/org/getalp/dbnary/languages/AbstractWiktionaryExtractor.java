@@ -17,6 +17,8 @@ import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStatsModule;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.iso639.ISO639_3;
 import org.getalp.iso639.ISO639_3.Lang;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtractor {
 
@@ -24,7 +26,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   // result
   // TODO: Determine how many nested macro are used in the different wiktionary languages.
   // These should be independent of the language
-
+  private static final Logger log = LoggerFactory.getLogger(AbstractWiktionaryExtractor.class);
 
   protected String pageContent;
   protected IWiktionaryDataHandler wdh;
@@ -150,6 +152,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
       return;
     }
     try {
+      log.trace("Extracting page '{}'", wiktionaryPageName);
       extractData();
     } catch (RuntimeException e) {
       System.err.println(

@@ -189,23 +189,27 @@ public class SummarizeDifferences extends VerboseCommand {
       s.append("*").append(capitalize(model)).append("*:\n");
       diffs.forEach((k, v) -> {
         s.append(">*").append(k).append("*: \t");
-        long max = Math.max(v.getGainCount(), v.getLossCount());
-        if (max == 0) {
+        long gainCount = v.getGainCount() - 1;
+        long lossCount = v.getLossCount() - 1;
+        long max = Math.max(gainCount, lossCount);
+        if (max == -1) {
+          s.append(":interrobang: ");
+        } else if (max == 0) {
           s.append(":ok: ");
         } else if (max < 1000) {
           s.append(":vs: ");
         } else {
           s.append(":sos: ");
         }
-        if (v.getGainCount() == v.getLossCount()) {
+        if (gainCount == lossCount) {
           s.append(":arrow_right: ");
-        } else if (v.getGainCount() > v.getLossCount()) {
+        } else if (gainCount > lossCount) {
           s.append(":small_red_triangle: ");
         } else {
           s.append(":small_red_triangle_down: ");
         }
-        s.append("\t +").append(v.getGainCount()).append("(").append(v.getGain()).append(") / -")
-            .append(v.getLossCount()).append("(").append(v.getLoss()).append(")\n");
+        s.append("\t +").append(gainCount).append("(").append(v.getGain()).append(") / -")
+            .append(lossCount).append("(").append(v.getLoss()).append(")\n");
       });
       return s.toString();
     }
@@ -238,9 +242,8 @@ public class SummarizeDifferences extends VerboseCommand {
     int count = 0;
     StmtIterator it = m.listStatements();
     while (it.hasNext()) {
-      Statement current = it.next();
-      if (!RDFDiff.diffRate.getLocalName().equals(current.getPredicate().getLocalName()))
-        count++;
+      it.next();
+      count++;
     }
     return count;
   }
@@ -255,8 +258,14 @@ public class SummarizeDifferences extends VerboseCommand {
       String lg = fileNameMatcher.group(1);
       String direction = fileNameMatcher.group(2);
       String model = fileNameMatcher.group(3);
-      double rate = Optional.ofNullable(m.getProperty(RDFDiff.me, RDFDiff.diffRate))
-          .map(Statement::getLiteral).map(Literal::getDouble).orElse(Double.NaN);
+      double rate = Double.NaN;
+      Statement property = m.getProperty(RDFDiff.me, RDFDiff.diffRate);
+      if (property != null) {
+        Literal literal = property.getLiteral();
+        if (literal != null) {
+          rate = literal.getDouble();
+        }
+      }
       long nbStatements = countStatements(m);
 
       // System.err.println("" + lg + "/" + direction + "/" + model + " -> " + rate);

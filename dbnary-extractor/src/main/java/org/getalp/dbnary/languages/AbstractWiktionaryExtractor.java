@@ -1,6 +1,8 @@
 package org.getalp.dbnary.languages;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Model;
@@ -13,6 +15,10 @@ import org.getalp.dbnary.enhancer.TranslationSourcesDisambiguator;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStatsModule;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.iso639.ISO639_3;
+import org.getalp.iso639.ISO639_3.Lang;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtractor {
 
@@ -20,7 +26,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   // result
   // TODO: Determine how many nested macro are used in the different wiktionary languages.
   // These should be independent of the language
-
+  private static final Logger log = LoggerFactory.getLogger(AbstractWiktionaryExtractor.class);
 
   protected String pageContent;
   protected IWiktionaryDataHandler wdh;
@@ -146,6 +152,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
       return;
     }
     try {
+      log.trace("Extracting page '{}'", wiktionaryPageName);
       extractData();
     } catch (RuntimeException e) {
       System.err.println(
@@ -214,6 +221,31 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   public void extractExample(Matcher definitionMatcher) {
     String example = definitionMatcher.group(2);
     extractExample(example);
+  }
+
+  protected static final Map<String, String> NON_STANDARD_LANGUAGE_MAPPINGS = new HashMap<>();
+
+  /**
+   * Standardize a wiktionary language code into a "valid" language code. As language editions use
+   * codes that may differ from ISO-639-3. Sometimes these codes are referring to languages that are
+   * not represented in the iso standard and there are some that may lead to invalid turtle dumps
+   * (either because IRI become malformed, but also because the language tag of string values is
+   * invalid.
+   *
+   * In this common implementation, we only consider ISO language codes.
+   *
+   * Language extractor may refine this method or just add new language to the
+   * NON_STANDARD_LANGUAGE_MAPPINGS map.
+   *
+   * @param language the language code to be checked
+   * @return the String representing the standardized representation for the language (usable as a
+   *         language tag in RDF) or null if language is invalid
+   */
+  protected String validateAndStandardizeLanguageCode(String language) {
+    Lang languageObject = ISO639_3.sharedInstance.getLang(language);
+    if (languageObject != null)
+      return languageObject.getId();
+    return NON_STANDARD_LANGUAGE_MAPPINGS.get(language);
   }
 
   public void extractExample(String example) {

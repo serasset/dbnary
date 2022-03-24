@@ -1,4 +1,4 @@
-FROM serasset/scipy-notebook
+FROM jupyter/scipy-notebook
 
 LABEL maintainer="Gilles Serasset <gilles.serasset@imag.fr>"
 
@@ -7,12 +7,13 @@ USER root
 # Install dependencies
 RUN apt-get update && apt-get install -y \
   software-properties-common \
-  curl
+  curl \
+  openjdk-11-jdk
 
 # Install Zulu OpenJdk 11 (LTS)
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 \
-  && apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main' \
-  && apt install -y zulu-11
+#RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 \
+#  && apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main' \
+#  && apt install -y zulu-11
 
 # Unpack and install the kernel
 RUN curl -L https://github.com/SpencerPark/IJava/releases/download/v1.3.0/ijava-1.3.0.zip > ijava-kernel.zip

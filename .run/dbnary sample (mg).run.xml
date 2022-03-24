@@ -2,7 +2,7 @@
   <configuration default="false" name="dbnary sample (mg)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
-    <option name="PROGRAM_PARAMETERS" value="sample -l mg --endolex=etymology --exolex=ontolex mgwkt-20210701.xml miloka" />
+    <option name="PROGRAM_PARAMETERS" value="sample -l mg --endolex=etymology --exolex=ontolex mgwkt-20210701.xml Efyoma" />
     <option name="VM_PARAMETERS" value="-Dorg.slf4j.simpleLogger.log.org.getalp.dbnary.mlg=trace" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/mg/20210701/" />
     <method v="2">

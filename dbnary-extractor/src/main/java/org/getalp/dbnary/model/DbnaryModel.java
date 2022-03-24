@@ -2,6 +2,7 @@ package org.getalp.dbnary.model;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -31,12 +32,12 @@ public class DbnaryModel {
   }
 
   public static String uriEncode(String s) {
-    StringBuffer res = new StringBuffer();
+    StringBuilder res = new StringBuilder();
     uriEncode(s, res);
     return res.toString();
   }
 
-  protected static void uriEncode(String s, StringBuffer res) {
+  protected static void uriEncode(String s, StringBuilder res) {
     int i = 0;
     s = Normalizer.normalize(s, Normalizer.Form.NFKC);
     while (i != s.length()) {
@@ -47,12 +48,7 @@ public class DbnaryModel {
           || (c == '"') || (c == '#') || (c == '[') || (c == ']') || (c == '\\') || (c == '^')
           || (c == '`') || (c == '{') || (c == '|') || (c == '}') || (c == '\u00D7')
           || (c == '\u00F7') || (c == ':')) {
-        try {
-          res.append(URLEncoder.encode("" + c, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-          // Should never happen
-          e.printStackTrace();
-        }
+        res.append(URLEncoder.encode("" + c, StandardCharsets.UTF_8));
       } else if (Character.isISOControl(c)) {
         // nop
       } else if (c == '\u200e' || c == '\u200f') {
@@ -67,7 +63,7 @@ public class DbnaryModel {
   }
 
   protected static String uriEncode(String s, String pos) {
-    StringBuffer res = new StringBuffer();
+    StringBuilder res = new StringBuilder();
     uriEncode(s, res);
     res.append("__");
     pos = Normalizer.normalize(pos, Normalizer.Form.NFKC);
@@ -80,9 +76,9 @@ public class DbnaryModel {
           || (c == '"') || (c == '#') || (c == '[') || (c == ']') || (c == '\\') || (c == '^')
           || (c == '`') || (c == '{') || (c == '|') || (c == '}') || (c == '\u00D7')
           || (c == '\u00F7') || (c == '-') || (c == '_') || Character.isISOControl(c)) {
-        ; // nop
+        // nop
       } else if (c == '\u200e' || c == '\u200f') {
-        ; // ignore rRLM and LRM.
+        // ignore rRLM and LRM.
       } else if (c == '/') {
         res.append("!slash!"); // ignore rRLM and LRM.
       } else {

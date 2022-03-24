@@ -153,6 +153,8 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
               } catch (RuntimeException e) {
                 spec.commandLine().getErr().println("Runtime exception while extracting  page<<"
                     + title + ">>, proceeding to next pages.");
+                if (log.isDebugEnabled())
+                  e.printStackTrace(spec.commandLine().getErr());
                 spec.commandLine().getErr().println(e.getMessage());
                 // e.printStackTrace();
               }

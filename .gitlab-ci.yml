@@ -13,6 +13,14 @@ variables:
   # when running from the command line.
   # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+  VALIDATION_LANGUAGES:
+    value: "fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"
+    description: "Space separated list of languages for which the sampling will be performed"
+  SAMPLE_SIZE:
+    value: "10000"
+    description: "The number of wiktionary pages that will be used for sampling"
+
+
 
 # DBnary requires jdk11 for compiling
 image: maven:3-openjdk-11
@@ -29,26 +37,11 @@ cache:
   stage: test
   script:
     - 'mvn $MAVEN_CLI_OPTS verify'
-  except:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-## Alias for sampling evaluation strategy
-.sampling: &sampling
-  tags:
-    - dbnary
-    - linux
   rules:
-    - if: $CI_COMMIT_BRANCH == "develop"
-      when: manual
-    - if: $CI_COMMIT_REF_NAME =~ "/feature/"
-      when: manual
-    - if: $CI_COMMIT_REF_NAME =~ "/release/"
-      when: manual
-    - if: $CI_COMMIT_REF_NAME =~ "/hotfix/"
-      when: manual
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "web"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      when: on_success
 
 # Verify merge requests using JDK11
 verify:jdk11:
@@ -68,67 +61,17 @@ package:
   rules:
     - if: $CI_COMMIT_TAG
 
-# Evaluate differences in extracts from current pull request vs develop or master branch
-# Make sure it only occurs on pull requests
-compile:sampling:
-  <<: *sampling
+sampling:
+  rules:
+    - if: '($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "web") && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+    - if: $CI_COMMIT_REF_NAME =~ /^release.*/
+    - if: $CI_COMMIT_REF_NAME =~ /^hotfix.*/
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   variables:
-    GIT_STRATEGY: clone
-    GIT_DEPTH: "0"
-  stage: build
-  script:
-    - env
-    - chmod +x .gitlab-ci/*.sh
-    - .gitlab-ci/compile-pr-and-target-versions.sh
-  artifacts:
-    paths:
-      - out/dbnary
-
-.evaluate:sampling: &evaluate
-  <<: *sampling
-  stage: test
-  variables:
-    LANGUAGE_BATCH: "en"
-  script:
-    - chmod +x .gitlab-ci/*.sh
-    - .gitlab-ci/extract_both_versions.sh ${LANGUAGE_BATCH}
-  artifacts:
-    paths:
-      - target/evaluation
-
-
-# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku
-evaluate:sampling:1:
-  <<: *evaluate
-  variables:
-    LANGUAGE_BATCH: "en"
-
-evaluate:sampling:2:
-  <<: *evaluate
-  variables:
-    LANGUAGE_BATCH: "fr no mg id la ku"
-
-evaluate:sampling:3:
-  <<: *evaluate
-  variables:
-    LANGUAGE_BATCH: "de bg pl nl sh sv lt"
-
-evaluate:sampling:4:
-  <<: *evaluate
-  variables:
-    LANGUAGE_BATCH: "pt it fi ru el tr ja es"
-
-analyse:sampling:
-  <<: *sampling
-  stage: deploy
-  script:
-    - chmod +x .gitlab-ci/*.sh
-    - .gitlab-ci/compute_differences.sh
-    - .gitlab-ci/summarize_on_slack.sh
-  artifacts:
-    paths:
-      - target/diffs
-
+    VALIDATION_LANGUAGES: ${VALIDATION_LANGUAGES}
+    SAMPLE_SIZE: ${SAMPLE_SIZE}
+  trigger:
+    include: .gitlab-ci/sampling.yml
 
 # gitlab does not accept artifacts of size > 10M in releases, and ours are 50M+
 # Hence the maven configuration will use the github mirror to perform releases.
@@ -138,6 +81,8 @@ deploy:jdk11:
     JRELEASER_DRAFT: "false"
   script:
     - 'mvn $MAVEN_CLI_OPTS -s ci_settings.xml -Prelease deploy'
-  only:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "web"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: on_success

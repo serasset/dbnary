@@ -5,48 +5,64 @@ package org.getalp.dbnary.languages.ell;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
-import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
+import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Heading;
+import org.getalp.dbnary.wiki.WikiText.IndentedItem;
+import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Text;
+import org.getalp.dbnary.wiki.WikiText.Token;
+import org.getalp.dbnary.wiki.WikiText.WikiContent;
+import org.getalp.dbnary.wiki.WikiText.WikiDocument;
+import org.getalp.dbnary.wiki.WikiText.WikiSection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Barry
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String SectionPatternString; // "={2,5}\\s*\\{\\{([^=]*)([^\\}\\|\n\r]*)\\s*(?:\\|([^\\}\n\r]*))?)\\s*\\}\\}={2,5}"
-
-  protected final static String languageSectionPatternString = "==\\s*\\{\\{-([^-]*)-\\}\\}\\s*==";
   protected final static String definitionPatternString =
       // "(?:^#{1,2}([^\\*#:].*))|(?:^\\*([^\\*#:].*))$";
       "^(?:#{1,2}([^\\*#:].*)|\\*([^\\*#:].*))$";
 
   protected final static String pronPatternString = "\\{\\{ΔΦΑ\\|([^\\|\\}]*)(.*)\\}\\}";
 
-  private final int NODATA = 0;
-  private final int TRADBLOCK = 1;
-  private final int DEFBLOCK = 2;
-  private final int NYMBLOCK = 3;
-  private final int PRONBLOCK = 4;
-
   // protected final static Pattern languageSectionPattern;
 
   private static HashSet<String> posMacros;
-  private static HashSet<String> nymMarkers;
-  protected final static Pattern languageSectionPattern;
+  private static HashSet<String> ignoredSection;
   private final static HashMap<String, String> nymMarkerToNymName;
 
+  private static void addPos(String pos) {
+    posMacros.add(pos);
+    if (pos.contains(" ")) {
+      posMacros.add(pos.replaceAll(" ", "_"));
+    }
+  }
 
   static {
-
-    SectionPatternString = new StringBuilder().append("={2,5}").append("\\{\\{\\s*")
-        .append("([^\\}\\|\n\r]*)(?:([^\\}\n\r]*))?").append("\\s*\\}\\}").append("={2,5}")
-        .toString();
 
     posMacros = new HashSet<>(20);
     // defMarkers.add("ουσιαστικό"); // Noun
@@ -63,318 +79,264 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // defMarkers.add("επιρρηματική έκφραση"); // adverbial expression
     // defMarkers.add("μετοχή"); // both adjective and verbs
 
-    posMacros.add("αντωνυμία");
-    posMacros.add("απαρέμφατο");
-    posMacros.add("άρθρο");
-    posMacros.add("αριθμητικό");
-    posMacros.add("γερουνδιακό");
-    posMacros.add("γερούνδιο");
-    posMacros.add("έκφραση");
-    posMacros.add("επιθετική έκφραση");
-    posMacros.add("επίθετο");
-    posMacros.add("επίθημα");
-    posMacros.add("επίρρημα");
-    posMacros.add("επιρρηματική έκφραση");
-    posMacros.add("επιφώνημα");
-    posMacros.add("κατάληξη");
-    posMacros.add("κατάληξη αρσενικών επιθέτων");
-    posMacros.add("κατάληξη αρσενικών και θηλυκών ουσιαστικών");
-    posMacros.add("κατάληξη αρσενικών ουσιαστικών");
-    posMacros.add("κατάληξη επιρρημάτων");
-    posMacros.add("κατάληξη θηλυκών ουσιαστικών");
-    posMacros.add("κατάληξη ουδέτερων ουσιαστικών");
-    posMacros.add("κατάληξη ρημάτων");
-    posMacros.add("κύριο όνομα");
-    posMacros.add("μετοχή");
-    posMacros.add("μόριο");
-    posMacros.add("μορφή αντωνυμίας");
-    posMacros.add("μορφή αριθμητικού");
-    posMacros.add("μορφή γερουνδιακού");
-    posMacros.add("μορφή επιθέτου");
-    posMacros.add("μορφή επιρρήματος");
-    posMacros.add("μορφή κυρίου ονόματος");
-    posMacros.add("μορφή μετοχής");
-    posMacros.add("μορφή ουσιαστικού");
-    posMacros.add("μορφή πολυλεκτικού όρου");
-    posMacros.add("μορφή ρήματος");
-    posMacros.add("ουσιαστικό");
-    posMacros.add("παροιμία");
-    posMacros.add("πολυλεκτικός όρος");
-    posMacros.add("πρόθεση");
-    posMacros.add("προθετική έκφραση");
-    posMacros.add("πρόθημα");
-    posMacros.add("πρόσφυμα");
-    posMacros.add("ρήμα");
-    posMacros.add("ρηματική έκφραση");
-    posMacros.add("ρίζα");
-    posMacros.add("σουπίνο");
-    posMacros.add("συγχώνευση");
-    posMacros.add("σύμβολο");
-    posMacros.add("συνδεσμική έκφραση");
-    posMacros.add("σύνδεσμος");
-    posMacros.add("συντομομορφή");
-    posMacros.add("φράση");
-    posMacros.add("χαρακτήρας");
-
-    nymMarkers = new HashSet<>(20);
-    nymMarkers.add("συνώνυμα");// Synonyms
-    nymMarkers.add("αντώνυμα");// Antonyms
-    nymMarkers.add("hyponyms");// Hyponyms
-    nymMarkers.add("hypernyms");// Hypernyms
-    nymMarkers.add("meronyms");// Meronyms
+    addPos("αντωνυμία");
+    addPos("απαρέμφατο");
+    addPos("άρθρο");
+    addPos("αριθμητικό");
+    addPos("γερουνδιακό");
+    addPos("γερούνδιο");
+    addPos("έκφραση");
+    addPos("επιθετική έκφραση");
+    addPos("επίθετο");
+    addPos("επίθημα");
+    addPos("επίρρημα");
+    addPos("επιρρηματική έκφραση");
+    addPos("επιφώνημα");
+    addPos("κατάληξη");
+    addPos("κατάληξη αρσενικών επιθέτων");
+    addPos("κατάληξη αρσενικών και θηλυκών ουσιαστικών");
+    addPos("κατάληξη αρσενικών ουσιαστικών");
+    addPos("κατάληξη επιρρημάτων");
+    addPos("κατάληξη θηλυκών ουσιαστικών");
+    addPos("κατάληξη ουδέτερων ουσιαστικών");
+    addPos("κατάληξη ρημάτων");
+    addPos("κύριο όνομα");
+    addPos("μετοχή");
+    addPos("μόριο");
+    addPos("μορφή αντωνυμίας");
+    addPos("μορφή αριθμητικού");
+    addPos("μορφή γερουνδιακού");
+    addPos("μορφή επιθέτου");
+    addPos("μορφή επιρρήματος");
+    addPos("μορφή κυρίου ονόματος");
+    addPos("μορφή μετοχής");
+    addPos("μορφή ουσιαστικού");
+    addPos("μορφή πολυλεκτικού όρου");
+    addPos("μορφή ρήματος");
+    addPos("ουσιαστικό");
+    addPos("παροιμία");
+    addPos("πολυλεκτικός όρος");
+    addPos("πρόθεση");
+    addPos("προθετική έκφραση");
+    addPos("πρόθημα");
+    addPos("πρόσφυμα");
+    addPos("ρήμα");
+    addPos("ρηματική έκφραση");
+    addPos("ρίζα");
+    addPos("σουπίνο");
+    addPos("συγχώνευση");
+    addPos("σύμβολο");
+    addPos("συνδεσμική έκφραση");
+    addPos("σύνδεσμος");
+    addPos("συντομομορφή");
+    addPos("φράση");
+    addPos("χαρακτήρας");
+    addPos("ένθημα");
+    addPos("μεταγραφή"); // A transcription from another language...
+    addPos("μορφή άρθρου"); // Clitic article type...
+    addPos("μορφή επιθήματοςς"); // Clitic suffix...
+    addPos("μορφή επιθήματος"); // Clitic suffix...
 
     nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("συνώνυμα", "syn");
+    nymMarkerToNymName.put("συνώνυμο", "syn");
+    nymMarkerToNymName.put("συνων", "syn");
+    nymMarkerToNymName.put("ταυτόσημα", "syn");
     nymMarkerToNymName.put("αντώνυμα", "ant");
+    nymMarkerToNymName.put("αντώνυμο", "ant");
+    nymMarkerToNymName.put("αντών", "ant");
     nymMarkerToNymName.put("hyponyms", "hypo");
+    nymMarkerToNymName.put("υπώνυμα", "hypo");
     nymMarkerToNymName.put("hypernyms", "hyper");
+    nymMarkerToNymName.put("υπερώνυμα", "hyper");
     nymMarkerToNymName.put("meronyms", "mero");
+    nymMarkerToNymName.put("μερώνυμα", "mero");
+    nymMarkerToNymName.put("παρώνυμα", "paro");
+
+    ignoredSection = new HashSet<>(20);
+    ignoredSection.add("άλλες γραφές"); // TODO: Other forms
+    ignoredSection.add("μορφές"); // TODO: Other forms
+    ignoredSection.add("άλλες μορφές"); // TODO: Other forms (is there a difference with the
+    // previous one ?)
+    ignoredSection.add("άλλη γραφή"); // TODO: Other forms (???)
+    ignoredSection.add("αλλόγλωσσα"); // Foreign language derivatives
+    ignoredSection.add("αναγραμματισμοί"); // Anagrams
+    ignoredSection.add("βλέπε"); // See also
+    ignoredSection.add("βλ"); // See also
+    ignoredSection.add("κοιτ"); // See also
+    ignoredSection.add("εκφράσεις"); // Expressions
+    ignoredSection.add("κλίση"); // TODO: Conjugations
+    ignoredSection.add("υποκοριστικά"); // diminutive (?)
+    ignoredSection.add("μεγεθυντικά"); // Augmentative (?)
+    ignoredSection.add("μεταγραφές"); // Transcriptions
+    ignoredSection.add("ομώνυμα"); // Homonym / Similar
+    ignoredSection.add("παράγωγα"); // Derived words
+    ignoredSection.add("πηγές"); // Sources
+    ignoredSection.add("πηγή"); // Sources
+    ignoredSection.add("πολυλεκτικοί όροι"); // Multilingual Terms ?
+    ignoredSection.add("σημείωση"); // Notes
+    ignoredSection.add("σημειώσεις"); // Notes
+    ignoredSection.add("συγγενικά"); // Related words
+    ignoredSection.add("σύνθετα"); // Compound words
+    ignoredSection.add("αναφορές"); // References
+    ignoredSection.add("παροιμίες"); // Proverbs
+
+    ignoredSection.add("ρηματική φωνή"); // Forms verbales
 
   }
 
-  public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
-    super(wdh);
+  // Non standard language codes used in Greek edition
+  static {
+    NON_STANDARD_LANGUAGE_MAPPINGS.put("conv", "mul-conv");
   }
 
-  protected final static Pattern SectionPattern;
+
   protected final static Pattern pronPattern;
 
   private static final Pattern definitionPattern;
 
   static {
-    SectionPattern = Pattern.compile(SectionPatternString);
     pronPattern = Pattern.compile(pronPatternString);
-    languageSectionPattern = Pattern.compile(languageSectionPatternString);
     definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
+  }
+
+  protected GreekDefinitionExtractorWikiModel definitionExpander;
+
+  public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
+    super(wdh);
+  }
+
+  @Override
+  public void setWiktionaryIndex(WiktionaryPageSource wi) {
+    super.setWiktionaryIndex(wi);
+    definitionExpander = new GreekDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("el"),
+        "/${image}", "/${title}");
 
   }
 
-  int state = NODATA;
-  int definitionBlockStart = -1;
-  int translationBlockStart = -1;
-  int pronBlockStart = -1;
-  private int nymBlockStart = -1;
-
-
-  private String currentNym = null;
-
-  private boolean isnotgreek(Matcher filter) {
-    if (!filter.find()) {
-      return false;
-    }
-    if (filter.group(1) != null) {
-      if (filter.group(1).equals("el")) {
-        return false;
-      }
-    }
-
-    return true;
+  @Override
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    super.setWiktionaryPageName(wiktionaryPageName);
+    definitionExpander.setPageName(this.getWiktionaryPageName());
   }
 
   public void extractData() {
     wdh.initializePageExtraction(getWiktionaryPageName());
-    // System.out.println(pageContent);
-    Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-    while (isnotgreek(languageFilter)) {
-      // nop
+    WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
+    WikiDocument doc = page.asStructuredDocument();
+    doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection)
+        .map(Token::asWikiSection).forEach(this::extractSection);
+    wdh.finalizePageExtraction();
+  }
+
+
+  private void extractSection(WikiSection section) {
+    Optional<String> language = sectionLanguage(section);
+    language.ifPresent(l -> extractLanguageSection(section, l));
+  }
+
+  private final static Pattern languageTemplate = Pattern.compile("-(.+)-");
+
+  public static Optional<String> sectionLanguage(WikiSection section) {
+    if (section.getHeading().getLevel() == 2) {
+      return section.getHeading().getContent().templatesOnUpperLevel().stream()
+          .map(Token::asTemplate).map(Template::getName).map(name -> {
+            Matcher m = languageTemplate.matcher(name);
+            return m.matches() ? m.group(1) : null;
+          }).filter(Objects::nonNull).findFirst();
     }
-    // Either the filter is at end of sequence or on greek language header.
-    if (languageFilter.hitEnd()) {
-      // There is no greek data in this page.
+    return Optional.empty();
+  }
+
+
+  private void extractLanguageSection(WikiSection languageSection, String language) {
+    if (null == language) {
       return;
     }
-    int greekSectionStartOffset = languageFilter.end();
-    // Advance till end of sequence or new language section
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !"el".equals(language)) {
+      return;
+    }
 
-    languageFilter.find();
-    int greekSectionEndOffset =
-        languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+    // The language is always defined when arriving here, but we should check if we extract it
+    String normalizedLanguage = validateAndStandardizeLanguageCode(language);
+    if (normalizedLanguage == null) {
+      log.trace("Ignoring language section {} for {}", language, getWiktionaryPageName());
+      return;
+    }
+    wdh.initializeLanguageSection(normalizedLanguage);
 
-    extractGreekData(greekSectionStartOffset, greekSectionEndOffset);
-    wdh.finalizeLanguageSection();
-  }
+    for (Token t : languageSection.getContent().headers()) {
+      Heading heading = t.asHeading();
+      Pair<Template, String> templateAndTitle = sectionType(heading);
 
-
-  void gotoNoData(Matcher m) {
-    state = NODATA;
-  }
-
-
-  void gotoTradBlock(Matcher m) {
-    translationBlockStart = m.end();
-    state = TRADBLOCK;
-  }
-
-  void leaveTradBlock(Matcher m) {
-    extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m));
-    translationBlockStart = -1;
-  }
-
-  void gotoDefBlock(Matcher m) {
-    state = DEFBLOCK;
-    definitionBlockStart = m.end();
-    wdh.initializeLexicalEntry(m.group(1));
-  }
-
-
-  void leaveDefBlock(Matcher m) {
-    extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
-    definitionBlockStart = -1;
-  }
-
-
-  private void gotoNymBlock(Matcher m) {
-    state = NYMBLOCK;
-    currentNym = nymMarkerToNymName.get(m.group(1));
-    nymBlockStart = m.end();
-  }
-
-  private void leaveNymBlock(Matcher m) {
-    extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
-    currentNym = null;
-    nymBlockStart = -1;
-  }
-
-  private void gotoPronBlock(Matcher m) {
-    state = PRONBLOCK;
-    pronBlockStart = m.end();
-  }
-
-  private void leavePronBlock(Matcher m) {
-    extractPron(pronBlockStart, computeRegionEnd(pronBlockStart, m));
-    pronBlockStart = -1;
-  }
-
-
-  private void extractGreekData(int startOffset, int endOffset) {
-    Matcher m = SectionPattern.matcher(pageContent);
-    m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection("el");
-    gotoNoData(m);
-
-    while (m.find()) {
-      switch (state) {
-        case NODATA:
-          if (m.group(1).equals("μεταφράσεις")) {
-            gotoTradBlock(m);
-          } else if (posMacros.contains(m.group(1))) {
-            gotoDefBlock(m);
-          } else if (nymMarkers.contains(m.group(1))) {
-            gotoNymBlock(m);
-          } else if (m.group(1).equals("προφορά")) {
-            gotoPronBlock(m);
-          }
-
-          break;
-
-        case DEFBLOCK:
-          // Iterate until we find a new section
-          if (m.group(1).equals("μεταφράσεις")) {
-            leaveDefBlock(m);
-            gotoTradBlock(m);
-          } else if (posMacros.contains(m.group(1))) {
-            leaveDefBlock(m);
-            gotoDefBlock(m);
-          } else if (nymMarkers.contains(m.group(1))) {
-            leaveDefBlock(m);
-            gotoNymBlock(m);
-          } else if (m.group(1).equals("προφορά")) {
-            leaveDefBlock(m);
-            gotoPronBlock(m);
-          } else {
-            leaveDefBlock(m);
-            gotoNoData(m);
-          }
-          break;
-
-        case TRADBLOCK:
-          if (m.group(1).equals("μεταφράσεις")) {
-            leaveTradBlock(m);
-            gotoTradBlock(m);
-          } else if (posMacros.contains(m.group(1))) {
-            leaveTradBlock(m);
-            gotoDefBlock(m);
-          } else if (nymMarkers.contains(m.group(1))) {
-            leaveTradBlock(m);
-            gotoNymBlock(m);
-          } else if (m.group(1).equals("προφορά")) {
-            leaveTradBlock(m);
-            gotoPronBlock(m);
-          } else {
-            leaveTradBlock(m);
-            gotoNoData(m);
-          }
-          break;
-
-        case NYMBLOCK:
-          if (m.group(1).equals("μεταφράσεις")) {
-            leaveNymBlock(m);
-            gotoTradBlock(m);
-          } else if (posMacros.contains(m.group(1))) {
-            leaveNymBlock(m);
-            gotoDefBlock(m);
-          } else if (nymMarkers.contains(m.group(1))) {
-            leaveNymBlock(m);
-            gotoNymBlock(m);
-          } else if (m.group(1).equals("προφορά")) {
-            leaveNymBlock(m);
-            gotoPronBlock(m);
-          } else {
-            leaveNymBlock(m);
-            gotoNoData(m);
-          }
-          break;
-
-        case PRONBLOCK:
-          if (m.group(1).equals("μεταφράσεις")) {
-            leavePronBlock(m);
-            gotoTradBlock(m);
-          } else if (posMacros.contains(m.group(1))) {
-            leavePronBlock(m);
-            gotoDefBlock(m);
-          } else if (nymMarkers.contains(m.group(1))) {
-            leavePronBlock(m);
-            gotoNymBlock(m);
-          } else if (m.group(1).equals("προφορά")) {
-            leavePronBlock(m);
-            gotoPronBlock(m);
-          } else {
-            leavePronBlock(m);
-            gotoNoData(m);
-          }
-          break;
-        default:
-          assert false : "Unexpected state while extracting translations from dictionary.";
+      Template title = templateAndTitle.getLeft();
+      String sectionName = templateAndTitle.getRight();
+      String pos;
+      if ("ετυμολογία".equals(sectionName)) {
+        // NOTHING YET
+      } else if ("μεταφράσεις".equals(sectionName)) {
+        // Translations
+        extractTranslations(heading.getSection().getPrologue().getText());
+      } else if ("προφορά".equals(sectionName)) {
+        // pronunciation
+        extractPron(heading.getSection().getPrologue());
+      } else if ((posMacros.contains(sectionName))) {
+        wdh.initializeLexicalEntry(sectionName);
+        extractDefinitions(heading.getSection().getPrologue());
+      } else if (nymMarkerToNymName.containsKey(sectionName)) {
+        // Nyms
+        WikiContent prologue = heading.getSection().getPrologue();
+        extractNyms(nymMarkerToNymName.get(sectionName), prologue.getBeginIndex(),
+            prologue.getEndIndex());
+      } else if (!ignoredSection.contains(sectionName)) {
+        log.debug("Unexpected title {} in {}", title == null ? sectionName : title.getText(),
+            getWiktionaryPageName());
       }
     }
-
-    // Finalize the entry parsing
-    switch (state) {
-      case NODATA:
-        break;
-      case DEFBLOCK:
-        leaveDefBlock(m);
-        break;
-      case TRADBLOCK:
-        leaveTradBlock(m);
-        break;
-      case NYMBLOCK:
-        leaveNymBlock(m);
-        break;
-      case PRONBLOCK:
-        leavePronBlock(m);
-        break;
-      default:
-        assert false
-            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
-    }
     wdh.finalizeLanguageSection();
   }
 
+  private void extractDefinitions(WikiContent prologue) {
+    prologue.wikiTokens().forEach(t -> {
+      if (t instanceof Text) {
+        String txt;
+        if (!"".equals(txt = t.asText().getText().trim()))
+          log.trace("Dangling text inside definition {} in {}", txt, wdh.currentPagename());
+      } else if (t instanceof ListItem || t instanceof NumberedListItem) {
+        IndentedItem item = t.asIndentedItem();
+        if (item.getContent().toString().startsWith(":")) {
+          // It's an example
+          wdh.registerExample(item.getContent().getText().substring(1), null);
+        } else {
+          extractDefinition(item.getContent().getText(), item.getLevel());
+        }
+      }
+    });
+  }
 
-  private void extractTranslations(int startOffset, int endOffset) {
-    Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
-    macroMatcher.region(startOffset, endOffset);
+  private Pair<Template, String> sectionType(Heading heading) {
+    List<Token> titleTemplate = heading.getContent().tokens().stream()
+        .filter(t -> !(t instanceof Text
+            && t.asText().getText().replaceAll("\u00A0", "").trim().equals("")))
+        .collect(Collectors.toList());
+    if (titleTemplate.size() == 0) {
+      log.trace("Unexpected empty title in {}", getWiktionaryPageName());
+      return new ImmutablePair<>(null, "");
+    }
+    if (titleTemplate.size() > 1) {
+      log.trace("Unexpected multi title {} in {}", heading.getText(), getWiktionaryPageName());
+    }
+    if (!(titleTemplate.get(0) instanceof Template)) {
+      log.trace("Unexpected non template title {} in {}", heading.getText(),
+          getWiktionaryPageName());
+      return new ImmutablePair<>(null, heading.getContent().getText().toLowerCase().trim());
+    }
+    return new ImmutablePair<>(titleTemplate.get(0).asTemplate(),
+        titleTemplate.get(0).asTemplate().getName().toLowerCase().trim());
+  }
+
+  private void extractTranslations(String source) {
+    Matcher macroMatcher = WikiPatterns.macroPattern.matcher(source);
     Resource currentGlose = null;
 
     while (macroMatcher.find()) {
@@ -423,44 +385,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  private void extractPron(int startOffset, int endOffset) {
-
-    Matcher pronMatcher = pronPattern.matcher(pageContent);
-    while (pronMatcher.find()) {
-      String pron = pronMatcher.group(1);
-
-      if (null == pron || pron.equals("")) {
-        return;
-      }
-
-      if (!pron.equals("")) {
-        wdh.registerPronunciation(pron, "el-fonipa");
-      }
-    }
+  private void extractPron(WikiContent pronContent) {
+    pronContent.wikiTokens().stream().filter(t -> t instanceof Template).map(Token::asTemplate)
+        .filter(t -> "ΔΦΑ".equals(t.getName())).forEach(t -> {
+          String pronLg = t.getParsedArg("1");
+          if (!pronLg.startsWith(wdh.getCurrentEntryLanguage()))
+            log.trace("Pronunciation language incorrect in section template {} ≠ {} in {}",
+                wdh.getCurrentEntryLanguage(), pronLg, wdh.currentPagename());
+          wdh.registerPronunciation(t.getParsedArgs().get("2"),
+              wdh.getCurrentEntryLanguage() + "-fonipa");
+        });
   }
 
   @Override
-  protected void extractDefinitions(int startOffset, int endOffset) {
-    Matcher definitionMatcher = definitionPattern.matcher(this.pageContent);
-    definitionMatcher.region(startOffset, endOffset);
-    while (definitionMatcher.find()) {
-      extractDefinition(definitionMatcher);
-    }
-  }
-
-  @Override
-  public void extractDefinition(Matcher definitionMatcher) {
-    // TODO: properly handle macros in definitions.
-    String definition = definitionMatcher.group(1);
-    int defLevel = 1;
-    if (null == definition) {
-      definition = definitionMatcher.group(2);
-    } else {
-      if (definitionMatcher.group().charAt(1) == '#') {
-        defLevel = 2;
-      }
-    }
-    extractDefinition(definition, defLevel);
+  public void extractDefinition(String definition, int defLevel) {
+    definitionExpander.parseDefinition(definition, defLevel);
   }
 
 }

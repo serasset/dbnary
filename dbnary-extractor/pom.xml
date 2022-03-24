@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>3.0.4</version>
+    <version>3.0.5</version>
   </parent>
   <artifactId>dbnary-extractor</artifactId>
   <packaging>jar</packaging>
@@ -250,7 +250,7 @@
     </dependency>
     <dependency>
       <groupId>com.typesafe.scala-logging</groupId>
-      <artifactId>scala-logging_2.12</artifactId>
+      <artifactId>scala-logging_${scalaBinaryVersion}</artifactId>
     </dependency>
     <dependency>
       <groupId>com.github.rwitzel.streamflyer</groupId>

@@ -7,7 +7,7 @@ The tutorials use a docker image that allows to run jupyter notebooks. To prepar
 * install docker
 * launch docker-compose
   - ```docker-compose up```
-  - copy the link that appears in the terminal (including the token) and past it in your browser. 
+  - copy the link that appears in the terminal (including the token) and paste it in your browser. 
 
 ## Shuting down the container
 * type control-C twice

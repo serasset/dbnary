@@ -305,6 +305,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractNyms((String) context.get("nym"), blockStart, end);
         break;
       case PRONBLOCK:
+        ewdh.initializeNewEtymology();
         extractPron(blockStart, end);
         break;
       case CONJUGATIONBLOCK:
@@ -492,7 +493,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   static private ArrayList<String> split(String s) {
-    ArrayList<String> toreturn = new ArrayList<String>();
+    ArrayList<String> toreturn = new ArrayList<>();
 
     String[] tmp = s.split(",");
     for (String t : tmp) {
@@ -582,15 +583,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     log.debug("Conjugation extraction not yet implemented in:\t{}", getWiktionaryPageName());
   }
 
-  private EnglishInflectionData plural = new EnglishInflectionData().plural();
-  private EnglishInflectionData singular = new EnglishInflectionData().singular();
-  private EnglishInflectionData comparative = new EnglishInflectionData().comparative();
-  private EnglishInflectionData superlative = new EnglishInflectionData().superlative();
-  private EnglishInflectionData pres3Sg =
+  private final EnglishInflectionData plural = new EnglishInflectionData().plural();
+  private final EnglishInflectionData singular = new EnglishInflectionData().singular();
+  private final EnglishInflectionData comparative = new EnglishInflectionData().comparative();
+  private final EnglishInflectionData superlative = new EnglishInflectionData().superlative();
+  private final EnglishInflectionData pres3Sg =
       new EnglishInflectionData().presentTense().thirdPerson().singular();
-  private EnglishInflectionData presPtc = new EnglishInflectionData().presentTense().participle();
-  private EnglishInflectionData past = new EnglishInflectionData().pastTense();
-  private EnglishInflectionData pastPtc = new EnglishInflectionData().pastTense().participle();
+  private final EnglishInflectionData presPtc =
+      new EnglishInflectionData().presentTense().participle();
+  private final EnglishInflectionData past = new EnglishInflectionData().pastTense();
+  private final EnglishInflectionData pastPtc =
+      new EnglishInflectionData().pastTense().participle();
 
   private void extractMorphology(int startOffset, int endOffset) {
     // TODO: For some entries, there are several morphology information covering different word
@@ -726,8 +729,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // This is a inflected form
           // TODO: Check if the inflected form is available in the base word morphology.
         } else {
-          log.debug("MORPH: direct call to head\t{}\tin\t{}", tmpl.toString(),
-              this.getWiktionaryPageName());
+          log.debug("MORPH: direct call to head\t{}\tin\t{}", tmpl, this.getWiktionaryPageName());
         }
       } else {
         // log.debug("NOMORPH PATTERN:\t {}\t in:\t{}", g1, wiktionaryPageName);
@@ -1150,10 +1152,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         args.remove("1");
         args.remove("2");
         args.remove("3");
-        String remainingArgs = "";
+        StringBuilder remainingArgs = new StringBuilder();
         if (args.size() > 0) {
           for (Entry<String, WikiContent> s : args.entrySet()) {
-            remainingArgs = remainingArgs + "|" + s.getKey() + "=" + s.getValue();
+            remainingArgs.append("|").append(s.getKey()).append("=").append(s.getValue());
           }
           if (usage.length() > 0) {
             usage = usage + remainingArgs;
@@ -1165,8 +1167,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (l != null) {
           lang = LangTools.normalize(l.toString());
         } else {
-          log.debug("null language (first positional arg) in {} > {}", t.toString(),
-              getWiktionaryPageName());
+          log.debug("null language (first positional arg) in {} > {}", t, getWiktionaryPageName());
         }
         lang = EnglishLangToCode.threeLettersCode(lang);
         if (lang != null) {
@@ -1344,18 +1345,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (pronMatcher.find()) {
       String pron = pronMatcher.group(1);
       Map<String, String> args = WikiTool.parseArgs(pron);
-      pron = args.get("2");
       if (!"en".equals(args.get("1"))) {
         log.debug("Non English ({}) pronunciation in page {}.", args.get("1"),
             this.getWiktionaryPageName());
       }
+      for (int i = 2; i < 9; i++) {
+        String pronunciation = args.get(Integer.toString(i));
 
-      if (null == pron || pron.equals("")) {
-        return;
+        if (null == pronunciation || pronunciation.equals("")) {
+          continue;
+        }
+
+        wdh.registerPronunciation(pronunciation, "en-fonipa");
       }
-
-      wdh.registerPronunciation(pron, "en-fonipa");
-
     }
   }
 

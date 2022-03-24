@@ -847,7 +847,8 @@ public class WikiTextTest {
     assertEquals("The template name is incorrect", "NAME", tmpl.getName());
     assertEquals("The template first argument is incorrect", "arg1", tmpl.getParsedArgs().get("1"));
 
-    System.out.println(text.content().getText());
+    // System.out.println(text.content().getText());
 
   }
+
 }

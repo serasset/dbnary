@@ -15,6 +15,7 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.getalp.dbnary.wiki.visit.Visitable;
 import org.getalp.dbnary.wiki.visit.Visitor;
@@ -154,7 +155,7 @@ public class WikiText {
 
     /**
      * get the index at which this token starts in its WikiText FullContent.
-     * 
+     *
      * @return the begin index, relative to the WikiText source content
      */
     public int getBeginIndex() {
@@ -163,7 +164,7 @@ public class WikiText {
 
     /**
      * get the index at which this token ends in its WikiText FullContent.
-     * 
+     *
      * @return the end index, relative to the WikiText source content
      */
     public int getEndIndex() {
@@ -246,6 +247,17 @@ public class WikiText {
     }
 
     /**
+     * returns a stream serving all wikiTokens in the wikiText, that is all special media wiki
+     * constructs, excluding html comments. This does not return the text tokens that are
+     * intertwined between the wiki tokens.
+     *
+     * @return a Stream of Tokens
+     */
+    public Stream<Token> wikiTokensStream() {
+      return tokens.stream().filter(t -> !(t instanceof HTMLComment));
+    }
+
+    /**
      * returns all wikiTokens in the wikiText, that is all special media wiki constructs, excluding
      * html comments. This does not return the text tokens that are intertwined between the wiki
      * tokens.
@@ -255,9 +267,20 @@ public class WikiText {
     public List<Token> wikiTokens() {
       if (wikiTokensNoComments == null) {
         wikiTokensNoComments =
-            tokens.stream().filter(t -> !(t instanceof HTMLComment)).collect(Collectors.toList());
+            wikiTokensStream().collect(Collectors.toList());
       }
       return wikiTokensNoComments;
+    }
+
+    /**
+     * returns a stream serving all wikiTokens in the wikiText, that is all special media wiki
+     * constructs, excluding html comments. This does not return the text tokens that are
+     * intertwined between the wiki tokens.
+     *
+     * @return a Stream of Tokens
+     */
+    public Stream<Token> wikiTokensStreamWithHtmlComments() {
+      return tokens.stream();
     }
 
     /**
@@ -272,8 +295,8 @@ public class WikiText {
     }
 
     /**
-     * returns a List of wikiTokens including Text tokens that may be intertwined. HTML comments
-     * are ignored and 2 successive Texts may be found if a comment was present in the wiki source.
+     * returns a List of wikiTokens including Text tokens that may be intertwined. HTML comments are
+     * ignored and 2 successive Texts may be found if a comment was present in the wiki source.
      *
      * @return a list of tokens (either text or wikiTokens)
      */
@@ -282,8 +305,8 @@ public class WikiText {
     }
 
     /**
-     * returns a List of wikiTokens including Text tokens that may be intertwined. HTML comments
-     * are included in the list.
+     * returns a List of wikiTokens including Text tokens that may be intertwined. HTML comments are
+     * included in the list.
      *
      * @return a list of tokens (either text or wikiTokens)
      */
@@ -306,8 +329,9 @@ public class WikiText {
         if (token.offset.start > tindex) {
           toks.add(new Text(tindex, token.offset.start));
         }
-        if (withComments || !(token instanceof HTMLComment))
+        if (withComments || !(token instanceof HTMLComment)) {
           toks.add(token);
+        }
         tindex = token.offset.end;
       }
       if (tindex < this.offset.end) {
@@ -378,7 +402,7 @@ public class WikiText {
     }
 
     @Override
-    public <T> T  accept(Visitor<T> visitor) {
+    public <T> T accept(Visitor<T> visitor) {
       return visitor.visit(this);
     }
 
@@ -420,7 +444,7 @@ public class WikiText {
     }
 
     @Override
-    public <T> T  accept(Visitor<T> visitor) {
+    public <T> T accept(Visitor<T> visitor) {
       return visitor.visit(this);
     }
 
@@ -531,7 +555,7 @@ public class WikiText {
 
     /**
      * return the argName/argValue Map. argName being a String and argValue a String.
-     *
+     * <p>
      * When iterated, the map will provide values or entries in insertion order, hence iterating
      * over the map will give args in the order they were defined.
      *
@@ -547,8 +571,29 @@ public class WikiText {
       return argsAsString;
     }
 
+    /**
+     * get the String value of the requested argument key.
+     * If the argument contain wiki tokens, the source text is returned.
+     *
+     * Use getArgs if you want to get the WikiContent associated to the key.
+     * @param key the key of the argument to be retrieved
+     * @return the value of the argument or null if the argument was not specified
+     */
     public String getParsedArg(String key) {
       return this.getParsedArgs().get(key);
+    }
+
+    /**
+     * get the String value of the requested argument key, or return default value if argument
+     * value is null. If the argument contain wiki tokens, the source text is returned.
+     *
+     * Use getArgs if you want to get the WikiContent associated to the key.
+     * @param key the key of the argument to be retrieved
+     * @param defaultValue the default value returned if the argument is undefined
+     * @return the value of the argument or defaultValue
+     */
+    public String getParsedArg(String key, String defaultValue) {
+      return this.getParsedArgs().getOrDefault(key, defaultValue);
     }
 
 
@@ -620,6 +665,16 @@ public class WikiText {
       return parsedArgs;
     }
 
+    /**
+     * get the WikiContent value of the requested argument key.
+     *
+     * @param key the key of the argument to be retrieved
+     * @return the value of the argument or null if the argument was not specified
+     */
+    public WikiContent getArg(String key) {
+      return this.getArgs().get(key);
+    }
+
     public WikiContent getContent() {
       WikiContent res = new WikiContent(name.offset.start);
       int end = name.offset.end;
@@ -665,6 +720,7 @@ public class WikiText {
     public WikiContent getTarget() {
       return target;
     }
+
     public WikiContent getLinkContent() {
       return linkTextContent;
     }
@@ -741,8 +797,9 @@ public class WikiText {
         r.append(this.linkTextContent.getText());
       }
       r.append("]]");
-      if (null != suffix)
+      if (null != suffix) {
         r.append(this.suffix.getText());
+      }
     }
 
     /**
@@ -803,7 +860,8 @@ public class WikiText {
     }
 
     /**
-     * sets the end offset to the given position (should point to the first char of the closing "]")
+     * sets the end offset to the given position (should point to the first char of the closing
+     * "]")
      *
      * @param position the position of the first character of the enclosing "]"
      */
@@ -1049,7 +1107,7 @@ public class WikiText {
     /**
      * returns the prologue, i.e. the part of the section content that precedes the first sub
      * section.
-     * 
+     *
      * @return a wikicontent containing all elements of the prologue
      */
     public WikiText.WikiContent getPrologue() {
@@ -1278,7 +1336,7 @@ public class WikiText {
       lexer.region(pos, end);
       if (lexer.lookingAt()) {
         String g;
-        if (null != (g = lexer.group("CHAR"))) {
+        if (null != (lexer.group("CHAR"))) {
           // Normal characters, just advance...
           pos++;
         } else if (null != (g = lexer.group("OT"))) {
@@ -1385,7 +1443,7 @@ public class WikiText {
           } else {
             pos += g.length();
           }
-        } else if (null != (g = lexer.group("OXC"))) {
+        } else if (null != (lexer.group("OXC"))) {
           // HTML comment start, just pass through text ignoring everything
           HTMLComment t = new HTMLComment(pos);
           pos = pos + 4;
@@ -1480,17 +1538,14 @@ public class WikiText {
               log.trace("UNCLOSED HEADING | {} | '{}' [{}]", t.toString().replace('\n', ' '),
                   this.pagename, lineno);
               invalidateHypothesis(stack.pop(), stack);
-              continue;
             } else if (t instanceof ExternalLink) {
               log.trace("UNCLOSED LINK | {} | '{}' [{}]", t.toString().replace('\n', ' '),
                   this.pagename, lineno);
               invalidateHypothesis(stack.pop(), stack);
-              continue;
             } else if (closeInternalLinks && t instanceof Link) {
               log.trace("UNCLOSED LINK | {} | '{}' [{}]", t.toString().replace('\n', ' '),
                   this.pagename, lineno);
               invalidateHypothesis(stack.pop(), stack);
-              continue;
             } else {
               break;
             }
@@ -1544,7 +1599,7 @@ public class WikiText {
 
     Token parsedRoot = stack.pop();
 
-    ((WikiContent) parsedRoot).setEndOffset(end);
+    parsedRoot.setEndOffset(end);
     return (WikiContent) parsedRoot;
   }
 
@@ -1552,19 +1607,19 @@ public class WikiText {
    * check if the stack contains an indented item that will be closed by the end of line token For
    * this to be true, there must be an indented item in the stack containing only pending tokens
    * less priority (i.e. pending Links, but not pending templates)
-   * 
+   *
    * @param stack the stack to be inspected
    * @return true iff the current token will close the top most indented item
    */
   private boolean stackWillCloseIndentedItem(Stack<Token> stack) {
     for (int i = stack.size() - 1; i >= 0; i--) {
-      if (stack.get(i) instanceof Link)
+      if (stack.get(i) instanceof Link) {
         continue;
-      if (stack.get(i) instanceof Heading)
+      }
+      if (stack.get(i) instanceof Heading) {
         continue;
-      if (stack.get(i) instanceof IndentedItem)
-        return true;
-      return false;
+      }
+      return stack.get(i) instanceof IndentedItem;
     }
     return false;
   }
@@ -1573,16 +1628,18 @@ public class WikiText {
    * check if the stack contains a heading that will be closed by the end of heading token For this
    * to be true, there must be a heading in the stack containing only pending tokens with less
    * priority (i.e. pending Links, but not pending templates)
-   * 
+   *
    * @param stack the stack to be inspected
    * @return true iff the current token will close the top most heading
    */
   private boolean stackWillCloseHeading(Stack<Token> stack) {
     for (int i = stack.size() - 1; i >= 0; i--) {
-      if (stack.get(i) instanceof Link)
+      if (stack.get(i) instanceof Link) {
         continue;
-      if (stack.get(i) instanceof Heading)
+      }
+      if (stack.get(i) instanceof Heading) {
         return true;
+      }
       return false;
     }
     return false;
@@ -1590,9 +1647,9 @@ public class WikiText {
 
   private static final Pattern newlinePattern = Pattern.compile("\r?\n|\r");
   private static final Pattern closingHeadingPattern =
-      Pattern.compile("\\={2,6}(?:\\s|<!--.*?-->)*$");
-  private Matcher closeHeadingMatcher = closingHeadingPattern.matcher("");
-  private Matcher newlineMatcher = newlinePattern.matcher("");
+      Pattern.compile("={2,6}(?:\\s|<!--.*?-->)*$");
+  private final Matcher closeHeadingMatcher = closingHeadingPattern.matcher("");
+  private final Matcher newlineMatcher = newlinePattern.matcher("");
 
   /**
    * Invalidate the hypothesis in the stack The Hypothesis is a Token that has been created and for
@@ -1603,7 +1660,7 @@ public class WikiText {
    * stack.
    *
    * @param hypothesis the token that is invalidated
-   * @param stack the stack on which this token's inner elements should be added.
+   * @param stack      the stack on which this token's inner elements should be added.
    */
   private void invalidateHypothesis(Token hypothesis, Stack<Token> stack) {
     // Create a WikiContent to hold all inner tokens
@@ -1666,8 +1723,9 @@ public class WikiText {
     Token inner;
     for (i++; i < innerTokens.size(); i++) {
       inner = innerTokens.get(i);
-      if (!(inner instanceof Text))
+      if (!(inner instanceof Text)) {
         remainingContent.addToken(inner);
+      }
     }
   }
 
@@ -1731,23 +1789,25 @@ public class WikiText {
   }
 
   /**
-   * Return the height of the highest template that may be closed (other tokens may be closed before
+   * Return the height of the highest template that may be closed (other tokens may be closed
+   * before
    */
   private int findHighestClosableTemplate(Stack<Token> stack) {
     for (int i = stack.size() - 1; i > 0; i--) {
-      if (stack.get(i) instanceof IndentedItem || stack.get(i) instanceof Link) {
-        continue;
-      } else if (stack.get(i) instanceof Template) {
-        return i;
-      } else {
-        return -1;
+      if (!(stack.get(i) instanceof IndentedItem) && !(stack.get(i) instanceof Link)) {
+        if (stack.get(i) instanceof Template) {
+          return i;
+        } else {
+          return -1;
+        }
       }
     }
     return -1;
   }
 
   /**
-   * Return the height of the highest template that may be closed (other tokens may be closed before
+   * Return the height of the highest template that may be closed (other tokens may be closed
+   * before
    */
   private int findHighestClosableInternalLink(Stack<Token> stack) {
     for (int i = stack.size() - 1; i >= 0; i--) {
@@ -1913,7 +1973,7 @@ public class WikiText {
 
     /**
      * @param content the content from which we get the sections
-     * @param level the expected level
+     * @param level   the expected level
      * @deprecated
      */
     @Deprecated

@@ -2,7 +2,9 @@ package org.getalp.dbnary.enhancer.disambiguation;
 
 import com.wcohen.ss.ScaledLevenstein;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -15,10 +17,10 @@ import org.getalp.dbnary.enhancer.similarity.string.TverskiIndex;
 
 public class TverskyBasedTranslationDisambiguationMethod implements DisambiguationMethod {
 
-  private double delta;
+  private final double delta;
   // private double alpha;
   // private double beta;
-  private TverskiIndex tversky;
+  private final TverskiIndex tversky;
 
   public TverskyBasedTranslationDisambiguationMethod(double alpha, double beta, double threshold) {
     delta = threshold;
@@ -27,7 +29,7 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
     tversky = new TverskiIndex(alpha, beta, true, false, new ScaledLevenstein());
   }
 
-  private class WeigthedSense {
+  private static class WeigthedSense {
 
     protected double weight;
     protected Resource sense;
@@ -39,10 +41,14 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
     }
   }
 
+  // Caching word sense selection as it is called once for each translation and its result depends
+  // solely on the (shared) gloss
+  private final Map<String, Set<Resource>> gloss2SensesCache = new HashMap<>();
+
   @Override
   public Set<Resource> selectWordSenses(Resource lexicalEntry, Object context)
       throws InvalidContextException, InvalidEntryException {
-    HashSet<Resource> res = new HashSet<Resource>();
+    HashSet<Resource> res = new HashSet<>();
 
     if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
         && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
@@ -62,7 +68,14 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
         Statement glossValueStmt = glossStmt.getObject().asResource().getProperty(RDF.value);
         if (null != glossValueStmt) {
           String gloss = glossValueStmt.getString();
-          ArrayList<WeigthedSense> weightedList = new ArrayList<WeigthedSense>();
+          String cacheKey = String.format("%s/%s", lexicalEntry, gloss);
+
+          // Get result from cache if it is available
+          if (gloss2SensesCache.containsKey(cacheKey)) {
+            return gloss2SensesCache.get(cacheKey);
+          }
+
+          ArrayList<WeigthedSense> weightedList = new ArrayList<>();
 
           // get a list of wordsenses, sorted by decreasing similarity.
           ArrayList<Resource> senses = new ArrayList<>();
@@ -79,6 +92,7 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
           }
 
           if (weightedList.size() == 0) {
+            gloss2SensesCache.put(cacheKey, res);
             return res;
           }
 
@@ -88,6 +102,7 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
             res.add(weightedList.get(i).sense);
             i++;
           }
+          gloss2SensesCache.put(cacheKey, res);
         }
       }
     } else {

@@ -3,7 +3,7 @@
 
 # A Docker configuration where we can interract with sparql either using rdflib,
 # or using sparql kernel
-ARG BASE_CONTAINER=serasset/scipy-notebook:arm64
+ARG BASE_CONTAINER=jupyter/scipy-notebook
 FROM $BASE_CONTAINER
 
 
@@ -24,8 +24,7 @@ RUN pip install --upgrade pip
 
 # Install Python 3 packages
 RUN pip install \
-    'rdflib>=5.0.0' \
-    'rdflib-jsonld==0.5.*' \
+    'rdflib>=6.1.0' \
     'sparqlkernel==1.3.*' \
     'sparqlwrapper==1.8.*' && \
     fix-permissions "${CONDA_DIR}" && \

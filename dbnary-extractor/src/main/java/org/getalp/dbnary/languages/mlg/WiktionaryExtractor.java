@@ -1,13 +1,12 @@
 package org.getalp.dbnary.languages.mlg;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
-import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
+import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,7 +211,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !lang.equals("mg"))
       return;
-    if (ignoreLanguage(lang)) {
+
+    // The language is always defined when arriving here, but we should check if we extract it
+    String normalizedLanguage = validateAndStandardizeLanguageCode(lang);
+    if (normalizedLanguage == null) {
+      log.trace("Ignoring language section {} for {}", lang, getWiktionaryPageName());
       return;
     }
 
@@ -257,15 +260,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     extractDataBlock(start, endOffset, block, blockString);
     wdh.finalizeLanguageSection();
-  }
-
-  private static final HashSet<String> ignoredLanguage = new HashSet<>();
-  static {
-    ignoredLanguage.add("m͡p");
-  }
-
-  private static boolean ignoreLanguage(String lang) {
-    return ignoredLanguage.contains(lang);
   }
 
   protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,

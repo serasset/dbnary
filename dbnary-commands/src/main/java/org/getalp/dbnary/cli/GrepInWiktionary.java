@@ -1,42 +1,142 @@
 package org.getalp.dbnary.cli;
 
-import java.io.File;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.getalp.wiktionary.WiktionaryGrep;
-import org.getalp.wiktionary.WiktionaryIndexerException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import org.apache.commons.text.TextStringBuilder;
+import org.codehaus.stax2.XMLInputFactory2;
+import org.codehaus.stax2.XMLStreamReader2;
+import org.getalp.dbnary.cli.mixins.BatchExtractorMixin;
+import org.getalp.dbnary.cli.mixins.WiktionaryIndexMixin;
+import org.getalp.wiktionary.WiktionaryIndexer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParentCommand;
+import picocli.CommandLine.Spec;
 
-public class GrepInWiktionary {
+@Command(name = "grep", mixinStandardHelpOptions = true,
+    header = "grep a given pattern in all pages of a dump.",
+    description = "This command looks for a given pattern in all pages of a dump and output "
+        + "the matching pages.")
+public class GrepInWiktionary implements Callable<Integer> {
 
-  /**
-   * @param args Command line arguments
-   * @throws WiktionaryIndexerException if any error occurs with indexer.
-   */
-  public static void main(String[] args) throws WiktionaryIndexerException {
-    if (args.length < 2) {
-      printUsage();
-      System.exit(1);
-    }
+  private final Logger log = LoggerFactory.getLogger(GrepInWiktionary.class);
 
-    Pattern pat = Pattern.compile(args[0]);
-    File in = new File(args[1]);
-    Writer out = new OutputStreamWriter(System.out);
+  private static final XMLInputFactory2 xmlif;
 
-    WiktionaryGrep.grep(in, pat, out);
+  @Spec
+  CommandSpec spec; // injected by picocli
+  @ParentCommand
+  protected DBnary parent; // picocli injects reference to parent command
+  @Mixin
+  private BatchExtractorMixin batch;
+  @Mixin
+  WiktionaryIndexMixin wi;
+  private Pattern pattern;
+  private Matcher match;
+
+
+  @Parameters(index = "1", description = "The pattern to be searched for.", arity = "1")
+  protected void setPattern(String patternString) {
+    this.pattern = Pattern.compile(patternString);
+    this.match = this.pattern.matcher("");
   }
 
 
-  public static void printUsage() {
-    System.err.println("Usage: ");
-    System.err.println("  java org.getalp.dbnary.cli.GrepInWiktionary pattern wiktionaryDumpFile");
-    System.err.println(
-        "Displays the title of the first entry text of the wiktionary page named \"entryname\".");
-    System.err.println("OPTIONS:");
-    System.err.println("  --all (-a): Display all the xml elements defining the page.");
-    System.err.println(
-        "  --        : Stops the sequence of options and start the sequence of entrynames.");
-    System.err.println(
-        "              This option is usefull when the wiktionaryDumpFile begins with a \"-\".");
+  static {
+    try {
+      xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
+      xmlif.setProperty(XMLInputFactory.IS_VALIDATING, Boolean.FALSE);
+      xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+      xmlif.setProperty(XMLInputFactory2.P_PRESERVE_LOCATION, Boolean.TRUE);
+    } catch (Exception ex) {
+      System.err.println("Cannot intialize XMLInputFactory while classloading WiktionaryIndexer.");
+      throw new RuntimeException("Cannot initialize XMLInputFactory", ex);
+    }
+  }
+
+
+
+  public Integer call() throws IOException {
+    int nbPages = 0;
+    // create new XMLStreamReader
+    XMLStreamReader2 xmlr = null;
+    try {
+      // pass the file name. all relative entity references will be
+      // resolved against this as base URI.
+      xmlr = xmlif.createXMLStreamReader(wi.getDumpFile());
+
+      // check if there are more events in the input stream
+      String title = "";
+      while (xmlr.hasNext()) {
+        xmlr.next();
+        if (xmlr.isStartElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
+          title = "";
+        } else if (xmlr.isStartElement()
+            && xmlr.getLocalName().equals(WiktionaryIndexer.titleTag)) {
+          title = xmlr.getElementText();
+        } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("text")) {
+          String text = xmlr.getElementText();
+          match.reset(text);
+          if (match.find()) {
+            spec.commandLine().getOut().write(title + ": ");
+            spec.commandLine().getOut().write(showMatchInContext(text, match.start(), match.end()));
+            spec.commandLine().getOut().flush();
+          }
+        } else if (xmlr.isEndElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
+          if (!title.equals("")) {
+            if (title.contains(":"))
+              continue;
+            nbPages++;
+            if (nbPages < batch.fromPage()) {
+              continue;
+            }
+            if (nbPages > batch.toPage()) {
+              break;
+            }
+          }
+        }
+      }
+    } catch (XMLStreamException ex) {
+      log.error(ex.getLocalizedMessage());
+
+      if (ex.getNestedException() != null) {
+        log.error("  Nested Exception: " + ex.getNestedException().getLocalizedMessage());
+      }
+      throw new IOException("XML Stream Exception while reading dump", ex);
+    } catch (Exception ex) {
+      log.error("Unexpected Exception: ", ex);
+    } finally {
+      try {
+        if (xmlr != null) {
+          xmlr.close();
+        }
+      } catch (XMLStreamException ex) {
+        log.error("Exception while closing xml stream. ", ex);
+      }
+    }
+    return 0;
+  }
+
+  private static String showMatchInContext(String text, int start, int end) {
+    TextStringBuilder res = new TextStringBuilder(120);
+    int before = start - 40;
+    int after = end + 40;
+    int from = before < 0 ? 0 : before;
+    int to = after > text.length() ? text.length() : after;
+    res.appendFixedWidthPadLeft(text.substring(from, start).replace('\n', '\u23CE'), 40, ' ');
+    res.append("___");
+    res.appendFixedWidthPadRight(text.substring(start, end).replace('\n', '\u23CE'), 10, ' ');
+    res.append("___");
+    res.appendFixedWidthPadRight(text.substring(end, to).replace('\n', '\u23CE'), 40, ' ');
+    res.appendNewLine();
+    return res.toString();
   }
 }

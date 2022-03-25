@@ -5,8 +5,10 @@ import static org.getalp.dbnary.stats.Statistics.countResourcesOfType;
 
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -1267,6 +1269,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // TODO: Add extractor version for the current dump
     metadataModel
         .add(metadataModel.createStatement(lexicon, DBnaryOnt.wiktionaryDumpVersion, dumpFilename));
+    try {
+      LocalDate date = LocalDate.parse(dumpFilename, DateTimeFormatter.BASIC_ISO_DATE);
+      lexicon.addLiteral(DCTerms.modified, date);
+    } catch (DateTimeParseException e) {
+      log.trace("Dump String {} is not a date.", dumpFilename);
+    }
 
     // TODO: Add VOID description : see https://www.w3.org/TR/void/#access
     // :DBpedia a void:Dataset;

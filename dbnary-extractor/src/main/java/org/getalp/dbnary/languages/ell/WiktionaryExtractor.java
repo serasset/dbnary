@@ -151,7 +151,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     nymMarkerToNymName.put("υπερώνυμα", "hyper");
     nymMarkerToNymName.put("meronyms", "mero");
     nymMarkerToNymName.put("μερώνυμα", "mero");
-    nymMarkerToNymName.put("παρώνυμα", "paro");
 
     ignoredSection = new HashSet<>(20);
     ignoredSection.add("άλλες γραφές"); // TODO: Other forms

@@ -19,14 +19,14 @@ import org.slf4j.LoggerFactory;
 
 public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
-  private IWiktionaryDataHandler delegate;
+  private final IWiktionaryDataHandler delegate;
 
-  private Logger log = LoggerFactory.getLogger(SpanishTranslationExtractorWikiModel.class);
-  private AbstractGlossFilter glossFilter;
+  private final Logger log = LoggerFactory.getLogger(SpanishTranslationExtractorWikiModel.class);
+  private final AbstractGlossFilter glossFilter;
 
   public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
       String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
-    this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL, glossFilter);
+    this(we, null, locale, imageBaseURL, linkBaseURL, glossFilter);
   }
 
   public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
@@ -47,11 +47,11 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
   }
 
 
-  private final static String senseNumberOrRangeRegExp = "(?:[\\s\\d\\,\\-—–\\?]|&ndash;)+";
+  private final static String senseNumberOrRangeRegExp = "(?:[\\s\\d,\\-—–?]|&ndash;)+";
   private final static Pattern senseNumberOrRangePattern =
       Pattern.compile(senseNumberOrRangeRegExp);
   private final Matcher senseNumberOrRangeMatcher = senseNumberOrRangePattern.matcher("");
-  private static Set<String> gender = new HashSet<>();
+  private static final Set<String> gender = new HashSet<>();
 
   static {
     gender.add("m");
@@ -61,7 +61,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
     gender.add("c");
   }
 
-  private static Set<String> pos = new HashSet<>();
+  private static final Set<String> pos = new HashSet<>();
 
   static {
     pos.add("adj");
@@ -95,13 +95,15 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
+    StructuredGloss currentGloss = null; // This currentGloss is mainly local inside the t+,
+    // however, when a trad appears, it applies to the last gloss specified by t+
     if ("t+".equals(templateName)) {
       // TODO : rank each translation by language
       String lang = LangTools.normalize(parameterMap.get("1"));
       int i = 2;
       String s = null;
       String usage = "", trans = null;
-      StructuredGloss currentGloss = null;
+      currentGloss = null;
       if (parameterMap.get("tr") != null) {
         usage = usage + "|tr=" + parameterMap.get("tr");
       }
@@ -202,10 +204,12 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
       String lang = parameterMap.get("1");
       String trans = parameterMap.get("2");
       String gloss = parameterMap.get("3");
-      senseNumberOrRangeMatcher.reset(gloss);
+      if (null != gloss) {
+        currentGloss = glossFilter.extractGlossStructure(gloss);
+      }
       if (null != trans) {
         delegate.registerTranslation(lang, delegate.createGlossResource(
-            merge(glossFilter.extractGlossStructure(gloss), globalGloss)), "", trans);
+            merge(currentGloss, globalGloss)), "", trans);
       }
     } else if ("l".equals(templateName)) {
       // Catch l template and expand it correctly as the template is now expanded before the

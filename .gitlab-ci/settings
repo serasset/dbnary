@@ -35,3 +35,8 @@ if [ "x$PREVIOUS_VERSION_BRANCH" == "x" -o "$PREVIOUS_VERSION_BRANCH" == "$NEXT_
     echo "Source branch and target branches are the same."
     exit 1
 fi
+
+DBNARY_CICD_SOURCE_BRANCH=${NEXT_VERSION_BRANCH}
+DBNARY_CICD_TARGET_BRANCH=${PREVIOUS_VERSION_BRANCH}
+
+

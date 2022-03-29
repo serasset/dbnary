@@ -197,6 +197,17 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
       // nop
     } else if ("trad-abajo".equals(templateName)) {
       globalGloss = null;
+    } else if ("trad".equals(templateName)) {
+      // Obsolete template that show a single translation
+      String lang = parameterMap.get("1");
+      String trans = parameterMap.get("2");
+      String gloss = parameterMap.get("3");
+      senseNumberOrRangeMatcher.reset(gloss);
+      if (null != trans) {
+        delegate.registerTranslation(lang,
+            delegate.createGlossResource(
+                merge(glossFilter.extractGlossStructure(gloss), globalGloss)), "", trans);
+      }
     } else if ("l".equals(templateName)) {
       // Catch l template and expand it correctly as the template is now expanded before the
       // enclosing template

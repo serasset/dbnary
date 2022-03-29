@@ -95,6 +95,15 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
   private Matcher glossWithPos = glossWithPossPattern.matcher("");
 
   @Override
+  public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {
+    // TODO: the super implementation will register the translation to the lexical entry if there is
+    //   only one defined in the current etymology, however, sometimes, translations are given for
+    //   inflected forms (which are not extracted). Such translation should not be attached to
+    //   anything.
+    super.registerTranslation(lang, currentGloss, usage, word);
+  }
+
+  @Override
   protected List<Resource> getLexicalEntryUsingGloss(Resource structuredGloss) {
     ArrayList<Resource> res = new ArrayList<>();
     // TODO: Should I take the sense Number into account, as it should be correctly processed by

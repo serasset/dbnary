@@ -72,7 +72,7 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
     } else if (nbEntries == 1) {
       super.registerTranslation(lang, currentGloss, usage, word);
     } else if (null == currentGloss) {
-      log.debug("Attaching translations to Vocable (Null gloss and several lexical entries) in {}",
+      log.debug("Attaching translations to Page (Null gloss and several lexical entries) in {}",
           currentPage.getName());
       super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
     } else {

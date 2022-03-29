@@ -16,6 +16,10 @@ import org.getalp.dbnary.StructuredGloss;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A data handler tailored to handle language editions where translation are given after all the
+ * different entries and should be attached to correct entries somehow.
+ */
 public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHandler {
   private static final Logger log = LoggerFactory.getLogger(PostTranslationDataHandler.class);
 
@@ -50,7 +54,7 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
   protected String getGlossResourceName(StructuredGloss gloss) {
     String key = gloss.getGloss() + gloss.getSenseNumber();
     key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray())
-        .replaceAll("[/=\\+]", "-");
+        .replaceAll("[/=+]", "-");
     return getPrefix() + "__" + shortEditionLanguageCode + "_gloss_" + key + "_"
         + encodedWiktionaryPageName;
   }

@@ -4,12 +4,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.wiki.ClassBasedFilter;
+import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Heading;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +27,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: {{grafía alternativa|hogaño|nota1=más usada|leng=es}}: 2450 résultats, 500 pour *
   // '''Variante''', {{variantes si la prononciation est différente}}.
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected final static String languageSectionPatternString;
   protected final static String headerPatternString;
@@ -52,13 +60,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
 
-    languageSectionPatternString = new StringBuilder().append("(?:").append("^\\s*\\{\\{")
-        .append("([\\p{Upper}\\-]*)(?:\\|([^\\}]*))?").append("\\}\\}").append(")|(?:")
-        .append("^==\\s*\\{\\{lengua\\|(.*)\\}\\}\\s*==\\s*$").append(")").toString();
+    languageSectionPatternString = "(?:" + "^\\s*\\{\\{" //
+        + "([\\p{Upper}\\-]*)(?:\\|([^\\}]*))?" //
+        + "\\}\\}" //
+        + ")|(?:" //
+        + "^==\\s*\\{\\{lengua\\|(.*)\\}\\}\\s*==\\s*$"//
+        + ")";
 
     languageSectionPattern = Pattern.compile(languageSectionPatternString, Pattern.MULTILINE);
-    multilineMacroPatternString = new StringBuilder().append("\\{\\{")
-        .append("([^\\}\\|]*)(?:\\|([^\\}]*))?").append("\\}\\}").toString();
+    multilineMacroPatternString = "\\{\\{" + "([^\\}\\|]*)(?:\\|([^\\}]*))?" //
+        + "\\}\\}";
 
     headerPatternString = new StringBuilder().append("(?:").append("^==([^=].*)==\\s*$")
         .append(")|(?:").append("^===([^=].*)===\\s*$").append(")|(?:")
@@ -150,26 +161,71 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void extractData() {
     wdh.initializePageExtraction(getWiktionaryPageName());
-    Matcher l1 = languageSectionPattern.matcher(pageContent);
-    int spaStart = -1;
-    while (l1.find()) {
-      if (-1 != spaStart) {
-        extractSpanishData(spaStart, l1.start());
-        spaStart = -1;
-      }
-      if (isSpanish(l1)) {
-        spaStart = l1.end();
+    WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
+    extractData(page);
+    wdh.finalizePageExtraction();
+  }
+
+  public void extractData(WikiText page) {
+    wdh.initializePageExtraction(getWiktionaryPageName());
+    WikiEventsSequence tokens =
+        page.filteredTokens(new ClassBasedFilter().allowHeading().allowTemplates());
+    int startOfLgSection = -1;
+    String sectionLanguage = null;
+    for (Token t : tokens) {
+      String lg;
+      if (null != (lg = languageHeading(t))) {
+        if (-1 != startOfLgSection) {
+          extractLanguageData(startOfLgSection, t.getBeginIndex(), sectionLanguage);
+        }
+        startOfLgSection = t.getEndIndex();
+        sectionLanguage = lg;
       }
     }
-    if (-1 != spaStart) {
-      extractSpanishData(spaStart, pageContent.length());
+    if (-1 != startOfLgSection) {
+      extractLanguageData(startOfLgSection, pageContent.length(), sectionLanguage);
     }
     wdh.finalizePageExtraction();
   }
 
+  /**
+   * return the language code iff the token represent a header for a language section. return null
+   * in all other cases. returns "" if the language code is unknown but a language section is found.
+   *
+   * @param t : the token to be checked and from which the language should be extracted
+   * @return the language code or null
+   */
+  private String languageHeading(Token t) {
+    if (t instanceof Template && "ES".equals(t.asTemplate().getName())) {
+      return "es";
+    }
+    if (t instanceof Heading) {
+      Heading h = t.asHeading();
+      // Look for the language template
+      Optional<Template> lt =
+          h.getContent().wikiTokens().stream().filter(tok -> tok instanceof Template)
+              .map(Token::asTemplate).filter(tok -> "lengua".equals(tok.getName())).findFirst();
+      if (lt.isPresent()) {
+        String lg = lt.get().getParsedArg("1");
+        if (null != lg) {
+          return lg.toLowerCase();
+        } else {
+          log.debug("lengua template with no language code {} in {}", lt, getWiktionaryPageName());
+          return "";
+        }
+      } else {
+        if (h.getLevel() == 2) {
+          log.trace("lvl 2 heading with no language {} in {}", h, getWiktionaryPageName());
+        }
+        return null;
+      }
+    }
+    return null;
+  }
+
   private boolean isSpanish(Matcher l1) {
-    return (l1.group(1) != null && l1.group(1).toLowerCase().equals("es")
-        || (l1.group(3) != null && l1.group(3).toLowerCase().equals("es")));
+    return (l1.group(1) != null && l1.group(1).equalsIgnoreCase("es")
+        || (l1.group(3) != null && l1.group(3).equalsIgnoreCase("es")));
   }
 
 
@@ -213,10 +269,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (l3 != null) {
       return l3;
     }
-    if (l4 != null) {
-      return l4;
-    }
-    return null;
+    return l4;
   }
 
   private boolean isHeader(Matcher m) {
@@ -303,12 +356,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // TODO: variants, pronunciations and other elements are common to the different entries in the
   // page.
-  private void extractSpanishData(int startOffset, int endOffset) {
-    wdh.initializeLanguageSection("es");
+  private void extractLanguageData(int startOffset, int endOffset, String language) {
+    if (null == language || "".equals(language)) {
+      return;
+    }
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !"es".equals(language)) {
+      return;
+    }
+    String normalizedLanguage = validateAndStandardizeLanguageCode(language);
+    if (normalizedLanguage == null) {
+      log.trace("Ignoring language section {} for {}", language, getWiktionaryPageName());
+      return;
+    }
+
+    wdh.initializeLanguageSection(language);
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     gotoHeaderBlock(m);
-    String pos = null;
+    String pos;
     while (m.find()) {
       switch (state) {
         case NODATA:
@@ -426,8 +491,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   private void extractTranslations(int startOffset, int endOffset, int translationLevel) {
-    if (log.isTraceEnabled())
+    if (log.isTraceEnabled()) {
       log.trace("TranslationLevel = {} in {}", translationLevel, getWiktionaryPageName());
+    }
     // TODO: maybe take the translation level into account (see issue #87)
     String transCode = pageContent.substring(startOffset, endOffset);
     translationExtractor.setPageName(getWiktionaryPageName());

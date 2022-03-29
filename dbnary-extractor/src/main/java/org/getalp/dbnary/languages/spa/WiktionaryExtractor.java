@@ -32,15 +32,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String languageSectionPatternString;
   protected final static String headerPatternString;
   protected final static String spanishDefinitionPatternString;
+  private final WiktionaryDataHandler spaWdh;
 
-  private static final int NODATA = 0;
-  private static final int TRADBLOCK = 1;
-  private static final int DEFBLOCK = 2;
-  private static final int HEADERBLOCK = 5;
-  private static final int IGNOREPOS = 6;
+  private enum EXTRACTION_STATE {
+    NODATA, TRADBLOCK, DEFBLOCK, HEADERBLOCK, IGNOREPOS, ETYMOLOGY
+  }
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
+    assert wdh instanceof WiktionaryDataHandler;
+    spaWdh = (WiktionaryDataHandler) wdh;
   }
 
 
@@ -147,6 +148,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   }
 
+
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
@@ -157,6 +159,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     translationExtractor = new SpanishTranslationExtractorWikiModel(this.wdh, this.wi,
         new Locale("es"), "/${image}", "/${title}", glossFilter);
   }
+
 
   @Override
   public void extractData() {
@@ -229,16 +232,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
 
-  private int state = NODATA;
+  private EXTRACTION_STATE state = EXTRACTION_STATE.NODATA;
   private int definitionBlockStart = -1;
   private int orthBlockStart = -1;
   private int translationBlockStart = -1;
   private int translationLevel = -1;
   private int headerBlockStart = -1;
+  private int etymologyBlockStart = -1;
 
 
   void gotoNoData(Matcher m) {
-    state = NODATA;
+    state = EXTRACTION_STATE.NODATA;
   }
 
   private int getHeaderLevel(Matcher m) {
@@ -301,7 +305,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   void gotoDefBlock(Matcher m, String pos) {
-    state = DEFBLOCK;
+    state = EXTRACTION_STATE.DEFBLOCK;
     definitionBlockStart = m.end();
     wdh.initializeLexicalEntry(pos);
   }
@@ -329,7 +333,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   void gotoTradBlock(Matcher m) {
     translationBlockStart = m.end();
     translationLevel = getHeaderLevel(m);
-    state = TRADBLOCK;
+    state = EXTRACTION_STATE.TRADBLOCK;
   }
 
   void leaveTradBlock(Matcher m) {
@@ -340,7 +344,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void gotoHeaderBlock(Matcher m) {
-    state = HEADERBLOCK;
+    state = EXTRACTION_STATE.HEADERBLOCK;
     // The header starts at the beginning of the region.
     headerBlockStart = m.regionStart();
   }
@@ -350,8 +354,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     headerBlockStart = -1;
   }
 
+  private void leaveEtymologyBlock(Matcher m) {
+    spaWdh.extractEtymmology();
+    headerBlockStart = -1;
+  }
+
   private void gotoIgnorePos() {
-    state = IGNOREPOS;
+    state = EXTRACTION_STATE.IGNOREPOS;
   }
 
   // TODO: variants, pronunciations and other elements are common to the different entries in the
@@ -459,6 +468,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
           } else if (isHeader(m)) {
             // gotoIgnorePos();
+          } else {
+            // unknownHeaders.add(m.group(0));
+          }
+          break;
+        case ETYMOLOGY:
+          if (isTranslation(m)) {
+            leaveEtymologyBlock(m);
+            gotoTradBlock(m);
+          } else if (null != (pos = getValidPOS(m))) {
+            leaveEtymologyBlock(m);
+            if (pos.length() == 0) {
+              gotoIgnorePos();
+            } else {
+              gotoDefBlock(m, pos);
+            }
+          } else if (isHeader(m)) {
+            leaveEtymologyBlock(m);
+            gotoNoData(m);
           } else {
             // unknownHeaders.add(m.group(0));
           }

@@ -59,13 +59,17 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
         + encodedWiktionaryPageName;
   }
 
+  private int countEntries() {
+    return lexEntries.values().stream().mapToInt(set -> set.size()).sum();
+  }
+
   @Override
   public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {
-
-    if (currentPage.nbEntries() == 0) {
+    int nbEntries = countEntries();
+    if (nbEntries == 0) {
       log.debug("Registering Translation when no lexical entry is defined in {}",
           currentPage.getName());
-    } else if (currentPage.nbEntries() == 1) {
+    } else if (nbEntries == 1) {
       super.registerTranslation(lang, currentGloss, usage, word);
     } else if (null == currentGloss) {
       log.debug("Attaching translations to Vocable (Null gloss and several lexical entries) in {}",
@@ -111,5 +115,11 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
       entrySet.add(entry);
       lexEntries.put(pos, entrySet);
     }
+  }
+
+  public void extractEtymmology() {
+    // In language edition which use a post translation layout, the etymology sections usually
+    // contain the translation. Hence, we should only attach translation belonging the the correct
+    // lexical entries
   }
 }

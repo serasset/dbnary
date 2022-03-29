@@ -191,6 +191,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizePageExtraction();
   }
 
+  private static final Pattern obsoleteLanguageTmplPattern =
+      Pattern.compile("(\\p{Upper}{2,3})-ES");
+  private static final Matcher obsoleteLanguage = obsoleteLanguageTmplPattern.matcher("");
+
   /**
    * return the language code iff the token represent a header for a language section. return null
    * in all other cases. returns "" if the language code is unknown but a language section is found.
@@ -199,10 +203,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    * @return the language code or null
    */
   private String languageHeading(Token t) {
-    if (t instanceof Template && "ES".equals(t.asTemplate().getName())) {
-      return "es";
-    }
-    if (t instanceof Heading) {
+    if (t instanceof Template) {
+      if ("ES".equals(t.asTemplate().getName())) {
+        return "es";
+      }
+      obsoleteLanguage.reset(t.asTemplate().getName());
+      if (obsoleteLanguage.matches()) {
+        String lg = obsoleteLanguage.group(1);
+        return lg.toLowerCase();
+      }
+    } else if (t instanceof Heading) {
       Heading h = t.asHeading();
       // Look for the language template
       Optional<Template> lt =
@@ -224,11 +234,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
     }
     return null;
-  }
-
-  private boolean isSpanish(Matcher l1) {
-    return (l1.group(1) != null && l1.group(1).equalsIgnoreCase("es")
-        || (l1.group(3) != null && l1.group(3).equalsIgnoreCase("es")));
   }
 
 

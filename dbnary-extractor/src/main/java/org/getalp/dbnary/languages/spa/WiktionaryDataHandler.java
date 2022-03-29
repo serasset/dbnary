@@ -97,9 +97,9 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
   @Override
   public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {
     // TODO: the super implementation will register the translation to the lexical entry if there is
-    //   only one defined in the current etymology, however, sometimes, translations are given for
-    //   inflected forms (which are not extracted). Such translation should not be attached to
-    //   anything.
+    // only one defined in the current etymology, however, sometimes, translations are given for
+    // inflected forms (which are not extracted). Such translation should not be attached to
+    // anything.
     super.registerTranslation(lang, currentGloss, usage, word);
   }
 

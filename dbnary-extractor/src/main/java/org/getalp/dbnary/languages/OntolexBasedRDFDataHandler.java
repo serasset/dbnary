@@ -144,8 +144,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       new HashMap<>();
 
   // protected static HashMap<String, Property> nymPropertyMap = new HashMap<String, Property>();
-  protected static HashMap<String, PosAndType> posAndTypeValueMap =
-      new HashMap<>();
+  protected static HashMap<String, PosAndType> posAndTypeValueMap = new HashMap<>();
 
   // Map of the String to lexvo language entity
   private HashMap<String, Resource> languages = new HashMap<>();
@@ -809,8 +808,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       addTo.forEach(entry -> addOtherFormPropertiesToLexicalEntry(entry, props));
 
       // Second, we store the other form for future possible matching entries
-      SimpleImmutableEntry<String, String> key =
-          new SimpleImmutableEntry<>(canonicalForm, pos);
+      SimpleImmutableEntry<String, String> key = new SimpleImmutableEntry<>(canonicalForm, pos);
 
       HashSet<HashSet<PropertyObjectPair>> otherForms =
           heldBackOtherForms.computeIfAbsent(key, k -> new HashSet<>());
@@ -1274,7 +1272,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         .add(metadataModel.createStatement(lexicon, DBnaryOnt.wiktionaryDumpVersion, dumpFilename));
     try {
       LocalDate date = LocalDate.parse(dumpFilename, DateTimeFormatter.BASIC_ISO_DATE);
-      Calendar dateCal = new GregorianCalendar(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+      Calendar dateCal =
+          new GregorianCalendar(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
       XSDDateTime jenaDate = new XSDDateTime(dateCal);
       jenaDate.narrowType(XSDDatatype.XSDdate);
       lexicon.addLiteral(DCTerms.modified, jenaDate);

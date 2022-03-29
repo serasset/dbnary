@@ -204,9 +204,8 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
       String gloss = parameterMap.get("3");
       senseNumberOrRangeMatcher.reset(gloss);
       if (null != trans) {
-        delegate.registerTranslation(lang,
-            delegate.createGlossResource(
-                merge(glossFilter.extractGlossStructure(gloss), globalGloss)), "", trans);
+        delegate.registerTranslation(lang, delegate.createGlossResource(
+            merge(glossFilter.extractGlossStructure(gloss), globalGloss)), "", trans);
       }
     } else if ("l".equals(templateName)) {
       // Catch l template and expand it correctly as the template is now expanded before the

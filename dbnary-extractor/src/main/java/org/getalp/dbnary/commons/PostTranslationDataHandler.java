@@ -64,8 +64,8 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
   private int countEntries() {
     // WARN: the entries may be duplicate (as they are available under several keys,
     // we should count unique entries
-    Set<Resource> uniqueEntries = lexEntries.values().stream().flatMap(Collection::stream)
-        .collect(Collectors.toSet());
+    Set<Resource> uniqueEntries =
+        lexEntries.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
     return uniqueEntries.size();
   }
 
@@ -118,7 +118,9 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
 
   private void addLexEntry(String wikiPos, Resource lexinfoPos, Resource entry) {
     addLexEntry(wikiPos, entry);
-    addLexEntry(lexinfoPos.toString(), entry);
+    if (null != lexinfoPos) {
+      addLexEntry(lexinfoPos.toString(), entry);
+    }
   }
 
   private void addLexEntry(String key, Resource entry) {

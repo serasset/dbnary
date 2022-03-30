@@ -211,6 +211,9 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
         delegate.registerTranslation(lang, delegate.createGlossResource(
             merge(currentGloss, globalGloss)), "", trans);
       }
+      // append translation into writer so that it will be available if trad template is called
+      // inside another template
+      writer.append(trans);
     } else if ("l".equals(templateName)) {
       // Catch l template and expand it correctly as the template is now expanded before the
       // enclosing template

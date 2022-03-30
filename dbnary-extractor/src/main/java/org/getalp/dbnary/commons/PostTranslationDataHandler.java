@@ -2,11 +2,13 @@ package org.getalp.dbnary.commons;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -24,7 +26,7 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
   private static final Logger log = LoggerFactory.getLogger(PostTranslationDataHandler.class);
 
   private String encodedWiktionaryPageName;
-  protected Map<Resource, Set<Resource>> lexEntries = new HashMap<>();
+  protected Map<String, Set<Resource>> lexEntries = new HashMap<>();
 
   protected PostTranslationDataHandler(String lang, String tdbDir) {
     super(lang, tdbDir);
@@ -46,7 +48,7 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
   @Override
   public Resource initializeLexicalEntry(String pos, Resource lexinfoPOS, Resource type) {
     Resource entry = super.initializeLexicalEntry(pos, lexinfoPOS, type);
-    addLexEntry(lexinfoPOS, entry);
+    addLexEntry(pos, lexinfoPOS, entry);
     return entry;
   }
 
@@ -60,7 +62,11 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
   }
 
   private int countEntries() {
-    return lexEntries.values().stream().mapToInt(set -> set.size()).sum();
+    // WARN: the entries may be duplicate (as they are available under several keys,
+    // we should count unique entries
+    Set<Resource> uniqueEntries = lexEntries.values().stream().flatMap(Collection::stream)
+        .collect(Collectors.toSet());
+    return uniqueEntries.size();
   }
 
   @Override
@@ -100,20 +106,29 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
   protected abstract List<Resource> getLexicalEntryUsingGloss(Resource structuredGloss);
 
   protected void addAllResourceOfPoS(ArrayList<Resource> res, Resource pos) {
+    addAllResourceOfPoS(res, pos.toString());
+  }
+
+  protected void addAllResourceOfPoS(ArrayList<Resource> res, String pos) {
     Set<Resource> ares = lexEntries.get(pos);
     if (ares != null) {
       res.addAll(ares);
     }
   }
 
-  private void addLexEntry(Resource pos, Resource entry) {
+  private void addLexEntry(String wikiPos, Resource lexinfoPos, Resource entry) {
+    addLexEntry(wikiPos, entry);
+    addLexEntry(lexinfoPos.toString(), entry);
+  }
+
+  private void addLexEntry(String key, Resource entry) {
     Set<Resource> entrySet;
-    if (null != (entrySet = lexEntries.get(pos))) {
+    if (null != (entrySet = lexEntries.get(key))) {
       entrySet.add(entry);
     } else {
       entrySet = new HashSet<>();
       entrySet.add(entry);
-      lexEntries.put(pos, entrySet);
+      lexEntries.put(key, entrySet);
     }
   }
 

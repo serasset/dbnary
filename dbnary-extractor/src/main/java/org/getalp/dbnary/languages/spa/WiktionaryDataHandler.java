@@ -2,6 +2,7 @@ package org.getalp.dbnary.languages.spa;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -89,8 +90,9 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
 
   private final static String posPatternString = "(?:verbo|sustantivo|adjetivo|adverbio)";
   private final static String glossWithPosValue =
-      "(?:^\\s*(?:como\\s+)?(" + posPatternString + ")\\s*$|" + "^.*\\((" + posPatternString
-          + ")\\)\\s*$|" + "^\\s*(" + posPatternString + "):.*$)";
+      "(?:^\\s*(?:como\\s+)?(" + posPatternString + ")\\s*$|" //
+    + "^.*\\((" + posPatternString + ")\\)\\s*$|" //
+    + "^\\s*(" + posPatternString + "):.*$)";
   private Pattern glossWithPossPattern = Pattern.compile(glossWithPosValue);
   private Matcher glossWithPos = glossWithPossPattern.matcher("");
 
@@ -116,7 +118,11 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     if (null == gloss) {
       return res;
     }
-    glossWithPos.reset(gloss.trim());
+    addAllResourceOfPoS(res, gloss.toLowerCase().trim());
+    if (! res.isEmpty()) {
+      return res;
+    }
+    glossWithPos.reset(gloss.toLowerCase().trim());
     if (glossWithPos.matches()) {
       String pos = Stream.of(glossWithPos.group(1), glossWithPos.group(2), glossWithPos.group(3))
           .filter(Objects::nonNull).findFirst().orElse(null);

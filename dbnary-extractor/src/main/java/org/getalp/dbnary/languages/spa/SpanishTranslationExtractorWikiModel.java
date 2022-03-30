@@ -208,8 +208,8 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
         currentGloss = glossFilter.extractGlossStructure(gloss);
       }
       if (null != trans) {
-        delegate.registerTranslation(lang, delegate.createGlossResource(
-            merge(currentGloss, globalGloss)), "", trans);
+        delegate.registerTranslation(lang,
+            delegate.createGlossResource(merge(currentGloss, globalGloss)), "", trans);
       }
       // append translation into writer so that it will be available if trad template is called
       // inside another template

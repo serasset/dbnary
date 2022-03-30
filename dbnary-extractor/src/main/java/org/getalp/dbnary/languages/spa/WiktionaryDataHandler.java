@@ -91,8 +91,8 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
   private final static String posPatternString = "(?:verbo|sustantivo|adjetivo|adverbio)";
   private final static String glossWithPosValue =
       "(?:^\\s*(?:como\\s+)?(" + posPatternString + ")\\s*$|" //
-    + "^.*\\((" + posPatternString + ")\\)\\s*$|" //
-    + "^\\s*(" + posPatternString + "):.*$)";
+          + "^.*\\((" + posPatternString + ")\\)\\s*$|" //
+          + "^\\s*(" + posPatternString + "):.*$)";
   private Pattern glossWithPossPattern = Pattern.compile(glossWithPosValue);
   private Matcher glossWithPos = glossWithPossPattern.matcher("");
 
@@ -119,7 +119,7 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
       return res;
     }
     addAllResourceOfPoS(res, gloss.toLowerCase().trim());
-    if (! res.isEmpty()) {
+    if (!res.isEmpty()) {
       return res;
     }
     glossWithPos.reset(gloss.toLowerCase().trim());

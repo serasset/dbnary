@@ -131,7 +131,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       log.trace("Ignoring language section {} for {}", lang, getWiktionaryPageName());
       return;
     }
-    wdh.initializeLanguageSection("it");
+    wdh.initializeLanguageSection(normalizedLanguage);
     extractLanguageData(heading.getSection());
     wdh.finalizeLanguageSection();
 

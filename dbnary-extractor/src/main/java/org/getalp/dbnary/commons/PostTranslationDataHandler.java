@@ -106,7 +106,9 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
   protected abstract List<Resource> getLexicalEntryUsingGloss(Resource structuredGloss);
 
   protected void addAllResourceOfPoS(ArrayList<Resource> res, Resource pos) {
-    addAllResourceOfPoS(res, pos.toString());
+    if (null != pos) {
+      addAllResourceOfPoS(res, pos.toString());
+    }
   }
 
   protected void addAllResourceOfPoS(ArrayList<Resource> res, String pos) {

@@ -2,7 +2,6 @@ package org.getalp.dbnary.languages.spa;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryDataHandler extends PostTranslationDataHandler {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
   public WiktionaryDataHandler(String lang, String tdbDir) {
     super(lang, tdbDir);
@@ -93,8 +92,8 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
       "(?:^\\s*(?:como\\s+)?(" + posPatternString + ")\\s*$|" //
           + "^.*\\((" + posPatternString + ")\\)\\s*$|" //
           + "^\\s*(" + posPatternString + "):.*$)";
-  private Pattern glossWithPossPattern = Pattern.compile(glossWithPosValue);
-  private Matcher glossWithPos = glossWithPossPattern.matcher("");
+  private final Pattern glossWithPossPattern = Pattern.compile(glossWithPosValue);
+  private final Matcher glossWithPos = glossWithPossPattern.matcher("");
 
   @Override
   public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {

@@ -124,7 +124,7 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     if (null == gloss) {
       return res;
     }
-    gloss = gloss.trim();
+    gloss = gloss.toLowerCase().trim();
     if (gloss.startsWith("aggettivo numerale")) {
       addAllResourceOfPoS(res, LexinfoOnt.numeral);
     } else if (gloss.startsWith("aggettivo")) {
@@ -140,6 +140,9 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     } else if (gloss.startsWith("agg. e sost.")) {
       addAllResourceOfPoS(res, LexinfoOnt.adjective);
       addAllResourceOfPoS(res, LexinfoOnt.noun);
+    } else {
+      log.debug("Could not decode gloss '{}' to chose lexical entry in '{}'", gloss,
+          currentPagename());
     }
     return res;
   }

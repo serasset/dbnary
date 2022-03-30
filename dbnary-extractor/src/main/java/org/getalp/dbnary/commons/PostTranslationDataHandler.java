@@ -136,9 +136,10 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
     }
   }
 
-  public void extractEtymmology() {
+  public void extractEtymology() {
     // In language edition which use a post translation layout, the etymology sections usually
-    // contain the translation. Hence, we should only attach translation belonging the the correct
+    // contain the translation. Hence, we should only attach translation belonging the correct
     // lexical entries
+    lexEntries.clear();
   }
 }

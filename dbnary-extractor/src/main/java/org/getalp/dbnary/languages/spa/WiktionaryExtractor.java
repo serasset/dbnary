@@ -285,6 +285,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return getHeaderLabel(m) != null;
   }
 
+  private boolean isEtymology(Matcher m) {
+    String headerLabel = getHeaderLabel(m);
+    if (null == headerLabel) return false;
+    return headerLabel.toLowerCase().trim().startsWith("etimología");
+  }
+
   // Part of speech section (Def block)
 
   private String getValidPOS(Matcher m) {
@@ -359,9 +365,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     headerBlockStart = -1;
   }
 
+  private void gotoEtymologyBlock(Matcher m) {
+    state = EXTRACTION_STATE.ETYMOLOGY;
+    // The header starts at the beginning of the region.
+    etymologyBlockStart = m.regionStart();
+  }
+
   private void leaveEtymologyBlock(Matcher m) {
-    spaWdh.extractEtymmology();
-    headerBlockStart = -1;
+    spaWdh.extractEtymology();
+    etymologyBlockStart = -1;
   }
 
   private void gotoIgnorePos() {
@@ -399,8 +411,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
               gotoDefBlock(m, pos);
             }
+          } else if (isEtymology(m)) {
+            gotoEtymologyBlock(m);
           } else if (isHeader(m)) {
-            // Level 2 header that are not a correct POS, or Etimology or Pronunciation are
+            // Level 2 header that are not a correct POS, or Pronunciation are
             // considered as ignorable POS.
             // unknownHeaders.add(m.group(0));
             gotoNoData(m);
@@ -420,6 +434,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
               gotoDefBlock(m, pos);
             }
+          } else if (isEtymology(m)) {
+            leaveDefBlock(m);
+            gotoEtymologyBlock(m);
           } else if (isHeader(m)) {
             leaveDefBlock(m);
             gotoNoData(m);
@@ -438,6 +455,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
               gotoDefBlock(m, pos);
             }
+          } else if (isEtymology(m)) {
+            leaveTradBlock(m);
+            gotoEtymologyBlock(m);
           } else if (isHeader(m)) {
             leaveTradBlock(m);
             gotoNoData(m);
@@ -456,6 +476,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
               gotoDefBlock(m, pos);
             }
+          } else if (isEtymology(m)) {
+            leaveHeaderBlock(m);
+            gotoEtymologyBlock(m);
           } else if (isHeader(m)) {
             leaveHeaderBlock(m);
             gotoNoData(m);
@@ -471,6 +494,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
               gotoDefBlock(m, pos);
             }
+          } else if (isEtymology(m)) {
+            gotoEtymologyBlock(m);
           } else if (isHeader(m)) {
             // gotoIgnorePos();
           } else {
@@ -488,6 +513,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
               gotoDefBlock(m, pos);
             }
+          } else if (isEtymology(m)) {
+            leaveEtymologyBlock(m);
+            gotoEtymologyBlock(m);
           } else if (isHeader(m)) {
             leaveEtymologyBlock(m);
             gotoNoData(m);

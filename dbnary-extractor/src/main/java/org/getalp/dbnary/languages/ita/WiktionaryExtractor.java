@@ -7,10 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -23,6 +25,8 @@ import org.getalp.dbnary.wiki.WikiText.Link;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
+import org.getalp.dbnary.wiki.WikiText.WikiDocument;
+import org.getalp.dbnary.wiki.WikiText.WikiSection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected final static String level2HeaderPatternString = "^==([^=].*[^=])==$";
 
@@ -39,8 +43,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
 
-    entrySectionPatternString = new StringBuilder().append("\\{\\{\\s*-")
-        .append("([^\\}\\|\n\r]*)-\\s*(?:\\|([^\\}\n\r]*))?").append("\\}\\}").toString();
+    entrySectionPatternString = //
+        "\\{\\{\\s*-" //
+            + "([^\\}\\|\n\r]*)-\\s*(?:\\|([^\\}\n\r]*))?" //
+            + "\\}\\}";
 
   }
 
@@ -100,33 +106,75 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private boolean isCorrectPOS;
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
-   * org.getalp.blexisma.semnet.SemanticNetwork)
-   */
   @Override
   public void extractData() {
-    Matcher l1 = level2HeaderPattern.matcher(pageContent);
-    int itaStart = -1;
     wdh.initializePageExtraction(getWiktionaryPageName());
-    while (l1.find()) {
-      // System.err.println(l1.group());
-      if (-1 != itaStart) {
-        // System.err.println("Parsing previous italian entry");
-        extractItalianData(itaStart, l1.start());
-        itaStart = -1;
-      }
-      if (isItalian(l1)) {
-        itaStart = l1.end();
-      }
-    }
-    if (-1 != itaStart) {
-      // System.err.println("Parsing previous italian entry");
-      extractItalianData(itaStart, pageContent.length());
-    }
+    WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
+    extractData(page);
     wdh.finalizePageExtraction();
+  }
+
+  public void extractData(WikiText page) {
+    page.headers(2).stream().map(Token::asHeading).forEach(this::extractLvl2Section);
+  }
+
+  private void extractLvl2Section(Heading heading) {
+    String lang = getLanguage(heading);
+    if ("".equals(lang)) {
+      return;
+    }
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !"es".equals(lang)) {
+      return;
+    }
+    String normalizedLanguage = validateAndStandardizeLanguageCode(lang);
+    if (normalizedLanguage == null) {
+      log.trace("Ignoring language section {} for {}", lang, getWiktionaryPageName());
+      return;
+    }
+    wdh.initializeLanguageSection("it");
+    extractLanguageData(heading.getSection());
+    wdh.finalizeLanguageSection();
+
+  }
+
+  private String getLanguage(Heading h) {
+    Optional<String> lg =
+        h.getContent().wikiTokens().stream().filter(tok -> tok instanceof Template)
+            .map(Token::asTemplate).filter(tok -> tok.getName().trim().matches("-.*-"))
+            .map(tok -> {
+              String name = tok.getName().trim();
+              return name.substring(1, name.length() - 1);
+            }).findFirst();
+    if (lg.isPresent()) {
+      return lg.get().toLowerCase();
+    } else {
+      log.debug("No language template in header [{}] in {}", h, getWiktionaryPageName());
+      return "";
+    }
+  }
+
+
+  private void extractLanguageData(WikiSection section) {
+    Matcher m = sectionPattern.matcher(pageContent);
+    m.region(section.getBeginIndex(), section.getEndIndex());
+    currentBlock = Block.NOBLOCK;
+    while (m.find()) {
+      HashMap<String, Object> context = new HashMap<>();
+      Block nextBlock = computeNextBlock(m, context);
+
+      if (nextBlock == null) {
+        continue;
+      }
+      // If current block is IGNOREPOS, we should ignore everything but a new
+      // DEFBLOCK/INFLECTIONBLOCK
+      if (Block.IGNOREPOS != currentBlock
+          || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
+        leaveCurrentBlock(m);
+        gotoNextBlock(nextBlock, context);
+      }
+    }
+    // Finalize the entry parsing
+    leaveCurrentBlock(m);
   }
 
   private boolean isItalian(Matcher l1) {
@@ -263,7 +311,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     WikiText wt = new WikiText(this.getWiktionaryPageName(), pageContent, startOffset, endOffset);
     List<? extends Token> toks = wt.wikiTokens();
 
-    String currentGloss = null;
+    String currentGloss;
     Resource currentStructuredGloss = null;
     int glossRank = 1;
     int ti = 0;
@@ -331,10 +379,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     tp.extractTranslationLine(line, gloss, wdh, glossFilter);
   }
 
-  static String ignorableGlossPatternText = new StringBuffer().append("\\s*(?:")
-      .append("(?:(?:\\dª|prima|seconda|terza)\\s+pers(?:ona|\\.)?)\\s+")
-      .append("|(?:femminile|participio passato|plurale)\\s+").append("|voce verbale").append(")")
-      .toString();
+  static String ignorableGlossPatternText = //
+      "\\s*(?:" //
+          + "(?:(?:\\dª|prima|seconda|terza)\\s+pers(?:ona|\\.)?)\\s+" //
+          + "|(?:femminile|participio passato|plurale)\\s+" //
+          + "|voce verbale" + ")";
   static Pattern ignorableGlossPattern = Pattern.compile(ignorableGlossPatternText);
   Matcher ignorableGloss = ignorableGlossPattern.matcher("");
 
@@ -366,14 +415,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
     // les caractères visible
-    carPatternString = new StringBuilder().append("(.)").toString();
+    carPatternString = "(.)";
 
     // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
     // line.
     macroOrLinkOrcarPatternString =
-        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
-            .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)")
-            .append(")|(?:").append(carPatternString).append(")").toString();
+        "(?:" //
+            + WikiPatterns.macroPatternString //
+            + ")|(?:" //
+            + WikiPatterns.linkPatternString //
+            + ")|(?:" //
+            + "(:*\\*)" //
+            + ")|(?:" //
+            + carPatternString //
+            + ")";
   }
 
   protected final static Pattern macroOrLinkOrcarPattern;

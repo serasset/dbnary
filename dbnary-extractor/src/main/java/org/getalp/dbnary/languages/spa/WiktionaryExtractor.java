@@ -170,7 +170,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   public void extractData(WikiText page) {
-    wdh.initializePageExtraction(getWiktionaryPageName());
     WikiEventsSequence tokens =
         page.filteredTokens(new ClassBasedFilter().allowHeading().allowTemplates());
     int startOfLgSection = -1;
@@ -188,7 +187,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (-1 != startOfLgSection) {
       extractLanguageData(startOfLgSection, pageContent.length(), sectionLanguage);
     }
-    wdh.finalizePageExtraction();
   }
 
   private static final Pattern obsoleteLanguageTmplPattern =

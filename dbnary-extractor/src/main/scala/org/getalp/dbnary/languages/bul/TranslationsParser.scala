@@ -18,7 +18,7 @@ class TranslationsParser extends RegexParsers with PackratParsers {
     val source = in.source
     val offset = in.offset
     val start = handleWhiteSpace(source, offset)
-    (r findPrefixMatchOf (source.subSequence(start, source.length))) match {
+    r findPrefixMatchOf source.subSequence(start, source.length) match {
       case Some(matched) =>
         Success(matched,
           in.drop(start + matched.end - offset))
@@ -29,13 +29,13 @@ class TranslationsParser extends RegexParsers with PackratParsers {
   }
 
   private val logger = Logger(classOf[TranslationsParser])
-  private var currentEntry: String = null
-  val Link = """\[\[(?:([^:\|\]]*)|([^\]\|]*:[^\]\|]*))(?:\|([^\]]*))?\]\]""".r
-  val Link2 = """\[\[([^]]*)\]\]""".r
-  val TranslationTemplate = """\{\{[tnп](?:\|([^\}\|]+)(?:\|([^\}\|]+)(?:\|([^\}]+))?)?)?\}\}""".r
-  val TemplateWithoutArgs = """\{\{([^\}|]+)\}\}""".r
+  private var currentEntry: String = _
+  val Link: Regex = """\[\[(?:([^:\|\]]*)|([^\]\|]*:[^\]\|]*))(?:\|([^\]]*))?\]\]""".r
+  val Link2: Regex = """\[\[([^]]*)\]\]""".r
+  val TranslationTemplate: Regex = """\{\{[tnп](?:\|([^\}\|]+)(?:\|([^\}\|]+)(?:\|([^\}]+))?)?)?\}\}""".r
+  val TemplateWithoutArgs: Regex = """\{\{([^\}|]+)\}\}""".r
 
-  def languageName = """[ _\p{L}]+""".r
+  def languageName: Regex = """[ _\p{L}]+""".r
 
   def languageTemplate: Parser[String] = matching(TemplateWithoutArgs) ^^ {
     case TemplateWithoutArgs(lc) => lc
@@ -56,7 +56,7 @@ class TranslationsParser extends RegexParsers with PackratParsers {
     case TranslationTemplate(lg, anchor, wf) => Translation(lg, wf, "", "")
   }
 
-  def links = link.+ ^^ {
+  def links: Parser[String] = link.+ ^^ {
     case list => list filter {
       _.nonEmpty
     } mkString (" ")

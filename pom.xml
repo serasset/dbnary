@@ -660,7 +660,7 @@
             <plugin>
               <groupId>org.jreleaser</groupId>
               <artifactId>jreleaser-maven-plugin</artifactId>
-              <version>1.0.0-M2</version>
+              <version>1.0.0-RC1</version>
               <configuration>
                 <jreleaser>
                   <project>
@@ -668,6 +668,7 @@
                     <java>
                       <mainClass>${app.main.class}</mainClass>
                     </java>
+                    <docsUrl>http://kaiko.getalp.org/static/reports/${project.version}</docsUrl>
                   </project>
                   <release>
                     <github>

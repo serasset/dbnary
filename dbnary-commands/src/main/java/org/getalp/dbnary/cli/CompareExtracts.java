@@ -65,7 +65,7 @@ public class CompareExtracts implements Callable<Integer> {
 
   @Option(names = {"-o", "--output"}, paramLabel = "DIR", defaultValue = ".",
       description = "create files in DIR (default: ${DEFAULT-VALUE})")
-  private Path output = null;
+  private Path output = Path.of(".");
 
   @Parameters(index = "0..*", description = "The languages to be updated and extracted.",
       arity = "1..*")

@@ -46,7 +46,7 @@ public class Struct {
   }
 
   public void delete(String key) {
-      delegate.remove(key);
+    delegate.remove(key);
   }
 
   // Set behaviour

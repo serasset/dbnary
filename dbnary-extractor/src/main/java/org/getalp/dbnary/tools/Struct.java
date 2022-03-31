@@ -46,9 +46,7 @@ public class Struct {
   }
 
   public void delete(String key) {
-    Stack<Object> stack = delegate.get(key);
-    if (stack != null)
-      delegate.remove(key);
+    delegate.remove(key);
   }
 
   // Set behaviour
@@ -59,12 +57,18 @@ public class Struct {
 
   public boolean remove(String key, Object value) {
     Stack<Object> stack = delegate.get(key);
-    return stack.remove(value);
+    if (null != stack)
+      return stack.remove(value);
+    else
+      return false;
   }
 
   public boolean contains(String key, Object value) {
     Stack<Object> stack = delegate.get(key);
-    return stack.contains(value);
+    if (null != stack)
+      return stack.contains(value);
+    else
+      return false;
   }
 
 }

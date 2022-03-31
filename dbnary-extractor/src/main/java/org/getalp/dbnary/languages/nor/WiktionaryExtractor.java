@@ -1,12 +1,12 @@
 package org.getalp.dbnary.languages.nor;
 
 import java.util.HashMap;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
-import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
+import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,10 +152,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private Block getBlock(String blockString) {
-    Set<String> set = blockValue.keySet();
-    for (String t : set) {
-      if (blockString.contains(t)) {
-        return blockValue.get(t);
+    for (Entry<String, Block> t : blockValue.entrySet()) {
+      if (blockString.contains(t.getKey())) {
+        return t.getValue();
       }
     }
     return Block.NOBLOCK;

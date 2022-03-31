@@ -4,6 +4,7 @@ package org.getalp.dbnary.tools;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.slf4j.Logger;
 
@@ -63,8 +64,8 @@ public class CounterSet implements Set<String> {
   }
 
   public void logCounters(Logger log) {
-    for (String s : counters.keySet()) {
-      log.debug("{}: {}", s, counters.get(s)._val);
+    for (Entry<String, MutableInteger> s : counters.entrySet()) {
+      log.debug("{}: {}", s.getKey(), s.getValue()._val);
     }
   }
 

@@ -285,7 +285,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private boolean isEtymology(Matcher m) {
     String headerLabel = getHeaderLabel(m);
-    if (null == headerLabel) return false;
+    if (null == headerLabel)
+      return false;
     return headerLabel.toLowerCase().trim().startsWith("etimología");
   }
 

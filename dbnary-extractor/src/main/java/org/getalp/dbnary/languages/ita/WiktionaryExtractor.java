@@ -140,8 +140,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private String getLanguage(Heading h) {
     Optional<String> lg =
         h.getContent().wikiTokens().stream().filter(tok -> tok instanceof Template)
-            .map(Token::asTemplate).filter(tok -> tok.getName().trim().matches("-.*-"))
-            .map(tok -> {
+            .map(Token::asTemplate).filter(tok -> tok.getName().trim().matches("-.*-")).map(tok -> {
               String name = tok.getName().trim();
               return name.substring(1, name.length() - 1);
             }).findFirst();
@@ -419,16 +418,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
     // line.
-    macroOrLinkOrcarPatternString =
-        "(?:" //
-            + WikiPatterns.macroPatternString //
-            + ")|(?:" //
-            + WikiPatterns.linkPatternString //
-            + ")|(?:" //
-            + "(:*\\*)" //
-            + ")|(?:" //
-            + carPatternString //
-            + ")";
+    macroOrLinkOrcarPatternString = "(?:" //
+        + WikiPatterns.macroPatternString //
+        + ")|(?:" //
+        + WikiPatterns.linkPatternString //
+        + ")|(?:" //
+        + "(:*\\*)" //
+        + ")|(?:" //
+        + carPatternString //
+        + ")";
   }
 
   protected final static Pattern macroOrLinkOrcarPattern;

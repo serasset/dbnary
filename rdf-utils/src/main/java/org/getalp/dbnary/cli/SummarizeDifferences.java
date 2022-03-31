@@ -84,8 +84,8 @@ public class SummarizeDifferences extends VerboseCommand {
         String token = System.getenv("SLACK_BOT_TOKEN");
         String channelID = System.getenv("SLACK_CHANNEL_ID");
 
-        String originalBranch = System.getenv("BITBUCKET_BRANCH");
-        String destinationBranch = System.getenv("BITBUCKET_PR_DESTINATION_BRANCH");
+        String originalBranch = System.getenv("DBNARY_CICD_SOURCE_BRANCH");
+        String destinationBranch = System.getenv("DBNARY_CICD_TARGET_BRANCH");
 
         // Initialize an API Methods client with the given token
         MethodsClient methods = slack.methods(token);
@@ -93,7 +93,7 @@ public class SummarizeDifferences extends VerboseCommand {
         // Build a request object
         ChatPostMessageRequest request = ChatPostMessageRequest.builder().channel(channelID)
             .text("I evaluated dbnary " + destinationBranch + " vs " + originalBranch)
-            .blocks(createSlackMessage()).build();
+            .blocks(createSlackMessage(originalBranch, destinationBranch)).build();
 
         // Get a response as a Java object
         System.err.println("Posting message : " + request);
@@ -117,10 +117,11 @@ public class SummarizeDifferences extends VerboseCommand {
     }
   }
 
-  private List<LayoutBlock> createSlackMessage() {
+  private List<LayoutBlock> createSlackMessage(String source, String target) {
     List<LayoutBlock> blocks = new ArrayList<>();
-    SectionBlock mainBlock = section(section -> section
-        .text(markdownText("*Results of extraction sample evaluation*")).fields(new ArrayList<>()));
+    SectionBlock mainBlock = section(section -> section.text(markdownText(
+        "*Results of extraction sample evaluation*\n" + "Branches: " + target + " vs " + source))
+        .fields(new ArrayList<>()));
     data.forEach((model, modelData) -> mainBlock.getFields()
         .add(markdownText(modelData.toMarkdownString())));
     blocks.add(mainBlock);

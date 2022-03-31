@@ -5,10 +5,13 @@ import static org.getalp.dbnary.stats.Statistics.countResourcesOfType;
 
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +21,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -117,7 +122,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   private final Set<Statement> heldBackStatements = new HashSet<>();
 
   protected int nbEntries = 0;
-  private String NS;
+  private final String NS;
   protected String WIKT;
   protected String currentEncodedLexicalEntryName;
 
@@ -136,14 +141,13 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   // private String currentSharedPronunciationLang;
 
   private HashMap<SimpleImmutableEntry<String, String>, HashSet<HashSet<PropertyObjectPair>>> heldBackOtherForms =
-      new HashMap<SimpleImmutableEntry<String, String>, HashSet<HashSet<PropertyObjectPair>>>();
+      new HashMap<>();
 
   // protected static HashMap<String, Property> nymPropertyMap = new HashMap<String, Property>();
-  protected static HashMap<String, PosAndType> posAndTypeValueMap =
-      new HashMap<String, PosAndType>();
+  protected static HashMap<String, PosAndType> posAndTypeValueMap = new HashMap<>();
 
   // Map of the String to lexvo language entity
-  private HashMap<String, Resource> languages = new HashMap<String, Resource>();
+  private HashMap<String, Resource> languages = new HashMap<>();
 
   public OntolexBasedRDFDataHandler(String longEditionLanguageCode, String tdbDir) {
     super();
@@ -329,7 +333,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // currentLexinfoPos = null;
     // currentWiktionaryPos = null;
     currentCanonicalForm = null;
-    currentSharedPronunciations = new HashSet<PronunciationPair>();
+    currentSharedPronunciations = new HashSet<>();
 
     // Create a dummy lexical entry that points to the one that corresponds to a part of speech
     currentMainLexEntry = getPageResource(wiktionaryPageName, true);
@@ -443,7 +447,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     // import other forms
     SimpleImmutableEntry<String, String> keyOtherForms =
-        new SimpleImmutableEntry<String, String>(currentPage.getName(), originalPOS);
+        new SimpleImmutableEntry<>(currentPage.getName(), originalPOS);
     HashSet<HashSet<PropertyObjectPair>> otherForms = heldBackOtherForms.get(keyOtherForms);
 
     // TODO: check that other forms point to valid entries and log faulty entries for wiktionary
@@ -804,11 +808,10 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       addTo.forEach(entry -> addOtherFormPropertiesToLexicalEntry(entry, props));
 
       // Second, we store the other form for future possible matching entries
-      SimpleImmutableEntry<String, String> key =
-          new SimpleImmutableEntry<String, String>(canonicalForm, pos);
+      SimpleImmutableEntry<String, String> key = new SimpleImmutableEntry<>(canonicalForm, pos);
 
       HashSet<HashSet<PropertyObjectPair>> otherForms =
-          heldBackOtherForms.computeIfAbsent(key, k -> new HashSet<HashSet<PropertyObjectPair>>());
+          heldBackOtherForms.computeIfAbsent(key, k -> new HashSet<>());
 
       otherForms.add(props);
     } else {
@@ -1038,14 +1041,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   private void promoteNymProperties() {
     StmtIterator entries = currentMainLexEntry.listProperties(DBnaryOnt.describes);
-    HashSet<Statement> toBeRemoved = new HashSet<Statement>();
-    ArrayList<Statement> toBeAdded = new ArrayList<Statement>();
+    HashSet<Statement> toBeRemoved = new HashSet<>();
+    ArrayList<Statement> toBeAdded = new ArrayList<>();
     while (entries.hasNext()) {
       Resource lu = entries.next().getResource();
       List<Statement> senses = lu.listProperties(OntolexOnt.sense).toList();
       if (senses.size() == 1) {
         Resource s = senses.get(0).getResource();
-        HashSet<Property> alreadyProcessedNyms = new HashSet<Property>();
+        HashSet<Property> alreadyProcessedNyms = new HashSet<>();
         for (NymRelation nymR : NymRelation.values()) {
           Property nymProp = nymR.getProperty();
           if (alreadyProcessedNyms.contains(nymProp)) {
@@ -1267,6 +1270,16 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // TODO: Add extractor version for the current dump
     metadataModel
         .add(metadataModel.createStatement(lexicon, DBnaryOnt.wiktionaryDumpVersion, dumpFilename));
+    try {
+      LocalDate date = LocalDate.parse(dumpFilename, DateTimeFormatter.BASIC_ISO_DATE);
+      Calendar dateCal =
+          new GregorianCalendar(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+      XSDDateTime jenaDate = new XSDDateTime(dateCal);
+      jenaDate.narrowType(XSDDatatype.XSDdate);
+      lexicon.addLiteral(DCTerms.modified, jenaDate);
+    } catch (DateTimeParseException e) {
+      log.trace("Dump String {} is not a date.", dumpFilename);
+    }
 
     // TODO: Add VOID description : see https://www.w3.org/TR/void/#access
     // :DBpedia a void:Dataset;

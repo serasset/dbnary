@@ -41,7 +41,8 @@ public class DBnary {
     }
   }
 
-  @Option(names = "--debug", scope = ScopeType.INHERIT) // option is shared with subcommands
+  @Option(names = "--debug", scope = ScopeType.INHERIT, split = ",") // option is shared with
+                                                                     // subcommands
   public void setDebug(String[] classes) {
     // Configure the slf4j-simple logger level for the specified parameters
     for (String clazz : classes) {

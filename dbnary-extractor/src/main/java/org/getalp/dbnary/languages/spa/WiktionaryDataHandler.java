@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryDataHandler extends PostTranslationDataHandler {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
   public WiktionaryDataHandler(String lang, String tdbDir) {
     super(lang, tdbDir);
@@ -89,10 +89,20 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
 
   private final static String posPatternString = "(?:verbo|sustantivo|adjetivo|adverbio)";
   private final static String glossWithPosValue =
-      "(?:^\\s*(?:como\\s+)?(" + posPatternString + ")\\s*$|" + "^.*\\((" + posPatternString
-          + ")\\)\\s*$|" + "^\\s*(" + posPatternString + "):.*$)";
-  private Pattern glossWithPossPattern = Pattern.compile(glossWithPosValue);
-  private Matcher glossWithPos = glossWithPossPattern.matcher("");
+      "(?:^\\s*(?:como\\s+)?(" + posPatternString + ")\\s*$|" //
+          + "^.*\\((" + posPatternString + ")\\)\\s*$|" //
+          + "^\\s*(" + posPatternString + "):.*$)";
+  private final Pattern glossWithPossPattern = Pattern.compile(glossWithPosValue);
+  private final Matcher glossWithPos = glossWithPossPattern.matcher("");
+
+  @Override
+  public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {
+    // TODO: the super implementation will register the translation to the lexical entry if there is
+    // only one defined in the current etymology, however, sometimes, translations are given for
+    // inflected forms (which are not extracted). Such translation should not be attached to
+    // anything.
+    super.registerTranslation(lang, currentGloss, usage, word);
+  }
 
   @Override
   protected List<Resource> getLexicalEntryUsingGloss(Resource structuredGloss) {
@@ -107,7 +117,11 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     if (null == gloss) {
       return res;
     }
-    glossWithPos.reset(gloss.trim());
+    addAllResourceOfPoS(res, gloss.toLowerCase().trim());
+    if (!res.isEmpty()) {
+      return res;
+    }
+    glossWithPos.reset(gloss.toLowerCase().trim());
     if (glossWithPos.matches()) {
       String pos = Stream.of(glossWithPos.group(1), glossWithPos.group(2), glossWithPos.group(3))
           .filter(Objects::nonNull).findFirst().orElse(null);

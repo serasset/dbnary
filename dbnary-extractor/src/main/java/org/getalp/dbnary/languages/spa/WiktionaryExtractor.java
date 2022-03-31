@@ -4,12 +4,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.wiki.ClassBasedFilter;
+import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Heading;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,20 +27,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: {{grafía alternativa|hogaño|nota1=más usada|leng=es}}: 2450 résultats, 500 pour *
   // '''Variante''', {{variantes si la prononciation est différente}}.
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected final static String languageSectionPatternString;
   protected final static String headerPatternString;
   protected final static String spanishDefinitionPatternString;
+  private final WiktionaryDataHandler spaWdh;
 
-  private static final int NODATA = 0;
-  private static final int TRADBLOCK = 1;
-  private static final int DEFBLOCK = 2;
-  private static final int HEADERBLOCK = 5;
-  private static final int IGNOREPOS = 6;
+  private enum EXTRACTION_STATE {
+    NODATA, TRADBLOCK, DEFBLOCK, HEADERBLOCK, IGNOREPOS, ETYMOLOGY
+  }
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
+    assert wdh instanceof WiktionaryDataHandler;
+    spaWdh = (WiktionaryDataHandler) wdh;
   }
 
 
@@ -52,13 +61,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
 
-    languageSectionPatternString = new StringBuilder().append("(?:").append("^\\s*\\{\\{")
-        .append("([\\p{Upper}\\-]*)(?:\\|([^\\}]*))?").append("\\}\\}").append(")|(?:")
-        .append("^==\\s*\\{\\{lengua\\|(.*)\\}\\}\\s*==\\s*$").append(")").toString();
+    languageSectionPatternString = "(?:" + "^\\s*\\{\\{" //
+        + "([\\p{Upper}\\-]*)(?:\\|([^\\}]*))?" //
+        + "\\}\\}" //
+        + ")|(?:" //
+        + "^==\\s*\\{\\{lengua\\|(.*)\\}\\}\\s*==\\s*$"//
+        + ")";
 
     languageSectionPattern = Pattern.compile(languageSectionPatternString, Pattern.MULTILINE);
-    multilineMacroPatternString = new StringBuilder().append("\\{\\{")
-        .append("([^\\}\\|]*)(?:\\|([^\\}]*))?").append("\\}\\}").toString();
+    multilineMacroPatternString = "\\{\\{" + "([^\\}\\|]*)(?:\\|([^\\}]*))?" //
+        + "\\}\\}";
 
     headerPatternString = new StringBuilder().append("(?:").append("^==([^=].*)==\\s*$")
         .append(")|(?:").append("^===([^=].*)===\\s*$").append(")|(?:")
@@ -136,6 +148,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   }
 
+
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
@@ -147,42 +160,92 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         new Locale("es"), "/${image}", "/${title}", glossFilter);
   }
 
+
   @Override
   public void extractData() {
     wdh.initializePageExtraction(getWiktionaryPageName());
-    Matcher l1 = languageSectionPattern.matcher(pageContent);
-    int spaStart = -1;
-    while (l1.find()) {
-      if (-1 != spaStart) {
-        extractSpanishData(spaStart, l1.start());
-        spaStart = -1;
-      }
-      if (isSpanish(l1)) {
-        spaStart = l1.end();
-      }
-    }
-    if (-1 != spaStart) {
-      extractSpanishData(spaStart, pageContent.length());
-    }
+    WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
+    extractData(page);
     wdh.finalizePageExtraction();
   }
 
-  private boolean isSpanish(Matcher l1) {
-    return (l1.group(1) != null && l1.group(1).toLowerCase().equals("es")
-        || (l1.group(3) != null && l1.group(3).toLowerCase().equals("es")));
+  public void extractData(WikiText page) {
+    WikiEventsSequence tokens =
+        page.filteredTokens(new ClassBasedFilter().allowHeading().allowTemplates());
+    int startOfLgSection = -1;
+    String sectionLanguage = null;
+    for (Token t : tokens) {
+      String lg;
+      if (null != (lg = languageHeading(t))) {
+        if (-1 != startOfLgSection) {
+          extractLanguageData(startOfLgSection, t.getBeginIndex(), sectionLanguage);
+        }
+        startOfLgSection = t.getEndIndex();
+        sectionLanguage = lg;
+      }
+    }
+    if (-1 != startOfLgSection) {
+      extractLanguageData(startOfLgSection, pageContent.length(), sectionLanguage);
+    }
+  }
+
+  private static final Pattern obsoleteLanguageTmplPattern =
+      Pattern.compile("(\\p{Upper}{2,3})-ES");
+  private static final Matcher obsoleteLanguage = obsoleteLanguageTmplPattern.matcher("");
+
+  /**
+   * return the language code iff the token represent a header for a language section. return null
+   * in all other cases. returns "" if the language code is unknown but a language section is found.
+   *
+   * @param t : the token to be checked and from which the language should be extracted
+   * @return the language code or null
+   */
+  private String languageHeading(Token t) {
+    if (t instanceof Template) {
+      if ("ES".equals(t.asTemplate().getName())) {
+        return "es";
+      }
+      obsoleteLanguage.reset(t.asTemplate().getName());
+      if (obsoleteLanguage.matches()) {
+        String lg = obsoleteLanguage.group(1);
+        return lg.toLowerCase();
+      }
+    } else if (t instanceof Heading) {
+      Heading h = t.asHeading();
+      // Look for the language template
+      Optional<Template> lt =
+          h.getContent().wikiTokens().stream().filter(tok -> tok instanceof Template)
+              .map(Token::asTemplate).filter(tok -> "lengua".equals(tok.getName())).findFirst();
+      if (lt.isPresent()) {
+        String lg = lt.get().getParsedArg("1");
+        if (null != lg) {
+          return lg.toLowerCase();
+        } else {
+          log.debug("lengua template with no language code {} in {}", lt, getWiktionaryPageName());
+          return "";
+        }
+      } else {
+        if (h.getLevel() == 2) {
+          log.trace("lvl 2 heading with no language {} in {}", h, getWiktionaryPageName());
+        }
+        return null;
+      }
+    }
+    return null;
   }
 
 
-  private int state = NODATA;
+  private EXTRACTION_STATE state = EXTRACTION_STATE.NODATA;
   private int definitionBlockStart = -1;
   private int orthBlockStart = -1;
   private int translationBlockStart = -1;
   private int translationLevel = -1;
   private int headerBlockStart = -1;
+  private int etymologyBlockStart = -1;
 
 
   void gotoNoData(Matcher m) {
-    state = NODATA;
+    state = EXTRACTION_STATE.NODATA;
   }
 
   private int getHeaderLevel(Matcher m) {
@@ -213,14 +276,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (l3 != null) {
       return l3;
     }
-    if (l4 != null) {
-      return l4;
-    }
-    return null;
+    return l4;
   }
 
   private boolean isHeader(Matcher m) {
     return getHeaderLabel(m) != null;
+  }
+
+  private boolean isEtymology(Matcher m) {
+    String headerLabel = getHeaderLabel(m);
+    if (null == headerLabel)
+      return false;
+    return headerLabel.toLowerCase().trim().startsWith("etimología");
   }
 
   // Part of speech section (Def block)
@@ -248,7 +315,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   void gotoDefBlock(Matcher m, String pos) {
-    state = DEFBLOCK;
+    state = EXTRACTION_STATE.DEFBLOCK;
     definitionBlockStart = m.end();
     wdh.initializeLexicalEntry(pos);
   }
@@ -276,7 +343,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   void gotoTradBlock(Matcher m) {
     translationBlockStart = m.end();
     translationLevel = getHeaderLevel(m);
-    state = TRADBLOCK;
+    state = EXTRACTION_STATE.TRADBLOCK;
   }
 
   void leaveTradBlock(Matcher m) {
@@ -287,7 +354,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void gotoHeaderBlock(Matcher m) {
-    state = HEADERBLOCK;
+    state = EXTRACTION_STATE.HEADERBLOCK;
     // The header starts at the beginning of the region.
     headerBlockStart = m.regionStart();
   }
@@ -297,18 +364,41 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     headerBlockStart = -1;
   }
 
+  private void gotoEtymologyBlock(Matcher m) {
+    state = EXTRACTION_STATE.ETYMOLOGY;
+    // The header starts at the beginning of the region.
+    etymologyBlockStart = m.regionStart();
+  }
+
+  private void leaveEtymologyBlock(Matcher m) {
+    spaWdh.extractEtymology();
+    etymologyBlockStart = -1;
+  }
+
   private void gotoIgnorePos() {
-    state = IGNOREPOS;
+    state = EXTRACTION_STATE.IGNOREPOS;
   }
 
   // TODO: variants, pronunciations and other elements are common to the different entries in the
   // page.
-  private void extractSpanishData(int startOffset, int endOffset) {
-    wdh.initializeLanguageSection("es");
+  private void extractLanguageData(int startOffset, int endOffset, String language) {
+    if (null == language || "".equals(language)) {
+      return;
+    }
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !"es".equals(language)) {
+      return;
+    }
+    String normalizedLanguage = validateAndStandardizeLanguageCode(language);
+    if (normalizedLanguage == null) {
+      log.trace("Ignoring language section {} for {}", language, getWiktionaryPageName());
+      return;
+    }
+
+    wdh.initializeLanguageSection(language);
     Matcher m = sectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
     gotoHeaderBlock(m);
-    String pos = null;
+    String pos;
     while (m.find()) {
       switch (state) {
         case NODATA:
@@ -320,8 +410,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
               gotoDefBlock(m, pos);
             }
+          } else if (isEtymology(m)) {
+            gotoEtymologyBlock(m);
           } else if (isHeader(m)) {
-            // Level 2 header that are not a correct POS, or Etimology or Pronunciation are
+            // Level 2 header that are not a correct POS, or Pronunciation are
             // considered as ignorable POS.
             // unknownHeaders.add(m.group(0));
             gotoNoData(m);
@@ -341,6 +433,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
               gotoDefBlock(m, pos);
             }
+          } else if (isEtymology(m)) {
+            leaveDefBlock(m);
+            gotoEtymologyBlock(m);
           } else if (isHeader(m)) {
             leaveDefBlock(m);
             gotoNoData(m);
@@ -359,6 +454,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
               gotoDefBlock(m, pos);
             }
+          } else if (isEtymology(m)) {
+            leaveTradBlock(m);
+            gotoEtymologyBlock(m);
           } else if (isHeader(m)) {
             leaveTradBlock(m);
             gotoNoData(m);
@@ -377,6 +475,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
               gotoDefBlock(m, pos);
             }
+          } else if (isEtymology(m)) {
+            leaveHeaderBlock(m);
+            gotoEtymologyBlock(m);
           } else if (isHeader(m)) {
             leaveHeaderBlock(m);
             gotoNoData(m);
@@ -392,8 +493,31 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
               gotoDefBlock(m, pos);
             }
+          } else if (isEtymology(m)) {
+            gotoEtymologyBlock(m);
           } else if (isHeader(m)) {
             // gotoIgnorePos();
+          } else {
+            // unknownHeaders.add(m.group(0));
+          }
+          break;
+        case ETYMOLOGY:
+          if (isTranslation(m)) {
+            leaveEtymologyBlock(m);
+            gotoTradBlock(m);
+          } else if (null != (pos = getValidPOS(m))) {
+            leaveEtymologyBlock(m);
+            if (pos.length() == 0) {
+              gotoIgnorePos();
+            } else {
+              gotoDefBlock(m, pos);
+            }
+          } else if (isEtymology(m)) {
+            leaveEtymologyBlock(m);
+            gotoEtymologyBlock(m);
+          } else if (isHeader(m)) {
+            leaveEtymologyBlock(m);
+            gotoNoData(m);
           } else {
             // unknownHeaders.add(m.group(0));
           }
@@ -426,8 +550,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   private void extractTranslations(int startOffset, int endOffset, int translationLevel) {
-    if (log.isTraceEnabled())
+    if (log.isTraceEnabled()) {
       log.trace("TranslationLevel = {} in {}", translationLevel, getWiktionaryPageName());
+    }
     // TODO: maybe take the translation level into account (see issue #87)
     String transCode = pageContent.substring(startOffset, endOffset);
     translationExtractor.setPageName(getWiktionaryPageName());

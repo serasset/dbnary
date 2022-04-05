@@ -53,7 +53,9 @@ public class GreekDefinitionExtractorWikiModel extends ExpandAllWikiModel {
 
   static String patched_ετ = null;
 
+  /* Old code as the template (and others) has been fixed in wiktionary
   @Override
+
   public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
       throws WikiModelContentException {
     // Patch Module:labels/data as the passed labels are incorrectly trimed by bliki.
@@ -71,4 +73,5 @@ public class GreekDefinitionExtractorWikiModel extends ExpandAllWikiModel {
       return super.getRawWikiContent(parsedPagename, map);
     }
   }
+     */
 }

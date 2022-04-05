@@ -183,7 +183,9 @@ for lg in ${LANGUAGES}; do
     file=`load $lg $ft`
     graph=`getGraph $lg $ft`
     echo >&2 "Loading $file in graph $graph"
-    bzcat $file | ${FUSEKI_HOME}/tdb2.tdbloader --loc ${DBNARY_TDB} --graph ${graph} --
+    ## Do not specify a grph until we migrate to JENA 4.5.0+
+    # bzcat $file | ${FUSEKI_HOME}/tdb2.tdbloader --loc ${DBNARY_TDB} --graph ${graph} --syntax=Turtle --
+    bzcat $file | ${FUSEKI_HOME}/tdb2.tdbloader --loc ${DBNARY_TDB} --syntax=Turtle --
     if [[ $file =~ ^${DBNARY_TMP} ]]; then
       rm -f $file
     fi

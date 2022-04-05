@@ -5,6 +5,9 @@ serasset/dbnary-server container.
 
 It will create configuration files (assemblies) and load DBnary data in a TDB2 database.
 
+### Limitation 
+Due to a bug in Jena 4.4.0, all the files will be loaded to the default graph.
+
 ## Usage
 
 ### Loading everything from DBnary dataset

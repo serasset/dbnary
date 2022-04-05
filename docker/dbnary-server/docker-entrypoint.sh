@@ -36,7 +36,9 @@ fi
 
 # $ADMIN_PASSWORD can always override
 if [ -n "$ADMIN_PASSWORD" ] ; then
-  sed -i "s/^admin=.*/admin=$ADMIN_PASSWORD/" "$FUSEKI_BASE/shiro.ini"
+  cp shiro.ini shiro.ini.bckup
+  awk "{ sub(/admin=.*$/,\"admin=${ADMIN_PASSWORD}\"); print }" < shiro.ini.bckup > shiro.ini
+  # sed -i "s/^admin=.*/admin=$ADMIN_PASSWORD/" "$FUSEKI_BASE/shiro.ini"
 fi
 
 exec "$@"

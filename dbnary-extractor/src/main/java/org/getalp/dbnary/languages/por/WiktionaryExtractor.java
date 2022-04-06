@@ -20,7 +20,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String languageSectionPatternString =
       "(?:=\\s*\\{\\{\\-([^=]*)\\-\\}\\}\\s*=)|(?:={1,5}\\s*([^=\\{\\]\\|\n\r]+)\\s*={1,5})";
-  protected final static String level1HeaderPatternString = "^=([^=].*[^=])=$";
+  protected final static String level1HeaderPatternString = "^=([^=].*[^=])=\\s*$";
 
   protected final static String sectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
   private final int NODATA = 0;

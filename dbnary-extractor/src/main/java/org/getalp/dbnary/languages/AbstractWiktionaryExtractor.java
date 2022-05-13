@@ -578,7 +578,9 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   public void populateMetadata(String dumpFilename, String extractorVersion) {
     // LIME is global to endolexicon and exolexicon
     wdh.populateMetadata(wdh.getEndolexFeatureBox(ExtractionFeature.LIME),
-        wdh.getEndolexFeatureBox(ExtractionFeature.MAIN), dumpFilename, extractorVersion);
+        wdh.getEndolexFeatureBox(ExtractionFeature.MAIN), dumpFilename, extractorVersion, false);
+    wdh.populateMetadata(wdh.getExolexFeatureBox(ExtractionFeature.LIME),
+        wdh.getExolexFeatureBox(ExtractionFeature.MAIN), dumpFilename, extractorVersion, true);
   }
 
 }

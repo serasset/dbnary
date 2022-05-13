@@ -436,6 +436,7 @@ WHERE {
         dct:language ?lg;
         ontolex:canonicalForm / ontolex:writtenRep ?wf;
         lexinfo:partOfSpeech ?pos.
+      FILTER (REGEX(STR(?le), "^http://kaiko.getalp.org/dbnary/.../[^_]")) .
       } GROUP BY ?trans
         HAVING (COUNT(*) = 1)
     }

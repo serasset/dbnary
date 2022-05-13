@@ -243,8 +243,9 @@ DB.DBA.XML_SET_NS_DECL ('jdm', 'http://kaiko.getalp.org/jdm/', 2);
 DB.DBA.XML_SET_NS_DECL ('dbnstats', 'http://kaiko.getalp.org/dbnary/statistics/', 2);
 
 -- Allow for federated queries through DBnary end point
-grant SPARQL_LOAD_SERVICE_DATA to "SPARQL";
-grant SPARQL_SPONGE to "SPARQL";
+GRANT SPARQL_LOAD_SERVICE_DATA to "SPARQL";
+GRANT SPARQL_SPONGE to "SPARQL";
+GRANT "SPARQL_SELECT_FED" TO "SPARQL";
 
 checkpoint;
 -- Load Core ontologies

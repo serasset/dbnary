@@ -30,6 +30,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ReifiedStatement;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -1279,6 +1280,13 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       lexicon.addLiteral(DCTerms.modified, jenaDate);
     } catch (DateTimeParseException e) {
       log.trace("Dump String {} is not a date.", dumpFilename);
+    }
+
+    // Connect all lexical entries to the dataset
+    for ( final ResIterator entries = sourceModel.listSubjectsWithProperty(RDF.type,
+        OntolexOnt.LexicalEntry); entries.hasNext(); ) {
+      final Resource entry = entries.next();
+      lexicon.addProperty(LimeOnt.entry, entry);
     }
 
     // TODO: Add VOID description : see https://www.w3.org/TR/void/#access

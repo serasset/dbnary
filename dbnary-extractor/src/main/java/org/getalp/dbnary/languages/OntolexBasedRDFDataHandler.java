@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.datatypes.xsd.XSDDateTime;
@@ -1232,12 +1232,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         getPrefix() + "___" + shortEditionLanguageCode + uriSuffix, LimeOnt.Lexicon);
     metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.title,
         ISO639_3.sharedInstance.getLanguageNameInEnglish(shortEditionLanguageCode)
-            + (isExolex ? " Exolex" : "")
-            + " DBnary Dataset",
+            + (isExolex ? " Exolex" : "") + " DBnary Dataset",
         "en"));
-    metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.title, "DBnary "
-             + (isExolex ? "Exolex " : "")
-        + ISO639_3.sharedInstance.getLanguageNameInFrench(shortEditionLanguageCode), "fr"));
+    metadataModel
+        .add(
+            metadataModel.createStatement(lexicon, DCTerms.title,
+                "DBnary " + (isExolex ? "Exolex " : "")
+                    + ISO639_3.sharedInstance.getLanguageNameInFrench(shortEditionLanguageCode),
+                "fr"));
     metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.description,
         "This lexicon is extracted from the original wiktionary data that can be found"
             + " in http://" + shortEditionLanguageCode
@@ -1260,18 +1262,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         "http://kaiko.getalp.org/static/ontolex/" + shortEditionLanguageCode));
 
     if (isExolex) {
-      metadataModel
-          .add(metadataModel.createStatement(lexicon, LimeOnt.language, "mul"));
-      metadataModel
-          .add(metadataModel.createStatement(lexicon, DCTerms.language,
-              metadataModel.createResource(LEXVO + "mul")));
+      metadataModel.add(metadataModel.createStatement(lexicon, LimeOnt.language, "mul"));
+      metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.language,
+          metadataModel.createResource(LEXVO + "mul")));
     } else {
       metadataModel
-          .add(metadataModel.createStatement(lexicon, LimeOnt.language,
-              shortEditionLanguageCode));
+          .add(metadataModel.createStatement(lexicon, LimeOnt.language, shortEditionLanguageCode));
       metadataModel
-          .add(metadataModel.createStatement(lexicon, DCTerms.language,
-              lexvoExtractedLanguage));
+          .add(metadataModel.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
     }
 
     metadataModel.add(
@@ -1296,8 +1294,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     // Connect all lexical entries to the dataset
     int entryCount = 0;
-    for ( final ResIterator entries = sourceModel.listSubjectsWithProperty(RDF.type,
-        OntolexOnt.LexicalEntry); entries.hasNext(); ) {
+    for (final ResIterator entries =
+        sourceModel.listSubjectsWithProperty(RDF.type, OntolexOnt.LexicalEntry); entries
+            .hasNext();) {
       final Resource entry = entries.next();
       entryCount++;
       lexicon.addProperty(LimeOnt.entry, entry);

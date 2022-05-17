@@ -53,25 +53,18 @@ public class GreekDefinitionExtractorWikiModel extends ExpandAllWikiModel {
 
   static String patched_ετ = null;
 
-  /* Old code as the template (and others) has been fixed in wiktionary
-  @Override
-
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
-    // Patch Module:labels/data as the passed labels are incorrectly trimed by bliki.
-    if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)
-        && "ετ".equals(parsedPagename.pagename)) {
-      // Patch the template that introduces spaces and newline that play havoc with bliki and Lua
-      if (patched_ετ == null) {
-        String rawText = super.getRawWikiContent(parsedPagename, map);
-        if (null != rawText)
-          patched_ετ =
-              rawText.replaceAll("}\n\\|", "}<!--\n-->|").replaceAll("-->\n\\|", "\n-->\\|");
-      }
-      return patched_ετ;
-    } else {
-      return super.getRawWikiContent(parsedPagename, map);
-    }
-  }
-     */
+  /*
+   * Old code as the template (and others) has been fixed in wiktionary
+   * 
+   * @Override
+   * 
+   * public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws
+   * WikiModelContentException { // Patch Module:labels/data as the passed labels are incorrectly
+   * trimed by bliki. if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY) &&
+   * "ετ".equals(parsedPagename.pagename)) { // Patch the template that introduces spaces and
+   * newline that play havoc with bliki and Lua if (patched_ετ == null) { String rawText =
+   * super.getRawWikiContent(parsedPagename, map); if (null != rawText) patched_ετ =
+   * rawText.replaceAll("}\n\\|", "}<!--\n-->|").replaceAll("-->\n\\|", "\n-->\\|"); } return
+   * patched_ετ; } else { return super.getRawWikiContent(parsedPagename, map); } }
+   */
 }

@@ -38,12 +38,12 @@
 
     <junit4.version>4.13.2</junit4.version>
     <junit5.version>5.8.2</junit5.version>
-    <jaxb.api.version>2.3.0</jaxb.api.version>
-    <jaxb.core.version>2.3.0.1</jaxb.core.version>
+    <!--jaxb.api.version>2.3.0</jaxb.api.version>
+    <jaxb.core.version>2.3.0.1</jaxb.core.version-->
+    <jaxb.version>3.0.1</jaxb.version>
     <javax.activation.version>1.2.0</javax.activation.version>
     <slf4j.version>1.7.36</slf4j.version>
-    <!--jena.version>3.13.1</jena.version-->
-    <jena.version>4.4.0</jena.version>
+    <jena.version>4.5.0</jena.version>
     <scalaBinaryVersion>2.13</scalaBinaryVersion>
 
 
@@ -237,25 +237,25 @@
       <!-- Java 8 = JAXB version 2.2.8 -->
       <!-- Java 9 = JAXB version 2.3.0 -->
       <!-- These dependencies should be used if using the JDK 9+ -->
-      <dependency>
+      <!--dependency>
         <groupId>com.sun.activation</groupId>
         <artifactId>javax.activation</artifactId>
         <version>${javax.activation.version}</version>
-      </dependency>
+      </dependency-->
       <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>${jaxb.api.version}</version>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>${jaxb.version}</version>
       </dependency>
-      <dependency>
+      <!--dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-core</artifactId>
         <version>${jaxb.core.version}</version>
-      </dependency>
+      </dependency-->
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
-        <version>${jaxb.core.version}</version>
+        <version>${jaxb.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>

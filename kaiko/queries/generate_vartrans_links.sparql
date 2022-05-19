@@ -20,7 +20,7 @@ SELECT (sample(?sle) as ?sle) (sample(?le) as ?tle) WHERE {
 LIMIT 10
 
 
-SELECT (sample(?sle) as ?sle), (count(?le) as ?ntle) WHERE {
+SELECT (sample(?sle) as ?sle), (count(?le) as ?ntle)  WHERE {
       ?trans
         a dbnary:Translation ;
         dbnary:isTranslationOf ?sle ;
@@ -34,3 +34,108 @@ SELECT (sample(?sle) as ?sle), (count(?le) as ?ntle) WHERE {
         lexinfo:partOfSpeech ?pos.
       } GROUP BY ?trans
 LIMIT 10
+
+SELECT (sample(?sle) as ?sle)  WHERE {
+      ?trans
+        a dbnary:Translation ;
+        dbnary:isTranslationOf ?sle ;
+        dbnary:targetLanguage ?lg ;
+        dbnary:writtenForm ?wf.
+      ?sle a ontolex:LexicalEntry;
+        lexinfo:partOfSpeech ?pos.
+      { select (count(?le) as ?ntle), (GROUP_CONCAT(?le ; SEPARATOR=",") as ?les) {
+         ?le a ontolex:LexicalEntry;
+         dct:language ?lg;
+         ontolex:canonicalForm / ontolex:writtenRep ?wf;
+         lexinfo:partOfSpeech ?pos.
+      } GROUP BY ?lg
+      }
+      } GROUP BY ?trans
+LIMIT 10
+
+SPARQL SELECT (sample(?sle) as ?sle), (count(?le) as ?ntle), GROUP_CONCAT(?le; separator="\t") as ?tle WHERE {
+    ?trans
+    a dbnary:Translation ;
+    dbnary:isTranslationOf ?sle ;
+    dbnary:targetLanguage ?lg ;
+    dbnary:writtenForm ?wf.
+    ?sle a ontolex:LexicalEntry;
+    lexinfo:partOfSpeech ?pos.
+    ?le a ontolex:LexicalEntry;
+    dct:language ?lg;
+    ontolex:canonicalForm / ontolex:writtenRep ?wf;
+    lexinfo:partOfSpeech ?pos.
+    } GROUP BY ?trans
+      HAVING (COUNT(?le) > 1)
+                           ;
+
+## Generating vartrans links for non homonimous lexical entries
+
+SPARQL INSERT
+      { GRAPH <http://kaiko.getalp.org/dbnary/vartrans> {?sle vartrans:translatableAs ?tle} }
+WHERE {
+      {
+      SELECT (sample(?sle) as ?sle), (sample(?le) as ?tle)
+          WHERE {
+                                                                   ?trans
+                                                                   a dbnary:Translation ;
+                                                                   dbnary:isTranslationOf ?sle ;
+                                                                   dbnary:targetLanguage ?lg ;
+                                                                   dbnary:writtenForm ?wf.
+                                                                   ?sle a ontolex:LexicalEntry;
+                                                                   lexinfo:partOfSpeech ?pos.
+                                                                   ?le a ontolex:LexicalEntry;
+                                                                   dct:language ?lg;
+                                                                   ontolex:canonicalForm / ontolex:writtenRep ?wf;
+                                                                                                              lexinfo:partOfSpeech ?pos.
+                                                                   } GROUP BY ?trans
+                                                                     HAVING (COUNT(*) = 1)
+      }
+      };
+
+## How many translation are linked to a page (and not a LexicalEntry ?
+select ?g, count(?trans) WHERE { ?trans a dbnary:Translation ; dbnary:isTranslationOf / a dbnary:Page . BIND (REPLACE(STR(?trans), "/__.*", "") as ?g) } group by ?g
+
+## g                                                                                 callret-1
+#LONG VARCHAR                                                                      LONG VARCHAR
+#_______________________________________________________________________________
+#
+#http://kaiko.getalp.org/dbnary/spa                                                33071
+#http://kaiko.getalp.org/dbnary/ita                                                27743
+
+## What are the translation that point to a homonymous target, with which complexity and
+## what are the elligible target lexical entries.
+
+PREFIX dbnary: <http://kaiko.getalp.org/dbnary#>
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+PREFIX lexinfo: <http://www.lexinfo.net/ontology/2.0/lexinfo#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX dbnary: <http://kaiko.getalp.org/dbnary#>
+
+select ?trans
+    (SAMPLE(?wf) as ?targetwf)
+    (SAMPLE(?pos) as ?partOfSpeech)
+    (COUNT (DISTINCT (?tle)) as ?nbtargets)
+    (GROUP_CONCAT(?tle; SEPARATOR=";") as ?targets)
+WHERE {
+      {
+      SELECT * WHERE {
+                     ?trans
+                     a dbnary:Translation ;
+                     dbnary:isTranslationOf ?sle ;
+                     dbnary:targetLanguage ?lg ;
+                     dbnary:writtenForm ?wf .
+                     ?sle a ontolex:LexicalEntry ;
+                     lexinfo:partOfSpeech ?pos .
+                     }
+      }
+      ?tle a ontolex:LexicalEntry ;
+      dct:language ?lg ;
+      ontolex:canonicalForm / ontolex:writtenRep ?wf ;
+      lexinfo:partOfSpeech ?pos .
+        ## Remove entries from exolex dictionaries
+      FILTER (REGEX(STR(?tle), "^http://kaiko.getalp.org/dbnary/.../[^_]")).
+      }
+GROUP BY ?trans
+HAVING (COUNT(?tle) > 1)
+ORDER BY DESC(?nbtargets)

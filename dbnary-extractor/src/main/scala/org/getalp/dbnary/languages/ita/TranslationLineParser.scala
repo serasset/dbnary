@@ -42,7 +42,7 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
     }
   }
 
-  def links = translationAsLink.+ ^^ {
+  def links: Parser[String] = translationAsLink.+ ^^ {
     case list => list filter {
       _.nonEmpty
     } mkString (" ")

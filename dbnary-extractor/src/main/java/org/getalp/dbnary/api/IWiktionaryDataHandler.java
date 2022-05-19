@@ -151,7 +151,7 @@ public interface IWiktionaryDataHandler {
   Resource currentLexinfoPos();
 
   void populateMetadata(Model metadataModel, Model sourceModel, String dumpFilename,
-      String extractorVersion);
+      String extractorVersion, boolean isExolex);
 
   void buildDatacubeObservations(String l, TranslationGlossesStat translationGlossesStat, Stat stat,
       String dumpFileVersion);

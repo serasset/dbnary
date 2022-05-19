@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>3.0.6.1</version>
+    <version>3.0.7</version>
   </parent>
   <artifactId>dbnary-extractor</artifactId>
   <packaging>jar</packaging>
@@ -64,14 +64,14 @@
             <artifactId>log4j</artifactId>
           </exclusion>
           <!-- older jackson is used in 3.13.1 version of jena -->
-          <exclusion>
+          <!--exclusion>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
           </exclusion>
           <exclusion>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-          </exclusion>
+          </exclusion-->
         <!-- older commons-compress is used in 3.13.1 version of jena -->
         <exclusion>
           <groupId>org.apache.commons</groupId>
@@ -110,19 +110,14 @@
     <!-- Java 8 = JAXB version 2.2.8 -->
     <!-- Java 9 = JAXB version 2.3.0 -->
     <!-- These dependencies should be used if using the JDK 9+ -->
-    <dependency>
+    <!--dependency>
       <groupId>com.sun.activation</groupId>
       <artifactId>javax.activation</artifactId>
       <scope>runtime</scope>
-    </dependency>
+    </dependency-->
     <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-core</artifactId>
-      <scope>runtime</scope>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
     </dependency>
     <dependency>
       <groupId>com.sun.xml.bind</groupId>

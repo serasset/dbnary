@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.datatypes.xsd.XSDDateTime;
@@ -30,6 +30,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ReifiedStatement;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -1221,19 +1222,24 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   /////// METADATA /////////
   @Override
   public void populateMetadata(Model metadataModel, Model sourceModel, String dumpFilename,
-      String extractorVersion) {
+      String extractorVersion, boolean isExolex) {
     if (null == metadataModel) {
       return;
     }
+    String uriSuffix = isExolex ? "_dbnary_exolex_dataset" : "_dbnary_dataset";
     Resource creator = metadataModel.createResource("http://serasset.bitbucket.io/");
     Resource lexicon = metadataModel.createResource(
-        getPrefix() + "___" + shortEditionLanguageCode + "_dbnary_dataset", LimeOnt.Lexicon);
+        getPrefix() + "___" + shortEditionLanguageCode + uriSuffix, LimeOnt.Lexicon);
     metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.title,
         ISO639_3.sharedInstance.getLanguageNameInEnglish(shortEditionLanguageCode)
-            + " DBnary Dataset",
+            + (isExolex ? " Exolex" : "") + " DBnary Dataset",
         "en"));
-    metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.title, "Dataset DBnary "
-        + ISO639_3.sharedInstance.getLanguageNameInFrench(shortEditionLanguageCode), "fr"));
+    metadataModel
+        .add(
+            metadataModel.createStatement(lexicon, DCTerms.title,
+                "DBnary " + (isExolex ? "Exolex " : "")
+                    + ISO639_3.sharedInstance.getLanguageNameInFrench(shortEditionLanguageCode),
+                "fr"));
     metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.description,
         "This lexicon is extracted from the original wiktionary data that can be found"
             + " in http://" + shortEditionLanguageCode
@@ -1255,12 +1261,17 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     metadataModel.add(metadataModel.createStatement(lexicon, FOAF.page,
         "http://kaiko.getalp.org/static/ontolex/" + shortEditionLanguageCode));
 
-    metadataModel
-        .add(metadataModel.createStatement(lexicon, LimeOnt.language, shortEditionLanguageCode));
-    metadataModel
-        .add(metadataModel.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
-    metadataModel
-        .add(metadataModel.createLiteralStatement(lexicon, LimeOnt.lexicalEntries, nbEntries()));
+    if (isExolex) {
+      metadataModel.add(metadataModel.createStatement(lexicon, LimeOnt.language, "mul"));
+      metadataModel.add(metadataModel.createStatement(lexicon, DCTerms.language,
+          metadataModel.createResource(LEXVO + "mul")));
+    } else {
+      metadataModel
+          .add(metadataModel.createStatement(lexicon, LimeOnt.language, shortEditionLanguageCode));
+      metadataModel
+          .add(metadataModel.createStatement(lexicon, DCTerms.language, lexvoExtractedLanguage));
+    }
+
     metadataModel.add(
         metadataModel.createStatement(lexicon, LimeOnt.linguisticCatalog, LexinfoOnt.getURI()));
     metadataModel
@@ -1280,6 +1291,19 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     } catch (DateTimeParseException e) {
       log.trace("Dump String {} is not a date.", dumpFilename);
     }
+
+    // Connect all lexical entries to the dataset
+    int entryCount = 0;
+    for (final ResIterator entries =
+        sourceModel.listSubjectsWithProperty(RDF.type, OntolexOnt.LexicalEntry); entries
+            .hasNext();) {
+      final Resource entry = entries.next();
+      entryCount++;
+      lexicon.addProperty(LimeOnt.entry, entry);
+    }
+
+    metadataModel
+        .add(metadataModel.createLiteralStatement(lexicon, LimeOnt.lexicalEntries, entryCount));
 
     // TODO: Add VOID description : see https://www.w3.org/TR/void/#access
     // :DBpedia a void:Dataset;

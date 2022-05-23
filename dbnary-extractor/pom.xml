@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>3.0.8-SNAPSHOT</version>
+    <version>3.0.8-chinese-SNAPSHOT</version>
   </parent>
   <artifactId>dbnary-extractor</artifactId>
   <packaging>jar</packaging>

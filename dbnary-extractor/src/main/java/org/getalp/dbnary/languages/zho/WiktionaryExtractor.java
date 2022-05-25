@@ -16,7 +16,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private static final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-
+  private static  String testString="test";
   protected final static String wikiSectionPatternString = "^={3,}\\s*([^=]*)\\s*={3,}\\s*$";
   protected final static String level2HeaderPatternString = "^==([^=].*[^=])==\\s*$";
   protected final static String pronounciationPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";

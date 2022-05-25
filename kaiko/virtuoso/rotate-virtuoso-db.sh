@@ -356,16 +356,37 @@ SELECT * FROM DB.DBA.LOAD_LIST;
 echoln "========================================================" ;
 echoln "=== Loading previously shown graphs                  ===" ;
 echoln "========================================================" ;
+END
 
-rdf_loader_run();
+echo "============================================="
+echo "FORKING 4 PARALLEL LOADERS"
+echo "============================================="
 
+echo "rdf_loader_run();" > ./run_loader.rq
+echo "forking 4 loaders"
+isql $SERVERPORT dba "$password" < ./run_loader.rq &
+isql $SERVERPORT dba "$password" < ./run_loader.rq &
+isql $SERVERPORT dba "$password" < ./run_loader.rq &
+isql $SERVERPORT dba "$password" < ./run_loader.rq &
+
+echo "waiting for loaders to finnish"
+wait;
+echo "All loaders done"
+
+rm ./run_loader.rq
+
+echo "============================================="
+echo "COMMITING LOADS"
+echo "============================================="
+
+isql $SERVERPORT dba "$password" <<END
 -- do nothing too heavy while data is loading
 checkpoint;
 commit WORK;
 checkpoint;
 
 echoln "========================================================" ;
-echoln "=== Error while loading graphs                       ===" ;
+echoln "=== Looking for errors while loading graphs                       ===" ;
 echoln "========================================================" ;
 -- Check the set of loaded files to see if errors appeared during load.
 select * from DB.DBA.LOAD_LIST where ll_error IS NOT NULL;

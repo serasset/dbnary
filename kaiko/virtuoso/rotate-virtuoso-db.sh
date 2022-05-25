@@ -433,7 +433,7 @@ WHERE {
       ?sle a ontolex:LexicalEntry;
         lexinfo:partOfSpeech ?pos.
       ?le a ontolex:LexicalEntry;
-        dct:language ?lg;
+        dcterms:language ?lg;
         ontolex:canonicalForm / ontolex:writtenRep ?wf;
         lexinfo:partOfSpeech ?pos.
       FILTER (REGEX(STR(?le), "^http://kaiko.getalp.org/dbnary/.../[^_]")) .

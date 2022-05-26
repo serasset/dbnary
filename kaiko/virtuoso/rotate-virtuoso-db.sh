@@ -436,9 +436,9 @@ WHERE {
         lexinfo:partOfSpeech ?pos.
       ?le a ontolex:LexicalEntry;
         dcterms:language ?lg;
-        ^lime:entry/dcterms:language ?lg;
         rdfs:label ?wf;
         lexinfo:partOfSpeech ?pos.
+      FILTER (REGEX(STR(?le), "^http://kaiko.getalp.org/dbnary/.../[^_]")) .
       } GROUP BY ?trans
         HAVING (COUNT(*) = 1)
     }

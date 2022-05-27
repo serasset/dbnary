@@ -84,7 +84,10 @@ function rotate_and_link() {
   target=${nextfile%.next}.current
 
   CURRENTDATETIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
-  mv ${previous} db.delete.${CURRENTDATETIMESTAMP}
+  if [[ ! -z ${previous} ]]
+  then
+    mv ${previous} db.delete.${CURRENTDATETIMESTAMP}
+  fi
   mv ${current} ${current%.current}.previous
   mv ${nextfile} ${target}
   ln -s ${target} db

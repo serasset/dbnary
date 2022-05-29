@@ -364,7 +364,7 @@ commit WORK;
 checkpoint;
 
 echoln "========================================================" ;
-echoln "=== Looking for errors while loading graphs                       ===" ;
+echoln "=== Looking for errors while loading graphs          ===" ;
 echoln "========================================================" ;
 -- Check the set of loaded files to see if errors appeared during load.
 select * from DB.DBA.LOAD_LIST where ll_error IS NOT NULL;

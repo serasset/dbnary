@@ -1,7 +1,7 @@
 version: '3.3'
 services:
     jupyter:
-        image: serasset/jupyter-full:latest
+        image: serasset/sparql-jupyterlab:latest
         volumes:
             - ./notebooks:/home/jovyan
         ports:

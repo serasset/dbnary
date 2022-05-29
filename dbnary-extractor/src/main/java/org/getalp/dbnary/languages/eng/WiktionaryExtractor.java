@@ -1125,7 +1125,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     extractTranslations(txt.content());
   }
 
-  // TODO: the multitrans template hides all its subtemplates. Either make a stream entreirng
+  // DONE: the multitrans template hides all its subtemplates. Either make a stream entering
   // multitrans or call the extraction recursively, BUT in this case the gloss should be external
   // to the recursive call (gloss is defined outside and may be redefined inside...
   private void extractTranslations(WikiContent txt) {
@@ -1138,7 +1138,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     templates(txt).sequential().forEach(t -> {
       String tName = t.getName();
       if (tName.equals("t+") || tName.equals("t-") || tName.equals("tø") || tName.equals("t")
-          || tName.equals("t-check") || tName.equals("t+check") || tName.equals("t-simple")) {
+          || tName.equals("t-check") || tName.equals("t+check") || tName.equals("t-simple")
+          || tName.equals("tt") || tName.equals("tt+")) {
         WikiContent l = t.getArgs().get("1");
         WikiContent word = t.getArgs().get("2");
         WikiContent usageContent = t.getArgs().get("3");

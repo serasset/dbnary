@@ -29,7 +29,7 @@ fi
   date 
   echo "==============================================="
 
-  JAVA_OPTS=$JVM_OPTIONS dbnary update $OPTIONS --dir $DIR -s $MIRROR -k 1 --compress --endolex=ontolex,morphology,etymology,lime,statistics,enhancement,combined --exolex=ontolex,combined $LANGS
+  JAVA_OPTS=$JVM_OPTIONS dbnary update $OPTIONS --dir $DIR -s $MIRROR -k 1 --compress --endolex=ontolex,morphology,etymology,lime,statistics,enhancement,combined --exolex=ontolex,lime,combined $LANGS
   echo "==============================================="
   echo -n "  DBnary dumps updated - "
   date 

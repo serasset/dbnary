@@ -186,8 +186,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     for (Token secionHeadingToken : content.headers()) {
       Heading sectionHeading = secionHeadingToken.asHeading();
-      HashMap<String, Object> context = new HashMap<>();
-      ignorePOS = extractBlock(sectionHeading, context, ignorePOS);
+      ignorePOS = extractBlock(sectionHeading, ignorePOS);
     }
 
     wdh.finalizeLanguageSection();
@@ -225,15 +224,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   /**
    * returns true if the block is a POS that should be ignored
    * @param h
-   * @param context
    * @param ignorePOS
    * @return
    */
-  private boolean extractBlock(Heading h, Map<String, Object> context, boolean ignorePOS) {
+  private boolean extractBlock(Heading h, boolean ignorePOS) {
     String title = h.getContent().getText().trim();
     String nym;
-    context.put("start", h.getSection().getBeginIndex());
-    WikiContent blockContent = h.getSection().getContent();
+    WikiContent blockContent = h.getSection().getPrologue();
     if (title.equals("Pronunciation")) {
       ewdh.initializeNewEtymology();
       extractPron(blockContent.getBeginIndex(), blockContent.getEndIndex());

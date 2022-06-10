@@ -25,7 +25,7 @@ public class ChineseDefinitionExtractorWikiModel extends DbnaryWikiModel {
     this.delegate = we;
   }
 
-  public void parseDefinition(String definition,int defLevel) {
+  public void parseDefinition(String definition, int defLevel) {
     // Render the definition to plain text, while ignoring the example template
     String def = WikiTool.removeReferencesIn(definition);
     try {

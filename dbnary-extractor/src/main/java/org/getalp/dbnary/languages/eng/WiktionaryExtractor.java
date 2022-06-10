@@ -159,6 +159,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if ("English".equals(languageName)) {
       WikiContent sectionContent = heading.getSection().getContent();
       extractEnglishData(sectionContent.getBeginIndex(), sectionContent.getEndIndex());
+    } else {
+      log.debug("Ignoring language section {} || {}", languageName, getWiktionaryPageName());
     }
   }
 
@@ -167,6 +169,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if ("English".equals(languageName)) {
       String sectionContent = heading.getSection().getContent().getText();
       wikisaurusExtractor.extractWikisaurusSection(getWiktionaryPageName(), sectionContent);
+    } else {
+      log.debug("Wikisaurus: Ignoring language section {} || {}", languageName, getWiktionaryPageName());
     }
   }
 

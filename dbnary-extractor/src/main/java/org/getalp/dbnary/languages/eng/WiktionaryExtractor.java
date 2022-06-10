@@ -158,7 +158,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String languageName = heading.getContent().getText().trim();
     if ("English".equals(languageName)) {
       WikiContent sectionContent = heading.getSection().getContent();
-      extractEnglishData(sectionContent.getBeginIndex(), sectionContent.getEndIndex());
+      extractEnglishData(sectionContent);
     } else {
       log.debug("Ignoring language section {} || {}", languageName, getWiktionaryPageName());
     }
@@ -174,44 +174,23 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  public void extractDataOld() {
-    boolean isWikisaurus = isWikisaurus(getWiktionaryPageName());
-    if (isWikisaurus) {
-      setWiktionaryPageName(cutNamespace(getWiktionaryPageName()));
-    }
-    wdh.initializePageExtraction(getWiktionaryPageName());
-    Matcher languageFilter = sectionPattern.matcher(pageContent);
-    while (languageFilter.find() && !languageFilter.group(1).equals("English")) {
-      // NOP
-    }
-    // Either the filter is at end of sequence or on English language header.
-    if (languageFilter.hitEnd()) {
-      // There is no English data in this page.
-      return;
-    }
-    int englishSectionStartOffset = languageFilter.end();
-    // Advance till end of sequence or new language section
-    while (languageFilter.find() && languageFilter.group().charAt(2) == '=') {
-      // NOP
-    }
-    // languageFilter.find();
-    int englishSectionEndOffset =
-        languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
-
-    if (isWikisaurus) {
-      wikisaurusExtractor.extractWikisaurusSection(getWiktionaryPageName(),
-          pageContent.substring(englishSectionStartOffset, englishSectionEndOffset));
-      return;
-    } else {
-      extractEnglishData(englishSectionStartOffset, englishSectionEndOffset);
-    }
-    wdh.finalizePageExtraction();
-  }
-
-
   private String cutNamespace(String pagename) {
     int p = pagename.indexOf(":");
     return pagename.substring(p + 1);
+  }
+
+  protected void extractEnglishData(WikiContent content) {
+    wdh.initializeLanguageSection("en");
+
+    boolean ignorePOS = false;
+
+    for (Token secionHeadingToken : content.headers()) {
+      Heading sectionHeading = secionHeadingToken.asHeading();
+      HashMap<String, Object> context = new HashMap<>();
+      ignorePOS = extractBlock(sectionHeading, context, ignorePOS);
+    }
+
+    wdh.finalizeLanguageSection();
   }
 
   protected void extractEnglishData(int startOffset, int endOffset) {
@@ -241,6 +220,49 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // Finalize the entry parsing
     leaveCurrentBlock(m, previousContext);
     wdh.finalizeLanguageSection();
+  }
+
+  /**
+   * returns true if the block is a POS that should be ignored
+   * @param h
+   * @param context
+   * @param ignorePOS
+   * @return
+   */
+  private boolean extractBlock(Heading h, Map<String, Object> context, boolean ignorePOS) {
+    String title = h.getContent().getText().trim();
+    String nym;
+    context.put("start", h.getSection().getBeginIndex());
+    WikiContent blockContent = h.getSection().getContent();
+    if (title.equals("Pronunciation")) {
+      ewdh.initializeNewEtymology();
+      extractPron(blockContent.getBeginIndex(), blockContent.getEndIndex());
+    } else if (WiktionaryDataHandler.isValidPOS(title)) {
+      wdh.initializeLexicalEntry(title);
+      ewdh.registerEtymologyPos(getWiktionaryPageName());
+      extractMorphology(blockContent);
+      extractHeadInformation(blockContent);
+      // TODO: English definition comes along examples and nyms, extract these also.
+      extractDefinitions(blockContent);
+    } else if (title.equals("Translations")) { // TODO: some sections are using Translation in the
+      // singular form...
+      if (!ignorePOS) extractTranslations(blockContent);
+    } else if (title.equals("Alternative spellings")) {
+      extractOrthoAlt(blockContent.getBeginIndex(), blockContent.getEndIndex());
+    } else if (title.equals("Conjugation")) {
+      extractConjugation(blockContent.getBeginIndex(), blockContent.getEndIndex());
+    } else if (title.startsWith("Etymology")) {
+      extractEtymology(blockContent.getBeginIndex(), blockContent.getEndIndex());
+    } else if (title.equals("Derived terms")) {
+      extractDerived(blockContent.getBeginIndex(), blockContent.getEndIndex());
+    } else if (title.equals("Descendants")) {
+      extractDescendants(blockContent.getBeginIndex(), blockContent.getEndIndex());
+    } else if (null != (nym = EnglishGlobals.nymMarkerToNymName.get(title))) {
+      extractNyms(nym, blockContent.getBeginIndex(), blockContent.getEndIndex());
+    } else {
+      log.debug("Ignoring content of section {} in {}", title, this.getWiktionaryPageName());
+    }
+    return false;
   }
 
   private Block computeNextBlock(Matcher m, Map<String, Object> context) {
@@ -323,8 +345,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         wdh.initializeLexicalEntry(pos);
         ewdh.registerEtymologyPos(getWiktionaryPageName());
         WikiText text = new WikiText(getWiktionaryPageName(), pageContent, blockStart, end);
-        extractMorphology(text);
-        extractHeadInformation(text);
+        extractMorphology(text.content());
+        extractHeadInformation(text.content());
         // TODO: English definition comes along examples and nyms, extract these also.
         extractDefinitions(blockStart, end);
         break;
@@ -389,7 +411,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         .keepContentOfTemplates(WiktionaryExtractor::getMyTemplateContent);
   }
 
-  private void extractHeadInformation(WikiText text) {
+  private void extractHeadInformation(WikiContent text) {
     for (Token t : text.templatesOnUpperLevel()) {
       Template tmpl = (Template) t;
       if (tmpl.getName().equals("head") || tmpl.getName().startsWith("en-")) {
@@ -428,6 +450,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         || (headword.endsWith(".") && pageName.equals(headword.substring(0, headword.length() - 1)))
         || (headword.endsWith("?")
             && pageName.equals(headword.substring(0, headword.length() - 1))));
+  }
+
+  private void extractDefinitions(WikiContent text) {
+    // TODO: use the wiki content directly
+    extractDefinitions(text.getBeginIndex(), text.getEndIndex());
   }
 
 
@@ -627,7 +654,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private final EnglishInflectionData pastPtc =
       new EnglishInflectionData().pastTense().participle();
 
-  private void extractMorphology(WikiText text) {
+  private void extractMorphology(WikiContent text) {
     // TODO: For some entries, there are several morphology information covering different word
     // senses
     // TODO: Handle such cases (by creating another lexical entry ?) // Similar to reflexiveness in
@@ -1159,6 +1186,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // multitrans or call the extraction recursively, BUT in this case the gloss should be external
   // to the recursive call (gloss is defined outside and may be redefined inside...
   private void extractTranslations(WikiContent txt) {
+    processedLinks.clear();
+    processedLinks.add(getWiktionaryPageName());
+
     AtomicReference<Resource> currentGloss = new AtomicReference<>();
     AtomicInteger rank = new AtomicInteger(1);
     // TODO: there are templates called "qualifier" used to further qualify the translation check

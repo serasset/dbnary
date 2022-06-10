@@ -1,0 +1,7 @@
+SELECT ?p (count(?p) as ?count) where { 
+  Graph <http://kaiko.getalp.org/dbnary/fra> { 
+    ?s ?p ?o 
+  } 
+} 
+GROUP BY ?p
+ORDER BY desc(?count)

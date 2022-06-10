@@ -1,0 +1,5 @@
+SELECT distinct ?p 
+FROM <http://kaiko.getalp.org/dbnary/fra>
+where {
+    ?s ?p ?o
+} LIMIT 200

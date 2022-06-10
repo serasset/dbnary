@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="GrepInWiktionary" type="Application" factoryName="Application" nameIsGenerated="true">
-    <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.GrepInWiktionary" />
+  <configuration default="false" name="dbnary grep" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
-    <option name="PROGRAM_PARAMETERS" value="&quot;\{\{variantes&quot; es/20211001/eswkt-20211001.xml" />
+    <option name="PROGRAM_PARAMETERS" value="grep --all-matches --plain en/20220601/enwkt-20220601.xml &quot;\n==[^=]*==&quot;" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/" />
     <extension name="coverage">
       <pattern>

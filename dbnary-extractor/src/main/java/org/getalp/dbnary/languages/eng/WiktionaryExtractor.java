@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -31,6 +32,7 @@ import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
@@ -135,14 +137,40 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return pagename.startsWith("Wikisaurus:") || pagename.startsWith("Thesaurus:");
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
-   * org.getalp.blexisma.semnet.SemanticNetwork)
-   */
   @Override
   public void extractData() {
+    Consumer<Heading> sectionConsumer = this::extractLanguageSection;
+
+    boolean isWikisaurus = isWikisaurus(getWiktionaryPageName());
+    if (isWikisaurus) {
+      setWiktionaryPageName(cutNamespace(getWiktionaryPageName()));
+      sectionConsumer = this::extractWikisaurusLanguageSection;
+    }
+    wdh.initializePageExtraction(getWiktionaryPageName());
+    WikiText text = new WikiText(pageContent);
+
+    // Iterate over all level 2 headers
+    text.headers(2).stream().map(Token::asHeading).forEach(sectionConsumer);
+    wdh.finalizePageExtraction();
+  }
+
+  private void extractLanguageSection(Heading heading) {
+    String languageName = heading.getContent().getText().trim();
+    if ("English".equals(languageName)) {
+      WikiContent sectionContent = heading.getSection().getContent();
+      extractEnglishData(sectionContent.getBeginIndex(), sectionContent.getEndIndex());
+    }
+  }
+
+  private void extractWikisaurusLanguageSection(Heading heading) {
+    String languageName = heading.getContent().getText().trim();
+    if ("English".equals(languageName)) {
+      String sectionContent = heading.getSection().getContent().getText();
+      wikisaurusExtractor.extractWikisaurusSection(getWiktionaryPageName(), sectionContent);
+    }
+  }
+
+  public void extractDataOld() {
     boolean isWikisaurus = isWikisaurus(getWiktionaryPageName());
     if (isWikisaurus) {
       setWiktionaryPageName(cutNamespace(getWiktionaryPageName()));

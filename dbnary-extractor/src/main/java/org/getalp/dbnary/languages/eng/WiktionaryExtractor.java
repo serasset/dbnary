@@ -290,8 +290,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String pos = (String) context.get("pos");
         wdh.initializeLexicalEntry(pos);
         ewdh.registerEtymologyPos(getWiktionaryPageName());
-        extractMorphology(blockStart, end);
-        extractHeadInformation(blockStart, end);
+        WikiText text = new WikiText(getWiktionaryPageName(), pageContent, blockStart, end);
+        extractMorphology(text);
+        extractHeadInformation(text);
         // TODO: English definition comes along examples and nyms, extract these also.
         extractDefinitions(blockStart, end);
         break;
@@ -356,12 +357,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         .keepContentOfTemplates(WiktionaryExtractor::getMyTemplateContent);
   }
 
-  private void extractHeadInformation(int start, int end) {
-    WikiText text = new WikiText(getWiktionaryPageName(), pageContent, start, end);
-    for (WikiText.Token t : text.templatesOnUpperLevel()) {
-      WikiText.Template tmpl = (WikiText.Template) t;
+  private void extractHeadInformation(WikiText text) {
+    for (Token t : text.templatesOnUpperLevel()) {
+      Template tmpl = (Template) t;
       if (tmpl.getName().equals("head") || tmpl.getName().startsWith("en-")) {
-        Map<String, WikiText.WikiContent> args = tmpl.getArgs();
+        Map<String, WikiContent> args = tmpl.getArgs();
         if (tmpl.getName().equals("head")) {
           String pos = args.get("2").toString();
           if (pos != null && pos.endsWith(" form")) {
@@ -369,7 +369,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           }
         }
         for (String h : heads) {
-          WikiText.WikiContent head = args.get(h);
+          WikiContent head = args.get(h);
           if (null != head && head.toString().trim().length() != 0) {
             WikiCharSequence s = new WikiCharSequence(head, linkResolver);
             String headword = s.toString();
@@ -595,7 +595,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private final EnglishInflectionData pastPtc =
       new EnglishInflectionData().pastTense().participle();
 
-  private void extractMorphology(int startOffset, int endOffset) {
+  private void extractMorphology(WikiText text) {
     // TODO: For some entries, there are several morphology information covering different word
     // senses
     // TODO: Handle such cases (by creating another lexical entry ?) // Similar to reflexiveness in
@@ -603,8 +603,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (ewdh.isDisabled(ExtractionFeature.MORPHOLOGY)) {
       return;
     }
-
-    WikiText text = new WikiText(getWiktionaryPageName(), pageContent, startOffset, endOffset);
 
     WikiEventsSequence wikiTemplates = text.templatesOnUpperLevel();
 
@@ -616,9 +614,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // process morphology templates.
 
     int nbTempl = 0;
-    for (WikiText.Token wikiTemplate : wikiTemplates) {
+    for (Token wikiTemplate : wikiTemplates) {
       nbTempl++;
-      WikiText.Template tmpl = (WikiText.Template) wikiTemplate;
+      Template tmpl = (Template) wikiTemplate;
       // String g1 = macroMatcher.group(1);
       String g1 = tmpl.getName();
       if (g1.equals("en-noun")) {

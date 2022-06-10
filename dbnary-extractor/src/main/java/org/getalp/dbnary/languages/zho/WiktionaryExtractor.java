@@ -5,8 +5,11 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
+import org.getalp.dbnary.languages.jpn.JapaneseDefinitionExtractorWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,37 +19,37 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private static final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  private static  String testString="test";
+  //private static  String testString="test";
   protected final static String wikiSectionPatternString = "^={3,}\\s*([^=]*)\\s*={3,}\\s*$";
   protected final static String level2HeaderPatternString = "^==([^=].*[^=])==\\s*$";
   protected final static String pronounciationPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
-
-
+  protected final static Pattern wikiSectionPattern;
+  //private final static Pattern pronounciationPattern;
+  private HashSet<String> unknownHeaders;
   private final int NODATA = 0;
-  private final int TRADBLOCK = 1;
-  private final int DEFBLOCK = 2;
-  private final int ORTHOALTBLOCK = 3;
-  private final int NYMBLOCK = 4;
-  private final int PRONBLOCK = 5;
-  private final int RELBLOCK = 7;
+  private final int TRADBLOCK = 1; //翻譯
+  private final int DEFBLOCK = 2; //名詞
+  private final int ORTHOALTBLOCK = 3;//
+  private final int NYMBLOCK = 4;//近義詞
+  private final int PRONBLOCK = 5;//讀音
+  private final int RELBLOCK = 7;//参考词汇
   private final int IGNOREPOS = 8;
 
-
+  ChineseDefinitionExtractorWikiModel definitionExtractor ;
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
-    throw new RuntimeException("Chinese extractor is currently not functional.");
+    //throw new RuntimeException("Chinese extractor is currently not functional.");
   }
 
+//  public void setWiktionaryIndex(WiktionaryPageSource wi) {
+//    super.setWiktionaryIndex(wi);
+//    definitionExtractor = new ChineseDefinitionExtractorWikiModel(wdh,wi,new Locale("zh"),"--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+//  }
   // protected final static HashSet<String> sectionMarkers;
-
   protected final static HashMap<String, String> posMarkers;
   protected final static HashMap<String, String> nymMarkerToNymName;
 
   static {
-
-    wikiSectionPattern = Pattern.compile(wikiSectionPatternString);
-    pronounciationPattern = Pattern.compile(pronounciationPatternString);
-
     posMarkers = new HashMap<String, String>(20);
     posMarkers.put("n.", "noun");
     posMarkers.put("名词", "noun");
@@ -90,38 +93,35 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   }
 
-  protected static Pattern wikiSectionPattern;
-  private static Pattern pronounciationPattern;
+  //protected static Pattern wikiSectionPattern;
+  //private static Pattern pronounciationPattern;
   protected final static Pattern level2HeaderPattern;
 
   static {
     level2HeaderPattern = Pattern.compile(level2HeaderPatternString, Pattern.MULTILINE);
-
     wikiSectionPattern = Pattern.compile(wikiSectionPatternString, Pattern.MULTILINE);
-    pronounciationPattern = Pattern.compile(pronounciationPatternString);
+   // pronounciationPattern = Pattern.compile(pronounciationPatternString);
   }
 
-
   int state = NODATA;
-  int definitionBlockStart = -1;
   int translationBlockStart = -1;
+  int definitionBlockStart = -1;
   int orthBlockStart = -1;
   private int nymBlockStart = -1;
   private int pronBlockStart = -1;
+  private int relBlockStart = -1;
   private String currentNym = null;
 
-  protected boolean isCurrentlyExtracting = false;
-  private boolean isCorrectPOS;
+  //protected boolean isCurrentlyExtracting = false;
+  //private boolean isCorrectPOS;
 
   private HashSet<String> unkownHeaders;
-  private int relBlockStart;
+
 
 
   public void extractData() {
-
     Matcher filter = level2HeaderPattern.matcher(pageContent);
     unkownHeaders = new HashSet<String>();
-
     int chineseStart = -1;
     wdh.initializePageExtraction(getWiktionaryPageName());
     while (filter.find()) {
@@ -136,68 +136,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (-1 != chineseStart) {
       extractData(chineseStart, pageContent.length());
     }
-
     wdh.finalizePageExtraction();
-
   }
-
-
-  private boolean isChineseLanguageHeader(Matcher filter) {
-    if (filter.group(1).trim().startsWith("zh")) {
-      return true;
-    }
-    if (filter.group(1).trim().startsWith("chinese")) {
-      return true;
-    }
-    if (filter.group(1).trim().startsWith("中文")) {
-      return true;
-    }
-    if (filter.group(1).trim().startsWith("汉语")) {
-      return true;
-    }
-    return false;
-  }
-
 
   private String getValidPOS(Matcher m) {
-
     String head = m.group(1).trim();
-    String pos = null;
-    Matcher macro = WikiPatterns.macroPattern.matcher(head);
-    if (macro.lookingAt()) { // the section starts by a wiki macro
-      pos = posMarkers.get(macro.group(1));
-    } else {
-      String[] h = head.split(":");
-      pos = posMarkers.get(h[0]);
-    }
-
-    if (null != pos && pos.equals("idiom"))
-    // When idiom is found on a 1 or 2 char entry, it is assumed to be a section giving the idioms
-    // build from the entry.
-    // Other idiom it is believed to be a Part Of Speech.
-    {
-      if (getWiktionaryPageName().length() <= 2) {
-        pos = null;
-      } else {
-        pos = "idiom";
-      }
-    }
-    return pos;
+    return WiktionaryDataHandler.getValidPOS(head,getWiktionaryPageName());
   }
-
 
   void gotoNoData(Matcher m) {
     state = NODATA;
   }
 
   private boolean isChineseHeader(Matcher m) {
-
-    if (m.group(0).startsWith("===") && !m.group(0).startsWith("====")) {
-      unkownHeaders.add(m.group(0));
+    if(m.group(1).trim().startsWith("{{zh")){
       return true;
-    } else {
-      return false;
     }
+    if(m.group(1).trim().startsWith("{{zho")){
+      return true;
+    }
+    return m.group(1).trim().startsWith("漢語");
   }
 
   void gotoDefBlock(Matcher m, String pos) {
@@ -241,13 +199,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // Translation section
   private boolean isTranslation(Matcher m) {
-
     String head = m.group(1).trim();
     Matcher trans = WikiPatterns.macroPattern.matcher(head);
     if (trans.find()) {
       return (trans.group(1).equals("trans"));
-    } else {
-      return "翻译".equals(head);
+    } else if ("翻譯".equals(head)){
+      return true;
+    }
+    else
+    {
+      return  "翻译".equals(head);
     }
   }
 
@@ -256,18 +217,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     state = TRADBLOCK;
   }
 
-  void leaveTradBlock(Matcher m) {
-    extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m));
-    translationBlockStart = -1;
-  }
-
 
   // Nyms
   private boolean isNymHeader(Matcher m) {
-    Matcher nym = WikiPatterns.macroPattern.matcher(m.group(1).trim());
-
-    return nym.matches()
-        && (ChineseRelatedWordsExtractorWikiModel.relMarkerToRelName).containsKey(nym.group(1));
+//    Matcher nym = WikiPatterns.macroPattern.matcher(m.group(1).trim());
+//
+//    return nym.matches()
+//        && (ChineseRelatedWordsExtractorWikiModel.relMarkerToRelName).containsKey(nym.group(1));
+    return (m.group(1).trim().equals("近義詞"));
   }
 
   private void gotoNymBlock(Matcher m) {
@@ -289,8 +246,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // Related Words
   private boolean isRelatedHeader(Matcher m) {
-    Matcher rel = WikiPatterns.macroPattern.matcher(m.group(1).trim());
-    return rel.matches() && rel.group(1).trim().equals("rel");
+    //Matcher rel = WikiPatterns.macroPattern.matcher(m.group(1).trim());
+    //return rel.matches() && rel.group(1).trim().equals("rel") ;
+    //System.out.println(m.group(1));
+    return (m.group(1).trim().equals("参考词汇")||m.group(1).trim().equals("參見"));
   }
 
   private void gotoRelBlock(Matcher m) {
@@ -306,14 +265,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // Pronounciation section
   private boolean isPronounciation(Matcher m) {
+    String head = m.group(1).trim();
     Matcher pron = WikiPatterns.macroPattern.matcher(m.group(1).trim());
-
-    if (pron.matches()) {
-      if (pron.group(1).equals("pron")) {
-        return true;
-      }
+    if(pron.find()){
+      return(pron.group(1).equals("pron"));
     }
-    return false;
+    else{
+      return ("讀音".equals(head))||("發音".equals(head));
+    }
   }
 
   private void gotoPronBlock(Matcher m) {
@@ -324,6 +283,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void leavePronBlock(Matcher m) {
     extractPron(pronBlockStart, computeRegionEnd(pronBlockStart, m));
     pronBlockStart = -1;
+  }
+
+  private boolean isLevel3Header (Matcher m){
+    if (m.group(0).startsWith("===") && !m.group(0).startsWith("====")) {
+      unknownHeaders.add(m.group(0));
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private void gotoIgnorePos() {
@@ -340,19 +308,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (m.find()) {
       switch (state) {
         case NODATA:
-          if (m.group(1).startsWith("Translation")) {
+          if (isTranslation(m)) {
             gotoTradBlock(m);
-          } else if (posMarkers.containsKey(m.group(1))) {
-            gotoDefBlock(m, pos);
-          } else if (m.group(1).equals("Alternative spellings")) {
+          } else if (null != (pos = getValidPOS(m))) {
+            if(pos.length() == 0){
+              gotoIgnorePos();
+            }else {
+              gotoDefBlock(m,pos);
+            }
+          }else if(isAlternate(m)){
             gotoOrthoAltBlock(m);
-          } else if (nymMarkerToNymName.containsKey(m.group(1))) {
+          }else if(isNymHeader(m)){
             gotoNymBlock(m);
-          } else if (m.group(1).equals("{{pronunciation}}")) {
+          }else if(isPronounciation(m)){
             gotoPronBlock(m);
-          } else if (isChineseHeader(m)) {
-            // not a correct POS, or Etimology or Pronunciation are considered as ignorable POS.
-            gotoIgnorePos();
+          }else if (isRelatedHeader(m)) {
+            gotoRelBlock(m);
+          }
+          else{
+            System.out.println("block named " +m.group(1)+" is ignored");
+            gotoNoData(m);
           }
           break;
 
@@ -362,7 +337,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             leaveDefBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            leaveDefBlock(m);
+            //leaveDefBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
@@ -385,6 +360,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             gotoNoData(m);
           } else {
             leaveDefBlock(m);
+            System.out.println("block named "+m.group(1)+" is ignored");
             gotoNoData(m);
           }
           break;
@@ -416,6 +392,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             leaveTradAltBlock(m);
             gotoNoData(m);
           } else {
+            System.out.println("block named "+m.group(1)+" is ignored");
             leaveTradAltBlock(m);
             gotoNoData(m);
           }
@@ -574,7 +551,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case NODATA:
         break;
       case DEFBLOCK:
-        leaveDefBlock(m);
+        //leaveDefBlock(m);
         break;
       case TRADBLOCK:
         leaveTradAltBlock(m);
@@ -615,9 +592,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void extractDefinition(String definition, int defLevel) {
-    ChineseDefinitionExtractorWikiModel dbnmodel = new ChineseDefinitionExtractorWikiModel(this.wdh,
-        this.wi, new Locale("zho"), "/${image}", "/${title}");
-    dbnmodel.parseDefinition(definition);
+   ChineseDefinitionExtractorWikiModel definitionExtractor =
+           new ChineseDefinitionExtractorWikiModel(wdh, wi, new Locale("ja"),
+       "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    definitionExtractor.setPageName(this.getWiktionaryPageName());
+    definitionExtractor.parseDefinition(definition, defLevel);
   }
 
   private void extractTranslations(int startOffset, int endOffset) {
@@ -627,6 +606,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             "/${image}/" + getWiktionaryPageName(), "/${title}", glossFilter);
     dbnmodel.parseTranslationBlock(transCode);
   }
+
 
 
 }

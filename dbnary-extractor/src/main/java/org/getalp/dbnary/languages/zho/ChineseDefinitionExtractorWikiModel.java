@@ -7,6 +7,7 @@ import java.util.Map;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
+import org.getalp.dbnary.wiki.WikiTool;
 
 public class ChineseDefinitionExtractorWikiModel extends DbnaryWikiModel {
 
@@ -24,16 +25,16 @@ public class ChineseDefinitionExtractorWikiModel extends DbnaryWikiModel {
     this.delegate = we;
   }
 
-  public void parseDefinition(String definition) {
+  public void parseDefinition(String definition,int defLevel) {
     // Render the definition to plain text, while ignoring the example template
-    String def = null;
+    String def = WikiTool.removeReferencesIn(definition);
     try {
-      def = render(new PlainTextConverter(), definition).trim();
+      def = render(new PlainTextConverter(), def).trim();
     } catch (IOException e) {
       e.printStackTrace();
     }
     if (null != def && !def.equals("")) {
-      delegate.registerNewDefinition(def);
+      delegate.registerNewDefinition(def, defLevel);
     }
   }
 

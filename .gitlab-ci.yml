@@ -16,7 +16,7 @@ variables:
   VALIDATION_LANGUAGES:
     value: "fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"
     description: "Space separated list of languages for which the sampling will be performed"
-  SAMPLE_SIZE:
+  VALIDATION_SAMPLE_SIZE:
     value: "10000"
     description: "The number of wiktionary pages that will be used for sampling"
 
@@ -69,7 +69,7 @@ sampling:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   variables:
     VALIDATION_LANGUAGES: ${VALIDATION_LANGUAGES}
-    SAMPLE_SIZE: ${SAMPLE_SIZE}
+    VALIDATION_SAMPLE_SIZE: ${VALIDATION_SAMPLE_SIZE}
   trigger:
     include: .gitlab-ci/sampling.yml
 

@@ -244,7 +244,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     } else if (title.equals("Translations")) { // TODO: some sections are using Translation in the
       // singular form...
       if (!ignorePOS) extractTranslations(blockContent);
-    } else if (title.equals("Alternative spellings")) {
+    } else if (title.equals("Alternative spellings")) { // TODO: Alternative forms ???
       extractOrthoAlt(blockContent.getBeginIndex(), blockContent.getEndIndex());
     } else if (title.equals("Conjugation")) {
       extractConjugation(blockContent.getBeginIndex(), blockContent.getEndIndex());

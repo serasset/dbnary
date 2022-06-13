@@ -65,6 +65,8 @@ analyse:sampling:
   needs: ["compile:sampling", "evaluate:sampling:1", "evaluate:sampling:2", "evaluate:sampling:3", "evaluate:sampling:4"]
   script:
     - chmod +x .gitlab-ci/*.sh
+    - export
+    - which rdfdiff
     - .gitlab-ci/compute_differences.sh
     - .gitlab-ci/summarize_on_slack.sh
   artifacts:

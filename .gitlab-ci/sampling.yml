@@ -1,6 +1,7 @@
 
 ## Alias for sampling evaluation strategy
 .sampling: &sampling
+  image: serasset/maven-jena:latest
   tags:
     - dbnary
     - linux

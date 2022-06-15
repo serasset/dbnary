@@ -223,18 +223,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     //
     // return nym.matches()
     // && (ChineseRelatedWordsExtractorWikiModel.relMarkerToRelName).containsKey(nym.group(1));
-    return (m.group(1).trim().equals("近義詞"));
+    return (m.group(1).trim().equals("近義詞")) || (m.group(1).trim().equals("同義詞"));
   }
 
   private void gotoNymBlock(Matcher m) {
     state = NYMBLOCK;
     nymBlockStart = m.end();
     Matcher nym = WikiPatterns.macroPattern.matcher(m.group(1).trim());
-    if (nym.matches()) {
-      currentNym = (ChineseRelatedWordsExtractorWikiModel.relMarkerToRelName).get(nym.group(1));
-    } else {
-      log.error("WARNING: non matching nym...");
-    }
+    // if (nym.matches()) {
+    // currentNym = (ChineseRelatedWordsExtractorWikiModel.relMarkerToRelName).get(nym.group(1));
+    // } else {
+    // log.error("WARNING: non matching nym...");
+    // }
   }
 
   private void leaveNymBlock(Matcher m) {
@@ -266,10 +266,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private boolean isPronounciation(Matcher m) {
     String head = m.group(1).trim();
     Matcher pron = WikiPatterns.macroPattern.matcher(m.group(1).trim());
+    Pattern pronHeadPattern= Pattern.compile("發音\\d?|讀音\\d?|发音\\d?|读音\\d?");
+    Matcher pronHeadMatcher=pronHeadPattern.matcher(head);
     if (pron.find()) {
       return (pron.group(1).equals("pron"));
     } else {
-      return ("讀音".equals(head)) || ("發音".equals(head));
+      return pronHeadMatcher.matches();
     }
   }
 
@@ -334,7 +336,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             leaveDefBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            // leaveDefBlock(m);
+            leaveDefBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
@@ -364,161 +366,161 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         case TRADBLOCK:
           if (isTranslation(m)) {
-            leaveTradAltBlock(m);
+             //leaveTradAltBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            leaveTradAltBlock(m);
+             //leaveTradAltBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            leaveTradAltBlock(m);
+            // leaveTradAltBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            leaveTradAltBlock(m);
+            // leaveTradAltBlock(m);
             gotoNymBlock(m);
           } else if (isPronounciation(m)) {
-            leaveTradAltBlock(m);
+            // leaveTradAltBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            leaveTradAltBlock(m);
+            // leaveTradAltBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            leaveTradAltBlock(m);
+            // leaveTradAltBlock(m);
             gotoNoData(m);
           } else {
             log.trace("block named " + m.group(1) + " is ignored");
-            leaveTradAltBlock(m);
+            // leaveTradAltBlock(m);
             gotoNoData(m);
           }
           break;
 
         case ORTHOALTBLOCK:
           if (isTranslation(m)) {
-            leaveOrthoAltBlock(m);
+            // leaveOrthoAltBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            leaveOrthoAltBlock(m);
+            // leaveOrthoAltBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            leaveOrthoAltBlock(m);
+            // leaveOrthoAltBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            leaveOrthoAltBlock(m);
+            // leaveOrthoAltBlock(m);
             gotoNymBlock(m);
           } else if (isPronounciation(m)) {
-            leaveOrthoAltBlock(m);
+            // leaveOrthoAltBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            leaveOrthoAltBlock(m);
+            // leaveOrthoAltBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            leaveOrthoAltBlock(m);
+            // leaveOrthoAltBlock(m);
             gotoNoData(m);
           } else {
-            leaveOrthoAltBlock(m);
+            // leaveOrthoAltBlock(m);
             gotoNoData(m);
           }
           break;
 
         case NYMBLOCK:
           if (isTranslation(m)) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoNymBlock(m);
           } else if (isPronounciation(m)) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoNoData(m);
           } else {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoNoData(m);
           }
           break;
 
         case PRONBLOCK:
           if (isTranslation(m)) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoNymBlock(m);
           } else if (isPronounciation(m)) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoNoData(m);
           } else {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoNoData(m);
           }
           break;
 
         case RELBLOCK:
           if (isTranslation(m)) {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoNymBlock(m);
           } else if (isPronounciation(m)) {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoNoData(m);
           } else {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoNoData(m);
           }
           break;
@@ -548,22 +550,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case NODATA:
         break;
       case DEFBLOCK:
-        // leaveDefBlock(m);
+        leaveDefBlock(m);
         break;
       case TRADBLOCK:
-        leaveTradAltBlock(m);
+         //leaveTradAltBlock(m);
         break;
       case ORTHOALTBLOCK:
-        leaveOrthoAltBlock(m);
+        // leaveOrthoAltBlock(m);
         break;
       case NYMBLOCK:
-        leaveNymBlock(m);
+        // leaveNymBlock(m);
         break;
       case PRONBLOCK:
-        leavePronBlock(m);
+        // leavePronBlock(m);
         break;
       case RELBLOCK:
-        leaveRelBlock(m);
+        // leaveRelBlock(m);
         break;
       case IGNOREPOS:
         break;
@@ -590,7 +592,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void extractDefinition(String definition, int defLevel) {
     ChineseDefinitionExtractorWikiModel definitionExtractor =
-        new ChineseDefinitionExtractorWikiModel(wdh, wi, new Locale("ja"),
+        new ChineseDefinitionExtractorWikiModel(wdh, wi, new Locale("en"),
             "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
     definitionExtractor.setPageName(this.getWiktionaryPageName());
     definitionExtractor.parseDefinition(definition, defLevel);
@@ -599,7 +601,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
     ChineseTranslationExtractorWikiModel dbnmodel =
-        new ChineseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"),
+        new ChineseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("en"),
             "/${image}/" + getWiktionaryPageName(), "/${title}", glossFilter);
     dbnmodel.parseTranslationBlock(transCode);
   }

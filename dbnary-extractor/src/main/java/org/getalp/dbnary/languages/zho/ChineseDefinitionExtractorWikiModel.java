@@ -6,10 +6,9 @@ import java.util.Locale;
 import java.util.Map;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.wiki.WikiTool;
 
-public class ChineseDefinitionExtractorWikiModel extends DbnaryWikiModel {
+public class ChineseDefinitionExtractorWikiModel extends ChineseDbnaryWikiModel {
 
   private IWiktionaryDataHandler delegate;
 
@@ -42,7 +41,11 @@ public class ChineseDefinitionExtractorWikiModel extends DbnaryWikiModel {
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
-    super.substituteTemplateCall(templateName, parameterMap, writer);
+    if (templateName.equals("check deprecated lang param usage")) {
+      writer.append(parameterMap.getOrDefault("1", ""));
+    } else {
+      super.substituteTemplateCall(templateName, parameterMap, writer);
+    }
   }
 
 }

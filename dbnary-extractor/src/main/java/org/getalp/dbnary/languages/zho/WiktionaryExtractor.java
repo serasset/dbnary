@@ -118,6 +118,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private HashSet<String> unkownHeaders;
 
+  @Override
+  public void setWiktionaryIndex(WiktionaryPageSource wi) {
+    super.setWiktionaryIndex(wi);
+    definitionExtractor = new ChineseDefinitionExtractorWikiModel(wdh, wi, new Locale("en"),
+        "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+  }
 
 
   public void extractData() {
@@ -591,9 +597,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void extractDefinition(String definition, int defLevel) {
-    ChineseDefinitionExtractorWikiModel definitionExtractor =
-        new ChineseDefinitionExtractorWikiModel(wdh, wi, new Locale("en"),
-            "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
     definitionExtractor.setPageName(this.getWiktionaryPageName());
     definitionExtractor.parseDefinition(definition, defLevel);
   }

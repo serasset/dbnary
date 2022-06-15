@@ -9,10 +9,9 @@ import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.languages.AbstractGlossFilter;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.iso639.ISO639_3;
 
-public class ChineseTranslationExtractorWikiModel extends DbnaryWikiModel {
+public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel {
 
   private final AbstractGlossFilter glossFilter;
   private IWiktionaryDataHandler delegate;

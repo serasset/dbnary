@@ -226,7 +226,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int rank = 1;
     for (Token tok : wk.templates()) {
       Template template = (Template) tok;
-      Map<String, String> args = template.getParsedArgs();
+      Map<String, String> args = template.cloneParsedArgs();
       if ("Üst".equals(template.getName())) {
         if (template.getParsedArgs().get("1") != null) {
           globalGloss = args.get("1");

@@ -727,7 +727,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (null != (g = lexer.group("TMPL"))) {
         WikiText.Template t = (WikiText.Template) line.getToken(g);
         String tname = t.getName();
-        Map<String, String> args = t.getParsedArgs();
+        Map<String, String> args = t.cloneParsedArgs();
 
         switch (tname) {
           case "trad+":

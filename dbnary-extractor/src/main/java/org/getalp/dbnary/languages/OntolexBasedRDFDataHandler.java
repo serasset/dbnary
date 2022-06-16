@@ -541,7 +541,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     log.debug("Registering lexical Variant: {} for entry: {}", alt, currentEncodedLexicalEntryName);
     Resource altlemma = aBox.createResource();
     aBox.add(currentLexEntry, VarTransOnt.lexicalRel, altlemma);
-    aBox.add(altlemma, OntolexOnt.writtenRep, alt, shortEditionLanguageCode);
+    aBox.add(altlemma, OntolexOnt.writtenRep, alt, shortSectionLanguageCode);
   }
 
   @Override

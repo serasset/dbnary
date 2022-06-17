@@ -221,10 +221,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (!ignorePOS) {
         extractTranslations(blockContent);
       }
-    } else if (title.equals("Alternative spellings") || title.equals("Alternative forms")) { // TODO:
-                                                                                             // Alternative
-                                                                                             // forms
-                                                                                             // ???
+    } else if (title.equals("Alternative spellings") || title.equals("Alternative forms")) {
       extractOrthoAlt(blockContent);
     } else if (title.equals("Conjugation")) {
       extractConjugation(blockContent.getBeginIndex(), blockContent.getEndIndex());
@@ -1279,7 +1276,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               continue;
             }
 
-            wdh.registerPronunciation(pronunciation, "en-fonipa");
+            wdh.registerPronunciation(pronunciation.trim(), "en-fonipa");
           }
         });
   }

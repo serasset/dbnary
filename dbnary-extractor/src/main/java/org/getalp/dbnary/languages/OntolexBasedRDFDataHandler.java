@@ -532,6 +532,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   // Form lexicalVariant should link 2 Lexical entries, same with varTrans lexicalRel
   @Override
   public void registerAlternateSpelling(String alt) {
+    // TODO: keep alternate spelling for remaining entries (in the same etymology or for the page)
     if (null == currentLexEntry) {
       log.debug("Registering Alternate Spelling when lex entry is null in \"{}\".",
           this.currentMainLexEntry);
@@ -539,9 +540,11 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     }
 
     log.debug("Registering lexical Variant: {} for entry: {}", alt, currentEncodedLexicalEntryName);
-    Resource altlemma = aBox.createResource();
-    aBox.add(currentLexEntry, VarTransOnt.lexicalRel, altlemma);
-    aBox.add(altlemma, OntolexOnt.writtenRep, alt, shortSectionLanguageCode);
+    Resource altLexEntry = aBox.createResource(OntolexOnt.LexicalEntry);
+    aBox.add(currentLexEntry, VarTransOnt.lexicalRel, altLexEntry);
+    Resource altForm = aBox.createResource();
+    aBox.add(altLexEntry, OntolexOnt.canonicalForm, altForm);
+    aBox.add(altForm, OntolexOnt.writtenRep, alt, shortSectionLanguageCode);
   }
 
   @Override

@@ -123,7 +123,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if ("".equals(lang)) {
       return;
     }
-    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !"es".equals(lang)) {
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
+        && !wdh.getExtractedLanguage().equals(lang)) {
       return;
     }
     String normalizedLanguage = validateAndStandardizeLanguageCode(lang);

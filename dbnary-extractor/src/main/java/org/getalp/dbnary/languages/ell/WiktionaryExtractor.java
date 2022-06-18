@@ -252,7 +252,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (null == language) {
       return;
     }
-    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !"el".equals(language)) {
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
+        && !wdh.getExtractedLanguage().equals(language)) {
       return;
     }
 

@@ -90,6 +90,10 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   private final Logger log = LoggerFactory.getLogger(OntolexBasedRDFDataHandler.class);
 
+  /**
+   * @deprecated use getFeatureBox()
+   */
+  @Deprecated
   protected Model aBox;
 
   private final Map<ExtractionFeature, Model> endolexFeatureBoxes;

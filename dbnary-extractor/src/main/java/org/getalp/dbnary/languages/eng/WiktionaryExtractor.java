@@ -17,7 +17,6 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.ExtractionFeature;
@@ -40,6 +39,8 @@ import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
 import org.getalp.dbnary.wiki.WikiTool;
+import org.getalp.iso639.ISO639_3;
+import org.getalp.iso639.ISO639_3.Lang;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,11 +159,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractLanguageSection(Heading heading) {
     String languageName = heading.getContent().getText().trim();
-    if ("English".equals(languageName)) {
+    Lang lg = ISO639_3.sharedInstance.getLangFromName(languageName);
+    if (null != lg) {
       WikiContent sectionContent = heading.getSection().getContent();
-      extractEnglishData(sectionContent);
+      extractLanguageData(lg, sectionContent);
     } else {
       log.debug("Ignoring language section {} || {}", languageName, getWiktionaryPageName());
+
     }
   }
 
@@ -182,8 +185,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return pagename.substring(p + 1);
   }
 
-  protected void extractEnglishData(WikiContent content) {
-    wdh.initializeLanguageSection("en");
+  protected void extractLanguageData(Lang lg, WikiContent content) {
+    String l2 = lg.getPart1();
+    if (null == l2 || "".equals(l2.trim())) {
+      l2 = lg.getId();
+    }
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
+        && !wdh.getExtractedLanguage().equals(l2))
+      return;
+    wdh.initializeLanguageSection(l2);
 
     boolean ignorePOS = false;
 
@@ -1262,7 +1272,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected void extractPron(WikiContent pronContent) {
-    pronContent.templates().stream().map(Token::asTemplate).filter(t -> "IPA".equals(t.getName()))
+    if (log.isDebugEnabled()) {
+      pronContent.templates().stream().map(Token::asTemplate)
+          .forEach(t -> log.debug("Pronunciation {}: get template {} in {}",
+              wdh.getCurrentEntryLanguage(), t.getName(), wdh.currentPagename()));
+    }
+    pronContent.templates().stream().map(Token::asTemplate).filter(t -> t.getName().equals("IPA"))
         .forEach(ipa -> {
           Map<String, String> args = ipa.getParsedArgs();
           if (!"en".equals(args.get("1"))) {
@@ -1302,7 +1317,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     blockContent.wikiTokens().stream().filter(t -> t instanceof ListItem).map(Token::asListItem)
         .forEach(li -> {
           li.getContent().templates().stream().map(Token::asTemplate).forEach(t -> {
-            if ("alter".equals(t.getName())) {
+            if ("alter".equals(t.getName()) || "alt".equals(t.getName())) {
               for (String k : t.getParsedArgs().keySet()) {
                 if (isPositiveInt(k)) {
                   if ("1".equals(k))

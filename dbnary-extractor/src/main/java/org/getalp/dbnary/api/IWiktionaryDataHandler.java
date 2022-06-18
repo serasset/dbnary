@@ -50,8 +50,18 @@ public interface IWiktionaryDataHandler {
 
   void finalizeLanguageSection();
 
+  /**
+   * returns the short (2 letter code) id of the language of the current LexicalEntry
+   * 
+   * @return current entry short language code
+   */
   String getCurrentEntryLanguage();
 
+  /**
+   * returns the short (2 letter code) id of the language of the language edition
+   * 
+   * @return wiktionary edition short language code
+   */
   String getExtractedLanguage();
 
   void initializeLexicalEntry(String pos);

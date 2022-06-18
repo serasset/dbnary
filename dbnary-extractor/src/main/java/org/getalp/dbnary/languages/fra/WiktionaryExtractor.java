@@ -468,7 +468,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractLanguageSection(WikiSection languageSection, String language) {
     if (null == language)
       return;
-    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !"fr".equals(language))
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
+        && !wdh.getExtractedLanguage().equals(language))
       return;
 
     // The language is always defined when arriving here, but we should check if we extract it

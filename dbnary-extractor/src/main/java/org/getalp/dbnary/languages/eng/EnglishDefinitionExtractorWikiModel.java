@@ -12,7 +12,7 @@ import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
+public class EnglishDefinitionExtractorWikiModel extends EnglishWikiModel {
 
   private final Logger log = LoggerFactory.getLogger(EnglishDefinitionExtractorWikiModel.class);
 
@@ -105,8 +105,6 @@ public class EnglishDefinitionExtractorWikiModel extends DbnaryWikiModel {
       if (null == text)
         text = parameterMap.get("1");
       writer.append("(").append(text).append(")");
-    } else if (templateName.equals("check deprecated lang param usage")) {
-      writer.append(parameterMap.get("1"));
     } else if (templateName.equals("context") || templateName.equals("cx")) {
       log.debug("Obsolete Context template in {}", this.getPageName());
     } else if (templateName.equals("l") || templateName.equals("link") || templateName.equals("m")

@@ -92,6 +92,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private ExpandAllWikiModel wikiExpander;
   protected EnglishDefinitionExtractorWikiModel definitionExpander;
+  protected EnglishPronunciationExtractorWikiModel pronunciationExpander;
   private WikisaurusExtractor wikisaurusExtractor;
 
 
@@ -102,6 +103,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         new ExpandAllWikiModel(wi, Locale.ENGLISH, "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
     definitionExpander = new EnglishDefinitionExtractorWikiModel(this.wdh, this.wi,
         new Locale("en"), "/${image}", "/${title}");
+    pronunciationExpander = new EnglishPronunciationExtractorWikiModel(this.wdh, this.wi,
+        new Locale("en"), "/${image}", "/${title}");
     wikisaurusExtractor = new WikisaurusExtractor(this.ewdh);
   }
 
@@ -110,6 +113,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super.setWiktionaryPageName(wiktionaryPageName);
     wikiExpander.setPageName(wiktionaryPageName);
     definitionExpander.setPageName(wiktionaryPageName);
+    pronunciationExpander.setPageName(wiktionaryPageName);
   }
 
 
@@ -184,8 +188,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       l2 = lg.getId();
     }
     if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
-        && !wdh.getExtractedLanguage().equals(l2))
+        && !wdh.getExtractedLanguage().equals(l2)) {
       return;
+    }
     wdh.initializeLanguageSection(l2);
 
     boolean ignorePOS = false;
@@ -200,7 +205,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   /**
    * returns true if the block is a POS that should be ignored
-   * 
+   *
    * @param h the heading of the section to be extracted
    * @param ignorePOS true if latest PoS was invalid and we should not extract this section
    * @return true iff the section is the beginning of a PoS section that should be ignored
@@ -715,8 +720,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       args.put("pl1qual", args.get("plqual"));
       args.remove("plqual");
     }
-    label:
-    while (arg != null) {
+    label: while (arg != null) {
       String note = args.get("pl" + argnum + "qual");
       switch (arg) {
         case "s":
@@ -1315,29 +1319,56 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   }
 
+  private static final Pattern languagePronPattern = Pattern.compile("(?:...?-IPA)");
+  private final Matcher languagePronTemplate = languagePronPattern.matcher("");
+
   protected void extractPron(WikiContent pronContent) {
-    if (log.isDebugEnabled()) {
-      pronContent.templates().stream().map(Token::asTemplate)
-          .forEach(t -> log.debug("Pronunciation {}: get template {} in {}",
-              wdh.getCurrentEntryLanguage(), t.getName(), wdh.currentPagename()));
-    }
-    pronContent.templates().stream().map(Token::asTemplate).filter(t -> t.getName().equals("IPA"))
-        .forEach(ipa -> {
-          Map<String, String> args = ipa.getParsedArgs();
-          if (!"en".equals(args.get("1"))) {
-            log.debug("Non English ({}) pronunciation in page {}.", args.get("1"),
-                this.getWiktionaryPageName());
-          }
-          for (int i = 2; i < 9; i++) {
-            String pronunciation = args.get(Integer.toString(i));
+    pronContent.templates().stream().map(Token::asTemplate).forEach(template -> {
+      if (template.getName().equals("IPA") || template.getName().equals("IPA-lite")
+          || template.getName().equals("IPAchar")) {
+        Map<String, String> args = template.getParsedArgs();
+        if (!wdh.getCurrentEntryLanguage().equals(args.get("1"))) {
+          log.debug("Non Matching Languages (actual: {} / expected: {}) pronunciation in page {}.",
+              args.get("1"), wdh.getCurrentEntryLanguage(), this.getWiktionaryPageName());
+        }
+        for (int i = 2; i < 9; i++) {
+          String pronunciation = args.get(Integer.toString(i));
 
-            if (null == pronunciation || pronunciation.equals("")) {
-              continue;
-            }
-
-            wdh.registerPronunciation(pronunciation.trim(), "en-fonipa");
+          if (null == pronunciation || pronunciation.equals("")) {
+            continue;
           }
-        });
+
+          wdh.registerPronunciation(pronunciation.trim(), "en-fonipa");
+        }
+      } else if (shoudlExpandPronTemplate(template)) {
+        pronunciationExpander.parsePronunciation(template.toString());
+      } else {
+        log.debug("Pronunciation {}: ignored template {} in {}", wdh.getCurrentEntryLanguage(),
+            template.getName(), wdh.currentPagename());
+      }
+    });
+  }
+
+  private static final Set<String> pronTemplateToExpand = new HashSet<>();
+  static {
+    pronTemplateToExpand.add("eo-pron");
+    pronTemplateToExpand.add("fi-pronunciation");
+    pronTemplateToExpand.add("fi-p");
+    pronTemplateToExpand.add("IPA letters");
+    pronTemplateToExpand.add("it-pr");
+    pronTemplateToExpand.add("ja-pron");
+    pronTemplateToExpand.add("ko-hanja-pron");
+    pronTemplateToExpand.add("pl-pronunciation");
+    pronTemplateToExpand.add("pl-p");
+    pronTemplateToExpand.add("ru-IPA-manual");
+    pronTemplateToExpand.add("vi-ipa");
+    pronTemplateToExpand.add("vi-pron");
+    pronTemplateToExpand.add("za-pron");
+  }
+
+  private boolean shoudlExpandPronTemplate(Template template) {
+    return languagePronTemplate.reset(template.getName()).matches()
+        || pronTemplateToExpand.contains(template.getName());
   }
 
   private static boolean isPositiveInt(String str) {
@@ -1364,13 +1395,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if ("alter".equals(t.getName()) || "alt".equals(t.getName())) {
               for (String k : t.getParsedArgs().keySet()) {
                 if (isPositiveInt(k)) {
-                  if ("1".equals(k))
+                  if ("1".equals(k)) {
                     continue;
+                  }
                   String alt = t.getParsedArgs().get(k);
                   if (alt != null && !alt.equals("")) {
                     wdh.registerAlternateSpelling(alt);
-                  } else
+                  } else {
                     break;
+                  }
                 } else {
                   log.debug("Alternate Forms: unexpected named arg {} in {}", k,
                       getWiktionaryPageName());

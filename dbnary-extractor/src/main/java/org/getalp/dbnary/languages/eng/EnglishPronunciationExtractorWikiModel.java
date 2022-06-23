@@ -22,12 +22,6 @@ public class EnglishPronunciationExtractorWikiModel extends EnglishWikiModel {
 
   private final Logger log = LoggerFactory.getLogger(EnglishPronunciationExtractorWikiModel.class);
 
-  // static Set<String> ignoredTemplates = new TreeSet<String>();
-  // static {
-  // ignoredTemplates.add("Wikipedia");
-  // ignoredTemplates.add("Incorrect");
-  // }
-
   private final IWiktionaryDataHandler delegate;
 
 
@@ -68,7 +62,6 @@ public class EnglishPronunciationExtractorWikiModel extends EnglishWikiModel {
     }
   }
 
-  @SuppressWarnings("StatementWithEmptyBody")
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {

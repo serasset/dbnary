@@ -340,32 +340,32 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         case DEFBLOCK:
           // Iterate until we find a new section
           if (isTranslation(m)) {
-           // leaveDefBlock(m);
+           leaveDefBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-           // leaveDefBlock(m);
+           leaveDefBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-           // leaveDefBlock(m);
+           leaveDefBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-           // leaveDefBlock(m);
+           leaveDefBlock(m);
             gotoNymBlock(m);
           } else if (isPronounciation(m)) {
-           // leaveDefBlock(m);
+           leaveDefBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-           // leaveDefBlock(m);
+           leaveDefBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-           // leaveDefBlock(m);
+           leaveDefBlock(m);
             gotoNoData(m);
           } else {
-           // leaveDefBlock(m);
+           leaveDefBlock(m);
             log.trace("block named " + m.group(1) + " is ignored");
             gotoNoData(m);
           }
@@ -557,7 +557,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case NODATA:
         break;
       case DEFBLOCK:
-       // leaveDefBlock(m);
+       leaveDefBlock(m);
         break;
       case TRADBLOCK:
           leaveTradAltBlock(m);
@@ -602,36 +602,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionExtractor.parseDefinition(definition, defLevel);
   }
 
-  public boolean languageTagIsChinese(String textContent)
-  {
-    String starChinese = "\n\\*:?\\s?(.)";
-    Pattern p = Pattern.compile(starChinese);
-    Matcher m=p.matcher(textContent);
-    if (m.find()&&Character.UnicodeScript.of(m.group(1).codePointAt(0))==Character.UnicodeScript.HAN)
-    {
-      System.out.println(m.group(1));
-      return true;
-    }
-    return false;
-
-  }
-
   private void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    if(!languageTagIsChinese(transCode)) {
-      JapaneseTranslationsExtractor dbnmodel =
-              new JapaneseTranslationsExtractor(this.wdh, this.wi, glossFilter);
-      dbnmodel.parseTranslations(transCode);
-    }
-    else {
-
-      ChineseTranslationExtractorWikiModel dbnmodel =
+    ChineseTranslationExtractorWikiModel dbnmodel =
               new ChineseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("en"),
                       "/${image}/" + getWiktionaryPageName(), "/${title}", glossFilter);
       dbnmodel.parseTranslationBlock(transCode);
-    }
   }
-
-
-
 }

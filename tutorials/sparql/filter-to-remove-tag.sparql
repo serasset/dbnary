@@ -1,0 +1,5 @@
+SELECT ?p
+WHERE { 
+	?p rdfs:label ?label
+	FILTER(str(?label) = "Georga W Busha")
+}

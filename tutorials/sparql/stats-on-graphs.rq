@@ -1,0 +1,4 @@
+SELECT ?g ?p (count(?p) as ?count) where { 
+  Graph ?g { ?s ?p ?o } 
+} group by ?p ?g 
+  order by desc (?g) desc(?count)

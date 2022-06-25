@@ -46,7 +46,7 @@ public class DBnary {
   public void setDebug(String[] classes) {
     // Configure the slf4j-simple logger level for the specified parameters
     for (String clazz : classes) {
-      spec.commandLine().getOut().println("Enabling debug for " + clazz);
+      spec.commandLine().getErr().println("Enabling debug for " + clazz);
       System.setProperty(SimpleLogger.LOG_FILE_KEY + "org.getalp.dbnary." + clazz, "debug");
       System.setProperty(SimpleLogger.LOG_FILE_KEY + clazz, "debug");
     }

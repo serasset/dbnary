@@ -39,6 +39,7 @@ public class DbnaryWikiModel extends WikiModel {
     this.wi = wi;
     // This tag is used at least in French Morphology templates.
     this.addTokenTag("bdi", new HTMLTag("bdi"));
+    this.addTokenTag("templatestyles", new HTMLTag("templatestyles"));
   }
 
   private static DocumentBuilder docBuilder = null;

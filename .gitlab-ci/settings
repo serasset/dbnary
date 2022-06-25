@@ -1,4 +1,7 @@
-SAMPLE_SIZE=${VALIDATION_SAMPLE_SIZE:-10000}
+SAMPLE_SIZE=${VALIDATION_SAMPLE_SIZE:-"10000"}
+if [[ ! $SAMPLE_SIZE =~ ^-?[0-9]+$ ]] ; then
+  SAMPLE_SIZE="10000"
+fi
 LANGS=${VALIDATION_LANGUAGES:-"fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"}
 # Override validation languages if given in the bitbucket commit message
 if [[ $CI_COMMIT_MESSAGE =~ 'VALIDATION_LANGUAGES="'([^\"]*)'"' ]]

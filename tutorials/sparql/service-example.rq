@@ -1,0 +1,14 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+SELECT * 
+WHERE {
+    SERVICE <http://dbpedia.org/sparql> {
+    SELECT *
+        WHERE { ?p a dbo:City ; rdfs:label ?o } LIMIT 1000
+    }
+    SERVICE <http://kaiko.getalp.org/sparql> {
+    SELECT *
+        WHERE { ?e a ontolex:LexicalEntry ; rdfs:label ?o } LIMIT 10
+    }
+}

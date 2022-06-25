@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParentCommand;
 import picocli.CommandLine.Spec;
@@ -49,6 +50,14 @@ public class GrepInWiktionary implements Callable<Integer> {
     this.match = this.pattern.matcher("");
   }
 
+  @Option(names = {"-l", "--pagename"}, description = "only show the name of the page.")
+  protected boolean onlyShowFilename = false;
+
+  @Option(names = {"--plain"}, description = "match is displayed without specific formatting.")
+  protected boolean plainDisplay = false;
+
+  @Option(names = {"--all-matches"}, description = "show all matches.")
+  protected boolean showAllMatches = false;
 
   static {
     try {
@@ -85,10 +94,12 @@ public class GrepInWiktionary implements Callable<Integer> {
         } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("text")) {
           String text = xmlr.getElementText();
           match.reset(text);
-          if (match.find()) {
-            spec.commandLine().getOut().write(title + ": ");
-            spec.commandLine().getOut().write(showMatchInContext(text, match.start(), match.end()));
-            spec.commandLine().getOut().flush();
+          while (match.find()) {
+            showMatch(title, text, match);
+            if (onlyShowFilename)
+              break;
+            if (!showAllMatches)
+              break;
           }
         } else if (xmlr.isEndElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
           if (!title.equals("")) {
@@ -125,6 +136,19 @@ public class GrepInWiktionary implements Callable<Integer> {
     return 0;
   }
 
+  private void showMatch(String title, String text, Matcher match) {
+    spec.commandLine().getOut().write(title);
+    if (onlyShowFilename)
+      return;
+    spec.commandLine().getOut().write(": ");
+    if (plainDisplay) {
+      spec.commandLine().getOut().write(showPlainMatch(text, match.start(), match.end()));
+    } else {
+      spec.commandLine().getOut().write(showMatchInContext(text, match.start(), match.end()));
+    }
+    spec.commandLine().getOut().flush();
+  }
+
   private static String showMatchInContext(String text, int start, int end) {
     TextStringBuilder res = new TextStringBuilder(120);
     int before = start - 40;
@@ -138,5 +162,9 @@ public class GrepInWiktionary implements Callable<Integer> {
     res.appendFixedWidthPadRight(text.substring(end, to).replace('\n', '\u23CE'), 40, ' ');
     res.appendNewLine();
     return res.toString();
+  }
+
+  private static String showPlainMatch(String text, int start, int end) {
+    return text.substring(start, end).replace('\n', '\u23CE') + "\n";
   }
 }

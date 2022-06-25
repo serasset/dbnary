@@ -1,0 +1,10 @@
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dcterm: <http://purl.org/dc/terms/>
+
+SELECT ?le ?l
+WHERE { 
+    ?le a ontolex:LexicalEntry ;
+        rdfs:label ?l ;
+        dcterm:language lexvo:fra .
+}

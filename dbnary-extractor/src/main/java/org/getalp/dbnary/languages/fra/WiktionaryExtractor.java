@@ -468,7 +468,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractLanguageSection(WikiSection languageSection, String language) {
     if (null == language)
       return;
-    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !"fr".equals(language))
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
+        && !wdh.getExtractedLanguage().equals(language))
       return;
 
     // The language is always defined when arriving here, but we should check if we extract it
@@ -727,7 +728,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (null != (g = lexer.group("TMPL"))) {
         WikiText.Template t = (WikiText.Template) line.getToken(g);
         String tname = t.getName();
-        Map<String, String> args = t.getParsedArgs();
+        Map<String, String> args = t.cloneParsedArgs();
 
         switch (tname) {
           case "trad+":

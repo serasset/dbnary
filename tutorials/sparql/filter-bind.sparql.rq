@@ -1,0 +1,6 @@
+SELECT ?p
+WHERE { 
+	?p rdfs:label ?label.
+	BIND(str(?label) as ?plainLabel)
+	FILTER(?plainlabel = "Georga W Busha")
+}

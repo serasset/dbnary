@@ -25,6 +25,7 @@ import org.getalp.dbnary.PronunciationPair;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.SkosOnt;
 import org.getalp.dbnary.model.NymRelation;
+import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +53,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   protected int currentEtymologyNumber;
 
 
-  protected String currentEntryLanguage = null;
-  protected String currentEntryLanguageName = null;
+  // protected String currentEntryLanguage = null;
+  // protected String currentEntryLanguageName = null;
 
   static {
     // English
@@ -115,19 +116,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     super(lang, tdbDir);
   }
 
-  @Override
   public void initializeLanguageSection(String lang) {
-    currentEntryLanguage = "en";
-    currentEntryLanguageName = "English";
-    initializeLanguageSection(currentPage.getName(), currentEntryLanguage,
-        currentEntryLanguageName);
-  }
-
-  public void initializeLanguageSection(String wiktionaryPageName, String lang,
-      String languageName) {
     currentEtymologyNumber = 0;
     currentEtymologyEntry = null;
-    currentGlobalEtymologyEntry = createGlobalEtymologyResource(wiktionaryPageName, lang);
+    currentGlobalEtymologyEntry = createGlobalEtymologyResource(currentPage.getName(), lang);
     super.initializeLanguageSection(lang);
   }
 
@@ -142,8 +134,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       Resource r =
           eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(wiktionaryPageName),
               DBnaryEtymologyOnt.EtymologyEntry);
-      Resource w = ResourceFactory.createResource(
-          WIKT + uriEncode(wiktionaryPageName) + "#" + uriEncode(currentEntryLanguageName));
+      Resource w = ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName) + "#"
+          + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(lang)));
       eBox.add(r, RDFS.seeAlso, w);
       eBox.add(r, RDFS.label, wiktionaryPageName, lang);
 
@@ -172,8 +164,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       currentEtymologyEntry =
           eBox.createResource(getPrefix(eBox, lang) + "__ee_" + uriEncode(currentPagename()),
               DBnaryEtymologyOnt.EtymologyEntry);
-      Resource w = ResourceFactory.createResource(
-          WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
+      Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentPagename()) + "#"
+          + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
       eBox.add(currentEtymologyEntry, RDFS.seeAlso, w);
       eBox.add(currentEtymologyEntry, RDFS.label, currentPagename(), lang);
     }
@@ -244,8 +236,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, currentEtymologyEntry);
           // TODO: when extracting a reconstructed word the URL of wiktionary page is not correctly
           // computed
-          Resource w = ResourceFactory.createResource(
-              WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
+          Resource w =
+              ResourceFactory.createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(
+                  ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
           eBox.add(vocable0, RDFS.seeAlso, w);
           eBox.add(vocable0, RDFS.label, word, lang);
         } else {
@@ -254,8 +247,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               DBnaryEtymologyOnt.EtymologyEntry);
           eBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyRelatedTo, vocable0);
           eBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable0);
-          Resource w = ResourceFactory.createResource(
-              WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
+          Resource w =
+              ResourceFactory.createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(
+                  ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
           eBox.add(vocable2, RDFS.seeAlso, w);
           eBox.add(vocable2, RDFS.label, word, lang);
         }
@@ -277,8 +271,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     currentEtymologyEntry = eBox.createResource(
         computeEtymologyId(eBox, currentEtymologyNumber, lang), DBnaryEtymologyOnt.EtymologyEntry);
     eBox.add(currentGlobalEtymologyEntry, DBnaryOnt.describes, currentEtymologyEntry);
-    Resource w = ResourceFactory.createResource(
-        WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
+    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentPagename()) + "#"
+        + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
     eBox.add(currentEtymologyEntry, RDFS.seeAlso, w);
   }
 
@@ -326,8 +320,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               vocable = createEtymologyEntryResource(eBox, word1, lang0);
               eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable);
               eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyRelatedTo, vocable);
-              Resource w = ResourceFactory.createResource(
-                  WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
+              Resource w = ResourceFactory
+                  .createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(
+                      ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
               eBox.add(vocable, RDFS.seeAlso, w);
               eBox.add(vocable, RDFS.label, word1, lang0);
             } else {
@@ -336,8 +331,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           } else {
             // parse template with multiple words (word1 word2 etc., and possibly lang1, lang2 etc.)
             boolean compound = false;
-            Resource w = ResourceFactory.createResource(
-                WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
+            Resource w = ResourceFactory
+                .createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(
+                    ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
             for (int kk = 1; kk < 12; kk++) {
               String word = b.args.get("word" + Integer.toString(kk));
               lang = b.args.get("lang" + Integer.toString(kk));
@@ -408,8 +404,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           if (counter == 0) {
             if (ancestor != null) {
               eBox.add(vocable, DBnaryEtymologyOnt.etymologicallyRelatedTo, ancestor);
-              Resource w = ResourceFactory.createResource(
-                  WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
+              Resource w = ResourceFactory
+                  .createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(
+                      ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
               eBox.add(vocable, RDFS.seeAlso, w);
               eBox.add(vocable, RDFS.label, word, lang);
             }
@@ -419,8 +416,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                 ancestors.get(ancestors.size() - 1));
             eBox.add(vocable, DBnaryEtymologyOnt.etymologicallyRelatedTo,
                 ancestors.get(ancestors.size() - 1));
-            Resource w = ResourceFactory.createResource(
-                WIKT + uriEncode(currentPagename()) + "#" + uriEncode(currentEntryLanguageName));
+            Resource w = ResourceFactory
+                .createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(
+                    ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
             eBox.add(vocable, RDFS.seeAlso, w);
             eBox.add(vocable, RDFS.label, word, lang);
           }

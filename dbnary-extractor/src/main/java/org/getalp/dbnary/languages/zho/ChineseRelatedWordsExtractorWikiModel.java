@@ -31,7 +31,7 @@ public class ChineseRelatedWordsExtractorWikiModel {
 
 
   public void parseRelatedWords(String relatedWords) {
-    parseRelatedWords(relatedWords);
+    // parseRelatedWords(relatedWords);
 
   }
 

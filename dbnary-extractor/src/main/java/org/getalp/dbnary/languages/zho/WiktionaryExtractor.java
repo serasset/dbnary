@@ -629,10 +629,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    ChineseTranslationExtractorWikiModel dbnmodel =
-              new ChineseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("en"),
-                      "/${image}/" + getWiktionaryPageName(), "/${title}", glossFilter);
-      dbnmodel.parseTranslationBlock(transCode);
+    ChineseTranslationExtractor translationExtractor = new ChineseTranslationExtractor(this.wdh, glossFilter);
+    translationExtractor.parseTranslationBlock(transCode);
   }
 
 }

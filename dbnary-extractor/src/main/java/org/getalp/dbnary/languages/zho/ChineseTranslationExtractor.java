@@ -3,6 +3,7 @@ package org.getalp.dbnary.languages.zho;
 import info.bliki.wiki.filter.WikipediaParser;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,27 +17,27 @@ import org.getalp.dbnary.languages.AbstractGlossFilter;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.languages.jpn.JapaneseLangtoCode;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.InternalLink;
+import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Text;
+import org.getalp.dbnary.wiki.WikiText.Token;
+import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel {
+public class ChineseTranslationExtractor {
 
   private final AbstractGlossFilter glossFilter;
   private IWiktionaryDataHandler delegate;
   private int rank = 1;
 
-  private Logger log = LoggerFactory.getLogger(ChineseTranslationExtractorWikiModel.class);
+  private Logger log = LoggerFactory.getLogger(ChineseTranslationExtractor.class);
 
-  public ChineseTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-                                              String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
-    this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL, glossFilter);
-  }
-
-  public ChineseTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-                                              Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
-    super(wi, locale, imageBaseURL, linkBaseURL);
+  public ChineseTranslationExtractor(IWiktionaryDataHandler we, AbstractGlossFilter glossFilter) {
     this.delegate = we;
     this.glossFilter = glossFilter;
   }
@@ -52,26 +53,95 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
     return (normalTypeMatcher.results().count()>=abnormalTypeMatcher.results().count());
   }
 
-  public void parseTranslationBlock(String block) {
-    initialize();
-    this.rank = 1;
-    if (block == null) {
-      return;
-    }
-    //transblock type : *langage: {{XX|XX|XX}}
-    if (isNormalType(block)) {
-      WikipediaParser.parse(block, this, true, null);
-    }
-    //transblock type : *langage: [[]]
-    else {
-      extractTranslations(block);
-    }
-    initialize();
-  }
-
   private Resource currentGloss = null;
 
-  @Override
+  public void parseTranslationBlock(String block) {
+    WikiText text = new WikiText(block);
+    extractTranslationsBlocks(text.content());
+  }
+
+  private void extractTranslationsBlocks(WikiContent text) {
+    for (Token t : text.wikiTokens()) {
+      if (t instanceof Template) {
+        Template tmpl = t.asTemplate();
+        if (tmpl.getName().equals("trans-top")) {
+          // Extract gloss
+          String g = tmpl.getParsedArg("1");
+          if (null != g) {
+            g = g.trim();
+            currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+          } else {
+            currentGloss = null;
+          }
+        } else if (tmpl.getName().equals("trans-bottom")) {
+          currentGloss = null;
+        } else if (tmpl.getName().equals("trans-mid")) {
+          // Just ignore
+        } else {
+          log.debug("Translation: Unknown Template {} in {}", tmpl.getName(),
+              delegate.currentPagename());
+        }
+      } else if (t instanceof ListItem) {
+        extractTranslationLine(t.asListItem().getContent());
+      } else {
+        log.debug("Translation: Unexpected WikiToken {} in {}", t.getClass().getName(),
+            delegate.currentPagename());
+      }
+    }
+  }
+
+  private void extractTranslationLine(WikiContent content) {
+    String lang = null;
+    List<Token> tokens = content.tokens();
+    if (tokens.size() == 0) return;
+    Token firstToken = tokens.get(0);
+    if (firstToken instanceof Template) {
+      // récupérer le code de langue
+      lang = normalizeLang(firstToken.asTemplate().getName().toLowerCase(Locale.ROOT));
+    } else if (firstToken instanceof Text) {
+      String languageIntroduction = firstToken.asText().toString();
+      String languageName = languageIntroduction.split(":|：")[0];
+      lang = normalizeLang(languageName);
+    } else {
+      log.debug("Translation Line: Unexpected first token {} in {}",
+          firstToken.getClass().toString(), delegate.currentPagename());
+    }
+    tokens.remove(0);
+    for (Token t : tokens) {
+      if (t instanceof Template) {
+        Template tmpl = t.asTemplate();
+        if (((Template) t).getName().equals("t")) { // t, t+ (tt tt+ t- tt-) l
+          String langCode = normalizeLang(tmpl.getParsedArg("1"));
+          String usage = tmpl.getParsedArg("3");
+          if (null == usage) {
+            usage = "";
+          }
+          String transcription = tmpl.getParsedArg("tr");
+          if (null == transcription) {
+            transcription = tmpl.getParsedArg("4");
+          }
+          if (null == transcription) {
+            transcription = "";
+          }
+
+          if (!transcription.equals("")) {
+            usage = "(" + transcription + "), " + usage;
+          }
+          delegate.registerTranslation(langCode, currentGloss, usage, tmpl.getParsedArg("2"));
+        }
+      } else if (t instanceof InternalLink) {
+        if (null == lang) {
+          log.debug("...");
+        }
+        delegate.registerTranslation(lang, currentGloss, null, t.asInternalLink().getTargetText());
+      } else {
+        log.debug("Translation Line: Unexpected token {} in {}",
+            firstToken.getClass().toString(), delegate.currentPagename());
+      }
+    }
+  }
+
+
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
                                      Appendable writer) throws IOException {
     if ("trad".equals(templateName)) {

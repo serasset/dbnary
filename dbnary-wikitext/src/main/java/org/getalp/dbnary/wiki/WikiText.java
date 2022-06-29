@@ -729,12 +729,20 @@ public class WikiText {
       return target.toString().contains("#");
     }
 
+    /**
+     * return the anchor part of the link
+     * @return the anchor of the link, null if no anchor
+     */
     public String getAnchorText() {
       String t = target.toString();
       int p = t.indexOf('#');
       return (p == -1) ? null : t.substring(p + 1);
     }
 
+    /**
+     * return the target of the link as a test without any anchor
+     * @return the target of the link
+     */
     public String getTargetText() {
       String t = target.toString();
       int p = t.indexOf('#');

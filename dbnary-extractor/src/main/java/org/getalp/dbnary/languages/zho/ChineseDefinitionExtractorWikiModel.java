@@ -28,7 +28,7 @@ public class ChineseDefinitionExtractorWikiModel extends ChineseDbnaryWikiModel 
     // Render the definition to plain text, while ignoring the example template
     String def = WikiTool.removeReferencesIn(definition);
     try {
-      def = render(new PlainTextConverter(), def).trim();
+        def = render(new PlainTextConverter(), def).trim();
     } catch (IOException e) {
       e.printStackTrace();
     }

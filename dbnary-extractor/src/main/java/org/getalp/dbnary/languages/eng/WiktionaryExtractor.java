@@ -214,7 +214,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private Block computeNextBlock(Matcher m, Map<String, Object> context) {
     String title = m.group(1).trim();
     String nym;
-    context.put("start", m.end());
+     context.put("start", m.end());
 
     if (title.equals("Pronunciation")) {
       return Block.PRONBLOCK;
@@ -280,7 +280,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     }
 
-    int end = computeRegionEnd(blockStart, m);
+     int end = computeRegionEnd(blockStart, m);
 
     switch (currentBlock) {
       case NOBLOCK:

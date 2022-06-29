@@ -46,8 +46,8 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
   }
 
   public boolean isNormalType(String textContent){
-    String normalTypeString = "(?:\\*.+\\uff1a\\{\\{.+\\}\\})|(?:\\*.+:\\s\\{\\{.+\\}\\})";
-    String abnormalTypeString = "(?:\\*.+\\uff1a\\[\\[.+\\]\\])|(?:\\*.+:\\s\\[\\[.+\\]\\])";
+    String normalTypeString = "(?:\\*.+\\uff1a?\\{\\{.+\\}\\})|(?:\\*.+:\\s\\{\\{.+\\}\\})";
+    String abnormalTypeString = "(?:\\*.+\\uff1a?\\[\\[.+\\]\\])|(?:\\*.+:\\s\\[\\[.+\\]\\])";
     Pattern normalTypePattern = Pattern.compile(normalTypeString);
     Pattern abnormalTypePattern = Pattern.compile(abnormalTypeString);
     Matcher normalTypeMatcher = normalTypePattern.matcher(textContent);

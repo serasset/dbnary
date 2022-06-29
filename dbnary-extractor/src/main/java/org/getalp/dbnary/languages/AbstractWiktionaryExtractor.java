@@ -183,6 +183,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
     Matcher defOrExampleMatcher = defOrExamplePattern.matcher(this.pageContent);
     defOrExampleMatcher.region(startOffset, endOffset);
+
     while (defOrExampleMatcher.find()) {
       if (null != defOrExampleMatcher.group(1)) {
         extractDefinition(defOrExampleMatcher);

@@ -261,7 +261,7 @@ public class ISO639_3 {
       }
     }
     catch (IOException e) {
-      System.err.println("ISO639 French data not available");
+      System.err.println("ISO639 Chinese data not available");
       e.printStackTrace();
     }
   }

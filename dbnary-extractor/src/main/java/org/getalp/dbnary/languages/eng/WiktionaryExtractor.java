@@ -1253,8 +1253,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return text.content();
   }
 
-  private Set<String> processedLinks = new HashSet<>();
 
+  private final Set<String> processedLinks = new HashSet<>();
   private void extractTranslations(int startOffset, int endOffset) {
     processedLinks.clear();
     processedLinks.add(getWiktionaryPageName());

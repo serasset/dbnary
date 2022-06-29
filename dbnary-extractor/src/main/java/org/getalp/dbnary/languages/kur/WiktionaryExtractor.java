@@ -199,7 +199,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       Template template = (Template) tok;
       if ("Z".equals(template.getName()))
         continue;
-      Map<String, String> args = template.getParsedArgs();
+      Map<String, String> args = template.cloneParsedArgs();
       if ("werger-ser".equals(template.getName())) {
         if (template.getParsedArgs().get("1") != null) {
           globalGloss = args.get("1");

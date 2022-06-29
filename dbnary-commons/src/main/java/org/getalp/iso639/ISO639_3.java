@@ -305,6 +305,17 @@ public class ISO639_3 {
     return langMap.get(langcode);
   }
 
+  private Map<String, Lang> name2Lang;
+
+  public Lang getLangFromName(String langName) {
+    if (null == name2Lang) {
+      name2Lang = new HashMap<>(langSet.size());
+      for (Lang l : langSet) {
+        name2Lang.put(l.en, l);
+      }
+    }
+    return name2Lang.get(langName);
+  }
 
   public Iterator<Lang> knownLanguagesIterator() {
     return langSet.iterator();

@@ -5,6 +5,7 @@ import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -103,8 +104,8 @@ public class WikiText {
       } else if (t instanceof Template) {
         Template tmpl = (Template) t;
         this.addFlattenedTokens(tmpl.name);
-        if (null != tmpl.args) {
-          for (WikiContent arg : tmpl.args) {
+        if (null != tmpl.arguments) {
+          for (WikiContent arg : tmpl.arguments) {
             this.addFlattenedTokens(arg);
           }
         }
@@ -489,8 +490,9 @@ public class WikiText {
   public final class Template extends Token {
 
     private final WikiContent name;
-    private ArrayList<WikiContent> args;
-    private Map<String, WikiContent> parsedArgs = null;
+    private ArrayList<WikiContent> arguments;
+    private LinkedHashMap<String, WikiContent> args = null;
+    private Map<String, String> argsAsString = null;
 
     private Template(int startOffset) {
       this.offset = new Segment(startOffset);
@@ -505,34 +507,34 @@ public class WikiText {
      */
     @Override
     protected void setEndOffset(int position) {
-      if (null == args) {
+      if (null == arguments) {
         this.name.setEndOffset(position);
       } else {
-        args.get(args.size() - 1).setEndOffset(position);
+        arguments.get(arguments.size() - 1).setEndOffset(position);
       }
       super.setEndOffset(position + 2);
     }
 
     private void gotAPipe(int position) {
-      if (null == args) {
+      if (null == arguments) {
         this.name.setEndOffset(position);
-        args = new ArrayList<>();
+        arguments = new ArrayList<>();
       } else {
         // got a new parameter separator...
-        if (!args.isEmpty()) {
-          args.get(args.size() - 1).setEndOffset(position);
+        if (!arguments.isEmpty()) {
+          arguments.get(arguments.size() - 1).setEndOffset(position);
         }
       }
-      args.add(new WikiContent(position + 1));
+      arguments.add(new WikiContent(position + 1));
     }
 
     @Override
     protected void addToken(Token t) {
-      if (null == args) {
+      if (null == arguments) {
         this.name.addToken(t);
       } else {
         // got a new token inside an arg...
-        args.get(args.size() - 1).addToken(t);
+        arguments.get(arguments.size() - 1).addToken(t);
       }
     }
 
@@ -540,8 +542,8 @@ public class WikiText {
     public void fillText(StringBuilder r) {
       r.append("{{");
       r.append(this.name.getText());
-      if (null != this.args) {
-        this.args.stream().map(WikiContent::getText).forEach(s -> {
+      if (null != this.arguments) {
+        this.arguments.stream().map(WikiContent::getText).forEach(s -> {
           r.append('|');
           r.append(s);
         });
@@ -554,7 +556,7 @@ public class WikiText {
     }
 
     /**
-     * return the argName/argValue Map. argName being a String and argValue a String.
+     * return the IMMUTABLE argName/argValue Map. argName being a String and argValue a String.
      * <p>
      * When iterated, the map will provide values or entries in insertion order, hence iterating
      * over the map will give args in the order they were defined.
@@ -563,12 +565,27 @@ public class WikiText {
      */
 
     public Map<String, String> getParsedArgs() {
-      Map<String, WikiContent> args = getArgs();
-      Map<String, String> argsAsString = new LinkedHashMap<>();
-      for (Map.Entry<String, WikiContent> e : args.entrySet()) {
-        argsAsString.put(e.getKey(), e.getValue().getText());
+      if (argsAsString == null) {
+        Map<String, WikiContent> args = getArgs();
+        argsAsString = new LinkedHashMap<>();
+        for (Map.Entry<String, WikiContent> e : args.entrySet()) {
+          argsAsString.put(e.getKey(), e.getValue().getText());
+        }
+        argsAsString = Collections.unmodifiableMap(argsAsString);
       }
       return argsAsString;
+    }
+
+    /**
+     * return a MUTABLE clone of argName/argValue Map. argName being a String and argValue a String.
+     * <p>
+     * When iterated, the map will provide values or entries in insertion order, hence iterating
+     * over the map will give args in the order they were defined.
+     *
+     * @return the argName/argVal map
+     */
+    public Map<String, String> cloneParsedArgs() {
+      return new LinkedHashMap<>(getParsedArgs());
     }
 
     /**
@@ -604,12 +621,12 @@ public class WikiText {
      *
      * @return the argName/argVal map
      */
-    public Map<String, WikiContent> getArgs() {
-      if (parsedArgs == null) {
-        parsedArgs = new LinkedHashMap<>();
-        if (null != args) {
+    public LinkedHashMap<String, WikiContent> getArgs() {
+      if (args == null) {
+        args = new LinkedHashMap<>();
+        if (null != arguments) {
           int n = 1; // number for positional args.
-          for (WikiContent arg : args) {
+          for (WikiContent arg : arguments) {
             if (null == arg) {
               continue;
             }
@@ -641,7 +658,7 @@ public class WikiText {
             }
             if (value != null) {
               String argname = key.toString().trim();
-              if (parsedArgs.containsKey(argname)) {
+              if (args.containsKey(argname)) {
                 log.debug("Duplicate arg name | {} | in [ {} ] entry : {}", argname, this.name,
                     pagename);
                 // Keep the first version of the arg
@@ -652,17 +669,17 @@ public class WikiText {
                     value.addToken(t);
                   }
                 }
-                parsedArgs.put(argname, value);
+                args.put(argname, value);
               }
             } else {
               // There is no argument name.
-              parsedArgs.put("" + n, arg);
+              args.put("" + n, arg);
               n++;
             }
           }
         }
       }
-      return parsedArgs;
+      return args;
     }
 
     /**
@@ -679,7 +696,7 @@ public class WikiText {
       WikiContent res = new WikiContent(name.offset.start);
       int end = name.offset.end;
       res.addFlattenedTokens(name);
-      for (WikiText.WikiContent arg : this.args) {
+      for (WikiText.WikiContent arg : this.arguments) {
         res.addFlattenedTokens(arg);
         end = arg.offset.end;
       }

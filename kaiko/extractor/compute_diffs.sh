@@ -66,7 +66,7 @@ prepareTDBifTooBig() {
         tdbfile=${ttlfile}.tdb
         if [ -d "$tdbfile" ]
         then
-            >&2 echo "TDB2 directory alrady exists, assuming it's OK:  $tdbfile"
+            >&2 echo "TDB2 directory already exists, assuming it's OK:  $tdbfile"
             >&2 echo "If not, remove directory and relaunch command."
         else
             >&2 tdb2.tdbloader --loc "$tdbfile" "$ttlfile"

@@ -1,0 +1,4 @@
+SELECT ?p
+WHERE { 
+    ?p rdfs:label "President Bush". 
+}

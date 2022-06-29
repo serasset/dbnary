@@ -1,0 +1,4 @@
+select distinct ?p 
+where {
+    ?s ?p ?o
+} LIMIT 200

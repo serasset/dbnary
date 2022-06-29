@@ -106,7 +106,7 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
     // pronunciation to the lexicalForms that were extracted from the other cell on the left.
     if (isInflectedFormPronunciation(cell)) {
       if (j < 2) {
-        log.warn("Unusual verbal inflection table geometry in {}", this.entryName);
+        log.debug("Unusual verbal inflection table geometry in {}", this.entryName);
         return new LinkedHashSet<>();
       }
       Set<LexicalForm> lexFormsOnTheLeft = results.get(i, j - 2);
@@ -159,7 +159,7 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
       }
     }
     if (noneMatch)
-      log.warn("Unexpected grammatical context {} in {}", c, this.entryName);
+      log.debug("Unexpected grammatical context {} in {}", c, this.entryName);
   }
 
   private boolean isInflectedFormPronunciation(Element cell) {

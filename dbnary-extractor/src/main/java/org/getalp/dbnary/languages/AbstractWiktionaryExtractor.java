@@ -162,7 +162,6 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   }
 
   /**
-   *
    * @param pagename the name of the page
    * @return returns true iff the pagename should be ignored during extraction.
    */
@@ -232,9 +231,9 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
    * not represented in the iso standard and there are some that may lead to invalid turtle dumps
    * (either because IRI become malformed, but also because the language tag of string values is
    * invalid.
-   *
+   * <p>
    * In this common implementation, we only consider ISO language codes.
-   *
+   * <p>
    * Language extractor may refine this method or just add new language to the
    * NON_STANDARD_LANGUAGE_MAPPINGS map.
    *
@@ -244,8 +243,9 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
    */
   protected String validateAndStandardizeLanguageCode(String language) {
     Lang languageObject = ISO639_3.sharedInstance.getLang(language);
-    if (languageObject != null)
+    if (languageObject != null) {
       return languageObject.getId();
+    }
     return NON_STANDARD_LANGUAGE_MAPPINGS.get(language);
   }
 
@@ -551,8 +551,9 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   }
 
   public void postProcessModel(Model enhancementModel, Model sourceModel, String dumpFileVersion) {
-    if (null == enhancementModel)
+    if (null == enhancementModel) {
       return;
+    }
     TranslationGlossesStatsModule stats = new TranslationGlossesStatsModule();
     EvaluationStats evaluator = new EvaluationStats();
     TranslationSourcesDisambiguator disambiguator =

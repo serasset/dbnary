@@ -128,7 +128,7 @@ public class ImpersonalMoodTableExtractor extends RefactoredTableExtractor {
         f.getFeature().add(Person.SECOND);
         break;
       default:
-        log.warn("Unexpected cell position {} in Imperative table in {}", i, this.entryName);
+        log.debug("Unexpected cell position {} in Imperative table in {}", i, this.entryName);
     }
   }
 

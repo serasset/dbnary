@@ -1,6 +1,7 @@
 
 ## Alias for sampling evaluation strategy
 .sampling: &sampling
+  image: serasset/maven-jena:latest
   tags:
     - dbnary
     - linux
@@ -30,6 +31,7 @@ compile:sampling:
     LANGUAGE_BATCH: "en"
   needs: ["compile:sampling"]
   script:
+    - export
     - chmod +x .gitlab-ci/*.sh
     - .gitlab-ci/extract_both_versions.sh ${LANGUAGE_BATCH}
   artifacts:

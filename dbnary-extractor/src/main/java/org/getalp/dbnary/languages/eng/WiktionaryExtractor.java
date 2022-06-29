@@ -1422,4 +1422,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionExpander.setPageName(this.getWiktionaryPageName());
     definitionExpander.parseDefinition(definition, defLevel);
   }
+
+  @Override
+  public void postProcessData(String dumpFileVersion) {
+    ewdh.postProcessEtymology();
+    super.postProcessData(dumpFileVersion);
+  }
 }

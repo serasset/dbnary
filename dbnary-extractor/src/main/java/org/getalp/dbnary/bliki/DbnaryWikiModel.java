@@ -110,7 +110,7 @@ public class DbnaryWikiModel extends WikiModel {
           parsedPagename.pagename.substring(7), parsedPagename.valid);
     }
 
-    trace.incr(parsedPagename.fullPagename());
+    if (log.isTraceEnabled()) trace.incr(parsedPagename.fullPagename());
 
     if (null != wi) {
       String rawText = wi.getTextOfPageWithRedirects(parsedPagename.fullPagename());

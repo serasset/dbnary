@@ -414,7 +414,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
     frwdh = (WiktionaryDataHandler) wdh;
-    if (log.isDebugEnabled())
+    if (log.isTraceEnabled())
       exampleTemplates = new CounterSet();
   }
 
@@ -896,9 +896,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void postProcessData(String dumpFileVersion) {
-    if (log.isDebugEnabled()) {
+    if (log.isTraceEnabled()) {
       CounterSet templateStats = (CounterSet) exampleTemplates;
-      templateStats.logCounters(log);
+      templateStats.traceCounters(log);
     }
     super.postProcessData(dumpFileVersion);
   }

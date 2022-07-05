@@ -85,7 +85,6 @@
         </executions>
         <configuration>
           <licenseHeaderFile>${basedir}/LICENSE.txt</licenseHeaderFile>
-          <extraJvmArguments>-Xmx8g</extraJvmArguments>
           <repositoryName>lib</repositoryName>
           <repositoryLayout>flat</repositoryLayout>
           <platforms>

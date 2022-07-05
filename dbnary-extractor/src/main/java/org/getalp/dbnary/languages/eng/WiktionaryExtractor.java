@@ -24,6 +24,7 @@ import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.Span;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
@@ -72,22 +73,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     } else {
       log.error("English Wiktionary Extractor instanciated with a non english data handler!");
     }
-  }
-
-  protected static Pattern languageSectionPattern;
-  protected final static Pattern sectionPattern;
-  protected final static Pattern pronPattern;
-
-  static {
-    languageSectionPattern = Pattern.compile(LANGUAGE_SECTION_PATTERN_STRING);
-
-    sectionPattern = Pattern.compile(SECTION_PATTERN_STRING);
-    pronPattern = Pattern.compile(PRON_PATTERN_STRING);
-
-    // TODO: Treat Abbreviations and Acronyms and contractions and Initialisms
-    // TODO: Alternative forms
-    // TODO: Extract quotations from definition block + from Quotations section
-
   }
 
   private ExpandAllWikiModel wikiExpander;
@@ -1421,5 +1406,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void extractDefinition(String definition, int defLevel) {
     definitionExpander.setPageName(this.getWiktionaryPageName());
     definitionExpander.parseDefinition(definition, defLevel);
+  }
+
+  @Override
+  public void postProcessData(String dumpFileVersion) {
+    if (log.isTraceEnabled()) {
+      ((DbnaryWikiModel) pronunciationExpander).displayGlobalTrace("Pronunciation Model");
+      ((DbnaryWikiModel) definitionExpander).displayGlobalTrace("Definition Model");
+    }
+    ewdh.postProcessEtymology();
+    super.postProcessData(dumpFileVersion);
   }
 }

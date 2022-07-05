@@ -63,9 +63,13 @@ public class CounterSet implements Set<String> {
     }
   }
 
-  public void logCounters(Logger log) {
+  public void traceCounters(Logger log) {
+    traceCounters(log, "Template Expansion");
+  }
+
+  public void traceCounters(Logger log, String msg) {
     for (Entry<String, MutableInteger> s : counters.entrySet()) {
-      log.debug("{}: {}", s.getKey(), s.getValue()._val);
+      log.trace("{}: {} --> {}", msg, s.getKey(), s.getValue()._val);
     }
   }
 

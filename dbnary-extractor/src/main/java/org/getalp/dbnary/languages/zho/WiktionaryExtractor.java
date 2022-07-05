@@ -6,54 +6,40 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import info.bliki.wiki.filter.PlainTextConverter;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
-import org.getalp.dbnary.languages.jpn.JapaneseDefinitionExtractorWikiModel;
-import org.getalp.dbnary.languages.jpn.JapaneseTranslationsExtractor;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.reflect.internal.Variance;
-
 
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
-
   private static final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
-
   protected final static String wikiSectionPatternString = "^={3,}\\s*([^=]*)\\s*={3,}\\s*$";
   protected final static String level2HeaderPatternString = "^==([^=].*[^=])==\\s*$";
-  protected final static String pronounciationPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
   protected final static Pattern wikiSectionPattern;
   // private final static Pattern pronounciationPattern;
   private HashSet<String> unknownHeaders;
   private final int NODATA = 0;
   private final int TRADBLOCK = 1; // 翻譯
   private final int DEFBLOCK = 2; // 名詞
-  private final int ORTHOALTBLOCK = 3;//isAlternant另一种表示
+  private final int ORTHOALTBLOCK = 3;// isAlternant另一种表示
   private final int NYMBLOCK = 4;// 近義詞
   private final int PRONBLOCK = 5;// 讀音
   private final int RELBLOCK = 7;// 参考词汇
   private final int IGNOREPOS = 8;
 
   ChineseDefinitionExtractorWikiModel definitionExtractor;
-  ChineseDbnaryWikiModel extractor = new ChineseDbnaryWikiModel( this.wi, new Locale("en"),
-          "/${image}/" + getWiktionaryPageName(), "/${title}");
+  ChineseDbnaryWikiModel extractor = new ChineseDbnaryWikiModel(this.wi, new Locale("en"),
+      "/${image}/" + getWiktionaryPageName(), "/${title}");
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
     // throw new RuntimeException("Chinese extractor is currently not functional.");
   }
 
-  // public void setWiktionaryIndex(WiktionaryPageSource wi) {
-  // super.setWiktionaryIndex(wi);
-  // definitionExtractor = new ChineseDefinitionExtractorWikiModel(wdh,wi,new Locale("zh"),"--DO NOT
-  // USE IMAGE BASE URL FOR DEBUG--", "");
-  // }
-  // protected final static HashSet<String> sectionMarkers;
   protected final static HashMap<String, String> posMarkers;
   protected final static HashMap<String, String> nymMarkerToNymName;
 
@@ -73,7 +59,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     posMarkers.put("代词", "pronoun");
     posMarkers.put("idiom.", "idiom");
     posMarkers.put("成语", "idiom");
-
     posMarkers.put("adv.", "adverb");
     posMarkers.put("副词", "adverb");
     posMarkers.put("prep.", "preposition");
@@ -98,19 +83,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     nymMarkerToNymName.put("上位词", "hyper");
     nymMarkerToNymName.put("Meronyms", "mero");
     nymMarkerToNymName.put("整体-部分", "mero");
-
   }
-
-  // protected static Pattern wikiSectionPattern;
-  // private static Pattern pronounciationPattern;
   protected final static Pattern level2HeaderPattern;
-
   static {
     level2HeaderPattern = Pattern.compile(level2HeaderPatternString, Pattern.MULTILINE);
     wikiSectionPattern = Pattern.compile(wikiSectionPatternString, Pattern.MULTILINE);
-    // pronounciationPattern = Pattern.compile(pronounciationPatternString);
   }
-
   int state = NODATA;
   int translationBlockStart = -1;
   int definitionBlockStart = -1;
@@ -119,10 +97,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private int pronBlockStart = -1;
   private int relBlockStart = -1;
   private String currentNym = null;
-
-  // protected boolean isCurrentlyExtracting = false;
-  // private boolean isCorrectPOS;
-
   private HashSet<String> unkownHeaders;
 
   @Override
@@ -133,7 +107,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
 
-  public void extractData()  {
+  public void extractData() {
     Matcher filter = level2HeaderPattern.matcher(pageContent);
     unkownHeaders = new HashSet<String>();
     int chineseStart = -1;
@@ -232,22 +206,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // Nyms
   private boolean isNymHeader(Matcher m) {
-    // Matcher nym = WikiPatterns.macroPattern.matcher(m.group(1).trim());
-    //
-    // return nym.matches()
-    // && (ChineseRelatedWordsExtractorWikiModel.relMarkerToRelName).containsKey(nym.group(1));
-    return (m.group(1).trim().equals("近義詞")) || (m.group(1).trim().equals("同義詞"))||(m.group(1).equals("相關詞"));
+    return (m.group(1).trim().equals("近義詞")) || (m.group(1).trim().equals("同義詞"))
+        || (m.group(1).equals("相關詞"));
   }
 
   private void gotoNymBlock(Matcher m) {
     state = NYMBLOCK;
     nymBlockStart = m.end();
     Matcher nym = WikiPatterns.macroPattern.matcher(m.group(1).trim());
-    // if (nym.matches()) {
-    // currentNym = (ChineseRelatedWordsExtractorWikiModel.relMarkerToRelName).get(nym.group(1));
-    // } else {
-    // log.error("WARNING: non matching nym...");
-    // }
   }
 
   private void leaveNymBlock(Matcher m) {
@@ -258,9 +224,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // Related Words
   private boolean isRelatedHeader(Matcher m) {
-    // Matcher rel = WikiPatterns.macroPattern.matcher(m.group(1).trim());
-    // return rel.matches() && rel.group(1).trim().equals("rel") ;
-    // System.out.println(m.group(1));
     return (m.group(1).trim().equals("参考词汇") || m.group(1).trim().equals("參見"));
   }
 
@@ -274,13 +237,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     relBlockStart = -1;
   }
 
-
   // Pronounciation section
-  private boolean isPronounciation(Matcher m) {
+  private boolean isPronunciation(Matcher m) {
     String head = m.group(1).trim();
     Matcher pron = WikiPatterns.macroPattern.matcher(m.group(1).trim());
-    Pattern pronHeadPattern= Pattern.compile("發音\\d?|讀音\\d?|发音\\d?|读音\\d?");
-    Matcher pronHeadMatcher=pronHeadPattern.matcher(head);
+    Pattern pronHeadPattern = Pattern.compile("發音\\d?|讀音\\d?|发音\\d?|读音\\d?");
+    Matcher pronHeadMatcher = pronHeadPattern.matcher(head);
     if (pron.find()) {
       return (pron.group(1).equals("pron"));
     } else {
@@ -298,21 +260,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     pronBlockStart = -1;
   }
 
-  private boolean isLevel3Header(Matcher m) {
-    if (m.group(0).startsWith("===") && !m.group(0).startsWith("====")) {
-      unknownHeaders.add(m.group(0));
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   private void gotoIgnorePos() {
     state = IGNOREPOS;
   }
 
-
-  private void extractData(int startOffset, int endOffset)  {
+  private void extractData(int startOffset, int endOffset) {
     wdh.initializeLanguageSection("zh");
     Matcher m = wikiSectionPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
@@ -333,7 +285,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
             gotoNymBlock(m);
-          } else if (isPronounciation(m)) {
+          } else if (isPronunciation(m)) {
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
             gotoRelBlock(m);
@@ -346,7 +298,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         case DEFBLOCK:
           // Iterate until we find a new section
           if (isTranslation(m)) {
-            leaveDefBlock(m);
+            // leaveDefBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
             leaveDefBlock(m);
@@ -356,22 +308,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            leaveDefBlock(m);
+            // leaveDefBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            leaveDefBlock(m);
+            // leaveDefBlock(m);
             gotoNymBlock(m);
-          } else if (isPronounciation(m)) {
-            leaveDefBlock(m);
+          } else if (isPronunciation(m)) {
+            // leaveDefBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            leaveDefBlock(m);
+            // leaveDefBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            leaveDefBlock(m);
+            // leaveDefBlock(m);
             gotoNoData(m);
           } else {
-            leaveDefBlock(m);
+            // leaveDefBlock(m);
             log.trace("block named " + m.group(1) + " is ignored");
             gotoNoData(m);
           }
@@ -379,33 +331,33 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         case TRADBLOCK:
           if (isTranslation(m)) {
-              leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-              leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-             leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-             leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoNymBlock(m);
-          } else if (isPronounciation(m)) {
-             leaveTradAltBlock(m);
+          } else if (isPronunciation(m)) {
+            leaveTradAltBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-             leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-             leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoNoData(m);
           } else {
             log.trace("block named " + m.group(1) + " is ignored");
-             leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoNoData(m);
           }
           break;
@@ -427,7 +379,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           } else if (isNymHeader(m)) {
             // leaveOrthoAltBlock(m);
             gotoNymBlock(m);
-          } else if (isPronounciation(m)) {
+          } else if (isPronunciation(m)) {
             // leaveOrthoAltBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
@@ -444,71 +396,71 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         case NYMBLOCK:
           if (isTranslation(m)) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoNymBlock(m);
-          } else if (isPronounciation(m)) {
-            leaveNymBlock(m);
+          } else if (isPronunciation(m)) {
+            // leaveNymBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoNoData(m);
           } else {
-            leaveNymBlock(m);
+            // leaveNymBlock(m);
             gotoNoData(m);
           }
           break;
 
         case PRONBLOCK:
           if (isTranslation(m)) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoNymBlock(m);
-          } else if (isPronounciation(m)) {
-            leavePronBlock(m);
+          } else if (isPronunciation(m)) {
+            // leavePronBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoNoData(m);
           } else {
-            leavePronBlock(m);
+            // leavePronBlock(m);
             gotoNoData(m);
           }
           break;
 
         case RELBLOCK:
           if (isTranslation(m)) {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
             leaveRelBlock(m);
@@ -518,22 +470,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoNymBlock(m);
-          } else if (isPronounciation(m)) {
-            leaveRelBlock(m);
+          } else if (isPronunciation(m)) {
+            // leaveRelBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoNoData(m);
           } else {
-            leaveRelBlock(m);
+            // leaveRelBlock(m);
             gotoNoData(m);
           }
           break;
@@ -548,7 +500,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
           } else if (isAlternate(m)) {
           } else if (isNymHeader(m)) {
-          } else if (isPronounciation(m)) {
+          } else if (isPronunciation(m)) {
           } else if (isRelatedHeader(m)) {
           } else if (isChineseHeader(m)) {
           } else {
@@ -563,7 +515,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case NODATA:
         break;
       case DEFBLOCK:
-       leaveDefBlock(m);
+        // leaveDefBlock(m);
         break;
       case TRADBLOCK:
         leaveTradAltBlock(m);
@@ -572,10 +524,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // leaveOrthoAltBlock(m);
         break;
       case NYMBLOCK:
-        leaveNymBlock(m);
+        // leaveNymBlock(m);
         break;
       case PRONBLOCK:
-        leavePronBlock(m);
+        // leavePronBlock(m);
         break;
       case RELBLOCK:
         // leaveRelBlock(m);
@@ -602,24 +554,23 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String pronCode = pageContent.substring(startOffset, endOffset);
     Pattern pronunciationPattern = Pattern.compile("\\{\\{zh-pron[\\n.]*\\|m=(.*?)[,\\n\\|]");
     Matcher pronunciationMatcher = pronunciationPattern.matcher(pronCode);
-    while(pronunciationMatcher.find()) {
+    while (pronunciationMatcher.find()) {
       String pronunciation = pronunciationMatcher.group(1);
       wdh.registerPronunciation(pronunciation, "zh");
     }
   }
+
   private void extractPronTemplate(int startOffset, int endOffset) {
     String pronCode = pageContent.substring(startOffset, endOffset);
     extractor.setPageName(this.getWiktionaryPageName());
     String pronunciation = WikiTool.removeReferencesIn(pronCode);
     try {
-      pronunciation= extractor.render(new PlainTextConverter(),pronunciation).trim();
+      pronunciation = extractor.render(new PlainTextConverter(), pronunciation).trim();
     } catch (IOException e) {
       e.printStackTrace();
     }
-    wdh.registerPronunciation(pronunciation,"en");
+    wdh.registerPronunciation(pronunciation, "en");
   }
-
-
 
   @Override
   public void extractDefinition(String definition, int defLevel) {
@@ -629,7 +580,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    ChineseTranslationExtractor translationExtractor = new ChineseTranslationExtractor(this.wdh, glossFilter);
+    ChineseTranslationExtractor translationExtractor =
+        new ChineseTranslationExtractor(this.wdh, glossFilter);
     translationExtractor.parseTranslationBlock(transCode);
   }
 

@@ -10,8 +10,7 @@ import org.getalp.dbnary.bliki.DbnaryWikiModel;
 
 public class ChineseDbnaryWikiModel extends DbnaryWikiModel {
 
-  public ChineseDbnaryWikiModel(WiktionaryPageSource wi, Locale locale,
-      String imageBaseURL,
+  public ChineseDbnaryWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
       String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
@@ -20,13 +19,14 @@ public class ChineseDbnaryWikiModel extends DbnaryWikiModel {
   public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
       throws WikiModelContentException {
     ParsedPageName originalPagename = parsedPagename;
-    if ((parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY) ||
-        parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)) &&
-        parsedPagename.pagename.length() > 0 &&
-        Character.isLowerCase(parsedPagename.pagename.charAt(0))) {
+    if ((parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)
+        || parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY))
+        && parsedPagename.pagename.length() > 0
+        && Character.isLowerCase(parsedPagename.pagename.charAt(0))) {
       parsedPagename = new ParsedPageName(parsedPagename.namespace,
-          Character.toUpperCase(originalPagename.pagename.charAt(0)) +
-              originalPagename.pagename.substring(1), parsedPagename.valid);
+          Character.toUpperCase(originalPagename.pagename.charAt(0))
+              + originalPagename.pagename.substring(1),
+          parsedPagename.valid);
     }
     String wikiContent = super.getRawWikiContent(parsedPagename, map);
     if (null == wikiContent) {

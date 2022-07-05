@@ -5,11 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,22 +70,14 @@ public class ISO639_3 {
       return epo;
     }
 
-    public String[] getZhSimple(){ return zhSimple;}
-
-    public String[] getZhTraditional(){return zhTraditional;}
-
     private String id, part2b, part2t, part1, fr, en, epo;
-
-    private String[] zhSimple = new String[3];
-
-    private String[] zhTraditional = new String [3];
-
   }
 
   private final static String linePatternString =
       "^(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)(?:\t(.*))?$";
   private final static String epolinePatternString = "^(.*?)\t(.*?)$";
-  private final static String chinesePatternString = "^(?:^(.*?)(?:\\s?\\(?.?\\)?))\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*)";
+  private final static String chinesePatternString =
+      "^(?:^(.*?)(?:\\s?(?:\\(.?\\)?)?))\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*)";
   private final static Pattern linePattern = Pattern.compile(linePatternString);
   private final static Pattern chinesePattern = Pattern.compile(chinesePatternString);
   private final static Pattern epolinePattern = Pattern.compile(epolinePatternString);
@@ -98,36 +86,6 @@ public class ISO639_3 {
   private final Map<String, Lang> langMap = new HashMap<>();
   private final Set<Lang> langSet = new HashSet<>();
 
-  /**
-   *
-   * @param zhGroup Multiple Chinese names for a language, separated by Chinese colons.
-   * @return An array of length three, each element in the array is a Chinese name or null
-   */
-  private static String[] splitZhGroup(String zhGroup){
-    String[] zhTable = new String[3];
-    Pattern twoChineseCommaPattern = Pattern.compile("(.*)、(.*)、(.*)");
-    Pattern oneChineseCommaPattern = Pattern.compile("(.*)、(.*)");
-
-    Matcher twoChineseCommaMatcher = twoChineseCommaPattern.matcher(zhGroup);
-    Matcher oneChineseCommaMatcher = oneChineseCommaPattern.matcher(zhGroup);
-
-    if(twoChineseCommaMatcher.matches())
-    {
-      zhTable[0]=twoChineseCommaMatcher.group(1);
-      zhTable[1]=twoChineseCommaMatcher.group(2);
-      zhTable[2]=twoChineseCommaMatcher.group(3);
-    } else if (oneChineseCommaMatcher.matches()) {
-      zhTable[0]=oneChineseCommaMatcher.group(1);
-      zhTable[1]=oneChineseCommaMatcher.group(2);
-      zhTable[2]=null;
-    }else
-    {
-      zhTable[0]=zhGroup;
-      zhTable[1]=null;
-      zhTable[2]=null;
-    }
-    return zhTable;
-  }
   private ISO639_3() {
     // an element of langMap has key "ita"
     // and value {id: "ita", part2b: "ita", part2t: "ita", part1: "it", en: "Italian"}
@@ -230,8 +188,8 @@ public class ISO639_3 {
     }
     // Get Chinese names
     try (InputStream fis = this.getClass().getResourceAsStream("ISO639-zh.tab");
-         BufferedReader br =
-                 new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
       Matcher matcher = chinesePattern.matcher("");
 
       String s = br.readLine();
@@ -242,16 +200,11 @@ public class ISO639_3 {
           if (l != null) {
             String zhTraditionalGroup = matcher.group(5);
             String zhSimpleGroup = matcher.group(6);
-            l.zhTraditional=splitZhGroup(zhTraditionalGroup);
-            l.zhSimple = splitZhGroup(zhSimpleGroup);
-
-            for(int i=0; i<3&&l.zhTraditional[i]!=null;i++)
-            {
-              langMap.put(l.zhTraditional[i],l);
+            for (String name : zhTraditionalGroup.split("、")) {
+              langMap.put(name, l);
             }
-
-            for (int i=0; i<3&&l.zhSimple[i]!=null;i++){
-              langMap.put(l.zhSimple[i],l);
+            for (String name : zhSimpleGroup.split("、")) {
+              langMap.put(name, l);
             }
           }
         } else {
@@ -259,8 +212,7 @@ public class ISO639_3 {
         }
         s = br.readLine();
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       System.err.println("ISO639 Chinese data not available");
       e.printStackTrace();
     }

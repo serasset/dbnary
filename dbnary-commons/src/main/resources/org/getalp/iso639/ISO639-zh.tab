@@ -8,7 +8,7 @@ ady		ADY	Adyghe	阿迪格語	阿迪格语
 afa (r)			Afro-Asiatic (Other)	亞非語系、閃含語系	亚非语系、闪含语系
 afh			Afrihili	阿弗里希利語	阿弗里希利语
 afr	af	AFK	Afrikaans	阿非利堪斯語、南非荷蘭語、南非語	阿非利堪斯语、南非荷兰语、南非语
-ain		AIN	Ainu (Japan)	阿伊努語	阿伊努语
+ain		AIN	Ainu (Japan)	阿伊努語、阿依努語	阿伊努语、阿依努语
 aka	ak	TWS	Akan	阿坎語	阿坎语
 akk			Akkadian	阿卡德語	阿卡德语
 alb (b)	sq		Albanian	阿爾巴尼亞語	阿尔巴尼亚语
@@ -26,10 +26,11 @@ ara	ar		Arabic	阿拉伯語	阿拉伯语
 arc			Official Aramaic (700-300 BCE)	阿拉米語	阿拉米语
 arg	an	AXX	Aragonese	阿拉貢語	阿拉贡语
 arm (b)	hy	ARM	Armenian	亞美尼亞語	亚美尼亚语
-arn		ARU	Mapudungun	阿勞坎語	阿劳坎语
+arn		ARU	Mapudungun	阿勞坎語、馬普切語	阿劳坎语、马普切语
 arp		ARP	Arapaho	阿拉帕霍語	阿拉帕霍语
 art (r)			Artificial (Other)	人工語言	人工语言
 arw		ARW	Arawak	阿拉瓦克語	阿拉瓦克语
+ase				美國手語	美国手语
 asm	as	ASM	Assamese	阿薩姆語	阿萨姆语
 ast		AUB	Asturian	阿斯圖里亞斯語	阿斯图里亚斯语
 ath (g)			Athapascan languages	阿薩巴斯卡語支	阿萨巴斯卡语支
@@ -46,8 +47,9 @@ bai (g)			Bamileke languages	巴米累克語支	巴米累克语支
 bak	ba	BXK	Bashkir	巴什基爾語、巴什噶爾語	巴什基尔语、巴什噶尔语
 bal			Baluchi	俾路支語	俾路支语
 bam	bm	BRA	Bambara	班巴拉語	班巴拉语
-ban		BZC	Balinese	峇里語	峇里语
+ban		BZC	Balinese	峇里語、巴厘語	峇里语、巴厘语
 baq (b)	eu	BSQ	Basque	巴斯克語	巴斯克语
+bar 				巴伐利亞語	巴伐利亚语
 bas		BAA	Basa (Cameroon)	巴薩語	巴萨语
 bat (r)			Baltic (Other)	波羅的語族	波罗的语族
 bej		BEI	Beja	貝賈語	贝贾语
@@ -55,6 +57,7 @@ bel	be	RUW	Belarusian	白俄羅斯語	白俄罗斯语
 bem		BEM	Bemba (Zambia)	本巴語	本巴语
 ben	bn	BNG	Bengali	孟加拉語	孟加拉语
 ber (r)			Berber (Other)	柏柏爾語族	柏柏尔语族
+bjn (r)			Berber (Other)	班查爾語、班查語	班查尔语、班查語
 bho		BHJ	Bhojpuri	博杰普爾語	博杰普尔语
 bih (c)	bh		Bihari	比哈爾語	比哈尔语
 bik			Bikol	比科爾語	比科尔语
@@ -72,6 +75,7 @@ bug		BPR	Buginese	布吉語	布吉语
 bul	bg	BLG	Bulgarian	保加利亞語	保加利亚语
 bur (b)	my	BMS	Burmese	緬甸語	缅甸语
 byn		BYN	Bilin	比林語	比林语
+caa		CAD	Caddo	奇奧蒂語	奇奧蒂语
 cad		CAD	Caddo	卡多語	卡多语
 cai (r)			Central American Indian (Other)	中美洲印第安諸語言	中美洲印第安诸语言
 car		CRB	Galibi Carib	加勒比語系	加勒比语系
@@ -99,6 +103,7 @@ chr		CER	Cherokee	切羅基語	切罗基语
 chu	cu	SLN	Church Slavic	古教會斯拉夫語	古教会斯拉夫语
 chv	cv	CJU	Chuvash	楚瓦什語	楚瓦什语
 chy		CHY	Cheyenne	夏延語	夏延语
+ckt		CHY	Cheyenne	楚克奇語、楚科奇語	楚克奇语、楚科奇语
 cmc (g)			Chamic languages	占語支	占语支
 cop		COP	Coptic	科普特語	科普特语
 cor	kw	CRN	Cornish	康沃爾語、康瓦爾語	康沃尔语、康瓦尔语
@@ -137,13 +142,14 @@ efi		EFK	Efik	埃菲克語	埃菲克语
 egx			Egyptian languages	埃及語族	埃及语族
 egy			Egyptian (Ancient)	古埃及語	古埃及语
 eka		EKA	Ekajuk	埃克丘克語	埃克丘克语
-ell (t)	el	GRK	Modern Greek (1453-)	現代希臘語	现代希腊语
+ell (t)	el	GRK	Modern Greek (1453-)	現代希臘語、希臘語	现代希腊语、希腊语
 elx			Elamite	埃蘭語	埃兰语
 eng	en	ENG	English	英語	英语
 enm			Middle English (1100-1500)	中古英語	中古英语
 epo	eo	ESP	Esperanto	世界語	世界语
 est	et	EST	Estonian	愛沙尼亞語	爱沙尼亚语
 esx			Eskimo-Aleut languages	爱斯基摩－阿留申语系	爱斯基摩－阿留申语系
+ett 				伊特魯里亞語	伊特鲁里亚语
 euq			Basque (family)	巴斯克語族	巴斯克语族
 eus (t)	eu	BSQ	Basque	巴斯克語	巴斯克语
 ewe	ee	EWE	Ewe	埃維語、幽語	埃维语、幽语
@@ -158,16 +164,17 @@ fin	fi	FIN	Finnish	芬蘭語	芬兰语
 fiu (r)			Finno-Ugrian (Other)	芬蘭-烏戈爾語族	芬兰-乌戈尔语族
 fon		FOA	Fon	豐語	丰语
 fox			Formosan languages	台灣南島語言	台湾南岛语言
-fra (t)	fr	FRN	French	法語	法语
-fre (b)	fr	FRN	French	法語	法语
+fra (t)	fr	FRN	French	法語、法文	法语、法文
+fre (b)	fr	FRN	French	法語、法文	法语、法文
 frm			Middle French (ca. 1400-1600)	中古法語	中古法语
 fro			Old French (842-ca. 1400)	古法語	古法语
 frr		FRR	Northern Frisian	北弗里西亞語	北弗里西亚语
 frs		FRS	Eastern Frisian	東弗里西亞語	东弗里西亚语
-fry	fy		Western Frisian	弗里西亞語、西弗里西亞語	弗里西亚语、西弗里西亚语
+fry	fy		Western Frisian	弗里西亞語、西弗里西亞語、西弗里斯蘭語	弗里西亚语、西弗里西亚语、西弗里斯兰语
 ful	ff		Fulah	富拉語、弗拉尼語	富拉语、弗拉尼语
 fur		FRL	Friulian	弗留利語	弗留利语
 gaa		GAC	Ga	加語	加语
+gag		GAC	Ga	加告茲語	加告兹语
 gay		GYO	Gayo	卡約語	卡约语
 gba			Gbaya (Central African Republic)	巴亞語	巴亚语
 gem (r)			Germanic (Other)	日耳曼語族、日爾曼語族	日耳曼语族、日尔曼语族
@@ -178,7 +185,7 @@ gil		GLB	Gilbertese	吉爾伯特語	吉尔伯特语
 gla	gd	GLS	Scottish Gaelic	蘇格蘭蓋爾語	苏格兰盖尔语
 gle	ga	GLI	Irish	愛爾蘭語	爱尔兰语
 glg	gl	GLN	Galician	加利西亞語、加里西亞語	加利西亚语、加里西亚语
-glv	gv	MJD	Manx	馬恩島語、曼島語	马恩岛语、曼岛语
+glv	gv	MJD	Manx	馬恩島語、曼島語、馬恩語	马恩岛语、曼岛语、马恩语
 gme			East Germanic languages	东日耳曼语支	东日耳曼语支
 gmh			Middle High German (ca. 1050-1500)	中古高地德語	中古高地德语
 gmq			North Germanic languages	北日耳曼语支	北日耳曼语支
@@ -188,7 +195,7 @@ gon			Gondi	貢德語	贡德语
 gor		GRL	Gorontalo	哥倫打洛語	哥伦打洛语
 got		GOF	Gothic	哥特語、哥德語	哥特语、哥德语
 grb			Grebo	格列博語	格列博语
-grc		GKO	Ancient Greek (to 1453)	古典希臘語	古典希腊语
+grc		GKO	Ancient Greek (to 1453)	古典希臘語、古希臘語	古典希腊语、古希腊语
 gre (b)	el	GRK	Modern Greek (1453-)	現代希臘語	现代希腊语
 grk			Greek languages	希臘語族	希腊语族
 grn	gn		Guarani	瓜拉尼語	瓜拉尼语
@@ -199,6 +206,7 @@ hai			Haida	海達語	海达语
 hat	ht	HAT	Haitian	海地克里奧爾語	海地克里奥尔语
 hau	ha	HUA	Hausa	豪薩語、豪撒語	豪萨语、豪撒语
 haw		HWI	Hawaiian	夏威夷語	夏威夷语
+hbs				塞爾維亞語、塞爾維亞-克羅地亞語	塞尔维亚语、塞尔维亚-克罗地亚语
 heb	he	HBR	Hebrew	希伯來語	希伯来语
 her	hz	HER	Herero	赫雷羅語	赫雷罗语
 hil		HIL	Hiligaynon	希利蓋農語、伊隆戈語	希利盖农语、伊隆戈语
@@ -219,13 +227,13 @@ iba		IBA	Iban	伊班語	伊班语
 ibo	ig	IGR	Igbo	伊博語、伊格柏語	伊博语、伊格柏语
 ice (b)	is	ICE	Icelandic	冰島語	冰岛语
 ido	io		Ido	伊多語	伊多语
-iii	ii	III	Sichuan Yi	四川彝語	四川彝语
+iii	ii	III	Sichuan Yi	四川彝語、彝語、彝语（四川）	四川彝语、彝语、彝语（四川）
 iir			Indo-Iranian languages	印度-伊朗语族	印度-伊朗语族
 ijo (c)			Ijo languages	伊喬語	伊乔语
 iku	iu		Inuktitut	伊努伊特語、伊努特語、因紐特語	伊努伊特语、伊努特语、因纽特语
-ile	ie		Interlingue	西方國際語（國際語E）	西方国际语（国际语E）
+ile	ie		Interlingue	西方國際語、國際語E	西方国际语、国际语E
 ilo		ILO	Iloko	伊洛卡諾語	伊洛卡诺语
-ina	ia	INR	Interlingua (International Auxiliary Language Association)	國際語（國際語A）	国际语（国际语A）
+ina	ia	INR	Interlingua (International Auxiliary Language Association)	國際語、國際語A	国际语、国际语A
 inc (r)			Indic (Other)	印度-雅利安語支	印度-雅利安语支
 ind	id	INZ	Indonesian	印尼語、印度尼西亞語	印尼语、印度尼西亚语
 ine (r)			Indo-European (Other)	印歐語系	印欧语系
@@ -261,8 +269,9 @@ khi (r)			Khoisan (Other)	科依桑語系	科依桑语系
 khm	km	KMR	Central Khmer	高棉語、中高棉語	高棉语、中高棉语
 kho			Khotanese	和闐語、和田語	和阗语、和田语
 kik	ki	KIU	Kikuyu	基庫尤語、吉庫尤語	基库尤语、吉库尤语
-kin	rw	RUA	Kinyarwanda	基尼阿萬達語、盧安達語	基尼阿万达语、卢安达语
+kin	rw	RUA	Kinyarwanda	基尼阿萬達語、盧安達語、盧旺達語	基尼阿万达语、卢安达语、卢旺达语
 kir	ky	KDO	Kirghiz	吉爾吉斯語、柯爾克孜語	吉尔吉斯语、柯尔克孜语
+kjh				哈卡斯語	哈卡斯语
 kmb		MLO	Kimbundu	金本杜語	金本杜语
 kok			Konkani (macrolanguage)	孔卡尼語	孔卡尼语
 kom	kv		Komi	科米語	科米语
@@ -288,6 +297,8 @@ lez		LEZ	Lezghian	列茲金語	列兹金语
 lim	li	LMP	Limburgan	林堡語	林堡语
 lin	ln	LIN	Lingala	林加拉語、林格拉語	林加拉语、林格拉语
 lit	lt	LIT	Lithuanian	立陶宛語	立陶宛语
+liv				利沃尼亞語	利沃尼亚语
+lkt				拉科塔語	拉科塔语
 lol		MOM	Mongo	芒戈語	芒戈语
 loz		LOZ	Lozi	洛齊語	洛齐语
 ltz	lb	LUX	Luxembourgish	盧森堡語	卢森堡语
@@ -310,13 +321,14 @@ mao (b)	mi	MBF	Maori	毛利語	毛利语
 map (r)			Austronesian (Other)	南島語系、澳斯特羅尼西亞語系	南岛语系、澳斯特罗尼西亚语系
 mar	mr	MRT	Marathi	馬拉地語	马拉地语
 mas		MET	Masai	馬薩伊語	马萨伊语
+mas				馬賽語	马赛语
 may (b)	ms		Malay (macrolanguage)	馬來語	马来语
 mdf		MDF	Moksha	莫克沙語	莫克沙语
 mdr		MHN	Mandar	曼達語	曼达语
 men		MFY	Mende (Sierra Leone)	門德語	门德语
 mga			Middle Irish (900-1200)	中古愛爾蘭語	中古爱尔兰语
 mic		MIC	Mi'kmaq	米克馬克語	米克马克语
-min		MPU	Minangkabau	米南卡保語	米南卡保语
+min		MPU	Minangkabau	米南卡保語、米南加保語	米南卡保语、米南加保语
 mis			Uncoded languages	未被編碼的語言	未被编码的语言
 mkd (t)	mk	MKJ	Macedonian	馬其頓語	马其顿语
 mkh (r)			Mon-Khmer (Other)	孟-高棉語族	孟-高棉语族
@@ -330,6 +342,7 @@ mol	mo		Moldavian	摩爾達維亞語、摩爾多瓦語	摩尔达维亚语、摩�
 mon	mn		Mongolian	蒙古語	蒙古语
 mos		MHM	Mossi	莫西語	莫西语
 mri (t)	mi	MBF	Maori	毛利語	毛利语
+mrc 				馬里科帕語	马里科帕语
 msa (t)	ms		Malay (macrolanguage)	馬來語	马来语
 mul			Multiple languages	多種語言	多种语言
 mun (g)			Munda languages	蒙達語族	蒙达语族
@@ -354,13 +367,16 @@ ngf			Trans-New Guinea languages	跨新几内亚语系	跨新几内亚语系
 nia		NIP	Nias	尼亞斯語	尼亚斯语
 nic (r)			Niger-Kordofanian (Other)	尼日爾-科爾多凡語系	尼日尔-科尔多凡语系
 niu		NIQ	Niuean	紐埃語	纽埃语
+niv				尼夫赫語	尼夫赫语
 nld (t)	nl	DUT	Dutch	荷蘭語	荷兰语
 nno	nn	NRN	Norwegian Nynorsk	新挪威語	新挪威语
 nob	nb	NRR	Norwegian Bokmål	挪威布克莫爾語、書面挪威語、波克莫爾語	挪威布克莫尔语、书面挪威语、波克莫尔语
 nog		NOG	Nogai	諾蓋語	诺盖语
 non			Old Norse	古諾爾斯語	古诺尔斯语
 nor	no		Norwegian	挪威語	挪威语
+nov				諾維亞語	诺维亚语
 nqo			N'Ko	西非書面語言	西非书面语言
+nrf				諾曼語	诺曼语
 nso		SRT	Pedi	北索托語	北索托语
 nub (g)			Nubian languages	努比亞語支	努比亚语支
 nwc			Classical Newari	古典尼瓦爾語	古典尼瓦尔语
@@ -376,6 +392,7 @@ omv			Omotic languages	奥摩语族	奥摩语族
 ori	or	ORY	Oriya	奧利亞語、奧里亞語	奥利亚语、奥里亚语
 orm	om		Oromo	奧羅莫語	奥罗莫语
 osa		OSA	Osage	奧薩格語	奥萨格语
+osc				奧斯坎語	奥斯坎语
 oss	os	OSE	Ossetian	奧塞梯語、奧塞提語	奥塞梯语、奥塞提语
 ota			Ottoman Turkish (1500-1928)	奧斯曼土耳其語	奥斯曼土耳其语
 oto (g)			Otomian languages	奧托米安語族	奥托米安语族
@@ -399,6 +416,7 @@ poz			Malayo-Polynesian languages	马来－波利尼西亚语族	马来－波利
 pqe			Eastern Malayo-Polynesian languages	东部马来－波利尼西亚语族	东部马来－波利尼西亚语族
 pqw			Western Malayo-Polynesian languages	西部马来－波利尼西亚语族	西部马来－波利尼西亚语族
 pra (g)			Prakrit languages	普拉克里特諸語言	普拉克里特诸语言
+prg				古普魯士語	古普鲁士语
 pro			Old Provençal (to 1500)	古普羅旺斯語	古普罗旺斯语
 pus	ps		Pushto	普什圖語、帕圖語	普什图语、帕图语
 qaa-qtz			Reserved for local use	私人使用的範圍	私人使用的范围
@@ -407,6 +425,7 @@ qwe			Quechuan (family)	克丘亞語族	克丘亚语族
 raj			Rajasthani	拉賈斯坦語	拉贾斯坦语
 rap		PBA	Rapanui	拉帕努伊語、復活節島語	拉帕努伊语、复活节岛语
 rar		RRT	Rarotongan	拉羅湯加語	拉罗汤加语
+rhg				羅興亞語	罗兴亚语
 roa (r)			Romance (Other)	羅曼語族	罗曼语族
 roh	rm	RHE	Romansh	羅曼什語	罗曼什语
 rom			Romany	羅姆語、吉普賽語	罗姆语、吉普赛语
@@ -414,7 +433,7 @@ ron (t)	ro	RUM	Romanian	羅馬尼亞語	罗马尼亚语
 rum (b)	ro	RUM	Romanian	羅馬尼亞語	罗马尼亚语
 run	rn	RUD	Rundi	基隆迪語、克倫地語	基隆迪语、克伦地语
 rup		RUP	Macedo Romanian	阿羅馬尼亞語	阿罗马尼亚语
-rus	ru	RUS	Russian	俄語	俄语
+rus	ru	RUS	Russian	俄語、俄文	俄语、俄文
 sad		SBR	Sandawe	桑達韋語	桑达韦语
 sag	sg	SAJ	Sango	桑戈語	桑戈语
 sah		UKT	Yakut	雅庫特語	雅库特语
@@ -426,7 +445,7 @@ sas		SAS	Sasak	薩薩克語	萨萨克语
 sat		SNT	Santali	桑塔利語	桑塔利语
 scc (b)(d)	sr	SDD	Serbian	塞爾維亞語	塞尔维亚语
 scn		SCN	Sicilian	西西里語	西西里语
-sco		SCO	Scots	蘇格蘭語	苏格兰语
+sco		SCO	Scots	蘇格蘭語、低地蘇格蘭語	苏格兰语、低地苏格兰语
 scr (b)(d)	hr	CRX	Croatian	克羅地亞語、克羅埃西亞語	克罗地亚语、克罗埃西亚语
 sdv			Eastern Sudanic languages	东部苏丹语支	东部苏丹语支
 sel		SAK	Selkup	塞爾庫普語	塞尔库普语
@@ -444,7 +463,7 @@ slo (b)	sk	SLO	Slovak	斯洛伐克語	斯洛伐克语
 slv	sl	SLV	Slovenian	斯洛文尼亞語、斯洛維尼亞語	斯洛文尼亚语、斯洛维尼亚语
 sma		LPC	Southern Sami	南薩米語	南萨米语
 sme	se	LPR	Northern Sami	北薩米語	北萨米语
-smi (r)			Sami languages (Other)	薩米語支（中的其他语言）	萨米语支（中的其他语言）
+smi (r)			Sami languages (Other)	薩米語支、薩米語	萨米语支、萨米语
 smj		LPL	Lule Sami	呂勒薩米語	吕勒萨米语
 smn		LPI	Inari Sami	伊納里薩米語	伊纳里萨米语
 smo	sm	SMY	Samoan	薩摩亞語	萨摩亚语
@@ -464,11 +483,12 @@ srp (t)	sr	SDD	Serbian	塞爾維亞語	塞尔维亚语
 srr		SES	Serer	塞雷爾語	塞雷尔语
 ssa (r)			Nilo-Saharan (Other)	尼羅-撒哈拉語系	尼罗-撒哈拉语系
 ssw	ss	SWZ	Swati	斯瓦特語、史瓦濟蘭語	斯瓦特语、史瓦济兰语
+sth				雪爾塔語	雪尔塔语
 suk		SUA	Sukuma	蘇庫馬語	苏库马语
 sun	su	SUO	Sundanese	巽他語	巽他语
 sus		SUD	Susu	蘇蘇語	苏苏语
 sux			Sumerian	蘇美爾語	苏美尔语
-swa	sw		Swahili (macrolanguage)	斯瓦希里語、斯瓦西里語（大語種）	斯瓦希里语、斯瓦西里语（大语种）
+swa	sw		Swahili (macrolanguage)	斯瓦希里語、斯瓦西里語	斯瓦希里语、斯瓦西里语
 swe	sv	SWD	Swedish	瑞典語	瑞典语
 syc		SYC	Classical Syriac	古典敘利亞語	古典叙利亚语
 syr			Syriac	古敘利亞語	古叙利亚语
@@ -493,7 +513,7 @@ tlh			Klingon	克林貢語	克林贡语
 tli		TLI	Tlingit	特林吉特語	特林吉特语
 tmh			Tamashek	塔馬舍克語	塔马舍克语
 tog		TOG	Tonga (Nyasa)	湯加語 (尼亞薩)	汤加语 (尼亚萨)
-ton	to	TOV	Tonga (Tonga Islands)	湯加語 (湯加島)、東加語	汤加语 (汤加岛)、东加语
+ton	to	TOV	Tonga (Tonga Islands)	湯加語 (湯加島)、東加語、湯加語	汤加语 (汤加岛)、东加语、汤加语
 tpi		PDG	Tok Pisin	托克皮辛語、巴布亞皮欽語	托克皮辛语、巴布亚皮钦语
 trk			Turkic languages	突厥语族	突厥语族
 tsi		TSI	Tsimshian	欽西安語	钦西安语
@@ -508,20 +528,24 @@ tuw			Tungus languages	满－通古斯语族	满－通古斯语族
 tvl		ELL	Tuvalu	圖瓦盧語	图瓦卢语
 twi	tw		Twi	契維語、特威語、多威語	契维语、特威语、多威语
 tyv		TUN	Tuvinian	圖瓦語、圖佤語	图瓦语、图佤语
+tzm		UDM	Udmurt	塔馬齊格特語、中阿特拉斯柏柏爾語	塔马齐格特语、中阿特拉斯柏柏尔语
 udm		UDM	Udmurt	烏德穆爾特語	乌德穆尔特语
 uga			Ugaritic	烏加里特語	乌加里特语
 uig	ug	UIG	Uighur	維吾爾語	维吾尔语
 ukr	uk	UKR	Ukrainian	烏克蘭語	乌克兰语
 umb		MNF	Umbundu	翁本杜語	翁本杜语
 und			Undetermined	未確定的語言	未确定的语言
+unr				蒙達里語	蒙达里语
 urd	ur	URD	Urdu	烏爾都語、烏都語、晤魯都語	乌尔都语、乌都语、晤鲁都语
 urj			Uralic languages	乌拉尔语系	乌拉尔语系
 uzb	uz		Uzbek	烏茲別克語、烏孜別克語	乌兹别克语、乌孜别克语
 vai		VAI	Vai	瓦伊語	瓦伊语
 ven	ve	VEN	Venda	文達語、溫達語	文达语、温达语
-vie	vi	VIE	Vietnamese	越南語、京語	越南语、京语
+vep				維普斯語	维普斯语
+vie	vi	VIE	Vietnamese	越南語、京語、越南文	越南语、京语、越南文
 vol	vo		Volapük	沃拉普克語	沃拉普克语
 vot		VOD	Votic	沃提克語	沃提克语
+vro				佛羅語	佛罗语
 wak (g)			Wakashan languages	瓦卡什語系	瓦卡什语系
 wal		WBC	Wolaytta		
 war		WRY	Waray (Philippines)	瓦賴語	瓦赖语
@@ -531,9 +555,11 @@ wen (g)			Sorbian languages	索布諸語言	索布诸语言
 wln	wa	WLZ	Walloon	瓦龍語、瓦隆語、華隆語	瓦龙语、瓦隆语、华隆语
 wol	wo	WOL	Wolof	沃洛夫語、渥魯夫語	沃洛夫语、渥鲁夫语
 xal		KGZ	Kalmyk	卡爾梅克語、衛拉特語	卡尔梅克语、卫拉特语
+xcl				古亞美尼亞語、古典亞美尼亞語	古亚美尼亚语、古典亚美尼亚语
 xgn			Mongolian languages	蒙古语族	蒙古语族
 xho	xh	XOS	Xhosa	科薩語	科萨语
 xnd			Na-Dene languages	納－德內語系	纳－德内语系
+xum				翁布里亚语	翁布里亚语
 yao		YAO	Yao	瑤語 (馬拉維)	瑶语 (马拉维)
 yap		YPS	Yapese	雅浦語	雅浦语
 yid	yi		Yiddish	依地語、意第緒語	依地语、意第绪语

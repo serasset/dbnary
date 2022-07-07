@@ -110,15 +110,15 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
 
   protected InflectedFormSet parseTables(String declinationTemplateCall) {
 
-    if (log.isDebugEnabled()) {
+    if (log.isTraceEnabled()) {
       WikiText txt = new WikiText(getPageName(), declinationTemplateCall);
       for (Token token : txt.templatesOnUpperLevel()) {
         Template tmpl = (Template) token;
         if (!ignoredTemplates.contains(tmpl.getName())) {
-          log.debug("MORPH template: {}", tmpl.getName());
+          log.trace("MORPH template: {}", tmpl.getName());
 
           String tmplSource = tmpl.toString().replaceAll("\\n", "");
-          log.debug("MORPH template call:  {} @ {}", tmplSource, getPageName());
+          log.trace("MORPH template call:  {} @ {}", tmplSource, getPageName());
         }
       }
     }

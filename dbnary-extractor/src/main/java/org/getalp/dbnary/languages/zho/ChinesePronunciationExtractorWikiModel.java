@@ -15,6 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiModel {
 
@@ -72,14 +76,11 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
         // concat all args of the 國音 template
         StringBuilder pinyinBuilder = new StringBuilder();
         arg.getValue().templates().stream().map(Token::asTemplate)
-            .filter(pt -> pt.getName().equals("國音")).findFirst().ifPresent(pt -> {
-                  pt.getParsedArgs().forEach((key, val) -> {
-                    if (key.matches("\\d+")) {
-                      pinyinBuilder.append(val);
-                    }
-                  });
-                }
-            );
+            .filter(pt -> pt.getName().equals("國音")||pt.getName().equals("国音")).findFirst().ifPresent(pt -> pt.getParsedArgs().forEach((key, val) -> {
+              if (key.matches("\\d+")) {
+                pinyinBuilder.append(val);
+              }
+            }));
         String pinyin = pinyinBuilder.toString();
         if (pinyin.length() > 0) {
           code.append("m=");
@@ -88,6 +89,20 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
         }
       } else if ("粵".equals(arg.getKey())) {
         // WARN, here, append a space after the numbers
+        StringBuilder pinyinBuilder = new StringBuilder();
+        arg.getValue().templates().stream().map(Token::asTemplate).filter(template -> template.getName().equals("粵音")||template.getName().equals("粵音/空")||template.getName().equals("粤音")||template.getName().equals("粤音/空")).findFirst().ifPresent(template -> template.getParsedArgs().forEach((key, val) -> {
+         if(key.matches("\\d+")){
+            pinyinBuilder.append(val);
+         }
+         if(val.matches("\\d+"))
+           pinyinBuilder.append(" ");
+        }));
+        String pinyin = pinyinBuilder.toString();
+        if(pinyin.length()>0){
+          code.append("c=");
+          code.append(pinyin);
+          code.append("|");
+        }
       } else {
 
       }
@@ -98,10 +113,10 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
   }
 
   public void parsePronunciation(String templateCall) {
-    if (templateCall.contains("{{汉语读音")) {
+    if (templateCall.contains("{{汉语读音")||templateCall.contains("{{漢語讀音")) {
       WikiText text = new WikiText(templateCall);
       StringBuilder translatedCallBuilder = new StringBuilder();
-      text.templates().stream().map(Token::asTemplate).filter(t -> t.getName().equals("汉语读音"))
+      text.templates().stream().map(Token::asTemplate).filter(t -> (t.getName().equals("汉语读音")||t.getName().equals("漢語讀音")))
           .forEach(t ->
             translatedCallBuilder.append(toZhPronCall(t)));
       templateCall = translatedCallBuilder.toString();

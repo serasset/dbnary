@@ -1,18 +1,14 @@
 package org.getalp.dbnary.languages.zho;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import info.bliki.wiki.filter.PlainTextConverter;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
-import org.getalp.dbnary.wiki.WikiText;
-import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +29,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private final int IGNOREPOS = 8;
 
   ChineseDefinitionExtractorWikiModel definitionExtractor;
-  ChineseDbnaryWikiModel extractor = new ChineseDbnaryWikiModel(this.wi, new Locale("en"),
-      "/${image}/" + getWiktionaryPageName(), "/${title}");
+  ChinesePronunciationExtractorWikiModel pronunciationExtractor;
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
@@ -104,6 +99,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
     definitionExtractor = new ChineseDefinitionExtractorWikiModel(wdh, wi, new Locale("en"),
+        "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    pronunciationExtractor = new ChinesePronunciationExtractorWikiModel(wdh, wi, new Locale("en"),
         "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
   }
 
@@ -262,6 +259,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void gotoIgnorePos() {
     state = IGNOREPOS;
   }
+
   private void extractData(int startOffset, int endOffset) {
     wdh.initializeLanguageSection("zh");
     Matcher m = wikiSectionPattern.matcher(pageContent);
@@ -536,22 +534,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizeLanguageSection();
   }
 
-
-  // extract translations
   private void extractRelatedWords(int startOffset, int endOffset) {
     String relCode = pageContent.substring(startOffset, endOffset);
-    ChineseRelatedWordsExtractorWikiModel dbnmodel =
-        new ChineseRelatedWordsExtractorWikiModel(this.wdh, this.wi);
+    ChineseRelatedWordsExtractor dbnmodel =
+        new ChineseRelatedWordsExtractor(this.wdh, this.wi);
     dbnmodel.parseRelatedWords(relCode);
   }
 
 
   private void extractPronTemplate(int startOffset, int endOffset) {
     String pronCode = pageContent.substring(startOffset, endOffset);
-    ChinesePronunciationExtractorWikiModel chinesePronunciationExtratorWikiModel =
-        new ChinesePronunciationExtractorWikiModel(this.wdh,this.wi, new Locale("en"),
-            "/${image}/" + getWiktionaryPageName(), "/${title}");
-    chinesePronunciationExtratorWikiModel.parsePronunciation(pronCode);
+    pronunciationExtractor.setPageName(getWiktionaryPageName());
+    pronunciationExtractor.parsePronunciation(pronCode);
   }
 
   @Override

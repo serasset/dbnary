@@ -26,7 +26,7 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
 
   private IWiktionaryDataHandler delegate;
 
-  private HashMap<String, String> dialectCodeList = new HashMap<String, String>();
+  private HashMap<String, String> dialectCodeList = new HashMap<>();
 
   {
     //dialectCodeList.put("北方話", "zh-cnp-fonipa");
@@ -113,10 +113,12 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
   }
 
   public void parsePronunciation(String templateCall) {
-    if (templateCall.contains("{{汉语读音")||templateCall.contains("{{漢語讀音")) {
+    // TODO: get the pinyin and register with language zh-Latn, yue-Latn
+    if (templateCall.contains("{{汉语读音") || templateCall.contains("{{漢語讀音")) {
       WikiText text = new WikiText(templateCall);
       StringBuilder translatedCallBuilder = new StringBuilder();
-      text.templates().stream().map(Token::asTemplate).filter(t -> (t.getName().equals("汉语读音")||t.getName().equals("漢語讀音")))
+      text.templates().stream().map(Token::asTemplate).filter(t ->
+              (t.getName().equals("汉语读音") || t.getName().equals("漢語讀音")))
           .forEach(t ->
             translatedCallBuilder.append(toZhPronCall(t)));
       templateCall = translatedCallBuilder.toString();

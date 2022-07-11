@@ -12,19 +12,19 @@ import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ChineseRelatedWordsExtractorWikiModel {
+public class ChineseRelatedWordsExtractor {
 
 
-  private Logger log = LoggerFactory.getLogger(ChineseRelatedWordsExtractorWikiModel.class);
+  private Logger log = LoggerFactory.getLogger(ChineseRelatedWordsExtractor.class);
 
   private IWiktionaryDataHandler delegate;
 
 
-  public ChineseRelatedWordsExtractorWikiModel(IWiktionaryDataHandler we) {
+  public ChineseRelatedWordsExtractor(IWiktionaryDataHandler we) {
     this(we, (WiktionaryPageSource) null);
   }
 
-  public ChineseRelatedWordsExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi) {
+  public ChineseRelatedWordsExtractor(IWiktionaryDataHandler we, WiktionaryPageSource wi) {
     // super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
   }

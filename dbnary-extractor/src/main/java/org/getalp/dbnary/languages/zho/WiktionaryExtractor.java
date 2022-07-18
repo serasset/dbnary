@@ -256,6 +256,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     extractPronTemplate(pronBlockStart, computeRegionEnd(pronBlockStart, m));
     pronBlockStart = -1;
   }
+
   private void gotoIgnorePos() {
     state = IGNOREPOS;
   }
@@ -294,32 +295,32 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         case DEFBLOCK:
           // Iterate until we find a new section
           if (isTranslation(m)) {
-            //leaveDefBlock(m);
+            // leaveDefBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            //leaveDefBlock(m);
+            // leaveDefBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            //leaveDefBlock(m);
+            // leaveDefBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            //leaveDefBlock(m);
+            // leaveDefBlock(m);
             gotoNymBlock(m);
           } else if (isPronunciation(m)) {
-            //leaveDefBlock(m);
+            // leaveDefBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            //leaveDefBlock(m);
+            // leaveDefBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            //leaveDefBlock(m);
+            // leaveDefBlock(m);
             gotoNoData(m);
           } else {
-            //leaveDefBlock(m);
+            // leaveDefBlock(m);
             log.trace("block named " + m.group(1) + " is ignored");
             gotoNoData(m);
           }
@@ -508,7 +509,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case NODATA:
         break;
       case DEFBLOCK:
-        //leaveDefBlock(m);
+        // leaveDefBlock(m);
         break;
       case TRADBLOCK:
         // leaveTradAltBlock(m);
@@ -536,8 +537,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractRelatedWords(int startOffset, int endOffset) {
     String relCode = pageContent.substring(startOffset, endOffset);
-    ChineseRelatedWordsExtractor dbnmodel =
-        new ChineseRelatedWordsExtractor(this.wdh, this.wi);
+    ChineseRelatedWordsExtractor dbnmodel = new ChineseRelatedWordsExtractor(this.wdh, this.wi);
     dbnmodel.parseRelatedWords(relCode);
   }
 
@@ -553,6 +553,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionExtractor.setPageName(this.getWiktionaryPageName());
     definitionExtractor.parseDefinition(definition, defLevel);
   }
+
   public void extractExample(String example) {
     definitionExtractor.setPageName(this.getWiktionaryPageName());
     definitionExtractor.parseExample(example);

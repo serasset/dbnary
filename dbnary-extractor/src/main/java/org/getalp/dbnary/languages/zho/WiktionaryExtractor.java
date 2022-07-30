@@ -1,7 +1,7 @@
 package org.getalp.dbnary.languages.zho;
-
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,77 +9,58 @@ import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private static final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
   protected final static String wikiSectionPatternString = "^={3,}\\s*([^=]*)\\s*={3,}\\s*$";
   protected final static String level2HeaderPatternString = "^==([^=].*[^=])==\\s*$";
   protected final static Pattern wikiSectionPattern;
-  // private final static Pattern pronounciationPattern;
+
   private HashSet<String> unknownHeaders;
   private final int NODATA = 0;
-  private final int TRADBLOCK = 1; // 翻譯
-  private final int DEFBLOCK = 2; // 名詞
-  private final int ORTHOALTBLOCK = 3;// isAlternant另一种表示
-  private final int NYMBLOCK = 4;// 近義詞
-  private final int PRONBLOCK = 5;// 讀音
-  private final int RELBLOCK = 7;// 参考词汇
+  private final int TRADBLOCK = 1;
+  private final int DEFBLOCK = 2;
+ private final int ORTHOALTBLOCK = 3;
+  private final int NYMBLOCK = 4;
+  private final int PRONBLOCK = 5;
+  private final int RELBLOCK = 7;
   private final int IGNOREPOS = 8;
-
   ChineseDefinitionExtractorWikiModel definitionExtractor;
   ChinesePronunciationExtractorWikiModel pronunciationExtractor;
-
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
-    // throw new RuntimeException("Chinese extractor is currently not functional.");
   }
-
-  protected final static HashMap<String, String> posMarkers;
+  private  final static  HashSet<String> nymMarkerSet = new HashSet<>();
   protected final static HashMap<String, String> nymMarkerToNymName;
-
   static {
-    posMarkers = new HashMap<String, String>(20);
-    posMarkers.put("n.", "noun");
-    posMarkers.put("名词", "noun");
-    posMarkers.put("v.", "verb");
-    posMarkers.put("动词", "verb");
-    posMarkers.put("adj.", "adjective");
-    posMarkers.put("形容词", "adjective");
-    posMarkers.put("num.", "numeral");
-    posMarkers.put("数词", "numeral");
-    posMarkers.put("clas.", "chinese classifier");
-    posMarkers.put("量词", "chinese classifier");
-    posMarkers.put("pron.", "pronoun");
-    posMarkers.put("代词", "pronoun");
-    posMarkers.put("idiom.", "idiom");
-    posMarkers.put("成语", "idiom");
-    posMarkers.put("adv.", "adverb");
-    posMarkers.put("副词", "adverb");
-    posMarkers.put("prep.", "preposition");
-    posMarkers.put("介词", "preposition");
-    posMarkers.put("conj.", "conjunction");
-    posMarkers.put("连词", "conjunction");
-    posMarkers.put("conj.", "auxiliary");
-    posMarkers.put("助词", "auxiliary");
-    posMarkers.put("echo.", "echo");
-    posMarkers.put("拟声词", "echo");
-    posMarkers.put("int.", "interjection");
-    posMarkers.put("叹词", "interjection");
-
+    nymMarkerSet.add("反義詞");
+    nymMarkerSet.add("反義字");
+    nymMarkerSet.add("同義字");
+    nymMarkerSet.add("同義詞");
+    nymMarkerSet.add("近義詞");
+    nymMarkerSet.add("近義字");
+    nymMarkerSet.add("Synonyms");
+    nymMarkerSet.add("相关词汇");
+    nymMarkerSet.add("相關詞彙");
+    nymMarkerSet.add("相關詞");
+    nymMarkerSet.add("相近詞彙");
+    nymMarkerSet.add("近义词");
+    nymMarkerSet.add("反义词");
     nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName.put("反義詞","ant");
+    nymMarkerToNymName.put("反義字","ant");
+    nymMarkerToNymName.put("反义词","ant");
+    nymMarkerToNymName.put("同義字","syn");
+    nymMarkerToNymName.put("同義詞","syn");
+    nymMarkerToNymName.put("近義詞","syn");
+    nymMarkerToNymName.put("近義字","syn");
     nymMarkerToNymName.put("Synonyms", "syn");
-    nymMarkerToNymName.put("同义词", "syn");
-    nymMarkerToNymName.put("Antonyms", "ant");
-    nymMarkerToNymName.put("反义词", "ant");
-    nymMarkerToNymName.put("Hyponyms", "hypo");
-    nymMarkerToNymName.put("下位词", "hypo");
-    nymMarkerToNymName.put("Hypernyms", "hyper");
-    nymMarkerToNymName.put("上位词", "hyper");
-    nymMarkerToNymName.put("Meronyms", "mero");
-    nymMarkerToNymName.put("整体-部分", "mero");
+    nymMarkerToNymName.put("近义词","syn");
   }
+
   protected final static Pattern level2HeaderPattern;
   static {
     level2HeaderPattern = Pattern.compile(level2HeaderPatternString, Pattern.MULTILINE);
@@ -128,11 +109,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String head = m.group(1).trim();
     return WiktionaryDataHandler.getValidPOS(head, getWiktionaryPageName());
   }
-
   void gotoNoData(Matcher m) {
     state = NODATA;
   }
-
   private boolean isChineseHeader(Matcher m) {
     if (m.group(1).trim().startsWith("{{zh")) {
       return true;
@@ -142,47 +121,36 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     return m.group(1).trim().startsWith("漢語");
   }
-
   void gotoDefBlock(Matcher m, String pos) {
     state = DEFBLOCK;
     definitionBlockStart = m.end();
     wdh.initializeLexicalEntry(pos);
   }
-
   void leaveDefBlock(Matcher m) {
     int end = computeRegionEnd(definitionBlockStart, m);
     extractDefinitions(definitionBlockStart, end);
     definitionBlockStart = -1;
   }
-
   void gotoTradAltBlock(Matcher m) {
     translationBlockStart = m.end();
     state = TRADBLOCK;
   }
-
   void leaveTradAltBlock(Matcher m) {
     extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m));
     translationBlockStart = -1;
   }
-
-  // Alternate Spelling
   private boolean isAlternate(Matcher m) {
     String head = m.group(1).trim();
     return "另一种表示".equals(head);
   }
-
   void gotoOrthoAltBlock(Matcher m) {
     state = ORTHOALTBLOCK;
     orthBlockStart = m.end();
   }
-
   void leaveOrthoAltBlock(Matcher m) {
     extractOrthoAlt(orthBlockStart, computeRegionEnd(orthBlockStart, m));
     orthBlockStart = -1;
   }
-
-
-  // Translation section
   private boolean isTranslation(Matcher m) {
     String head = m.group(1).trim();
     Matcher trans = WikiPatterns.macroPattern.matcher(head);
@@ -194,47 +162,41 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return "翻译".equals(head);
     }
   }
-
   void gotoTradBlock(Matcher m) {
     translationBlockStart = m.end();
     state = TRADBLOCK;
   }
-
-
   // Nyms
   private boolean isNymHeader(Matcher m) {
-    return (m.group(1).trim().equals("近義詞")) || (m.group(1).trim().equals("同義詞"))
-        || (m.group(1).equals("相關詞"));
+    String nymMarker = m.group(1).trim();
+    return nymMarkerSet.contains(nymMarker);
   }
-
   private void gotoNymBlock(Matcher m) {
+    String nymMarker = m.group(1).trim();
+    if(nymMarkerToNymName.get(nymMarker)!=null){
+      currentNym=nymMarkerToNymName.get(nymMarker);
+    }
     state = NYMBLOCK;
     nymBlockStart = m.end();
     Matcher nym = WikiPatterns.macroPattern.matcher(m.group(1).trim());
   }
-
   private void leaveNymBlock(Matcher m) {
     extractNyms(currentNym, nymBlockStart, computeRegionEnd(nymBlockStart, m));
     currentNym = null;
     nymBlockStart = -1;
   }
-
   // Related Words
   private boolean isRelatedHeader(Matcher m) {
     return (m.group(1).trim().equals("参考词汇") || m.group(1).trim().equals("參見"));
   }
-
   private void gotoRelBlock(Matcher m) {
     state = RELBLOCK;
     relBlockStart = m.end();
   }
-
   private void leaveRelBlock(Matcher m) {
     extractRelatedWords(relBlockStart, computeRegionEnd(relBlockStart, m));
     relBlockStart = -1;
   }
-
-  // Pronounciation section
   private boolean isPronunciation(Matcher m) {
     String head = m.group(1).trim();
     Matcher pron = WikiPatterns.macroPattern.matcher(m.group(1).trim());
@@ -246,21 +208,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return pronHeadMatcher.matches();
     }
   }
-
   private void gotoPronBlock(Matcher m) {
     state = PRONBLOCK;
     pronBlockStart = m.end();
   }
-
   private void leavePronBlock(Matcher m) {
     extractPronTemplate(pronBlockStart, computeRegionEnd(pronBlockStart, m));
     pronBlockStart = -1;
   }
-
   private void gotoIgnorePos() {
     state = IGNOREPOS;
   }
-
   private void extractData(int startOffset, int endOffset) {
     wdh.initializeLanguageSection("zh");
     Matcher m = wikiSectionPattern.matcher(pageContent);
@@ -291,199 +249,195 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             gotoNoData(m);
           }
           break;
-
         case DEFBLOCK:
           // Iterate until we find a new section
           if (isTranslation(m)) {
-            // leaveDefBlock(m);
+            leaveDefBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            // leaveDefBlock(m);
+            leaveDefBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            // leaveDefBlock(m);
+            leaveDefBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            // leaveDefBlock(m);
+            leaveDefBlock(m);
             gotoNymBlock(m);
           } else if (isPronunciation(m)) {
-            // leaveDefBlock(m);
+            leaveDefBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            // leaveDefBlock(m);
+            leaveDefBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            // leaveDefBlock(m);
+            leaveDefBlock(m);
             gotoNoData(m);
           } else {
-            // leaveDefBlock(m);
+            leaveDefBlock(m);
             log.trace("block named " + m.group(1) + " is ignored");
             gotoNoData(m);
           }
           break;
-
         case TRADBLOCK:
           if (isTranslation(m)) {
-            // leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            // leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            // leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            // leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoNymBlock(m);
           } else if (isPronunciation(m)) {
-            // leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            // leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            // leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoNoData(m);
           } else {
             log.trace("block named " + m.group(1) + " is ignored");
-            // leaveTradAltBlock(m);
+            leaveTradAltBlock(m);
             gotoNoData(m);
           }
           break;
         case ORTHOALTBLOCK:
           if (isTranslation(m)) {
-            // leaveOrthoAltBlock(m);
+            leaveOrthoAltBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            // leaveOrthoAltBlock(m);
+            leaveOrthoAltBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            // leaveOrthoAltBlock(m);
+            leaveOrthoAltBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            // leaveOrthoAltBlock(m);
+            leaveOrthoAltBlock(m);
             gotoNymBlock(m);
           } else if (isPronunciation(m)) {
-            // leaveOrthoAltBlock(m);
+            leaveOrthoAltBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            // leaveOrthoAltBlock(m);
+            leaveOrthoAltBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            // leaveOrthoAltBlock(m);
+            leaveOrthoAltBlock(m);
             gotoNoData(m);
           } else {
-            // leaveOrthoAltBlock(m);
+            leaveOrthoAltBlock(m);
             gotoNoData(m);
           }
           break;
         case NYMBLOCK:
           if (isTranslation(m)) {
-            // leaveNymBlock(m);
+           leaveNymBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            // leaveNymBlock(m);
+           leaveNymBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            // leaveNymBlock(m);
+           leaveNymBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            // leaveNymBlock(m);
+           leaveNymBlock(m);
             gotoNymBlock(m);
           } else if (isPronunciation(m)) {
-            // leaveNymBlock(m);
+           leaveNymBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            // leaveNymBlock(m);
+           leaveNymBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            // leaveNymBlock(m);
+           leaveNymBlock(m);
             gotoNoData(m);
           } else {
-            // leaveNymBlock(m);
+           leaveNymBlock(m);
             gotoNoData(m);
           }
           break;
         case PRONBLOCK:
           if (isTranslation(m)) {
-            leavePronBlock(m);
+           //leavePronBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            leavePronBlock(m);
+           leavePronBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            leavePronBlock(m);
+           leavePronBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            leavePronBlock(m);
+           leavePronBlock(m);
             gotoNymBlock(m);
           } else if (isPronunciation(m)) {
-            leavePronBlock(m);
+           leavePronBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            leavePronBlock(m);
+           leavePronBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            leavePronBlock(m);
+           leavePronBlock(m);
             gotoNoData(m);
           } else {
-            leavePronBlock(m);
+           leavePronBlock(m);
             gotoNoData(m);
           }
           break;
-
         case RELBLOCK:
           if (isTranslation(m)) {
-            // leaveRelBlock(m);
+            leaveRelBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            // leaveRelBlock(m);
+            leaveRelBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-            // leaveRelBlock(m);
+            leaveRelBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-            // leaveRelBlock(m);
+            leaveRelBlock(m);
             gotoNymBlock(m);
           } else if (isPronunciation(m)) {
-            // leaveRelBlock(m);
+            leaveRelBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-            // leaveRelBlock(m);
+            leaveRelBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-            // leaveRelBlock(m);
+            leaveRelBlock(m);
             gotoNoData(m);
           } else {
-            // leaveRelBlock(m);
+            leaveRelBlock(m);
             gotoNoData(m);
           }
           break;
-
         case IGNOREPOS:
           if (isTranslation(m)) {
           } else if (null != (pos = getValidPOS(m))) {
@@ -509,22 +463,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case NODATA:
         break;
       case DEFBLOCK:
-        // leaveDefBlock(m);
+        leaveDefBlock(m);
         break;
       case TRADBLOCK:
-        // leaveTradAltBlock(m);
+        leaveTradAltBlock(m);
         break;
       case ORTHOALTBLOCK:
-        // leaveOrthoAltBlock(m);
+        leaveOrthoAltBlock(m);
         break;
       case NYMBLOCK:
-        // leaveNymBlock(m);
+       leaveNymBlock(m);
         break;
       case PRONBLOCK:
-        leavePronBlock(m);
+       leavePronBlock(m);
         break;
       case RELBLOCK:
-        // leaveRelBlock(m);
+        leaveRelBlock(m);
         break;
       case IGNOREPOS:
         break;
@@ -540,7 +494,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ChineseRelatedWordsExtractor dbnmodel = new ChineseRelatedWordsExtractor(this.wdh, this.wi);
     dbnmodel.parseRelatedWords(relCode);
   }
-
 
   private void extractPronTemplate(int startOffset, int endOffset) {
     String pronCode = pageContent.substring(startOffset, endOffset);
@@ -565,5 +518,77 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         new ChineseTranslationExtractor(this.wdh, glossFilter);
     translationExtractor.parseTranslationBlock(transCode);
   }
-
+  private void removeIrrelevantToken(List<Token> tokens, int location) {
+    if (tokens.get(location).getText().equals(" ") || tokens.get(location).getText().equals(": ")
+            || tokens.get(location).getText().equals("：")) {
+      tokens.remove(location);
+    }
+  }
+  protected void extractNyms(String currentNym, int startOffset, int endOffset){
+      String nymBlock = pageContent.substring(startOffset,endOffset);
+      WikiText text = new WikiText(nymBlock);
+      //正常情况下，显示相关词汇
+    if(currentNym == null){
+      for (Token t:text.wikiTokens()){
+        if(t instanceof ListItem)
+        {
+          WikiContent listContent = t.asListItem().getContent();
+          List<Token> tokens = listContent.tokens();
+          removeIrrelevantToken(tokens,0);
+          if(tokens.size()==0)
+            return;
+          else if (tokens.size()==1 && tokens.get(0) instanceof Text) { //situation 1 : *近義詞：[[標記]]｜[[標誌]]｜[[象徵]]
+            String nymMarker=tokens.get(0).getText().split("：")[0];
+            nymMarker = nymMarker.substring(0,nymMarker.length());
+            if(nymMarkerSet.contains(nymMarker)) {
+              currentNym = nymMarkerToNymName.get(nymMarker);
+              if(tokens.get(0).getText().split("：").length>1){
+                  String nymTex = tokens.get(0).getText().split("：")[1];
+                  wdh.registerNymRelation(nymTex,currentNym);
+              }
+            }
+            else {
+              log.debug("Extract nym: can't find the nymMarker: "+nymMarker);
+            }
+          }else {
+            Token firstToken = tokens.get(0);
+            String nymMarker=firstToken.getText().split("：")[0];
+            if(nymMarkerSet.contains(nymMarker)){
+              currentNym = nymMarkerToNymName.get(nymMarker);
+              tokens.remove(0);
+              for(Token tokenInList: tokens){
+                if(tokenInList instanceof InternalLink){
+                  String nymText = tokenInList.asInternalLink().getTargetText();
+                  wdh.registerNymRelation(nymText,currentNym);
+                }
+              }
+            }
+            else{
+              log.trace("Extract nym: can't find the nymMarker: "+nymMarker);
+            }
+          }
+        }
+      }
+    }
+    //其他情况,显示近义词和反义词
+    else{
+      for (Token t:text.wikiTokens()){
+        if(t instanceof ListItem){
+          WikiContent listContent = t.asListItem().getContent();
+          List<Token> tokens = listContent.tokens();
+          removeIrrelevantToken(tokens,0);
+          for(Token token:tokens){
+            if(token instanceof Template){
+                    if(((Template) token).getName().equals("zh-l")){
+                      wdh.registerNymRelation(((Template) token).getArg("1").toString(),currentNym);
+                    }
+            }
+          }
+        } else if (t instanceof Template) {
+          if(((Template) t).getParsedArg("1")!=null)
+            wdh.registerNymRelation(((Template) t).getArg("1").toString(),currentNym);
+        }
+      }
+    }
+  }
 }

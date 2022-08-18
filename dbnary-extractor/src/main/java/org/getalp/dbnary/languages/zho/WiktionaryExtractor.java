@@ -38,7 +38,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super(wdh);
     // throw new RuntimeException("Chinese extractor is currently not functional.");
   }
-  private  final static  HashSet<String> nymMarkerSet = new HashSet<>();
+
+  private final static HashSet<String> nymMarkerSet = new HashSet<>();
   protected final static HashMap<String, String> nymMarkerToNymName;
 
   static {
@@ -56,15 +57,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     nymMarkerSet.add("近义词");
     nymMarkerSet.add("反义词");
     nymMarkerToNymName = new HashMap<String, String>(20);
-    nymMarkerToNymName.put("反義詞","ant");
-    nymMarkerToNymName.put("反義字","ant");
-    nymMarkerToNymName.put("反义词","ant");
-    nymMarkerToNymName.put("同義字","syn");
-    nymMarkerToNymName.put("同義詞","syn");
-    nymMarkerToNymName.put("近義詞","syn");
-    nymMarkerToNymName.put("近義字","syn");
+    nymMarkerToNymName.put("反義詞", "ant");
+    nymMarkerToNymName.put("反義字", "ant");
+    nymMarkerToNymName.put("反义词", "ant");
+    nymMarkerToNymName.put("同義字", "syn");
+    nymMarkerToNymName.put("同義詞", "syn");
+    nymMarkerToNymName.put("近義詞", "syn");
+    nymMarkerToNymName.put("近義字", "syn");
     nymMarkerToNymName.put("Synonyms", "syn");
-    nymMarkerToNymName.put("近义词","syn");
+    nymMarkerToNymName.put("近义词", "syn");
   }
 
   protected final static Pattern level2HeaderPattern;

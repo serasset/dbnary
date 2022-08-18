@@ -377,63 +377,63 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           break;
         case NYMBLOCK:
           if (isTranslation(m)) {
-           leaveNymBlock(m);
+            leaveNymBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-           leaveNymBlock(m);
+            leaveNymBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-           leaveNymBlock(m);
+            leaveNymBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-           leaveNymBlock(m);
+            leaveNymBlock(m);
             gotoNymBlock(m);
           } else if (isPronunciation(m)) {
-           leaveNymBlock(m);
+            leaveNymBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-           leaveNymBlock(m);
+            leaveNymBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-           leaveNymBlock(m);
+            leaveNymBlock(m);
             gotoNoData(m);
           } else {
-           leaveNymBlock(m);
+            leaveNymBlock(m);
             gotoNoData(m);
           }
           break;
         case PRONBLOCK:
           if (isTranslation(m)) {
-           //leavePronBlock(m);
+            // leavePronBlock(m);
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-           leavePronBlock(m);
+            leavePronBlock(m);
             if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
             }
           } else if (isAlternate(m)) {
-           leavePronBlock(m);
+            leavePronBlock(m);
             gotoOrthoAltBlock(m);
           } else if (isNymHeader(m)) {
-           leavePronBlock(m);
+            leavePronBlock(m);
             gotoNymBlock(m);
           } else if (isPronunciation(m)) {
-           leavePronBlock(m);
+            leavePronBlock(m);
             gotoPronBlock(m);
           } else if (isRelatedHeader(m)) {
-           leavePronBlock(m);
+            leavePronBlock(m);
             gotoRelBlock(m);
           } else if (isChineseHeader(m)) {
-           leavePronBlock(m);
+            leavePronBlock(m);
             gotoNoData(m);
           } else {
-           leavePronBlock(m);
+            leavePronBlock(m);
             gotoNoData(m);
           }
           break;
@@ -502,10 +502,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         leaveOrthoAltBlock(m);
         break;
       case NYMBLOCK:
-       leaveNymBlock(m);
+        leaveNymBlock(m);
         break;
       case PRONBLOCK:
-       leavePronBlock(m);
+        leavePronBlock(m);
         break;
       case RELBLOCK:
         leaveRelBlock(m);
@@ -551,73 +551,72 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void removeIrrelevantToken(List<Token> tokens, int location) {
     if (tokens.get(location).getText().equals(" ") || tokens.get(location).getText().equals(": ")
-            || tokens.get(location).getText().equals("：")) {
+        || tokens.get(location).getText().equals("：")) {
       tokens.remove(location);
     }
   }
-  protected void extractNyms(String currentNym, int startOffset, int endOffset){
-      String nymBlock = pageContent.substring(startOffset,endOffset);
-      WikiText text = new WikiText(nymBlock);
-      //正常情况下，显示相关词汇
-    if(currentNym == null){
-      for (Token t:text.wikiTokens()){
-        if(t instanceof ListItem)
-        {
+
+  protected void extractNyms(String currentNym, int startOffset, int endOffset) {
+    String nymBlock = pageContent.substring(startOffset, endOffset);
+    WikiText text = new WikiText(nymBlock);
+    // 正常情况下，显示相关词汇
+    if (currentNym == null) {
+      for (Token t : text.wikiTokens()) {
+        if (t instanceof ListItem) {
           WikiContent listContent = t.asListItem().getContent();
           List<Token> tokens = listContent.tokens();
-          removeIrrelevantToken(tokens,0);
-          if(tokens.size()==0)
+          removeIrrelevantToken(tokens, 0);
+          if (tokens.size() == 0)
             return;
-          else if (tokens.size()==1 && tokens.get(0) instanceof Text) { //situation 1 : *近義詞：[[標記]]｜[[標誌]]｜[[象徵]]
-            String nymMarker=tokens.get(0).getText().split("：")[0];
-            nymMarker = nymMarker.substring(0,nymMarker.length());
-            if(nymMarkerSet.contains(nymMarker)) {
+          else if (tokens.size() == 1 && tokens.get(0) instanceof Text) { // situation 1 :
+                                                                          // *近義詞：[[標記]]｜[[標誌]]｜[[象徵]]
+            String nymMarker = tokens.get(0).getText().split("：")[0];
+            nymMarker = nymMarker.substring(0, nymMarker.length());
+            if (nymMarkerSet.contains(nymMarker)) {
               currentNym = nymMarkerToNymName.get(nymMarker);
-              if(tokens.get(0).getText().split("：").length>1){
-                  String nymTex = tokens.get(0).getText().split("：")[1];
-                  wdh.registerNymRelation(nymTex,currentNym);
+              if (tokens.get(0).getText().split("：").length > 1) {
+                String nymTex = tokens.get(0).getText().split("：")[1];
+                wdh.registerNymRelation(nymTex, currentNym);
               }
+            } else {
+              log.debug("Extract nym: can't find the nymMarker: " + nymMarker);
             }
-            else {
-              log.debug("Extract nym: can't find the nymMarker: "+nymMarker);
-            }
-          }else {
+          } else {
             Token firstToken = tokens.get(0);
-            String nymMarker=firstToken.getText().split("：")[0];
-            if(nymMarkerSet.contains(nymMarker)){
+            String nymMarker = firstToken.getText().split("：")[0];
+            if (nymMarkerSet.contains(nymMarker)) {
               currentNym = nymMarkerToNymName.get(nymMarker);
               tokens.remove(0);
-              for(Token tokenInList: tokens){
-                if(tokenInList instanceof InternalLink){
+              for (Token tokenInList : tokens) {
+                if (tokenInList instanceof InternalLink) {
                   String nymText = tokenInList.asInternalLink().getTargetText();
-                  wdh.registerNymRelation(nymText,currentNym);
+                  wdh.registerNymRelation(nymText, currentNym);
                 }
               }
-            }
-            else{
-              log.trace("Extract nym: can't find the nymMarker: "+nymMarker);
+            } else {
+              log.trace("Extract nym: can't find the nymMarker: " + nymMarker);
             }
           }
         }
       }
     }
-    //其他情况,显示近义词和反义词
-    else{
-      for (Token t:text.wikiTokens()){
-        if(t instanceof ListItem){
+    // 其他情况,显示近义词和反义词
+    else {
+      for (Token t : text.wikiTokens()) {
+        if (t instanceof ListItem) {
           WikiContent listContent = t.asListItem().getContent();
           List<Token> tokens = listContent.tokens();
-          removeIrrelevantToken(tokens,0);
-          for(Token token:tokens){
-            if(token instanceof Template){
-                    if(((Template) token).getName().equals("zh-l")){
-                      wdh.registerNymRelation(((Template) token).getArg("1").toString(),currentNym);
-                    }
+          removeIrrelevantToken(tokens, 0);
+          for (Token token : tokens) {
+            if (token instanceof Template) {
+              if (((Template) token).getName().equals("zh-l")) {
+                wdh.registerNymRelation(((Template) token).getArg("1").toString(), currentNym);
+              }
             }
           }
         } else if (t instanceof Template) {
-          if(((Template) t).getParsedArg("1")!=null)
-            wdh.registerNymRelation(((Template) t).getArg("1").toString(),currentNym);
+          if (((Template) t).getParsedArg("1") != null)
+            wdh.registerNymRelation(((Template) t).getArg("1").toString(), currentNym);
         }
       }
     }

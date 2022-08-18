@@ -16,6 +16,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // Chinese
     posAndTypeValueMap.put("动詞", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("名詞", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("名词", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("釋義", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("副詞", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("专有名词", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry)); // Male

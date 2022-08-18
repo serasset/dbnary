@@ -41,54 +41,54 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
     phonemicSystemList.put("國際音標", "fonipa");// IPA
     phonemicSystemList.put("四川話拼音", "Latn");// Sichuanese Pinyin
     phonemicSystemList.put("四川话拉丁化新文字", "Latn");// Scuanxua Ladinxua Sin Wenz
-    phonemicSystemList.put("國語羅馬字", "GR");// Gwoyeu Romatzyh
-    phonemicSystemList.put("威式拼音", "WG");// Wade–Giles
+    phonemicSystemList.put("國語羅馬字", "Latn-GR");// Gwoyeu Romatzyh
+    phonemicSystemList.put("威式拼音", "Latn-WG");// Wade–Giles
     phonemicSystemList.put("客家話拼音", "Latn");// Hakka Pinyin
     phonemicSystemList.put("客家語拼音", "Latn");// Hakka Pinyin
-    phonemicSystemList.put("平話字", "BUC");// Bàng-uâ-cê
+    phonemicSystemList.put("平話字", "Latn-BUC");// Bàng-uâ-cê
     phonemicSystemList.put("廣州話拼音", "Latn");// Cantonese Pinyin
     phonemicSystemList.put("廣東拼音", "Latn");// Cantonese Pinyin
     phonemicSystemList.put("拼音", "Latn");// Pinyin
-    phonemicSystemList.put("普實台文", "PSDB");// Phofsit Daibuun
-    phonemicSystemList.put("模仿白話字", "POJ");// Pe̍h-uē- 台语罗马字 白话字 台語羅馬字 教会罗马字
-    phonemicSystemList.put("白話字", "POJ");
+    phonemicSystemList.put("普實台文", "Latn-PSDB");// Phofsit Daibuun
+    phonemicSystemList.put("模仿白話字", "Latn-POJ");// Pe̍h-uē- 台语罗马字 白话字 台語羅馬字 教会罗马字
+    phonemicSystemList.put("白話字", "Latn-POJ");
     phonemicSystemList.put("粵拼", "Jyutping");// Jyutping
-    phonemicSystemList.put("維基詞典", "Wiki");// Wiktionary
-    phonemicSystemList.put("耶魯粵拼", "YaleRomanization"); // Yale romanization of Cantonese
+    phonemicSystemList.put("維基詞典", "Latn-Wiki");// Wiktionary
+    phonemicSystemList.put("耶魯粵拼", "Latn-YaleRomanization"); // Yale romanization of Cantonese
     phonemicSystemList.put("臺羅拼音", "Latn");// The official romanization system for Taiwanese Hokkien
                                            // in Taiwanese Hokkien
-    phonemicSystemList.put("西里爾字母", " Cyrillic");// Cyrillic
+    phonemicSystemList.put("西里爾字母", "Cyrl");// Cyrillic
     phonemicSystemList.put("通用拼音", "Latn");// a romanization system for Mandarin Chinese used in
                                            // Taiwan
-    phonemicSystemList.put("注音", "Bopomofo");// Bopomofo zhuyin
+    phonemicSystemList.put("注音", "Bopo");// Bopomofo zhuyin
     phonemicSystemList.put("臺灣話", "TW");// Here is one location name, in order to adapt the method
                                         // parsePronunciation2
   }
   private static HashMap<String, String> locationList = new HashMap<>();
   {
-    locationList.put("福建", "Fujian");
-    locationList.put("Beijing dialect", "Beijing");
-    locationList.put("北京方言", "Beijing");
-    locationList.put("北京話", "Beijing");
+    locationList.put("福建", "CN-FJ"); // Fujian
+    locationList.put("Beijing dialect", "CN-BJ"); // Beijing
+    locationList.put("北京方言", "CN-BJ"); // Beijing
+    locationList.put("北京話", "CN-BJ"); // Beijing
     locationList.put("北四縣話", "ignored");
     locationList.put("南四縣話", "ignored");
-    locationList.put("南昌", "Nanchang");
-    locationList.put("台山話", "Taishan");
+    locationList.put("南昌", "CN-JX"); // Nanchang
+    locationList.put("台山話", "CN-GD"); // Taishan is a sub district of Guangdong region
     locationList.put("四縣話", "ignored");
-    locationList.put("太原話", "Taiyuan");
-    locationList.put("太原話", "Taiyuan");
-    locationList.put("廣州話", "Guangzhou");
-    locationList.put("建甌", "Jianou");
-    locationList.put("成都話", "Chengdu");
+    locationList.put("太原話", "CN-SX"); // Taiyuan
+    locationList.put("太原話", "CN-SX"); // Taiyuan
+    locationList.put("廣州話", "CN-GD"); // Guangzhou
+    locationList.put("建甌", "CN-FJ"); // Jianou in Fujian region
+    locationList.put("成都話", "CN-SC"); // Chengdu
     locationList.put("東干語", "ignored");// dng
-    locationList.put("梅州話", "Meizhou");
-    locationList.put("潮州話", "Chaozhou");
-    locationList.put("福州話", "Fuzhou");
-    locationList.put("長沙話", "Changsha");
+    locationList.put("梅州話", "CN-GD"); // Meizhou is a sub district of Guangdong region
+    locationList.put("潮州話", "CN-GD"); // Chaozhou is a sub district of Guangdong region
+    locationList.put("福州話", "CN-FJ"); // Fuzhou (capitale du Fujian)
+    locationList.put("長沙話", "CN-HN"); // Changsha (capitale du Hunan)
     locationList.put("非標準或方言", "ignored");
-    locationList.put("上海話", "Shanghai");
+    locationList.put("上海話", "CN-SH");
     locationList.put("官話", "ignored");
-    locationList.put("台山話，台城", "Taishan");
+    locationList.put("台山話，台城", "CN-GD"); // Taishan is a sub district of Guangdong region
   }
 
   public ChinesePronunciationExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi,

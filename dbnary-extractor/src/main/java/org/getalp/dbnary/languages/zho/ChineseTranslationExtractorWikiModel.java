@@ -30,18 +30,18 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
   private Logger log = LoggerFactory.getLogger(ChineseTranslationExtractorWikiModel.class);
 
   public ChineseTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-                                              String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+      String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
     this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL, glossFilter);
   }
 
   public ChineseTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-                                              Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+      Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
     this.glossFilter = glossFilter;
   }
 
-  public boolean isNormalType(String textContent){
+  public boolean isNormalType(String textContent) {
     String normalTypeString = "(?:\\*.+\\uff1a?\\{\\{.+\\}\\})|(?:\\*.+:\\s\\{\\{.+\\}\\})";
     String abnormalTypeString = "(?:\\*.+\\uff1a?\\[\\[.+\\]\\])|(?:\\*.+:\\s\\[\\[.+\\]\\])";
     Pattern normalTypePattern = Pattern.compile(normalTypeString);
@@ -49,7 +49,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
     Matcher normalTypeMatcher = normalTypePattern.matcher(textContent);
     Matcher abnormalTypeMatcher = abnormalTypePattern.matcher(textContent);
 
-    return (normalTypeMatcher.results().count()>=abnormalTypeMatcher.results().count());
+    return (normalTypeMatcher.results().count() >= abnormalTypeMatcher.results().count());
   }
 
   public void parseTranslationBlock(String block) {
@@ -58,11 +58,11 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
     if (block == null) {
       return;
     }
-    //transblock type : *langage: {{XX|XX|XX}}
+    // transblock type : *langage: {{XX|XX|XX}}
     if (isNormalType(block)) {
       WikipediaParser.parse(block, this, true, null);
     }
-    //transblock type : *langage: [[]]
+    // transblock type : *langage: [[]]
     else {
       extractTranslations(block);
     }
@@ -73,7 +73,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
 
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-                                     Appendable writer) throws IOException {
+      Appendable writer) throws IOException {
     if ("trad".equals(templateName)) {
       // Trad macro contains a set of translations with no usage note.
       String lang = normalizeLang(parameterMap.get("1"));
@@ -87,7 +87,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
       // xlatio and trad- macro contains a translation and a transcription.
       String lang = normalizeLang(parameterMap.get("1"));
       delegate.registerTranslation(lang, currentGloss, parameterMap.get("3"),
-              parameterMap.get("2"));
+          parameterMap.get("2"));
     } else if ("t".equals(templateName) || "t+".equals(templateName)) {
       // t macro contains a translation, a transcription and an usage note.
       String lang = normalizeLang(parameterMap.get("1"));
@@ -136,11 +136,11 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
     return lang;
   }
 
-  //Extraction Method of transblock type : *langage: [[]]
+  // Extraction Method of transblock type : *langage: [[]]
   protected final static String carPatternString;
 
   protected final static String starChinesePatternString;
- 
+
   protected final static String macroOrLinkOrcarPatternString;
   protected final int INIT = 1;
   protected final int LANGUE = 2;
@@ -150,17 +150,19 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
   static {
     // les caractères visible
     carPatternString = new StringBuilder().append("(.)").toString();
-    starChinesePatternString = new StringBuilder().append("\\*").append("([\\u4e00-\\u9fa5]+)").toString();
-    
+    starChinesePatternString =
+        new StringBuilder().append("\\*").append("([\\u4e00-\\u9fa5]+)").toString();
+
 
     // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
     // line.
-//    macroOrLinkOrcarPatternString =
-//            new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
-//                    .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)")
-//                    .append(")|(?:").append("^;([^:\\n\\r]*)") // Term definition
-//                    .append(")|(?:").append(carPatternString).append(")").toString();
-        macroOrLinkOrcarPatternString ="(?:\\{\\{([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\})|(?<=\\*)([\\u4e00-\\u9fa5]+)|(?:\\[\\[([^\\]\\|]*)(?:\\|([^\\]]*))?\\]\\])|(?:(:*\\*))|(?:^;([^:\\n\\r]*))|(?:(.))";
+    // macroOrLinkOrcarPatternString =
+    // new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
+    // .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)")
+    // .append(")|(?:").append("^;([^:\\n\\r]*)") // Term definition
+    // .append(")|(?:").append(carPatternString).append(")").toString();
+    macroOrLinkOrcarPatternString =
+        "(?:\\{\\{([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\})|(?<=\\*)([\\u4e00-\\u9fa5]+)|(?:\\[\\[([^\\]\\|]*)(?:\\|([^\\]]*))?\\]\\])|(?:(:*\\*))|(?:^;([^:\\n\\r]*))|(?:(.))";
   }
 
   protected final static Pattern macroOrLinkOrcarPattern;
@@ -169,7 +171,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
   static {
     carPattern = Pattern.compile(carPatternString);
     macroOrLinkOrcarPattern =
-            Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
+        Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
   }
   static HashSet<String> commonUsageMacros = new HashSet<>();
   static HashSet<String> fontMacros = new HashSet<>();
@@ -217,7 +219,8 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
     String langname = "";
 
     while (macroOrLinkOrcarMatcher.find()) {
-      String macro = macroOrLinkOrcarMatcher.group(3) !=null? macroOrLinkOrcarMatcher.group(3):macroOrLinkOrcarMatcher.group(1); //显示语言种类 Ar 或者 中文
+      String macro = macroOrLinkOrcarMatcher.group(3) != null ? macroOrLinkOrcarMatcher.group(3)
+          : macroOrLinkOrcarMatcher.group(1); // 显示语言种类 Ar 或者 中文
       String link = macroOrLinkOrcarMatcher.group(4);
       String star = macroOrLinkOrcarMatcher.group(6);
       String term = macroOrLinkOrcarMatcher.group(7);
@@ -230,7 +233,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
                 currentGloss =
-                        delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                    delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
               } else {
                 currentGloss = null;
               }
@@ -241,16 +244,16 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
               // ignore
             } else {
               log.debug("Got {} macro while in INIT state. for page: {}", macro,
-                      this.delegate.currentPagename());
+                  this.delegate.currentPagename());
             }
           } else if (link != null) {
             log.debug("Unexpected link {} while in INIT state. for page: {}", link,
-                    this.delegate.currentPagename());
+                this.delegate.currentPagename());
           } else if (star != null) {
             ETAT = LANGUE;
           } else if (term != null) {
             currentGloss =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
+                delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
           } else if (car != null) {
             switch (car) {
               case ":":
@@ -264,7 +267,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
                 log.debug("Skipping ',' while in INIT state.");
                 break;
               default:
-              //  log.debug("Skipping {} while in INIT state.", car);
+                // log.debug("Skipping {} while in INIT state.", car);
                 break;
             }
           }
@@ -278,7 +281,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
                 currentGloss =
-                        delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                    delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
               } else {
                 currentGloss = null;
               }
@@ -308,18 +311,18 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
             // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (term != null) {
             currentGloss =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
+                delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
             langname = "";
             word = "";
             usage = "";
             ETAT = INIT;
           } else if (car != null) {
-            if (car.equals(":")||car.equals("：")) {
+            if (car.equals(":") || car.equals("：")) {
               lang = langname.trim();
               lang = AbstractWiktionaryExtractor.stripParentheses(lang);
               lang = JapaneseLangtoCode.threeLettersCode(lang);
               if (null == lang) {
-               // log.debug("Unknown language {} : {}", langname, this.delegate.currentPagename());
+                // log.debug("Unknown language {} : {}", langname, this.delegate.currentPagename());
               }
               langname = "";
               ETAT = TRAD;
@@ -339,7 +342,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
                 currentGloss =
-                        delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                    delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
               } else {
                 currentGloss = null;
               }
@@ -419,11 +422,11 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
               // handling trans_link macro in " + this.delegate.currentLexEntry());
               word = argmap.get("2");
             } else if (macro.equals("t+") || macro.equals("t-") || macro.equals("t")
-                    || macro.equals("tø") || macro.equals("trad")) {
+                || macro.equals("tø") || macro.equals("trad")) {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               if (null != word && word.length() != 0) {
-              //  log.debug("Word is not null ({}) when handling t+- macro in {}", word,
-                        this.delegate.currentPagename();
+                // log.debug("Word is not null ({}) when handling t+- macro in {}", word,
+                this.delegate.currentPagename();
               }
               String l = argmap.get("1");
               if (null != l && (null != lang) && !lang.equals(LangTools.getCode(l))) {
@@ -439,8 +442,8 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
             } else if (macro.equals("lang") || macro.equals("Lang")) {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               if (null != word && word.length() != 0) {
-               log.debug("Word is not null ({}) when handling lang macro in {}", word,
-                        this.delegate.currentPagename());
+                log.debug("Word is not null ({}) when handling lang macro in {}", word,
+                    this.delegate.currentPagename());
               }
               String l = argmap.get("1");
               if (null != l && (null != lang) && !lang.equals(LangTools.getCode(l))) {
@@ -475,13 +478,13 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
           } else if (link != null) {
             if (!isAnExternalLink(link)) {
               word = word + " " + ((macroOrLinkOrcarMatcher.group(4) == null) ? link
-                      : macroOrLinkOrcarMatcher.group(4));
+                  : macroOrLinkOrcarMatcher.group(4));
             }
           } else if (star != null) {
             // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (term != null) {
             currentGloss =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
+                delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
             langname = "";
             word = "";
             usage = "";
@@ -497,12 +500,12 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
                   this.delegate.registerTranslation(lang, currentGloss, usage, word);
                 }
               }
-              //存储后将所存的内容初始化
+              // 存储后将所存的内容初始化
               lang = null;
               usage = "";
               word = "";
               ETAT = INIT;
-            } else if (car.equals(",") || car.equals("、")||car.equals(";")) {
+            } else if (car.equals(",") || car.equals("、") || car.equals(";")) {
               usage = usage.trim();
               // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
               // currentGloss);
@@ -519,7 +522,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
           }
           break;
         default:
-         // log.error("Unexpected state number {}", ETAT);
+          // log.error("Unexpected state number {}", ETAT);
           break;
       }
     }

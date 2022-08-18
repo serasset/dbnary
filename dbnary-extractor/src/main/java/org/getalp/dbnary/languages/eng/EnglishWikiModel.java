@@ -16,10 +16,12 @@ public class EnglishWikiModel extends DbnaryWikiModel {
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
-    if (templateName.equals("check deprecated lang param usage")) {
-      writer.append(parameterMap.get("1"));
-    } else {
-      super.substituteTemplateCall(templateName, parameterMap, writer);
+    if (!templateName.startsWith("tracking")) {
+      if (templateName.equals("check deprecated lang param usage")) {
+        writer.append(parameterMap.get("1"));
+      } else {
+        super.substituteTemplateCall(templateName, parameterMap, writer);
+      }
     }
   }
 }

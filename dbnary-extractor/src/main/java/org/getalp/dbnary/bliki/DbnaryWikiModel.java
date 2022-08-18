@@ -78,17 +78,23 @@ public class DbnaryWikiModel extends WikiModel {
 
   protected String expandWikiCode(String wikicode) {
     try {
-      return render(new HTMLConverter(), wikicode);
+      String render = render(new HTMLConverter(), wikicode);
+      return render;
     } catch (IOException e) {
+      log.warn("WikiCode Expansion led to Exception in {}", getPageName());
       e.printStackTrace();
     }
     return null;
   }
 
-  protected static CounterSet trace = new CounterSet();
+  protected CounterSet trace = new CounterSet();
 
-  public static void logCounters() {
-    trace.logCounters(log);
+  public void displayGlobalTrace() {
+    trace.traceCounters(log);
+  }
+
+  public void displayGlobalTrace(String msg) {
+    trace.traceCounters(log, msg);
   }
 
   @Override
@@ -110,7 +116,8 @@ public class DbnaryWikiModel extends WikiModel {
           parsedPagename.pagename.substring(7), parsedPagename.valid);
     }
 
-    trace.incr(parsedPagename.fullPagename());
+    if (log.isTraceEnabled())
+      trace.incr(parsedPagename.fullPagename());
 
     if (null != wi) {
       String rawText = wi.getTextOfPageWithRedirects(parsedPagename.fullPagename());
@@ -171,4 +178,5 @@ public class DbnaryWikiModel extends WikiModel {
     }
     return rawWikiText;
   }
+
 }

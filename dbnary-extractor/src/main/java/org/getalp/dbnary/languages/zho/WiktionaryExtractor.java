@@ -2,6 +2,7 @@ package org.getalp.dbnary.languages.zho;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +10,8 @@ import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,51 +38,35 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super(wdh);
     // throw new RuntimeException("Chinese extractor is currently not functional.");
   }
-
-  protected final static HashMap<String, String> posMarkers;
+  private  final static  HashSet<String> nymMarkerSet = new HashSet<>();
   protected final static HashMap<String, String> nymMarkerToNymName;
 
   static {
-    posMarkers = new HashMap<String, String>(20);
-    posMarkers.put("n.", "noun");
-    posMarkers.put("名词", "noun");
-    posMarkers.put("v.", "verb");
-    posMarkers.put("动词", "verb");
-    posMarkers.put("adj.", "adjective");
-    posMarkers.put("形容词", "adjective");
-    posMarkers.put("num.", "numeral");
-    posMarkers.put("数词", "numeral");
-    posMarkers.put("clas.", "chinese classifier");
-    posMarkers.put("量词", "chinese classifier");
-    posMarkers.put("pron.", "pronoun");
-    posMarkers.put("代词", "pronoun");
-    posMarkers.put("idiom.", "idiom");
-    posMarkers.put("成语", "idiom");
-    posMarkers.put("adv.", "adverb");
-    posMarkers.put("副词", "adverb");
-    posMarkers.put("prep.", "preposition");
-    posMarkers.put("介词", "preposition");
-    posMarkers.put("conj.", "conjunction");
-    posMarkers.put("连词", "conjunction");
-    posMarkers.put("conj.", "auxiliary");
-    posMarkers.put("助词", "auxiliary");
-    posMarkers.put("echo.", "echo");
-    posMarkers.put("拟声词", "echo");
-    posMarkers.put("int.", "interjection");
-    posMarkers.put("叹词", "interjection");
-
+    nymMarkerSet.add("反義詞");
+    nymMarkerSet.add("反義字");
+    nymMarkerSet.add("同義字");
+    nymMarkerSet.add("同義詞");
+    nymMarkerSet.add("近義詞");
+    nymMarkerSet.add("近義字");
+    nymMarkerSet.add("Synonyms");
+    nymMarkerSet.add("相关词汇");
+    nymMarkerSet.add("相關詞彙");
+    nymMarkerSet.add("相關詞");
+    nymMarkerSet.add("相近詞彙");
+    nymMarkerSet.add("近义词");
+    nymMarkerSet.add("反义词");
     nymMarkerToNymName = new HashMap<String, String>(20);
+    nymMarkerToNymName.put("反義詞","ant");
+    nymMarkerToNymName.put("反義字","ant");
+    nymMarkerToNymName.put("反义词","ant");
+    nymMarkerToNymName.put("同義字","syn");
+    nymMarkerToNymName.put("同義詞","syn");
+    nymMarkerToNymName.put("近義詞","syn");
+    nymMarkerToNymName.put("近義字","syn");
     nymMarkerToNymName.put("Synonyms", "syn");
-    nymMarkerToNymName.put("同义词", "syn");
-    nymMarkerToNymName.put("Antonyms", "ant");
-    nymMarkerToNymName.put("反义词", "ant");
-    nymMarkerToNymName.put("Hyponyms", "hypo");
-    nymMarkerToNymName.put("下位词", "hypo");
-    nymMarkerToNymName.put("Hypernyms", "hyper");
-    nymMarkerToNymName.put("上位词", "hyper");
-    nymMarkerToNymName.put("Meronyms", "mero");
-    nymMarkerToNymName.put("整体-部分", "mero");
+    nymMarkerToNymName.put("近义词","syn");
   }
+
   protected final static Pattern level2HeaderPattern;
   static {
     level2HeaderPattern = Pattern.compile(level2HeaderPatternString, Pattern.MULTILINE);
@@ -537,7 +524,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     dbnmodel.parseRelatedWords(relCode);
   }
 
-
   private void extractPronTemplate(int startOffset, int endOffset) {
     String pronCode = pageContent.substring(startOffset, endOffset);
     pronunciationExtractor.setPageName(getWiktionaryPageName());
@@ -562,4 +548,77 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     translationExtractor.parseTranslationBlock(transCode);
   }
 
+  private void removeIrrelevantToken(List<Token> tokens, int location) {
+    if (tokens.get(location).getText().equals(" ") || tokens.get(location).getText().equals(": ")
+            || tokens.get(location).getText().equals("：")) {
+      tokens.remove(location);
+    }
+  }
+  protected void extractNyms(String currentNym, int startOffset, int endOffset){
+      String nymBlock = pageContent.substring(startOffset,endOffset);
+      WikiText text = new WikiText(nymBlock);
+      //正常情况下，显示相关词汇
+    if(currentNym == null){
+      for (Token t:text.wikiTokens()){
+        if(t instanceof ListItem)
+        {
+          WikiContent listContent = t.asListItem().getContent();
+          List<Token> tokens = listContent.tokens();
+          removeIrrelevantToken(tokens,0);
+          if(tokens.size()==0)
+            return;
+          else if (tokens.size()==1 && tokens.get(0) instanceof Text) { //situation 1 : *近義詞：[[標記]]｜[[標誌]]｜[[象徵]]
+            String nymMarker=tokens.get(0).getText().split("：")[0];
+            nymMarker = nymMarker.substring(0,nymMarker.length());
+            if(nymMarkerSet.contains(nymMarker)) {
+              currentNym = nymMarkerToNymName.get(nymMarker);
+              if(tokens.get(0).getText().split("：").length>1){
+                  String nymTex = tokens.get(0).getText().split("：")[1];
+                  wdh.registerNymRelation(nymTex,currentNym);
+              }
+            }
+            else {
+              log.debug("Extract nym: can't find the nymMarker: "+nymMarker);
+            }
+          }else {
+            Token firstToken = tokens.get(0);
+            String nymMarker=firstToken.getText().split("：")[0];
+            if(nymMarkerSet.contains(nymMarker)){
+              currentNym = nymMarkerToNymName.get(nymMarker);
+              tokens.remove(0);
+              for(Token tokenInList: tokens){
+                if(tokenInList instanceof InternalLink){
+                  String nymText = tokenInList.asInternalLink().getTargetText();
+                  wdh.registerNymRelation(nymText,currentNym);
+                }
+              }
+            }
+            else{
+              log.trace("Extract nym: can't find the nymMarker: "+nymMarker);
+            }
+          }
+        }
+      }
+    }
+    //其他情况,显示近义词和反义词
+    else{
+      for (Token t:text.wikiTokens()){
+        if(t instanceof ListItem){
+          WikiContent listContent = t.asListItem().getContent();
+          List<Token> tokens = listContent.tokens();
+          removeIrrelevantToken(tokens,0);
+          for(Token token:tokens){
+            if(token instanceof Template){
+                    if(((Template) token).getName().equals("zh-l")){
+                      wdh.registerNymRelation(((Template) token).getArg("1").toString(),currentNym);
+                    }
+            }
+          }
+        } else if (t instanceof Template) {
+          if(((Template) t).getParsedArg("1")!=null)
+            wdh.registerNymRelation(((Template) t).getArg("1").toString(),currentNym);
+        }
+      }
+    }
+  }
 }

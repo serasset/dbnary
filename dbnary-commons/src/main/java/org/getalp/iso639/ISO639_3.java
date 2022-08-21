@@ -201,9 +201,11 @@ public class ISO639_3 {
             String zhTraditionalGroup = matcher.group(5);
             String zhSimpleGroup = matcher.group(6);
             for (String name : zhTraditionalGroup.split("、")) {
+              if (name.trim().length() == 0) continue;
               langMap.put(name, l);
             }
             for (String name : zhSimpleGroup.split("、")) {
+              if (name.trim().length() == 0) continue;
               langMap.put(name, l);
             }
           }

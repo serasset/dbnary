@@ -15,7 +15,7 @@ public class WikiPatterns {
   public final static String multipleBulletListPatternString = "(\\*+)\\s*(.*)";
 
   // public final static String examplePatternString = "^#{1,2}\\*\\s*(.*)$";
-  public final static String examplePatternString = "^#{1,2}[\\*:]+\\s*(.*)$";
+  public final static String examplePatternString = "^#{1,2}[\\*:]+[ \t\\x0B\f]*(.*)$";
 
   public final static String catOrInterwikiLink = "^\\s*\\[\\[([^\\:\\]]*)\\:([^\\]]*)\\]\\]\\s*$";
   public final static Pattern categoryOrInterwikiLinkPattern;

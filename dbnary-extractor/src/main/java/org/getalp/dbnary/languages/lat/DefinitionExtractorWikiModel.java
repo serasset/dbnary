@@ -26,8 +26,8 @@ public class DefinitionExtractorWikiModel extends DbnaryWikiModel {
   private IWiktionaryDataHandler delegate;
 
 
-  public DefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public DefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL,
+      String linkBaseURL) {
     this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
@@ -55,7 +55,7 @@ public class DefinitionExtractorWikiModel extends DbnaryWikiModel {
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
-      super.substituteTemplateCall(templateName, parameterMap, writer);
+    super.substituteTemplateCall(templateName, parameterMap, writer);
   }
 
   @Override

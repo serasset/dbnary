@@ -131,10 +131,10 @@ public class DbnaryWikiModel extends WikiModel {
         rawText = prepareForTransclusion(rawText);
       }
       if (null == rawText
-        && parsedPagename.namespace.isType(NamespaceCode.MEDIAWIKI_NAMESPACE_KEY)) {
+          && parsedPagename.namespace.isType(NamespaceCode.MEDIAWIKI_NAMESPACE_KEY)) {
         // In MediaWiki, try to capitalize the pagename
-        rawText = wi.getTextOfPageWithRedirects(parsedPagename.namespace + ":" +
-            WordUtils.capitalize(parsedPagename.pagename, new char[]{}));
+        rawText = wi.getTextOfPageWithRedirects(parsedPagename.namespace + ":"
+            + WordUtils.capitalize(parsedPagename.pagename, new char[] {}));
       }
       // TODO: should I try with: name = encodeTitleToUrl(articleName, true);
 

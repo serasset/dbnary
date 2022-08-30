@@ -15,7 +15,6 @@ import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
-import org.getalp.dbnary.languages.fra.FrenchDefinitionExtractorWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
@@ -161,14 +160,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private String currentNym = null;
 
   protected ExampleExpanderWikiModel exampleExpander;
-  protected FrenchDefinitionExtractorWikiModel definitionExpander;
+  protected DefinitionExtractorWikiModel definitionExpander;
 
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
     exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("la"),
         "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
-    definitionExpander = new FrenchDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("la"),
+    definitionExpander = new DefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("la"),
         "/${image}", "/${title}");
   }
 

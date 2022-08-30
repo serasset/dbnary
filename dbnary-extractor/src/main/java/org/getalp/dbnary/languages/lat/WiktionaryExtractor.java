@@ -15,7 +15,6 @@ import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
-import org.getalp.dbnary.languages.fra.ExampleExpanderWikiModel;
 import org.getalp.dbnary.languages.fra.FrenchDefinitionExtractorWikiModel;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiTool;
@@ -167,9 +166,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("fr"),
+    exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("la"),
         "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
-    definitionExpander = new FrenchDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"),
+    definitionExpander = new FrenchDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("la"),
         "/${image}", "/${title}");
   }
 
@@ -447,8 +446,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void extractExample(String example) {
     Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
-    String ex = exampleExpander.expandExample(example, defTemplates, context,
-        wdh.getExtractedLanguage(), wdh.getCurrentEntryLanguage());
+    String ex = exampleExpander.expandExample(example, defTemplates, context);
     if (ex != null && !ex.equals("")) {
       wdh.registerExample(ex, context);
     }

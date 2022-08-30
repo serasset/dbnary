@@ -27,7 +27,7 @@ DIFFS=target/diffs
 
 if [ "x$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "x" ]; then
   NEXT_VERSION_BRANCH=$CI_COMMIT_BRANCH
-  if [[ "$CI_COMMIT_BRANCH" =~ "^feature/" ]]; then
+  if [[ $CI_COMMIT_BRANCH =~ ^feature/ ]]; then
     PREVIOUS_VERSION_BRANCH=develop
   else
     PREVIOUS_VERSION_BRANCH=master

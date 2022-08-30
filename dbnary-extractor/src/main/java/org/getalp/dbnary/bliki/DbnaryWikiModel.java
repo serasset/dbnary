@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.text.WordUtils;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.tools.CounterSet;
 import org.slf4j.Logger;
@@ -121,18 +122,22 @@ public class DbnaryWikiModel extends WikiModel {
 
     if (null != wi) {
       String rawText = wi.getTextOfPageWithRedirects(parsedPagename.fullPagename());
-      if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)) {
-        rawText = prepareForTransclusion(rawText);
-      }
       String name;
       if (null == rawText
           && !(name = parsedPagename.pagename.trim()).equals(parsedPagename.pagename)) {
         rawText = wi.getTextOfPageWithRedirects(parsedPagename.namespace + ":" + name);
-        if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)) {
-          rawText = prepareForTransclusion(rawText);
-        }
+      }
+      if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)) {
+        rawText = prepareForTransclusion(rawText);
+      }
+      if (null == rawText
+          && parsedPagename.namespace.isType(NamespaceCode.MEDIAWIKI_NAMESPACE_KEY)) {
+        // In MediaWiki, try to capitalize the pagename
+        rawText = wi.getTextOfPageWithRedirects(parsedPagename.namespace + ":"
+            + WordUtils.capitalize(parsedPagename.pagename, new char[] {}));
       }
       // TODO: should I try with: name = encodeTitleToUrl(articleName, true);
+
       return rawText;
     }
 

@@ -2,7 +2,7 @@
   <configuration default="false" name="dbnary grep" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
-    <option name="PROGRAM_PARAMETERS" value="grep --all-matches --plain en/20220601/enwkt-20220601.xml &quot;==Conjugation==&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="grep --all-matches --plain zh/20220601/zhwkt-20220601.xml &quot;===含义===&quot;" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/" />
     <extension name="coverage">
       <pattern>

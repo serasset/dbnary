@@ -5,11 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,13 +71,15 @@ public class ISO639_3 {
     }
 
     private String id, part2b, part2t, part1, fr, en, epo;
-
   }
 
   private final static String linePatternString =
       "^(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)(?:\t(.*))?$";
   private final static String epolinePatternString = "^(.*?)\t(.*?)$";
+  private final static String chinesePatternString =
+      "^(?:^(.*?)(?:\\s?(?:\\(.?\\)?)?))\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*)";
   private final static Pattern linePattern = Pattern.compile(linePatternString);
+  private final static Pattern chinesePattern = Pattern.compile(chinesePatternString);
   private final static Pattern epolinePattern = Pattern.compile(epolinePatternString);
 
   public static ISO639_3 sharedInstance = new ISO639_3();
@@ -186,6 +184,40 @@ public class ISO639_3 {
       }
     } catch (IOException e) {
       System.err.println("ISO639 French data not available");
+      e.printStackTrace();
+    }
+    // Get Chinese names
+    try (InputStream fis = this.getClass().getResourceAsStream("ISO639-zh.tab");
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+      Matcher matcher = chinesePattern.matcher("");
+
+      String s = br.readLine();
+      while (s != null) {
+        matcher.reset(s);
+        if (matcher.find()) {
+          Lang l = langMap.get(matcher.group(1));
+          if (l != null) {
+            String zhTraditionalGroup = matcher.group(5);
+            String zhSimpleGroup = matcher.group(6);
+            for (String name : zhTraditionalGroup.split("、")) {
+              if (name.trim().length() == 0)
+                continue;
+              langMap.put(name, l);
+            }
+            for (String name : zhSimpleGroup.split("、")) {
+              if (name.trim().length() == 0)
+                continue;
+              langMap.put(name, l);
+            }
+          }
+        } else {
+          System.err.println("Unrecognized line:" + s);
+        }
+        s = br.readLine();
+      }
+    } catch (IOException e) {
+      System.err.println("ISO639 Chinese data not available");
       e.printStackTrace();
     }
   }

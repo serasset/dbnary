@@ -6,12 +6,11 @@ import java.util.Locale;
 import java.util.Map;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
+import org.getalp.dbnary.wiki.WikiTool;
 
-public class ChineseDefinitionExtractorWikiModel extends DbnaryWikiModel {
+public class ChineseDefinitionExtractorWikiModel extends ChineseDbnaryWikiModel {
 
   private IWiktionaryDataHandler delegate;
-
 
   public ChineseDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
       String imageBaseURL, String linkBaseURL) {
@@ -24,16 +23,28 @@ public class ChineseDefinitionExtractorWikiModel extends DbnaryWikiModel {
     this.delegate = we;
   }
 
-  public void parseDefinition(String definition) {
+  public void parseDefinition(String definition, int defLevel) {
     // Render the definition to plain text, while ignoring the example template
-    String def = null;
+    String def = WikiTool.removeReferencesIn(definition);
     try {
-      def = render(new PlainTextConverter(), definition).trim();
+      def = render(new PlainTextConverter(), def).trim();
     } catch (IOException e) {
       e.printStackTrace();
     }
     if (null != def && !def.equals("")) {
-      delegate.registerNewDefinition(def);
+      delegate.registerNewDefinition(def, defLevel);
+    }
+  }
+
+  public void parseExample(String example) {
+    String exa = WikiTool.removeReferencesIn(example);
+    try {
+      exa = render(new PlainTextConverter(), exa).trim();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    if (null != exa && !exa.equals("")) {
+      delegate.registerExample(exa, null);
     }
   }
 
@@ -41,7 +52,13 @@ public class ChineseDefinitionExtractorWikiModel extends DbnaryWikiModel {
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
-    super.substituteTemplateCall(templateName, parameterMap, writer);
+    if (templateName.equals("check deprecated lang param usage")) {
+      writer.append(parameterMap.getOrDefault("1", ""));
+    } else if (templateName.equals("分類")) {
+
+    } else {
+      super.substituteTemplateCall(templateName, parameterMap, writer);
+    }
   }
 
 }

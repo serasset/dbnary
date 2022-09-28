@@ -140,18 +140,18 @@ As we are using the gitflow strategy, here are the different steps to be perform
   * Features
     * ```mvn gitflow:feature-start -DpushRemote=true```
     * Develop the feature on its branch (don't forget to push the feature branch)
-    * Create a Pull Request to develop branch on bitbucket (this will trigger CI/CD evaluation of the pull request, the pipeline extracts a sample of pages from latest wiktionary dumps and compares these. The ttl files are available as an artefact in the pipeline, available for 14 days after evaluation, please keep in mind that evaluation can take a very long time (several hours))
+    * Create a Pull Request to develop branch on gitlab (this will trigger CI/CD evaluation of the pull request, the pipeline extracts a sample of pages from latest wiktionary dumps and compares these. The ttl files are available as an artefact in the pipeline, available for 14 days after evaluation, please keep in mind that evaluation can take a very long time (several hours))
     * When the PR has been evaluated, checked and approved, then finnish it using gitflow plugin
     * ```mvn gitflow:feature-finnish```
-    * OR, merge it using the PR on bitbucket (and delete the feature branch).
+    * OR, merge it using the MR on gitlab (and delete the feature branch).
   * Releases
     * TDB
 
 ### Controlling CI/CD extractors validation ###
 
-In order to avoid all languages to be re-evaluated when it is not necessary, it is possible to contraol the validation process in 2 different manners :
+In order to avoid all languages to be re-evaluated when it is not necessary, it is possible to control the validation process in 2 different manners :
 
- 1. Globally setting VALIDATION_LANGUAGES variable on the repository (see repository variables on bitbucket)
+ 1. Globally setting VALIDATION_LANGUAGES variable on the repository (see repository variables on gitlab)
  2. Specifying the languages in the COMMIT MESSAGE
      * The commit message THAT TRIGGERS THE EVALUATION (the last message of the PR), should contain the string : `VALIDATION_LANGUAGES="la es fr"` (note that the quotes are mandatory)
    

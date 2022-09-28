@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone --branch="develop" https://serasset@bitbucket.org/serasset/dbnary.git
+git clone --branch="develop" https://gitlab.com/gilles.serasset/dbnary.git
 cd dbnary
 chmod +x ./kaiko/cicd/*.sh ./kaiko/extractor/*.sh
 ./kaiko/cicd/compile-pr-and-target-versions.sh

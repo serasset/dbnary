@@ -5,11 +5,6 @@
   tags:
     - dbnary
     - linux
-  rules:
-    - if: '($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "web") && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
-    - if: $CI_COMMIT_REF_NAME =~ /^release.*/
-    - if: $CI_COMMIT_REF_NAME =~ /^hotfix.*/
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 
 # Evaluate differences in extracts from current pull request vs develop or master branch

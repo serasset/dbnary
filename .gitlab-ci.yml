@@ -14,7 +14,7 @@ variables:
   # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
   VALIDATION_LANGUAGES:
-    value: "fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"
+    value: "fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku zh"
     description: "Space separated list of languages for which the sampling will be performed"
   VALIDATION_SAMPLE_SIZE:
     value: "10000"
@@ -66,7 +66,6 @@ sampling:
     - if: '($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "web") && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
     - if: $CI_COMMIT_REF_NAME =~ /^release.*/
     - if: $CI_COMMIT_REF_NAME =~ /^hotfix.*/
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   variables:
     VALIDATION_LANGUAGES: ${VALIDATION_LANGUAGES}
     VALIDATION_SAMPLE_SIZE: ${VALIDATION_SAMPLE_SIZE}

@@ -18,6 +18,9 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.ExtractionFeature;
@@ -76,6 +79,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private ExpandAllWikiModel wikiExpander;
   protected EnglishDefinitionExtractorWikiModel definitionExpander;
+  protected ExampleExpanderWikiModel exampleExpander;
   protected EnglishPronunciationExtractorWikiModel pronunciationExpander;
   private WikisaurusExtractor wikisaurusExtractor;
 
@@ -87,6 +91,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         new ExpandAllWikiModel(wi, Locale.ENGLISH, "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
     definitionExpander = new EnglishDefinitionExtractorWikiModel(this.wdh, this.wi,
         new Locale("en"), "/${image}", "/${title}");
+    exampleExpander =
+        new ExampleExpanderWikiModel(this.wi, new Locale("en"), "/${image}", "/${title}");
     pronunciationExpander = new EnglishPronunciationExtractorWikiModel(this.wdh, this.wi,
         new Locale("en"), "/${image}", "/${title}");
     wikisaurusExtractor = new WikisaurusExtractor(this.ewdh);
@@ -97,6 +103,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super.setWiktionaryPageName(wiktionaryPageName);
     wikiExpander.setPageName(wiktionaryPageName);
     definitionExpander.setPageName(wiktionaryPageName);
+    exampleExpander.setPageName(wiktionaryPageName);
     pronunciationExpander.setPageName(wiktionaryPageName);
   }
 
@@ -306,6 +313,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     extractDefinitions(text.getBeginIndex(), text.getEndIndex());
   }
 
+
   private void extractDefinitions(WikiContent text) {
     ClassBasedFilter indentedItems = new ClassBasedFilter();
     indentedItems.allowIndentedItem();
@@ -320,11 +328,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         } else if (liContent.startsWith("*")) {
           // It's a quotation reference (that starts a new quotation
         } else if (liContent.startsWith(":")) {
-          // This is a simple example
+          // This is a simple example or a nym
+          extractExample(liContent);
         } else {
           // This is a definition that starts a new word sense
           extractDefinition(liContent, listItem.asNumberedListItem().getLevel());
         }
+      } else {
+        log.trace("Unexpected IndentedItem in definition block [{}] : {}", getWiktionaryPageName(),
+            listItem.getText());
       }
     }
   }
@@ -1320,9 +1332,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void extractExample(String example) {
-    // TODO: current example extractor cannot handle English data where different lines are used to
-    // define the example.
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
+    String ex = exampleExpander.expandExample(example, null, context, wdh.getExtractedLanguage(),
+        wdh.getCurrentEntryLanguage());
+    Resource exampleNode = null;
+    if ("".equals(ex.trim()) && !context.isEmpty()) {
+      // There is no example, it is a note that should be attached to the definition
+      wdh.addToCurrentWordSense(context);
+    }
+    if (ex != null && !ex.equals("")) {
+      exampleNode = wdh.registerExample(ex, context);
+    }
   }
 
   private static final Pattern languagePronPattern = Pattern.compile("(?:...?-IPA)");

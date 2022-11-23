@@ -6,6 +6,7 @@ package org.getalp.dbnary.languages.eng;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,7 +35,9 @@ import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
+import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
@@ -59,10 +62,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // DONE: extract pronunciation
   // TODO: attach multiple pronounciation correctly
   static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
-
-  protected final static String LANGUAGE_SECTION_PATTERN_STRING = "==\\s*([^=]*)\\s*==";
-  protected final static String SECTION_PATTERN_STRING = "={2,5}\\s*([^=]*)\\s*={2,5}";
-  protected final static String PRON_PATTERN_STRING = "\\{\\{IPA\\|([^}]*)}}";
 
   private WiktionaryDataHandler ewdh; // English specific version of the data handler.
 
@@ -302,11 +301,33 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             && pageName.equals(headword.substring(0, headword.length() - 1))));
   }
 
-  private void extractDefinitions(WikiContent text) {
+  private void extractDefinitionsOld(WikiContent text) {
     // TODO: use the wiki content directly
     extractDefinitions(text.getBeginIndex(), text.getEndIndex());
   }
 
+  private void extractDefinitions(WikiContent text) {
+    ClassBasedFilter indentedItems = new ClassBasedFilter();
+    indentedItems.allowIndentedItem();
+    Iterator<Token> definitionsListItems = (new WikiEventsSequence(text, indentedItems)).iterator();
+
+    while (definitionsListItems.hasNext()) {
+      IndentedItem listItem = definitionsListItems.next().asIndentedItem();
+      String liContent = listItem.getContent().getText();
+      if (listItem instanceof NumberedListItem) {
+        if (liContent.startsWith("*:")) {
+          // It's a quotation content
+        } else if (liContent.startsWith("*")) {
+          // It's a quotation reference (that starts a new quotation
+        } else if (liContent.startsWith(":")) {
+          // This is a simple example
+        } else {
+          // This is a definition that starts a new word sense
+          extractDefinition(liContent, listItem.asNumberedListItem().getLevel());
+        }
+      }
+    }
+  }
 
   // TODO: check correct parsing of From ''[[semel#Latin|semel]]'' + ''[[pro#Latin|pro]]'' +
   // ''[[semper#Latin|semper]]''

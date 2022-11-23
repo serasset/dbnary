@@ -96,8 +96,10 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
           context.add(Pair.of(RDF.value, rdfNode(transliteration, shortSectionLanguage + "-Latn")));
       }
       writer.append(text.trim());
+    } else if ("syn".equals(templateName)) {
+      // HANDLE synonyms
     } else {
-      log.trace("Caught template call: {} --in-- {}", templateName, this.getPageName());
+      log.trace("Template call: {} --in-- {}", templateName, this.getPageName());
       super.substituteTemplateCall(templateName, parameterMap, writer);
     }
   }

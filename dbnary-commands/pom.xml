@@ -31,7 +31,7 @@
       <groupId>info.picocli</groupId>
       <artifactId>picocli</artifactId>
     </dependency>
-    <!-- Force non vulnerable version of common compress (HDT comes with 1.20) -->
+    <!-- Force non-vulnerable version of common compress (HDT comes with 1.20) -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>

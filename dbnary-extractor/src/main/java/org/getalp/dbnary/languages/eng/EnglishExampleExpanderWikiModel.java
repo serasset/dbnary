@@ -38,8 +38,8 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
   private String shortSectionLanguage;
   private final ExpandAllWikiModel simpleExpander;
 
-  public EnglishExampleExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public EnglishExampleExpanderWikiModel(WiktionaryPageSource wi, Locale locale,
+      String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     simpleExpander = new ExpandAllWikiModel(wi, locale, imageBaseURL, linkBaseURL);
   }
@@ -53,18 +53,16 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
   private static final String PASSAGE_OPEN = "///PASSAGE- ";
   private static final String PASSAGE_CLOSE = " -PASSAGE///";
 
-  public void expandCitation(String definition,
-      Set<Pair<Property, RDFNode>> context, String shortEditionLanguage,
-      String shortSectionLanguage) {
+  public void expandCitation(String definition, Set<Pair<Property, RDFNode>> context,
+      String shortEditionLanguage, String shortSectionLanguage) {
     String text = render(definition, context, shortEditionLanguage, shortSectionLanguage);
     if (null != text && text.trim().length() > 0) {
       context.add(Pair.of(DCTerms.bibliographicCitation, rdfNode(text, shortSectionLanguage)));
     }
   }
 
-  public String render(String definition,
-      Set<Pair<Property, RDFNode>> context, String shortEditionLanguage,
-      String shortSectionLanguage) {
+  public String render(String definition, Set<Pair<Property, RDFNode>> context,
+      String shortEditionLanguage, String shortSectionLanguage) {
     this.context = context;
     this.shortEditionLanguage = shortEditionLanguage;
     this.shortSectionLanguage = shortSectionLanguage;
@@ -77,9 +75,8 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
     return "";
   }
 
-  public void expandExample(String definition,
-      Set<Pair<Property, RDFNode>> context, String shortEditionLanguage,
-      String shortSectionLanguage) {
+  public void expandExample(String definition, Set<Pair<Property, RDFNode>> context,
+      String shortEditionLanguage, String shortSectionLanguage) {
     String text = render(definition, context, shortEditionLanguage, shortSectionLanguage);
     if (null != text && text.trim().length() > 0) {
       context.add(Pair.of(RDF.value, rdfNode(text, shortSectionLanguage)));
@@ -100,8 +97,7 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
               shortSectionLanguage, getPageName());
         }
         // TODO: handle script code
-        String scriptCode = parameterMap.get("sc");
-        ;
+        String scriptCode = parameterMap.get("sc");;
         if (null != scriptCode) {
           log.trace("UX Template: unhanded script code {} [{}]", scriptCode, getPageName());
         }

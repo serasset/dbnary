@@ -328,10 +328,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (listItem instanceof NumberedListItem) {
         if (liContent.startsWith("*:")) {
           // It's a quotation content
-          Set<Pair<Property, RDFNode>> citation = expandExample(
-              liContent.substring(2).trim());
-          Optional<Pair<Property, RDFNode>> value = citation.stream()
-              .filter(p -> p.getLeft().equals(RDF.value)).findFirst();
+          Set<Pair<Property, RDFNode>> citation = expandExample(liContent.substring(2).trim());
+          Optional<Pair<Property, RDFNode>> value =
+              citation.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
           if (null == referenceContext) {
             log.debug("A citation is given without reference [{}] — {}", liContent,
                 getWiktionaryPageName());
@@ -344,10 +343,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           }
         } else if (liContent.startsWith("*")) {
           // It's a quotation reference (that starts a new quotation)
-          Set<Pair<Property, RDFNode>> citation = expandCitation(
-              liContent.substring(1).trim());
-          Optional<Pair<Property, RDFNode>> value = citation.stream()
-              .filter(p -> p.getLeft().equals(RDF.value)).findFirst();
+          Set<Pair<Property, RDFNode>> citation = expandCitation(liContent.substring(1).trim());
+          Optional<Pair<Property, RDFNode>> value =
+              citation.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
           if (value.isEmpty()) {
             // It's only a reference and the citation itself is to be found later
             referenceContext = citation;
@@ -380,8 +378,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void registerExampleIfNotNull(Set<Pair<Property, RDFNode>> context) {
-    Optional<Pair<Property, RDFNode>> value = context.stream()
-        .filter(p -> p.getLeft().equals(RDF.value)).findFirst();
+    Optional<Pair<Property, RDFNode>> value =
+        context.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
     if (value.isEmpty() && !context.isEmpty()) {
       // There is no example, it is a note that should be attached to the definition
       wdh.addToCurrentWordSense(context);

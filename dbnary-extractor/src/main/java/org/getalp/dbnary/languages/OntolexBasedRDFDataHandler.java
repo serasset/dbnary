@@ -57,6 +57,7 @@ import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.SynSemOnt;
 import org.getalp.dbnary.VarTransOnt;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
+import org.getalp.dbnary.commons.HierarchicalSenseNumber;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
 import org.getalp.dbnary.hdt.Models2HDT;
@@ -109,8 +110,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
 
   protected Resource currentSense;
-  protected int currentSenseNumber;
-  protected int currentSubSenseNumber;
+  protected HierarchicalSenseNumber currentSenseNumber;
   protected CounterSet translationCount = new CounterSet();
   protected CounterSet reifiedNymCount = new CounterSet();
 
@@ -330,8 +330,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   private void initializeLanguageSection__noModel(String wiktionaryPageName) {
     currentSense = null;
-    currentSenseNumber = 0;
-    currentSubSenseNumber = 0;
+    currentSenseNumber = new HierarchicalSenseNumber();
     translationCount.resetAll();
     reifiedNymCount.resetAll();
 
@@ -433,8 +432,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       Resource normalizedType) {
     // DONE: create a LexicalEntry for this part of speech only and attach info to it.
     currentSense = null;
-    currentSenseNumber = 0;
-    currentSubSenseNumber = 0;
+    currentSenseNumber = new HierarchicalSenseNumber();
     // currentWiktionaryPos = originalPOS;
     // currentLexinfoPos = normalizedPOS;
 
@@ -563,13 +561,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
           this.currentMainLexEntry);
       return; // Don't register anything if current lex entry is not known.
     }
-    if (lvl > 1) {
-      log.trace("registering sub sense for {}", currentEncodedLexicalEntryName);
-      currentSubSenseNumber++;
-    } else {
-      currentSenseNumber++;
-      currentSubSenseNumber = 0;
-    }
+    currentSenseNumber.increment(lvl);
     registerNewDefinition(def, computeSenseNum());
   }
 
@@ -615,8 +607,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   protected String computeSenseNum() {
-    return "" + currentSenseNumber
-        + ((currentSubSenseNumber == 0) ? "" : ("." + currentSubSenseNumber));
+    return currentSenseNumber.toString();
   }
 
   protected Resource registerTranslationToEntity(Resource entity, String lang,

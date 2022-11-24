@@ -11,6 +11,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.commons.HierarchicalSenseNumber;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.model.ontolex.LexicalForm;
@@ -65,8 +66,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       typeR = OntolexOnt.MultiWordExpression;
     }
     // reset the sense number.
-    currentSenseNumber = 0;
-    currentSubSenseNumber = 0;
+    currentSenseNumber = new HierarchicalSenseNumber();
     initializeLexicalEntry(pos, posResource(pat), typeR);
     Model morphoBox = getFeatureBox(ExtractionFeature.MORPHOLOGY);
     if (null != morphoBox) {
@@ -79,14 +79,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   protected String computeSenseNum() {
-    char s;
-    if (currentSubSenseNumber > 26) {
-      log.error("Subsense (alphabetical) number above z in {}", currentEncodedLexicalEntryName);
-      s = (char) ('A' + currentSubSenseNumber - 1);
-    } else {
-      s = (char) ('a' + currentSubSenseNumber - 1);
-    }
-    return "" + currentSenseNumber + ((currentSubSenseNumber == 0) ? "" : s);
+    return currentSenseNumber.formatWithModel("naiiiiiiii");
   }
 
   public void addLexicalForm(LexicalForm form) {

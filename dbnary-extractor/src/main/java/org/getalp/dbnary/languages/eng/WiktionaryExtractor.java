@@ -329,16 +329,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // It's a quotation reference (that starts a new quotation
         } else if (liContent.startsWith(":")) {
           // This is a simple example or a nym
-          extractExample(liContent);
+          extractExample(liContent.substring(1));
         } else {
           // This is a definition that starts a new word sense
-          extractDefinition(liContent, listItem.asNumberedListItem().getLevel());
+          extractDefinition(liContent.trim(), listItem.asNumberedListItem().getLevel());
         }
       } else {
         log.trace("Unexpected IndentedItem in definition block [{}] : {}", getWiktionaryPageName(),
             listItem.getText());
       }
     }
+  }
+
+  @Override
+  public void extractDefinition(String definition, int defLevel) {
+    definitionExpander.parseDefinition(definition, defLevel);
   }
 
   // TODO: check correct parsing of From ''[[semel#Latin|semel]]'' + ''[[pro#Latin|pro]]'' +
@@ -1442,12 +1447,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
           });
         });
-  }
-
-  @Override
-  public void extractDefinition(String definition, int defLevel) {
-    definitionExpander.setPageName(this.getWiktionaryPageName());
-    definitionExpander.parseDefinition(definition, defLevel);
   }
 
   @Override

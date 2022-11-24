@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.getalp.LangTools;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.PropertyObjectPair;
@@ -79,7 +81,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private ExpandAllWikiModel wikiExpander;
   protected EnglishDefinitionExtractorWikiModel definitionExpander;
-  protected ExampleExpanderWikiModel exampleExpander;
+  protected EnglishExampleExpanderWikiModel exampleExpander;
   protected EnglishPronunciationExtractorWikiModel pronunciationExpander;
   private WikisaurusExtractor wikisaurusExtractor;
 
@@ -92,7 +94,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionExpander = new EnglishDefinitionExtractorWikiModel(this.wdh, this.wi,
         new Locale("en"), "/${image}", "/${title}");
     exampleExpander =
-        new ExampleExpanderWikiModel(this.wi, new Locale("en"), "/${image}", "/${title}");
+        new EnglishExampleExpanderWikiModel(this.wi, new Locale("en"), "/${image}", "/${title}");
     pronunciationExpander = new EnglishPronunciationExtractorWikiModel(this.wdh, this.wi,
         new Locale("en"), "/${image}", "/${title}");
     wikisaurusExtractor = new WikisaurusExtractor(this.ewdh);
@@ -318,6 +320,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ClassBasedFilter indentedItems = new ClassBasedFilter();
     indentedItems.allowIndentedItem();
     Iterator<Token> definitionsListItems = (new WikiEventsSequence(text, indentedItems)).iterator();
+    Set<Pair<Property, RDFNode>> referenceContext = null;
 
     while (definitionsListItems.hasNext()) {
       IndentedItem listItem = definitionsListItems.next().asIndentedItem();
@@ -325,14 +328,39 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (listItem instanceof NumberedListItem) {
         if (liContent.startsWith("*:")) {
           // It's a quotation content
+          Set<Pair<Property, RDFNode>> citation = expandExample(
+              liContent.substring(2).trim());
+          Optional<Pair<Property, RDFNode>> value = citation.stream()
+              .filter(p -> p.getLeft().equals(RDF.value)).findFirst();
+          if (null == referenceContext) {
+            log.debug("A citation is given without reference [{}] — {}", liContent,
+                getWiktionaryPageName());
+            registerExampleIfNotNull(citation);
+          } else if (value.isEmpty()) {
+            log.debug("Unexpected empty example in [{}] — {}", liContent, getWiktionaryPageName());
+          } else {
+            citation.addAll(referenceContext);
+            registerExampleIfNotNull(citation);
+          }
         } else if (liContent.startsWith("*")) {
-          // It's a quotation reference (that starts a new quotation
+          // It's a quotation reference (that starts a new quotation)
+          Set<Pair<Property, RDFNode>> citation = expandCitation(
+              liContent.substring(1).trim());
+          Optional<Pair<Property, RDFNode>> value = citation.stream()
+              .filter(p -> p.getLeft().equals(RDF.value)).findFirst();
+          if (value.isEmpty()) {
+            // It's only a reference and the citation itself is to be found later
+            referenceContext = citation;
+          } else {
+            registerExampleIfNotNull(citation);
+          }
         } else if (liContent.startsWith(":")) {
           // This is a simple example or a nym
-          extractExample(liContent.substring(1));
+          extractExample(liContent.substring(1).trim());
         } else {
           // This is a definition that starts a new word sense
           extractDefinition(liContent.trim(), listItem.asNumberedListItem().getLevel());
+          referenceContext = null;
         }
       } else {
         log.trace("Unexpected IndentedItem in definition block [{}] : {}", getWiktionaryPageName(),
@@ -344,6 +372,38 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void extractDefinition(String definition, int defLevel) {
     definitionExpander.parseDefinition(definition, defLevel);
+  }
+
+  public void extractExample(String example) {
+    Set<Pair<Property, RDFNode>> citation = expandExample(example);
+    registerExampleIfNotNull(citation);
+  }
+
+  private void registerExampleIfNotNull(Set<Pair<Property, RDFNode>> context) {
+    Optional<Pair<Property, RDFNode>> value = context.stream()
+        .filter(p -> p.getLeft().equals(RDF.value)).findFirst();
+    if (value.isEmpty() && !context.isEmpty()) {
+      // There is no example, it is a note that should be attached to the definition
+      wdh.addToCurrentWordSense(context);
+    }
+    if (value.isPresent()) {
+      ewdh.registerExample(context);
+    }
+  }
+
+  public Set<Pair<Property, RDFNode>> expandCitation(String example) {
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
+
+    exampleExpander.expandCitation(example, context, wdh.getExtractedLanguage(),
+        wdh.getCurrentEntryLanguage());
+    return context;
+  }
+
+  public Set<Pair<Property, RDFNode>> expandExample(String example) {
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
+    exampleExpander.expandExample(example, context, wdh.getExtractedLanguage(),
+        wdh.getCurrentEntryLanguage());
+    return context;
   }
 
   // TODO: check correct parsing of From ''[[semel#Latin|semel]]'' + ''[[pro#Latin|pro]]'' +
@@ -1332,22 +1392,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
         }
       }
-    }
-  }
-
-  @Override
-  public void extractExample(String example) {
-    Set<Pair<Property, RDFNode>> context = new HashSet<>();
-
-    String ex = exampleExpander.expandExample(example, null, context, wdh.getExtractedLanguage(),
-        wdh.getCurrentEntryLanguage());
-    Resource exampleNode = null;
-    if ("".equals(ex.trim()) && !context.isEmpty()) {
-      // There is no example, it is a note that should be attached to the definition
-      wdh.addToCurrentWordSense(context);
-    }
-    if (ex != null && !ex.equals("")) {
-      exampleNode = wdh.registerExample(ex, context);
     }
   }
 

@@ -1,10 +1,16 @@
 package org.getalp.dbnary.languages.eng;
 
+import info.bliki.htmlcleaner.BaseToken;
+import info.bliki.wiki.filter.ITextConverter;
+import info.bliki.wiki.filter.PlainTextConverter;
+import info.bliki.wiki.filter.WikipediaParser;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
@@ -15,14 +21,13 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.SKOS;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
-import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
+public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
 
   static Set<String> ignoredTemplates = new HashSet<>();
-  static Logger log = LoggerFactory.getLogger(ExampleExpanderWikiModel.class);
+  static Logger log = LoggerFactory.getLogger(EnglishExampleExpanderWikiModel.class);
 
   static {
     // ignoredTemplates.add("ébauche-exe");
@@ -33,7 +38,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
   private String shortSectionLanguage;
   private final ExpandAllWikiModel simpleExpander;
 
-  public ExampleExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
+  public EnglishExampleExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
       String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     simpleExpander = new ExpandAllWikiModel(wi, locale, imageBaseURL, linkBaseURL);
@@ -45,26 +50,40 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
     simpleExpander.setPageName(pageTitle);
   }
 
-  private static final String NOTE_SPLIT = "///NOTES///";
+  private static final String PASSAGE_OPEN = "///PASSAGE- ";
+  private static final String PASSAGE_CLOSE = " -PASSAGE///";
 
-  public String expandExample(String definition, Set<String> templates,
+  public void expandCitation(String definition,
+      Set<Pair<Property, RDFNode>> context, String shortEditionLanguage,
+      String shortSectionLanguage) {
+    String text = render(definition, context, shortEditionLanguage, shortSectionLanguage);
+    if (null != text && text.trim().length() > 0) {
+      context.add(Pair.of(DCTerms.bibliographicCitation, rdfNode(text, shortSectionLanguage)));
+    }
+  }
+
+  public String render(String definition,
       Set<Pair<Property, RDFNode>> context, String shortEditionLanguage,
       String shortSectionLanguage) {
     this.context = context;
     this.shortEditionLanguage = shortEditionLanguage;
     this.shortSectionLanguage = shortSectionLanguage;
-    String exampleText = expandAll(definition, templates);
-    String[] textAndNote = exampleText.split(NOTE_SPLIT);
-    if (textAndNote.length > 1) {
-      for (int i = 1; i < textAndNote.length; i++) {
-        String note;
-        if (textAndNote[i] != null && !"".equals(note = textAndNote[i].trim())) {
-          context.add(
-              Pair.of(SKOS.note, ResourceFactory.createLangLiteral(note, shortEditionLanguage)));
-        }
-      }
+    try {
+      return render(new PlainTextConverter(), definition).trim();
+    } catch (IOException e) {
+      log.error("Error while rendering page.", e);
+      // e.printStackTrace();
     }
-    return textAndNote[0];
+    return "";
+  }
+
+  public void expandExample(String definition,
+      Set<Pair<Property, RDFNode>> context, String shortEditionLanguage,
+      String shortSectionLanguage) {
+    String text = render(definition, context, shortEditionLanguage, shortSectionLanguage);
+    if (null != text && text.trim().length() > 0) {
+      context.add(Pair.of(RDF.value, rdfNode(text, shortSectionLanguage)));
+    }
   }
 
   @Override
@@ -72,7 +91,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       Appendable writer) throws IOException {
     if (ignoredTemplates.contains(templateName)) {
       // NOP
-    } else if ("ux".equals(templateName)) {
+    } else if ("ux".equals(templateName) || "ux-lite".equals(templateName)) {
       // Simple usage example
       if (log.isTraceEnabled()) {
         String langCode = parameterMap.get("1");
@@ -81,23 +100,46 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
               shortSectionLanguage, getPageName());
         }
         // TODO: handle script code
-        String scriptCode = parameterMap.get("sc");;
-        if (null != scriptCode)
+        String scriptCode = parameterMap.get("sc");
+        ;
+        if (null != scriptCode) {
           log.trace("UX Template: unhanded script code {} [{}]", scriptCode, getPageName());
+        }
       }
       String text = parameterMap.get("2");
       String translation = parameterMap.getOrDefault("t",
-          parameterMap.getOrDefault("translation", parameterMap.get("2")));
+          parameterMap.getOrDefault("translation", parameterMap.get("3")));
       String transliteration = parameterMap.getOrDefault("tr", parameterMap.get("transliteration"));
       if (context != null) {
-        if (null != translation)
+        if (null != text && text.trim().length() > 0) {
+          context.add(Pair.of(RDF.value, rdfNode(text, shortSectionLanguage)));
+        }
+        if (null != translation) {
           context.add(Pair.of(RDF.value, rdfNode(translation, shortEditionLanguage)));
-        if (null != transliteration)
+        }
+        if (null != transliteration) {
           context.add(Pair.of(RDF.value, rdfNode(transliteration, shortSectionLanguage + "-Latn")));
+        }
       }
-      writer.append(text.trim());
     } else if ("syn".equals(templateName)) {
       // HANDLE synonyms
+    } else if ("quote-book".equals(templateName) || "quote-journal".equals(templateName)) {
+      String passage = parameterMap.getOrDefault("passage", parameterMap.get("text"));
+      if (null != passage && !"".equals(passage.trim())) {
+        parameterMap.remove("text");
+        parameterMap.remove("passage");
+      }
+      StringBuilder str = new StringBuilder();
+      super.substituteTemplateCall(templateName, parameterMap, str);
+      if (context != null) {
+        if (null != passage && passage.trim().length() > 0) {
+          context.add(Pair.of(RDF.value, rdfNode(passage, shortSectionLanguage)));
+        }
+        String ref = StringUtils.strip(str.toString(), " \t\\x0B\f\n\r:");
+        if (ref.length() > 0) {
+          context.add(Pair.of(DCTerms.bibliographicCitation, rdfNode(ref, shortEditionLanguage)));
+        }
+      }
     } else {
       log.trace("Template call: {} --in-- {}", templateName, this.getPageName());
       super.substituteTemplateCall(templateName, parameterMap, writer);

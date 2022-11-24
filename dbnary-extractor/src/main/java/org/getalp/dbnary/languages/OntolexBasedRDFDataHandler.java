@@ -32,6 +32,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ReifiedStatement;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.vocabulary.FOAF;
@@ -1115,6 +1116,11 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public Resource registerExample(String ex, Set<Pair<Property, RDFNode>> context) {
+    context.add(Pair.of(RDF.value, ResourceFactory.createLangLiteral(ex, getCurrentEntryLanguage())));
+    return registerExample(context);
+  }
+
+  public Resource registerExample(Set<Pair<Property, RDFNode>> context) {
     if (null == currentSense) {
       log.debug("Registering example when lex sense is null in \"{}\".", this.currentMainLexEntry);
       return null; // Don't register anything if current lex entry is not known.
@@ -1122,7 +1128,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     // Create new example element
     Resource example = aBox.createResource();
-    aBox.add(aBox.createStatement(example, RDF.value, ex, getCurrentEntryLanguage()));
     addTo(example, context);
 
     aBox.add(aBox.createStatement(currentSense, SkosOnt.example, example));

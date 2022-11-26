@@ -326,7 +326,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       IndentedItem listItem = definitionsListItems.next().asIndentedItem();
       String liContent = listItem.getContent().getText();
       if (listItem instanceof NumberedListItem) {
-        if (liContent.startsWith("*:")) {
+        if (liContent.startsWith("*::")) {
+          log.debug("Ignoring quotation meta [{}] — {}", liContent, getWiktionaryPageName());
+        } else if (liContent.startsWith("*:")) {
           // It's a quotation content
           Set<Pair<Property, RDFNode>> citation = expandExample(liContent.substring(2).trim());
           Optional<Pair<Property, RDFNode>> value =

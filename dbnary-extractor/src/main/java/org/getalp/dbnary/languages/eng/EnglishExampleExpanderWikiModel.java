@@ -5,6 +5,7 @@ import info.bliki.wiki.filter.ITextConverter;
 import info.bliki.wiki.filter.PlainTextConverter;
 import info.bliki.wiki.filter.WikipediaParser;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -30,13 +31,42 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
   static Logger log = LoggerFactory.getLogger(EnglishExampleExpanderWikiModel.class);
 
   static {
-    // ignoredTemplates.add("ébauche-exe");
+    ignoredTemplates.add("rfex");
+    ignoredTemplates.add("rfquote");
+    ignoredTemplates.add("rfquote-sense");
+    ignoredTemplates.add("rfquotek");
   }
 
   private Set<Pair<Property, RDFNode>> context;
   private String shortEditionLanguage;
   private String shortSectionLanguage;
   private final ExpandAllWikiModel simpleExpander;
+
+  private static final Map<String, String> nyms = new HashMap<>();
+
+  static {
+    nyms.put("syn", "syn");
+    nyms.put("synonyms", "syn");
+    nyms.put("syn-lite", "syn");
+    nyms.put("antonyms", "ant");
+    nyms.put("antonym", "ant");
+    nyms.put("ant", "ant");
+    nyms.put("hyponyms", "hypo");
+    nyms.put("hypo", "hypo");
+    nyms.put("hypernyms", "hyper");
+    nyms.put("hyper", "hyper");
+    nyms.put("holonyms", "holo");
+    nyms.put("holo", "holo");
+    nyms.put("hol", "holo");
+    nyms.put("meronyms", "mero");
+    nyms.put("mero", "mero");
+    nyms.put("mer", "mero");
+    nyms.put("comeronyms", "comero");
+    nyms.put("troponyms", "tropo");
+    nyms.put("coordinate terms", "cot");
+    nyms.put("coordinate_terms", "cot");
+    nyms.put("cot", "cot");
+  }
 
   public EnglishExampleExpanderWikiModel(WiktionaryPageSource wi, Locale locale,
       String imageBaseURL, String linkBaseURL) {
@@ -88,10 +118,12 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
       Appendable writer) throws IOException {
     if (ignoredTemplates.contains(templateName)) {
       // NOP
-    } else if ("ux".equals(templateName) || "ux-lite".equals(templateName)) {
+    } else if ("ux".equals(templateName) || "usex".equals(templateName) || "eg".equals(templateName)
+        || "uxi".equals(templateName) || "ux-lite".equals(templateName)
+        || "quote".equals(templateName)) {
       // Simple usage example
       if (log.isTraceEnabled()) {
-        String langCode = parameterMap.get("1");
+        String langCode = parameterMap.getOrDefault("1", "").trim();
         if (!langCode.equalsIgnoreCase(shortSectionLanguage)) {
           log.trace("UX Template: incoherent language code {} (expected {}) [{}]", langCode,
               shortSectionLanguage, getPageName());
@@ -117,9 +149,17 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
           context.add(Pair.of(RDF.value, rdfNode(transliteration, shortSectionLanguage + "-Latn")));
         }
       }
-    } else if ("syn".equals(templateName)) {
+    } else if (nyms.containsKey(templateName)) {
       // HANDLE synonyms
-    } else if ("quote-book".equals(templateName) || "quote-journal".equals(templateName)) {
+      // TODO: also take gloss template into account as it gives more info on the nym
+    } else if ("seeSynonyms".equals(templateName)) {
+      // HANDLE synonyms in an external page
+    } else if ("seeCites".equals(templateName) || "seeMoreCites".equals(templateName)
+        || "seemoreCites".equals(templateName)) {
+      // HANDLE Citations that are given in another page
+    } else if ("quote-book".equals(templateName) || "quote-journal".equals(templateName)
+        || "quote-text".equals(templateName) || "quote-text".equals(templateName)
+        || "quote-video game".equals(templateName) || "quote-web".equals(templateName)) {
       String passage = parameterMap.getOrDefault("passage", parameterMap.get("text"));
       if (null != passage && !"".equals(passage.trim())) {
         parameterMap.remove("text");
@@ -135,6 +175,11 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
         if (ref.length() > 0) {
           context.add(Pair.of(DCTerms.bibliographicCitation, rdfNode(ref, shortEditionLanguage)));
         }
+      }
+    } else if ("glossary".equals(templateName) || "glink".equals(templateName)) {
+      String text = parameterMap.getOrDefault("2", parameterMap.get("1"));
+      if (null != text) {
+        writer.append(text);
       }
     } else {
       log.trace("Template call: {} --in-- {}", templateName, this.getPageName());

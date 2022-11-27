@@ -277,6 +277,7 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
         dialectList = parents.get(i);
       }
     }
+    if (null == dialectList) return null;
     return dialectCodeList.get(dialectList.child(0).text());
   }
 
@@ -285,6 +286,7 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
     // Element location = parent.previousElementSibling().text().equals("+")?
     // parent.previousElementSibling().previousElementSibling():parent.previousElementSibling();
     Element location = parent.previousElementSibling();
+    if (null == location) return "";
     if (location.tagName() == "sup") {
       location = location.previousElementSibling();
     }
@@ -296,6 +298,7 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
       locationName = locationMatcher.group(1);
     }
     StringBuilder locationCode = new StringBuilder(15);
+    if (null == locationName) return "";
     if (locationName.contains("福建:")) {
       locationCode.append("Fujian");
     } else if (locationName.contains("官話,")) {

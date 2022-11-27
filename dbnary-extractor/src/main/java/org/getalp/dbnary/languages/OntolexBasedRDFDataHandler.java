@@ -1020,7 +1020,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void registerPronunciation(String pron, String lang) {
-    if (null == pron) return;
+    if (null == pron)
+      return;
     if (null == currentCanonicalForm) {
       // if pronunciation is provided before the first canonical form
       // assume that this pronunciation is shared by all and put it

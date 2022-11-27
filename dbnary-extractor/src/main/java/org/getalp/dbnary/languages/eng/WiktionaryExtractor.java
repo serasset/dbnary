@@ -93,8 +93,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         new ExpandAllWikiModel(wi, Locale.ENGLISH, "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
     definitionExpander = new EnglishDefinitionExtractorWikiModel(this.wdh, this.wi,
         new Locale("en"), "/${image}", "/${title}");
-    exampleExpander =
-        new EnglishExampleExpanderWikiModel(this.wi, new Locale("en"), "/${image}", "/${title}");
+    exampleExpander = new EnglishExampleExpanderWikiModel(this.wi, new Locale("en"), "/${image}",
+        "/${title}", wdh);
     pronunciationExpander = new EnglishPronunciationExtractorWikiModel(this.wdh, this.wi,
         new Locale("en"), "/${image}", "/${title}");
     wikisaurusExtractor = new WikisaurusExtractor(this.ewdh);

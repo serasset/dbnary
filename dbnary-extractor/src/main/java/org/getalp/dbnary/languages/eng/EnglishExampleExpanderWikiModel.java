@@ -1,13 +1,9 @@
 package org.getalp.dbnary.languages.eng;
 
-import info.bliki.htmlcleaner.BaseToken;
-import info.bliki.wiki.filter.ITextConverter;
 import info.bliki.wiki.filter.PlainTextConverter;
-import info.bliki.wiki.filter.WikipediaParser;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +15,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.SKOS;
+import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.slf4j.Logger;
@@ -68,9 +64,12 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
     nyms.put("cot", "cot");
   }
 
+  private IWiktionaryDataHandler wdh;
+
   public EnglishExampleExpanderWikiModel(WiktionaryPageSource wi, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+      String imageBaseURL, String linkBaseURL, IWiktionaryDataHandler wdh) {
     super(wi, locale, imageBaseURL, linkBaseURL);
+    this.wdh = wdh;
     simpleExpander = new ExpandAllWikiModel(wi, locale, imageBaseURL, linkBaseURL);
   }
 
@@ -79,9 +78,6 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
     super.setPageName(pageTitle);
     simpleExpander.setPageName(pageTitle);
   }
-
-  private static final String PASSAGE_OPEN = "///PASSAGE- ";
-  private static final String PASSAGE_CLOSE = " -PASSAGE///";
 
   public void expandCitation(String definition, Set<Pair<Property, RDFNode>> context,
       String shortEditionLanguage, String shortSectionLanguage) {
@@ -152,6 +148,20 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
     } else if (nyms.containsKey(templateName)) {
       // HANDLE synonyms
       // TODO: also take gloss template into account as it gives more info on the nym
+      String nym = nyms.get(templateName);
+      if (log.isTraceEnabled()) {
+        String langCode = parameterMap.getOrDefault("1", "").trim();
+        if (!langCode.equalsIgnoreCase(shortSectionLanguage)) {
+          log.trace("NYM Template: incoherent language code {} (expected {}) [{}]", langCode,
+              shortSectionLanguage, getPageName());
+        }
+      }
+      String val;
+      for (int i = 2; (val = parameterMap.get(String.valueOf(i))) != null; i++) {
+        if (val.startsWith("Thesaurus:"))
+          continue;
+        wdh.registerNymRelationOnCurrentSense(val, nym);
+      }
     } else if ("seeSynonyms".equals(templateName)) {
       // HANDLE synonyms in an external page
     } else if ("seeCites".equals(templateName) || "seeMoreCites".equals(templateName)

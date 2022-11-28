@@ -32,6 +32,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ReifiedStatement;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.vocabulary.FOAF;
@@ -57,6 +58,7 @@ import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.SynSemOnt;
 import org.getalp.dbnary.VarTransOnt;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
+import org.getalp.dbnary.commons.HierarchicalSenseNumber;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
 import org.getalp.dbnary.hdt.Models2HDT;
@@ -109,8 +111,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
 
   protected Resource currentSense;
-  protected int currentSenseNumber;
-  protected int currentSubSenseNumber;
+  protected HierarchicalSenseNumber currentSenseNumber;
   protected CounterSet translationCount = new CounterSet();
   protected CounterSet reifiedNymCount = new CounterSet();
 
@@ -330,8 +331,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   private void initializeLanguageSection__noModel(String wiktionaryPageName) {
     currentSense = null;
-    currentSenseNumber = 0;
-    currentSubSenseNumber = 0;
+    currentSenseNumber = new HierarchicalSenseNumber();
     translationCount.resetAll();
     reifiedNymCount.resetAll();
 
@@ -433,8 +433,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       Resource normalizedType) {
     // DONE: create a LexicalEntry for this part of speech only and attach info to it.
     currentSense = null;
-    currentSenseNumber = 0;
-    currentSubSenseNumber = 0;
+    currentSenseNumber = new HierarchicalSenseNumber();
     // currentWiktionaryPos = originalPOS;
     // currentLexinfoPos = normalizedPOS;
 
@@ -563,13 +562,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
           this.currentMainLexEntry);
       return; // Don't register anything if current lex entry is not known.
     }
-    if (lvl > 1) {
-      log.trace("registering sub sense for {}", currentEncodedLexicalEntryName);
-      currentSubSenseNumber++;
-    } else {
-      currentSenseNumber++;
-      currentSubSenseNumber = 0;
-    }
+    currentSenseNumber.increment(lvl);
     registerNewDefinition(def, computeSenseNum());
   }
 
@@ -615,8 +608,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   protected String computeSenseNum() {
-    return "" + currentSenseNumber
-        + ((currentSubSenseNumber == 0) ? "" : ("." + currentSubSenseNumber));
+    return currentSenseNumber.toString();
   }
 
   protected Resource registerTranslationToEntity(Resource entity, String lang,
@@ -1028,6 +1020,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public void registerPronunciation(String pron, String lang) {
+    if (null == pron)
+      return;
     if (null == currentCanonicalForm) {
       // if pronunciation is provided before the first canonical form
       // assume that this pronunciation is shared by all and put it
@@ -1124,6 +1118,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public Resource registerExample(String ex, Set<Pair<Property, RDFNode>> context) {
+    if (null == context)
+      context = new HashSet<>();
+    context
+        .add(Pair.of(RDF.value, ResourceFactory.createLangLiteral(ex, getCurrentEntryLanguage())));
+    return registerExample(context);
+  }
+
+  public Resource registerExample(Set<Pair<Property, RDFNode>> context) {
     if (null == currentSense) {
       log.debug("Registering example when lex sense is null in \"{}\".", this.currentMainLexEntry);
       return null; // Don't register anything if current lex entry is not known.
@@ -1131,7 +1133,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
     // Create new example element
     Resource example = aBox.createResource();
-    aBox.add(aBox.createStatement(example, RDF.value, ex, getCurrentEntryLanguage()));
     addTo(example, context);
 
     aBox.add(aBox.createStatement(currentSense, SkosOnt.example, example));

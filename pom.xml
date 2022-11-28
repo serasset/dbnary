@@ -43,7 +43,7 @@
     <jaxb.version>3.0.1</jaxb.version>
     <javax.activation.version>1.2.0</javax.activation.version>
     <slf4j.version>1.7.36</slf4j.version>
-    <jena.version>4.5.0</jena.version>
+    <jena.version>4.6.1</jena.version>
     <scalaBinaryVersion>2.13</scalaBinaryVersion>
 
 
@@ -132,6 +132,7 @@
     <module>dbnary-hdt</module>
     <module>dbnary-commands</module>
     <module>dbnary-wikitext</module>
+    <module>dbnary-jena-libs</module>
   </modules>
 
   <reporting>
@@ -191,6 +192,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
           </exclusion>
+          <!-- protobuf version included in jena has a vulnerability -->
+          <exclusion>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -225,12 +231,22 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
           </exclusion>
+          <!-- protobuf version included in jena has a vulnerability -->
+          <exclusion>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.jena</groupId>
         <artifactId>jena-cmds</artifactId>
         <version>${jena.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>3.21.9</version>
       </dependency>
       <!-- Java 6 = JAXB version 2.0   -->
       <!-- Java 7 = JAXB version 2.2.3 -->
@@ -265,7 +281,7 @@
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>
-        <version>6.2.8</version>
+        <version>6.4.0</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -275,14 +291,14 @@
       <dependency>
         <groupId>info.bliki.wiki</groupId>
         <artifactId>bliki-core</artifactId>
-        <version>3.1.2G</version>
+        <version>3.1.3G</version>
       </dependency>
 
       <!-- Misc -->
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.21</version>
+        <version>1.22</version>
       </dependency>
       <dependency>
         <groupId>commons-cli</groupId>

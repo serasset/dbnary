@@ -180,9 +180,4 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
     return simpleExpander.expandAll(originalSource, this.templates);
   }
 
-  @Override
-  public void addCategory(String categoryName, String sortKey) {
-    log.trace("Called addCategory : " + categoryName);
-    super.addCategory(categoryName, sortKey);
-  }
 }

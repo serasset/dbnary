@@ -191,6 +191,8 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
       if (null != text) {
         writer.append(text);
       }
+    } else if ("maintenance line".equals(templateName)) {
+      // Just ignore maintenance lines
     } else {
       log.trace("Template call: {} --in-- {}", templateName, this.getPageName());
       super.substituteTemplateCall(templateName, parameterMap, writer);

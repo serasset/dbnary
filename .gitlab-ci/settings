@@ -3,12 +3,12 @@ if [[ ! $SAMPLE_SIZE =~ ^-?[0-9]+$ ]] ; then
   SAMPLE_SIZE="10000"
 fi
 LANGS=${VALIDATION_LANGUAGES:-"fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku"}
-# Override validation languages if given in the bitbucket commit message
+# Override validation languages if given in the git commit message
 if [[ $CI_COMMIT_MESSAGE =~ 'VALIDATION_LANGUAGES="'([^\"]*)'"' ]]
 then
   LANGS=${BASH_REMATCH[1]}
 fi
-# Override SAMPLE_SIZE if given in the bitbucket commit message
+# Override SAMPLE_SIZE if given in the git commit message
 if [[ $CI_COMMIT_MESSAGE =~ 'SAMPLE_SIZE='([:digit:]+) ]]
 then
   SAMPLE_SIZE=${BASH_REMATCH[1]}
@@ -27,7 +27,7 @@ DIFFS=target/diffs
 
 if [ "x$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "x" ]; then
   NEXT_VERSION_BRANCH=$CI_COMMIT_BRANCH
-  if [[ "$CI_COMMIT_BRANCH" =~ "^feature/" ]]; then
+  if [[ $CI_COMMIT_BRANCH =~ ^feature/ ]]; then
     PREVIOUS_VERSION_BRANCH=develop
   else
     PREVIOUS_VERSION_BRANCH=master

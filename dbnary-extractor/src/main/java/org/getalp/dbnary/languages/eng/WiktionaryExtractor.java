@@ -6,10 +6,12 @@ package org.getalp.dbnary.languages.eng;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -17,7 +19,11 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.getalp.LangTools;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.PropertyObjectPair;
@@ -34,7 +40,9 @@ import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
+import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
@@ -60,10 +68,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: attach multiple pronounciation correctly
   static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String LANGUAGE_SECTION_PATTERN_STRING = "==\\s*([^=]*)\\s*==";
-  protected final static String SECTION_PATTERN_STRING = "={2,5}\\s*([^=]*)\\s*={2,5}";
-  protected final static String PRON_PATTERN_STRING = "\\{\\{IPA\\|([^}]*)}}";
-
   private WiktionaryDataHandler ewdh; // English specific version of the data handler.
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
@@ -77,6 +81,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private ExpandAllWikiModel wikiExpander;
   protected EnglishDefinitionExtractorWikiModel definitionExpander;
+  protected EnglishExampleExpanderWikiModel exampleExpander;
   protected EnglishPronunciationExtractorWikiModel pronunciationExpander;
   private WikisaurusExtractor wikisaurusExtractor;
 
@@ -88,6 +93,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         new ExpandAllWikiModel(wi, Locale.ENGLISH, "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
     definitionExpander = new EnglishDefinitionExtractorWikiModel(this.wdh, this.wi,
         new Locale("en"), "/${image}", "/${title}");
+    exampleExpander = new EnglishExampleExpanderWikiModel(this.wi, new Locale("en"), "/${image}",
+        "/${title}", wdh);
     pronunciationExpander = new EnglishPronunciationExtractorWikiModel(this.wdh, this.wi,
         new Locale("en"), "/${image}", "/${title}");
     wikisaurusExtractor = new WikisaurusExtractor(this.ewdh);
@@ -98,6 +105,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super.setWiktionaryPageName(wiktionaryPageName);
     wikiExpander.setPageName(wiktionaryPageName);
     definitionExpander.setPageName(wiktionaryPageName);
+    exampleExpander.setPageName(wiktionaryPageName);
     pronunciationExpander.setPageName(wiktionaryPageName);
   }
 
@@ -302,11 +310,101 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             && pageName.equals(headword.substring(0, headword.length() - 1))));
   }
 
-  private void extractDefinitions(WikiContent text) {
+  private void extractDefinitionsOld(WikiContent text) {
     // TODO: use the wiki content directly
     extractDefinitions(text.getBeginIndex(), text.getEndIndex());
   }
 
+
+  private void extractDefinitions(WikiContent text) {
+    ClassBasedFilter indentedItems = new ClassBasedFilter();
+    indentedItems.allowIndentedItem();
+    Iterator<Token> definitionsListItems = (new WikiEventsSequence(text, indentedItems)).iterator();
+    Set<Pair<Property, RDFNode>> referenceContext = null;
+
+    while (definitionsListItems.hasNext()) {
+      IndentedItem listItem = definitionsListItems.next().asIndentedItem();
+      String liContent = listItem.getContent().getText();
+      if (listItem instanceof NumberedListItem) {
+        if (liContent.startsWith("*::")) {
+          log.debug("Ignoring quotation meta [{}] — {}", liContent, getWiktionaryPageName());
+        } else if (liContent.startsWith("*:")) {
+          // It's a quotation content
+          Set<Pair<Property, RDFNode>> citation = expandExample(liContent.substring(2).trim());
+          Optional<Pair<Property, RDFNode>> value =
+              citation.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
+          if (null == referenceContext) {
+            log.debug("A citation is given without reference [{}] — {}", liContent,
+                getWiktionaryPageName());
+            registerExampleIfNotNull(citation);
+          } else if (value.isEmpty()) {
+            log.debug("Unexpected empty example in [{}] — {}", liContent, getWiktionaryPageName());
+          } else {
+            citation.addAll(referenceContext);
+            registerExampleIfNotNull(citation);
+          }
+        } else if (liContent.startsWith("*")) {
+          // It's a quotation reference (that starts a new quotation)
+          Set<Pair<Property, RDFNode>> citation = expandCitation(liContent.substring(1).trim());
+          Optional<Pair<Property, RDFNode>> value =
+              citation.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
+          if (value.isEmpty()) {
+            // It's only a reference and the citation itself is to be found later
+            referenceContext = citation;
+          } else {
+            registerExampleIfNotNull(citation);
+          }
+        } else if (liContent.startsWith(":")) {
+          // This is a simple example or a nym
+          extractExample(liContent.substring(1).trim());
+        } else {
+          // This is a definition that starts a new word sense
+          extractDefinition(liContent.trim(), listItem.asNumberedListItem().getLevel());
+          referenceContext = null;
+        }
+      } else {
+        log.trace("Unexpected IndentedItem in definition block [{}] : {}", getWiktionaryPageName(),
+            listItem.getText());
+      }
+    }
+  }
+
+  @Override
+  public void extractDefinition(String definition, int defLevel) {
+    definitionExpander.parseDefinition(definition, defLevel);
+  }
+
+  public void extractExample(String example) {
+    Set<Pair<Property, RDFNode>> citation = expandExample(example);
+    registerExampleIfNotNull(citation);
+  }
+
+  private void registerExampleIfNotNull(Set<Pair<Property, RDFNode>> context) {
+    Optional<Pair<Property, RDFNode>> value =
+        context.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
+    if (value.isEmpty() && !context.isEmpty()) {
+      // There is no example, it is a note that should be attached to the definition
+      wdh.addToCurrentWordSense(context);
+    }
+    if (value.isPresent()) {
+      ewdh.registerExample(context);
+    }
+  }
+
+  public Set<Pair<Property, RDFNode>> expandCitation(String example) {
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
+
+    exampleExpander.expandCitation(example, context, wdh.getExtractedLanguage(),
+        wdh.getCurrentEntryLanguage());
+    return context;
+  }
+
+  public Set<Pair<Property, RDFNode>> expandExample(String example) {
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
+    exampleExpander.expandExample(example, context, wdh.getExtractedLanguage(),
+        wdh.getCurrentEntryLanguage());
+    return context;
+  }
 
   // TODO: check correct parsing of From ''[[semel#Latin|semel]]'' + ''[[pro#Latin|pro]]'' +
   // ''[[semper#Latin|semper]]''
@@ -1297,13 +1395,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  @Override
-  public void extractExample(String example) {
-    // TODO: current example extractor cannot handle English data where different lines are used to
-    // define the example.
-
-  }
-
   private static final Pattern languagePronPattern = Pattern.compile("(?:...?-IPA)");
   private final Matcher languagePronTemplate = languagePronPattern.matcher("");
 
@@ -1400,12 +1491,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
           });
         });
-  }
-
-  @Override
-  public void extractDefinition(String definition, int defLevel) {
-    definitionExpander.setPageName(this.getWiktionaryPageName());
-    definitionExpander.parseDefinition(definition, defLevel);
   }
 
   @Override

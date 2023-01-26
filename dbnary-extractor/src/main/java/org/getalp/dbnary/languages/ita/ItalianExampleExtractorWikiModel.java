@@ -34,8 +34,12 @@ public class ItalianExampleExtractorWikiModel extends DbnaryWikiModel {
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
-    // Currently just expand the definition to get the full text.
-    super.substituteTemplateCall(templateName, parameterMap, writer);
+    if (templateName.equals("ColoreN")) {
+      // This template generate on-screen examples of colors. IGNORE IT
+
+    } else {
+      super.substituteTemplateCall(templateName, parameterMap, writer);
+    }
   }
 
 }

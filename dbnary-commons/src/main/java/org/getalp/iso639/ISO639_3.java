@@ -5,11 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,8 +14,8 @@ import java.util.regex.Pattern;
  *         <p>
  *         This class is designed to be used as a singleton.
  *         <p>
- *         Usage: <code>ISO639_3 isoLanguages =
- * ISO639_3.sharedInstance; String french = isoLanguages.getLanguageNameInEnglish("fre");</code>
+ *         Usage: <code>ISO639_3 isoLanguages = ISO639_3.sharedInstance;
+ *                String french = isoLanguages.getLanguageNameInEnglish("fre");</code>
  */
 public class ISO639_3 {
 
@@ -75,13 +71,39 @@ public class ISO639_3 {
     }
 
     private String id, part2b, part2t, part1, fr, en, epo;
+    Map<String, LinkedHashSet<String>> names = new HashMap<>();
+
+    void addName(String lang, String langName) {
+      names.computeIfAbsent(lang, k -> new LinkedHashSet<>()).add(langName);
+
+    }
+
+    String getName(String lang) {
+      LinkedHashSet<String> namesInLang = names.get(lang);
+      if (null == namesInLang)
+        return null;
+      Iterator<String> itr = namesInLang.iterator();
+
+      // get the first element
+      if (itr.hasNext())
+        return itr.next();
+      else
+        return null;
+    }
+
+    Set<String> getNames(String lang) {
+      return names.get(lang);
+    }
 
   }
 
   private final static String linePatternString =
       "^(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)(?:\t(.*))?$";
   private final static String epolinePatternString = "^(.*?)\t(.*?)$";
+  private final static String chinesePatternString =
+      "^(?:^(.*?)(?:\\s?(?:\\(.?\\)?)?))\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*)";
   private final static Pattern linePattern = Pattern.compile(linePatternString);
+  private final static Pattern chinesePattern = Pattern.compile(chinesePatternString);
   private final static Pattern epolinePattern = Pattern.compile(epolinePatternString);
 
   public static ISO639_3 sharedInstance = new ISO639_3();
@@ -111,6 +133,7 @@ public class ISO639_3 {
           l.part2t = matcher.group(3);
           l.part1 = matcher.group(4);
           l.en = matcher.group(7);
+          l.addName("eng", l.en);
 
           langSet.add(l);
           langMap.put(l.id, l);
@@ -135,7 +158,30 @@ public class ISO639_3 {
       // don't know what I should do here, as the data should be bundled with the code.
       e.printStackTrace();
     }
+    try (InputStream fis = this.getClass().getResourceAsStream("iso-639-3-patchDBnary.tab");
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+      Matcher matcher = epolinePattern.matcher("");
 
+      String s = br.readLine();
+      while (s != null) {
+        matcher.reset(s);
+        if (matcher.find()) {
+          // System.err.println(matcher.group(5));
+          // a3b, a3t, a2, en, fr
+          Lang l = langMap.get(matcher.group(1));
+          if (l != null) {
+            l.addName(l.id, matcher.group(2));
+          }
+        } else {
+          System.err.println("Unrecognized line:" + s);
+        }
+        s = br.readLine();
+      }
+    } catch (IOException e) {
+      System.err.println("ISO639 French data not available");
+      e.printStackTrace();
+    }
     // Get eponym language names
     // TODO: do it lazily.
     try (InputStream fis = this.getClass().getResourceAsStream("ISO639-eponym.tab");
@@ -153,6 +199,7 @@ public class ISO639_3 {
           Lang l = langMap.get(matcher.group(1));
           if (l != null) {
             l.epo = matcher.group(2);
+            l.addName(l.id, l.epo);
           }
         } else {
           System.err.println("Unrecognized line:" + s);
@@ -178,6 +225,7 @@ public class ISO639_3 {
           Lang l = langMap.get(matcher.group(1));
           if (l != null) {
             l.fr = matcher.group(2);
+            l.addName(l.id, l.fr);
           }
         } else {
           System.err.println("Unrecognized line:" + s);
@@ -186,6 +234,40 @@ public class ISO639_3 {
       }
     } catch (IOException e) {
       System.err.println("ISO639 French data not available");
+      e.printStackTrace();
+    }
+    // Get Chinese names
+    try (InputStream fis = this.getClass().getResourceAsStream("ISO639-zh.tab");
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+      Matcher matcher = chinesePattern.matcher("");
+
+      String s = br.readLine();
+      while (s != null) {
+        matcher.reset(s);
+        if (matcher.find()) {
+          Lang l = langMap.get(matcher.group(1));
+          if (l != null) {
+            String zhTraditionalGroup = matcher.group(5);
+            String zhSimpleGroup = matcher.group(6);
+            for (String name : zhTraditionalGroup.split("、")) {
+              if (name.trim().length() == 0)
+                continue;
+              langMap.put(name, l);
+            }
+            for (String name : zhSimpleGroup.split("、")) {
+              if (name.trim().length() == 0)
+                continue;
+              langMap.put(name, l);
+            }
+          }
+        } else {
+          System.err.println("Unrecognized line:" + s);
+        }
+        s = br.readLine();
+      }
+    } catch (IOException e) {
+      System.err.println("ISO639 Chinese data not available");
       e.printStackTrace();
     }
   }
@@ -232,6 +314,10 @@ public class ISO639_3 {
   private Map<String, Lang> name2Lang;
 
   public Lang getLangFromName(String langName) {
+    return getLangFromName("eng", langName);
+  }
+
+  public Lang getLangFromName(String lang, String langName) {
     if (null == name2Lang) {
       name2Lang = new HashMap<>(langSet.size());
       for (Lang l : langSet) {

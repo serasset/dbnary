@@ -4,6 +4,7 @@ import static org.getalp.dbnary.ExtractionFeature.MAIN;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,10 +14,12 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,7 +67,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   @Mixin
   private ExtractionFeaturesMixin features; // injected by picocli
 
-  private static final String DEFAULT_SERVER_URL = "http://dumps.wikimedia.org/";
+  private static final String DEFAULT_SERVER_URL = "https://dumps.wikimedia.org/";
   private String server;
 
   @CommandLine.Option(names = {"-s", "--server"}, paramLabel = "WIKTIONARY-DUMP_MIRROR URL",
@@ -104,11 +107,37 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       arity = "1..*")
   String[] languages;
 
+  private static class LockReleaser extends Thread {
+
+    private final Path lockFile;
+
+    public LockReleaser(Path lockFile) {
+      super();
+      this.lockFile = lockFile;
+    }
+
+    @Override
+    public void run() {
+      if (null != lockFile) {
+        System.err.format("Deleting lock file %s on exit hook.%n", lockFile);
+        try {
+          Files.delete(lockFile);
+        } catch (IOException e) {
+          System.err.format(e.getLocalizedMessage());
+          System.err.format("Could not delete lock file '%s'. %n", lockFile);
+        }
+      }
+      super.run();
+    }
+  }
   private static class LanguageConfiguration {
+
     String lang;
     String dumpDir;
     private boolean uncompressed = false;
     private boolean extracted = false;
+    private Path lock = null;
+    private LockReleaser lockRemovalHook = null;
 
     public LanguageConfiguration(String lang, String dumpDir) {
       this.lang = lang;
@@ -130,6 +159,26 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
     public boolean isExtracted() {
       return extracted;
     }
+
+    public boolean ownsLock() {
+      return null != getLock();
+    }
+
+    public Path getLock() {
+      return lock;
+    }
+
+    public void setLock(Path lock) {
+      this.lock = lock;
+    }
+
+    public LockReleaser getLockRemovalHook() {
+      return lockRemovalHook;
+    }
+
+    public void setLockRemovalHook(LockReleaser lockRemovalHook) {
+      this.lockRemovalHook = lockRemovalHook;
+    }
   }
 
   @Override
@@ -146,18 +195,78 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
         .map(this::retrieveLastDump).collect(Collectors.toList());
     confs =
         confs.stream().parallel().map(this::uncompressRetrievedDump).collect(Collectors.toList());
-    confs.stream().sequential().map(this::extract).map(this::removeOldDumps)
-        .forEach(this::linkToLatestExtractedFiles);
+    confs.stream().sequential().map(this::checkLock).map(this::extract).map(this::removeOldDumps)
+        .map(this::releaseLock).forEach(this::linkToLatestExtractedFiles);
   }
+
+  private LanguageConfiguration checkLock(LanguageConfiguration conf) {
+    if (conf.isUncompressed()) {
+      Path lock = getLockPath(conf.lang, conf.dumpDir);
+      if (null == lock || Files.exists(lock)) {
+        System.err.format("Unable to secure lock file '%s'; Bailing out. %n", lock);
+        return conf;
+      }
+      LockReleaser lockReleaser = new LockReleaser(lock);
+      conf.setLockRemovalHook(lockReleaser);
+      Runtime.getRuntime().addShutdownHook(lockReleaser);
+      try (
+          OutputStream lockStream =
+              Files.newOutputStream(lock, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+          Writer lockWriter = new OutputStreamWriter(lockStream, StandardCharsets.UTF_8)) {
+        lockWriter.write(Long.toString(ProcessHandle.current().pid()));
+      } catch (IOException e) {
+        System.err.format(e.getLocalizedMessage());
+        System.err.format("Could not write to lock file '%s'; Bailing out. %n", lock);
+        return conf;
+      }
+      conf.setLock(lock);
+    }
+    return conf;
+  }
+
+  private Path getLockPath(String lang, String dir) {
+    if (null == dir || dir.equals("")) {
+      return null;
+    }
+
+    Path odir = prefs.getExtractionDir(lang);
+    try {
+      Files.createDirectories(odir);
+    } catch (IOException e) {
+      System.err.format("Could not create directory '%s'.%n", odir);
+      // e.printStackTrace(System.err);
+      return null;
+    }
+
+    Path extractedFile = prefs.outputFileForFeature(MAIN, lang, dir, features.getOutputFormat(),
+        batch.doCompress(), false);
+    return Paths.get(extractedFile.toString() + ".lck");
+  }
+
+  private LanguageConfiguration releaseLock(LanguageConfiguration conf) {
+    if (conf.ownsLock()) {
+      Runtime.getRuntime().removeShutdownHook(conf.getLockRemovalHook());
+      try {
+        Files.delete(conf.getLock());
+      } catch (IOException e) {
+        System.err.format(e.getLocalizedMessage());
+        System.err.format("Could not delete lock file '%s'. %n", conf.getLock());
+        return conf;
+      }
+    }
+    return conf;
+  }
+
 
   private void linkToLatestExtractedFiles(LanguageConfiguration conf) {
     if (conf.isExtracted()) {
       System.err.format("[%s] ==> Linking to latest versions.%n", conf.lang);
       features.getEndolexFeatures()
           .forEach(f -> linkToLatestExtractFile(conf.lang, conf.dumpDir, f, false));
-      if (null != features.getExolexFeatures())
+      if (null != features.getExolexFeatures()) {
         features.getExolexFeatures()
             .forEach(f -> linkToLatestExtractFile(conf.lang, conf.dumpDir, f, true));
+      }
     }
   }
 
@@ -203,10 +312,11 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   }
 
   private LanguageConfiguration removeOldDumps(LanguageConfiguration conf) {
-    if (conf.isExtracted())
+    if (conf.isExtracted()) {
       cleanUpDumps(conf.lang, conf.dumpDir);
-    else if (parent.isVerbose())
+    } else if (parent.isVerbose()) {
       System.err.println("Older dumps cleanup aborted as extraction did not succeed.");
+    }
     return conf;
   }
 
@@ -306,7 +416,8 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
 
     try {
       URL url = new URL(server);
-      if (!url.getProtocol().equals("http")) { // URL protocol is not http
+      if (!url.getProtocol().equals("http") && !url.getProtocol().equals("https")) { // URL protocol
+                                                                                     // is not http
         System.err.format("Unsupported protocol: %s", url.getProtocol());
         return defaultRes;
       }
@@ -459,8 +570,9 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
     Path compressedDump = prefs.originalDump(lang, dir);
     Path expandedDump = prefs.expandedDump(lang, dir);
     if (Files.exists(expandedDump)) {
-      if (parent.isVerbose())
+      if (parent.isVerbose()) {
         System.err.println("Uncompressed dump file " + expandedDump + " already exists.");
+      }
       return true;
     }
 
@@ -493,7 +605,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   }
 
   private LanguageConfiguration extract(LanguageConfiguration conf) {
-    if (conf.isUncompressed()) {
+    if (conf.ownsLock()) {
       boolean ok = extractDumpFile(conf.lang, conf.dumpDir);
       conf.setExtracted(ok);
       if (!ok) {
@@ -543,8 +655,9 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
         batch.doCompress(), false);
 
     if (Files.exists(extractedFile) && !force) {
-      if (parent.isVerbose())
+      if (parent.isVerbose()) {
         System.err.println("Extracted wiktionary file " + extractedFile + " already exists.");
+      }
       return true;
     }
     System.err.println("========= EXTRACTING file " + extractedFile + " ===========");
@@ -574,10 +687,11 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
         a.add(String.valueOf(batch.toPage()));
       }
     }
-    if (batch.doCompress())
+    if (batch.doCompress()) {
       a.add("--compress");
-    else
+    } else {
       a.add("--no-compress");
+    }
     a.add("--endolex");
     a.add(String.join(",", features.getEndolexFeatures().stream().map(ExtractionFeature::toString)
         .toArray(String[]::new)));

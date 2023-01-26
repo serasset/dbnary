@@ -8,6 +8,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -455,8 +458,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     frwdh.initializePageExtraction(getWiktionaryPageName());
     WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
     WikiDocument doc = page.asStructuredDocument();
-    doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection)
-        .map(Token::asWikiSection).forEach(this::extractSection);
+    doc.getContent().wikiTokens().stream().filter(new Predicate<Token>() {
+      @Override
+      public boolean test(Token t) {
+        return t instanceof WikiSection;
+      }
+    }).map(new Function<Token, WikiSection>() {
+      @Override
+      public WikiSection apply(Token token) {
+        return token.asWikiSection();
+      }
+    }).forEach(new Consumer<WikiSection>() {
+      @Override
+      public void accept(WikiSection section) {
+        WiktionaryExtractor.this.extractSection(section);
+      }
+    });
     frwdh.finalizePageExtraction();
   }
 
@@ -877,20 +894,38 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // In French Wiktionary, many adjective "main entry" (the lemma) is marked as masculine
     // so remove any genre from adjective otherForm extraction.
     if ("-adj-".equals(wdh.currentWiktionaryPos())) {
-      context.removeIf("Masculin"::equals);
+      context.removeIf(new Predicate<String>() {
+        @Override
+        public boolean test(String anObject) {
+          return "Masculin".equals(anObject);
+        }
+      });
       // I consider that an adjective which is marked as feminine is in fact defective.
       // context.removeIf("Féminin"::equals);
     }
 
-    content.templatesOnUpperLevel().stream().map(Token::asTemplate)
-        .filter(t -> t.getName().startsWith("fr-")).filter(t -> !t.getName().startsWith("fr-verbe"))
-        .forEach(t -> morphologyExtractor.parseOtherForm(t.getText(), context));
+    content.templatesOnUpperLevel().stream().map(new Function<Token, Template>() {
+      @Override
+      public Template apply(Token token) {
+        return token.asTemplate();
+      }
+    }).filter(new Predicate<Template>() {
+      @Override
+      public boolean test(Template t) {
+        return t.getName().startsWith("fr-");
+      }
+    }).filter(t -> {
+      return !t.getName().startsWith("fr-verbe");
+    }).forEach(new Consumer<Template>() {
+      @Override
+      public void accept(Template t) {
+        morphologyExtractor.parseOtherForm(t.getText(), context);
+      }
+    });
   }
 
   @Override
   public void extractDefinition(String definition, int defLevel) {
-    // TODO: properly handle macros in definitions.
-    // definitionExpander.setPageName(this.getWiktionaryPageName());
     definitionExpander.parseDefinition(definition, defLevel);
   }
 

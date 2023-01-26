@@ -5,7 +5,7 @@
   <parent>
     <artifactId>dbnary</artifactId>
     <groupId>org.getalp</groupId>
-    <version>3.0.10-SNAPSHOT</version>
+    <version>3.1.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -31,7 +31,7 @@
       <groupId>info.picocli</groupId>
       <artifactId>picocli</artifactId>
     </dependency>
-    <!-- Force non vulnerable version of common compress (HDT comes with 1.20) -->
+    <!-- Force non-vulnerable version of common compress (HDT comes with 1.20) -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
@@ -85,7 +85,6 @@
         </executions>
         <configuration>
           <licenseHeaderFile>${basedir}/LICENSE.txt</licenseHeaderFile>
-          <extraJvmArguments>-Xmx8g</extraJvmArguments>
           <repositoryName>lib</repositoryName>
           <repositoryLayout>flat</repositoryLayout>
           <platforms>

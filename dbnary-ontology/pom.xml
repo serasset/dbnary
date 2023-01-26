@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>3.0.10-SNAPSHOT</version>
+    <version>3.1.4-SNAPSHOT</version>
   </parent>
   <artifactId>dbnary-ontology</artifactId>
 
@@ -68,21 +68,6 @@
       <!-- keep in test scope so that it is not required when the module is used as a dependency-->
       <scope>test</scope>
     </dependency>
-    <!--dependency>
-      <groupId>com.fasterxml.woodstox</groupId>
-      <artifactId>woodstox-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-compress</artifactId>
-      <scope>test</scope>
-    </dependency-->
   </dependencies>
   <build>
     <plugins>

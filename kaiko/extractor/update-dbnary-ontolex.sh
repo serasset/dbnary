@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PATH=$HOME/local/graalvm:/home/linuxbrew/.linuxbrew/bin:$HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/opt/puppetlabs/bin:/opt/virtuoso-opensource/bin
+PATH=$HOME/local/graalvm/bin:/home/linuxbrew/.linuxbrew/bin:$HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/opt/puppetlabs/bin:/opt/virtuoso-opensource/bin
 if [ ! -t 0 ]; then
   exec 1>> /var/log/dbnary/dbnary.log 2>&1
 fi

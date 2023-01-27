@@ -21,7 +21,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiModel {
-  private static final Logger log = LoggerFactory.getLogger(ChinesePronunciationExtractorWikiModel.class);
+  private static final Logger log =
+      LoggerFactory.getLogger(ChinesePronunciationExtractorWikiModel.class);
   private final IWiktionaryDataHandler delegate;
   private static final HashMap<String, String> dialectCodeList = new HashMap<>();
   static {
@@ -359,7 +360,7 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
     } else {
       pronunciationTag.append("-unKnownSystem");
     }
-    if (locationName != null && !locationName.equals("ignored") ) {
+    if (locationName != null && !locationName.equals("ignored")) {
       pronunciationTag.append("-").append(locationName);
     }
 

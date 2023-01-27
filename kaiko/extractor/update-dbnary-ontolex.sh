@@ -14,9 +14,11 @@ MIRROR=https://dumps.wikimedia.org/
 #MIRROR=ftp://ftpmirror.your.org/pub/wikimedia/dumps/
 OPTIONS="--tdb -v "
 JVM_OPTIONS="$JVM_OPTS -Xmx80g -Xms12g"
+TMPDIR=${DBNARY_TMP:-$HOME/var/tmp/}
+
 # Change tmp dir on debian systems (as the default /tmp partition may not be sufficient to cope with TDBs)
 if [ -f "/etc/debian_version" ]; then
-  JVM_OPTIONS="$JVM_OPTIONS -Djava.io.tmpdir=/var/tmp/"
+  JVM_OPTIONS="${JVM_OPTIONS} -Djava.io.tmpdir=${TMPDIR}"
 fi
 
 if [ $# -ge 1 ]

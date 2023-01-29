@@ -1010,6 +1010,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       // aBox.add(nym, isAnnotatedBy, target.substring(hash));
     }
 
+    if (NymRelation.of(synRelation) == null)
+      return;
     Property nymProperty = NymRelation.of(synRelation).getProperty();
     // Property nymProperty = nymPropertyMap.get(synRelation);
 

@@ -26,7 +26,9 @@ public class DBnary {
   @Spec
   private CommandSpec spec;
 
-  @Option(names = "--dir", scope = ScopeType.INHERIT, defaultValue = ".")
+  @Option(names = "--dir", scope = ScopeType.INHERIT, defaultValue = ".",
+      description = "The directory to be used for dumps and extracts. "
+          + "The default value is the current directory")
   public Path dbnaryDir;
 
   @Option(names = {"-v"}, scope = ScopeType.INHERIT, description = "Print extra information.")

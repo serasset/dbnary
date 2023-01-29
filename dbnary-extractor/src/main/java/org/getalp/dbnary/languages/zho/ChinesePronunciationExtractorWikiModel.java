@@ -1,5 +1,7 @@
 package org.getalp.dbnary.languages.zho;
 
+import java.util.IllformedLocaleException;
+import java.util.Locale.Builder;
 import java.util.Map.Entry;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -19,10 +21,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiModel {
-  private static Logger log = LoggerFactory.getLogger(ChinesePronunciationExtractorWikiModel.class);
-  private IWiktionaryDataHandler delegate;
-  private static HashMap<String, String> dialectCodeList = new HashMap<>();
-  {
+  private static final Logger log =
+      LoggerFactory.getLogger(ChinesePronunciationExtractorWikiModel.class);
+  private final IWiktionaryDataHandler delegate;
+  private static final HashMap<String, String> dialectCodeList = new HashMap<>();
+  static {
     dialectCodeList.put("官話", "zh");
     dialectCodeList.put("北方話", "zh");
     dialectCodeList.put("粵語", "yue");
@@ -35,7 +38,7 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
     dialectCodeList.put("贛語", "gan");
     dialectCodeList.put("湘語", "hsn");
   }
-  private HashMap<String, String> phonemicSystemList = new HashMap<>();
+  private final HashMap<String, String> phonemicSystemList = new HashMap<>();
   {
     phonemicSystemList.put("汉语拼音", "Latn");
     phonemicSystemList.put("國際音標", "fonipa");// IPA
@@ -64,8 +67,8 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
     phonemicSystemList.put("臺灣話", "TW");// Here is one location name, in order to adapt the method
                                         // parsePronunciation2
   }
-  private static HashMap<String, String> locationList = new HashMap<>();
-  {
+  private static final HashMap<String, String> locationList = new HashMap<>();
+  static {
     locationList.put("福建", "CN-FJ"); // Fujian
     locationList.put("Beijing dialect", "CN-BJ"); // Beijing
     locationList.put("北京方言", "CN-BJ"); // Beijing
@@ -75,7 +78,6 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
     locationList.put("南昌", "CN-JX"); // Nanchang
     locationList.put("台山話", "CN-GD"); // Taishan is a sub district of Guangdong region
     locationList.put("四縣話", "ignored");
-    locationList.put("太原話", "CN-SX"); // Taiyuan
     locationList.put("太原話", "CN-SX"); // Taiyuan
     locationList.put("廣州話", "CN-GD"); // Guangzhou
     locationList.put("建甌", "CN-FJ"); // Jianou in Fujian region
@@ -143,7 +145,7 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
       } else if ("粵".equals(arg.getKey())) {
         // WARN, here, append a space after the numbers
         StringBuilder pinyinBuilder = new StringBuilder();
-        arg.getValue().templates().stream().map(token -> token.asTemplate())
+        arg.getValue().templates().stream().map(Token::asTemplate)
             .filter(template -> template.getName().equals("粵音") || template.getName().equals("粵音/空")
                 || template.getName().equals("粤音") || template.getName().equals("粤音/空"))
             .findFirst().ifPresent(template -> template.getParsedArgs().forEach((key, val) -> {
@@ -205,10 +207,8 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
         if (phonemicSystemName == null) {
           phonemicSystemName =
               t.getText().substring(1, t.getText().length() - 1).split("：")[0].trim();
-          phonemicSystemCode = phonemicSystemList.get(phonemicSystemName);
-        } else {
-          phonemicSystemCode = phonemicSystemList.get(phonemicSystemName);
         }
+        phonemicSystemCode = phonemicSystemList.get(phonemicSystemName);
         if (phonemicSystemCode.equals("Jyutping")) {
           Tag = "yue-Jyutping";
         } else {
@@ -220,6 +220,8 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
     }
   }
 
+  static Locale.Builder localeBuilder = new Builder();
+
   public void parsePronunciation(String templateCall) {
     if (templateCall.contains("* [[")) {
       parsePronunciation2(templateCall);
@@ -227,16 +229,13 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
       if (templateCall.contains("{{汉语读音") || templateCall.contains("{{漢語讀音")) {
         WikiText text = new WikiText(templateCall);
         StringBuilder translatedCallBuilder = new StringBuilder();
-        text.templates().stream().map(token -> token.asTemplate())
+        text.templates().stream().map(Token::asTemplate)
             .filter(t -> (t.getName().equals("汉语读音") || t.getName().equals("漢語讀音")))
             .forEach(t -> translatedCallBuilder.append(toZhPronCall(t)));
         templateCall = translatedCallBuilder.toString();
       }
       String html = expandWikiCode(templateCall);
       Document doc = Jsoup.parse(html);
-      if (null == doc) {
-        return;
-      }
       Elements divs = doc.getElementsByTag("div");
       Element usefulParte = null;
       for (Element div : divs) {
@@ -252,7 +251,14 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
             String locationName = getLocationName(list);
             String tag = getPronunciationTag(languageTypeCode, phonemicSystemCode, locationName);
             String pronunciation = getPronunciation(list);
-            delegate.registerPronunciation(pronunciation, tag);
+            try {
+              // Check the language using localeBuilder. It will throw an exception if incorrect
+              localeBuilder.setLanguageTag(tag);
+              delegate.registerPronunciation(pronunciation, tag);
+            } catch (IllformedLocaleException e) {
+              // Just ignore
+              log.trace("Illformed Locale ignored: {} || {}", tag, getPageName());
+            }
           }
         }
       }
@@ -262,7 +268,7 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
   public static boolean isLastLi(Element li) {
     Elements children = li.children();
     for (Element child : children) {
-      if (child.tagName() == "li" || child.tagName() == "ul") {
+      if (child.tagName().equals("li") || child.tagName().equals("ul")) {
         return false;
       }
     }
@@ -272,9 +278,9 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
   public static String getLanguageType(Element li) {
     Elements parents = li.parents();
     Element dialectList = null;
-    for (int i = 0; i < parents.size(); i++) {
-      if (parents.get(i).tagName().equals("li")) {
-        dialectList = parents.get(i);
+    for (Element parent : parents) {
+      if (parent.tagName().equals("li")) {
+        dialectList = parent;
       }
     }
     if (null == dialectList)
@@ -286,12 +292,14 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
     Element parent = li.parent();
     // Element location = parent.previousElementSibling().text().equals("+")?
     // parent.previousElementSibling().previousElementSibling():parent.previousElementSibling();
-    Element location = parent.previousElementSibling();
+    Element location = parent != null ? parent.previousElementSibling() : null;
     if (null == location)
       return "";
-    if (location.tagName() == "sup") {
+    if (location.tagName().equals("sup")) {
       location = location.previousElementSibling();
     }
+    if (null == location)
+      return "";
     Pattern locationPattern = Pattern.compile("\\((.*)\\)");
     String locationText = location.text();
     Matcher locationMatcher = locationPattern.matcher(locationText);
@@ -342,18 +350,18 @@ public class ChinesePronunciationExtractorWikiModel extends ChineseDbnaryWikiMod
   public String getPronunciationTag(String languageType, String phonemicSystem,
       String locationName) {
     StringBuilder pronunciationTag = new StringBuilder(30);
-    if (languageType != null && languageType != "ignored") {
+    if (languageType != null && !languageType.equals("ignored")) {
       pronunciationTag.append(languageType);
     } else {
       pronunciationTag.append("zh");
     }
     if (phonemicSystem != null && !phonemicSystem.equals("ignored")) {
-      pronunciationTag.append("-" + phonemicSystem);
+      pronunciationTag.append("-").append(phonemicSystem);
     } else {
       pronunciationTag.append("-unKnownSystem");
     }
-    if (!locationName.equals("ignored") && locationName != null) {
-      pronunciationTag.append("-" + locationName);
+    if (locationName != null && !locationName.equals("ignored")) {
+      pronunciationTag.append("-").append(locationName);
     }
 
     return String.valueOf(pronunciationTag);

@@ -59,7 +59,7 @@ prepareTDBifTooBig() {
   if [ -f "$1" ]
   then
     fsize="$(wc -c <"$ttlfile")"
-    if [[ "$fsize" -gt 1000000000 || "x$FORCETDB" == "xtrue" ]]
+    if [[ "$fsize" -gt 100000000 || "x$FORCETDB" == "xtrue" ]]
     then
         #More than 1G -> TDB
         >&2 echo "Preparing TDB2 from big ttl :  ${ttlfile}"

@@ -26,7 +26,7 @@ function show_help() {
   echo "      s: use provided value as the virtuoso service name (default value = $VIRTUOSO_SERVICE_NAME)."
 }
 
-while getopts "h?d:c:" opt; do
+while getopts "h?d:c:s:" opt; do
   case "$opt" in
     h | \?)
       show_help

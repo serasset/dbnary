@@ -73,8 +73,8 @@ IndexTreeMaps            = 256
 MaxMemPoolSize           = 200000000
 PrefixResultNames        = 0
 MacSpotlight             = 0
-IndexTreeMaps            = 64
-MaxQueryMem              = 2G	; memory allocated to query processor
+;IndexTreeMaps            = 64
+MaxQueryMem              = 4G	; memory allocated to query processor
 VectorSize               = 1000	; initial parallel query vector (array of query operations) size
 MaxVectorSize            = 1000000	; query vector size threshold.
 AdjustVectorSize         = 0
@@ -132,7 +132,7 @@ ProxyConnectionCacheTimeout = 15
 HTTPThreadSize              = 280000
 HttpPrintWarningsInOutput   = 0
 Charset                     = UTF-8
-HTTPLogFile                 = logs/http.log
+;HTTPLogFile                 = logs/http.log
 MaintenancePage             = atomic.html
 EnabledGzipContent          = 1
 
@@ -158,7 +158,7 @@ VDBDisconnectTimeout		    = 1000
 KeepConnectionOnFixedThread	= 0
 
 [Replication]
-ServerName                  = db-DANAKIL
+ServerName                  = db-KUMO
 ServerEnable                = 1
 QueueMax                    = 50000
 
@@ -206,7 +206,7 @@ Segment2                     = 100M, db-seg2-1.db
 ;...
 
 [Zero Config]
-ServerName = virtuoso (DANAKIL)
+ServerName = virtuoso (KUMO)
 ;ServerDSN			= ZDSN
 ;SSLServerName			=
 ;SSLServerDSN			=
@@ -232,6 +232,8 @@ MaxQueryCostEstimationTime = 400	; in seconds
 MaxQueryExecutionTime      = 60	; in seconds
 DefaultQuery               = select distinct ?Concept where {[] a ?Concept} LIMIT 100
 DeferInferenceRulesInit    = 0  ; controls inference rules loading
+MaxMemInUse			= 0  ; limits the amount of memory for construct dict (0=unlimited)
+;LabelInferenceName		= facets	; Only needed when using the Faceted Browser
 ;PingService       		= http://rpc.pingthesemanticweb.com/
 ShortenLongURIs            = 1
 
@@ -240,12 +242,16 @@ LoadPath			= @@VIRTUOSO_PLUGINS_HOSTING@@
 Load1				= plain, wikiv
 Load2				= plain, mediawiki
 Load3				= plain, creolewiki
-Load4			  = plain, im
-Load5		    = plain, wbxml2
-;Load6			= plain, hslookup
-;Load7			= attach, libphp5.so
-;Load8			= Hosting, hosting_php.so
-;Load9			= Hosting,hosting_perl.so
-;Load10		= Hosting,hosting_python.so
-;Load11		= Hosting,hosting_ruby.so
-;Load12				= msdtc,msdtc_sample
+;Load4			  = plain, im
+;Load5		    = plain, wbxml2
+;Load6		= plain, proj4
+;Load7			= plain, geos
+Load8		= plain, shapefileio
+Load9		= plain, graphql
+;Load10			= plain, hslookup
+;Load11		= attach, libphp5.so
+;Load12		= Hosting, hosting_php.so
+;Load13		= Hosting,hosting_perl.so
+;Load14		= Hosting,hosting_python.so
+;Load15		= Hosting,hosting_ruby.so
+;Load16				= msdtc, msdtc_sample

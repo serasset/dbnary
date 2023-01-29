@@ -88,6 +88,7 @@ VSP_INSTALL_DIR=/var/lib/virtuoso-opensource-7/vsp/
 script_dir=$(dirname $(realpath $0))
 BOOTSTRAPSQLTMPL=$script_dir/bootstrap.sql.tmpl
 bootstrap_ini=virtuoso.ini.bootstrap.tmpl
+prod_ini=virtuoso.ini.prod.tmpl
 #prod_ini=virtuoso.ini.prod.tmpl
 ## Read values from configuration file
 [[ -f $DBNARY_USER_CONFIG_DIR/config ]] && source $DBNARY_USER_CONFIG_DIR/config
@@ -97,9 +98,16 @@ DBNARYLATEST=${DBNARYLATEST:-${DBNARY_ONTOLEX}/latest}
 [[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL=$DBNARY_USER_CONFIG_DIR/$bootstrap_ini
 [[ -f $VIRTUOSOINITMPL ]] || VIRTUOSOINITMPL=$script_dir/$bootstrap_ini
 if [[ ! -f $VIRTUOSOINITMPL ]]; then
-  echo >&2 "Could not find virtuoso.ini template file."
+  echo >&2 "Could not find bootstrap virtuoso.ini template file."
   exit 1
 fi
+[[ x$VIRTUOSOPRODINITMPL == "x" ]] && $VIRTUOSOPRODINITMPL=$DBNARY_USER_CONFIG_DIR/$prod_ini
+[[ -f $VIRTUOSOPRODINITMPL ]] || $VIRTUOSOPRODINITMPL=$script_dir/$prod_ini
+if [[ ! -f $VIRTUOSOPRODINITMPL ]]; then
+  echo >&2 "Could not find production virtuoso.ini template file."
+  exit 1
+fi
+
 
 BOOTSTRAPSQL=$script_dir/bootstrap.sql
 
@@ -462,7 +470,17 @@ END
 
 ## PREPARE THE DB FOLDER FOR PROD.
 VIRTUOSOINIPROD=$script_dir/virtuoso.prod.ini
-cp ${VIRTUOSOINIPROD} ${DBBOOTSTRAPFOLDER}/virtuoso.ini
+
+sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$VIRTUOSOPRODINITMPL" |
+  sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
+  sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
+  sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
+  sed "s|@@VAD_INSTALL_DIR@@|$VAD_INSTALL_DIR|g" |
+  sed "s|@@VSP_INSTALL_DIR@@|$VSP_INSTALL_DIR|g" |
+  sed "s|@@VIRTUOSO_PLUGINS_HOSTING@@|$VIRTUOSO_PLUGINS_HOSTING|g" |
+  sed "s|@@WEBSERVERPORT@@|$WEBSERVERPORT|g" >"$DBBOOTSTRAPFOLDER"/virtuoso.ini
+
+#cp ${VIRTUOSOINIPROD} ${DBBOOTSTRAPFOLDER}/virtuoso.ini
 
 ## COPY THE DATABASE NEAR THE VIRTUOSO DB
 CURRENTDATETIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")

@@ -278,7 +278,9 @@ fi
     cp ${DBNARY_ONTOLEX}/??/??_dbnary_statistics_*.ttl.bz2 "$DATASETDIR"
     ## TODO: expand Disambiguated translations + foreign data ? + etymology
     pushd "$DATASETDIR"
-    bunzip2 ./*.ttl.bz2
+    # Decompress in parallel
+    #bunzip2 ./*.ttl.bz2
+    find ./*.ttl.bz2 -print0 | xargs -0 -n 1 -P 6 bunzip2
   fi
 )
 

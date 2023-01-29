@@ -52,19 +52,19 @@ shift $((OPTIND - 1))
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
 
 ## Read values from configuration file
-[[ -f $DBNARY_USER_CONFIG_DIR/config ]] && source $DBNARY_USER_CONFIG_DIR/config
+[[ -f "$DBNARY_USER_CONFIG_DIR/config" ]] && source "$DBNARY_USER_CONFIG_DIR/config"
 
 # exit when any command fails
 set -e
 
 
 function stop_virtuoso() {
-  systemctl stop ${VIRTUOSO_SERVICE_NAME}.service
+  systemctl stop "${VIRTUOSO_SERVICE_NAME}.service"
   sleep 15
 }
 
 function start_virtuoso() {
-  systemctl start ${VIRTUOSO_SERVICE_NAME}.service
+  systemctl start "${VIRTUOSO_SERVICE_NAME}.service"
   sleep 15
 }
 

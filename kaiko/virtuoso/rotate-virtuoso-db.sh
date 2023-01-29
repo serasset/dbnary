@@ -95,16 +95,16 @@ prod_ini=virtuoso.ini.prod.tmpl
 
 DBNARYLATEST=${DBNARYLATEST:-${DBNARY_ONTOLEX}/latest}
 
-[[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL=$DBNARY_USER_CONFIG_DIR/$bootstrap_ini
-[[ -f $VIRTUOSOINITMPL ]] || VIRTUOSOINITMPL=$script_dir/$bootstrap_ini
+[[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL="$DBNARY_USER_CONFIG_DIR/$bootstrap_ini"
+[[ -f $VIRTUOSOINITMPL ]] || VIRTUOSOINITMPL="$script_dir/$bootstrap_ini"
 if [[ ! -f $VIRTUOSOINITMPL ]]; then
   echo >&2 "Could not find bootstrap virtuoso.ini template file."
   exit 1
 fi
-[[ x$VIRTUOSOPRODINITMPL == "x" ]] && $VIRTUOSOPRODINITMPL=$DBNARY_USER_CONFIG_DIR/$prod_ini
-[[ -f $VIRTUOSOPRODINITMPL ]] || $VIRTUOSOPRODINITMPL=$script_dir/$prod_ini
+[[ x$VIRTUOSOPRODINITMPL == "x" ]] && VIRTUOSOPRODINITMPL="$DBNARY_USER_CONFIG_DIR/$prod_ini"
+[[ -f $VIRTUOSOPRODINITMPL ]] || VIRTUOSOPRODINITMPL="$script_dir/$prod_ini"
 if [[ ! -f $VIRTUOSOPRODINITMPL ]]; then
-  echo >&2 "Could not find production virtuoso.ini template file."
+  echo >&2 "Could not find production virtuoso.ini template file ${VIRTUOSOPRODINITMPL}."
   exit 1
 fi
 

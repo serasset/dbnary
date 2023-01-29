@@ -11,25 +11,36 @@ fi
 
 ## Parse command line options
 OPTIND=1 # Reset in case getopts has been used previously in the shell.
+DBNARY_USER_CONFIG_DIR="$HOME/.dbnary/"
+VIRTUOSO_SERVICE_NAME="virtuoso-opensource-7"
 
 VIRTUOSODBLOCATION=/var/lib/virtuoso-opensource-7/
 
 function show_help() {
-  echo "USAGE: $0 [-h] [-d dir]"
+  echo "USAGE: $0 [-h] [-d dir] [-c config] [-s servicename]"
   echo "OPTIONS:"
   echo "      h: display this help message."
   echo "      d: use provided value as the virtuoso database location (default value = $VIRTUOSODBLOCATION)."
+  echo "      c: use provided value as the configuration directory (default value = $DBNARY_USER_CONFIG_DIR)."
+  echo "         This directory should contain config and virtuoso.ini.tmpl files."
+  echo "      s: use provided value as the virtuoso service name (default value = $VIRTUOSO_SERVICE_NAME)."
 }
 
-while getopts "h?d:" opt; do
+while getopts "h?d:c:" opt; do
   case "$opt" in
-  h | \?)
-    show_help
-    exit 0
-    ;;
-  d)
-    VIRTUOSODBLOCATION=$OPTARG
-    ;;
+    h | \?)
+      show_help
+      exit 0
+      ;;
+    c)
+      DBNARY_USER_CONFIG_DIR=$OPTARG
+      ;;
+    d)
+      VIRTUOSODBLOCATION=$OPTARG
+      ;;
+    s)
+      VIRTUOSO_SERVICE_NAME=$OPTARG
+      ;;
   esac
 done
 
@@ -37,17 +48,23 @@ shift $((OPTIND - 1))
 
 [ "$1" = "--" ] && shift
 
+## Default values that will be overriden by configuration file
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
+
+## Read values from configuration file
+[[ -f $DBNARY_USER_CONFIG_DIR/config ]] && source $DBNARY_USER_CONFIG_DIR/config
+
 # exit when any command fails
 set -e
 
 
 function stop_virtuoso() {
-  systemctl stop virtuoso-opensource-7.service
+  systemctl stop ${VIRTUOSO_SERVICE_NAME}.service
   sleep 15
 }
 
 function start_virtuoso() {
-  systemctl start virtuoso-opensource-7.service
+  systemctl start ${VIRTUOSO_SERVICE_NAME}.service
   sleep 15
 }
 
@@ -94,9 +111,6 @@ function rotate_and_link() {
 
   rm -rf db.delete.${CURRENTDATETIMESTAMP}
 }
-
-## Default values that will be overriden by configuration file
-PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
 
 cd "$VIRTUOSODBLOCATION"
 nextfile=$(db_file_with_suffix next)

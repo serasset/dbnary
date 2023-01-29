@@ -70,7 +70,6 @@ while getopts "h?fp:Pvc:l:t:d:" opt; do
     FORCE=true
   esac
 done
-DBNARYLATEST=${DBNARY_ONTOLEX}/latest
 
 shift $((OPTIND - 1))
 
@@ -92,6 +91,9 @@ bootstrap_ini=virtuoso.ini.bootstrap.tmpl
 #prod_ini=virtuoso.ini.prod.tmpl
 ## Read values from configuration file
 [[ -f $DBNARY_USER_CONFIG_DIR/config ]] && source $DBNARY_USER_CONFIG_DIR/config
+
+DBNARYLATEST=${DBNARYLATEST:-${DBNARY_ONTOLEX}/latest}
+
 [[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL=$DBNARY_USER_CONFIG_DIR/$bootstrap_ini
 [[ -f $VIRTUOSOINITMPL ]] || VIRTUOSOINITMPL=$script_dir/$bootstrap_ini
 if [[ ! -f $VIRTUOSOINITMPL ]]; then
@@ -211,6 +213,7 @@ iso3Lang[mg]=mlg
 iso3Lang[no]=nor
 iso3Lang[bm]=bam
 iso3Lang[ku]=kur
+iso3Lang[zh]=zho
 
 SAVETMPDIR=$TMPDIR
 export TMPDIR=$TEMPORARYPREFIX

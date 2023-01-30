@@ -469,7 +469,7 @@ shutdown();
 END
 
 ## PREPARE THE DB FOLDER FOR PROD.
-VIRTUOSOINIPROD=$script_dir/virtuoso.prod.ini
+#VIRTUOSOINIPROD=$script_dir/virtuoso.prod.ini
 
 sed "s|@@DBFOLDER@@|$DBFOLDER|g" <"$VIRTUOSOPRODINITMPL" |
   sed "s|@@DATASETDIR@@|$DATASETDIR|g" |

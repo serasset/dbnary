@@ -25,13 +25,11 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
       case Italics(l) => Language(l, null)
     }
 
-  def languageTemplate: Parser[Language] = template ^^ {
-    case lt => Language("", lt.getName)
-  }
+  def languageTemplate: Parser[Language] = template ^^ (lt => Language("", lt.getName))
 
   def translationAsLink: Parser[String] = internalLink() ^^ {
     // ignore links to external language editions
-    case l => {
+    l => {
       val target = l.getTargetText
       if (target.contains(":")) {
         logger.debug("Ignoring translation link " + target + " in " + currentEntry)

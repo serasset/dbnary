@@ -1,9 +1,7 @@
 package org.getalp.dbnary.wiki;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import org.getalp.dbnary.tools.CharRange;
@@ -23,9 +21,9 @@ import org.getalp.dbnary.wiki.WikiText.WikiContent;
 /**
  * A WikiCharSequence is a special character sequence that transforms a mediawiki code according to
  * a filter function.
- *
+ * <p>
  * Default filter function is ...
- *
+ * <p>
  * Created by serasset on 28/01/16.
  */
 public class WikiCharSequence implements CharSequence, Cloneable {
@@ -45,7 +43,7 @@ public class WikiCharSequence implements CharSequence, Cloneable {
   private final StringBuffer chars;
   private final WikiContent content;
 
-  private final Map<Character, Token> characterTokenMap;
+  private final Map<Integer, Token> characterTokenMap;
 
   private final Function<Token, Action> filter;
 
@@ -53,11 +51,11 @@ public class WikiCharSequence implements CharSequence, Cloneable {
   private final int subSequenceStart;
   private final int subSequenceEnd;
 
-  private char firstAvailableListChar = LISTS_RANGE.getStart();
-  private char firstAvailableTemplateChar = TEMPLATES_RANGE.getStart();
-  private char firstAvailableExternalLinkChar = EXTERNAL_LINKS_RANGE.getStart();
-  private char firstAvailableInternalLinkChar = INTERNAL_LINKS_RANGE.getStart();
-  private char firstAvailableHeaderChar = HEADERS_RANGE.getStart();
+  private int firstAvailableListChar = LISTS_RANGE.getStart();
+  private int firstAvailableTemplateChar = TEMPLATES_RANGE.getStart();
+  private int firstAvailableExternalLinkChar = EXTERNAL_LINKS_RANGE.getStart();
+  private int firstAvailableInternalLinkChar = INTERNAL_LINKS_RANGE.getStart();
+  private int firstAvailableHeaderChar = HEADERS_RANGE.getStart();
 
   // public WikiCharSequence(String source) {
   // this(new WikiText(source));
@@ -84,12 +82,13 @@ public class WikiCharSequence implements CharSequence, Cloneable {
   }
 
   private WikiCharSequence(WikiContent content, StringBuffer chars,
-      Map<Character, Token> characterTokenMap, Function<Token, Action> filter) {
+      Map<Integer, Token> characterTokenMap, Function<Token, Action> filter) {
     this.content = content;
     this.chars = chars;
     this.characterTokenMap = characterTokenMap;
     this.filter = filter;
     fillChars();
+    assert this.chars.length() == currentOffset;
     this.subSequenceEnd = currentOffset;
     this.subSequenceStart = 0;
   }
@@ -123,9 +122,9 @@ public class WikiCharSequence implements CharSequence, Cloneable {
 
 
 
-  private char allocateCharacterFor(Token tok) {
+  private int allocateCharacterFor(Token tok) {
     // Assign a new char to the token
-    char ch;
+    int ch;
     if (tok instanceof Template) {
       ch = firstAvailableTemplateChar++;
       if (ch > TEMPLATES_RANGE.getEnd()) {
@@ -183,10 +182,10 @@ public class WikiCharSequence implements CharSequence, Cloneable {
     if (a instanceof OpenContentClose) {
       Function<Token, List<Token>> contentSelector = ((Content) a).getter;
 
-      char o = allocateCharacterFor(token);
-      fillChars("〔" + o); // LEFT TORTOISE SHELL BRACKET (\u3014)
+      int o = allocateCharacterFor(token);
+      fillChars("〔" + new String(Character.toChars(o))); // LEFT TORTOISE SHELL BRACKET (\u3014)
       fillChars(contentSelector.apply(token));
-      fillChars(o + "〕"); // RIGHT TORTOISE SHELL BRACKET (\u3015)
+      fillChars(new String(Character.toChars(o)) + "〕"); // RIGHT TORTOISE SHELL BRACKET (\u3015)
 
     } else if (a instanceof Content) {
       Function<Token, List<Token>> contentSelector = ((Content) a).getter;
@@ -195,8 +194,8 @@ public class WikiCharSequence implements CharSequence, Cloneable {
       chars.append(token.getFullContent(), token.offset.start, token.offset.end);
       currentOffset += (token.offset.end - token.offset.start);
     } else if (a instanceof Atomize) {
-      char o = allocateCharacterFor(token);
-      fillChars("" + o);
+      int o = allocateCharacterFor(token);
+      fillChars(new String(Character.toChars(o)));
     } else if (a instanceof WikiSequenceFiltering.Void) {
       // Nothing...
     }
@@ -221,6 +220,31 @@ public class WikiCharSequence implements CharSequence, Cloneable {
       throw new IndexOutOfBoundsException(String.format("Index out of bound : %d", index));
     }
     return chars.charAt(realIndex);
+  }
+
+  /**
+   * Returns the character (Unicode code point) at the specified
+   * index. The index refers to {@code char} values
+   * (Unicode code units) and ranges from {@code 0} to
+   * {@link #length()}{@code  - 1}.
+   *
+   * <p> If the {@code char} value specified at the given index
+   * is in the high-surrogate range, the following index is less
+   * than the length of this {@code WikiCharSequence}, and the
+   * {@code char} value at the following index is in the
+   * low-surrogate range, then the supplementary code point
+   * corresponding to this surrogate pair is returned. Otherwise,
+   * the {@code char} value at the given index is returned.
+   *
+   * @param      index the index to the {@code char} values
+   * @return     the code point value of the character at the
+   *             {@code index}
+   * @exception  IndexOutOfBoundsException  if the {@code index}
+   *             argument is negative or not less than the length of this
+   *             string.
+   */
+  public int codePointAt(int index) {
+    return chars.codePointAt(index);
   }
 
   @Override
@@ -257,14 +281,20 @@ public class WikiCharSequence implements CharSequence, Cloneable {
   public String getSourceContent(CharSequence s) {
     StringBuffer res = new StringBuffer();
 
-    for (int i = 0; i < s.length(); i++) {
-      char c = s.charAt(i);
+    s.codePoints().forEach(c -> {
       if (Character.getType(c) == Character.PRIVATE_USE) {
         res.append(this.getToken(c).toString());
       } else {
-        res.append(c);
-      }
-    }
+        res.append(Character.toChars(c));
+      }});
+//    for (int i = 0; i < s.length(); i++) {
+//      char c = s.charAt(i);
+//      if (Character.getType(c) == Character.PRIVATE_USE) {
+//        res.append(this.getToken(c).toString());
+//      } else {
+//        res.append(c);
+//      }
+//    }
     return res.toString();
   }
 
@@ -273,13 +303,13 @@ public class WikiCharSequence implements CharSequence, Cloneable {
   }
 
   public Token getToken(String c) {
-    if (c.length() != 1) {
-      throw new RuntimeException("A token name must be a single character.");
+    if (c.codePointCount(0, c.length()) != 1) {
+      throw new RuntimeException("A token name must be a single (possibly supplementary) character.");
     }
-    return this.getToken(c.charAt(0));
+    return this.getToken(c.codePointAt(0));
   }
 
-  public Token getToken(char c) {
+  public Token getToken(int c) {
     return this.characterTokenMap.get(c);
   }
 

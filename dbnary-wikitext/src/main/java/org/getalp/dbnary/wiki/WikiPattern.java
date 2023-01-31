@@ -73,10 +73,8 @@ public class WikiPattern {
     return Pattern.compile(correctedRegex);
   }
 
-  private static final String reserveWikiPatternWords = "(?<TMPL>\\\\(?<TMATCH>[pP])\\{Template\\})" // \p{Template}
-                                                                                                     // to
-                                                                                                     // match
-                                                                                                     // templates
+  private static final String reserveWikiPatternWords = //
+      "(?<TMPL>\\\\(?<TMATCH>[pP])\\{Template\\})" // \p{Template} to match templates
       + "|(?<RESERVED>\\\\(?<RMATCH>[pP])\\{Reserved\\})" // \p{Reserved} to match reserved
       + "|(?<L>\\\\(?<LMATCH>[pP])\\{Link\\})" // \p{Link} to match a link
       + "|(?<IL>\\\\(?<ILMATCH>[pP])\\{InternalLink\\})" // \p{InternalLink} for internal link

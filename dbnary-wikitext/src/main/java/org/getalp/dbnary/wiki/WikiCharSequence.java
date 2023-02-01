@@ -22,23 +22,30 @@ import org.getalp.dbnary.wiki.WikiText.WikiContent;
  * A WikiCharSequence is a special character sequence that transforms a mediawiki code according to
  * a filter function.
  * <p>
+ * The character sequence will reflect a cut in the wikitext tree. The cut is specified by a
+ * filter function that takes nodes and decide if
+ * <ul>
+ *   <li>the node source is to be added to the sequence</li>
+ *   <li>the node is to be ignored</li>
+ *   <li>the node is to be added as an atomic character (from unicode private use blocks)</li>
+ *   <li>the node is to be added as a sequence beginning/ending with specific open/close
+ *   characters and containing a cut of its descendants forest</li>
+ * </ul>.
+ * </p><p>
  * Default filter function is ...
- * <p>
+ * </p><p>
  * Created by serasset on 28/01/16.
  */
 public class WikiCharSequence implements CharSequence, Cloneable {
 
-  // FIXED: there are already 2 pages in English wiktionary which hits the limits in the number of
-  // allowed templates (number of different private use chars in range. Find a way to overpass this
-  // limit
-  // (using upper plane private chars or using a private char sequence).
-  public static final CharRange LISTS_RANGE = new CharRange('\uE000', '\uE3FF'); // links from
-  // U+E000 - U+E3FF
-  public static final CharRange TEMPLATES_RANGE = new CharRange('\uE400', '\uEBFF'); // templates
-  // from U+E400 - U+E7FF
-  public static final CharRange EXTERNAL_LINKS_RANGE = new CharRange('\uEC00', '\uEFFF');
-  public static final CharRange INTERNAL_LINKS_RANGE = new CharRange('\uF000', '\uF3FF');
-  public static final CharRange HEADERS_RANGE = new CharRange('\uF400', '\uF8FF');
+  // Private use ranges : U+E000..U+F8FF, U+F0000..U+FFFFD and U+100000..U+10FFFD.
+  public static final CharRange LISTS_RANGE = new CharRange(0xF0000, 0xF3FFF);
+  public static final CharRange TEMPLATES_RANGE = new CharRange(0xF4000, 0xF7FFF);
+  // External and internal links should remain contiguous AND in this block order as this property
+  // allows for a better detection of general links
+  public static final CharRange EXTERNAL_LINKS_RANGE = new CharRange(0xF8000, 0xFBFFF);
+  public static final CharRange INTERNAL_LINKS_RANGE = new CharRange(0xFC000, 0xFFFFD);
+  public static final CharRange HEADERS_RANGE = new CharRange('\uE000', '\uF8FF');
 
   private final StringBuffer chars;
   private final WikiContent content;

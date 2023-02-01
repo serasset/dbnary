@@ -39,13 +39,13 @@ import org.getalp.dbnary.wiki.WikiText.WikiContent;
 public class WikiCharSequence implements CharSequence, Cloneable {
 
   // Private use ranges : U+E000..U+F8FF, U+F0000..U+FFFFD and U+100000..U+10FFFD.
-  public static final CharRange LISTS_RANGE = new CharRange(0xF0000, 0xF3FFF);
-  public static final CharRange TEMPLATES_RANGE = new CharRange(0xF4000, 0xF7FFF);
+  public static final CharRange LISTS_RANGE = new CharRange(0xF0000, 0xF2FFF);
+  public static final CharRange TEMPLATES_RANGE = new CharRange(0xF3000, 0xF6FFF);
   // External and internal links should remain contiguous AND in this block order as this property
   // allows for a better detection of general links
-  public static final CharRange EXTERNAL_LINKS_RANGE = new CharRange(0xF8000, 0xFBFFF);
-  public static final CharRange INTERNAL_LINKS_RANGE = new CharRange(0xFC000, 0xFFFFD);
-  public static final CharRange HEADERS_RANGE = new CharRange('\uE000', '\uF8FF');
+  public static final CharRange EXTERNAL_LINKS_RANGE = new CharRange(0xF7000, 0xF9FFF);
+  public static final CharRange INTERNAL_LINKS_RANGE = new CharRange(0xFA000, 0xFCFFF);
+  public static final CharRange HEADERS_RANGE = new CharRange(0xFD000, 0xFFFFD);
 
   private final StringBuffer chars;
   private final WikiContent content;
@@ -217,14 +217,11 @@ public class WikiCharSequence implements CharSequence, Cloneable {
   @Override
   public char charAt(int index) {
     if (0 > index) {
-      throw new IndexOutOfBoundsException(String.format("Index out of bound : %d", index));
+      throw new IndexOutOfBoundsException(index);
     }
     int realIndex = index + subSequenceStart;
     if (realIndex >= subSequenceEnd) {
-      throw new IndexOutOfBoundsException(String.format("Index out of bound : %d", index));
-    }
-    if (subSequenceEnd > 0 && realIndex >= subSequenceEnd) {
-      throw new IndexOutOfBoundsException(String.format("Index out of bound : %d", index));
+      throw new IndexOutOfBoundsException(index);
     }
     return chars.charAt(realIndex);
   }
@@ -251,7 +248,19 @@ public class WikiCharSequence implements CharSequence, Cloneable {
    *             string.
    */
   public int codePointAt(int index) {
-    return chars.codePointAt(index);
+    int start = subSequenceStart + index;
+    if (start >= subSequenceEnd) {
+      throw new IndexOutOfBoundsException(index);
+    }
+    return chars.codePointAt(start);
+  }
+
+  public int codePointCount() {
+    return this.chars.codePointCount(subSequenceStart, subSequenceEnd);
+  }
+
+  public int codePointCount(int beginIndex, int endIndex) {
+    return this.chars.codePointCount(beginIndex, endIndex);
   }
 
   @Override
@@ -261,9 +270,9 @@ public class WikiCharSequence implements CharSequence, Cloneable {
   }
 
   @Override
-  public CharSequence subSequence(int beginIndex, int endIndex) {
+  public WikiCharSequence subSequence(int beginIndex, int endIndex) {
     if (beginIndex < 0) {
-      throw new IndexOutOfBoundsException(String.format("Index out of bound : %d", beginIndex));
+      throw new IndexOutOfBoundsException(beginIndex);
     }
     int subLen = endIndex - beginIndex;
     if (subLen < 0) {
@@ -273,15 +282,15 @@ public class WikiCharSequence implements CharSequence, Cloneable {
     int realStart = beginIndex + subSequenceStart;
     int realEnd = endIndex + subSequenceStart;
     if (realStart > subSequenceEnd) {
-      throw new IndexOutOfBoundsException(String.format("Index out of bound : %d", beginIndex));
+      throw new IndexOutOfBoundsException(beginIndex);
     }
     if (realEnd > subSequenceEnd) {
-      throw new IndexOutOfBoundsException(String.format("Index out of bound : %d", endIndex));
+      throw new IndexOutOfBoundsException(endIndex);
     }
     return new WikiCharSequence(this, realStart, realEnd);
   }
 
-  public CharSequence subSequence(int beginIndex) {
+  public WikiCharSequence subSequence(int beginIndex) {
     return this.subSequence(beginIndex, this.length());
   }
 
@@ -294,14 +303,6 @@ public class WikiCharSequence implements CharSequence, Cloneable {
       } else {
         res.append(Character.toChars(c));
       }});
-//    for (int i = 0; i < s.length(); i++) {
-//      char c = s.charAt(i);
-//      if (Character.getType(c) == Character.PRIVATE_USE) {
-//        res.append(this.getToken(c).toString());
-//      } else {
-//        res.append(c);
-//      }
-//    }
     return res.toString();
   }
 

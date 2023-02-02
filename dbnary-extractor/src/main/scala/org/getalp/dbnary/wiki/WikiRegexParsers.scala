@@ -135,7 +135,7 @@ trait WikiRegexParsers extends RegexParsers {
     val start: Int = handleWhiteSpace(source, offset)
     r findPrefixMatchOf source.subSequence(start) match {
       case Some(matched) =>
-        Success(source.subSequence(start, start + matched.end).toString,
+        Success(source.getSourceContent(source.subSequence(start, start + matched.end).toString),
           in.drop(start + matched.end - offset))
       case None =>
         val found = if (start == source.length()) "end of source" else "`" + strFromCodePoint(source.codePointAt(start)) + "'"

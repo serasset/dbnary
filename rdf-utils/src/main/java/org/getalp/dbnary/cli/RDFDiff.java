@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.io.FileUtils;
@@ -75,6 +76,10 @@ public class RDFDiff extends VerboseCommand {
     String outFile = null;
     if (remainingArgs.length == 3)
       outFile = remainingArgs[2];
+    diff(fromFile, toFile, outFile, this.verbose);
+  }
+
+  public void diff(String fromFile, String toFile, String outFile, boolean verbose) throws FileNotFoundException {
     Model fromModel;
     Model toModel;
     Model diffModel;
@@ -83,7 +88,7 @@ public class RDFDiff extends VerboseCommand {
     Dataset diffDataset = null;
     boolean useTDB = false;
 
-    if (remainingArgs[0].endsWith(".tdb")) {
+    if (fromFile.endsWith(".tdb")) {
       // read the RDF/XML files
       if (verbose)
         System.err.println("Handling first model from TDB database: " + fromFile);
@@ -103,7 +108,7 @@ public class RDFDiff extends VerboseCommand {
       }
     }
 
-    if (remainingArgs[1].endsWith(".tdb")) {
+    if (toFile.endsWith(".tdb")) {
       // read the RDF/XML files
       if (verbose)
         System.err.println("Handling second model from TDB database: " + toFile);
@@ -210,19 +215,9 @@ public class RDFDiff extends VerboseCommand {
         nbtriple++;
         if (s.isBlank()) {
           nbBlank++;
-          ExtendedIterator<Triple> it = m.getGraph().find(s, Node.ANY, Node.ANY);
-          SortedSet<String> signature = new TreeSet<>();
-          while (it.hasNext()) {
-            Triple t = it.next();
-            signature.add(t.getPredicate().toString() + "+" + t.getObject().toString());
+          if (null == anodes2id.get(s.getBlankNodeLabel())) {
+            createAndAddNodeSignature(m, s);
           }
-          StringBuilder b = new StringBuilder();
-          for (String r : signature) {
-            b.append(r).append("|");
-          }
-          String key = b.toString();
-          assert anodes2id.get(s.getBlankNodeLabel()) == null;
-          anodes2id.put(s.getBlankNodeLabel(), key);
         }
         if (verbose && nbtriple % 1000 == 0) {
           System.err.print("Indexed " + nbBlank + " blank nodes /" + nbtriple + "\r");
@@ -237,32 +232,67 @@ public class RDFDiff extends VerboseCommand {
     }
   }
 
+  private String createAndAddNodeSignature(Model m, Node s) {
+    assert anodes2id.get(s.getBlankNodeLabel()) == null;
+    // Mark the node as currently processed
+    anodes2id.put(s.getBlankNodeLabel(), "");
+
+    // Create the signature (using recursive signature creation for further blank nodes
+    ExtendedIterator<Triple> it = m.getGraph().find(s, Node.ANY, Node.ANY);
+    SortedSet<String> signature = new TreeSet<>();
+    while (it.hasNext()) {
+      Triple t = it.next();
+      Node o = t.getObject();
+      if (o.isBlank()) {
+        String bkey = anodes2id.get(o.getBlankNodeLabel());
+        if (null == bkey) {
+          bkey = createAndAddNodeSignature(m, o);
+        }
+        signature.add("[" + bkey + "]");
+      } else {
+        signature.add(t.getPredicate().toString() + "+" + o.toString());
+      }
+    }
+    //StringBuilder b = new StringBuilder();
+    //for (String r : signature) {
+    //  b.append(r).append("|");
+    //}    anodes2id.put(s.getBlankNodeLabel(), key);
+    String key = String.join("|", signature);
+    anodes2id.put(s.getBlankNodeLabel(), key);
+    return key;
+  }
+
   private Model difference(Model from, Model to, Model diff) {
     ExtendedIterator<Triple> iter = null;
-    Triple triple;
     int nbprocessed = 0;
     int nbdiffs = 0;
     try {
       iter = GraphUtil.findAll(from.getGraph());
       while (iter.hasNext()) {
-        triple = iter.next();
+        final Triple triple = iter.next();
         nbprocessed++;
         if (triple.getSubject().isBlank() && triple.getObject().isBlank()) {
-          // We assume this is not the case.
+          // If both subject and objects are blanks then the subject signature already contains
+          // the object signature. Just check if a bound subject exists in target graph
+          ExtendedIterator<Node> it = null;
+          try {
+            it = GraphUtil.listSubjects(to.getGraph(), triple.getPredicate(), Node.ANY);
+            it = it.filterKeep(n -> bound(triple.getSubject(), n));
+            if (! it.hasNext()) {
+              diff.getGraph().add(triple);
+              nbdiffs++;
+            }
+          } finally {
+            if (null != it) {
+              it.close();
+            }
+          }
         } else if (triple.getSubject().isBlank()) {
           ExtendedIterator<Node> it = null;
           try {
             it = GraphUtil.listSubjects(to.getGraph(), triple.getPredicate(), triple.getObject());
-            if (it.hasNext()) {
-              Node ec = it.next();
-              while (it.hasNext() && !bound(triple.getSubject(), ec)) {
-                ec = it.next();
-              }
-              if (!bound(triple.getSubject(), ec)) {
-                diff.getGraph().add(triple);
-                nbdiffs++;
-              }
-            } else {
+            it = it.filterKeep(n -> bound(triple.getSubject(), n));
+            if (! it.hasNext()) {
               diff.getGraph().add(triple);
               nbdiffs++;
             }
@@ -276,16 +306,8 @@ public class RDFDiff extends VerboseCommand {
           ExtendedIterator<Node> it = null;
           try {
             it = GraphUtil.listObjects(to.getGraph(), triple.getSubject(), triple.getPredicate());
-            if (it.hasNext()) {
-              Node ec = it.next();
-              while (it.hasNext() && !bound(triple.getObject(), ec)) {
-                ec = it.next();
-              }
-              if (!bound(triple.getObject(), ec)) {
-                diff.getGraph().add(triple);
-                nbdiffs++;
-              }
-            } else {
+            it = it.filterKeep(n -> bound(triple.getObject(), n));
+            if (! it.hasNext()) {
               diff.getGraph().add(triple);
               nbdiffs++;
             }

@@ -1,0 +1,40 @@
+@prefix dbetym:   <http://etytree-virtuoso.wmflabs.org/dbnaryetymology#> .
+@prefix dbnary:   <http://kaiko.getalp.org/dbnary#> .
+@prefix dbstats:  <http://kaiko.getalp.org/dbnary/statistics/> .
+@prefix dcterms:  <http://purl.org/dc/terms/> .
+@prefix decomp:   <http://www.w3.org/2002/07/owl#> .
+@prefix fra:      <http://kaiko.getalp.org/dbnary/fra/> .
+@prefix lexinfo:  <http://www.lexinfo.net/ontology/2.0/lexinfo#> .
+@prefix lexvo:    <http://lexvo.org/id/iso639-3/> .
+@prefix lime:     <http://www.w3.org/ns/lemon/lime#> .
+@prefix olia:     <http://purl.org/olia/olia.owl#> .
+@prefix ontolex:  <http://www.w3.org/ns/lemon/ontolex#> .
+@prefix qb:       <http://purl.org/linked-data/cube#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:     <http://www.w3.org/2004/02/skos/core#> .
+@prefix synsem:   <http://www.w3.org/ns/lemon/synsem#> .
+@prefix vartrans: <http://www.w3.org/ns/lemon/vartrans#> .
+@prefix wikt:     <https://fr.wiktionary.org/wiki/> .
+@prefix xs:       <http://www.w3.org/2001/XMLSchema#> .
+
+fra:mûre__nom__1  rdf:type     ontolex:Word , ontolex:LexicalEntry ;
+  rdfs:label             "mûre"@fr ;
+  dbnary:partOfSpeech    "-nom-" ;
+  dcterms:language       lexvo:fra ;
+  lexinfo:partOfSpeech   lexinfo:noun ;
+  lime:language          "fr" ;
+  ontolex:canonicalForm  fra:__cf_mûre__nom__1 ;
+  ontolex:sense          fra:__ws_1_mûre__nom__1 , fra:__ws_2_mûre__nom__1 , fra:__ws_3_mûre__nom__1 ;
+  vartrans:lexicalRel    [ rdf:type               ontolex:LexicalEntry ;
+                             ontolex:canonicalForm  [ ontolex:writtenRep
+                                                          "mure"@fr ]
+                         ] ;
+  vartrans:lexicalRel    [ rdf:type               ontolex:LexicalEntry ;
+                             ontolex:canonicalForm  [ ontolex:writtenRep
+                                                          "meure (variante désuète)"@fr ]
+                         ] ;
+  vartrans:lexicalRel    [ rdf:type               ontolex:LexicalEntry ;
+                             ontolex:canonicalForm  [ ontolex:writtenRep
+                                                          "mure"@fr ]
+                         ] .

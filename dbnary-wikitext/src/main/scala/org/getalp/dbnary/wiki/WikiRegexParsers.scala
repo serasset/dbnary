@@ -143,5 +143,22 @@ trait WikiRegexParsers extends RegexParsers {
     }
   }
 
+  /** A parser that matches a regex and return the matched WikiCharSequence (should be implicit ?)*/
+  def gwikiCharSequenceMatching(r: Regex): Parser[WikiCharSequence]
+  = (in: Input) => {
+    val source = in.source.asInstanceOf[WikiCharSequence]
+    val offset = in.offset
+    val start: Int = handleWhiteSpace(source, offset)
+    r findPrefixMatchOf source.subSequence(start) match {
+      case Some(matched) =>
+        Success(source.subSequence(start, start + matched.end),
+          in.drop(start + matched.end - offset))
+      case None =>
+        val found = if (start == source.length()) "end of source" else "`" + strFromCodePoint(source.codePointAt(start)) + "'"
+        Failure("string matching regex `" + r + "' expected but " + source.getSourceContent(found) + " found", in.drop(start - offset))
+    }
+  }
+
+  /** TODO: A parser that matches a regex and returns a WikiContent */
 
 }

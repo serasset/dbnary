@@ -52,5 +52,18 @@
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+    </dependency>
+    <!-- taken from: http://github.com/scala/scala-module-dependency-sample -->
+    <dependency>
+      <groupId>org.scala-lang.modules</groupId>
+      <artifactId>scala-parser-combinators_${scalaBinaryVersion}</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.typesafe.scala-logging</groupId>
+      <artifactId>scala-logging_${scalaBinaryVersion}</artifactId>
+    </dependency>
   </dependencies>
 </project>

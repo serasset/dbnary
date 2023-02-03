@@ -7,6 +7,8 @@ import org.getalp.dbnary.wiki.{WikiCharSequence, WikiRegexParsers, WikiText}
 import org.getalp.dbnary.api.IWiktionaryDataHandler
 import org.getalp.dbnary.languages.AbstractGlossFilter
 
+import scala.util.matching.Regex
+
 class TranslationLineParser(page: String) extends WikiRegexParsers {
 
   private val pagename = page
@@ -15,8 +17,8 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
   private var currentEntry: String = null
   private var source: WikiCharSequence = null
 
-  val SenseNumber = """\[?((?:\s*\d+\s*[.,-]?)+)\]?""".r
-  val Italics = """'''([ _\p{L}]+)'''""".r
+  val SenseNumber: Regex = """\[?((?:\s*\d+\s*[.,-]?)+)\]?""".r
+  val Italics: Regex = """'''([ _\p{L}]+)'''""".r
 
   def languageName: Parser[Language] =
     """[ _\p{L}]+""".r ^^ {
@@ -61,7 +63,7 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
   }
 
 
-  def usageValue: Parser[String] = rep1(italics | parens | """[^\(,;*#\n]+""".r) ^^ {
+  def usageValue: Parser[String] = rep1(italics | parens | """[^(,;*#\n]+""".r) ^^ {
     case list => source.getSourceContent(list filter {
       _.nonEmpty
     } mkString (" "))

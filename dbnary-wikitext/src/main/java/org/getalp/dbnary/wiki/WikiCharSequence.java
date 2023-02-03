@@ -327,4 +327,9 @@ public class WikiCharSequence implements CharSequence, Cloneable {
     String str = mutator.apply(this.toString());
     return new WikiCharSequence(this, str);
   }
+
+  // TODO: convert back to content ? Is this possible ?
+  public WikiContent toCentent() {
+    throw new UnsupportedOperationException("Operation not yet implemented");
+  }
 }

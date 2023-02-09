@@ -94,6 +94,7 @@ prod_ini=virtuoso.ini.prod.tmpl
 [[ -f $DBNARY_USER_CONFIG_DIR/config ]] && source $DBNARY_USER_CONFIG_DIR/config
 
 DBNARYLATEST=${DBNARYLATEST:-${DBNARY_ONTOLEX}/latest}
+DBFOLDER=${VIRTUOSODBLOCATION}/db
 
 [[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL="$DBNARY_USER_CONFIG_DIR/$bootstrap_ini"
 [[ -f $VIRTUOSOINITMPL ]] || VIRTUOSOINITMPL="$script_dir/$bootstrap_ini"
@@ -471,7 +472,8 @@ END
 ## PREPARE THE DB FOLDER FOR PROD.
 #VIRTUOSOINIPROD=$script_dir/virtuoso.prod.ini
 
-sed "s|@@DATASETDIR@@|$DATASETDIR|g" <"$VIRTUOSOPRODINITMPL" |
+sed "s|@@DBFOLDER@@|$DBFOLDER|g" <"$VIRTUOSOPRODINITMPL" |
+  sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
   sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
   sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |
   sed "s|@@VAD_INSTALL_DIR@@|$VAD_INSTALL_DIR|g" |

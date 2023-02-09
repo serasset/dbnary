@@ -1,5 +1,3 @@
-
-
 # This template will build and test your projects
 # * Caches downloaded dependencies and plugins between invocation.
 # * Verify but don't deploy merge requests.

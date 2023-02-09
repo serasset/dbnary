@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.io.FileUtils;
@@ -79,7 +78,8 @@ public class RDFDiff extends VerboseCommand {
     diff(fromFile, toFile, outFile, this.verbose);
   }
 
-  public void diff(String fromFile, String toFile, String outFile, boolean verbose) throws FileNotFoundException {
+  public void diff(String fromFile, String toFile, String outFile, boolean verbose)
+      throws FileNotFoundException {
     Model fromModel;
     Model toModel;
     Model diffModel;
@@ -250,13 +250,13 @@ public class RDFDiff extends VerboseCommand {
         }
         signature.add("[" + bkey + "]");
       } else {
-        signature.add(t.getPredicate().toString() + "+" + o.toString());
+        signature.add(t.getPredicate().toString() + "+" + o);
       }
     }
-    //StringBuilder b = new StringBuilder();
-    //for (String r : signature) {
-    //  b.append(r).append("|");
-    //}    anodes2id.put(s.getBlankNodeLabel(), key);
+    // StringBuilder b = new StringBuilder();
+    // for (String r : signature) {
+    // b.append(r).append("|");
+    // } anodes2id.put(s.getBlankNodeLabel(), key);
     String key = String.join("|", signature);
     anodes2id.put(s.getBlankNodeLabel(), key);
     return key;
@@ -278,7 +278,7 @@ public class RDFDiff extends VerboseCommand {
           try {
             it = GraphUtil.listSubjects(to.getGraph(), triple.getPredicate(), Node.ANY);
             it = it.filterKeep(n -> bound(triple.getSubject(), n));
-            if (! it.hasNext()) {
+            if (!it.hasNext()) {
               diff.getGraph().add(triple);
               nbdiffs++;
             }
@@ -292,7 +292,7 @@ public class RDFDiff extends VerboseCommand {
           try {
             it = GraphUtil.listSubjects(to.getGraph(), triple.getPredicate(), triple.getObject());
             it = it.filterKeep(n -> bound(triple.getSubject(), n));
-            if (! it.hasNext()) {
+            if (!it.hasNext()) {
               diff.getGraph().add(triple);
               nbdiffs++;
             }
@@ -307,7 +307,7 @@ public class RDFDiff extends VerboseCommand {
           try {
             it = GraphUtil.listObjects(to.getGraph(), triple.getSubject(), triple.getPredicate());
             it = it.filterKeep(n -> bound(triple.getObject(), n));
-            if (! it.hasNext()) {
+            if (!it.hasNext()) {
               diff.getGraph().add(triple);
               nbdiffs++;
             }

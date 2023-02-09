@@ -21,11 +21,11 @@
 ;  Database setup
 ;
 [Database]
-DatabaseFile       = @@DBFOLDER@@/virtuoso.db
-ErrorLogFile       = @@DBFOLDER@@/virtuoso.log
-LockFile           = @@DBFOLDER@@/virtuoso.lck
-TransactionFile    = @@DBFOLDER@@/virtuoso.trx
-xa_persistent_file = @@DBFOLDER@@/virtuoso.pxa
+DatabaseFile       = virtuoso.db
+ErrorLogFile       = virtuoso.log
+LockFile           = virtuoso.lck
+TransactionFile    = virtuoso.trx
+xa_persistent_file = virtuoso.pxa
 ErrorLogLevel      = 7
 FileExtend         = 200
 MaxCheckpointRemap = 680000
@@ -33,8 +33,8 @@ Striping           = 0
 TempStorage        = TempDatabase
 
 [TempDatabase]
-DatabaseFile       = @@DBFOLDER@@/virtuoso-temp.db
-TransactionFile    = @@DBFOLDER@@/virtuoso-temp.trx
+DatabaseFile       = virtuoso-temp.db
+TransactionFile    = virtuoso-temp.trx
 MaxCheckpointRemap = 2000
 Striping           = 0
 

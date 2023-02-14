@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.Map;
 import jakarta.xml.bind.DatatypeConverter;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.ReifiedStatement;
@@ -22,6 +25,7 @@ import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OliaOnt;
+import org.getalp.dbnary.commons.HierarchicalSenseNumber;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.PronunciationPair;
@@ -29,6 +33,7 @@ import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.SkosOnt;
 import org.getalp.dbnary.model.NymRelation;
 import org.getalp.iso639.ISO639_3;
+import org.getalp.model.ontolex.LexicalForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,6 +129,29 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     currentEtymologyEntry = null;
     currentGlobalEtymologyEntry = createGlobalEtymologyResource(currentPage.getName(), lang);
     super.initializeLanguageSection(lang);
+  }
+
+  private static final String spacePunctsRegex = "[\\s\\p{Punct}]+";
+  private static final String wordPunct = "-־׳״'.·*’་•:";
+  private static final String NonWordPunctRegex = "[^" + wordPunct + "]";
+  private static final Pattern spacePuncts = Pattern.compile(spacePunctsRegex);
+  private static final Pattern nonWordPunct = Pattern.compile(NonWordPunctRegex);
+
+  @Override
+  public void initializeLexicalEntry(String pos) {
+    super.initializeLexicalEntry(pos);
+
+    // Compute if the entry is a phrase or a word.
+    Matcher sp = spacePuncts.matcher(currentPage.getName().trim());
+    while (sp.find()) {
+      Matcher nwp = nonWordPunct.matcher(sp.group());
+      if (nwp.find()) {
+        currentLexicalEntry.addResourceType(OntolexOnt.MultiWordExpression);
+        aBox.add(aBox.createStatement(currentLexEntry, RDF.type, OntolexOnt.MultiWordExpression));
+        return;
+      }
+    }
+    aBox.add(aBox.createStatement(currentLexEntry, RDF.type, OntolexOnt.Word));
   }
 
   private Resource createGlobalEtymologyResource(String wiktionaryPageName, String lang) {

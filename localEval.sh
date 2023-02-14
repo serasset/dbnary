@@ -25,6 +25,7 @@ while getopts ":o:vVLD" opt; do
     ;;
   \?)
     echo "Invalid option: -$OPTARG" >&2
+    exit 0
     ;;
   :)
     echo "Option -$OPTARG requires an argument." >&2

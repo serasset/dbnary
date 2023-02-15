@@ -1,41 +1,44 @@
-@prefix dc:       <http://purl.org/dc/elements/1.1/> .
-@prefix ns:       <http://creativecommons.org/ns#> .
-@prefix qb:       <http://purl.org/linked-data/cube#> .
-@prefix owl:      <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml:      <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
-@prefix foaf:     <http://xmlns.com/foaf/0.1/> .
-@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix skos:     <http://www.w3.org/2004/02/skos/core#> .
-@prefix vann:     <http://purl.org/vocab/vann/> .
-@prefix void:     <http://rdfs.org/ns/void#> .
-@prefix dbnary:   <http://kaiko.getalp.org/dbnary#> .
-@prefix dbcubes:   <http://kaiko.getalp.org/dbnary/statistics/> .
-@prefix dcterms:  <http://purl.org/dc/terms/> .
-@prefix ontolex:  <http://www.w3.org/ns/lemon/ontolex#> .
-@prefix vartrans: <http://www.w3.org/ns/lemon/vartrans#> .
+@prefix : <http://kaiko.getalp.org/dbnary#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix ns: <http://creativecommons.org/ns#> .
+@prefix qb: <http://purl.org/linked-data/cube#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix lime: <http://www.w3.org/ns/lemon/lime#> .
-@base             <http://kaiko.getalp.org/dbnary> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix dbnary: <http://kaiko.getalp.org/dbnary#> .
+@prefix dbcubes: <http://kaiko.getalp.org/dbnary/statistics/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ontolex: <http://www.w3.org/ns/lemon/ontolex#> .
+@prefix vartrans: <http://www.w3.org/ns/lemon/vartrans#> .
+@base <http://kaiko.getalp.org/dbnary> .
 
-<http://kaiko.getalp.org/dbnary>
-    rdf:type                      owl:Ontology ;
-    owl:versionIRI                <http://kaiko.getalp.org/dbnary/2.1.1> ;
-    owl:versionInfo               "2.1.1" ;
-    owl:priorVersion              <http://kaiko.getalp.org/dbnary/2.1.0> ;
-    owl:imports                   <http://purl.org/linked-data/cube>, rdf:,
-                                  <http://www.w3.org/ns/lemon/ontolex> ;
-    dcterms:license               <http://creativecommons.org/licenses/by-sa/4.0/> ;
-    rdfs:comment
-                                  "DBnary: A lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the ontolex model (http://www.w3.org/ns/lemon/ontolex)."@en ;
-    rdfs:label                    "DBnary" ;
-    rdfs:seeAlso                  "http://kaiko.getalp.org/about-dbnary/" ;
-    vann:preferredNamespaceUri    "http://kaiko.getalp.org/dbnary" ;
-    vann:preferredNamespacePrefix "dbnary" ;
-    dcterms:title                 "The DBnary Ontolex Extension Data Model" ;
-    dcterms:abstract
-                                  "The DBnary dataset gives access to many lexical data currently contained implicitely in several editions of Wiktionary.\n The data model used is Ontolex, with very few extensions used to encode specific information. We also uses the DataCube Ontology to provide some statistivs concerning the extraction and enhancement process on each version of Wiktionary.\n This Ontology describes these extensions." ;
-    dcterms:creator               <http://serasset.bitbucket.io/> .
+<http://kaiko.getalp.org/dbnary> rdf:type owl:Ontology ;
+                                  owl:versionIRI <http://kaiko.getalp.org/dbnary/2.1.2> ;
+                                  owl:imports rdf: ,
+                                              <http://www.w3.org/ns/lemon/ontolex> ;
+                                  dcterms:abstract """The DBnary dataset gives access to many lexical data currently contained implicitely in several editions of Wiktionary.
+ The data model used is Ontolex, with very few extensions used to encode specific information. We also uses the DataCube Ontology to provide some statistivs concerning the extraction and enhancement process on each version of Wiktionary.
+ This Ontology describes these extensions.""" ;
+                                  dcterms:creator <http://serasset.bitbucket.io/> ;
+                                  dcterms:license <http://creativecommons.org/licenses/by-sa/4.0/> ;
+                                  dcterms:title "The DBnary Ontolex Extension Data Model" ;
+                                  vann:preferredNamespacePrefix "dbnary" ;
+                                  vann:preferredNamespaceUri "http://kaiko.getalp.org/dbnary" ;
+                                  rdfs:comment "DBnary: A lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the ontolex model (http://www.w3.org/ns/lemon/ontolex)."@en ;
+                                  rdfs:label "DBnary" ;
+                                  rdfs:seeAlso "http://kaiko.getalp.org/about-dbnary/" ;
+                                  owl:priorVersion <http://kaiko.getalp.org/dbnary/2.1.1> ;
+                                  owl:versionInfo "2.1.2" .
+
+
+
 
 #################################################################
 #    Object Properties
@@ -48,7 +51,7 @@ dbnary:describes
     rdf:type     owl:ObjectProperty ;
     rdfs:domain  dbnary:Page ;
     rdfs:range   ontolex:LexicalEntry ;
-    rdfs:comment "links a vocable to any lexical entry that share the same written form. "@en .
+    rdfs:comment "links a Page to any lexical entry that share the same written form. "@en .
 
 
 dbnary:partOfSpeech
@@ -95,7 +98,7 @@ dbnary:Translation
 
 dbnary:gloss
     rdf:type    owl:ObjectProperty ;
-    rdfs:domain [ rdf:type    owl:Class ;
+               rdfs:domain [ rdf:type owl:Class ;
                   owl:unionOf ( rdf:Statement
                                 dbnary:Translation ) ] ;
     rdfs:range  dbnary:Gloss ;
@@ -106,9 +109,9 @@ dbnary:gloss
 dbnary:isTranslationOf
     rdf:type     owl:ObjectProperty ;
     rdfs:domain  dbnary:Translation ;
-    rdfs:range   [ rdf:type    owl:Class ;
-                   owl:unionOf ( dbnary:Page
-                                 ontolex:LexicalEntry
+               rdfs:range [ rdf:type owl:Class ;
+                            owl:unionOf ( dbnary:Page
+                                          ontolex:LexicalEntry
                                  ontolex:LexicalSense ) ] ;
     rdfs:comment "links the translation information to the Lexical Entity it belongs to."@en .
 
@@ -148,13 +151,15 @@ dbnary:writtenForm
 
 dbnary:antonym
     a dbnary:NymProperty, owl:ObjectProperty ;
-    rdfs:domain     [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
-                                    ontolex:LexicalSense ) ] ;
-    rdfs:range      [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
+                          rdfs:domain [ rdf:type owl:Class ;
+                                        owl:unionOf ( dbnary:Page
+                                                      ontolex:LexicalEntry
+                                                      ontolex:LexicalSense
+                                                    )
+                                      ] ;
+                          rdfs:range [ rdf:type owl:Class ;
+                                       owl:unionOf ( dbnary:Page
+                                                     ontolex:LexicalEntry
                                     ontolex:LexicalSense ) ] ;
     rdfs:comment
       "An underspecified antonymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
@@ -162,27 +167,33 @@ dbnary:antonym
 
 dbnary:approximateSynonym
     a dbnary:NymProperty, owl:ObjectProperty ;
-    rdfs:domain     [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
-                                    ontolex:LexicalSense ) ] ;
-    rdfs:range      [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
-                                    ontolex:LexicalSense ) ] ;
+                   rdfs:domain [ rdf:type owl:Class ;
+                                 owl:unionOf ( dbnary:Page
+                                               ontolex:LexicalEntry
+                                               ontolex:LexicalSense
+                                             )
+                               ] ;
+                   rdfs:range [ rdf:type owl:Class ;
+                                owl:unionOf ( dbnary:Page
+                                              ontolex:LexicalEntry
+                                              ontolex:LexicalSense
+                                            )
+                              ] ;
     rdfs:comment
       "An underspecified approximate synonymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
 
 
 dbnary:holonym
     a dbnary:NymProperty, owl:ObjectProperty ;
-    rdfs:domain     [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
-                                    ontolex:LexicalSense ) ] ;
-    rdfs:range      [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
+               rdfs:domain [ rdf:type owl:Class ;
+                             owl:unionOf ( dbnary:Page
+                                           ontolex:LexicalEntry
+                                           ontolex:LexicalSense
+                                         )
+                           ] ;
+               rdfs:range [ rdf:type owl:Class ;
+                            owl:unionOf ( dbnary:Page
+                                          ontolex:LexicalEntry
                                     ontolex:LexicalSense ) ] ;
     rdfs:comment
       "An underspecified holonymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
@@ -190,13 +201,15 @@ dbnary:holonym
 
 dbnary:hypernym
     a dbnary:NymProperty, owl:ObjectProperty ;
-    rdfs:domain     [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
-                                    ontolex:LexicalSense ) ] ;
-    rdfs:range      [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
+                rdfs:domain [ rdf:type owl:Class ;
+                              owl:unionOf ( dbnary:Page
+                                            ontolex:LexicalEntry
+                                            ontolex:LexicalSense
+                                          )
+                            ] ;
+                rdfs:range [ rdf:type owl:Class ;
+                             owl:unionOf ( dbnary:Page
+                                           ontolex:LexicalEntry
                                     ontolex:LexicalSense ) ] ;
     rdfs:comment
       "An underspecified hypernymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
@@ -204,13 +217,15 @@ dbnary:hypernym
 
 dbnary:hyponym
     a dbnary:NymProperty, owl:ObjectProperty ;
-    rdfs:domain     [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
-                                    ontolex:LexicalSense ) ] ;
-    rdfs:range      [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
+               rdfs:domain [ rdf:type owl:Class ;
+                             owl:unionOf ( dbnary:Page
+                                           ontolex:LexicalEntry
+                                           ontolex:LexicalSense
+                                         )
+                           ] ;
+               rdfs:range [ rdf:type owl:Class ;
+                            owl:unionOf ( dbnary:Page
+                                          ontolex:LexicalEntry
                                     ontolex:LexicalSense ) ] ;
     rdfs:comment
       "An underspecified hyponymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
@@ -218,13 +233,15 @@ dbnary:hyponym
 
 dbnary:meronym
     a dbnary:NymProperty, owl:ObjectProperty ;
-    rdfs:domain     [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
-                                    ontolex:LexicalSense ) ] ;
-    rdfs:range      [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
+               rdfs:domain [ rdf:type owl:Class ;
+                             owl:unionOf ( dbnary:Page
+                                           ontolex:LexicalEntry
+                                           ontolex:LexicalSense
+                                         )
+                           ] ;
+               rdfs:range [ rdf:type owl:Class ;
+                            owl:unionOf ( dbnary:Page
+                                          ontolex:LexicalEntry
                                     ontolex:LexicalSense ) ] ;
     rdfs:comment
       "An underspecified meronymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
@@ -232,13 +249,15 @@ dbnary:meronym
 
 dbnary:synonym
     a dbnary:NymProperty, owl:ObjectProperty ;
-    rdfs:domain     [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
-                                    ontolex:LexicalSense ) ] ;
-    rdfs:range      [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
+               rdfs:domain [ rdf:type owl:Class ;
+                             owl:unionOf ( dbnary:Page
+                                           ontolex:LexicalEntry
+                                           ontolex:LexicalSense
+                                         )
+                           ] ;
+               rdfs:range [ rdf:type owl:Class ;
+                            owl:unionOf ( dbnary:Page
+                                          ontolex:LexicalEntry
                                     ontolex:LexicalSense ) ] ;
     rdfs:comment
       "An underspecified synonymy relation between LexicalEntities (Lexical entries or Lexical Senses). This relation is used to encode an information available in a lexicon when the linked Lexical Senses are not known. When both source and target of the relation are Lexical Senses, one should use the corresponding LEMON relation. "@en .
@@ -251,16 +270,34 @@ dbnary:NymProperty
 
 dbnary:troponym
     a dbnary:NymProperty, owl:ObjectProperty ;
-    rdfs:domain     [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
-                                    ontolex:LexicalSense ) ] ;
-    rdfs:range      [ rdf:type    owl:Class ;
-                      owl:unionOf ( dbnary:Page
-                                    ontolex:LexicalEntry
-                                    ontolex:LexicalSense ) ] ;
+                rdfs:domain [ rdf:type owl:Class ;
+                              owl:unionOf ( dbnary:Page
+                                            ontolex:LexicalEntry
+                                            ontolex:LexicalSense
+                                          )
+                            ] ;
+                rdfs:range [ rdf:type owl:Class ;
+                             owl:unionOf ( dbnary:Page
+                                           ontolex:LexicalEntry
+                                           ontolex:LexicalSense ) ] ;
     rdfs:comment
       "A verb that indicates more precisely the manner of doing something by replacing a verb of a more generalized meaning. E.g.: \"Stroll\" is a troponym of \"walk\", since it involves a slow and relaxed sort of walking."@en .
+
+dbnary:derivedFrom rdf:type owl:ObjectProperty ,
+                              owl:TransitiveProperty ;
+  rdfs:domain [ rdf:type owl:Class ;
+                  owl:unionOf ( dbnary:Page
+                                ontolex:LexicalEntry
+                                ontolex:LexicalSense
+                              )
+              ] ;
+  rdfs:range [ rdf:type owl:Class ;
+                 owl:unionOf ( dbnary:Page
+                               ontolex:LexicalEntry
+                               ontolex:LexicalSense
+                             )
+             ] ;
+  rdfs:comment "This transitive relation states that a Page, Lexical Entry or Lexical Sense derives from another Page or Lexical Entry or Lexical Sense."@en .
 
 ## LIME (Metamodel description)
 ##-----------------------------
@@ -396,13 +433,13 @@ dbnary:wiktionaryDumpVersion
     rdfs:label "Wiktionary Dump Version"@en ;
     rdfs:comment
                "version number of the wiktionary dump from which the lexical data is extracted."@en ;
-    rdfs:range xsd:string .
+                         rdfs:range xsd:string .
 
 dbnary:translationsWithNoGloss
     rdf:type     owl:DatatypeProperty, qb:MeasureProperty ;
     rdfs:label   "Translations with no gloss"@en ;
     rdfs:comment "count of the number of translation that is not associated to a gloss."@en ;
-    rdfs:range   xsd:int .
+                         rdfs:range xsd:int .
 
 dbnary:translationsWithSenseNumberAndTextualGloss
     rdf:type   owl:DatatypeProperty, qb:MeasureProperty ;
@@ -423,20 +460,20 @@ dbnary:translationsWithTextualGloss
     rdfs:label "Translations with a textual gloss but no sense number"@en ;
     rdfs:comment
                "count of the number of translations that are associated with a gloss containing only a textual description."@en ;
-    rdfs:range xsd:int .
+                         rdfs:range xsd:int .
 
 dbnary:enhancementMethod
     rdf:type     owl:DatatypeProperty, qb:DimensionProperty ;
     rdfs:label   "Name of the enhancement method"@en ;
     rdfs:comment "Name of the enhancement method for wich the confidence measures are given."@en ;
-    rdfs:range   xsd:string .
+                           rdfs:range xsd:string .
 
 
 dbnary:f1Measure
     rdf:type     owl:DatatypeProperty, qb:MeasureProperty ;
     rdfs:label   "F1 Measure"@en ;
     rdfs:comment "The F1 confidence value as calculated by (2xPrecxRecall)/(Prec+Recall)"@en ;
-    rdfs:range   xsd:double .
+                        rdfs:range xsd:double .
 
 
 dbnary:precisionMeasure
@@ -450,44 +487,44 @@ dbnary:recallMeasure
     rdf:type     owl:DatatypeProperty, qb:MeasureProperty ;
     rdfs:label   "Recall"@en ;
     rdfs:comment "The fraction of relevant instances that were actually retrieved"@en ;
-    rdfs:range   xsd:double .
+                     rdfs:range xsd:double .
 
 dbnary:lexicalEntryCount
     rdf:type     owl:DatatypeProperty, qb:MeasureProperty ;
     rdfs:label   "count of Lexical Entries"@en ;
     rdfs:comment "count of ontolex Lexical Entries contained in a specific extract."@en ;
-    rdfs:range   xsd:int .
+                         rdfs:range xsd:int .
 
 dbnary:lexicalSenseCount
     rdf:type     owl:DatatypeProperty, qb:MeasureProperty ;
     rdfs:label   "count of Lexical Senses"@en ;
     rdfs:comment "count of ontolex Lexical Senses contained in a specific extract."@en ;
-    rdfs:range   xsd:int .
+                               rdfs:range xsd:int .
 
 dbnary:pageCount
     rdf:type     owl:DatatypeProperty, qb:MeasureProperty ;
     rdfs:label   "count of Pages"@en ;
     rdfs:comment "count of dbnary Pages contained in a specific extract."@en ;
-    rdfs:range   xsd:int .
+                                   rdfs:range xsd:int .
 
 dbnary:translationsCount
     rdf:type     owl:DatatypeProperty, qb:MeasureProperty ;
     rdfs:label   "count of Translations"@en ;
     rdfs:comment "count of Dbnary Translations contained in a specific extract."@en ;
-    rdfs:range   xsd:int .
+                                                  rdfs:range xsd:int .
 
 dbnary:nymRelation
     a          owl:ObjectProperty, qb:DimensionProperty ;
     rdfs:label "Nym relation"@en ;
     rdfs:range dbnary:NymProperty ;
     rdfs:comment
-               "version number of the wiktionary dump from which the lexical data is extracted."@en ;
+               "the dimension stating the counted nym relation in the Nym Count Datacube."@en ;
     rdfs:range xsd:string .
 
 dbnary:count
     rdf:type     owl:DatatypeProperty, qb:MeasureProperty ;
     rdfs:label   "count"@en ;
     rdfs:comment "cardinality of a certain set of Object a specific extract."@en ;
-    rdfs:range   xsd:int .
+                                    rdfs:range xsd:int .
 
 lime:language a qb:MeasureProperty .

@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.concurrent.Callable;
 import javax.xml.stream.XMLInputFactory;
@@ -205,6 +206,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
       spec.commandLine().getErr().format("Post processed %d entries in %s%n", nbRelevantPages,
           formatHMS(totalRelevantTime));
 
+      Files.createDirectories(prefs.getExtractionDir(lm.getLanguage()));
       for (ExtractionFeature f : features.getEndolexFeatures()) {
         if (!f.equals(ExtractionFeature.HDT)) {
           saveBox(f, false);

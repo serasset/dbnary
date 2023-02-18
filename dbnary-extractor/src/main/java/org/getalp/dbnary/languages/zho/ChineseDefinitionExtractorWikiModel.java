@@ -10,7 +10,7 @@ import org.getalp.dbnary.wiki.WikiTool;
 
 public class ChineseDefinitionExtractorWikiModel extends ChineseDbnaryWikiModel {
 
-  private IWiktionaryDataHandler delegate;
+  private final IWiktionaryDataHandler delegate;
 
   public ChineseDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
       String imageBaseURL, String linkBaseURL) {

@@ -20,10 +20,13 @@ echo >> .gitignore
 echo out >> .gitignore
 echo .m2 >> .gitignore
 
+# Fail early if the next version does not install
+set -e
 mkdir -p "$BINDIR/$NEXT_VERSION"
 mvn versions:set -B -DnewVersion="$NEXT_VERSION"
 mvn package
 cp -r dbnary-commands/target/distributions/dbnary/*.tar.gz "$BINDIR/$NEXT_VERSION"
+set +e
 
 #ls -al
 #ls -al out/dbnary/ci-next-version

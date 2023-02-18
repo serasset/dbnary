@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
@@ -27,12 +28,14 @@ import org.apache.jena.vocabulary.RDF;
 import org.getalp.LangTools;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.PropertyObjectPair;
+import org.getalp.dbnary.SkosOnt;
 import org.getalp.dbnary.Span;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.languages.ita.TranslationLineParser;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.ClassBasedSequenceFilter;
 import org.getalp.dbnary.wiki.WikiCharSequence;
@@ -41,9 +44,11 @@ import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
+import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Text;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
@@ -230,6 +235,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       extractEtymology(blockContent.getBeginIndex(), blockContent.getEndIndex());
     } else if (title.equals("Derived terms")) {
       extractDerived(blockContent.getBeginIndex(), blockContent.getEndIndex());
+      extractDerivedSection(blockContent);
     } else if (title.equals("Descendants")) {
       extractDescendants(blockContent.getBeginIndex(), blockContent.getEndIndex());
     } else if (null != (nym = EnglishGlobals.nymMarkerToNymName.get(title))) {
@@ -435,6 +441,83 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
     }
   }
+
+  private void extractDerivedSection(WikiContent blockContent) {
+    // blockContent.templatesOnUpperLevel().forEach(this::extractDerivationList);
+    WikiCharSequence section = new WikiCharSequence(blockContent);
+    DerivationsParser dp = new DerivationsParser(this.getWiktionaryPageName());
+    dp.extractDerivations(section, ewdh);
+  }
+
+  private static final String derivationTemplatesRegex = "(?:col|der|rel)([12345])?(?:-u)?";
+  private static final String punctuationRegex = "[\\s\\p{Punct}]*";
+  private static final Pattern derivationTemplatesPattern =
+      Pattern.compile(derivationTemplatesRegex);
+  private static final Pattern punctuationPattern = Pattern.compile(punctuationRegex);
+  private final Matcher derivationTemplate = derivationTemplatesPattern.matcher("");
+  private final Matcher punctuation = punctuationPattern.matcher("");
+
+  private void extractDerivationList(Token token) {
+    Template t = token.asTemplate();
+    derivationTemplate.reset(t.getName().trim());
+    if (derivationTemplate.matches()) {
+      Map<String, String> args = t.cloneParsedArgs();
+      // Handle col
+      if (args.containsKey("title")) {
+        log.debug("Non empty title in derivation template: {} || {}", args.remove("title"),
+            getWiktionaryPageName());
+      }
+      if (!args.containsKey("lang")) {
+        // the language arg is arg 1
+        args.remove("1");
+      }
+      args.remove("sc");
+      args.remove("sort");
+      args.remove("collapse");
+      args.entrySet().forEach(e -> {
+        if (StringUtils.isNumeric(e.getKey())) {
+          WikiContent valContent = t.getArg(e.getKey());
+          if (valContent.wikiTokens().isEmpty()) {
+            // the value is a string
+            ewdh.registerDerivation(e.getValue());
+          } else {
+            valContent.tokens().forEach(this::extractLinkAsDerivation);
+          }
+        } else {
+          log.debug("Derivation: Unexpected arg in derivation template: {} || {}", e,
+              getWiktionaryPageName());
+        }
+      });
+    } else {
+      log.debug("Derivation: Unexpected derivation template: {} || {}", t, getWiktionaryPageName());
+    }
+  }
+
+  private void extractLinkAsDerivation(Token tok) {
+    String text;
+    if (tok instanceof Text && (text = tok.getText().trim()).length() > 0) {
+      punctuation.reset(text);
+      if (!punctuation.matches()) {
+        log.debug("Derivation: Unexpected Text token in a complex derivation arg: \"{}\" || {}",
+            tok, getWiktionaryPageName());
+      }
+    } else if (tok instanceof Template) {
+      Template valueTmpl = tok.asTemplate();
+      String name = valueTmpl.getName().trim();
+      if (name.equalsIgnoreCase("l") || name.equals("link")) {
+        ewdh.registerDerivation(valueTmpl.getParsedArg("2"));
+      } else {
+        log.debug("Derivation: Unexpected template in a complex derivation arg: {} || {}",
+            valueTmpl, getWiktionaryPageName());
+      }
+    } else if (tok instanceof InternalLink) {
+      ewdh.registerDerivation(tok.asInternalLink().getTargetText());
+    } else {
+      log.debug("Derivation: Unexpected token in a complex derivation arg: {} || {}", tok,
+          getWiktionaryPageName());
+    }
+  }
+
 
   // TODO: process * {{l|pt|mundinho}}, {{l|pt|mundozinho}} {{gloss|diminutives}}
   // * {{l|pt|mundão}} {{gloss|augmentative}}

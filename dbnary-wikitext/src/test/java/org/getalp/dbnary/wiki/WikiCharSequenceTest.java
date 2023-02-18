@@ -13,45 +13,62 @@ import org.junit.Test;
 public class WikiCharSequenceTest {
 
   @Test
-  public void testWikiWikiCharSequence2() {
-    String test = "{{en-noun}} text [[link]]s text {{template}} text [[toto]]";
+  public void testWikiWikiCharSequence() {
+    String test = "{{en-noun}} text [[link]]s truc {{template}} text [[toto]]";
     WikiText text = new WikiText(test);
 
     WikiCharSequence seq = new WikiCharSequence(text);
-    assertEquals(22, seq.length());
+    assertEquals("Incorrect length (in code points)",22, seq.codePointCount());
     Pattern pattern = Pattern.compile("^\\p{Co}.*$");
     assertTrue(pattern.matcher(seq).matches());
     pattern = Pattern.compile("^\\p{Alpha}.*$");
     assertFalse(pattern.matcher(seq).matches());
-    pattern = Pattern.compile("^[\uE200-\uE7FF]\\stext\\s.*$");
+    pattern = WikiPattern.compile("^\\p{Template}\\stext\\s.*$");
     assertTrue(pattern.matcher(seq).matches());
-    pattern = Pattern.compile("^[\uE200-\uE7FF]\\stext\\s");
+    pattern = WikiPattern.compile("^\\p{Template}\\stext\\s");
+    assertTrue(pattern.matcher(seq).find());
+    pattern = WikiPattern.compile("\\p{Link}\\struc\\s");
     Matcher m = pattern.matcher(seq);
     assertTrue(m.find());
-    assertEquals(Character.getType(seq.charAt(m.end())), Character.PRIVATE_USE);
+    assertEquals("The first code point of the match should be a private use char.",
+        Character.getType(seq.codePointAt(m.start())), Character.PRIVATE_USE);
+    assertEquals("The code point immediately after the match should be a private use char.",
+        Character.getType(seq.codePointAt(m.start())), Character.PRIVATE_USE);
   }
 
   @Test
-  public void testWikiCharSequence() {
-    String test = "{{en-noun}} text [[link]]s text {{template}} text [[toto]]";
+  public void testWikiCharSubSequence() {
+    String test = "{{en-noun}} text [[link]]s truc {{template}} text [[toto]]";
     WikiText text = new WikiText(test);
 
-    CharSequence seq = new WikiCharSequence(text);
-    CharSequence ss1 = seq.subSequence(0, 10);
-    assertEquals(10, ss1.length());
+    WikiCharSequence seq = new WikiCharSequence(text);
+    // Reminder: subsequence parameters are in char counts (code UNITS), not in code point.
+    // Hence each special element accounts for 2 chars
+    WikiCharSequence ss1 = seq.subSequence(0, 10);
+    assertEquals("The subsequence should contain 10 code units.",10,
+        ss1.length());
+    assertEquals("The subsequence should contain 8 code points (with 2 supplementary private use chars).",
+        8, ss1.codePointCount());
+    assertEquals("{{en-noun}} text [[link]]s", ss1.getSourceContent());
+
 
     Pattern pattern = Pattern.compile("^\\p{Co}.*$");
-    assertTrue(pattern.matcher(ss1).matches());
+    assertTrue("The subsequence should start with a supplementary private use char.",
+        pattern.matcher(ss1).matches());
 
-    CharSequence ss2 = seq.subSequence(11, 22);
+    WikiCharSequence ss2 = seq.subSequence(11, 22);
 
-    assertEquals('x', ss2.charAt(0));
+    assertEquals('t', ss2.charAt(0));
+    assertEquals("truc {{template}} tex", ss2.getSourceContent());
 
-    CharSequence ss3 = ss1.subSequence(5, 9);
-    assertEquals(4, ss3.length());
+    WikiCharSequence ss3 = ss2.subSequence(3, 10);
+    assertEquals(7, ss3.length());
+    assertEquals(6, ss3.codePointCount());
+    assertEquals("c {{template}} te", ss3.getSourceContent());
+
 
     CharSequence ss4 = ss2.subSequence(5, 9);
-    assertEquals('t', ss4.charAt(0));
+    assertEquals(' ', ss4.charAt(2));
 
   }
 
@@ -62,26 +79,32 @@ public class WikiCharSequenceTest {
 
     ClassBasedSequenceFilter filter = new ClassBasedSequenceFilter();
     filter.voidTemplates();
-    CharSequence seq = new WikiCharSequence(text, filter);
-    System.out.println(seq);
+    WikiCharSequence seq = new WikiCharSequence(text, filter);
 
-    assertEquals(20, seq.length());
+    assertEquals(22, seq.length());
+    assertEquals(20, seq.codePointCount());
     Pattern pattern = Pattern.compile("^\\p{Co}.*$");
-    assertFalse(pattern.matcher(seq).matches()); // no template chars as first character in char
+    assertFalse("The first template should be discarded.",
+        pattern.matcher(seq).matches()); // no template chars as first character in char
     // sequence
     pattern = Pattern.compile("^\\p{Alpha}.*$");
-    assertFalse(pattern.matcher(seq).matches()); // the first char is a space, not an alpha
+    assertFalse("First char after discarded template should be a space char",
+        pattern.matcher(seq).matches()); // the first char is a space, not an alpha
     assertEquals(' ', seq.charAt(0));
     pattern = Pattern.compile("[" + WikiCharSequence.INTERNAL_LINKS_RANGE + "]");
     Matcher m = pattern.matcher(seq);
     assertTrue(m.find());
-    assertEquals(' ', seq.charAt(m.end())); // the s is art of the link, hence it has been atomised
-    // with it
-    assertEquals(Character.getType(seq.charAt(seq.length() - 1)), Character.PRIVATE_USE);
+    assertEquals("The link is immediately followed by a space (especially, the s is part of the link)",
+        ' ', seq.charAt(m.end()));
 
-    pattern = Pattern.compile("[\uE200-\uE7FF]"); // matches a template char
+    // Pay attention to the fact that every special token take 2 chars
+    assertEquals(Character.SURROGATE, Character.getType(seq.charAt(seq.length() - 1)));
+    assertEquals(Character.SURROGATE, Character.getType(seq.charAt(seq.length() - 2)));
+    assertEquals(Character.PRIVATE_USE, Character.getType(seq.codePointAt(seq.length() - 2)));
+
+    pattern = WikiPattern.compile("\\p{Template}"); // matches a template char
     m = pattern.matcher(seq);
-    assertFalse(m.find());
+    assertFalse("No template char should be in the char sequence.", m.find());
 
   }
 
@@ -92,22 +115,24 @@ public class WikiCharSequenceTest {
 
     ClassBasedSequenceFilter filter = new ClassBasedSequenceFilter();
     filter.clearAction().atomizeTemplates().sourceText().keepContentOfInternalLink();
-    CharSequence seq = new WikiCharSequence(text, filter);
-    System.out.println(seq);
+    WikiCharSequence seq = new WikiCharSequence(text, filter);
 
-    assertEquals(29, seq.length());
+    assertEquals(31, seq.length());
+    assertEquals(29, seq.codePointCount());
+
     Pattern pattern = Pattern.compile("^\\p{Co}.*$");
     assertTrue(pattern.matcher(seq).matches()); // first character is template char
     pattern = Pattern.compile("\\blinks\\b");
     Matcher m = pattern.matcher(seq);
     assertTrue(m.find());
-    pattern = Pattern.compile("[\uE900-\uE9FF]");
+    pattern = WikiPattern.compile("\\p{InternalLink}");
     m = pattern.matcher(seq);
     assertFalse(m.find());
     assertEquals('o', seq.charAt(seq.length() - 1));
 
-    pattern = Pattern.compile("[\uE200-\uE7FF]"); // matches a template char
+    pattern = WikiPattern.compile("\\p{Template}"); // matches a template char
     m = pattern.matcher(seq);
+    assertTrue(m.find());
     assertTrue(m.find());
 
   }

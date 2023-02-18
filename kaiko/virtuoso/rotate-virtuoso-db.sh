@@ -39,7 +39,7 @@ function show_help() {
   echo "      v: uses verbose output."
 }
 
-while getopts "h?fp:Pvc:l:t:d:" opt; do
+while getopts "h?fp:Pvc:e:t:d:" opt; do
   case "$opt" in
   h | \?)
     show_help
@@ -75,7 +75,7 @@ shift $((OPTIND - 1))
 
 [ "$1" = "--" ] && shift
 
-## Default values that will be overriden by configuration file
+## Default values that will be overridden by configuration file
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
 VIRTUOSODAEMON=virtuoso-t
 SERVERPORT=1112
@@ -85,7 +85,7 @@ VIRTUOSO_PLUGINS_HOSTING=/usr/lib/virtuoso-opensource-7/hosting
 VAD_INSTALL_DIR=/usr/share/virtuoso-opensource-7/vad/
 VSP_INSTALL_DIR=/var/lib/virtuoso-opensource-7/vsp/
 
-script_dir=$(dirname $(realpath $0))
+script_dir=$(dirname "$(realpath $0)")
 BOOTSTRAPSQLTMPL=$script_dir/bootstrap.sql.tmpl
 bootstrap_ini=virtuoso.ini.bootstrap.tmpl
 prod_ini=virtuoso.ini.prod.tmpl
@@ -94,6 +94,7 @@ prod_ini=virtuoso.ini.prod.tmpl
 [[ -f $DBNARY_USER_CONFIG_DIR/config ]] && source $DBNARY_USER_CONFIG_DIR/config
 
 DBNARYLATEST=${DBNARYLATEST:-${DBNARY_ONTOLEX}/latest}
+DBFOLDER=${VIRTUOSODBLOCATION}/db
 
 [[ x$VIRTUOSOINITMPL == "x" ]] && VIRTUOSOINITMPL="$DBNARY_USER_CONFIG_DIR/$bootstrap_ini"
 [[ -f $VIRTUOSOINITMPL ]] || VIRTUOSOINITMPL="$script_dir/$bootstrap_ini"
@@ -275,7 +276,7 @@ fi
 # TODO: use a fixed dataset dir for dataset outside of dbnary latest folder.
 (
   shopt -s nullglob
-  files=(${DATASETDIR}/*.ttl)
+  files=("${DATASETDIR}"/*.ttl)
   if [[ "${#files[@]}" -gt 0 ]]; then
     echo >&2 "Dataset already exists and is not empty, assuming its content is up to date."
   else
@@ -469,9 +470,9 @@ shutdown();
 END
 
 ## PREPARE THE DB FOLDER FOR PROD.
-VIRTUOSOINIPROD=$script_dir/virtuoso.prod.ini
+#VIRTUOSOINIPROD=$script_dir/virtuoso.prod.ini
 
-sed "s|@@DBBOOTSTRAPFOLDER@@|$DBBOOTSTRAPFOLDER|g" <"$VIRTUOSOPRODINITMPL" |
+sed "s|@@DBFOLDER@@|$DBFOLDER|g" <"$VIRTUOSOPRODINITMPL" |
   sed "s|@@DATASETDIR@@|$DATASETDIR|g" |
   sed "s|@@SERVERPORT@@|$SERVERPORT|g" |
   sed "s|@@SSLSERVERPORT@@|$SSLSERVERPORT|g" |

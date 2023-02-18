@@ -7,6 +7,8 @@ import org.getalp.dbnary.wiki.{WikiCharSequence, WikiRegexParsers, WikiText}
 import org.getalp.dbnary.api.IWiktionaryDataHandler
 import org.getalp.dbnary.languages.AbstractGlossFilter
 
+import scala.util.matching.Regex
+
 class TranslationLineParser(page: String) extends WikiRegexParsers {
 
   private val pagename = page
@@ -15,8 +17,8 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
   private var currentEntry: String = null
   private var source: WikiCharSequence = null
 
-  val SenseNumber = """\[?((?:\s*\d+\s*[.,-]?)+)\]?""".r
-  val Italics = """'''([ _\p{L}]+)'''""".r
+  val SenseNumber: Regex = """\[?((?:\s*\d+\s*[.,-]?)+)\]?""".r
+  val Italics: Regex = """'''([ _\p{L}]+)'''""".r
 
   def languageName: Parser[Language] =
     """[ _\p{L}]+""".r ^^ {
@@ -25,13 +27,11 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
       case Italics(l) => Language(l, null)
     }
 
-  def languageTemplate: Parser[Language] = template ^^ {
-    case lt => Language("", lt.getName)
-  }
+  def languageTemplate: Parser[Language] = template ^^ (lt => Language("", lt.getName))
 
   def translationAsLink: Parser[String] = internalLink() ^^ {
     // ignore links to external language editions
-    case l => {
+    l => {
       val target = l.getTargetText
       if (target.contains(":")) {
         logger.debug("Ignoring translation link " + target + " in " + currentEntry)
@@ -63,7 +63,7 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
   }
 
 
-  def usageValue: Parser[String] = rep1(italics | parens | """[^\(,;*#\n]+""".r) ^^ {
+  def usageValue: Parser[String] = rep1(italics | parens | """[^(,;*#\n]+""".r) ^^ {
     case list => source.getSourceContent(list filter {
       _.nonEmpty
     } mkString (" "))

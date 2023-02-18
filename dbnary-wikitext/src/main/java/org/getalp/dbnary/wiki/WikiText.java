@@ -683,6 +683,18 @@ public class WikiText {
     }
 
     /**
+     * return a MUTABLE clone of argName/argValue Map. argName being a String and argValue a String.
+     * <p>
+     * When iterated, the map will provide values or entries in insertion order, hence iterating
+     * over the map will give args in the order they were defined.
+     *
+     * @return the argName/argVal map
+     */
+    public Map<String, WikiContent> cloneArgs() {
+      return new LinkedHashMap<>(getArgs());
+    }
+
+    /**
      * get the WikiContent value of the requested argument key.
      *
      * @param key the key of the argument to be retrieved
@@ -757,7 +769,7 @@ public class WikiText {
     }
 
     /**
-     * return the target of the link as a test without any anchor
+     * return the target of the link as a text without any anchor
      * @return the target of the link
      */
     public String getTargetText() {

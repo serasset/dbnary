@@ -13,6 +13,31 @@ trait WikiRegexParsers extends RegexParsers {
 
   override protected val whiteSpace: Regex = WikiPattern.toStandardPattern("""\p{White_Space}+""").r
 
+  /**
+   * A parser that matches a template whose name matches namePattern
+   * @param namePattern the regex pattern that te template should match
+   * @return a Parser resulting in a Template
+   */
+  def template(namePattern: Regex): Parser[WikiText#Template] = (in: Input) => {
+      val source = in.source.asInstanceOf[WikiCharSequence]
+      val offset = in.offset
+      val start = handleWhiteSpace(source, offset)
+      if (start < source.length()) {
+        val c = source.codePointAt(start)
+        if (WikiCharSequence.TEMPLATES_RANGE.contains(c)) {
+          val tmpl = source.getToken(c).asInstanceOf[WikiText#Template]
+          if (namePattern matches tmpl.getName)
+            Success(tmpl, in.drop(start - offset + Character.charCount(c)))
+          else
+            Failure("Template with name matching `" + namePattern + "' expected but Template named" + tmpl.getName + " found", in.drop(start - offset))
+        }
+        else
+          Failure("Template with name matching `" + namePattern + "' expected but " + source.getSourceContent(strFromCodePoint(c)) + " found", in.drop(start - offset))
+      }
+      else
+        Failure("Template with name matching `" + namePattern + "' expected but end of source found", in.drop(start - offset))
+    }
+
   /** A parser that matches a template with given name */
   def template(templateName: String): Parser[WikiText#Template] = (in: Input) => {
     val source = in.source.asInstanceOf[WikiCharSequence]

@@ -60,7 +60,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
    */
   protected int currentEtymologyNumber;
 
-
   // protected String currentEntryLanguage = null;
   // protected String currentEntryLanguageName = null;
 
@@ -152,6 +151,30 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       }
     }
     aBox.add(aBox.createStatement(currentLexEntry, RDF.type, OntolexOnt.Word));
+  }
+
+  public void registerDerivation(String derived) {
+    registerDerivation(derived, null);
+  }
+
+  public void registerDerivation(String derived, String note) {
+    if (null != derived && (derived = derived.trim()).length() == 0) {
+      return;
+    }
+    Resource target = getPageResource(derived);
+    aBox.add(target, DBnaryOnt.derivedFrom, currentLexEntry);
+    Statement derivStmt = aBox.createStatement(target, DBnaryOnt.derivedFrom, currentLexEntry);
+    if (null != note && note.trim().length() > 0) {
+      ReifiedStatement derivReifiedStmt =
+          derivStmt.createReifiedStatement(getDerivationStatementId(derived));
+      derivReifiedStmt.addLiteral(SkosOnt.note, note);
+      derivStmt = derivReifiedStmt.getStatement();
+    }
+    aBox.add(derivStmt);
+  }
+
+  public String getDerivationStatementId(String derived) {
+    return getPrefix() + "__der_" + currentEncodedLexicalEntryName + "_" + uriEncode(derived);
   }
 
   private Resource createGlobalEtymologyResource(String wiktionaryPageName, String lang) {

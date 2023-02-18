@@ -516,6 +516,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // TODO: General gloss is in arg G // Meaning number in arg 1
         extractTranslationsFromItems(args.get("Ü-links"));
         extractTranslationsFromItems(args.get("Ü-rechts"));
+        extractTranslationsFromItems(args.get("Ü-Liste"));
         // extractTranslationsFromItems(args.get("Dialekttabelle"));
         // extractTranslationsFromItems(args.get("D-rechts"));
       }

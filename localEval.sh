@@ -47,7 +47,7 @@ DUMPS=${HOME}/dev/wiktionary/dumps
 if [[ $passlocalupdate -eq 0 ]]; then
   mkdir -p ${NEXT_DIR}
   pushd ${NEXT_DIR}
-  [[ -L dumps ]] || ln -s ${DUMPS} .
+  [[ -L dumps ]] || ln -s "${DUMPS}" .
   popd
 
   if [ "$verbose" = 1 ]; then
@@ -57,13 +57,13 @@ if [[ $passlocalupdate -eq 0 ]]; then
   if [ "$verbose" = 1 ]; then
     echo "Extracting samples with local version"
   fi
-  dbnary-commands/target/appassembler/bin/dbnary update --dir ${NEXT_DIR} -v --no-compress --sample "$SAMPLE_SIZE" "$@"
+  dbnary-commands/target/appassembler/bin/dbnary update --dir "${NEXT_DIR}" -v --no-compress --sample "$SAMPLE_SIZE" "$@"
 fi #$passlocalupdate
 ##### PREVIOUS VERSION
 
 mkdir -p ${PREVIOUS_DIR}
 pushd ${PREVIOUS_DIR}
-[[ -L dumps ]] || ln -s ${DUMPS} .
+[[ -L dumps ]] || ln -s "${DUMPS}" .
 popd
 
 if [[ $passversusupdate -eq 0 ]]; then
@@ -72,9 +72,9 @@ if [[ $passversusupdate -eq 0 ]]; then
   fi
   mkdir -p target/versus
   pushd target/versus
-  [[ -d dbnary ]] || git clone $origin
+  [[ -d dbnary ]] || git clone "$origin"
   pushd dbnary
-  git checkout $versus
+  git checkout "$versus"
 
   if [ "$verbose" = 1 ]; then
     echo "Compiling previous version"

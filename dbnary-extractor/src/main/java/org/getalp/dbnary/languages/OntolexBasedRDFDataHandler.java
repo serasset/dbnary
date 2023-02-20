@@ -311,7 +311,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     lexvoSectionLanguage = tBox.createResource(LEXVO + longSectionLanguageCode);
 
     assert currentLexicalEntry == null;
-    currentLexicalEntry = null;
+
     if (longEditionLanguageCode.equals(longSectionLanguageCode)) {
       aBox = getEndolexFeatureBox(ExtractionFeature.MAIN);
     } else {
@@ -363,7 +363,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     if (!this.longEditionLanguageCode.equals(this.longSectionLanguageCode)) {
       nameBuilder.append("_").append(longSectionLanguageCode).append("__");
     }
-    nameBuilder.append(uriEncode(pageName, pos) + "__" + defNumber);
+    nameBuilder.append(uriEncode(pageName, pos)).append("__").append(defNumber);
     return nameBuilder.toString();
   }
 
@@ -483,7 +483,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     aBox.add(currentCanonicalForm, OntolexOnt.writtenRep, currentPage.getName(),
         getCurrentEntryLanguage());
     aBox.add(currentLexEntry, RDFS.label, currentPage.getName(), getCurrentEntryLanguage());
-    aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos());
+    String pos = currentWiktionaryPos();
+    if (null != pos && pos.length() != 0)
+      aBox.add(currentLexEntry, DBnaryOnt.partOfSpeech, currentWiktionaryPos());
     if (null != currentLexinfoPos()) {
       aBox.add(currentLexEntry, LexinfoOnt.partOfSpeech, currentLexinfoPos());
     }
@@ -748,7 +750,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     String lexEntryLocalName = lexEntry.getLocalName();
     String compactProperties =
         DatatypeConverter.printBase64Binary(BigInteger.valueOf(properties.hashCode()).toByteArray())
-            .replaceAll("[/=\\+]", "-");
+            .replaceAll("[/=+]", "-");
 
     return "__wf_" + compactProperties + "_" + lexEntryLocalName;
   }
@@ -855,8 +857,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   private Resource getLexvoLanguageResource(String lang) {
-    Resource res = languages.computeIfAbsent(lang, l -> tBox.createResource(LEXVO + l));
-    return res;
+    return languages.computeIfAbsent(lang, l -> tBox.createResource(LEXVO + l));
   }
 
   public void registerNymRelationToEntity(String target, String synRelation, Resource entity) {
@@ -965,7 +966,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   protected String getGlossResourceName(StructuredGloss gloss) {
     String key = gloss.getGloss() + gloss.getSenseNumber();
     key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray())
-        .replaceAll("[/=\\+]", "-");
+        .replaceAll("[/=+]", "-");
     return getPrefix() + "__" + shortEditionLanguageCode + "_gloss_" + key + "_"
         + currentEncodedLexicalEntryName;
   }

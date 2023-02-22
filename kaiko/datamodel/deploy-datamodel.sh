@@ -12,7 +12,7 @@ OPTIND=1 # Reset in case getopts has been used previously in the shell.
 # Initialize our own variables:
 verbose=false
 PREFIXDIR=$HOME/develop/wiktionary/extracts/
-WIDOCOJAR=$HOME/lib/widoco-1.4.14-jar-with-dependencies.jar
+WIDOCOJAR=$HOME/lib/java-11-widoco-1.4.17-jar-with-dependencies.jar
 JAVA=java
 ONTOLOGY=./../../dbnary-ontology/src/main/resources/org/getalp/dbnary/dbnary.ttl
 
@@ -87,4 +87,4 @@ popd
 echo "Should I deploy the generated files to the public web server [y/N]"
 IFS= read continue
 [[ "$continue" == "y" ]] || exit 0;
-rsync -avz "$PREFIXDIR/datamodel" "lig-getalp.imag.fr:/opt/dbnary/static/datamodel"
+rsync -avz "$PREFIXDIR/datamodel" "lig-getalp.imag.fr:/opt/dbnary/static/"

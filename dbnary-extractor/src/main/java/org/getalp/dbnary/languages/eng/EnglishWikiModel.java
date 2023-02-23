@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
+import org.getalp.iso639.ISO639_3;
 
 public class EnglishWikiModel extends DbnaryWikiModel {
 
@@ -28,11 +29,28 @@ public class EnglishWikiModel extends DbnaryWikiModel {
           String val = parameterMap.getOrDefault("1", "");
           writer.append(val.substring(0, Math.min(l, val.length())));
         } catch (NumberFormatException e) {
-
+          // nop
         }
+      } else if ("langname".equals(templateName)) {
+        String langname = ISO639_3.sharedInstance.getLanguageNameInEnglish(parameterMap.get("1"));
+        if (null != langname)
+          writer.append(langname);
+        else
+          super.substituteTemplateCall(templateName, parameterMap, writer);
       } else {
         super.substituteTemplateCall(templateName, parameterMap, writer);
       }
     }
+  }
+
+  @Override
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
+      throws WikiModelContentException {
+    // give a langname implementation without safesubst
+    if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)
+        && parsedPagename.pagename.equals("langname")) {
+      return "{{#invoke:languages/templates|getByCode|{{{1}}}|getCanonicalName}}";
+    }
+    return super.getRawWikiContent(parsedPagename, map);
   }
 }

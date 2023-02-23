@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
+import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -27,17 +28,16 @@ import org.slf4j.LoggerFactory;
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected final static String senseNumberRegExp =
       "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d)*\\.?[abcdefghijklmn]?)";
   protected final static String senseNumberOrRangeRegExp =
       "(?:(?:(?:<tt>)?[IV]+(?:</tt>)?|\\d|-|\u2013|,| |&nbsp;)*\\.?[abcdefghij]?)"; // long dash
-  protected static final String simpleNumListFilter =
-      "^\\s*(" + senseNumberRegExp + "(?:\\s*[\\,\\-–]\\s*" + senseNumberRegExp + ")*)\\s*$";
+
 
   protected final static String languageSectionPatternString =
-      "={2}\\s*([^\\(\r\n]*)\\(\\{\\{Sprache\\|([^\\}]*)\\}\\}\\s*\\)\\s*={2}";
+      "={2}\\s*([^(\r\n]*)\\(\\{\\{Sprache\\|([^}]*)}}\\s*\\)\\s*={2}";
 
   // === {{Wortart|Substantiv|Deutsch}}, {{n}} ===
   protected final static String partOfSpeechPatternString =
@@ -91,20 +91,30 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // Pattern.compile(languageSectionPatternString);
 
     languageSectionPattern = Pattern.compile(languageSectionPatternString);
-    multilineMacroPatternString = new StringBuilder().append("\\{\\{")
-        .append("([^\\}\\|]*)(?:\\|([^\\}]*))?").append("\\}\\}").toString();
+    multilineMacroPatternString = new StringBuilder().append("\\{\\{") //
+        .append("([^\\}\\|]*)(?:\\|([^\\}]*))?") //
+        .append("\\}\\}").toString();
 
-    macroOrPOSPatternString =
-        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
-            .append(partOfSpeechPatternString).append(")|(?:").append(subSection4PatternString)
-            .append(")|(?:").append(multilineMacroPatternString).append(")").toString();
+    macroOrPOSPatternString = new StringBuilder().append("(?:") //
+        .append(WikiPatterns.macroPatternString) //
+        .append(")|(?:") //
+        .append(partOfSpeechPatternString) //
+        .append(")|(?:") //
+        .append(subSection4PatternString) //
+        .append(")|(?:") //
+        .append(multilineMacroPatternString) //
+        .append(")").toString();
 
     macroOrPOSPattern = Pattern.compile(macroOrPOSPatternString);
 
     posHeaderElementsPatternString =
-        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
-            .append("''(.*)''").append(")|(?:").append("[,/\\(\\)]\\s*").append(")|(?:")
-            .append("((?:ohne\\s+)?[^\\s,/\\(\\)]+)").append(")").toString();
+        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:") //
+            .append("''(.*)''") //
+            .append(")|(?:") //
+            .append("[,/\\(\\)]\\s*") //
+            .append(")|(?:") //
+            .append("((?:ohne\\s+)?[^\\s,/\\(\\)]+)") //
+            .append(")").toString();
     posHeaderElementsPattern = Pattern.compile(posHeaderElementsPatternString);
 
     germanDefinitionPattern = Pattern.compile(germanDefinitionPatternString, Pattern.MULTILINE);
@@ -505,6 +515,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     glossOrMacroPattern = Pattern.compile(glossOrMacroPatternString);
   }
 
+  protected Resource globalGloss = null;
+
   private void extractTranslations(int startOffset, int endOffset) {
     WikiText wt = new WikiText(getWiktionaryPageName(), pageContent, startOffset, endOffset);
     List<? extends WikiText.Token> toks = wt.wikiTokens();
@@ -512,8 +524,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (WikiText.Token t : toks) {
       if (t instanceof WikiText.Template
           && ((WikiText.Template) t).getName().trim().equals("Ü-Tabelle")) {
-        Map<String, WikiText.WikiContent> args = ((WikiText.Template) t).getArgs();
-        // TODO: General gloss is in arg G // Meaning number in arg 1
+        WikiText.Template tmpl = t.asTemplate();
+        Map<String, WikiText.WikiContent> args = tmpl.getArgs();
+        // DONE: General gloss is in arg G // Meaning number in arg 1
+        globalGloss = wdh.createGlossResource(
+            new StructuredGloss(tmpl.getParsedArg("1"), tmpl.getParsedArg("G")));
         extractTranslationsFromItems(args.get("Ü-links"));
         extractTranslationsFromItems(args.get("Ü-rechts"));
         extractTranslationsFromItems(args.get("Ü-Liste"));
@@ -553,6 +568,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private static final Pattern tokenizer = WikiPattern.compile(translationTokenizer);
 
+  private static <T> T or(T _1, T _2) {
+    return null == _1 ? _2 : _1;
+  }
 
   // TODO: faire une analyse plus poussée des traduction, car il y a des entrées comme cela :
   // se {{Ü|fr|mettre}} {{Ü|fr|à}} {{Ü|fr|couler}} qui est extrait en 3 traductions différentes
@@ -607,7 +625,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               usage = "alt=" + linkText + "|";
             }
             if (null != lg && null != lemma && !"".equals(lemma)) {
-              wdh.registerTranslation(lg, currentGloss, usage, lemma);
+              wdh.registerTranslation(lg, or(currentGloss, globalGloss), usage, lemma);
             }
             break;
           case "Üt":
@@ -624,7 +642,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               usage = "alt=" + linkText + "|";
             }
             if (null != lg && null != lemma && !"".equals(lemma)) {
-              wdh.registerTranslation(lg, currentGloss, usage, lemma);
+              wdh.registerTranslation(lg, or(currentGloss, globalGloss), usage, lemma);
             }
             break;
           case "Üxx4":
@@ -649,7 +667,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               usage = "b=" + bedeutung + "|";
             }
             if (null != lg && null != lemma && !"".equals(lemma)) {
-              wdh.registerTranslation(lg, currentGloss, usage, lemma);
+              wdh.registerTranslation(lg, or(currentGloss, globalGloss), usage, lemma);
             }
             break;
           case "Üxx5":
@@ -666,8 +684,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               usage = "v=" + vocalization + "|";
             }
             if (null != lg && null != lemma && !"".equals(lemma)) {
-              wdh.registerTranslation(lg, currentGloss, usage, lemma);
+              wdh.registerTranslation(lg, or(currentGloss, globalGloss), usage, lemma);
             }
+          default:
+            log.trace("Translation: Ignoring template {} || {}", t, getWiktionaryPageName());
         }
       }
     }

@@ -260,8 +260,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         case NODATA:
           if (isTranslation(m)) {
             gotoTradBlock(m);
-          } else if (null != (pos = getValidPOS(m))) {
-            if (pos.length() == 0) {
+          } else if (null != (pos = getValidPOS(m)) || "释义".equals(m.group(1).trim())) {
+            if (null == pos) {
+              gotoDefBlock(m, "");
+            } else if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -284,9 +286,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (isTranslation(m)) {
             leaveDefBlock(m);
             gotoTradBlock(m);
-          } else if (null != (pos = getValidPOS(m))) {
+          } else if (null != (pos = getValidPOS(m)) || "释义".equals(m.group(1).trim())) {
             leaveDefBlock(m);
-            if (pos.length() == 0) {
+            if (null == pos) {
+              gotoDefBlock(m, "");
+            } else if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -316,9 +320,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (isTranslation(m)) {
             leaveTradAltBlock(m);
             gotoTradBlock(m);
-          } else if (null != (pos = getValidPOS(m))) {
+          } else if (null != (pos = getValidPOS(m)) || "释义".equals(m.group(1).trim())) {
             leaveTradAltBlock(m);
-            if (pos.length() == 0) {
+            if (null == pos) {
+              gotoDefBlock(m, "");
+            } else if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -348,9 +354,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (isTranslation(m)) {
             leaveOrthoAltBlock(m);
             gotoTradBlock(m);
-          } else if (null != (pos = getValidPOS(m))) {
+          } else if (null != (pos = getValidPOS(m)) || "释义".equals(m.group(1).trim())) {
             leaveOrthoAltBlock(m);
-            if (pos.length() == 0) {
+            if (null == pos) {
+              gotoDefBlock(m, "");
+            } else if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -379,9 +387,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (isTranslation(m)) {
             leaveNymBlock(m);
             gotoTradBlock(m);
-          } else if (null != (pos = getValidPOS(m))) {
+          } else if (null != (pos = getValidPOS(m)) || "释义".equals(m.group(1).trim())) {
             leaveNymBlock(m);
-            if (pos.length() == 0) {
+            if (null == pos) {
+              gotoDefBlock(m, "");
+            } else if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -410,9 +420,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (isTranslation(m)) {
             // leavePronBlock(m);
             gotoTradBlock(m);
-          } else if (null != (pos = getValidPOS(m))) {
+          } else if (null != (pos = getValidPOS(m)) || "释义".equals(m.group(1).trim())) {
             leavePronBlock(m);
-            if (pos.length() == 0) {
+            if (null == pos) {
+              gotoDefBlock(m, "");
+            } else if (null == pos) {
+              gotoDefBlock(m, "");
+            } else if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -441,9 +455,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (isTranslation(m)) {
             leaveRelBlock(m);
             gotoTradBlock(m);
-          } else if (null != (pos = getValidPOS(m))) {
+          } else if (null != (pos = getValidPOS(m)) || "释义".equals(m.group(1).trim())) {
             leaveRelBlock(m);
-            if (pos.length() == 0) {
+            if (null == pos) {
+              gotoDefBlock(m, "");
+            } else if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -470,8 +486,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           break;
         case IGNOREPOS:
           if (isTranslation(m)) {
-          } else if (null != (pos = getValidPOS(m))) {
-            if (pos.length() == 0) {
+          } else if (null != (pos = getValidPOS(m)) || "释义".equals(m.group(1).trim())) {
+            if (null == pos) {
+              gotoDefBlock(m, "");
+            } else if (pos.length() == 0) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);

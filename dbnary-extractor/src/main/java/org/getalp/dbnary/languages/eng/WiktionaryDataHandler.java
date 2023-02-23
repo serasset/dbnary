@@ -161,6 +161,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     if (null != derived && (derived = derived.trim()).length() == 0) {
       return;
     }
+    if (null == currentLexEntry) {
+      log.debug("Registering derivation when no lex entry is defined");
+      return;
+    }
     Resource target = getPageResource(derived);
     aBox.add(target, DBnaryOnt.derivedFrom, currentLexEntry);
     Statement derivStmt = aBox.createStatement(target, DBnaryOnt.derivedFrom, currentLexEntry);

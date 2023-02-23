@@ -7,7 +7,7 @@ When a new version of the dbnary data model is created (with a new version numbe
 model and its documentation should be made available on the web server and served
 when requested, using content negociation to serve either the doc or the ontology file.
 
-##Layout of the datamodel folder
+### Layout of the datamodel folder
 
 The datamodel folder is used to provide the ontology and its documentation in all its versions.
 

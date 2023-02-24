@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
@@ -81,6 +83,10 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
     return textAndNote[0];
   }
 
+
+  private static final Predicate<String> isLanguageTag =
+      Pattern.compile("[a-z]{2,3}(?:-.*)?").asMatchPredicate();
+
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
@@ -147,6 +153,10 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       String source = parameterMap.get("source");
       if (null != example) {
         writer.append(example);
+      }
+      if (!isLanguageTag.test(lang)) {
+        logger.debug("Invalid language tag in example {} ||| {}", lang, getPageName());
+        lang = shortSectionLanguage;
       }
       if (context != null) {
         if (null != source)

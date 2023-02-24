@@ -79,9 +79,6 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
               Pair.of(SKOS.note, ResourceFactory.createLangLiteral(note, shortEditionLanguage)));
         }
       }
-    } else {
-      // No text and no note, just get rid of everything
-      context.clear();
     }
     return textAndNote[0];
   }

@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 
+## Pass options to dbnary commands in DBNARY_OPTS
+## Pass list of models in EVAL_MODELS
+## e.g. DBNARY_OPTS="--endolex=morphology" EVAL_MODELS="endolex morphology" ./localEval.sh en
 verbose=0
 origin=git@gitlab.com:gilles.serasset/dbnary.git
 versus=develop
 passlocalupdate=0
 passversusupdate=0
 
-while getopts ":o:vVLD" opt; do
+while getopts ":o:vVLD:d" opt; do
   case $opt in
   V)
     verbose=1
@@ -57,7 +60,7 @@ if [[ $passlocalupdate -eq 0 ]]; then
   if [ "$verbose" = 1 ]; then
     echo "Extracting samples with local version"
   fi
-  dbnary-commands/target/appassembler/bin/dbnary update --dir "${NEXT_DIR}" -v --no-compress --sample "$SAMPLE_SIZE" "$@"
+  dbnary-commands/target/appassembler/bin/dbnary update --dir "${NEXT_DIR}" -v --no-compress --sample "$SAMPLE_SIZE" ${DBNARY_OPTS} "$@"
 fi #$passlocalupdate
 ##### PREVIOUS VERSION
 
@@ -85,7 +88,9 @@ if [[ $passversusupdate -eq 0 ]]; then
   if [ "$verbose" = 1 ]; then
     echo "Extracting samples with local version"
   fi
-  target/versus/dbnary/dbnary-commands/target/appassembler/bin/dbnary update --dir ${PREVIOUS_DIR} -v --no-compress --sample "$SAMPLE_SIZE" "$@"
+  target/versus/dbnary/dbnary-commands/target/appassembler/bin/dbnary update --dir ${PREVIOUS_DIR} -v --no-compress --sample "$SAMPLE_SIZE"  ${DBNARY_OPTS} "$@"
 fi
 [[ -d target/diffs ]] || mkdir -p target/diffs
-kaiko/extractor/compute_diffs.sh -f "${PREVIOUS_DIR}/extracts/ontolex/latest/" -t "${NEXT_DIR}/extracts/ontolex/latest/" -d "target/diffs" -x "dbnary-commands/target/appassembler/bin/rdfdiff" "$@"
+for model in ${EVAL_MODELS}; do
+  kaiko/extractor/compute_diffs.sh -m "$model" -f "${PREVIOUS_DIR}/extracts/ontolex/latest/" -t "${NEXT_DIR}/extracts/ontolex/latest/" -d "target/diffs" -x "dbnary-commands/target/appassembler/bin/rdfdiff" "$@"
+done

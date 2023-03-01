@@ -202,7 +202,7 @@ public class EnglishMorphologyExtractorWikiModel extends EnglishWikiModel {
   @Override
   public ScribuntoEngine createScribuntoEngine() {
     if (null == fScribuntoEngine)
-      fScribuntoEngine = new ScribuntoLuaEngine(this, compiledScriptCache, true);
+      fScribuntoEngine = new ScribuntoLuaEngine(this, compiledScriptCache, log.isDebugEnabled());
     return fScribuntoEngine;
   }
 }

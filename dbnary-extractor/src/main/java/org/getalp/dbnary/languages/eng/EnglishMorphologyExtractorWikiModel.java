@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.getalp.dbnary.OntolexOnt;
@@ -93,10 +94,11 @@ public class EnglishMorphologyExtractorWikiModel extends EnglishWikiModel {
 
     InflectedFormSet forms = new InflectedFormSet();
 
-    Elements elts = doc.select("strong.headword, b.form-of, a");
+    String note = null;
+    Elements elts =
+        doc.select("strong.headword, b.form-of, a, span.qualifier-content, span.ib-content");
     for (Element elt : elts) {
       if (elt.tagName().equalsIgnoreCase("a")) {
-
         String href = elt.attr("href").trim();
         if (href.startsWith("/Appendix:Glossary#")) {
           String concept = href.substring(1 + href.indexOf('#'));
@@ -116,52 +118,69 @@ public class EnglishMorphologyExtractorWikiModel extends EnglishWikiModel {
           delegate.addWrittenRep(text);
           log.debug("MORPH: headword `{}` is not pagename `{}`", text, getPageName());
         }
+      } else if (elt.hasClass("qualifier-content") || elt.hasClass("ib-content")) {
+        note = elt.text().trim();
       } else {
-        addInflexions(elt, elt.text(), forms);
+        InflectedFormSet newForms = new InflectedFormSet();
+        addInflexions(elt, elt.text(), newForms);
+        if (null != note) {
+          final String finalNote = note;
+          newForms.forEach(e -> ((EnglishInflectionData) e.getKey()).note(finalNote));
+          // Assume a note only concerns the following form
+          note = null;
+        }
+        newForms.forEach(e -> forms.add(e.getKey(), e.getValue()));
       }
     }
     return forms;
   }
 
 
-  private static final EnglishInflectionData plural = new EnglishInflectionData().plural();
-  private static final EnglishInflectionData singular = new EnglishInflectionData().singular();
-  private static final EnglishInflectionData feminine = new EnglishInflectionData().feminine();
-  private static final EnglishInflectionData masculine = new EnglishInflectionData().masculine();
-  private static final EnglishInflectionData comparative =
-      new EnglishInflectionData().comparative();
-  private static final EnglishInflectionData superlative =
-      new EnglishInflectionData().superlative();
-  private static final EnglishInflectionData pres3Sg =
-      new EnglishInflectionData().presentTense().thirdPerson().singular();
-  private static final EnglishInflectionData presPtc =
-      new EnglishInflectionData().presentTense().participle();
-  private static final EnglishInflectionData past = new EnglishInflectionData().pastTense();
-  private static final EnglishInflectionData pastPtc =
-      new EnglishInflectionData().pastTense().participle();
+  private static final Supplier<EnglishInflectionData> plural =
+      () -> new EnglishInflectionData().plural();
+  private static final Supplier<EnglishInflectionData> singular =
+      () -> new EnglishInflectionData().singular();
+  private static final Supplier<EnglishInflectionData> feminine =
+      () -> new EnglishInflectionData().feminine();
+  private static final Supplier<EnglishInflectionData> masculine =
+      () -> new EnglishInflectionData().masculine();
+  private static final Supplier<EnglishInflectionData> comparative =
+      () -> new EnglishInflectionData().comparative();
+  private static final Supplier<EnglishInflectionData> superlative =
+      () -> new EnglishInflectionData().superlative();
+  private static final Supplier<EnglishInflectionData> pres3Sg =
+      () -> new EnglishInflectionData().presentTense().thirdPerson().singular();
+  private static final Supplier<EnglishInflectionData> presPtc =
+      () -> new EnglishInflectionData().presentTense().participle();
+  private static final Supplier<EnglishInflectionData> past =
+      () -> new EnglishInflectionData().pastTense();
+  private static final Supplier<EnglishInflectionData> pastPtc =
+      () -> new EnglishInflectionData().pastTense().participle();
 
   private static final Map<String, BiConsumer<InflectedFormSet, String>> inflectionDecoder =
       new HashMap<>();
 
   static BiConsumer<InflectedFormSet, String> ppt = (forms, text) -> {
-    forms.add(pastPtc, text);
-    forms.add(past, text);
+    forms.add(pastPtc.get(), text);
+    forms.add(past.get(), text);
   };
 
   static {
-    inflectionDecoder.put("comparative-form-of", (forms, text) -> forms.add(comparative, text));
-    inflectionDecoder.put("comparative", (forms, text) -> forms.add(comparative, text));
-    inflectionDecoder.put("superlative-form-of", (forms, text) -> forms.add(superlative, text));
-    inflectionDecoder.put("superlative", (forms, text) -> forms.add(superlative, text));
-    inflectionDecoder.put("p-form-of", (forms, text) -> forms.add(plural, text));
-    inflectionDecoder.put("plural", (forms, text) -> forms.add(plural, text));
-    inflectionDecoder.put("singular", (forms, text) -> forms.add(singular, text));
-    inflectionDecoder.put("feminine", (forms, text) -> forms.add(feminine, text));
-    inflectionDecoder.put("masculine", (forms, text) -> forms.add(masculine, text));
-    inflectionDecoder.put("3|s|pres-form-of", (forms, text) -> forms.add(pres3Sg, text));
-    inflectionDecoder.put("pres|ptcp-form-of", (forms, text) -> forms.add(presPtc, text));
-    inflectionDecoder.put("past|ptcp-form-of", (forms, text) -> forms.add(pastPtc, text));
-    inflectionDecoder.put("past-form-of", (forms, text) -> forms.add(past, text));
+    inflectionDecoder.put("comparative-form-of",
+        (forms, text) -> forms.add(comparative.get(), text));
+    inflectionDecoder.put("comparative", (forms, text) -> forms.add(comparative.get(), text));
+    inflectionDecoder.put("superlative-form-of",
+        (forms, text) -> forms.add(superlative.get(), text));
+    inflectionDecoder.put("superlative", (forms, text) -> forms.add(superlative.get(), text));
+    inflectionDecoder.put("p-form-of", (forms, text) -> forms.add(plural.get(), text));
+    inflectionDecoder.put("plural", (forms, text) -> forms.add(plural.get(), text));
+    inflectionDecoder.put("singular", (forms, text) -> forms.add(singular.get(), text));
+    inflectionDecoder.put("feminine", (forms, text) -> forms.add(feminine.get(), text));
+    inflectionDecoder.put("masculine", (forms, text) -> forms.add(masculine.get(), text));
+    inflectionDecoder.put("3|s|pres-form-of", (forms, text) -> forms.add(pres3Sg.get(), text));
+    inflectionDecoder.put("pres|ptcp-form-of", (forms, text) -> forms.add(presPtc.get(), text));
+    inflectionDecoder.put("past|ptcp-form-of", (forms, text) -> forms.add(pastPtc.get(), text));
+    inflectionDecoder.put("past-form-of", (forms, text) -> forms.add(past.get(), text));
     inflectionDecoder.put("past|and|past|ptcp-form-of", ppt);
     inflectionDecoder.put("simple past and past participle", ppt);
 

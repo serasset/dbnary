@@ -333,7 +333,9 @@ public class EnglishInflectionData extends InflectionData {
     return this;
   }
 
-  public EnglishInflectionData nop() {
+  public EnglishInflectionData note(String n) {
+    if (null != n && n.trim().length() > 0)
+      note.add(n);
     return this;
   }
 }

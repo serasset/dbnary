@@ -7,10 +7,11 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.SkosOnt;
+import org.getalp.dbnary.morphology.InflectionData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EnglishInflectionData {
+public class EnglishInflectionData extends InflectionData {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
@@ -18,6 +19,7 @@ public class EnglishInflectionData {
     MASCULINE, FEMININE, NEUTRUM, NOTHING
   }
 
+  @Deprecated
   public enum Cas {
     NOMINATIF, GENITIF, DATIF, ACCUSATIF, NOTHING
   }
@@ -291,6 +293,16 @@ public class EnglishInflectionData {
     return this;
   }
 
+  public EnglishInflectionData feminine() {
+    genre = Genre.FEMININE;
+    return this;
+  }
+
+  public EnglishInflectionData masculine() {
+    genre = Genre.MASCULINE;
+    return this;
+  }
+
   public EnglishInflectionData comparative() {
     degree = Degree.COMPARATIVE;
     return this;
@@ -318,6 +330,10 @@ public class EnglishInflectionData {
 
   public EnglishInflectionData pastTense() {
     tense = Tense.PAST;
+    return this;
+  }
+
+  public EnglishInflectionData nop() {
     return this;
   }
 }

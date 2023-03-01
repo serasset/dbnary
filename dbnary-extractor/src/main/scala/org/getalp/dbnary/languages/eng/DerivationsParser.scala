@@ -16,7 +16,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
   protected var currentEntry: String = _
   protected var source: WikiCharSequence = _
 
-  protected def derivationsAsTemplate: Parser[List[Derivation]] =
+  protected def derivationsAsDerTemplate: Parser[List[Derivation]] = {
     template("""(?:col|der|rel)([12345])?(?:-u)?""".r) ^^ (tmpl => {
       val args = tmpl.cloneArgs.asScala
       // Handle col
@@ -31,6 +31,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
       //val es: List[Entry[String, WikiText#WikiContent]] = args.entrySet().toList
       args.flatMap(tuple => processDerTemplateArgs(tuple._1, tuple._2)).toList
     })
+  }
 
   protected def processDerTemplateArgs(k: String, v: WikiText#WikiContent): List[Derivation] = {
     if (StringUtils.isNumeric(k)) {
@@ -168,7 +169,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
   })
 
   protected def derivationSection: Parser[List[Derivation]] =
-    rep(derivationsAsTemplate | derivationsAsLink | derivationAsListItem | junk) ^^ (l => l.flatten)
+    rep(derivationsAsDerTemplate | derivationsAsLink | derivationAsListItem | junk) ^^ (l => l.flatten)
 
 
   protected def parseDerivations(input: WikiCharSequence, entry: String): List[Derivation] = {

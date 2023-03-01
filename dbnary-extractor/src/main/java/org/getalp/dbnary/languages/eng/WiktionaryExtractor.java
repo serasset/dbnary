@@ -316,12 +316,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             && pageName.equals(headword.substring(0, headword.length() - 1))));
   }
 
-  private void extractDefinitionsOld(WikiContent text) {
-    // TODO: use the wiki content directly
-    extractDefinitions(text.getBeginIndex(), text.getEndIndex());
-  }
-
-
   private void extractDefinitions(WikiContent text) {
     ClassBasedFilter indentedItems = new ClassBasedFilter();
     indentedItems.allowIndentedItem();
@@ -448,76 +442,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     DerivationsParser dp = new DerivationsParser(this.getWiktionaryPageName());
     dp.extractDerivations(section, ewdh);
   }
-
-  private static final String derivationTemplatesRegex = "(?:col|der|rel)([12345])?(?:-u)?";
-  private static final String punctuationRegex = "[\\s\\p{Punct}]*";
-  private static final Pattern derivationTemplatesPattern =
-      Pattern.compile(derivationTemplatesRegex);
-  private static final Pattern punctuationPattern = Pattern.compile(punctuationRegex);
-  private final Matcher derivationTemplate = derivationTemplatesPattern.matcher("");
-  private final Matcher punctuation = punctuationPattern.matcher("");
-
-  private void extractDerivationList(Token token) {
-    Template t = token.asTemplate();
-    derivationTemplate.reset(t.getName().trim());
-    if (derivationTemplate.matches()) {
-      Map<String, String> args = t.cloneParsedArgs();
-      // Handle col
-      if (args.containsKey("title")) {
-        log.debug("Non empty title in derivation template: {} || {}", args.remove("title"),
-            getWiktionaryPageName());
-      }
-      if (!args.containsKey("lang")) {
-        // the language arg is arg 1
-        args.remove("1");
-      }
-      args.remove("sc");
-      args.remove("sort");
-      args.remove("collapse");
-      args.entrySet().forEach(e -> {
-        if (StringUtils.isNumeric(e.getKey())) {
-          WikiContent valContent = t.getArg(e.getKey());
-          if (valContent.wikiTokens().isEmpty()) {
-            // the value is a string
-            ewdh.registerDerivation(e.getValue());
-          } else {
-            valContent.tokens().forEach(this::extractLinkAsDerivation);
-          }
-        } else {
-          log.debug("Derivation: Unexpected arg in derivation template: {} || {}", e,
-              getWiktionaryPageName());
-        }
-      });
-    } else {
-      log.debug("Derivation: Unexpected derivation template: {} || {}", t, getWiktionaryPageName());
-    }
-  }
-
-  private void extractLinkAsDerivation(Token tok) {
-    String text;
-    if (tok instanceof Text && (text = tok.getText().trim()).length() > 0) {
-      punctuation.reset(text);
-      if (!punctuation.matches()) {
-        log.debug("Derivation: Unexpected Text token in a complex derivation arg: \"{}\" || {}",
-            tok, getWiktionaryPageName());
-      }
-    } else if (tok instanceof Template) {
-      Template valueTmpl = tok.asTemplate();
-      String name = valueTmpl.getName().trim();
-      if (name.equalsIgnoreCase("l") || name.equals("link")) {
-        ewdh.registerDerivation(valueTmpl.getParsedArg("2"));
-      } else {
-        log.debug("Derivation: Unexpected template in a complex derivation arg: {} || {}",
-            valueTmpl, getWiktionaryPageName());
-      }
-    } else if (tok instanceof InternalLink) {
-      ewdh.registerDerivation(tok.asInternalLink().getTargetText());
-    } else {
-      log.debug("Derivation: Unexpected token in a complex derivation arg: {} || {}", tok,
-          getWiktionaryPageName());
-    }
-  }
-
 
   // TODO: process * {{l|pt|mundinho}}, {{l|pt|mundozinho}} {{gloss|diminutives}}
   // * {{l|pt|mundão}} {{gloss|augmentative}}

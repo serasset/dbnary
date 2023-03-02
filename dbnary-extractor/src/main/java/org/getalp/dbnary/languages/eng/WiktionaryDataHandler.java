@@ -1,13 +1,12 @@
 package org.getalp.dbnary.languages.eng;
 
+import jakarta.xml.bind.DatatypeConverter;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import jakarta.xml.bind.DatatypeConverter;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Model;
@@ -25,15 +24,13 @@ import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OliaOnt;
-import org.getalp.dbnary.commons.HierarchicalSenseNumber;
-import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.PronunciationPair;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.SkosOnt;
+import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.model.NymRelation;
 import org.getalp.iso639.ISO639_3;
-import org.getalp.model.ontolex.LexicalForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
   /**
    * a HashSet to store the name of etymtree pages that have already been extracted
@@ -509,10 +506,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     if (pronunciations != null) {
       for (PronunciationPair pronunciation : pronunciations) {
-        // TODO: deprecating lexinfo:pronunciation in favour of ontolex:phoneticRep, remove
+        // DONE: deprecating lexinfo:pronunciation in favour of ontolex:phoneticRep, remove
         // the former after a certain period.
-        props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation,
-            aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+        // props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation,
+        // aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
         props.add(PropertyObjectPair.get(OntolexOnt.phoneticRep,
             aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
       }
@@ -575,6 +572,11 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   }
 
+  public void addWrittenRep(String word) {
+    if (currentLexEntry != null) {
+      aBox.add(currentLexEntry, OntolexOnt.writtenRep, word, getCurrentEntryLanguage());
+    }
+  }
 
   public void uncountable() {
     if (currentLexEntry == null) {

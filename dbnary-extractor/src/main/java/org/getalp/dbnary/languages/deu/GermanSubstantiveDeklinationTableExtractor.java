@@ -5,22 +5,42 @@ import java.util.List;
 import org.getalp.dbnary.languages.deu.GermanInflectionData.Cas;
 import org.getalp.dbnary.languages.deu.GermanInflectionData.GNumber;
 import org.getalp.dbnary.languages.deu.GermanInflectionData.Genre;
+import org.getalp.dbnary.morphology.InflectedFormSet;
 import org.getalp.dbnary.morphology.InflectionData;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtractor {
-  private Logger log = LoggerFactory.getLogger(GermanSubstantiveDeklinationTableExtractor.class);
+  private final Logger log =
+      LoggerFactory.getLogger(GermanSubstantiveDeklinationTableExtractor.class);
 
   public GermanSubstantiveDeklinationTableExtractor() {
     super();
   }
 
   @Override
+  public InflectedFormSet parseHTML(String htmlCode, String pagename) {
+    return super.parseHTML(htmlCode, pagename);
+  }
+
+  @Override
+  protected boolean isHeaderCell(Element cell) {
+    // German table building has a bug generating a td cell instead of a th cell in case of
+    // different plurals
+    if (cell.tagName().equalsIgnoreCase("td")) {
+      Elements anchors = cell.select("a");
+      if (anchors.stream().anyMatch(a -> a.attr("href").startsWith("/Hilfe:")))
+        return true;
+    }
+    return super.isHeaderCell(cell);
+  }
+
+  @Override
   protected List<InflectionData> getInflectionDataFromCellContext(List<String> context) {
     GermanInflectionData inflection = new GermanInflectionData();
     boolean isArticleColumn = false;
-    boolean hasGender = false;
     String numberIndex;
     for (String h : context) {
       h = h.trim();
@@ -37,7 +57,7 @@ public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtra
           inflection.number = GNumber.SINGULAR;
           numberIndex = getNumberIndex(h);
           if (!numberIndex.isEmpty()) {
-            inflection.note.add("number:" + h);
+            inflection.note.add("number:" + numberIndex);
           }
           break;
         case "Singular m":
@@ -60,22 +80,19 @@ public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtra
           // (1-4)
           inflection.number = GNumber.PLURAL;
           numberIndex = getNumberIndex(h);
-          log.debug("h={} numberIndex={}", h, numberIndex);
+          // log.debug("h={} numberIndex={}", h, numberIndex);
           if (!numberIndex.isEmpty()) {
-            inflection.note.add("number:" + h);
+            inflection.note.add("number:" + numberIndex);
           }
           break;
         case "Maskulinum":
           inflection.genre = Genre.MASCULIN;
-          hasGender = true;
           break;
         case "Femininum":
           inflection.genre = Genre.FEMININ;
-          hasGender = true;
           break;
         case "Neutrum":
           inflection.genre = Genre.NEUTRUM;
-          hasGender = true;
           break;
         case "Artikel":
           isArticleColumn = true;
@@ -106,11 +123,6 @@ public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtra
     }
     if (isArticleColumn) {
       return null;
-    }
-    // check whether Substantive does have a gender - warn otherwise
-    // TODO: not quite sure what to do. One possibility is to guess Gender from the article
-    if (!hasGender) {
-      log.debug("Warning: no gender in Substantive entry.");
     }
     List<InflectionData> inflections = new ArrayList<>();
     inflections.add(inflection);

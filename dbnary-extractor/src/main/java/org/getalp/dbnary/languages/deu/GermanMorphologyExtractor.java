@@ -6,12 +6,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.regex.Pattern;
+import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.languages.deu.GermanInflectionData.Degree;
 import org.getalp.dbnary.morphology.InflectedFormSet;
-import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.morphology.InflectionData;
 import org.getalp.dbnary.tools.StringDistance;
 import org.getalp.dbnary.wiki.WikiText;
@@ -30,7 +29,7 @@ public class GermanMorphologyExtractor {
   protected final GermanKonjugationExtractorWikiModel konjugationExtractor;
   protected final GermanSubstantiveDeklinationExtractorWikiModel substantivDeklinationExtractor;
 
-  private static HashSet<String> ignoredTemplates;
+  private static final HashSet<String> ignoredTemplates;
 
   // private boolean reflexiv=false;
   static {
@@ -49,7 +48,7 @@ public class GermanMorphologyExtractor {
     ignoredTemplates.add("Wort des Jahres");
   }
 
-  private Logger log = LoggerFactory.getLogger(GermanMorphologyExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(GermanMorphologyExtractor.class);
 
   public GermanMorphologyExtractor(IWiktionaryDataHandler wdh, WiktionaryPageSource wi) {
     this.wdh = wdh;
@@ -59,7 +58,7 @@ public class GermanMorphologyExtractor {
     konjugationExtractor =
         new GermanKonjugationExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
     substantivDeklinationExtractor = new GermanSubstantiveDeklinationExtractorWikiModel(wdh, wi,
-        new Locale("de"), "/${Bild}", "/${Titel}");
+        new Locale("de"), "/${image}", "/${title}");
   }
 
   public void extractMorphologicalData(String wikiSourceText, String pageName) {
@@ -77,10 +76,11 @@ public class GermanMorphologyExtractor {
 
       if ("Deutsch Substantiv Übersicht".equals(templateName)
           || "Deutsch Toponym Übersicht".equals(templateName)
-          || "Deutsch Nachname Übersicht".equals(templateName)) {
+          || "Deutsch Nachname Übersicht".equals(templateName)
+          || "Deutsch Vorname Übersicht m".equals(templateName)) {
         extractMorphologicalSignature(wt);
         // TODO: extract the data from generated table, so that it is less fragile.
-        extractFormsWithModel(wt.toString(), pageName, substantivDeklinationExtractor);
+        extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
       } else if ("Deutsch Adjektiv Übersicht".equals(templateName)) {
         // DONE fetch and expand deklination page and parse all tables.
         // TODO: check if such template may be used on substantivs
@@ -105,10 +105,10 @@ public class GermanMorphologyExtractor {
         String conjugationPage = "Flexion:" + pageName;
         extractFormsPageWithModel(conjugationPage, pageName, konjugationExtractor);
       } else if (templateName.equals("Deutsch adjektivische Deklination")) {
-        extractFormsWithModel(wt.toString(), pageName, substantivDeklinationExtractor);
+        extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
       } else if (templateName.startsWith("Deutsch adjektivische Deklination ")) {
         // Will expand to Deutsch adjektivische Deklination that will be caught afterwards.
-        extractFormsWithModel(wt.toString(), pageName, substantivDeklinationExtractor);
+        extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
       } else {
         log.debug("Morphology Extraction: Caught template call: {} --in-- {}", templateName,
             pageName);
@@ -117,9 +117,9 @@ public class GermanMorphologyExtractor {
     }
   }
 
-  private static ArrayList<String> cases = new ArrayList<>();
-  private static ArrayList<String> numbers = new ArrayList<>();
-  private static ArrayList<String> substTmplKeys = new ArrayList<>();
+  private static final ArrayList<String> cases = new ArrayList<>();
+  private static final ArrayList<String> numbers = new ArrayList<>();
+  private static final ArrayList<String> substTmplKeys = new ArrayList<>();
   static {
     cases.add("Nominativ");
     cases.add("Genitiv");
@@ -135,9 +135,6 @@ public class GermanMorphologyExtractor {
       }
     }
   }
-
-
-  private static final Pattern dashes = Pattern.compile("[\u2010-\u2015]+");
 
   private void extractMorphologicalSignature(Template wt) {
 
@@ -179,8 +176,7 @@ public class GermanMorphologyExtractor {
     signature.setLength(signature.length() - 1);
     // TODO: treat defective cases (kein plural, etc.)
 
-    log.debug("SUBSTANTIVE MORPHOLOGY @ {} >SIGNATURE: {}", wdh.currentPagename(),
-        signature.toString());
+    log.debug("SUBSTANTIVE MORPHOLOGY @ {} >SIGNATURE: {}", wdh.currentPagename(), signature);
   }
 
   private void addFormSignature(String arg, StringBuilder signature) {
@@ -220,8 +216,8 @@ public class GermanMorphologyExtractor {
             wdh.currentPagename());
       }
 
-      value = value.replaceAll("<(?:/)?small>", "");
-      for (String form : value.split("(?:<br(?: */)?>)|(?:,\\s*)")) {
+      value = value.replaceAll("</?small>", "");
+      for (String form : value.split("<br(?: */)?>|,\\s*")) {
         addForm(inflection.toPropertyObjectMap(), form.trim());
       }
     }
@@ -250,6 +246,14 @@ public class GermanMorphologyExtractor {
     }
 
     extractFormsWithModel(subPageContent, pageName, model);
+  }
+
+  private void extractFormsWithModel(Template template, String pageName,
+      GermanTableExtractorWikiModel model) {
+    model.setPageName(pageName);
+    InflectedFormSet forms = model.parseTables(template);
+    model.postProcessForms(template, forms);
+    registerAllForms(forms);
   }
 
   private void extractFormsWithModel(String wikiCode, String pageName,

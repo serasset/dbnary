@@ -16,7 +16,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
   protected var currentEntry: String = _
   protected var source: WikiCharSequence = _
 
-  protected def derivationsAsTemplate: Parser[List[Derivation]] =
+  protected def derivationsAsDerTemplate: Parser[List[Derivation]] = {
     template("""(?:col|der|rel)([12345])?(?:-u)?""".r) ^^ (tmpl => {
       val args = tmpl.cloneArgs.asScala
       // Handle col
@@ -31,17 +31,13 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
       //val es: List[Entry[String, WikiText#WikiContent]] = args.entrySet().toList
       args.flatMap(tuple => processDerTemplateArgs(tuple._1, tuple._2)).toList
     })
+  }
 
   protected def processDerTemplateArgs(k: String, v: WikiText#WikiContent): List[Derivation] = {
     if (StringUtils.isNumeric(k)) {
       val valContent = v
-      if (valContent.wikiTokens.isEmpty) { // the value is a string
-        List(Derivation(valContent.toString.trim, null))
-      }
-      else {
-        val valueParser = new DerivationsParser(page)
-        valueParser.parseDerivationValues(new WikiCharSequence(valContent), currentEntry)
-      }
+      val valueParser = new DerivationsParser(page)
+      valueParser.parseDerivationValues(new WikiCharSequence(valContent), currentEntry)
     }
     else {
       logger.debug("Derivation: Unexpected arg in derivation template: {} -> {} || {}", k, v, pagename)
@@ -49,8 +45,16 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
     }
   }
 
-  protected def derivationNotes: Parser[String] =
+  protected def derivationNotes: Parser[List[String]] = rep(plainNotes | inlineModifiers)
+
+  protected def plainNotes: Parser[String] =
     "\\([^)]*\\)".r ^^ (s => {
+      logger.debug("Derivations: ignoring notes `{}` in {}", s, pagename)
+      s
+    })
+
+  protected def inlineModifiers: Parser[String] =
+    "<[^>]*>".r ^^ (s => {
       logger.debug("Derivations: ignoring notes `{}` in {}", s, pagename)
       s
     })
@@ -58,17 +62,17 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
   protected def derivationValue: Parser[List[Derivation]] = derivationValueSequence | junkValue
 
   protected def junkValue: Parser[List[Derivation]] = wikiCharSequenceMatching(".*".r) ^^ (s => {
-    logger.debug("Ignoring derivation value (Junk Value): `{}` in {}", s.getSourceContent(s), pagename )
+    logger.debug("Ignoring derivation value (Junk Value): `{}` in {}", s.getSourceContent(s), pagename)
     List.empty
   })
 
   protected def derivationValueSequence: Parser[List[Derivation]] = (
     repsep(
-      (derivationsAsLink | derivationLinkAsTemplate | derivationAsPlainText) <~ opt(derivationNotes),
+      (derivationsAsLink | derivationLinkAsTemplate | derivationAsPlainText) <~ derivationNotes,
       "or|\\p{Punct}*".r
     ) <~ "\\p{Punct}*".r) ^^ (_.flatten)
 
-  protected def derivationAsPlainText: Parser[List[Derivation]] = wikiCharSequenceMatching(("[^" + WikiPattern.RESERVED + "(]+").r) ^^ (
+  protected def derivationAsPlainText: Parser[List[Derivation]] = wikiCharSequenceMatching(("[^" + WikiPattern.RESERVED + "(<]+").r) ^^ (
     s => {
       logger.debug("Derivation Value (Plain Text): {} || {}", s.getSourceContent, pagename)
       List(Derivation(s.getSourceContent, null))
@@ -168,7 +172,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
   })
 
   protected def derivationSection: Parser[List[Derivation]] =
-    rep(derivationsAsTemplate | derivationsAsLink | derivationAsListItem | junk) ^^ (l => l.flatten)
+    rep(derivationsAsDerTemplate | derivationsAsLink | derivationAsListItem | junk) ^^ (l => l.flatten)
 
 
   protected def parseDerivations(input: WikiCharSequence, entry: String): List[Derivation] = {

@@ -205,7 +205,7 @@ public abstract class TableExtractor extends HtmlTableHandler {
     // there are cells with <br> and commas to separate different values: split them
     // get rid of spurious html-formatting (<nbsp> <small> <i> etc.)
     Set<String> forms = new HashSet<>();
-    Elements anchors = cell.select("a");
+    Elements anchors = cell.select("a, strong");
 
     if (anchors.isEmpty()) {
       String cellText = cell.html();

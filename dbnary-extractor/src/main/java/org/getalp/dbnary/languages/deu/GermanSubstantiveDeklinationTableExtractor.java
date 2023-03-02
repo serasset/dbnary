@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtractor {
-  private Logger log = LoggerFactory.getLogger(GermanSubstantiveDeklinationTableExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(GermanSubstantiveDeklinationTableExtractor.class);
 
   public GermanSubstantiveDeklinationTableExtractor() {
     super();
@@ -81,7 +81,7 @@ public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtra
           numberIndex = getNumberIndex(h);
           // log.debug("h={} numberIndex={}", h, numberIndex);
           if (!numberIndex.isEmpty()) {
-            inflection.note.add("number:" + h);
+            inflection.note.add("number:" + numberIndex);
           }
           break;
         case "Maskulinum":

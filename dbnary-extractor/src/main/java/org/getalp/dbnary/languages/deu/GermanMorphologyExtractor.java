@@ -59,7 +59,7 @@ public class GermanMorphologyExtractor {
     konjugationExtractor =
         new GermanKonjugationExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
     substantivDeklinationExtractor = new GermanSubstantiveDeklinationExtractorWikiModel(wdh, wi,
-        new Locale("de"), "/${Bild}", "/${Titel}");
+        new Locale("de"), "/${image}", "/${title}");
   }
 
   public void extractMorphologicalData(String wikiSourceText, String pageName) {
@@ -80,7 +80,7 @@ public class GermanMorphologyExtractor {
           || "Deutsch Nachname Übersicht".equals(templateName)) {
         extractMorphologicalSignature(wt);
         // TODO: extract the data from generated table, so that it is less fragile.
-        extractFormsWithModel(wt.toString(), pageName, substantivDeklinationExtractor);
+        extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
       } else if ("Deutsch Adjektiv Übersicht".equals(templateName)) {
         // DONE fetch and expand deklination page and parse all tables.
         // TODO: check if such template may be used on substantivs
@@ -105,10 +105,10 @@ public class GermanMorphologyExtractor {
         String conjugationPage = "Flexion:" + pageName;
         extractFormsPageWithModel(conjugationPage, pageName, konjugationExtractor);
       } else if (templateName.equals("Deutsch adjektivische Deklination")) {
-        extractFormsWithModel(wt.toString(), pageName, substantivDeklinationExtractor);
+        extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
       } else if (templateName.startsWith("Deutsch adjektivische Deklination ")) {
         // Will expand to Deutsch adjektivische Deklination that will be caught afterwards.
-        extractFormsWithModel(wt.toString(), pageName, substantivDeklinationExtractor);
+        extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
       } else {
         log.debug("Morphology Extraction: Caught template call: {} --in-- {}", templateName,
             pageName);
@@ -250,6 +250,14 @@ public class GermanMorphologyExtractor {
     }
 
     extractFormsWithModel(subPageContent, pageName, model);
+  }
+
+  private void extractFormsWithModel(Template template, String pageName,
+      GermanTableExtractorWikiModel model) {
+    model.setPageName(pageName);
+    InflectedFormSet forms = model.parseTables(template);
+    model.postProcessForms(template, forms);
+    registerAllForms(forms);
   }
 
   private void extractFormsWithModel(String wikiCode, String pageName,

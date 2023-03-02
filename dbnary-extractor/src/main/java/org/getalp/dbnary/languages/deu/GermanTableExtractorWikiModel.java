@@ -115,8 +115,6 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
       for (Token token : txt.templatesOnUpperLevel()) {
         Template tmpl = (Template) token;
         if (!ignoredTemplates.contains(tmpl.getName())) {
-          log.trace("MORPH template: {}", tmpl.getName());
-
           String tmplSource = tmpl.toString().replaceAll("\\n", "");
           log.trace("MORPH template call:  {} @ {}", tmplSource, getPageName());
         }
@@ -136,4 +134,11 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
     return getTemplateMap().get(name);
   }
 
+  public InflectedFormSet parseTables(Template template) {
+    return parseTables(template.getText());
+  }
+
+  public void postProcessForms(Template template, InflectedFormSet forms) {
+
+  }
 }

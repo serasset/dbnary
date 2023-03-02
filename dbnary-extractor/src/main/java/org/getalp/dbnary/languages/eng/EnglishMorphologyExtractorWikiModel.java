@@ -13,6 +13,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
+import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.OliaOnt;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.morphology.InflectedFormSet;
@@ -57,6 +59,10 @@ public class EnglishMorphologyExtractorWikiModel extends EnglishWikiModel {
       log.debug("MORPH: unknown form of morph template call");
       forms = new InflectedFormSet();
     }
+    // FOR NOUNS
+    // TODO: scan forms to which one is missing (the canonical form) and specify number on
+    // the canonical form
+    // TODO: add countable feature on the entry if plural is present
     for (Entry<InflectionData, Set<String>> form : forms) {
       delegate.registerInflection(form.getKey(), form.getValue());
     }

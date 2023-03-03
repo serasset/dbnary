@@ -93,7 +93,15 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
         inflection.tense = Tense.PRÄSENS;
       } else if ("Partizip Perfekt".equals(h)) {
         inflection.mode = Mode.PARTIZIPIEN;
-        inflection.tense = Tense.PRÄSENS;
+        inflection.tense = Tense.PERFEKT;
+      } else if ("Partizip II".equals(h)) {
+        inflection.mode = Mode.PARTIZIPIEN;
+        inflection.tense = Tense.PERFEKT;
+        inflection.voice = Voice.PASSIV;
+      } else if ("Partizip II".equals(h)) {
+        inflection.mode = Mode.PARTIZIPIEN;
+        inflection.tense = Tense.PERFEKT;
+        inflection.voice = Voice.PASSIV;
       } else if ("Aktiv".equals(h)) {
         inflection.voice = Voice.AKTIV;
       } else if ("Vorgangspassiv".equals(h)) {
@@ -106,10 +114,10 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
       } else if ("Perfekt Passiv".equals(h)) {
         inflection.tense = Tense.PERFEKT;
         inflection.voice = Voice.PASSIV;
-      } else if ("Gerundivum".equals(h)) { // WARN: title contains 2 lines : "Nur attributive
-                                           // Verwendung"
+      } else if ("Gerundivum".equals(h)) {
+        // WARN: title contains 2 lines : "Nur attributive Verwendung"
         inflection.mode = Mode.GERUNDIVUM;
-      } else if ("Imperative".equals(h)) {
+      } else if ("Imperative".equals(h) || "Imperativ".equals(h)) {
         inflection.mode = Mode.IMPERATIV;
       } else if ("Präsens Vorgangspassiv".equals(h)) {
         inflection.tense = Tense.PRÄSENS;
@@ -130,7 +138,7 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
         inflection.voice = Voice.ZUSTANDSREFLEXIVEPASSIV;
       } else if ("Höflichkeitsform".equals(h)) {
         inflection.person = Person.HÖFLICHKEITSFORM;
-      } else if ("Person".equals(h)) {
+      } else if ("Person".equals(h) || "Wortform".equals(h)) {
       } else if ("Hauptsatzkonjugation".equals(h) || "Nebensatzkonjugation".equals(h)) {
         inflection.note.add(h);
       } else if ("Indikativ".equals(h)) {
@@ -147,7 +155,8 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
           || "du".equals(h)) {
         inflection.number = GNumber.SINGULAR;
         inflection.person = Person.SECOND;
-      } else if ("3. Person Singular".equals(h) || "Sg. 3. Pers.".equals(h) || "er".equals(h)) {
+      } else if ("3. Person Singular".equals(h) || "Sg. 3. Pers.".equals(h) || "er".equals(h)
+          || "er, sie, es".equals(h)) {
         inflection.number = GNumber.SINGULAR;
         inflection.person = Person.THIRD;
       } else if ("1. Person Plural".equals(h) || "Pl. 1. Pers.".equals(h) || "wir".equals(h)) {
@@ -182,18 +191,19 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
       } else if ("Text".equals(h)) {
         inflection.note.clear();
       } else if (h.startsWith("Hilfsverb")) {// TODO: how do I represent the hilfsverbs ?
-      } else if ("Infinitive und Partizipien".equals(h) || "Finite Formen".equals(h)) {// comes from
-                                                                                       // a <h4>
-                                                                                       // tag: just
-                                                                                       // add as a
-                                                                                       // note
+      } else if ("Infinitive und Partizipien".equals(h) || "Finite Formen".equals(h)) {
+        // comes from a <h4> tag: just add as a note
         inflection.note.add(h);
       } else if ("—".equals(h) || "".equals(h) || " ".equals(h)) {
-      } else if ("Flexion der Verbaladjektive".equals(h)) {// This table header is the last one and
-                                                           // cells under it should be ignored.
+      } else if ("Flexion der Verbaladjektive".equals(h)) {
+        // This table header is the last one and cells under it should be ignored.
         return null;
+      } else if ("Singular".equals(h)) {
+        inflection.number = GNumber.SINGULAR;
+      } else if ("Plural".equals(h)) {
+        inflection.number = GNumber.PLURAL;
       } else {
-        log.debug("Deklination Extraction: Unhandled header {} in {}", h, currentEntry);
+        log.debug("Konjugation Extraction: Unhandled header {} in {}", h, currentEntry);
       }
     }
     List<InflectionData> inflections = new ArrayList<>();

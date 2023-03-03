@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiModel {
 
   protected GermanTableExtractor germanTableExtractor;
-  private Logger log = LoggerFactory.getLogger(GermanTableExtractorWikiModel.class);
+  private final Logger log = LoggerFactory.getLogger(GermanTableExtractorWikiModel.class);
   protected IWiktionaryDataHandler wdh;
 
   public GermanTableExtractorWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
@@ -40,8 +40,9 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
     if ("Flexlink".equals(templateName)) {
       // Just display the link name and drop the link...
       writer.append(parameterMap.get("1"));
+    } else if ("Str subr".equals(templateName)) {
+      writer.append(sub(parameterMap));
     } else if ("Str subrev".equals(templateName)) {
-      // subrev & rightc are extensively called and generate a very big Lua overhead
       writer.append(subrev(parameterMap));
     } else if ("Str rightc".equals(templateName)) {
       writer.append(rightc(parameterMap));
@@ -54,8 +55,7 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
     } else if ("Literatur".equals(templateName)) {
       // nop : catch and ignore this template in the context of morphology tables.
     } else {
-      // DONE: catch Str subc and Str subrev for drastic extraction time enhancement
-      // log.trace("Expanding template call: {}", templateName);
+      log.trace("Expanding template call: {}", templateName);
       super.substituteTemplateCall(templateName, parameterMap, writer);
     }
   }
@@ -103,6 +103,30 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
     }
   }
 
+  private String sub(Map<String, String> parameterMap) {
+    String text = parameterMap.getOrDefault("1", "").trim();
+    String from = parameterMap.get("2");
+    String length = parameterMap.get("3");
+    try {
+      int start = (null == from || "".equals(from)) ? 0 : (Integer.parseInt(from) - 1);
+      int len = (null == length || "".equals(length)) ? 0 : (Integer.parseInt(length));
+      if (start < 0) {
+        return "";
+      }
+      if (len <= 0) {
+        return "";
+      }
+      return text.substring(start, start + len);
+    } catch (NumberFormatException e) {
+      log.warn("Number Format Exception in `Str sub` template || {}", getPageName());
+      return "";
+    } catch (IndexOutOfBoundsException e) {
+      log.warn("Index Out Of Bound Exception in `Str sub|{}|{}|{}` template  || {}", text, from,
+          length, getPageName());
+      return "";
+    }
+  }
+
 
   Set<String> ignoredTemplates =
       Stream.of("Adjektivdeklination", "Verbkonjugation", "Adverbdeklination")
@@ -125,12 +149,13 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
     return germanTableExtractor.parseHTML(htmlCode, getPageName());
   }
 
-  private static ITemplateFunction germanInvoke = new GermanInvoke();
+  private static final ITemplateFunction germanInvoke = new GermanInvoke();
 
   @Override
   public ITemplateFunction getTemplateFunction(String name) {
-    if ("#invoke".equals(name))
+    if ("#invoke".equals(name)) {
       return germanInvoke;
+    }
     return getTemplateMap().get(name);
   }
 

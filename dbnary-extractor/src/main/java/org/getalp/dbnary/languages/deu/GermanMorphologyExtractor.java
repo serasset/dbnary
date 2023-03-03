@@ -92,14 +92,14 @@ public class GermanMorphologyExtractor {
         // page.
         // extractAdjectiveDegree returns true(!) iff there are NO further forms ("Keine weiteren
         // Formen") therefore the Flexion: page is only consulted iff false is returned
-        if (!extractAdjectiveLocalTable(wt.getParsedArgs())) {
+        if (extractAdjectiveLocalTable(wt.getParsedArgs())) {
           String deklinationPageName = "Flexion:" + pageName;
           extractFormsPageWithModel(deklinationPageName, pageName, deklinationExtractor);
         } else {
           log.debug("Did not extract Adjectiv declination");
         }
-      } else if ("Deutsch Verb Übersicht".equals(templateName)
-          || ("Verb-Tabelle".equals(templateName))) {
+      } else // Will expand to Deutsch adjektivische Deklination that will be caught afterwards.
+      if ("Deutsch Verb Übersicht".equals(templateName) || ("Verb-Tabelle".equals(templateName))) {
         // DONE get the link to the Konjugationnen page and extract data from the expanded tables
         String hasFlexion = wt.getParsedArg("Flexion");
         if (null != hasFlexion && ("nein".equalsIgnoreCase(hasFlexion = hasFlexion.trim())
@@ -110,10 +110,9 @@ public class GermanMorphologyExtractor {
           String conjugationPage = "Flexion:" + pageName;
           extractFormsPageWithModel(conjugationPage, pageName, konjugationExtractor);
         }
-      } else if (templateName.equals("Deutsch adjektivische Deklination")) {
-        extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
-      } else if (templateName.startsWith("Deutsch adjektivische Deklination ")) {
-        // Will expand to Deutsch adjektivische Deklination that will be caught afterwards.
+      } else if (templateName.equals("Deutsch adjektivische Deklination")
+          || templateName.startsWith("Deutsch adjektivische Deklination ")
+          || templateName.equals("Deutsch adjektivisch Übersicht")) {
         extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
       } else {
         log.debug("Morphology Extraction: Caught template call: {} --in-- {}", templateName,

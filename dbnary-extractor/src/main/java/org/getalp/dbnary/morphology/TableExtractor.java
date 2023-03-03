@@ -18,11 +18,11 @@ public abstract class TableExtractor extends HtmlTableHandler {
 
   protected Set<Element> alreadyParsedTables = new HashSet<>();
   protected String currentEntry = null;
-  private Logger log = LoggerFactory.getLogger(TableExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(TableExtractor.class);
 
   /**
    * returns the inflection data that correspond to current celle context
-   *
+   * <p>
    * The cell context is a list of String that corresponds to all column and row headers + section
    * headers in which the cell appears.
    *
@@ -91,7 +91,7 @@ public abstract class TableExtractor extends HtmlTableHandler {
           continue;
         }
         if (alreadyParsedTables.contains(elt)) {
-          log.debug("Ignoring already parsed table {} in {}", elt.html(), currentEntry);
+          log.debug("Ignoring already parsed table in {}", currentEntry);
           continue;
         }
         if (elt.id().equalsIgnoreCase("toc")) {
@@ -222,6 +222,7 @@ public abstract class TableExtractor extends HtmlTableHandler {
       cellText = cellText.replaceAll("</?strong.*?>", "");
       cellText = cellText.replaceAll("</?span.*?>", "");
       cellText = cellText.replaceAll("</?b.*?>", "");
+      cellText = cellText.replaceAll("</?div.*?>", "");
 
       String[] atomicForms = cellText.split("[,;]");
       for (String atomicForm : atomicForms) {

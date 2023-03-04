@@ -114,8 +114,8 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     super(lang, tdbDir);
   }
 
-  protected List<Resource> getLexicalEntryUsingGloss(Resource structuredGloss) {
-    ArrayList<Resource> res = new ArrayList<>();
+  protected List<List<Resource>> getLexicalEntriesUsingGloss(Resource structuredGloss) {
+    ArrayList<List<Resource>> res = new ArrayList<>();
     Statement s = structuredGloss.getProperty(RDF.value);
     if (null == s) {
       return res;

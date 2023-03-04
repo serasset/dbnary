@@ -6,9 +6,11 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
+import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.commons.PostTranslationDataHandler;
@@ -105,15 +107,23 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
   }
 
   @Override
-  protected List<Resource> getLexicalEntryUsingGloss(Resource structuredGloss) {
-    ArrayList<Resource> res = new ArrayList<>();
+  protected List<List<Resource>> getLexicalEntriesUsingGloss(Resource structuredGloss) {
+    ArrayList<List<Resource>> res = new ArrayList<>();
     // TODO: Should I take the sense Number into account, as it should be correctly processed by
     // the extractor ?
-    Statement s = structuredGloss.getProperty(RDF.value);
-    if (null == s) {
+    Statement senseNumStmt = structuredGloss.getProperty(DBnaryOnt.senseNumber);
+    if (null != senseNumStmt) {
+      String translationSenseNum = senseNumStmt.getString();
+      Pair<Resource, Resource> pair = senses.get(translationSenseNum);
+
+      res.add(List.of(pair.getLeft(), pair.getRight()));
       return res;
     }
-    String gloss = s.getString();
+    Statement glossStmt = structuredGloss.getProperty(RDF.value);
+    if (null == glossStmt) {
+      return res;
+    }
+    String gloss = glossStmt.getString();
     if (null == gloss) {
       return res;
     }

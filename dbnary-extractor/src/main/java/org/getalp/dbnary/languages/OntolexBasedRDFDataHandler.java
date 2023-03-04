@@ -553,19 +553,19 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void registerNewDefinition(String def) {
-    this.registerNewDefinition(def, 1);
+  public Resource registerNewDefinition(String def) {
+    return this.registerNewDefinition(def, 1);
   }
 
   @Override
-  public void registerNewDefinition(String def, int lvl) {
+  public Resource registerNewDefinition(String def, int lvl) {
     if (null == currentLexEntry) {
       log.debug("Registering Word Sense when lex entry is null in \"{}\".",
           this.currentMainLexEntry);
-      return; // Don't register anything if current lex entry is not known.
+      return null; // Don't register anything if current lex entry is not known.
     }
     currentSenseNumber.increment(lvl);
-    registerNewDefinition(def, computeSenseNum());
+    return registerNewDefinition(def, computeSenseNum());
   }
 
   /**
@@ -573,15 +573,16 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
    *
    * @param def the definition string
    * @param senseNumber a string giving the sense number of the definition.
+   * @return
    */
-  public void registerNewDefinition(String def, String senseNumber) {
+  public Resource registerNewDefinition(String def, String senseNumber) {
     if (def == null || def.length() == 0) {
-      return;
+      return null;
     }
     if (null == currentLexEntry) {
       log.debug("Registering Word Sense when lex entry is null in \"{}\".",
           this.currentMainLexEntry);
-      return; // Don't register anything if current lex entry is not known.
+      return null;
     }
 
     // Create new word sense + a definition element
@@ -602,7 +603,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
         shortEditionLanguageCode);
 
     // TODO: Extract domain/usage field from the original definition.
-
+    return currentSense;
   }
 
   private String computeSenseId(String senseNumber) {

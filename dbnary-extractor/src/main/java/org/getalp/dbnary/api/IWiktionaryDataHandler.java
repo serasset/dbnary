@@ -74,8 +74,9 @@ public interface IWiktionaryDataHandler {
    * It is equivalent to registerNewDefinition(def, 1);
    *
    * @param def a string
+   * @return
    */
-  void registerNewDefinition(String def);
+  Resource registerNewDefinition(String def);
 
   /**
    * Register definition def for the current lexical entry.
@@ -85,8 +86,9 @@ public interface IWiktionaryDataHandler {
    *
    * @param def the definition string
    * @param lvl an integer giving the level of the definition (1 or 2).
+   * @return
    */
-  void registerNewDefinition(String def, int lvl);
+  Resource registerNewDefinition(String def, int lvl);
 
   /**
    * Register example ex for the current lexical sense.
@@ -102,11 +104,12 @@ public interface IWiktionaryDataHandler {
    * Register definition def for the current lexical entry.
    * <p>
    * This method will use senseNumber as a sense number for this definition.
-   * 
+   *
    * @param def the definition string
    * @param senseNumber a string giving the sense number of the definition.
+   * @return
    */
-  void registerNewDefinition(String def, String senseNumber);
+  Resource registerNewDefinition(String def, String senseNumber);
 
 
   void registerAlternateSpelling(String alt);

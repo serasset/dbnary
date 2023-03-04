@@ -67,12 +67,13 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
 
   @Override
-  public void registerNewDefinition(String def, String senseNumber) {
-    super.registerNewDefinition(def, senseNumber);
+  public Resource registerNewDefinition(String def, String senseNumber) {
+    Resource sense = super.registerNewDefinition(def, senseNumber);
     if (null != this.currentLexEntry) {
       currentWordsenses.put(senseNumber, new Resource[] {this.currentSense, this.currentLexEntry});
       currentLexEntries.add(this.currentLexEntry);
     }
+    return sense;
   }
 
   public void registerNymRelation(String target, String synRelation, String senseNum) {

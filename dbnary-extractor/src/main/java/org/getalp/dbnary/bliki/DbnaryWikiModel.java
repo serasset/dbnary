@@ -26,12 +26,12 @@ import org.xml.sax.SAXException;
 
 public class DbnaryWikiModel extends WikiModel {
 
-  private static Logger log = LoggerFactory.getLogger(DbnaryWikiModel.class);
+  private static final Logger log = LoggerFactory.getLogger(DbnaryWikiModel.class);
 
-  protected WiktionaryPageSource wi = null;
+  protected WiktionaryPageSource wi;
 
   public DbnaryWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
-    this((WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
+    this(null, locale, imageBaseURL, linkBaseURL);
   }
 
   public DbnaryWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
@@ -79,8 +79,7 @@ public class DbnaryWikiModel extends WikiModel {
 
   protected String expandWikiCode(String wikicode) {
     try {
-      String render = render(new HTMLConverter(), wikicode);
-      return render;
+      return render(new HTMLConverter(), wikicode);
     } catch (IOException e) {
       log.warn("WikiCode Expansion led to Exception in {}", getPageName());
       e.printStackTrace();
@@ -155,10 +154,8 @@ public class DbnaryWikiModel extends WikiModel {
     if (-1 != noIncludeOffset) {
       int noIncludeEndOffset = rawWikiText.indexOf("</noinclude>", noIncludeOffset);
       if (-1 != noIncludeEndOffset) {
-        return prepareForTransclusion(
-            new StringBuffer().append(rawWikiText.substring(0, noIncludeOffset))
-                .append(rawWikiText.substring(noIncludeEndOffset + "</noinclude>".length()))
-                .toString());
+        return prepareForTransclusion(rawWikiText.substring(0, noIncludeOffset)
+            + rawWikiText.substring(noIncludeEndOffset + "</noinclude>".length()));
       }
     }
     int onlyIncludeOffset = rawWikiText.indexOf("<onlyinclude>");
@@ -173,15 +170,14 @@ public class DbnaryWikiModel extends WikiModel {
     if (-1 != includeOnlyOffset) {
       int includeOnlyEndOffset = rawWikiText.indexOf("</includeonly>", noIncludeOffset);
       if (-1 != includeOnlyEndOffset) {
-        String removeTags = new StringBuffer().append(rawWikiText.substring(0, includeOnlyOffset))
-            .append(rawWikiText.substring(includeOnlyOffset + "<includeonly>".length(),
-                includeOnlyEndOffset))
-            .append(rawWikiText.substring(includeOnlyEndOffset + "</includeonly>".length()))
-            .toString();
+        String removeTags = rawWikiText.substring(0, includeOnlyOffset)
+            + rawWikiText.substring(includeOnlyOffset + "<includeonly>".length(),
+                includeOnlyEndOffset)
+            + rawWikiText.substring(includeOnlyEndOffset + "</includeonly>".length());
         return prepareForTransclusion(removeTags);
       }
     }
-    return rawWikiText;
+    return rawWikiText.replaceAll("\\{\\{safesubst:", "{{").replaceAll("\\{\\{subst:", "{{");
   }
 
 }

@@ -76,14 +76,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         .append(")|(?:").append("^===([^=].*)===\\s*$").append(")|(?:")
         .append("^====([^=].*)====\\s*$").append(")").toString();
 
-    sectionPatternString =
-        "(?m)(?:" + headerPatternString + ")";
+    sectionPatternString = "(?m)(?:" + headerPatternString + ")";
 
     sectionPattern = Pattern.compile(sectionPatternString);
 
-    spanishDefinitionPatternString = "(?:"
-        + "^;([^:]*):([^\n\r]*)$" + ")|(?:" + WikiPatterns.macroPatternString
-        + ")|(?:" + "^:([^\n\r]*)$" + ")";
+    spanishDefinitionPatternString = "(?:" + "^;([^:]*):([^\n\r]*)$" + ")|(?:"
+        + WikiPatterns.macroPatternString + ")|(?:" + "^:([^\n\r]*)$" + ")";
     spanishDefinitionPattern = Pattern.compile(spanishDefinitionPatternString, Pattern.MULTILINE);
 
     posMarkers = new HashSet<>(20);

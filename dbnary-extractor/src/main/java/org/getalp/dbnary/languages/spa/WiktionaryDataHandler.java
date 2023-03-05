@@ -115,9 +115,11 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     if (null != senseNumStmt) {
       String translationSenseNum = senseNumStmt.getString();
       Pair<Resource, Resource> pair = senses.get(translationSenseNum);
-
-      res.add(List.of(pair.getLeft(), pair.getRight()));
-      return res;
+      if (null != pair) {
+        // Add the lexical entry first so that the translation id follows the usual convention
+        res.add(List.of(pair.getRight(), pair.getLeft()));
+        return res;
+      }
     }
     Statement glossStmt = structuredGloss.getProperty(RDF.value);
     if (null == glossStmt) {

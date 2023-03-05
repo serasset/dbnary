@@ -8,9 +8,9 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.getalp.dbnary.ExtractionFeature;
-import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiPatterns;
@@ -62,10 +62,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   static {
 
     languageSectionPatternString = "(?:" + "^\\s*\\{\\{" //
-        + "([\\p{Upper}\\-]*)(?:\\|([^\\}]*))?" //
+        + "([\\p{Upper}\\-]*)(?:\\|([^}]*))?" //
         + "\\}\\}" //
         + ")|(?:" //
-        + "^==\\s*\\{\\{lengua\\|(.*)\\}\\}\\s*==\\s*$"//
+        + "^==\\s*\\{\\{lengua\\|(.*)}}\\s*==\\s*$"//
         + ")";
 
     languageSectionPattern = Pattern.compile(languageSectionPatternString, Pattern.MULTILINE);
@@ -77,13 +77,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         .append("^====([^=].*)====\\s*$").append(")").toString();
 
     sectionPatternString =
-        new StringBuilder().append("(?m)(?:").append(headerPatternString).append(")").toString();
+        "(?m)(?:" + headerPatternString + ")";
 
     sectionPattern = Pattern.compile(sectionPatternString);
 
-    spanishDefinitionPatternString = new StringBuilder().append("(?:")
-        .append("^;([^:]*):([^\n\r]*)$").append(")|(?:").append(WikiPatterns.macroPatternString)
-        .append(")|(?:").append("^:([^\n\r]*)$").append(")").toString();
+    spanishDefinitionPatternString = "(?:"
+        + "^;([^:]*):([^\n\r]*)$" + ")|(?:" + WikiPatterns.macroPatternString
+        + ")|(?:" + "^:([^\n\r]*)$" + ")";
     spanishDefinitionPattern = Pattern.compile(spanishDefinitionPatternString, Pattern.MULTILINE);
 
     posMarkers = new HashSet<>(20);
@@ -368,6 +368,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     state = EXTRACTION_STATE.ETYMOLOGY;
     // The header starts at the beginning of the region.
     etymologyBlockStart = m.regionStart();
+    spaWdh.startNewEtymologySection();
   }
 
   private void leaveEtymologyBlock(Matcher m) {

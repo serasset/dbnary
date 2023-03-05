@@ -44,6 +44,12 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
     encodedWiktionaryPageName = uriEncode(currentPage.getName());
   }
 
+  public void startNewEtymologySection() {
+    // Translations, entries and senses are local to an Etymology block in Spanish
+    lexEntries.clear();
+    senses.clear();
+  }
+
   @Override
   public void finalizeLanguageSection() {
     super.finalizeLanguageSection();

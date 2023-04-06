@@ -147,7 +147,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         return;
       }
     }
-    aBox.add(aBox.createStatement(currentLexEntry, RDF.type, OntolexOnt.Word));
+    // Not all non MWE are Words (think affixes, etc.)
+    // aBox.add(aBox.createStatement(currentLexEntry, RDF.type, OntolexOnt.Word));
   }
 
   public void registerDerivation(String derived) {

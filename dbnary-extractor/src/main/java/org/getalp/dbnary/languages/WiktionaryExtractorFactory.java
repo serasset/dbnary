@@ -36,9 +36,8 @@ public class WiktionaryExtractorFactory {
           .println("Security exception while instanciating wiktionary extractor for " + language);
       e.printStackTrace(System.err);
     } catch (InvocationTargetException e) {
-      log.warn(
-          "InvocationTargetException exception while instanciating wiktionary extractor for "
-              + language);
+      log.warn("InvocationTargetException exception while instanciating wiktionary extractor for "
+          + language);
       e.printStackTrace(System.err);
     } catch (NoSuchMethodException e) {
       log.error(

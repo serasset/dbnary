@@ -11,8 +11,7 @@ public class WiktionaryDataHandlerFactory {
   private static final Logger log = LoggerFactory.getLogger(WiktionaryDataHandlerFactory.class);
   private static final String DATA_HANDLER_CLASSNAME = "WiktionaryDataHandler";
 
-  public static IWiktionaryDataHandler getDataHandler(String language,
-      String tdbDir) {
+  public static IWiktionaryDataHandler getDataHandler(String language, String tdbDir) {
     IWiktionaryDataHandler wdh = null;
 
     String cname = WiktionaryDataHandlerFactory.class.getCanonicalName();

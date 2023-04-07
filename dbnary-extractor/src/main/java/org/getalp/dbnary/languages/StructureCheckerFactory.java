@@ -11,8 +11,7 @@ public class StructureCheckerFactory {
   private static final Logger log = LoggerFactory.getLogger(StructureCheckerFactory.class);
   private static final String STRUCTURE_CHECKER_CLASSNAME = "WiktionaryStructureChecker";
 
-  public static IStructureChecker getStructureChecker(String language,
-      String tdbDir) {
+  public static IStructureChecker getStructureChecker(String language, String tdbDir) {
     IStructureChecker wsc = null;
 
     String cname = StructureCheckerFactory.class.getCanonicalName();

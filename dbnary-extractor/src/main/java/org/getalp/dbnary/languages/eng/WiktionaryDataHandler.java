@@ -68,8 +68,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Proper Noun",
         new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
 
-    posAndTypeValueMap.put("Adjective",
-        new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
+    posAndTypeValueMap.put("Adjective", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
     posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
     posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
     posAndTypeValueMap.put("Article", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
@@ -186,7 +185,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return super.initializeLexicalEntry(pos, lexinfoPOS, type);
     } else if (multiWordTypes.contains(type)) {
       Resource entry = super.initializeLexicalEntry(pos, lexinfoPOS, type);
-      if (! OntolexOnt.MultiWordExpression.equals(type)) {
+      if (!OntolexOnt.MultiWordExpression.equals(type)) {
         currentLexicalEntry.addResourceType(OntolexOnt.MultiWordExpression);
         currentLexEntry.addProperty(RDF.type, OntolexOnt.MultiWordExpression);
       }
@@ -206,14 +205,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         Resource multiWordType =
             wordToMutiWordPOSTypes.getOrDefault(type, OntolexOnt.MultiWordExpression);
         Resource entry = super.initializeLexicalEntry(pos, lexinfoPOS, multiWordType);
-        if (! OntolexOnt.MultiWordExpression.equals(multiWordType)) {
+        if (!OntolexOnt.MultiWordExpression.equals(multiWordType)) {
           currentLexicalEntry.addResourceType(OntolexOnt.MultiWordExpression);
           currentLexEntry.addProperty(RDF.type, OntolexOnt.MultiWordExpression);
         }
         return entry;
       } else {
         Resource entry = super.initializeLexicalEntry(pos, lexinfoPOS, type);
-        if (! OntolexOnt.Word.equals(type)) {
+        if (!OntolexOnt.Word.equals(type)) {
           currentLexicalEntry.addResourceType(OntolexOnt.Word);
           currentLexEntry.addProperty(RDF.type, OntolexOnt.Word);
         }

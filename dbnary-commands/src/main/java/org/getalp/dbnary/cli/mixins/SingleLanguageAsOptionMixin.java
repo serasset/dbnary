@@ -6,6 +6,7 @@ import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.ParameterException;
 import picocli.CommandLine.ParentCommand;
+import picocli.CommandLine.ScopeType;
 import picocli.CommandLine.Spec;
 
 public class SingleLanguageAsOptionMixin {
@@ -21,7 +22,8 @@ public class SingleLanguageAsOptionMixin {
 
   @Option(names = {"-l", "--language"}, paramLabel = "LANGUAGE", defaultValue = DEFAULT_LANGUAGE,
       description = "language edition of the dump to be extracted; uses a 2 or 3 iso letter code;"
-          + " Default: ${DEFAULT-VALUE}.")
+          + " Default: ${DEFAULT-VALUE}.",
+      scope = ScopeType.INHERIT)
   public void setLanguage(String language) {
     this.language = LangTools.getCode(language);
     if (null == this.language) {

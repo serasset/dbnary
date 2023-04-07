@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.ParentCommand;
+import picocli.CommandLine.ScopeType;
 import picocli.CommandLine.Spec;
 
 public class BatchExtractorMixin {
@@ -21,19 +22,21 @@ public class BatchExtractorMixin {
   private DBnary parent;
 
   @Option(names = {"--no-compress"}, negatable = true,
-      description = "Compress the resulting extracted files using BZip2. set by default.")
+      description = "Compress the resulting extracted files using BZip2. set by default.",
+      scope = ScopeType.INHERIT)
   private boolean compress = true;
 
   @Option(names = {"-F", "--frompage"}, paramLabel = "NUMBER", defaultValue = "-1",
-      description = "Begin the extraction at the specified page number.")
+      description = "Begin the extraction at the specified page number.", scope = ScopeType.INHERIT)
   private int fromPage = 0;
 
   @Option(names = {"-T", "--topage"}, paramLabel = "NUMBER",
-      description = "Stop the extraction at the specified page number.")
+      description = "Stop the extraction at the specified page number.", scope = ScopeType.INHERIT)
   private int toPage = Integer.MAX_VALUE;
 
   @Option(names = {"--no-tdb"}, negatable = true,
-      description = "Use TDB2 (temporary file storage for extracted models, usefull/necessary for big dumps. set by default.")
+      description = "Use TDB2 (temporary file storage for extracted models, usefull/necessary for big dumps. set by default.",
+      scope = ScopeType.INHERIT)
   private boolean useTdb = true;
 
   // non parameters

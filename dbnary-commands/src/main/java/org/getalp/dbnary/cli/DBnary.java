@@ -13,7 +13,7 @@ import picocli.CommandLine.ScopeType;
 import picocli.CommandLine.Spec;
 
 @Command(name = "dbnary",
-    subcommands = {CheckWiktionarySyntaxQuality.class, ExtractWiktionary.class, HelpCommand.class,
+    subcommands = {CheckWiktionaryQuality.class, ExtractWiktionary.class, HelpCommand.class,
         UpdateAndExtractDumps.class, GetExtractedSemnet.class, DisplayWikiTextTree.class,
         GetRawEntry.class, CompareExtracts.class, GrepInWiktionary.class},
     mixinStandardHelpOptions = true, versionProvider = VersionProvider.class,

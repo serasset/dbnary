@@ -49,8 +49,8 @@
 
     <!-- Maven plugin versions -->
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-    <maven-failsafe-plugin.version>3.0.0-M4</maven-failsafe-plugin.version>
-    <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+    <maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
+    <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
     <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
 
     <!-- Sonar -->
@@ -573,7 +573,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.5.0</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>

@@ -27,6 +27,7 @@ public class GermanMorphologyExtractor {
   private final IWiktionaryDataHandler wdh;
   protected final GermanDeklinationExtractorWikiModel deklinationExtractor;
   protected final GermanKonjugationExtractorWikiModel konjugationExtractor;
+  protected final GermanInPageKonjugationExtractorWikiModel inPageKonjugationExtractor;
   protected final GermanSubstantiveDeklinationExtractorWikiModel substantivDeklinationExtractor;
 
   private static final HashSet<String> ignoredTemplates;
@@ -53,10 +54,12 @@ public class GermanMorphologyExtractor {
   public GermanMorphologyExtractor(IWiktionaryDataHandler wdh, WiktionaryPageSource wi) {
     this.wdh = wdh;
     this.wi = wi;
-    deklinationExtractor =
-        new GermanDeklinationExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
-    konjugationExtractor =
-        new GermanKonjugationExtractorWikiModel(wdh, wi, new Locale("de"), "/${Bild}", "/${Titel}");
+    deklinationExtractor = new GermanDeklinationExtractorWikiModel(wdh, wi, new Locale("de"),
+        "/${image}", "/${title}");
+    konjugationExtractor = new GermanKonjugationExtractorWikiModel(wdh, wi, new Locale("de"),
+        "/${image}", "/${title}");
+    inPageKonjugationExtractor = new GermanInPageKonjugationExtractorWikiModel(wdh, wi,
+        new Locale("de"), "/${image}", "/${title}");
     substantivDeklinationExtractor = new GermanSubstantiveDeklinationExtractorWikiModel(wdh, wi,
         new Locale("de"), "/${image}", "/${title}");
   }
@@ -78,11 +81,9 @@ public class GermanMorphologyExtractor {
           || "Deutsch Toponym Übersicht".equals(templateName)
           || "Deutsch Nachname Übersicht".equals(templateName)
           || "Deutsch Vorname Übersicht m".equals(templateName)) {
-        extractMorphologicalSignature(wt);
-        // TODO: extract the data from generated table, so that it is less fragile.
+        // extractMorphologicalSignature(wt);
         extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
       } else if ("Deutsch Adjektiv Übersicht".equals(templateName)) {
-        // DONE fetch and expand deklination page and parse all tables.
         // TODO: check if such template may be used on substantivs
         if (wdh.currentWiktionaryPos().equals("Substantiv")) {
           log.debug("Adjectiv ubersicht in noun : {} ", wdh.currentPagename());
@@ -91,23 +92,27 @@ public class GermanMorphologyExtractor {
         // page.
         // extractAdjectiveDegree returns true(!) iff there are NO further forms ("Keine weiteren
         // Formen") therefore the Flexion: page is only consulted iff false is returned
-        if (!extractAdjectiveDegree(wt.getParsedArgs())) {
-          // Page name has changed to "Flexion:" String deklinationPageName = pageName + "
-          // (Deklination)";
+        if (extractAdjectiveLocalTable(wt.getParsedArgs())) {
           String deklinationPageName = "Flexion:" + pageName;
-          log.debug("German Adjectiv: try deklinationPageName: {}", deklinationPageName);
           extractFormsPageWithModel(deklinationPageName, pageName, deklinationExtractor);
+        } else {
+          log.debug("Did not extract Adjectiv declination");
         }
-      } else if ("Deutsch Verb Übersicht".equals(templateName)
-          || ("Verb-Tabelle".equals(templateName))) {
+      } else // Will expand to Deutsch adjektivische Deklination that will be caught afterwards.
+      if ("Deutsch Verb Übersicht".equals(templateName) || ("Verb-Tabelle".equals(templateName))) {
         // DONE get the link to the Konjugationnen page and extract data from the expanded tables
-        // Page name has changed to "Flexion:" String conjugationPage = pageName + " (Konjugation)";
-        String conjugationPage = "Flexion:" + pageName;
-        extractFormsPageWithModel(conjugationPage, pageName, konjugationExtractor);
-      } else if (templateName.equals("Deutsch adjektivische Deklination")) {
-        extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
-      } else if (templateName.startsWith("Deutsch adjektivische Deklination ")) {
-        // Will expand to Deutsch adjektivische Deklination that will be caught afterwards.
+        String hasFlexion = wt.getParsedArg("Flexion");
+        if (null != hasFlexion && ("nein".equalsIgnoreCase(hasFlexion = hasFlexion.trim())
+            || "hist".equalsIgnoreCase(hasFlexion) || "historisch".equalsIgnoreCase(hasFlexion)
+            || "keine".equalsIgnoreCase(hasFlexion))) {
+          extractFormsWithModel(wt, pageName, inPageKonjugationExtractor);
+        } else {
+          String conjugationPage = "Flexion:" + pageName;
+          extractFormsPageWithModel(conjugationPage, pageName, konjugationExtractor);
+        }
+      } else if (templateName.equals("Deutsch adjektivische Deklination")
+          || templateName.startsWith("Deutsch adjektivische Deklination ")
+          || templateName.equals("Deutsch adjektivisch Übersicht")) {
         extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
       } else {
         log.debug("Morphology Extraction: Caught template call: {} --in-- {}", templateName,
@@ -120,6 +125,7 @@ public class GermanMorphologyExtractor {
   private static final ArrayList<String> cases = new ArrayList<>();
   private static final ArrayList<String> numbers = new ArrayList<>();
   private static final ArrayList<String> substTmplKeys = new ArrayList<>();
+
   static {
     cases.add("Nominativ");
     cases.add("Genitiv");
@@ -137,8 +143,6 @@ public class GermanMorphologyExtractor {
   }
 
   private void extractMorphologicalSignature(Template wt) {
-
-
 
     // Analyse declinations and compute the regular deltas
     StringBuilder signature = new StringBuilder();
@@ -189,8 +193,15 @@ public class GermanMorphologyExtractor {
 
   }
 
-  private boolean extractAdjectiveDegree(Map<String, String> parameterMap) {
-    boolean noOtherForms = false;
+  /**
+   * Extracts the deklinations from the small table available in the entry page, then returns true
+   * if a more extended Flexion page is available
+   *
+   * @param parameterMap the parameters passed to the adjectival template
+   * @return true if other forms are described in a Flexion Page
+   */
+  private boolean extractAdjectiveLocalTable(Map<String, String> parameterMap) {
+    boolean otherFormsExist = true;
 
     for (Map.Entry<String, String> e : parameterMap.entrySet()) {
       String key = e.getKey();
@@ -201,7 +212,7 @@ public class GermanMorphologyExtractor {
         continue;
       }
       if (key.equalsIgnoreCase("keine weiteren Formen")) {
-        noOtherForms = true;
+        otherFormsExist = false;
         continue;
       }
 
@@ -221,7 +232,7 @@ public class GermanMorphologyExtractor {
         addForm(inflection.toPropertyObjectMap(), form.trim());
       }
     }
-    return noOtherForms;
+    return otherFormsExist;
   }
 
   private void addForm(HashSet<PropertyObjectPair> infl, String s) {

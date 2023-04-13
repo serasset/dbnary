@@ -5,7 +5,7 @@
   <parent>
     <artifactId>dbnary</artifactId>
     <groupId>org.getalp</groupId>
-    <version>3.1.7</version>
+    <version>3.1.8</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -74,7 +74,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>appassembler-maven-plugin</artifactId>
-        <version>1.10</version>
+        <version>2.1.0</version>
         <executions>
           <execution>
             <phase>package</phase>

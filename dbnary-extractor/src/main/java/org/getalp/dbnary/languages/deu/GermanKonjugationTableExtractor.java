@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GermanKonjugationTableExtractor extends GermanTableExtractor {
-  private Logger log = LoggerFactory.getLogger(GermanKonjugationTableExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(GermanKonjugationTableExtractor.class);
 
   public GermanKonjugationTableExtractor() {
     super();
@@ -63,205 +63,147 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
       if (h.startsWith("Gerundivum")) {
         h = "Gerundivum";
       }
-      switch (h) {
-        case "transitive Verwendung":
-        case "transitive":
-          inflection.valency = Valency.TRANSITIVE;
-          break;
-        case "reflexive Verwendung":
-        case "reflexiv":
-          inflection.voice = Voice.REFLEXIV;
-          break;
-        case "intransitive":
-          inflection.valency = Valency.INTRANSITIVE;
-          break;
-        case "(nichterweiterte) Infinitive":
-        case "nichterweitert":
-        case "Infinitive":
-          inflection.mode = Mode.INFINITIV;
-          break;
-        case "erweiterte Infinitive":
-        case "erweitert":
-          inflection.mode = Mode.ZU_INFINITIV;
-          break;
-        case "Partizipien":
-          inflection.mode = Mode.PARTIZIPIEN;
-          break;
-        case "Infinitiv Präsens":
-          inflection.mode = Mode.INFINITIV;
-          inflection.tense = Tense.PRÄSENS;
-          break;
-        case "Infinitiv Perfekt":
-          inflection.mode = Mode.INFINITIV;
-          inflection.tense = Tense.PERFEKT;
-          break;
-        case "Infinitiv Futur I":
-          inflection.mode = Mode.INFINITIV;
-          inflection.tense = Tense.FUTURE1;
-          break;
-        case "Infinitiv Futur II":
-          inflection.mode = Mode.INFINITIV;
-          inflection.tense = Tense.FUTURE2;
-          break;
-        case "Partizip Präsens":
-          inflection.mode = Mode.PARTIZIPIEN;
-          inflection.tense = Tense.PRÄSENS;
-          break;
-        case "Partizip Perfekt":
-          inflection.mode = Mode.PARTIZIPIEN;
-          inflection.tense = Tense.PRÄSENS;
-          break;
-        case "Aktiv":
-          inflection.voice = Voice.AKTIV;
-          break;
-        case "Vorgangspassiv":
-          inflection.voice = Voice.VORGANGSPASSIV;
-          break;
-        case "Zustandspassiv":
-          inflection.voice = Voice.ZUSTANDSPASSIV;
-          break;
-        case "Präsens Aktiv":
-          inflection.tense = Tense.PRÄSENS;
-          inflection.voice = Voice.AKTIV;
-          break;
-        case "Perfekt Passiv":
-          inflection.tense = Tense.PERFEKT;
-          inflection.voice = Voice.PASSIV;
-          break;
-        case "Gerundivum": // WARN: title contains 2 lines : "Nur attributive Verwendung"
-          inflection.mode = Mode.GERUNDIVUM;
-          break;
-        case "Imperative":
-          inflection.mode = Mode.IMPERATIV;
-          break;
-        case "Präsens Vorgangspassiv":
-          inflection.tense = Tense.PRÄSENS;
-          inflection.voice = Voice.VORGANGSPASSIV;
-          break;
-        case "Präsens Zustandspassiv":
-          inflection.tense = Tense.PRÄSENS;
-          inflection.voice = Voice.ZUSTANDSPASSIV;
-          break;
-        case "Perfekt Aktiv":
-          inflection.tense = Tense.PERFEKT;
-          inflection.voice = Voice.AKTIV;
-          break;
-        case "Perfekt Vorgangspassiv":
-          inflection.tense = Tense.PERFEKT;
-          inflection.voice = Voice.VORGANGSPASSIV;
-          break;
-        case "Perfekt Zustandspassiv":
-          inflection.tense = Tense.PERFEKT;
-          inflection.voice = Voice.ZUSTANDSPASSIV;
-          break;
-        case "Zustandsreflexiv":
-          inflection.voice = Voice.ZUSTANDSREFLEXIVEPASSIV;
-          break;
-        case "Höflichkeitsform":
-          inflection.person = Person.HÖFLICHKEITSFORM;
-          break;
-        case "Person":
-          break;
-        case "Hauptsatzkonjugation":
-        case "Nebensatzkonjugation":
-          inflection.note.add(h);
-          break;
-        case "Indikativ":
-          inflection.mode = Mode.INDICATIV;
-          break;
-        case "Konjunktiv I":
-          inflection.mode = Mode.KONJUNKTIV1;
-          break;
-        case "Konjunktiv II":
-          inflection.mode = Mode.KONJUNKTIV2;
-          break;
+      if ("transitive Verwendung".equals(h) || "transitive".equals(h)) {
+        inflection.valency = Valency.TRANSITIVE;
+      } else if ("reflexive Verwendung".equals(h) || "reflexiv".equals(h)) {
+        inflection.voice = Voice.REFLEXIV;
+      } else if ("intransitive".equals(h)) {
+        inflection.valency = Valency.INTRANSITIVE;
+      } else if ("(nichterweiterte) Infinitive".equals(h) || "nichterweitert".equals(h)
+          || "Infinitive".equals(h)) {
+        inflection.mode = Mode.INFINITIV;
+      } else if ("erweiterte Infinitive".equals(h) || "erweitert".equals(h)) {
+        inflection.mode = Mode.ZU_INFINITIV;
+      } else if ("Partizipien".equals(h)) {
+        inflection.mode = Mode.PARTIZIPIEN;
+      } else if ("Infinitiv Präsens".equals(h)) {
+        inflection.mode = Mode.INFINITIV;
+        inflection.tense = Tense.PRÄSENS;
+      } else if ("Infinitiv Perfekt".equals(h)) {
+        inflection.mode = Mode.INFINITIV;
+        inflection.tense = Tense.PERFEKT;
+      } else if ("Infinitiv Futur I".equals(h)) {
+        inflection.mode = Mode.INFINITIV;
+        inflection.tense = Tense.FUTURE1;
+      } else if ("Infinitiv Futur II".equals(h)) {
+        inflection.mode = Mode.INFINITIV;
+        inflection.tense = Tense.FUTURE2;
+      } else if ("Partizip Präsens".equals(h)) {
+        inflection.mode = Mode.PARTIZIPIEN;
+        inflection.tense = Tense.PRÄSENS;
+      } else if ("Partizip Perfekt".equals(h)) {
+        inflection.mode = Mode.PARTIZIPIEN;
+        inflection.tense = Tense.PERFEKT;
+      } else if ("Partizip II".equals(h)) {
+        inflection.mode = Mode.PARTIZIPIEN;
+        inflection.tense = Tense.PERFEKT;
+        inflection.voice = Voice.PASSIV;
+      } else if ("Partizip II".equals(h)) {
+        inflection.mode = Mode.PARTIZIPIEN;
+        inflection.tense = Tense.PERFEKT;
+        inflection.voice = Voice.PASSIV;
+      } else if ("Aktiv".equals(h)) {
+        inflection.voice = Voice.AKTIV;
+      } else if ("Vorgangspassiv".equals(h)) {
+        inflection.voice = Voice.VORGANGSPASSIV;
+      } else if ("Zustandspassiv".equals(h)) {
+        inflection.voice = Voice.ZUSTANDSPASSIV;
+      } else if ("Präsens Aktiv".equals(h)) {
+        inflection.tense = Tense.PRÄSENS;
+        inflection.voice = Voice.AKTIV;
+      } else if ("Perfekt Passiv".equals(h)) {
+        inflection.tense = Tense.PERFEKT;
+        inflection.voice = Voice.PASSIV;
+      } else if ("Gerundivum".equals(h)) {
+        // WARN: title contains 2 lines : "Nur attributive Verwendung"
+        inflection.mode = Mode.GERUNDIVUM;
+      } else if ("Imperative".equals(h) || "Imperativ".equals(h)) {
+        inflection.mode = Mode.IMPERATIV;
+      } else if ("Präsens Vorgangspassiv".equals(h)) {
+        inflection.tense = Tense.PRÄSENS;
+        inflection.voice = Voice.VORGANGSPASSIV;
+      } else if ("Präsens Zustandspassiv".equals(h)) {
+        inflection.tense = Tense.PRÄSENS;
+        inflection.voice = Voice.ZUSTANDSPASSIV;
+      } else if ("Perfekt Aktiv".equals(h)) {
+        inflection.tense = Tense.PERFEKT;
+        inflection.voice = Voice.AKTIV;
+      } else if ("Perfekt Vorgangspassiv".equals(h)) {
+        inflection.tense = Tense.PERFEKT;
+        inflection.voice = Voice.VORGANGSPASSIV;
+      } else if ("Perfekt Zustandspassiv".equals(h)) {
+        inflection.tense = Tense.PERFEKT;
+        inflection.voice = Voice.ZUSTANDSPASSIV;
+      } else if ("Zustandsreflexiv".equals(h)) {
+        inflection.voice = Voice.ZUSTANDSREFLEXIVEPASSIV;
+      } else if ("Höflichkeitsform".equals(h)) {
+        inflection.person = Person.HÖFLICHKEITSFORM;
+      } else if ("Person".equals(h) || "Wortform".equals(h)) {
+      } else if ("Hauptsatzkonjugation".equals(h) || "Nebensatzkonjugation".equals(h)) {
+        inflection.note.add(h);
+      } else if ("Indikativ".equals(h)) {
+        inflection.mode = Mode.INDICATIV;
+      } else if ("Konjunktiv I".equals(h)) {
+        inflection.mode = Mode.KONJUNKTIV1;
+      } else if ("Konjunktiv II".equals(h)) {
+        inflection.mode = Mode.KONJUNKTIV2;
         // Gender/number
-        case "1. Person Singular":
-        case "Sg. 1. Pers.":
-        case "ich":
-          inflection.number = GNumber.SINGULAR;
-          inflection.person = Person.FIRST;
-          break;
-        case "2. Person Singular":
-        case "Sg. 2. Pers.":
-        case "(du)":
-        case "du":
-          inflection.number = GNumber.SINGULAR;
-          inflection.person = Person.SECOND;
-          break;
-        case "3. Person Singular":
-        case "Sg. 3. Pers.":
-        case "er":
-          inflection.number = GNumber.SINGULAR;
-          inflection.person = Person.THIRD;
-          break;
-        case "1. Person Plural":
-        case "Pl. 1. Pers.":
-        case "wir":
-          inflection.number = GNumber.PLURAL;
-          inflection.person = Person.FIRST;
-          break;
-        case "2. Person Plural":
-        case "Pl. 2. Pers.":
-        case "(ihr)":
-        case "ihr":
-          inflection.number = GNumber.PLURAL;
-          inflection.person = Person.SECOND;
-          break;
-        case "3. Person Plural":
-        case "Pl. 3. Pers.":
-        case "sie":
-          inflection.number = GNumber.PLURAL;
-          inflection.person = Person.THIRD;
-          break;
+      } else if ("1. Person Singular".equals(h) || "Sg. 1. Pers.".equals(h) || "ich".equals(h)) {
+        inflection.number = GNumber.SINGULAR;
+        inflection.person = Person.FIRST;
+      } else if ("2. Person Singular".equals(h) || "Sg. 2. Pers.".equals(h) || "(du)".equals(h)
+          || "du".equals(h)) {
+        inflection.number = GNumber.SINGULAR;
+        inflection.person = Person.SECOND;
+      } else if ("3. Person Singular".equals(h) || "Sg. 3. Pers.".equals(h) || "er".equals(h)
+          || "er, sie, es".equals(h)) {
+        inflection.number = GNumber.SINGULAR;
+        inflection.person = Person.THIRD;
+      } else if ("1. Person Plural".equals(h) || "Pl. 1. Pers.".equals(h) || "wir".equals(h)) {
+        inflection.number = GNumber.PLURAL;
+        inflection.person = Person.FIRST;
+      } else if ("2. Person Plural".equals(h) || "Pl. 2. Pers.".equals(h) || "(ihr)".equals(h)
+          || "ihr".equals(h)) {
+        inflection.number = GNumber.PLURAL;
+        inflection.person = Person.SECOND;
+      } else if ("3. Person Plural".equals(h) || "Pl. 3. Pers.".equals(h) || "sie".equals(h)) {
+        inflection.number = GNumber.PLURAL;
+        inflection.person = Person.THIRD;
         // Tenses
-        case "Präsens":
-          inflection.note.clear();
-          inflection.tense = Tense.PRÄSENS;
-          break;
-        case "Präteritum":
-        case "Präteritum (Imperfekt)":
-          inflection.note.clear();
-          inflection.tense = Tense.PRÄTERITUM;
-          break;
-        case "Perfekt":
-          inflection.note.clear();
-          inflection.tense = Tense.PERFEKT;
-          break;
-        case "Plusquamperfekt":
-          inflection.note.clear();
-          inflection.tense = Tense.PLUSQUAMPERFEKT;
-          break;
-        case "Futur I":
-        case "Futur I.":
-          inflection.note.clear();
-          inflection.tense = Tense.FUTURE1;
-          break;
-        case "Futur II":
-        case "Futur II.":
-          inflection.note.clear();
-          inflection.tense = Tense.FUTURE2;
-          break;
-        case "Text":
-          inflection.note.clear();
-          break;
-        case "Hilfsverb":
-          // TODO: how do I represent the hilfsverbs ?
-          break;
-        case "Infinitive und Partizipien":
-        case "Finite Formen":
-          // comes from a <h4> tag: just add as a note
-          inflection.note.add(h);
-          break;
-        case "—":
-        case "":
-        case " ":
-          break;
-        case "Flexion der Verbaladjektive":
-          // This table header is the last one and cells under it should be ignored.
-          return null;
-        default:
-          log.debug("Deklination Extraction: Unhandled header {} in {}", h, currentEntry);
+      } else if ("Präsens".equals(h)) {
+        inflection.note.clear();
+        inflection.tense = Tense.PRÄSENS;
+      } else if ("Präteritum".equals(h) || "Präteritum (Imperfekt)".equals(h)) {
+        inflection.note.clear();
+        inflection.tense = Tense.PRÄTERITUM;
+      } else if ("Perfekt".equals(h)) {
+        inflection.note.clear();
+        inflection.tense = Tense.PERFEKT;
+      } else if ("Plusquamperfekt".equals(h)) {
+        inflection.note.clear();
+        inflection.tense = Tense.PLUSQUAMPERFEKT;
+      } else if ("Futur I".equals(h) || "Futur I.".equals(h)) {
+        inflection.note.clear();
+        inflection.tense = Tense.FUTURE1;
+      } else if ("Futur II".equals(h) || "Futur II.".equals(h)) {
+        inflection.note.clear();
+        inflection.tense = Tense.FUTURE2;
+      } else if ("Text".equals(h)) {
+        inflection.note.clear();
+      } else if (h.startsWith("Hilfsverb")) {// TODO: how do I represent the hilfsverbs ?
+      } else if ("Infinitive und Partizipien".equals(h) || "Finite Formen".equals(h)) {
+        // comes from a <h4> tag: just add as a note
+        inflection.note.add(h);
+      } else if ("—".equals(h) || "".equals(h) || " ".equals(h)) {
+      } else if ("Flexion der Verbaladjektive".equals(h)) {
+        // This table header is the last one and cells under it should be ignored.
+        return null;
+      } else if ("Singular".equals(h)) {
+        inflection.number = GNumber.SINGULAR;
+      } else if ("Plural".equals(h)) {
+        inflection.number = GNumber.PLURAL;
+      } else {
+        log.debug("Konjugation Extraction: Unhandled header {} in {}", h, currentEntry);
       }
     }
     List<InflectionData> inflections = new ArrayList<>();

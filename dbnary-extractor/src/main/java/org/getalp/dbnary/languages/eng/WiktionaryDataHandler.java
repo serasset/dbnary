@@ -62,16 +62,15 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   static {
     // English
-    posAndTypeValueMap.put("Noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Noun", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
     posAndTypeValueMap.put("Proper noun",
-        new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+        new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
     posAndTypeValueMap.put("Proper Noun",
-        new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+        new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
 
-    posAndTypeValueMap.put("Adjective",
-        new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Adjective", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
+    posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
+    posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
     posAndTypeValueMap.put("Article", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
     posAndTypeValueMap.put("Conjunction",
         new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
@@ -92,7 +91,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         new PosAndType(LexinfoOnt.postposition, LexinfoOnt.Postposition));
 
     posAndTypeValueMap.put("Prepositional phrase",
-        new PosAndType(null, OntolexOnt.MultiWordExpression));
+        new PosAndType(null, LexinfoOnt.PrepositionPhrase));
 
     posAndTypeValueMap.put("Pronoun", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
     posAndTypeValueMap.put("Symbol", new PosAndType(LexinfoOnt.symbol, LexinfoOnt.Symbol));
@@ -116,6 +115,52 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // Initialism ?
   }
 
+  protected static final HashMap<Resource, Resource> wordToMutiWordPOSTypes = new HashMap<>();
+  static {
+    wordToMutiWordPOSTypes.put(LexinfoOnt.Noun, LexinfoOnt.NounPhrase);
+    wordToMutiWordPOSTypes.put(LexinfoOnt.Adjective, LexinfoOnt.AdjectivePhrase);
+    wordToMutiWordPOSTypes.put(LexinfoOnt.Verb, LexinfoOnt.VerbPhrase);
+    wordToMutiWordPOSTypes.put(LexinfoOnt.Adverb, LexinfoOnt.NounPhrase);
+  }
+  protected static final HashSet<Resource> multiWordTypes = new HashSet<>();
+  static {
+    multiWordTypes.add(OntolexOnt.MultiWordExpression);
+    multiWordTypes.add(LexinfoOnt.NounPhrase);
+    multiWordTypes.add(LexinfoOnt.AdjectiveFrame);
+    multiWordTypes.add(LexinfoOnt.VerbPhrase);
+    multiWordTypes.add(LexinfoOnt.PrepositionPhrase);
+  }
+
+  protected static final HashSet<Resource> affixTypes = new HashSet<>();
+  static {
+    affixTypes.add(LexinfoOnt.Affix);
+    affixTypes.add(LexinfoOnt.Prefix);
+    affixTypes.add(LexinfoOnt.Infix);
+    affixTypes.add(LexinfoOnt.Suffix);
+  }
+
+  protected static final HashSet<Resource> wordTypes = new HashSet<>();
+  static {
+    wordTypes.add(OntolexOnt.Word);
+    wordTypes.add(LexinfoOnt.Noun);
+    wordTypes.add(LexinfoOnt.ProperNoun);
+    wordTypes.add(LexinfoOnt.CommonNoun);
+    wordTypes.add(LexinfoOnt.Adjective);
+    wordTypes.add(LexinfoOnt.Verb);
+    wordTypes.add(LexinfoOnt.Adverb);
+    wordTypes.add(LexinfoOnt.Preposition);
+    wordTypes.add(LexinfoOnt.Interjection);
+    wordTypes.add(LexinfoOnt.Conjunction);
+    wordTypes.add(LexinfoOnt.Pronoun);
+    wordTypes.add(LexinfoOnt.Numeral);
+    wordTypes.add(LexinfoOnt.Adposition);
+    wordTypes.add(LexinfoOnt.Particle);
+    wordTypes.add(LexinfoOnt.FusedPreposition);
+    wordTypes.add(LexinfoOnt.Determiner);
+    wordTypes.add(LexinfoOnt.Symbol);
+  }
+
+
   public WiktionaryDataHandler(String lang, String tdbDir) {
     super(lang, tdbDir);
   }
@@ -134,20 +179,46 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   private static final Pattern nonWordPunct = Pattern.compile(NonWordPunctRegex);
 
   @Override
-  public void initializeLexicalEntry(String pos) {
-    super.initializeLexicalEntry(pos);
+  protected Resource initializeLexicalEntry(String pos, Resource lexinfoPOS, Resource type) {
 
-    // Compute if the entry is a phrase or a word.
-    Matcher sp = spacePuncts.matcher(currentPage.getName().trim());
-    while (sp.find()) {
-      Matcher nwp = nonWordPunct.matcher(sp.group());
-      if (nwp.find()) {
+    if (affixTypes.contains(type)) {
+      return super.initializeLexicalEntry(pos, lexinfoPOS, type);
+    } else if (multiWordTypes.contains(type)) {
+      Resource entry = super.initializeLexicalEntry(pos, lexinfoPOS, type);
+      if (!OntolexOnt.MultiWordExpression.equals(type)) {
         currentLexicalEntry.addResourceType(OntolexOnt.MultiWordExpression);
-        aBox.add(aBox.createStatement(currentLexEntry, RDF.type, OntolexOnt.MultiWordExpression));
-        return;
+        currentLexEntry.addProperty(RDF.type, OntolexOnt.MultiWordExpression);
+      }
+      return entry;
+    } else {
+      // Compute if the entry is a phrase or a word.
+      boolean isAPhrase = false;
+      Matcher sp = spacePuncts.matcher(currentPage.getName().trim());
+      while (sp.find()) {
+        Matcher nwp = nonWordPunct.matcher(sp.group());
+        if (nwp.find()) {
+          isAPhrase = true;
+          break;
+        }
+      }
+      if (isAPhrase) {
+        Resource multiWordType =
+            wordToMutiWordPOSTypes.getOrDefault(type, OntolexOnt.MultiWordExpression);
+        Resource entry = super.initializeLexicalEntry(pos, lexinfoPOS, multiWordType);
+        if (!OntolexOnt.MultiWordExpression.equals(multiWordType)) {
+          currentLexicalEntry.addResourceType(OntolexOnt.MultiWordExpression);
+          currentLexEntry.addProperty(RDF.type, OntolexOnt.MultiWordExpression);
+        }
+        return entry;
+      } else {
+        Resource entry = super.initializeLexicalEntry(pos, lexinfoPOS, type);
+        if (!OntolexOnt.Word.equals(type)) {
+          currentLexicalEntry.addResourceType(OntolexOnt.Word);
+          currentLexEntry.addProperty(RDF.type, OntolexOnt.Word);
+        }
+        return entry;
       }
     }
-    aBox.add(aBox.createStatement(currentLexEntry, RDF.type, OntolexOnt.Word));
   }
 
   public void registerDerivation(String derived) {

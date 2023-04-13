@@ -18,11 +18,12 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
   static {
     // German
     posAndTypeValueMap.put("Substantiv", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
+    posAndTypeValueMap.put("Zahlklassifikator", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
     posAndTypeValueMap.put("Nachname",
         new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
     posAndTypeValueMap.put("Vorname", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
@@ -55,6 +56,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Artikel", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
     posAndTypeValueMap.put("Conjunction",
         new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
+    posAndTypeValueMap.put("Konjunktion",
+        new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
     posAndTypeValueMap.put("Determiner",
         new PosAndType(LexinfoOnt.determiner, LexinfoOnt.Determiner));
 
@@ -64,9 +67,13 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Cardinal number",
         new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
 
-    posAndTypeValueMap.put("Numeral", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
     posAndTypeValueMap.put("Particle", new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));
-    posAndTypeValueMap.put("Partikel", new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));
+    posAndTypeValueMap.put("Negationspartikel",
+        new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));
+    posAndTypeValueMap.put("Fokuspartikel",
+        new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));
+    posAndTypeValueMap.put("Gradpartikel",
+        new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));
 
     posAndTypeValueMap.put("Preposition",
         new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
@@ -111,7 +118,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Redewendung", new PosAndType(null, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("Numerale", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
 
-    posAndTypeValueMap.put("Toponym", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Grußformel", new PosAndType(null, OntolexOnt.LexicalEntry));
 
     // Fokuspartikel
@@ -125,7 +131,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     /*
      * Enklitikon Konjunktionaladverb Gradpartikel Konjunktion Ortsnamengrundwort Subjunktion
      * Zahlklassifikator Geflügeltes Wort Onomatopoetikum
-     * 
+     *
      * Gebundenes Lexem
      */
 
@@ -133,10 +139,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   public WiktionaryDataHandler(String lang, String tdbDir) {
     super(lang, tdbDir);
-  }
-
-  public static boolean isValidPOS(String pos) {
-    return posAndTypeValueMap.containsKey(pos);
   }
 
   public void addExtraPartOfSpeech(String pos) {

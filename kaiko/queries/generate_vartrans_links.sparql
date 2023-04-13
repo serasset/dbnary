@@ -69,7 +69,7 @@ SPARQL SELECT (sample(?sle) as ?sle), (count(?le) as ?ntle), GROUP_CONCAT(?le; s
       HAVING (COUNT(?le) > 1)
                            ;
 
-## Generating vartrans links for non homonimous lexical entries
+## Generating vartrans links for non homonymous lexical entries
 
 SPARQL INSERT
       { GRAPH <http://kaiko.getalp.org/dbnary/vartrans> {?sle vartrans:translatableAs ?tle} }

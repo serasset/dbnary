@@ -9,7 +9,7 @@ versus=develop
 passlocalupdate=0
 passversusupdate=0
 
-while getopts ":o:vVLD:d" opt; do
+while getopts "o:v:VLDd:" opt; do
   case $opt in
   V)
     verbose=1
@@ -60,7 +60,7 @@ if [[ $passlocalupdate -eq 0 ]]; then
   if [ "$verbose" = 1 ]; then
     echo "Extracting samples with local version"
   fi
-  dbnary-commands/target/appassembler/bin/dbnary update --dir "${NEXT_DIR}" -v --no-compress --sample "$SAMPLE_SIZE" ${DBNARY_OPTS} "$@"
+  echo dbnary-commands/target/appassembler/bin/dbnary update --dir "${NEXT_DIR}" -v --no-compress --sample "$SAMPLE_SIZE" ${DBNARY_OPTS} "$@"
 fi #$passlocalupdate
 ##### PREVIOUS VERSION
 

@@ -60,7 +60,7 @@ if [[ $passlocalupdate -eq 0 ]]; then
   if [ "$verbose" = 1 ]; then
     echo "Extracting samples with local version"
   fi
-  echo dbnary-commands/target/appassembler/bin/dbnary update --dir "${NEXT_DIR}" -v --no-compress --sample "$SAMPLE_SIZE" ${DBNARY_OPTS} "$@"
+  dbnary-commands/target/appassembler/bin/dbnary update --dir "${NEXT_DIR}" -v --no-compress --sample "$SAMPLE_SIZE" ${DBNARY_OPTS} "$@"
 fi #$passlocalupdate
 ##### PREVIOUS VERSION
 

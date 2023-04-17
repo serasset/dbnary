@@ -431,37 +431,37 @@ END
 ## Expand data by linking lexical entries when there is no homonymy
 ## TODO: do it at extraction post processing using JENA on the TDB, so that it may be possible
 #        to also link in ambiguous cases ?
-isql $SERVERPORT dba "$password" <<END
--- turn off transaction isolation to avoid reaching limits in transaction log
-log_enable(2);
-echoln "========================================================" ;
-echoln "=== Linking translatableAs Lexical Entries           ===" ;
-echoln "========================================================" ;
-SPARQL INSERT
-    { GRAPH <http://kaiko.getalp.org/dbnary/vartrans> {?sle vartrans:translatableAs ?tle} }
-WHERE {
-    { SELECT (sample(?sle) as ?sle), (sample(?le) as ?tle) WHERE {
-      ?trans
-        a dbnary:Translation ;
-        dbnary:isTranslationOf ?sle ;
-        dbnary:targetLanguage ?lg ;
-        dbnary:writtenForm ?wf.
-      ?sle a ontolex:LexicalEntry;
-        lexinfo:partOfSpeech ?pos.
-      ?le a ontolex:LexicalEntry;
-        dcterms:language ?lg;
-        rdfs:label ?wf;
-        lexinfo:partOfSpeech ?pos.
-      FILTER (REGEX(STR(?le), "^http://kaiko.getalp.org/dbnary/.../[^_]")) .
-      } GROUP BY ?trans
-        HAVING (COUNT(*) = 1)
-    }
-};
-checkpoint;
-commit WORK;
-checkpoint;
-echoln "=== Loading done                                     ===" ;
-END
+#isql $SERVERPORT dba "$password" <<END
+#-- turn off transaction isolation to avoid reaching limits in transaction log
+#log_enable(2);
+#echoln "========================================================" ;
+#echoln "=== Linking translatableAs Lexical Entries           ===" ;
+#echoln "========================================================" ;
+#SPARQL INSERT
+#    { GRAPH <http://kaiko.getalp.org/dbnary/vartrans> {?sle vartrans:translatableAs ?tle} }
+#WHERE {
+#    { SELECT (sample(?sle) as ?sle), (sample(?le) as ?tle) WHERE {
+#      ?trans
+#        a dbnary:Translation ;
+#        dbnary:isTranslationOf ?sle ;
+#        dbnary:targetLanguage ?lg ;
+#        dbnary:writtenForm ?wf.
+#      ?sle a ontolex:LexicalEntry;
+#        lexinfo:partOfSpeech ?pos.
+#      ?le a ontolex:LexicalEntry;
+#        dcterms:language ?lg;
+#        rdfs:label ?wf;
+#        lexinfo:partOfSpeech ?pos.
+#      FILTER (REGEX(STR(?le), "^http://kaiko.getalp.org/dbnary/.../[^_]")) .
+#      } GROUP BY ?trans
+#        HAVING (COUNT(*) = 1)
+#    }
+#};
+#checkpoint;
+#commit WORK;
+#checkpoint;
+#echoln "=== Loading done                                     ===" ;
+#END
 
 #Shutdown the bootstrap database
 isql $SERVERPORT dba "$password" <<END

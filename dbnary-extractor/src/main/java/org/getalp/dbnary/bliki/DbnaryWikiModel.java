@@ -189,8 +189,8 @@ public class DbnaryWikiModel extends WikiModel {
   public ScribuntoEngine createScribuntoEngine() {
     if (null == fScribuntoEngine) {
       Logger scribuntoLog = LoggerFactory.getLogger(ScribuntoEngine.class);
-      fScribuntoEngine = new ScribuntoLuaEngine(this, compiledScriptCache,
-          scribuntoLog.isDebugEnabled());
+      fScribuntoEngine =
+          new ScribuntoLuaEngine(this, compiledScriptCache, scribuntoLog.isDebugEnabled());
     }
     return fScribuntoEngine;
   }

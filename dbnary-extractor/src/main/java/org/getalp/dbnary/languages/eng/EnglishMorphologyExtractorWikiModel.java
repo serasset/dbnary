@@ -1,8 +1,5 @@
 package org.getalp.dbnary.languages.eng;
 
-import info.bliki.extensions.scribunto.engine.ScribuntoEngine;
-import info.bliki.extensions.scribunto.engine.lua.CompiledScriptCache;
-import info.bliki.extensions.scribunto.engine.lua.ScribuntoLuaEngine;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
@@ -11,11 +8,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.OliaOnt;
-import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.morphology.InflectedFormSet;
 import org.getalp.dbnary.morphology.InflectionData;
@@ -221,13 +213,4 @@ public class EnglishMorphologyExtractorWikiModel extends EnglishWikiModel {
     super.substituteTemplateCall(templateName, parameterMap, writer);
   }
 
-  private CompiledScriptCache compiledScriptCache = new CompiledScriptCache();
-  private ScribuntoEngine fScribuntoEngine = null;
-
-  @Override
-  public ScribuntoEngine createScribuntoEngine() {
-    if (null == fScribuntoEngine)
-      fScribuntoEngine = new ScribuntoLuaEngine(this, compiledScriptCache, log.isDebugEnabled());
-    return fScribuntoEngine;
-  }
 }

@@ -9,7 +9,7 @@ versus=develop
 passlocalupdate=0
 passversusupdate=0
 
-while getopts ":o:vVLD:d" opt; do
+while getopts "o:v:VLDd:" opt; do
   case $opt in
   V)
     verbose=1
@@ -47,7 +47,7 @@ PREVIOUS_DIR="target/evaluation/ci-previous-version"
 SAMPLE_SIZE=10000
 DUMPS=${HOME}/dev/wiktionary/dumps
 
-if [[ $passlocalupdate -eq 0 ]]; then
+if [[ "$passlocalupdate" = 0 ]]; then
   mkdir -p ${NEXT_DIR}
   pushd ${NEXT_DIR}
   [[ -L dumps ]] || ln -s "${DUMPS}" .
@@ -69,7 +69,7 @@ pushd ${PREVIOUS_DIR}
 [[ -L dumps ]] || ln -s "${DUMPS}" .
 popd
 
-if [[ $passversusupdate -eq 0 ]]; then
+if [[ $passversusupdate = 0 ]]; then
   if [ "$verbose" = 1 ]; then
     echo "Cloning previous version"
   fi

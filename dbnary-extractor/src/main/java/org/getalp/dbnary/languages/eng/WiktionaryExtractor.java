@@ -19,7 +19,6 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
@@ -28,14 +27,12 @@ import org.apache.jena.vocabulary.RDF;
 import org.getalp.LangTools;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.PropertyObjectPair;
-import org.getalp.dbnary.SkosOnt;
 import org.getalp.dbnary.Span;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.languages.ita.TranslationLineParser;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.ClassBasedSequenceFilter;
 import org.getalp.dbnary.wiki.WikiCharSequence;
@@ -44,11 +41,9 @@ import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
-import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
-import org.getalp.dbnary.wiki.WikiText.Text;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
@@ -1490,22 +1485,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractPron(WikiContent pronContent) {
     pronContent.templates().stream().map(Token::asTemplate).forEach(template -> {
-      if (template.getName().equals("IPA") || template.getName().equals("IPA-lite")
-          || template.getName().equals("IPAchar")) {
+      if (template.getName().equals("IPA") || template.getName().equals("IPA-lite")) {
+        Map<String, String> args = template.cloneParsedArgs();
+        String lg = args.get("1");
+        args.remove("1");
+        extractPronFromTemplateArgs(lg, args);
+      } else if (template.getName().equals("IPAchar")) {
         Map<String, String> args = template.getParsedArgs();
-        if (!wdh.getCurrentEntryLanguage().equals(args.get("1"))) {
-          log.debug("Non Matching Languages (actual: {} / expected: {}) pronunciation in page {}.",
-              args.get("1"), wdh.getCurrentEntryLanguage(), this.getWiktionaryPageName());
-        }
-        for (int i = 2; i < 9; i++) {
-          String pronunciation = args.get(Integer.toString(i));
-
-          if (null == pronunciation || pronunciation.equals("")) {
-            continue;
-          }
-
-          wdh.registerPronunciation(pronunciation.trim(), "en-fonipa");
-        }
+        extractPronFromTemplateArgs(null, args);
       } else if (shoudlExpandPronTemplate(template)) {
         pronunciationExpander.parsePronunciation(template.toString());
       } else {
@@ -1513,6 +1500,23 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             template.getName(), wdh.currentPagename());
       }
     });
+  }
+
+  private void extractPronFromTemplateArgs(String lg, Map<String, String> args) {
+    if (null != lg && !wdh.getCurrentEntryLanguage().equals(lg)) {
+      log.debug("Non Matching Languages (actual: {} / expected: {}) pronunciation in page {}.",
+          args.get("1"), wdh.getCurrentEntryLanguage(), this.getWiktionaryPageName());
+    }
+    if (args.containsKey("10")) {
+      log.warn("More than 10 pronunciations in {}", getWiktionaryPageName());
+    }
+    for (int i = 1; i < 9; i++) {
+      String pronunciation = args.get(Integer.toString(i));
+      if (null == pronunciation || pronunciation.equals("")) {
+        continue;
+      }
+      wdh.registerPronunciation(pronunciation.trim(), "en-fonipa");
+    }
   }
 
   private static final Set<String> pronTemplateToExpand = new HashSet<>();

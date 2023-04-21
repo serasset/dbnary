@@ -1,5 +1,8 @@
 package org.getalp.dbnary.bliki;
 
+import info.bliki.extensions.scribunto.engine.ScribuntoEngine;
+import info.bliki.extensions.scribunto.engine.lua.CompiledScriptCache;
+import info.bliki.extensions.scribunto.engine.lua.ScribuntoLuaEngine;
 import info.bliki.wiki.filter.HTMLConverter;
 import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.Configuration;
@@ -29,6 +32,8 @@ public class DbnaryWikiModel extends WikiModel {
   private static final Logger log = LoggerFactory.getLogger(DbnaryWikiModel.class);
 
   protected WiktionaryPageSource wi;
+  private CompiledScriptCache compiledScriptCache = new CompiledScriptCache();
+  private ScribuntoEngine fScribuntoEngine = null;
 
   public DbnaryWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
     this(null, locale, imageBaseURL, linkBaseURL);
@@ -180,4 +185,13 @@ public class DbnaryWikiModel extends WikiModel {
     return rawWikiText.replaceAll("\\{\\{safesubst:", "{{").replaceAll("\\{\\{subst:", "{{");
   }
 
+  @Override
+  public ScribuntoEngine createScribuntoEngine() {
+    if (null == fScribuntoEngine) {
+      Logger scribuntoLog = LoggerFactory.getLogger(ScribuntoEngine.class);
+      fScribuntoEngine =
+          new ScribuntoLuaEngine(this, compiledScriptCache, scribuntoLog.isDebugEnabled());
+    }
+    return fScribuntoEngine;
+  }
 }

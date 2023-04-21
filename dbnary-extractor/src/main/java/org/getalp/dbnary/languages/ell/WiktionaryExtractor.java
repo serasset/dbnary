@@ -389,7 +389,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     pronContent.wikiTokens().stream().filter(t -> t instanceof Template).map(Token::asTemplate)
         .filter(t -> "ΔΦΑ".equals(t.getName())).forEach(t -> {
           String pronLg = t.getParsedArg("1");
-          if (!pronLg.startsWith(wdh.getCurrentEntryLanguage()))
+          if (null == pronLg || !pronLg.startsWith(wdh.getCurrentEntryLanguage()))
             log.trace("Pronunciation language incorrect in section template {} ≠ {} in {}",
                 wdh.getCurrentEntryLanguage(), pronLg, wdh.currentPagename());
           wdh.registerPronunciation(t.getParsedArgs().get("2"),

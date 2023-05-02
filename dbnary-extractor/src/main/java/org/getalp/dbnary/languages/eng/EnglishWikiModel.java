@@ -46,10 +46,28 @@ public class EnglishWikiModel extends DbnaryWikiModel {
   @Override
   public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
       throws WikiModelContentException {
-    // give a langname implementation without safesubst
     if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)
         && parsedPagename.pagename.equals("langname")) {
+      // give a langname implementation without safesubst
       return "{{#invoke:languages/templates|getByCode|{{{1}}}|getCanonicalName}}";
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.equals("Jpan-sortkey")) {
+      // Jpan sortkey uses a hack that is not possible in our setting and generates a Lua error
+      // As sortkey is not essential in our setting, just return a stub
+      String rawContent = super.getRawWikiContent(parsedPagename, map);
+      if (null == rawContent)
+        return null;
+      String patchedContent = rawContent.replaceAll(
+          "tonumber\\(mw.getCurrentFrame\\(\\):extensionTag\\('nowiki', ''\\):match'\\(\\[%dA-F\\]\\+\\)', 16\\)",
+          "0");
+      if (logger.isDebugEnabled()) {
+        boolean patched = !patchedContent.equals(rawContent);
+        if (patched)
+          logger.debug("Module:Jpan-sortkey has been patched.");
+        else
+          logger.warn("Module:Jpan-sortkey could not be patched ! Check current implementation.");
+      }
+      return patchedContent;
     }
     return super.getRawWikiContent(parsedPagename, map);
   }

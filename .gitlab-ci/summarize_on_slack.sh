@@ -6,4 +6,4 @@ echo "Sourcing settings from: ${SCRIPT_DIR}/settings"
 source "${SCRIPT_DIR}/settings"
 
 env
-"$NEXT_VERSION_BIN/dbnary-diff-summary" --slack "$DIFFS"
+"$NEXT_VERSION_BIN/dbnary-diff-summary" --discord --next ${DBNARY_CICD_SOURCE_BRANCH} --previous ${DBNARY_CICD_TARGET_BRANCH} "$DIFFS"

@@ -56,6 +56,14 @@ public class SummarizeDifferences extends VerboseCommand {
             .build())
         .addOption(Option.builder().longOpt(STDOUT_OPTION).desc(
             "Display summary on stdout (default if neither slack nor discord specified).")
+            .build())
+        .addOption(Option.builder().longOpt("next").hasArg()
+            .desc(
+                "set the name of the branch that is evaluated.")
+            .build())
+        .addOption(Option.builder().longOpt("previous").hasArg()
+            .desc(
+                "set the name of the branch on which the comparison is based.")
             .build());
   }
 
@@ -74,6 +82,10 @@ public class SummarizeDifferences extends VerboseCommand {
     useSlack = cmd.hasOption(SLACK_OPTION);
     useDiscord = cmd.hasOption(DISCORD_OPTION);
     useTerminal = cmd.hasOption(STDOUT_OPTION) || (!useSlack && !useDiscord);
+    if (originalBranch == null)
+      originalBranch = cmd.getOptionValue("previous");
+    if (destinationBranch == null)
+      destinationBranch = cmd.getOptionValue("next");
     if (remainingArgs.length != 1) {
       printUsage();
       System.exit(1);

@@ -121,6 +121,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (l1.group(1).trim().startsWith("{{ja")) {
       return true;
     }
+    if (l1.group(1).trim().startsWith("{{L|ja")) {
+      return true;
+    }
     if (l1.group(1).trim().startsWith("{{jpn")) {
       return true;
     }

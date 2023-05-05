@@ -23,10 +23,10 @@ public class JapaneseTranslationsExtractor {
   // ignoredTemplates.add("Incorrect");
   // }
 
-  private IWiktionaryDataHandler delegate;
-  private AbstractGlossFilter glossFilter;
+  private final IWiktionaryDataHandler delegate;
+  private final AbstractGlossFilter glossFilter;
 
-  private Logger log = LoggerFactory.getLogger(JapaneseTranslationsExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(JapaneseTranslationsExtractor.class);
 
   public JapaneseTranslationsExtractor(IWiktionaryDataHandler we, AbstractGlossFilter glossFilter) {
     this(we, (WiktionaryPageSource) null, glossFilter);
@@ -202,6 +202,9 @@ public class JapaneseTranslationsExtractor {
               word = "";
               usage = "";
               ETAT = INIT;
+            } else if (macro.equals("T")) {
+              Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
+              langname = LangTools.normalize(argmap.get("1"));
             } else {
               langname = LangTools.normalize(macro);
             }
@@ -333,8 +336,8 @@ public class JapaneseTranslationsExtractor {
               }
               String l = argmap.get("1");
               if (null != l && (null != lang) && !lang.equals(LangTools.getCode(l))) {
-                // System.err.println("Language in t+ macro does not map language in list in ");// +
-                // this.delegate.currentLexEntry());
+                log.debug("Language ({}) in t+ macro does not map language ({}) in list in {}",
+                    LangTools.getCode(l), lang, this.delegate.currentPagename());
               }
               word = argmap.get("2");
               argmap.remove("1");

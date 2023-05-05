@@ -64,6 +64,11 @@
       <version>1.23.0</version>
     </dependency>
     <dependency>
+      <groupId>club.minnced</groupId>
+      <artifactId>discord-webhooks</artifactId>
+      <version>0.8.2</version>
+    </dependency>
+    <dependency>
       <groupId>org.getalp</groupId>
       <artifactId>dbnary-commons</artifactId>
       <version>${project.version}</version>

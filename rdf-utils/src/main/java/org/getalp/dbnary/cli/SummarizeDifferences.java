@@ -1,8 +1,14 @@
 package org.getalp.dbnary.cli;
 
-import static com.slack.api.model.block.Blocks.*;
-import static com.slack.api.model.block.composition.BlockCompositions.*;
+import static com.slack.api.model.block.Blocks.section;
+import static com.slack.api.model.block.composition.BlockCompositions.markdownText;
 
+import club.minnced.discord.webhook.WebhookClient;
+import club.minnced.discord.webhook.send.WebhookEmbed.EmbedField;
+import club.minnced.discord.webhook.send.WebhookEmbed.EmbedTitle;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
+import club.minnced.discord.webhook.send.WebhookMessage;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.slack.api.Slack;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
@@ -32,14 +38,32 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
 
 public class SummarizeDifferences extends VerboseCommand {
+
   protected final static String SLACK_OPTION = "slack";
+  protected final static String DISCORD_OPTION = "discord";
+  protected final static String STDOUT_OPTION = "stdout";
+
+
   static {
-    options.addOption(Option.builder().longOpt(SLACK_OPTION).desc(
-        "Display summary on Slack (using $SLACK_BOT_TOKEN and $SLACK_CHANNEL_ID environment variables).")
-        .build());
+    options
+        .addOption(Option.builder()
+            .longOpt(SLACK_OPTION).desc(
+                "Display summary on Slack (using $SLACK_BOT_TOKEN and $SLACK_CHANNEL_ID environment variables).")
+            .build())
+        .addOption(Option.builder()
+            .longOpt(DISCORD_OPTION).desc(
+                "Display summary on Discord (using DISCORD_CHANNEL_WEBHOOK environment variable).")
+            .build())
+        .addOption(Option.builder().longOpt(STDOUT_OPTION).desc(
+            "Display summary on stdout (default if neither slack nor discord specified).")
+            .build());
   }
 
   boolean useSlack = false;
+  boolean useDiscord = false;
+  boolean useTerminal = true;
+  String originalBranch = System.getenv("DBNARY_CICD_SOURCE_BRANCH");
+  String destinationBranch = System.getenv("DBNARY_CICD_TARGET_BRANCH");
 
   public SummarizeDifferences(String[] args) {
     this.loadArgs(args);
@@ -48,10 +72,13 @@ public class SummarizeDifferences extends VerboseCommand {
   @Override
   protected void loadArgs(CommandLine cmd) {
     useSlack = cmd.hasOption(SLACK_OPTION);
+    useDiscord = cmd.hasOption(DISCORD_OPTION);
+    useTerminal = cmd.hasOption(STDOUT_OPTION) || (!useSlack && !useDiscord);
     if (remainingArgs.length != 1) {
       printUsage();
       System.exit(1);
     }
+
   }
 
   @Override
@@ -75,55 +102,95 @@ public class SummarizeDifferences extends VerboseCommand {
   }
 
   private void publishSummary() {
+
     if (useSlack) {
-      try {
-        Slack slack = Slack.getInstance();
+      shoutOnSlack();
+    }
+    if (useDiscord) {
+      shoutOnDiscord();
+    }
+  }
 
-        // If the token is a bot token, it starts with `xoxb-` while if it's a user token, it starts
-        // with `xoxp-`
-        String token = System.getenv("SLACK_BOT_TOKEN");
-        String channelID = System.getenv("SLACK_CHANNEL_ID");
+  private void shoutOnDiscord() {
+    String channelUrl = System.getenv("DISCORD_CHANNEL_WEBHOOK");
 
-        String originalBranch = System.getenv("DBNARY_CICD_SOURCE_BRANCH");
-        String destinationBranch = System.getenv("DBNARY_CICD_TARGET_BRANCH");
+    try (WebhookClient client = WebhookClient.withUrl(channelUrl)) {
+      // Send and forget
 
-        // Initialize an API Methods client with the given token
-        MethodsClient methods = slack.methods(token);
+      WebhookMessage message = createDiscordMessage();
+      client.send(message)
+          .thenAccept((msg) -> System.err.printf("Message with embed has been sent [%s]%n",
+              msg.getId()));
+    }
+  }
 
-        // Build a request object
-        ChatPostMessageRequest request = ChatPostMessageRequest.builder().channel(channelID)
-            .text("I evaluated dbnary " + destinationBranch + " vs " + originalBranch)
-            .blocks(createSlackMessage(originalBranch, destinationBranch)).build();
+  private WebhookMessage createDiscordMessage() {
+    WebhookMessageBuilder builder = new WebhookMessageBuilder();
+    builder.setContent(String.format(
+        "**Extraction sample comparison between branch:%s and branch:%s**", originalBranch,
+        destinationBranch));
 
-        // Get a response as a Java object
-        System.err.println("Posting message : " + request);
-        ChatPostMessageResponse response = methods.chatPostMessage(request);
-        if (!response.isOk()) {
-          System.err.println("Error received from Slack API.");
-          System.err.println(response.getError());
-        }
-
-      } catch (SlackApiException e) {
-        System.err.println("Slack API exception.");
-        System.err.println(e.getLocalizedMessage());
-        e.printStackTrace();
-      } catch (IOException e) {
-        System.err.println("IOException while accessing Slack API.");
-        System.err.println(e.getLocalizedMessage());
-        e.printStackTrace();
+    WebhookEmbedBuilder endolexEmbedBuilder =
+        new WebhookEmbedBuilder().setColor(0x58b9ff)
+            .setTitle(new EmbedTitle("Endolex (editions' languages) datasets", ""));
+    WebhookEmbedBuilder exolexEmbedBuilder =
+        new WebhookEmbedBuilder().setColor(0x8f07b1)
+            .setTitle(new EmbedTitle("Exolex (foreign languages) datasets", ""));
+    data.forEach((model, modelData) -> {
+      if (model.startsWith("exolex")) {
+        exolexEmbedBuilder.addField(
+            new EmbedField(true, capitalize(model), modelData.toDiscordMarkdownString()));
+      } else {
+        endolexEmbedBuilder.addField(
+            new EmbedField(true, capitalize(model), modelData.toDiscordMarkdownString()));
       }
-    } else {
-      System.out.println(createConsoleMessage());
+    });
+    return builder.addEmbeds(endolexEmbedBuilder.build(), exolexEmbedBuilder.build()).build();
+  }
+
+  private void shoutOnSlack() {
+    try {
+      Slack slack = Slack.getInstance();
+
+      // If the token is a bot token, it starts with `xoxb-` while if it's a user token, it starts
+      // with `xoxp-`
+      String token = System.getenv("SLACK_BOT_TOKEN");
+      String channelID = System.getenv("SLACK_CHANNEL_ID");
+
+      // Initialize an API Methods client with the given token
+      MethodsClient methods = slack.methods(token);
+
+      // Build a request object
+      ChatPostMessageRequest request = ChatPostMessageRequest.builder().channel(channelID)
+          .text("I evaluated dbnary " + destinationBranch + " vs " + originalBranch)
+          .blocks(createSlackMessage(originalBranch, destinationBranch)).build();
+
+      // Get a response as a Java object
+      System.err.println("Posting message : " + request);
+      ChatPostMessageResponse response = methods.chatPostMessage(request);
+      if (!response.isOk()) {
+        System.err.println("Error received from Slack API.");
+        System.err.println(response.getError());
+      }
+
+    } catch (SlackApiException e) {
+      System.err.println("Slack API exception.");
+      System.err.println(e.getLocalizedMessage());
+      e.printStackTrace();
+    } catch (IOException e) {
+      System.err.println("IOException while accessing Slack API.");
+      System.err.println(e.getLocalizedMessage());
+      e.printStackTrace();
     }
   }
 
   private List<LayoutBlock> createSlackMessage(String source, String target) {
     List<LayoutBlock> blocks = new ArrayList<>();
     SectionBlock mainBlock = section(section -> section.text(markdownText(
-        "*Results of extraction sample evaluation*\n" + "Branches: " + target + " vs " + source))
+            "*Results of extraction sample evaluation*\n" + "Branches: " + target + " vs " + source))
         .fields(new ArrayList<>()));
     data.forEach((model, modelData) -> mainBlock.getFields()
-        .add(markdownText(modelData.toMarkdownString())));
+        .add(markdownText(modelData.toSlackMarkdownString())));
     blocks.add(mainBlock);
     return blocks;
   }
@@ -131,12 +198,13 @@ public class SummarizeDifferences extends VerboseCommand {
   private String createConsoleMessage() {
     StringBuilder out = new StringBuilder();
     out.append("*Results of extraction sample evaluation*\n");
-    data.forEach((model, modelData) -> out.append(modelData.toMarkdownString()));
+    data.forEach((model, modelData) -> out.append(modelData.toSlackMarkdownString()));
     return out.toString();
   }
 
 
   private static class Diff {
+
     double gain;
     double loss;
     long gainCount;
@@ -170,6 +238,7 @@ public class SummarizeDifferences extends VerboseCommand {
   }
 
   private static class ModelData {
+
     String model;
     Map<String, Diff> diffs = new TreeMap<>();
 
@@ -185,7 +254,7 @@ public class SummarizeDifferences extends VerboseCommand {
       return Optional.ofNullable(diffs.get(language));
     }
 
-    public String toMarkdownString() {
+    public String toSlackMarkdownString() {
       StringBuilder s = new StringBuilder();
       s.append("*").append(capitalize(model)).append("*:\n");
       diffs.forEach((k, v) -> {
@@ -214,6 +283,36 @@ public class SummarizeDifferences extends VerboseCommand {
       });
       return s.toString();
     }
+
+    public String toDiscordMarkdownString() {
+      StringBuilder s = new StringBuilder();
+      diffs.forEach((k, v) -> {
+        s.append("**").append(capitalize(k)).append("**:  ");
+        long gainCount = v.getGainCount() - 1;
+        long lossCount = v.getLossCount() - 1;
+        long max = Math.max(gainCount, lossCount);
+        if (max == -1) {
+          s.append("⁉ ");
+        } else if (max == 0) {
+          s.append(Character.toString(0x1F7E2)); // Green circle
+        } else if (max < 1000) {
+          s.append(Character.toString(0x1F7E0)); // orange circle
+        } else {
+          s.append(Character.toString(0x1F534)); // red circle
+        }
+        s.append(" ");
+        if (gainCount == lossCount) {
+          s.append("➡ ");
+        } else if (gainCount > lossCount) {
+          s.append("↗ ");
+        } else {
+          s.append("↘ ");
+        }
+        s.append("\t +").append(gainCount).append(" / -")
+            .append(lossCount).append("\n");
+      });
+      return s.toString();
+    }
   }
 
   private static String capitalize(String str) {
@@ -231,7 +330,7 @@ public class SummarizeDifferences extends VerboseCommand {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    data.forEach((k, v) -> System.out.println(v.toMarkdownString()));
+    data.forEach((k, v) -> System.out.println(v.toSlackMarkdownString()));
   }
 
   // TODO: restructure the modules to create an aggregate one and make the RDF utils module depend

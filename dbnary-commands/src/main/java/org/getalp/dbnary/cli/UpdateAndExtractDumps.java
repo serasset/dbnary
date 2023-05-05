@@ -695,7 +695,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
     a.add("--endolex");
     a.add(String.join(",", features.getEndolexFeatures().stream().map(ExtractionFeature::toString)
         .toArray(String[]::new)));
-    if (null != features.getExolexFeatures()) {
+    if (null != features.getExolexFeatures() && !features.getExolexFeatures().isEmpty()) {
       a.add("--exolex");
       a.add(String.join(",", features.getExolexFeatures().stream().map(ExtractionFeature::toString)
           .toArray(String[]::new)));

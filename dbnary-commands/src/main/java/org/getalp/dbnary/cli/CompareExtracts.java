@@ -126,8 +126,8 @@ public class CompareExtracts implements Callable<Integer> {
   private void compareExtracts(String lang) {
     features.getEndolexFeatures().forEach(ft -> compare(lang, ft, fromDate, toDate, false));
     features.getExolexFeatures().forEach(ft -> compare(lang, ft, fromDate, toDate, true));
-    features.getEndolexFeatures().forEach(ft -> compare(lang, ft, fromDate, toDate, false));
-    features.getExolexFeatures().forEach(ft -> compare(lang, ft, fromDate, toDate, true));
+    // features.getEndolexFeatures().forEach(ft -> compare(lang, ft, toDate, fromDate, false));
+    // features.getExolexFeatures().forEach(ft -> compare(lang, ft, fromDate, toDate, true));
   }
 
   private void compare(String lang, ExtractionFeature ft, String fromDate, String toDate,

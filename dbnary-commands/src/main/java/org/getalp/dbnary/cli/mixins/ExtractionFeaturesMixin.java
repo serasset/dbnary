@@ -18,7 +18,7 @@ public class ExtractionFeaturesMixin {
   private static final String DEFAULT_OUTPUT_FORMAT = "Turtle";
   private String outputFormat;
 
-  private Set<ExtractionFeature> endolexFeatures;
+  private Set<ExtractionFeature> endolexFeatures = new HashSet<>();;
 
   @Option(names = {"--endolex"}, split = ",", defaultValue = "ontolex",
       description = "Enable the specified features for the endolex extraction "
@@ -30,7 +30,7 @@ public class ExtractionFeaturesMixin {
     endolexFeatures.add(ExtractionFeature.MAIN);
   }
 
-  private Set<ExtractionFeature> exolexFeatures;
+  private Set<ExtractionFeature> exolexFeatures = new HashSet<>();
 
   @Option(names = {"--exolex"}, split = ",",
       description = "Enable the specified features for the exolex (foreign entries) extraction "

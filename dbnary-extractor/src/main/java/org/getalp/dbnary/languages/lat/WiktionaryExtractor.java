@@ -50,26 +50,43 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
     // =={{-la-|Rosa}} ==
-    languageSectionPatternString = "==\\s*\\{\\{-([^-]*)-(?:[^\\}]*)\\}\\}\\s*==";
+    languageSectionPatternString = "==\\s*\\{\\{-([^-]*)-\\|?([^\\}]*)\\}\\}\\s*==";
 
     // ==={{int:wikt-nomen-subst}}===
-    entrySectionPatternString = "===?\\s*\\{\\{int:([^}]*)\\}\\}\\s*=?==";
+    entrySectionPatternString = "===?\\s*\\{\\{(?:int:)?([^}|]*)\\|?([^}]*)\\}\\}\\s*=?==";
 
     posMarkers = new HashMap<>(130);
     ignorablePosMarkers = new HashSet<>(130);
 
     addPos("wikt-nomen-subst", "nomen-subst");
     addPos("wikt-adverbium", "adverbium");
+    addPos("adverbium", "adverbium");
     addPos("wikt-nomen-prop", "nomen-prop");
+    addPos("proprium", "proprium");
     addPos("wikt-verbum", "verbum");
+    addPos("verbum", "verbum");
     addPos("wikt-coniunctio", "coniunctio");
     addPos("wikt-verbum-tr", "verbum-tr");
+    addPos("transitivum", "intransitivum");
     addPos("wikt-verbum-intr", "verbum-intr");
+    addPos("intransitivum", "intransitivum");
     addPos("wikt-pronomen", "pronomen");
+    addPos("pronomen", "pronomen");
     addPos("wikt-nomen-adj", "nomen-adj");
+    addPos("adiectivum", "adiectivum");
     addPos("wikt-participium", "participium");
     addPos("wikt-praep", "praep");
     addPos("wikt-nomen", "nomen");
+    addPos("nomen", "nomen");
+    addPos("substantivum", "substantivum");
+    addPos("abbreviatio", "abbreviatio");
+    addPos("cardinalis", "cardinalis");
+    addPos("ordinalis", "ordinalis");
+    addPos("numerus", "numerus");
+    addPos("interiectio", "interiectio");
+    addPos("participium", "participium");
+    addPos("praepositio", "praepositio");
+    addPos("proverbium", "proverbium");
 
     ignorablePosMarkers.add("-flex-adj-indéf-");
 
@@ -182,6 +199,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public String getLanguageInHeader(Matcher m) {
     if (null != m.group(1)) {
+      if ("lingua".equals(m.group(1))) {
+        Map<String, String> argmap = WikiTool.parseArgs(m.group(2));
+        return argmap.get("1");
+      }
       return m.group(1);
     }
 
@@ -262,10 +283,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (sectionTitle != null) {
       if (ignorablePosMarkers.contains(sectionTitle)) {
         return Block.IGNOREPOS;
-      } else if ((pos = posMarkers.get(sectionTitle)) != null) {
+      } else if ((pos = getPos(m)) != null) {
         context.put("pos", pos);
         return Block.DEFBLOCK;
-      } else if ("wikt-trans".equals(sectionTitle)) {
+      } else if (isTranslation(m)) {
         return Block.TRADBLOCK;
       } else if (isAlternate(sectionTitle)) {
         return Block.ORTHOALTBLOCK;
@@ -275,13 +296,32 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (ignorableSectionMarkers.contains(sectionTitle)) {
         return Block.NOBLOCK;
       } else {
-        log.debug("Unknown section title {} in {}", sectionTitle, this.getWiktionaryPageName());
+        log.debug("Unknown section title {} in {}", m.group(), this.getWiktionaryPageName());
         return Block.NOBLOCK;
       }
     } else {
       log.debug("Null section title in {}", this.getWiktionaryPageName());
       return Block.NOBLOCK;
     }
+  }
+
+
+  private String getPos(Matcher m) {
+    String templateName = m.group(1);
+    if ("S".equals(templateName)) {
+      Map<String, String> argmap = WikiTool.parseArgs(m.group(2));
+      templateName = argmap.get("1");
+    }
+    return templateName == null ? null : posMarkers.get(templateName);
+  }
+
+  private boolean isTranslation(Matcher m) {
+    String templateName = m.group(1);
+    if ("S".equals(templateName)) {
+      Map<String, String> argmap = WikiTool.parseArgs(m.group(2));
+      templateName = argmap.get("1");
+    }
+    return "wikt-trans".equals(templateName) || "trans".equals(templateName);
   }
 
 
@@ -384,6 +424,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   private void extractTranslations(int startOffset, int endOffset) {
+    // TODO: parse wiki text and extract using a grammar !!!
     Matcher macroMatcher = WikiPatterns.macroPattern.matcher(pageContent);
     macroMatcher.region(startOffset, endOffset);
     Resource currentGloss = null;
@@ -392,7 +433,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       String g1 = macroMatcher.group(1);
 
       if (g1.equals("x") || g1.equals("xlatio") || g1.equals("xlatio-d") || g1.equals("xlatio2")
-          || g1.equals("xlatio0")) {
+          || g1.equals("xlatio0") || g1.equals("t+")) {
         String g2 = macroMatcher.group(2);
         Map<String, String> args = WikiTool.parseArgs(g2);
         String lang = LatinLangtoCode.threeLettersCode(args.get("1"));
@@ -426,6 +467,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (g1.equals("=sum=")) {
         // The current latin macro does not allow glosses...
 
+      } else if (g1.equals("trans-tab")) {
+        // Warn: trans-tab is a template where all translations are part of the second arg.
+        // As the template will fail catching it, we should only use the first arg and reparse
+        // the rest (that will be part of a translation value).
+        Map<String, String> argmap = WikiTool.parseArgs(macroMatcher.group(2));
+        String g = argmap.get("1");
+        if (null != g)
+          currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g));
+        int secondArgOffset = macroMatcher.toMatchResult().end(1) + 1; // position of the first arg
+        secondArgOffset = secondArgOffset + (null != g ? g.length() : 0) + 1;
+        macroMatcher.reset().region(secondArgOffset, endOffset);
       } else if (g1.equals("=med=")) {
         // just ignore it
       } else if (g1.equals("=ima=")) {

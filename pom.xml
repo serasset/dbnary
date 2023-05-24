@@ -689,6 +689,17 @@
                       <files>false</files-->
                     </github>
                   </release>
+                  <upload>
+                    <gitlab>
+                      <dbnary>
+                        <active>RELEASE</active>
+                        <artifacts>true</artifacts>
+                        <host>gitlab.com</host>
+                        <packageName>dbnary</packageName>
+                        <projectIdentifier>33561967</projectIdentifier>
+                      </dbnary>
+                    </gitlab>
+                  </upload>
                   <distributions>
                     <dbnary>
                       <tags>

@@ -144,7 +144,7 @@ public class TverskiIndex implements SimilarityMeasure {
         } else {
           score = md;
         }
-        if (score > 0.999 || score < 1.0 && ((lcssConstraint && lssl >= 3) || !lcssConstraint)) {
+        if (score > 0.999 || score < 1.0 && (!lcssConstraint || lssl >= 3)) {
 
           if (!this.lcss) {
             if (lcssConstraint) {

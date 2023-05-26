@@ -1,5 +1,7 @@
 package org.getalp.dbnary.wiki;
 
+import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Stack;
@@ -38,6 +40,12 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
       return nextTokenToReturn();
     }
     Token t = currentIterator.next();
+    while(filter.apply(t) == VOID) {
+      if (currentIterator.hasNext())
+        t = currentIterator.next();
+      else
+        break;
+    }
     switch (filter.apply(t)) {
       case VOID:
         return nextTokenToReturn();

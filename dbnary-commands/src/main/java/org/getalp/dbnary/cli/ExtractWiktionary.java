@@ -37,7 +37,7 @@ import picocli.CommandLine.Option;
         + "lexinfo, olia and other standard vocabularies.")
 public class ExtractWiktionary extends Extractor implements Callable<Integer> {
 
-  private static final Logger log = LoggerFactory.getLogger(OntolexBasedRDFDataHandler.class);
+  private static final Logger log = LoggerFactory.getLogger(ExtractWiktionary.class);
 
   private ExtractionPreferences prefs;
   @Mixin
@@ -157,7 +157,12 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
                 if (log.isDebugEnabled())
                   e.printStackTrace(spec.commandLine().getErr());
                 spec.commandLine().getErr().println(e.getMessage());
-                // e.printStackTrace();
+              } catch (StackOverflowError e) {
+                spec.commandLine().getErr().println("StackOverflowError while extracting  page<<"
+                    + title + ">>, proceeding to next pages.");
+                if (log.isDebugEnabled())
+                  e.printStackTrace(spec.commandLine().getErr());
+                spec.commandLine().getErr().println(e.getMessage());
               }
               if (nbnodes != wdh.nbEntries()) {
                 totalRelevantTime = (System.currentTimeMillis() - startTime);

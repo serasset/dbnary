@@ -109,14 +109,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     macroOrPOSPattern = Pattern.compile(macroOrPOSPatternString);
 
-    posHeaderElementsPatternString =
-        "(?:" + WikiPatterns.macroPatternString + ")|(?:" //
-            + "''(.*)''" //
-            + ")|(?:" //
-            + "[,/\\(\\)]\\s*" //
-            + ")|(?:" //
-            + "((?:ohne\\s+)?[^\\s,/\\(\\)]+)" //
-            + ")";
+    posHeaderElementsPatternString = "(?:" + WikiPatterns.macroPatternString + ")|(?:" //
+        + "''(.*)''" //
+        + ")|(?:" //
+        + "[,/\\(\\)]\\s*" //
+        + ")|(?:" //
+        + "((?:ohne\\s+)?[^\\s,/\\(\\)]+)" //
+        + ")";
     posHeaderElementsPattern = Pattern.compile(posHeaderElementsPatternString);
 
     germanDefinitionPattern = Pattern.compile(germanDefinitionPatternString, Pattern.MULTILINE);

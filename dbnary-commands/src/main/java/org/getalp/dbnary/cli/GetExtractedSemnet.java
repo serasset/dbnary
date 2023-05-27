@@ -34,14 +34,14 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
       try {
         we.extractData(entry, pageContent);
       } catch (RuntimeException e) {
-        spec.commandLine().getErr().println("Runtime exception while extracting  page<<"
-            + entry + ">>, proceeding to next pages.");
+        spec.commandLine().getErr().println(
+            "Runtime exception while extracting  page<<" + entry + ">>, proceeding to next pages.");
         if (log.isDebugEnabled())
           e.printStackTrace(spec.commandLine().getErr());
         spec.commandLine().getErr().println(e.getMessage());
       } catch (StackOverflowError e) {
-        spec.commandLine().getErr().println("StackOverflowError while extracting  page<<"
-            + entry + ">>, proceeding to next pages.");
+        spec.commandLine().getErr().println("StackOverflowError while extracting  page<<" + entry
+            + ">>, proceeding to next pages.");
         if (log.isDebugEnabled())
           e.printStackTrace(spec.commandLine().getErr());
         spec.commandLine().getErr().println(e.getMessage());

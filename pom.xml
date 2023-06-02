@@ -672,7 +672,9 @@
                     <java>
                       <mainClass>${app.main.class}</mainClass>
                     </java>
-                    <docsUrl>http://kaiko.getalp.org/static/reports/${project.version}</docsUrl>
+                    <links>
+                      <documentation>http://kaiko.getalp.org/static/reports/${project.version}</documentation>
+                    </links>
                   </project>
                   <release>
                     <github>
@@ -689,7 +691,7 @@
                       <files>false</files-->
                     </github>
                   </release>
-                  <upload>
+                  <!--upload>
                     <gitlab>
                       <dbnary>
                         <active>RELEASE</active>
@@ -699,7 +701,7 @@
                         <projectIdentifier>33561967</projectIdentifier>
                       </dbnary>
                     </gitlab>
-                  </upload>
+                  </upload-->
                   <distributions>
                     <dbnary>
                       <tags>

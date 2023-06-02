@@ -1,12 +1,17 @@
 package org.getalp.dbnary.languages.nor;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Token;
+import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,9 +87,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     NOBLOCK, IGNOREPOS, DEFBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK, ABBREVIATIONBLOCK, MORPHOBLOCK, WRITTENREP, EXAMPLEBLOCK
   }
 
-  protected static HashMap<String, Block> blockValue = new HashMap<>();
+  protected static LinkedHashMap<String, Block> blockValue = new LinkedHashMap<>();
 
   static {
+    blockValue.put("Faste uttrykk", Block.NOBLOCK); // Derivations ?
+
     blockValue.put("Egennavn", Block.DEFBLOCK); // Noun
     blockValue.put("ubstant", Block.DEFBLOCK); // Noun
     blockValue.put("ubtant", Block.DEFBLOCK); // Noun
@@ -512,6 +519,96 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected void extractTranslations(int start, int end) {
+    extractTranslations(new WikiText(getWiktionaryPageName(), pageContent.substring(start, end)));
+  }
+
+  private void extractTranslations(WikiText wikiText) {
+    Resource currentGloss = null;
+    int rank = 1;
+    if (log.isDebugEnabled()) {
+      if (wikiText.links().stream().map(Token::asLink)
+          .anyMatch(l -> !l.getTargetText().toLowerCase().startsWith("kategori:"))) {
+        log.debug("Translation section contains links in {}", wdh.currentPagename());
+        log.trace("TRANSSECTION = {}", wikiText);
+      }
+    }
+    for (Token tok : wikiText.templates()) {
+      Template t = tok.asTemplate();
+
+      switch (t.getName().trim().toLowerCase()) {
+        case "overs":
+        case "o":
+        case "t+":
+        case "trad":
+        case "xlatio":
+        case "overs-sjå":
+        case "qualifier":
+          String lang = t.getParsedArg("1");
+          String trad = t.getParsedArg("2");
+          // TODO: handle other args (gender, script, transcription, etc.)
+          if (lang != null && trad != null) {
+            wdh.registerTranslation(lang, currentGloss, null, trad);
+          }
+          break;
+        case "overs-topp":
+        case "topp":
+        case "overs-trengersortering":
+        case "toppdrive propaganda":
+        case "trans-top":
+          String gloss = t.getParsedArg("1");
+          if (gloss != null) {
+            currentGloss =
+                wdh.createGlossResource(glossFilter.extractGlossStructure(gloss), rank++);
+          }
+          break;
+        case "overs-midt":
+        case "trans-mid":
+          // case "midt":
+          // case "bunn":
+        case "overs-mangler": // trad missing
+        case "oversettelsr mangler": // trad missing
+        case "oversettelser mangler": // trad missing
+          // case "etymologi mangler": // trad missing
+          // case "overs-se":
+          // case "refforbedreoversettelse":
+          // case "Ukedagene norsk":
+          // case "kontekst":
+        case "afrika":
+        case "asia":
+        case "defaultsort":
+          // case "opprydning":
+          // case "trenger referanse": // citation
+        case "m":
+        case "f":
+        case "n":
+        case "p":
+        case "l":
+        case "c":
+          // case "Fylke":
+          // case "Oslo":
+          // case "wikipedia-no":
+          // case "wikipediaartikkel":
+          // case "Wikipediaartikkel":
+          // case "Årets måneder norsk":
+          // case "1-10 norsk":
+          // case "refleksivt": // morpho
+          // case "dativ": // morpho
+          // case "FAchar":
+          // case "etyl":
+          // case "prefiks":
+          // case "suffiks":
+          break;
+        case "overs-bunn":
+        case "trans-bottom":
+          break;
+        default:
+          log.debug("Unknown Translation Template value {} --in-- {}", t.getName(),
+              wdh.currentPagename());
+      }
+    }
+  }
+
+  protected void extractTranslationsOld(int start, int end) {
     Matcher trad = tradPattern.matcher(pageContent);
     trad.region(start, end);
     Resource currentGloss = null;

@@ -5,7 +5,7 @@
   <parent>
     <artifactId>dbnary</artifactId>
     <groupId>org.getalp</groupId>
-    <version>3.1.9</version>
+    <version>3.1.10</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -62,6 +62,11 @@
       <groupId>com.slack.api</groupId>
       <artifactId>slack-api-client</artifactId>
       <version>1.23.0</version>
+    </dependency>
+    <dependency>
+      <groupId>club.minnced</groupId>
+      <artifactId>discord-webhooks</artifactId>
+      <version>0.8.2</version>
     </dependency>
     <dependency>
       <groupId>org.getalp</groupId>

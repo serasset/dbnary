@@ -61,11 +61,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected GermanMorphologyExtractor morphologyExtractor;
+  private GermanDefinitionExpander definitionExpander;
 
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
     morphologyExtractor = new GermanMorphologyExtractor(wdh, wi);
+    definitionExpander = new GermanDefinitionExpander(wi);
   }
 
   protected final static String macroOrPOSPatternString;
@@ -91,30 +93,29 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // Pattern.compile(languageSectionPatternString);
 
     languageSectionPattern = Pattern.compile(languageSectionPatternString);
-    multilineMacroPatternString = new StringBuilder().append("\\{\\{") //
-        .append("([^\\}\\|]*)(?:\\|([^\\}]*))?") //
-        .append("\\}\\}").toString();
+    multilineMacroPatternString = "\\{\\{" //
+        + "([^\\}\\|]*)(?:\\|([^\\}]*))?" //
+        + "\\}\\}";
 
-    macroOrPOSPatternString = new StringBuilder().append("(?:") //
-        .append(WikiPatterns.macroPatternString) //
-        .append(")|(?:") //
-        .append(partOfSpeechPatternString) //
-        .append(")|(?:") //
-        .append(subSection4PatternString) //
-        .append(")|(?:") //
-        .append(multilineMacroPatternString) //
-        .append(")").toString();
+    macroOrPOSPatternString = "(?:" //
+        + WikiPatterns.macroPatternString //
+        + ")|(?:" //
+        + partOfSpeechPatternString //
+        + ")|(?:" //
+        + subSection4PatternString //
+        + ")|(?:" //
+        + multilineMacroPatternString //
+        + ")";
 
     macroOrPOSPattern = Pattern.compile(macroOrPOSPatternString);
 
-    posHeaderElementsPatternString =
-        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:") //
-            .append("''(.*)''") //
-            .append(")|(?:") //
-            .append("[,/\\(\\)]\\s*") //
-            .append(")|(?:") //
-            .append("((?:ohne\\s+)?[^\\s,/\\(\\)]+)") //
-            .append(")").toString();
+    posHeaderElementsPatternString = "(?:" + WikiPatterns.macroPatternString + ")|(?:" //
+        + "''(.*)''" //
+        + ")|(?:" //
+        + "[,/\\(\\)]\\s*" //
+        + ")|(?:" //
+        + "((?:ohne\\s+)?[^\\s,/\\(\\)]+)" //
+        + ")";
     posHeaderElementsPattern = Pattern.compile(posHeaderElementsPatternString);
 
     germanDefinitionPattern = Pattern.compile(germanDefinitionPatternString, Pattern.MULTILINE);
@@ -146,7 +147,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignorableSectionMarkers.add("Dialektausdrücke (Deutsch)");
     ignorableSectionMarkers.add("Referenzen");
     ignorableSectionMarkers.add("Ähnlichkeiten");
-    ignorableSectionMarkers.add("Anmerkung");
     ignorableSectionMarkers.add("Anmerkungen");
     // TODO: Integrate these in alternative spelling ?
     ignorableSectionMarkers.add("Alte Rechtschreibung");
@@ -170,8 +170,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignorableSectionMarkers.add("Männliche Namensvarianten");
     ignorableSectionMarkers.add("Bekannte Namensträger");
     ignorableSectionMarkers.add("Sprichwörter");
-    ignorableSectionMarkers.add("Charakteristische Wortkombinationen");
-    ignorableSectionMarkers.add("Abgeleitete Begriffe");
 
     // Others
     ignorableSectionMarkers.add("Anmerkung");
@@ -613,14 +611,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         log.debug("Translation as link : {}", line.getToken(lexer.group("LINK")));
       } else if (null != (g = lexer.group("TMPL"))) {
         WikiText.Template t = (WikiText.Template) line.getToken(g);
+        String lg;
+        String lemma;
+        String linkText;
+        String usage;
+        String vocalization;
         switch (t.getName()) {
           case "Ü":
           case "Ü?":
-            String lg =
-                GermanLangToCode.threeLettersCode(LangTools.normalize(t.getParsedArgs().get("1")));
-            String lemma = t.getParsedArgs().get("2");
-            String linkText = t.getParsedArgs().get("3");
-            String usage = null;
+            lg = GermanLangToCode.threeLettersCode(LangTools.normalize(t.getParsedArgs().get("1")));
+            lemma = t.getParsedArgs().get("2");
+            linkText = t.getParsedArgs().get("3");
+            usage = null;
             if (null != linkText) {
               usage = "alt=" + linkText + "|";
             }
@@ -650,7 +652,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             lg = GermanLangToCode.threeLettersCode(LangTools.normalize(t.getParsedArgs().get("1")));
             lemma = t.getParsedArgs().get("2");
             linkText = t.getParsedArgs().get("3");
-            String vocalization = t.getParsedArgs().get("v");
+            vocalization = t.getParsedArgs().get("v");
             transcript = t.getParsedArgs().get("d");
             String bedeutung = t.getParsedArgs().get("b");
             usage = null;
@@ -761,7 +763,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // this might be an overkill: but we would like to
     // add multiple pronunciations in the reverse order
     // so in the result show up in the original order again
-    ArrayList<String> matches = new ArrayList<String>();
+    ArrayList<String> matches = new ArrayList<>();
     while (pronMatcher.find()) {
       String pron = pronMatcher.group(1);
       if (null == pron || pron.equals("")) {
@@ -786,7 +788,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String currentLevel1SenseNumber = "";
     String currentLevel2SenseNumber = "";
     while (definitionMatcher.find()) {
-      String def = cleanUpMarkup(definitionMatcher.group(2));
+      String def = expandDefinition(definitionMatcher.group(2));
       String senseNum = definitionMatcher.group(1);
       if (null == senseNum) {
         log.debug("Null sense number in definition\"{}\" for entry {}", def,
@@ -820,10 +822,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
 
         if (def != null && !def.equals("")) {
-          wdh.registerNewDefinition(definitionMatcher.group(2), senseNum);
+          wdh.registerNewDefinition(def, senseNum);
         }
       }
     }
+  }
+
+
+  private String expandDefinition(String group) {
+    if (group == null)
+      return "";
+    definitionExpander.setPageName(getWiktionaryPageName());
+    return definitionExpander.expandAll(group.trim(), null);
   }
 
 }

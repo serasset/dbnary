@@ -19,22 +19,33 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // French
     posAndTypeValueMap.put("nomen-subst", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
     posAndTypeValueMap.put("nomen", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
+    posAndTypeValueMap.put("substantivum", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
     posAndTypeValueMap.put("nomen-prop", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
+    posAndTypeValueMap.put("proprium", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
     // posAndTypeValueMap.put("-prénom-", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
     posAndTypeValueMap.put("nomen-adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
+    posAndTypeValueMap.put("adiectivum", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
     posAndTypeValueMap.put("verbum", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
+    posAndTypeValueMap.put("transitivum", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
     // TODO: check how to encode transitivity/intransitivity
     posAndTypeValueMap.put("verbum-tr", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
     posAndTypeValueMap.put("verbum-intr", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
+    posAndTypeValueMap.put("intransitivum", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
     posAndTypeValueMap.put("adverbium", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
-    // posAndTypeValueMap.put("-loc-adv-", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Phrase));
-    // posAndTypeValueMap.put("-loc-adj-", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Phrase));
-    // posAndTypeValueMap.put("-loc-nom-", new PosAndType(LexinfoOnt.noun, OntolexOnt.Phrase));
-    // posAndTypeValueMap.put("-loc-verb-", new PosAndType(LexinfoOnt.verb, OntolexOnt.Phrase));
     posAndTypeValueMap.put("coniunctio", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.Word));
     posAndTypeValueMap.put("pronomen", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.Word));
     posAndTypeValueMap.put("participium", new PosAndType(LexinfoOnt.participle, OntolexOnt.Word));
     posAndTypeValueMap.put("wikt-praep", new PosAndType(LexinfoOnt.preposition, OntolexOnt.Word));
+    posAndTypeValueMap.put("abbreviatio", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.Word));
+    posAndTypeValueMap.put("cardinalis",
+        new PosAndType(LexinfoOnt.cardinalNumeral, OntolexOnt.Word));
+    posAndTypeValueMap.put("ordinalis",
+        new PosAndType(LexinfoOnt.ordinalAdjective, OntolexOnt.Word));
+    posAndTypeValueMap.put("numerus", new PosAndType(LexinfoOnt.numeral, OntolexOnt.Word));
+    posAndTypeValueMap.put("interiectio", new PosAndType(LexinfoOnt.interjection, OntolexOnt.Word));
+    posAndTypeValueMap.put("praepositio", new PosAndType(LexinfoOnt.preposition, OntolexOnt.Word));
+    posAndTypeValueMap.put("proverbium",
+        new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
   }
 
   public WiktionaryDataHandler(String lang, String tdbDir) {

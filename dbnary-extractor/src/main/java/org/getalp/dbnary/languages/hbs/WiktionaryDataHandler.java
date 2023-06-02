@@ -2,17 +2,18 @@ package org.getalp.dbnary.languages.hbs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
+import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
   static {
 
@@ -41,7 +42,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   public void extractPOSandExtraInfos(String posInfos) {
-    String t[] = posInfos.split("\\|");
+    String[] t = posInfos.split("\\|");
     if (t.length > 0) {
       switch (t[0]) {
         case "sh-pridjev": // adj
@@ -166,8 +167,16 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               }
               i++;
               if (cirilica != null) {
-                aBox.add(currentLexEntry, OntolexOnt.writtenRep, cirilica,
-                    getCurrentEntryLanguage());
+                try {
+                  Resource canonicalForm =
+                      currentLexEntry.getRequiredProperty(OntolexOnt.canonicalForm).getResource();
+                  canonicalForm.addProperty(OntolexOnt.writtenRep, cirilica,
+                      getCurrentEntryLanguage() + "-Cyrl");
+                } catch (Exception e) {
+                  log.error("Could not get canonical form in {}", currentPage.getName());
+                }
+                // aBox.add(currentLexEntry, OntolexOnt.writtenRep, cirilica,
+                // getCurrentEntryLanguage());
               } else {
                 log.debug("r (Cirilica) unused in {} --in-- {}", infos[0], this.currentPagename());
               }

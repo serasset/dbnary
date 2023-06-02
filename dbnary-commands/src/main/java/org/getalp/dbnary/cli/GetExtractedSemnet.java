@@ -7,6 +7,8 @@ import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.cli.mixins.Extractor;
 import org.getalp.dbnary.cli.utils.VersionProvider;
 import org.getalp.wiktionary.WiktionaryIndexerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
@@ -16,6 +18,7 @@ import picocli.CommandLine.Parameters;
         + "are passed to the program. The extracted lexical data is encoded as RDF graphs using "
         + "ontolex, lexinfo, olia and other standard vocabularies.")
 public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
+  private static final Logger log = LoggerFactory.getLogger(GetExtractedSemnet.class);
 
   @Parameters(index = "1..*", description = "The entries to be extracted.", arity = "1..*")
   String[] entries;
@@ -28,7 +31,21 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
 
     for (String entry : entries) {
       String pageContent = wi.getTextOfPage(entry);
-      we.extractData(entry, pageContent);
+      try {
+        we.extractData(entry, pageContent);
+      } catch (RuntimeException e) {
+        spec.commandLine().getErr().println(
+            "Runtime exception while extracting  page<<" + entry + ">>, proceeding to next pages.");
+        if (log.isDebugEnabled())
+          e.printStackTrace(spec.commandLine().getErr());
+        spec.commandLine().getErr().println(e.getMessage());
+      } catch (StackOverflowError e) {
+        spec.commandLine().getErr().println("StackOverflowError while extracting  page<<" + entry
+            + ">>, proceeding to next pages.");
+        if (log.isDebugEnabled())
+          e.printStackTrace(spec.commandLine().getErr());
+        spec.commandLine().getErr().println(e.getMessage());
+      }
     }
 
     postProcessAfterExtraction(VersionProvider.getDumpVersion(wi.getDumpFile().getName()));

@@ -12,20 +12,27 @@ import info.bliki.wiki.namespaces.INamespace;
 import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import info.bliki.wiki.tags.HTMLTag;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Locale;
 import java.util.Map;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.text.WordUtils;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.tools.CounterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class DbnaryWikiModel extends WikiModel {
 
   private static final Logger log = LoggerFactory.getLogger(DbnaryWikiModel.class);
 
   protected WiktionaryPageSource wi;
-  private final CompiledScriptCache compiledScriptCache = new CompiledScriptCache();
+  private CompiledScriptCache compiledScriptCache = new CompiledScriptCache();
   private ScribuntoEngine fScribuntoEngine = null;
 
   public DbnaryWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
@@ -39,6 +46,40 @@ public class DbnaryWikiModel extends WikiModel {
     // This tag is used at least in French Morphology templates.
     this.addTokenTag("bdi", new HTMLTag("bdi"));
     this.addTokenTag("templatestyles", new HTMLTag("templatestyles"));
+  }
+
+  private static DocumentBuilder docBuilder = null;
+  private static InputSource docSource = null;
+
+  // get the DOM representation of the HTML code corresponding
+  // to the wikicode given in arguments
+  public Document wikicodeToHtmlDOM(String wikicode) {
+    if (docBuilder == null) {
+      try {
+        docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      } catch (ParserConfigurationException e) {
+        System.err.println("got a ParserConfigurationException in the DBnaryWikiModel class.");
+        return null;
+      }
+
+      docSource = new InputSource();
+    }
+
+    String html = expandWikiCode(wikicode);
+
+    docSource.setCharacterStream(new StringReader("<div>" + html + "</div>"));
+
+    Document doc = null;
+
+    try {
+      doc = docBuilder.parse(docSource);
+    } catch (SAXException e) {
+      log.error("Unable to parse template call in DBnaryWikiModel.");
+    } catch (IOException e) {
+      log.error("got IOException in DBnaryWikiModel ‽");
+    }
+
+    return doc;
   }
 
   protected String expandWikiCode(String wikicode) {
@@ -142,16 +183,6 @@ public class DbnaryWikiModel extends WikiModel {
       }
     }
     return rawWikiText.replaceAll("\\{\\{safesubst:", "{{").replaceAll("\\{\\{subst:", "{{");
-  }
-
-  @Override
-  public void setPageName(String pageTitle) {
-    if (null != pageTitle && pageTitle.equals(fPageTitle)) {
-      return;
-    }
-    super.setPageName(pageTitle);
-    // current engine belongs to another page, get rid of it
-    fScribuntoEngine = null;
   }
 
   @Override

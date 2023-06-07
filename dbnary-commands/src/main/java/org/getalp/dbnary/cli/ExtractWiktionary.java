@@ -151,8 +151,14 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
               }
               try {
                 we.extractData(title, page);
-              } catch (RuntimeException | StackOverflowError e) {
+              } catch (RuntimeException e) {
                 spec.commandLine().getErr().println("Runtime exception while extracting  page<<"
+                    + title + ">>, proceeding to next pages.");
+                if (log.isDebugEnabled())
+                  e.printStackTrace(spec.commandLine().getErr());
+                spec.commandLine().getErr().println(e.getMessage());
+              } catch (StackOverflowError e) {
+                spec.commandLine().getErr().println("StackOverflowError while extracting  page<<"
                     + title + ">>, proceeding to next pages.");
                 if (log.isDebugEnabled())
                   e.printStackTrace(spec.commandLine().getErr());

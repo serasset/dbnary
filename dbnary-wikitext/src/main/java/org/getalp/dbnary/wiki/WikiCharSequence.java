@@ -23,7 +23,7 @@ import org.getalp.dbnary.wiki.WikiText.WikiContent;
  * a filter function.
  * <p>
  * The character sequence will reflect a cut in the wikitext tree. The cut is specified by a
- * filter function that takes nodes and decide if
+ * filter function that takes nodes and decide if</p>
  * <ul>
  *   <li>the node source is to be added to the sequence</li>
  *   <li>the node is to be ignored</li>
@@ -31,7 +31,7 @@ import org.getalp.dbnary.wiki.WikiText.WikiContent;
  *   <li>the node is to be added as a sequence beginning/ending with specific open/close
  *   characters and containing a cut of its descendants forest</li>
  * </ul>.
- * </p><p>
+ * <p>
  * Default filter function is ...
  * </p><p>
  * Created by serasset on 28/01/16.

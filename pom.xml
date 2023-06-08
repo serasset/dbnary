@@ -5,7 +5,7 @@
 
   <groupId>org.getalp</groupId>
   <artifactId>dbnary</artifactId>
-  <version>3.1.10</version>
+  <version>3.1.11</version>
   <packaging>pom</packaging>
 
   <inceptionYear>2010</inceptionYear>
@@ -291,7 +291,7 @@
       <dependency>
         <groupId>info.bliki.wiki</groupId>
         <artifactId>bliki-core</artifactId>
-        <version>3.1.9G</version>
+        <version>3.1.10G</version>
       </dependency>
 
       <!-- Misc -->
@@ -690,6 +690,10 @@
                       <!--artifacts>false</artifacts>
                       <files>false</files-->
                     </github>
+                    <!--gitlab>
+                      <owner>gilles.serasset</owner>
+                      <name>dbnary</name>
+                    </gitlab-->
                   </release>
                   <!--upload>
                     <gitlab>

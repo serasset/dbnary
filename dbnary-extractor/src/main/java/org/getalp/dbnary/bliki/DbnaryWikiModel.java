@@ -1,8 +1,5 @@
 package org.getalp.dbnary.bliki;
 
-import info.bliki.extensions.scribunto.engine.ScribuntoEngine;
-import info.bliki.extensions.scribunto.engine.lua.CompiledScriptCache;
-import info.bliki.extensions.scribunto.engine.lua.ScribuntoLuaEngine;
 import info.bliki.wiki.filter.HTMLConverter;
 import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.Configuration;
@@ -25,8 +22,6 @@ public class DbnaryWikiModel extends WikiModel {
   private static final Logger log = LoggerFactory.getLogger(DbnaryWikiModel.class);
 
   protected WiktionaryPageSource wi;
-  private final CompiledScriptCache compiledScriptCache = new CompiledScriptCache();
-  private ScribuntoEngine fScribuntoEngine = null;
 
   public DbnaryWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
     this(null, locale, imageBaseURL, linkBaseURL);
@@ -52,10 +47,6 @@ public class DbnaryWikiModel extends WikiModel {
   }
 
   protected CounterSet trace = new CounterSet();
-
-  public void displayGlobalTrace() {
-    trace.traceCounters(log);
-  }
 
   public void displayGlobalTrace(String msg) {
     trace.traceCounters(log, msg);
@@ -144,23 +135,4 @@ public class DbnaryWikiModel extends WikiModel {
     return rawWikiText.replaceAll("\\{\\{safesubst:", "{{").replaceAll("\\{\\{subst:", "{{");
   }
 
-  @Override
-  public void setPageName(String pageTitle) {
-    if (null != pageTitle && pageTitle.equals(fPageTitle)) {
-      return;
-    }
-    super.setPageName(pageTitle);
-    // current engine belongs to another page, get rid of it
-    fScribuntoEngine = null;
-  }
-
-  @Override
-  public ScribuntoEngine createScribuntoEngine() {
-    if (null == fScribuntoEngine) {
-      Logger scribuntoLog = LoggerFactory.getLogger(ScribuntoEngine.class);
-      fScribuntoEngine =
-          new ScribuntoLuaEngine(this, compiledScriptCache, scribuntoLog.isDebugEnabled());
-    }
-    return fScribuntoEngine;
-  }
 }

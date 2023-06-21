@@ -7,12 +7,10 @@ import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiText;
-import org.getalp.model.dbnary.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
@@ -60,10 +58,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         this.wdh.initializePageExtraction(getWiktionaryPageName());
 
-        WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
-        WikiText.WikiDocument doc = page.asStructuredDocument();
-
-        pageAnalyzer(new PageIterator(doc.getContent().tokens(), ignoredTemplate));
+        PageIterator page = PageIterator.of(pageContent, ignoredTemplate);
+        pageAnalyzer(page);
 
         showCounter();
         this.wdh.finalizePageExtraction();
@@ -75,27 +71,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String nextLanguage;
 
         while (page.hasNext()) {
-
-            if (page.next() instanceof WikiText.Template && (nextLanguage = parseLanguageTemplate(page.get().asTemplate())) != null) { // If a language template is found.
-
-                if (this.currentLanguage != null) { // Finalize the currentLanguage before switching it.
-                    log.trace("{} => Finalizing {} language.", getWiktionaryPageName(), this.currentLanguage);
-                    this.wdh.finalizeLanguageSection();
-                }
-                currentLanguage = nextLanguage; // Switch current language.
-
-                if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !this.currentLanguage.equals("gle"))
-                    this.currentLanguage = null;
-                else {
-                    log.trace("{} => Language swap {} was found on the page ---> {}.", getWiktionaryPageName(), this.currentLanguage, url());
-                    this.wdh.initializeLanguageSection(this.currentLanguage); // Initialize the new currentLanguage.
-                }
-
-            } else if (this.currentLanguage != null) { // TODO parse data from the language section.
+            if (page.next() instanceof WikiText.Template && (nextLanguage = parseLanguageTemplate(page.get().asTemplate())) != null) // If a language template is found.
+                switchCurrentLanguage(nextLanguage);
+            else if (this.currentLanguage != null) // If current token isn't a language template and a language is initialized.
                 templateDispatcher(page.get(), page);
-
-            }
-
         }
 
         if (this.currentLanguage != null) { // Close the current language at the end of the page.
@@ -105,8 +84,23 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     }
 
+    private void switchCurrentLanguage(String nextLanguage) {
+        if (this.currentLanguage != null) { // Finalize the currentLanguage before switching it.
+            log.trace("{} => Finalizing {} language.", getWiktionaryPageName(), this.currentLanguage);
+            this.wdh.finalizeLanguageSection();
+        }
+        currentLanguage = nextLanguage; // Switch current language.
 
-    public void templateDispatcher(final WikiText.Token token, final PageIterator page) {
+        if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !this.currentLanguage.equals("gle"))
+            this.currentLanguage = null;
+        else {
+            log.trace("{} => Language swap {} was found on the page ---> {}.", getWiktionaryPageName(), this.currentLanguage, url());
+            this.wdh.initializeLanguageSection(this.currentLanguage); // Initialize the new currentLanguage.
+        }
+    }
+
+
+    public void templateDispatcher(final WikiText.Token token, final PageIterator page) { // TODO analyse all things.
         if (!(token instanceof WikiText.Template)) {
             if (token.getText().startsWith("*IPA"))
                 pageAnalyzer(PageIterator.of(token.getText().substring(1)));
@@ -116,7 +110,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 case "IPA":
                     extractPrononciation(template);
                     break;
-
                 case "-aistr-":
                     extractTranslation(template, page);
                     break;
@@ -130,13 +123,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     private void extractTranslation(final WikiText.Template template, final PageIterator page) {
         // Collect the list in the translation field.
         List<WikiText.Token> internToken = new ArrayList<>();
-        while (page.hasNextTemplate() && !page.nextTemplate().getName().equals(")"))
-            internToken.add(page.get().asTemplate());
+        while (page.hasNext() && (!(page.next() instanceof WikiText.Template) || !page.get().asTemplate().getName().equals(")")))
+            internToken.add(page.get());
 
         PageIterator transIt = PageIterator.of(internToken, ignoredTemplate);
 
-        String gloss = transIt.goToNextTemplate("(").getArg("1").getText();
-        log.debug("{} => Glossary found \"{}\" ---> {}", getWiktionaryPageName(), gloss, url());
+        if (transIt.goToNextTemplate("(") == null) { // If the translation field don't close
+            log.warn("{} => translation field don't close !", getWiktionaryPageName());
+            return;
+        }
+
+        String gloss = "";
+        if (transIt.get().asTemplate().getArgs().size() > 0) { // glossary found
+            gloss = transIt.get().asTemplate().getArg("1").getText();
+            log.debug("{} => Glossary found \"{}\" ---> {}", getWiktionaryPageName(), gloss, url());
+        }
 
         TransBuilder builder = new TransBuilder();
         while (transIt.hasNext()) {
@@ -145,30 +146,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
                 if (builder.word != null && builder.lang != null) {
                     this.wdh.registerTranslation(builder.lang, null /* TODO gloss*/, builder.usage, builder.word);
-                    log.debug("{} => translation -> {}  --{}-> {}, {}.  ---> {} "
+                    log.trace("{} => translation -> {}  --{}-> {}, {}.  ---> {} "
                             , getWiktionaryPageName(), getWiktionaryPageName(), builder.lang, builder.word, builder.usage, url());
                 }
+
                 builder = new TransBuilder();
                 builder.lang = LangTools.normalize(transIt.get().asTemplate().getArg("1").getText());
                 builder.word = transIt.get().asTemplate().getArg("2").getText();
 
-            } else if (transIt.get() instanceof WikiText.Template) // adding template name to usage example : {{fir}}, {{bain}}, {{n}}.
+            } else if (transIt.get() instanceof WikiText.Template) // adding template name to usage. Like {{fir}}, {{bain}}, {{n}}.
                 builder.usage += transIt.get().asTemplate().getName() + ".";
-            else // Adding classic text between 2 trans as usage.
-            {
-                log.debug("Classic text : " + transIt);
-                builder.usage += transIt.get().getText();
-            }
+            else // Adding classic text between 2 traduction as usage.
+                builder.usage += " " + transIt.get().getText().trim();
 
         }
 
-        if (builder.word != null && builder.lang != null) {
+        if (builder.word != null && builder.lang != null) { // Save the last trans.
             this.wdh.registerTranslation(builder.lang, null /* TODO gloss*/, builder.usage, builder.word);
-            log.debug("{} => translation -> {}  --{}-> {}.  ---> {} "
+            log.trace("{} => translation -> {}  --{}-> {}.  ---> {} "
                     , getWiktionaryPageName(), getWiktionaryPageName(), builder.lang, builder.word, url());
         }
-
-        log.debug("Page after trans check : " + page);
     }
 
     private static class TransBuilder {
@@ -239,7 +236,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         public WikiText.Token next() {
             do {
                 cursor++;
-            } while (get() instanceof WikiText.Template && !get().getText().trim().isBlank() && this.skippedTemplate.contains(get().asTemplate().getName()));
+            } while (get().getText().trim().isBlank() || (get() instanceof WikiText.Template && this.skippedTemplate.contains(get().asTemplate().getName())));
 
             return get();
         }
@@ -270,7 +267,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             int shadowCursor = 0;
             do {
                 shadowCursor++;
-            } while (this.cursor + shadowCursor < size && shadowNext(shadowCursor) instanceof WikiText.Template && !shadowNext(shadowCursor).getText().trim().isBlank() && this.skippedTemplate.contains(shadowNext(shadowCursor).asTemplate().getName()));
+            } while (this.cursor + shadowCursor < size
+                     && (shadowNext(shadowCursor).getText().trim().isBlank()
+                         || (shadowNext(shadowCursor) instanceof WikiText.Template && this.skippedTemplate.contains(shadowNext(shadowCursor).asTemplate().getName()))));
 
             return this.cursor + shadowCursor < size;
         }
@@ -290,13 +289,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             do {
                 shadowCursor++;
             } while (this.cursor + shadowCursor < this.size &&
-                     (!(this.shadowNext(shadowCursor) instanceof WikiText.Template) || this.shadowNext(shadowCursor).asTemplate().getName().equals(name)));
+                     (!(this.shadowNext(shadowCursor) instanceof WikiText.Template) || !this.shadowNext(shadowCursor).asTemplate().getName().equals(name)));
             return this.cursor + shadowCursor < this.size ? shadowCursor : -1;
         }
 
         public WikiText.Template goToNextTemplate(final String name) {
             WikiText.Template template = null;
-            while (this.hasNextTemplate() && (template = this.nextTemplate()).getName().equals(name)) ;
+            while (this.hasNextTemplate() && !(template = this.nextTemplate()).getName().equals(name)) ;
             return template;
         }
 
@@ -305,7 +304,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
 
         public static PageIterator of(final String content, final Set<String> skippedTemplate) {
-            WikiText page = new WikiText("", content);
+            WikiText page = new WikiText("PageIterator parser.", content);
             WikiText.WikiDocument doc = page.asStructuredDocument();
 
             return new PageIterator(doc.getContent().tokens(), skippedTemplate);

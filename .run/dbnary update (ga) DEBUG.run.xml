@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="dbnary update (ga) DEBUG" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
+    <module name="dbnary-commands" />
+    <option name="PROGRAM_PARAMETERS" value="update ga --force --no-network --debug=org.getalp.dbnary.languages.gle" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

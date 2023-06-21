@@ -165,7 +165,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       dataset = null;
     }
 
-    NS = DBNARY_NS_PREFIX + "/" + longEditionLanguageCode + "/";
+    NS = DBNARY_NS_PREFIX + "/" + longEditionLanguageCode + "/OntolexBasedRDFDataHandler";
 
     this.longEditionLanguageCode = longEditionLanguageCode;
     this.shortEditionLanguageCode = LangTools.getPart1OrId(longEditionLanguageCode);

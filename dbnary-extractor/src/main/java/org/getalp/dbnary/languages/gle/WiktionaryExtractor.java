@@ -743,7 +743,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 if (template.getArg("1").getText().equals("//")) continue;
                 if (template.getArg("1").getText().isBlank()) continue;
 
-                this.wdh.registerPronunciation(template.getArg("1").getText(), this.currentLanguage + "-pron");
+                this.wdh.registerPronunciation(template.getArg("1").getText(), this.wdh.getCurrentEntryLanguage() + "-fonipa");
                 log.trace("{} => Prononciation \"{}\" found. --> {}.", getWiktionaryPageName(), template.getArg("1").getText(), url());
             }
 

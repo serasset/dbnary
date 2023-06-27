@@ -2,8 +2,8 @@
   <configuration default="false" name="dbnary update (ga) TRACE" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
-    <option name="PROGRAM_PARAMETERS" value="update ga --force --trace=org.getalp.dbnary.languages.gle" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../Wiktionary" />
+    <option name="PROGRAM_PARAMETERS" value="update --endolex=ontolex,morphology,lime --exolex=ontolex ga --force --trace=org.getalp.dbnary.languages.gle" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/tmp" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

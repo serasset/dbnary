@@ -508,10 +508,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     protected void saveToDataHandler(final LexicalBuilder builder) {
+        saveCanonicalForm(builder);
+
+        builder.definitions.forEach(def -> this.wdh.registerNewDefinition(def.toString()));
+
         if (wdh.isDisabled(ExtractionFeature.MORPHOLOGY))
             return;
 
-        saveCanonicalForm(builder);
 
         // TODO EXTRACT NOUN VERBAL AND ADJECTIV VERBAL FROM VERB TEMPLATE
 
@@ -557,7 +560,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     protected void saveCanonicalForm(final LexicalBuilder builder) {
-        builder.definitions.forEach(def -> this.wdh.registerNewDefinition(def.toString()));
 
         if (builder.gender != null) {
             Resource gender;

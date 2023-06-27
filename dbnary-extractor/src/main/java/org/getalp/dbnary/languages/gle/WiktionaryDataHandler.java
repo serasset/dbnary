@@ -1,9 +1,13 @@
 package org.getalp.dbnary.languages.gle;
 
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
-import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.OntolexOnt;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDFS;
+import org.getalp.dbnary.*;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
+import org.getalp.iso639.ISO639_3;
+import org.getalp.model.ontolex.LexicalForm;
 
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     static {
@@ -50,6 +54,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         posAndTypeValueMap.put("-mír-", new PosAndType(LexinfoOnt.article, OntolexOnt.Word));
     }
 
+    public Resource currentEtymologyEntry = null;
+
+
     public WiktionaryDataHandler(String longEditionLanguageCode, String tdbDir) {
         super(longEditionLanguageCode, tdbDir);
     }
@@ -61,4 +68,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         initializeLexicalEntry(pos, posResource(pat), typeR);
     }
 
+    public void addLexicalForm(LexicalForm form) {
+        Model morphoBox = this.getFeatureBox(ExtractionFeature.MORPHOLOGY);
+
+        if (null == morphoBox)
+            return;
+
+        form.attachTo(currentLexEntry.inModel(morphoBox));
+    }
 }

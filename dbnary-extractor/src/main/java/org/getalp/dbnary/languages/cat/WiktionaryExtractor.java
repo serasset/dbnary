@@ -168,25 +168,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     @Override
     public void extractData() {
-        if (false && !pageContent.contains("ca-num-forma"))
-            return;
-
-        if (false && !getWiktionaryPageName().equals("perquè"))
-            return;
-
         count++;
-
-        if (false && count <= 531647)
-            return;
 
         this.wdh.initializePageExtraction(getWiktionaryPageName());
 
-        try {
-            pageAnalyser(PageIterator.of(pageContent, ignoredTemplate));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        pageAnalyser(PageIterator.of(pageContent, ignoredTemplate));
 
         showCount();
 
@@ -221,7 +207,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 WikiText.Template template = sec.get().asTemplate();
                 switch (template.getName().trim()) {
                     case "ca-pron":
-                          // extractPrononciation(template); // proncom
+                        // extractPrononciation(template); // proncom
                         break;
                     case "pron":
                     case "pronafi":

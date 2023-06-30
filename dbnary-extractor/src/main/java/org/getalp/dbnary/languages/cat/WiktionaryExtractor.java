@@ -27,9 +27,10 @@ import java.util.regex.Pattern;
  *      - Extract Datas of the templates to the DataHandler
  *  - Make a big check for external languages
  *  - Make a big refactor and clean the entire code, which is ugly :
- *      - Section name comparator
- *      - The way that the templates, and sections are currently dispatched.
- *      - Other things.
+ *      - Section name comparator ✓
+ *      - The way that the templates, and sections are currently dispatched.  ✓
+ *      - Other things. ✓
+ *  - Finish the big check for the CA language. ✓
  */
 
 /*--endolex=ontolex,morphology,lime --exolex=ontolex*/
@@ -60,7 +61,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addIgnoredT("parònims");
         addIgnoredT("numeral");
         addIgnoredT("ca-num");
-        addIgnoredT("etimologia");
         addIgnoredT("catllengua");
         addIgnoredT("categoritza");
         addIgnoredT("-pronafi-");
@@ -81,7 +81,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addIgnoredT("àudio");
         addIgnoredT("homòfons");
         addIgnoredT("ca-rima");
-        addIgnoredT("etimologia");
         addIgnoredT("homòfons");
         addIgnoredT("map draw");
         addIgnoredT("rimes");
@@ -97,6 +96,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addIgnoredT("terme");
         addIgnoredT("map_draw");
         addIgnoredT("etim-fsuf");
+        addIgnoredT("entrada");
 
 
         addIgnoredText(",");
@@ -104,46 +104,38 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addIgnoredText("__NOTOC__");
 
         // CHANGE THE SECTION NAME COMPARAISON.
-        addIgnoredSec("Miscel·lània", 3);
-        addIgnoredSec("Vegeu també", 3);
-        addIgnoredSec("Relacionats", 4);
-        addIgnoredSec("Nota", 4);
-        addIgnoredSec("Notes", 4);
-        addIgnoredSec("Gentilicis", 4);
-        addIgnoredSec("Gentilicis", 3);
-        addIgnoredSec("Nota d'ús", 4);
-        addIgnoredSec("Notes d'ús", 4);
-        addIgnoredSec("Derivats", 4);
-        addIgnoredSec("Variants", 4);
-        addIgnoredSec("Referències", 3);
-        addIgnoredSec("Notes gramaticals", 4);
-        addIgnoredSec("Compostos", 5);
-        addIgnoredSec("Expressions", 5);
-        addIgnoredSec("Etimologia", 4);
-        addIgnoredSec("Arcaismes", 5);
-        addIgnoredSec("Arcaismes", 4);
-        addIgnoredSec("Citacions", 3);
-        addIgnoredSec("Citacions", 4);
-        addIgnoredSec("Altres formes", 4);
-        addIgnoredSec("Notes", 3);
-        addIgnoredSec("Cites", 4);
-        addIgnoredSec("Cites", 3);
-        addIgnoredSec("Notes d'us", 4);
-        addIgnoredSec("Grafia alternativa", 4);
-        addIgnoredSec("Grafia alternativa", 3);
-        addIgnoredSec("Nota", 3);
-        addIgnoredSec("Onomàstica", 4);
-        addIgnoredSec("Notes d’ús", 4);
-        addIgnoredSec("Compostos i expressions", 4);
-        addIgnoredSec("Vegeu tambe", 3);
-        addIgnoredSec("Veure també", 3);
-        addIgnoredSec("Miscel·lania", 3);
-        addIgnoredSec("Termes derivats", 4);
-        addIgnoredSec("Referències", 4);
-        addIgnoredSec("Termes relacionats", 3);
-        addIgnoredSec("Vegeu", 3);
-        addIgnoredSec("Variants", 4);
-
+        addIgnoredSec("Miscel·lània");
+        addIgnoredSec("Vegeu també");
+        addIgnoredSec("Relacionats");
+        addIgnoredSec("Nota");
+        addIgnoredSec("Notes");
+        addIgnoredSec("Gentilicis");
+        addIgnoredSec("Gentilici");
+        addIgnoredSec("Nota d'ús");
+        addIgnoredSec("Notes d'ús");
+        addIgnoredSec("Derivats");
+        addIgnoredSec("Variants");
+        addIgnoredSec("Referències");
+        addIgnoredSec("Notes gramaticals");
+        addIgnoredSec("Compostos");
+        addIgnoredSec("Expressions");
+        addIgnoredSec("Etimologia");
+        addIgnoredSec("Arcaismes");
+        addIgnoredSec("Citacions");
+        addIgnoredSec("Altres formes");
+        addIgnoredSec("Cites");
+        addIgnoredSec("Notes d'us");
+        addIgnoredSec("Grafia alternativa");
+        addIgnoredSec("Onomàstica");
+        addIgnoredSec("Notes d’ús");
+        addIgnoredSec("Compostos i expressions");
+        addIgnoredSec("Vegeu tambe");
+        addIgnoredSec("Veure també");
+        addIgnoredSec("Miscel·lania");
+        addIgnoredSec("Termes derivats");
+        addIgnoredSec("Termes relacionats");
+        addIgnoredSec("Vegeu");
+        addIgnoredSec("Contraccions");
     }
 
     protected final WiktionaryDataHandler catwdh;
@@ -172,7 +164,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         this.wdh.initializePageExtraction(getWiktionaryPageName());
 
-        pageAnalyser(PageIterator.of(pageContent, ignoredTemplate));
+        try {
+            pageAnalyser(PageIterator.of(pageContent, ignoredTemplate));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
 
         showCount();
 
@@ -187,7 +184,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             else if (page.get() instanceof WikiText.WikiSection)
                 log.warn("{} => Wrong level section found \"{}\"! ---> {}", getWiktionaryPageName(), page.get().asWikiSection().getHeading().getContent().getText().trim(), url());
             else if (!ignoredText.contains(page.get().getText().trim()) && !page.get().getText().contains("#REDIRECCIÓ") && !page.get().getText().contains("#REDIRECT") && !page.get().getText().contains("[[Fitxer:"))
-                log.warn("{} => Low level thing found \"{}\" ---> {}", getWiktionaryPageName(), page.get(), url());
+                log.warn("{} => Low level token found \"{}\" ---> {}", getWiktionaryPageName(), page.get(), url());
         }
 
     }
@@ -203,166 +200,175 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         while (sec.hasNext()) {
             sec.next();
-            if (sec.isTemplate()) {
-                WikiText.Template template = sec.get().asTemplate();
-                switch (template.getName().trim()) {
-                    case "ca-pron":
-                        // extractPrononciation(template); // proncom
-                        break;
-                    case "pron":
-                    case "pronafi":
-                        this.wdh.registerPronunciation(template.getArg("2").getText(), template.getArg("1").getText());
-                        break;
-                    case "etim-comp":
-                    case "-etimologia-":
-                    case "etim-s":
-                    case "-etim-":
-                    case "etim-lang":
-                        skipUntilNextSection(sec);
-                        break;
-                    default:
-                        if (!ignoredTemplate.contains(template.getName().trim()))
-                            log.warn("{} => Unhandled template \"{}\" in language section ---> {}", getWiktionaryPageName(), sec.get().getText(), url());
-                        break;
-                }
-            } else if (sec.isSection()) {
-                if (ignoredSection.contains(sec.get().asWikiSection().getHeading().getText()))
-                    continue;
-                if (sec.get().asWikiSection().getHeading().getContent().getText().trim().equals("Conjugació")) {
-                    // TODO extract conj
-                } else
-                    extractLexicalEntry(sec.get().asWikiSection());
+            if (sec.isTemplate())
+                templateDispatcher(sec);
+            else if (sec.isSection()) {
+                sectionDispatcher(sec); // if the section wasn't dispatched.
             } else if (!ignoredText.contains(sec.get().getText().trim()) && !sec.get().getText().startsWith("[[Fitxer"))
-                log.trace("{} => Unhandled text \"{}\" in language section ---> {}", getWiktionaryPageName(), sec.get().getText(), url());
+                log.trace("{} => Unhandled component \"{}\" in language section ---> {}", getWiktionaryPageName(), sec.get().getText(), url());
         }
 
         this.wdh.finalizeLanguageSection();
     }
 
     public void extractLexicalEntry(final WikiText.WikiSection section) {
-        if (section.getLevel() != 3) {
-            log.warn("{} => STRANGE SECTION LEVEL -> expected 3. ---> {}", getWiktionaryPageName(), url());
-            return;
-        }
-
-        log.trace("{} => Extracting section \"{}\" ---> {}", getWiktionaryPageName(), section.getHeading().getText(), url());
-        this.wdh.initializeLexicalEntry(section.getHeading().getText());
+        this.wdh.initializeLexicalEntry(getSectionTitle(section));
+        log.trace("{} => Extracting section \"{}\" ---> {}", getWiktionaryPageName(), getSectionTitle(section), url());
 
         PageIterator sectionIt = PageIterator.of(section.getContent().tokens(), ignoredTemplate);
 
         while (sectionIt.hasNext()) {
             sectionIt.next();
-            if (sectionIt.isTemplate()) {
-                WikiText.Template template = sectionIt.get().asTemplate();
-                switch (template.getName()) {
-                    case "lema":
-                        final String gen = toText(template.getArg("g"));
-                        if (gen == null)
-                            break;
-                        extractNumber(gen);
-                        extractGender(gen);
-                        break;
-                    case "ca-adj-forma":
-                    case "es-adj-forma":
-                    case "ca-nom-forma":
-                    case "ca-nom":
-                    case "ca-num-forma":
-                        final String arg = toText(template.getArg("1"));
-                        if (arg == null)
-                            break;
-                        extractNumber(arg);
-                        extractGender(arg);
-                        break;
-                    case "verb-forma":
-                        //TODO extract
-                        break;
-                    case "ca-verb":
-                        // TODO extract
-                        break;
-                    case "-hipo-":
-                    case "-mero-":
-                    case "-ant-":
-                    case "-sin-":
-                    case "-hiper-":
-                    case "-holo-":
-                        extractNymWithPage(sectionIt);
-                        break;
-                    case "-comp-":
-                        extractExpressions(sectionIt);
-                        break;
-                    case "-trad-":
-                        extractTranslation(sectionIt);
-                        break;
-                    case "inici": // Try to handle translation without an opened field.
-                        PageIterator clone = sectionIt.cloneIt();
-                        clone.skip(sectionIt.getCursor() - 2);
-                        extractTranslation(clone);
-                        sectionIt.skip(clone.getCursor() - sectionIt.getCursor());
-                        break;
-                    case "ca-adj":
-                        final String gender = toText(template.getArg("1"));
-                        if (gender != null && gender.equals("m"))
-                            this.wdh.registerPropertyOnCanonicalForm(LexinfoOnt.gender, LexinfoOnt.masculine);
-                        final String feminine = toText(template.getArg("f"));
-                        final String plural1 = toText(template.getArg("p"));
-                        final String plural2 = toText(template.getArg("p2"));
-                        String pluralFeminine = toText(template.getArg("pf"));
-                        if (pluralFeminine == null) pluralFeminine = toText(template.getArg("fp"));
-                        int argFound = 1;
-                        if (feminine != null) argFound++;
-                        if (plural1 != null) argFound++;
-                        if (plural2 != null) argFound++;
-                        if (pluralFeminine != null) argFound++;
-                        if (toText(template.getArg("cat")) != null) argFound++;
-                        // TODO do something with this.
-                        if (template.getArgs().size() > argFound)
-                            log.warn("{} => Args detected on ajd template ---> {}", getWiktionaryPageName(), url());
-                        break;
-                    case "sigles": // TODO extract may be.
-                        break;
-                    case "-rel-":
-                        skipSimpleText(sectionIt);
-                        if (sectionIt.hasNext() && sectionIt.isNextATemplate() && !sectionIt.shadowNextTemplate().getName().startsWith("-"))
-                            sectionIt.next();
-                    case "-var-":
-                    case "-der-":
-                    case "-cog-":
-                    case "-desc-":
-                    case "-notes-":
-                    case "-nota-":
-                    case "-fals-":
-                        skipSimpleText(sectionIt);
-                        break;
-                    case "ca-pron":
-                    case "entrada":
-                        break;
-                    case "ca-verb-forma":
-                        // TODO check if some have args
-                        break;
-                    default:
-                        log.warn("{} => Template unhandled template in \"{}\" -> {} ---> {}", getWiktionaryPageName(), this.catwdh.parseSectionName(section.getHeading().getText()), sectionIt.get().getText(), url());
-                        break;
-                }
-            } else if (sectionIt.isSection()) {
-                final String headingTitle = sectionIt.get().asWikiSection().getHeading().getContent().getText().trim();
-                if (headingTitle.equals("Conjugació"))
-                    // TODO EXTRACT
-                    continue;
-                else if (headingTitle.equals("Expressions i frases fetes"))
-                    extractExpressions(sectionIt);
-                else if (headingTitle.equals("Antònims") || headingTitle.equals("Sinònims") || headingTitle.equals("Hipònims")
-                         || headingTitle.equals("Hiperònims") || headingTitle.equals("Parònims"))
-                    extractNymWithSection(sectionIt.get().asWikiSection());
-                else if (!ignoredSection.contains(sectionIt.get().asWikiSection().getHeading().getText()))
-                    log.warn("{} => Section unhandled in \"{}\" -> {} ---> {}", getWiktionaryPageName(), this.catwdh.parseSectionName(section.getHeading().getText()), this.catwdh.parseSectionName(sectionIt.get().asWikiSection().getHeading().getText()), url());
-            } else {
-                if (sectionIt.get().getText().startsWith("#"))
-                    extractDefinitionField(sectionIt);
-                else if (!sectionIt.get().getText().contains("<gallery>") && !sectionIt.get().getText().contains("[[Categoria:") && !sectionIt.get().getText().startsWith("[[Fitxer:"))
-                    log.warn("{} => Text unhandled in \"{}\" -> {} ---> {}", getWiktionaryPageName(), this.catwdh.parseSectionName(section.getHeading().getText()), sectionIt.get().getText().trim(), url());
-            }
+
+            if (sectionIt.isTemplate())
+                templateDispatcher(sectionIt);
+            else if (sectionIt.get().getText().startsWith("#"))
+                extractDefinitionField(sectionIt);
+            else if (sectionIt.isSection()) {
+                sectionDispatcher(sectionIt);
+            } else if (!sectionIt.get().getText().trim().equals("!") && !sectionIt.get().getText().contains("<gallery>") && !sectionIt.get().getText().contains("[[Categoria:") && !sectionIt.get().getText().startsWith("[[Fitxer:"))
+                log.trace("{} => Text unhandled in \"{}\" -> {} ---> {}", getWiktionaryPageName(), getSectionTitle(section), sectionIt.get().getText().trim(), url());
+
         }
     }
+
+    private void sectionDispatcher(PageIterator sec) {
+        final String name = sec.get().asWikiSection().getHeading().getContent().getText().trim();
+
+        if (isIgnoredSection(sec.get().asWikiSection()))
+            return;
+
+        switch (name) {
+            case "Conjugació":
+                // TODO extract conj
+                break;
+            case "Expressions i frases fetes":
+                extractExpressions(sec);
+                break;
+            case "Antònims":
+            case "Sinònims":
+            case "Hipònims":
+            case "Hiperònims":
+            case "Parònims":
+                extractNymWithSection(sec.get().asWikiSection());
+                break;
+            default:
+                if (sec.get().asWikiSection().getLevel() == 3)
+                    extractLexicalEntry(sec.get().asWikiSection());
+                else
+                    log.warn("{} => Section unhandled -> {} ---> {}", getWiktionaryPageName(), getSectionTitle(sec.get().asWikiSection()), url());
+                break;
+        }
+
+    }
+
+    private void templateDispatcher(PageIterator sec) {
+        final WikiText.Template template = sec.get().asTemplate();
+
+        switch (template.getName().trim()) {
+            case "ca-pron":
+              //  extractPrononciation(template);
+                break;
+            case "pron":
+            case "pronafi":
+                this.wdh.registerPronunciation(template.getArg("2").getText(), template.getArg("1").getText());
+                break;
+            case "lema":
+                final String gen = toText(template.getArg("g"));
+                if (gen == null) break;
+                extractNumber(gen);
+                extractGender(gen);
+                break;
+            case "ca-adj-forma":
+            case "es-adj-forma":
+            case "ca-nom-forma":
+            case "ca-nom":
+            case "ca-num-forma":
+                final String arg = toText(template.getArg("1"));
+                if (arg == null) break;
+                extractNumber(arg);
+                extractGender(arg);
+                break;
+            case "ca-adj":
+                final String gender = toText(template.getArg("1"));
+                if (gender != null && gender.equals("m"))
+                    this.wdh.registerPropertyOnCanonicalForm(LexinfoOnt.gender, LexinfoOnt.masculine);
+                final String feminine = toText(template.getArg("f"));
+                final String plural1 = toText(template.getArg("p"));
+                final String plural2 = toText(template.getArg("p2"));
+                String pluralFeminine = toText(template.getArg("pf"));
+                if (pluralFeminine == null) pluralFeminine = toText(template.getArg("fp"));
+                int argFound = 1;
+                if (feminine != null) argFound++;
+                if (plural1 != null) argFound++;
+                if (plural2 != null) argFound++;
+                if (pluralFeminine != null) argFound++;
+                if (toText(template.getArg("cat")) != null) argFound++;
+                // TODO do something with this.
+                if (template.getArgs().size() > argFound)
+                    log.warn("{} => Args detected on ajd template ---> {}", getWiktionaryPageName(), url());
+                break;
+            case "verb-forma":
+            case "ca-verb-forma":
+                // TODO check if some have args
+                break;
+            case "ca-verb":
+                // TODO extract
+                break;
+            case "-trad-":
+                extractTranslation(sec);
+                break;
+            case "inici": // Try to handle translation without an opened field.
+                translationFieldWithOutHeadExtractor(sec);
+                break;
+            case "-comp-":
+                extractExpressions(sec);
+                break;
+            case "-hipo-":
+            case "-mero-":
+            case "-ant-":
+            case "-sin-":
+            case "-hiper-":
+            case "-holo-":
+                extractNymWithPage(sec);
+                break;
+            case "etim-comp":
+            case "-etimologia-":
+            case "etimologia":
+            case "etim-s":
+            case "-etim-":
+            case "etim-lang":
+                skipUntilNextSection(sec);
+                break;
+            case "sigles": // TODO extract may be.
+                break;
+            case "-rel-":
+                skipSimpleText(sec);
+                if (sec.hasNext() && sec.isNextATemplate() && !sec.shadowNextTemplate().getName().startsWith("-"))
+                    sec.next();
+            case "-var-":
+            case "-der-":
+            case "-cog-":
+            case "-desc-":
+            case "-notes-":
+            case "-nota-":
+            case "-fals-":
+                skipSimpleText(sec);
+                break;
+            default:
+                if (!ignoredTemplate.contains(template.getName().trim()))
+                    log.warn("{} => Unhandled template \"{}\" in language section ---> {}", getWiktionaryPageName(), sec.get().getText(), url());
+                break;
+        }
+    }
+
+    private void translationFieldWithOutHeadExtractor(PageIterator sec) {
+        PageIterator clone = sec.cloneIt();
+        clone.skip(sec.getCursor() - 2);
+        extractTranslation(clone);
+        sec.skip(clone.getCursor() - sec.getCursor());
+    }
+
 
     public void skipSimpleText(final PageIterator section) {
         log.trace("{} => Derived field found. ---> {}", getWiktionaryPageName(), url());
@@ -488,16 +494,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     public void extractDefinitionLine(final WikiText.Token line) {
-        if (line.getText().startsWith("# ")) { // TODO use render
+
+        if (line.getText().startsWith("#:")) { // TODO use render
+            log.trace("{} => Example found -> {} ---> {}", getWiktionaryPageName(), line.getText().substring(2).trim(), url());
+            this.wdh.registerExample(line.getText().substring(2).trim(), null);
+
+        } else if (line.getText().startsWith("##")) { // TODO handle complex definitions
+            log.warn("{} => Complex definition found, not currently handled. ---> {}", getWiktionaryPageName(), url());
+
+        } else if (line.getText().startsWith("#")) {
             log.trace("{} => Definition found -> {} ---> {}", getWiktionaryPageName(), line.getText(), url());
-            this.wdh.registerNewDefinition(line.getText().substring(2));
-        } else if (line.getText().startsWith("#: ")) {
-            log.trace("{} => Example found -> {} ---> {}", getWiktionaryPageName(), line.getText().substring(3), url());
-            this.wdh.registerExample(line.getText().substring(3), null);
-        } else if (line.getText().startsWith("##")) // TODO handle complex definitions
-            log.trace("{} => Complex definition found, not currently handled. ---> {}", getWiktionaryPageName(), url());
-        else if (!line.getText().substring(1).isBlank())// TODO accept : "#direct def text snap to the #"
+            this.wdh.registerNewDefinition(line.getText().substring(1).trim());
+
+        } else if (!line.getText().substring(1).isBlank())
             log.warn("{} => Definition component non handled -> {} ---> {}", getWiktionaryPageName(), line.getText(), url());
+
     }
 
     public void extractPrononciation(final WikiText.Template template) {
@@ -558,11 +569,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         ignoredText.add(text);
     }
 
-    public static void addIgnoredSec(final String ignored, final int level) {
-        String equals = "";
-        for (int i = 0; i < level; i++)
-            equals += "=";
-        ignoredSection.add(equals + " " + ignored + " " + equals);
+    public static void addIgnoredSec(final String ignored) {
+        ignoredSection.add(ignored.trim());
+    }
+
+    public static boolean isIgnoredSection(final WikiText.WikiSection section) {
+        return ignoredSection.contains(section.getHeading().getContent().getText().trim());
+    }
+
+    public static String getSectionTitle(final WikiText.WikiSection section) {
+        return section.getHeading().getContent().getText().trim();
+    }
+
+    public static boolean isNameEquals(final String name, final WikiText.WikiSection section) {
+        return section.getHeading().getContent().getText().trim().equals(name);
     }
 
 }

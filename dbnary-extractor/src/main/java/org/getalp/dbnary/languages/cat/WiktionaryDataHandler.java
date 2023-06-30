@@ -47,17 +47,18 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         posAndTypeValueMap.put("Lletra", new PosAndType(LexinfoOnt.letter, OntolexOnt.Word));
         posAndTypeValueMap.put("Preposició", new PosAndType(LexinfoOnt.preposition, OntolexOnt.Word));
         posAndTypeValueMap.put("Interjecció", new PosAndType(LexinfoOnt.Interjection, OntolexOnt.Word));
-        posAndTypeValueMap.put("Pronom", new PosAndType(LexinfoOnt.Pronoun, OntolexOnt.Word));
-        posAndTypeValueMap.put("Article", new PosAndType(LexinfoOnt.Article, OntolexOnt.Word));
+        posAndTypeValueMap.put("Pronom", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("Article", new PosAndType(LexinfoOnt.article, OntolexOnt.Word));
         posAndTypeValueMap.put("Contracció", new PosAndType(LexinfoOnt.contraction, OntolexOnt.Word));
-        posAndTypeValueMap.put("Prefix", new PosAndType(LexinfoOnt.Prefix, OntolexOnt.Affix));
-        posAndTypeValueMap.put("Sufix", new PosAndType(LexinfoOnt.Suffix, OntolexOnt.Affix));
-        posAndTypeValueMap.put("Infix", new PosAndType(LexinfoOnt.Infix, OntolexOnt.Affix));
-        posAndTypeValueMap.put("Símbol", new PosAndType(LexinfoOnt.Symbol, LexinfoOnt.Symbol));
+        posAndTypeValueMap.put("Prefix", new PosAndType(LexinfoOnt.prefix, OntolexOnt.Affix));
+        posAndTypeValueMap.put("Sufix", new PosAndType(LexinfoOnt.suffix, OntolexOnt.Affix));
+        posAndTypeValueMap.put("Infix", new PosAndType(LexinfoOnt.infix, OntolexOnt.Affix));
+        posAndTypeValueMap.put("Símbol", new PosAndType(LexinfoOnt.symbol, LexinfoOnt.Symbol));
         posAndTypeValueMap.put("Forma verbal", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
         posAndTypeValueMap.put("Frase feta", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
         posAndTypeValueMap.put("Desinència", new PosAndType(LexinfoOnt.suffix, OntolexOnt.Affix));
-
+        posAndTypeValueMap.put("Acrònim", new PosAndType(LexinfoOnt.acronym, OntolexOnt.Word));
+        posAndTypeValueMap.put("Proverbi", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
     }
 
 
@@ -71,15 +72,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     }
 
     @Override
-    public void initializeLexicalEntry(String headingTitle) {
-        String pos = parseSectionName(headingTitle);
+    public void initializeLexicalEntry(String title) {
 
-        if (posAndTypeValueMap.get(pos) == null)
-            log.warn("UNHANDLED LEXICAL TYPE : " + pos + " name -> " + this.currentPage.getName());
+        if (posAndTypeValueMap.get(title) == null)
+            log.warn("UNHANDLED LEXICAL TYPE : " + title + " name -> " + this.currentPage.getName());
 
-        PosAndType pat = posAndTypeValueMap.get(pos);
+        PosAndType pat = posAndTypeValueMap.get(title);
         Resource typeR = typeResource(pat);
-        initializeLexicalEntry(pos, posResource(pat), typeR);
+        initializeLexicalEntry(title, posResource(pat), typeR);
     }
 
     public void addLexicalForm(LexicalForm form) {
@@ -91,10 +91,4 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         form.attachTo(currentLexEntry.inModel(morphoBox));
     }
 
-    public String parseSectionName(final String str) {
-        int level = 0;
-        while (str.charAt(level) == '=')
-            level++;
-        return str.substring(level, str.length() - level).trim();
-    }
 }

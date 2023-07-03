@@ -25,6 +25,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         nymRelation.put("hiper", "hyper");
         nymRelation.put("mero", "mero");
         nymRelation.put("holo", "holo");
+        nymRelation.put("paro", "qsyn");
 
         nymRelation.put("Antònims", "ant");
         nymRelation.put("Sinònims", "syn");
@@ -33,14 +34,29 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         nymRelation.put("Parònims", "qsyn");
 
         posAndTypeValueMap.put("Nom", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
+        posAndTypeValueMap.put("Noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
+        posAndTypeValueMap.put("Nom-1", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
+        posAndTypeValueMap.put("Nom-2", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
         posAndTypeValueMap.put("nom", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
         posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
+        posAndTypeValueMap.put("Verb 1", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
+        posAndTypeValueMap.put("Verb 2", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
         posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
+        posAndTypeValueMap.put("Verb-1", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
+        posAndTypeValueMap.put("Verb-2", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
+        posAndTypeValueMap.put("Verbs", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
         posAndTypeValueMap.put("Adjectiu", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
+        posAndTypeValueMap.put("Adjectiu-1", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
+        posAndTypeValueMap.put("Adjectiu-2", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
+        posAndTypeValueMap.put("Adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
         posAndTypeValueMap.put("Adjetiu", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
         posAndTypeValueMap.put("Sigles", new PosAndType(LexinfoOnt.acronym, OntolexOnt.Word));
         posAndTypeValueMap.put("Adverbi", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
+        posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
+        posAndTypeValueMap.put("Adjective", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
         posAndTypeValueMap.put("Nom propi", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("Nom Propi", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("Nom prompi", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
         posAndTypeValueMap.put("Numeral", new PosAndType(LexinfoOnt.number, OntolexOnt.Word));
         posAndTypeValueMap.put("Conjunció", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.Word));
         posAndTypeValueMap.put("Abreviatura", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.Word));
@@ -59,6 +75,17 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         posAndTypeValueMap.put("Desinència", new PosAndType(LexinfoOnt.suffix, OntolexOnt.Affix));
         posAndTypeValueMap.put("Acrònim", new PosAndType(LexinfoOnt.acronym, OntolexOnt.Word));
         posAndTypeValueMap.put("Proverbi", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("Transliteració", new PosAndType(LexinfoOnt.transliteration, OntolexOnt.MultiWordExpression));
+        posAndTypeValueMap.put("Lletres", new PosAndType(LexinfoOnt.letter, OntolexOnt.Word));
+        posAndTypeValueMap.put("Determinant", new PosAndType(LexinfoOnt.determiner, OntolexOnt.Word));
+        posAndTypeValueMap.put("Caràcter", new PosAndType(LexinfoOnt.symbol, OntolexOnt.Word));
+        posAndTypeValueMap.put("Posposició", new PosAndType(LexinfoOnt.preposition, OntolexOnt.Word));
+        posAndTypeValueMap.put("Adjectiu numeral", new PosAndType(LexinfoOnt.genericNumeral, OntolexOnt.Word));
+        posAndTypeValueMap.put("Abreviacions", new PosAndType(LexinfoOnt.AbbreviatedForm, OntolexOnt.Word));
+        posAndTypeValueMap.put("Pronom relatiu", new PosAndType(LexinfoOnt.relativePronoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("Pronom indefinit", new PosAndType(LexinfoOnt.indefinitePronoun, OntolexOnt.Word));
+        posAndTypeValueMap.put("Postposició", new PosAndType(LexinfoOnt.postposition, OntolexOnt.Word));
+        posAndTypeValueMap.put("Prenom",new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
     }
 
 

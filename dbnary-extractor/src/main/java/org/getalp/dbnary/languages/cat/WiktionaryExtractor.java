@@ -9,11 +9,19 @@ import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.morphology.MorphoSyntacticFeature;
+import org.getalp.dbnary.morphology.StrictInflexionScheme;
 import org.getalp.dbnary.tools.PageIterator;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.model.lexinfo.Gender;
+import org.getalp.model.lexinfo.Mood;
+import org.getalp.model.lexinfo.Number;
+import org.getalp.model.ontolex.LexicalForm;
+import org.getalp.model.ontolex.WrittenRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -22,10 +30,10 @@ import java.util.regex.Pattern;
 /**
  * TODO :
  *  - complete all TOD0 resuming to :
- *      - Extract Conjugaison
- *      - Extract Datas from some templates
- *      - Extract Datas of the templates to the DataHandler
- *  - Make a big check for external languages
+ *      - Extract Conjugaison ?
+ *      - Extract Datas from some templates  ✓
+ *      - Extract Datas of the templates to the DataHandler  ✓
+ *  - Make a big check for external languages  ✓
  *  - Make a big refactor and clean the entire code, which is ugly :
  *      - Section name comparator ✓
  *      - The way that the templates, and sections are currently dispatched.  ✓
@@ -55,6 +63,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addIgnoredT("colauto");
         addIgnoredT("mig");
         addIgnoredT("q");
+        addIgnoredT("sigles");
         addIgnoredT("homòfons");
         addIgnoredT("map shape");
         addIgnoredT("verb-forma");
@@ -97,6 +106,48 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addIgnoredT("map_draw");
         addIgnoredT("etim-fsuf");
         addIgnoredT("entrada");
+        addIgnoredT("en-adv");
+        addIgnoredT("eo-entrada");
+        addIgnoredT("pronunciació");
+        addIgnoredT("ja-lema");
+        addIgnoredT("zh-lema");
+        addIgnoredT("el-nN-ο-α-1");
+        addIgnoredT("zh-forma");
+        addIgnoredT("es-num");
+        addIgnoredT("wikimedia");
+        addIgnoredT("audio");
+        addIgnoredT("peces d'escacs/en");
+        addIgnoredT("ja-forma");
+        addIgnoredT("rom-entrada");
+        addIgnoredT("es-interj");
+        addIgnoredT("fr-interj");
+        addIgnoredT("columnes");
+        addIgnoredT("columna nova");
+        addIgnoredT("colls de la baralla/fr");
+        addIgnoredT("eo-lema");
+        addIgnoredT("eo-part");
+        addIgnoredT("colls de la baralla/es");
+        addIgnoredT("signes");
+        addIgnoredT("e");
+        addIgnoredT("zodíac/fr");
+        addIgnoredT("hi-pronoms");
+        addIgnoredT("final columnes");
+        addIgnoredT("ja-kanji");
+        addIgnoredT("en-noun");
+        addIgnoredT("la-decl-3a-cons-n");
+        addIgnoredT("it-part");
+        addIgnoredT("fr-haspirada");
+        addIgnoredT("ISBN");
+        addIgnoredT("top2");
+        addIgnoredT("mid2");
+        addIgnoredT("zodíac/it");
+        addIgnoredT("arn-entrada");
+        addIgnoredT("Ã udio simple");
+        addIgnoredT("it-sil");
+        addIgnoredT("peces d'escacs/fr");
+        addIgnoredT("xib-lema");
+        addIgnoredT("marca");
+        addIgnoredT("arn-entrada");
 
 
         addIgnoredText(",");
@@ -106,6 +157,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // CHANGE THE SECTION NAME COMPARAISON.
         addIgnoredSec("Miscel·lània");
         addIgnoredSec("Vegeu també");
+        addIgnoredSec("vegeu també");
+        addIgnoredSec("Vegeu tembé");
+        addIgnoredSec("Veugeu també");
+        addIgnoredSec("Vegeu tammbé");
+        addIgnoredSec("Vegueu també");
         addIgnoredSec("Relacionats");
         addIgnoredSec("Nota");
         addIgnoredSec("Notes");
@@ -136,6 +192,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         addIgnoredSec("Termes relacionats");
         addIgnoredSec("Vegeu");
         addIgnoredSec("Contraccions");
+        addIgnoredSec("Declinació");
+        addIgnoredSec("Locucions");
+        addIgnoredSec("Enunciatiu");
+        addIgnoredSec("Locució");
+        addIgnoredSec("Nota d'us");
+        addIgnoredSec("Variacions");
+        addIgnoredSec("Glossa");
+        addIgnoredSec("Forma alternativa");
+        addIgnoredSec("Àmbit");
+        addIgnoredSec("Flexió");
+        addIgnoredSec("Refèrencies");
+        addIgnoredSec("Kanji");
+        addIgnoredSec("Cognats");
+        addIgnoredSec("Formes alternatives");
+        addIgnoredSec("Descendents");
+        addIgnoredSec("Verb suru");
+        addIgnoredSec("forma-");
+        addIgnoredSec("Col·locacions");
     }
 
     protected final WiktionaryDataHandler catwdh;
@@ -239,6 +313,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             return;
 
         switch (name) {
+            case "Conjugation":
+            case "Conjucació":
             case "Conjugació":
                 // TODO extract conj
                 break;
@@ -264,56 +340,41 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     private void templateDispatcher(PageIterator sec) {
         final WikiText.Template template = sec.get().asTemplate();
+        final String name = template.getName().trim();
+
+        if (name.matches("(.*)-pron")) {
+            //  extractPrononciation(template);
+            return;
+        } else if (name.matches("(.*)-adj-forma") || name.matches("(.*)-nom(.*)") || name.matches("(.*)-num-forma")) {
+            extractGenderAndNumber(template);
+            return;
+        } else if (name.matches("(.*)-adj")) {
+            extractAdj(template);
+            return;
+        } else if (name.matches("(.*)-verb")) { // TODO extracts args, transitiv etc...
+            /*   int argFound = 1;
+                if (template.getArgs().size() > argFound)
+                    log.trace("{} => Verb args unhandled found {} ---> {}", getWiktionaryPageName(), template.getText(), url());*/
+            return;
+        } else if (name.matches("(.*)-verb-forma") || name.equals("verb-forma")) {
+            FormBuilder.of(toText(template.getArg("1")), this.catwdh)
+                    .addMorpho(Mood.INFINITIVE)
+                    .save();
+            return;
+        }
 
         switch (template.getName().trim()) {
-            case "ca-pron":
-              //  extractPrononciation(template);
-                break;
+            case "-pron-":
             case "pron":
             case "pronafi":
-                this.wdh.registerPronunciation(template.getArg("2").getText(), template.getArg("1").getText());
+                if (template.getArg("2") != null)
+                    this.wdh.registerPronunciation(template.getArg("2").getText(), template.getArg("1").getText());
                 break;
             case "lema":
                 final String gen = toText(template.getArg("g"));
                 if (gen == null) break;
                 extractNumber(gen);
                 extractGender(gen);
-                break;
-            case "ca-adj-forma":
-            case "es-adj-forma":
-            case "ca-nom-forma":
-            case "ca-nom":
-            case "ca-num-forma":
-                final String arg = toText(template.getArg("1"));
-                if (arg == null) break;
-                extractNumber(arg);
-                extractGender(arg);
-                break;
-            case "ca-adj":
-                final String gender = toText(template.getArg("1"));
-                if (gender != null && gender.equals("m"))
-                    this.wdh.registerPropertyOnCanonicalForm(LexinfoOnt.gender, LexinfoOnt.masculine);
-                final String feminine = toText(template.getArg("f"));
-                final String plural1 = toText(template.getArg("p"));
-                final String plural2 = toText(template.getArg("p2"));
-                String pluralFeminine = toText(template.getArg("pf"));
-                if (pluralFeminine == null) pluralFeminine = toText(template.getArg("fp"));
-                int argFound = 1;
-                if (feminine != null) argFound++;
-                if (plural1 != null) argFound++;
-                if (plural2 != null) argFound++;
-                if (pluralFeminine != null) argFound++;
-                if (toText(template.getArg("cat")) != null) argFound++;
-                // TODO do something with this.
-                if (template.getArgs().size() > argFound)
-                    log.warn("{} => Args detected on ajd template ---> {}", getWiktionaryPageName(), url());
-                break;
-            case "verb-forma":
-            case "ca-verb-forma":
-                // TODO check if some have args
-                break;
-            case "ca-verb":
-                // TODO extract
                 break;
             case "-trad-":
                 extractTranslation(sec);
@@ -330,6 +391,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case "-sin-":
             case "-hiper-":
             case "-holo-":
+            case "-paro-":
                 extractNymWithPage(sec);
                 break;
             case "etim-comp":
@@ -339,8 +401,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case "-etim-":
             case "etim-lang":
                 skipUntilNextSection(sec);
-                break;
-            case "sigles": // TODO extract may be.
                 break;
             case "-rel-":
                 skipSimpleText(sec);
@@ -353,6 +413,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case "-notes-":
             case "-nota-":
             case "-fals-":
+            case "-exe-":
                 skipSimpleText(sec);
                 break;
             default:
@@ -360,6 +421,35 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                     log.warn("{} => Unhandled template \"{}\" in language section ---> {}", getWiktionaryPageName(), sec.get().getText(), url());
                 break;
         }
+    }
+
+    private void extractAdj(WikiText.Template template) {
+        extractGender(toText(template.getArg("1")));
+        FormBuilder.of(toText(template.getArg("f")), this.catwdh)
+                .addMorpho(Gender.FEMININE)
+                .save();
+        FormBuilder.of(toText(template.getArg("f2")), this.catwdh)
+                .addMorpho(Gender.FEMININE)
+                .save();
+        FormBuilder.of(toText(template.getArg("p")), this.catwdh)
+                .addGender("m")
+                .addMorpho(Number.PLURAL)
+                .save();
+        FormBuilder.of(toText(template.getArg("p2")), this.catwdh)
+                .addGender("m")
+                .addMorpho(Number.PLURAL)
+                .save();
+        FormBuilder.of(template.getArg("pf") == null ? toText(template.getArg("fp")) : toText(template.getArg("pf")), this.catwdh)
+                .addGender("f")
+                .addMorpho(Number.PLURAL)
+                .save();
+    }
+
+    private void extractGenderAndNumber(WikiText.Template template) {
+        final String arg = toText(template.getArg("1"));
+        if (arg == null) return;
+        extractNumber(arg);
+        extractGender(arg);
     }
 
     private void translationFieldWithOutHeadExtractor(PageIterator sec) {
@@ -426,6 +516,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     private void extractGender(final String gender) {
+        if (gender == null)
+            return;
+
         RDFNode gen;
 
         if (gender.contains("mf")) {
@@ -500,7 +593,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             this.wdh.registerExample(line.getText().substring(2).trim(), null);
 
         } else if (line.getText().startsWith("##")) { // TODO handle complex definitions
-            log.warn("{} => Complex definition found, not currently handled. ---> {}", getWiktionaryPageName(), url());
+            log.trace("{} => Complex definition found, not currently handled. ---> {}", getWiktionaryPageName(), url());
 
         } else if (line.getText().startsWith("#")) {
             log.trace("{} => Definition found -> {} ---> {}", getWiktionaryPageName(), line.getText(), url());
@@ -509,6 +602,61 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         } else if (!line.getText().substring(1).isBlank())
             log.warn("{} => Definition component non handled -> {} ---> {}", getWiktionaryPageName(), line.getText(), url());
 
+    }
+
+
+    public static class FormBuilder {
+        protected final WiktionaryDataHandler catwdh;
+        protected LexicalForm form;
+        protected StrictInflexionScheme sch;
+
+        protected final String value;
+
+        /**
+         * if the value is null, this object do nothing.
+         */
+        private FormBuilder(@Nullable final String value, final WiktionaryDataHandler catwdh) {
+            this.catwdh = catwdh;
+
+            if (value != null) {
+                this.form = new LexicalForm();
+                this.sch = new StrictInflexionScheme();
+            }
+
+            this.value = value;
+        }
+
+        public FormBuilder addGender(@Nullable final String gender) {
+            if (this.value == null) return this;
+
+            if (gender != null) if (gender.equals("m")) this.sch.add(Gender.MASCULINE);
+            else if (gender.equals("f")) this.sch.add(Gender.FEMININE);
+            else this.sch.add(Gender.NEUTER);
+            return this;
+        }
+
+        public FormBuilder addMorpho(final MorphoSyntacticFeature morpho) {
+            if (this.value == null) return this;
+
+            this.sch.add(morpho);
+            return this;
+        }
+
+        public boolean save() {
+            if (this.value == null) return false;
+
+            this.form.setFeature(this.sch);
+            this.form.addValue(new WrittenRepresentation(this.value, this.catwdh.getCurrentEntryLanguage()));
+
+            this.catwdh.addLexicalForm(this.form);
+
+            return true;
+        }
+
+
+        public static FormBuilder of(final String value, final WiktionaryDataHandler catwdh) {
+            return new FormBuilder(value, catwdh);
+        }
     }
 
     public void extractPrononciation(final WikiText.Template template) {

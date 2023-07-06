@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  * templates ✓ - Extract Datas of the templates to the DataHandler ✓ - Make a big check for external
  * languages ✓ - Make a big refactor and clean the entire code, which is ugly : - Section name
  * comparator ✓ - The way that the templates, and sections are currently dispatched. ✓ - Other
- * things. ✓ - Finish the big check for the CA language. ✓
+ * things. ✓ - Patch render - Finish the big check for the CA language. ✓
  */
 
 /*--endolex=ontolex,morphology,lime --exolex=ontolex*/
@@ -142,6 +142,46 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     addIgnoredT("xib-lema");
     addIgnoredT("marca");
     addIgnoredT("arn-entrada");
+    addIgnoredT("mesos/ca");
+    addIgnoredT("de-adj-decl");
+    addIgnoredT("Icelandic declension kvk sb 03 æ");
+    addIgnoredT("ga-noun-m3");
+    addIgnoredT("de-nota llengua");
+    addIgnoredT("pl-adj-decl");
+    addIgnoredT("de-nota llengua");
+    addIgnoredT("e-propi");
+    addIgnoredT("el-nN-ι-ια-2b");
+    addIgnoredT("hr-decl-noun");
+    addIgnoredT("la-adj-decl");
+    addIgnoredT("mesos/es");
+    addIgnoredT("sq-noun-f-të");
+    addIgnoredT("ésser-estar");
+    addIgnoredT("w");
+    addIgnoredT("fi-decl-ovi");
+    addIgnoredT("rel-top4");
+    addIgnoredT("mid4");
+    addIgnoredT("rel-mid4");
+    addIgnoredT("rel-bottom4");
+    addIgnoredT("ca-pronoms personals");
+    addIgnoredT("taula periòdica/de");
+    addIgnoredT("es.v.conj.ar");
+    addIgnoredT("DEFAULTSORT:ejar");
+    addIgnoredT("lleng");
+    addIgnoredT("mesos/ty");
+    addIgnoredT("ru-adjectiu2");
+    addIgnoredT("ref-web");
+    addIgnoredT("fi-decl-risti");
+    addIgnoredT("hi-adj-1");
+    addIgnoredT("IPAchar");
+    addIgnoredT("ca-nota-l'a");
+    addIgnoredT("ca-octes");
+    addIgnoredT("zgh-pronoms parentiu");
+    addIgnoredT("zgh-pronoms parentiu");
+    addIgnoredT("mesos/ast");
+    addIgnoredT("2");
+    addIgnoredT("forma-");
+    addIgnoredT("peces d'escacs/ca");
+    addIgnoredT("taula periòdica/ca");
 
 
     addIgnoredText(",");
@@ -156,6 +196,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     addIgnoredSec("Veugeu també");
     addIgnoredSec("Vegeu tammbé");
     addIgnoredSec("Vegueu també");
+    addIgnoredSec("Vegeu tambe");
+    addIgnoredSec("Vegeu");
+    addIgnoredSec("Vegue també");
+    addIgnoredSec("Vegeu també =");
+    addIgnoredSec("= Vegeu també");
+    addIgnoredSec("Vegeu tmbé");
+    addIgnoredSec("Referències");
     addIgnoredSec("Relacionats");
     addIgnoredSec("Nota");
     addIgnoredSec("Notes");
@@ -165,7 +212,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     addIgnoredSec("Notes d'ús");
     addIgnoredSec("Derivats");
     addIgnoredSec("Variants");
-    addIgnoredSec("Referències");
     addIgnoredSec("Notes gramaticals");
     addIgnoredSec("Compostos");
     addIgnoredSec("Expressions");
@@ -179,12 +225,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     addIgnoredSec("Onomàstica");
     addIgnoredSec("Notes d’ús");
     addIgnoredSec("Compostos i expressions");
-    addIgnoredSec("Vegeu tambe");
     addIgnoredSec("Veure també");
     addIgnoredSec("Miscel·lania");
     addIgnoredSec("Termes derivats");
     addIgnoredSec("Termes relacionats");
-    addIgnoredSec("Vegeu");
     addIgnoredSec("Contraccions");
     addIgnoredSec("Declinació");
     addIgnoredSec("Locucions");
@@ -204,6 +248,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     addIgnoredSec("Verb suru");
     addIgnoredSec("forma-");
     addIgnoredSec("Col·locacions");
+    addIgnoredSec("Vegeu  també");
+    addIgnoredSec("Fonts i referències");
+    addIgnoredSec("Partícula");
+    addIgnoredSec("Síl·laba");
   }
 
   protected final WiktionaryDataHandler catwdh;
@@ -250,7 +298,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (page.hasNext()) {
       if (page.next() instanceof WikiText.WikiSection && page.get().asWikiSection().getLevel() == 2)
         extractLanguageSection(parseLanguage(page.get().asWikiSection().getHeading()),
-            PageIterator.of(page.get().asWikiSection()));
+            PageIterator.of(page.get().asWikiSection(), ignoredTemplate));
       else if (page.get() instanceof WikiText.WikiSection)
         log.warn("{} => Wrong level section found \"{}\"! ---> {}", getWiktionaryPageName(),
             page.get().asWikiSection().getHeading().getContent().getText().trim(), url());
@@ -318,33 +366,42 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void sectionDispatcher(PageIterator sec) {
     final String name = sec.get().asWikiSection().getHeading().getContent().getText().trim();
-
-    if (isIgnoredSection(sec.get().asWikiSection()))
-      return;
+    PageIterator childs = PageIterator.of(sec.get().asWikiSection(), ignoredTemplate);
 
     switch (name) {
       case "Conjugation":
       case "Conjucació":
       case "Conjugació":
+        // log.warn("{} => Conjugaison found -> {} ---> {}", getWiktionaryPageName(), childs,
+        // url());
+        while (childs.hasNext() && (!childs.isNextATemplate()
+            || !childs.shadowNext().asTemplate().getName().startsWith("-")))
+          childs.next();
         // TODO extract conj
         break;
       case "Expressions i frases fetes":
-        extractExpressions(sec);
+        extractExpressions(childs);
         break;
       case "Antònims":
       case "Sinònims":
       case "Hipònims":
       case "Hiperònims":
       case "Parònims":
-        extractNymWithSection(sec.get().asWikiSection());
+        extractNym(name, childs);
         break;
       default:
-        if (sec.get().asWikiSection().getLevel() == 3)
+        if (sec.get().asWikiSection().getLevel() == 3) {
+          if (isIgnoredSection(sec.get().asWikiSection()))
+            return;
           extractLexicalEntry(sec.get().asWikiSection());
-        else
-          log.warn("{} => Section unhandled -> {} ---> {}", getWiktionaryPageName(),
-              getSectionTitle(sec.get().asWikiSection()), url());
+        }
         break;
+    }
+
+    while (childs.hasNextTemplate()) { // if the current sections contains unused childs dispatch
+      // them.
+      childs.nextTemplate();
+      templateDispatcher(childs);
     }
 
   }
@@ -364,11 +421,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       extractAdj(template);
       return;
     } else if (name.matches("(.*)-verb")) { // TODO extracts args, transitiv etc...
-      /*
-       * int argFound = 1; if (template.getArgs().size() > argFound)
-       * log.trace("{} => Verb args unhandled found {} ---> {}", getWiktionaryPageName(),
-       * template.getText(), url());
-       */
+      if (name.equals("ca-verb")) {
+        final String verb_status = toText(template.getArg("1"));
+        final String pronominal = toText(template.getArg("p"));
+        if (verb_status != null) {
+
+        }
+        /*
+         * TODO pronominal Morpho FormBuilder.of(pronominal, this.catwdh) .addMorpho() .save();
+         */
+      } else {
+        int argFound = 1;
+        if (template.getArgs().size() > argFound)
+          log.trace("{} => Verb args unhandled found {} ---> {}", getWiktionaryPageName(),
+              template.getText(), url());
+      }
       return;
     } else if (name.matches("(.*)-verb-forma") || name.equals("verb-forma")) {
       FormBuilder.of(toText(template.getArg("1")), this.catwdh).addMorpho(Mood.INFINITIVE).save();
@@ -441,6 +508,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractAdj(WikiText.Template template) {
     extractGender(toText(template.getArg("1")));
+    if (this.catwdh.isDisabled(ExtractionFeature.ETYMOLOGY))
+      return;
     FormBuilder.of(toText(template.getArg("f")), this.catwdh).addMorpho(Gender.FEMININE).save();
     FormBuilder.of(toText(template.getArg("f2")), this.catwdh).addMorpho(Gender.FEMININE).save();
     FormBuilder.of(toText(template.getArg("p")), this.catwdh).addGender("m")
@@ -474,7 +543,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (section.hasNext()
         && ((!section.isNextASection() && !section.isNextATemplate()) || (section.isNextATemplate()
             && section.shadowNext().asTemplate().getName().contains("Col-")))) // TODO do something
-                                                                               // with this.
+      // with this.
       section.next();
   }
 
@@ -521,11 +590,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public void extractExpressions(final PageIterator section) {
     while (section.hasNext() && !section.isNextATemplate() && !section.isNextASection()) { // TODO
-                                                                                           // do
-                                                                                           // somethings
-                                                                                           // with
-                                                                                           // this
-                                                                                           // datas.
+      // do
+      // somethings
+      // with
+      // this
+      // datas.
       if (section.next().getText().startsWith("* ")) {
         log.trace("{} => -comp- Changing part -> {} ---> {}", getWiktionaryPageName(),
             section.get().getText().substring(2), url());
@@ -575,14 +644,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     extractNym(relation, field);
   }
 
-  public void extractNymWithSection(final WikiText.WikiSection section) {
-    final String relation = section.getHeading().getContent().getText().trim();
-    extractNym(relation, PageIterator.of(section.getContent().tokens(), ignoredTemplate));
-  }
-
   public void extractNym(final String relation, final PageIterator field) {
 
-    while (field.hasNext() && !field.isNextASection() && !field.isNextASection()) {
+    while (field.hasNext() && !field.isNextATemplate() && !field.isNextASection()) {
 
       String text = field.next().getText();
       if (text.startsWith("*"))
@@ -622,8 +686,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void extractDefinitionLine(final WikiText.Token line) {
 
     if (line.getText().startsWith("#:")) { // TODO use render
-      log.trace("{} => Example found -> {} ---> {}", getWiktionaryPageName(),
-          line.getText().substring(2).trim(), url());
+      log.warn("{} => Example found -> {} ---> {}", getWiktionaryPageName(),
+          line.getText().substring(2).trim(), url());;
       this.wdh.registerExample(line.getText().substring(2).trim(), null);
 
     } else if (line.getText().startsWith("##")) { // TODO handle complex definitions
@@ -768,7 +832,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignoredSection.add(ignored.trim());
   }
 
-  public static boolean isIgnoredSection(final WikiText.WikiSection section) {
+  public boolean isIgnoredSection(final WikiText.WikiSection section) {
     return ignoredSection.contains(section.getHeading().getContent().getText().trim());
   }
 

@@ -23,9 +23,7 @@ public class ExpandAllWikiModelCat extends ExpandAllWikiModel {
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
-    if (!templateName.equals("maraca")) {
-      super.substituteTemplateCall(templateName, parameterMap, writer);
-    }
+    super.substituteTemplateCall(templateName, parameterMap, writer);
   }
 
   @Override

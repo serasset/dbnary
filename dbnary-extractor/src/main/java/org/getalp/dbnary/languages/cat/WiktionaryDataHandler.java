@@ -37,6 +37,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
     posAndTypeValueMap.put("Nom-1", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
     posAndTypeValueMap.put("Nom-2", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
+    posAndTypeValueMap.put("Nom1", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
+    posAndTypeValueMap.put("Nom2", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
     posAndTypeValueMap.put("nom", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
     posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
     posAndTypeValueMap.put("Verb 1", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
@@ -93,6 +95,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         new PosAndType(LexinfoOnt.indefinitePronoun, OntolexOnt.Word));
     posAndTypeValueMap.put("Postposició", new PosAndType(LexinfoOnt.postposition, OntolexOnt.Word));
     posAndTypeValueMap.put("Prenom", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
+    posAndTypeValueMap.put("Forma Nom", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
+    // posAndTypeValueMap.put("Adjectiu determinant", new PosAndType(LexinfoOnt.adjective))
   }
 
 

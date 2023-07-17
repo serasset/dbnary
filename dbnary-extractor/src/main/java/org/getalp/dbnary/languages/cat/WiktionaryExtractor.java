@@ -294,9 +294,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         log.warn("{} => Wrong level section found \"{}\"! ---> {}", getWiktionaryPageName(),
             page.get().asWikiSection().getHeading().getContent().getText().trim(), url());
       else if (!ignoredText.contains(page.get().getText().trim())
-               && !page.get().getText().contains("#REDIRECCIÓ")
-               && !page.get().getText().contains("#REDIRECT")
-               && !page.get().getText().contains("[[Fitxer:"))
+          && !page.get().getText().contains("#REDIRECCIÓ")
+          && !page.get().getText().contains("#REDIRECT")
+          && !page.get().getText().contains("[[Fitxer:"))
         log.warn("{} => Low level token found \"{}\" ---> {}", getWiktionaryPageName(), page.get(),
             url());
     }
@@ -306,7 +306,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void extractLanguageSection(final String currentLanguage, final PageIterator sec) {
 
     if (currentLanguage == null || null == this.wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
-                                   && !currentLanguage.equals("cat"))
+        && !currentLanguage.equals("cat"))
       return;
 
     log.trace("{} => Extracting language : {} ---> {}", getWiktionaryPageName(), currentLanguage,
@@ -321,7 +321,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       else if (sec.isSection()) {
         sectionDispatcher(sec); // if the section wasn't dispatched.
       } else if (!ignoredText.contains(sec.get().getText().trim())
-                 && !sec.get().getText().startsWith("[[Fitxer"))
+          && !sec.get().getText().startsWith("[[Fitxer"))
         log.trace("{} => Unhandled component \"{}\" in language section ---> {}",
             getWiktionaryPageName(), sec.get().getText(), url());
     }
@@ -346,9 +346,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       else if (sectionIt.isSection()) {
         sectionDispatcher(sectionIt);
       } else if (!sectionIt.get().getText().trim().equals("!")
-                 && !sectionIt.get().getText().contains("<gallery>")
-                 && !sectionIt.get().getText().contains("[[Categoria:")
-                 && !sectionIt.get().getText().startsWith("[[Fitxer:"))
+          && !sectionIt.get().getText().contains("<gallery>")
+          && !sectionIt.get().getText().contains("[[Categoria:")
+          && !sectionIt.get().getText().startsWith("[[Fitxer:"))
         log.trace("{} => Text unhandled in \"{}\" -> {} ---> {}", getWiktionaryPageName(),
             getSectionTitle(section), sectionIt.get().getText().trim(), url());
 
@@ -368,7 +368,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           extractConjugation(childs);
 
         while (childs.hasNext() && (!childs.isNextATemplate()
-                                    || !childs.shadowNext().asTemplate().getName().startsWith("-")))
+            || !childs.shadowNext().asTemplate().getName().startsWith("-")))
           childs.next();
 
         // TODO extract conj
@@ -463,7 +463,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       extractPrononciation(template);
       return;
     } else if (name.matches("(.*)-adj-forma") || name.matches("(.*)-nom(.*)")
-               || name.matches("(.*)-num-forma")) {
+        || name.matches("(.*)-num-forma")) {
       extractGenderAndNumber(template);
       return;
     } else if (name.matches("(.*)-adj")) {
@@ -561,7 +561,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractDerived(PageIterator sec) {
     log.trace("{} => Derived field found. ---> {}", getWiktionaryPageName(), url());
     while (sec.hasNext() && ((!sec.isNextASection() && !sec.isNextATemplate())
-                             || (sec.isNextATemplate() && sec.shadowNext().asTemplate().getName().contains("Col-")))) {
+        || (sec.isNextATemplate() && sec.shadowNext().asTemplate().getName().contains("Col-")))) {
       sec.next();
       String content = render(sec.get().getText());
       if (!content.isEmpty() && content.charAt(content.length() - 1) == '.')
@@ -603,8 +603,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public void skipSimpleText(final PageIterator section) {
     while (section.hasNext()
-           && ((!section.isNextASection() && !section.isNextATemplate()) || (section.isNextATemplate()
-                                                                             && section.shadowNext().asTemplate().getName().contains("Col-")))) // TODO do something
+        && ((!section.isNextASection() && !section.isNextATemplate()) || (section.isNextATemplate()
+            && section.shadowNext().asTemplate().getName().contains("Col-")))) // TODO do something
       section.next();
   }
 
@@ -712,7 +712,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           log.trace("{} => {} detected -> {} ---> {}", getWiktionaryPageName(), relation,
               line.get().asLink().getLinkText(), url());
         } else if (!line.get().getText().trim().equals(",")
-                   && !line.get().getText().trim().equals("."))
+            && !line.get().getText().trim().equals("."))
           log.trace("{} => Unhandled text in {} field -> {} ---> {}", getWiktionaryPageName(),
               relation, line.get().getText(), url());
 

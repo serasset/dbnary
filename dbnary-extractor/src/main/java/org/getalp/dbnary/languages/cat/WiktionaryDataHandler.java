@@ -2,9 +2,7 @@ package org.getalp.dbnary.languages.cat;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
-import org.getalp.dbnary.ExtractionFeature;
-import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.OntolexOnt;
+import org.getalp.dbnary.*;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.model.ontolex.LexicalForm;
 import org.slf4j.Logger;
@@ -12,6 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
+/**
+ * @author Arnaud Alet 13/07/2023
+ */
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   private static final Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
@@ -127,6 +128,32 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return;
 
     form.attachTo(currentLexEntry.inModel(morphoBox));
+  }
+
+  public void registerVerbForm(final String value) {
+    if (value == null)
+      return;
+
+    if (value.contains("t"))
+      aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasValency, OliaOnt.Transitive));
+    if (value.contains("i"))
+      aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasValency, OliaOnt.Intransitive));
+
+    /*
+     * TODO if a is in the value, the currentLexEntry is an Auxilliar. if (value.contains("a"))
+     * aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasValency, OliaOnt.AuxiliaryVerb));
+     */
+  }
+
+  public void registerDerivedForm(final String... values) {
+    if (currentLexEntry == null)
+      return;
+
+    for (String val : values) {
+      Resource target = getPageResource(val);
+      aBox.add(target, DBnaryOnt.derivedFrom, currentLexEntry);
+      aBox.add(aBox.createStatement(target, DBnaryOnt.derivedFrom, currentLexEntry));
+    }
   }
 
 }

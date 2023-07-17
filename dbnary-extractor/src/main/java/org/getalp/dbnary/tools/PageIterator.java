@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * @author Arnaud Alet 13/07/2023
+ */
 public class PageIterator implements Iterator<WikiText.Token> {
 
   protected final List<WikiText.Token> page;

@@ -9,6 +9,9 @@ import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.iso639.ISO639_3;
 import org.getalp.model.ontolex.LexicalForm;
 
+/**
+ * @author Arnaud Alet 13/07/2023
+ */
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   static {
     posAndTypeValueMap.put("-adjf-", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
@@ -58,9 +61,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("-mgm-", new PosAndType(LexinfoOnt.formalRegister, OntolexOnt.Word));
     posAndTypeValueMap.put("-mír-", new PosAndType(LexinfoOnt.article, OntolexOnt.Word));
   }
-
-  public Resource currentEtymologyEntry = null;
-
 
   public WiktionaryDataHandler(String longEditionLanguageCode, String tdbDir) {
     super(longEditionLanguageCode, tdbDir);

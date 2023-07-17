@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * @author Arnaud Alet
+ * @author Arnaud Alet 13/07/2023
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 

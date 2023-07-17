@@ -277,7 +277,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void extractData() {
     this.wdh.initializePageExtraction(getWiktionaryPageName());
 
-
     pageAnalyser(PageIterator.of(pageContent, ignoredTemplate));
 
     this.wdh.finalizePageExtraction();
@@ -316,6 +315,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     while (sec.hasNext()) {
       sec.next();
+
       if (sec.isTemplate())
         templateDispatcher(sec);
       else if (sec.isSection()) {
@@ -652,8 +652,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   public void extractExpressions(final PageIterator section) {
-    while (section.hasNext() && !section.isNextATemplate() && !section.isNextASection()) {
-    }
+    while (section.hasNext() && !section.isNextATemplate() && !section.isNextASection())
+      section.next();
   }
 
   private void extractNumber(final String number) {

@@ -823,19 +823,53 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public void extractPrononciation(final WikiText.Template template) {
     String prononciationText = render(template.getText());
-    int start = -1;
-    for (int i = 0; i < prononciationText.length(); i++) {
-      if (prononciationText.charAt(i) == '/') {
-        if (start == -1)
-          start = i;
-        else {
-          log.trace("{} => Prononciation found {} ---> {}", getWiktionaryPageName(),
-              prononciationText.substring(start, i + 1), url());
-          this.wdh.registerPronunciation(prononciationText.substring(start, i + 1),
-              this.wdh.getCurrentEntryLanguage());
-          start = -1;
-        }
-      }
+
+    if (prononciationText.startsWith("Pronúncia(i): ")) {
+      prononciationText = prononciationText.substring("Pronúncia(i): ".length());
+      prononciationText = prononciationText.split("Rimes:")[0];
+    }
+
+    prononciationText =
+        prononciationText.replaceAll("\n", " ").replaceAll("/, /", "/,/").replaceAll(", ", " ");
+
+    String[] args = prononciationText.split(" ");
+    ArrayList<PronBuilder> builders = new ArrayList<>();
+    PronBuilder builder = new PronBuilder("root");
+
+    for (String s : args) {
+      if (s.startsWith("/"))
+        for (String pron : s.split(","))
+          builders.add(builder.of(pron));
+      else if (this.catwdh.getCurrentEntryLanguage().equals("ca") && !s.startsWith("("))
+        builder = new PronBuilder(s);
+    }
+
+    this.catwdh.registerPron(builders);
+
+  }
+
+  public static class PronBuilder {
+    public String loc;
+    public String pron;
+
+    public PronBuilder(final String loc) {
+      this.loc = loc.trim();
+      if (loc.endsWith(":"))
+        this.loc = this.loc.substring(0, this.loc.length() - 1);
+    }
+
+    public PronBuilder(final String loc, final String pron) {
+      this.loc = loc;
+      this.pron = pron;
+    }
+
+    public PronBuilder of(final String pron) {
+      return new PronBuilder(loc, pron);
+    }
+
+    @Override
+    public String toString() {
+      return "{" + "loc:'" + loc + '\'' + ", pron:'" + pron + '\'' + '}';
     }
   }
 

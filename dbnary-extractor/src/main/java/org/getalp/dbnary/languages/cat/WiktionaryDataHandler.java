@@ -8,6 +8,7 @@ import org.getalp.model.ontolex.LexicalForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -18,8 +19,27 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   private static final Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
   private static final HashMap<String, String> nymRelation = new HashMap<>();
+  private static final HashMap<String, String> pronCodeRelation = new HashMap<>();
 
   static {
+    pronCodeRelation.put("balear", "ca-u-sd-esib");
+    pronCodeRelation.put("valencià", "ca-valencia");
+    pronCodeRelation.put("septentrional", "ca-FR");
+    pronCodeRelation.put("alguerès", "ca-IT");
+    pronCodeRelation.put("central", "ca");
+    pronCodeRelation.put("nord-occidental", "ca");
+    pronCodeRelation.put("local", "ca");
+    pronCodeRelation.put("barceloní", "ca");
+    pronCodeRelation.put("ribagorçà", "ca");
+
+    pronCodeRelation.put("centr.", pronCodeRelation.get("central"));
+    pronCodeRelation.put("nord-occ.", pronCodeRelation.get("nord-occidental"));
+    pronCodeRelation.put("mallorquí", pronCodeRelation.get("balear"));
+    pronCodeRelation.put("Oriental", pronCodeRelation.get("central"));
+    pronCodeRelation.put("oriental", pronCodeRelation.get("central"));
+    pronCodeRelation.put("occidental", pronCodeRelation.get("nord-occidental"));
+    pronCodeRelation.put("Occidental", pronCodeRelation.get("nord-occidental"));
+
     nymRelation.put("sin", "syn");
     nymRelation.put("ant", "ant");
     nymRelation.put("hipo", "hypo");
@@ -97,7 +117,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Postposició", new PosAndType(LexinfoOnt.postposition, OntolexOnt.Word));
     posAndTypeValueMap.put("Prenom", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
     posAndTypeValueMap.put("Forma Nom", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
-    // posAndTypeValueMap.put("Adjectiu determinant", new PosAndType(LexinfoOnt.adjective))
+
+
   }
 
 
@@ -140,7 +161,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasValency, OliaOnt.Intransitive));
 
     /*
-     * TODO if a is in the value, the currentLexEntry is an Auxilliar. if (value.contains("a"))
+     * TODO if "a" is in the value, the currentLexEntry is an Auxilliar. if (value.contains("a"))
      * aBox.add(aBox.createStatement(currentLexEntry, OliaOnt.hasValency, OliaOnt.AuxiliaryVerb));
      */
   }
@@ -153,6 +174,25 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       Resource target = getPageResource(val);
       aBox.add(target, DBnaryOnt.derivedFrom, currentLexEntry);
       aBox.add(aBox.createStatement(target, DBnaryOnt.derivedFrom, currentLexEntry));
+    }
+  }
+
+  public void registerPron(final ArrayList<WiktionaryExtractor.PronBuilder> prons) {
+    String code;
+    for (WiktionaryExtractor.PronBuilder pron : prons) {
+
+      code = pronCodeRelation.get(pron.loc);
+
+      if (pron.loc.equals("root"))
+        code = this.getCurrentEntryLanguage();
+
+      if (code == null) {
+        log.warn("{} => Unhandled loc (normal) -> {}", currentPage.getName(), pron.loc);
+        code = this.getCurrentEntryLanguage();
+      }
+
+      this.registerPronunciation(pron.pron, code + "-pronafi");
+
     }
   }
 

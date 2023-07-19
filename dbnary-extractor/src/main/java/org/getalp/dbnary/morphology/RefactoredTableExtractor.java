@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import org.getalp.dbnary.languages.fra.morphology.Utils;
 import org.getalp.dbnary.tools.ArrayMatrix;
 import org.getalp.model.ontolex.LexicalForm;
@@ -104,7 +105,7 @@ public abstract class RefactoredTableExtractor implements Cloneable {
    * true if the cell should be processed by the extractor. This is called for a normal cell and not
    * for a header cell, it allows specific subclasses to further filter out cells based on their
    * content.
-   * 
+   *
    * @param cell the td element to be examined
    * @return true if the cell should be processed
    */
@@ -161,17 +162,20 @@ public abstract class RefactoredTableExtractor implements Cloneable {
     return res;
   }
 
-  protected void addToContext(ArrayMatrix<Element> columnHeaders, int i, int j, List<String> res) {
+  protected boolean addToContext(ArrayMatrix<Element> columnHeaders, int i, int j,
+      List<String> res) {
     Element cell = columnHeaders.get(i, j);
     String header;
     if (null != cell && isHeaderCell(cell) && (header = cell.text().trim()).length() != 0) {
       res.add(header);
+      return true;
     }
+    return false;
   }
 
   /**
    * returns the set of lexical forms that correspond to current cell and context
-   *
+   * <p>
    * The context is a list of String that corresponds to all column and row headers + section
    * headers in which the cell appears.
    *
@@ -188,7 +192,7 @@ public abstract class RefactoredTableExtractor implements Cloneable {
 
   /**
    * returns the inflection that correspond to current cell context
-   *
+   * <p>
    * The cell context is a list of String that corresponds to all column and row headers + section
    * headers in which the cell appears.
    *

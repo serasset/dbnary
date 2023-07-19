@@ -291,7 +291,7 @@
       <dependency>
         <groupId>info.bliki.wiki</groupId>
         <artifactId>bliki-core</artifactId>
-        <version>3.1.10G</version>
+        <version>3.1.11G</version>
       </dependency>
 
       <!-- Misc -->

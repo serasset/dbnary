@@ -187,7 +187,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         code = this.getCurrentEntryLanguage();
 
       if (code == null) {
-        log.warn("{} => Unhandled loc (normal) -> {}", currentPage.getName(), pron.loc);
+        log.trace("{} => Unhandled loc (don't worry) -> {}", currentPage.getName(), pron.loc);
         code = this.getCurrentEntryLanguage();
       }
 

@@ -833,18 +833,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         prononciationText.replaceAll("\n", " ").replaceAll("/, /", "/,/").replaceAll(", ", " ");
 
     String[] args = prononciationText.split(" ");
-    ArrayList<PronBuilder> builders = new ArrayList<>();
+    ArrayList<PronBuilder> pronBuilders = new ArrayList<>();
     PronBuilder builder = new PronBuilder("root");
 
     for (String s : args) {
       if (s.startsWith("/"))
         for (String pron : s.split(","))
-          builders.add(builder.of(pron));
+          pronBuilders.add(builder.of(pron));
       else if (this.catwdh.getCurrentEntryLanguage().equals("ca") && !s.startsWith("("))
         builder = new PronBuilder(s);
     }
 
-    this.catwdh.registerPron(builders);
+    this.catwdh.registerPron(pronBuilders);
 
   }
 

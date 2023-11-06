@@ -181,7 +181,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractLanguageData(Lang lg, WikiContent content) {
     String l2 = lg.getPart1();
-    if (null == l2 || "".equals(l2.trim())) {
+    if (null == l2 || l2.trim().isEmpty()) {
       l2 = lg.getId();
     }
     if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
@@ -287,7 +287,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
         for (String h : heads) {
           WikiContent head = args.get(h);
-          if (null != head && head.toString().trim().length() != 0) {
+          if (null != head && !head.toString().trim().isEmpty()) {
             WikiCharSequence s = new WikiCharSequence(head, linkResolver);
             String headword = s.toString();
             if (isSignificantlyDifferent(headword, getWiktionaryPageName())) {

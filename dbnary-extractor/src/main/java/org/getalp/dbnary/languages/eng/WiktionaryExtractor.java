@@ -1485,19 +1485,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractPron(WikiContent pronContent) {
     pronContent.templates().stream().map(Token::asTemplate).forEach(template -> {
-      if (template.getName().equals("IPA") || template.getName().equals("IPA-lite")) {
+      String tname;
+      if ((tname = template.getName()).equals("IPA") || tname.equals("IPA-lite")) {
         Map<String, String> args = template.cloneParsedArgs();
         String lg = args.get("1");
         args.remove("1");
         extractPronFromTemplateArgs(lg, args);
-      } else if (template.getName().equals("IPAchar")) {
+      } else if (tname.equals("IPAchar")) {
         Map<String, String> args = template.getParsedArgs();
         extractPronFromTemplateArgs(null, args);
       } else if (shoudlExpandPronTemplate(template)) {
         pronunciationExpander.parsePronunciation(template.toString());
+      } else if (tname.equals("a") || tname.equals("accent")) {
+        log.trace("Pronunciation Accent: {} ||| {}", template, wdh.currentPagename());
       } else {
-        log.debug("Pronunciation {}: ignored template {} in {}", wdh.getCurrentEntryLanguage(),
-            template.getName(), wdh.currentPagename());
+        log.debug("Pronunciation {}: ignored template {} \\ {}", wdh.getCurrentEntryLanguage(),
+            template, wdh.currentPagename());
       }
     });
   }

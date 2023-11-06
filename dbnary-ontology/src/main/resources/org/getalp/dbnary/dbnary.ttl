@@ -527,4 +527,4 @@ dbnary:count
     rdfs:comment "cardinality of a certain set of Object a specific extract."@en ;
                                     rdfs:range xsd:int .
 
-lime:language a qb:MeasureProperty .
+lime:language a qb:DimensionProperty .

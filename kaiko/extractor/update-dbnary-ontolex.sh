@@ -31,7 +31,7 @@ fi
   date 
   echo "==============================================="
   set -x
-  JAVA_OPTS="$JVM_OPTIONS" dbnary update $OPTIONS --dir $DIR -s $MIRROR -k 1 --compress --endolex=ontolex,morphology,etymology,lime,statistics,enhancement,combined --exolex=ontolex,lime,combined $LANGS
+  JAVA_OPTS="$JVM_OPTIONS" dbnary update $OPTIONS --dir $DIR -s $MIRROR -k 1 --compress --endolex=ontolex,morphology,etymology,lime,statistics,enhancement --exolex=ontolex,lime $LANGS
   set +x
   
   echo "==============================================="

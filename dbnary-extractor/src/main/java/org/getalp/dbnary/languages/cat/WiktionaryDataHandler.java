@@ -1,5 +1,7 @@
 package org.getalp.dbnary.languages.cat;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.*;
@@ -166,12 +168,27 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
      */
   }
 
+  final static String SENSE_NUM_PREFIX = "^\\[(.+)\\]\\s*:\\s*(.*)$";
+  final static Pattern senseNumPattern = Pattern.compile(SENSE_NUM_PREFIX);
+
+  public void registerDerivedForms(String value) {
+    if (currentLexEntry == null)
+      return;
+    Matcher m = senseNumPattern.matcher(value);
+    if (m.matches()) {
+      log.warn("Unhandled sense num in {} : {}", currentPagename(), m.group(1));
+      value = m.group(2);
+    }
+
+    registerDerivedForm(value.split(","));
+  }
+
   public void registerDerivedForm(final String... values) {
     if (currentLexEntry == null)
       return;
 
     for (String val : values) {
-      Resource target = getPageResource(val);
+      Resource target = getPageResource(val.trim());
       aBox.add(target, DBnaryOnt.derivedFrom, currentLexEntry);
       aBox.add(aBox.createStatement(target, DBnaryOnt.derivedFrom, currentLexEntry));
     }
@@ -191,7 +208,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         code = this.getCurrentEntryLanguage();
       }
 
-      this.registerPronunciation(pron.pron, code + "-pronafi");
+      this.registerPronunciation(pron.pron, code + "-fonipa");
 
     }
   }

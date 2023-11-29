@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.getalp.iso639.ISO639_3;
 
 /**
  * @author Arnaud Alet 13/07/2023
@@ -44,11 +45,18 @@ public class ExpandAllWikiModelCat extends ExpandAllWikiModel {
     if (templateName.equals("ex-us") || templateName.equals("ex-cit")) {
 
       final String lang = parameterMap.get("1");
+
       writer.append(parameterMap.get("2"));
 
-      if (null != parameterMap.remove("ref"))
-        context
-            .add(Pair.of(DCTerms.bibliographicCitation, rdfNode(parameterMap.remove("ref"), lang)));
+      if (null != parameterMap.get("ref")) {
+        if (null == ISO639_3.sharedInstance.getLang(lang)) {
+          logger.warn("Unknown language code in ex- template for {} : {}", this.getPageName(), lang);
+        } else {
+          context
+              .add(Pair.of(DCTerms.bibliographicCitation,
+                  rdfNode(parameterMap.get("ref"), lang)));
+        }
+      }
       if (null != parameterMap.get("3"))
         context.add(Pair.of(RDF.value, rdfNode(parameterMap.get("3"), "ca")));
       if (null != parameterMap.get("trad"))

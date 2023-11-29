@@ -43,7 +43,7 @@
     <jaxb.version>3.0.1</jaxb.version>
     <javax.activation.version>1.2.0</javax.activation.version>
     <slf4j.version>1.7.36</slf4j.version>
-    <jena.version>4.8.0</jena.version>
+    <jena.version>4.10.0</jena.version>
     <scalaBinaryVersion>2.13</scalaBinaryVersion>
 
 
@@ -298,7 +298,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.22</version>
+        <version>1.25.0</version>
       </dependency>
       <dependency>
         <groupId>commons-cli</groupId>

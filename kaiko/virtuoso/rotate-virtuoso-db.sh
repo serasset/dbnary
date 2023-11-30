@@ -199,30 +199,33 @@ fi
 # Prepare the dataset directory
 ## Converting language codes
 declare -A iso3Lang
-iso3Lang[bg]=bul
-iso3Lang[de]=deu
-iso3Lang[el]=ell
-iso3Lang[en]=eng
-iso3Lang[es]=spa
-iso3Lang[fi]=fin
-iso3Lang[fr]=fra
-iso3Lang[it]=ita
-iso3Lang[ja]=jpn
-iso3Lang[pl]=pol
-iso3Lang[pt]=por
-iso3Lang[ru]=rus
-iso3Lang[tr]=tur
-iso3Lang[nl]=nld
-iso3Lang[sh]=shr
-iso3Lang[sv]=swe
-iso3Lang[lt]=lit
-iso3Lang[id]=ind
-iso3Lang[la]=lat
-iso3Lang[mg]=mlg
-iso3Lang[no]=nor
-iso3Lang[bm]=bam
-iso3Lang[ku]=kur
-iso3Lang[zh]=zho
+iso3Lang[bg]="bul"
+iso3Lang[de]="deu"
+iso3Lang[el]="ell"
+iso3Lang[en]="eng"
+iso3Lang[es]="spa"
+iso3Lang[fi]="fin"
+iso3Lang[fr]="fra"
+iso3Lang[it]="ita"
+iso3Lang[ja]="jpn"
+iso3Lang[pl]="pol"
+iso3Lang[pt]="por"
+iso3Lang[ru]="rus"
+iso3Lang[tr]="tur"
+iso3Lang[nl]="nld"
+iso3Lang[sh]="shr"
+iso3Lang[sv]="swe"
+iso3Lang[lt]="lit"
+iso3Lang[id]="ind"
+iso3Lang[la]="lat"
+iso3Lang[mg]="mlg"
+iso3Lang[no]="nor"
+iso3Lang[bm]="bam"
+iso3Lang[ku]="kur"
+iso3Lang[zh]="zho"
+iso3Lang[ca]="cat"
+iso3Lang[ga]="gle"
+
 
 SAVETMPDIR=$TMPDIR
 export TMPDIR=$TEMPORARYPREFIX

@@ -54,8 +54,7 @@ public class ExpandAllWikiModelCat extends ExpandAllWikiModel {
           // Sometimes the ref is given in extenso or inside a ref element. But the ref element
           // will not be rendered in plain text, so remove it.
           String ref = parameterMap.get("ref").replaceAll("<ref>|</ref>", "");
-          context
-              .add(Pair.of(DCTerms.bibliographicCitation, rdfNode(ref, lang)));
+          context.add(Pair.of(DCTerms.bibliographicCitation, rdfNode(ref, lang)));
         }
       }
       if (null != parameterMap.get("3"))

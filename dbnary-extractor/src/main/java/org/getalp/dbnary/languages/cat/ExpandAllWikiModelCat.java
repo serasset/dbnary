@@ -2,8 +2,12 @@ package org.getalp.dbnary.languages.cat;
 
 import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.WikiModelContentException;
-import info.bliki.wiki.namespaces.INamespace;
 import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
@@ -13,12 +17,6 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 import org.getalp.iso639.ISO639_3;
 
 /**
@@ -50,11 +48,14 @@ public class ExpandAllWikiModelCat extends ExpandAllWikiModel {
 
       if (null != parameterMap.get("ref")) {
         if (null == ISO639_3.sharedInstance.getLang(lang)) {
-          logger.warn("Unknown language code in ex- template for {} : {}", this.getPageName(), lang);
+          logger.warn("Unknown language code in ex- template for {} : {}", this.getPageName(),
+              lang);
         } else {
+          // Sometimes the ref is given in extenso or inside a ref element. But the ref element
+          // will not be rendered in plain text, so remove it.
+          String ref = parameterMap.get("ref").replaceAll("<ref>|</ref>", "");
           context
-              .add(Pair.of(DCTerms.bibliographicCitation,
-                  rdfNode(parameterMap.get("ref"), lang)));
+              .add(Pair.of(DCTerms.bibliographicCitation, rdfNode(ref, lang)));
         }
       }
       if (null != parameterMap.get("3"))
@@ -71,12 +72,11 @@ public class ExpandAllWikiModelCat extends ExpandAllWikiModel {
       parameterMap.remove("trad");
       parameterMap.remove("t");
       parameterMap.remove("inline");
-      if (parameterMap.size() > 0)
+      if (!parameterMap.isEmpty())
         logger.trace("Found complex ex template : " + parameterMap);
-    } else if (templateName.equals("forma-"))
-      return;
-    else
+    } else if (!templateName.equals("forma-")) {
       super.substituteTemplateCall(templateName, parameterMap, writer);
+    }
   }
 
   @Override

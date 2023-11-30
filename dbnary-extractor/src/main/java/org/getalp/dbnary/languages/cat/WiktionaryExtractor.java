@@ -512,8 +512,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (template.getArg("2") != null) {
           final String lang = template.getArg("2").getText();
           if (ISO639_3.sharedInstance.getLang(lang) != null) {
-            this.wdh.registerPronunciation(lang,
-              template.getArg("1").getText());
+            this.wdh.registerPronunciation(lang, template.getArg("1").getText());
           } else {
             log.warn("Unknown language code in pron for '{}' : {}", getWiktionaryPageName(), lang);
           }

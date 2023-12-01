@@ -204,6 +204,8 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
       writer.append(" […] ");
     } else if ("nb...".equals(templateName)) {
       writer.append("\u00A0[…]");
+    } else if (templateName.startsWith("tracking/")) {
+      // IGNORE
     } else {
       log.trace("Template call: {} --in-- {}", templateName, this.getPageName());
       super.substituteTemplateCall(templateName, parameterMap, writer);

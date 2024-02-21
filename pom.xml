@@ -343,12 +343,12 @@
       <dependency>
         <groupId>org.scala-lang.modules</groupId>
         <artifactId>scala-parser-combinators_${scalaBinaryVersion}</artifactId>
-        <version>1.1.2</version>
+        <version>2.3.0</version>
       </dependency>
       <dependency>
         <groupId>com.typesafe.scala-logging</groupId>
         <artifactId>scala-logging_${scalaBinaryVersion}</artifactId>
-        <version>3.9.4</version>
+        <version>3.9.5</version>
       </dependency>
 
       <!-- uses slf4j in all modules -->
@@ -638,7 +638,7 @@
         <plugin>
           <groupId>net.alchim31.maven</groupId>
           <artifactId>scala-maven-plugin</artifactId>
-          <version>3.2.2</version>
+          <version>4.8.1</version>
         </plugin>
       </plugins>
     </pluginManagement>

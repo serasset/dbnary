@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Literal;
@@ -114,6 +115,19 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
     }
   }
 
+
+  private static final Pattern haniChars = Pattern.compile("\\p{IsHani}");
+
+  private static boolean hasHaniChar(String text) {
+    return haniChars.matcher(text).find();
+  }
+
+  private static final Pattern kanaChars = Pattern.compile("\\p{IsHira}|\\p{IsKana}");
+
+  private static boolean hasKanaChar(String text) {
+    return kanaChars.matcher(text).find();
+  }
+
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
@@ -130,7 +144,8 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
               shortSectionLanguage, getPageName());
         }
         // TODO: handle script code
-        String scriptCode = parameterMap.get("sc");;
+        String scriptCode = parameterMap.get("sc");
+        ;
         if (null != scriptCode) {
           log.trace("UX Template: unhanded script code {} [{}]", scriptCode, getPageName());
         }
@@ -151,6 +166,49 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
               rdfNode(transliteration, shortSectionLanguage + "-Latn"));
         }
       }
+    } else if ("ja-usex".equals(templateName)) {
+      // Japanese usage example contains the japanese value + transliteration + translation
+      String langCode = "ja";
+      String example = parameterMap.get("1");
+      if (null == example || example.trim().isEmpty()) {
+        return;
+      }
+      String transliteration = parameterMap.get("2");
+      String translation = parameterMap.get("3");
+      // The translation is at position 2 if the text only contains kana (hence no transliteration necessary)
+      if (hasHaniChar(example)) {
+        if (null == transliteration || transliteration.trim().isEmpty()) {
+          log.trace("JA-USEX Template: missing transliteration [{}]", getPageName());
+          transliteration = null;
+        }
+        if (null == translation || translation.trim().isEmpty()) {
+          log.trace("JA-USEX Template: missing translation [{}]", getPageName());
+          translation = null;
+        }
+      } else if (hasKanaChar(example)) {
+        if (null == transliteration || transliteration.trim().isEmpty() || !hasKanaChar(
+            transliteration)) {
+          translation = transliteration;
+          transliteration = null;
+        }
+      } else {
+        log.trace("JA-USEX Template: japanese example with no japanese char...", getPageName());
+        translation = example;
+        example = null;
+      }
+
+      if (context != null) {
+        if (null != example && example.trim().length() > 0) {
+          addNodeToContext(context, RDF.value, rdfNode(example, shortSectionLanguage));
+        }
+        if (null != translation) {
+          addNodeToContext(context, RDF.value, rdfNode(translation, shortEditionLanguage));
+        }
+        if (null != transliteration) {
+          addNodeToContext(context, RDF.value,
+              rdfNode(transliteration, shortSectionLanguage + "-Kana"));
+        }
+      }
     } else if (nyms.containsKey(templateName)) {
       // HANDLE synonyms
       // TODO: also take gloss template into account as it gives more info on the nym
@@ -164,8 +222,9 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
       }
       String val;
       for (int i = 2; (val = parameterMap.get(String.valueOf(i))) != null; i++) {
-        if (val.startsWith("Thesaurus:"))
+        if (val.startsWith("Thesaurus:")) {
           continue;
+        }
         wdh.registerNymRelationOnCurrentSense(val, nym);
       }
     } else if ("seeSynonyms".equals(templateName)) {
@@ -218,8 +277,9 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
 
   private Literal rdfNode(String value, String lang, boolean expand) {
     String val = expand ? expandString(value) : value;
-    if (null == val || val.trim().length() == 0)
+    if (null == val || val.trim().length() == 0) {
       return null;
+    }
     return ResourceFactory.createLangLiteral(val, lang);
   }
 
@@ -237,7 +297,8 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
 
   private void addNodeToContext(Set<Pair<Property, RDFNode>> context, Property prop,
       Literal rdfNode) {
-    if (null != rdfNode)
+    if (null != rdfNode) {
       context.add(Pair.of(prop, rdfNode));
+    }
   }
 }

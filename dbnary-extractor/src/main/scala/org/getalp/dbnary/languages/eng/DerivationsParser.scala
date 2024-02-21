@@ -148,6 +148,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
       } else {
         val nameSpace: Option[String] = honoredNameSpaces findPrefixOf target
         val targetText = l.getTargetText.substring(nameSpace.getOrElse("").length)
+        logger.debug("Derivation Value (Simple Link): {} || {}", targetText, currentEntry)
         if (targetText == l.getLinkText)
           List(Derivation(targetText, null))
         else

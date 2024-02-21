@@ -87,7 +87,7 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
     if (!textWithoutErrors.equals(text)) {
       log.debug("LuaError while expanding citation in {}", getPageName());
     }
-    if (textWithoutErrors.trim().length() > 0) {
+    if (!textWithoutErrors.trim().isEmpty()) {
       addNodeToContext(context, DCTerms.bibliographicCitation,
           rdfNode(textWithoutErrors, shortSectionLanguage));
     }
@@ -110,7 +110,7 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
   public void expandExample(String definition, Set<Pair<Property, RDFNode>> context,
       String shortEditionLanguage, String shortSectionLanguage) {
     String text = render(definition, context, shortEditionLanguage, shortSectionLanguage);
-    if (null != text && text.trim().length() > 0) {
+    if (null != text && !text.trim().isEmpty()) {
       addNodeToContext(context, RDF.value, rdfNode(text, shortSectionLanguage));
     }
   }
@@ -145,7 +145,6 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
         }
         // TODO: handle script code
         String scriptCode = parameterMap.get("sc");
-        ;
         if (null != scriptCode) {
           log.trace("UX Template: unhanded script code {} [{}]", scriptCode, getPageName());
         }
@@ -155,7 +154,7 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
           parameterMap.getOrDefault("translation", parameterMap.get("3")));
       String transliteration = parameterMap.getOrDefault("tr", parameterMap.get("transliteration"));
       if (context != null) {
-        if (null != text && text.trim().length() > 0) {
+        if (null != text && !text.trim().isEmpty()) {
           addNodeToContext(context, RDF.value, rdfNode(text, shortSectionLanguage));
         }
         if (null != translation) {
@@ -166,9 +165,9 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
               rdfNode(transliteration, shortSectionLanguage + "-Latn"));
         }
       }
-    } else if ("ja-usex".equals(templateName)) {
+    } else if ("ja-usex".equals(templateName) || "ja-x".equals(templateName)
+        || "ja-usex-inline".equals(templateName) || "ja-x-inline".equals(templateName)) {
       // Japanese usage example contains the japanese value + transliteration + translation
-      String langCode = "ja";
       String example = parameterMap.get("1");
       if (null == example || example.trim().isEmpty()) {
         return;
@@ -192,13 +191,13 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
           transliteration = null;
         }
       } else {
-        log.trace("JA-USEX Template: japanese example with no japanese char...", getPageName());
+        log.trace("JA-USEX Template: japanese example with no japanese char [{}]", getPageName());
         translation = example;
         example = null;
       }
 
       if (context != null) {
-        if (null != example && example.trim().length() > 0) {
+        if (null != example && !example.trim().isEmpty()) {
           addNodeToContext(context, RDF.value, rdfNode(example, shortSectionLanguage));
         }
         if (null != translation) {
@@ -228,26 +227,26 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
         wdh.registerNymRelationOnCurrentSense(val, nym);
       }
     } else if ("seeSynonyms".equals(templateName)) {
-      // HANDLE synonyms in an external page
+      // TODO: HANDLE synonyms in an external page
     } else if ("seeCites".equals(templateName) || "seeMoreCites".equals(templateName)
         || "seemoreCites".equals(templateName)) {
-      // HANDLE Citations that are given in another page
+      // TODO: HANDLE Citations that are given in another page
     } else if ("quote-book".equals(templateName) || "quote-journal".equals(templateName)
         || "quote-text".equals(templateName) || "quote-video game".equals(templateName)
         || "quote-web".equals(templateName)) {
       String passage = parameterMap.getOrDefault("passage", parameterMap.get("text"));
-      if (null != passage && !"".equals(passage.trim())) {
+      if (null != passage && !passage.trim().isEmpty()) {
         parameterMap.remove("text");
         parameterMap.remove("passage");
       }
       StringBuilder str = new StringBuilder();
       super.substituteTemplateCall(templateName, parameterMap, str);
       if (context != null) {
-        if (null != passage && passage.trim().length() > 0) {
+        if (null != passage && !passage.trim().isEmpty()) {
           addNodeToContext(context, RDF.value, rdfNode(passage, shortSectionLanguage));
         }
         String ref = StringUtils.strip(str.toString(), " \t\\x0B\f\n\r:");
-        if (ref.length() > 0) {
+        if (!ref.isEmpty()) {
           addNodeToContext(context, DCTerms.bibliographicCitation,
               rdfNode(ref, shortEditionLanguage));
         }
@@ -277,7 +276,7 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
 
   private Literal rdfNode(String value, String lang, boolean expand) {
     String val = expand ? expandString(value) : value;
-    if (null == val || val.trim().length() == 0) {
+    if (null == val || val.trim().isEmpty()) {
       return null;
     }
     return ResourceFactory.createLangLiteral(val, lang);

@@ -102,75 +102,73 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
       String lang = LangTools.normalize(parameterMap.get("1"));
       int i = 2;
       String s = null;
-      String usage = "", trans = null;
+      StringBuilder usage = new StringBuilder();
+      String trans = null;
       currentGloss = null;
       if (parameterMap.get("tr") != null) {
-        usage = usage + "|tr=" + parameterMap.get("tr");
+        usage.append("|tr=").append(parameterMap.get("tr"));
       }
       while (i != 31 && (s = parameterMap.get("" + i)) != null) {
         s = s.trim();
         senseNumberOrRangeMatcher.reset(s);
-        if ("".equals(s)) {
+        if (s.isEmpty()) {
           // Just ignore empty parameters
         } else if (s.matches("[,;]")) {
-          if (usage.length() == 0) {
-            usage = null;
-          } else {
-            usage = usage.substring(1);
-          }
           if (null != trans) {
             delegate.registerTranslation(lang,
-                delegate.createGlossResource(merge(currentGloss, globalGloss)), usage, trans);
+                delegate.createGlossResource(merge(currentGloss, globalGloss)),
+                usage.length() == 0 ? null : usage.substring(1), trans);
           }
           trans = null;
-          usage = "";
+          usage = new StringBuilder();
         } else if (senseNumberOrRangeMatcher.matches()) {
           // the current item is a senseNumber or range
           if (null != trans && null != currentGloss) {
             log.debug("Missing Comma after translation (was {}) when parsing a new gloss in {}",
                 trans, delegate.currentPagename());
-            if (usage.length() == 0) {
-              usage = null;
-            } else {
-              usage = usage.substring(1);
-            }
             delegate.registerTranslation(lang,
-                delegate.createGlossResource(merge(currentGloss, globalGloss)), usage, trans);
+                delegate.createGlossResource(merge(currentGloss, globalGloss)),
+                usage.length() == 0 ? null : usage.substring(1), trans);
             trans = null;
-            usage = "";
+            usage = new StringBuilder();
           }
           currentGloss = glossFilter.extractGlossStructure(s);
         } else if (gender.contains(s)) {
-          usage = usage + "|" + s;
+          usage.append("|").append(s);
         } else if ("p".equals(s)) {
           // plural
-          usage = usage + "|" + s;
+          usage.append("|").append(s);
         } else if ("nota".equals(s)) {
           // nota
           i++;
           s = parameterMap.get("" + i);
-          usage = usage + "|" + "nota=" + s;
+          usage.append("|").append("nota=").append(s);
         } else if (pos.contains(s)) {
           // Part Of Speech of target
-          usage = usage + "|" + s;
+          usage.append("|").append(s);
         } else if ("tr".equals(s)) {
           // transcription
           i++;
           s = parameterMap.get("" + i);
-          if (null != s && !"".equals(s)) {
-            usage = usage + "|" + "tr=" + s;
+          if (null != s && !s.isEmpty()) {
+            usage.append("|").append("tr=").append(s);
           }
         } else if ("nl".equals(s)) {
           // ?
           i++;
           s = parameterMap.get("" + i);
-          usage = usage + "|" + "nl=" + s;
+          usage.append("|").append("nl=").append(s);
         } else {
           // translation
           if (null != trans) {
             log.debug("Non null translation (was {}) when registering new translation {} in {}",
                 trans, s, delegate.currentPagename());
           }
+          // Register previous translation before keeping the new one
+          delegate.registerTranslation(lang,
+              delegate.createGlossResource(merge(currentGloss, globalGloss)),
+              usage.length() == 0 ? null : usage.substring(1), trans);
+          usage = new StringBuilder();
           trans = s;
         }
         i++;
@@ -179,10 +177,10 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
         if (usage.length() == 0) {
           usage = null;
         } else {
-          usage = usage.substring(1);
+          usage = new StringBuilder(usage.substring(1));
         }
         delegate.registerTranslation(lang,
-            delegate.createGlossResource(merge(currentGloss, globalGloss)), usage, trans);
+            delegate.createGlossResource(merge(currentGloss, globalGloss)), usage.toString(), trans);
       }
     } else if ("trad-arriba".equals(templateName)) {
       // TODO : extract the parameter (gloss and POS specification)

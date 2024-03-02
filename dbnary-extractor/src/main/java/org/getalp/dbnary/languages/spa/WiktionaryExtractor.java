@@ -46,7 +46,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   protected final static String sectionPatternString;
-  protected final static Pattern languageSectionPattern;
+  // protected final static Pattern languageSectionPattern;
   protected final static Pattern spanishDefinitionPattern;
   protected final static String multilineMacroPatternString;
   protected final static Pattern sectionPattern; // Combine macro pattern
@@ -68,13 +68,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         + "^==\\s*\\{\\{lengua\\|(.*)}}\\s*==\\s*$"//
         + ")";
 
-    languageSectionPattern = Pattern.compile(languageSectionPatternString, Pattern.MULTILINE);
+    // languageSectionPattern = Pattern.compile(languageSectionPatternString, Pattern.MULTILINE);
     multilineMacroPatternString = "\\{\\{" + "([^\\}\\|]*)(?:\\|([^\\}]*))?" //
         + "\\}\\}";
 
-    headerPatternString = new StringBuilder().append("(?:").append("^==([^=].*)==\\s*$")
-        .append(")|(?:").append("^===([^=].*)===\\s*$").append(")|(?:")
-        .append("^====([^=].*)====\\s*$").append(")").toString();
+    headerPatternString = "(?:" + "^==([^=].*)==\\s*$" //
+        + ")|(?:" + "^===([^=].*)===\\s*$" + ")|(?:"  //
+        + "^====([^=].*)====\\s*$" + ")";
 
     sectionPatternString = "(?m)(?:" + headerPatternString + ")";
 
@@ -90,6 +90,92 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     posMarkers.add("sustantivo propio");
     posMarkers.add("adverbio");
     posMarkers.add("verbo");
+    posMarkers.add("interjección");
+
+    posMarkers.add("adjetivo cardinal");
+    posMarkers.add("adjetivo demostrativo");
+    posMarkers.add("adjetivo indefinido");
+    posMarkers.add("adjetivo indeterminado");
+    posMarkers.add("adjetivo interrogativo");
+    posMarkers.add("adjetivo numeral");
+    posMarkers.add("adjetivo ordinal");
+    posMarkers.add("adjetivo posesivo");
+    posMarkers.add("adjetivo relativo");
+    posMarkers.add("adverbio comparativo");
+    posMarkers.add("adverbio de afirmación");
+    posMarkers.add("adverbio de cantidad");
+    posMarkers.add("adverbio de duda");
+    posMarkers.add("adverbio de lugar");
+    posMarkers.add("adverbio de modo");
+    posMarkers.add("adverbio de negación");
+    posMarkers.add("adverbio de orden");
+    posMarkers.add("adverbio de tiempo");
+    posMarkers.add("adverbio demostrativo");
+    posMarkers.add("adverbio interrogativo");
+    posMarkers.add("adverbio relativo");
+    posMarkers.add("afijo");
+    posMarkers.add("artículo");
+    posMarkers.add("artículo determinado");
+    posMarkers.add("artículo indeterminado");
+
+    posMarkers.add("circunfijo");
+    posMarkers.add("conjunción");
+    posMarkers.add("conjunción adversativa");
+    posMarkers.add("conjunción ilativa");
+    posMarkers.add("determinante");
+    posMarkers.add("dígrafo");
+    posMarkers.add("expresión");
+    posMarkers.add("forma verbal");
+    posMarkers.add("letra");
+    posMarkers.add("locución");
+    posMarkers.add("locución adjetiva");
+    posMarkers.add("locución adverbial");
+    posMarkers.add("locución conjuntiva");
+    posMarkers.add("locución interjectiva");
+    posMarkers.add("locución prepositiva");
+    posMarkers.add("locución pronominal");
+    posMarkers.add("locución sustantiva");
+    posMarkers.add("locución verbal");
+    posMarkers.add("onomatopeya");
+    posMarkers.add("partícula");
+    posMarkers.add("postposición");
+    posMarkers.add("prefijo");
+    posMarkers.add("preposición");
+    posMarkers.add("preposición de ablativo");
+    posMarkers.add("preposición de acusativo");
+    posMarkers.add("preposición de acusativo o ablativo");
+    posMarkers.add("preposición de genitivo");
+    posMarkers.add("pronombre");
+    posMarkers.add("pronombre demostrativo");
+    posMarkers.add("pronombre indefinido");
+    posMarkers.add("pronombre interrogativo");
+    posMarkers.add("pronombre personal");
+    posMarkers.add("pronombre posesivo");
+    posMarkers.add("pronombre relativo");
+    posMarkers.add("refrán");
+    posMarkers.add("sigla");
+    posMarkers.add("sufijo");
+    posMarkers.add("sufijo flexivo");
+    posMarkers.add("sustantivo ambiguo");
+    posMarkers.add("sustantivo animado");
+    posMarkers.add("sustantivo común");
+    posMarkers.add("sustantivo femenino");
+    posMarkers.add("sustantivo femenino y masculino");
+    posMarkers.add("sustantivo inanimado");
+    posMarkers.add("sustantivo masculino");
+    posMarkers.add("sustantivo neutro");
+    posMarkers.add("sustantivo neutro y masculino");
+    posMarkers.add("sustantivo propio/pruebas");
+    posMarkers.add("símbolo");
+    posMarkers.add("verbo auxiliar");
+    posMarkers.add("verbo bitransitivo");
+    posMarkers.add("verbo enclítico");
+    posMarkers.add("verbo impersonal");
+    posMarkers.add("verbo intransitivo");
+    posMarkers.add("verbo modal");
+    posMarkers.add("verbo perfectivo");
+    posMarkers.add("verbo pronominal");
+    posMarkers.add("verbo transitivo");
 
     ignorableSectionMarkers = new HashSet<>(20);
     ignorableSectionMarkers.add("Silbentrennung");
@@ -98,8 +184,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignorableSectionMarkers.add("Gegenworte");
     ignorableSectionMarkers.add("Beispiele");
     ignorableSectionMarkers.add("Redewendungen");
-    ignorableSectionMarkers.add("Abgeleitete Begriffe");
-    ignorableSectionMarkers.add("Charakteristische Wortkombinationen");
     ignorableSectionMarkers.add("Dialektausdrücke (Deutsch)");
     ignorableSectionMarkers.add("Referenzen");
     ignorableSectionMarkers.add("Ähnlichkeiten");
@@ -201,11 +285,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private String languageHeading(Token t) {
     if (t instanceof Template) {
       if ("ES".equals(t.asTemplate().getName())) {
+        log.trace("LANGUAGE_HEADING: ES template found in {}", getWiktionaryPageName());
         return "es";
       }
       obsoleteLanguage.reset(t.asTemplate().getName());
       if (obsoleteLanguage.matches()) {
         String lg = obsoleteLanguage.group(1);
+        log.trace("LANGUAGE_HEADING: Obsolete language template {} found in {}", lg,
+            getWiktionaryPageName());
         return lg.toLowerCase();
       }
     } else if (t instanceof Heading) {
@@ -235,7 +322,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private EXTRACTION_STATE state = EXTRACTION_STATE.NODATA;
   private int definitionBlockStart = -1;
-  private int orthBlockStart = -1;
   private int translationBlockStart = -1;
   private int translationLevel = -1;
   private int headerBlockStart = -1;
@@ -303,13 +389,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if ((head.startsWith("forma")) || head.startsWith("{{forma")) {
       return "";
     }
-    for (String p : posMarkers) {
-      if (head.contains(p)) {
-        return head;
+    if (head.contains("{{")) {
+      WikiText complexHeading = new WikiText(head);
+      Optional<Template> posTmpl =
+          complexHeading.wikiTokens().stream().filter(tok -> tok instanceof Template)
+              .map(Token::asTemplate).filter(tok -> posMarkers.contains(tok.getName())).findFirst();
+      if (posTmpl.isPresent()) {
+        return posTmpl.get().getName();
       }
     }
-
-    return null;
+    return posMarkers.contains(head) ? head : null;
   }
 
   void gotoDefBlock(Matcher m, String pos) {
@@ -335,6 +424,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return false;
     }
     head = head.trim().toLowerCase();
+    if (log.isTraceEnabled() && head.contains("traducci")) {
+      log.trace("Translation header found in {}", getWiktionaryPageName());
+    }
     return "traducciones".equals(head) || "traducción".equals(head);
   }
 
@@ -381,7 +473,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: variants, pronunciations and other elements are common to the different entries in the
   // page.
   private void extractLanguageData(int startOffset, int endOffset, String language) {
-    if (null == language || "".equals(language)) {
+    if (null == language || language.isEmpty()) {
       return;
     }
     if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !"es".equals(language)) {
@@ -404,7 +496,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (isTranslation(m)) {
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
-            if (pos.length() == 0) {
+            if (pos.isEmpty()) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -427,7 +519,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
             leaveDefBlock(m);
-            if (pos.length() == 0) {
+            if (pos.isEmpty()) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -448,7 +540,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
             leaveTradBlock(m);
-            if (pos.length() == 0) {
+            if (pos.isEmpty()) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -469,7 +561,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
             leaveHeaderBlock(m);
-            if (pos.length() == 0) {
+            if (pos.isEmpty()) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -487,7 +579,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         case IGNOREPOS:
           if (isTranslation(m)) {
           } else if (null != (pos = getValidPOS(m))) {
-            if (pos.length() == 0) {
+            if (pos.isEmpty()) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -506,7 +598,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             gotoTradBlock(m);
           } else if (null != (pos = getValidPOS(m))) {
             leaveEtymologyBlock(m);
-            if (pos.length() == 0) {
+            if (pos.isEmpty()) {
               gotoIgnorePos();
             } else {
               gotoDefBlock(m, pos);
@@ -572,7 +664,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String def = definitionMatcher.group(2);
         String senseNumber = "";
         String term = definitionMatcher.group(1);
-        if (null == term || term.length() == 0) {
+        if (null == term || term.isEmpty()) {
           log.debug("Null sense number in definition\"{}\" for entry {}", def,
               this.getWiktionaryPageName());
         } else {
@@ -587,7 +679,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               senseNumber = s.group(1);
               term = term.substring(s.end());
               term = term.trim();
-              if (term.length() != 0) {
+              if (!term.isEmpty()) {
                 def = term + "| " + def;
               }
             }
@@ -604,7 +696,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (definitionMatcher.group(3) != null) {
         // It's a macro not inside a definition...
         String macro = definitionMatcher.group(3);
-        String nym = null;
+        String nym;
         if (null != (nym = nymMarkerToNymName.get(macro))) {
           Map<String, String> args = WikiTool.parseArgs(definitionMatcher.group(4));
           for (int i = 1; i <= 40; i++) {

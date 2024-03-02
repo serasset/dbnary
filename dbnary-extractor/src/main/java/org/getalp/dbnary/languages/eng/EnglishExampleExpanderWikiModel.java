@@ -174,7 +174,8 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
       }
       String transliteration = parameterMap.get("2");
       String translation = parameterMap.get("3");
-      // The translation is at position 2 if the text only contains kana (hence no transliteration necessary)
+      // The translation is at position 2 if the text only contains kana (hence no transliteration
+      // necessary)
       if (hasHaniChar(example)) {
         if (null == transliteration || transliteration.trim().isEmpty()) {
           log.trace("JA-USEX Template: missing transliteration [{}]", getPageName());
@@ -185,8 +186,8 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
           translation = null;
         }
       } else if (hasKanaChar(example)) {
-        if (null == transliteration || transliteration.trim().isEmpty() || !hasKanaChar(
-            transliteration)) {
+        if (null == transliteration || transliteration.trim().isEmpty()
+            || !hasKanaChar(transliteration)) {
           translation = transliteration;
           transliteration = null;
         }

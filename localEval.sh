@@ -8,8 +8,9 @@ origin=git@gitlab.com:gilles.serasset/dbnary.git
 versus=develop
 passlocalupdate=0
 passversusupdate=0
+sample=10000
 
-while getopts "o:v:VLDd:" opt; do
+while getopts "s:o:v:VLDd:" opt; do
   case $opt in
   V)
     verbose=1
@@ -25,6 +26,9 @@ while getopts "o:v:VLDd:" opt; do
     ;;
   D)
     passversusupdate=1
+    ;;
+  s)
+    sample="$OPTARG"
     ;;
   \?)
     echo "Invalid option: -$OPTARG" >&2
@@ -44,7 +48,7 @@ set -v
 
 NEXT_DIR="target/evaluation/ci-next-version"
 PREVIOUS_DIR="target/evaluation/ci-previous-version"
-SAMPLE_SIZE=10000
+SAMPLE_SIZE=${sample}
 DUMPS=${HOME}/dev/wiktionary/dumps
 
 if [[ "$passlocalupdate" = 0 ]]; then

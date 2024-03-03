@@ -304,12 +304,12 @@ exolexRegex2='(..)_([^_]*)_exolex_(.*)'
 for f in $DATASETDIR/*.ttl; do
   if [[ $f =~ $statsRegex2 ]]; then
     lg2=${BASH_REMATCH[1]}
-    echo "http://kaiko.getalp.org/statistics/" >"$f.graph"
+    echo "http://kaiko.getalp.org/statistics" >"$f.graph"
   elif [[ $f =~ $exolexRegex2 ]]; then
     lg2=${BASH_REMATCH[1]}
     graph=${BASH_REMATCH[2]}
     lg3=${iso3Lang[$lg2]}
-    echo "http://kaiko.getalp.org/$graph/${lg3}_exolex/" >"$f.graph"
+    echo "http://kaiko.getalp.org/$graph/${lg3}_exolex" >"$f.graph"
   elif [[ $f =~ $langRegex2 ]]; then
     lg2=${BASH_REMATCH[1]}
     graph=${BASH_REMATCH[2]}

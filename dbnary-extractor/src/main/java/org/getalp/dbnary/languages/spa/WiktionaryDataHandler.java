@@ -37,7 +37,6 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
 
     PosAndType pat = null;
     String spos = pos;
-    // TODO : handle locucions
 
     if (pos.startsWith("adjetivo cardinal")) {
       pat = new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word);
@@ -46,8 +45,16 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     } else if (pos.startsWith("adjetivo posesivo")) {
       pat = new PosAndType(LexinfoOnt.possessiveAdjective, OntolexOnt.Word);
     } else if (pos.startsWith("adjetivo")) {
+      // Catches :
+      // adjetivo demostrativo
+      // adjetivo indefinido
+      // adjetivo indeterminado
+      // adjetivo interrogativo
+      // adjetivo numeral
+      // adjetivo relativo
       pat = new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word);
     } else if (pos.startsWith("sustantivo propio")) {
+      // Catches : sustantivo propio/pruebas
       pat = new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word);
     } else if (pos.startsWith("sustantivo femenino y masculino")) {
       pat = new PosAndType(LexinfoOnt.noun, OntolexOnt.Word);
@@ -61,24 +68,119 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     } else if (pos.startsWith("sustantivo")) {
       pat = new PosAndType(LexinfoOnt.noun, OntolexOnt.Word);
     } else if (pos.startsWith("adverbio")) {
+      // Catches :
+      // adverbio comparativo
+      // adverbio de afirmación
+      // adverbio de cantidad
+      // adverbio de duda
+      // adverbio de lugar
+      // adverbio de modo
+      // adverbio de negación
+      // adverbio de orden
+      // adverbio de tiempo
+      // adverbio demostrativo
+      // adverbio interrogativo
+      // adverbio relativo
       pat = new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word);
     } else if (pos.startsWith("verbo transitivo")) {
       pat = new PosAndType(LexinfoOnt.verb, OntolexOnt.Word);
-      // TODO: add proper syntactive frame
+      // TODO: add proper syntactic frame
     } else if (pos.startsWith("verbo intransitivo")) {
       pat = new PosAndType(LexinfoOnt.verb, OntolexOnt.Word);
-      // TODO: add proper syntactive frame
+      // TODO: add proper syntactic frame
     } else if (pos.startsWith("verbo pronominal")) {
       pat = new PosAndType(LexinfoOnt.verb, OntolexOnt.Word);
-      // TODO: add proper syntactive frame
+      // TODO: add proper syntactic frame
     } else if (pos.startsWith("verbo impersonal")) {
       pat = new PosAndType(LexinfoOnt.verb, OntolexOnt.Word);
-      // TODO: add proper syntactive frame
+      // TODO: add proper syntactic frame
     } else if (pos.startsWith("verbo auxiliar")) {
       pat = new PosAndType(LexinfoOnt.verb, OntolexOnt.Word);
-      // TODO: add proper syntactive frame
+      // TODO: add proper syntactic frame
     } else if (pos.startsWith("verbo")) {
+      // Catches :
+      // verbo bitransitivo
+      // verbo enclítico
+      // verbo modal
+      // verbo perfectivo
       pat = new PosAndType(LexinfoOnt.verb, OntolexOnt.Word);
+    } else if (pos.startsWith("afijo")) {
+      pat = new PosAndType(LexinfoOnt.affix, OntolexOnt.Affix);
+    } else if (pos.startsWith("prefijo")) {
+      pat = new PosAndType(LexinfoOnt.prefix, OntolexOnt.Affix);
+    } else if (pos.startsWith("circunfijo")) {
+      pat = new PosAndType(LexinfoOnt.affix, OntolexOnt.Affix);
+    } else if (pos.startsWith("sufijo")) {
+      // Catches : sufijo flexivo"
+      pat = new PosAndType(LexinfoOnt.suffix, OntolexOnt.Affix);
+    } else if (pos.startsWith("símbolo")) {
+      pat = new PosAndType(LexinfoOnt.symbol, OntolexOnt.LexicalEntry);
+    } else if (pos.startsWith("artículo")) {
+      // Catches:
+      // artículo determinado
+      // artículo indeterminado
+      pat = new PosAndType(LexinfoOnt.symbol, OntolexOnt.LexicalEntry);
+    } else if (pos.startsWith("conjunción")) {
+      // Catches:
+      // conjunción adversativa
+      // conjunción ilativa
+      pat = new PosAndType(LexinfoOnt.conjunction, OntolexOnt.Word);
+    } else if (pos.startsWith("determinante")) {
+      pat = new PosAndType(LexinfoOnt.determiner, OntolexOnt.Word);
+    } else if (pos.startsWith("dígrafo") || pos.startsWith("letra")) {
+      pat = new PosAndType(LexinfoOnt.letter, OntolexOnt.LexicalEntry);
+    } else if (pos.startsWith("interjección")) {
+      pat = new PosAndType(LexinfoOnt.interjection, OntolexOnt.Word);
+    } else if (pos.startsWith("locución adjetiva")) {
+      pat = new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression);
+    } else if (pos.startsWith("locución adverbial")) {
+      pat = new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression);
+    } else if (pos.startsWith("locución conjuntiva")) {
+      pat = new PosAndType(LexinfoOnt.conjunction, OntolexOnt.MultiWordExpression);
+    } else if (pos.startsWith("locución interjectiva")) {
+      pat = new PosAndType(LexinfoOnt.interjection, OntolexOnt.MultiWordExpression);
+    } else if (pos.startsWith("locución prepositiva")) {
+      pat = new PosAndType(LexinfoOnt.preposition, OntolexOnt.MultiWordExpression);
+    } else if (pos.startsWith("locución pronominal")) {
+      pat = new PosAndType(LexinfoOnt.pronoun, OntolexOnt.MultiWordExpression);
+    } else if (pos.startsWith("locución sustantiva")) {
+      pat = new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression);
+    } else if (pos.startsWith("locución verbal")) {
+      pat = new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression);
+    } else if (pos.startsWith("locución") || pos.startsWith("expresión")) {
+      pat = new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression);
+    } else if (pos.startsWith("onomatopeya")) {
+      // NOT SURE I SHOULD USE THIS
+      pat = new PosAndType(null, OntolexOnt.Word);
+    } else if (pos.startsWith("partícula")) {
+      pat = new PosAndType(LexinfoOnt.particle, OntolexOnt.Word);
+    } else if (pos.startsWith("postposición")) {
+      pat = new PosAndType(LexinfoOnt.postposition, OntolexOnt.Word);
+    } else if (pos.startsWith("preposición")) {
+      // Catches:
+      // preposición de ablativo
+      // preposición de acusativo
+      // preposición de acusativo o ablativo
+      // preposición de genitivo
+      pat = new PosAndType(LexinfoOnt.preposition, OntolexOnt.Word);
+    } else if (pos.startsWith("pronombre demostrativo")) {
+      pat = new PosAndType(LexinfoOnt.demonstrativePronoun, OntolexOnt.Word);
+    } else if (pos.startsWith("pronombre indefinido")) {
+      pat = new PosAndType(LexinfoOnt.indefinitePronoun, OntolexOnt.Word);
+    } else if (pos.startsWith("pronombre interrogativo")) {
+      pat = new PosAndType(LexinfoOnt.interrogativePronoun, OntolexOnt.Word);
+    } else if (pos.startsWith("pronombre personal")) {
+      pat = new PosAndType(LexinfoOnt.personalPronoun, OntolexOnt.Word);
+    } else if (pos.startsWith("pronombre posesivo")) {
+      pat = new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word);
+    } else if (pos.startsWith("pronombre relativo")) {
+      pat = new PosAndType(LexinfoOnt.relativePronoun, OntolexOnt.Word);
+    } else if (pos.startsWith("pronombre")) {
+      pat = new PosAndType(LexinfoOnt.pronoun, OntolexOnt.Word);
+    } else if (pos.startsWith("refrán")) {
+      pat = new PosAndType(LexinfoOnt.proverb, OntolexOnt.Word);
+    } else if (pos.startsWith("sigla")) {
+      pat = new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry);
     }
 
     // TODO handle extra information (genre, ...) from pos

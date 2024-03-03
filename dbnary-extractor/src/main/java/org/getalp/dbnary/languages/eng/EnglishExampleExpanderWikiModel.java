@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Literal;
@@ -86,7 +87,7 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
     if (!textWithoutErrors.equals(text)) {
       log.debug("LuaError while expanding citation in {}", getPageName());
     }
-    if (textWithoutErrors.trim().length() > 0) {
+    if (!textWithoutErrors.trim().isEmpty()) {
       addNodeToContext(context, DCTerms.bibliographicCitation,
           rdfNode(textWithoutErrors, shortSectionLanguage));
     }
@@ -109,9 +110,22 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
   public void expandExample(String definition, Set<Pair<Property, RDFNode>> context,
       String shortEditionLanguage, String shortSectionLanguage) {
     String text = render(definition, context, shortEditionLanguage, shortSectionLanguage);
-    if (null != text && text.trim().length() > 0) {
+    if (null != text && !text.trim().isEmpty()) {
       addNodeToContext(context, RDF.value, rdfNode(text, shortSectionLanguage));
     }
+  }
+
+
+  private static final Pattern haniChars = Pattern.compile("\\p{IsHani}");
+
+  private static boolean hasHaniChar(String text) {
+    return haniChars.matcher(text).find();
+  }
+
+  private static final Pattern kanaChars = Pattern.compile("\\p{IsHira}|\\p{IsKana}");
+
+  private static boolean hasKanaChar(String text) {
+    return kanaChars.matcher(text).find();
   }
 
   @Override
@@ -130,7 +144,7 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
               shortSectionLanguage, getPageName());
         }
         // TODO: handle script code
-        String scriptCode = parameterMap.get("sc");;
+        String scriptCode = parameterMap.get("sc");
         if (null != scriptCode) {
           log.trace("UX Template: unhanded script code {} [{}]", scriptCode, getPageName());
         }
@@ -140,7 +154,7 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
           parameterMap.getOrDefault("translation", parameterMap.get("3")));
       String transliteration = parameterMap.getOrDefault("tr", parameterMap.get("transliteration"));
       if (context != null) {
-        if (null != text && text.trim().length() > 0) {
+        if (null != text && !text.trim().isEmpty()) {
           addNodeToContext(context, RDF.value, rdfNode(text, shortSectionLanguage));
         }
         if (null != translation) {
@@ -149,6 +163,50 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
         if (null != transliteration) {
           addNodeToContext(context, RDF.value,
               rdfNode(transliteration, shortSectionLanguage + "-Latn"));
+        }
+      }
+    } else if ("ja-usex".equals(templateName) || "ja-x".equals(templateName)
+        || "ja-usex-inline".equals(templateName) || "ja-x-inline".equals(templateName)) {
+      // Japanese usage example contains the japanese value + transliteration + translation
+      String example = parameterMap.get("1");
+      if (null == example || example.trim().isEmpty()) {
+        return;
+      }
+      String transliteration = parameterMap.get("2");
+      String translation = parameterMap.get("3");
+      // The translation is at position 2 if the text only contains kana (hence no transliteration
+      // necessary)
+      if (hasHaniChar(example)) {
+        if (null == transliteration || transliteration.trim().isEmpty()) {
+          log.trace("JA-USEX Template: missing transliteration [{}]", getPageName());
+          transliteration = null;
+        }
+        if (null == translation || translation.trim().isEmpty()) {
+          log.trace("JA-USEX Template: missing translation [{}]", getPageName());
+          translation = null;
+        }
+      } else if (hasKanaChar(example)) {
+        if (null == transliteration || transliteration.trim().isEmpty()
+            || !hasKanaChar(transliteration)) {
+          translation = transliteration;
+          transliteration = null;
+        }
+      } else {
+        log.trace("JA-USEX Template: japanese example with no japanese char [{}]", getPageName());
+        translation = example;
+        example = null;
+      }
+
+      if (context != null) {
+        if (null != example && !example.trim().isEmpty()) {
+          addNodeToContext(context, RDF.value, rdfNode(example, shortSectionLanguage));
+        }
+        if (null != translation) {
+          addNodeToContext(context, RDF.value, rdfNode(translation, shortEditionLanguage));
+        }
+        if (null != transliteration) {
+          addNodeToContext(context, RDF.value,
+              rdfNode(transliteration, shortSectionLanguage + "-Kana"));
         }
       }
     } else if (nyms.containsKey(templateName)) {
@@ -164,31 +222,32 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
       }
       String val;
       for (int i = 2; (val = parameterMap.get(String.valueOf(i))) != null; i++) {
-        if (val.startsWith("Thesaurus:"))
+        if (val.startsWith("Thesaurus:")) {
           continue;
+        }
         wdh.registerNymRelationOnCurrentSense(val, nym);
       }
     } else if ("seeSynonyms".equals(templateName)) {
-      // HANDLE synonyms in an external page
+      // TODO: HANDLE synonyms in an external page
     } else if ("seeCites".equals(templateName) || "seeMoreCites".equals(templateName)
         || "seemoreCites".equals(templateName)) {
-      // HANDLE Citations that are given in another page
+      // TODO: HANDLE Citations that are given in another page
     } else if ("quote-book".equals(templateName) || "quote-journal".equals(templateName)
         || "quote-text".equals(templateName) || "quote-video game".equals(templateName)
         || "quote-web".equals(templateName)) {
       String passage = parameterMap.getOrDefault("passage", parameterMap.get("text"));
-      if (null != passage && !"".equals(passage.trim())) {
+      if (null != passage && !passage.trim().isEmpty()) {
         parameterMap.remove("text");
         parameterMap.remove("passage");
       }
       StringBuilder str = new StringBuilder();
       super.substituteTemplateCall(templateName, parameterMap, str);
       if (context != null) {
-        if (null != passage && passage.trim().length() > 0) {
+        if (null != passage && !passage.trim().isEmpty()) {
           addNodeToContext(context, RDF.value, rdfNode(passage, shortSectionLanguage));
         }
         String ref = StringUtils.strip(str.toString(), " \t\\x0B\f\n\r:");
-        if (ref.length() > 0) {
+        if (!ref.isEmpty()) {
           addNodeToContext(context, DCTerms.bibliographicCitation,
               rdfNode(ref, shortEditionLanguage));
         }
@@ -204,6 +263,8 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
       writer.append(" […] ");
     } else if ("nb...".equals(templateName)) {
       writer.append("\u00A0[…]");
+    } else if (templateName.startsWith("tracking/")) {
+      // IGNORE
     } else {
       log.trace("Template call: {} --in-- {}", templateName, this.getPageName());
       super.substituteTemplateCall(templateName, parameterMap, writer);
@@ -216,8 +277,9 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
 
   private Literal rdfNode(String value, String lang, boolean expand) {
     String val = expand ? expandString(value) : value;
-    if (null == val || val.trim().length() == 0)
+    if (null == val || val.trim().isEmpty()) {
       return null;
+    }
     return ResourceFactory.createLangLiteral(val, lang);
   }
 
@@ -235,7 +297,8 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
 
   private void addNodeToContext(Set<Pair<Property, RDFNode>> context, Property prop,
       Literal rdfNode) {
-    if (null != rdfNode)
+    if (null != rdfNode) {
       context.add(Pair.of(prop, rdfNode));
+    }
   }
 }

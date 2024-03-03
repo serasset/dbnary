@@ -145,12 +145,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // posMarkersPrefixes.add("preposición de acusativo o ablativo");
     // posMarkersPrefixes.add("preposición de genitivo");
     posMarkersPrefixes.add("pronombre");
-    //posMarkersPrefixes.add("pronombre demostrativo");
-    //posMarkersPrefixes.add("pronombre indefinido");
-    //posMarkersPrefixes.add("pronombre interrogativo");
-    //posMarkersPrefixes.add("pronombre personal");
-    //posMarkersPrefixes.add("pronombre posesivo");
-    //posMarkersPrefixes.add("pronombre relativo");
+    // posMarkersPrefixes.add("pronombre demostrativo");
+    // posMarkersPrefixes.add("pronombre indefinido");
+    // posMarkersPrefixes.add("pronombre interrogativo");
+    // posMarkersPrefixes.add("pronombre personal");
+    // posMarkersPrefixes.add("pronombre posesivo");
+    // posMarkersPrefixes.add("pronombre relativo");
     posMarkersPrefixes.add("refrán");
     posMarkersPrefixes.add("sigla");
     posMarkersPrefixes.add("sufijo");
@@ -393,7 +393,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       Optional<Template> posTmpl =
           complexHeading.wikiTokens().stream().filter(tok -> tok instanceof Template)
               .map(Token::asTemplate).filter(tok -> posMarkersPrefixes.stream()
-                  .anyMatch(prefix -> tok.getName().startsWith(prefix))).findFirst();
+                  .anyMatch(prefix -> tok.getName().startsWith(prefix)))
+              .findFirst();
       if (posTmpl.isPresent()) {
         return posTmpl.get().getName();
       }

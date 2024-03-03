@@ -163,24 +163,20 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
           if (null != trans) {
             log.debug("Non null translation (was {}) when registering new translation {} in {}",
                 trans, s, delegate.currentPagename());
+            // Register previous translation before keeping the new one
+            delegate.registerTranslation(lang,
+                delegate.createGlossResource(merge(currentGloss, globalGloss)),
+                usage.length() == 0 ? null : usage.substring(1), trans);
+            usage = new StringBuilder();
           }
-          // Register previous translation before keeping the new one
-          delegate.registerTranslation(lang,
-              delegate.createGlossResource(merge(currentGloss, globalGloss)),
-              usage.length() == 0 ? null : usage.substring(1), trans);
-          usage = new StringBuilder();
           trans = s;
         }
         i++;
       }
       if (null != trans) {
-        if (usage.length() == 0) {
-          usage = null;
-        } else {
-          usage = new StringBuilder(usage.substring(1));
-        }
         delegate.registerTranslation(lang,
-            delegate.createGlossResource(merge(currentGloss, globalGloss)), usage.toString(), trans);
+            delegate.createGlossResource(merge(currentGloss, globalGloss)),
+            usage.length() == 0 ? null : usage.substring(1), trans);
       }
     } else if ("trad-arriba".equals(templateName)) {
       // TODO : extract the parameter (gloss and POS specification)

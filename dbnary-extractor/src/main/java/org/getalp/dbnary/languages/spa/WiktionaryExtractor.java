@@ -73,7 +73,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         + "\\}\\}";
 
     headerPatternString = "(?:" + "^==([^=].*)==\\s*$" //
-        + ")|(?:" + "^===([^=].*)===\\s*$" + ")|(?:"  //
+        + ")|(?:" + "^===([^=].*)===\\s*$" + ")|(?:" //
         + "^====([^=].*)====\\s*$" + ")";
 
     sectionPatternString = "(?m)(?:" + headerPatternString + ")";

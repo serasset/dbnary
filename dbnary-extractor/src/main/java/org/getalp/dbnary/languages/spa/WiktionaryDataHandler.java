@@ -46,12 +46,12 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
       pat = new PosAndType(LexinfoOnt.possessiveAdjective, OntolexOnt.Word);
     } else if (pos.startsWith("adjetivo")) {
       // Catches :
-      //    adjetivo demostrativo
-      //    adjetivo indefinido
-      //    adjetivo indeterminado
-      //    adjetivo interrogativo
-      //    adjetivo numeral
-      //    adjetivo relativo
+      // adjetivo demostrativo
+      // adjetivo indefinido
+      // adjetivo indeterminado
+      // adjetivo interrogativo
+      // adjetivo numeral
+      // adjetivo relativo
       pat = new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word);
     } else if (pos.startsWith("sustantivo propio")) {
       // Catches : sustantivo propio/pruebas
@@ -69,18 +69,18 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
       pat = new PosAndType(LexinfoOnt.noun, OntolexOnt.Word);
     } else if (pos.startsWith("adverbio")) {
       // Catches :
-      //    adverbio comparativo
-      //    adverbio de afirmación
-      //    adverbio de cantidad
-      //    adverbio de duda
-      //    adverbio de lugar
-      //    adverbio de modo
-      //    adverbio de negación
-      //    adverbio de orden
-      //    adverbio de tiempo
-      //    adverbio demostrativo
-      //    adverbio interrogativo
-      //    adverbio relativo
+      // adverbio comparativo
+      // adverbio de afirmación
+      // adverbio de cantidad
+      // adverbio de duda
+      // adverbio de lugar
+      // adverbio de modo
+      // adverbio de negación
+      // adverbio de orden
+      // adverbio de tiempo
+      // adverbio demostrativo
+      // adverbio interrogativo
+      // adverbio relativo
       pat = new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word);
     } else if (pos.startsWith("verbo transitivo")) {
       pat = new PosAndType(LexinfoOnt.verb, OntolexOnt.Word);
@@ -99,10 +99,10 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
       // TODO: add proper syntactic frame
     } else if (pos.startsWith("verbo")) {
       // Catches :
-      //    verbo bitransitivo
-      //    verbo enclítico
-      //    verbo modal
-      //    verbo perfectivo
+      // verbo bitransitivo
+      // verbo enclítico
+      // verbo modal
+      // verbo perfectivo
       pat = new PosAndType(LexinfoOnt.verb, OntolexOnt.Word);
     } else if (pos.startsWith("afijo")) {
       pat = new PosAndType(LexinfoOnt.affix, OntolexOnt.Affix);
@@ -111,7 +111,7 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     } else if (pos.startsWith("circunfijo")) {
       pat = new PosAndType(LexinfoOnt.affix, OntolexOnt.Affix);
     } else if (pos.startsWith("sufijo")) {
-      // Catches :    sufijo flexivo"
+      // Catches : sufijo flexivo"
       pat = new PosAndType(LexinfoOnt.suffix, OntolexOnt.Affix);
     } else if (pos.startsWith("símbolo")) {
       pat = new PosAndType(LexinfoOnt.symbol, OntolexOnt.LexicalEntry);

@@ -14,7 +14,7 @@
 
   <name>RDF utilities for DBnary</name>
   <description>This module provides some utility commands for the DBnary ecosystem (mainly
-    RDFDiffing tool that are tailor made to evaluate diffs between DBnary extracts).
+    RDFDiffing tool that are tailor-made to evaluate diffs between DBnary extracts).
   </description>
 
   <dependencies>
@@ -61,12 +61,25 @@
     <dependency>
       <groupId>com.slack.api</groupId>
       <artifactId>slack-api-client</artifactId>
-      <version>1.36.1</version>
+      <version>1.38.0</version>
     </dependency>
     <dependency>
       <groupId>club.minnced</groupId>
       <artifactId>discord-webhooks</artifactId>
-      <version>0.8.3</version>
+      <version>0.8.4</version>
+      <exclusions>
+        <exclusion>
+          <!-- Exclude the imported json library as it contains a vulnerability -->
+          <groupId>org.json</groupId>
+          <artifactId>json</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <!-- provide a more recent json library -->
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20240205</version>
     </dependency>
     <dependency>
       <groupId>org.getalp</groupId>

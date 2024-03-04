@@ -862,35 +862,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   public void registerNymRelationToEntity(String target, String synRelation, Resource entity) {
-    if (null == entity) {
-      log.debug("Registering Lexical Relation when lex entry is null in \"{}\".",
-          this.currentMainLexEntry);
-      return; // Don't register anything if current lex entry is not known.
-    }
-    // Some links point to Annex pages or Images, just ignore these.
-    int colon = target.indexOf(':');
-    if (colon != -1) {
-      return;
-    }
-    int hash = target.indexOf('#');
-    if (hash != -1) {
-      // The target contains an intra page href. Remove it from the target uri and keep it in the
-      // relation.
-      target = target.substring(0, hash);
-      // TODO: keep additional intra-page href
-      // aBox.add(nym, isAnnotatedBy, target.substring(hash));
-    }
-
-    Property nymProperty = NymRelation.of(synRelation).getProperty();
-    // Property nymProperty = nymPropertyMap.get(synRelation);
-
-    Resource targetResource = getPageResource(target);
-
-    aBox.add(entity, nymProperty, targetResource);
+    registerNymRelationToEntity(target, synRelation, entity, null, null);
   }
 
   public void registerNymRelationToEntity(String target, String synRelation, Resource entity,
       Resource gloss, String usage) {
+    if (NymRelation.of(synRelation) == null)
+      return;
+
     if (null == entity) {
       log.debug("Registering Lexical Relation when lex entry is null in \"{}\".",
           this.currentMainLexEntry);
@@ -996,30 +975,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       log.debug("Registering Lexical Relation when current sense is null in \"{}\".",
           this.currentMainLexEntry);
       registerNymRelation(target, synRelation);
-      return; // Don't register anything if current lex entry is not known.
+    } else {
+      registerNymRelationToEntity(target, synRelation, currentSense);
     }
-    // Some links point to Annex pages or Images, just ignore these.
-    int colon = target.indexOf(':');
-    if (colon != -1) {
-      return;
-    }
-    int hash = target.indexOf('#');
-    if (hash != -1) {
-      // The target contains an intra page href. Remove it from the target uri and keep it in the
-      // relation.
-      target = target.substring(0, hash);
-      // TODO: keep additional intra-page href
-      // aBox.add(nym, isAnnotatedBy, target.substring(hash));
-    }
-
-    if (NymRelation.of(synRelation) == null)
-      return;
-    Property nymProperty = NymRelation.of(synRelation).getProperty();
-    // Property nymProperty = nymPropertyMap.get(synRelation);
-
-    Resource targetResource = getPageResource(target);
-
-    aBox.add(currentSense, nymProperty, targetResource);
   }
 
   @Override

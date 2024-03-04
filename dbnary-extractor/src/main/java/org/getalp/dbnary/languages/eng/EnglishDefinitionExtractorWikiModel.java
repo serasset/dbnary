@@ -39,7 +39,7 @@ public class EnglishDefinitionExtractorWikiModel extends EnglishWikiModel {
   public void parseDefinition(String definition, int defLevel) {
     // Render the definition to plain text, while ignoring the example template
     // log.trace("extracting definitions in {}", this.getPageName());
-    log.debug("Parsing definition : ||| {} ||| in {}", definition, delegate.currentPagename());
+    log.trace("Parsing definition : ||| {} ||| in {}", definition, delegate.currentPagename());
     String def = null;
     try {
       def = render(new PlainTextConverter(), definition).trim();
@@ -117,7 +117,10 @@ public class EnglishDefinitionExtractorWikiModel extends EnglishWikiModel {
       writer.append(l);
     } else if (templateName.equals("synonym of") || templateName.equals("ellipsis of")
         || templateName.equals("initialism of") || templateName.equals("init of")
-        || templateName.equals("acronym of")) {
+        || templateName.equals("acronym of") || templateName.equals("abbr of")
+        || templateName.equals("abbreviation of") || templateName.equals("abbrev of")
+        || templateName.equals("clipping of") || templateName.equals("clip of")
+        || templateName.equals("former name of")) {
       // TODO: handle synonym of by creating the appropriate synonymy relation.
       // catch and expand synonym of template before it is caught by next condition.
       super.substituteTemplateCall(templateName, parameterMap, writer);

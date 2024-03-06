@@ -6,6 +6,7 @@ import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.iso639.ISO639_3;
@@ -43,6 +44,8 @@ public class EnglishWikiModel extends DbnaryWikiModel {
     }
   }
 
+  public static final Pattern UNPACK_PATTERN = Pattern.compile("(unpack\\([^),]+)\\)");
+
   @Override
   public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
       throws WikiModelContentException {
@@ -68,7 +71,24 @@ public class EnglishWikiModel extends DbnaryWikiModel {
           logger.warn("Module:Jpan-sortkey could not be patched ! Check current implementation.");
       }
       return patchedContent;
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.startsWith("place")) {
+      String rawContent = super.getRawWikiContent(parsedPagename, map);
+      if (null == rawContent)
+        return null;
+      String patchedContent =
+          UNPACK_PATTERN.matcher(rawContent).replaceAll(m -> m.group(1) + ", 1, 3)");
+      if (logger.isDebugEnabled()) {
+        boolean patched = !patchedContent.equals(rawContent);
+        if (patched)
+          logger.debug("Module:place... has been patched.");
+        else
+          logger.warn("Module:place... could not be patched ! Check current implementation.");
+      }
+      if (null != patchedContent)
+        return patchedContent;
     }
     return super.getRawWikiContent(parsedPagename, map);
   }
+
 }

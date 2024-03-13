@@ -219,7 +219,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       ewdh.registerEtymologyPos(getWiktionaryPageName());
       extractMorphology(blockContent);
       extractHeadInformation(blockContent);
-      // TODO: English definition comes along examples and nyms, extract these also.
+      // DONE: English definition comes along examples and nyms, extract these also.
       extractDefinitions(blockContent);
     } else if (title.equals("Translations")) { // TODO: some sections are using Translation in the
       // singular form...
@@ -1328,8 +1328,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String g2 = t.getParsedArgs().get("1");
         // Ignore gloss if it is a macro
         if (g2 != null && !g2.startsWith("{{")) {
-          currentGloss.set(
-              wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank.getAndAdd(1)));
+          currentGloss.set(wdh.createGlossResource(g2, rank.getAndAdd(1)));
         } else {
           currentGloss.set(null);
         }
@@ -1421,7 +1420,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     for (WikiText.Token tok : wikiEvents) {
       if (tok instanceof WikiText.IndentedItem) {
-        // It's a link, only keep the alternate string if present.
         extractNymValues(synRelation, tok.asIndentedItem().getContent());
       }
     }
@@ -1442,14 +1440,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // It's a link, only keep the alternate string if present.
         WikiText.InternalLink link = (WikiText.InternalLink) tok;
         String linkText = link.getLinkText();
-        if (linkText != null && !linkText.equals("") && !linkText.startsWith("Catégorie:")
-            && !linkText.startsWith("#")) {
+        if (!linkText.isEmpty() && !linkText.startsWith("Category:") && !linkText.startsWith("#")) {
           if (isWikisaurus(linkText)) {
             // NOP: Wikisaurus pages are extracted independently
             // TODO : should we note that the current lexical entry points
             // to this particular wikisaurus page
           } else {
-            wdh.registerNymRelation(linkText, synRelation, currentGloss);
+            wdh.registerNymRelation(linkText, synRelation, currentGloss, null);
           }
         }
       } else if (tok instanceof WikiText.Template) {
@@ -1464,7 +1461,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               log.debug("Unhandled remaining args {} in {}", args.entrySet(),
                   this.getWiktionaryPageName());
             }
-            wdh.registerNymRelation(target, synRelation, currentGloss);
+            wdh.registerNymRelation(target, synRelation, currentGloss, null);
+          } else {
+            log.debug("NYM: Non English link in {} : {}", tmpl, this.getWiktionaryPageName());
           }
         } else if ("sense".equals(tmpl.getName())) {
           String g = tmpl.getParsedArgs().get("1");
@@ -1474,7 +1473,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               g += ", " + p;
             }
           }
-          currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+          currentGloss = wdh.createGlossResource(g, rank++);
         }
       }
     }

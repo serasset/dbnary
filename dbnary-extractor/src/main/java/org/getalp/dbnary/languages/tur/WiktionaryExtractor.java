@@ -230,8 +230,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if ("Üst".equals(template.getName())) {
         if (template.getParsedArgs().get("1") != null) {
           globalGloss = args.get("1");
-          globalGlossResource =
-              wdh.createGlossResource(glossFilter.extractGlossStructure(globalGloss), rank++);
+          globalGlossResource = wdh.createGlossResource(globalGloss, rank++);
         } else {
           globalGloss = "";
           globalGlossResource = null;

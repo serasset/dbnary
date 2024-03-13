@@ -104,7 +104,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionExtractor = new PortugueseDefinitionExtractorWikiModel(this.wdh, this.wi,
         Locale.forLanguageTag("pt"), "/${image}", "/${title}");
     translationExtractor = new PortugueseTranslationExtractorWikiModel(this.wdh, this.wi,
-        new Locale("pt"), "/${image}/" + getWiktionaryPageName(), "/${title}", glossFilter);
+        new Locale("pt"), "/${image}/" + getWiktionaryPageName(), "/${title}");
   }
 
   public boolean isCurrentlyExtracting() {

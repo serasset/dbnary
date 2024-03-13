@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.ReifiedStatement;
@@ -28,6 +29,7 @@ import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.PronunciationPair;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.SkosOnt;
+import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.model.NymRelation;
 import org.getalp.iso639.ISO639_3;
@@ -736,6 +738,62 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     } catch (NullPointerException npe) {
       log.debug("Unknown Nym Property in Wikisaurus:{}", currentNym);
     }
+  }
+
+  // INLINE codes in syn template:
+  // t: gloss
+  // alt: alternative display text
+  // tr: transliteration
+  // ts: transcription, for languages where the transliteration and pronunciation are markedly
+  // different
+  // q: qualifier, e.g. rare; this appears before the term, parenthesized and italicized
+  // qq: qualifier, e.g. rare; this appears after the term, parenthesized and italicized
+  // lit: literal meaning
+  // pos: part of speech
+  // g: comma-separated list of gender/number specifications
+  // id: sense ID; see {{senseid}}
+  // sc: script code
+  // tag: dialect tag; see below
+  private final static Pattern NYM_VALUE_INLINE_MODIFIER_PATTERN =
+      Pattern.compile("<qq?:(?<qual>[^>]+)>|<(?:t|lit):(?<gloss>[^>]+)>|<alt:(?<alt>[^>]+)>|"
+          + "<(?:tr|ts):(?<tr>[^>]+)>|<pos:(?<pos>[^>]+)>|<g:(?<g>[^>]+)>|<id:(?<sid>[^>]+)>|"
+          + "<sc:([^>]+)>|<tag:([^>]+)>");
+
+  @Override
+  public void registerNymRelationToEntity(String target, String nymRelation, Resource entity,
+      Resource gloss, String usage) {
+    Matcher m = NYM_VALUE_INLINE_MODIFIER_PATTERN.matcher(target);
+    while (m.find()) {
+      String qualValue, glossValue, altValue, trValue, posValue, gValue, sidValue;
+      if ((glossValue = m.group("gloss")) != null) {
+        if (gloss == null) {
+          gloss = createGlossResource(glossValue);
+        } else {
+          log.debug("Gloss already defined for {} ({})", target, currentPagename());
+        }
+      }
+      if ((qualValue = m.group("qual")) != null) {
+        usage = usage == null ? qualValue : usage + "|qual=" + qualValue;
+      }
+      if ((altValue = m.group("alt")) != null) {
+        usage = usage == null ? altValue : usage + "|alt=" + altValue;
+      }
+      if ((trValue = m.group("tr")) != null) {
+        usage = usage == null ? trValue : usage + "|tr=" + trValue;
+      }
+      if ((posValue = m.group("pos")) != null) {
+        usage = usage == null ? posValue : usage + "|pos=" + posValue;
+      }
+      if ((gValue = m.group("g")) != null) {
+        usage = usage == null ? gValue : usage + "|g=" + gValue;
+      }
+      if ((sidValue = m.group("sid")) != null) {
+        // TODO: handle sense id
+        log.debug("Sense id not handled for {} ({})", target, currentPagename());
+      }
+    }
+    target = m.replaceAll("");
+    super.registerNymRelationToEntity(target, nymRelation, entity, gloss, usage);
   }
 
   public void initializeNewEtymology() {

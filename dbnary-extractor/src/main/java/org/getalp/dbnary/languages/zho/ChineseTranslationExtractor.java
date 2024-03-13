@@ -17,14 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ChineseTranslationExtractor {
-  private final AbstractGlossFilter glossFilter;
   private IWiktionaryDataHandler delegate;
   private int rank = 1;
   private Logger log = LoggerFactory.getLogger(ChineseTranslationExtractor.class);
 
-  public ChineseTranslationExtractor(IWiktionaryDataHandler we, AbstractGlossFilter glossFilter) {
+  public ChineseTranslationExtractor(IWiktionaryDataHandler we) {
     this.delegate = we;
-    this.glossFilter = glossFilter;
   }
 
   private Resource currentGloss = null;
@@ -54,7 +52,7 @@ public class ChineseTranslationExtractor {
       String g = tmpl.getParsedArg("1");
       if (null != g) {
         g = g.trim();
-        currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+        currentGloss = delegate.createGlossResource(g, rank++);
       } else {
         currentGloss = null;
       }

@@ -183,11 +183,11 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
     }
   }
 
-  def extractTranslationLine(input: WikiCharSequence, gloss: Resource, delegate: IWiktionaryDataHandler, filter: AbstractGlossFilter): Unit = {
+  def extractTranslationLine(input: WikiCharSequence, gloss: Resource, delegate: IWiktionaryDataHandler): Unit = {
     parseTranslationLine(input, delegate.currentPagename()).foreach {
       case Translation(lg, wr, null, use) => delegate.registerTranslation(lg, gloss, use, wr)
       case Translation(lg, wr, localGloss, use) => {
-        val g2 = createGloss(gloss, localGloss, delegate, filter)
+        val g2 = createGloss(gloss, localGloss, delegate)
         delegate.registerTranslation(lg, g2, use, wr)
       }
     }
@@ -204,8 +204,8 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
     }
   }
 
-  def createGloss(globalGloss: Resource, localGloss: String, delegate: IWiktionaryDataHandler, filter: AbstractGlossFilter): Resource =
-    delegate.createGlossResource(filter.extractGlossStructure(getGlossString(globalGloss) + "|" + localGloss))
+  def createGloss(globalGloss: Resource, localGloss: String, delegate: IWiktionaryDataHandler): Resource =
+    delegate.createGlossResource(getGlossString(globalGloss) + "|" + localGloss)
 
 }
 

@@ -14,6 +14,7 @@ import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats.Stat;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStat;
+import org.getalp.dbnary.languages.AbstractGlossFilter;
 import org.getalp.dbnary.morphology.InflectionData;
 
 public interface IWiktionaryDataHandler {
@@ -116,11 +117,15 @@ public interface IWiktionaryDataHandler {
 
   void registerNymRelation(String target, String synRelation);
 
+  AbstractGlossFilter getGlossFilter();
+
+  Resource createGlossResource(String gloss, int rank);
+
   Resource createGlossResource(StructuredGloss gloss, int rank);
 
-  Resource createGlossResource(StructuredGloss gloss);
+  Resource createGlossResource(String gloss);
 
-  void registerNymRelation(String target, String synRelation, Resource gloss);
+  Resource createGlossResource(StructuredGloss gloss);
 
   void registerNymRelation(String target, String synRelation, Resource gloss, String usage);
 
@@ -144,7 +149,13 @@ public interface IWiktionaryDataHandler {
    */
   void dump(Model model, OutputStream out, String format);
 
-  void registerNymRelationOnCurrentSense(String target, String synRelation);
+  default void registerNymRelationOnCurrentSense(String target, String synRelation) {
+    registerNymRelationOnCurrentSense(target, synRelation, null, null);
+  }
+
+  void registerNymRelationOnCurrentSense(String target, String synRelation, Resource gloss,
+      String usage);
+
 
   void registerPropertyOnLexicalEntry(Property p, RDFNode r);
 

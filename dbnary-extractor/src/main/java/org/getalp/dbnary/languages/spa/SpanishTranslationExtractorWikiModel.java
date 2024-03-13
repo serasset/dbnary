@@ -22,18 +22,16 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
   private final IWiktionaryDataHandler delegate;
 
   private final Logger log = LoggerFactory.getLogger(SpanishTranslationExtractorWikiModel.class);
-  private final AbstractGlossFilter glossFilter;
 
   public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
-    this(we, null, locale, imageBaseURL, linkBaseURL, glossFilter);
+      String imageBaseURL, String linkBaseURL) {
+    this(we, null, locale, imageBaseURL, linkBaseURL);
   }
 
   public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+      Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
-    this.glossFilter = glossFilter;
   }
 
   public void parseTranslationBlock(String block) {
@@ -132,7 +130,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
             trans = null;
             usage = new StringBuilder();
           }
-          currentGloss = glossFilter.extractGlossStructure(s);
+          currentGloss = delegate.getGlossFilter().extractGlossStructure(s);
         } else if (gender.contains(s)) {
           usage.append("|").append(s);
         } else if ("p".equals(s)) {
@@ -185,7 +183,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
       }
       if (!parameterMap.isEmpty()) {
         String globalGlossValue = parameterMap.get("1");
-        globalGloss = glossFilter.extractGlossStructure(globalGlossValue);
+        globalGloss = delegate.getGlossFilter().extractGlossStructure(globalGlossValue);
       } else {
         globalGloss = null;
       }
@@ -199,7 +197,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
       String trans = parameterMap.get("2");
       String gloss = parameterMap.get("3");
       if (null != gloss) {
-        currentGloss = glossFilter.extractGlossStructure(gloss);
+        currentGloss = delegate.getGlossFilter().extractGlossStructure(gloss);
       }
       if (null != trans) {
         delegate.registerTranslation(lang,

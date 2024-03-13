@@ -639,7 +639,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void extractTranslation(final PageIterator section) {
     log.trace("{} => Translation field found ---> {}", getWiktionaryPageName(), url());
 
-    final StructuredGloss gloss = new StructuredGloss();
+    String gloss = null;
     String shadowNextName;
     if (section.hasNext() && section.isNextATemplate()
         && ((shadowNextName = section.shadowNext().asTemplate().getName()).equals("inici")
@@ -647,7 +647,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (section.next().asTemplate().getArg("1") != null) {
         log.trace("{} => Glossary found -> {} ---> {}", getWiktionaryPageName(),
             section.get().asTemplate().getArg("1").getText(), url());
-        gloss.setGloss(section.get().asTemplate().getArg("1").getText());
+        gloss = section.get().asTemplate().getArg("1").getText();
       }
     } else {
       log.trace("{} => Translation field open fail. ---> {}", getWiktionaryPageName(), url());

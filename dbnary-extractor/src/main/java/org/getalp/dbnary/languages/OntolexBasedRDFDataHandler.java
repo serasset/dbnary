@@ -155,6 +155,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   // Map of the String to lexvo language entity
   private HashMap<String, Resource> languages = new HashMap<>();
 
+  protected final AbstractGlossFilter glossFilter;
+
   public OntolexBasedRDFDataHandler(String longEditionLanguageCode, String tdbDir) {
     super();
 
@@ -178,6 +180,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     endolexFeatureBoxes = new HashMap<>();
     endolexFeatureBoxes.put(ExtractionFeature.MAIN, aBox);
     exolexFeatureBoxes = new HashMap<>();
+
+    glossFilter = WiktionaryGlossFilterFactory.getGlossFilter(longEditionLanguageCode);
   }
 
   private Model createAndInitializeABox(String lang) {
@@ -865,9 +869,9 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     registerNymRelationToEntity(target, synRelation, entity, null, null);
   }
 
-  public void registerNymRelationToEntity(String target, String synRelation, Resource entity,
+  public void registerNymRelationToEntity(String target, String nymRelation, Resource entity,
       Resource gloss, String usage) {
-    if (NymRelation.of(synRelation) == null)
+    if (NymRelation.of(nymRelation) == null)
       return;
 
     if (null == entity) {
@@ -878,6 +882,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     // Some links point to Annex pages or Images, just ignore these.
     int colon = target.indexOf(':');
     if (colon != -1) {
+      log.trace("IGNORING NYM VALUE: {} -- {} --> {}", entity, nymRelation, target);
       return;
     }
     int hash = target.indexOf('#');
@@ -888,7 +893,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       // TODO: keep additional intra-page href
       // aBox.add(nym, isAnnotatedBy, target.substring(hash));
     }
-    Property nymProperty = NymRelation.of(synRelation).getProperty();
+    Property nymProperty = NymRelation.of(nymRelation).getProperty();
     // Property nymProperty = nymPropertyMap.get(synRelation);
 
     Resource targetResource = getPageResource(target);
@@ -900,15 +905,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       return;
     }
 
-    ReifiedStatement rnymR = nymR.createReifiedStatement(computeNymId(synRelation));
+    // TODO: for Jena 5.x these class will disappear, Check ReifierStd class in jena
+    ReifiedStatement rnymR = nymR.createReifiedStatement(computeNymId(nymRelation));
     if (gloss != null) {
       rnymR.addProperty(DBnaryOnt.gloss, gloss);
     }
     if (usage != null) {
       rnymR.addProperty(DBnaryOnt.usage, usage);
     }
-
-
   }
 
 
@@ -918,19 +922,34 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
+  public AbstractGlossFilter getGlossFilter() {
+    return glossFilter;
+  }
+
+  @Override
+  public Resource createGlossResource(String gloss) {
+    return createGlossResource(gloss, -1);
+  }
+
+  @Override
   public Resource createGlossResource(StructuredGloss gloss) {
     return createGlossResource(gloss, -1);
   }
 
   @Override
+  public Resource createGlossResource(String gloss, int rank) {
+    return createGlossResource(glossFilter.extractGlossStructure(gloss), rank);
+  }
+
+  @Override
   public Resource createGlossResource(StructuredGloss gloss, int rank) {
-    if (gloss == null || ((gloss.getGloss() == null || gloss.getGloss().length() == 0)
-        && (gloss.getSenseNumber() == null || gloss.getSenseNumber().length() == 0))) {
+    if (gloss == null || ((gloss.getGloss() == null || gloss.getGloss().isEmpty())
+        && (gloss.getSenseNumber() == null || gloss.getSenseNumber().isEmpty()))) {
       return null;
     }
 
     Resource glossResource = aBox.createResource(getGlossResourceName(gloss), DBnaryOnt.Gloss);
-    if (null != gloss.getGloss() && gloss.getGloss().trim().length() > 0) {
+    if (null != gloss.getGloss() && !gloss.getGloss().trim().isEmpty()) {
       aBox.add(aBox.createStatement(glossResource, RDF.value, gloss.getGloss(),
           shortEditionLanguageCode));
     }
@@ -952,11 +971,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void registerNymRelation(String target, String synRelation, Resource gloss) {
-    registerNymRelation(target, synRelation, gloss, null);
-  }
-
-  @Override
   public void registerNymRelation(String target, String synRelation, Resource gloss, String usage) {
     registerNymRelationToEntity(target, synRelation, currentLexEntry, gloss, usage);
   }
@@ -970,13 +984,14 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public void registerNymRelationOnCurrentSense(String target, String synRelation) {
+  public void registerNymRelationOnCurrentSense(String target, String synRelation, Resource gloss,
+      String usage) {
     if (null == currentSense) {
       log.debug("Registering Lexical Relation when current sense is null in \"{}\".",
           this.currentMainLexEntry);
-      registerNymRelation(target, synRelation);
+      registerNymRelation(target, synRelation, gloss, usage);
     } else {
-      registerNymRelationToEntity(target, synRelation, currentSense);
+      registerNymRelationToEntity(target, synRelation, currentSense, gloss, usage);
     }
   }
 

@@ -333,7 +333,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else {
               g = tmp[0];
             }
-            currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g), gRank++);
+            currentGloss = wdh.createGlossResource(g, gRank++);
           }
           break;
         case "f":
@@ -463,7 +463,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else {
         g = tmp[0];
       }
-      return wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank);
+      return wdh.createGlossResource(g, rank);
     }
     return null;
   }

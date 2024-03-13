@@ -15,20 +15,18 @@ import org.getalp.dbnary.bliki.DbnaryWikiModel;
 
 public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
 
-  private final AbstractGlossFilter glossFilter;
   private IWiktionaryDataHandler delegate;
   private int rank;
 
   public PortugueseTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
-    this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL, glossFilter);
+      String imageBaseURL, String linkBaseURL) {
+    this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
   public PortugueseTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+      Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
-    this.glossFilter = glossFilter;
   }
 
   public void parseTranslationBlock(String block) {
@@ -93,7 +91,7 @@ public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
       String g = parameterMap.get("1");
       if (null != g) {
         g = g.trim();
-        currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+        currentGloss = delegate.createGlossResource(g, rank++);
       }
     } else if ("tradini-checar".equals(templateName)) {
       currentGloss = null;

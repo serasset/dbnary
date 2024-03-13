@@ -22,22 +22,20 @@ import org.slf4j.LoggerFactory;
 
 public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
-  private final AbstractGlossFilter glossFilter;
   private final IWiktionaryDataHandler delegate;
   private final Logger log = LoggerFactory.getLogger(FinnishTranslationExtractorWikiModel.class);
   private int rank;
 
   public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
       String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
-    this(we, null, locale, imageBaseURL, linkBaseURL, glossFilter);
+    this(we, null, locale, imageBaseURL, linkBaseURL);
   }
 
   public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+      Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
     this.rank = 1;
-    this.glossFilter = glossFilter;
   }
 
 
@@ -208,8 +206,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
     int ETAT = INIT;
 
-    Resource currentGlose =
-        delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
+    Resource currentGlose = delegate.createGlossResource(gloss, r);
     String lang = null, word = "";
     String usage = "";
     String langname = "";
@@ -233,12 +230,10 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
             if (macro.equalsIgnoreCase("ylä")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 gloss = macroOrLinkOrcarMatcher.group(2);
-                currentGlose =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
+                currentGlose = delegate.createGlossResource(gloss, r);
               } else if (macroOrLinkOrcarMatcher.group(4) != null) {
                 gloss = macroOrLinkOrcarMatcher.group(4);
-                currentGlose =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
+                currentGlose = delegate.createGlossResource(gloss, r);
               } else {
                 currentGlose = null;
               }
@@ -274,8 +269,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
             if (macro.equalsIgnoreCase("ylä")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 gloss = macroOrLinkOrcarMatcher.group(2);
-                currentGlose =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
+                currentGlose = delegate.createGlossResource(gloss, r);
               } else {
                 currentGlose = null;
               }
@@ -328,8 +322,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
             if (macro.equalsIgnoreCase("ylä")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 gloss = macroOrLinkOrcarMatcher.group(2);
-                currentGlose =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(gloss), r);
+                currentGlose = delegate.createGlossResource(gloss, r);
               } else {
                 currentGlose = null;
               }

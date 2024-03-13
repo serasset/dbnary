@@ -557,8 +557,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         case "trans-top":
           String gloss = t.getParsedArg("1");
           if (gloss != null) {
-            currentGloss =
-                wdh.createGlossResource(glossFilter.extractGlossStructure(gloss), rank++);
+            currentGloss = wdh.createGlossResource(gloss, rank++);
           }
           break;
         case "overs-midt":
@@ -655,8 +654,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             case "toppdrive propaganda":
             case "trans-top":
               if (tTrad.length > 1) {
-                currentGloss =
-                    wdh.createGlossResource(glossFilter.extractGlossStructure(tTrad[1]), rank++);
+                currentGloss = wdh.createGlossResource(tTrad[1], rank++);
               }
               break;
             case "overs-midt":

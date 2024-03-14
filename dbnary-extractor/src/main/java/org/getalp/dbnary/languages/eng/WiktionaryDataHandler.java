@@ -32,6 +32,10 @@ import org.getalp.dbnary.SkosOnt;
 import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.model.NymRelation;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Link;
+import org.getalp.dbnary.wiki.WikiText.Text;
+import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -773,19 +777,19 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         }
       }
       if ((qualValue = m.group("qual")) != null) {
-        usage = usage == null ? qualValue : usage + "|qual=" + qualValue;
+        usage = usage == null ? "|qual=" + qualValue : usage + "|qual=" + qualValue;
       }
       if ((altValue = m.group("alt")) != null) {
-        usage = usage == null ? altValue : usage + "|alt=" + altValue;
+        usage = usage == null ? "|alt=" + altValue : usage + "|alt=" + altValue;
       }
       if ((trValue = m.group("tr")) != null) {
-        usage = usage == null ? trValue : usage + "|tr=" + trValue;
+        usage = usage == null ? "|tr=" + trValue : usage + "|tr=" + trValue;
       }
       if ((posValue = m.group("pos")) != null) {
-        usage = usage == null ? posValue : usage + "|pos=" + posValue;
+        usage = usage == null ? "|pos=" + posValue : usage + "|pos=" + posValue;
       }
       if ((gValue = m.group("g")) != null) {
-        usage = usage == null ? gValue : usage + "|g=" + gValue;
+        usage = usage == null ? "|g=" + gValue : usage + "|g=" + gValue;
       }
       if ((sidValue = m.group("sid")) != null) {
         // TODO: handle sense id
@@ -793,6 +797,21 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       }
     }
     target = m.replaceAll("");
+    if (target.contains("[[")) {
+      // nym value is one or more links, resolve the links
+      WikiText targetWT = new WikiText(target);
+      StringBuilder out = new StringBuilder();
+      for (Token t : targetWT.tokens()) {
+        if (t instanceof Text) {
+          out.append(t);
+        } else if (t instanceof Link) {
+          out.append(t.asLink().getTargetText());
+        } else {
+          log.debug("NYM: Unexpected token {} in nym value {} [{}]", t, target, currentPagename());
+        }
+      }
+      target = out.toString();
+    }
     super.registerNymRelationToEntity(target, nymRelation, entity, gloss, usage);
   }
 

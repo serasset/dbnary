@@ -84,7 +84,11 @@ public class ExpandAllWikiModelCat extends ExpandAllWikiModel {
     if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)
         && parsedPagename.pagename.equals("la-pron")) {
       return "{{pronafi|la|/{{#invoke:la-pron|show|{{{1|{{PAGENAME}}}}}}}/|{{#if:{{{2|}}}|/{{#invoke:la-pron|show|{{{2}}}}}/}}}}\n";
-    }
+    } // else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+      // && parsedPagename.pagename.equals("llengua/ordre")) {
+      // return super.getRawWikiContent(parsedPagename, map).replaceAll("u\\(0x10_FFFF\\)",
+      // "\"_\"");
+    // }
     return super.getRawWikiContent(parsedPagename, map);
   }
 

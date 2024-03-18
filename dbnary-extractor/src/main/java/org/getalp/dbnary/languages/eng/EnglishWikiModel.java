@@ -87,6 +87,23 @@ public class EnglishWikiModel extends DbnaryWikiModel {
       }
       if (null != patchedContent)
         return patchedContent;
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.equals("utilities")) {
+      // utilities uses the nasty nowiki tag hack. So patch the function using it to always return 0
+      String rawContent = super.getRawWikiContent(parsedPagename, map);
+      if (null == rawContent)
+        return null;
+      String patchedContent = rawContent.replaceAll("function export.get_current_section\\(\\)",
+          "function export.get_current_section()\n\t\tlocal test = 1\n"
+              + "\t\tif test then return 0 end");
+      if (logger.isDebugEnabled()) {
+        boolean patched = !patchedContent.equals(rawContent);
+        if (patched)
+          logger.debug("Module:utilities has been patched.");
+        else
+          logger.warn("Module:utilities could not be patched ! Check current implementation.");
+      }
+      return patchedContent;
     }
     return super.getRawWikiContent(parsedPagename, map);
   }

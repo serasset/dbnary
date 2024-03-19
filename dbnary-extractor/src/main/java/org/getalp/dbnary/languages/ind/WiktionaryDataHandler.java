@@ -1,6 +1,7 @@
 package org.getalp.dbnary.languages.ind;
 
 
+import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.LexinfoOnt;
@@ -142,10 +143,13 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     registerTranslation(lang, gloss, usage, word);
   }
 
+  final static Pattern CONTROL_CHAR = Pattern.compile("[[:cntrl:]]");
   public void addNewDefinition(String def, String sense) {
     if (currentLexEntry == null) {
       initializeLexicalEntry("none");
     }
+    // Many control chars a present in definitions. Just get rid of them
+    def = CONTROL_CHAR.matcher(def).replaceAll("");
     registerNewDefinition(def, sense);
   }
 

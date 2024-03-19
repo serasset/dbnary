@@ -618,6 +618,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     return currentSenseNumber.toString();
   }
 
+  final static Pattern CONTROL_CHAR = Pattern.compile("[[:cntrl:]]");
   protected Resource registerTranslationToEntity(Resource entity, String lang,
       Resource currentGloss, String usage, String word) {
     if (null == entity) {
@@ -626,6 +627,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       return null; // Don't register anything if current lex entry is not known.
     }
     word = word.trim();
+    word = CONTROL_CHAR.matcher(word).replaceAll("");
+
     if (null != usage) {
       usage = usage.trim();
     }

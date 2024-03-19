@@ -143,7 +143,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     registerTranslation(lang, gloss, usage, word);
   }
 
-  final static Pattern CONTROL_CHAR = Pattern.compile("[[:cntrl:]]");
+  private final static Pattern CONTROL_CHAR = Pattern.compile("\\p{Cntrl}");
   public void addNewDefinition(String def, String sense) {
     if (currentLexEntry == null) {
       initializeLexicalEntry("none");

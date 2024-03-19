@@ -618,7 +618,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     return currentSenseNumber.toString();
   }
 
-  final static Pattern CONTROL_CHAR = Pattern.compile("[[:cntrl:]]");
+  final static Pattern CONTROL_CHAR = Pattern.compile("\\p{Cntrl}");
   protected Resource registerTranslationToEntity(Resource entity, String lang,
       Resource currentGloss, String usage, String word) {
     if (null == entity) {

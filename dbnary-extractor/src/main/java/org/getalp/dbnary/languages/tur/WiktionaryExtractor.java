@@ -274,7 +274,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private static Pattern senseNumPattern = Pattern.compile("\\[(\\d+)\\]");
-  private static Pattern CONTROL_CHAR = Pattern.compile("[:cntrl:]");
+  private final static Pattern CONTROL_CHAR = Pattern.compile("\\p{Cntrl}");
 
   protected void extractDefinitions(WikiContent wk) {
     WikiEventsSequence indentationsOrTemplates =

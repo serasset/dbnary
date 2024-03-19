@@ -606,8 +606,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    JapaneseTranslationsExtractor dbnmodel =
-        new JapaneseTranslationsExtractor(this.wdh, this.wi, glossFilter);
+    JapaneseTranslationsExtractor dbnmodel = new JapaneseTranslationsExtractor(this.wdh, this.wi);
     dbnmodel.parseTranslations(transCode);
   }
 

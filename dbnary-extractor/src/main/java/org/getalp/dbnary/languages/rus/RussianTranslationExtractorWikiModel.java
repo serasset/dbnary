@@ -29,18 +29,16 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
   private IWiktionaryDataHandler delegate;
 
   private Logger log = LoggerFactory.getLogger(RussianTranslationExtractorWikiModel.class);
-  private AbstractGlossFilter glossFilter;
 
   public RussianTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
-    this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL, glossFilter);
+      String imageBaseURL, String linkBaseURL) {
+    this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
   public RussianTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+      Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
-    this.glossFilter = glossFilter;
     this.rank = 1;
   }
 
@@ -66,7 +64,7 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
       Resource gloss = null;
       if (null != g) {
         g = g.trim();
-        gloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+        gloss = delegate.createGlossResource(g, rank++);
       }
       for (Entry<String, String> kv : parameterMap.entrySet()) {
         if ("1".equals(kv.getKey())) {

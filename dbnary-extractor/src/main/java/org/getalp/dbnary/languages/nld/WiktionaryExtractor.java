@@ -272,7 +272,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String g2 = macroMatcher.group(2);
         // Ignore glose if it is a macro
         if (g2 != null && !g2.startsWith("{{")) {
-          currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);
+          currentGloss = wdh.createGlossResource(g2, rank++);
         }
       } else if (g1.equals("trans-bottom")) {
         // Forget the current glose

@@ -789,8 +789,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (null != gloss) {
               gloss = glossExtractor.expandAll(gloss, null);
             }
-            currentGloss =
-                wdh.createGlossResource(glossFilter.extractGlossStructure(gloss), rank++);
+            currentGloss = wdh.createGlossResource(gloss, rank++);
 
             break;
           case "trad-fin":

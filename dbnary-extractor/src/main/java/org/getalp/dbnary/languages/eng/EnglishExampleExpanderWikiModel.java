@@ -1,6 +1,7 @@
 package org.getalp.dbnary.languages.eng;
 
 import info.bliki.wiki.filter.PlainTextConverter;
+import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -222,8 +223,11 @@ public class EnglishExampleExpanderWikiModel extends EnglishWikiModel {
       }
       String val;
       for (int i = 2; (val = parameterMap.get(String.valueOf(i))) != null; i++) {
-        if (val.startsWith("Thesaurus:")) {
-          continue;
+        if (val.contains(":")) {
+          String prefix = StringUtils.substringBefore(val, ":");
+          if (this.getNamespace().getNamespace(prefix) != null) {
+            continue;
+          }
         }
         wdh.registerNymRelationOnCurrentSense(val, nym);
       }

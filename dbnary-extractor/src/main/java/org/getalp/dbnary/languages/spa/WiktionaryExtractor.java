@@ -238,7 +238,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     headerExtractor = new SpanishHeaderExtractorWikiModel(this.wdh, this.wi, new Locale("es"),
         "/${image}", "/${title}");
     translationExtractor = new SpanishTranslationExtractorWikiModel(this.wdh, this.wi,
-        new Locale("es"), "/${image}", "/${title}", glossFilter);
+        new Locale("es"), "/${image}", "/${title}");
   }
 
 

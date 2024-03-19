@@ -606,7 +606,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // TODO: some are only additional usage notes, other are alternate translation, decide
         // between them and handle the translation cases.
       } else if (null != (g = lexer.group("GLOSS"))) {
-        currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+        currentGloss = wdh.createGlossResource(g, rank++);
       } else if (null != (g = lexer.group("LINK"))) {
         log.debug("Translation as link : {}", line.getToken(lexer.group("LINK")));
       } else if (null != (g = lexer.group("TMPL"))) {
@@ -745,8 +745,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (null == senseNum) {
               wdh.registerNymRelation(leftGroup, synRelation);
             } else {
-              wdh.registerNymRelation(leftGroup, synRelation,
-                  wdh.createGlossResource(glossFilter.extractGlossStructure(senseNum)));
+              wdh.registerNymRelation(leftGroup, synRelation, wdh.createGlossResource(senseNum),
+                  null);
             }
           }
         }

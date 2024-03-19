@@ -364,7 +364,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
     dbnmodel = new FinnishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("ru"),
-        "/${image}", "/${title}", glossFilter);
+        "/${image}", "/${title}");
   }
 
   @Override

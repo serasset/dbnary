@@ -290,7 +290,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String g2 = macroMatcher.group(2);
         // Ignore glose if it is a macro
         if (g2 != null && !g2.startsWith("{{")) {
-          currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g2), rank++);
+          currentGloss = wdh.createGlossResource(g2, rank++);
         }
       } else if (g1.equals("ö-botten")) {
         // on remet le gloss à null à la fin du bloc de traduction
@@ -335,8 +335,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     while (nymSenseMatcher.find()) {
       if (nymSenseMatcher.group(1) != null) {
-        StructuredGloss g = glossFilter.extractGlossStructure(nymSenseMatcher.group(1));
-        gloss = wdh.createGlossResource(g);
+        gloss = wdh.createGlossResource(nymSenseMatcher.group(1));
       } else {
         String leftGroup = nymSenseMatcher.group(2);
         String usage = (nymSenseMatcher.group(5) != null) ? nymSenseMatcher.group(5)

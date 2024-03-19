@@ -78,21 +78,19 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
 
   private final DefinitionsWikiModel definitionExpander;
   Set<String> templates = null;
-  private AbstractGlossFilter glossFilter;
 
   public BulgarianWikiModel(IWiktionaryDataHandler wdh, Locale locale, String imageBaseURL,
-      String linkBaseURL, AbstractGlossFilter glossFilter) {
-    this(wdh, null, locale, imageBaseURL, linkBaseURL, glossFilter);
+      String linkBaseURL) {
+    this(wdh, null, locale, imageBaseURL, linkBaseURL);
   }
 
   public BulgarianWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi, Locale locale,
-      String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+      String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = wdh;
     if (log.isDebugEnabled()) {
       templates = new HashSet<>();
     }
-    this.glossFilter = glossFilter;
     this.definitionExpander = new DefinitionsWikiModel(wi, this.fLocale, this.getImageBaseURL(),
         this.getWikiBaseURL(), templates);
   }
@@ -134,7 +132,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
           // this.getPageName());
           // TODO: use a shared instance of the translation parser.
           TranslationsParser tp = new TranslationsParser();
-          tp.extractTranslations(sectionContent, delegate, glossFilter);
+          tp.extractTranslations(sectionContent, delegate);
 
           // extractTranslationsFromRawWikiCode(sectionContent)
           // delegate.registerTranslation();

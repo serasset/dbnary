@@ -69,7 +69,7 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
     if (null != senseNumber && null != sense) {
       Pair<Resource, Resource> pair = senses.get(senseNumber);
       if (null != pair) {
-        log.warn("Registering a new sense with an already existing sense number {}: {} ||| {} ",
+        log.debug("Registering a new sense with an already existing sense number {}: {} ||| {} ",
             senseNumber, def, currentPagename());
         // In this case, should I remove all senses to avoid attaching translations to the
         // incorrect entry ?

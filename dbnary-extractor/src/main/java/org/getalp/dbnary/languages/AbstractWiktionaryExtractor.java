@@ -32,14 +32,12 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   protected IWiktionaryDataHandler wdh;
 
   private String wiktionaryPageName;
-  protected final AbstractGlossFilter glossFilter;
 
   protected WiktionaryPageSource wi = null;
 
   public AbstractWiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super();
     this.wdh = wdh;
-    glossFilter = createGlossFilter();
   }
 
   @Override

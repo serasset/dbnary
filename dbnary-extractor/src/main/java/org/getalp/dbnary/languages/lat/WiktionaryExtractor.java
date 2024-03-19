@@ -474,7 +474,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Map<String, String> argmap = WikiTool.parseArgs(macroMatcher.group(2));
         String g = argmap.get("1");
         if (null != g)
-          currentGloss = wdh.createGlossResource(glossFilter.extractGlossStructure(g));
+          currentGloss = wdh.createGlossResource(g);
         int secondArgOffset = macroMatcher.toMatchResult().end(1) + 1; // position of the first arg
         secondArgOffset = secondArgOffset + (null != g ? g.length() : 0) + 1;
         macroMatcher.reset().region(secondArgOffset, endOffset);

@@ -369,14 +369,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private Resource glossResource(String currentGloss, int i) {
-    return wdh.createGlossResource(glossFilter.extractGlossStructure(currentGloss), i);
+    return wdh.createGlossResource(currentGloss, i);
   }
 
   private void processTranslationLine(Resource gloss, IndentedItem t) {
     log.trace("Translation line: {} ||| {}", t.toString(), this.getWiktionaryPageName());
     WikiCharSequence line = new WikiCharSequence(t.getContent());
     TranslationLineParser tp = new TranslationLineParser(this.getWiktionaryPageName());
-    tp.extractTranslationLine(line, gloss, wdh, glossFilter);
+    tp.extractTranslationLine(line, gloss, wdh);
   }
 
   static String ignorableGlossPatternText = //
@@ -468,8 +468,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGlose =
-                    wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGlose = wdh.createGlossResource(g, rank++);
               } else {
                 currentGlose = null;
               }
@@ -503,8 +502,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGlose =
-                    wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGlose = wdh.createGlossResource(g, rank++);
               } else {
                 currentGlose = null;
               }
@@ -552,8 +550,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGlose =
-                    wdh.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGlose = wdh.createGlossResource(g, rank++);
               } else {
                 currentGlose = null;
               }

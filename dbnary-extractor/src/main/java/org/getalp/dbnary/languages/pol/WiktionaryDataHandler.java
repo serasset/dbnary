@@ -86,7 +86,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
             currentPagename());
         StructuredGloss sg = new StructuredGloss(n, "");
         Resource g = super.createGlossResource(sg);
-        super.registerNymRelation(target, synRelation, g);
+        super.registerNymRelation(target, synRelation, g, null);
       } else {
         Resource ws = senseAndEntry[0];
         registerNymRelationToEntity(target, synRelation, ws);

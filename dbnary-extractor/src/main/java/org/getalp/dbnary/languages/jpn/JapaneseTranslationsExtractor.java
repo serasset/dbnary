@@ -24,18 +24,15 @@ public class JapaneseTranslationsExtractor {
   // }
 
   private final IWiktionaryDataHandler delegate;
-  private final AbstractGlossFilter glossFilter;
 
   private final Logger log = LoggerFactory.getLogger(JapaneseTranslationsExtractor.class);
 
-  public JapaneseTranslationsExtractor(IWiktionaryDataHandler we, AbstractGlossFilter glossFilter) {
-    this(we, (WiktionaryPageSource) null, glossFilter);
+  public JapaneseTranslationsExtractor(IWiktionaryDataHandler we) {
+    this(we, (WiktionaryPageSource) null);
   }
 
-  public JapaneseTranslationsExtractor(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      AbstractGlossFilter glossFilter) {
+  public JapaneseTranslationsExtractor(IWiktionaryDataHandler we, WiktionaryPageSource wi) {
     this.delegate = we;
-    this.glossFilter = glossFilter;
   }
 
 
@@ -134,8 +131,7 @@ public class JapaneseTranslationsExtractor {
             if (macro.equalsIgnoreCase("trans-top") || macro.equalsIgnoreCase("top")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGloss =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGloss = delegate.createGlossResource(g, rank++);
               } else {
                 currentGloss = null;
               }
@@ -154,8 +150,7 @@ public class JapaneseTranslationsExtractor {
           } else if (star != null) {
             ETAT = LANGUE;
           } else if (term != null) {
-            currentGloss =
-                delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
+            currentGloss = delegate.createGlossResource(term, rank++);
           } else if (car != null) {
             switch (car) {
               case ":":
@@ -182,8 +177,7 @@ public class JapaneseTranslationsExtractor {
             if (macro.equalsIgnoreCase("trans-top") || macro.equalsIgnoreCase("top")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGloss =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGloss = delegate.createGlossResource(g, rank++);
               } else {
                 currentGloss = null;
               }
@@ -215,8 +209,7 @@ public class JapaneseTranslationsExtractor {
           } else if (star != null) {
             // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (term != null) {
-            currentGloss =
-                delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
+            currentGloss = delegate.createGlossResource(term, rank++);
             langname = "";
             word = "";
             usage = "";
@@ -246,8 +239,7 @@ public class JapaneseTranslationsExtractor {
             if (macro.equalsIgnoreCase("trans-top") || macro.equalsIgnoreCase("top")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGloss =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGloss = delegate.createGlossResource(g, rank++);
               } else {
                 currentGloss = null;
               }
@@ -389,8 +381,7 @@ public class JapaneseTranslationsExtractor {
           } else if (star != null) {
             // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (term != null) {
-            currentGloss =
-                delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
+            currentGloss = delegate.createGlossResource(term, rank++);
             langname = "";
             word = "";
             usage = "";

@@ -1,5 +1,7 @@
 package org.getalp.dbnary.languages.rus;
 
+import java.util.regex.Pattern;
+import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;

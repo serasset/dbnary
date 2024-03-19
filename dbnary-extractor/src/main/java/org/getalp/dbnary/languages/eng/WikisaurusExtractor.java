@@ -63,8 +63,11 @@ public class WikisaurusExtractor {
     log.debug("Wikisaurus gloss = {}", content.toString());
     for (WikiText.Token t : content.templatesOnUpperLevel()) {
       WikiText.Template tmpl = (WikiText.Template) t;
-      if (((WikiText.Template) t).getName().equals("ws sense")) {
-        gloss.append(((WikiText.Template) t).getParsedArgs().get("1"));
+      String tmplName = tmpl.getName();
+      if (tmplName.equals("ws sense") || tmplName.equals("wse-sense")) {
+        gloss.append(tmpl.getParsedArgs().get("2"));
+      } else {
+        log.trace("Unknown template in gloss : {}", tmplName);
       }
     }
     return gloss.toString();

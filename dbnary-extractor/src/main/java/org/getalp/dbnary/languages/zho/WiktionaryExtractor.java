@@ -562,8 +562,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractTranslations(int startOffset, int endOffset) {
     String transCode = pageContent.substring(startOffset, endOffset);
-    ChineseTranslationExtractor translationExtractor =
-        new ChineseTranslationExtractor(this.wdh, glossFilter);
+    ChineseTranslationExtractor translationExtractor = new ChineseTranslationExtractor(this.wdh);
     translationExtractor.parseTranslationBlock(transCode);
   }
 

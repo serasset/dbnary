@@ -144,6 +144,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   private final static Pattern CONTROL_CHAR = Pattern.compile("\\p{Cntrl}");
+
   public void addNewDefinition(String def, String sense) {
     if (currentLexEntry == null) {
       initializeLexicalEntry("none");

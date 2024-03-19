@@ -136,8 +136,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    expander =
-        new ExpandAllWikiModel(wi, Locale.forLanguageTag("tr"), "/images", "/link");
+    expander = new ExpandAllWikiModel(wi, Locale.forLanguageTag("tr"), "/images", "/link");
   }
 
   public void extractData() {
@@ -282,10 +281,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token indent : indentationsOrTemplates) {
       if (indent instanceof NumberedListItem) {
         // Do not extract numbered list items that begin with ":" as they are indeed examples.
-        if (indent.asNumberedListItem().getContent().getText().startsWith(":") ||
-            indent.asNumberedListItem().getContent().getText().startsWith("*")) {
-          String expandedExample =
-              expander.expandAll(indent.asNumberedListItem().getContent().toString().substring(1), null);
+        if (indent.asNumberedListItem().getContent().getText().startsWith(":")
+            || indent.asNumberedListItem().getContent().getText().startsWith("*")) {
+          String expandedExample = expander
+              .expandAll(indent.asNumberedListItem().getContent().toString().substring(1), null);
           expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
           wdh.registerExample(expandedExample, null);
         } else {

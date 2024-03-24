@@ -11,6 +11,7 @@ import info.bliki.wiki.tags.HTMLTag;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.apache.commons.text.WordUtils;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.tools.CounterSet;
@@ -135,4 +136,17 @@ public class DbnaryWikiModel extends WikiModel {
     return rawWikiText.replaceAll("\\{\\{safesubst:", "{{").replaceAll("\\{\\{subst:", "{{");
   }
 
+  private final Pattern HAS_WIKI_CONTENT = Pattern.compile("\\{\\{|<nowiki|\\[|^[#:*=]");
+  // This method is only called by preprocess and, when called with a non wiki text, generates
+  // a html string with <p> while the php preprocess will not. To avoid some bugs appearing in
+  // English template, we catch calls with simple (non wiki, non html) values and return the
+  // original string directly
+  @Override
+  public String render(String rawWikiText) throws IOException {
+    if (HAS_WIKI_CONTENT.matcher(rawWikiText).find()) {
+      return super.render(rawWikiText);
+    } else {
+      return rawWikiText;
+    }
+  }
 }

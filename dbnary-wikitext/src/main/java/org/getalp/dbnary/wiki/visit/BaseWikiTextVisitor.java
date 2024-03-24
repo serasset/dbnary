@@ -7,6 +7,7 @@ import org.getalp.dbnary.wiki.WikiText.Indentation;
 import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.Item;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NoWiki;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Text;
@@ -81,6 +82,11 @@ public abstract class BaseWikiTextVisitor implements Visitor<Void> {
 
   @Override
   public Void visit(Text text) {
+    return null;
+  }
+
+  @Override
+  public Void visit(NoWiki nowiki) {
     return null;
   }
 

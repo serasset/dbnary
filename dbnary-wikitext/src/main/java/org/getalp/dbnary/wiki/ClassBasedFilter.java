@@ -86,8 +86,8 @@ public class ClassBasedFilter implements WikiEventFilter {
     return this;
   }
 
-  public ClassBasedFilter allowNowiki() {
-    // TODO: implement nowiki handling
+  public ClassBasedFilter allowNoWiki() {
+    classesToKeep.add(WikiText.NoWiki.class);
     return this;
   }
 
@@ -102,7 +102,7 @@ public class ClassBasedFilter implements WikiEventFilter {
   }
 
   public ClassBasedFilter allowAll() {
-    this.allowExternalLink().allowHTMLComment().allowInternalLink().allowNowiki().allowTemplates()
+    this.allowExternalLink().allowHTMLComment().allowInternalLink().allowNoWiki().allowTemplates()
         .allowIndentedItem().allowHeading().allowText();
     return this;
   }
@@ -157,8 +157,8 @@ public class ClassBasedFilter implements WikiEventFilter {
     return this;
   }
 
-  public ClassBasedFilter denyNowiki() {
-    // TODO: implement nowiki handling
+  public ClassBasedFilter denyNoWiki() {
+    classesToKeep.remove(WikiText.NoWiki.class);
     return this;
   }
 

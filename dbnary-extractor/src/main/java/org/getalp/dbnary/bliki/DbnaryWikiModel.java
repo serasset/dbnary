@@ -137,6 +137,7 @@ public class DbnaryWikiModel extends WikiModel {
   }
 
   private final Pattern HAS_WIKI_CONTENT = Pattern.compile("\\{\\{|<nowiki|\\[|^[#:*=]");
+
   // This method is only called by preprocess and, when called with a non wiki text, generates
   // a html string with <p> while the php preprocess will not. To avoid some bugs appearing in
   // English template, we catch calls with simple (non wiki, non html) values and return the

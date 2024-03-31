@@ -303,8 +303,8 @@ public class WikiText {
 
     /**
      * returns a List of wikiTokens including Text tokens that may be intertwined. HTML comments are
-     * ignored and nowiki elements are replaced by their content as a Text token.
-     * Two successive Texts may be found if a comment or a nowiki was present in the wiki source.
+     * ignored.
+     * Two successive Texts may be found if a comment was present in the wiki source.
      *
      * @return a list of tokens (either text or wikiTokens)
      */
@@ -337,9 +337,7 @@ public class WikiText {
         if (token.offset.start > tindex) {
           toks.add(new Text(tindex, token.offset.start));
         }
-        if (token instanceof NoWiki) {
-          toks.add(token.asText());
-        } else if (withComments || !(token instanceof HTMLComment)) {
+        if (withComments || !(token instanceof HTMLComment)) {
           toks.add(token);
         }
         tindex = token.offset.end;
@@ -516,7 +514,8 @@ public class WikiText {
 
     @Override
     public void fillText(StringBuilder s) {
-      s.append(sourceContent, this.contentOffest.start, this.contentOffest.end);
+      // Keep the nowiki tag by default in fill text
+      s.append(sourceContent, this.offset.start, this.offset.end);
     }
 
     @Override

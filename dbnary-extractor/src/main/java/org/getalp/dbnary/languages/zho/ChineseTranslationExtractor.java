@@ -8,6 +8,7 @@ import org.getalp.dbnary.languages.AbstractGlossFilter;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NoWiki;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Text;
 import org.getalp.dbnary.wiki.WikiText.Token;
@@ -104,7 +105,7 @@ public class ChineseTranslationExtractor {
           ? firstToken.asTemplate().getName().toLowerCase(Locale.ROOT)
           : firstToken.asTemplate().getParsedArg("1");
       removeIrrelevantToken(tokens, 1);
-    } else if (firstToken instanceof Text) {
+    } else if (firstToken instanceof Text || firstToken instanceof NoWiki) {
       String languageIntroduction = firstToken.asText().toString();
       langFromFirstToken = languageIntroduction.split(":|：")[0].trim();
     } else {

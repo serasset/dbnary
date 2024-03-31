@@ -241,9 +241,7 @@ public class ClassBasedSequenceFilter implements Function<Token, Action> {
       ExternalLink li = (ExternalLink) t;
       return li.getLink().tokens();
     } else if (t instanceof NoWiki) {
-      ArrayList<Token> res = new ArrayList<>();
-      res.add(t.asText());
-      return res;
+      return List.of(t.asText());
     } else {
       throw new RuntimeException("Cannot collect parameter contents on a content less token");
     }

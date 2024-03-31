@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
@@ -42,6 +43,7 @@ import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NoWiki;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Token;
@@ -270,7 +272,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   static {
-    linkResolver.clearAction().keepContentOfInternalLink().sourceText()
+    linkResolver.clearAction().keepContentOfInternalLink().sourceText().keepContentOfNoWiki()
         .keepContentOfTemplates(WiktionaryExtractor::getMyTemplateContent);
   }
 
@@ -1325,10 +1327,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
       } else if (tName.equals("trans-top") || tName.equals("trans-top-also")) {
         // Get the gloss that should help disambiguate the source acception
-        String g2 = t.getParsedArgs().get("1");
+        WikiContent g2 = t.getArgs().get("1");
         // Ignore gloss if it is a macro
-        if (g2 != null && !g2.startsWith("{{")) {
-          currentGloss.set(wdh.createGlossResource(g2, rank.getAndAdd(1)));
+        if (g2 != null) {
+          String glossText = g2.tokens().stream()
+              .filter(tok -> tok instanceof WikiText.Text || tok instanceof WikiText.NoWiki)
+              .map(WikiText.Token::asText)
+              .map(WikiText.Token::getText).collect(Collectors.joining(""));
+          if (glossText.trim().isEmpty()) {
+            currentGloss.set(null);
+          } else {
+            currentGloss.set(wdh.createGlossResource(glossText, rank.getAndAdd(1)));
+          }
         } else {
           currentGloss.set(null);
         }
@@ -1439,7 +1449,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (tok instanceof WikiText.InternalLink) {
         // It's a link, only keep the alternate string if present.
         WikiText.InternalLink link = (WikiText.InternalLink) tok;
-        String linkText = link.getLinkText();
+        // TODO: Why get the link text instead of the target text ?
+        String linkText = link.getTargetText();
         if (!linkText.isEmpty() && !linkText.startsWith("Category:") && !linkText.startsWith("#")) {
           if (isWikisaurus(linkText)) {
             // NOP: Wikisaurus pages are extracted independently

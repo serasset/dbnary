@@ -1,11 +1,12 @@
 package org.getalp.dbnary.model;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DbnaryModel {
 
@@ -15,6 +16,7 @@ public class DbnaryModel {
   public static final String LEXVO = "http://lexvo.org/id/iso639-3/";
 
   public static Model tBox;
+  static Logger logger = LoggerFactory.getLogger(DbnaryModel.class);
 
   static {
     // Create T-Box and read rdf schema associated to it.
@@ -51,6 +53,11 @@ public class DbnaryModel {
         res.append(URLEncoder.encode("" + c, StandardCharsets.UTF_8));
       } else if (Character.isISOControl(c)) {
         // nop
+      } else if (Character.isHighSurrogate(c) && i + 1 < s.length()
+          && Character.isLowSurrogate(s.charAt(i + 1))) {
+        // Encode the surrogate pair as a UTF_8 char, then percent encode the resulting octets
+        res.append(URLEncoder.encode(s.substring(i, i + 2), StandardCharsets.UTF_8));
+        i++;
       } else if (c == '\u200e' || c == '\u200f') {
         // ignore rRLM and LRM.
       } else if (c == '/') {

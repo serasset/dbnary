@@ -96,6 +96,8 @@ public class WikiText {
     protected void addFlattenedTokens(Token t) {
       // TODO: the flattened token may contain text that is of importance to this. Override this
       // method to handle such cases. The token that will receive elements of the flatten one do
+      // know what are the elements to consider
+
       if (t instanceof WikiContent) {
         WikiContent wc = (WikiContent) t;
         for (Token token : wc.tokens) {
@@ -118,7 +120,6 @@ public class WikiText {
         this.addFlattenedTokens(l.target);
         this.addFlattenedTokens(l.linkTextContent);
       }
-      // know what are the elements to consider
     }
 
     public WikiText getWikiText() {
@@ -132,7 +133,7 @@ public class WikiText {
     /**
      * returns the content as a String. All tokens will be rendered as their source text, without
      * any html comments that were present in the wiki source. NOTE: the toString() method will
-     * return the wikiSource WITH comments.
+     * return the wikiSource WITH comments and nowiki tags.
      *
      * @return a list of tokens (either text or wikiTokens)
      */
@@ -184,6 +185,11 @@ public class WikiText {
     public HTMLComment asHTMLComment() {
       throw new IllegalStateException("Not an HTMLComment.");
     }
+
+    public NoWiki asNoWiki() {
+      throw new IllegalStateException("Not a NoWiki.");
+    }
+
 
     public InternalLink asInternalLink() {
       throw new IllegalStateException("Not an InternalLink.");
@@ -297,7 +303,8 @@ public class WikiText {
 
     /**
      * returns a List of wikiTokens including Text tokens that may be intertwined. HTML comments are
-     * ignored and 2 successive Texts may be found if a comment was present in the wiki source.
+     * ignored.
+     * Two successive Texts may be found if a comment was present in the wiki source.
      *
      * @return a list of tokens (either text or wikiTokens)
      */
@@ -463,12 +470,12 @@ public class WikiText {
 
     @Override
     protected void addToken(Token t) {
-      throw new UnsupportedOperationException("Cannot add token to HTML Comment");
+      throw new UnsupportedOperationException("Cannot add token to NoWiki");
     }
 
     @Override
     protected void addFlattenedTokens(Token t) {
-      throw new RuntimeException("Cannot add flattened tokens to HTML Comment");
+      throw new RuntimeException("Cannot add flattened tokens to NoWiki");
     }
 
     @Override
@@ -486,6 +493,47 @@ public class WikiText {
       return this;
     }
   }
+
+  public final class NoWiki extends Token {
+    Segment contentOffest;
+
+    public NoWiki(int startOffset, int endOffset, int contentStart, int contentEnd) {
+      this.offset = new Segment(startOffset, endOffset);
+      this.contentOffest = new Segment(contentStart, contentEnd);
+    }
+
+    @Override
+    protected void addToken(Token t) {
+      throw new UnsupportedOperationException("Cannot add token to HTML Comment");
+    }
+
+    @Override
+    protected void addFlattenedTokens(Token t) {
+      throw new RuntimeException("Cannot add flattened tokens to HTML Comment");
+    }
+
+    @Override
+    public void fillText(StringBuilder s) {
+      // Keep the nowiki tag by default in fill text
+      s.append(sourceContent, this.offset.start, this.offset.end);
+    }
+
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
+      return visitor.visit(this);
+    }
+
+    @Override
+    public NoWiki asNoWiki() {
+      return this;
+    }
+
+    @Override
+    public Text asText() {
+      return new Text(contentOffest.start, contentOffest.end);
+    }
+  }
+
 
   public final class Template extends Token {
 
@@ -862,7 +910,7 @@ public class WikiText {
     public boolean isValidInternalLink() {
       // Only allow Templates and texts without curly braces in the target
       // Force sequencial filtering as the Matcher is a singleton
-      return target.tokens().stream().sequential()
+      return target.tokens().stream()
           .filter(t -> !(t instanceof Template)).allMatch(t -> t instanceof Text
               && !invalidCharsMatcher.region(t.offset.start, t.offset.end).find());
     }
@@ -1111,6 +1159,8 @@ public class WikiText {
       return this;
     }
   }
+
+
   ////////////////////////////////////////////////////////////////////////
   /// View wiki text as a document structured in sections and subsections
   ////////////////////////////////////////////////////////////////////////
@@ -1349,6 +1399,7 @@ public class WikiText {
     lexerCode.append("(?<OINDENT>").append(":+").append(")|");
     lexerCode.append("(?<ONUMLIST>").append("\\#+").append(")|");
     lexerCode.append("(?<OITEM>").append(";").append(")|");
+    lexerCode.append("(?<NOWIKI>").append("<nowiki\\s*>(?<NOWIKITXT>.*?)</nowiki>").append(")|");
     lexerCode.append("(?<PIPE>").append("\\|").append(")|");
     lexerCode.append("(?<SPACE>").append(" ").append(")|");
     lexerCode.append("(?<NL>").append("\r?\n|\r").append(")|");
@@ -1376,6 +1427,11 @@ public class WikiText {
         if (null != (lexer.group("CHAR"))) {
           // Normal characters, just advance...
           pos++;
+        } else if (null != (lexer.group("NOWIKI"))) {
+          // a nowiki is handled as a special node
+          stack.peek().addToken(new NoWiki(lexer.start("NOWIKI"), lexer.end("NOWIKI"),
+              lexer.start("NOWIKITXT"), lexer.end("NOWIKITXT")));
+          pos = lexer.end("NOWIKI");
         } else if (null != (g = lexer.group("OT"))) {
           // Template Start
           stack.push(new Template(pos));

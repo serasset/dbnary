@@ -1,11 +1,12 @@
 package org.getalp.dbnary.model;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DbnaryModel {
 
@@ -51,6 +52,11 @@ public class DbnaryModel {
         res.append(URLEncoder.encode("" + c, StandardCharsets.UTF_8));
       } else if (Character.isISOControl(c)) {
         // nop
+      } else if (Character.isHighSurrogate(c) && i + 1 < s.length()
+          && Character.isLowSurrogate(s.charAt(i + 1))) {
+        // Even higher plane char are ucschars (are they ?)
+        res.append(s, i, i + 2);
+        i++;
       } else if (c == '\u200e' || c == '\u200f') {
         // ignore rRLM and LRM.
       } else if (c == '/') {

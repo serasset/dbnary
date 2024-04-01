@@ -2,13 +2,16 @@ package org.getalp.dbnary.wiki;
 
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
+import org.getalp.dbnary.wiki.WikiText.NoWiki;
 
 /**
  * Created by serasset on 28/01/16.
@@ -63,6 +66,8 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
           iterators.push(s.getContent().tokens().iterator());
           iterators.push(Collections.singletonList((Token) s.getHeading()).iterator());
           return nextTokenToReturn();
+        } else if (t instanceof NoWiki) {
+          List.of(t.asText()).iterator();
         } else {
           // treat an incorrect ENTER action as a VOID
           return nextTokenToReturn();

@@ -7,6 +7,7 @@ import org.getalp.dbnary.wiki.WikiText.Indentation;
 import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.Item;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NoWiki;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Text;
@@ -36,6 +37,8 @@ public interface Visitor<T> {
   T visit(Text text);
 
   T visit(HTMLComment htmlComment);
+
+  T visit(NoWiki nowiki);
 
   T visit(WikiSection section);
 

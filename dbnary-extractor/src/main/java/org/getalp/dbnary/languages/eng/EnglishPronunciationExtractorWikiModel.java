@@ -43,6 +43,10 @@ public class EnglishPronunciationExtractorWikiModel extends EnglishWikiModel {
     // Render the pronunciation template to plain text then extract the computed pronunciation
     log.trace("Parsing pronunciation : ||| {} ||| in {}", pronTemplate.toString(),
         delegate.currentPagename());
+    // Do not parse pronunciation for vietnamese entry as the pronunciation code is not
+    // compatible with our Lua version and systematically raises an error
+    if ("vi".equals(delegate.getCurrentEntryLanguage()))
+      return;
     String expandedPron = null;
     try {
       expandedPron = render(new PlainTextConverter(), pronTemplate).trim();

@@ -104,6 +104,11 @@ public class EnglishWikiModel extends DbnaryWikiModel {
           logger.warn("Module:utilities could not be patched ! Check current implementation.");
       }
       return patchedContent;
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.equals("Hrkt-translit/data/ja")) {
+      // Hrkt-translit/data/ja does not exists, and Lua takes care of this, but will generate
+      // an annoying error message. So we just return an empty table
+      return "return {}";
     }
     return super.getRawWikiContent(parsedPagename, map);
   }

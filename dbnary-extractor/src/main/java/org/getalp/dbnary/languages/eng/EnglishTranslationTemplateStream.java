@@ -8,6 +8,7 @@ import org.getalp.dbnary.wiki.WikiText.Indentation;
 import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.Item;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NoWiki;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Text;
@@ -74,6 +75,11 @@ public class EnglishTranslationTemplateStream implements Visitor<Stream<Template
 
   @Override
   public Stream<Template> visit(HTMLComment htmlComment) {
+    return Stream.empty();
+  }
+
+  @Override
+  public Stream<Template> visit(NoWiki nowiki) {
     return Stream.empty();
   }
 

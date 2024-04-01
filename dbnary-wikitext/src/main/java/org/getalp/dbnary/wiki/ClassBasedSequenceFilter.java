@@ -1,8 +1,10 @@
 package org.getalp.dbnary.wiki;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
+import org.apache.commons.lang3.ArrayUtils;
 import org.getalp.dbnary.wiki.WikiSequenceFiltering.Action;
 import org.getalp.dbnary.wiki.WikiSequenceFiltering.Atomize;
 import org.getalp.dbnary.wiki.WikiSequenceFiltering.Content;
@@ -17,6 +19,7 @@ import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.Item;
 import org.getalp.dbnary.wiki.WikiText.Link;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NoWiki;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Text;
@@ -40,7 +43,7 @@ public class ClassBasedSequenceFilter implements Function<Token, Action> {
    */
   public ClassBasedSequenceFilter() {
     super();
-    this.atomizeAll().sourceText().voidHTMLComment().voidNowiki().openCloseHeading()
+    this.atomizeAll().sourceText().voidHTMLComment().keepContentOfNoWiki().openCloseHeading()
         .openCloseIndentedItem();
   }
 
@@ -109,7 +112,7 @@ public class ClassBasedSequenceFilter implements Function<Token, Action> {
   }
 
   public ClassBasedSequenceFilter atomizeNowiki() {
-    // TODO: implement nowiki handling
+    actions.put(NoWiki.class, new Atomize());
     return this;
   }
 
@@ -237,6 +240,8 @@ public class ClassBasedSequenceFilter implements Function<Token, Action> {
     } else if (t instanceof ExternalLink) {
       ExternalLink li = (ExternalLink) t;
       return li.getLink().tokens();
+    } else if (t instanceof NoWiki) {
+      return List.of(t.asText());
     } else {
       throw new RuntimeException("Cannot collect parameter contents on a content less token");
     }
@@ -322,18 +327,13 @@ public class ClassBasedSequenceFilter implements Function<Token, Action> {
     return this;
   }
 
-  public ClassBasedSequenceFilter keepContentOfNowiki() {
-    // TODO: implement nowiki handling
+  public ClassBasedSequenceFilter keepContentOfNoWiki() {
+    actions.put(NoWiki.class, new Content(ClassBasedSequenceFilter::getContent));
     return this;
   }
 
-  // public ClassBasedSequenceFilter keepContentOfText() {
-  // actions.put(WikiText.Text.class, new WikiSequenceFiltering.Content());
-  // return this;
-  // }
-
   public ClassBasedSequenceFilter keepContentOfAll() {
-    this.keepTargetOfExternalLink().keepTargetOfInternalLink().keepContentOfNowiki()
+    this.keepTargetOfExternalLink().keepTargetOfInternalLink().keepContentOfNoWiki()
         .keepContentOfTemplates().keepContentOfIndentedItem().keepContentOfHeading().sourceText();
     return this;
   }
@@ -399,15 +399,9 @@ public class ClassBasedSequenceFilter implements Function<Token, Action> {
   }
 
   public ClassBasedSequenceFilter openCloseNowiki() {
-    // TODO: implement nowiki handling
+    actions.put(NoWiki.class, new OpenContentClose(ClassBasedSequenceFilter::getContent));
     return this;
   }
-
-  // public ClassBasedSequenceFilter openCloseText() {
-  // actions.put(WikiText.Text.class, new
-  // WikiSequenceFiltering.OpenContentClose(ClassBasedSequenceFilter::getContent));
-  // return this;
-  // }
 
   public ClassBasedSequenceFilter openCloseAll() {
     this.openCloseExternalLink().openCloseInternalLink().openCloseNowiki().openCloseTemplates()
@@ -475,7 +469,7 @@ public class ClassBasedSequenceFilter implements Function<Token, Action> {
   }
 
   public ClassBasedSequenceFilter sourceNowiki() {
-    // TODO: implement nowiki handling
+    actions.put(NoWiki.class, new KeepAsis());
     return this;
   }
 

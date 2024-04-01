@@ -665,15 +665,15 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     registerTranslationToEntity(currentLexEntry, lang, currentGloss, usage, word);
   }
 
-  public String getVocableResourceName(String vocable) {
+  public String getPageResourceIRI(String vocable) {
     return getPrefix() + uriEncode(vocable);
   }
 
   public Resource getPageResource(String vocable, boolean dontLinkWithType) {
     if (dontLinkWithType) {
-      return aBox.createResource(getVocableResourceName(vocable));
+      return aBox.createResource(getPageResourceIRI(vocable));
     }
-    return aBox.createResource(getVocableResourceName(vocable), DBnaryOnt.Page);
+    return aBox.createResource(getPageResourceIRI(vocable), DBnaryOnt.Page);
   }
 
   public Resource getPageResource(String page) {

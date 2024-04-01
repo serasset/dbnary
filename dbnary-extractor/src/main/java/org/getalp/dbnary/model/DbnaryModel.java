@@ -16,7 +16,6 @@ public class DbnaryModel {
   public static final String LEXVO = "http://lexvo.org/id/iso639-3/";
 
   public static Model tBox;
-  static Logger logger = LoggerFactory.getLogger(DbnaryModel.class);
 
   static {
     // Create T-Box and read rdf schema associated to it.
@@ -55,8 +54,8 @@ public class DbnaryModel {
         // nop
       } else if (Character.isHighSurrogate(c) && i + 1 < s.length()
           && Character.isLowSurrogate(s.charAt(i + 1))) {
-        // Encode the surrogate pair as a UTF_8 char, then percent encode the resulting octets
-        res.append(URLEncoder.encode(s.substring(i, i + 2), StandardCharsets.UTF_8));
+        // Even higher plane char are ucschars (are they ?)
+        res.append(s, i, i + 2);
         i++;
       } else if (c == '\u200e' || c == '\u200f') {
         // ignore rRLM and LRM.

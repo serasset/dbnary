@@ -754,8 +754,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         WikiContent g2 = t.getArgs().get("1");
         // Ignore gloss if it is a macro
         if (g2 != null) {
-          String glossText = g2.tokens().stream()
-              .filter(tok -> ! (tok instanceof WikiText.Template))
+          String glossText = g2.tokens().stream().filter(tok -> !(tok instanceof WikiText.Template))
               .map(tok -> (tok instanceof WikiText.NoWiki) ? tok.asText() : tok)
               .map(WikiText.Token::getText).collect(Collectors.joining(""));
           if (glossText.trim().isEmpty()) {

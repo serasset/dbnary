@@ -59,12 +59,17 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
       s
     })
 
-  protected def derivationValue: Parser[List[Derivation]] = derivationValueSequence | junkValue
+  protected def derivationValue: Parser[List[Derivation]] = derivationValueWithGloss | junkValue
 
   protected def junkValue: Parser[List[Derivation]] = wikiCharSequenceMatching(".*".r) ^^ (s => {
     logger.debug("Ignoring derivation value (Junk Value): `{}` in {}", s.getSourceContent(s), pagename)
     List.empty
   })
+
+  protected def derivationValueWithGloss: Parser[List[Derivation]] = opt("\\([^)\n\r]+\\)".r) ~ derivationValueSequence ^^ {
+    case Some(gloss) ~ derivations => derivations map (d => d.addNote(gloss))
+    case None ~ derivations => derivations
+  }
 
   protected def derivationValueSequence: Parser[List[Derivation]] = (
     repsep(
@@ -194,10 +199,9 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
     source = input
     parseAll(derivationValue, input) match {
       case Success(result, _) => result
-      case failure: NoSuccess => {
+      case failure: NoSuccess =>
         logger.debug("Could not parse derivation values {} for \"{}\": {}", source.getSourceContent(source), entry, failure.msg)
         Nil
-      }
     }
   }
 
@@ -210,7 +214,10 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
 
 case class Derivation(target: String, var note: String) {
   def addNote(u: String): Derivation = {
-    this.note = this.note + u
+    this.note match {
+      case null => this.note = u
+      case _ => this.note = this.note + "|" + u
+    }
     this
   }
 }

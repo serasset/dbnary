@@ -945,7 +945,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (null == pronunciation || pronunciation.equals("")) {
         continue;
       }
-      wdh.registerPronunciation(pronunciation.trim(), "en-fonipa");
+      wdh.registerPronunciation(pronunciation.trim(), wdh.getCurrentEntryLanguage() + "-fonipa");
     }
   }
 

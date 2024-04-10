@@ -31,7 +31,6 @@ import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.Span;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
@@ -81,10 +80,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private ExpandAllWikiModel wikiExpander;
-  protected EnglishDefinitionExtractorWikiModel definitionExpander;
-  protected EnglishExampleExpanderWikiModel exampleExpander;
-  protected EnglishMorphologyExtractorWikiModel morphologyExtractor;
-  protected EnglishPronunciationExtractorWikiModel pronunciationExpander;
+  protected CombinedWikiModel combinedExpander;
   private WikisaurusExtractor wikisaurusExtractor;
 
 
@@ -93,14 +89,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super.setWiktionaryIndex(wi);
     wikiExpander =
         new ExpandAllWikiModel(wi, Locale.ENGLISH, "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
-    definitionExpander = new EnglishDefinitionExtractorWikiModel(this.wdh, this.wi,
-        new Locale("en"), "/${image}", "/${title}");
-    exampleExpander = new EnglishExampleExpanderWikiModel(this.wi, new Locale("en"), "/${image}",
-        "/${title}", wdh);
-    morphologyExtractor = new EnglishMorphologyExtractorWikiModel(this.ewdh, this.wi,
-        new Locale("en"), "/${image}", "/${title}");
-    pronunciationExpander = new EnglishPronunciationExtractorWikiModel(this.wdh, this.wi,
-        new Locale("en"), "/${image}", "/${title}");
+    combinedExpander =
+        new CombinedWikiModel(this.ewdh, this.wi, new Locale("en"), "/${image}", "/${title}");
+
     wikisaurusExtractor = new WikisaurusExtractor(this.ewdh);
   }
 
@@ -108,10 +99,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void setWiktionaryPageName(String wiktionaryPageName) {
     super.setWiktionaryPageName(wiktionaryPageName);
     wikiExpander.setPageName(wiktionaryPageName);
-    definitionExpander.setPageName(wiktionaryPageName);
-    exampleExpander.setPageName(wiktionaryPageName);
-    morphologyExtractor.setPageName(wiktionaryPageName);
-    pronunciationExpander.setPageName(wiktionaryPageName);
+    combinedExpander.setPageName(wiktionaryPageName);
   }
 
 
@@ -371,7 +359,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void extractDefinition(String definition, int defLevel) {
-    definitionExpander.parseDefinition(definition, defLevel);
+    combinedExpander.parseDefinition(definition, defLevel);
   }
 
   public void extractExample(String example) {
@@ -394,15 +382,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public Set<Pair<Property, RDFNode>> expandCitation(String example) {
     Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
-    exampleExpander.expandCitation(example, context, wdh.getExtractedLanguage(),
-        wdh.getCurrentEntryLanguage());
+    combinedExpander.expandCitation(example, context);
     return context;
   }
 
   public Set<Pair<Property, RDFNode>> expandExample(String example) {
     Set<Pair<Property, RDFNode>> context = new HashSet<>();
-    exampleExpander.expandExample(example, context, wdh.getExtractedLanguage(),
-        wdh.getCurrentEntryLanguage());
+    combinedExpander.expandExample(example, context);
     return context;
   }
 
@@ -650,7 +636,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         case "en-suffix":
         case "en-symbol":
         case "en-number":
-          morphologyExtractor.parseMorphology(tmpl.getText());
+          combinedExpander.parseMorphology(tmpl.getText());
           break;
         case "head": {
           Map<String, String> args = tmpl.getParsedArgs();
@@ -659,7 +645,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             // This is a inflected form
             // TODO: Check if the inflected form is available in the base word morphology.
           } else {
-            morphologyExtractor.parseMorphology(tmpl.getText());
+            combinedExpander.parseMorphology(tmpl.getText());
           }
           break;
         }
@@ -835,7 +821,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return text.content();
   }
 
-  private Set<String> processedLinks = new HashSet<>();
+  private final Set<String> processedLinks = new HashSet<>();
 
   protected void extractNyms(String synRelation, WikiText.WikiContent blockContent) {
     ClassBasedFilter filter = new ClassBasedFilter();
@@ -922,7 +908,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Map<String, String> args = template.getParsedArgs();
         extractPronFromTemplateArgs(null, args);
       } else if (shoudlExpandPronTemplate(template)) {
-        pronunciationExpander.parsePronunciation(template.toString());
+        combinedExpander.parsePronunciation(template.toString());
       } else if (tname.equals("a") || tname.equals("accent")) {
         log.trace("Pronunciation Accent: {} ||| {}", template, wdh.currentPagename());
       } else {
@@ -1021,8 +1007,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void postProcessData(String dumpFileVersion) {
     if (log.isTraceEnabled()) {
-      ((DbnaryWikiModel) pronunciationExpander).displayGlobalTrace("Pronunciation Model");
-      ((DbnaryWikiModel) definitionExpander).displayGlobalTrace("Definition Model");
+      combinedExpander.displayGlobalTrace("Pronunciation Model");
+      combinedExpander.displayGlobalTrace("Definition Model");
+      combinedExpander.displayGlobalTrace("Example Model");
     }
     ewdh.postProcessEtymology();
     super.postProcessData(dumpFileVersion);

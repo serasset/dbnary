@@ -127,6 +127,37 @@ public class EnglishWikiModel extends DbnaryWikiModel {
       // Hrkt-translit/data/ja does not exists, and Lua takes care of this, but will generate
       // an annoying error message. So we just return an empty table
       return "return {}";
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.equals("ko-pron")) {
+      String rawContent = super.getRawWikiContent(parsedPagename, map);
+      if (null == rawContent)
+        return null;
+      String patchedContent = rawContent.replace(
+          "return tostring(html_ul) .. tostring(html_table) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
+          "return tostring(html_ul)").replace(
+              "return tostring(html_ul) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
+              "return tostring(html_ul)");
+      if (logger.isDebugEnabled()) {
+        if (!patchedContent.equals(rawContent))
+          logger.debug("Module:ko-pron has been patched.");
+        else
+          logger.warn("Module:ko-pron could not be patched ! Check current implementation.");
+      }
+      return patchedContent;
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.equals("audio")) {
+      String rawContent = super.getRawWikiContent(parsedPagename, map);
+      if (null == rawContent)
+        return null;
+      String patchedContent = rawContent.replace("return stylesheet .. text .. categories",
+          "return text .. categories");
+      if (logger.isDebugEnabled()) {
+        if (!patchedContent.equals(rawContent))
+          logger.debug("Module:audio has been patched.");
+        else
+          logger.warn("Module:audio could not be patched ! Check current implementation.");
+      }
+      return patchedContent;
     }
     return super.getRawWikiContent(parsedPagename, map);
   }

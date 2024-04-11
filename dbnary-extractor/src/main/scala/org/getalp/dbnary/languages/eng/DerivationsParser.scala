@@ -17,7 +17,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
   protected var source: WikiCharSequence = _
 
   protected def derivationsAsDerTemplate: Parser[List[Derivation]] = {
-    template("""(?:col|der|rel)([12345])?(?:-u)?""".r) ^^ (tmpl => {
+    template("""(?:col|der|rel)([12345]|-auto)?(?:-u)?""".r) ^^ (tmpl => {
       val args = tmpl.cloneArgs.asScala
       // Handle col
       if (args.contains("title"))

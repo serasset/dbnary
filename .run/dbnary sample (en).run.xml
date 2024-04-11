@@ -2,7 +2,7 @@
   <configuration default="false" name="dbnary sample (en)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
-    <option name="PROGRAM_PARAMETERS" value="sample --debug=info.bliki.extensions --debug=org.getalp.dbnary.languages.eng -l en --endolex=etymology,morphology --exolex=ontolex enwkt-20240401.xml Paraná" />
+    <option name="PROGRAM_PARAMETERS" value="sample --debug=info.bliki.extensions --debug=org.getalp.dbnary.languages.eng -l en --endolex=etymology,morphology --exolex=ontolex enwkt-20240401.xml ま" />
     <option name="VM_PARAMETERS" value="-Dorg.slf4j.simpleLogger.log.org.getalp.dbnary=trace " />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/en/20240401" />
     <method v="2">

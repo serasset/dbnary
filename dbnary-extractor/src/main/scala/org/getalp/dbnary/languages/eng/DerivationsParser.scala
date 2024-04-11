@@ -17,7 +17,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
   protected var source: WikiCharSequence = _
 
   protected def derivationsAsDerTemplate: Parser[List[Derivation]] = {
-    template("""(?:col|der|rel)([12345]|-auto)?(?:-u)?""".r) ^^ (tmpl => {
+    template("""(?:(?:col|der|rel)(?:[12345]|-auto)?(?:-u)?|derived terms)[\s\n\r]*""".r) ^^ (tmpl => {
       val args = tmpl.cloneArgs.asScala
       // Handle col
       if (args.contains("title"))
@@ -29,7 +29,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
       args.remove("sort")
       args.remove("collapse")
       //val es: List[Entry[String, WikiText#WikiContent]] = args.entrySet().toList
-      args.flatMap(tuple => processDerTemplateArgs(tuple._1, tuple._2)).toList
+      args.flatMap(tuple =>   processDerTemplateArgs(tuple._1, tuple._2)).toList
     })
   }
 
@@ -45,6 +45,17 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
     }
   }
 
+  protected def derivationsAsjaRMultiTemplate: Parser[List[Derivation]] = {
+    template("""ja-r/multi[\s\n\r]*""".r) ^^ (tmpl => {
+      val data = tmpl.getArg("data")
+      processJaRMultiTemplateArgs(data)
+    })
+  }
+
+  protected def processJaRMultiTemplateArgs(v: WikiText#WikiContent): List[Derivation] = {
+      val valueParser = new DerivationsParser(page)
+      valueParser.parseDerivations(new WikiCharSequence(v), currentEntry)
+  }
   protected def derivationNotes: Parser[List[String]] = rep(plainNotes | inlineModifiers)
 
   protected def plainNotes: Parser[String] =
@@ -84,7 +95,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
     })
 
   protected def derivationLinkAsTemplate: Parser[List[Derivation]] =
-    linkTemplate | vernTemplate | wTemplate | junkTemplate
+    linkTemplate | vernTemplate | wTemplate | jaRTemplate | junkTemplate
 
   protected def linkTemplate: Parser[List[Derivation]] = template("[lL](ink)?".r) ^^ (
     t => {
@@ -124,6 +135,18 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
         List(Derivation(target, mapAsString(args)))
       }
     })
+
+  protected def jaRTemplate: Parser[List[Derivation]] = template("ja-r(/args)?".r) ^^ (
+    t => {
+      val args = t.cloneParsedArgs().asScala
+      args.remove("1") // removing target value as it will be taken directly from the template
+      if (args.contains("2")) args.addOne("kana" -> args("2"))
+      args.remove("2")
+      if (args.contains("3")) args.addOne("gloss" -> args("3"))
+      args.remove("3")
+      List(Derivation(t.getParsedArg("1"), mapAsString(args)))
+    })
+
 
   protected def mapAsString(m: mutable.Map[String, String]): String = {
     if (m.isEmpty)
@@ -178,7 +201,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
   })
 
   protected def derivationSection: Parser[List[Derivation]] =
-    rep(derivationsAsDerTemplate | derivationsAsLink | derivationAsListItem | junk) ^^ (l => l.flatten)
+    rep(derivationsAsDerTemplate | derivationsAsLink | derivationAsListItem | derivationsAsjaRMultiTemplate | junk) ^^ (l => l.flatten)
 
 
   protected def parseDerivations(input: WikiCharSequence, entry: String): List[Derivation] = {

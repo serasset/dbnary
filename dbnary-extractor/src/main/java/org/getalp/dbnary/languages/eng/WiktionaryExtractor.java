@@ -1007,9 +1007,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void postProcessData(String dumpFileVersion) {
     if (log.isTraceEnabled()) {
-      combinedExpander.displayGlobalTrace("Pronunciation Model");
-      combinedExpander.displayGlobalTrace("Definition Model");
-      combinedExpander.displayGlobalTrace("Example Model");
+      combinedExpander.displayGlobalTrace("Combined Model");
     }
     ewdh.postProcessEtymology();
     super.postProcessData(dumpFileVersion);

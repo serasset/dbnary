@@ -170,6 +170,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
       context.put("nym", nym);
       return Block.NYMBLOCK;
+    } else if (title.equals("l")
+        || (title.length() > 2 && title.substring(0, 2).equals(wdh.getCurrentEntryLanguage()))) {
+      // The special -l- template is not a new block, but a continuation of the previous block
+      log.trace("Template -{}- in {} is not a section template", title,
+          this.getWiktionaryPageName());
+      return null;
     } else {
       log.debug("Ignoring content of section {} in {}", title, this.getWiktionaryPageName());
       return Block.NOBLOCK;

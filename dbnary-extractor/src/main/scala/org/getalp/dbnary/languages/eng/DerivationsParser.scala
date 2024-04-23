@@ -97,7 +97,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
   protected def derivationLinkAsTemplate: Parser[List[Derivation]] =
     linkTemplate | vernTemplate | wTemplate | jaRTemplate | junkTemplate
 
-  protected def linkTemplate: Parser[List[Derivation]] = template("[lL](ink)?".r) ^^ (
+  protected def linkTemplate: Parser[List[Derivation]] = template("[lL](ink|-lite|l)?".r) ^^ (
     t => {
       val args = t.cloneParsedArgs().asScala
       args.remove("1") // removing language declaration

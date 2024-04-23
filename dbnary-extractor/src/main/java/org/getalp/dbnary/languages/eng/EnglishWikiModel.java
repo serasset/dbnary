@@ -4,8 +4,10 @@ import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.WikiModelContentException;
 import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
@@ -32,12 +34,24 @@ public class EnglishWikiModel extends DbnaryWikiModel {
         } catch (NumberFormatException e) {
           // nop
         }
+      } else if ("catlangname".equals(templateName) || "cln".equals(templateName)
+          || "categorize".equals(templateName) || "C".equals(templateName)
+          || "topics".equals(templateName)) {
+        // Just ignore this template
       } else if ("langname".equals(templateName)) {
         String langname = ISO639_3.sharedInstance.getLanguageNameInEnglish(parameterMap.get("1"));
         if (null != langname)
           writer.append(langname);
         else
           super.substituteTemplateCall(templateName, parameterMap, writer);
+      } else if ("ja-pron".equals(templateName)) {
+        Map<String, String> simplifiedMap = new LinkedHashMap<>(parameterMap.size());
+        // Remove all references arguments to the template
+        for (Entry<String, String> e : parameterMap.entrySet()) {
+          if (!e.getKey().endsWith("_ref"))
+            simplifiedMap.put(e.getKey(), e.getValue());
+        }
+        super.substituteTemplateCall(templateName, simplifiedMap, writer);
       } else {
         super.substituteTemplateCall(templateName, parameterMap, writer);
       }
@@ -99,16 +113,51 @@ public class EnglishWikiModel extends DbnaryWikiModel {
       if (logger.isDebugEnabled()) {
         boolean patched = !patchedContent.equals(rawContent);
         if (patched)
-          logger.debug("Module:utilities has been patched.");
+          logger.debug("Module:utilities NOWIKI Hack has been patched.");
         else
           logger.warn("Module:utilities could not be patched ! Check current implementation.");
       }
+      patchedContent = patchedContent.replaceAll("return export",
+          "-- This function is redefined to avoid too much time taken in calculus we do not need.\n"
+              + "function export.format_categories(categories, lang, sort_key, sort_base, force_output, sc)\n"
+              + "return \"\"\n" + "end\n" + "\n" + "return export");
       return patchedContent;
     } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
         && parsedPagename.pagename.equals("Hrkt-translit/data/ja")) {
       // Hrkt-translit/data/ja does not exists, and Lua takes care of this, but will generate
       // an annoying error message. So we just return an empty table
       return "return {}";
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.equals("ko-pron")) {
+      String rawContent = super.getRawWikiContent(parsedPagename, map);
+      if (null == rawContent)
+        return null;
+      String patchedContent = rawContent.replace(
+          "return tostring(html_ul) .. tostring(html_table) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
+          "return tostring(html_ul)").replace(
+              "return tostring(html_ul) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
+              "return tostring(html_ul)");
+      if (logger.isDebugEnabled()) {
+        if (!patchedContent.equals(rawContent))
+          logger.debug("Module:ko-pron has been patched.");
+        else
+          logger.warn("Module:ko-pron could not be patched ! Check current implementation.");
+      }
+      return patchedContent;
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.equals("audio")) {
+      String rawContent = super.getRawWikiContent(parsedPagename, map);
+      if (null == rawContent)
+        return null;
+      String patchedContent = rawContent.replace("return stylesheet .. text .. categories",
+          "return text .. categories");
+      if (logger.isDebugEnabled()) {
+        if (!patchedContent.equals(rawContent))
+          logger.debug("Module:audio has been patched.");
+        else
+          logger.warn("Module:audio could not be patched ! Check current implementation.");
+      }
+      return patchedContent;
     }
     return super.getRawWikiContent(parsedPagename, map);
   }

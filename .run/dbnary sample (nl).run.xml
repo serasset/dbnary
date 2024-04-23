@@ -2,9 +2,8 @@
   <configuration default="false" name="dbnary sample (nl)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
-    <option name="PROGRAM_PARAMETERS" value="sample -l nl --endolex=morphology --exolex=ontolex nlwkt-20220301.xml land" />
-    <option name="VM_PARAMETERS" value="-Dorg.slf4j.simpleLogger.log.org.getalp.dbnary.nld=trace" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/nl/20220301" />
+    <option name="PROGRAM_PARAMETERS" value="sample --trace org.getalp.dbnary -l nl --endolex=morphology --exolex=ontolex nlwkt-20240420.xml boek" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/nl/20240420" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

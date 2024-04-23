@@ -184,7 +184,8 @@ public class CombinedWikiModel extends EnglishWikiModel {
   private final WiktionaryDataHandler delegate;
   private Set<Pair<Property, RDFNode>> context;
   private final ExpandAllWikiModel simpleExpander;
-  private final Map<Pair<String, Map<String, String>>, MutableInt> citationCallCache = new HashMap<>();
+  private final Map<Pair<String, Map<String, String>>, MutableInt> citationCallCache =
+      new HashMap<>();
 
 
   public CombinedWikiModel(WiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale,
@@ -219,8 +220,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
 
   public void parsePronunciation(String pronTemplate) {
     // Render the pronunciation template to plain text then extract the computed pronunciation
-    log.trace("Parsing pronunciation : ||| {} ||| in {}", pronTemplate,
-        delegate.currentPagename());
+    log.trace("Parsing pronunciation : ||| {} ||| in {}", pronTemplate, delegate.currentPagename());
     // Do not parse pronunciation for vietnamese entry as the pronunciation code is not
     // compatible with our Lua version and systematically raises an error
     Mode previousMode = currentMode; // the parse pronunciation may occur inside a Lua call
@@ -250,8 +250,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
   public void parseMorphology(String morphTemplate) {
     currentMode = Mode.MORPHOLOGY;
     // Render the pronunciation template to plain text then extract the computed pronunciation
-    log.trace("Parsing morphology : ||| {} ||| in {}", morphTemplate,
-        delegate.currentPagename());
+    log.trace("Parsing morphology : ||| {} ||| in {}", morphTemplate, delegate.currentPagename());
     String expandedMorph = expandWikiCode(morphTemplate);
     InflectedFormSet forms;
     if (morphTemplate.contains("{{en-")) {

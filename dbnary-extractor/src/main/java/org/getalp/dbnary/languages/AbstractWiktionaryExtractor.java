@@ -407,30 +407,12 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   // TODO: Some nyms can be placed in sublists and lists (hence with ** or ***). In this case, we
   // currently extract the additional stars.
   protected void extractNyms(String synRelation, int startOffset, int endOffset) {
-    // System.out.println(wiktionaryPageName + " contains: " + pageContent.substring(startOffset,
-    // endOffset));
+
     // Extract all links
     Matcher linkMatcher = WikiPatterns.linkPattern.matcher(this.pageContent);
     linkMatcher.region(startOffset, endOffset);
-    // int lastNymEndOffset = startOffset;
-    // int lastNymStartOffset = startOffset;
-    // System.err.println("---- In: " + wiktionaryPageName + " ----");
-    // System.err.println(this.pageContent.substring(startOffset, endOffset));
     while (linkMatcher.find()) {
       // TODO: remove debug specific treatment for nym extraction and take a better heuristic
-      // if (lastNymEndOffset != startOffset) {
-      // String inbetween = this.pageContent.substring(lastNymEndOffset, linkMatcher.start());
-      // // if (! inbetween.matches(".*[,\\r\\n].*")) {
-      // if (inbetween.equals(" ")) {
-      // System.out.println("---- In: " + wiktionaryPageName + " ----");
-      // System.out.println(this.pageContent.substring(lastNymStartOffset,linkMatcher.end()));
-      // }
-      // }
-      // lastNymStartOffset = linkMatcher.start();
-      // lastNymEndOffset = linkMatcher.end();
-      // // End of debug specific treatment for nym extraction...
-      // System.err.println("Matched: " + linkMatcher.group(0));
-
       // It's a link, only keep the alternate string if present.
       String leftGroup = linkMatcher.group(1);
       if (leftGroup != null && !leftGroup.equals("") && !leftGroup.startsWith("Wikisaurus:")

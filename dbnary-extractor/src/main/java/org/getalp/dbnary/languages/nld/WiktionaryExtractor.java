@@ -76,6 +76,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     nymMarkerToNymName.put("synoniems", "syn");
     nymMarkerToNymName.put("Antoniemen", "ant");
     nymMarkerToNymName.put("Hyponiemen", "hypo");
+    nymMarkerToNymName.put("syn", "syn");
+    nymMarkerToNymName.put("ant", "ant");
+    nymMarkerToNymName.put("hypo", "hypo");
+    nymMarkerToNymName.put("hyper", "hyper");
+    nymMarkerToNymName.put("holo", "holo");
+    nymMarkerToNymName.put("mero", "mero");
     /*
      * nymMarkerToNymName.put("Hypernyms", "hyper"); nymMarkerToNymName.put("Meronyms", "mero");
      * nymMarkerToNymName.put("Holonyms", "holo"); nymMarkerToNymName.put("Troponyms", "tropo");
@@ -166,8 +172,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return Block.DEFBLOCK;
     } else if (title.equals("trans")) {
       return Block.TRADBLOCK;
+    } else if (title.equals("drv")) {
+      // TODO: handle derivations
+      return Block.NOBLOCK;
+    } else if (title.equals("expr")) {
+      // TODO: handle expressions and sayings as derivations
+      return Block.NOBLOCK;
     } else if (null != (nym = nymMarkerToNymName.get(title))) {
-
       context.put("nym", nym);
       return Block.NYMBLOCK;
     } else if (title.equals("l")

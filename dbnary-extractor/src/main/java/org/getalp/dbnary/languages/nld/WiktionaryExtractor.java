@@ -11,7 +11,10 @@ import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
+import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.WikiPatterns;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +35,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   private enum Block {
-    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK
+    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK, DERIVATIONBLOCK
   }
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
@@ -174,7 +177,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return Block.TRADBLOCK;
     } else if (title.equals("drv")) {
       // TODO: handle derivations
-      return Block.NOBLOCK;
+      return Block.DERIVATIONBLOCK;
     } else if (title.equals("expr")) {
       // TODO: handle expressions and sayings as derivations
       return Block.NOBLOCK;
@@ -200,19 +203,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     switch (nextBlock) {
       case NOBLOCK:
       case IGNOREPOS:
+      case DERIVATIONBLOCK:
+      case PRONBLOCK:
+      case TRADBLOCK:
+      case ORTHOALTBLOCK:
         break;
       case DEFBLOCK:
         String pos = (String) context.get("pos");
         wdh.initializeLexicalEntry(pos);
         break;
-      case TRADBLOCK:
-        break;
-      case ORTHOALTBLOCK:
-        break;
       case NYMBLOCK:
         currentNym = (String) context.get("nym");
-        break;
-      case PRONBLOCK:
         break;
       default:
         assert false : "Unexpected block while parsing: " + getWiktionaryPageName();
@@ -247,8 +248,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case PRONBLOCK:
         extractPron(blockStart, end);
         break;
-      default:
-        assert false : "Unexpected block while parsing: " + getWiktionaryPageName();
+      case DERIVATIONBLOCK:
+        extractDerivationSection(blockStart, end);
     }
 
     blockStart = -1;
@@ -332,7 +333,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   }
 
-  // TODO : should be the default behavour for all languages.
+  // TODO : should be the default behaviour for all languages.
   @Override
   public void extractDefinition(String definition, int defLevel) {
     defOrExampleExpander.setPageName(getWiktionaryPageName());
@@ -348,7 +349,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     extractExample(example);
   }
 
-  // TODO : should be the default behavour for all languages.
+  // TODO : should be the default behaviour for all languages.
   @Override
   public void extractExample(String example) {
     defOrExampleExpander.setPageName(getWiktionaryPageName());
@@ -356,5 +357,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (ex != null && !ex.equals("")) {
       wdh.registerExample(ex, null);
     }
+  }
+
+  private void extractDerivationSection(int startOffset, int endOffset) {
+    WikiText blockText = new WikiText(getWiktionaryPageName(), pageContent, startOffset, endOffset);
+    ClassBasedFilter linksInLists = new ClassBasedFilter();
+    linksInLists.enterIndentedItem().allowLink().allowTemplates();
+    for (Token t : blockText.filteredTokens(linksInLists)) {
+      if (t instanceof WikiText.Link) {
+        wdh.registerDerivation(t.asLink().getLinkText());
+      } else {
+        log.trace("Ignoring token {} in derivation section", t);
+      }
+    }
+
   }
 }

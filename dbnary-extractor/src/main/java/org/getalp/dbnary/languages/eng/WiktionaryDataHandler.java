@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.ReifiedStatement;
@@ -29,7 +28,6 @@ import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.PronunciationPair;
 import org.getalp.dbnary.PropertyObjectPair;
 import org.getalp.dbnary.SkosOnt;
-import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.model.NymRelation;
 import org.getalp.dbnary.wiki.WikiText;
@@ -225,34 +223,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         return entry;
       }
     }
-  }
-
-  public void registerDerivation(String derived) {
-    registerDerivation(derived, null);
-  }
-
-  public void registerDerivation(String derived, String note) {
-    if (null != derived && (derived = derived.trim()).length() == 0) {
-      return;
-    }
-    if (null == currentLexEntry) {
-      log.debug("Registering derivation when no lex entry is defined");
-      return;
-    }
-    Resource target = getPageResource(derived);
-    aBox.add(target, DBnaryOnt.derivedFrom, currentLexEntry);
-    Statement derivStmt = aBox.createStatement(target, DBnaryOnt.derivedFrom, currentLexEntry);
-    if (null != note && note.trim().length() > 0) {
-      ReifiedStatement derivReifiedStmt =
-          derivStmt.createReifiedStatement(getDerivationStatementId(derived));
-      derivReifiedStmt.addLiteral(SkosOnt.note, note);
-      derivStmt = derivReifiedStmt.getStatement();
-    }
-    aBox.add(derivStmt);
-  }
-
-  public String getDerivationStatementId(String derived) {
-    return getPrefix() + "__der_" + currentEncodedLexicalEntryName + "_" + uriEncode(derived);
   }
 
   private Resource createGlobalEtymologyResource(String wiktionaryPageName, String lang) {

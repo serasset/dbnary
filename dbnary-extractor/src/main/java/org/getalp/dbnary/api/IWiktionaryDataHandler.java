@@ -161,6 +161,10 @@ public interface IWiktionaryDataHandler {
 
   void registerPropertyOnCanonicalForm(Property p, RDFNode r);
 
+  void registerDerivation(String derived);
+
+  void registerDerivation(String derived, String note);
+
   void registerInflection(String languageCode, String pos, String inflection, String canonicalForm,
       int defNumber, HashSet<PropertyObjectPair> properties,
       HashSet<PronunciationPair> pronunciations);

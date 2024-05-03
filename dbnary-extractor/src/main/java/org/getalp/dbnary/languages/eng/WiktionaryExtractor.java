@@ -423,7 +423,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractDerivedSection(WikiContent blockContent) {
-    // blockContent.templatesOnUpperLevel().forEach(this::extractDerivationList);
     WikiCharSequence section = new WikiCharSequence(blockContent);
     DerivationsParser dp = new DerivationsParser(this.getWiktionaryPageName());
     dp.extractDerivations(section, ewdh);

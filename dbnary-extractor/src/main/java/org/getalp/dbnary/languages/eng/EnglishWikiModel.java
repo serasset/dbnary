@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
@@ -71,95 +72,76 @@ public class EnglishWikiModel extends DbnaryWikiModel {
         && parsedPagename.pagename.equals("Jpan-sortkey")) {
       // Jpan sortkey uses a hack that is not possible in our setting and generates a Lua error
       // As sortkey is not essential in our setting, just return a stub
-      String rawContent = super.getRawWikiContent(parsedPagename, map);
-      if (null == rawContent)
-        return null;
-      String patchedContent = rawContent.replaceAll(
+      return getAndPatchModule(parsedPagename, map, t -> t.replaceAll(
           "tonumber\\(mw.getCurrentFrame\\(\\):extensionTag\\('nowiki', ''\\):match'\\(\\[%dA-F\\]\\+\\)', 16\\)",
-          "0");
-      if (logger.isDebugEnabled()) {
-        boolean patched = !patchedContent.equals(rawContent);
-        if (patched)
-          logger.debug("Module:Jpan-sortkey has been patched.");
-        else
-          logger.warn("Module:Jpan-sortkey could not be patched ! Check current implementation.");
+          "0"));
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)) {
+      if (parsedPagename.pagename.startsWith("place")) {
+        return getAndPatchModule(parsedPagename, map,
+            t -> UNPACK_PATTERN.matcher(t).replaceAll(m -> m.group(1) + ", 1, 3)"));
+      } else if (parsedPagename.pagename.equals("utilities")) {
+        // utilities uses the nasty nowiki tag hack. So patch the function using it to always return
+        // 0
+        return getAndPatchModule(parsedPagename, map,
+            t -> t.replaceAll("function export.get_current_section\\(\\)",
+                "function export.get_current_section()\n\t\tlocal test = 1\n"
+                    + "\t\tif test then return 0 end"),
+            t -> t.replaceAll("return export",
+                "-- This function is redefined to avoid too much time taken in calculus we do not need.\n"
+                    + "function export.format_categories(categories, lang, sort_key, sort_base, force_output, sc)\n"
+                    + "return \"\"\n" + "end\n" + "\n" + "return export"));
+      } else if (parsedPagename.pagename.equals("Hrkt-translit/data/ja")) {
+        // Hrkt-translit/data/ja does not exists, and Lua takes care of this, but will generate
+        // an annoying error message. So we just return an empty table
+        return "return {}";
+      } else if (parsedPagename.pagename.equals("ko-pron")) {
+        return getAndPatchModule(parsedPagename, map, t -> t.replace(
+            "return tostring(html_ul) .. tostring(html_table) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
+            "return tostring(html_ul)").replace(
+                "return tostring(html_ul) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
+                "return tostring(html_ul)"));
+      } else if (parsedPagename.pagename.equals("audio")) {
+        return getAndPatchModule(parsedPagename, map,
+            t -> t.replace("return stylesheet .. text .. categories", "return text .. categories"));
+      } else if (parsedPagename.pagename.equals("table")) {
+        return getAndPatchModule(parsedPagename, map,
+            t -> t.replace("function export.append(...)\n" + "\tlocal ret, n = {}, 0\n",
+                "function export.append(...)\n" + "\tlocal arg = { n = select('#', ...); ... }\n"
+                    + "\tlocal ret, n = {}, 0\n"));
+      } else if (parsedPagename.pagename.equals("languages")) {
+        return getAndPatchModule(parsedPagename, map,
+            t -> t.replace("function export.addDefaultTypes(data, regular, ...)\n",
+                "function export.addDefaultTypes(data, regular, ...)\n"
+                    + "\tlocal arg = { n = select('#', ...); ... }\n"));
+      } else if (parsedPagename.pagename.equals("scripts")) {
+        return getAndPatchModule(parsedPagename, map,
+            t -> t.replace("function Script:hasType(...)\n",
+                "function Script:hasType(...)\n" + "\tlocal arg = { n = select('#', ...); ... }"));
       }
-      return patchedContent;
-    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.startsWith("place")) {
-      String rawContent = super.getRawWikiContent(parsedPagename, map);
-      if (null == rawContent)
-        return null;
-      String patchedContent =
-          UNPACK_PATTERN.matcher(rawContent).replaceAll(m -> m.group(1) + ", 1, 3)");
-      if (logger.isDebugEnabled()) {
-        boolean patched = !patchedContent.equals(rawContent);
-        if (patched)
-          logger.debug("Module:place... has been patched.");
-        else
-          logger.warn("Module:place... could not be patched ! Check current implementation.");
-      }
-      if (null != patchedContent)
-        return patchedContent;
-    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("utilities")) {
-      // utilities uses the nasty nowiki tag hack. So patch the function using it to always return 0
-      String rawContent = super.getRawWikiContent(parsedPagename, map);
-      if (null == rawContent)
-        return null;
-      String patchedContent = rawContent.replaceAll("function export.get_current_section\\(\\)",
-          "function export.get_current_section()\n\t\tlocal test = 1\n"
-              + "\t\tif test then return 0 end");
-      if (logger.isDebugEnabled()) {
-        boolean patched = !patchedContent.equals(rawContent);
-        if (patched)
-          logger.debug("Module:utilities NOWIKI Hack has been patched.");
-        else
-          logger.warn("Module:utilities could not be patched ! Check current implementation.");
-      }
-      patchedContent = patchedContent.replaceAll("return export",
-          "-- This function is redefined to avoid too much time taken in calculus we do not need.\n"
-              + "function export.format_categories(categories, lang, sort_key, sort_base, force_output, sc)\n"
-              + "return \"\"\n" + "end\n" + "\n" + "return export");
-      return patchedContent;
-    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("Hrkt-translit/data/ja")) {
-      // Hrkt-translit/data/ja does not exists, and Lua takes care of this, but will generate
-      // an annoying error message. So we just return an empty table
-      return "return {}";
-    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("ko-pron")) {
-      String rawContent = super.getRawWikiContent(parsedPagename, map);
-      if (null == rawContent)
-        return null;
-      String patchedContent = rawContent.replace(
-          "return tostring(html_ul) .. tostring(html_table) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
-          "return tostring(html_ul)").replace(
-              "return tostring(html_ul) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
-              "return tostring(html_ul)");
-      if (logger.isDebugEnabled()) {
-        if (!patchedContent.equals(rawContent))
-          logger.debug("Module:ko-pron has been patched.");
-        else
-          logger.warn("Module:ko-pron could not be patched ! Check current implementation.");
-      }
-      return patchedContent;
-    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("audio")) {
-      String rawContent = super.getRawWikiContent(parsedPagename, map);
-      if (null == rawContent)
-        return null;
-      String patchedContent = rawContent.replace("return stylesheet .. text .. categories",
-          "return text .. categories");
-      if (logger.isDebugEnabled()) {
-        if (!patchedContent.equals(rawContent))
-          logger.debug("Module:audio has been patched.");
-        else
-          logger.warn("Module:audio could not be patched ! Check current implementation.");
-      }
-      return patchedContent;
     }
     return super.getRawWikiContent(parsedPagename, map);
+  }
+
+  @SafeVarargs
+  private String getAndPatchModule(ParsedPageName parsedPagename, Map<String, String> map,
+      Function<String, String>... patchers) throws WikiModelContentException {
+    String content = super.getRawWikiContent(parsedPagename, map);
+    if (null == content)
+      return null;
+    int patchnum = 0;
+    for (Function<String, String> patcher : patchers) {
+      String patchedContent = patcher.apply(content);
+      if (logger.isDebugEnabled()) {
+        boolean patched = !patchedContent.equals(content);
+        if (patched)
+          logger.debug("Module:{} has been patched ({}).", parsedPagename.pagename, ++patchnum);
+        else
+          logger.warn("Module:{} could not be patched! ({}) Check current implementation.",
+              parsedPagename.pagename, ++patchnum);
+      }
+      content = patchedContent;
+    }
+    return content;
   }
 
 }

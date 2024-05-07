@@ -46,7 +46,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     this.wi = wi;
-    expander = new ExpandAllWikiModel(this.wi, new Locale("fi"), "/${image}", "/${title}");
+    expander = new ExpandAllWikiModel(this.wi, new Locale(wdh.getExtractedLanguage()), "/${image}", "/${title}");
   }
 
   protected String getWiktionaryPageName() {

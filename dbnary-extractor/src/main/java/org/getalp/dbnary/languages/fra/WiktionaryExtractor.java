@@ -632,6 +632,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           log.trace("Subsection under nym section in {}", getWiktionaryPageName());
         extractNyms(nym, subsection.getContent().getBeginIndex(),
             subsection.getPrologue().getEndIndex());
+      } else if (derivationSections.contains(sectionName)) {
+        extractDerivationSection(subsection.getContent());
       } else {
         log.trace("Unexpected sub section title {} in {}",
             title == null ? sectionName : title.getText(), getWiktionaryPageName());
@@ -643,6 +645,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       subsection.getContent().sections().stream().map(Token::asWikiSection)
           .filter(s -> sectionTitle(s).getRight().startsWith("trad"))
           .forEach(s -> extractTranslations(s.getPrologue()));
+    }
+  }
+
+  private void extractDerivationSection(WikiContent content) {
+    ClassBasedFilter linksInLists = new ClassBasedFilter();
+    linksInLists.enterIndentedItem().allowLink().allowTemplates();
+    for (Token t : content.filteredTokens(linksInLists)) {
+      // TODO: maybe use a grammar as we have in english and check if there are many links in
+      // parenthesis (i.e. notes)
+      if (t instanceof WikiText.Link) {
+        wdh.registerDerivation(t.asLink().getLinkText());
+      } else {
+        log.trace("Ignoring token {} in derivation section", t);
+      }
     }
   }
 
@@ -711,6 +727,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     variantSections.add("anciennes orthographes");
     variantSections.add("ortho-arch");
     variantSections.add("anciennes ortho");
+  }
+
+  private static final Set<String> derivationSections = new HashSet<>();
+  static {
+    derivationSections.add("dérivés");
+    derivationSections.add("phrases");
   }
 
   private static final String translationTokenizer = "(?<ITALICS>'{2,3}.*?'{2,3})|"

@@ -46,7 +46,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     this.wi = wi;
-    expander = new ExpandAllWikiModel(this.wi, new Locale(wdh.getExtractedLanguage()), "/${image}", "/${title}");
+    expander = new ExpandAllWikiModel(this.wi, new Locale(wdh.getExtractedLanguage()), "/${image}",
+        "/${title}");
   }
 
   protected String getWiktionaryPageName() {
@@ -174,9 +175,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   public abstract void extractData();
 
-  static String defOrExamplePatternString =
-      "(?:" + WikiPatterns.definitionPatternString + ")|(?:"
-          + WikiPatterns.examplePatternString + ")";
+  static String defOrExamplePatternString = "(?:" + WikiPatterns.definitionPatternString + ")|(?:"
+      + WikiPatterns.examplePatternString + ")";
 
   static Pattern defOrExamplePattern =
       Pattern.compile(defOrExamplePatternString, Pattern.MULTILINE);

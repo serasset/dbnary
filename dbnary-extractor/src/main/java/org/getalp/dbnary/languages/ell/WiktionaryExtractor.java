@@ -354,9 +354,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private Pair<Template, String> sectionType(Heading heading) {
-    List<Token> titleTemplate = heading.getContent().tokens().stream()
-        .filter(t -> !(t instanceof Text
-            && t.asText().getText().replaceAll("\u00A0", "").trim().isEmpty()))
+    List<Token> titleTemplate = heading.getContent().tokens().stream().filter(
+        t -> !(t instanceof Text && t.asText().getText().replaceAll("\u00A0", "").trim().isEmpty()))
         .collect(Collectors.toList());
     if (titleTemplate.isEmpty()) {
       log.trace("Unexpected empty title in {}", getWiktionaryPageName());

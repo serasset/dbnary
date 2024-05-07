@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -26,8 +27,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // DONE: Validate the fact that links and macro should be on one line or may be on several...
     // DONE: for this, evaluate the difference in extraction !
 
-    sectionPatternString = new StringBuilder().append("(?:").append(sectionPatternString1)
-        .append(")|(?:").append(sectionPatternString2).append(")").toString();
+    sectionPatternString = "(?:" + sectionPatternString1
+        + ")|(?:" + sectionPatternString2 + ")";
 
   }
 
@@ -359,18 +360,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private FinnishTranslationExtractorWikiModel dbnmodel;
+  private ExpandAllWikiModel expander;
 
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    dbnmodel = new FinnishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("ru"),
+    dbnmodel = new FinnishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("fi"),
         "/${image}", "/${title}");
+    expander = new ExpandAllWikiModel(this.wi, new Locale("fi"), "/${image}", "/${title}");
   }
 
   @Override
   protected void setWiktionaryPageName(String wiktionaryPageName) {
     super.setWiktionaryPageName(wiktionaryPageName);
     dbnmodel.setPageName(wiktionaryPageName);
+    expander.setPageName(wiktionaryPageName);
   }
 
   private void extractTranslations(int startOffset, int endOffset) {
@@ -378,4 +382,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     dbnmodel.parseTranslationBlock(transCode);
   }
 
+  @Override
+  public void extractExample(String example) {
+    String ex = expander.expandAll(example, null);
+    if (ex != null && !ex.isEmpty()) {
+      wdh.registerExample(ex, null);
+    }
+  }
 }

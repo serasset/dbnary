@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -20,11 +19,13 @@ import org.getalp.LangTools;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
+import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
@@ -43,16 +44,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String definitionPatternString =
-      // "(?:^#{1,2}([^\\*#:].*))|(?:^\\*([^\\*#:].*))$";
-      "^(?:#{1,2}([^\\*#:].*)|\\*([^\\*#:].*))$";
-
   protected final static String pronPatternString = "\\{\\{ΔΦΑ\\|([^\\|\\}]*)(.*)\\}\\}";
 
   // protected final static Pattern languageSectionPattern;
 
-  private static HashSet<String> posMacros;
-  private static HashSet<String> ignoredSection;
+  private static final HashSet<String> posMacros;
+  private static final HashSet<String> ignoredSection;
   private final static HashMap<String, String> nymMarkerToNymName;
 
   private static void addPos(String pos) {
@@ -192,14 +189,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static Pattern pronPattern;
 
-  private static final Pattern definitionPattern;
 
   static {
     pronPattern = Pattern.compile(pronPatternString);
-    definitionPattern = Pattern.compile(definitionPatternString, Pattern.MULTILINE);
   }
 
   protected GreekDefinitionExtractorWikiModel definitionExpander;
+  protected ExpandAllWikiModel exampleExpander;
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
@@ -210,6 +206,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super.setWiktionaryIndex(wi);
     definitionExpander = new GreekDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("el"),
         "/${image}", "/${title}");
+    exampleExpander = new ExpandAllWikiModel(this.wi, new Locale("el"), "/${image}", "/${title}");
 
   }
 
@@ -217,6 +214,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void setWiktionaryPageName(String wiktionaryPageName) {
     super.setWiktionaryPageName(wiktionaryPageName);
     definitionExpander.setPageName(this.getWiktionaryPageName());
+    exampleExpander.setPageName(this.getWiktionaryPageName());
   }
 
   public void extractData() {
@@ -271,7 +269,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
       Template title = templateAndTitle.getLeft();
       String sectionName = templateAndTitle.getRight();
-      String pos;
       if ("ετυμολογία".equals(sectionName)) {
         // NOTHING YET
       } else if ("μεταφράσεις".equals(sectionName)) {
@@ -297,29 +294,71 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractDefinitions(WikiContent prologue) {
-    prologue.wikiTokens().forEach(t -> {
-      if (t instanceof Text) {
-        String txt;
-        if (!"".equals(txt = t.asText().getText().trim()))
-          log.trace("Dangling text inside definition {} in {}", txt, wdh.currentPagename());
-      } else if (t instanceof ListItem || t instanceof NumberedListItem) {
+    for (Token t : prologue.wikiTokens()) {
+      if (t instanceof ListItem || t instanceof NumberedListItem) {
         IndentedItem item = t.asIndentedItem();
-        if (item.getContent().toString().startsWith(":")) {
-          // It's an example
-          wdh.registerExample(item.getContent().getText().substring(1), null);
+        if (item.getContent().toString().startsWith("::")) {
+          // It's a reference for the previous example
+          // String ref = exampleExpander.expandAll(item.getContent().getText().substring(1), null);
+        } else if (item.getContent().toString().startsWith(":")) {
+          // It's an example or a synonym/antonym information
+          Optional<Token> firstToken = item.getContent().wikiTokens().stream().findFirst();
+          if (firstToken.isPresent() && firstToken.get() instanceof Template) {
+            // this is a line containing synonyms or antonyms
+            switch (firstToken.get().asTemplate().getName()) {
+              case "συνων":
+              case "συνών":
+              case "syn":
+                extractNyms("syn", item.getContent());
+                continue;
+              case "αντων":
+              case "αντών":
+              case "ant":
+                extractNyms("ant", item.getContent());
+                continue;
+              case "βλ":
+              case "cf":
+                // this a a link to other word. We ignore it
+                // TODO: add a seeAlso relation?
+                continue;
+              case "μορφ":
+                // other forms of the word
+                continue;
+              default:
+                break;
+            }
+          }
+          String expandedDef =
+              exampleExpander.expandAll(item.getContent().getText().substring(1), null);
+          wdh.registerExample(expandedDef, null);
+
         } else {
           extractDefinition(item.getContent().getText(), item.getLevel());
         }
+      } else {
+        log.trace("Unexpected token {} in definition in {}", t.getClass().getSimpleName(),
+            wdh.currentPagename());
       }
-    });
+    }
+  }
+
+  private void extractNyms(String syn, WikiContent content) {
+    for (Token t : content.wikiTokens()) {
+      if (t instanceof Template) {
+        log.debug("Unexpected template {} in nyms in {}", t.asTemplate().getName(),
+            wdh.currentPagename());
+      } else if (t instanceof InternalLink) {
+        wdh.registerNymRelation(t.asInternalLink().getTargetText(), syn);
+      }
+    }
   }
 
   private Pair<Template, String> sectionType(Heading heading) {
     List<Token> titleTemplate = heading.getContent().tokens().stream()
         .filter(t -> !(t instanceof Text
-            && t.asText().getText().replaceAll("\u00A0", "").trim().equals("")))
+            && t.asText().getText().replaceAll("\u00A0", "").trim().isEmpty()))
         .collect(Collectors.toList());
-    if (titleTemplate.size() == 0) {
+    if (titleTemplate.isEmpty()) {
       log.trace("Unexpected empty title in {}", getWiktionaryPageName());
       return new ImmutablePair<>(null, "");
     }
@@ -389,9 +428,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     pronContent.wikiTokens().stream().filter(t -> t instanceof Template).map(Token::asTemplate)
         .filter(t -> "ΔΦΑ".equals(t.getName())).forEach(t -> {
           String pronLg = t.getParsedArg("1");
-          if (null == pronLg || !pronLg.startsWith(wdh.getCurrentEntryLanguage()))
+          if (null == pronLg || !pronLg.startsWith(wdh.getCurrentEntryLanguage())) {
             log.trace("Pronunciation language incorrect in section template {} ≠ {} in {}",
                 wdh.getCurrentEntryLanguage(), pronLg, wdh.currentPagename());
+          }
           wdh.registerPronunciation(t.getParsedArgs().get("2"),
               wdh.getCurrentEntryLanguage() + "-fonipa");
         });

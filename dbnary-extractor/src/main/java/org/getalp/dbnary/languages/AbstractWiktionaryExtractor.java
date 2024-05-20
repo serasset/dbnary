@@ -2,6 +2,7 @@ package org.getalp.dbnary.languages;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,6 +12,7 @@ import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.IWiktionaryExtractor;
 import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.enhancer.TranslationSourcesDisambiguator;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStatsModule;
@@ -30,6 +32,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   protected String pageContent;
   protected IWiktionaryDataHandler wdh;
+  protected ExpandAllWikiModel expander;
 
   private String wiktionaryPageName;
 
@@ -43,6 +46,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     this.wi = wi;
+    expander = new ExpandAllWikiModel(this.wi, new Locale(wdh.getExtractedLanguage()), "/${image}",
+        "/${title}");
   }
 
   protected String getWiktionaryPageName() {
@@ -51,6 +56,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   protected void setWiktionaryPageName(String wiktionaryPageName) {
     this.wiktionaryPageName = wiktionaryPageName;
+    expander.setPageName(wiktionaryPageName);
   }
   // Suppression des commentaires XML d'un texte
 
@@ -80,7 +86,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     int indexEnd = 0; // index du debut de la partie qui nous interesse
     int indexBegin = 0; // index de la fin de la partie qui nous interesse
 
-    StringBuffer result = new StringBuffer(); // la nouvelles chaine de caracteres
+    StringBuilder result = new StringBuilder(); // la nouvelles chaine de caracteres
 
     while (xmlCommentMatcher.find()) {
       String g1 = xmlCommentMatcher.group(1); // g1 =<!-- ou null
@@ -95,7 +101,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
             indexEnd = xmlCommentMatcher.start(1);
             // on change d'etat
             ET = B;
-            result.append(s.substring(indexBegin, indexEnd));
+            result.append(s, indexBegin, indexEnd);
           }
           break;
         case B:
@@ -169,9 +175,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   public abstract void extractData();
 
-  static String defOrExamplePatternString =
-      new StringBuilder().append("(?:").append(WikiPatterns.definitionPatternString).append(")|(?:")
-          .append(WikiPatterns.examplePatternString).append(")").toString();
+  static String defOrExamplePatternString = "(?:" + WikiPatterns.definitionPatternString + ")|(?:"
+      + WikiPatterns.examplePatternString + ")";
 
   static Pattern defOrExamplePattern =
       Pattern.compile(defOrExamplePatternString, Pattern.MULTILINE);
@@ -202,7 +207,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   public void extractDefinition(String definition, int defLevel) {
     String def = cleanUpMarkup(definition);
-    if (def != null && !def.equals("")) {
+    if (!def.isEmpty()) {
       wdh.registerNewDefinition(definition, defLevel);
     }
   }
@@ -247,12 +252,12 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   }
 
   public void extractExample(String example) {
-    // TODO: properly handle macros in definitions.
-    String ex = cleanUpMarkup(example);
-    if (ex != null && !ex.equals("")) {
-      wdh.registerExample(example, null);
+    String ex = expander.expandAll(example, null);
+    if (ex != null && !ex.isEmpty()) {
+      wdh.registerExample(ex, null);
     }
   }
+
 
   // Some utility methods that should be common to all languages
   // DONE: (priority: top) keep annotated lemma (#{lemma}#) in definitions.
@@ -275,10 +280,10 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
    */
   public static String cleanUpMarkup(String str, boolean humanReadable) {
     Matcher m = WikiPatterns.macroOrLinkPattern.matcher(str);
-    StringBuffer sb = new StringBuffer(str.length());
+    StringBuilder sb = new StringBuilder(str.length());
     String leftGroup, rightGroup;
     while (m.find()) {
-      if ((leftGroup = m.group(1)) != null) {
+      if (m.group(1) != null) {
         // It's a macro, ignore it for now
         m.appendReplacement(sb, "");
       } else if ((leftGroup = m.group(3)) != null) {
@@ -296,12 +301,12 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
         if (!humanReadable) { // && str.length() > m.end() &&
           // Character.isLetter(str.charAt(m.end()))
           int i = m.end();
-          StringBuffer affix = new StringBuffer();
+          StringBuilder affix = new StringBuilder();
           while (i < str.length() && Character.isLetter(str.charAt(i))) {
             affix.append(str.charAt(i));
             i++;
           }
-          replacement = replacement + affix.toString();
+          replacement = replacement + affix;
           replacement = replacement + "}#";
           replacement = Matcher.quoteReplacement(replacement);
           m.appendReplacement(sb, replacement);
@@ -342,22 +347,17 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     return sb.toString();
   }
 
-  private static String definitionMarkupString = "#\\{([^\\|]*)\\|([^\\}]*)\\}\\#";
-  private static Pattern definitionMarkup = Pattern.compile(definitionMarkupString);
+  private static final String definitionMarkupString = "#\\{([^\\|]*)\\|([^\\}]*)\\}\\#";
+  private static final Pattern definitionMarkup = Pattern.compile(definitionMarkupString);
 
   public static String convertToHumanReadableForm(String def) {
     Matcher m = definitionMarkup.matcher(def);
-    StringBuffer sb = new StringBuffer(def.length());
+    StringBuilder sb = new StringBuilder(def.length());
     while (m.find()) {
       m.appendReplacement(sb, m.group(2));
     }
     m.appendTail(sb);
     return sb.toString();
-  }
-
-  public static String getHumanReadableForm(String id) {
-    String def = id.substring(id.indexOf("|") + 1);
-    return convertToHumanReadableForm(def);
   }
 
   // TODO: dissociates entry parsing and structure building in 2 classes.
@@ -367,7 +367,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     bulletListMatcher.region(startOffset, endOffset);
     while (bulletListMatcher.find()) {
       String alt = cleanUpMarkup(bulletListMatcher.group(1), true);
-      if (alt != null && !alt.equals("")) {
+      if (!alt.isEmpty()) {
         wdh.registerAlternateSpelling(alt);
       }
     }
@@ -407,30 +407,12 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   // TODO: Some nyms can be placed in sublists and lists (hence with ** or ***). In this case, we
   // currently extract the additional stars.
   protected void extractNyms(String synRelation, int startOffset, int endOffset) {
-    // System.out.println(wiktionaryPageName + " contains: " + pageContent.substring(startOffset,
-    // endOffset));
+
     // Extract all links
     Matcher linkMatcher = WikiPatterns.linkPattern.matcher(this.pageContent);
     linkMatcher.region(startOffset, endOffset);
-    // int lastNymEndOffset = startOffset;
-    // int lastNymStartOffset = startOffset;
-    // System.err.println("---- In: " + wiktionaryPageName + " ----");
-    // System.err.println(this.pageContent.substring(startOffset, endOffset));
     while (linkMatcher.find()) {
       // TODO: remove debug specific treatment for nym extraction and take a better heuristic
-      // if (lastNymEndOffset != startOffset) {
-      // String inbetween = this.pageContent.substring(lastNymEndOffset, linkMatcher.start());
-      // // if (! inbetween.matches(".*[,\\r\\n].*")) {
-      // if (inbetween.equals(" ")) {
-      // System.out.println("---- In: " + wiktionaryPageName + " ----");
-      // System.out.println(this.pageContent.substring(lastNymStartOffset,linkMatcher.end()));
-      // }
-      // }
-      // lastNymStartOffset = linkMatcher.start();
-      // lastNymEndOffset = linkMatcher.end();
-      // // End of debug specific treatment for nym extraction...
-      // System.err.println("Matched: " + linkMatcher.group(0));
-
       // It's a link, only keep the alternate string if present.
       String leftGroup = linkMatcher.group(1);
       if (leftGroup != null && !leftGroup.equals("") && !leftGroup.startsWith("Wikisaurus:")

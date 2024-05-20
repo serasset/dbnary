@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -26,8 +27,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // DONE: Validate the fact that links and macro should be on one line or may be on several...
     // DONE: for this, evaluate the difference in extraction !
 
-    sectionPatternString = new StringBuilder().append("(?:").append(sectionPatternString1)
-        .append(")|(?:").append(sectionPatternString2).append(")").toString();
+    sectionPatternString = "(?:" + sectionPatternString1 + ")|(?:" + sectionPatternString2 + ")";
 
   }
 
@@ -363,7 +363,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    dbnmodel = new FinnishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("ru"),
+    dbnmodel = new FinnishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("fi"),
         "/${image}", "/${title}");
   }
 

@@ -764,6 +764,36 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     return "__wf_" + compactProperties + "_" + lexEntryLocalName;
   }
 
+  @Override
+  public void registerDerivation(String derived) {
+    registerDerivation(derived, null);
+  }
+
+  @Override
+  public void registerDerivation(String derived, String note) {
+    if (null != derived && (derived = derived.trim()).isEmpty()) {
+      return;
+    }
+    if (null == currentLexEntry) {
+      log.debug("Registering derivation when no lex entry is defined");
+      return;
+    }
+    Resource target = getPageResource(derived);
+    aBox.add(target, DBnaryOnt.derivedFrom, currentLexEntry);
+    Statement derivStmt = aBox.createStatement(target, DBnaryOnt.derivedFrom, currentLexEntry);
+    if (null != note && !note.trim().isEmpty()) {
+      ReifiedStatement derivReifiedStmt =
+          derivStmt.createReifiedStatement(getDerivationStatementId(derived));
+      derivReifiedStmt.addLiteral(SkosOnt.note, note);
+      derivStmt = derivReifiedStmt.getStatement();
+    }
+    aBox.add(derivStmt);
+  }
+
+  public String getDerivationStatementId(String derived) {
+    return getPrefix() + "__der_" + currentEncodedLexicalEntryName + "_" + uriEncode(derived);
+  }
+
   public void registerInflection(String languageCode, String pos, String inflection,
       String canonicalForm, int defNumber, HashSet<PropertyObjectPair> props,
       HashSet<PronunciationPair> pronunciations) {

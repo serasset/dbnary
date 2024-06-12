@@ -19,8 +19,8 @@ public class EnglishLikeModulesPatcherWikiModel extends DbnaryWikiModel {
     super(locale, imageBaseURL, linkBaseURL);
   }
 
-  public EnglishLikeModulesPatcherWikiModel(WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public EnglishLikeModulesPatcherWikiModel(WiktionaryPageSource wi, Locale locale,
+      String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
@@ -52,8 +52,8 @@ public class EnglishLikeModulesPatcherWikiModel extends DbnaryWikiModel {
         return getAndPatchModule(parsedPagename, map, t -> t.replace(
             "return tostring(html_ul) .. tostring(html_table) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
             "return tostring(html_ul)").replace(
-            "return tostring(html_ul) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
-            "return tostring(html_ul)"));
+                "return tostring(html_ul) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
+                "return tostring(html_ul)"));
       } else if (pagename.equals("audio")) {
         return getAndPatchModule(parsedPagename, map,
             t -> t.replace("return stylesheet .. text .. categories", "return text .. categories"));

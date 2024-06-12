@@ -44,7 +44,7 @@ public class EnglishLikeModulesPatcherWikiModel extends DbnaryWikiModel {
                 "-- This function is redefined to avoid too much time taken in calculus we do not need.\n"
                     + "function export.format_categories(categories, lang, sort_key, sort_base, force_output, sc)\n"
                     + "return \"\"\n" + "end\n" + "\n" + "return export"));
-      } else if (pagename.equals("Hrkt-translit/data/ja")) {
+      } else if (pagename.equals("hrkt-translit/data/ja")) {
         // Hrkt-translit/data/ja does not exists, and Lua takes care of this, but will generate
         // an annoying error message. So we just return an empty table
         return "return {}";

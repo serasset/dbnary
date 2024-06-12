@@ -36,7 +36,7 @@ public class EnglishWikiModel extends EnglishLikeModulesPatcherWikiModel {
       } else if ("catlangname".equals(templateName) || "cln".equals(templateName)
           || "categorize".equals(templateName) || "C".equals(templateName)
           || "topics".equals(templateName)) {
-        // Just ignore this template
+        // Just ignore these templates
       } else if ("langname".equals(templateName)) {
         String langname = ISO639_3.sharedInstance.getLanguageNameInEnglish(parameterMap.get("1"));
         if (null != langname)

@@ -6,7 +6,6 @@ import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import java.util.Locale;
 import java.util.Map;
 import org.getalp.dbnary.api.WiktionaryPageSource;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.languages.commons.EnglishLikeModulesPatcherWikiModel;
 
 public class ChineseDbnaryWikiModel extends EnglishLikeModulesPatcherWikiModel {
@@ -23,7 +22,7 @@ public class ChineseDbnaryWikiModel extends EnglishLikeModulesPatcherWikiModel {
     ParsedPageName originalPagename = parsedPagename;
     if ((parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)
         || parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY))
-        && parsedPagename.pagename.length() > 0
+        && !parsedPagename.pagename.isEmpty()
         && Character.isLowerCase(parsedPagename.pagename.charAt(0))) {
       parsedPagename = new ParsedPageName(parsedPagename.namespace,
           Character.toUpperCase(originalPagename.pagename.charAt(0))

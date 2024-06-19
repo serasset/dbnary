@@ -1129,15 +1129,24 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   @Override
   public Resource registerExample(String ex, Set<Pair<Property, RDFNode>> context) {
+    return registerExampleOnResource(ex, context, currentSense);
+  }
+
+  @Override
+  public Resource registerExampleOnResource(String ex, Set<Pair<Property, RDFNode>> context, Resource sense) {
     if (null == context)
       context = new HashSet<>();
     context
-        .add(Pair.of(RDF.value, ResourceFactory.createLangLiteral(ex, getCurrentEntryLanguage())));
-    return registerExample(context);
+            .add(Pair.of(RDF.value, ResourceFactory.createLangLiteral(ex, getCurrentEntryLanguage())));
+    return registerExampleOnResource(context, sense);
   }
 
   public Resource registerExample(Set<Pair<Property, RDFNode>> context) {
-    if (null == currentSense) {
+    return registerExampleOnResource(context, currentSense);
+  }
+
+  public Resource registerExampleOnResource(Set<Pair<Property, RDFNode>> context, Resource sense) {
+    if (null == sense) {
       log.debug("Registering example when lex sense is null in \"{}\".", this.currentMainLexEntry);
       return null; // Don't register anything if current lex entry is not known.
     }
@@ -1146,7 +1155,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     Resource example = aBox.createResource();
     addTo(example, context);
 
-    aBox.add(aBox.createStatement(currentSense, SkosOnt.example, example));
+    aBox.add(aBox.createStatement(sense, SkosOnt.example, example));
     return example;
   }
 

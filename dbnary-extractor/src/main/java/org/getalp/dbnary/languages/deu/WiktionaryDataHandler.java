@@ -1,15 +1,13 @@
 package org.getalp.dbnary.languages.deu;
 
 import java.util.HashSet;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
-import org.getalp.dbnary.ExtractionFeature;
-import org.getalp.dbnary.LexinfoOnt;
-import org.getalp.dbnary.OliaOnt;
+import org.getalp.dbnary.*;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
-import org.getalp.dbnary.OntolexOnt;
-import org.getalp.dbnary.PropertyObjectPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

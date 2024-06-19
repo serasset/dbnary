@@ -47,8 +47,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String partOfSpeechPatternString =
       "={3}[^\\{]*\\{\\{Wortart\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
   protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
-  protected final static String germanCitationPatternString =
-          "<ref>(.*)</ref>";
+  protected final static String germanCitationPatternString = "<ref>(.*)</ref>";
   protected final static String germanExampleCitationPatternString =
       "\\s*„?([^\n\r“]*)“?\\s*(?:" + germanCitationPatternString + ")?";
   protected final static String germanDefinitionPatternString =
@@ -56,7 +55,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String germanExamplePatternString =
       // "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
-      "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?" + germanExampleCitationPatternString + "$";
+      "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?" + germanExampleCitationPatternString
+          + "$";
 
   protected final static String germanNymLinePatternString =
       "^:{1,3}\\s*(?:\\[(" + senseNumberOrRangeRegExp + "*)\\])?([^\n\r]*)$";
@@ -855,7 +855,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
         if (def != null && !def.equals("")) {
           Resource res_sense = wdh.registerNewDefinition(def, senseNum);
-          definitionSenseLink.put(senseNum,res_sense);
+          definitionSenseLink.put(senseNum, res_sense);
         }
       }
     }
@@ -879,12 +879,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String currentLevel1SenseNumber = "";
     String currentLevel2SenseNumber = "";
     while (exampleMatcher.find()) {
-      String example =
-          exampleExpander.expandAll(exampleMatcher.group(2), null);
-      String ref =
-              exampleExpander.expandAll(exampleMatcher.group(3), null);
+      String example = exampleExpander.expandAll(exampleMatcher.group(2), null);
+      String ref = exampleExpander.expandAll(exampleMatcher.group(3), null);
       if (ref != null && !ref.isEmpty()) {
-        context.add(Pair.of(DCTerms.bibliographicCitation, ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
+        context.add(Pair.of(DCTerms.bibliographicCitation,
+            ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
       }
       String senseNum = exampleMatcher.group(1);
       if (null == senseNum) {
@@ -919,7 +918,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
 
         if (example != null && !example.isEmpty()) {
-          wdh.registerExampleOnResource(example, context,definitionSenseLink.get(senseNum));
+          wdh.registerExampleOnResource(example, context, definitionSenseLink.get(senseNum));
           context = new HashSet<>();
         }
       }

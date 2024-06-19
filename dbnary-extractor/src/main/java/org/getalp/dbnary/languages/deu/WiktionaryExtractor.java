@@ -50,7 +50,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String germanCitationPatternString =
           "<ref>(.*)</ref>";
   protected final static String germanExampleCitationPatternString =
-      "\\s*„?([^\n\r“]*)“?\\s*(?:" + germanCitationPatternString + ")?";
+      "\\s*[„\"»]?([^\n\r“]*)[“\"«]?\\s*(?:" + germanCitationPatternString + ")?";
   protected final static String germanDefinitionPatternString =
       "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
 
@@ -871,9 +871,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractExamples(int startOffset, int endOffset) {
 
-    Matcher exampleMatcher = germanExamplePattern.matcher(this.pageContent);
-    exampleMatcher.region(startOffset, endOffset);
+    String page_content = this.pageContent;
+    Pattern suspectline = Pattern.compile("\n:{2,3}\\s*([^\\[])");
+    Matcher suspectMatcher = suspectline.matcher(page_content);
+    suspectMatcher.region(startOffset,endOffset);
+    if (suspectMatcher.find()){
+      page_content=suspectMatcher.replaceAll(x -> "__dnary_return_line⏕⏔⌂dnary__"+x.group(1));
+    }
 
+    Matcher exampleMatcher = germanExamplePattern.matcher(page_content);
+    exampleMatcher.region(startOffset, endOffset);
     Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
     String currentLevel1SenseNumber = "";
@@ -881,6 +888,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (exampleMatcher.find()) {
       String example =
           exampleExpander.expandAll(exampleMatcher.group(2), null);
+      example=example.replaceAll("__dnary_return_line⏕⏔⌂dnary__","\n");
+      if (Pattern.matches("[„\"»].*", example)){
+        example=example.substring(1);
+      }
+      if (Pattern.matches(".*[„\"»]", example)){
+        example=example.substring(0,example.length()-1);
+      }
+
+      if (Pattern.compile("[^\\w].*").matcher(example).matches()){
+        log.trace("patern check example first caracter '{}' of {} ",example.charAt(0),example) ;
+      }
       String ref =
               exampleExpander.expandAll(exampleMatcher.group(3), null);
       if (ref != null && !ref.isEmpty()) {

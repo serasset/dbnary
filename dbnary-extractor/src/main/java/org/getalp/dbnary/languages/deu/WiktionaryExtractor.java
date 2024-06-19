@@ -888,6 +888,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (exampleMatcher.find()) {
       String example =
           exampleExpander.expandAll(exampleMatcher.group(2), null);
+      example=example.replaceAll("__dnary_return_line⏕⏔⌂dnary__","\n");
+      if ( Pattern.matches("[„\"»].*", example)){
+        example=example.substring(1);
+      }
+      if ( Pattern.matches(".*[„\"»]", example)){
+        example=example.substring(0,example.length()-1);
+      }
+
       String ref =
               exampleExpander.expandAll(exampleMatcher.group(3), null);
       if (ref != null && !ref.isEmpty()) {

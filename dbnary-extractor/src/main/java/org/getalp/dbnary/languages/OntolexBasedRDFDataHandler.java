@@ -1133,11 +1133,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   @Override
-  public Resource registerExampleOnResource(String ex, Set<Pair<Property, RDFNode>> context, Resource sense) {
+  public Resource registerExampleOnResource(String ex, Set<Pair<Property, RDFNode>> context,
+      Resource sense) {
     if (null == context)
       context = new HashSet<>();
     context
-            .add(Pair.of(RDF.value, ResourceFactory.createLangLiteral(ex, getCurrentEntryLanguage())));
+        .add(Pair.of(RDF.value, ResourceFactory.createLangLiteral(ex, getCurrentEntryLanguage())));
     return registerExampleOnResource(context, sense);
   }
 

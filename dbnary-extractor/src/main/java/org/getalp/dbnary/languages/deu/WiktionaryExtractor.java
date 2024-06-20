@@ -48,13 +48,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
   protected final static String germanCitationPatternString = "<ref>(.*)</ref>";
   protected final static String germanExampleCitationPatternString =
-      "\\s*[„\"»]?([^\n\r“]*)[“\"«]?\\s*(?:" + germanCitationPatternString + ")?";
+      "\\s*[„\"»]?([^\n\r“]*)[“\"«]?\\s*([^\n^\r<$:]*)(?:" + germanCitationPatternString + ")?";
   protected final static String germanDefinitionPatternString =
       "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
 
   protected final static String germanExamplePatternString =
       // "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
-      "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?" + germanExampleCitationPatternString
+      "^:{1,3}\\s*(?:\\[(" + senseNumberOrRangeRegExp + "*)\\])?" + germanExampleCitationPatternString
           + "$";
 
   protected final static String germanNymLinePatternString =
@@ -871,34 +871,34 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractExamples(int startOffset, int endOffset) {
 
     // TODO: do not change the page_content attribute as it may be used by other processes
-    String page_content = this.pageContent;
+    String exampleContent = this.pageContent.substring(startOffset, endOffset);
     Pattern suspectline = Pattern.compile("\n:{2,3}\\s*([^\\[])");
-    Matcher suspectMatcher = suspectline.matcher(page_content);
-    suspectMatcher.region(startOffset, endOffset);
+    Matcher suspectMatcher = suspectline.matcher(exampleContent);
+    HashSet<String> listSensesNum = new HashSet<>();
+
     if (suspectMatcher.find()) {
-      page_content = suspectMatcher.replaceAll(x -> "__dnary_return_line⏕⏔⌂dnary__" + x.group(1));
+      exampleContent = suspectMatcher.replaceAll(x -> "__dnary_return_line⏕⏔⌂dnary__" + x.group(1));
     }
 
-    Matcher exampleMatcher = germanExamplePattern.matcher(page_content);
-    exampleMatcher.region(startOffset, endOffset);
+    Matcher exampleMatcher = germanExamplePattern.matcher(exampleContent);
     Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
     String currentLevel1SenseNumber = "";
     String currentLevel2SenseNumber = "";
     while (exampleMatcher.find()) {
-      String example = exampleExpander.expandAll(exampleMatcher.group(2), null);
+      String example = exampleExpander.expandAll(exampleMatcher.group(2)+exampleMatcher.group(3), null);
       example = example.replaceAll("__dnary_return_line⏕⏔⌂dnary__", "\n");
-      StringUtils.strip(example, "„\"»");
+      StringUtils.strip(example, "„“\"»«");
 
-      String ref = exampleExpander.expandAll(exampleMatcher.group(3), null);
+      String ref = exampleExpander.expandAll(exampleMatcher.group(4), null);
       if (ref != null && !ref.isEmpty()) {
         context.add(Pair.of(DCTerms.bibliographicCitation,
-            ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
+                ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
       }
       String senseNum = exampleMatcher.group(1);
       if (null == senseNum) {
         log.debug("Null sense number in example\"{}\" for entry {}", example,
-            this.getWiktionaryPageName());
+                this.getWiktionaryPageName());
       } else {
 
         senseNum = senseNum.trim();
@@ -907,7 +907,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (exampleMatcher.group().length() >= 3 && exampleMatcher.group().charAt(2) == ':') {
             // Level 3
             log.debug("Level 3 example: \"{}\" in entry {}", exampleMatcher.group(),
-                this.getWiktionaryPageName());
+                    this.getWiktionaryPageName());
             if (!senseNum.startsWith(currentLevel2SenseNumber)) {
               senseNum = currentLevel2SenseNumber + senseNum;
             }
@@ -915,7 +915,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           } else {
             // Level 2
             log.debug("Level 2 definition: \"{}\" in entry {}", exampleMatcher.group(),
-                this.wiktionaryPageName);
+                    this.wiktionaryPageName);
             if (!senseNum.startsWith(currentLevel1SenseNumber)) {
               senseNum = currentLevel1SenseNumber + senseNum;
             }
@@ -927,9 +927,43 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           currentLevel2SenseNumber = senseNum;
         }
 
-        if (example != null && !example.isEmpty()) {
-          wdh.registerExampleOnResource(example, context, definitionSenseLink.get(senseNum));
+        if(senseNum.equals("*")){
+            listSensesNum.addAll(definitionSenseLink.keySet());
+        }
+        else {
+          String[] SenseSplited = senseNum.split(",");
+          for (String senseSep : SenseSplited) {
+            if(senseSep.contains("-")){
+              boolean conditionActive=false;
+              String[] SenseSepared = senseSep.split("-");
+              String startSenseSplit=SenseSepared[0];
+              String endSenseSplit=SenseSepared[1];
+
+              for (String sense : definitionSenseLink.keySet()){
+                if (startSenseSplit.equals(sense)){
+                  conditionActive=true;
+                }
+                if (conditionActive){
+                  listSensesNum.add(sense);
+                }
+                if (endSenseSplit.equals(sense)){
+                  conditionActive=false;
+                }
+              }
+            }
+            else {
+              listSensesNum.add(senseSep.trim());
+            }
+          }
+        }
+
+        if (!example.isEmpty()) {
+          for (String sense : listSensesNum){
+            Set<Pair<Property, RDFNode>> context_tmp = context;
+            wdh.registerExampleOnResource(example, context_tmp, definitionSenseLink.get(sense));
+          }
           context = new HashSet<>();
+          listSensesNum = new HashSet<>();
         }
       }
     }

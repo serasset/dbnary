@@ -2,6 +2,7 @@ package org.getalp.dbnary.languages.deu;
 
 import java.util.*;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
@@ -18,8 +19,6 @@ import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
-import org.getalp.dbnary.languages.fra.ExampleExpanderWikiModel;
-import org.getalp.dbnary.tools.CounterSet;
 import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiPattern;
 import org.getalp.dbnary.wiki.WikiPatterns;
@@ -889,13 +888,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (exampleMatcher.find()) {
       String example = exampleExpander.expandAll(exampleMatcher.group(2), null);
       example = example.replaceAll("__dnary_return_line⏕⏔⌂dnary__", "\n");
-      // TODO: only trim in beginning or end of line, not inside
-      if (Pattern.matches("[„\"»].*", example)) {
-        example = example.substring(1);
-      }
-      if (Pattern.matches(".*[„\"»]", example)) {
-        example = example.substring(0, example.length() - 1);
-      }
+      StringUtils.strip(example, "„\"»");
 
       String ref = exampleExpander.expandAll(exampleMatcher.group(3), null);
       if (ref != null && !ref.isEmpty()) {

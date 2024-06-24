@@ -16,6 +16,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
+import org.getalp.dbnary.enhancer.disambiguation.SenseNumberBasedTranslationDisambiguationMethod;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -47,15 +48,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       "={3}[^\\{]*\\{\\{Wortart\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
   protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
   protected final static String germanCitationPatternString = "<ref>(.*)</ref>";
-  protected final static String germanExampleCitationPatternString =
-      "\\s*[„\"»]?([^\n\r“]*)[“\"«]?\\s*([^\n^\r<$:]*)(?:" + germanCitationPatternString + ")?";
+  protected final static String germanExamplesuspectString = "\n:{2,3}\\s*([^\\[])";
   protected final static String germanDefinitionPatternString =
       "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
 
   protected final static String germanExamplePatternString =
-      // "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
-      "^:{1,3}\\s*(?:\\[(" + senseNumberOrRangeRegExp + "*)\\])?" + germanExampleCitationPatternString
-          + "$";
+      "^:{1,3}\\s*(?:\\[(" + senseNumberOrRangeRegExp + "*)\\])?([^\n\r]*)$";
 
   protected final static String germanNymLinePatternString =
       "^:{1,3}\\s*(?:\\[(" + senseNumberOrRangeRegExp + "*)\\])?([^\n\r]*)$";
@@ -97,7 +95,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static Pattern languageSectionPattern;
   protected final static Pattern germanDefinitionPattern;
   protected final static Pattern germanExamplePattern;
+  protected final static Pattern germanCitationPattern;
   protected final static Pattern germanNymLinePattern;
+  protected final static Pattern suspectline;
+
   protected final static String multilineMacroPatternString;
   protected final static Pattern macroOrPOSPattern; // Combine macro pattern and pos pattern.
   protected final static Pattern posHeaderElementsPattern;
@@ -143,6 +144,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     germanDefinitionPattern = Pattern.compile(germanDefinitionPatternString, Pattern.MULTILINE);
     germanExamplePattern = Pattern.compile(germanExamplePatternString, Pattern.MULTILINE);
+    germanCitationPattern = Pattern.compile(germanCitationPatternString);
+    suspectline = Pattern.compile(germanExamplesuspectString);
     germanNymLinePattern = Pattern.compile(germanNymLinePatternString, Pattern.MULTILINE);
 
     pronPattern = Pattern.compile(pronPatternString);
@@ -548,9 +551,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractTranslations(int startOffset, int endOffset) {
     WikiText wt = new WikiText(getWiktionaryPageName(), pageContent, startOffset, endOffset);
-    List<? extends WikiText.Token> toks = wt.wikiTokens();
+    List<? extends Token> toks = wt.wikiTokens();
 
-    for (WikiText.Token t : toks) {
+    for (Token t : toks) {
       if (t instanceof WikiText.Template
           && ((WikiText.Template) t).getName().trim().equals("Ü-Tabelle")) {
         WikiText.Template tmpl = t.asTemplate();
@@ -574,7 +577,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     List<? extends Token> toks = wc.wikiTokens();
 
-    for (WikiText.Token li : toks) {
+    for (Token li : toks) {
       if (li instanceof WikiText.IndentedItem) {
         extractTranslationFromItem(li.asIndentedItem());
       }
@@ -872,9 +875,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     // TODO: do not change the page_content attribute as it may be used by other processes
     String exampleContent = this.pageContent.substring(startOffset, endOffset);
-    Pattern suspectline = Pattern.compile("\n:{2,3}\\s*([^\\[])");
     Matcher suspectMatcher = suspectline.matcher(exampleContent);
-    HashSet<String> listSensesNum = new HashSet<>();
 
     if (suspectMatcher.find()) {
       exampleContent = suspectMatcher.replaceAll(x -> "__dnary_return_line⏕⏔⌂dnary__" + x.group(1));
@@ -886,15 +887,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String currentLevel1SenseNumber = "";
     String currentLevel2SenseNumber = "";
     while (exampleMatcher.find()) {
-      String example = exampleExpander.expandAll(exampleMatcher.group(2)+exampleMatcher.group(3), null);
-      example = example.replaceAll("__dnary_return_line⏕⏔⌂dnary__", "\n");
-      StringUtils.strip(example, "„“\"»«");
+      String example =exampleMatcher.group(2);
+      String ref = "";
+      Matcher exampleCitationMatcher = germanCitationPattern.matcher(example);
 
-      String ref = exampleExpander.expandAll(exampleMatcher.group(4), null);
+      if (exampleCitationMatcher.find()){
+        ref=exampleCitationMatcher.group(1);
+        example=example.substring(0,exampleCitationMatcher.start());
+      }
+
+      example = exampleExpander.expandAll(example, null);
+      example = example.replaceAll("__dnary_return_line⏕⏔⌂dnary__", "\n");
+      example = StringUtils.strip(example, "„“\"»«");
+
+      ref = exampleExpander.expandAll(ref, null);
       if (ref != null && !ref.isEmpty()) {
         context.add(Pair.of(DCTerms.bibliographicCitation,
                 ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
       }
+
       String senseNum = exampleMatcher.group(1);
       if (null == senseNum) {
         log.debug("Null sense number in example\"{}\" for entry {}", example,
@@ -927,35 +938,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           currentLevel2SenseNumber = senseNum;
         }
 
-        if(senseNum.equals("*")){
-            listSensesNum.addAll(definitionSenseLink.keySet());
-        }
-        else {
-          String[] SenseSplited = senseNum.split(",");
-          for (String senseSep : SenseSplited) {
-            if(senseSep.contains("-")){
-              boolean conditionActive=false;
-              String[] SenseSepared = senseSep.split("-");
-              String startSenseSplit=SenseSepared[0];
-              String endSenseSplit=SenseSepared[1];
-
-              for (String sense : definitionSenseLink.keySet()){
-                if (startSenseSplit.equals(sense)){
-                  conditionActive=true;
-                }
-                if (conditionActive){
-                  listSensesNum.add(sense);
-                }
-                if (endSenseSplit.equals(sense)){
-                  conditionActive=false;
-                }
-              }
-            }
-            else {
-              listSensesNum.add(senseSep.trim());
-            }
-          }
-        }
+        ArrayList<String> listSensesNum = SenseNumberBasedTranslationDisambiguationMethod.getSenseNumbers(senseNum);
 
         if (!example.isEmpty()) {
           for (String sense : listSensesNum){
@@ -963,7 +946,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             wdh.registerExampleOnResource(example, context_tmp, definitionSenseLink.get(sense));
           }
           context = new HashSet<>();
-          listSensesNum = new HashSet<>();
         }
       }
     }

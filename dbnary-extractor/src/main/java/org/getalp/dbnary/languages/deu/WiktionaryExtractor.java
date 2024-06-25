@@ -887,13 +887,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String currentLevel1SenseNumber = "";
     String currentLevel2SenseNumber = "";
     while (exampleMatcher.find()) {
-      String example =exampleMatcher.group(2);
+      String example = exampleMatcher.group(2);
       String ref = "";
       Matcher exampleCitationMatcher = germanCitationPattern.matcher(example);
 
-      if (exampleCitationMatcher.find()){
-        ref=exampleCitationMatcher.group(1);
-        example=example.substring(0,exampleCitationMatcher.start());
+      if (exampleCitationMatcher.find()) {
+        ref = exampleCitationMatcher.group(1);
+        example = example.substring(0, exampleCitationMatcher.start());
       }
 
       example = exampleExpander.expandAll(example, null);
@@ -903,13 +903,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       ref = exampleExpander.expandAll(ref, null);
       if (ref != null && !ref.isEmpty()) {
         context.add(Pair.of(DCTerms.bibliographicCitation,
-                ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
+            ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
       }
 
       String senseNum = exampleMatcher.group(1);
       if (null == senseNum) {
         log.debug("Null sense number in example\"{}\" for entry {}", example,
-                this.getWiktionaryPageName());
+            this.getWiktionaryPageName());
       } else {
 
         senseNum = senseNum.trim();
@@ -918,7 +918,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (exampleMatcher.group().length() >= 3 && exampleMatcher.group().charAt(2) == ':') {
             // Level 3
             log.debug("Level 3 example: \"{}\" in entry {}", exampleMatcher.group(),
-                    this.getWiktionaryPageName());
+                this.getWiktionaryPageName());
             if (!senseNum.startsWith(currentLevel2SenseNumber)) {
               senseNum = currentLevel2SenseNumber + senseNum;
             }
@@ -926,7 +926,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           } else {
             // Level 2
             log.debug("Level 2 definition: \"{}\" in entry {}", exampleMatcher.group(),
-                    this.wiktionaryPageName);
+                this.wiktionaryPageName);
             if (!senseNum.startsWith(currentLevel1SenseNumber)) {
               senseNum = currentLevel1SenseNumber + senseNum;
             }
@@ -938,10 +938,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           currentLevel2SenseNumber = senseNum;
         }
 
-        ArrayList<String> listSensesNum = SenseNumberBasedTranslationDisambiguationMethod.getSenseNumbers(senseNum);
+        ArrayList<String> listSensesNum =
+            SenseNumberBasedTranslationDisambiguationMethod.getSenseNumbers(senseNum);
 
         if (!example.isEmpty()) {
-          for (String sense : listSensesNum){
+          for (String sense : listSensesNum) {
             Set<Pair<Property, RDFNode>> context_tmp = context;
             wdh.registerExampleOnResource(example, context_tmp, definitionSenseLink.get(sense));
           }

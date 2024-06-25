@@ -87,8 +87,10 @@
           <licenseHeaderFile>${basedir}/LICENSE.txt</licenseHeaderFile>
           <repositoryName>lib</repositoryName>
           <repositoryLayout>flat</repositoryLayout>
+          <useWildcardClassPath>true</useWildcardClassPath>
           <platforms>
             <platform>unix</platform>
+            <platform>windows</platform>
           </platforms>
           <programs>
             <program>

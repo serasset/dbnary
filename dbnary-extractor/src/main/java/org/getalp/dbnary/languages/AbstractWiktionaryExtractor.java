@@ -34,7 +34,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   protected IWiktionaryDataHandler wdh;
   protected ExpandAllWikiModel expander;
 
-  private String wiktionaryPageName;
+  protected String wiktionaryPageName;
 
   protected WiktionaryPageSource wi = null;
 

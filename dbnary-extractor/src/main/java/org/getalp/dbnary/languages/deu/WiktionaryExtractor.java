@@ -1,18 +1,22 @@
 package org.getalp.dbnary.languages.deu;
 
-import java.util.List;
+import java.util.*;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.DCTerms;
 import org.getalp.dbnary.ExtractionFeature;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.ListIterator;
-import java.util.Map;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.StructuredGloss;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
+import org.getalp.dbnary.enhancer.disambiguation.SenseNumberBasedTranslationDisambiguationMethod;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -43,8 +47,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String partOfSpeechPatternString =
       "={3}[^\\{]*\\{\\{Wortart\\|([^\\}\\|]*)(?:\\|([^\\}]*))?\\}\\}.*={3}";
   protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
+  protected final static String germanCitationPatternString = "<ref>(.*)</ref>";
+  protected final static String germanExamplesuspectString = "\n:{2,3}\\s*([^\\[])";
   protected final static String germanDefinitionPatternString =
       "^:{1,3}\\s*(?:\\[(" + senseNumberRegExp + "*)\\])?([^\n\r]*)$";
+
+  protected final static String germanExamplePatternString =
+      "^:{1,3}\\s*(?:\\[(" + senseNumberOrRangeRegExp + "*)\\])?([^\n\r]*)$";
+
   protected final static String germanNymLinePatternString =
       "^:{1,3}\\s*(?:\\[(" + senseNumberOrRangeRegExp + "*)\\])?([^\n\r]*)$";
 
@@ -60,6 +70,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super(wdh);
   }
 
+  protected ExpandAllWikiModel exampleExpander;
   protected GermanMorphologyExtractor morphologyExtractor;
   private GermanDefinitionExpander definitionExpander;
 
@@ -68,6 +79,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super.setWiktionaryIndex(wi);
     morphologyExtractor = new GermanMorphologyExtractor(wdh, wi);
     definitionExpander = new GermanDefinitionExpander(wi);
+    exampleExpander = new ExpandAllWikiModel(wi, new Locale("de"), "", "");
+  }
+
+  @Override
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    super.setWiktionaryPageName(wiktionaryPageName);
+    exampleExpander.setPageName(this.getWiktionaryPageName());
+    definitionExpander.setPageName(this.getWiktionaryPageName());
   }
 
   protected final static String macroOrPOSPatternString;
@@ -75,7 +94,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static Pattern languageSectionPattern;
   protected final static Pattern germanDefinitionPattern;
+  protected final static Pattern germanExamplePattern;
+  protected final static Pattern germanCitationPattern;
   protected final static Pattern germanNymLinePattern;
+  protected final static Pattern suspectline;
+
   protected final static String multilineMacroPatternString;
   protected final static Pattern macroOrPOSPattern; // Combine macro pattern and pos pattern.
   protected final static Pattern posHeaderElementsPattern;
@@ -83,6 +106,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static HashSet<String> ignorableSectionMarkers;
   protected final static HashSet<String> nymMarkers;
   protected final static HashMap<String, String> nymMarkerToNymName;
+  protected final static HashMap<String, Resource> definitionSenseLink;
   // protected final static HashSet<String> inflectionMarkers;
 
   protected final static Pattern pronPattern;
@@ -119,6 +143,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     posHeaderElementsPattern = Pattern.compile(posHeaderElementsPatternString);
 
     germanDefinitionPattern = Pattern.compile(germanDefinitionPatternString, Pattern.MULTILINE);
+    germanExamplePattern = Pattern.compile(germanExamplePatternString, Pattern.MULTILINE);
+    germanCitationPattern = Pattern.compile(germanCitationPatternString);
+    suspectline = Pattern.compile(germanExamplesuspectString);
     germanNymLinePattern = Pattern.compile(germanNymLinePatternString, Pattern.MULTILINE);
 
     pronPattern = Pattern.compile(pronPatternString);
@@ -140,7 +167,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignorableSectionMarkers.add("Worttrennung");
     ignorableSectionMarkers.add("Herkunft");
     ignorableSectionMarkers.add("Gegenworte");
-    ignorableSectionMarkers.add("Beispiele");
     ignorableSectionMarkers.add("Redewendungen");
     ignorableSectionMarkers.add("Abgeleitete Begriffe");
     ignorableSectionMarkers.add("Charakteristische Wortkombinationen");
@@ -199,6 +225,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     nymMarkerToNymName.put("Oberbegriffe", "hyper");
     nymMarkerToNymName.put("Meronyms", "mero");
 
+    definitionSenseLink = new HashMap<>(40);
   }
 
   /*
@@ -241,7 +268,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: supprimer les "Deklinierte Form" des catégories extraites.
 
   private enum Block {
-    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, POSBLOCK, NYMBLOCK, PRONBLOCK
+    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, POSBLOCK, NYMBLOCK, PRONBLOCK, EXAMPLEBLOCK
   }
 
   private Block currentBlock = Block.NOBLOCK;
@@ -264,7 +291,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         continue;
       }
       // If current block is IGNOREPOS, we should ignore everything but a new
-      // DEFBLOCK/INFLECTIONBLOCK
+      // DEFBLOCK/INFLECTIONBLOCK/EXAMPLEBLOCK
       if (Block.IGNOREPOS != currentBlock || (Block.POSBLOCK == nextBlock)) {
         leaveCurrentBlock(m);
         gotoNextBlock(nextBlock, context);
@@ -290,6 +317,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return Block.PRONBLOCK;
       } else if (template.equals("Alternative Schreibweisen")) {
         return Block.ORTHOALTBLOCK;
+      } else if (template.equals("Beispiele")) {
+        return Block.EXAMPLEBLOCK;
       } else if (nymMarkers.contains(template)) {
         context.put("nym", nymMarkerToNymName.get(template));
         return Block.NYMBLOCK;
@@ -383,6 +412,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
       case PRONBLOCK:
         break;
+      case EXAMPLEBLOCK:
+        break;
       default:
         assert false
             : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
@@ -422,6 +453,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case INFLECTIONBLOCK:
         extractInflections(blockStart, end);
         blockStart = end;
+        break;
+      case EXAMPLEBLOCK:
+        extractExamples(blockStart, end);
         break;
       default:
         assert false
@@ -517,9 +551,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractTranslations(int startOffset, int endOffset) {
     WikiText wt = new WikiText(getWiktionaryPageName(), pageContent, startOffset, endOffset);
-    List<? extends WikiText.Token> toks = wt.wikiTokens();
+    List<? extends Token> toks = wt.wikiTokens();
 
-    for (WikiText.Token t : toks) {
+    for (Token t : toks) {
       if (t instanceof WikiText.Template
           && ((WikiText.Template) t).getName().trim().equals("Ü-Tabelle")) {
         WikiText.Template tmpl = t.asTemplate();
@@ -543,7 +577,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     List<? extends Token> toks = wc.wikiTokens();
 
-    for (WikiText.Token li : toks) {
+    for (Token li : toks) {
       if (li instanceof WikiText.IndentedItem) {
         extractTranslationFromItem(li.asIndentedItem());
       }
@@ -822,7 +856,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
 
         if (def != null && !def.equals("")) {
-          wdh.registerNewDefinition(def, senseNum);
+          Resource res_sense = wdh.registerNewDefinition(def, senseNum);
+          definitionSenseLink.put(senseNum, res_sense);
         }
       }
     }
@@ -836,4 +871,84 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return definitionExpander.expandAll(group.trim(), null);
   }
 
+  protected void extractExamples(int startOffset, int endOffset) {
+
+    // TODO: do not change the page_content attribute as it may be used by other processes
+    String exampleContent = this.pageContent.substring(startOffset, endOffset);
+    Matcher suspectMatcher = suspectline.matcher(exampleContent);
+
+    if (suspectMatcher.find()) {
+      exampleContent = suspectMatcher.replaceAll(x -> "__dnary_return_line⏕⏔⌂dnary__" + x.group(1));
+    }
+
+    Matcher exampleMatcher = germanExamplePattern.matcher(exampleContent);
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
+
+    String currentLevel1SenseNumber = "";
+    String currentLevel2SenseNumber = "";
+    while (exampleMatcher.find()) {
+      String example = exampleMatcher.group(2);
+      String ref = "";
+      Matcher exampleCitationMatcher = germanCitationPattern.matcher(example);
+
+      if (exampleCitationMatcher.find()) {
+        ref = exampleCitationMatcher.group(1);
+        example = example.substring(0, exampleCitationMatcher.start());
+      }
+
+      example = exampleExpander.expandAll(example, null);
+      example = example.replaceAll("__dnary_return_line⏕⏔⌂dnary__", "\n");
+      example = StringUtils.strip(example, "„“\"»«");
+
+      ref = exampleExpander.expandAll(ref, null);
+      if (ref != null && !ref.isEmpty()) {
+        context.add(Pair.of(DCTerms.bibliographicCitation,
+            ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
+      }
+
+      String senseNum = exampleMatcher.group(1);
+      if (null == senseNum) {
+        log.debug("Null sense number in example\"{}\" for entry {}", example,
+            this.getWiktionaryPageName());
+      } else {
+
+        senseNum = senseNum.trim();
+        senseNum = senseNum.replaceAll("<[^>]*>", "");
+        if (exampleMatcher.group().length() >= 2 && exampleMatcher.group().charAt(1) == ':') {
+          if (exampleMatcher.group().length() >= 3 && exampleMatcher.group().charAt(2) == ':') {
+            // Level 3
+            log.debug("Level 3 example: \"{}\" in entry {}", exampleMatcher.group(),
+                this.getWiktionaryPageName());
+            if (!senseNum.startsWith(currentLevel2SenseNumber)) {
+              senseNum = currentLevel2SenseNumber + senseNum;
+            }
+            log.debug("Sense number is: {}", senseNum);
+          } else {
+            // Level 2
+            log.debug("Level 2 definition: \"{}\" in entry {}", exampleMatcher.group(),
+                this.wiktionaryPageName);
+            if (!senseNum.startsWith(currentLevel1SenseNumber)) {
+              senseNum = currentLevel1SenseNumber + senseNum;
+            }
+            currentLevel2SenseNumber = senseNum;
+          }
+        } else {
+          // Level 1 definition
+          currentLevel1SenseNumber = senseNum;
+          currentLevel2SenseNumber = senseNum;
+        }
+
+        ArrayList<String> listSensesNum =
+            SenseNumberBasedTranslationDisambiguationMethod.getSenseNumbers(senseNum);
+
+        if (!example.isEmpty()) {
+          for (String sense : listSensesNum) {
+            Set<Pair<Property, RDFNode>> context_tmp = context;
+            wdh.registerExampleOnResource(example, context_tmp, definitionSenseLink.get(sense));
+          }
+          context = new HashSet<>();
+        }
+      }
+    }
+  }
 }

@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.util.regex.Pattern;
 
 public class schemagenIfNewer {
 
@@ -19,6 +20,10 @@ public class schemagenIfNewer {
     FileTime ontologyModificationDate = fileModificationDate(ontologyFile);
     FileTime outputModificationDate = fileModificationDate(outputFile);
 
+    if (Pattern.matches("^\\p{Alpha}:.*", ontologyFile)) {
+      ontologyFile = ontologyFile.replaceAll("\\\\", "/");
+    }
+    setOption(args, "-i", ontologyFile);
     // System.err.format("Ontology: %s / output %s%n", ontologyFile, outputFile);
     // System.err.format("Ontology Date: %s / output date %s%n", ontologyModificationDate,
     // outputModificationDate);
@@ -42,6 +47,14 @@ public class schemagenIfNewer {
       }
     }
     return null;
+  }
+
+  private static void setOption(String[] args, String s, String value) {
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].equals(s)) {
+        args[i + 1] = value;
+      }
+    }
   }
 
   private static FileTime fileModificationDate(String filename) {

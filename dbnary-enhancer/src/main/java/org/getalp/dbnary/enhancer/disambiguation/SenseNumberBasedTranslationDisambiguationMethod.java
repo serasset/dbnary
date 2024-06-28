@@ -90,7 +90,7 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements Disambig
   }
 
 
-  public ArrayList<String> getSenseNumbers(String nums) {
+  public static ArrayList<String> getSenseNumbers(String nums) {
     ArrayList<String> ns = new ArrayList<String>();
 
     if (nums.contains(",")) {

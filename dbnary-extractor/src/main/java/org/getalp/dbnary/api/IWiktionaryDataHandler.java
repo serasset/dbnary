@@ -100,6 +100,17 @@ public interface IWiktionaryDataHandler {
    */
   Resource registerExample(String ex, Set<Pair<Property, RDFNode>> context);
 
+  /**
+   * Register example ex for a given lexical sens
+   *
+   * @param ex the example string
+   * @param context map of property + RDFNode that are to be attached to the example object.
+   * @param sense the Resource of the lexical sens are to be attached with the example object.
+   * @return a Resource
+   *
+   */
+  Resource registerExampleOnResource(String ex, Set<Pair<Property, RDFNode>> context,
+      Resource sense);
 
   /**
    * Register definition def for the current lexical entry.

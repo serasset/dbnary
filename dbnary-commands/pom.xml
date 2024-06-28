@@ -5,7 +5,7 @@
   <parent>
     <artifactId>dbnary</artifactId>
     <groupId>org.getalp</groupId>
-    <version>3.1.19b</version>
+    <version>3.1.20</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -87,8 +87,10 @@
           <licenseHeaderFile>${basedir}/LICENSE.txt</licenseHeaderFile>
           <repositoryName>lib</repositoryName>
           <repositoryLayout>flat</repositoryLayout>
+          <useWildcardClassPath>true</useWildcardClassPath>
           <platforms>
             <platform>unix</platform>
+            <platform>windows</platform>
           </platforms>
           <programs>
             <program>

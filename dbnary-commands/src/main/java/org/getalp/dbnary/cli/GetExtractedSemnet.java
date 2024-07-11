@@ -1,6 +1,11 @@
 package org.getalp.dbnary.cli;
 
+import com.github.jsonldjava.shaded.com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.apache.jena.rdf.model.Model;
 import org.getalp.dbnary.ExtractionFeature;
@@ -10,6 +15,7 @@ import org.getalp.wiktionary.WiktionaryIndexerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Command(name = "sample", mixinStandardHelpOptions = true,
@@ -20,8 +26,22 @@ import picocli.CommandLine.Parameters;
 public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
   private static final Logger log = LoggerFactory.getLogger(GetExtractedSemnet.class);
 
-  @Parameters(index = "1..*", description = "The entries to be extracted.", arity = "1..*")
+  @Parameters(index = "1..*", description = "The entries to be extracted.", arity = "0..*")
   String[] entries;
+
+  String[] entriesFromFile = null;
+
+  @Option(names = {"--entries"},
+      description = "take the list of entries from the specified file instead of remaining arguments.",
+      arity = "1")
+  protected void getEntriesFromFile(Path entriesFile) {
+    try {
+      entriesFromFile =
+          Files.readLines(entriesFile.toFile(), Charset.defaultCharset()).toArray(new String[0]);
+    } catch (IOException e) {
+      throw new RuntimeException("Could not read the list of entries.", e);
+    }
+  }
 
   protected Integer prepareExtraction() throws WiktionaryIndexerException {
     return setupHandlers(null);
@@ -29,6 +49,9 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
 
   private Integer extract() {
 
+    if (null != entriesFromFile) {
+      entries = entriesFromFile;
+    }
     for (String entry : entries) {
       String pageContent = wi.getTextOfPage(entry);
       try {

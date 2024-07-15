@@ -729,17 +729,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (macro.equals("ejemplo")) {
           Map<String, String> args = WikiTool.parseArgs(definitionMatcher.group(4));
           String example = args.get("1");
-          example=exampleExpander.expandAll(example,null);
+          example = exampleExpander.expandAll(example, null);
           String ref = null;
           if (example != null) {
             Set<Pair<Property, RDFNode>> context = new HashSet<>();
-            ref = exampleExpander.expandAll(definitionMatcher.group(),null);
-            ref = ref.replace("Ejemplo:","");
+            ref = exampleExpander.expandAll(definitionMatcher.group(), null);
+            ref = ref.replace("Ejemplo:", "");
 
-            ref = ref.replace(example,"").trim();
+            ref = ref.replace(example, "").trim();
             if (ref != null && !ref.isEmpty()) {
               context.add(Pair.of(DCTerms.bibliographicCitation,
-                      ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
+                  ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
             }
             wdh.registerExample(example, context);
           }

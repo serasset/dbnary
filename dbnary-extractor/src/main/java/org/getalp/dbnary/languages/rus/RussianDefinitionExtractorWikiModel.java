@@ -30,7 +30,7 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
   // ignoredTemplates.add("Wikipedia");
   // ignoredTemplates.add("Incorrect");
   // }
-  protected final static Pattern numberPattern=Pattern.compile("\\d+");
+  protected final static Pattern numberPattern = Pattern.compile("\\d+");
 
   protected static class Example {
 
@@ -102,8 +102,8 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
         if (null != ex && ex.length() != 0) {
           Example example = new Example(ex);
           parameterMap.remove("текст");
-          if (!parameterMap.isEmpty()){
-            example.add(DCTerms.bibliographicCitation, expendBibliographicRef(parameterMap,ex));
+          if (!parameterMap.isEmpty()) {
+            example.add(DCTerms.bibliographicCitation, expendBibliographicRef(parameterMap, ex));
           }
           currentExamples.add(example);
         }
@@ -114,8 +114,8 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
         if (null != ex && ex.length() != 0) {
           Example example = new Example(ex);
           parameterMap.remove("1");
-          if (!parameterMap.isEmpty()){
-            example.add(DCTerms.bibliographicCitation, (expendBibliographicRef(parameterMap,ex)));
+          if (!parameterMap.isEmpty()) {
+            example.add(DCTerms.bibliographicCitation, (expendBibliographicRef(parameterMap, ex)));
           }
           currentExamples.add(example);
         }
@@ -128,21 +128,20 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
     }
   }
 
-  private RDFNode expendBibliographicRef(Map<String, String> parameterMap,String example) {
+  private RDFNode expendBibliographicRef(Map<String, String> parameterMap, String example) {
     StringBuilder b = new StringBuilder();
-    b.append("{{пример|"+example);
+    b.append("{{пример|" + example);
     for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
-      if (numberPattern.matcher(entry.getKey()).matches() ){
+      if (numberPattern.matcher(entry.getKey()).matches()) {
         b.append("|").append(entry.getValue());
-      }
-      else {
+      } else {
         b.append("|").append(entry.getKey()).append("=").append(entry.getValue());
       }
     }
     b.append("}}");
-    String expanded_ref =expander.expandAll(b.toString(),null);
-    expanded_ref=expanded_ref.replace(example,"");
-    expanded_ref=expanded_ref.replaceAll("[◆ ]","").trim();
+    String expanded_ref = expander.expandAll(b.toString(), null);
+    expanded_ref = expanded_ref.replace(example, "");
+    expanded_ref = expanded_ref.replaceAll("[◆ ]", "").trim();
     return ResourceFactory.createLangLiteral(expanded_ref, "ru");
   }
 

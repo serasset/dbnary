@@ -458,22 +458,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     frwdh.initializePageExtraction(getWiktionaryPageName());
     WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
     WikiDocument doc = page.asStructuredDocument();
-    doc.getContent().wikiTokens().stream().filter(new Predicate<Token>() {
-      @Override
-      public boolean test(Token t) {
-        return t instanceof WikiSection;
-      }
-    }).map(new Function<Token, WikiSection>() {
-      @Override
-      public WikiSection apply(Token token) {
-        return token.asWikiSection();
-      }
-    }).forEach(new Consumer<WikiSection>() {
-      @Override
-      public void accept(WikiSection section) {
-        WiktionaryExtractor.this.extractSection(section);
-      }
-    });
+    doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection)
+        .map(Token::asWikiSection).forEach(WiktionaryExtractor.this::extractSection);
     frwdh.finalizePageExtraction();
   }
 
@@ -606,7 +592,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int end = section.getPrologue().getEndIndex();
     List<String> morphologicalFeatures = extractMorphologicalData(blockStart, end);
     extractConjugationPage(morphologicalFeatures);
-    extractDefinitions(blockStart, end);
+    extractDefinitions(section);
     extractPronunciation(section.getPrologue());
     extractOtherForms(section.getPrologue(), morphologicalFeatures);
 
@@ -890,6 +876,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return context;
   }
 
+  Pattern examplePattern = Pattern.compile("(?s)^[*:]+\\s*(.*)");
+
+  protected void extractDefinitions(WikiSection section) {
+    WikiContent content = section.getPrologue();
+    content.filteredTokens(new ClassBasedFilter().allowNumberedListItem()).stream()
+        .map(Token::asNumberedListItem).forEach(item -> {
+          Matcher exampleMatcher = examplePattern.matcher(item.getContent().getText());
+          if (exampleMatcher.matches()) {
+            extractExample(exampleMatcher.group(1));
+          } else {
+            extractDefinition(item.getContent().getText().trim(),
+                item.asNumberedListItem().getLevel());
+          }
+        });
+  }
+
   @Override
   public void extractExample(String example) {
     Set<Pair<Property, RDFNode>> context = new HashSet<>();
@@ -925,24 +927,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       // context.removeIf("Féminin"::equals);
     }
 
-    content.templatesOnUpperLevel().stream().map(new Function<Token, Template>() {
-      @Override
-      public Template apply(Token token) {
-        return token.asTemplate();
-      }
-    }).filter(new Predicate<Template>() {
-      @Override
-      public boolean test(Template t) {
-        return t.getName().startsWith("fr-");
-      }
-    }).filter(t -> {
-      return !t.getName().startsWith("fr-verbe");
-    }).forEach(new Consumer<Template>() {
-      @Override
-      public void accept(Template t) {
-        morphologyExtractor.parseOtherForm(t.getText(), context);
-      }
-    });
+    content.templatesOnUpperLevel().stream().map(Token::asTemplate)
+        .filter(t -> t.getName().startsWith("fr-")).filter(t -> !t.getName().startsWith("fr-verbe"))
+        .forEach(t -> morphologyExtractor.parseOtherForm(t.getText(), context));
   }
 
   @Override

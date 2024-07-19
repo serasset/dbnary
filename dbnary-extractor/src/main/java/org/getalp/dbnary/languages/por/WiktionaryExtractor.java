@@ -6,11 +6,19 @@ package org.getalp.dbnary.languages.por;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.DCTerms;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.wiki.WikiPatterns;
 
 /**
  * @author serasset
@@ -19,10 +27,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   protected final static String languageSectionPatternString =
-      "(?:=\\s*\\{\\{\\-([^=]*)\\-\\}\\}\\s*=)|(?:={1,5}\\s*([^=\\{\\]\\|\n\r]+)\\s*={1,5})";
+          "(?:=\\s*\\{\\{\\-([^=]*)\\-\\}\\}\\s*=)|(?:={1,5}\\s*([^=\\{\\]\\|\n\r]+)\\s*={1,5})";
   protected final static String level1HeaderPatternString = "^=([^=].*[^=])=\\s*$";
 
   protected final static String sectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
+  static String defOrExamplePatternString = "(?:" + WikiPatterns.definitionPatternString + ")|(?:"
+          + WikiPatterns.examplePatternString + ")";
   private final int NODATA = 0;
   private final int TRADBLOCK = 1;
   private final int DEFBLOCK = 2;
@@ -69,7 +79,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static Pattern sectionPattern;
   protected final static Pattern languageSectionPattern;
-
+  protected final static Pattern defOrExamplePattern;
   // TODO: handle pronunciation in portuguese
   private final static Pattern pronunciationPattern;
   protected final static Pattern level1HeaderPattern;
@@ -80,6 +90,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     sectionPattern = Pattern.compile(sectionPatternString);
     languageSectionPattern = Pattern.compile(languageSectionPatternString);
     pronunciationPattern = Pattern.compile(pronounciationPatternString);
+    defOrExamplePattern=Pattern.compile(defOrExamplePatternString, Pattern.MULTILINE);
   }
 
   int state = NODATA;
@@ -102,9 +113,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
     definitionExtractor = new PortugueseDefinitionExtractorWikiModel(this.wdh, this.wi,
-        Locale.forLanguageTag("pt"), "/${image}", "/${title}");
+            Locale.forLanguageTag("pt"), "/${image}", "/${title}");
     translationExtractor = new PortugueseTranslationExtractorWikiModel(this.wdh, this.wi,
-        new Locale("pt"), "/${image}/" + getWiktionaryPageName(), "/${title}");
+            new Locale("pt"), "/${image}/" + getWiktionaryPageName(), "/${title}");
   }
 
   public boolean isCurrentlyExtracting() {
@@ -113,7 +124,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
    * org.getalp.blexisma.semnet.SemanticNetwork)
    */
@@ -401,7 +412,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
       default:
         assert false
-            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
+                : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
     wdh.finalizeLanguageSection();
   }
@@ -429,4 +440,31 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
 
+  @Override
+  protected void extractDefinitions(int startOffset, int endOffset) {
+    Matcher defOrExampleMatcher = defOrExamplePattern.matcher(this.pageContent);
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
+    defOrExampleMatcher.region(startOffset, endOffset);
+
+    while (defOrExampleMatcher.find()) {
+      String exempleRef = expander.expandAll(defOrExampleMatcher.group(2), null);
+      if (null != defOrExampleMatcher.group(1)) {
+        extractDefinition(defOrExampleMatcher);
+      } else if (null != defOrExampleMatcher.group(2)) {
+        if (defOrExampleMatcher.group().startsWith("#:")){
+          context.add(Pair.of(DCTerms.bibliographicCitation,
+                  ResourceFactory.createLangLiteral(exempleRef, wdh.getCurrentEntryLanguage())));
+        } else {
+          registerExample(exempleRef, context);
+          context.clear();
+        }
+      }
+    }
+  }
+
+  private void registerExample(String example,Set<Pair<Property, RDFNode>> context ) {
+    if (example != null && !example.isEmpty()) {
+      wdh.registerExample(example, context);
+    }
+  }
 }

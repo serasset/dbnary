@@ -660,7 +660,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private static final Pattern nonMacroRelationPattern =
       Pattern.compile("\\*\\s*'''([^']*)'''(.*)$");
   private static final Pattern exampleTraductionPattern =
-      Pattern.compile("(?:traducción|trad)=([^\r\n}]*)");
+      Pattern.compile("(?:traducción|trad)=([^\r\n|}]*)");
 
   @Override
   protected void extractDefinitions(int startOffset, int endOffset) {
@@ -746,7 +746,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
             if (exTradMatch.find()) {
               ref = definitionMatcher.group().replace("|" + exTradMatch.group(), "");
-              exampleLangTrad = exampleExpander.expandAll(exTradMatch.group(1), null);
+              exampleLangTrad = exampleExpander.expandAll(exTradMatch.group(1).replaceAll("(→|\\\")",""), null);
             } else {
               ref = definitionMatcher.group();
             }

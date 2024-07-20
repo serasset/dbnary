@@ -659,8 +659,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private static final Pattern senseNumPattern = Pattern.compile("(\\d+)");
   private static final Pattern nonMacroRelationPattern =
       Pattern.compile("\\*\\s*'''([^']*)'''(.*)$");
-  private static final Pattern exampleTraductionPattern =
-      Pattern.compile("(?:traducción|trad)=(([^\r\n\\[{|}]|(" + WikiPatterns.macroOrLinkPatternString+ "))*)");
+  private static final Pattern exampleTraductionPattern = Pattern.compile(
+      "(?:traducción|trad)=(([^\r\n\\[{|}]|(" + WikiPatterns.macroOrLinkPatternString + "))*)");
 
   @Override
   protected void extractDefinitions(int startOffset, int endOffset) {
@@ -740,13 +740,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             String ref = null;
             String exampleLangTrad = null;
 
-            if (example.contains(" – ")){
-              log.trace("Example: traduction possible ;{}; found in {}",example, getWiktionaryPageName());
+            if (example.contains(" – ")) {
+              log.trace("Example: traduction possible ;{}; found in {}", example,
+                  getWiktionaryPageName());
             }
 
             if (exTradMatch.find()) {
               ref = definitionMatcher.group().replace("|" + exTradMatch.group(), "");
-              exampleLangTrad = exampleExpander.expandAll(exTradMatch.group(1).replaceAll("(→|\\\")",""), null);
+              exampleLangTrad =
+                  exampleExpander.expandAll(exTradMatch.group(1).replaceAll("(→|\\\")", ""), null);
             } else {
               ref = definitionMatcher.group();
             }

@@ -56,7 +56,7 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
       val valueParser = new DerivationsParser(page)
       valueParser.parseDerivations(new WikiCharSequence(v), currentEntry)
   }
-  protected def derivationNotes: Parser[List[String]] = rep(plainNotes | inlineModifiers)
+  protected def derivationNotes: Parser[List[String]] = rep(plainNotes | inlineModifiers | colonSeparatedNotes)
 
   protected def plainNotes: Parser[String] =
     "\\([^)]*\\)".r ^^ (s => {
@@ -66,6 +66,12 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
 
   protected def inlineModifiers: Parser[String] =
     "<[^>]*>".r ^^ (s => {
+      logger.debug("Derivations: ignoring notes `{}` in {}", s, pagename)
+      s
+    })
+
+  protected def colonSeparatedNotes: Parser[String] =
+    ":[^\n]*".r ^^ (s => {
       logger.debug("Derivations: ignoring notes `{}` in {}", s, pagename)
       s
     })

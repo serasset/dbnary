@@ -1,15 +1,18 @@
 package org.getalp.dbnary.languages.spa;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
@@ -58,6 +61,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected SpanishDefinitionExtractorWikiModel definitionExpander;
   protected SpanishHeaderExtractorWikiModel headerExtractor;
   protected SpanishTranslationExtractorWikiModel translationExtractor;
+  protected ExpandAllWikiModel exampleExpander;
 
   static {
 
@@ -239,6 +243,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         "/${image}", "/${title}");
     translationExtractor = new SpanishTranslationExtractorWikiModel(this.wdh, this.wi,
         new Locale("es"), "/${image}", "/${title}");
+    exampleExpander = new ExpandAllWikiModel(wi, new Locale("es"), "/${image}", "/${title}");
   }
 
 
@@ -651,8 +656,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     translationExtractor.parseTranslationBlock(transCode);
   }
 
-  Pattern senseNumPattern = Pattern.compile("(\\d+)");
-  Pattern nonMacroRelationPattern = Pattern.compile("\\*\\s*'''([^']*)'''(.*)$");
+  private static final Pattern senseNumPattern = Pattern.compile("(\\d+)");
+  private static final Pattern nonMacroRelationPattern =
+      Pattern.compile("\\*\\s*'''([^']*)'''(.*)$");
+  private static final Pattern exampleTraductionPattern = Pattern.compile(
+      "(?:traducción|trad)=(([^\r\n\\[{|}]|(" + WikiPatterns.macroOrLinkPatternString + "))*)");
 
   @Override
   protected void extractDefinitions(int startOffset, int endOffset) {
@@ -722,6 +730,43 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           extractNyms(nym, vals);
           definitionMatcher.region(offset, endOffset);
         }
+        if (macro.equals("ejemplo")) {
+          Map<String, String> args = WikiTool.parseArgs(definitionMatcher.group(4));
+          String example = args.get("1");
+          example = exampleExpander.expandAll(example, null);
+          if (example != null) {
+            Set<Pair<Property, RDFNode>> context = new HashSet<>();
+            Matcher exTradMatch = exampleTraductionPattern.matcher(definitionMatcher.group());
+            String ref = null;
+            String exampleLangTrad = null;
+
+            if (example.contains(" – ")) {
+              log.trace("Example: traduction possible ;{}; found in {}", example,
+                  getWiktionaryPageName());
+            }
+
+            if (exTradMatch.find()) {
+              ref = definitionMatcher.group().replace("|" + exTradMatch.group(), "");
+              exampleLangTrad =
+                  exampleExpander.expandAll(exTradMatch.group(1).replaceAll("(→|\\\")", ""), null);
+            } else {
+              ref = definitionMatcher.group();
+            }
+
+            ref = exampleExpander.expandAll(ref, null);
+            ref = ref.replace("Ejemplo:", "");
+            ref = ref.replace(example, "").trim();
+            if (ref != null && !ref.isEmpty()) {
+              context.add(Pair.of(DCTerms.bibliographicCitation,
+                  ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
+            }
+            if (exampleLangTrad != null && !exampleLangTrad.isEmpty()) {
+              context.add(
+                  Pair.of(RDF.value, ResourceFactory.createLangLiteral(exampleLangTrad, "es")));
+            }
+            wdh.registerExample(example, context);
+          }
+        }
       } else if (definitionMatcher.group(5) != null) {
         Matcher m = nonMacroRelationPattern.matcher(definitionMatcher.group(5));
         if (m.matches()) {
@@ -739,6 +784,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public void extractDefinition(String definition, String senseNumber) {
     definitionExpander.setPageName(getWiktionaryPageName());
+    exampleExpander.setPageName(getWiktionaryPageName());
     definitionExpander.parseDefinition(definition, senseNumber);
   }
 

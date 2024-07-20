@@ -27,12 +27,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
   protected final static String languageSectionPatternString =
-          "(?:=\\s*\\{\\{\\-([^=]*)\\-\\}\\}\\s*=)|(?:={1,5}\\s*([^=\\{\\]\\|\n\r]+)\\s*={1,5})";
+      "(?:=\\s*\\{\\{\\-([^=]*)\\-\\}\\}\\s*=)|(?:={1,5}\\s*([^=\\{\\]\\|\n\r]+)\\s*={1,5})";
   protected final static String level1HeaderPatternString = "^=([^=].*[^=])=\\s*$";
 
   protected final static String sectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
   static String defOrExamplePatternString = "(?:" + WikiPatterns.definitionPatternString + ")|(?:"
-          + WikiPatterns.examplePatternString + ")";
+      + WikiPatterns.examplePatternString + ")";
   private final int NODATA = 0;
   private final int TRADBLOCK = 1;
   private final int DEFBLOCK = 2;
@@ -90,7 +90,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     sectionPattern = Pattern.compile(sectionPatternString);
     languageSectionPattern = Pattern.compile(languageSectionPatternString);
     pronunciationPattern = Pattern.compile(pronounciationPatternString);
-    defOrExamplePattern=Pattern.compile(defOrExamplePatternString, Pattern.MULTILINE);
+    defOrExamplePattern = Pattern.compile(defOrExamplePatternString, Pattern.MULTILINE);
   }
 
   int state = NODATA;
@@ -113,9 +113,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
     definitionExtractor = new PortugueseDefinitionExtractorWikiModel(this.wdh, this.wi,
-            Locale.forLanguageTag("pt"), "/${image}", "/${title}");
+        Locale.forLanguageTag("pt"), "/${image}", "/${title}");
     translationExtractor = new PortugueseTranslationExtractorWikiModel(this.wdh, this.wi,
-            new Locale("pt"), "/${image}/" + getWiktionaryPageName(), "/${title}");
+        new Locale("pt"), "/${image}/" + getWiktionaryPageName(), "/${title}");
   }
 
   public boolean isCurrentlyExtracting() {
@@ -412,7 +412,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
       default:
         assert false
-                : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
+            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
     wdh.finalizeLanguageSection();
   }
@@ -451,9 +451,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (null != defOrExampleMatcher.group(1)) {
         extractDefinition(defOrExampleMatcher);
       } else if (null != defOrExampleMatcher.group(2)) {
-        if (defOrExampleMatcher.group().startsWith("#:")){
+        if (defOrExampleMatcher.group().startsWith("#:")) {
           context.add(Pair.of(DCTerms.bibliographicCitation,
-                  ResourceFactory.createLangLiteral(exempleRef, wdh.getCurrentEntryLanguage())));
+              ResourceFactory.createLangLiteral(exempleRef, wdh.getCurrentEntryLanguage())));
         } else {
           registerExample(exempleRef, context);
           context.clear();
@@ -462,7 +462,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  private void registerExample(String example,Set<Pair<Property, RDFNode>> context ) {
+  private void registerExample(String example, Set<Pair<Property, RDFNode>> context) {
     if (example != null && !example.isEmpty()) {
       wdh.registerExample(example, context);
     }

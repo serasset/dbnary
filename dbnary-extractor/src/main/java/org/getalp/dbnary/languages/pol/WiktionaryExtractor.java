@@ -50,7 +50,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     DEFS, NYMS, TRANS, PRON, MORPH, EXAMPLES, IGNORE, NOTASECTION
   }
 
-  protected ExpandAllWikiModel definitionExpander;
+  protected DefinitionExpanderWikiModel definitionExpander;
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);

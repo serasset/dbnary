@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
 
-public class EnglishLikeModulesPatcherWikiModel extends DbnaryWikiModel {
+public class EnglishLikeModulesPatcherWikiModel extends ModulesPatcherWikiModel {
 
   public static final Pattern UNPACK_PATTERN = Pattern.compile("(unpack\\([^),]+)\\)");
 
@@ -76,25 +76,4 @@ public class EnglishLikeModulesPatcherWikiModel extends DbnaryWikiModel {
     return super.getRawWikiContent(parsedPagename, map);
   }
 
-  @SafeVarargs
-  protected final String getAndPatchModule(ParsedPageName parsedPagename, Map<String, String> map,
-      Function<String, String>... patchers) throws WikiModelContentException {
-    String content = super.getRawWikiContent(parsedPagename, map);
-    if (null == content)
-      return null;
-    int patchnum = 0;
-    for (Function<String, String> patcher : patchers) {
-      String patchedContent = patcher.apply(content);
-      if (logger.isDebugEnabled()) {
-        boolean patched = !patchedContent.equals(content);
-        if (patched)
-          logger.debug("Module:{} has been patched ({}).", parsedPagename.pagename, ++patchnum);
-        else
-          logger.warn("Module:{} could not be patched! ({}) Check current implementation.",
-              parsedPagename.pagename, ++patchnum);
-      }
-      content = patchedContent;
-    }
-    return content;
-  }
 }

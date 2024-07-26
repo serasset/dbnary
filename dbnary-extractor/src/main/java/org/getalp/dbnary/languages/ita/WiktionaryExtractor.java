@@ -25,7 +25,6 @@ import org.getalp.dbnary.wiki.WikiText.Link;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
-import org.getalp.dbnary.wiki.WikiText.WikiDocument;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

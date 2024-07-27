@@ -1,11 +1,15 @@
 package org.getalp.dbnary.languages.pol;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.DCTerms;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -27,6 +31,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String partOfSpeechPatternString = "''(.*)''";
   protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
+  protected final static String polishCitationPatternString = "<ref>(.*)</ref>";
   protected final static String polishDefinitionPatternString =
       "^:{1,3}\\s*(?:\\((" + senseNumberRegExp + ")\\))?\\s*([^\n\r]*)$";
 
@@ -38,13 +43,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private final int ORTHOALTBLOCK = 3;
   private final int NYMBLOCK = 4;
   private final int PRONBLOCK = 5;
-  private final int IGNOREPOS = 6;
+  private final int EXAMPLEBLOCK = 6;
+  private final int IGNOREPOS = 7;
 
   protected enum SectionType {
     DEFS, NYMS, TRANS, PRON, MORPH, EXAMPLES, IGNORE, NOTASECTION
   }
 
-  protected ExpandAllWikiModel definitionExpander;
+  protected DefinitionExpanderWikiModel definitionExpander;
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
@@ -61,11 +67,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static Pattern languageSectionPattern;
   protected final static Pattern polishDefinitionPattern;
   protected final static Pattern polishNymLinePattern;
+  protected final static Pattern polishExampleLinePattern;
+  protected final static Pattern polishCitationPattern;
+
   protected final static Pattern sectionPattern; // Combine macro pattern
   // and pos pattern.
   protected final static HashMap<String, SectionType> validSectionTemplates;
 
   protected final static HashMap<String, String> nymMarkerToNymName;
+  protected final static HashMap<String, Resource> definitionSenseLink;
 
   static {
     // languageSectionPattern =
@@ -85,6 +95,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         .append(")").toString();
 
     polishDefinitionPattern = Pattern.compile(defPattern, Pattern.MULTILINE);
+
+    String ExamplePattern = new StringBuilder().append("(?:").append(polishDefinitionPatternString)
+        .append(")|(?:").append(partOfSpeechPatternString).append(")|(?:").append("^(.*)$")
+        .append(")").toString();
+    polishExampleLinePattern = Pattern.compile(ExamplePattern, Pattern.MULTILINE);
+
+    polishCitationPattern = Pattern.compile(polishCitationPatternString);
 
     validSectionTemplates = new HashMap<>(20);
     validSectionTemplates.put("wymowa", SectionType.PRON);
@@ -114,6 +131,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     nymMarkerToNymName.put("holonimy", "holo");
     nymMarkerToNymName.put("meronimy", "mero");
 
+    definitionSenseLink = new HashMap<>(40);
   }
 
   /*
@@ -153,22 +171,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   int definitionBlockStart = -1;
   int orthBlockStart = -1;
   int translationBlockStart = -1;
+  int exampleBlockStart = -1;
   private int nymBlockStart = -1;
   private String currentNym = null;
 
   private int pronBlockStart = -1;
 
-  void gotoNoData(Matcher m) {
-    state = NODATA;
-  }
-
-  void gotoTradBlock(Matcher m) {
-    translationBlockStart = m.end();
-    state = TRADBLOCK;
-  }
-
   void registerNewPartOfSpeech(Matcher m) {
     polwdh.initializeLexicalEntry(m.group(3));
+  }
+
+  void gotoNoData(Matcher m) {
+    state = NODATA;
   }
 
   void gotoDefBlock(Matcher m) {
@@ -176,19 +190,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionBlockStart = m.end();
   }
 
-  void gotoOrthoAltBlock(Matcher m) {
-    state = ORTHOALTBLOCK;
-    orthBlockStart = m.end();
-  }
-
   void leaveDefBlock(Matcher m) {
     extractDefinitions(definitionBlockStart, computeRegionEnd(definitionBlockStart, m));
     definitionBlockStart = -1;
   }
 
+  void gotoTradBlock(Matcher m) {
+    translationBlockStart = m.end();
+    state = TRADBLOCK;
+  }
+
   void leaveTradBlock(Matcher m) {
     extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m));
     translationBlockStart = -1;
+  }
+
+  void gotoOrthoAltBlock(Matcher m) {
+    state = ORTHOALTBLOCK;
+    orthBlockStart = m.end();
   }
 
   void leaveOrthoAltBlock(Matcher m) {
@@ -218,6 +237,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   }
 
+  void gotoExampleBlock(Matcher m) {
+    exampleBlockStart = m.end();
+    state = EXAMPLEBLOCK;
+  }
+
+  void leaveExampleBlock(Matcher m) {
+    extractExample(exampleBlockStart, computeRegionEnd(exampleBlockStart, m));
+    exampleBlockStart = -1;
+  }
+
   private void extractPolishData(int startOffset, int endOffset) {
 
     Matcher m = sectionPattern.matcher(pageContent);
@@ -239,7 +268,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               gotoTradBlock(m);
               break;
             case EXAMPLES:
-              gotoNoData(m);
+              gotoExampleBlock(m);
               break;
             case MORPH:
               gotoNoData(m);
@@ -272,7 +301,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               break;
             case EXAMPLES:
               leaveDefBlock(m);
-              gotoNoData(m);
+              gotoExampleBlock(m);
               break;
             case MORPH:
               leaveDefBlock(m);
@@ -308,7 +337,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               break;
             case EXAMPLES:
               leaveTradBlock(m);
-              gotoNoData(m);
+              gotoExampleBlock(m);
               break;
             case MORPH:
               leaveTradBlock(m);
@@ -320,6 +349,42 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               break;
             case IGNORE:
               leaveTradBlock(m);
+              gotoNoData(m);
+              break;
+            case NOTASECTION:
+              break;
+            default:
+              break;
+          }
+          break;
+        case EXAMPLEBLOCK:
+          switch (t) {
+            case DEFS:
+              leaveExampleBlock(m);
+              gotoDefBlock(m);
+              break;
+            case NYMS:
+              leaveExampleBlock(m);
+              gotoNymBlock(m);
+              break;
+            case TRANS:
+              leaveExampleBlock(m);
+              gotoTradBlock(m);
+              break;
+            case EXAMPLES:
+              leaveExampleBlock(m);
+              gotoExampleBlock(m);
+              break;
+            case MORPH:
+              leaveExampleBlock(m);
+              gotoNoData(m);
+              break;
+            case PRON:
+              leaveExampleBlock(m);
+              gotoPronBlock(m);
+              break;
+            case IGNORE:
+              leaveExampleBlock(m);
               gotoNoData(m);
               break;
             case NOTASECTION:
@@ -345,7 +410,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               break;
             case EXAMPLES:
               leaveOrthoAltBlock(m);
-              gotoNoData(m);
+              gotoExampleBlock(m);
               break;
             case MORPH:
               leaveOrthoAltBlock(m);
@@ -382,7 +447,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               break;
             case EXAMPLES:
               leaveNymBlock(m);
-              gotoNoData(m);
+              gotoExampleBlock(m);
               break;
             case MORPH:
               leaveNymBlock(m);
@@ -418,7 +483,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               break;
             case EXAMPLES:
               leavePronBlock(m);
-              gotoNoData(m);
+              gotoExampleBlock(m);
               break;
             case MORPH:
               leavePronBlock(m);
@@ -450,6 +515,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         leaveDefBlock(m);
         break;
       case TRADBLOCK:
+        leaveTradBlock(m);
+        break;
+      case EXAMPLEBLOCK:
         leaveTradBlock(m);
         break;
       case ORTHOALTBLOCK:
@@ -604,13 +672,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           log.debug("Null sense number in definition\"{}\" for entry {}", def,
               this.getWiktionaryPageName());
           if (def != null && !def.equals("")) {
-            polwdh.registerNewDefinition(def);
+            Resource res_sense = polwdh.registerNewDefinition(def);
+            definitionSenseLink.put(senseNum, res_sense);
           }
         } else {
           senseNum = senseNum.trim();
           senseNum = senseNum.replaceAll("<[^>]*>", "");
           if (def != null && !def.equals("")) {
-            polwdh.registerNewDefinition(def, senseNum);
+            Resource res_sense = polwdh.registerNewDefinition(def, senseNum);
+            definitionSenseLink.put(senseNum, res_sense);
           }
         }
       } else if (definitionMatcher.group(3) != null) {
@@ -656,6 +726,58 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
     }
 
+  }
+
+  protected void extractExample(int startOffset, int endOffset) {
+    Matcher exampleLineMatcher = polishExampleLinePattern.matcher(this.pageContent);
+    exampleLineMatcher.region(startOffset, endOffset);
+    Set<Pair<Property, RDFNode>> context = new HashSet<>();
+
+    while (exampleLineMatcher.find()) {
+      if (exampleLineMatcher.group(2) != null) {
+        // It's a line with a sense number
+
+        String example = exampleLineMatcher.group(2);
+        String ref = null;
+
+        Matcher exampleCitationMatcher = polishCitationPattern.matcher(example);
+        if (exampleCitationMatcher.find()) {
+          ref = exampleCitationMatcher.group(1);
+          example = example.substring(0, exampleCitationMatcher.start());
+          ref = definitionExpander.expandAll(ref, null);
+        }
+
+        example = definitionExpander.expandAll(example, null);
+
+        // Cleanup remaining html flags from definition expansion...
+        example = example.replaceAll("<[^>]*>", "");
+        example = example.replaceAll("&nbsp;", " ");
+        example = example.replaceAll("&lt;", "<");
+        example = example.replaceAll("&gt;", ">");
+
+        if (ref != null && !ref.isEmpty()) {
+          context.add(Pair.of(DCTerms.bibliographicCitation,
+              ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
+        }
+
+        String senseNum = exampleLineMatcher.group(1);
+        if (null == senseNum) {
+          log.debug("Null sense number in example\"{}\" for entry {}", example,
+              this.getWiktionaryPageName());
+        } else {
+          senseNum = senseNum.trim();
+          senseNum = senseNum.replaceAll("<[^>]*>", "");
+          if (example != null && !example.equals("")) {
+            wdh.registerExampleOnResource(example, context, definitionSenseLink.get(senseNum));
+            context.clear();
+          }
+        }
+      } else if (exampleLineMatcher.group(3) != null
+          && !exampleLineMatcher.group(3).trim().isEmpty()) {
+        log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", exampleLineMatcher.group(3),
+            this.getWiktionaryPageName());
+      }
+    }
   }
 
 

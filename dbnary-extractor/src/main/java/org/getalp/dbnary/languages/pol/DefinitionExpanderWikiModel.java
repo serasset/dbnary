@@ -67,15 +67,28 @@ public class DefinitionExpanderWikiModel extends ModulesPatcherWikiModel {
     }
   }
 
+  static final Set<String> varargFunctions = new HashSet<>();
+  static {
+    varargFunctions.add("local function hasNilOrEmptyArg( ... )\n");
+    varargFunctions.add("function Declension:missingForm( ... )\n");
+    varargFunctions.add("Declension:endsWith( form, ... )\n");
+    varargFunctions.add("Declension:startsWith( form, ... )\n");
+  }
+
+  protected String patcheVarAgrsIn(String content) {
+    for (String varargFunction : varargFunctions) {
+        content = content.replace(varargFunction,
+            varargFunction + "\n\tlocal arg = { n = select('#', ...); ... }\n");
+    }
+    return content;
+  }
   @Override
   public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
       throws WikiModelContentException {
-    if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("NKJP")) {
-      return getAndPatchModule(parsedPagename, map,
-          t -> t.replace("local function hasNilOrEmptyArg( ... )\n",
-              "local function hasNilOrEmptyArg( ... )\n"
-                  + "\tlocal arg = { n = select('#', ...); ... }"));
+    if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)) {
+      if (parsedPagename.pagename.equals("NKJP") || parsedPagename.pagename.equals("odmiana")) {
+        return getAndPatchModule(parsedPagename, map, this::patcheVarAgrsIn);
+      }
     }
     return super.getRawWikiContent(parsedPagename, map);
   }

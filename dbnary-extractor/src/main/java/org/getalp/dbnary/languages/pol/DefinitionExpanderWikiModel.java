@@ -77,11 +77,12 @@ public class DefinitionExpanderWikiModel extends ModulesPatcherWikiModel {
 
   protected String patcheVarAgrsIn(String content) {
     for (String varargFunction : varargFunctions) {
-        content = content.replace(varargFunction,
-            varargFunction + "\n\tlocal arg = { n = select('#', ...); ... }\n");
+      content = content.replace(varargFunction,
+          varargFunction + "\n\tlocal arg = { n = select('#', ...); ... }\n");
     }
     return content;
   }
+
   @Override
   public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
       throws WikiModelContentException {

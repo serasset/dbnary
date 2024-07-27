@@ -659,8 +659,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private static final Pattern senseNumPattern = Pattern.compile("(\\d+)");
   private static final Pattern nonMacroRelationPattern =
       Pattern.compile("\\*\\s*'''([^']*)'''(.*)$");
-  private static final Pattern exampleTraductionPattern = Pattern.compile(
-      "(?:traducción|trad)=(([^\r\n\\[{|}]|(" + WikiPatterns.macroOrLinkPatternString + "))*)");
+  private static final Pattern exampleTraductionPattern =
+      Pattern.compile("(?:traducción|trad)=(([^\r\n\\[{|}]|("
+          + WikiPatterns.macroOrLinkPatternString + ")|\\[[^\r\n\\[])*)");
 
   @Override
   protected void extractDefinitions(int startOffset, int endOffset) {

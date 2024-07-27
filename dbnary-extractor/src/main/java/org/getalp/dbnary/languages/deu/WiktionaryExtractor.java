@@ -887,7 +887,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String currentLevel1SenseNumber = "";
     String currentLevel2SenseNumber = "";
     while (exampleMatcher.find()) {
-      String example = exampleMatcher.group(2);
+      String example = exampleMatcher.group(2).trim();
       String ref = "";
       Matcher exampleCitationMatcher = germanCitationPattern.matcher(example);
 

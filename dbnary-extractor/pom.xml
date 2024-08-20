@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.getalp</groupId>
     <artifactId>dbnary</artifactId>
-    <version>3.1.23</version>
+    <version>3.1.24-SNAPSHOT</version>
   </parent>
   <artifactId>dbnary-extractor</artifactId>
   <packaging>jar</packaging>

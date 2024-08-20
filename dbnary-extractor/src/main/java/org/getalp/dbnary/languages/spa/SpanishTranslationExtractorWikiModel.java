@@ -1,5 +1,7 @@
 package org.getalp.dbnary.languages.spa;
 
+import static java.util.Map.entry;
+
 import info.bliki.wiki.filter.WikipediaParser;
 import java.io.IOException;
 import java.util.HashSet;
@@ -9,11 +11,11 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.getalp.LangTools;
-import org.getalp.dbnary.languages.AbstractGlossFilter;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
+import org.getalp.dbnary.wiki.ParameterStandardizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
   private final IWiktionaryDataHandler delegate;
 
   private final Logger log = LoggerFactory.getLogger(SpanishTranslationExtractorWikiModel.class);
+  private final ParameterStandardizer tParametersStandardizer;
 
   public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
       String imageBaseURL, String linkBaseURL) {
@@ -32,6 +35,19 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
       Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
+    tParametersStandardizer = new ParameterStandardizer(Map.ofEntries(entry("t", "t"),
+        entry("trad", "t"), entry("traduccion", "t"), entry("traducción", "t"), entry("d", "t"),
+        entry("desc", "t"), entry("descendiente", "t"), entry("a", "a"), entry("acepcion", "a"),
+        entry("acepción", "a"), entry("niv", "niv"), entry("nivel", "niv"), entry("nl", "nl"),
+        entry("nolink", "nl"), entry("nota", "nota"), entry("tl", "tl"), entry("tr", "tl"),
+        entry("transliteración", "tl"), entry("transliteracion", "tl"), entry("g", "g"),
+        entry("genero", "g"), entry("género", "g"), entry("n", "n"), entry("numero", "n"),
+        entry("número", "n"), entry("c", "c"), entry("cat", "c"), entry("categoria", "c"),
+        entry("categoría", "c"), entry("caso", "c"), entry("m", "m"), entry("modo", "m"),
+        entry("r", "r"), entry("relacion", "r"), entry("relación", "r"), entry("ne", "ne"),
+        entry("noequivalente", "ne"), entry("i", "i"), entry("inc", "i"), entry("incompleto", "i"),
+        entry("incompleta", "i"), entry("na", "na"), entry("noaplica", "na"), entry("f", "f"),
+        entry("falta", "f")));
   }
 
   public void parseTranslationBlock(String block) {
@@ -102,7 +118,6 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
       String s = null;
       StringBuilder usage = new StringBuilder();
       String trans = null;
-      currentGloss = null;
       if (parameterMap.get("tr") != null) {
         usage.append("|tr=").append(parameterMap.get("tr"));
       }
@@ -176,6 +191,15 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
             delegate.createGlossResource(merge(currentGloss, globalGloss)),
             usage.length() == 0 ? null : usage.substring(1), trans);
       }
+    } else if ("t".equals(templateName)) {
+      String lang = LangTools.normalize(parameterMap.get("1"));
+      parameterMap = tParametersStandardizer.normalizeParameters(parameterMap);
+      if (!parameterMap.containsKey("f") || parameterMap.containsKey("na")) {
+        int i = 1;
+        while (processTranslationAtPosition(lang, parameterMap, i)) {
+          i++;
+        }
+      }
     } else if ("trad-arriba".equals(templateName)) {
       // TODO : extract the parameter (gloss and POS specification)
       if (log.isTraceEnabled() && !parameterMap.isEmpty()) {
@@ -232,29 +256,73 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
     }
   }
 
+  /**
+   *
+   * @param lang the normalized language code of the translation
+   * @param parameterMap the standadized parameters given to the template
+   * @param i the rank of the translation to be processed
+   * @return true if a new translation was processed, false otherwise
+   */
+  private boolean processTranslationAtPosition(String lang, Map<String, String> parameterMap,
+      int i) {
+    StructuredGloss currentGloss = null;
+    StringBuilder usage = new StringBuilder();
+    String trans = parameterMap.get("t" + i);
+    if (null == trans)
+      return false;
+    String translit;
+    if ((translit = parameterMap.get("tl" + i)) != null) {
+      usage.append("|tr=").append(translit);
+    }
+    String senseNum;
+    if ((senseNum = parameterMap.get("a" + i)) != null) {
+      currentGloss = delegate.getGlossFilter().extractGlossStructure(senseNum);
+    }
+    String gender;
+    if ((gender = parameterMap.get("g" + i)) != null) {
+      usage.append("|").append(gender);
+    }
+    String number;
+    if ((number = parameterMap.get("n" + i)) != null) {
+      usage.append("|").append(number);
+    }
+    String cat;
+    if ((cat = parameterMap.get("c" + i)) != null) {
+      usage.append("|").append(cat);
+    }
+    delegate.registerTranslation(lang,
+        delegate.createGlossResource(merge(currentGloss, globalGloss)),
+        usage.length() == 0 ? null : usage.substring(1), trans);
+    return true;
+  }
+
   private StructuredGloss merge(StructuredGloss localGloss, StructuredGloss globalGloss) {
-    if (null == localGloss)
+    if (null == localGloss) {
       return globalGloss;
-    if (null == globalGloss)
+    }
+    if (null == globalGloss) {
       return localGloss;
+    }
 
     StructuredGloss result = new StructuredGloss();
     result.setSenseNumber(localGloss.getSenseNumber());
-    if (null == localGloss.getSenseNumber())
+    if (null == localGloss.getSenseNumber()) {
       result.setSenseNumber(globalGloss.getSenseNumber());
-    else {
+    } else {
       String localGlossValue = localGloss.getSenseNumber();
       String globalGlossValue = globalGloss.getSenseNumber();
-      if (null != globalGlossValue && !localGlossValue.equals(globalGloss.getSenseNumber()))
+      if (null != globalGlossValue && !localGlossValue.equals(globalGloss.getSenseNumber())) {
         log.debug("incompatible senseNumbers : [" + localGloss.getSenseNumber() + "] vs ["
             + globalGloss.getSenseNumber() + "] in: " + this.getPageName());
+      }
     }
 
     result.setGloss(localGloss.getGloss());
-    if (null == localGloss.getGloss())
+    if (null == localGloss.getGloss()) {
       result.setGloss(globalGloss.getGloss());
-    else if (null != globalGloss.getGloss())
+    } else if (null != globalGloss.getGloss()) {
       result.setGloss(globalGloss.getGloss() + "|" + localGloss.getGloss());
+    }
     return result;
   }
 }

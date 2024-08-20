@@ -10,12 +10,8 @@ import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.wiki.WikiTool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SpanishDefinitionExtractorWikiModel extends DbnaryWikiModel {
-
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   // static Set<String> ignoredTemplates = new TreeSet<String>();
   // static {
@@ -23,12 +19,12 @@ public class SpanishDefinitionExtractorWikiModel extends DbnaryWikiModel {
   // ignoredTemplates.add("Incorrect");
   // }
 
-  private IWiktionaryDataHandler delegate;
+  private final IWiktionaryDataHandler delegate;
 
 
   public SpanishDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
       String imageBaseURL, String linkBaseURL) {
-    this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
+    this(we, null, locale, imageBaseURL, linkBaseURL);
   }
 
   public SpanishDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
@@ -42,11 +38,13 @@ public class SpanishDefinitionExtractorWikiModel extends DbnaryWikiModel {
     // Render the definition to plain text, while ignoring the example template
     String def = WikiTool.removeReferencesIn(definition);
     try {
+      def = def.trim();
       def = render(new PlainTextConverter(), def).trim();
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("Error while rendering definition: {}", def, e);
+      // e.printStackTrace();
     }
-    if (null != def && !def.equals("")) {
+    if (!def.isEmpty()) {
       delegate.registerNewDefinition(def, senseNum);
     }
   }

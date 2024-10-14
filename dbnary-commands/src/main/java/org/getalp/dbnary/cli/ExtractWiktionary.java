@@ -16,6 +16,7 @@ import org.apache.jena.rdf.model.Model;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.dbnary.ExtractionFeature;
+import org.getalp.dbnary.cli.utils.NoWiktionaryExtractorException;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.wiktionary.WiktionaryIndexer;
 import org.getalp.wiktionary.WiktionaryIndexerException;
@@ -55,7 +56,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
       xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
       xmlif.setProperty(XMLInputFactory2.P_PRESERVE_LOCATION, Boolean.TRUE);
     } catch (Exception ex) {
-      System.err.println("Cannot intialize XMLInputFactory while classloading WiktionaryIndexer.");
+      System.err.println("Cannot initialize XMLInputFactory while classloading WiktionaryIndexer.");
       throw new RuntimeException("Cannot initialize XMLInputFactory", ex);
     }
   }
@@ -65,13 +66,16 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
     Integer returnCode;
     try {
       returnCode = prepareExtraction();
-    } catch (WiktionaryIndexerException e) {
-      spec.commandLine().getErr().println("Could not read dump.");
+    } catch (NoWiktionaryExtractorException e) {
+      spec.commandLine().getErr().println("Problem setting up the data handlers.");
+      spec.commandLine().getErr().println(e.getLocalizedMessage());
       // e.printStackTrace(spec.commandLine().getErr());
-      return -1;
+      return 0;
     } catch (IOException e) {
       spec.commandLine().getErr().println("IOException while preparing extraction, aborting.");
       // e.printStackTrace(spec.commandLine().getErr());
+      return -1;
+    } catch (WiktionaryIndexerException e) {
       return -1;
     }
     if (returnCode != 0)
@@ -86,7 +90,8 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
     }
   }
 
-  protected Integer prepareExtraction() throws WiktionaryIndexerException, IOException {
+  protected Integer prepareExtraction()
+      throws WiktionaryIndexerException, IOException, NoWiktionaryExtractorException {
     prefs = new ExtractionPreferences(parent.dbnaryDir);
 
     if (batch.useTdb())

@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
 import org.apache.jena.rdf.model.Model;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.cli.mixins.Extractor;
+import org.getalp.dbnary.cli.utils.NoWiktionaryExtractorException;
 import org.getalp.dbnary.cli.utils.VersionProvider;
 import org.getalp.wiktionary.WiktionaryIndexerException;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
     }
   }
 
-  protected Integer prepareExtraction() throws WiktionaryIndexerException {
+  protected Integer prepareExtraction() throws NoWiktionaryExtractorException {
     return setupHandlers(null);
   }
 
@@ -102,7 +103,7 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
     Integer returnCode;
     try {
       returnCode = prepareExtraction();
-    } catch (WiktionaryIndexerException e) {
+    } catch (NoWiktionaryExtractorException e) {
       spec.commandLine().getErr().println("Could not read dump.");
       // e.printStackTrace(spec.commandLine().getErr());
       return -1;

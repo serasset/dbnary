@@ -161,6 +161,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     } catch (RuntimeException e) {
       System.err.println(
           "Caught RuntimeException while parsing entry [" + this.getWiktionaryPageName() + "]");
+      log.trace("Caught RuntimeException while parsing entry [{}]. Stack trace follows",
+          this.getWiktionaryPageName(), e);
       throw e;
     }
   }

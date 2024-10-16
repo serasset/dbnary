@@ -1,0 +1,82 @@
+package org.getalp.dbnary.languages.dan;
+
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.jena.rdf.model.Property;
+import org.getalp.dbnary.LexinfoOnt;
+import org.getalp.dbnary.OntolexOnt;
+import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Created by serasset on 17/09/14.
+ */
+public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
+
+  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+
+  static {
+
+    // Finnish
+    posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("prop", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("subs", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
+    // This is an onomatopoeia, classify it as a noun ?
+    posAndTypeValueMap.put("lyd", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("interj",
+        new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("post",
+        new PosAndType(LexinfoOnt.postposition, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("prep", new PosAndType(LexinfoOnt.preposition, OntolexOnt.LexicalEntry));
+    // Rather: Prepositional Conjunction ?
+    posAndTypeValueMap.put("pp", new PosAndType(LexinfoOnt.preposition, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("art", new PosAndType(LexinfoOnt.article, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("prov", new PosAndType(LexinfoOnt.proverb, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("frase", new PosAndType(LexinfoOnt.expression, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("part", new PosAndType(LexinfoOnt.particle, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("suf", new PosAndType(LexinfoOnt.suffix, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("pref", new PosAndType(LexinfoOnt.prefix, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("conj", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Aakkonen", new PosAndType(LexinfoOnt.letter, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Kirjoitusmerkki",
+        new PosAndType(LexinfoOnt.letter, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("car-num",
+        new PosAndType(LexinfoOnt.cardinalNumeral, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("seq-num",
+        new PosAndType(LexinfoOnt.ordinalAdjective, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("pron", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("pers-pronom",
+        new PosAndType(LexinfoOnt.personalPronoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("ubest-pronon",
+        new PosAndType(LexinfoOnt.indefinitePronoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("dem-pronom",
+        new PosAndType(LexinfoOnt.demonstrativePronoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("abbr",
+        new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
+
+  }
+
+  public WiktionaryDataHandler(String lang, String tdbDir) {
+    super(lang, tdbDir);
+  }
+
+  public boolean isPartOfSpeech(String name) {
+    return posAndTypeValueMap.containsKey(name);
+  }
+
+  private static Map<String, Property> nymMap = new HashMap<>();
+  static {
+    nymMap.put("syn", LexinfoOnt.synonym);
+    nymMap.put("ant", LexinfoOnt.antonym);
+    nymMap.put("hyper", LexinfoOnt.hypernym);
+    nymMap.put("hypo", LexinfoOnt.hyponym);
+  }
+
+  public boolean isNym(String name) {
+    return nymMap.containsKey(name);
+  }
+}

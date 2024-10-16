@@ -1,0 +1,59 @@
+{
+  "@context": "https://w3id.org/codemeta/3.0",
+  "type": "SoftwareSourceCode",
+  "applicationCategory": "Natural Language Processing",
+  "author": [
+    {
+      "id": "https://orcid.org/0000-0003-2761-7353",
+      "type": "Person",
+      "affiliation": {
+        "type": "Organization",
+        "name": "Laboratoire d'Informatique de Grenoble, Université Grenoble Alpes"
+      },
+      "email": "gilles.serasset@imag.fr",
+      "familyName": "Sérasset",
+      "givenName": "Gilles"
+    },
+    {
+      "type": "Role",
+      "schema:author": "https://orcid.org/0000-0003-2761-7353",
+      "roleName": "Developper",
+      "startDate": "2010-04-27"
+    }
+  ],
+  "codeRepository": "git+https://gitlab.com/gilles.serasset/dbnary.git",
+  "dateCreated": "2010-04-27",
+  "dateModified": "2024-08-20",
+  "datePublished": "2013-05-07",
+  "description": "DBnary is an attempt to extract as many lexical data as possible from as many Wiktionary Language Editions as possible, in a structured (RDF) way, using standard lexicon ontology vocabulary (ontolex).\nThe extracted data is kept in sync with Wiktionary each time a new dump is generated and is available from http://kaiko.getalp.org/about-dbnary (more info is contained there).\nThe current repository contains the extraction programs, currently handling 25 language editions.",
+  "downloadUrl": "https://github.com/serasset/dbnary/releases/download/v3.1.23/dbnary-commands-3.1.23.zip",
+  "isPartOf": "https://kaiko.getalp.org/about-dbnary",
+  "keywords": [
+    "Lexicon",
+    "ontolex",
+    "wiktionary",
+    "dbnary"
+  ],
+  "license": "https://spdx.org/licenses/MIT",
+  "name": "DBnary extractor",
+  "operatingSystem": [
+    "Linux",
+    "MacOS",
+    "Windows"
+  ],
+  "programmingLanguage": [
+    "Java",
+    "scala",
+    "bash",
+    "SPARQL"
+  ],
+  "runtimePlatform": "JVM",
+  "version": "3.1.23",
+  "codemeta:contIntegration": {
+    "id": "https://gitlab.com/gilles.serasset/dbnary/-/pipelines"
+  },
+  "continuousIntegration": "https://gitlab.com/gilles.serasset/dbnary/-/pipelines",
+  "developmentStatus": "active",
+  "isSourceCodeOf": "DBnary dataset",
+  "issueTracker": "https://gitlab.com/gilles.serasset/dbnary/-/issues/"
+}

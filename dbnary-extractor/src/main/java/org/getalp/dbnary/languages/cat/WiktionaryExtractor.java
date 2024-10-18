@@ -292,13 +292,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractLanguageSection(parseLanguage(page.get().asWikiSection().getHeading()),
             PageIterator.of(page.get().asWikiSection(), ignoredTemplate));
       } else if (page.get() instanceof WikiText.WikiSection) {
-        log.warn("{} => Wrong level section found \"{}\"! ---> {}", getWiktionaryPageName(),
+        log.debug("{} => Wrong level section found \"{}\"! ---> {}", getWiktionaryPageName(),
             page.get().asWikiSection().getHeading().getContent().getText().trim(), url());
       } else if (!ignoredText.contains(page.get().getText().trim())
           && !page.get().getText().contains("#REDIRECCIÓ")
           && !page.get().getText().contains("#REDIRECT")
           && !page.get().getText().contains("[[Fitxer:")) {
-        log.warn("{} => Low level token found \"{}\" ---> {}", getWiktionaryPageName(), page.get(),
+        log.debug("{} => Low level token found \"{}\" ---> {}", getWiktionaryPageName(), page.get(),
             url());
       }
     }
@@ -515,7 +515,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (ISO639_3.sharedInstance.getLang(lang) != null) {
             this.wdh.registerPronunciation(template.getArg("2").getText(), lang);
           } else {
-            log.warn("Unknown language code in pron for '{}' : {}", getWiktionaryPageName(), lang);
+            log.debug("Unknown language code in pron for '{}' : {}", getWiktionaryPageName(), lang);
           }
         }
         break;
@@ -574,7 +574,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         break;
       default:
         if (!ignoredTemplate.contains(template.getName().trim())) {
-          log.warn("{} => Unhandled template \"{}\" in language section ---> {}",
+          log.debug("{} => Unhandled template \"{}\" in language section ---> {}",
               getWiktionaryPageName(), sec.get().getText(), url());
         }
         break;
@@ -796,7 +796,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           url());
       this.wdh.registerNewDefinition(render(line.getText().substring(1).trim()), 1);
     } else if (!line.getText().substring(1).isBlank()) {
-      log.warn("{} => Definition component non handled -> {} ---> {}", getWiktionaryPageName(),
+      log.debug("{} => Definition component non handled -> {} ---> {}", getWiktionaryPageName(),
           line.getText(), url());
     }
 
@@ -943,7 +943,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     try {
       rended = this.templateRender.render(new PlainTextConverter(), content).trim();
     } catch (IOException e) {
-      log.warn("{} => Render error -> {} ---> {}", getWiktionaryPageName(), e.getMessage(), url());
+      log.debug("{} => Render error -> {} ---> {}", getWiktionaryPageName(), e.getMessage(), url());
     }
     return rended;
   }

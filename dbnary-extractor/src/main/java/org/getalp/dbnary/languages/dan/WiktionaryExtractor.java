@@ -169,12 +169,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           super.extractExample(example);
         } else {
           String definition = li.getContent().getText().trim();
-          super.extractDefinition(definition, li.getLevel());
+          extractDefinition(definition, li.getLevel());
         }
       }
     }
   }
 
+  @Override
+  public void extractDefinition(String definition, int defLevel) {
+    // Render the definition to plain text using a wiktionary model
+    String def = expander.expandAll(definition, null);
+    if (!def.isEmpty()) {
+      wdh.registerNewDefinition(def, defLevel);
+    }
+  }
   private static final Set<String> ignoredTemplates = new HashSet<>();
   static {
     ignoredTemplates.add("(");

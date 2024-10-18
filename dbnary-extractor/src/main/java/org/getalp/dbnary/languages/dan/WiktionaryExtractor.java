@@ -195,11 +195,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           Map<String, String> args = template.cloneParsedArgs();
           String lang = args.get("1");
           String translation = args.get("2");
+          if (translation.startsWith("#")) {
+            // it is a sektion marker, the translation should be the next arg
+            translation = args.get("3");
+            args.remove("3");
+          }
           wdh.registerTranslation(lang, null, null, translation);
           args.remove("1");
           args.remove(2);
           if (!args.isEmpty()) {
-            log.debug("Unexpected arguments in translation template: {}", args);
+            log.debug("Unexpected arguments in trad template: {}", args);
           }
         } else if (template.getName().equals("t")) {
           Map<String, String> args = template.cloneParsedArgs();
@@ -209,7 +214,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           args.remove("1");
           args.remove(2);
           if (!args.isEmpty()) {
-            log.debug("Unexpected arguments in translation template: {}", args);
+            log.debug("Unexpected arguments in t template: {}", args);
           }
         } else {
           log.error("Unexpected template in translation section: {}", template);

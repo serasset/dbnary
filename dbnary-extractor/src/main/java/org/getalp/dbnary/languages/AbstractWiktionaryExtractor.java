@@ -208,7 +208,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   }
 
   public void extractDefinition(String definition, int defLevel) {
-    String def = expander.expandAll(definition, null);
+    String def = cleanUpMarkup(definition);
     if (!def.isEmpty()) {
       wdh.registerNewDefinition(def, defLevel);
     }

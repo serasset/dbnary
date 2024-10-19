@@ -11,7 +11,7 @@
 # Make sure it only occurs on pull requests
 compile:sampling:
   <<: *sampling
-  image: maven:3-openjdk-11
+  image: 3-amazoncorretto-11⁠
   variables:
     GIT_STRATEGY: clone
     GIT_DEPTH: "0"

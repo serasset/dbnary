@@ -183,6 +183,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       wdh.registerNewDefinition(def, defLevel);
     }
   }
+
   private static final Set<String> ignoredTemplates = new HashSet<>();
   static {
     ignoredTemplates.add("(");

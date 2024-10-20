@@ -161,6 +161,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     } catch (RuntimeException e) {
       System.err.println(
           "Caught RuntimeException while parsing entry [" + this.getWiktionaryPageName() + "]");
+      log.trace("Caught RuntimeException while parsing entry [{}]. Stack trace follows",
+          this.getWiktionaryPageName(), e);
       throw e;
     }
   }
@@ -208,13 +210,9 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   public void extractDefinition(String definition, int defLevel) {
     String def = cleanUpMarkup(definition);
     if (!def.isEmpty()) {
-      wdh.registerNewDefinition(definition, defLevel);
+      wdh.registerNewDefinition(def, defLevel);
     }
   }
-
-  /*
-   * public void extractDefinition(String definition) { extractDefinition(definition, 1); }
-   */
 
   public static String cleanUpMarkup(String group) {
     return cleanUpMarkup(group, false);

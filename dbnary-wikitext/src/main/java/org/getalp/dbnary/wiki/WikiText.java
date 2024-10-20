@@ -864,11 +864,19 @@ public class WikiText {
       this.suffix = suffix;
     }
 
+    /**
+     * returns the full text of the link, including the suffix if any
+     * @return the full text of the link
+     */
     @Override
     public String getLinkText() {
       return super.getLinkText() + ((null == suffix) ? "" : suffix);
     }
 
+    /**
+     * returns the suffix of the link, if any
+     * @return the suffix of the link
+     */
     public WikiContent getSuffix() {
       return this.suffix;
     }
@@ -1078,10 +1086,19 @@ public class WikiText {
       return this.content;
     }
 
+    /**
+     * returns the level of indentation of the item. The level is the number of characters in the
+     * list prefix.
+     * @return the level of indentation
+     */
     public int getLevel() {
       return this.listPrefix.length();
     }
 
+    /**
+     * returns the prefix of the list item.
+     * @return the prefix of the list item
+     */
     public String getListPrefix() {
       return listPrefix;
     }

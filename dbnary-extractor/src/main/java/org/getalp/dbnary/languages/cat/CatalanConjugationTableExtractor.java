@@ -116,7 +116,7 @@ public class CatalanConjugationTableExtractor extends RefactoredTableExtractor {
         case "–":
           break;
         default:
-          log.warn("{} => Conjugation field non handled -> {} ---> {}", entryName, h,
+          log.debug("{} => Conjugation field non handled -> {} ---> {}", entryName, h,
               "https://ca.wiktionary.org/wiki/" + entryName);
           break;
       }

@@ -21,27 +21,27 @@ public class WiktionaryGlossFilterFactory {
       Class<?> wdhc = Class.forName(pack + "." + language + "." + GLOSS_FILTER_CLASSNAME);
       glossFilter = (AbstractGlossFilter) wdhc.getConstructor().newInstance();
     } catch (ClassNotFoundException e) {
-      log.warn("No wiktionary data handler found for {}", language);
+      log.warn("No wiktionary gloss filter found for {}", language);
     } catch (InstantiationException e) {
-      log.warn("Could not instanciate wiktionary data handler for {}", language);
+      log.warn("Could not instanciate wiktionary gloss filter for {}", language);
     } catch (IllegalAccessException e) {
-      log.warn("Illegal access to wiktionary data handler for {}", language);
+      log.warn("Illegal access to wiktionary gloss filter for {}", language);
     } catch (IllegalArgumentException e) {
       log.warn("No constructor {}() for {}", GLOSS_FILTER_CLASSNAME, language);
     } catch (SecurityException e) {
-      log.error("Security exception while instanciating wiktionary data handler for {}", language);
+      log.error("Security exception while instanciating wiktionary gloss filter for {}", language);
     } catch (InvocationTargetException e) {
       log.warn(
-          "InvocationTargetException exception while instanciating wiktionary data handler for {}",
+          "InvocationTargetException exception while instanciating wiktionary gloss filter for {}",
           language);
       e.printStackTrace(System.err);
     } catch (NoSuchMethodException e) {
-      log.warn("No appropriate constructor when instanciating wiktionary data handler for {}",
+      log.warn("No appropriate constructor when instanciating wiktionary gloss filter for {}",
           language);
     }
 
     if (null == glossFilter) {
-      log.warn("Using default data handler for {}.", language);
+      log.warn("Using default gloss filter for {}.", language);
       glossFilter = new DefaultGlossFilter();
     }
     return glossFilter;

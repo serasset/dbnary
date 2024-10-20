@@ -11,7 +11,7 @@
 # Make sure it only occurs on pull requests
 compile:sampling:
   <<: *sampling
-  image: maven:3-openjdk-11
+  image: maven:3-amazoncorretto-11
   variables:
     GIT_STRATEGY: clone
     GIT_DEPTH: "0"
@@ -27,6 +27,7 @@ compile:sampling:
 
 .evaluate:sampling: &evaluate
   <<: *sampling
+  image: maven:3-amazoncorretto-11
   stage: test
   variables:
     LANGUAGE_BATCH: "en"
@@ -41,7 +42,7 @@ compile:sampling:
       - target/evaluation
 
 
-# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku zh ga ca
+# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku zh ga ca da
 evaluate:sampling:1:
   <<: *evaluate
   variables:
@@ -55,7 +56,7 @@ evaluate:sampling:2:
 evaluate:sampling:3:
   <<: *evaluate
   variables:
-    LANGUAGE_BATCH: "de bg pl nl sh sv lt ga ca"
+    LANGUAGE_BATCH: "de bg pl nl sh sv lt ga ca da"
 
 evaluate:sampling:4:
   <<: *evaluate

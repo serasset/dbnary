@@ -9,4 +9,8 @@ public class WiktionaryIndexerException extends Exception {
   public WiktionaryIndexerException(Exception ex) {
     super(ex);
   }
+
+  public WiktionaryIndexerException(String message) {
+    super(message);
+  }
 }

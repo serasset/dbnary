@@ -6,7 +6,7 @@ if [ ! -t 0 ]; then
 fi
 
 DIR=${DBNARY_DIR:-$HOME/develop/wiktionary}
-LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku zh ga ca"
+LANGS="fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku zh ga ca da"
 #TLANGS="fra,eng,por,deu,ell,rus,ita,fin,tur,jpn"
 MIRROR=https://dumps.wikimedia.org/
 #MIRROR=http://dumps.wikimedia.your.org/

@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.ExtractionFeature;
+import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiText;
@@ -76,6 +78,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (t instanceof Template) {
       String name = t.asTemplate().getName();
       if (name.startsWith("=") && name.endsWith("=")) {
+        if (name.equals("=sprog=")) {
+          return "unknown";
+        }
         return name.substring(1, name.length() - 1);
       } else if (name.startsWith("-") && name.endsWith("-") && name.length() > 2) {
         String potentialLanguageCode = name.substring(1, name.length() - 1);
@@ -93,6 +98,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (null == language)
       return;
     String lang = ISO639_3.sharedInstance.getTerm2Code(getLanguageCode(language));
+
+    if (null == lang)
+      return;
 
     if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
         && !wdh.getExtractedLanguage().equals(lang))
@@ -152,8 +160,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (t instanceof Template) {
         if (ignoredTemplates.contains(t.asTemplate().getName())) {
           continue;
+        } else if (t.asTemplate().getName().equals("l")) {
+          Map<String, String> args = t.asTemplate().cloneParsedArgs();
+          String nym = args.get("2");
+          wdh.registerNymRelation(nym, name);
+          args.remove("1");
+          args.remove("2");
+          if (!args.isEmpty()) {
+            log.debug("Unexpected arguments in l template: {}", args);
+          }
+        } else {
+          log.error("Unexpected template in Nym section: {}", t);
         }
-        log.error("Unexpected template in Nym section: {}", t);
       } else if (t instanceof IndentedItem) {
         IndentedItem li = t.asIndentedItem();
         List<Token> values = li.getContent().tokens();
@@ -194,8 +212,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-
   private void extractTranslations(List<Token> tokens) {
+    Resource currentGloss = null;
+    extractTranslations(tokens, currentGloss);
+  }
+
+  private void extractTranslations(List<Token> tokens, Resource currentGloss) {
     for (Token t : tokens) {
       if (t instanceof Template) {
         Template template = t.asTemplate();
@@ -210,34 +232,42 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             translation = args.get("3");
             args.remove("3");
           }
-          wdh.registerTranslation(lang, null, null, translation);
+          wdh.registerTranslation(lang, currentGloss, null, translation);
           args.remove("1");
           args.remove("2");
           if (!args.isEmpty()) {
             log.debug("Unexpected arguments in trad template: {}", args);
           }
-        } else if (template.getName().equals("t")) {
+        } else if (template.getName().equals("t") || template.getName().equals("O")
+            || template.getName().equals("t+")) {
           Map<String, String> args = template.cloneParsedArgs();
           String lang = args.get("1");
           String translation = args.get("2");
-          wdh.registerTranslation(lang, null, null, translation);
+          wdh.registerTranslation(lang, currentGloss, null, translation);
           args.remove("1");
           args.remove("2");
           if (!args.isEmpty()) {
             log.debug("Unexpected arguments in t template: {}", args);
           }
+        } else if (template.getName().equals("trans-top")) {
+          String g = template.getParsedArg("1");
+          if (null != g) {
+            currentGloss = wdh.createGlossResource(new StructuredGloss(null, g));
+          }
+        } else if (template.getName().equals("trans-bottom")) {
+          currentGloss = null;
         } else {
-          log.error("Unexpected template in translation section: {}", template);
+          log.debug("Unexpected template in translation section: {}", template);
         }
       } else if (t instanceof IndentedItem) {
         IndentedItem li = t.asIndentedItem();
         List<Token> values = li.getContent().tokens();
-        extractTranslations(values);
+        extractTranslations(values, currentGloss);
       } else if (t instanceof InternalLink) {
         // We have to get the language of the translation before registering it
         // wdh.registerTranslation(t.asInternalLink().getLinkText(), null, null, null);
       } else if (t instanceof Text) {
-        if (t.getText().replaceAll("\\s", "").isEmpty()) {
+        if (t.getText().replaceAll("[\\s:]+", "").isEmpty()) {
           continue;
         }
         log.debug("Unexpected text in translation section: {}", t);

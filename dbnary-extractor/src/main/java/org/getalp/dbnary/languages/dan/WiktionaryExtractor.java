@@ -78,6 +78,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (t instanceof Template) {
       String name = t.asTemplate().getName();
       if (name.startsWith("=") && name.endsWith("=")) {
+        if (name.equals("=sprog=")) {
+          return "unknown";
+        }
         return name.substring(1, name.length() - 1);
       } else if (name.startsWith("-") && name.endsWith("-") && name.length() > 2) {
         String potentialLanguageCode = name.substring(1, name.length() - 1);
@@ -95,6 +98,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (null == language)
       return;
     String lang = ISO639_3.sharedInstance.getTerm2Code(getLanguageCode(language));
+
+    if (null == lang) return;
 
     if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
         && !wdh.getExtractedLanguage().equals(lang))

@@ -25,9 +25,19 @@ import org.slf4j.LoggerFactory;
  * @author serasset
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
-  private static Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private static final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  private WiktionaryDataHandler daWdh;
+  private static final Set<String> ignoredTemplates = new HashSet<>();
+  static {
+    ignoredTemplates.add("(");
+    ignoredTemplates.add(")");
+    ignoredTemplates.add("-");
+    ignoredTemplates.add("top");
+    ignoredTemplates.add("midt");
+    ignoredTemplates.add("bund");
+  }
+
+  private final WiktionaryDataHandler daWdh;
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
@@ -184,22 +194,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  private static final Set<String> ignoredTemplates = new HashSet<>();
-  static {
-    ignoredTemplates.add("(");
-    ignoredTemplates.add(")");
-    ignoredTemplates.add("-");
-    ignoredTemplates.add("top");
-    ignoredTemplates.add("midt");
-    ignoredTemplates.add("bund");
-  }
 
   private void extractTranslations(List<Token> tokens) {
     for (Token t : tokens) {
       if (t instanceof Template) {
         Template template = t.asTemplate();
         if (ignoredTemplates.contains(template.getName())) {
-          continue;
+          // ignore
         } else if (template.getName().equals("trad")) {
           Map<String, String> args = template.cloneParsedArgs();
           String lang = args.get("1");
@@ -211,7 +212,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           }
           wdh.registerTranslation(lang, null, null, translation);
           args.remove("1");
-          args.remove(2);
+          args.remove("2");
           if (!args.isEmpty()) {
             log.debug("Unexpected arguments in trad template: {}", args);
           }
@@ -221,13 +222,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           String translation = args.get("2");
           wdh.registerTranslation(lang, null, null, translation);
           args.remove("1");
-          args.remove(2);
+          args.remove("2");
           if (!args.isEmpty()) {
             log.debug("Unexpected arguments in t template: {}", args);
           }
         } else {
           log.error("Unexpected template in translation section: {}", template);
         }
+      } else if (t instanceof IndentedItem) {
+        IndentedItem li = t.asIndentedItem();
+        List<Token> values = li.getContent().tokens();
+        extractTranslations(values);
+      } else if (t instanceof InternalLink) {
+        // We have to get the language of the translation before registering it
+        // wdh.registerTranslation(t.asInternalLink().getLinkText(), null, null, null);
+      } else if (t instanceof Text) {
+        if (t.getText().replaceAll("\\s", "").isEmpty()) {
+          continue;
+        }
+        log.debug("Unexpected text in translation section: {}", t);
       }
     }
   }

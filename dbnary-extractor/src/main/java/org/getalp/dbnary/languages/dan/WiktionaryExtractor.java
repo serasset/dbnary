@@ -232,7 +232,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             translation = args.get("3");
             args.remove("3");
           }
-          wdh.registerTranslation(lang, currentGloss, null, translation);
+          if (null != lang && null != translation)
+            wdh.registerTranslation(lang, currentGloss, null, translation);
           args.remove("1");
           args.remove("2");
           if (!args.isEmpty()) {
@@ -243,7 +244,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           Map<String, String> args = template.cloneParsedArgs();
           String lang = args.get("1");
           String translation = args.get("2");
-          wdh.registerTranslation(lang, currentGloss, null, translation);
+          if (null != lang && null != translation)
+            wdh.registerTranslation(lang, currentGloss, null, translation);
           args.remove("1");
           args.remove("2");
           if (!args.isEmpty()) {

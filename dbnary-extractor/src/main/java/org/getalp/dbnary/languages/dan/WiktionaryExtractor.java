@@ -99,7 +99,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
     String lang = ISO639_3.sharedInstance.getTerm2Code(getLanguageCode(language));
 
-    if (null == lang) return;
+    if (null == lang)
+      return;
 
     if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
         && !wdh.getExtractedLanguage().equals(lang))

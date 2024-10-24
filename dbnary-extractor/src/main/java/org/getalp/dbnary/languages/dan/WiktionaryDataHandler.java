@@ -6,15 +6,11 @@ import org.apache.jena.rdf.model.Property;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by serasset on 17/09/14.
  */
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
-
-  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
   static {
 
@@ -60,20 +56,20 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   }
 
+  private final static Map<String, Property> nymMap = new HashMap<>();
+  static {
+    nymMap.put("syn", LexinfoOnt.synonym);
+    nymMap.put("ant", LexinfoOnt.antonym);
+    nymMap.put("hyper", LexinfoOnt.hypernym);
+    nymMap.put("hypo", LexinfoOnt.hyponym);
+  }
+
   public WiktionaryDataHandler(String lang, String tdbDir) {
     super(lang, tdbDir);
   }
 
   public boolean isPartOfSpeech(String name) {
     return posAndTypeValueMap.containsKey(name);
-  }
-
-  private static Map<String, Property> nymMap = new HashMap<>();
-  static {
-    nymMap.put("syn", LexinfoOnt.synonym);
-    nymMap.put("ant", LexinfoOnt.antonym);
-    nymMap.put("hyper", LexinfoOnt.hypernym);
-    nymMap.put("hypo", LexinfoOnt.hyponym);
   }
 
   public boolean isNym(String name) {

@@ -7,7 +7,7 @@ DBnary is an attempt to extract as many lexical data as possible from as many Wi
 
 The extracted data is kept in sync with Wiktionary each time a new dump is generated and is available from http://kaiko.getalp.org/about-dbnary (more info is contained there).
 
-The current repository contains the extraction programs, currently handling 21 language editions.
+The current repository contains the extraction programs, currently handling 26 language editions.
 
 ## Using the extracted data ##
 

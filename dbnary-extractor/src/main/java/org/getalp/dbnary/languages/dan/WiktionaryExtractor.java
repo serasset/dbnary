@@ -13,6 +13,7 @@ import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
@@ -110,10 +111,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     List<Pair<Token, List<Token>>> sections = split(value, this::isSectionHeader);
     for (Pair<Token, List<Token>> section : sections) {
       Token header = section.getLeft();
-      if (header instanceof Template) {
-        Template t = header.asTemplate();
-        // remove the dashes before end after
-        String name = t.getName().substring(1, t.getName().length() - 1);
+      if (header instanceof Template || header instanceof Heading) {
+        String name;
+        if (header instanceof Heading) {
+          name = header.asHeading().getContent().getText().trim();
+        } else {
+          Template t = header.asTemplate();
+          // remove the dashes before end after
+          name = t.getName().substring(1, t.getName().length() - 1);
+        }
         if (daWdh.isPartOfSpeech(name)) {
           wdh.initializeLexicalEntry(name);
           extractDefinitions(section.getRight());
@@ -121,7 +127,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // TODO: extract examples
         } else if (name.equals("trans")) {
           extractTranslations(section.getRight());
-        } else if (name.equals("etym")) {
+        } else if (name.equals("etym") || name.startsWith("Etymologi")) {
           // TODO: extract etymology
         } else if (name.equals("pronun")) {
           // TODO: extract pronunciation
@@ -137,10 +143,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         } else if (name.equals("decl")) {
           // TODO: extract morphology
         } else {
-          log.trace("Unexpected section template: {}", t);
+          log.trace("Unexpected section name: {}", name);
         }
       } else {
-        log.error("Unexpected non template token after section split: {}", header);
+        log.error("Unexpected non Template/Heading token after section split: {}", header);
       }
     }
     wdh.finalizeLanguageSection();
@@ -151,6 +157,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       Template tmpl = t.asTemplate();
       String name = tmpl.getName();
       return name.length() >= 2 && name.startsWith("-") && name.endsWith("-");
+    } else if (t instanceof Heading) {
+      return t.asHeading().getLevel() <= 3;
     }
     return false;
   }

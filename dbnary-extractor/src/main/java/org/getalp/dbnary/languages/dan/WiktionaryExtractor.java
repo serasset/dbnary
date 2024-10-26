@@ -41,6 +41,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private final WiktionaryDataHandler daWdh;
+  private final static Set<String> knownSections = new HashSet<>();
+  static {
+    // These legimate known sections clash with language codes and should not be interpreted as languages
+    knownSections.add("ant");
+    knownSections.add("abr");
+    knownSections.add("adj");
+    knownSections.add("adv");
+    knownSections.add("afl");
+    knownSections.add("alt");
+    knownSections.add("art");
+    knownSections.add("end");
+    knownSections.add("lyd");
+    knownSections.add("num");
+    knownSections.add("phr");
+    knownSections.add("ref");
+    knownSections.add("rel");
+    knownSections.add("syn");
+
+  }
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
@@ -80,11 +99,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       String name = t.asTemplate().getName();
       if (name.startsWith("=") && name.endsWith("=")) {
         if (name.equals("=sprog=")) {
+          // TODO: extract language name from Danish value
           return "unknown";
         }
         return name.substring(1, name.length() - 1);
       } else if (name.startsWith("-") && name.endsWith("-") && name.length() > 2) {
         String potentialLanguageCode = name.substring(1, name.length() - 1);
+        if (knownSections.contains(potentialLanguageCode)) {
+          return null;
+        }
         if (ISO639_3.sharedInstance.getLang(potentialLanguageCode) != null) {
           return potentialLanguageCode;
         }
@@ -167,7 +190,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token t : tokens) {
       if (t instanceof Template) {
         if (ignoredTemplates.contains(t.asTemplate().getName())) {
-          continue;
+          // ignore
         } else if (t.asTemplate().getName().equals("l")) {
           Map<String, String> args = t.asTemplate().cloneParsedArgs();
           String nym = args.get("2");

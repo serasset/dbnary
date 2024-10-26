@@ -16,6 +16,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     // Finnish
     posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("noun2", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Substantiv", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Adjektiv",
@@ -59,8 +60,21 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         new PosAndType(LexinfoOnt.indefinitePronoun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("dem-pronom",
         new PosAndType(LexinfoOnt.demonstrativePronoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("int-pronom",
+        new PosAndType(LexinfoOnt.interrogativePronoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("rel-pronom",
+        new PosAndType(LexinfoOnt.relativePronoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Possessivt Pronomen (Ejestedord)",
+        new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Possessivt Pronomen",
+        new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("abbr",
         new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("abr", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("acro", new PosAndType(LexinfoOnt.acronym, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("contr",
+        new PosAndType(LexinfoOnt.contraction, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("symb", new PosAndType(LexinfoOnt.symbol, OntolexOnt.LexicalEntry));
 
   }
 

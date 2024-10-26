@@ -18,7 +18,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Substantiv", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Adjektiv", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Adjektiv",
+        new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Verbum", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("prop", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
@@ -43,7 +44,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("conj", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Aakkonen", new PosAndType(LexinfoOnt.letter, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("num", new PosAndType(LexinfoOnt.numeral, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("phr", new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("phr",
+        new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("Kirjoitusmerkki",
         new PosAndType(LexinfoOnt.letter, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("car-num",

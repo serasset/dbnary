@@ -16,6 +16,7 @@ import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.InternalLink;
+import org.getalp.dbnary.wiki.WikiText.Item;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Text;
@@ -36,14 +37,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignoredTemplates.add(")");
     ignoredTemplates.add("-");
     ignoredTemplates.add("top");
+    ignoredTemplates.add("top3");
+    ignoredTemplates.add("top4");
     ignoredTemplates.add("midt");
+    ignoredTemplates.add("mid");
+    ignoredTemplates.add("mid3");
+    ignoredTemplates.add("mid4");
     ignoredTemplates.add("bund");
+    ignoredTemplates.add("bottom");
+    ignoredTemplates.add("trans-mid");
   }
 
   private final WiktionaryDataHandler daWdh;
   private final static Set<String> knownSections = new HashSet<>();
   static {
-    // These legimate known sections clash with language codes and should not be interpreted as languages
+    // These legimate known sections clash with language codes and should not be interpreted as
+    // languages
     knownSections.add("ant");
     knownSections.add("abr");
     knownSections.add("adj");
@@ -252,9 +261,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token t : tokens) {
       if (t instanceof Template) {
         Template template = t.asTemplate();
-        if (ignoredTemplates.contains(template.getName())) {
-          // ignore
-        } else if (template.getName().equals("trad")) {
+        if (template.getName().equals("trad")) {
           Map<String, String> args = template.cloneParsedArgs();
           String lang = args.get("1");
           String translation = args.get("2");
@@ -287,10 +294,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (null != g) {
             currentGloss = wdh.createGlossResource(new StructuredGloss(null, g));
           }
-        } else if (template.getName().equals("trans-bottom")) {
+        } else if (template.getName().equals("trans-bottom") || template.getName().equals(")")
+            || template.getName().equals("bottom")) {
           currentGloss = null;
+        } else if (ignoredTemplates.contains(template.getName())) {
+          // ignore
         } else {
           log.debug("Unexpected template in translation section: {}", template);
+        }
+      } else if (t instanceof Item) {
+        Item glossItem = t.asItem();
+        String g = glossItem.getContent().getText();
+        if (null != g) {
+          g = g.trim();
+          currentGloss = wdh.createGlossResource(new StructuredGloss(null, g));
+        } else {
+          currentGloss = null;
         }
       } else if (t instanceof IndentedItem) {
         IndentedItem li = t.asIndentedItem();

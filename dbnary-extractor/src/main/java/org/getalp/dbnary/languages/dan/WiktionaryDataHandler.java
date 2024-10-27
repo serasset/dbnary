@@ -38,7 +38,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("art", new PosAndType(LexinfoOnt.article, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("prov", new PosAndType(LexinfoOnt.proverb, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("frase", new PosAndType(LexinfoOnt.expression, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Udtryk", new PosAndType(LexinfoOnt.expression, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Udtryk",
+        new PosAndType(LexinfoOnt.expression, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("part", new PosAndType(LexinfoOnt.particle, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("suf", new PosAndType(LexinfoOnt.suffix, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("end", new PosAndType(LexinfoOnt.suffix, OntolexOnt.LexicalEntry));

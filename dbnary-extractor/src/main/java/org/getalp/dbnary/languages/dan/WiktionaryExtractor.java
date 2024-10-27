@@ -149,8 +149,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           name = header.asHeading().getContent().getText().trim();
         } else {
           Template t = header.asTemplate();
-          // remove the dashes before end after
+          // remove the dashes before and after
           name = t.getName().substring(1, t.getName().length() - 1);
+          if ("expr".equals(name) && t.getArg("1") != null)
+            name = "Udtryk";
         }
         if (daWdh.isPartOfSpeech(name)) {
           wdh.initializeLexicalEntry(name);

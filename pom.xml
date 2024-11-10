@@ -107,7 +107,7 @@
     <!--repository>
       <id>getalp.repository</id>
       <name>Getalp Projects and third party repository</name>
-      <url>scpexe://getalp.imag.fr/opt/www/m2</url>
+      <url>scpexe://getalp.imag.fr/opt/getalp/m2</url>
     </repository-->
     <site>
       <id>kaiko.getalp.org</id>
@@ -291,7 +291,7 @@
       <dependency>
         <groupId>info.bliki.wiki</groupId>
         <artifactId>bliki-core</artifactId>
-        <version>3.1.16G</version>
+        <version>3.1.17G</version>
       </dependency>
 
       <!-- Misc -->

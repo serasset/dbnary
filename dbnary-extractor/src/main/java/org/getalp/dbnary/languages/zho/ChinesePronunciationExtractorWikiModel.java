@@ -1,7 +1,9 @@
 package org.getalp.dbnary.languages.zho;
 
+import java.io.IOException;
 import java.util.IllformedLocaleException;
 import java.util.Locale.Builder;
+import java.util.Map;
 import java.util.Map.Entry;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;

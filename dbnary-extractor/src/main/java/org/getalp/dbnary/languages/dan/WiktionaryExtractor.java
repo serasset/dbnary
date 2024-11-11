@@ -1,11 +1,11 @@
 package org.getalp.dbnary.languages.dan;
 
-import java.util.ArrayList;
+import static org.getalp.dbnary.tools.TokenListSplitter.split;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.ExtractionFeature;
@@ -75,19 +75,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     daWdh = (WiktionaryDataHandler) wdh;
   }
 
-  private List<Pair<Token, List<Token>>> split(List<Token> tokens, Predicate<Token> predicate) {
-    List<Pair<Token, List<Token>>> splits = new ArrayList<>();
-    List<Token> currentSplit = new ArrayList<>();
-    for (Token t : tokens) {
-      if (predicate.test(t)) {
-        currentSplit = new ArrayList<>();
-        splits.add(Pair.of(t, currentSplit));
-      } else {
-        currentSplit.add(t);
-      }
-    }
-    return splits;
-  }
 
 
   public void extractData() {
@@ -140,6 +127,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
 
     wdh.initializeLanguageSection(lang);
+    extractLanguageSections(value);
+    wdh.finalizeLanguageSection();
+  }
+
+  private void extractLanguageSections(List<Token> value) {
     List<Pair<Token, List<Token>>> sections = split(value, this::isSectionHeader);
     for (Pair<Token, List<Token>> section : sections) {
       Token header = section.getLeft();
@@ -183,7 +175,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         log.error("Unexpected non Template/Heading token after section split: {}", header);
       }
     }
-    wdh.finalizeLanguageSection();
   }
 
   private boolean isSectionHeader(Token t) {
@@ -246,12 +237,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   @Override
-  public void extractDefinition(String definition, int defLevel) {
+  public Resource extractDefinition(String definition, int defLevel) {
     // Render the definition to plain text using a wiktionary model
     String def = expander.expandAll(definition, null);
     if (!def.isEmpty()) {
       wdh.registerNewDefinition(def, defLevel);
     }
+    return null;
   }
 
   private void extractTranslations(List<Token> tokens) {

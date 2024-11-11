@@ -358,13 +358,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   @Override
-  public void extractDefinition(String definition, int defLevel) {
+  public Resource extractDefinition(String definition, int defLevel) {
     combinedExpander.parseDefinition(definition, defLevel);
+    return null;
   }
 
-  public void extractExample(String example) {
+  public Resource extractExample(String example) {
     Set<Pair<Property, RDFNode>> citation = expandExample(example);
     registerExampleIfNotNull(citation);
+    return null;
   }
 
   private void registerExampleIfNotNull(Set<Pair<Property, RDFNode>> context) {

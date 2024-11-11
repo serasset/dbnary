@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
@@ -196,7 +197,15 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     }
   }
 
-  public void extractDefinition(Matcher definitionMatcher) {
+  /**
+   * Extract and register a new wordsense in the current lexical entry. The definition is extracted
+   * from a Matcher object where the group contains the list item's content and group(1) the
+   * definition. The definition level is taken from the matcher object
+   *
+   * @param definitionMatcher the pattern matcher containing the definition
+   * @return the resource representing the new word sense
+   */
+  public Resource extractDefinition(Matcher definitionMatcher) {
     // Remove at least the leading spaces from definition as they are meaningless (just a separator
     // from the list item) and may be interpreted as pre content when taken out of context.
     String definition = definitionMatcher.group(1).trim();
@@ -204,14 +213,22 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     if (definitionMatcher.group().charAt(1) == '#') {
       defLevel = 2;
     }
-    extractDefinition(definition, defLevel);
+    return extractDefinition(definition, defLevel);
   }
 
-  public void extractDefinition(String definition, int defLevel) {
+  /**
+   * Extract and register a new wordsense in the current lexical entry.
+   * 
+   * @param definition the definition string
+   * @param defLevel the level at which the word sense is defined (sub-senses vs senses)
+   * @return the resource representing the new word sense
+   */
+  public Resource extractDefinition(String definition, int defLevel) {
     String def = cleanUpMarkup(definition);
     if (!def.isEmpty()) {
-      wdh.registerNewDefinition(def, defLevel);
+      return wdh.registerNewDefinition(def, defLevel);
     }
+    return null;
   }
 
   public static String cleanUpMarkup(String group) {
@@ -249,11 +266,12 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     return NON_STANDARD_LANGUAGE_MAPPINGS.get(language);
   }
 
-  public void extractExample(String example) {
+  public Resource extractExample(String example) {
     String ex = expander.expandAll(example, null);
     if (ex != null && !ex.isEmpty()) {
-      wdh.registerExample(ex, null);
+      return wdh.registerExample(ex, null);
     }
+    return null;
   }
 
 

@@ -104,8 +104,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   // States used for processing
   @Deprecated
   protected Resource currentLexEntry;
-  // @Deprecated protected Resource currentLexinfoPos;
-  // @Deprecated protected String currentWiktionaryPos;
 
   protected LexicalEntry currentLexicalEntry;
 
@@ -624,7 +622,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       Resource currentGloss, String usage, String word) {
     if (null == entity) {
       log.debug("Registering Translation when lex entry is null in \"{}\".",
-          this.currentMainLexEntry);
+          this.currentPage.getWiktionaryURI());
       return null; // Don't register anything if current lex entry is not known.
     }
     word = word.trim();
@@ -634,7 +632,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       usage = usage.trim();
     }
     // Do not register empty translations
-    if (word.length() == 0 && (usage == null || usage.length() == 0)) {
+    if (word.isEmpty() && (usage == null || usage.isEmpty())) {
       return null;
     }
     // Ensure language is in its standard form.
@@ -654,7 +652,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       aBox.add(trans, DBnaryOnt.gloss, currentGloss);
     }
 
-    if (usage != null && usage.length() > 0) {
+    if (usage != null && !usage.isEmpty()) {
       aBox.add(trans, DBnaryOnt.usage, usage);
     }
     return trans;
@@ -900,6 +898,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   }
 
   public void registerNymRelationToEntity(String target, String synRelation, Resource entity) {
+    if (null == entity)
+      entity = currentLexEntry;
     registerNymRelationToEntity(target, synRelation, entity, null, null);
   }
 
@@ -1111,9 +1111,12 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     return NS;
   }
 
+  @Override
   public Resource addTo(Resource target, Set<Pair<Property, RDFNode>> pv) {
     if (null == pv)
       return target;
+    if (null == target)
+      target = currentLexEntry;
     for (Pair<Property, RDFNode> p : pv) {
       target.addProperty(p.getLeft(), p.getRight());
     }

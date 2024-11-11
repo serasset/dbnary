@@ -22,20 +22,31 @@ public class ModulesPatcherWikiModel extends DbnaryWikiModel {
   @SafeVarargs
   protected final String getAndPatchModule(ParsedPageName parsedPagename, Map<String, String> map,
       Function<String, String>... patchers) throws WikiModelContentException {
-    String content = super.getRawWikiContent(parsedPagename, map);
-    if (null == content) {
+    String content = getContent(parsedPagename, map);
+    if (content == null) {
       return null;
     }
+    content = patchModule(parsedPagename.pagename, content, patchers);
+    return content;
+  }
+
+  protected String getContent(ParsedPageName parsedPagename, Map<String, String> map)
+      throws WikiModelContentException {
+    return super.getRawWikiContent(parsedPagename, map);
+  }
+
+  protected String patchModule(String pagename, String content,
+      Function<String, String>... patchers) {
     int patchnum = 0;
     for (Function<String, String> patcher : patchers) {
       String patchedContent = patcher.apply(content);
       if (logger.isDebugEnabled()) {
         boolean patched = !patchedContent.equals(content);
         if (patched) {
-          logger.debug("Module:{} has been patched ({}).", parsedPagename.pagename, ++patchnum);
+          logger.debug("Module:{} has been patched ({}).", pagename, ++patchnum);
         } else {
           logger.warn("Module:{} could not be patched! ({}) Check current implementation.",
-              parsedPagename.pagename, ++patchnum);
+              pagename, ++patchnum);
         }
       }
       content = patchedContent;

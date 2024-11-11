@@ -199,5 +199,7 @@ public interface IWiktionaryDataHandler {
 
   void dumpAllFeaturesAsHDT(OutputStream ostream, boolean isExolex);
 
+  Resource addTo(Resource target, Set<Pair<Property, RDFNode>> pv);
+
   Resource addToCurrentWordSense(Set<Pair<Property, RDFNode>> context);
 }

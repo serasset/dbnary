@@ -1,6 +1,8 @@
 package org.getalp.dbnary.languages.swe;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.ExtractionFeature;
@@ -11,19 +13,17 @@ import org.getalp.dbnary.PropertyObjectPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author malick
- */
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+  final static HashMap<String, String> nymMarkerToNymName;
 
   static {
     /*
-     * Les lignes avec comme commentaire "fait" indique ce part of speech à été trouver dans certain
-     * mots du swedois
+     * Les lignes avec comme commentaire "fait" indique ce part of speech a été trouvé dans certains
+     * mots du Suedois
      */
-    // swedois
+    // swedish
     posAndTypeValueMap.put("Substantiv", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry)); // fait
     posAndTypeValueMap.put("Proper noun",
         new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
@@ -80,6 +80,21 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         new PosAndType(LexinfoOnt.personalPronoun, LexinfoOnt.Pronoun));
 
     // Initialism ?
+
+    nymMarkerToNymName = new HashMap<>(20);
+    nymMarkerToNymName.put("synonymer", "syn");
+    nymMarkerToNymName.put("antonymer", "ant");
+    nymMarkerToNymName.put("hyponymer", "hypo");
+    nymMarkerToNymName.put("hyperonymer", "hyper");
+    nymMarkerToNymName.put("syn", "syn");
+    nymMarkerToNymName.put("ant", "ant");
+    nymMarkerToNymName.put("hypo", "hypo");
+    nymMarkerToNymName.put("hyper", "hyper");
+    // nymMarkerToNymName.put("kohyponymer", null);
+    nymMarkerToNymName.put("holonymer", "holo");
+    nymMarkerToNymName.put("meronymer", "mero");
+    // nymMarkerToNymName.put("komeronymer", "mero");
+    nymMarkerToNymName.put("troponymer", "tropo");
   }
 
   public WiktionaryDataHandler(String lang, String tdbDir) {

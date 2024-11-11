@@ -649,14 +649,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   @Override
-  public void extractDefinition(String definition, int defLevel) {
+  public Resource extractDefinition(String definition, int defLevel) {
     // TODO: properly handle macros in definitions.
     italianDefinitionExtractorWikiModel.parseDefinition(definition, defLevel);
+    return null;
   }
 
   @Override
-  public void extractExample(String example) {
+  public Resource extractExample(String example) {
     italianExampleExtractorWikiModel.parseExample(example);
+    return null;
   }
 
   private ItalianDefinitionExtractorWikiModel italianDefinitionExtractorWikiModel;

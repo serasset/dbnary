@@ -494,19 +494,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
 
-  public void extractExample(String example) {
+  public Resource extractExample(String example) {
     Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
     String ex = exampleExpander.expandExample(example, defTemplates, context);
     if (ex != null && !ex.equals("")) {
       wdh.registerExample(ex, context);
     }
+    return null;
   }
 
   @Override
-  public void extractDefinition(String definition, int defLevel) {
+  public Resource extractDefinition(String definition, int defLevel) {
     // TODO: properly handle macros in definitions.
     definitionExpander.parseDefinition(definition, defLevel);
+    return null;
   }
 
 }

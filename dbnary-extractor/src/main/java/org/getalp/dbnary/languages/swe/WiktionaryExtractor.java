@@ -181,20 +181,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token t : tokens) {
       if (t instanceof Template) {
         Template template = t.asTemplate();
-        if (template.getName().equals("ö+") || template.getName().equals("ö+")) {
+        if (template.getName().equals("ö") || template.getName().equals("ö+")) {
           Map<String, String> args = template.cloneParsedArgs();
           String lang = args.get("1");
           String translation = args.get("2");
           String gram1 = args.get("3");
           String gram2 = args.get("4");
-          if (gram1 != null || gram2 != null) {
-            gram1 += "g=" + (gram1 == null ? gram2 : gram1 + "+" + (gram2 == null ? "" : gram2));
-          }
           String tr = args.get("tr");
           if (null != tr) {
             tr += "tr=" + tr; // transliteration
           }
-          String usage = Stream.of(gram1, tr).filter(s -> s != null && !s.isEmpty())
+          String usage = Stream.of(gram1, gram2, tr).filter(s -> s != null && !s.isEmpty())
               .collect(Collectors.joining("|"));
           if (null != lang && null != translation)
             wdh.registerTranslation(lang, currentGloss, usage, translation);
@@ -280,7 +277,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           target = null;
           continue;
         }
-        exampleExtractor.processDefinitionLine(ex.substring(1).trim(), target);
+        exampleExtractor.processDefinitionLine(ex, target);
       }
     }
   }

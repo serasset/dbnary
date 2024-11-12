@@ -2,12 +2,10 @@ package org.getalp.dbnary.languages.swe;
 
 import static org.getalp.dbnary.tools.TokenListSplitter.split;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
@@ -17,7 +15,6 @@ import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
-import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
@@ -45,7 +42,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected ExampleExpanderWikiModel exampleExtractor;
   protected DefinitionExpanderWikiModel definitionExpander;
 
-  private static Set<String> ignoredTranslationTemplates = new HashSet<>();
+  private static final Set<String> ignoredTranslationTemplates = new HashSet<>();
+  // Currently no ignored translation templates
 
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {

@@ -98,9 +98,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void extractLanguageData(Token language, List<Token> value) {
     if (null == language)
       return;
-    String lang = ISO639_3.sharedInstance.getTerm2Code(getLanguageCode(language));
+    String lang = ISO639_3.sharedInstance.getShortestCode(getLanguageCode(language));
 
-    if (null == lang) {
+    if (null == lang || lang.isEmpty()) {
       log.trace("Ignoring language section {} in {}", language, wdh.currentPagename());
       return;
     }
@@ -265,6 +265,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           String definition = ex.trim();
           target = extractDefinition(definition, t.asNumberedListItem().getLevel());
         }
+      } else if (t instanceof ListItem) {
+        // Ignore list items in definitions (they hold pronunciations)
       } else if (t instanceof IndentedItem) {
         WikiContent content = t.asIndentedItem().getContent();
         String ex = content.getText();

@@ -307,6 +307,18 @@ public class ISO639_3 {
     return (l != null) ? l.part1 : null;
   }
 
+  public String getShortestCode(String langcode) {
+    String l = getTerm2Code(langcode);
+    if (l == null || l.isEmpty()) {
+      l = getTerm3Code(langcode);
+    }
+    if (l == null || l.isEmpty()) {
+      l = getIdCode(langcode);
+    }
+
+    return l;
+  }
+
   public Lang getLang(String langcode) {
     return langMap.get(langcode);
   }

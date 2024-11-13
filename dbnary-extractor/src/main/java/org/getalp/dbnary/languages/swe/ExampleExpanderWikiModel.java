@@ -84,18 +84,33 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
    *
    * @param example the wiki code
    * @param target the resource (current Sense or current LexEntry) on which to attach information.
+   * @return the resource representing the extracted example
    */
-  public void processDefinitionLine(String example, Resource target) {
+  public Resource processDefinitionLine(String example, Resource target) {
     this.context = new HashSet<>();
     this.target = target;
     String exampleText = expandAll(example, templates).trim();
     if (!exampleText.isEmpty()) {
       Resource exNode = wdh.registerExample(exampleText, context);
       wdh.addTo(exNode, context);
+      return exNode;
     } else {
       wdh.addTo(target, context);
     }
+    return null;
   }
+
+  public void processExampleTranslation(String translation, Resource example) {
+    this.context = new HashSet<>();
+    String exampleText = simpleExpander.expandAll(translation, this.templates);
+    if (!exampleText.isEmpty()) {
+      context.add(Pair.of(RDF.value,
+          ResourceFactory.createLangLiteral(exampleText, wdh.getExtractedLanguage())));
+      if (null != example)
+        wdh.addTo(example, context);
+    }
+  }
+
 
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,

@@ -241,6 +241,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractDefinitions(List<Token> tokens) {
     Resource target = null;
+    Resource latestExample = null;
     for (Token t : tokens) {
       if (t instanceof NumberedListItem) {
         WikiContent content = t.asNumberedListItem().getContent();
@@ -250,16 +251,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               .anyMatch(tmpl -> tmpl.asTemplate().getName().equals("avgränsare"))) {
             // All remaining information will be attached to the lexical entry rather than the last
             // sense
+            log.trace("avgränsare found as numbered list item in definition section: {} -- {}", ex,
+                this.getWiktionaryPageName());
             target = null;
+            latestExample = null;
             continue;
           }
           // If there is 2 colon, it should be the translation of the previous example
           if (ex.startsWith("::")) {
+            exampleExtractor.processExampleTranslation(ex.substring(2).trim(), latestExample);
             log.debug("Unhandled translation of an example in definition section: {} -- {}", ex,
                 this.getWiktionaryPageName());
           } else {
             // It is an example or information line of the target.
-            exampleExtractor.processDefinitionLine(ex.substring(1).trim(), target);
+            latestExample = exampleExtractor.processDefinitionLine(ex.substring(1).trim(), target);
           }
         } else {
           String definition = ex.trim();
@@ -275,9 +280,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // All remaining information will be attached to the lexical entry rather than the last
           // sense
           target = null;
+          latestExample = null;
           continue;
         }
-        exampleExtractor.processDefinitionLine(ex, target);
+        latestExample = exampleExtractor.processDefinitionLine(ex, target);
       }
     }
   }

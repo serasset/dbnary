@@ -19,6 +19,7 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
+import org.getalp.dbnary.tools.TemplateTracker;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.Token;
@@ -39,6 +40,10 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
     ignoredTemplates.add("diverse"); // other misc information
     ignoredTemplates.add("anagram"); // anagrams
     ignoredTemplates.add("konstr"); // common usage (TODO: use as examples ?)
+    ignoredTemplates.add("etymologi"); // etymology (TODO: extract ?)
+    ignoredTemplates.add("etymologi"); // etymology (TODO: extract ?)
+    ignoredTemplates.add("grammatik"); // grammatical information (TODO: extract ?)
+    ignoredTemplates.add("?"); // lexicographer note about lexical information
   }
 
   private Set<Pair<Property, RDFNode>> context;
@@ -46,6 +51,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
   private final SwedishWikiModel swedishWikiModel;
   private final WiktionaryDataHandler wdh;
   private Resource target;
+  private final TemplateTracker templateTracker = new TemplateTracker();
 
   public ExampleExpanderWikiModel(WiktionaryPageSource wi, WiktionaryDataHandler wdh) {
     this(wi, wdh, new Locale("sv"), "/IMG", "/LINK");
@@ -115,6 +121,10 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
   @Override
   public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
       Appendable writer) throws IOException {
+    long startTime = 0;
+    if (log.isTraceEnabled()) {
+      startTime = System.nanoTime();
+    }
     if (ignoredTemplates.contains(templateName)) {
       // NOP
     } else if ("citat".equals(templateName)) {
@@ -135,14 +145,8 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
             ResourceFactory.createLangLiteral(translation, wdh.getExtractedLanguage())));
       }
       writer.append(text);
-    } else if (WiktionaryDataHandler.nymMarkerToNymName.containsKey(templateName)) {
+    } else if (WiktionaryDataHandler.isValidNym(templateName)) {
       extractNyms(templateName, parameterMap);
-    } else if ("etymologi".equals(templateName)) {
-      // TODO: extract eymologies
-      log.trace("Etymology is not extracted yet.");
-    } else if ("grammatik".equals(templateName)) {
-      // TODO: extract grammatical information
-      log.trace("Grammatical information are not extracted yet.");
     } else if ("varianter".equals(templateName) || "smeknamn".equals(templateName)) {
       // TODO: extract variants
       log.trace("Variants are not extracted yet.");
@@ -150,20 +154,23 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       // TODO: extract variants
       log.trace("användning (use ?) are not extracted yet.");
     } else if ("besläktade ord".equals(templateName)) {
-      // TODO: extract variants
+      // TODO: extract related words
       log.trace("besläktade ord / seäven (related words ?) are not extracted yet.");
     } else if ("sammansättningar".equals(templateName) || "fraser".equals(templateName)) {
-      // TODO: extract variants
+      // TODO: extract dérived terms and phrases
       log.trace("sammansättningar and (compounds ?) are not extracted yet.");
     } else {
-      log.trace("DEFINITIONS - processing template: {} --in-- {}", templateName,
-          this.getPageName());
+      log.trace("DEFINITIONS - processing template: {} @ {}", templateName, this.getPageName());
       super.substituteTemplateCall(templateName, parameterMap, writer);
+    }
+
+    if (log.isTraceEnabled()) {
+      long elapsedNanos = System.nanoTime() - startTime;
+      templateTracker.incr(templateName, elapsedNanos);
     }
   }
 
   private void extractNyms(String nym, Map<String, String> parameterMap) {
-    Collection<Pair<Property, RDFNode>> context = new HashSet<>();
     WikiText nymValues = new WikiText(parameterMap.get("1"));
     for (Token t : nymValues.links()) {
       if (t instanceof InternalLink) {
@@ -190,4 +197,9 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
     return simpleExpander.expandAll(originalSource, this.templates);
   }
 
+  public void logTemplateTracker() {
+    if (log.isTraceEnabled()) {
+      templateTracker.trace(log, "Example Expander");
+    }
+  }
 }

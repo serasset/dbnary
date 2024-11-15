@@ -75,7 +75,6 @@ public class ISO639_3 {
 
     void addName(String lang, String langName) {
       names.computeIfAbsent(lang, k -> new LinkedHashSet<>()).add(langName);
-
     }
 
     String getName(String lang) {
@@ -115,49 +114,11 @@ public class ISO639_3 {
     // and value {id: "ita", part2b: "ita", part2t: "ita", part1: "it", en: "Italian"}
     // another element of langMap has key "it"
     // and value {id: "ita", part2b: "ita", part2t: "ita", part1: "it", en: "Italian"}
-    try (InputStream fis = this.getClass().getResourceAsStream("iso-639-3.tab");
-        BufferedReader br =
-            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+    extractSilIsoTable("iso-639-3.tab");
+    // Also takes patch languages (mainly some collective languages that are not part of iso-639-3
+    // but were part of iso-639-2)
+    extractSilIsoTable("iso-639-patch.tab");
 
-      Matcher matcher = linePattern.matcher("");
-
-      String s = br.readLine();
-      while (s != null) {
-        matcher.reset(s);
-        if (matcher.find()) {
-          Lang l = new Lang();
-          // Id___Part2B_Part2T_Part1 Scope Language_Type Ref_Name Comment
-          // ita__ita____ita____it____I_____L_____________Italian
-          l.id = matcher.group(1);
-          l.part2b = matcher.group(2);
-          l.part2t = matcher.group(3);
-          l.part1 = matcher.group(4);
-          l.en = matcher.group(7);
-          l.addName("eng", l.en);
-
-          langSet.add(l);
-          langMap.put(l.id, l);
-          if (l.part1.length() != 0) {
-            langMap.put(l.part1, l);
-          }
-          if (l.part2b.length() != 0) {
-            langMap.put(l.part2b, l);
-          }
-          if (l.part2t.length() != 0) {
-            langMap.put(l.part2t, l);
-          }
-
-        } else {
-          System.err.println("Unrecognized line:" + s);
-        }
-        s = br.readLine();
-      }
-
-
-    } catch (IOException e) {
-      // don't know what I should do here, as the data should be bundled with the code.
-      e.printStackTrace();
-    }
     try (InputStream fis = this.getClass().getResourceAsStream("iso-639-3-patchDBnary.tab");
         BufferedReader br =
             new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
@@ -272,6 +233,58 @@ public class ISO639_3 {
     }
   }
 
+  private void extractSilIsoTable(String fname) {
+    try (InputStream fis = this.getClass().getResourceAsStream(fname);
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+
+      Matcher matcher = linePattern.matcher("");
+
+      String s = br.readLine();
+      while (s != null) {
+        if (s.startsWith("#")) {
+          s = br.readLine();
+          continue;
+        }
+
+        matcher.reset(s);
+        if (matcher.find()) {
+          Lang l = new Lang();
+          // Id___Part2B_Part2T_Part1 Scope Language_Type Ref_Name Comment
+          // ita__ita____ita____it____I_____L_____________Italian
+          l.id = matcher.group(1);
+          l.part2b = matcher.group(2);
+          l.part2t = matcher.group(3);
+          l.part1 = matcher.group(4);
+          l.en = matcher.group(7);
+          l.addName("eng", l.en);
+
+          langSet.add(l);
+          if (!l.id.isEmpty()) {
+            langMap.put(l.id, l);
+          }
+          if (!l.part1.isEmpty()) {
+            langMap.put(l.part1, l);
+          }
+          if (!l.part2b.isEmpty()) {
+            langMap.put(l.part2b, l);
+          }
+          if (!l.part2t.isEmpty()) {
+            langMap.put(l.part2t, l);
+          }
+
+        } else {
+          System.err.println("Unrecognized line:" + s);
+        }
+        s = br.readLine();
+      }
+
+    } catch (IOException e) {
+      // don't know what I should do here, as the data should be bundled with the code.
+      e.printStackTrace();
+    }
+  }
+
   public String getLanguageNameInFrench(String langcode) {
     Lang l = langMap.get(langcode);
     return (l != null) ? l.fr : null;
@@ -287,12 +300,12 @@ public class ISO639_3 {
     return (l != null) ? l.epo : null;
   }
 
-  public String getBib3Code(String langcode) {
+  public String getTerm3BCode(String langcode) {
     Lang l = langMap.get(langcode);
-    return (l != null) ? l.part2b : null;
+    return (l != null) ? (l.part2b == null) ? l.id : l.part2b : null;
   }
 
-  public String getTerm3Code(String langcode) {
+  public String getTerm3TCode(String langcode) {
     Lang l = langMap.get(langcode);
     return (l != null) ? (l.part2t == null) ? l.id : l.part2t : null;
   }
@@ -310,7 +323,10 @@ public class ISO639_3 {
   public String getShortestCode(String langcode) {
     String l = getTerm2Code(langcode);
     if (l == null || l.isEmpty()) {
-      l = getTerm3Code(langcode);
+      l = getTerm3TCode(langcode);
+    }
+    if (l == null || l.isEmpty()) {
+      l = getTerm3BCode(langcode);
     }
     if (l == null || l.isEmpty()) {
       l = getIdCode(langcode);

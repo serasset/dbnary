@@ -6,8 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.ExtractionFeature;
@@ -17,6 +20,7 @@ import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
+import org.getalp.dbnary.wiki.WikiText.Indentation;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
@@ -125,28 +129,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           extractDefinitions(section.getRight());
           extractMorphology(section.getRight());
           extractPronunciation(section.getRight());
+        } else if (WiktionaryDataHandler.isValidNym(name)) {
+          // TODO: extract nyms
+          extractDeprecatedNymList(name, section.getRight());
         } else if (name.equals("exam")) {
           // TODO: extract examples
         } else if (name.equals("Översättningar")) {
           extractTranslations(section.getRight());
-        } else if (name.equals("etym") || name.startsWith("Etymologi")) {
+        } else if (name.startsWith("Etymologi")) {
           // TODO: extract etymology
-        } else if (name.equals("pronun")) {
-          // TODO: extract pronunciation
-        } else if (name.equals("derv") || name.equals("rel") || name.equals("desc")) {
-          // TODO: extract derivations/related terms
         } else if (name.equals("expr")) {
           // TODO: extract proverbs and expressions
-        } else if (name.equals("ref") || name.equals("srce") || name.equals("also")
+        } else if (name.equals("ref") || name.equals("srce") || name.equals("Se även")
             || name.equals("anag")) {
           // TODO: ignore references/sources
-        } else if (name.equals("decl")) {
-          // TODO: extract morphology
         } else {
-          log.trace("Unexpected section name: {}", name);
+          log.trace("Unexpected section name: {} @ {}", name, wiktionaryPageName);
         }
       } else {
-        log.error("Unexpected non Template/Heading token after section split: {}", header);
+        log.error("Unexpected non Heading token after section split: {} @ {}", header,
+            wiktionaryPageName);
       }
     }
   }
@@ -223,16 +225,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (t instanceof InternalLink) {
         // We have to get the language of the translation before registering it
         // wdh.registerTranslation(t.asInternalLink().getLinkText(), null, null, null);
-        log.debug("Unhandled internal link in translation section: {} -- {}", t,
+        log.debug("Unhandled internal link in translation section: {} @ {}", t,
             this.getWiktionaryPageName());
       } else if (t instanceof Text) {
         if (t.getText().replaceAll("[\\s:]+", "").isEmpty()) {
           continue;
         }
-        log.debug("Unexpected text in translation section: {} -- {}", t,
+        log.debug("Unexpected text in translation section: {} @ {}", t,
             this.getWiktionaryPageName());
       } else {
-        log.trace("Unexpected token in translation section: {} -- {}", t,
+        log.trace("Unexpected token in translation section: {} @ {}", t,
             this.getWiktionaryPageName());
       }
     }
@@ -251,7 +253,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               .anyMatch(tmpl -> tmpl.asTemplate().getName().equals("avgränsare"))) {
             // All remaining information will be attached to the lexical entry rather than the last
             // sense
-            log.trace("avgränsare found as numbered list item in definition section: {} -- {}", ex,
+            log.trace("avgränsare found as numbered list item in definition section: {} @ {}", ex,
                 this.getWiktionaryPageName());
             target = null;
             latestExample = null;
@@ -260,11 +262,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // If there is 2 colon, it should be the translation of the previous example
           if (ex.startsWith("::")) {
             exampleExtractor.processExampleTranslation(ex.substring(2).trim(), latestExample);
-            log.debug("Unhandled translation of an example in definition section: {} -- {}", ex,
-                this.getWiktionaryPageName());
           } else {
-            // It is an example or information line of the target.
-            latestExample = exampleExtractor.processDefinitionLine(ex.substring(1).trim(), target);
+            latestExample = processExample(content, target);
           }
         } else {
           String definition = ex.trim();
@@ -283,9 +282,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           latestExample = null;
           continue;
         }
-        latestExample = exampleExtractor.processDefinitionLine(ex, target);
+        latestExample = processExample(content, target);
       }
     }
+  }
+
+  private static Matcher indents = Pattern.compile("^:+").matcher("");
+
+  private Resource processExample(WikiContent content, Resource target) {
+    Resource exampleNode;
+    // It is an example or information line of the target.
+    // First clear all ignored Templates to avoid expansion of their parameters before the
+    // expander is called as such expansion is time consuming.
+    String curatedContent = content.tokens().stream()
+        .filter(token -> !(token instanceof Template)
+            || !ExampleExpanderWikiModel.ignoredTemplates.contains(token.asTemplate().getName()))
+        .map(Token::getText).collect(Collectors.joining());
+    curatedContent = indents.reset(curatedContent).replaceFirst("").trim();
+    exampleNode = exampleExtractor.processDefinitionLine(curatedContent, target);
+    return exampleNode;
   }
 
   @Override
@@ -301,5 +316,33 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         .map(t -> t.asTemplate().getParsedArgs().get("ipa")).forEach(
             pron -> wdh.registerPronunciation(pron, wdh.getCurrentEntryLanguage() + "-fonipa"));
     // TODO: a few pronunciations are computed using the ipa template (in esperanto and finish)
+  }
+
+  private void extractDeprecatedNymList(String nym, List<Token> tokens) {
+    for (Token t : tokens) {
+      if (t instanceof InternalLink) {
+        InternalLink link = t.asInternalLink();
+        String value = link.getTargetText();
+        if (value != null) {
+          String nymName = WiktionaryDataHandler.nymMarkerToNymName.get(nym);
+          wdh.registerNymRelation(value, nymName);
+        }
+      } else if (t instanceof Text) {
+        // Ignore text
+        log.debug("Ignoring text in deprecated nym section: {} @ {}", t, wiktionaryPageName);
+      } else if (t instanceof IndentedItem) {
+        extractDeprecatedNymList(nym, t.asIndentedItem().getContent().tokens());
+      } else {
+        log.debug("Unexpected token in nym section: {} @ {}", t, wiktionaryPageName);
+      }
+    }
+  }
+
+  @Override
+  public void postProcessData(String dumpFileVersion) {
+    log.debug("Post processing data");
+    definitionExpander.logTemplateTracker();
+    exampleExtractor.logTemplateTracker();
+    super.postProcessData(dumpFileVersion);
   }
 }

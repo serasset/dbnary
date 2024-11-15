@@ -13,7 +13,7 @@ ara	adf	A
 ara	aeb	A
 ara	aec	A
 ara	afb	A
-ara	ajp	A
+ara	ajp	R
 ara	apc	A
 ara	apd	A
 ara	arb	A
@@ -27,7 +27,7 @@ ara	ayh	A
 ara	ayl	A
 ara	ayn	A
 ara	ayp	A
-ara	bbz	A
+ara	bbz	R
 ara	pga	A
 ara	shu	A
 ara	ssh	A
@@ -94,8 +94,10 @@ gba	gmm	A
 gba	gso	A
 gba	gya	A
 gba	mdo	R
+gon	esg	A
 gon	ggo	R
 gon	gno	A
+gon	wsg	A
 grb	gbo	A
 grb	gec	A
 grb	grj	A
@@ -109,6 +111,7 @@ grn	nhd	A
 hai	hax	A
 hai	hdn	A
 hbs	bos	A
+hbs	cnr	A
 hbs	hrv	A
 hbs	srp	A
 hmn	blu	R
@@ -141,7 +144,7 @@ iku	ike	A
 iku	ikt	A
 ipk	esi	A
 ipk	esk	A
-jrb	ajt	A
+jrb	ajt	R
 jrb	aju	A
 jrb	jye	A
 jrb	yhd	A
@@ -335,6 +338,8 @@ rom	rmn	A
 rom	rmo	A
 rom	rmw	A
 rom	rmy	A
+san	cls	A
+san	vsn	A
 sqi	aae	A
 sqi	aat	A
 sqi	aln	A
@@ -372,6 +377,7 @@ zap	zav	A
 zap	zaw	A
 zap	zax	A
 zap	zca	A
+zap	zcd	A
 zap	zoo	A
 zap	zpa	A
 zap	zpb	A
@@ -434,15 +440,20 @@ zha	zzj	A
 zho	cdo	A
 zho	cjy	A
 zho	cmn	A
+zho	cnp	A
 zho	cpx	A
+zho	csp	A
 zho	czh	A
 zho	czo	A
 zho	gan	A
 zho	hak	A
+zho	hnm	A
 zho	hsn	A
+zho	luh	A
 zho	lzh	A
 zho	mnp	A
 zho	nan	A
+zho	sjc	A
 zho	wuu	A
 zho	yue	A
 zza	diq	A

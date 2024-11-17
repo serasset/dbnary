@@ -288,10 +288,10 @@ public class ISO639_3 {
     try (InputStream fis = this.getClass().getResourceAsStream(fname);
         BufferedReader br =
             new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
-
-      Matcher matcher = linePattern.matcher("");
-
+      // Read and ignore header line
       String s = br.readLine();
+      if (s.startsWith("Id\tRef"))
+        s = br.readLine();
       while (s != null) {
         if (s.startsWith("#")) {
           s = br.readLine();
@@ -308,10 +308,12 @@ public class ISO639_3 {
           case "D":
           case "M":
             Lang l = langMap.get(change_to);
-            if (langMap.containsKey(lang_id)) {
-              logger.error("Retired language: {} conflict with {}", lang_id, change_to);
+            if (null != l) {
+              if (langMap.containsKey(lang_id)) {
+                logger.error("Retired language: {} conflict with {}", lang_id, change_to);
+              }
+              langMap.putIfAbsent(lang_id, l);
             }
-            langMap.putIfAbsent(lang_id, l);
             break;
           default:
             break;
@@ -371,7 +373,6 @@ public class ISO639_3 {
     if (l == null || l.isEmpty()) {
       l = getIdCode(langcode);
     }
-
     return l;
   }
 

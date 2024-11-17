@@ -168,7 +168,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     NS = DBNARY_NS_PREFIX + "/" + longEditionLanguageCode + "/";
 
     this.longEditionLanguageCode = longEditionLanguageCode;
-    this.shortEditionLanguageCode = LangTools.getPart1OrId(longEditionLanguageCode);
+    this.shortEditionLanguageCode = LangTools.getShortCode(longEditionLanguageCode);
     WIKT = "https://" + shortEditionLanguageCode + ".wiktionary.org/wiki/";
     lexvoExtractedLanguage = tBox.createResource(LEXVO + longEditionLanguageCode);
 
@@ -306,7 +306,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   public void initializeLanguageSection(String language) {
     assert currentPage != null;
     String longLang = LangTools.getCode(language);
-    String shortLang = LangTools.getPart1OrId(language);
+    String shortLang = LangTools.getShortCode(language);
 
     longSectionLanguageCode = longLang == null ? language : longLang;
     shortSectionLanguageCode = shortLang == null ? language : shortLang;
@@ -636,7 +636,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
       return null;
     }
     // Ensure language is in its standard form.
-    String tl = LangTools.getPart1OrId(lang);
+    String tl = LangTools.getShortCode(lang);
     lang = LangTools.normalize(lang);
     Resource trans = aBox.createResource(computeTransId(lang, entity), DBnaryOnt.Translation);
     aBox.add(trans, DBnaryOnt.isTranslationOf, entity);
@@ -1193,7 +1193,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   public static void createGeneralStatisticsObservation(Model statsBox, String dumpVersion,
       String prefix, String lang, long translationCount, long pageCount, long entryCount,
       long senseCount) {
-    String lg2 = LangTools.getPart1OrId(lang);
+    String lg2 = LangTools.getShortCode(lang);
 
     Resource classesObs =
         statsBox.createResource(prefix + "___mainClassesObs__" + lang + "__" + dumpVersion);
@@ -1216,7 +1216,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   public static void createNymRelationObservation(Model box, String dumpVersion, String prefix,
       String lang, NymRelation nym, long cr) {
-    String lg2 = LangTools.getPart1OrId(lang);
+    String lg2 = LangTools.getShortCode(lang);
 
     Resource nymObs = box.createResource(
         prefix + "___nymObs__" + lang + "__" + nym.name().toLowerCase() + "__" + dumpVersion);
@@ -1233,8 +1233,8 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   public static void createTranslationObservation(Model statsBox, String dumpVersion, String prefix,
       String sourceLanguage, String targetLanguage, long c) {
     // languages should be kept in 2 letter code if available.
-    String slg2 = LangTools.getPart1OrId(sourceLanguage);
-    String tlg2 = LangTools.getPart1OrId(targetLanguage);
+    String slg2 = LangTools.getShortCode(sourceLanguage);
+    String tlg2 = LangTools.getShortCode(targetLanguage);
     tlg2 = (null != tlg2) ? tlg2 : targetLanguage;
 
     Resource transObs = statsBox.createResource(

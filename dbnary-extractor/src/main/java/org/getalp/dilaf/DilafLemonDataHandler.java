@@ -38,7 +38,7 @@ public class DilafLemonDataHandler extends DbnaryModel {
 
     NS = DILAF_NS + "/" + lang + "/";
 
-    twoLetterLanguageCode = LangTools.getPart1OrId(lang);
+    twoLetterLanguageCode = LangTools.getShortCode(lang);
     lexvoLanguageElement = tBox.getResource(LEXVO + lang);
 
     // Create aBox

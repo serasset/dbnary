@@ -821,7 +821,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             lang = p.getParsedArgs().get("lang");
           }
           if (null != lang) {
-            lang = LangTools.getPart1OrId(lang.trim());
+            lang = LangTools.getShortCode(lang.trim());
           }
           if (null == lang || lang.equals("")) {
             lang = wdh.getCurrentEntryLanguage();

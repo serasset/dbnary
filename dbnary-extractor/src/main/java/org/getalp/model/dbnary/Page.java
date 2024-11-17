@@ -23,7 +23,7 @@ public class Page implements AcceptTranslation {
   }
 
   public String getShortLanguageCode() {
-    String shortCode = LangTools.getPart1OrId(language);
+    String shortCode = LangTools.getShortCode(language);
     return null != shortCode ? shortCode : language;
   }
 

@@ -97,7 +97,7 @@ public class ExtractionPreferences {
   }
 
   private static String shortLanguage(String language) {
-    return Objects.requireNonNull(LangTools.getPart1OrId(language));
+    return Objects.requireNonNull(LangTools.getShortCode(language));
   }
 
 }

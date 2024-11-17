@@ -52,7 +52,7 @@ public class LangTools {
   }
 
   public static String getShortCode(String lang) {
-     return ISO639_3.sharedInstance.getShortestCode(lang);
+    return ISO639_3.sharedInstance.getShortestCode(lang);
   }
 
 

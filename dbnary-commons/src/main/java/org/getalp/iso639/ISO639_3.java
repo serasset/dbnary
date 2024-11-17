@@ -315,6 +315,20 @@ public class ISO639_3 {
               langMap.putIfAbsent(lang_id, l);
             }
             break;
+          case "N":
+          case "S":
+            // Keep language that have been declared as non existing or obsolete if there is no
+            // conflict
+            if (!langMap.containsKey(lang_id)) {
+              Lang obsolete_lang = new Lang();
+              obsolete_lang.id = lang_id;
+              obsolete_lang.en = parts[1];
+              obsolete_lang.addName("eng", obsolete_lang.en);
+              if (!obsolete_lang.id.isEmpty()) {
+                langSet.add(obsolete_lang);
+                langMap.put(obsolete_lang.id, obsolete_lang);
+              }
+            }
           default:
             break;
         }

@@ -15,7 +15,7 @@ public class SwedishMorphologyExtractor {
   private final IWiktionaryDataHandler wdh;
   protected final SwedishTableExtractorWikiModel tableExtractor;
 
-  public SwedishMorphologyExtractor(IWiktionaryDataHandler wdh, WiktionaryPageSource wi) {
+  public SwedishMorphologyExtractor(WiktionaryPageSource wi, IWiktionaryDataHandler wdh) {
     this.wdh = wdh;
     tableExtractor = new SwedishTableExtractorWikiModel(wi, "/${Bild}", "/${Titel}");
   }

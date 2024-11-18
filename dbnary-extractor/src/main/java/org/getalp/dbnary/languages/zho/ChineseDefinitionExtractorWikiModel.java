@@ -48,18 +48,5 @@ public class ChineseDefinitionExtractorWikiModel extends ChineseDbnaryWikiModel 
     }
   }
 
-  @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
-    // Currently just expand the definition to get the full text.
-    if (templateName.equals("check deprecated lang param usage")) {
-      writer.append(parameterMap.getOrDefault("1", ""));
-    } else if (templateName.equals("分類")) {
-
-    } else {
-      super.substituteTemplateCall(templateName, parameterMap, writer);
-    }
-  }
-
 }
 

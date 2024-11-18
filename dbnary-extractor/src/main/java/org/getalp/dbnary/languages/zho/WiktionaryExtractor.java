@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
@@ -550,14 +551,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   @Override
-  public void extractDefinition(String definition, int defLevel) {
+  public Resource extractDefinition(String definition, int defLevel) {
     definitionExtractor.setPageName(this.getWiktionaryPageName());
     definitionExtractor.parseDefinition(definition, defLevel);
+    return null;
   }
 
-  public void extractExample(String example) {
+  public Resource extractExample(String example) {
     definitionExtractor.setPageName(this.getWiktionaryPageName());
     definitionExtractor.parseExample(example);
+    return null;
   }
 
   private void extractTranslations(int startOffset, int endOffset) {

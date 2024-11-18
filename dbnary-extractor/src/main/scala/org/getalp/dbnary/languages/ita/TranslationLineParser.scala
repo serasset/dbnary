@@ -69,7 +69,7 @@ class TranslationLineParser(page: String) extends WikiRegexParsers {
     } mkString (" "))
   }
 
-  def linkRegex = """\[\[|\]\]""".r
+  private def linkRegex = """\[\[|\]\]""".r
 
   def getTranslation(content: WikiText#WikiContent): Translation = {
     Translation("", linkRegex.replaceAllIn(content.toString, ""), null, "")

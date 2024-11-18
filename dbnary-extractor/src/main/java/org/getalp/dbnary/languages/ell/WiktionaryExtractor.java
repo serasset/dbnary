@@ -437,8 +437,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   @Override
-  public void extractDefinition(String definition, int defLevel) {
+  public Resource extractDefinition(String definition, int defLevel) {
     definitionExpander.parseDefinition(definition, defLevel);
+    return null;
   }
 
 }

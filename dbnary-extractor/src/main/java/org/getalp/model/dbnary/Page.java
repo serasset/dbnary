@@ -1,8 +1,5 @@
 package org.getalp.model.dbnary;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.Stack;
 import org.getalp.LangTools;
 import org.getalp.model.ontolex.LexicalEntry;
@@ -26,7 +23,7 @@ public class Page implements AcceptTranslation {
   }
 
   public String getShortLanguageCode() {
-    String shortCode = LangTools.getPart1OrId(language);
+    String shortCode = LangTools.getShortCode(language);
     return null != shortCode ? shortCode : language;
   }
 
@@ -56,5 +53,7 @@ public class Page implements AcceptTranslation {
     return entries.size();
   }
 
-
+  public String getWiktionaryURI() {
+    return "http://" + getShortLanguageCode() + ".wiktionary.org/wiki/" + name;
+  }
 }

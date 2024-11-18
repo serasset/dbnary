@@ -1,11 +1,11 @@
 package org.getalp.dbnary.languages.dan;
 
-import java.util.ArrayList;
+import static org.getalp.dbnary.tools.TokenListSplitter.split;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.ExtractionFeature;
@@ -13,8 +13,10 @@ import org.getalp.dbnary.StructuredGloss;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.InternalLink;
+import org.getalp.dbnary.wiki.WikiText.Item;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Text;
@@ -35,30 +37,44 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignoredTemplates.add(")");
     ignoredTemplates.add("-");
     ignoredTemplates.add("top");
+    ignoredTemplates.add("top3");
+    ignoredTemplates.add("top4");
     ignoredTemplates.add("midt");
+    ignoredTemplates.add("mid");
+    ignoredTemplates.add("mid3");
+    ignoredTemplates.add("mid4");
     ignoredTemplates.add("bund");
+    ignoredTemplates.add("bottom");
+    ignoredTemplates.add("trans-mid");
   }
 
   private final WiktionaryDataHandler daWdh;
+  private final static Set<String> knownSections = new HashSet<>();
+  static {
+    // These legimate known sections clash with language codes and should not be interpreted as
+    // languages
+    knownSections.add("ant");
+    knownSections.add("abr");
+    knownSections.add("adj");
+    knownSections.add("adv");
+    knownSections.add("afl");
+    knownSections.add("alt");
+    knownSections.add("art");
+    knownSections.add("end");
+    knownSections.add("lyd");
+    knownSections.add("num");
+    knownSections.add("phr");
+    knownSections.add("ref");
+    knownSections.add("rel");
+    knownSections.add("syn");
+
+  }
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
     daWdh = (WiktionaryDataHandler) wdh;
   }
 
-  private List<Pair<Token, List<Token>>> split(List<Token> tokens, Predicate<Token> predicate) {
-    List<Pair<Token, List<Token>>> splits = new ArrayList<>();
-    List<Token> currentSplit = new ArrayList<>();
-    for (Token t : tokens) {
-      if (predicate.test(t)) {
-        currentSplit = new ArrayList<>();
-        splits.add(Pair.of(t, currentSplit));
-      } else {
-        currentSplit.add(t);
-      }
-    }
-    return splits;
-  }
 
 
   public void extractData() {
@@ -79,11 +95,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       String name = t.asTemplate().getName();
       if (name.startsWith("=") && name.endsWith("=")) {
         if (name.equals("=sprog=")) {
+          // TODO: extract language name from Danish value
           return "unknown";
         }
         return name.substring(1, name.length() - 1);
       } else if (name.startsWith("-") && name.endsWith("-") && name.length() > 2) {
         String potentialLanguageCode = name.substring(1, name.length() - 1);
+        if (knownSections.contains(potentialLanguageCode)) {
+          return null;
+        }
         if (ISO639_3.sharedInstance.getLang(potentialLanguageCode) != null) {
           return potentialLanguageCode;
         }
@@ -107,13 +127,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       return;
 
     wdh.initializeLanguageSection(lang);
+    extractLanguageSections(value);
+    wdh.finalizeLanguageSection();
+  }
+
+  private void extractLanguageSections(List<Token> value) {
     List<Pair<Token, List<Token>>> sections = split(value, this::isSectionHeader);
     for (Pair<Token, List<Token>> section : sections) {
       Token header = section.getLeft();
-      if (header instanceof Template) {
-        Template t = header.asTemplate();
-        // remove the dashes before end after
-        String name = t.getName().substring(1, t.getName().length() - 1);
+      if (header instanceof Template || header instanceof Heading) {
+        String name;
+        if (header instanceof Heading) {
+          name = header.asHeading().getContent().getText().trim();
+        } else {
+          Template t = header.asTemplate();
+          // remove the dashes before and after
+          name = t.getName().substring(1, t.getName().length() - 1);
+          if ("expr".equals(name) && t.getArg("1") != null)
+            name = "Udtryk";
+        }
         if (daWdh.isPartOfSpeech(name)) {
           wdh.initializeLexicalEntry(name);
           extractDefinitions(section.getRight());
@@ -121,7 +153,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // TODO: extract examples
         } else if (name.equals("trans")) {
           extractTranslations(section.getRight());
-        } else if (name.equals("etym")) {
+        } else if (name.equals("etym") || name.startsWith("Etymologi")) {
           // TODO: extract etymology
         } else if (name.equals("pronun")) {
           // TODO: extract pronunciation
@@ -137,13 +169,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         } else if (name.equals("decl")) {
           // TODO: extract morphology
         } else {
-          log.trace("Unexpected section template: {}", t);
+          log.trace("Unexpected section name: {}", name);
         }
       } else {
-        log.error("Unexpected non template token after section split: {}", header);
+        log.error("Unexpected non Template/Heading token after section split: {}", header);
       }
     }
-    wdh.finalizeLanguageSection();
   }
 
   private boolean isSectionHeader(Token t) {
@@ -151,6 +182,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       Template tmpl = t.asTemplate();
       String name = tmpl.getName();
       return name.length() >= 2 && name.startsWith("-") && name.endsWith("-");
+    } else if (t instanceof Heading) {
+      return t.asHeading().getLevel() <= 3;
     }
     return false;
   }
@@ -159,7 +192,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token t : tokens) {
       if (t instanceof Template) {
         if (ignoredTemplates.contains(t.asTemplate().getName())) {
-          continue;
+          // ignore
         } else if (t.asTemplate().getName().equals("l")) {
           Map<String, String> args = t.asTemplate().cloneParsedArgs();
           String nym = args.get("2");
@@ -204,12 +237,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   @Override
-  public void extractDefinition(String definition, int defLevel) {
+  public Resource extractDefinition(String definition, int defLevel) {
     // Render the definition to plain text using a wiktionary model
     String def = expander.expandAll(definition, null);
     if (!def.isEmpty()) {
       wdh.registerNewDefinition(def, defLevel);
     }
+    return null;
   }
 
   private void extractTranslations(List<Token> tokens) {
@@ -221,9 +255,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token t : tokens) {
       if (t instanceof Template) {
         Template template = t.asTemplate();
-        if (ignoredTemplates.contains(template.getName())) {
-          // ignore
-        } else if (template.getName().equals("trad")) {
+        if (template.getName().equals("trad")) {
           Map<String, String> args = template.cloneParsedArgs();
           String lang = args.get("1");
           String translation = args.get("2");
@@ -232,7 +264,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             translation = args.get("3");
             args.remove("3");
           }
-          wdh.registerTranslation(lang, currentGloss, null, translation);
+          if (null != lang && null != translation)
+            wdh.registerTranslation(lang, currentGloss, null, translation);
           args.remove("1");
           args.remove("2");
           if (!args.isEmpty()) {
@@ -243,7 +276,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           Map<String, String> args = template.cloneParsedArgs();
           String lang = args.get("1");
           String translation = args.get("2");
-          wdh.registerTranslation(lang, currentGloss, null, translation);
+          if (null != lang && null != translation)
+            wdh.registerTranslation(lang, currentGloss, null, translation);
           args.remove("1");
           args.remove("2");
           if (!args.isEmpty()) {
@@ -254,10 +288,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (null != g) {
             currentGloss = wdh.createGlossResource(new StructuredGloss(null, g));
           }
-        } else if (template.getName().equals("trans-bottom")) {
+        } else if (template.getName().equals("trans-bottom") || template.getName().equals(")")
+            || template.getName().equals("bottom")) {
           currentGloss = null;
+        } else if (ignoredTemplates.contains(template.getName())) {
+          // ignore
         } else {
           log.debug("Unexpected template in translation section: {}", template);
+        }
+      } else if (t instanceof Item) {
+        Item glossItem = t.asItem();
+        String g = glossItem.getContent().getText();
+        if (null != g) {
+          g = g.trim();
+          currentGloss = wdh.createGlossResource(new StructuredGloss(null, g));
+        } else {
+          currentGloss = null;
         }
       } else if (t instanceof IndentedItem) {
         IndentedItem li = t.asIndentedItem();

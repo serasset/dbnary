@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
@@ -433,10 +434,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   @Override
-  public void extractDefinition(String definition, int defLevel) {
+  public Resource extractDefinition(String definition, int defLevel) {
     // TODO: properly handle macros in definitions.
     definitionExtractor.setPageName(this.getWiktionaryPageName());
     definitionExtractor.parseDefinition(definition, defLevel);
+    return null;
   }
 
 

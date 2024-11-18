@@ -821,7 +821,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             lang = p.getParsedArgs().get("lang");
           }
           if (null != lang) {
-            lang = LangTools.getPart1OrId(lang.trim());
+            lang = LangTools.getShortCode(lang.trim());
           }
           if (null == lang || lang.equals("")) {
             lang = wdh.getCurrentEntryLanguage();
@@ -891,7 +891,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   @Override
-  public void extractExample(String example) {
+  public Resource extractExample(String example) {
     Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
     String ex = exampleExpander.expandExample(example, exampleTemplates, context,
@@ -901,9 +901,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       // There is no example, it is a note that should be attached to the definition
       wdh.addToCurrentWordSense(context);
     }
-    if (ex != null && !ex.equals("")) {
+    if (!ex.equals("")) {
       exampleNode = wdh.registerExample(ex, context);
     }
+    return exampleNode;
   }
 
   // TODO: all canonical forms are also available as otherForm, process other forms to remove
@@ -931,8 +932,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   @Override
-  public void extractDefinition(String definition, int defLevel) {
+  public Resource extractDefinition(String definition, int defLevel) {
     definitionExpander.parseDefinition(definition, defLevel);
+    return null;
   }
 
   @Override

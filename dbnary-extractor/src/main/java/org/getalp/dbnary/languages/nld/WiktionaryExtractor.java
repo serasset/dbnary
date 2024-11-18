@@ -335,12 +335,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // TODO : should be the default behaviour for all languages.
   @Override
-  public void extractDefinition(String definition, int defLevel) {
+  public Resource extractDefinition(String definition, int defLevel) {
     defOrExampleExpander.setPageName(getWiktionaryPageName());
     String def = defOrExampleExpander.expandAll(definition, null);
     if (def != null && !def.equals("")) {
       wdh.registerNewDefinition(def, defLevel);
     }
+    return null;
   }
 
   @Override
@@ -351,12 +352,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // TODO : should be the default behaviour for all languages.
   @Override
-  public void extractExample(String example) {
+  public Resource extractExample(String example) {
     defOrExampleExpander.setPageName(getWiktionaryPageName());
     String ex = defOrExampleExpander.expandAll(example, null);
     if (ex != null && !ex.equals("")) {
       wdh.registerExample(ex, null);
     }
+    return null;
   }
 
   private void extractDerivationSection(int startOffset, int endOffset) {

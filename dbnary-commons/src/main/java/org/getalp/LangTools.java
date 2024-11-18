@@ -51,14 +51,11 @@ public class LangTools {
     return l.getPart1();
   }
 
-  public static String getPart1OrId(String lang) {
-    Lang l = ISO639_3.sharedInstance.getLang(lang);
-    if (l == null) {
-      return null;
-    }
-    String p1 = l.getPart1();
-    return (null != p1 && !"".equals(p1.trim())) ? l.getPart1() : l.getId();
+  public static String getShortCode(String lang) {
+    return ISO639_3.sharedInstance.getShortestCode(lang);
   }
+
+
 
   public static String normalize(String lang) {
     return normalize(lang, lang);

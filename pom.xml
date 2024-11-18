@@ -5,7 +5,7 @@
 
   <groupId>org.getalp</groupId>
   <artifactId>dbnary</artifactId>
-  <version>3.1.24b</version>
+  <version>3.1.25</version>
   <packaging>pom</packaging>
 
   <inceptionYear>2010</inceptionYear>
@@ -107,7 +107,7 @@
     <!--repository>
       <id>getalp.repository</id>
       <name>Getalp Projects and third party repository</name>
-      <url>scpexe://getalp.imag.fr/opt/www/m2</url>
+      <url>scpexe://getalp.imag.fr/opt/getalp/m2</url>
     </repository-->
     <site>
       <id>kaiko.getalp.org</id>
@@ -291,30 +291,35 @@
       <dependency>
         <groupId>info.bliki.wiki</groupId>
         <artifactId>bliki-core</artifactId>
-        <version>3.1.16G</version>
+        <version>3.1.17G</version>
       </dependency>
 
       <!-- Misc -->
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.26.0</version>
+        <version>1.27.1</version>
       </dependency>
       <dependency>
         <groupId>commons-cli</groupId>
         <artifactId>commons-cli</artifactId>
-        <version>1.5.0</version>
+        <version>1.9.0</version>
         <type>jar</type>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
-        <version>1.11.0</version>
+        <version>1.12.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.14.0</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.15.1</version>
+        <version>2.17.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>

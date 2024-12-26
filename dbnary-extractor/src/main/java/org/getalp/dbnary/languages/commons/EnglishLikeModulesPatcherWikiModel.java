@@ -57,21 +57,25 @@ public class EnglishLikeModulesPatcherWikiModel extends ModulesPatcherWikiModel 
       } else if (pagename.equals("audio")) {
         return getAndPatchModule(parsedPagename, map,
             t -> t.replace("return stylesheet .. text .. categories", "return text .. categories"));
-      } else if (pagename.equals("table")) {
-        return getAndPatchModule(parsedPagename, map,
-            t -> t.replace("function export.append(...)\n" + "\tlocal ret, n = {}, 0\n",
-                "function export.append(...)\n" + "\tlocal arg = { n = select('#', ...); ... }\n"
-                    + "\tlocal ret, n = {}, 0\n"));
-      } else if (pagename.equals("languages")) {
-        return getAndPatchModule(parsedPagename, map,
-            t -> t.replace("function export.addDefaultTypes(data, regular, ...)\n",
-                "function export.addDefaultTypes(data, regular, ...)\n"
-                    + "\tlocal arg = { n = select('#', ...); ... }\n"));
-      } else if (pagename.equals("scripts")) {
-        return getAndPatchModule(parsedPagename, map,
-            t -> t.replace("function Script:hasType(...)\n",
-                "function Script:hasType(...)\n" + "\tlocal arg = { n = select('#', ...); ... }"));
       }
+      // These patches are not useful anymore as the code to functions with var args is now correct
+      // for our Lua version.
+      // else if (pagename.equals("table")) {
+      // return getAndPatchModule(parsedPagename, map,
+      // t -> t.replace("function export.append(...)\n" + "\tlocal ret, n = {}, 0\n",
+      // "function export.append(...)\n" + "\tlocal arg = { n = select('#', ...); ... }\n"
+      // + "\tlocal ret, n = {}, 0\n"));
+      // }
+      // else if (false && pagename.equals("languages")) {
+      // return getAndPatchModule(parsedPagename, map,
+      // t -> t.replace("function export.addDefaultTypes(data, regular, ...)\n",
+      // "function export.addDefaultTypes(data, regular, ...)\n"
+      // + "\tlocal arg = { n = select('#', ...); ... }\n"));
+      // } else if (pagename.equals("scripts")) {
+      // return getAndPatchModule(parsedPagename, map,
+      // t -> t.replace("function Script:hasType(...)\n",
+      // "function Script:hasType(...)\n" + "\tlocal arg = { n = select('#', ...); ... }"));
+      // }
     }
     return super.getRawWikiContent(parsedPagename, map);
   }

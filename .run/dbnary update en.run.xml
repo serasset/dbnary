@@ -2,7 +2,7 @@
   <configuration default="false" name="dbnary update en" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
-    <option name="PROGRAM_PARAMETERS" value="update --endolex=ontolex,morphology,etymology,statistics,enhancement,lime --exolex=ontolex --force --no-compress --sample 10000 en" />
+    <option name="PROGRAM_PARAMETERS" value="update --endolex=ontolex,morphology,etymology,statistics,enhancement,lime --exolex=ontolex --force --no-compress --sample 500 en" />
     <option name="VM_PARAMETERS" value="-Dorg.slf4j.simpleLogger.log.org.getalp.dbnary.languages.eng=trace" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/tmp" />
     <method v="2">

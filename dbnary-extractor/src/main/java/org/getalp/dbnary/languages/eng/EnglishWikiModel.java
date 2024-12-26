@@ -4,10 +4,13 @@ import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.WikiModelContentException;
 import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.io.IOUtils;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.languages.commons.EnglishLikeModulesPatcherWikiModel;
 import org.getalp.iso639.ISO639_3;
@@ -71,8 +74,30 @@ public class EnglishWikiModel extends EnglishLikeModulesPatcherWikiModel {
       return getAndPatchModule(parsedPagename, map, t -> t.replaceAll(
           "tonumber\\(mw.getCurrentFrame\\(\\):extensionTag\\('nowiki', ''\\):match'\\(\\[%dA-F\\]\\+\\)', 16\\)",
           "0"));
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.equals("parameters")) {
+      // December 2024: Module:parameters now uses the traceback that is only available in debug
+      // mode avoid an error while compiling the module as debug is not available in our execution
+      // environment — patch it
+      return getAndPatchModule(parsedPagename, map,
+          t -> t.replaceAll("local\\s+traceback\\s*=\\s*debug.traceback\n", //
+              "local function traceback() \n" //
+                  + " return \"\"\n" //
+                  + "end\n"));
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.equals("checkparams")) {
+      return loadStubResource("checkparams.lua");
     }
     return super.getRawWikiContent(parsedPagename, map);
   }
 
+  private String loadStubResource(String name) {
+    logger.debug("loading stub page from resources: {}", name);
+    try (InputStream is = getClass().getResourceAsStream(name)) {
+      return is == null ? null : IOUtils.toString(is, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      logger.error("error loading " + name, e);
+      throw new RuntimeException(e);
+    }
+  }
 }

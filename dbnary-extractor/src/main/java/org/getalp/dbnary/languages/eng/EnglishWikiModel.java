@@ -86,7 +86,8 @@ public class EnglishWikiModel extends EnglishLikeModulesPatcherWikiModel {
                   + "end\n"));
     } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
         && parsedPagename.pagename.equals("checkparams")) {
-      return loadStubResource("checkparams.lua");
+      String resource = loadStubResource("checkparams.lua");
+      return null == resource ? super.getRawWikiContent(parsedPagename, map) : resource;
     }
     return super.getRawWikiContent(parsedPagename, map);
   }
@@ -96,8 +97,8 @@ public class EnglishWikiModel extends EnglishLikeModulesPatcherWikiModel {
     try (InputStream is = getClass().getResourceAsStream(name)) {
       return is == null ? null : IOUtils.toString(is, StandardCharsets.UTF_8);
     } catch (IOException e) {
-      logger.error("error loading " + name, e);
-      throw new RuntimeException(e);
+      logger.error("Could not substitute stub page '{}' defaulting to normal page.", name, e);
+      return null;
     }
   }
 }

@@ -3,9 +3,8 @@
     <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
     <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
-    <option name="PROGRAM_PARAMETERS" value="extract -l fr --tdb --no-compress --endolex=morphology,ontolex,enhancement,lime,etymology,statistics --exolex=ontolex -v --frompage 0 --topage 10000 frwkt-20220101.xml" />
-    <option name="VM_PARAMETERS" value="-Xmx16g  -Dorg.slf4j.simpleLogger.log.org.getalp.dbnary.fra=trace" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/fr/20220101" />
+    <option name="PROGRAM_PARAMETERS" value="extract -l la --tdb --no-compress --endolex=morphology,ontolex,enhancement,lime,etymology,statistics --exolex=ontolex --trace org.getalp.dbnary.languages.lat -v --frompage 0 --topage 10000 lawkt-20250101.xml" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/la/20250101" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

@@ -117,6 +117,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
 
     // Initialism ?
+    // Chinese chars uses Definitions to aggregate several PoS, How can we cretae an underspecified
+    // entry from this ?
+    posAndTypeValueMap.put("Definitions",
+        null);
   }
 
   protected static final HashMap<Resource, Resource> wordToMutiWordPOSTypes = new HashMap<>();

@@ -147,7 +147,6 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
   private HashMap<SimpleImmutableEntry<String, String>, HashSet<HashSet<PropertyObjectPair>>> heldBackOtherForms =
       new HashMap<>();
 
-  // protected static HashMap<String, Property> nymPropertyMap = new HashMap<String, Property>();
   protected static HashMap<String, PosAndType> posAndTypeValueMap = new HashMap<>();
 
   // Map of the String to lexvo language entity

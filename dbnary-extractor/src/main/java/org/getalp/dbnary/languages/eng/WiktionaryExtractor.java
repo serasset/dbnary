@@ -204,6 +204,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       ewdh.initializeNewEtymology();
       extractPron(blockContent);
     } else if (WiktionaryDataHandler.isValidPOS(title)) {
+      title = "Definitions".equals(title) ? "" : title ;
       wdh.initializeLexicalEntry(title);
       ewdh.registerEtymologyPos(getWiktionaryPageName());
       extractMorphology(blockContent);

@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected final static String languageSectionPatternString =
       "^={2}\\s*\\{\\{([^=]+)\\}\\}\\s*={2}";
@@ -127,17 +127,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         wdh.initializeLexicalEntry(header);
         // Extract definitions
         extractDefinitions(section.getContent());
-        for (Token wikiToken : section.getContent().wikiTokens()) {
-          if (wikiToken instanceof WikiSection) {
-            WikiSection ws = (WikiSection) wikiToken;
-            String h4 = ws.getHeading().getContent().toString().trim();
-            if ("Werger".equals(h4)) {
-              extractTranslations(ws.getContent());
-            } else {
-              log.debug("Unhandled sub section {} in {}", h4, getWiktionaryPageName());
-            }
-          }
-        }
+        section.getContent().wikiTokens().stream()
+            .filter(wikiToken -> wikiToken instanceof WikiSection)
+            .map(wikiToken -> wikiToken.asWikiSection()).forEach(ws -> {
+              String h4 = ws.getHeading().getContent().toString().trim();
+              if ("Werger".equals(h4)) {
+                extractTranslations(ws.getContent());
+              } else if ("Hevmane".equals(h4) || "Dijmane".equals(h4)) {
+                // TODO: Synonym / Antonym
+                log.debug("Synonym/Antonym section not yet handled in {}", getWiktionaryPageName());
+              } else {
+                log.debug("Unhandled sub section {} in {}", h4, getWiktionaryPageName());
+              }
+            });
       } else {
         log.debug("Unexpected header {} in {}", header, getWiktionaryPageName());
       }
@@ -211,7 +213,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if ("werger-bin".equals(template.getName())) {
         globalGloss = "";
         globalGlossResource = null;
-      } else if ("W".equals(template.getName())) {
+      } else if ("W".equals(template.getName())
+          || "W+".equals(template.getName())
+          || "W-".equals(template.getName())) {
         String lang = LangTools.getCode(args.get("1"));
         String word = args.get("2");
         args.remove("1");

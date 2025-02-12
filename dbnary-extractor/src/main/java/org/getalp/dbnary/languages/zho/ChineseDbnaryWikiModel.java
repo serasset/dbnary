@@ -12,7 +12,7 @@ import org.getalp.dbnary.languages.commons.EnglishLikeModulesPatcherWikiModel;
 
 public class ChineseDbnaryWikiModel extends EnglishLikeModulesPatcherWikiModel {
 
-  private Stack<String> linkCallStack = new Stack<>();
+  private final Stack<String> linkCallStack = new Stack<>();
 
   public ChineseDbnaryWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
       String linkBaseURL) {
@@ -46,7 +46,8 @@ public class ChineseDbnaryWikiModel extends EnglishLikeModulesPatcherWikiModel {
             t -> t.replace("return function(input)",
                 "return function(input)\n" + "\tif 1 == 1 then return true end\n"));
       } else if (parsedPagename.pagename.equalsIgnoreCase("parameters")) {
-        // December 2024: English Module:parameters now uses the traceback that is only available in debug
+        // December 2024: English Module:parameters now uses the traceback that is only available in
+        // debug
         // mode avoid an error while compiling the module as debug is not available in our execution
         // environment and when English community does a stupid thing, it always percolate to
         // Chinese language edition... — patch it

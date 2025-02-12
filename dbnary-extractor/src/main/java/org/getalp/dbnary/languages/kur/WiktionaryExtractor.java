@@ -7,6 +7,7 @@ import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
+import org.getalp.dbnary.wiki.WikiEventFilter.Action;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.*;
@@ -130,12 +131,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         section.getContent().wikiTokens().stream()
             .filter(wikiToken -> wikiToken instanceof WikiSection)
             .map(wikiToken -> wikiToken.asWikiSection()).forEach(ws -> {
-              String h4 = ws.getHeading().getContent().toString().trim();
-              if ("Werger".equals(h4)) {
+              String h4 = ws.getHeading().getContent().toString().trim().toLowerCase();
+              if ("werger".equals(h4)) {
                 extractTranslations(ws.getContent());
-              } else if ("Hevmane".equals(h4) || "Dijmane".equals(h4)) {
-                // TODO: Synonym / Antonym
-                log.debug("Synonym/Antonym section not yet handled in {}", getWiktionaryPageName());
+              } else if (WiktionaryDataHandler.nymMap.containsKey(h4)) {
+                extractNymSection(WiktionaryDataHandler.nymMap.get(h4), ws.getContent());
               } else {
                 log.debug("Unhandled sub section {} in {}", h4, getWiktionaryPageName());
               }
@@ -145,6 +145,45 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
     }
     wdh.finalizeLanguageSection();
+  }
+
+  private void extractNymSection(String nym, WikiContent content) {
+    WikiEventsSequence templateOrLinks =
+        content.templates().or(tok -> (tok instanceof InternalLink) ? Action.KEEP : Action.VOID);
+    for (Token tok : templateOrLinks) {
+      if (tok instanceof Template) {
+        Template t = tok.asTemplate();
+        if ("g".equals(t.getName())) {
+          // link template
+          if (wdh.getCurrentEntryLanguage().equals(t.getParsedArg("1"))) {
+            wdh.registerNymRelation(t.getParsedArg("2"), nym);
+          } else {
+            log.debug("Link Template to another language in a nym relation {} in {}", t.getText(),
+                wdh.currentPagename());
+          }
+        } else if (t.getName().startsWith("kol") || "pêk".equals(t.getName())) {
+          int valueIndex = 2;
+          String lang = t.getParsedArg("1").trim();
+          if (!lang.equals(wdh.getCurrentEntryLanguage())) {
+            log.debug("Link Template to another language in a nym relation {} in {}", t.getText(),
+                wdh.currentPagename());
+            continue;
+          }
+          String value;
+          while (null != (value = t.getParsedArg(String.valueOf(valueIndex)))) {
+            wdh.registerNymRelation(value.trim(), nym);
+            valueIndex++;
+          }
+        } else if ("stûn".equals(t.getName())) {
+          extractNymSection(nym, t.getArg("1"));
+        } else {
+          log.trace("NYM: Ignoring template {} in nym section in {}", t.getText(),
+              wdh.currentPagename());
+        }
+      } else if (tok instanceof InternalLink) {
+        wdh.registerNymRelation(tok.asInternalLink().getTargetText(), nym);
+      }
+    }
   }
 
   protected void extractDefinitions(WikiContent wk) {
@@ -213,8 +252,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if ("werger-bin".equals(template.getName())) {
         globalGloss = "";
         globalGlossResource = null;
-      } else if ("W".equals(template.getName())
-          || "W+".equals(template.getName())
+      } else if ("W".equals(template.getName()) || "W+".equals(template.getName())
           || "W-".equals(template.getName())) {
         String lang = LangTools.getCode(args.get("1"));
         String word = args.get("2");

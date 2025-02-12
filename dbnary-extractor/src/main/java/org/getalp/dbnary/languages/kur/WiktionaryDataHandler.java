@@ -1,5 +1,6 @@
 package org.getalp.dbnary.languages.kur;
 
+import java.util.HashMap;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryDataHandler.class);
 
   static {
 
@@ -53,6 +54,15 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Sembol", new PosAndType(LexinfoOnt.symbol, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Kurtenav",
         new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
+  }
+
+  public static final HashMap<String, String> nymMap = new HashMap<>();
+
+  static {
+    nymMap.put("hevmane", "syn");
+    nymMap.put("dijmane", "ant");
+    nymMap.put("jornav", "hyper");
+    nymMap.put("jêrnav", "hypo");
   }
 
   public WiktionaryDataHandler(String lang, String tdbDir) {

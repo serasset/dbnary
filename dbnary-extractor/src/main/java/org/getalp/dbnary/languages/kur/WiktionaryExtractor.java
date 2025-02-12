@@ -2,6 +2,7 @@ package org.getalp.dbnary.languages.kur;
 
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
+import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -11,6 +12,7 @@ import org.getalp.dbnary.wiki.WikiEventFilter.Action;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.*;
+import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,36 +86,48 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.initializePageExtraction(getWiktionaryPageName());
     definitionExpander.setPageName(getWiktionaryPageName());
     pronunciationExpander.setPageName(getWiktionaryPageName());
-    // System.out.println(pageContent);
-    Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-    while (languageFilter.find() && !languageFilter.group(1).equals("ziman|ku")) {
-    }
-    // Either the filter is at end of sequence or on German language header.
-    if (languageFilter.hitEnd()) {
-      // There is no Turkish data in this page.
-      return;
-    }
-    int kurdeSectionStartOffset = languageFilter.end();
-    // Advance till end of sequence or new language section
-    // WHY filter on section level ?: while (languageFilter.find() && (languageFilter.start(1) -
-    // languageFilter.start()) != 2) {
-    languageFilter.find();
-    // languageFilter.find();
-    int kurdeSectionEndOffset =
-        languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
-    extractKurdishData(kurdeSectionStartOffset, kurdeSectionEndOffset);
+    WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
+    page.headers(2).stream().map(Token::asHeading).forEach(h -> {
+      WikiSection section2 = h.getSection();
+      String lang = getHeaderLanguage(h);
+      if (lang != null) {
+        extractLanguageData(lang, section2.getContent());
+      }
+    });
+
+    // Matcher languageFilter = languageSectionPattern.matcher(pageContent);
+    // while (languageFilter.find() && !languageFilter.group(1).equals("ziman|ku")) {
+    // }
+    // // Either the filter is at end of sequence or on German language header.
+    // if (languageFilter.hitEnd()) {
+    // // There is no Turkish data in this page.
+    // return;
+    // }
+    // int kurdeSectionStartOffset = languageFilter.end();
+    // // Advance till end of sequence or new language section
+    // // WHY filter on section level ?: while (languageFilter.find() && (languageFilter.start(1) -
+    // // languageFilter.start()) != 2) {
+    // languageFilter.find();
+    // // languageFilter.find();
+    // int kurdeSectionEndOffset =
+    // languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+    //
+    // extractKurdishData(kurdeSectionStartOffset, kurdeSectionEndOffset);
     wdh.finalizePageExtraction();
   }
 
+  private void extractLanguageData(String lang, WikiContent content) {
+    String l2 = LangTools.getShortCode(lang);
+    if (l2 == null)
+      return;
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
+        && !wdh.getExtractedLanguage().equals(l2)) {
+      return;
+    }
 
-  // TODO: section {{Kısaltmalar}} gives abbreviations
-  // TODO: section Yan Kavramlar gives related concepts (apparently not synonyms).
-  private void extractKurdishData(int startOffset, int endOffset) {
-    WikiText txt =
-        new WikiText(getWiktionaryPageName(), pageContent.substring(startOffset, endOffset));
-    wdh.initializeLanguageSection("ku");
-    for (Token evt : txt.headers(3)) {
+    wdh.initializeLanguageSection(l2);
+    for (Token evt : content.headers(3)) {
       WikiSection section = evt.asHeading().getSection();
       String header = section.getHeading().getContent().toString().trim();
 
@@ -129,8 +143,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // Extract definitions
         extractDefinitions(section.getContent());
         section.getContent().wikiTokens().stream()
-            .filter(wikiToken -> wikiToken instanceof WikiSection)
-            .map(wikiToken -> wikiToken.asWikiSection()).forEach(ws -> {
+            .filter(wikiToken -> wikiToken instanceof WikiSection).map(Token::asWikiSection)
+            .forEach(ws -> {
               String h4 = ws.getHeading().getContent().toString().trim().toLowerCase();
               if ("werger".equals(h4)) {
                 extractTranslations(ws.getContent());
@@ -145,6 +159,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
     }
     wdh.finalizeLanguageSection();
+  }
+
+  private String getHeaderLanguage(Heading h) {
+    Optional<Token> langTmpl = h.getContent().templates().stream()
+        .filter(t -> t.asTemplate().getName().equals("ziman")).findFirst();
+    return langTmpl.isPresent() ? langTmpl.get().asTemplate().getParsedArg("1") : null;
   }
 
   private void extractNymSection(String nym, WikiContent content) {
@@ -212,8 +232,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   /**
-   *
-   * @param indent
+   * States if an indented item in the definition sections is an exemple or not
+   * 
+   * @param indent an indented item in the definition section
    * @return true if the indented item is an example specification
    */
   private boolean isAnExample(Token indent) {

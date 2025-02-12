@@ -1,6 +1,6 @@
 package org.getalp.dbnary.wiki;
 
-import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
+import static org.getalp.dbnary.wiki.WikiEventFilter.Action.KEEP;
 
 public class WikiEventFilterConjunction implements WikiEventFilter {
 
@@ -14,8 +14,9 @@ public class WikiEventFilterConjunction implements WikiEventFilter {
 
   @Override
   public Action apply(WikiText.Token tok) {
-    if (rhs.apply(tok) == VOID) {
-      return VOID;
+    Action leftAction;
+    if ((leftAction = rhs.apply(tok)) != KEEP) {
+      return leftAction;
     } else {
       return lhs.apply(tok);
     }

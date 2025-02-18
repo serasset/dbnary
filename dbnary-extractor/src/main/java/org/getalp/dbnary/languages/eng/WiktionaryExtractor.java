@@ -125,18 +125,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   @Override
   public void extractData() {
-    Consumer<Heading> sectionConsumer = this::extractLanguageSection;
+    Consumer<Heading> extractor = this::extractLanguageSection;
 
     boolean isWikisaurus = isWikisaurus(getWiktionaryPageName());
-    if (isWikisaurus) {
-      setWiktionaryPageName(cutNamespace(getWiktionaryPageName()));
-      sectionConsumer = this::extractWikisaurusLanguageSection;
-    }
-    wdh.initializePageExtraction(getWiktionaryPageName());
     WikiText text = new WikiText(pageContent);
 
+    if (isWikisaurus) {
+      setWiktionaryPageName(cutNamespace(getWiktionaryPageName()));
+      extractor = this::extractWikisaurusLanguageSection;
+    }
+    wdh.initializePageExtraction(getWiktionaryPageName());
     // Iterate over all level 2 headers
-    text.headers(2).stream().map(Token::asHeading).forEach(sectionConsumer);
+    text.headers(2).stream().map(Token::asHeading).forEach(extractor);
     wdh.finalizePageExtraction();
   }
 
@@ -154,9 +154,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractWikisaurusLanguageSection(Heading heading) {
     String languageName = heading.getContent().getText().trim();
-    if ("English".equals(languageName)) {
-      String sectionContent = heading.getSection().getContent().getText();
-      wikisaurusExtractor.extractWikisaurusSection(getWiktionaryPageName(), sectionContent);
+    Lang lg = ISO639_3.sharedInstance.getLangFromName(languageName);
+    if (null != lg) {
+      WikiContent sectionContent = heading.getSection().getContent();
+      wikisaurusExtractor.extractWikisaurusSection(lg, sectionContent);
     } else {
       log.debug("Wikisaurus: Ignoring language section {} || {}", languageName,
           getWiktionaryPageName());
@@ -164,7 +165,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private String cutNamespace(String pagename) {
-    int p = pagename.indexOf(":");
+    int p = pagename.lastIndexOf(":");
     return pagename.substring(p + 1);
   }
 

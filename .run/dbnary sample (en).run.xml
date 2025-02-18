@@ -2,7 +2,7 @@
   <configuration default="false" name="dbnary sample (en)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
-    <option name="PROGRAM_PARAMETERS" value="sample --debug=info.bliki.extensions --trace=org.getalp.dbnary.languages.eng --trace=info.bliki -l en --endolex=ontolex --exolex=ontolex enwkt-20250201.xml 門" />
+    <option name="PROGRAM_PARAMETERS" value="sample --debug=info.bliki.extensions --trace=org.getalp.dbnary --trace=info.bliki -l en --endolex=ontolex --exolex=ontolex enwkt-20250201.xml Thesaurus:chat" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/en/20250201" />
     <method v="2">
       <option name="Make" enabled="true" />

@@ -433,7 +433,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       String g1 = macroMatcher.group(1);
 
       if (g1.equals("x") || g1.equals("xlatio") || g1.equals("xlatio-d") || g1.equals("xlatio2")
-          || g1.equals("xlatio0") || g1.equals("t+")) {
+          || g1.equals("xlatio0") || g1.equals("t+") || g1.equals("t") || g1.equals("t-")) {
         String g2 = macroMatcher.group(2);
         Map<String, String> args = WikiTool.parseArgs(g2);
         String lang = LatinLangtoCode.threeLettersCode(args.get("1"));
@@ -478,9 +478,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         int secondArgOffset = macroMatcher.toMatchResult().end(1) + 1; // position of the first arg
         secondArgOffset = secondArgOffset + (null != g ? g.length() : 0) + 1;
         macroMatcher.reset().region(secondArgOffset, endOffset);
-      } else if (g1.equals("=med=")) {
+      } else if (g1.equals("trans-top")) {
+        Map<String, String> argmap = WikiTool.parseArgs(macroMatcher.group(2));
+        String g = argmap.get("1");
+        if (null != g)
+          currentGloss = wdh.createGlossResource(g);
+      } else if (g1.equals("=med=") || g1.equals("trans-mid")) {
         // just ignore it
-      } else if (g1.equals("=ima=")) {
+      } else if (g1.equals("=ima=") || g1.equals("trans-bottom")) {
         // Forget the current glose
         currentGloss = null;
       } else if ((g1.length() == 2 || g1.length() == 3)

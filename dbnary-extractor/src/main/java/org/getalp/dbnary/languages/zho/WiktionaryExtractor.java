@@ -123,13 +123,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private boolean isChineseHeader(Matcher m) {
-    if (m.group(1).trim().startsWith("{{zh")) {
-      return true;
-    }
-    if (m.group(1).trim().startsWith("{{zho")) {
-      return true;
-    }
-    return m.group(1).trim().startsWith("漢語");
+    String head = m.group(1).trim();
+    return head.startsWith("{{zh") || head.startsWith("{{zho") || head.startsWith("漢語")
+        || head.startsWith("汉语") || head.startsWith("官話") || head.startsWith("粵語");
   }
 
   void gotoDefBlock(Matcher m, String pos) {

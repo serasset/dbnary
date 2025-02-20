@@ -20,7 +20,7 @@
 @base <http://kaiko.getalp.org/dbnary> .
 
 <http://kaiko.getalp.org/dbnary> rdf:type owl:Ontology ;
-                                  owl:versionIRI <http://kaiko.getalp.org/dbnary/2.1.2> ;
+                                  owl:versionIRI <http://kaiko.getalp.org/dbnary/2.1.3> ;
                                   owl:imports rdf: ,
                                               <http://www.w3.org/ns/lemon/ontolex> ;
                                   dcterms:abstract """The DBnary dataset gives access to many lexical data currently contained implicitely in several editions of Wiktionary.
@@ -34,8 +34,8 @@
                                   rdfs:comment "DBnary: A lexicon model designed to allow the representation of lexical data extracted from wiktionary language editions (http://www.wiktionary.org/). The dbnary model extends the ontolex model (http://www.w3.org/ns/lemon/ontolex)."@en ;
                                   rdfs:label "DBnary" ;
                                   rdfs:seeAlso "http://kaiko.getalp.org/about-dbnary/" ;
-                                  owl:priorVersion <http://kaiko.getalp.org/dbnary/2.1.1> ;
-                                  owl:versionInfo "2.1.2" .
+                                  owl:priorVersion <http://kaiko.getalp.org/dbnary/2.1.2> ;
+                                  owl:versionInfo "2.1.3" .
 
 
 
@@ -105,6 +105,14 @@ dbnary:gloss
     rdfs:comment
                 "A short description of the context (usually a brief definition) under which the subject Translation or Relation is valid"@en .
 
+dbnary:gloss4Target
+    rdf:type    owl:ObjectProperty ;
+               rdfs:domain [ rdf:type owl:Class ;
+                  owl:unionOf ( rdf:Statement
+                                dbnary:Translation ) ] ;
+    rdfs:range  dbnary:Gloss ;
+    rdfs:comment
+                "A short description of the context (usually a brief definition) under which the target of a Translation or Lexical Relation is valid"@en .
 
 dbnary:isTranslationOf
     rdf:type     owl:ObjectProperty ;
@@ -135,7 +143,7 @@ dbnary:usage
     rdf:type     owl:DatatypeProperty ;
     rdfs:domain  dbnary:Translation ;
     rdfs:range   xsd:string ;
-    rdfs:comment "Usage note that is used to further annotate the target of the translation."@en .
+    rdfs:comment "Usage note that is used to further annotate the target of a translation or Lexical Relation."@en .
 
 
 dbnary:writtenForm

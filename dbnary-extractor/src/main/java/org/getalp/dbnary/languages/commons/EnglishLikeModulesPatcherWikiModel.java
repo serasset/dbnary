@@ -37,9 +37,9 @@ public class EnglishLikeModulesPatcherWikiModel extends ModulesPatcherWikiModel 
         // utilities uses the nasty nowiki tag hack. So patch the function using it to always return
         // 0
         return getAndPatchModule(parsedPagename, map,
-            t -> t.replaceAll("function export.get_current_section\\(\\)",
-                "function export.get_current_section()\n\t\tlocal test = 1\n"
-                    + "\t\tif test then return 0 end"),
+            // t -> t.replaceAll("function export.get_current_section\\(\\)",
+            // "function export.get_current_section()\n\t\tlocal test = 1\n"
+            // + "\t\tif test then return 0 end"),
             t -> t.replaceAll("return export",
                 "-- This function is redefined to avoid too much time taken in calculus we do not need.\n"
                     + "function export.format_categories(categories, lang, sort_key, sort_base, force_output, sc)\n"

@@ -146,11 +146,11 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
     t => {
       val args = t.cloneParsedArgs().asScala
       args.remove("1") // removing target value as it will be taken directly from the template
-      if (args.contains("2")) args.addOne("kana" -> args("2"))
+      if (args.contains("2")) args.addOne("kana" -> args("2").replaceAll("[ %^.-]", ""))
       args.remove("2")
       if (args.contains("3")) args.addOne("gloss" -> args("3"))
       args.remove("3")
-      List(Derivation(t.getParsedArg("1"), mapAsString(args)))
+      List(Derivation(t.getParsedArg("1").replaceAll("[ %^.-]", ""), mapAsString(args)))
     })
 
 

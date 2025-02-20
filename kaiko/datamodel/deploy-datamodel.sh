@@ -11,8 +11,9 @@ OPTIND=1 # Reset in case getopts has been used previously in the shell.
 
 # Initialize our own variables:
 verbose=false
-PREFIXDIR=$HOME/develop/wiktionary/extracts/
-WIDOCOJAR=$HOME/lib/java-11-widoco-1.4.17-jar-with-dependencies.jar
+PREFIXDIR=/data/wiktionary/extracts/
+WIDOCOJAR=$HOME/lib/widoco-1.4.25-jar-with-dependencies_JDK-17.jar
+#WIDOCOJAR=$HOME/lib/java-11-widoco-1.4.17-jar-with-dependencies.jar
 JAVA=java
 ONTOLOGY=./../../dbnary-ontology/src/main/resources/org/getalp/dbnary/dbnary.ttl
 

@@ -117,16 +117,22 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
 
     // Initialism ?
+    // Chinese chars uses Definitions to aggregate several PoS, How can we cretae an underspecified
+    // entry from this ?
+    posAndTypeValueMap.put("Definitions", null);
   }
 
   protected static final HashMap<Resource, Resource> wordToMutiWordPOSTypes = new HashMap<>();
+
   static {
     wordToMutiWordPOSTypes.put(LexinfoOnt.Noun, LexinfoOnt.NounPhrase);
     wordToMutiWordPOSTypes.put(LexinfoOnt.Adjective, LexinfoOnt.AdjectivePhrase);
     wordToMutiWordPOSTypes.put(LexinfoOnt.Verb, LexinfoOnt.VerbPhrase);
     wordToMutiWordPOSTypes.put(LexinfoOnt.Adverb, LexinfoOnt.NounPhrase);
   }
+
   protected static final HashSet<Resource> multiWordTypes = new HashSet<>();
+
   static {
     multiWordTypes.add(OntolexOnt.MultiWordExpression);
     multiWordTypes.add(LexinfoOnt.NounPhrase);
@@ -136,6 +142,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   protected static final HashSet<Resource> affixTypes = new HashSet<>();
+
   static {
     affixTypes.add(LexinfoOnt.Affix);
     affixTypes.add(LexinfoOnt.Prefix);
@@ -144,6 +151,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   protected static final HashSet<Resource> wordTypes = new HashSet<>();
+
   static {
     wordTypes.add(OntolexOnt.Word);
     wordTypes.add(LexinfoOnt.Noun);
@@ -670,6 +678,56 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public String getGlossURI(String id) {
     return getPrefix() + "__" + shortEditionLanguageCode + "_gloss_" + id + "_"
         + uriEncode(currentPagename());
+  }
+
+  public void registerWikisaurusNymFromTo(String currentPOS, String nym, String gloss,
+      String targetGloss, String s, String t) {
+    if (t.equals(s)) {
+      return;
+    }
+    if (null == nym || NymRelation.of(nym) == null) {
+      log.debug("null nym or unknown nym {} in Wikisaurus:{}", nym, currentPagename());
+      return;
+    }
+
+    Property nymProperty = NymRelation.of(nym).getProperty();
+
+    Statement nymR = aBox.createStatement(getPageResource(s), nymProperty, getPageResource(t));
+    aBox.add(nymR);
+
+
+    Resource glossResource = getGlossResource(gloss);
+    Resource targetGlossResource = getGlossResource(targetGloss);
+    Resource pos = posResource(currentPOS);
+
+    if (null == pos && null == glossResource && null == targetGlossResource)
+      return;
+
+    ReifiedStatement rnymR =
+        nymR.createReifiedStatement(computeNymId(nym, uriEncode(currentPagename())));
+
+    if (null != pos) {
+      rnymR.addProperty(DBnaryOnt.partOfSpeech, pos);
+    }
+    if (null != glossResource) {
+      aBox.add(glossResource, RDF.value, gloss, getCurrentEntryLanguage());
+      rnymR.addProperty(DBnaryOnt.gloss, glossResource);
+    }
+    if (null != targetGlossResource) {
+      aBox.add(targetGlossResource, RDF.value, targetGloss, getCurrentEntryLanguage());
+      rnymR.addProperty(DBnaryOnt.gloss4Target, targetGlossResource);
+    }
+  }
+
+  private Resource getGlossResource(String gloss) {
+    if (gloss == null)
+      return null;
+    String glossKey = gloss;
+    glossKey =
+        DatatypeConverter.printBase64Binary(BigInteger.valueOf(glossKey.hashCode()).toByteArray())
+            .replaceAll("[/=\\+]", "-");
+    Resource glossResource = getGlossForWikisaurus(glossKey);
+    return glossResource;
   }
 
   public void registerWikisaurusNym(String currentPOS, String currentWS, String currentNym,

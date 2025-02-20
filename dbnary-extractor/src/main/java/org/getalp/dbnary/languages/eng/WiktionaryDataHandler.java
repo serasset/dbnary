@@ -680,8 +680,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         + uriEncode(currentPagename());
   }
 
-  public void registerWikisaurusNymFromTo(String currentPOS, String nym,
-      String gloss, String targetGloss, String s, String t) {
+  public void registerWikisaurusNymFromTo(String currentPOS, String nym, String gloss,
+      String targetGloss, String s, String t) {
     if (t.equals(s)) {
       return;
     }

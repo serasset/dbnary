@@ -84,7 +84,8 @@ public class WikisaurusExtractor {
 
   private void extractWikisaurusLinks(String l2, String pos, String gloss, String nym,
       WikiContent content) {
-    if (null == nym) return;
+    if (null == nym)
+      return;
     List<Pair<String, String>> targets = new ArrayList<>();
     for (Token tok : content.templates()) {
       Template tmpl = tok.asTemplate();

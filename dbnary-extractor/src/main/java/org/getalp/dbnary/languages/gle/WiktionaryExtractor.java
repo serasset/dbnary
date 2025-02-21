@@ -352,7 +352,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // Ignore
           break;
         default:
-          log.warn("{} => {} template was found in {} language. ---> {}.", getWiktionaryPageName(),
+          log.debug("{} => {} template was found in {} language. ---> {}.", getWiktionaryPageName(),
               page.get().asTemplate().getName(), this.currentLanguage, url());
           break;
       }
@@ -474,7 +474,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           case "iol":
             break;
           default:
-            log.warn("{} => Lexical content \"{}\" template non handled -> {} ---> {}",
+            log.debug("{} => Lexical content \"{}\" template non handled -> {} ---> {}",
                 getWiktionaryPageName(), builder.field, page.get().getText(), url());
             break;
         }

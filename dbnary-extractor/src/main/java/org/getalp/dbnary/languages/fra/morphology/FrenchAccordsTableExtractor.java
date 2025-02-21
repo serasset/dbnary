@@ -190,7 +190,7 @@ public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
             .forEach(p -> lexFormsAbove.forEach(
                 f -> f.addValue(new PhoneticRepresentation(standardizeValue(p), language))));
       } else {
-        log.warn("No lexical form above as we have an isolated pronunciation in {}",
+        log.debug("No lexical form above as we have an isolated pronunciation in {}",
             this.entryName);
       }
       return new LinkedHashSet<>();

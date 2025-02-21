@@ -128,7 +128,7 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
     String fone = parameterMap.get("1");
     if (null != fone) {
       if (null != parameterMap.get("fone")) {
-        log.warn("fone arg and first args are both given in pron-graf template in {}",
+        log.debug("fone arg and first args are both given in pron-graf template in {}",
             getPageName());
         // Use the fone parameter value as it is usually the correct one.
         fone = parameterMap.get("fone");

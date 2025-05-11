@@ -119,6 +119,9 @@ public class WikiText {
         ExternalLink l = (ExternalLink) t;
         this.addFlattenedTokens(l.target);
         this.addFlattenedTokens(l.linkTextContent);
+      } else if (t instanceof Heading) {
+        Heading l = (Heading) t;
+        this.addFlattenedTokens(l.content);
       }
     }
 
@@ -1592,7 +1595,7 @@ public class WikiText {
               assert false;
             }
           }
-          pos += lexer.group().length(); // The CH capture extra spaces that should be ignored.
+          pos += lexer.group("CH").length(); // The CH capture extra spaces and comments
         } else if (null != (g = lexer.group("OH"))) {
           int level = g.length();
           if (atLineBeginning) {

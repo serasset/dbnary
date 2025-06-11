@@ -40,7 +40,7 @@ compile:sampling:
       - target/evaluation
 
 
-# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku zh ga ca da
+# fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku zh ga ca da cz
 evaluate:sampling:1:
   <<: *evaluate
   variables:
@@ -59,7 +59,7 @@ evaluate:sampling:3:
 evaluate:sampling:4:
   <<: *evaluate
   variables:
-    LANGUAGE_BATCH: "pt it fi ru el tr ja es"
+    LANGUAGE_BATCH: "pt it fi ru el tr ja es cz"
 
 analyse:sampling:
   <<: *sampling

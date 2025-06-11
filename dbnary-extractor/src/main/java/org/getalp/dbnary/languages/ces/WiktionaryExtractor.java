@@ -123,13 +123,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String lang =
         CzechLanguageCodes.threeLettersCode(language.asHeading().getContent().getText().trim());
 
-    log.trace("Extracting data for: {}", lang);
+    log.trace("'{}': Extracting data for: {}", getWiktionaryPageName(), lang);
 
     if (null == lang)
       return;
 
     if (!lang.equals("ces") && !exolex) {
-      log.trace("Exolex is disabled. Ignoring language {}", lang);
+      log.trace("'{}': Exolex is disabled. Ignoring language {}", getWiktionaryPageName(), lang);
+      return;
     }
 
 
@@ -147,8 +148,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (header instanceof Heading) {
         String name = header.asHeading().getContent().getText().trim().toLowerCase();
 
-        log.trace("Processing heading: {}", name);
-
         if (cesWdh.isPartOfSpeech(name)) {
           cesWdh.initializeLexicalEntry(name);
           /*
@@ -158,12 +157,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         } else if (sectionHeadings.contains(name)) {
           sectionFunction(name).accept(name, section.getRight());
         } else if (ignoredHeadings.contains(name)) {
-          log.debug("Ignoring known heading {}", name);
+          log.debug("'{}': Ignoring known heading {}", getWiktionaryPageName(), name);
         } else {
-          log.debug("Ignoring unknown heading {}", name);
+          log.debug("'{}': Ignoring unknown heading {}", getWiktionaryPageName(), name);
         }
       } else {
-        log.error("Unexpected non-heading token after section split: {}", header);
+        log.debug("'{}': Unexpected non-heading token after section split: {}",
+            getWiktionaryPageName(), header);
       }
     }
   }
@@ -230,16 +230,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Template tm = t.asTemplate();
         Map<String, String> args = tm.getParsedArgs();
 
-        log.debug("Found example template: {}", t);
-
         if (tm.getName().trim().equals("Příklad") && args.size() == 2
             && args.get("1").equals("cs")) {
           super.extractExample(args.get("2"));
         } else {
-          log.error("unexpected example template: '{}' ({} arguments)", tm.getName(), args.size());
+          log.debug("'{}': Unexpected example template: '{}' ({} arguments)",
+              getWiktionaryPageName(), tm.getName(), args.size());
         }
       } else {
-        log.error("dismissing unexpected example token: '{}'", t);
+        log.debug("'{}': Dismissing unexpected example token: '{}'", getWiktionaryPageName(), t);
       }
     }
   }
@@ -267,7 +266,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Map<String, String> args = tm.getParsedArgs();
 
         if (args.size() == 0) {
-          log.trace("No translations for this sense.");
+          log.trace("'{}': No translations for this sense.", getWiktionaryPageName());
           return;
         }
 
@@ -284,10 +283,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           cesWdh.registerTranslation(lang, null, sense, trans);
         }
       } else {
-        log.error("expected 'Překlady' template for translations, found '{}'", tm.getName());
+        log.debug("'{}': Expected 'Překlady' template for translations, found '{}' template",
+            getWiktionaryPageName(), tm.getName());
       }
     } else {
-      log.error("expected template for translation, found {}", t);
+      if (!t.getText().trim().equals("")) {
+        log.debug("'{}': expected template for translation, found {}", getWiktionaryPageName(), t);
+      }
     }
   }
 

@@ -17,6 +17,7 @@ import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
+import org.getalp.dbnary.wiki.WikiText.Link;
 import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
@@ -309,9 +310,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (t instanceof NumberedListItem) {
         NumberedListItem li = t.asNumberedListItem();
 
-        extractNymString(nymrel, li.getContent().getText());
-      } else {
-        extractNymString(nymrel, t.getText());
+        for (Token tl : li.getContent().tokens()) {
+          log.debug("{}", tl.toString());
+          if (tl instanceof Link) {
+            extractNymString(nymrel, tl.asLink().getLinkText());
+          }
+        }
       }
     }
   }

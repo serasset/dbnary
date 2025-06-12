@@ -1,6 +1,7 @@
 package org.getalp.dbnary.languages.ces;
 
 import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -263,24 +264,32 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       Template tm = t.asTemplate();
 
       if (tm.getName().trim().equals("Překlady")) {
-        Map<String, String> args = tm.getParsedArgs();
+        LinkedHashMap<String, WikiContent> args = tm.getArgs();
 
         if (args.size() == 0) {
           log.trace("'{}': No translations for this sense.", getWiktionaryPageName());
           return;
         }
 
-        String sense = args.get("význam");
+        WikiContent sense = args.get("význam");
 
-        for (Map.Entry<String, String> entry : args.entrySet()) {
+        for (Map.Entry<String, WikiContent> entry : args.entrySet()) {
           String lang = entry.getKey();
-          String trans = entry.getValue();
+          WikiContent trans = entry.getValue();
 
-          if (lang == "význam") {
-            continue;
+          if (!lang.equals("význam")) {
+            for (Token tk : trans.tokens()) {
+              // TODO: match on token type
+              if (tk instanceof Template) {
+                Template tm1 = tk.asTemplate();
+                Map<String, String> args1 = tm1.getParsedArgs();
+
+                if (tm1.getName().equals("P") && args1.size() >= 2) {
+                  cesWdh.registerTranslation(lang, null, sense.toString(), args1.get("2"));
+                }
+              }
+            }
           }
-
-          cesWdh.registerTranslation(lang, null, sense, trans);
         }
       } else {
         log.debug("'{}': Expected 'Překlady' template for translations, found '{}' template",

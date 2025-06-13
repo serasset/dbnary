@@ -15,6 +15,7 @@ import static org.getalp.dbnary.tools.TokenListSplitter.split;
 import org.apache.commons.lang3.tuple.Pair;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
+import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiText.Link;
@@ -273,6 +274,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
 
         WikiContent sense = args.get("význam");
+        String senseText = sense.toString().trim();
+        Resource gloss = cesWdh.createGlossResource(senseText);
 
         for (Map.Entry<String, WikiContent> entry : args.entrySet()) {
           String lang = entry.getKey();
@@ -286,7 +289,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 Map<String, String> args1 = tm1.getParsedArgs();
 
                 if (tm1.getName().equals("P") && args1.size() >= 2) {
-                  cesWdh.registerTranslation(lang, null, sense.toString(), args1.get("2"));
+                  cesWdh.registerTranslation(lang, gloss, sense.toString(), args1.get("2"));
                 }
               }
             }

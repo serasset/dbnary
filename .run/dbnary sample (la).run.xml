@@ -2,8 +2,8 @@
   <configuration default="false" name="dbnary sample (la)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
-    <option name="PROGRAM_PARAMETERS" value="sample -l la --endolex=morphology --exolex=ontolex --trace=org.getalp.dbnary.languages.lat lawkt-20250101.xml bilinguis" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/la/20250101" />
+    <option name="PROGRAM_PARAMETERS" value="sample -l la --endolex=morphology --exolex=ontolex --trace=org.getalp.dbnary.languages.lat lawkt-20250501.xml casa rosa" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/la/20250501" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

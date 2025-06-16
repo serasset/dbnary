@@ -10,7 +10,7 @@ public class GlossFilter extends AbstractGlossFilter {
   public static final String senseNumRegExp = "\\d+(?:[abcdefghijklmn][iv]*)?";
 
   public static final String simpleNumListFilter =
-      "^\\s*(" + senseNumRegExp + "(?:\\s*[\\,\\-–]\\s*" + senseNumRegExp + ")*)\\s*$";
+      "^\\[?\\s*(" + senseNumRegExp + "(?:\\s*[\\,\\-–]\\s*" + senseNumRegExp + ")*)\\]?\\s*(.*)$";
   public static final Pattern simpleNumListPattern = Pattern.compile(simpleNumListFilter);
   public static final Matcher simpleNumListMatcher = simpleNumListPattern.matcher("");
 
@@ -25,7 +25,7 @@ public class GlossFilter extends AbstractGlossFilter {
     }
     simpleNumListMatcher.reset(rawGloss);
     if (simpleNumListMatcher.matches()) {
-      return new StructuredGloss(simpleNumListMatcher.group(1), null);
+      return new StructuredGloss(simpleNumListMatcher.group(1), simpleNumListMatcher.group(2));
     }
     return new StructuredGloss(null, rawGloss);
   }

@@ -348,7 +348,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private Resource glossResource(String currentGloss, int i) {
     if (currentGloss != null) {
       // Use a shared ExpandAllWikiModel to expand the currentGloss
-      expander.expandAll(currentGloss, null);
+      currentGloss = expander.expandAll(currentGloss, null);
     }
     return wdh.createGlossResource(currentGloss, i);
   }

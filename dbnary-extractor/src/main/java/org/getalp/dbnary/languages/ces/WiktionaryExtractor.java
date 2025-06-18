@@ -162,7 +162,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         } else if (ignoredHeadings.contains(name)) {
           log.debug("'{}': Ignoring known heading {}", getWiktionaryPageName(), name);
         } else {
-          log.debug("'{}': Ignoring unknown heading {}", getWiktionaryPageName(), name);
+          log.debug("'{}': Ignoring unknown heading {} (level {})", getWiktionaryPageName(), name,
+              header.asHeading().getLevel());
         }
       } else {
         log.debug("'{}': Unexpected non-heading token after section split: {}",
@@ -240,8 +241,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           log.debug("'{}': Unexpected example template: '{}' ({} arguments)",
               getWiktionaryPageName(), tm.getName(), args.size());
         }
-      } else {
-        log.debug("'{}': Dismissing unexpected example token: '{}'", getWiktionaryPageName(), t);
       }
     }
   }
@@ -314,7 +313,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         NumberedListItem li = t.asNumberedListItem();
 
         for (Token tl : li.getContent().tokens()) {
-          log.debug("{}", tl.toString());
           if (tl instanceof Link) {
             extractNymString(nymrel, tl.asLink().getLinkText());
           }

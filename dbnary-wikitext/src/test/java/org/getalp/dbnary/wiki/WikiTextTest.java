@@ -342,7 +342,7 @@ public class WikiTextTest {
     String test = "=== Simple Heading ===\n" + "=== Heading level 2 ==\n"
         + "=== Heading level 3 ====\n" + " === not an heading ===\n"
         + "=== spaces are accepted after equals === \n" + "=== nor this one \n"
-        + "= No Heading 1 =\n" + "===end===\n" + "==Heading 2==\n" + "===Heading 2.1===";
+        + "= No Heading 1 =\n" + "===end===\n" + "==Heading 2===\n" + "===Heading 2.1===";
     WikiText text = new WikiText(test);
 
     assertNotNull(text.wikiTokens());
@@ -373,6 +373,11 @@ public class WikiTextTest {
     el = (WikiText.Heading) text.wikiTokens().get(4);
     assertEquals("end", el.getContent().toString());
     assertEquals(3, el.getLevel());
+
+    assertTrue(text.wikiTokens().get(5) instanceof WikiText.Heading);
+    el = (WikiText.Heading) text.wikiTokens().get(5);
+    assertEquals("Heading 2=", el.getContent().toString());
+    assertEquals(2, el.getLevel());
 
     int nbH = 0;
     for (WikiText.Token tok : text.headers(2)) {
@@ -405,6 +410,17 @@ public class WikiTextTest {
     assertEquals(2, nbH); // 3 Headers with title beginning by "Heading", === Heading level 3 ====,
     // ==Heading 2==, ===Heading 2.1===
     // === Heading level 2 == is a level 2 heading starting with = (hence it does not match...)
+
+  }
+
+  @Test
+  public void testUnclosedHeading() {
+    String test = "===X=== {{void}}\n" ;
+    WikiText text = new WikiText(test);
+
+    assertNotNull(text.wikiTokens());
+    assertFalse(text.wikiTokens().isEmpty());
+    assertEquals("Should have only recognized one template", 1, text.wikiTokens().size());
 
   }
 

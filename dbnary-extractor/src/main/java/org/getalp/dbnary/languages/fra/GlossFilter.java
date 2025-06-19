@@ -23,7 +23,7 @@ public class GlossFilter extends AbstractGlossFilter {
   private static Pattern aTrierPattern = Pattern.compile(aTrierRegExp);
   private static Matcher aTrierMatcher = aTrierPattern.matcher("");
 
-  private static String sensenum = "(?:(?:\\d+\\.?[abcdefg])|\\d|et|\\s|,|(?:S|s)ens général)+";
+  private static String sensenum = "(?:(?:\\d+\\.?[abcdefg])|\\d|et|\\s|,)+";
   private static String simpleSenseNumberingRegExp = "^([^\\|]*)\\|(" + sensenum + ")$";
   private static Pattern simpleSenseNumberingPattern = Pattern.compile(simpleSenseNumberingRegExp);
   private static Matcher simpleSenseNumberingMatcher = simpleSenseNumberingPattern.matcher("");

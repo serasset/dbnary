@@ -927,7 +927,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           args.get("1"), wdh.getCurrentEntryLanguage(), this.getWiktionaryPageName());
     }
     if (args.containsKey("10")) {
-      log.warn("More than 10 pronunciations in {}", getWiktionaryPageName());
+      log.debug("More than 10 pronunciations in {}", getWiktionaryPageName());
     }
     for (int i = 1; i < 9; i++) {
       String pronunciation = args.get(Integer.toString(i));

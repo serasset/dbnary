@@ -18,7 +18,7 @@ ln -s $HOME/dev/wiktionary/tmp/dumps $WIKTIONARY_DIR/$NEXT_VERSION/dumps
 ln -s $HOME/dev/wiktionary/tmp/dumps $WIKTIONARY_DIR/$PREVIOUS_VERSION/dumps
 
 BATCH[1]="en"
-BATCH[2]="fr pt it fi ru no la"
+BATCH[2]="fr pt it fi ru no la cs"
 BATCH[3]="de el tr ja es bg pl nl sh sv lt mg id ku"
 
 extract() {

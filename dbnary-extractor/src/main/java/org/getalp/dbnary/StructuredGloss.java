@@ -10,6 +10,9 @@ public class StructuredGloss {
   }
 
   public StructuredGloss(String senseNumber, String gloss) {
+    if (null != gloss && (gloss = gloss.trim()).isEmpty()) {
+      gloss = null;
+    }
     this.senseNumber = senseNumber;
     this.gloss = gloss;
   }

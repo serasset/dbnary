@@ -15,7 +15,7 @@ public class Page implements AcceptTranslation {
   public Page(String language, String name) {
     String normalizedLanguage = LangTools.getCode(language);
     if (normalizedLanguage == null) {
-      log.warn("Unknown language {} while parsing page {}", language, name);
+      log.debug("Unknown language {} while parsing page {}", language, name);
       normalizedLanguage = language;
     }
     this.language = normalizedLanguage;

@@ -36,7 +36,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: handle morphological informations e.g. fr-rég template ?
   protected final static String pronunciationPatternString = "\\{\\{pron\\|([^|}]*)\\|([^}]*)}}";
 
-  protected final static String otherFormPatternString = "\\{\\{fr-[^\\}]*\\}\\}";
+  protected final static String otherFormPatternString = "\\{\\{fr-[^}]*}}";
 
   private static final HashMap<String, String> posMarkers;
   private static final HashSet<String> ignorablePosMarkers;
@@ -50,7 +50,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
     // =={{-la-|Rosa}} ==
-    languageSectionPatternString = "==\\s*\\{\\{-([^-]*)-\\|?([^\\}]*)\\}\\}\\s*==";
+    // {{lingua2|la|casa}}
+    languageSectionPatternString =
+        "(?:^==\\s*\\{\\{-([^-]*)-\\|?([^\\}]*)\\}\\}\\s*==)" + "|(?:\\{\\{lingua2\\|([^|}]+))";
 
     // ==={{int:wikt-nomen-subst}}===
     entrySectionPatternString = "===?\\s*\\{\\{(?:int:)?([^}|]*)\\|?([^}]*)\\}\\}\\s*=?==";
@@ -161,7 +163,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static Pattern otherFormPattern;
 
   static {
-    languageSectionPattern = Pattern.compile(languageSectionPatternString);
+    languageSectionPattern = Pattern.compile(languageSectionPatternString, Pattern.MULTILINE);
     entrySectionPattern = Pattern.compile(entrySectionPatternString);
     pronunciationPattern = Pattern.compile(pronunciationPatternString);
     otherFormPattern = Pattern.compile(otherFormPatternString);
@@ -204,6 +206,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return argmap.get("1");
       }
       return m.group(1);
+    } else if (null != m.group(3)) {
+      return m.group(3);
     }
 
     return null;
@@ -503,7 +507,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
     String ex = exampleExpander.expandExample(example, defTemplates, context);
-    if (ex != null && !ex.equals("")) {
+    if (ex != null && !ex.isEmpty()) {
       wdh.registerExample(ex, context);
     }
     return null;

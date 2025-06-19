@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
-import org.getalp.LangTools;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
@@ -49,21 +48,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   }
 
-  protected final static String wikiSectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
-
   private enum Block {
     NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, NYMBLOCK, PRONBLOCK
   }
-
-  // TODO: handle pronounciation
-  protected final static String pronounciationPatternString = "\\{\\{IPA\\|([^\\}\\|]*)(.*)\\}\\}";
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
   }
 
-  // protected final static Pattern languageSectionPattern;
-  // protected final static HashSet<String> nymMarkers;
   protected final static HashMap<String, String> nymMarkerToNymName;
 
   static {
@@ -88,22 +80,45 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static Pattern sectionPattern;
 
   // TODO: handle pronunciation in italian
-  private final static Pattern pronunciationPattern;
   protected final static Pattern level2HeaderPattern;
 
   static {
     level2HeaderPattern = Pattern.compile(level2HeaderPatternString, Pattern.MULTILINE);
 
     sectionPattern = Pattern.compile(entrySectionPatternString);
-    pronunciationPattern = Pattern.compile(pronounciationPatternString);
+  }
+
+  private ItalianExpandAllWikiModel expander;
+  private ItalianDefinitionExtractorWikiModel italianDefinitionExtractorWikiModel;
+  private ItalianExampleExtractorWikiModel italianExampleExtractorWikiModel;
+  private ItalianPronunciationExtractorWikiModel italianPronunciationExtractorWikiModel;
+
+  @Override
+  public void setWiktionaryIndex(WiktionaryPageSource wi) {
+    super.setWiktionaryIndex(wi);
+    expander = new ItalianExpandAllWikiModel(this.wi, new Locale("it"), "/${image}", "/${title}");
+    italianDefinitionExtractorWikiModel = new ItalianDefinitionExtractorWikiModel(this.wdh, this.wi,
+        new Locale("it"), "/${image}", "/${title}");
+    italianExampleExtractorWikiModel = new ItalianExampleExtractorWikiModel(this.wdh, this.wi,
+        new Locale("it"), "/${image}", "/${title}");
+    italianPronunciationExtractorWikiModel = new ItalianPronunciationExtractorWikiModel(this.wdh,
+        this.wi, new Locale("it"), "/${image}", "/${title}");
+  }
+
+  @Override
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    super.setWiktionaryPageName(wiktionaryPageName);
+    String pagename = this.getWiktionaryPageName();
+    expander.setPageName(pagename);
+    italianDefinitionExtractorWikiModel.setPageName(pagename);
+    italianExampleExtractorWikiModel.setPageName(pagename);
+    italianPronunciationExtractorWikiModel.setPageName(pagename);
   }
 
   private Block currentBlock;
   private int blockStart = -1;
 
   private String currentNym = null;
-
-  private boolean isCorrectPOS;
 
   @Override
   public void extractData() {
@@ -176,39 +191,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     leaveCurrentBlock(m);
   }
 
-  private boolean isItalian(Matcher l1) {
-    // log.debug("Considering header == {}",l1.group(1));
-    String t = l1.group(1).trim();
-    return (t.startsWith("{{-it-") || t.startsWith("{{it"));
-  }
-
-  // TODO: variants, pronunciations and other elements are common to the different entries in the
-  // page.
-  protected void extractItalianData(int startOffset, int endOffset) {
-    Matcher m = sectionPattern.matcher(pageContent);
-    m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection("it");
-    currentBlock = Block.NOBLOCK;
-    while (m.find()) {
-      HashMap<String, Object> context = new HashMap<>();
-      Block nextBlock = computeNextBlock(m, context);
-
-      if (nextBlock == null) {
-        continue;
-      }
-      // If current block is IGNOREPOS, we should ignore everything but a new
-      // DEFBLOCK/INFLECTIONBLOCK
-      if (Block.IGNOREPOS != currentBlock
-          || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
-        leaveCurrentBlock(m);
-        gotoNextBlock(nextBlock, context);
-      }
-    }
-    // Finalize the entry parsing
-    leaveCurrentBlock(m);
-    wdh.finalizeLanguageSection();
-  }
-
   private Block computeNextBlock(Matcher m, Map<String, Object> context) {
     String title = m.group(1).trim();
     String nym;
@@ -249,19 +231,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     switch (nextBlock) {
       case NOBLOCK:
       case IGNOREPOS:
+      case ORTHOALTBLOCK:
+      case TRADBLOCK:
+      case PRONBLOCK:
         break;
       case DEFBLOCK:
         String pos = (String) context.get("pos");
         wdh.initializeLexicalEntry(pos);
         break;
-      case TRADBLOCK:
-        break;
-      case ORTHOALTBLOCK:
-        break;
       case NYMBLOCK:
         currentNym = (String) context.get("nym");
-        break;
-      case PRONBLOCK:
         break;
       default:
         assert false : "Unexpected block while parsing: " + this.getWiktionaryPageName();
@@ -325,10 +304,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (isIgnorable(currentGloss)) {
             // Ignore the full translation block
             currentGloss = null;
-            ti++;
-            while (ti != toks.size() && !isClosingTranslationBlock(toks.get(ti))) {
+            do {
               ti++;
-            }
+            } while (ti != toks.size() && !isClosingTranslationBlock(toks.get(ti)));
           } else {
             currentStructuredGloss = glossResource(currentGloss, glossRank++);
           }
@@ -368,6 +346,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private Resource glossResource(String currentGloss, int i) {
+    if (currentGloss != null) {
+      // Use a shared ExpandAllWikiModel to expand the currentGloss
+      currentGloss = expander.expandAll(currentGloss, null);
+    }
     return wdh.createGlossResource(currentGloss, i);
   }
 
@@ -437,212 +419,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL);
   }
 
-  protected final int INIT = 1;
-  protected final int LANGUE = 2;
-  protected final int TRAD = 3;
-
-  // TODO: delegate translation extraction to the appropriate wiki model
-  private void extractTranslationsOld(int startOffset, int endOffset) {
-    Matcher macroOrLinkOrcarMatcher = macroOrLinkOrcarPattern.matcher(pageContent);
-    macroOrLinkOrcarMatcher.region(startOffset, endOffset);
-    int ETAT = INIT;
-
-    Resource currentGlose = null;
-    String lang = null, word = "";
-    String usage = "";
-    String langname = "";
-    int rank = 1;
-
-    while (macroOrLinkOrcarMatcher.find()) {
-
-      String g1 = macroOrLinkOrcarMatcher.group(1);
-      String g3 = macroOrLinkOrcarMatcher.group(3);
-      String g5 = macroOrLinkOrcarMatcher.group(5);
-      String g6 = macroOrLinkOrcarMatcher.group(6);
-
-      switch (ETAT) {
-
-        case INIT:
-          if (g1 != null) {
-            if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
-              if (macroOrLinkOrcarMatcher.group(2) != null) {
-                String g = macroOrLinkOrcarMatcher.group(2);
-                currentGlose = wdh.createGlossResource(g, rank++);
-              } else {
-                currentGlose = null;
-              }
-
-            } else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
-              currentGlose = null;
-            } else if (g1.equalsIgnoreCase("mid")) {
-              // ignore
-            }
-          } else if (g3 != null) {
-            // System.err.println("Unexpected link while in INIT state.");
-          } else if (g5 != null) {
-            ETAT = LANGUE;
-          } else if (g6 != null) {
-            if (g6.equals(":")) {
-              // System.err.println("Skipping ':' while in INIT state.");
-            } else if (g6.equals("\n") || g6.equals("\r")) {
-
-            } else if (g6.equals(",")) {
-              // System.err.println("Skipping ',' while in INIT state.");
-            } else {
-              // System.err.println("Skipping " + g5 + " while in INIT state.");
-            }
-          }
-
-          break;
-
-        case LANGUE:
-
-          if (g1 != null) {
-            if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
-              if (macroOrLinkOrcarMatcher.group(2) != null) {
-                String g = macroOrLinkOrcarMatcher.group(2);
-                currentGlose = wdh.createGlossResource(g, rank++);
-              } else {
-                currentGlose = null;
-              }
-              langname = "";
-              word = "";
-              usage = "";
-              ETAT = INIT;
-            } else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
-              currentGlose = null;
-              langname = "";
-              word = "";
-              usage = "";
-              ETAT = INIT;
-            } else if (g1.equalsIgnoreCase("mid")) {
-              langname = "";
-              word = "";
-              usage = "";
-              ETAT = INIT;
-            } else {
-              langname = LangTools.normalize(g1);
-            }
-          } else if (g3 != null) {
-            // System.err.println("Unexpected link while in LANGUE state.");
-          } else if (g5 != null) {
-            // System.err.println("Skipping '*' while in LANGUE state.");
-          } else if (g6 != null) {
-            if (g6.equals(":")) {
-              lang = langname.trim();
-              lang = stripParentheses(lang);
-              lang = ItalianLangToCode.threeLettersCode(lang);
-              langname = "";
-              ETAT = TRAD;
-            } else if (g6.equals("\n") || g6.equals("\r")) {
-              // System.err.println("Skipping newline while in LANGUE state.");
-            } else if (g6.equals(",")) {
-              // System.err.println("Skipping ',' while in LANGUE state.");
-            } else {
-              langname = langname + g6;
-            }
-          }
-
-          break;
-        case TRAD:
-          if (g1 != null) {
-            if (g1.equalsIgnoreCase("trad1") || g1.equalsIgnoreCase("(")) {
-              if (macroOrLinkOrcarMatcher.group(2) != null) {
-                String g = macroOrLinkOrcarMatcher.group(2);
-                currentGlose = wdh.createGlossResource(g, rank++);
-              } else {
-                currentGlose = null;
-              }
-              // if (word != null && word.length() != 0) {
-              // lang=stripParentheses(lang);
-              // wdh.registerTranslation(lang, currentGlose, usage, word);
-              // }
-              langname = "";
-              word = "";
-              usage = "";
-              lang = null;
-              ETAT = INIT;
-            } else if (g1.equalsIgnoreCase("trad2") || g1.equalsIgnoreCase(")")) {
-              if (word != null && word.length() != 0) {
-                if (lang != null) {
-                  wdh.registerTranslation(lang, currentGlose, usage, word);
-                }
-              }
-              currentGlose = null;
-              langname = "";
-              word = "";
-              usage = "";
-              lang = null;
-              ETAT = INIT;
-            } else if (g1.equalsIgnoreCase("mid")) {
-              if (word != null && word.length() != 0) {
-                if (lang != null) {
-                  wdh.registerTranslation(lang, currentGlose, usage, word);
-                }
-              }
-              langname = "";
-              word = "";
-              usage = "";
-              lang = null;
-              ETAT = INIT;
-            } else {
-              usage = usage + "{{" + g1 + "}}";
-            }
-          } else if (g3 != null) {
-            word = word + " " + removeAnchor(g3);
-          } else if (g5 != null) {
-            // System.err.println("Skipping '*' while in LANGUE state.");
-          } else if (g6 != null) {
-            if (g6.equals("\n") || g6.equals("\r")) {
-              usage = usage.trim();
-              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
-              // currentGlose);
-              if (word != null && word.length() != 0) {
-                if (lang != null) {
-                  wdh.registerTranslation(lang, currentGlose, usage, word);
-                }
-              }
-              lang = null;
-              usage = "";
-              word = "";
-              ETAT = INIT;
-            } else if (g6.equals(",") || g6.equals(";") || g6.equals("/")) {
-              usage = usage.trim();
-              // System.err.println("Registering: " + word + ";" + lang + " (" + usage + ") " +
-              // currentGlose);
-              if (word != null && word.length() != 0) {
-                if (lang != null) {
-                  wdh.registerTranslation(lang, currentGlose, usage, word);
-                }
-              }
-              usage = "";
-              word = "";
-            } else {
-              usage = usage + g6;
-            }
-          }
-          break;
-        default:
-          System.err.println("Unexpected state number:" + ETAT);
-          break;
-      }
-
-
-    }
-  }
-
-  private String removeAnchor(String g3) {
-    if (null == g3) {
-      return null;
-    }
-    int hash = g3.indexOf('#');
-    if (-1 == hash) {
-      return g3;
-    } else {
-      return g3.substring(0, hash);
-    }
-  }
-
   private void extractPron(int startOffset, int endOffset) {
     String pronCode = pageContent.substring(startOffset, endOffset);
     italianPronunciationExtractorWikiModel.parsePronunciation(pronCode);
@@ -661,26 +437,4 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return null;
   }
 
-  private ItalianDefinitionExtractorWikiModel italianDefinitionExtractorWikiModel;
-  private ItalianExampleExtractorWikiModel italianExampleExtractorWikiModel;
-  private ItalianPronunciationExtractorWikiModel italianPronunciationExtractorWikiModel;
-
-  @Override
-  public void setWiktionaryIndex(WiktionaryPageSource wi) {
-    super.setWiktionaryIndex(wi);
-    italianDefinitionExtractorWikiModel = new ItalianDefinitionExtractorWikiModel(this.wdh, this.wi,
-        new Locale("it"), "/${image}", "/${title}");
-    italianExampleExtractorWikiModel = new ItalianExampleExtractorWikiModel(this.wdh, this.wi,
-        new Locale("it"), "/${image}", "/${title}");
-    italianPronunciationExtractorWikiModel = new ItalianPronunciationExtractorWikiModel(this.wdh,
-        this.wi, new Locale("it"), "/${image}", "/${title}");
-  }
-
-  @Override
-  protected void setWiktionaryPageName(String wiktionaryPageName) {
-    super.setWiktionaryPageName(wiktionaryPageName);
-    italianDefinitionExtractorWikiModel.setPageName(this.getWiktionaryPageName());
-    italianExampleExtractorWikiModel.setPageName(this.getWiktionaryPageName());
-    italianPronunciationExtractorWikiModel.setPageName(this.getWiktionaryPageName());
-  }
 }

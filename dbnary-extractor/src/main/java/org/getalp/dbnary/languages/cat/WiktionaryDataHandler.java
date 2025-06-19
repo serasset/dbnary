@@ -137,7 +137,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public void initializeLexicalEntry(String title) {
 
     if (posAndTypeValueMap.get(title) == null)
-      log.warn("UNHANDLED LEXICAL TYPE : " + title + " name -> " + this.currentPage.getName());
+      log.debug("UNHANDLED LEXICAL TYPE : {} name -> {}", title, this.currentPage.getName());
 
     PosAndType pat = posAndTypeValueMap.get(title);
     Resource typeR = typeResource(pat);
@@ -176,7 +176,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return;
     Matcher m = senseNumPattern.matcher(value);
     if (m.matches()) {
-      log.warn("Unhandled sense num in {} : {}", currentPagename(), m.group(1));
+      log.debug("Unhandled sense num in {} : {}", currentPagename(), m.group(1));
       value = m.group(2);
     }
 

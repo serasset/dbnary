@@ -226,6 +226,7 @@ iso3Lang[zh]="zho"
 iso3Lang[ca]="cat"
 iso3Lang[ga]="gle"
 iso3Lang[da]="dan"
+iso3Lang[cs]="ces"
 
 
 SAVETMPDIR=$TMPDIR

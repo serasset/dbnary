@@ -273,7 +273,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
 
         WikiContent sense = args.get("význam");
-        String senseText = sense.toString().trim();
+        String senseText = (sense == null) ? "" : sense.toString().trim();
         Resource gloss = cesWdh.createGlossResource(senseText);
 
         for (Map.Entry<String, WikiContent> entry : args.entrySet()) {
@@ -288,7 +288,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 Map<String, String> args1 = tm1.getParsedArgs();
 
                 if (tm1.getName().equals("P") && args1.size() >= 2) {
-                  cesWdh.registerTranslation(lang, gloss, sense.toString(), args1.get("2"));
+                  cesWdh.registerTranslation(lang, gloss, senseText, args1.get("2"));
                 }
               }
             }

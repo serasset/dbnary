@@ -5,7 +5,7 @@
 
   <groupId>org.getalp</groupId>
   <artifactId>dbnary</artifactId>
-  <version>3.1.28-gustek-SNAPSHOT</version>
+  <version>3.1.28-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <inceptionYear>2010</inceptionYear>

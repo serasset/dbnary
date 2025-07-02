@@ -30,40 +30,45 @@ public class EnglishLikeModulesPatcherWikiModel extends ModulesPatcherWikiModel 
     // This allow the handling of the Chinese wikimodel that uses capitalized module names
     String pagename = parsedPagename.pagename.toLowerCase();
     if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)) {
-      if (pagename.startsWith("place")) {
-        return getAndPatchModule(parsedPagename, map,
-            t -> UNPACK_PATTERN.matcher(t).replaceAll(m -> m.group(1) + ", 1, 3)"));
-      } else if (pagename.equals("utilities")) {
-        // utilities uses the nasty nowiki tag hack. So patch the function using it to always return
-        // 0
-        return getAndPatchModule(parsedPagename, map,
-            // t -> t.replaceAll("function export.get_current_section\\(\\)",
-            // "function export.get_current_section()\n\t\tlocal test = 1\n"
-            // + "\t\tif test then return 0 end"),
-            t -> t.replaceAll("return export",
-                "-- This function is redefined to avoid too much time taken in calculus we do not need.\n"
-                    + "function export.format_categories(categories, lang, sort_key, sort_base, force_output, sc)\n"
-                    + "return \"\"\n" + "end\n" + "\n" + "return export"));
-      } else if (pagename.equals("hrkt-translit/data/ja")) {
-        // Hrkt-translit/data/ja does not exists, and Lua takes care of this, but will generate
-        // an annoying error message. So we just return an empty table
-        return "return {}";
-      } else if (pagename.equals("ko-pron")) {
-        return getAndPatchModule(parsedPagename, map, t -> t.replace(
-            "return tostring(html_ul) .. tostring(html_table) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
-            "return tostring(html_ul)").replace(
-                "return tostring(html_ul) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
-                "return tostring(html_ul)"));
-      } else if (pagename.equals("audio")) {
-        return getAndPatchModule(parsedPagename, map,
-            t -> t.replace("return stylesheet .. text .. categories", "return text .. categories"));
-      } else if (pagename.equals("quote")) {
-        // The quote module contains too many locals and hits the 200 local per chunk limit of Lua.
-        // This is problematic here as we compile lua code (hence the limit, while interpreted lua
-        // seems not to bear the same issue)
-        // we fix it by a hack that replace the local functions with global functions
-        return getAndPatchModule(parsedPagename, map,
-            t -> t.replace("\nlocal function ", "\nfunction "));
+      // NOW correct in Module:place and should not be patched in Module:place/...
+      // if (pagename.startsWith("place")) {
+      // return getAndPatchModule(parsedPagename, map,
+      // t -> UNPACK_PATTERN.matcher(t).replaceAll(m -> m.group(1) + ", 1, 3)"));
+      // } else
+      switch (pagename) {
+        case "utilities":
+          // utilities uses the nasty nowiki tag hack. So patch the function using it to always
+          // return
+          // 0
+          return getAndPatchModule(parsedPagename, map,
+              // t -> t.replaceAll("function export.get_current_section\\(\\)",
+              // "function export.get_current_section()\n\t\tlocal test = 1\n"
+              // + "\t\tif test then return 0 end"),
+              t -> t.replaceAll("return export",
+                  "-- This function is redefined to avoid too much time taken in calculus we do not need.\n"
+                      + "function export.format_categories(categories, lang, sort_key, sort_base, force_output, sc)\n"
+                      + "return \"\"\n" + "end\n" + "\n" + "return export"));
+        case "hrkt-translit/data/ja":
+          // Hrkt-translit/data/ja does not exists, and Lua takes care of this, but will generate
+          // an annoying error message. So we just return an empty table
+          return "return {}";
+        case "ko-pron":
+          return getAndPatchModule(parsedPagename, map, t -> t.replace(
+              "return tostring(html_ul) .. tostring(html_table) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
+              "return tostring(html_ul)").replace(
+                  "return tostring(html_ul) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
+                  "return tostring(html_ul)"));
+        case "audio":
+          return getAndPatchModule(parsedPagename, map, t -> t
+              .replace("return stylesheet .. text .. categories", "return text .. categories"));
+        case "quote":
+          // The quote module contains too many locals and hits the 200 local per chunk limit of
+          // Lua.
+          // This is problematic here as we compile lua code (hence the limit, while interpreted lua
+          // seems not to bear the same issue)
+          // we fix it by a hack that replace the local functions with global functions
+          return getAndPatchModule(parsedPagename, map,
+              t -> t.replace("\nlocal function ", "\nfunction "));
       }
       // These patches are not useful anymore as the code to functions with var args is now correct
       // for our Lua version.

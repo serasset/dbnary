@@ -5,14 +5,12 @@ import info.bliki.wiki.model.WikiModelContentException;
 import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.regex.Pattern;
+
 import org.getalp.dbnary.api.WiktionaryPageSource;
-import org.getalp.dbnary.bliki.DbnaryWikiModel;
 
 public class EnglishLikeModulesPatcherWikiModel extends ModulesPatcherWikiModel {
 
-  public static final Pattern UNPACK_PATTERN = Pattern.compile("(unpack\\([^),]+)\\)");
+  // public static final Pattern UNPACK_PATTERN = Pattern.compile("(unpack\\([^),]+)\\)");
 
   public EnglishLikeModulesPatcherWikiModel(Locale locale, String imageBaseURL,
       String linkBaseURL) {

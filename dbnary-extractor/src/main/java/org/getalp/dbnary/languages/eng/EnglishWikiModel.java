@@ -75,15 +75,23 @@ public class EnglishWikiModel extends EnglishLikeModulesPatcherWikiModel {
           "tonumber\\(mw.getCurrentFrame\\(\\):extensionTag\\('nowiki', ''\\):match'\\(\\[%dA-F\\]\\+\\)', 16\\)",
           "0"));
     } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("parameters")) {
+        && parsedPagename.pagename.equals("parameters/track")) {
       // December 2024: Module:parameters now uses the traceback that is only available in debug
       // mode avoid an error while compiling the module as debug is not available in our execution
       // environment — patch it
+      // July 2025: now defined in Module/parameters/track
       return getAndPatchModule(parsedPagename, map,
           t -> t.replaceAll("local\\s+traceback\\s*=\\s*debug.traceback\n", //
               "local function traceback() \n" //
                   + " return \"\"\n" //
                   + "end\n"));
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
+        && parsedPagename.pagename.equals("table/getUnprotectedMetatable")) {
+      // December 2024: Module:table/getUnprotectedMetatable queries debug which is nil
+      // in our environment — patch it
+      return getAndPatchModule(parsedPagename, map,
+          t -> t.replaceAll("local _getmetatable = debug.getmetatable\n", //
+              "local _getmetatable = nil\n"));
     } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
         && parsedPagename.pagename.equals("checkparams")) {
       String resource = loadStubResource("checkparams.lua");

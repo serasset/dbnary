@@ -1,7 +1,10 @@
 package org.getalp.dbnary.languages.deu;
 
+import static org.getalp.dbnary.tools.TokenListSplitter.splitAndProcessToken;
+
 import java.util.*;
 
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
@@ -24,6 +27,7 @@ import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiPattern;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
@@ -161,7 +165,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // posMarkers.add("Wortverbindung");
     // posMarkers.add("Verb");
 
-    ignorableSectionMarkers = new HashSet<>(20);
+    ignorableSectionMarkers = new HashSet<>(100);
     ignorableSectionMarkers.add("Silbentrennung");
     ignorableSectionMarkers.add("Aussprache");
     ignorableSectionMarkers.add("Worttrennung");
@@ -228,15 +232,45 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionSenseLink = new HashMap<>(40);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang .String,
-   * org.getalp.blexisma.semnet.SemanticNetwork)
-   */
+
+
   @Override
   public void extractData() {
+
     wdh.initializePageExtraction(getWiktionaryPageName());
+    WikiText doc = new WikiText(getWiktionaryPageName(), pageContent);
+
+    List<Pair<String, List<Token>>> languageSections =
+        splitAndProcessToken(doc.tokens(), this::getLanguageCode);
+
+    for (Pair<String, List<Token>> languageSection : languageSections) {
+      List<Token> section = languageSection.getRight();
+      extractLanguageData(languageSection.getLeft(), section.get(0).getBeginIndex(),
+          section.get(section.size() - 1).getEndIndex());
+    }
+
+    wdh.finalizePageExtraction();
+  }
+
+  public String getLanguageCode(Token t) {
+    /* language sections are 2nd level headings */
+    if (t instanceof Heading && t.asHeading().getLevel() == 2) {
+      List<String> languages = t.asHeading().getContent().templates().stream()
+          .map(Token::asTemplate).filter(tok -> tok.getName().equals("Sprache"))
+          .map(tmpl -> tmpl.getParsedArg("1")).collect(Collectors.toList());
+
+      for (String language : languages) {
+        String languageCode = GermanLanguageCodes.getCode(language);
+        if (languageCode != null)
+          return languageCode;
+      }
+    }
+
+    return null;
+  }
+
+  public void extractDataOld() {
+
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (languageFilter.find() && !isGermanLanguageHeader(languageFilter)) {
       // nop
@@ -255,7 +289,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int germanSectionEndOffset =
         languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
-    extractGermanData(germanSectionStartOffset, germanSectionEndOffset);
+    extractLanguageData("de", germanSectionStartOffset, germanSectionEndOffset);
     wdh.finalizePageExtraction();
   }
 
@@ -277,10 +311,23 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private String currentNym = null;
 
-  private void extractGermanData(int startOffset, int endOffset) {
+  private void extractLanguageData(String languageCode, int startOffset, int endOffset) {
+    if (null == languageCode || languageCode.isEmpty()) {
+      return;
+    }
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
+        && !wdh.getExtractedLanguage().equals(languageCode)) {
+      return;
+    }
+    String normalizedLanguage = validateAndStandardizeLanguageCode(languageCode);
+    if (normalizedLanguage == null) {
+      log.trace("Ignoring language section {} for {}", languageCode, getWiktionaryPageName());
+      return;
+    }
+
     Matcher m = macroOrPOSPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection("de");
+    wdh.initializeLanguageSection(normalizedLanguage);
     currentBlock = Block.IGNOREPOS;
 
     while (m.find()) {

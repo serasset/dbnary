@@ -16,4 +16,16 @@ class GermanLanguageCodesTest {
     assertEquals("fra", GermanLanguageCodes.getCode("Französisch"));
   }
 
+  @Test
+  void getCodeShouldMatchUncased() {
+    assertEquals("fra", GermanLanguageCodes.getCode("franzöSisch"));
+  }
+
+  @Test
+  void getCodeShouldIgnoreLeadingAndTrailingWhitespaces() {
+    assertEquals("apc", GermanLanguageCodes.getCode("Levantinisches Arabisch "));
+    assertEquals("nah", GermanLanguageCodes.getCode("Klassisches Nahuatl\u200E "));
+  }
+
+
 }

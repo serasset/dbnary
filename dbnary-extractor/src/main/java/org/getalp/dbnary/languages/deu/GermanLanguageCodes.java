@@ -21,6 +21,102 @@ public class GermanLanguageCodes {
 
   static {
     readCodesFromWikipediaTables();
+
+    // Patches as some language denomination are particular in German wiktionary
+    registerLanguageName("Weißrussisch", "bel");
+    registerLanguageName("Prußisch", "prg");
+    registerLanguageName("Preußisch", "prg");
+    registerLanguageName("Maori", "mri");
+    registerLanguageName("Neugriechisch", "ell");
+    registerLanguageName("Mittelgriechisch", "grc");
+    registerLanguageName("Paschtu", "pus");
+    registerLanguageName("Paschtunisch", "pus");
+    registerLanguageName("Venezianisch", "vec");
+    registerLanguageName("Venedisch", "vec");
+    registerLanguageName("Venetisch", "vec");
+    registerLanguageName("Venezisch", "vec");
+    registerLanguageName("Friaulisch", "fur");
+    registerLanguageName("Furlanisch", "fur");
+    registerLanguageName("Friulanisch", "fur");
+    registerLanguageName("West-Pandschabi", "pnb");
+    registerLanguageName("Westpanjabi", "pnb");
+    registerLanguageName("West-Pandschabisch", "pnb");
+    registerLanguageName("Nepalesisch", "nep");
+    registerLanguageName("Suaheli", "swa");
+    registerLanguageName("Belutschi", "bal");
+    registerLanguageName("Belutschisch", "bal");
+    registerLanguageName("Huastekisches Zentral-Nahuatl", "nch");
+    registerLanguageName("Zentral-Nahuatl", "nhn");
+    registerLanguageName("Huastekisches West-Nahuatl", "nhw");
+    registerLanguageName("Huastekisches Ost-Nahuatl", "nhe");
+    registerLanguageName("Tetelcingo-Nahuatl", "nhg");
+    registerLanguageName("Temascaltepec-Nahuatl", "nhv");
+    registerLanguageName("Klassisches Nahuatl", "nah");
+    registerLanguageName("Nahuatl", "nah");
+    registerLanguageName("Orizaba-Nahuatl", "nlv");
+    registerLanguageName("Guerrero-Nahuatl", "ngu");
+    registerLanguageName("Durango-Nahuatl", "nln");
+    registerLanguageName("Zentrales Puebla-Nahuatl", "ncx");
+    registerLanguageName("Tibetisch", "bod");
+    registerLanguageName("Dunganisch", "dng");
+    registerLanguageName("Asturisch", "ast");
+    registerLanguageName("asturianische", "ast");
+    registerLanguageName("Somalisch", "som");
+    registerLanguageName("Mokscha", "mdf");
+    registerLanguageName("Fidschi", "fij");
+    registerLanguageName("Võro", "vro");
+    registerLanguageName("Pennsylvaniadeutsch", "pdc");
+    registerLanguageName("Pensilfaanisch", "pdc");
+    registerLanguageName("Madagassisch", "mlg");
+    registerLanguageName("Malagassi", "mlg");
+    registerLanguageName("Luwisch", "xlu");
+    registerLanguageName("Acehnesisch", "ace");
+    registerLanguageName("Seselwa", "crs");
+    registerLanguageName("Ladino", "lad");
+    registerLanguageName("Sephardisch", "lad");
+    registerLanguageName("Djudezmo", "lad");
+    registerLanguageName("Kumükisch", "kum");
+    registerLanguageName("Kapingamarangi", "kpg");
+    registerLanguageName("Pandschabi", "pan");
+    registerLanguageName("Pandschabisch", "pan");
+    registerLanguageName("Mezquital-Otomi", "ote");
+    registerLanguageName("Argentinisches Quechua", "qus");
+    registerLanguageName("Morisien", "mfe");
+    registerLanguageName("Isthmus-Zapotekisch", "zai");
+    registerLanguageName("Yosondúa-Mixtekisch", "mpm");
+    registerLanguageName("Tzotzil", "tzo");
+    registerLanguageName("Pukapuka", "pkp");
+    registerLanguageName("Pikardisch", "pcd");
+    registerLanguageName("Kumükisch", "kum");
+    registerLanguageName("Komorisch", "swb");
+    registerLanguageName("Jamaika-Kreolisch", "jam");
+    registerLanguageName("Jamaika-Kreol", "jam");
+    registerLanguageName("Gurage", "sgw");
+    registerLanguageName("Sibirisch-Yupik", "ess");
+    registerLanguageName("West-Abenaki", "abe");
+    registerLanguageName("Micmac", "mic");
+
+    // Oshivambo is underspecified, either it is ng (Ndonga), kj (Kwanjama)
+    registerLanguageName("Oshivambo", "");
+
+    // German Wiktionary uses Altaisch for Southern Altai rather than Northern Altai
+    registerLanguageName("Altaisch", "alt");
+    // German Wiktionary uses Sami and mainly refers to Northern Sami (in 2025)
+    registerLanguageName("Sami", "sme");
+
+
+
+    // Since 2023, North/South Levantine Arabic has been merge under apc code
+    registerLanguageName("Levantinisches Arabisch", "apc");
+
+    // Treat translingual/International entries as "Multiple Language"
+    registerLanguageName("International", "mul");
+    // Just recognize, but ignore the following "languages"
+    registerLanguageName("Umschrift", "");
+    // No usable language code for this older/historic languages
+    registerLanguageName("Frühneuhochdeutsch", "");
+    registerLanguageName("Alttschechisch", "");
+
   }
 
   private static void readCodesFromWikipediaTables() {
@@ -41,7 +137,8 @@ public class GermanLanguageCodes {
 
     } catch (IOException e) {
       // don't know what I should do here, as the data should be bundled with the code.
-      log.error("Error reading Wiktionary Language Codes during german extractor initialization", e);
+      log.error("Error reading Wiktionary Language Codes during german extractor initialization",
+          e);
     }
   }
 
@@ -81,6 +178,7 @@ public class GermanLanguageCodes {
   }
 
   private static void registerLanguageName(String languageName, String languageCode) {
+    languageName = languageName.toLowerCase().trim();
     String oldCode = languageNamesToCode.put(languageName, languageCode);
     if (null != oldCode) {
       log.debug("LANGUAGE NAME CONFLICT: {} --> {} has been redefined to {}", languageName, oldCode,
@@ -89,6 +187,10 @@ public class GermanLanguageCodes {
   }
 
   public static String getCode(String languageName) {
+    if (null == languageName || languageName.isEmpty())
+      return null;
+    languageName = languageName.toLowerCase().replaceAll("[\\p{Cf}\\p{Cc}\\s]+$", "")
+        .replaceAll("^[\\p{Cf}\\p{Cc}\\s]+", "");
     return languageNamesToCode.get(languageName);
   }
 }

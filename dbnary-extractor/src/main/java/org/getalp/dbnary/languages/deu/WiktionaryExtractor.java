@@ -261,9 +261,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
       for (String language : languages) {
         String languageCode = GermanLanguageCodes.getCode(language);
-        if (languageCode != null)
+        if (languageCode == null) {
+          log.trace("Language not found, trying next: {} || {}", language, wiktionaryPageName);
+        } else {
           return languageCode;
+        }
       }
+      if (log.isTraceEnabled()) {
+        log.trace("No recognized language code: {} || {}", t.getText(), wiktionaryPageName);
+      }
+      return "";
     }
 
     return null;

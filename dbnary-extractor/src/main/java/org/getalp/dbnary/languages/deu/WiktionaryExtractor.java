@@ -1,7 +1,10 @@
 package org.getalp.dbnary.languages.deu;
 
+import static org.getalp.dbnary.tools.TokenListSplitter.splitAndProcessToken;
+
 import java.util.*;
 
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Property;
@@ -24,7 +27,13 @@ import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiPattern;
 import org.getalp.dbnary.wiki.WikiPatterns;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Heading;
+import org.getalp.dbnary.wiki.WikiText.IndentedItem;
+import org.getalp.dbnary.wiki.WikiText.Link;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Text;
 import org.getalp.dbnary.wiki.WikiText.Token;
+import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,7 +170,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // posMarkers.add("Wortverbindung");
     // posMarkers.add("Verb");
 
-    ignorableSectionMarkers = new HashSet<>(20);
+    ignorableSectionMarkers = new HashSet<>(100);
     ignorableSectionMarkers.add("Silbentrennung");
     ignorableSectionMarkers.add("Aussprache");
     ignorableSectionMarkers.add("Worttrennung");
@@ -205,7 +214,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignorableSectionMarkers.add("Lemmaverweis");
     ignorableSectionMarkers.add("Veraltete Schreibweisen");
     ignorableSectionMarkers.add("Steigerbarkeit Adjektiv");
-    ignorableSectionMarkers.add("Wortbildungen");
+    // We now extract Derivations
+    // ignorableSectionMarkers.add("Wortbildungen");
+
+    ignorableSectionMarkers.add("Entlehnungen");
+    ignorableSectionMarkers.add("Erbwörter");
+    ignorableSectionMarkers.add("Wortfamilie");
+    ignorableSectionMarkers.add("Geflügelte Worte");
+    ignorableSectionMarkers.add("Quellen");
     ignorableSectionMarkers.add("Symbole");
 
     nymMarkers = new HashSet<>(20);
@@ -228,15 +244,52 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionSenseLink = new HashMap<>(40);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang .String,
-   * org.getalp.blexisma.semnet.SemanticNetwork)
-   */
+
+
   @Override
   public void extractData() {
+
     wdh.initializePageExtraction(getWiktionaryPageName());
+    WikiText doc = new WikiText(getWiktionaryPageName(), pageContent);
+
+    List<Pair<String, List<Token>>> languageSections =
+        splitAndProcessToken(doc.tokens(), this::getLanguageCode);
+
+    for (Pair<String, List<Token>> languageSection : languageSections) {
+      List<Token> section = languageSection.getRight();
+      extractLanguageData(languageSection.getLeft(), section.get(0).getBeginIndex(),
+          section.get(section.size() - 1).getEndIndex());
+    }
+
+    wdh.finalizePageExtraction();
+  }
+
+  public String getLanguageCode(Token t) {
+    /* language sections are 2nd level headings */
+    if (t instanceof Heading && t.asHeading().getLevel() == 2) {
+      List<String> languages = t.asHeading().getContent().templates().stream()
+          .map(Token::asTemplate).filter(tok -> tok.getName().equals("Sprache"))
+          .map(tmpl -> tmpl.getParsedArg("1")).collect(Collectors.toList());
+
+      for (String language : languages) {
+        String languageCode = GermanLanguageCodes.getCode(language);
+        if (languageCode == null) {
+          log.trace("Language not found, trying next: {} || {}", language, wiktionaryPageName);
+        } else {
+          return languageCode;
+        }
+      }
+      if (log.isTraceEnabled()) {
+        log.trace("No recognized language code: {} || {}", t.getText(), wiktionaryPageName);
+      }
+      return "";
+    }
+
+    return null;
+  }
+
+  public void extractDataOld() {
+
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (languageFilter.find() && !isGermanLanguageHeader(languageFilter)) {
       // nop
@@ -255,7 +308,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int germanSectionEndOffset =
         languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
-    extractGermanData(germanSectionStartOffset, germanSectionEndOffset);
+    extractLanguageData("de", germanSectionStartOffset, germanSectionEndOffset);
     wdh.finalizePageExtraction();
   }
 
@@ -268,7 +321,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: supprimer les "Deklinierte Form" des catégories extraites.
 
   private enum Block {
-    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, POSBLOCK, NYMBLOCK, PRONBLOCK, EXAMPLEBLOCK
+    NOBLOCK, IGNOREPOS, TRADBLOCK, DEFBLOCK, INFLECTIONBLOCK, ORTHOALTBLOCK, POSBLOCK, NYMBLOCK, PRONBLOCK, EXAMPLEBLOCK, DERIVATIONBLOCK
   }
 
   private Block currentBlock = Block.NOBLOCK;
@@ -277,10 +330,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private String currentNym = null;
 
-  private void extractGermanData(int startOffset, int endOffset) {
+  private void extractLanguageData(String languageCode, int startOffset, int endOffset) {
+    if (null == languageCode || languageCode.isEmpty()) {
+      return;
+    }
+    languageCode = LangTools.getShortCode(languageCode);
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
+        && !wdh.getExtractedLanguage().equals(languageCode)) {
+      return;
+    }
+    String normalizedLanguage = validateAndStandardizeLanguageCode(languageCode);
+    if (normalizedLanguage == null) {
+      log.trace("Ignoring language section {} for {}", languageCode, getWiktionaryPageName());
+      return;
+    }
+
     Matcher m = macroOrPOSPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    wdh.initializeLanguageSection("de");
+    wdh.initializeLanguageSection(normalizedLanguage);
     currentBlock = Block.IGNOREPOS;
 
     while (m.find()) {
@@ -290,9 +357,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (nextBlock == null) {
         continue;
       }
-      // If current block is IGNOREPOS, we should ignore everything but a new
+      // If the current block is IGNOREPOS, we should ignore everything but a new
       // DEFBLOCK/INFLECTIONBLOCK/EXAMPLEBLOCK
-      if (Block.IGNOREPOS != currentBlock || (Block.POSBLOCK == nextBlock)) {
+      if (currentBlock != Block.IGNOREPOS || (nextBlock == Block.POSBLOCK)) {
         leaveCurrentBlock(m);
         gotoNextBlock(nextBlock, context);
       }
@@ -319,6 +386,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return Block.ORTHOALTBLOCK;
       } else if (template.equals("Beispiele")) {
         return Block.EXAMPLEBLOCK;
+      } else if (template.equals("Wortbildungen")) {
+        return Block.DERIVATIONBLOCK;
       } else if (nymMarkers.contains(template)) {
         context.put("nym", nymMarkerToNymName.get(template));
         return Block.NYMBLOCK;
@@ -393,30 +462,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     switch (nextBlock) {
       case NOBLOCK:
       case IGNOREPOS:
+      case DERIVATIONBLOCK:
+      case EXAMPLEBLOCK:
+      case PRONBLOCK:
+      case ORTHOALTBLOCK:
+      case TRADBLOCK:
+      case DEFBLOCK:
+      case INFLECTIONBLOCK:
         break;
       case POSBLOCK:
         String header = (String) context.get("posHeader");
         registerAllPosInformation(header);
         // wdh.addPartOfSpeech(pos);
         break;
-      case INFLECTIONBLOCK:
-        break;
-      case DEFBLOCK:
-        break;
-      case TRADBLOCK:
-        break;
-      case ORTHOALTBLOCK:
-        break;
       case NYMBLOCK:
         currentNym = (String) context.get("nym");
         break;
-      case PRONBLOCK:
-        break;
-      case EXAMPLEBLOCK:
-        break;
-      default:
-        assert false
-            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
 
   }
@@ -425,8 +486,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (blockStart == -1) {
       return;
     }
-    // log.trace("Leaving block {} while parsing entry {}", currentBlock.name(),
-    // this.wiktionaryPageName);
 
     int end = computeRegionEnd(blockStart, m);
     switch (currentBlock) {
@@ -457,9 +516,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case EXAMPLEBLOCK:
         extractExamples(blockStart, end);
         break;
-      default:
-        assert false
-            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
+      case DERIVATIONBLOCK:
+        extractDerivations(blockStart, end);
     }
 
     blockStart = -1;
@@ -469,7 +527,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void registerAllPosInformation(String header) {
     header = header.replaceAll("===", "");
     Matcher m = posHeaderElementsPattern.matcher(header);
-    StringBuffer unhandledData = new StringBuffer();
+    StringBuilder unhandledData = new StringBuilder();
     ArrayList<String> partOfSpeeches = new ArrayList<>();
     HashSet<String> additionalInfo = new HashSet<>();
 
@@ -499,7 +557,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     m.appendTail(unhandledData);
     String unhandledDataString = unhandledData.toString().trim();
     if (unhandledDataString.length() != 0) {
-      log.debug("Unhandled POS data: ", m.toString());
+      log.debug("Unhandled POS data: {}", m.toString());
     }
     // TODO: maybe use all POS instead of the first one to create the entry label...
     wdh.initializeLexicalEntry(partOfSpeeches.remove(0));
@@ -604,7 +662,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return null == _1 ? _2 : _1;
   }
 
-  // TODO: faire une analyse plus poussée des traduction, car il y a des entrées comme cela :
+  // TODO: faire une analyse plus poussée des traductions, car il y a des entrées comme cela :
   // se {{Ü|fr|mettre}} {{Ü|fr|à}} {{Ü|fr|couler}} qui est extrait en 3 traductions différentes
   // TODO: Certains liens sont entre crochet pour annoter la traduction suivante ou précédente
   // comme dans la traduction anglais de ‘Präsidentin’ ([female] chairperson),
@@ -746,12 +804,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (nymLineMatcher.group().length() >= 2 && nymLineMatcher.group().charAt(1) == ':') {
           if (nymLineMatcher.group().length() >= 3 && nymLineMatcher.group().charAt(2) == ':') {
             // Level 3
-            log.debug("Level 3 definition: \"{}\" in entry {}", nymLineMatcher.group(),
+            log.debug("Level 3 sense number: \"{}\" in entry {}", nymLineMatcher.group(),
                 this.getWiktionaryPageName());
             if (!senseNum.startsWith(currentLevel2SenseNumber)) {
               senseNum = currentLevel2SenseNumber + senseNum;
             }
-            log.debug("Sense number is: {}", senseNum);
+            log.debug("Nym extraction: Sense number is: {}", senseNum);
           } else {
             // Level 2
             // log.debug("Level 2 definition: \"{}\" in entry {}", definitionMatcher.group(),
@@ -789,6 +847,73 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
 
+  }
+
+  private void extractDerivations(int blockStart, int end) {
+    WikiText derivations = new WikiText(this.pageContent.substring(blockStart, end));
+    extractDerivations(derivations.content());
+
+  }
+
+
+  private void extractDerivations(WikiContent derivations) {
+    for (Token t : derivations.tokens()) {
+      if (t instanceof IndentedItem) {
+        extractDerivationsFromIndentation(((IndentedItem) t).getContent());
+      } else if (t instanceof Heading && t.asHeading().getLevel() >= 3) {
+        // This is a non standard heading that ends the Derivation section
+        return;
+      } else {
+        if (t instanceof Text && t.asText().getText().replaceAll("[\\p{Z}\\s\n\r]", "").isEmpty())
+          continue;
+        log.debug("Ignored Derivation token: {} || {}", t, getWiktionaryPageName());
+      }
+    }
+  }
+
+  private static final Pattern refTag =
+      Pattern.compile("(?<OR><ref.*>)|(?<CR></ref.*>)|(?<IT>''+)|(?<SN>\\[[\\s\\d-—,]+])");
+
+  private void extractDerivationsFromIndentation(WikiContent content) {
+    List<Token> tokens = content.tokens();
+    String gloss = null;
+    boolean insideRefElement = false;
+    boolean insideItalics = false;
+    for (Token t : tokens) {
+      if (t instanceof Link) {
+        if (insideRefElement || insideItalics)
+          continue;
+        wdh.registerDerivation(t.asLink().getTargetText(), gloss);
+      } else if (t instanceof Template) {
+        if (insideRefElement || insideItalics)
+          continue;
+        if (t.asTemplate().getName().equalsIgnoreCase("wikipedia")) {
+          log.trace("Derivations: Should I extract {} in '{}' || {}", t, tokens,
+              getWiktionaryPageName());
+        }
+        log.debug("Unexpected template in derivations: {} || {}", t.getText(),
+            getWiktionaryPageName());
+      } else if (t instanceof Text) {
+        // We should ignore what is placed inside refs html element (that are just references and
+        // not derivations, as well as what is inside italics
+        // (relying on the position of the first ':' leads to too many false negatives)
+        Matcher m = refTag.matcher(t.asText().getText());
+        while (m.find()) {
+          String tag;
+          if (null != (tag = m.group("OR")) && !tag.endsWith("/>"))
+            insideRefElement = true;
+          else if (null != m.group("CR"))
+            insideRefElement = false;
+          else if (null != m.group("IT"))
+            insideItalics = !insideItalics;
+          else if (null != m.group("SN"))
+            gloss = m.group("SN");
+        }
+      } else {
+        log.debug("Unexpected token in derivations: {} || {}", t.getText(),
+            getWiktionaryPageName());
+      }
+    }
   }
 
   protected void extractPron(int startOffset, int endOffset) {

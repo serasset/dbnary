@@ -678,11 +678,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ewdh.registerInflection(s, note, infl);
   }
 
-  private void extractTranslations(String wikiSource) {
-    WikiText txt = new WikiText(getWiktionaryPageName(), wikiSource);
-    extractTranslations(txt.content());
-  }
-
   // DONE: the multitrans template hides all its subtemplates. Either make a stream entering
   // multitrans or call the extraction recursively, BUT in this case the gloss should be external
   // to the recursive call (gloss is defined outside and may be redefined inside...

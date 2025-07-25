@@ -98,6 +98,19 @@ trait WikiRegexParsers extends RegexParsers {
       c => WikiCharSequence.INTERNAL_LINKS_RANGE.contains(c)
     ) ^^ (l => l.asInstanceOf[WikiText#InternalLink])
 
+  /**
+   * A parser that matches a template whose name matches namePattern
+   *
+   * @param targetPattern the regex pattern that the link should point to
+   * @return a Parser resulting in an InternalLink
+   */
+  def internalLink(targetPattern: Regex): Parser[WikiText#InternalLink] =
+    wikiEvent("InternalLink with target matching `" + targetPattern + "'",
+      c => WikiCharSequence.INTERNAL_LINKS_RANGE.contains(c),
+      t => targetPattern matches t.asInstanceOf[WikiText#InternalLink].getTargetText)
+      .^^(t => t.asInstanceOf[WikiText#InternalLink])
+
+
   /** A parser that matches any external link */
   def externalLink(): Parser[WikiText#ExternalLink] =
     wikiEvent(
@@ -105,12 +118,29 @@ trait WikiRegexParsers extends RegexParsers {
       c => WikiCharSequence.EXTERNAL_LINKS_RANGE.contains(c)
     ) ^^ (l => l.asInstanceOf[WikiText#ExternalLink])
 
-  /** A parser that matches any indented item */
+  /** A parser that matches any indented item (Indentation, ListItem, Item, NumberedListItem) */
   def indentedItem(): Parser[WikiText#IndentedItem] =
     wikiEvent(
       "Indented Item",
       c => WikiCharSequence.LISTS_RANGE.contains(c)
     ) ^^ (l => l.asInstanceOf[WikiText#IndentedItem])
+
+  /** A parser that matches an indentation as in '::xxx' */
+  def indentation(): Parser[WikiText#Indentation] =
+    wikiEvent(
+      "Indentation",
+      c => WikiCharSequence.LISTS_RANGE.contains(c),
+      t => t.isInstanceOf[WikiText#Indentation]
+    ) ^^ (l => l.asInstanceOf[WikiText#Indentation])
+
+  /** A parser that matches an item as in ';xxx' */
+  def item(): Parser[WikiText#Item] =
+    wikiEvent(
+      "Indentation",
+      c => WikiCharSequence.LISTS_RANGE.contains(c),
+      t => t.isInstanceOf[WikiText#Item]
+    ) ^^ (l => l.asInstanceOf[WikiText#Item])
+
 
   /** A parser that matches any list item */
   def listItem(): Parser[WikiText#ListItem] =

@@ -422,10 +422,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return m.group(0).startsWith("==") && !m.group(0).startsWith("===");
   }
 
+  private final static Pattern externalTranslationPattern =
+      Pattern.compile("\\[\\[([^\\]]*/traduções)]]");
 
   private void extractTranslations(int startOffset, int endOffset) {
+    // TODO: Check if the translations refer to an independant page
+
     String transCode = pageContent.substring(startOffset, endOffset);
     translationExtractor.setPageName(this.getWiktionaryPageName());
+    Matcher externalTranslationPage = externalTranslationPattern.matcher(transCode);
+    while (externalTranslationPage.find()) {
+      String translationContent = wi.getTextOfPageWithRedirects(externalTranslationPage.group(1));
+      translationExtractor.parseTranslationBlock(translationContent);
+    }
     translationExtractor.parseTranslationBlock(transCode);
   }
 

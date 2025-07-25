@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.languages.AbstractGlossFilter;
@@ -38,6 +39,7 @@ public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
     WikipediaParser.parse(block, this, true, null);
     initialize();
   }
+
 
   private static final HashSet<String> transMacroWithNotes = new HashSet<>();
 
@@ -108,4 +110,5 @@ public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
       // super.substituteTemplateCall(templateName, parameterMap, writer);
     }
   }
+
 }

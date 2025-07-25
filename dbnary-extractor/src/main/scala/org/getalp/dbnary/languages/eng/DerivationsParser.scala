@@ -3,6 +3,7 @@ package org.getalp.dbnary.languages.eng
 import com.typesafe.scalalogging.Logger
 import org.apache.commons.lang3.StringUtils
 import org.getalp.dbnary.wiki.{WikiCharSequence, WikiPattern, WikiRegexParsers, WikiText}
+import org.getalp.dbnary.languages.common.Derivation
 
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
@@ -241,16 +242,4 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
   }
 }
 
-case class Derivation(target: String, var note: String) {
-  def addNote(u: String): Derivation = {
-    this.note match {
-      case null => this.note = u
-      case _ => this.note = this.note + "|" + u
-    }
-    this
-  }
-}
-
-
-case class Language(name: String, code: String)
 

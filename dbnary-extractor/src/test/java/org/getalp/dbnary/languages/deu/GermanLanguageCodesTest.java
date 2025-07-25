@@ -24,7 +24,7 @@ class GermanLanguageCodesTest {
   @Test
   void getCodeShouldIgnoreLeadingAndTrailingWhitespaces() {
     assertEquals("apc", GermanLanguageCodes.getCode("Levantinisches Arabisch "));
-    assertEquals("nah", GermanLanguageCodes.getCode("Klassisches Nahuatl\u200E "));
+    assertEquals("nci", GermanLanguageCodes.getCode("Klassisches Nahuatl\u200E "));
   }
 
 

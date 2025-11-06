@@ -19,15 +19,16 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("名词", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("釋義", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("副詞", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("专有名词", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry)); // Male
-                                                                                                    // name
-                                                                                                    // ?
+    posAndTypeValueMap.put("专有名词", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("專有名詞", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+
     posAndTypeValueMap.put("代词", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("形容词", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("谚语",
         new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
 
     posAndTypeValueMap.put("成语", new PosAndType(LexinfoOnt.idiom, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("成語", new PosAndType(LexinfoOnt.idiom, OntolexOnt.LexicalEntry));
 
     posAndTypeValueMap.put("多义词",
         new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression));

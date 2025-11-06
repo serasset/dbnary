@@ -56,6 +56,10 @@ public class ChineseDbnaryWikiModel extends EnglishLikeModulesPatcherWikiModel {
                 "local function traceback() \n" //
                     + " return \"\"\n" //
                     + "end\n"));
+      } else if (parsedPagename.pagename.equalsIgnoreCase("Table/getUnprotectedMetatable")) {
+        return getAndPatchModule(parsedPagename, map,
+            t -> t.replaceAll("local\\s+_getmetatable\\s*=\\s*debug.getmetatable\\s*\n", //
+                "local _getmetatable = nil\n"));
       }
     }
     return wikiContent;

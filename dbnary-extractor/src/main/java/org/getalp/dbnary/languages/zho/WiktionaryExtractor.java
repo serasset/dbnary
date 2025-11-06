@@ -40,24 +40,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // throw new RuntimeException("Chinese extractor is currently not functional.");
   }
 
-  private final static HashSet<String> nymMarkerSet = new HashSet<>();
   protected final static HashMap<String, String> nymMarkerToNymName;
 
   static {
-    nymMarkerSet.add("反義詞");
-    nymMarkerSet.add("反義字");
-    nymMarkerSet.add("同義字");
-    nymMarkerSet.add("同義詞");
-    nymMarkerSet.add("近義詞");
-    nymMarkerSet.add("近義字");
-    nymMarkerSet.add("Synonyms");
-    nymMarkerSet.add("相关词汇");
-    nymMarkerSet.add("相關詞彙");
-    nymMarkerSet.add("相關詞");
-    nymMarkerSet.add("相近詞彙");
-    nymMarkerSet.add("近义词");
-    nymMarkerSet.add("反义词");
-    nymMarkerToNymName = new HashMap<String, String>(20);
+    // nymMarkerSet.add("相关词汇"); (Related Vocabulary ?)
+    // nymMarkerSet.add("相關詞彙"); (Related Vocabulary ?)
+    // nymMarkerSet.add("相關詞"); (Related words ?)
+    // nymMarkerSet.add("相近詞彙"); (Similar words ?)
+    nymMarkerToNymName = new HashMap<>(20);
     nymMarkerToNymName.put("反義詞", "ant");
     nymMarkerToNymName.put("反義字", "ant");
     nymMarkerToNymName.put("反义词", "ant");
@@ -195,7 +185,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void gotoNymBlock(Matcher m) {
     state = NYMBLOCK;
     nymBlockStart = m.end();
-    Matcher nym = WikiPatterns.macroPattern.matcher(m.group(1).trim());
+    currentNym = m.group(1).trim();
   }
 
   private void leaveNymBlock(Matcher m) {
@@ -584,12 +574,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           removeIrrelevantToken(tokens, 0);
           if (tokens.size() == 0)
             return;
-          else if (tokens.size() == 1 && tokens.get(0) instanceof Text) { // situation 1 :
-                                                                          // *近義詞：[[標記]]｜[[標誌]]｜[[象徵]]
+          else if (tokens.size() == 1 && tokens.get(0) instanceof Text) {
+            // situation 1 : *近義詞：[[標記]]｜[[標誌]]｜[[象徵]]
             String nymMarker = tokens.get(0).getText().split("：")[0];
             nymMarker = nymMarker.substring(0, nymMarker.length());
-            if (nymMarkerSet.contains(nymMarker)) {
-              currentNym = nymMarkerToNymName.get(nymMarker);
+            if (null != (currentNym = nymMarkerToNymName.get(nymMarker))) {
+              ;
               if (tokens.get(0).getText().split("：").length > 1) {
                 String nymTex = tokens.get(0).getText().split("：")[1];
                 wdh.registerNymRelation(nymTex, currentNym);
@@ -600,8 +590,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           } else {
             Token firstToken = tokens.get(0);
             String nymMarker = firstToken.getText().split("：")[0];
-            if (nymMarkerSet.contains(nymMarker)) {
-              currentNym = nymMarkerToNymName.get(nymMarker);
+            if (null != (currentNym = nymMarkerToNymName.get(nymMarker))) {
               tokens.remove(0);
               for (Token tokenInList : tokens) {
                 if (tokenInList instanceof InternalLink) {

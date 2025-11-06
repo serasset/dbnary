@@ -11,22 +11,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.getalp.dbnary.api.WiktionaryPageSource;
-import org.getalp.dbnary.languages.commons.ModulesPatcherWikiModel;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefinitionExpanderWikiModel extends ModulesPatcherWikiModel {
+public class DefinitionExpanderWikiModel extends DbnaryWikiModel {
   private static final Logger log = LoggerFactory.getLogger(DefinitionExpanderWikiModel.class);
 
   static Set<String> ignoredTemplates = new HashSet<>();
 
   static {
     ignoredTemplates.add("wikipedia");
-  }
-
-  public DefinitionExpanderWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
-    super(locale, imageBaseURL, linkBaseURL);
   }
 
   public DefinitionExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,

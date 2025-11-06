@@ -1,3 +1,4 @@
+
 package org.getalp.dbnary.bliki;
 
 import info.bliki.wiki.filter.HTMLConverter;
@@ -5,12 +6,12 @@ import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.Configuration;
 import info.bliki.wiki.model.WikiModel;
 import info.bliki.wiki.model.WikiModelContentException;
-import info.bliki.wiki.namespaces.INamespace;
 import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import info.bliki.wiki.tags.HTMLTag;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import org.apache.commons.text.WordUtils;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -42,7 +43,7 @@ public class DbnaryWikiModel extends WikiModel {
       return render(new HTMLConverter(), wikicode);
     } catch (IOException e) {
       log.warn("WikiCode Expansion led to Exception in {}", getPageName());
-      e.printStackTrace();
+      log.debug("   ---> {}", e.getMessage(), e);
     }
     return null;
   }
@@ -56,6 +57,11 @@ public class DbnaryWikiModel extends WikiModel {
   @Override
   public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
       throws WikiModelContentException {
+    return getContentPlain(parsedPagename, map);
+  }
+
+  private String getContentPlain(ParsedPageName parsedPagename, Map<String, String> map)
+      throws WikiModelContentException {
     log.trace("resolving {} in {}", parsedPagename.fullPagename(), this.getPageName());
     String result = super.getRawWikiContent(parsedPagename, map);
     if (result != null) {
@@ -65,7 +71,7 @@ public class DbnaryWikiModel extends WikiModel {
 
     // Fix a bug in some wiktionary where a lua script import "Module:page" by specifying
     // the namepace, while the wiktionary edition uses a localized namespace.
-    if (parsedPagename.namespace.isType(INamespace.NamespaceCode.MODULE_NAMESPACE_KEY)
+    if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
         && (parsedPagename.pagename.startsWith("Module:")
             || parsedPagename.pagename.startsWith("module:"))) {
       parsedPagename = new ParsedPageName(parsedPagename.namespace,
@@ -99,6 +105,59 @@ public class DbnaryWikiModel extends WikiModel {
     log.debug("getRawWikiContent return null for {} in {}", parsedPagename.fullPagename(),
         this.getPageName());
     return null;
+  }
+
+  /**
+   * Retrieves the content of a module or template and applies patching functions to it. This method
+   * is useful for fixing known issues in Lua modules before they are processed.
+   *
+   * @param parsedPagename the parsed page name
+   * @param map the parameter map
+   * @param patchers variable number of patching functions to apply to the content
+   * @return the patched content, or null if content cannot be retrieved
+   * @throws WikiModelContentException if there's an error retrieving the content
+   */
+  @SafeVarargs
+  protected final String getAndPatchModule(ParsedPageName parsedPagename, Map<String, String> map,
+      Function<String, String>... patchers) throws WikiModelContentException {
+    String content = getContentPlain(parsedPagename, map);
+    if (content == null) {
+      return null;
+    }
+    content = patchModule(parsedPagename.pagename, content, patchers);
+    return content;
+  }
+
+  /**
+   * Applies a series of patching functions to module content. Logs debug information about
+   * successful and failed patches.
+   *
+   * @param pagename the name of the page being patched
+   * @param content the original content
+   * @param patchers variable number of patching functions
+   * @return the patched content
+   */
+  @SafeVarargs
+  protected final String patchModule(String pagename, String content,
+      Function<String, String>... patchers) {
+    int patchnum = 0;
+    for (Function<String, String> patcher : patchers) {
+      ++patchnum;
+      String patchedContent = patcher.apply(content);
+      if (log.isDebugEnabled()) {
+        boolean patched = !patchedContent.equals(content);
+        if (patched) {
+          log.debug("Module:{} has been patched ({}).", pagename, patchnum);
+        } else {
+          log.warn("Module:{} could not be patched! ({}) Check current implementation.", pagename,
+              patchnum);
+        }
+      }
+      if (patchedContent != null) {
+        content = patchedContent;
+      }
+    }
+    return content;
   }
 
   public String prepareForTransclusion(String rawWikiText) {

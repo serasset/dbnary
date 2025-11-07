@@ -48,8 +48,8 @@ public class EnglishLikeModulesPatcherWikiModel extends DbnaryWikiModel {
           return getAndPatchModule(parsedPagename, map, t -> t.replace(
               "return tostring(html_ul) .. tostring(html_table) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
               "return tostring(html_ul)").replace(
-                  "return tostring(html_ul) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
-                  "return tostring(html_ul)"));
+              "return tostring(html_ul) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
+              "return tostring(html_ul)"));
         case "audio":
           return getAndPatchModule(parsedPagename, map, t -> t
               .replace("return stylesheet .. text .. categories", "return text .. categories"));
@@ -61,6 +61,21 @@ public class EnglishLikeModulesPatcherWikiModel extends DbnaryWikiModel {
           // we fix it by a hack that replace the local functions with global functions
           return getAndPatchModule(parsedPagename, map,
               t -> t.replace("\nlocal function ", "\nfunction "));
+        case "parameters":
+        case "table/compare":
+          return getAndPatchModule(parsedPagename, map,
+              t -> t.replaceAll("local\\s+traceback\\s*=\\s*debug.traceback\n", //
+                  "local function traceback() \n" //
+                      + " return \"\"\n" //
+                      + "end\n"));
+        case "table/getunprotectedmetatable":
+          return getAndPatchModule(parsedPagename, map,
+              t -> t.replaceAll("local\\s+_getmetatable\\s*=\\s*debug.getmetatable\\s*\n", //
+                  "local _getmetatable = nil\n"));
+        case "parameters/track":
+          return "return function(page, param_name)\n"
+              + "  return\n"
+              + "end";
       }
       // These patches are not useful anymore as the code to functions with var args is now correct
       // for our Lua version.

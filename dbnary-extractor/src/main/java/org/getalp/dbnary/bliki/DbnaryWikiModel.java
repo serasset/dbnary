@@ -9,10 +9,13 @@ import info.bliki.wiki.model.WikiModelContentException;
 import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import info.bliki.wiki.tags.HTMLTag;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.WordUtils;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.tools.CounterSet;
@@ -208,5 +211,28 @@ public class DbnaryWikiModel extends WikiModel {
     } else {
       return rawWikiText;
     }
+  }
+
+  protected String loadModuleResource(String name) {
+    return loadResource(resourceNameFromModuleName(name));
+  }
+
+  private String loadResource(String name) {
+    if (name == null) {
+      return null;
+    }
+    if (log.isDebugEnabled()) {
+      log.error("loading {}", name);
+    }
+    try (InputStream is = getClass().getResourceAsStream(name)) {
+      return is == null ? null : IOUtils.toString(is, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      log.error("error loading {}", name, e);
+      throw new RuntimeException(e);
+    }
+  }
+
+  private String resourceNameFromModuleName(String name) {
+    return name + ".lua";
   }
 }

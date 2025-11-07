@@ -4,11 +4,8 @@ import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.WikiModelContentException;
 import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.commons.io.IOUtils;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.morphology.InflectedFormSet;
 import org.getalp.dbnary.wiki.WikiText;
@@ -74,29 +71,6 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
             parsedPagename.fullPagename());
     }
     return result;
-  }
-
-  private String loadModuleResource(String name) {
-    return loadResource(resourceNameFromModuleName(name));
-  }
-
-  private String loadResource(String name) {
-    if (name == null) {
-      return null;
-    }
-    if (log.isDebugEnabled()) {
-      log.error("loading " + name);
-    }
-    try (InputStream is = getClass().getResourceAsStream(name)) {
-      return is == null ? null : IOUtils.toString(is, StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      logger.error("error loading " + name, e);
-      throw new RuntimeException(e);
-    }
-  }
-
-  private String resourceNameFromModuleName(String name) {
-    return name + ".lua";
   }
 
   @Override

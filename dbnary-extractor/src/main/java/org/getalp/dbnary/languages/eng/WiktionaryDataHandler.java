@@ -791,6 +791,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           + "<(?:tr|ts):(?<tr>[^>]+)>|<pos:(?<pos>[^>]+)>|<g:(?<g>[^>]+)>|<id:(?<sid>[^>]+)>|"
           + "<sc:([^>]+)>|<tag:([^>]+)>");
 
+  // TODO: in entry Vysoke one find nym inline with html tags, hence one should parse the inline
+  // with a context free
+  // grammar
   @Override
   public void registerNymRelationToEntity(String target, String nymRelation, Resource entity,
       Resource gloss, String usage) {

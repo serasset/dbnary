@@ -54,9 +54,14 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
     // There modules uses the obsolete arg magik variable which is not supported anymore by lua >
     // 5.1
     // Check if Swedish has changed its definition of grammar-table
-    if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("grammar-table")) {
-      result = loadModuleResource("grammar-table");
+    if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)) {
+      if (parsedPagename.pagename.equals("grammar-table")) {
+        result = loadModuleResource("grammar-table");
+      } else if (parsedPagename.pagename.equals("giltigt sidnamn")) {
+        result = loadModuleResource("giltigt_sidnamn");
+      } else {
+        result = super.getRawWikiContent(parsedPagename, map);
+      }
     } else {
       result = super.getRawWikiContent(parsedPagename, map);
     }
@@ -94,5 +99,10 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
     return name + ".lua";
   }
 
+  @Override
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
+      Appendable writer) throws IOException {
 
+    super.substituteTemplateCall(templateName, parameterMap, writer);
+  }
 }

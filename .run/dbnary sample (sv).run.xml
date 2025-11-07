@@ -2,8 +2,8 @@
   <configuration default="false" name="dbnary sample (sv)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
-    <option name="PROGRAM_PARAMETERS" value="sample -l sv --endolex=morphology --exolex=ontolex --trace=org.getalp.dbnary.languages svwkt-20241101.xml älska" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/sv/20241101" />
+    <option name="PROGRAM_PARAMETERS" value="sample -l sv --endolex=morphology --exolex=ontolex --trace=org.getalp.dbnary.languages svwkt-20250901.xml skälva" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/sv/20250901" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

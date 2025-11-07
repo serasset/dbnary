@@ -7,15 +7,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 
-public class EnglishLikeModulesPatcherWikiModel extends ModulesPatcherWikiModel {
-
-  // public static final Pattern UNPACK_PATTERN = Pattern.compile("(unpack\\([^),]+)\\)");
-
-  public EnglishLikeModulesPatcherWikiModel(Locale locale, String imageBaseURL,
-      String linkBaseURL) {
-    super(locale, imageBaseURL, linkBaseURL);
-  }
+public class EnglishLikeModulesPatcherWikiModel extends DbnaryWikiModel {
 
   public EnglishLikeModulesPatcherWikiModel(WiktionaryPageSource wi, Locale locale,
       String imageBaseURL, String linkBaseURL) {

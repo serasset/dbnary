@@ -65,7 +65,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
       if (nextLang != null) {
         nextLang = nextLang.replaceAll("[=-]", "").trim();
-        nextLang = nextLang.replaceAll("[Bb]ahasa", "");
+        nextLang = nextLang.replaceAll("[Bb]ahasa\\|?", "");
       }
       extractDataLang(startSection, languageFilter.start(), lang);
       lang = nextLang;

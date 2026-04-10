@@ -55,7 +55,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private static void addPos(String pos) {
     posMacros.add(pos);
     if (pos.contains(" ")) {
-      posMacros.add(pos.replaceAll(" ", "_"));
+      posMacros.add(pos.replace(" ", "_"));
     }
   }
 
@@ -291,10 +291,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token t : prologue.wikiTokens()) {
       if (t instanceof ListItem || t instanceof NumberedListItem) {
         IndentedItem item = t.asIndentedItem();
-        if (item.getContent().toString().startsWith("::")) {
+        if (item.getListPrefix().substring(item.getLevel()).startsWith("::")) {
           // It's a reference for the previous example
           // String ref = exampleExpander.expandAll(item.getContent().getText().substring(1), null);
-        } else if (item.getContent().toString().startsWith(":")) {
+        } else if (item.getListPrefix().substring(item.getLevel()).startsWith(":")) {
           // It's an example or a synonym/antonym information
           Optional<Token> firstToken = item.getContent().wikiTokens().stream().findFirst();
           if (firstToken.isPresent() && firstToken.get() instanceof Template) {
@@ -346,7 +346,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private Pair<Template, String> sectionType(Heading heading) {
     List<Token> titleTemplate = heading.getContent().tokens().stream()
-        .filter(t -> !(t instanceof Text && t.asText().getText().replaceAll("\u00A0", "").trim().isEmpty())).collect(Collectors.toList());
+        .filter(t -> !(t instanceof Text && t.asText().getText().replace("\u00A0", "").trim().isEmpty())).collect(Collectors.toList());
     if (titleTemplate.isEmpty()) {
       log.trace("Unexpected empty title in {}", getWiktionaryPageName());
       return new ImmutablePair<>(null, "");

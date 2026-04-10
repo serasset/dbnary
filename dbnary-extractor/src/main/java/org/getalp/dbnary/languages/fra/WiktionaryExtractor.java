@@ -839,14 +839,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return context;
   }
 
-  Pattern examplePattern = Pattern.compile("(?s)^[*:]+\\s*(.*)");
-
   protected void extractDefinitions(WikiSection section) {
     WikiContent content = section.getPrologue();
     content.filteredTokens(new ClassBasedFilter().allowNumberedListItem()).stream().map(Token::asNumberedListItem).forEach(item -> {
-      Matcher exampleMatcher = examplePattern.matcher(item.getContent().getText());
-      if (exampleMatcher.matches()) {
-        extractExample(exampleMatcher.group(1));
+      // DONE: parsing part of the prefix in the content while it is not there anymore
+      if (item.getListPrefix().contains("*") || item.getListPrefix().contains(":")) {
+        extractExample(item.getContent().getText());
       } else {
         extractDefinition(item.getContent().getText().trim(), item.asNumberedListItem().getLevel());
       }

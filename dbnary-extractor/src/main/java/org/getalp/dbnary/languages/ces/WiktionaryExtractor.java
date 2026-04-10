@@ -3,7 +3,6 @@ package org.getalp.dbnary.languages.ces;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.function.BiConsumer;
 import java.util.List;
@@ -15,7 +14,6 @@ import static org.getalp.dbnary.tools.TokenListSplitter.split;
 import org.apache.commons.lang3.tuple.Pair;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
-import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiText.Link;
@@ -27,17 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected WiktionaryDataHandler cesWdh;
 
   /* patterns */
   protected final static String languageSectionPatternString = "={2}\\s*(.*)\\s*={2}";
-  /*
-   * subsections may be 3rd or 4th level depending on whether or not the word class is present as a
-   * 3rd level subsection
-   */
-  protected final static String subSectionPatternString = "(?:={3}\\s*(.*)\\s*={3})|(?:={4}\\s*(.*)\\s*={4})";
 
   protected final static HashSet<String> sectionHeadings = new HashSet<>();
   protected final static HashSet<String> ignoredHeadings = new HashSet<>();
@@ -204,7 +197,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         NumberedListItem li = t.asNumberedListItem();
 
         /* examples */
-        if (li.getContent().getText().startsWith("*")) {
+        if (li.getListPrefix().substring(li.getLevel()).startsWith("*")) {
           /* 'Přiklad' template */
           extractExample(li);
         } else {
@@ -260,7 +253,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (tm.getName().trim().equals("Překlady")) {
         LinkedHashMap<String, WikiContent> args = tm.getArgs();
 
-        if (args.size() == 0) {
+        if (args.isEmpty()) {
           log.trace("'{}': No translations for this sense.", getWiktionaryPageName());
           return;
         }
@@ -291,7 +284,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         log.debug("'{}': Expected 'Překlady' template for translations, found '{}' template", getWiktionaryPageName(), tm.getName());
       }
     } else {
-      if (!t.getText().trim().equals("")) {
+      if (!t.getText().trim().isEmpty()) {
         log.debug("'{}': expected template for translation, found {}", getWiktionaryPageName(), t);
       }
     }

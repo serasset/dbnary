@@ -12,12 +12,10 @@ import org.getalp.dbnary.wiki.WikiEventFilter.Action;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.*;
-import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -42,7 +40,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     languageSectionPattern = Pattern.compile(languageSectionPatternString, Pattern.MULTILINE);
 
-    partOfSpeechMarkers = new HashSet<String>(40);
+    partOfSpeechMarkers = new HashSet<>(40);
 
     partOfSpeechMarkers.add("Navdêr");
     partOfSpeechMarkers.add("Serenav");
@@ -157,7 +155,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private String getHeaderLanguage(Heading h) {
     Optional<Token> langTmpl = h.getContent().templates().stream().filter(t -> t.asTemplate().getName().equals("ziman")).findFirst();
-    return langTmpl.isPresent() ? langTmpl.get().asTemplate().getParsedArg("1") : null;
+    return langTmpl.map(token -> token.asTemplate().getParsedArg("1")).orElse(null);
   }
 
   private void extractNymSection(String nym, WikiContent content) {
@@ -199,6 +197,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     WikiEventsSequence indentationsOrTemplates = wk.filteredTokens(new ClassBasedFilter().allowIndentedItem().allowTemplates());
     for (Token indent : indentationsOrTemplates) {
       if (isAnExample(indent)) {
+        // TODO: Kurdish wiktionary now encodes synonyms below definitions (with examples); see 'mij'
         String nli = indent.asIndentedItem().getContent().getText();
         String expandedExample = definitionExpander.expandAll(nli, null);
         wdh.registerExample(expandedExample.replace("\n", ""), null);
@@ -224,14 +223,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    * @return true if the indented item is an example specification
    */
   private boolean isAnExample(Token indent) {
-    String content;
     if (indent instanceof Indentation) {
       return true;
     }
     if (indent instanceof NumberedListItem) {
-      if ((content = indent.asNumberedListItem().getContent().getText()).startsWith(":") || content.startsWith("*")) {
-        return true;
-      }
+      NumberedListItem nli = indent.asNumberedListItem();
+      String additionalPrefix = nli.getListPrefix().substring(nli.getLevel());
+      return additionalPrefix.startsWith(":") || additionalPrefix.startsWith("*");
     }
     return false;
   }
@@ -292,14 +290,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           } else {
             pron = template.getParsedArgs().get("2");
           }
-          if (null == pron || pron.trim().length() == 0) {
+          if (null == pron || pron.trim().isEmpty()) {
             pron = pronunciationExpander.expandAll(template.toString(), null);
             if (null != pron && pron.startsWith("IPA(kilîd): "))
               pron = pron.substring("IPA(kilîd): ".length());
           }
           if (null != pron && pron.trim().length() > 0) {
             for (String p : pron.split(",")) {
-              if (null != p && (p = p.trim()).length() > 0) {
+              if ((p = p.trim()).length() > 0) {
                 // TODO: normalize pronunciation (remove or ensure '/' around pron)
                 wdh.registerPronunciation(p, "kur-fonipa");
               }

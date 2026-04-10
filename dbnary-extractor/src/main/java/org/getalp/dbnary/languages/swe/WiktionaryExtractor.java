@@ -10,7 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.ExtractionFeature;
@@ -20,7 +19,6 @@ import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
-import org.getalp.dbnary.wiki.WikiText.Indentation;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
 import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.ListItem;
@@ -236,9 +234,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     Resource latestExample = null;
     for (Token t : tokens) {
       if (t instanceof NumberedListItem) {
-        WikiContent content = t.asNumberedListItem().getContent();
+        NumberedListItem numberedListItem = t.asNumberedListItem();
+        WikiContent content = numberedListItem.getContent();
         String ex = content.getText();
-        if (ex.startsWith(":")) {
+        String nliAdditionalPrefix = numberedListItem.getListPrefix().substring(numberedListItem.getLevel());
+        if (nliAdditionalPrefix.startsWith(":")) {
           if (content.templates().stream().anyMatch(tmpl -> tmpl.asTemplate().getName().equals("avgränsare"))) {
             // All remaining information will be attached to the lexical entry rather than the last
             // sense
@@ -248,20 +248,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             continue;
           }
           // If there is 2 colon, it should be the translation of the previous example
-          if (ex.startsWith("::")) {
-            exampleExtractor.processExampleTranslation(ex.substring(2).trim(), latestExample);
+          if (nliAdditionalPrefix.startsWith("::")) {
+            exampleExtractor.processExampleTranslation(ex.trim(), latestExample);
           } else {
             latestExample = processExample(content, target);
           }
         } else {
           String definition = ex.trim();
-          target = extractDefinition(definition, t.asNumberedListItem().getLevel());
+          target = extractDefinition(definition, numberedListItem.getLevel());
         }
       } else if (t instanceof ListItem) {
         // Ignore list items in definitions (they hold pronunciations)
       } else if (t instanceof IndentedItem) {
         WikiContent content = t.asIndentedItem().getContent();
-        String ex = content.getText();
         if (content.templates().stream().anyMatch(tmpl -> tmpl.asTemplate().getName().equals("avgränsare"))) {
           // All remaining information will be attached to the lexical entry rather than the last
           // sense
@@ -274,17 +273,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  private static Matcher indents = Pattern.compile("^:+").matcher("");
+  private static final Matcher indents = Pattern.compile("^:+").matcher("");
 
   private Resource processExample(WikiContent content, Resource target) {
     Resource exampleNode;
     // It is an example or information line of the target.
     // First clear all ignored Templates to avoid expansion of their parameters before the
     // expander is called as such expansion is time consuming.
-    String curatedContent = content.tokens().stream()
-        .filter(token -> !(token instanceof Template) || !ExampleExpanderWikiModel.ignoredTemplates.contains(token.asTemplate().getName())).map(Token::getText)
+    String curatedContent = content.tokens().stream() //
+        .filter(token -> !(token instanceof Template) || !ExampleExpanderWikiModel.ignoredTemplates.contains(token.asTemplate().getName())) //
+        .map(Token::getText) //
         .collect(Collectors.joining());
-    curatedContent = indents.reset(curatedContent).replaceFirst("").trim();
+    // curatedContent = indents.reset(curatedContent).replaceFirst("").trim();
     exampleNode = exampleExtractor.processDefinitionLine(curatedContent, target);
     return exampleNode;
   }
@@ -296,8 +296,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractPronunciation(List<Token> tokens) {
-    tokens.stream().filter(t -> t instanceof ListItem).flatMap(t -> t.asListItem().getContent().templates().stream()).filter(t -> t instanceof Template)
-        .filter(t -> t.asTemplate().getName().equals("uttal")).map(t -> t.asTemplate().getParsedArgs().get("ipa"))
+    tokens.stream().filter(t -> t instanceof ListItem) //
+        .flatMap(t -> t.asListItem().getContent().templates().stream()) //
+        .filter(t -> t instanceof Template) //
+        .filter(t -> t.asTemplate().getName().equals("uttal")) //
+        .map(t -> t.asTemplate().getParsedArgs().get("ipa")) //
         .forEach(pron -> wdh.registerPronunciation(pron, wdh.getCurrentEntryLanguage() + "-fonipa"));
     // TODO: a few pronunciations are computed using the ipa template (in esperanto and finish)
   }

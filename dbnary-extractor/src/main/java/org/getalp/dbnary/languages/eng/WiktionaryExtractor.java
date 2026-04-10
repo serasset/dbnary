@@ -303,12 +303,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (definitionsListItems.hasNext()) {
       IndentedItem listItem = definitionsListItems.next().asIndentedItem();
       String liContent = listItem.getContent().getText();
+      String liAdditionalPrefix = listItem.getListPrefix().substring(listItem.getLevel());
       if (listItem instanceof NumberedListItem) {
-        if (liContent.startsWith("*::")) {
+        if (liAdditionalPrefix.startsWith("*::")) {
           log.debug("Ignoring quotation meta [{}] — {}", liContent, getWiktionaryPageName());
-        } else if (liContent.startsWith("*:")) {
+        } else if (liAdditionalPrefix.startsWith("*:")) {
           // It's a quotation content
-          Set<Pair<Property, RDFNode>> citation = expandExample(liContent.substring(2).trim());
+          Set<Pair<Property, RDFNode>> citation = expandExample(liContent.trim());
           Optional<Pair<Property, RDFNode>> value = citation.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
           if (null == referenceContext) {
             log.debug("A citation is given without reference [{}] — {}", liContent, getWiktionaryPageName());
@@ -319,9 +320,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             citation.addAll(referenceContext);
             registerExampleIfNotNull(citation);
           }
-        } else if (liContent.startsWith("*")) {
+        } else if (liAdditionalPrefix.startsWith("*")) {
           // It's a quotation reference (that starts a new quotation)
-          Set<Pair<Property, RDFNode>> citation = expandCitation(liContent.substring(1).trim());
+          Set<Pair<Property, RDFNode>> citation = expandCitation(liContent.trim());
           Optional<Pair<Property, RDFNode>> value = citation.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
           if (value.isEmpty()) {
             // It's only a reference and the citation itself is to be found later
@@ -329,9 +330,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           } else {
             registerExampleIfNotNull(citation);
           }
-        } else if (liContent.startsWith(":")) {
+        } else if (liAdditionalPrefix.startsWith(":")) {
           // This is a simple example or a nym
-          extractExample(liContent.substring(1).trim());
+          extractExample(liContent.trim());
         } else {
           // This is a definition that starts a new word sense
           extractDefinition(liContent.trim(), listItem.asNumberedListItem().getLevel());

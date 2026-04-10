@@ -221,9 +221,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token t : tokens) {
       if (t instanceof NumberedListItem) {
         NumberedListItem li = t.asNumberedListItem();
-        if (((NumberedListItem) t).getContent().getText().startsWith(":")) {
+        if (li.getListPrefix().substring(li.getLevel()).startsWith(":")) {
           // It is an example of the latest word sense.
-          String example = li.getContent().getText().substring(1).trim();
+          String example = li.getContent().getText().trim();
           super.extractExample(example);
         } else {
           String definition = li.getContent().getText().trim();

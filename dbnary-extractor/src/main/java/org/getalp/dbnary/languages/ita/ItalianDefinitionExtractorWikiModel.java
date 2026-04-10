@@ -19,13 +19,11 @@ public class ItalianDefinitionExtractorWikiModel extends DbnaryWikiModel {
   private IWiktionaryDataHandler delegate;
 
 
-  public ItalianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public ItalianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public ItalianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public ItalianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
   }
@@ -44,8 +42,7 @@ public class ItalianDefinitionExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     if (templateName.equals("Nodef")) {
       // No definition given, simply ignore.

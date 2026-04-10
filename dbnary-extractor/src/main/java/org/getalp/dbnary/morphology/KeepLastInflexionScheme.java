@@ -19,8 +19,7 @@ public class KeepLastInflexionScheme extends InflectionScheme {
    */
   @Override
   public boolean add(MorphoSyntacticFeature morphoSyntacticFeature) {
-    super.stream().filter(f -> f.property() == morphoSyntacticFeature.property()).findFirst()
-        .ifPresent(super::remove);
+    super.stream().filter(f -> f.property() == morphoSyntacticFeature.property()).findFirst().ifPresent(super::remove);
     return super.add(morphoSyntacticFeature);
   }
 

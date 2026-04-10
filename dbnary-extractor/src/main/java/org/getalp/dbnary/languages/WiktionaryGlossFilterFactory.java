@@ -31,13 +31,10 @@ public class WiktionaryGlossFilterFactory {
     } catch (SecurityException e) {
       log.error("Security exception while instanciating wiktionary gloss filter for {}", language);
     } catch (InvocationTargetException e) {
-      log.warn(
-          "InvocationTargetException exception while instanciating wiktionary gloss filter for {}",
-          language);
+      log.warn("InvocationTargetException exception while instanciating wiktionary gloss filter for {}", language);
       e.printStackTrace(System.err);
     } catch (NoSuchMethodException e) {
-      log.warn("No appropriate constructor when instanciating wiktionary gloss filter for {}",
-          language);
+      log.warn("No appropriate constructor when instanciating wiktionary gloss filter for {}", language);
     }
 
     if (null == glossFilter) {

@@ -10,8 +10,7 @@ public class GlossFilter extends AbstractGlossFilter {
   private static String sensenum = "(?:(?:[\\d０-９]+(?:\\.\\d+)?)|、|\\s)+";
 
   // 語義1及び語義2
-  private static String numSenseListGlossRegExp =
-      "^((?:語義)?\\s*" + sensenum + "(?:及び(?:語義)?\\s*" + sensenum + ")*)(.*)$";
+  private static String numSenseListGlossRegExp = "^((?:語義)?\\s*" + sensenum + "(?:及び(?:語義)?\\s*" + sensenum + ")*)(.*)$";
   private static Pattern numSenseListGlossPattern = Pattern.compile(numSenseListGlossRegExp);
   private static Matcher numSenseListGlossMatcher = numSenseListGlossPattern.matcher("");
 

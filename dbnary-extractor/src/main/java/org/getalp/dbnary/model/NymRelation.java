@@ -4,9 +4,8 @@ import org.apache.jena.rdf.model.Property;
 import org.getalp.dbnary.DBnaryOnt;
 
 public enum NymRelation {
-  SYNONYM(DBnaryOnt.synonym), APPROXIMATE_SYNONYM(DBnaryOnt.approximateSynonym), ANTONYM(
-      DBnaryOnt.antonym), HYPERNYM(DBnaryOnt.hypernym), HYPONYM(DBnaryOnt.hyponym), MERONYM(
-          DBnaryOnt.meronym), HOLONYM(DBnaryOnt.holonym), TROPONYM(DBnaryOnt.troponym);
+  SYNONYM(DBnaryOnt.synonym), APPROXIMATE_SYNONYM(DBnaryOnt.approximateSynonym), ANTONYM(DBnaryOnt.antonym), HYPERNYM(DBnaryOnt.hypernym), HYPONYM(
+      DBnaryOnt.hyponym), MERONYM(DBnaryOnt.meronym), HOLONYM(DBnaryOnt.holonym), TROPONYM(DBnaryOnt.troponym);
 
   private Property property;
 

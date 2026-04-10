@@ -52,8 +52,8 @@ public class PageIterator implements Iterator<WikiText.Token> {
 
   @Override
   public WikiText.Token next() {
-    while (pageGetNext().getText().trim().isBlank() || (pageGetNext() instanceof WikiText.Template
-        && this.skippedTemplate.contains(pageGetNext().asTemplate().getName())))
+    while (pageGetNext().getText().trim().isBlank()
+        || (pageGetNext() instanceof WikiText.Template && this.skippedTemplate.contains(pageGetNext().asTemplate().getName())))
       this.cursor++;
     return getAndIncrement();
   }
@@ -67,16 +67,14 @@ public class PageIterator implements Iterator<WikiText.Token> {
   public WikiText.Token shadowNext() {
     int shadowCursor = 0;
     while (pageOffsetGet(shadowCursor).getText().trim().isBlank()
-        || (pageOffsetGet(shadowCursor) instanceof WikiText.Template
-            && this.skippedTemplate.contains(pageOffsetGet(shadowCursor).asTemplate().getName())))
+        || (pageOffsetGet(shadowCursor) instanceof WikiText.Template && this.skippedTemplate.contains(pageOffsetGet(shadowCursor).asTemplate().getName())))
       shadowCursor++;
     return pageOffsetGet(shadowCursor);
   }
 
   public WikiText.Template shadowNextTemplate() {
     int shadowCursor = 0;
-    while (!(pageOffsetGet(shadowCursor) instanceof WikiText.Template)
-        || this.skippedTemplate.contains(pageOffsetGet(shadowCursor).asTemplate().getName()))
+    while (!(pageOffsetGet(shadowCursor) instanceof WikiText.Template) || this.skippedTemplate.contains(pageOffsetGet(shadowCursor).asTemplate().getName()))
       shadowCursor++;
     return pageOffsetGet(shadowCursor).asTemplate();
   }
@@ -88,10 +86,8 @@ public class PageIterator implements Iterator<WikiText.Token> {
   @Override
   public boolean hasNext() {
     int shadowCursor = 0;
-    while (this.cursor + shadowCursor < this.size && (pageOffsetGet(shadowCursor).getText().trim()
-        .isBlank()
-        || (pageOffsetGet(shadowCursor) instanceof WikiText.Template
-            && this.skippedTemplate.contains(pageOffsetGet(shadowCursor).asTemplate().getName()))))
+    while (this.cursor + shadowCursor < this.size && (pageOffsetGet(shadowCursor).getText().trim().isBlank()
+        || (pageOffsetGet(shadowCursor) instanceof WikiText.Template && this.skippedTemplate.contains(pageOffsetGet(shadowCursor).asTemplate().getName()))))
       shadowCursor++;
     return this.cursor + shadowCursor < this.size;
   }
@@ -99,16 +95,14 @@ public class PageIterator implements Iterator<WikiText.Token> {
   public boolean hasNextTemplate() {
     int shadowCursor = 0;
     while (this.cursor + shadowCursor < this.size
-        && (!(pageOffsetGet(shadowCursor) instanceof WikiText.Template)
-            || this.skippedTemplate.contains(pageOffsetGet(shadowCursor).asTemplate().getName())))
+        && (!(pageOffsetGet(shadowCursor) instanceof WikiText.Template) || this.skippedTemplate.contains(pageOffsetGet(shadowCursor).asTemplate().getName())))
       shadowCursor++;
     return this.cursor + shadowCursor < this.size;
   }
 
   public int findNextTemplate(final String name) {
     int shadowCursor = 0;
-    while (this.cursor + shadowCursor < this.page.size()
-        && pageOffsetGet(shadowCursor) instanceof WikiText.Template
+    while (this.cursor + shadowCursor < this.page.size() && pageOffsetGet(shadowCursor) instanceof WikiText.Template
         && !pageOffsetGet(shadowCursor).asTemplate().getName().equals(name))
       shadowCursor++;
     return this.cursor + shadowCursor < this.size ? shadowCursor : -1;
@@ -141,8 +135,7 @@ public class PageIterator implements Iterator<WikiText.Token> {
     return of(tokens, Set.of());
   }
 
-  public static PageIterator of(final List<WikiText.Token> tokens,
-      final Set<String> skippedTemplate) {
+  public static PageIterator of(final List<WikiText.Token> tokens, final Set<String> skippedTemplate) {
     return new PageIterator(tokens, skippedTemplate);
   }
 
@@ -150,8 +143,7 @@ public class PageIterator implements Iterator<WikiText.Token> {
     return of(section.getContent().tokens(), Set.of());
   }
 
-  public static PageIterator of(final WikiText.WikiSection section,
-      final Set<String> skippedTemplate) {
+  public static PageIterator of(final WikiText.WikiSection section, final Set<String> skippedTemplate) {
     return of(section.getContent().tokens(), skippedTemplate);
   }
 
@@ -177,8 +169,7 @@ public class PageIterator implements Iterator<WikiText.Token> {
     StringBuilder builder = new StringBuilder();
     builder.append("Cursor : ").append(this.cursor).append("\n{\n");
     while (newIt.hasNext())
-      builder.append(newIt.getCursor() == cursor ? " -> " : "    ").append(newIt.cursor)
-          .append(": ").append(newIt.next()).append("\n");
+      builder.append(newIt.getCursor() == cursor ? " -> " : "    ").append(newIt.cursor).append(": ").append(newIt.next()).append("\n");
     builder.append("}");
     return builder.toString();
   }

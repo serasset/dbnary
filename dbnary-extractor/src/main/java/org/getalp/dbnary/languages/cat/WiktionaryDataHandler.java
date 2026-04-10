@@ -96,26 +96,19 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Infix", new PosAndType(LexinfoOnt.infix, OntolexOnt.Affix));
     posAndTypeValueMap.put("Símbol", new PosAndType(LexinfoOnt.symbol, LexinfoOnt.Symbol));
     posAndTypeValueMap.put("Forma verbal", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
-    posAndTypeValueMap.put("Frase feta",
-        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Frase feta", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("Desinència", new PosAndType(LexinfoOnt.suffix, OntolexOnt.Affix));
     posAndTypeValueMap.put("Acrònim", new PosAndType(LexinfoOnt.acronym, OntolexOnt.Word));
-    posAndTypeValueMap.put("Proverbi",
-        new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("Transliteració",
-        new PosAndType(LexinfoOnt.transliteration, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Proverbi", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Transliteració", new PosAndType(LexinfoOnt.transliteration, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("Lletres", new PosAndType(LexinfoOnt.letter, OntolexOnt.Word));
     posAndTypeValueMap.put("Determinant", new PosAndType(LexinfoOnt.determiner, OntolexOnt.Word));
     posAndTypeValueMap.put("Caràcter", new PosAndType(LexinfoOnt.symbol, OntolexOnt.Word));
     posAndTypeValueMap.put("Posposició", new PosAndType(LexinfoOnt.preposition, OntolexOnt.Word));
-    posAndTypeValueMap.put("Adjectiu numeral",
-        new PosAndType(LexinfoOnt.genericNumeral, OntolexOnt.Word));
-    posAndTypeValueMap.put("Abreviacions",
-        new PosAndType(LexinfoOnt.AbbreviatedForm, OntolexOnt.Word));
-    posAndTypeValueMap.put("Pronom relatiu",
-        new PosAndType(LexinfoOnt.relativePronoun, OntolexOnt.Word));
-    posAndTypeValueMap.put("Pronom indefinit",
-        new PosAndType(LexinfoOnt.indefinitePronoun, OntolexOnt.Word));
+    posAndTypeValueMap.put("Adjectiu numeral", new PosAndType(LexinfoOnt.genericNumeral, OntolexOnt.Word));
+    posAndTypeValueMap.put("Abreviacions", new PosAndType(LexinfoOnt.AbbreviatedForm, OntolexOnt.Word));
+    posAndTypeValueMap.put("Pronom relatiu", new PosAndType(LexinfoOnt.relativePronoun, OntolexOnt.Word));
+    posAndTypeValueMap.put("Pronom indefinit", new PosAndType(LexinfoOnt.indefinitePronoun, OntolexOnt.Word));
     posAndTypeValueMap.put("Postposició", new PosAndType(LexinfoOnt.postposition, OntolexOnt.Word));
     posAndTypeValueMap.put("Prenom", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.Word));
     posAndTypeValueMap.put("Forma Nom", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));

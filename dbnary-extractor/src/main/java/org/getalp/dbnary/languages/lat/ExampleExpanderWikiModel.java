@@ -31,8 +31,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
   private Set<Pair<Property, RDFNode>> context;
   private final ExpandAllWikiModel simpleExpander;
 
-  public ExampleExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public ExampleExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     simpleExpander = new ExpandAllWikiModel(wi, locale, imageBaseURL, linkBaseURL);
   }
@@ -52,15 +51,13 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
    * @param context if not null, the method will add all contextual relation to the map.
    * @return the converted wiki code
    */
-  public String expandExample(String definition, Set<String> templates,
-      Set<Pair<Property, RDFNode>> context) {
+  public String expandExample(String definition, Set<String> templates, Set<Pair<Property, RDFNode>> context) {
     this.context = context;
     return expandAll(definition, templates);
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if (ignoredTemplates.contains(templateName)) {
       // NOP
     } else {

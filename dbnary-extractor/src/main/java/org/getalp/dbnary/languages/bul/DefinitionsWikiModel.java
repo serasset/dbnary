@@ -16,13 +16,11 @@ public class DefinitionsWikiModel extends DbnaryWikiModel {
     this((WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public DefinitionsWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public DefinitionsWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
-  public DefinitionsWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL, Set<String> usedTemplates) {
+  public DefinitionsWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL, Set<String> usedTemplates) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.usedTemplates = usedTemplates;
   }
@@ -47,8 +45,7 @@ public class DefinitionsWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if (usedTemplates != null) {
       usedTemplates.add(templateName);
     }

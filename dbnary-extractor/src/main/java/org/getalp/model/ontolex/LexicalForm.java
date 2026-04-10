@@ -43,8 +43,7 @@ public class LexicalForm {
   }
 
   public Set<Representation> getValues(Class<? extends Representation> proto) {
-    return values.stream().filter(o -> proto.isAssignableFrom(o.getClass()))
-        .collect(Collectors.toSet());
+    return values.stream().filter(o -> proto.isAssignableFrom(o.getClass())).collect(Collectors.toSet());
   }
 
   public void addValue(Representation representation) {
@@ -57,7 +56,7 @@ public class LexicalForm {
 
   /**
    * Attach the Lexical Form to the given lexical entry in its model.
-   * 
+   *
    * @param lexEntry
    * @return the lexical form resource (it may be a new resource or an already existing one).
    */
@@ -77,8 +76,7 @@ public class LexicalForm {
   }
 
   private Resource createLexicalFormResource(Resource lexEntry) {
-    Resource lexForm =
-        lexEntry.getModel().createResource(computeResourceName(lexEntry), OntolexOnt.Form);
+    Resource lexForm = lexEntry.getModel().createResource(computeResourceName(lexEntry), OntolexOnt.Form);
     features.attachTo(lexForm);
     values.forEach(v -> v.attachTo(lexForm));
     lexEntry.getModel().add(lexEntry, OntolexOnt.otherForm, lexForm);
@@ -88,12 +86,9 @@ public class LexicalForm {
   private Resource mergeInto(Resource otherFormResource) {
     // otherForm has an identical feature set, but we should handle forms with different
     // phoneticRep and/or writtenRep
-    Set<String> writtenReps = otherFormResource.listProperties(OntolexOnt.writtenRep).toList()
-        .stream().map(Statement::getString).collect(Collectors.toSet());
-    Set<String> phoneticRep = otherFormResource.listProperties(OntolexOnt.phoneticRep).toList()
-        .stream().map(Statement::getString).collect(Collectors.toSet());
-    boolean hasMyWrittenReps = getValues(WrittenRepresentation.class).stream()
-        .map(Representation::getValue).allMatch(writtenReps::contains);
+    Set<String> writtenReps = otherFormResource.listProperties(OntolexOnt.writtenRep).toList().stream().map(Statement::getString).collect(Collectors.toSet());
+    Set<String> phoneticRep = otherFormResource.listProperties(OntolexOnt.phoneticRep).toList().stream().map(Statement::getString).collect(Collectors.toSet());
+    boolean hasMyWrittenReps = getValues(WrittenRepresentation.class).stream().map(Representation::getValue).allMatch(writtenReps::contains);
     if (hasMyWrittenReps) {
       Set<Representation> phoneticReps = getValues(PhoneticRepresentation.class);
       phoneticReps.forEach(r -> r.attachTo(otherFormResource));
@@ -116,14 +111,13 @@ public class LexicalForm {
 
   /**
    * Check if this LexicalForm is compatible with an existing resource.
-   * 
+   *
    * @param r a LexicalForm as a resource
    * @return true iff this is compatible with r
    */
   private StatementCompatibility isCompatibleWith(Resource r) {
-    Map<Property, List<Statement>> properties = r.listProperties().toList().stream()
-        .filter(p -> !ignoredPredicates.contains(p.getPredicate()))
-        .collect(Collectors.groupingBy(Statement::getPredicate));
+    Map<Property, List<Statement>> properties =
+        r.listProperties().toList().stream().filter(p -> !ignoredPredicates.contains(p.getPredicate())).collect(Collectors.groupingBy(Statement::getPredicate));
     StatementCompatibility result = StatementCompatibility.IDENTICAL;
     for (Map.Entry<Property, List<Statement>> ps : properties.entrySet()) {
       switch (compatibilityOf(ps)) {
@@ -163,21 +157,16 @@ public class LexicalForm {
       return StatementCompatibility.INCOMPATIBLE;
   }
 
-  private static boolean subSetEq(Set<MorphoSyntacticFeature> features,
-      List<Statement> statements) {
-    return features.stream()
-        .allMatch(f -> statements.stream().anyMatch(s -> s.getObject().equals(f.value())));
+  private static boolean subSetEq(Set<MorphoSyntacticFeature> features, List<Statement> statements) {
+    return features.stream().allMatch(f -> statements.stream().anyMatch(s -> s.getObject().equals(f.value())));
   }
 
-  private static boolean subSetEq(List<Statement> statements,
-      Set<MorphoSyntacticFeature> features) {
-    return statements.stream()
-        .allMatch(s -> features.stream().anyMatch(f -> s.getObject().equals(f.value())));
+  private static boolean subSetEq(List<Statement> statements, Set<MorphoSyntacticFeature> features) {
+    return statements.stream().allMatch(s -> features.stream().anyMatch(f -> s.getObject().equals(f.value())));
   }
 
   private Set<MorphoSyntacticFeature> getFeatures(Property p) {
-    return this.getFeature().stream().filter(f -> f.property().equals(p))
-        .collect(Collectors.toSet());
+    return this.getFeature().stream().filter(f -> f.property().equals(p)).collect(Collectors.toSet());
   }
 
   private String computeResourceName(Resource lexEntry) {
@@ -186,10 +175,8 @@ public class LexicalForm {
     if (!lexEntry.getURI().equals(lexEntryPrefix + lexEntryLocalName)) {
       log.error("ERROR: getNameSpace and getLocalName did not work !!!");
     }
-    String compactProperties = DatatypeConverter
-        .printBase64Binary(
-            BigInteger.valueOf(features.hashCode() + values.hashCode()).toByteArray())
-        .replaceAll("[/=+]", "-");
+    String compactProperties =
+        DatatypeConverter.printBase64Binary(BigInteger.valueOf(features.hashCode() + values.hashCode()).toByteArray()).replaceAll("[/=+]", "-");
 
     return lexEntryPrefix + "__wf_" + compactProperties + "_" + lexEntryLocalName;
   }

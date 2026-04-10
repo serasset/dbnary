@@ -40,8 +40,7 @@ public class ChineseTranslationExtractor {
       } else if (t instanceof ListItem) {
         extractTranslationLine(t.asListItem().getContent());
       } else {
-        log.debug("Translation: Unexpected WikiToken {} in {}", t.getClass().getName(),
-            delegate.currentPagename());
+        log.debug("Translation: Unexpected WikiToken {} in {}", t.getClass().getName(), delegate.currentPagename());
       }
     }
   }
@@ -62,8 +61,7 @@ public class ChineseTranslationExtractor {
     } else if (isTheMiddleOfTranslation(tmpl.getName())) {
       // Just ignore
     } else {
-      log.debug("Translation: Unknown Template {} in {}", tmpl.getName(),
-          delegate.currentPagename());
+      log.debug("Translation: Unknown Template {} in {}", tmpl.getName(), delegate.currentPagename());
     }
   }
 
@@ -91,8 +89,7 @@ public class ChineseTranslationExtractor {
   }
 
   private void removeIrrelevantToken(List<Token> tokens, int location) {
-    if (tokens.get(location).getText().equals(" ") || tokens.get(location).getText().equals(": ")
-        || tokens.get(location).getText().equals("：")) {
+    if (tokens.get(location).getText().equals(" ") || tokens.get(location).getText().equals(": ") || tokens.get(location).getText().equals("：")) {
       tokens.remove(location);
     }
   }
@@ -101,16 +98,14 @@ public class ChineseTranslationExtractor {
     String langFromFirstToken = null;
     if (firstToken instanceof Template) {
 
-      langFromFirstToken = (!firstToken.asTemplate().getName().equals("langname"))
-          ? firstToken.asTemplate().getName().toLowerCase(Locale.ROOT)
+      langFromFirstToken = (!firstToken.asTemplate().getName().equals("langname")) ? firstToken.asTemplate().getName().toLowerCase(Locale.ROOT)
           : firstToken.asTemplate().getParsedArg("1");
       removeIrrelevantToken(tokens, 1);
     } else if (firstToken instanceof Text || firstToken instanceof NoWiki) {
       String languageIntroduction = firstToken.asText().toString();
       langFromFirstToken = languageIntroduction.split(":|：")[0].trim();
     } else {
-      log.debug("Translation Line: Unexpected first token " + firstToken.getText() + " {} in {}",
-          firstToken.getClass().toString(), delegate.currentPagename());
+      log.debug("Translation Line: Unexpected first token " + firstToken.getText() + " {} in {}", firstToken.getClass().toString(), delegate.currentPagename());
     }
     return langFromFirstToken;
   }
@@ -122,9 +117,8 @@ public class ChineseTranslationExtractor {
         continue;
       if (t instanceof Template) {
         Template tmpl = t.asTemplate();
-        if (tmpl.getName().equals("t") || tmpl.getName().equals("t+") || tmpl.getName().equals("tt")
-            || tmpl.getName().equals("t-") || tmpl.getName().equals("tt-")
-            || tmpl.getName().equals("l")) {
+        if (tmpl.getName().equals("t") || tmpl.getName().equals("t+") || tmpl.getName().equals("tt") || tmpl.getName().equals("t-")
+            || tmpl.getName().equals("tt-") || tmpl.getName().equals("l")) {
           langCode = normalizeLang(tmpl.getParsedArg("1").trim());
           String usage = tmpl.getParsedArg("3");
           if (null == usage) {
@@ -148,11 +142,9 @@ public class ChineseTranslationExtractor {
           log.debug("Translation Line: can't identify the language of the text: " + t.getText());
         }
         langCode = normalizeLang(langFromFirstToken);
-        delegate.registerTranslation(langCode, currentGloss, null,
-            t.asInternalLink().getTargetText());
+        delegate.registerTranslation(langCode, currentGloss, null, t.asInternalLink().getTargetText());
       } else {
-        log.debug("Translation Line: Unexpected token " + t.getText() + " {} in {}",
-            t.getClass().toString(), delegate.currentPagename());
+        log.debug("Translation Line: Unexpected token " + t.getText() + " {} in {}", t.getClass().toString(), delegate.currentPagename());
       }
     }
   }

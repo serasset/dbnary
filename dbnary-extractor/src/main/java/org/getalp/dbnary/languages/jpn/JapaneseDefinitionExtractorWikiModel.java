@@ -22,13 +22,11 @@ public class JapaneseDefinitionExtractorWikiModel extends DbnaryWikiModel {
   private IWiktionaryDataHandler delegate;
 
 
-  public JapaneseDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public JapaneseDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public JapaneseDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public JapaneseDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
   }
@@ -47,20 +45,16 @@ public class JapaneseDefinitionExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     // BUGFIX for incorrect gwtwiki invocation of module User:Codecat/isValidPagename
-    if (parsedPagename.namespace.toString().equals("User")
-        && parsedPagename.pagename.equals("CodeCat/isValidPageName")) {
-      return getRawWikiContent(new ParsedPageName(this.getNamespace().getModule(),
-          "User:" + parsedPagename.pagename, true), map);
+    if (parsedPagename.namespace.toString().equals("User") && parsedPagename.pagename.equals("CodeCat/isValidPageName")) {
+      return getRawWikiContent(new ParsedPageName(this.getNamespace().getModule(), "User:" + parsedPagename.pagename, true), map);
     }
     return super.getRawWikiContent(parsedPagename, map);
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     super.substituteTemplateCall(templateName, parameterMap, writer);
   }

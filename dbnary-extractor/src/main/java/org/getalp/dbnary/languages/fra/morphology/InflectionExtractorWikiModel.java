@@ -27,14 +27,12 @@ public class InflectionExtractorWikiModel extends MorphologyWikiModel {
 
   private WiktionaryDataHandler delegate;
 
-  public InflectionExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public InflectionExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     if (wdh instanceof WiktionaryDataHandler)
       this.delegate = (WiktionaryDataHandler) wdh;
     else
-      throw new RuntimeException(
-          "Invalid delegate class, expecting French Wiktionary Data Handler");
+      throw new RuntimeException("Invalid delegate class, expecting French Wiktionary Data Handler");
   }
 
   public void parseOtherForm(String templateCall, List<String> context) {
@@ -54,8 +52,7 @@ public class InflectionExtractorWikiModel extends MorphologyWikiModel {
     }
     Elements tables = doc.select("table");
 
-    FrenchAccordsTableExtractor declinationExtractor =
-        new FrenchAccordsTableExtractor(this.getPageName(), "fr", context);
+    FrenchAccordsTableExtractor declinationExtractor = new FrenchAccordsTableExtractor(this.getPageName(), "fr", context);
 
     for (Element table : tables) {
       Set<LexicalForm> forms = declinationExtractor.parseTable(table);

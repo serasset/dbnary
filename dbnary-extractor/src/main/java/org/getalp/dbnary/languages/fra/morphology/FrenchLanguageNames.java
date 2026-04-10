@@ -25,11 +25,9 @@ public class FrenchLanguageNames {
       return ISO639_3.sharedInstance.getLanguageNameInFrench(code);
   }
 
-  private static final Pattern languageDef =
-      Pattern.compile("l\\['([^']*)']\\s*=\\s*\\{\\s*nom\\s=\\s*'([^']*)'.*}");
+  private static final Pattern languageDef = Pattern.compile("l\\['([^']*)']\\s*=\\s*\\{\\s*nom\\s=\\s*'([^']*)'.*}");
   private static final Matcher simpleLanguageLine = languageDef.matcher("");
-  private static final Pattern languageRedirection =
-      Pattern.compile("l\\['([^']*)']\\s*=\\s*l\\['([^']*)']");
+  private static final Pattern languageRedirection = Pattern.compile("l\\['([^']*)']\\s*=\\s*l\\['([^']*)']");
   private static final Matcher languageRedirectionLine = languageRedirection.matcher("");
 
 

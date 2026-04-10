@@ -67,35 +67,26 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   static {
     // English
     posAndTypeValueMap.put("Noun", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
-    posAndTypeValueMap.put("Proper noun",
-        new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
-    posAndTypeValueMap.put("Proper Noun",
-        new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
+    posAndTypeValueMap.put("Proper noun", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
+    posAndTypeValueMap.put("Proper Noun", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
 
     posAndTypeValueMap.put("Adjective", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
     posAndTypeValueMap.put("Verb", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
     posAndTypeValueMap.put("Adverb", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
     posAndTypeValueMap.put("Article", new PosAndType(LexinfoOnt.article, LexinfoOnt.Article));
-    posAndTypeValueMap.put("Conjunction",
-        new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
-    posAndTypeValueMap.put("Determiner",
-        new PosAndType(LexinfoOnt.determiner, LexinfoOnt.Determiner));
+    posAndTypeValueMap.put("Conjunction", new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
+    posAndTypeValueMap.put("Determiner", new PosAndType(LexinfoOnt.determiner, LexinfoOnt.Determiner));
 
     posAndTypeValueMap.put("Numeral", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
-    posAndTypeValueMap.put("Cardinal numeral",
-        new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
-    posAndTypeValueMap.put("Cardinal number",
-        new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
+    posAndTypeValueMap.put("Cardinal numeral", new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
+    posAndTypeValueMap.put("Cardinal number", new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
 
     posAndTypeValueMap.put("Number", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Number));
     posAndTypeValueMap.put("Particle", new PosAndType(LexinfoOnt.particle, LexinfoOnt.Particle));
-    posAndTypeValueMap.put("Preposition",
-        new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
-    posAndTypeValueMap.put("Postposition",
-        new PosAndType(LexinfoOnt.postposition, LexinfoOnt.Postposition));
+    posAndTypeValueMap.put("Preposition", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
+    posAndTypeValueMap.put("Postposition", new PosAndType(LexinfoOnt.postposition, LexinfoOnt.Postposition));
 
-    posAndTypeValueMap.put("Prepositional phrase",
-        new PosAndType(null, LexinfoOnt.PrepositionPhrase));
+    posAndTypeValueMap.put("Prepositional phrase", new PosAndType(null, LexinfoOnt.PrepositionPhrase));
 
     posAndTypeValueMap.put("Pronoun", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
     posAndTypeValueMap.put("Symbol", new PosAndType(LexinfoOnt.symbol, LexinfoOnt.Symbol));
@@ -107,14 +98,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Interfix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
     posAndTypeValueMap.put("Circumfix", new PosAndType(LexinfoOnt.affix, LexinfoOnt.Affix));
 
-    posAndTypeValueMap.put("Proverb",
-        new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("Interjection",
-        new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
-    posAndTypeValueMap.put("Phrase",
-        new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("Idiom",
-        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Proverb", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Interjection", new PosAndType(LexinfoOnt.interjection, LexinfoOnt.Interjection));
+    posAndTypeValueMap.put("Phrase", new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
 
     // Initialism ?
     // Chinese chars uses Definitions to aggregate several PoS, How can we cretae an underspecified
@@ -214,8 +201,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         }
       }
       if (isAPhrase) {
-        Resource multiWordType =
-            wordToMutiWordPOSTypes.getOrDefault(type, OntolexOnt.MultiWordExpression);
+        Resource multiWordType = wordToMutiWordPOSTypes.getOrDefault(type, OntolexOnt.MultiWordExpression);
         Resource entry = super.initializeLexicalEntry(pos, lexinfoPOS, multiWordType);
         if (!OntolexOnt.MultiWordExpression.equals(multiWordType)) {
           currentLexicalEntry.addResourceType(OntolexOnt.MultiWordExpression);
@@ -241,10 +227,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     if ((eBox = this.getFeatureBox(ExtractionFeature.ETYMOLOGY)) != null) {
       // TODO : should I check that getPrefix returns null ?
       lang = EnglishLangToCode.threeLettersCode(lang);
-      Resource r = eBox.createResource(getPrefix(lang) + "__ee_" + uriEncode(wiktionaryPageName),
-          DBnaryEtymologyOnt.EtymologyEntry);
-      Resource w = ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName) + "#"
-          + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(lang)));
+      Resource r = eBox.createResource(getPrefix(lang) + "__ee_" + uriEncode(wiktionaryPageName), DBnaryEtymologyOnt.EtymologyEntry);
+      Resource w =
+          ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName) + "#" + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(lang)));
       eBox.add(r, RDFS.seeAlso, w);
       eBox.add(r, RDFS.label, wiktionaryPageName, lang);
 
@@ -270,11 +255,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return;
     }
     if (currentEtymologyEntry == null) { // there is no etymology section
-      currentEtymologyEntry =
-          eBox.createResource(getPrefix(lang) + "__ee_" + uriEncode(currentPagename()),
-              DBnaryEtymologyOnt.EtymologyEntry);
-      Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentPagename()) + "#"
-          + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
+      currentEtymologyEntry = eBox.createResource(getPrefix(lang) + "__ee_" + uriEncode(currentPagename()), DBnaryEtymologyOnt.EtymologyEntry);
+      Resource w = ResourceFactory
+          .createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
       eBox.add(currentEtymologyEntry, RDFS.seeAlso, w);
       eBox.add(currentEtymologyEntry, RDFS.label, currentPagename(), lang);
     }
@@ -350,32 +333,27 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     for (Symbols b : etymology.symbols) {
       String word = b.args.get("word1").split(",")[0].trim();
       if (word.equals("")) {
-        log.debug("Error: empty lemma found while processing derived words of {} in string {}",
-            currentPagename(), etymology.string);
+        log.debug("Error: empty lemma found while processing derived words of {} in string {}", currentPagename(), etymology.string);
       } else {
         if (counter == 0) {
           lang = b.args.get("lang");
           // register derives_from
-          vocable0 = eBox.createResource(getPrefix(lang) + "__ee_" + uriEncode(word),
-              DBnaryEtymologyOnt.EtymologyEntry);
+          vocable0 = eBox.createResource(getPrefix(lang) + "__ee_" + uriEncode(word), DBnaryEtymologyOnt.EtymologyEntry);
           eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyRelatedTo, currentEtymologyEntry);
           eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyDerivesFrom, currentEtymologyEntry);
           // TODO: when extracting a reconstructed word the URL of wiktionary page is not correctly
           // computed
-          Resource w =
-              ResourceFactory.createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(
-                  ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
+          Resource w = ResourceFactory.createResource(
+              WIKT + uriEncode(currentPagename()) + "#" + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
           eBox.add(vocable0, RDFS.seeAlso, w);
           eBox.add(vocable0, RDFS.label, word, lang);
         } else {
           // register etymologically_equivalent_to
-          Resource vocable2 = eBox.createResource(getPrefix(lang) + "__ee_" + uriEncode(word),
-              DBnaryEtymologyOnt.EtymologyEntry);
+          Resource vocable2 = eBox.createResource(getPrefix(lang) + "__ee_" + uriEncode(word), DBnaryEtymologyOnt.EtymologyEntry);
           eBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyRelatedTo, vocable0);
           eBox.add(vocable2, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable0);
-          Resource w =
-              ResourceFactory.createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(
-                  ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
+          Resource w = ResourceFactory.createResource(
+              WIKT + uriEncode(currentPagename()) + "#" + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
           eBox.add(vocable2, RDFS.seeAlso, w);
           eBox.add(vocable2, RDFS.label, word, lang);
         }
@@ -394,18 +372,16 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return;
     }
     currentEtymologyNumber++;
-    currentEtymologyEntry = eBox.createResource(computeEtymologyId(currentEtymologyNumber, lang),
-        DBnaryEtymologyOnt.EtymologyEntry);
+    currentEtymologyEntry = eBox.createResource(computeEtymologyId(currentEtymologyNumber, lang), DBnaryEtymologyOnt.EtymologyEntry);
     eBox.add(currentGlobalEtymologyEntry, DBnaryOnt.describes, currentEtymologyEntry);
-    Resource w = ResourceFactory.createResource(WIKT + uriEncode(currentPagename()) + "#"
-        + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
+    Resource w = ResourceFactory
+        .createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
     eBox.add(currentEtymologyEntry, RDFS.seeAlso, w);
   }
 
   public Resource createEtymologyEntryResource(Model eBox, String e, String lang) {
     String word = e.split(",")[0].trim();
-    return eBox.createResource(getPrefix(lang) + "__ee_" + uriEncode(word),
-        DBnaryEtymologyOnt.EtymologyEntry);
+    return eBox.createResource(getPrefix(lang) + "__ee_" + uriEncode(word), DBnaryEtymologyOnt.EtymologyEntry);
   }
 
   public void registerEtymology(Etymology etymology) {
@@ -446,9 +422,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               vocable = createEtymologyEntryResource(eBox, word1, lang0);
               eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyEquivalentTo, vocable);
               eBox.add(vocable0, DBnaryEtymologyOnt.etymologicallyRelatedTo, vocable);
-              Resource w = ResourceFactory
-                  .createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(
-                      ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
+              Resource w = ResourceFactory.createResource(
+                  WIKT + uriEncode(currentPagename()) + "#" + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
               eBox.add(vocable, RDFS.seeAlso, w);
               eBox.add(vocable, RDFS.label, word1, lang0);
             } else {
@@ -457,9 +432,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           } else {
             // parse template with multiple words (word1 word2 etc., and possibly lang1, lang2 etc.)
             boolean compound = false;
-            Resource w = ResourceFactory
-                .createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(
-                    ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
+            Resource w = ResourceFactory.createResource(
+                WIKT + uriEncode(currentPagename()) + "#" + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
             for (int kk = 1; kk < 12; kk++) {
               String word = b.args.get("word" + Integer.toString(kk));
               lang = b.args.get("lang" + Integer.toString(kk));
@@ -525,26 +499,21 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         if (b.values.get(0).equals("LEMMA")) {
           String word = b.args.get("word1").split(",")[0].trim();
           String lang = b.args.get("lang");
-          Resource vocable = eBox.createResource(getPrefix(lang) + "__ee_" + uriEncode(word),
-              DBnaryEtymologyOnt.EtymologyEntry);
+          Resource vocable = eBox.createResource(getPrefix(lang) + "__ee_" + uriEncode(word), DBnaryEtymologyOnt.EtymologyEntry);
           if (counter == 0) {
             if (ancestor != null) {
               eBox.add(vocable, DBnaryEtymologyOnt.etymologicallyRelatedTo, ancestor);
-              Resource w = ResourceFactory
-                  .createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(
-                      ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
+              Resource w = ResourceFactory.createResource(
+                  WIKT + uriEncode(currentPagename()) + "#" + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
               eBox.add(vocable, RDFS.seeAlso, w);
               eBox.add(vocable, RDFS.label, word, lang);
             }
             ancestors.add(vocable);
           } else {
-            eBox.add(vocable, DBnaryEtymologyOnt.etymologicallyEquivalentTo,
-                ancestors.get(ancestors.size() - 1));
-            eBox.add(vocable, DBnaryEtymologyOnt.etymologicallyRelatedTo,
-                ancestors.get(ancestors.size() - 1));
-            Resource w = ResourceFactory
-                .createResource(WIKT + uriEncode(currentPagename()) + "#" + uriEncode(
-                    ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
+            eBox.add(vocable, DBnaryEtymologyOnt.etymologicallyEquivalentTo, ancestors.get(ancestors.size() - 1));
+            eBox.add(vocable, DBnaryEtymologyOnt.etymologicallyRelatedTo, ancestors.get(ancestors.size() - 1));
+            Resource w = ResourceFactory.createResource(
+                WIKT + uriEncode(currentPagename()) + "#" + uriEncode(ISO639_3.sharedInstance.getLanguageNameInEnglish(shortSectionLanguageCode)));
             eBox.add(vocable, RDFS.seeAlso, w);
             eBox.add(vocable, RDFS.label, word, lang);
           }
@@ -555,8 +524,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void registerInflection(String languageCode, String pos, String inflection,
-      String canonicalForm, int defNumber, HashSet<PropertyObjectPair> props,
+  public void registerInflection(String languageCode, String pos, String inflection, String canonicalForm, int defNumber, HashSet<PropertyObjectPair> props,
       HashSet<PronunciationPair> pronunciations) {
 
     if (pronunciations != null) {
@@ -565,8 +533,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         // the former after a certain period.
         // props.add(PropertyObjectPair.get(LexinfoOnt.pronunciation,
         // aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
-        props.add(PropertyObjectPair.get(OntolexOnt.phoneticRep,
-            aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
+        props.add(PropertyObjectPair.get(OntolexOnt.phoneticRep, aBox.createLiteral(pronunciation.pron, pronunciation.lang)));
       }
     }
 
@@ -574,8 +541,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  protected void addOtherFormPropertiesToLexicalEntry(Resource lexEntry,
-      HashSet<PropertyObjectPair> properties) {
+  protected void addOtherFormPropertiesToLexicalEntry(Resource lexEntry, HashSet<PropertyObjectPair> properties) {
     // Do not try to merge new form with an existing compatible one in English.
     // This would lead to a Past becoming a PastParticiple when registering the past participle
     // form.
@@ -594,17 +560,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   }
 
-  public void registerInflection(String inflection, String note,
-      HashSet<PropertyObjectPair> props) {
+  public void registerInflection(String inflection, String note, HashSet<PropertyObjectPair> props) {
 
     // Keep it simple for english: register forms on the current lexical entry
     if (null != note) {
-      PropertyObjectPair p =
-          PropertyObjectPair.get(SkosOnt.note, aBox.createLiteral(note, shortEditionLanguageCode));
+      PropertyObjectPair p = PropertyObjectPair.get(SkosOnt.note, aBox.createLiteral(note, shortEditionLanguageCode));
       props.add(p);
     }
-    PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep,
-        aBox.createLiteral(inflection, getCurrentEntryLanguage()));
+    PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, getCurrentEntryLanguage()));
     props.add(p);
 
     addOtherFormPropertiesToLexicalEntry(currentLexEntry, props);
@@ -612,14 +575,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   @Override
-  public void registerInflection(String languageCode, String pos, String inflection,
-      String canonicalForm, int defNumber, HashSet<PropertyObjectPair> props) {
+  public void registerInflection(String languageCode, String pos, String inflection, String canonicalForm, int defNumber, HashSet<PropertyObjectPair> props) {
 
     // Keep it simple for english: register forms on the current lexical entry
     // FIXME: check what is provided when we have different lex entries with the same pos and morph.
 
-    PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep,
-        aBox.createLiteral(inflection, getCurrentEntryLanguage()));
+    PropertyObjectPair p = PropertyObjectPair.get(OntolexOnt.writtenRep, aBox.createLiteral(inflection, getCurrentEntryLanguage()));
 
     props.add(p);
 
@@ -676,12 +637,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
   public String getGlossURI(String id) {
-    return getPrefix() + "__" + shortEditionLanguageCode + "_gloss_" + id + "_"
-        + uriEncode(currentPagename());
+    return getPrefix() + "__" + shortEditionLanguageCode + "_gloss_" + id + "_" + uriEncode(currentPagename());
   }
 
-  public void registerWikisaurusNymFromTo(String currentPOS, String nym, String gloss,
-      String targetGloss, String s, String t) {
+  public void registerWikisaurusNymFromTo(String currentPOS, String nym, String gloss, String targetGloss, String s, String t) {
     if (t.equals(s)) {
       return;
     }
@@ -703,8 +662,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     if (null == pos && null == glossResource && null == targetGlossResource)
       return;
 
-    ReifiedStatement rnymR =
-        nymR.createReifiedStatement(computeNymId(nym, uriEncode(currentPagename())));
+    ReifiedStatement rnymR = nymR.createReifiedStatement(computeNymId(nym, uriEncode(currentPagename())));
 
     if (null != pos) {
       rnymR.addProperty(DBnaryOnt.partOfSpeech, pos);
@@ -723,15 +681,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     if (gloss == null)
       return null;
     String glossKey = gloss;
-    glossKey =
-        DatatypeConverter.printBase64Binary(BigInteger.valueOf(glossKey.hashCode()).toByteArray())
-            .replaceAll("[/=\\+]", "-");
+    glossKey = DatatypeConverter.printBase64Binary(BigInteger.valueOf(glossKey.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
     Resource glossResource = getGlossForWikisaurus(glossKey);
     return glossResource;
   }
 
-  public void registerWikisaurusNym(String currentPOS, String currentWS, String currentNym,
-      String s) {
+  public void registerWikisaurusNym(String currentPOS, String currentWS, String currentNym, String s) {
     if (s.equals(currentPagename())) {
       return;
     }
@@ -750,9 +705,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         return;
       }
       String gloss = currentNym + currentPOS + currentWS;
-      gloss =
-          DatatypeConverter.printBase64Binary(BigInteger.valueOf(gloss.hashCode()).toByteArray())
-              .replaceAll("[/=\\+]", "-");
+      gloss = DatatypeConverter.printBase64Binary(BigInteger.valueOf(gloss.hashCode()).toByteArray()).replaceAll("[/=\\+]", "-");
       Resource glossResource = getGlossForWikisaurus(gloss);
       Resource pos = posResource(currentPOS);
       if (null != pos) {
@@ -763,8 +716,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       }
 
       if (glossResource != null) {
-        ReifiedStatement rnymR =
-            nymR.createReifiedStatement(computeNymId(currentNym, uriEncode(currentPagename())));
+        ReifiedStatement rnymR = nymR.createReifiedStatement(computeNymId(currentNym, uriEncode(currentPagename())));
         rnymR.addProperty(DBnaryOnt.gloss, glossResource);
       }
     } catch (NullPointerException npe) {
@@ -786,17 +738,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   // id: sense ID; see {{senseid}}
   // sc: script code
   // tag: dialect tag; see below
-  private final static Pattern NYM_VALUE_INLINE_MODIFIER_PATTERN =
-      Pattern.compile("<qq?:(?<qual>[^>]+)>|<(?:t|lit):(?<gloss>[^>]+)>|<alt:(?<alt>[^>]+)>|"
-          + "<(?:tr|ts):(?<tr>[^>]+)>|<pos:(?<pos>[^>]+)>|<g:(?<g>[^>]+)>|<id:(?<sid>[^>]+)>|"
-          + "<sc:([^>]+)>|<tag:([^>]+)>");
+  private final static Pattern NYM_VALUE_INLINE_MODIFIER_PATTERN = Pattern.compile("<qq?:(?<qual>[^>]+)>|<(?:t|lit):(?<gloss>[^>]+)>|<alt:(?<alt>[^>]+)>|"
+      + "<(?:tr|ts):(?<tr>[^>]+)>|<pos:(?<pos>[^>]+)>|<g:(?<g>[^>]+)>|<id:(?<sid>[^>]+)>|" + "<sc:([^>]+)>|<tag:([^>]+)>");
 
   // TODO: in entry Vysoke one find nym inline with html tags, hence one should parse the inline
   // with a context free
   // grammar
   @Override
-  public void registerNymRelationToEntity(String target, String nymRelation, Resource entity,
-      Resource gloss, String usage) {
+  public void registerNymRelationToEntity(String target, String nymRelation, Resource entity, Resource gloss, String usage) {
     Matcher m = NYM_VALUE_INLINE_MODIFIER_PATTERN.matcher(target);
     while (m.find()) {
       String qualValue, glossValue, altValue, trValue, posValue, gValue, sidValue;

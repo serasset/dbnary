@@ -25,7 +25,7 @@ public class DbnaryModel {
   /**
    * Set the DBNARY prefix globally. Warning, setting this too late in the processus may lead to
    * inconsistent dataset.
-   * 
+   *
    * @param p the global prefix to be used for the extracted data.
    */
   public static void setGlobalDbnaryPrefix(String p) {
@@ -45,15 +45,12 @@ public class DbnaryModel {
       char c = s.charAt(i);
       if (Character.isSpaceChar(c)) {
         res.append('_');
-      } else if ((c >= '\u00A0' && c <= '\u00BF') || (c == '<') || (c == '>') || (c == '%')
-          || (c == '"') || (c == '#') || (c == '[') || (c == ']') || (c == '\\') || (c == '^')
-          || (c == '`') || (c == '{') || (c == '|') || (c == '}') || (c == '\u00D7')
-          || (c == '\u00F7') || (c == ':')) {
+      } else if ((c >= '\u00A0' && c <= '\u00BF') || (c == '<') || (c == '>') || (c == '%') || (c == '"') || (c == '#') || (c == '[') || (c == ']')
+          || (c == '\\') || (c == '^') || (c == '`') || (c == '{') || (c == '|') || (c == '}') || (c == '\u00D7') || (c == '\u00F7') || (c == ':')) {
         res.append(URLEncoder.encode("" + c, StandardCharsets.UTF_8));
       } else if (Character.isISOControl(c)) {
         // nop
-      } else if (Character.isHighSurrogate(c) && i + 1 < s.length()
-          && Character.isLowSurrogate(s.charAt(i + 1))) {
+      } else if (Character.isHighSurrogate(c) && i + 1 < s.length() && Character.isLowSurrogate(s.charAt(i + 1))) {
         // Even higher plane char are ucschars (are they ?)
         res.append(s, i, i + 2);
         i++;
@@ -78,10 +75,9 @@ public class DbnaryModel {
       char c = pos.charAt(i);
       if (Character.isSpaceChar(c)) {
         res.append('_');
-      } else if ((c >= '\u00A0' && c <= '\u00BF') || (c == '<') || (c == '>') || (c == '%')
-          || (c == '"') || (c == '#') || (c == '[') || (c == ']') || (c == '\\') || (c == '^')
-          || (c == '`') || (c == '{') || (c == '|') || (c == '}') || (c == '\u00D7')
-          || (c == '\u00F7') || (c == '-') || (c == '_') || Character.isISOControl(c)) {
+      } else if ((c >= '\u00A0' && c <= '\u00BF') || (c == '<') || (c == '>') || (c == '%') || (c == '"') || (c == '#') || (c == '[') || (c == ']')
+          || (c == '\\') || (c == '^') || (c == '`') || (c == '{') || (c == '|') || (c == '}') || (c == '\u00D7') || (c == '\u00F7') || (c == '-') || (c == '_')
+          || Character.isISOControl(c)) {
         // nop
       } else if (c == '\u200e' || c == '\u200f') {
         // ignore rRLM and LRM.

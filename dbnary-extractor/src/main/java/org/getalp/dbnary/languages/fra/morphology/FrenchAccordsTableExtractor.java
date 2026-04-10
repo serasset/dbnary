@@ -176,8 +176,7 @@ public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
   // TODO : remove the other word form that correspond to the canonical form...
   // TODO: les formes extraites à partir des définitions de formes fléchies sont en double
   @Override
-  protected Set<LexicalForm> getLexicalFormsFromCell(int i, int j, Element cell,
-      List<String> context) {
+  protected Set<LexicalForm> getLexicalFormsFromCell(int i, int j, Element cell, List<String> context) {
     // In the French language edition, pronunciation are often given in independant cells below
     // the lexical Form written rep. In case of a pronunication information, we attach the
     // ponounciation to the lexicalForm that were extracted from the cell above.
@@ -185,13 +184,10 @@ public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
     if ((pron = isIsolatedPronunciation(cell)) != null) {
       Set<LexicalForm> lexFormsAbove = results.get(i - 1, j);
       if (null != lexFormsAbove) {
-        Arrays.stream(pron.split("\\\\ ou \\\\")).map(Utils::standardizePronunciation)
-            .filter(s -> s.length() > 0 && !"Prononciation ?".equalsIgnoreCase(s))
-            .forEach(p -> lexFormsAbove.forEach(
-                f -> f.addValue(new PhoneticRepresentation(standardizeValue(p), language))));
+        Arrays.stream(pron.split("\\\\ ou \\\\")).map(Utils::standardizePronunciation).filter(s -> s.length() > 0 && !"Prononciation ?".equalsIgnoreCase(s))
+            .forEach(p -> lexFormsAbove.forEach(f -> f.addValue(new PhoneticRepresentation(standardizeValue(p), language))));
       } else {
-        log.debug("No lexical form above as we have an isolated pronunciation in {}",
-            this.entryName);
+        log.debug("No lexical form above as we have an isolated pronunciation in {}", this.entryName);
       }
       return new LinkedHashSet<>();
     } else {
@@ -201,15 +197,13 @@ public class FrenchAccordsTableExtractor extends RefactoredTableExtractor {
 
   @Override
   protected boolean elementIsAValidForm(Element anchor) {
-    return !(anchor.attr("href").contains("Annexe:Prononciation")
-        || anchor.attr("href").contains("action=edit")
-        || anchor.attr("href").contains("/H_aspir%C3%A9")
-        || anchor.attr("href").contains("/H_muet"));
+    return !(anchor.attr("href").contains("Annexe:Prononciation") || anchor.attr("href").contains("action=edit")
+        || anchor.attr("href").contains("/H_aspir%C3%A9") || anchor.attr("href").contains("/H_muet"));
   }
 
   /**
    * returns a pronunciation string iff the cell is a pronunciation only cell returns
-   * 
+   *
    * @param cell a table cell
    * @return null or a string
    */

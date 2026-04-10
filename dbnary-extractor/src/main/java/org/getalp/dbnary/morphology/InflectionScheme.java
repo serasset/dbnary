@@ -15,10 +15,7 @@ public abstract class InflectionScheme extends TreeSet<MorphoSyntacticFeature> {
 
   @Override
   public String toString() {
-    return new StringBuilder().append("[")
-        .append(
-            this.stream().map(MorphoSyntacticFeature::toString).collect(Collectors.joining("|")))
-        .append("]").toString();
+    return new StringBuilder().append("[").append(this.stream().map(MorphoSyntacticFeature::toString).collect(Collectors.joining("|"))).append("]").toString();
   }
 
 

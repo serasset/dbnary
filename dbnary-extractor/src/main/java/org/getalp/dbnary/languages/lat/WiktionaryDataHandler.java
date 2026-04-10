@@ -37,15 +37,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("participium", new PosAndType(LexinfoOnt.participle, OntolexOnt.Word));
     posAndTypeValueMap.put("wikt-praep", new PosAndType(LexinfoOnt.preposition, OntolexOnt.Word));
     posAndTypeValueMap.put("abbreviatio", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.Word));
-    posAndTypeValueMap.put("cardinalis",
-        new PosAndType(LexinfoOnt.cardinalNumeral, OntolexOnt.Word));
-    posAndTypeValueMap.put("ordinalis",
-        new PosAndType(LexinfoOnt.ordinalAdjective, OntolexOnt.Word));
+    posAndTypeValueMap.put("cardinalis", new PosAndType(LexinfoOnt.cardinalNumeral, OntolexOnt.Word));
+    posAndTypeValueMap.put("ordinalis", new PosAndType(LexinfoOnt.ordinalAdjective, OntolexOnt.Word));
     posAndTypeValueMap.put("numerus", new PosAndType(LexinfoOnt.numeral, OntolexOnt.Word));
     posAndTypeValueMap.put("interiectio", new PosAndType(LexinfoOnt.interjection, OntolexOnt.Word));
     posAndTypeValueMap.put("praepositio", new PosAndType(LexinfoOnt.preposition, OntolexOnt.Word));
-    posAndTypeValueMap.put("proverbium",
-        new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("proverbium", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
   }
 
   public WiktionaryDataHandler(String lang, String tdbDir) {

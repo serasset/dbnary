@@ -27,13 +27,11 @@ import org.getalp.dbnary.wiki.WikiPatterns;
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
-  protected final static String languageSectionPatternString =
-      "(?:=\\s*\\{\\{\\-([^=]*)\\-\\}\\}\\s*=)|(?:={1,5}\\s*([^=\\{\\]\\|\n\r]+)\\s*={1,5})";
+  protected final static String languageSectionPatternString = "(?:=\\s*\\{\\{\\-([^=]*)\\-\\}\\}\\s*=)|(?:={1,5}\\s*([^=\\{\\]\\|\n\r]+)\\s*={1,5})";
   protected final static String level1HeaderPatternString = "^=([^=].*[^=])=\\s*$";
 
   protected final static String sectionPatternString = "={2,4}\\s*([^=]*)\\s*={2,4}";
-  static String defOrExamplePatternString = "(?:" + WikiPatterns.definitionPatternString + ")|(?:"
-      + WikiPatterns.examplePatternString + ")";
+  static String defOrExamplePatternString = "(?:" + WikiPatterns.definitionPatternString + ")|(?:" + WikiPatterns.examplePatternString + ")";
   private final int NODATA = 0;
   private final int TRADBLOCK = 1;
   private final int DEFBLOCK = 2;
@@ -113,10 +111,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    definitionExtractor = new PortugueseDefinitionExtractorWikiModel(this.wdh, this.wi,
-        Locale.forLanguageTag("pt"), "/${image}", "/${title}");
-    translationExtractor = new PortugueseTranslationExtractorWikiModel(this.wdh, this.wi,
-        new Locale("pt"), "/${image}/" + getWiktionaryPageName(), "/${title}");
+    definitionExtractor = new PortugueseDefinitionExtractorWikiModel(this.wdh, this.wi, Locale.forLanguageTag("pt"), "/${image}", "/${title}");
+    translationExtractor =
+        new PortugueseTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("pt"), "/${image}/" + getWiktionaryPageName(), "/${title}");
   }
 
   public boolean isCurrentlyExtracting() {
@@ -412,8 +409,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case IGNOREPOS:
         break;
       default:
-        assert false
-            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
+        assert false : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
     wdh.finalizeLanguageSection();
   }
@@ -422,8 +418,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return m.group(0).startsWith("==") && !m.group(0).startsWith("===");
   }
 
-  private final static Pattern externalTranslationPattern =
-      Pattern.compile("\\[\\[([^\\]]*/traduções)]]");
+  private final static Pattern externalTranslationPattern = Pattern.compile("\\[\\[([^\\]]*/traduções)]]");
 
   private void extractTranslations(int startOffset, int endOffset) {
     // TODO: Check if the translations refer to an independant page
@@ -463,8 +458,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractDefinition(defOrExampleMatcher);
       } else if (null != defOrExampleMatcher.group(2)) {
         if (defOrExampleMatcher.group().startsWith("#:")) {
-          context.add(Pair.of(DCTerms.bibliographicCitation,
-              ResourceFactory.createLangLiteral(exempleRef, wdh.getCurrentEntryLanguage())));
+          context.add(Pair.of(DCTerms.bibliographicCitation, ResourceFactory.createLangLiteral(exempleRef, wdh.getCurrentEntryLanguage())));
         } else {
           registerExample(exempleRef, context);
           context.clear();

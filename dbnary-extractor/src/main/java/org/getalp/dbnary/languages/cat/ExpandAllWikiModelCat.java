@@ -29,8 +29,7 @@ public class ExpandAllWikiModelCat extends ExpandAllWikiModel {
   final WiktionaryDataHandler handler;
   private final ExpandAllWikiModel simpleExpander;
 
-  public ExpandAllWikiModelCat(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL, final WiktionaryDataHandler handler) {
+  public ExpandAllWikiModelCat(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL, final WiktionaryDataHandler handler) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.handler = handler;
     simpleExpander = new ExpandAllWikiModel(wi, locale, imageBaseURL, linkBaseURL);
@@ -38,8 +37,7 @@ public class ExpandAllWikiModelCat extends ExpandAllWikiModel {
 
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if (templateName.equals("ex-us") || templateName.equals("ex-cit")) {
 
       final String lang = parameterMap.get("1");
@@ -48,8 +46,7 @@ public class ExpandAllWikiModelCat extends ExpandAllWikiModel {
 
       if (null != parameterMap.get("ref")) {
         if (null == ISO639_3.sharedInstance.getLang(lang)) {
-          logger.warn("Unknown language code in ex- template for {} : {}", this.getPageName(),
-              lang);
+          logger.warn("Unknown language code in ex- template for {} : {}", this.getPageName(), lang);
         } else {
           // Sometimes the ref is given in extenso or inside a ref element. But the ref element
           // will not be rendered in plain text, so remove it.
@@ -79,10 +76,8 @@ public class ExpandAllWikiModelCat extends ExpandAllWikiModel {
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
-    if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("la-pron")) {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
+    if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY) && parsedPagename.pagename.equals("la-pron")) {
       return "{{pronafi|la|/{{#invoke:la-pron|show|{{{1|{{PAGENAME}}}}}}}/|{{#if:{{{2|}}}|/{{#invoke:la-pron|show|{{{2}}}}}/}}}}\n";
     } // else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
       // && parsedPagename.pagename.equals("llengua/ordre")) {
@@ -97,8 +92,7 @@ public class ExpandAllWikiModelCat extends ExpandAllWikiModel {
   }
 
   private Literal rdfNode(String value, String lang, boolean expand) {
-    return ResourceFactory.createLangLiteral(
-        expand ? this.simpleExpander.expandAll(value, this.templates) : value, lang);
+    return ResourceFactory.createLangLiteral(expand ? this.simpleExpander.expandAll(value, this.templates) : value, lang);
   }
 
   public void resetContext() {

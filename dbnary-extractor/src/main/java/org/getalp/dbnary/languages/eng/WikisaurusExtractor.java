@@ -30,8 +30,7 @@ public class WikisaurusExtractor {
     if (null == l2 || l2.trim().isEmpty()) {
       l2 = lg.getId();
     }
-    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
-        && !wdh.getExtractedLanguage().equals(l2)) {
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !wdh.getExtractedLanguage().equals(l2)) {
       return;
     }
 
@@ -44,12 +43,10 @@ public class WikisaurusExtractor {
         if (WiktionaryDataHandler.isValidPOS(pos)) {
           extractWikisaurusPoSSection(l2, pos, wikiSection.getContent());
         } else {
-          log.debug("Ignoring section {} (not a Part Of Speech) in Thesarurus:{}", pos,
-              wdh.currentPagename());
+          log.debug("Ignoring section {} (not a Part Of Speech) in Thesarurus:{}", pos, wdh.currentPagename());
         }
       } else {
-        log.debug("Ignoring token {} (not a Part Of Speech Section) in Thesarurus:{}", section,
-            wdh.currentPagename());
+        log.debug("Ignoring token {} (not a Part Of Speech Section) in Thesarurus:{}", section, wdh.currentPagename());
       }
     }
 
@@ -67,14 +64,12 @@ public class WikisaurusExtractor {
     }
   }
 
-  private void extractWikisaurusRelations(String l2, String pos, String gloss,
-      WikiContent content) {
+  private void extractWikisaurusRelations(String l2, String pos, String gloss, WikiContent content) {
     for (Token section : content.wikiTokens()) {
       if (section instanceof WikiSection) {
         // Level 5 sections are nym relations
         WikiSection wikiSection = section.asWikiSection();
-        String nym =
-            EnglishGlobals.nymMarkerToNymName.get(wikiSection.getHeading().getContent().getText());
+        String nym = EnglishGlobals.nymMarkerToNymName.get(wikiSection.getHeading().getContent().getText());
         extractWikisaurusLinks(l2, pos, gloss, nym, wikiSection.getContent());
       } else {
         log.debug("Unexpected token {} in Thesaurus:{}", section, wdh.currentPagename());
@@ -82,28 +77,24 @@ public class WikisaurusExtractor {
     }
   }
 
-  private void extractWikisaurusLinks(String l2, String pos, String gloss, String nym,
-      WikiContent content) {
+  private void extractWikisaurusLinks(String l2, String pos, String gloss, String nym, WikiContent content) {
     if (null == nym)
       return;
     List<Pair<String, String>> targets = new ArrayList<>();
     for (Token tok : content.templates()) {
       Template tmpl = tok.asTemplate();
       String tmplName = tmpl.getName().trim();
-      if (tmplName.equals("ws beginlist") || tmplName.equals("ws endlist")
-          || tmplName.equals("ws ----")) {
+      if (tmplName.equals("ws beginlist") || tmplName.equals("ws endlist") || tmplName.equals("ws ----")) {
         // ignore
       } else if (tmplName.equals("ws")) {
         String target = tmpl.getParsedArg("2");
         String targetGloss = tmpl.getParsedArg("3");
-        targetGloss = Optional.ofNullable(targetGloss).map(String::trim).filter(s -> !s.isEmpty())
-            .orElse(null);
+        targetGloss = Optional.ofNullable(targetGloss).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
         if (target != null) {
           target = target.trim();
           String lang = tmpl.getParsedArg("1");
           if (!Objects.equals(lang, l2)) {
-            log.trace("THESAURUS: incorrect nym language (expected: {}, actual: {}) in {}",
-                wdh.getCurrentEntryLanguage(), lang, wdh.currentPagename());
+            log.trace("THESAURUS: incorrect nym language (expected: {}, actual: {}) in {}", wdh.getCurrentEntryLanguage(), lang, wdh.currentPagename());
           } else {
             targets.add(Pair.of(target, targetGloss));
           }

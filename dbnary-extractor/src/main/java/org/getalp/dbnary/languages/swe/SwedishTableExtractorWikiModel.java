@@ -18,8 +18,7 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
 
   private Logger log = LoggerFactory.getLogger(SwedishTableExtractorWikiModel.class);
 
-  public SwedishTableExtractorWikiModel(WiktionaryPageSource wi, String imageBaseURL,
-      String linkBaseURL) {
+  public SwedishTableExtractorWikiModel(WiktionaryPageSource wi, String imageBaseURL, String linkBaseURL) {
     super(wi, new Locale("sv"), imageBaseURL, linkBaseURL);
   }
 
@@ -45,8 +44,7 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     String result;
     // There modules uses the obsolete arg magik variable which is not supported anymore by lua >
     // 5.1
@@ -64,18 +62,15 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
     }
     if (log.isDebugEnabled()) {
       if (null == result) {
-        log.debug("null result when getting raw wiki content for {}",
-            parsedPagename.fullPagename());
+        log.debug("null result when getting raw wiki content for {}", parsedPagename.fullPagename());
       } else if (result.contains("(...)"))
-        log.debug("{} contains a vararg. Check if its use is correct.",
-            parsedPagename.fullPagename());
+        log.debug("{} contains a vararg. Check if its use is correct.", parsedPagename.fullPagename());
     }
     return result;
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
 
     super.substituteTemplateCall(templateName, parameterMap, writer);
   }

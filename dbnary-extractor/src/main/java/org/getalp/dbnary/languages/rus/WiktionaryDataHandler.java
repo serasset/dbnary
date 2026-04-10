@@ -25,11 +25,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("гл", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("мест", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("числ", new PosAndType(LexinfoOnt.numeral, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("прич",
-        new PosAndType(LexinfoOnt.participleAdjective, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("прич", new PosAndType(LexinfoOnt.participleAdjective, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("деепр", new PosAndType(LexinfoOnt.participle, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("interj",
-        new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("interj", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("suffix", new PosAndType(LexinfoOnt.suffix, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("conj", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("prep", new PosAndType(LexinfoOnt.preposition, OntolexOnt.LexicalEntry));

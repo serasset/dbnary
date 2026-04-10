@@ -46,8 +46,7 @@ public class TranslationsStatistics {
   }
 
 
-  public static void printStats(Model m1, String language, String targets, PrintWriter out,
-      boolean verbose) {
+  public static void printStats(Model m1, String language, String targets, PrintWriter out, boolean verbose) {
     // TODO: extract iso code from lexvo entity.
     SortedMap<String, IncrementableInt> counts = initCounts(targets);
 

@@ -204,8 +204,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    definitionExpander = new GreekDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("el"),
-        "/${image}", "/${title}");
+    definitionExpander = new GreekDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("el"), "/${image}", "/${title}");
     exampleExpander = new ExpandAllWikiModel(this.wi, new Locale("el"), "/${image}", "/${title}");
 
   }
@@ -221,8 +220,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.initializePageExtraction(getWiktionaryPageName());
     WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
     WikiDocument doc = page.asStructuredDocument();
-    doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection)
-        .map(Token::asWikiSection).forEach(this::extractSection);
+    doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection).map(Token::asWikiSection).forEach(this::extractSection);
     wdh.finalizePageExtraction();
   }
 
@@ -236,11 +234,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   public static Optional<String> sectionLanguage(WikiSection section) {
     if (section.getHeading().getLevel() == 2) {
-      return section.getHeading().getContent().templatesOnUpperLevel().stream()
-          .map(Token::asTemplate).map(Template::getName).map(name -> {
-            Matcher m = languageTemplate.matcher(name);
-            return m.matches() ? m.group(1) : null;
-          }).filter(Objects::nonNull).findFirst();
+      return section.getHeading().getContent().templatesOnUpperLevel().stream().map(Token::asTemplate).map(Template::getName).map(name -> {
+        Matcher m = languageTemplate.matcher(name);
+        return m.matches() ? m.group(1) : null;
+      }).filter(Objects::nonNull).findFirst();
     }
     return Optional.empty();
   }
@@ -250,8 +247,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (null == language) {
       return;
     }
-    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
-        && !wdh.getExtractedLanguage().equals(language)) {
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !wdh.getExtractedLanguage().equals(language)) {
       return;
     }
 
@@ -283,11 +279,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (nymMarkerToNymName.containsKey(sectionName)) {
         // Nyms
         WikiContent prologue = heading.getSection().getPrologue();
-        extractNyms(nymMarkerToNymName.get(sectionName), prologue.getBeginIndex(),
-            prologue.getEndIndex());
+        extractNyms(nymMarkerToNymName.get(sectionName), prologue.getBeginIndex(), prologue.getEndIndex());
       } else if (!ignoredSection.contains(sectionName)) {
-        log.debug("Unexpected title {} in {}", title == null ? sectionName : title.getText(),
-            getWiktionaryPageName());
+        log.debug("Unexpected title {} in {}", title == null ? sectionName : title.getText(), getWiktionaryPageName());
       }
     }
     wdh.finalizeLanguageSection();
@@ -328,16 +322,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 break;
             }
           }
-          String expandedDef =
-              exampleExpander.expandAll(item.getContent().getText().substring(1), null);
+          String expandedDef = exampleExpander.expandAll(item.getContent().getText().substring(1), null);
           wdh.registerExample(expandedDef, null);
 
         } else {
           extractDefinition(item.getContent().getText(), item.getLevel());
         }
       } else {
-        log.trace("Unexpected token {} in definition in {}", t.getClass().getSimpleName(),
-            wdh.currentPagename());
+        log.trace("Unexpected token {} in definition in {}", t.getClass().getSimpleName(), wdh.currentPagename());
       }
     }
   }
@@ -345,8 +337,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractNyms(String syn, WikiContent content) {
     for (Token t : content.wikiTokens()) {
       if (t instanceof Template) {
-        log.debug("Unexpected template {} in nyms in {}", t.asTemplate().getName(),
-            wdh.currentPagename());
+        log.debug("Unexpected template {} in nyms in {}", t.asTemplate().getName(), wdh.currentPagename());
       } else if (t instanceof InternalLink) {
         wdh.registerNymRelation(t.asInternalLink().getTargetText(), syn);
       }
@@ -354,9 +345,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private Pair<Template, String> sectionType(Heading heading) {
-    List<Token> titleTemplate = heading.getContent().tokens().stream().filter(
-        t -> !(t instanceof Text && t.asText().getText().replaceAll("\u00A0", "").trim().isEmpty()))
-        .collect(Collectors.toList());
+    List<Token> titleTemplate = heading.getContent().tokens().stream()
+        .filter(t -> !(t instanceof Text && t.asText().getText().replaceAll("\u00A0", "").trim().isEmpty())).collect(Collectors.toList());
     if (titleTemplate.isEmpty()) {
       log.trace("Unexpected empty title in {}", getWiktionaryPageName());
       return new ImmutablePair<>(null, "");
@@ -365,12 +355,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       log.trace("Unexpected multi title {} in {}", heading.getText(), getWiktionaryPageName());
     }
     if (!(titleTemplate.get(0) instanceof Template)) {
-      log.trace("Unexpected non template title {} in {}", heading.getText(),
-          getWiktionaryPageName());
+      log.trace("Unexpected non template title {} in {}", heading.getText(), getWiktionaryPageName());
       return new ImmutablePair<>(null, heading.getContent().getText().toLowerCase().trim());
     }
-    return new ImmutablePair<>(titleTemplate.get(0).asTemplate(),
-        titleTemplate.get(0).asTemplate().getName().toLowerCase().trim());
+    return new ImmutablePair<>(titleTemplate.get(0).asTemplate(), titleTemplate.get(0).asTemplate().getName().toLowerCase().trim());
   }
 
   private void extractTranslations(String source) {
@@ -424,16 +412,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void extractPron(WikiContent pronContent) {
-    pronContent.wikiTokens().stream().filter(t -> t instanceof Template).map(Token::asTemplate)
-        .filter(t -> "ΔΦΑ".equals(t.getName())).forEach(t -> {
-          String pronLg = t.getParsedArg("1");
-          if (null == pronLg || !pronLg.startsWith(wdh.getCurrentEntryLanguage())) {
-            log.trace("Pronunciation language incorrect in section template {} ≠ {} in {}",
-                wdh.getCurrentEntryLanguage(), pronLg, wdh.currentPagename());
-          }
-          wdh.registerPronunciation(t.getParsedArgs().get("2"),
-              wdh.getCurrentEntryLanguage() + "-fonipa");
-        });
+    pronContent.wikiTokens().stream().filter(t -> t instanceof Template).map(Token::asTemplate).filter(t -> "ΔΦΑ".equals(t.getName())).forEach(t -> {
+      String pronLg = t.getParsedArg("1");
+      if (null == pronLg || !pronLg.startsWith(wdh.getCurrentEntryLanguage())) {
+        log.trace("Pronunciation language incorrect in section template {} ≠ {} in {}", wdh.getCurrentEntryLanguage(), pronLg, wdh.currentPagename());
+      }
+      wdh.registerPronunciation(t.getParsedArgs().get("2"), wdh.getCurrentEntryLanguage() + "-fonipa");
+    });
   }
 
   @Override

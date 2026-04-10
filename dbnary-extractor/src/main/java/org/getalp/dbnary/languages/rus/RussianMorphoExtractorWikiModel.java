@@ -37,13 +37,11 @@ public class RussianMorphoExtractorWikiModel extends DbnaryWikiModel {
   private IWiktionaryDataHandler delegate;
   private boolean hasAPOS = false;
 
-  public RussianMorphoExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public RussianMorphoExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public RussianMorphoExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public RussianMorphoExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
   }
@@ -61,8 +59,7 @@ public class RussianMorphoExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     String pos = getPOS(templateName);
     if (null != pos) {
       // This is a macro specifying the part Of Speech

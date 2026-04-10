@@ -30,14 +30,12 @@ public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
 
   private WiktionaryDataHandler delegate;
 
-  public VerbalInflexionExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public VerbalInflexionExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     if (wdh instanceof WiktionaryDataHandler)
       this.delegate = (WiktionaryDataHandler) wdh;
     else
-      throw new RuntimeException(
-          "Invalid delegate class, expecting French Wiktionary Data Handler");
+      throw new RuntimeException("Invalid delegate class, expecting French Wiktionary Data Handler");
   }
 
   private String getConjugationPageName() {
@@ -55,8 +53,7 @@ public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
     String conjugationPageContent = wi.getTextOfPage(conjugationPagename);
 
     if (conjugationPageContent == null) {
-      log.debug("No conjugation page for '" + delegate.currentPagename() + "/"
-          + delegate.getCurrentEntryLanguage() + "'");
+      log.debug("No conjugation page for '" + delegate.currentPagename() + "/" + delegate.getCurrentEntryLanguage() + "'");
       return;
     }
     log.trace("Extracting conjugation page in {}", this.getPageName());
@@ -76,8 +73,7 @@ public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
     for (Element h3 : sectionTitles) {
       String sectionTitle = h3.text().trim();
 
-      if ("Futur simple et conditionnel présent avant 1976 (et prononciation du XIXe siècle)"
-          .equals(sectionTitle)) {
+      if ("Futur simple et conditionnel présent avant 1976 (et prononciation du XIXe siècle)".equals(sectionTitle)) {
         log.debug("Ignoring inflections from pré-1976 tables in {}", this.getPageName());
         continue;
       }
@@ -85,11 +81,9 @@ public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
       sectionContext.add(sectionTitle);
       RefactoredTableExtractor verbalTableExtractor;
       if ("Modes impersonnels".equals(sectionTitle) || "Impératif".equals(sectionTitle)) {
-        verbalTableExtractor =
-            new ImpersonalMoodTableExtractor(this.getPageName(), "fr", sectionContext);
+        verbalTableExtractor = new ImpersonalMoodTableExtractor(this.getPageName(), "fr", sectionContext);
       } else {
-        verbalTableExtractor =
-            new StandardMoodTableExtractor(this.getPageName(), "fr", sectionContext);
+        verbalTableExtractor = new StandardMoodTableExtractor(this.getPageName(), "fr", sectionContext);
       }
       Element sectionContent = h3.nextElementSibling();
       // get the tables that do not contain any embedded tables
@@ -98,8 +92,7 @@ public class VerbalInflexionExtractorWikiModel extends MorphologyWikiModel {
         if (null != tables)
           tables.forEach(t -> registerAllForms(verbalTableExtractor.parseTable(t)));
         else
-          log.debug("No table in the conjugation page for {} ({})", delegate.currentPagename(),
-              delegate.getCurrentEntryLanguage());
+          log.debug("No table in the conjugation page for {} ({})", delegate.currentPagename(), delegate.getCurrentEntryLanguage());
       }
     }
   }

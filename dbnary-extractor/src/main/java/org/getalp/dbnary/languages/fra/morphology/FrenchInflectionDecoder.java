@@ -187,28 +187,24 @@ public class FrenchInflectionDecoder {
     }
   }
 
-  private static final Pattern inflectionPattern = WikiPattern
-      .compile("^(.*(?:de|d\\’|du verbe|du nom|de l’adjectif))\\s*(\\p{InternalLink}).\\s*$");
+  private static final Pattern inflectionPattern = WikiPattern.compile("^(.*(?:de|d\\’|du verbe|du nom|de l’adjectif))\\s*(\\p{InternalLink}).\\s*$");
 
-  public static Stream<Pair<InternalLink, LexicalForm>> getOtherForms(IndentedItem ident,
-      String pronunciation) {
+  public static Stream<Pair<InternalLink, LexicalForm>> getOtherForms(IndentedItem ident, String pronunciation) {
     List<Pair<InternalLink, LexicalForm>> result = new LinkedList<>();
-    WikiCharSequence inflectionSource = new WikiCharSequence(ident.asIndentedItem().getContent())
-        .mutateString(s -> s.toLowerCase().replaceAll("''+", "").trim());
+    WikiCharSequence inflectionSource =
+        new WikiCharSequence(ident.asIndentedItem().getContent()).mutateString(s -> s.toLowerCase().replaceAll("''+", "").trim());
     Matcher m = inflectionPattern.matcher(inflectionSource);
     if (m.matches()) {
       String inflectionDescription = m.group(1);
       InternalLink target = inflectionSource.getToken(m.group(2)).asInternalLink();
       try {
         InflectionScheme infl = new StrictInflexionScheme();
-        Arrays.stream(inflectionDescription.split("\\bde l’|\\bdu\\b|\\bde\\b"))
-            .forEach(w -> addAtomicMorphologicalInfo(infl, w.trim()));
+        Arrays.stream(inflectionDescription.split("\\bde l’|\\bdu\\b|\\bde\\b")).forEach(w -> addAtomicMorphologicalInfo(infl, w.trim()));
         LexicalForm form = new LexicalForm(infl);
         result.add(new ImmutablePair<>(target, form));
       } catch (INCOHERENT_INFLECTION_SCHEME e) {
         // An incoherent inflection scheme has been detected, just ignore it.
-        log.debug("Incoherent inflection scheme while extracting {}",
-            inflectionSource.getSourceContent(m.group()));
+        log.debug("Incoherent inflection scheme while extracting {}", inflectionSource.getSourceContent(m.group()));
       }
     }
     return result.stream();

@@ -26,27 +26,20 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
   private final Logger log = LoggerFactory.getLogger(SpanishTranslationExtractorWikiModel.class);
   private final ParameterStandardizer tParametersStandardizer;
 
-  public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public SpanishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
-    tParametersStandardizer = new ParameterStandardizer(Map.ofEntries(entry("t", "t"),
-        entry("trad", "t"), entry("traduccion", "t"), entry("traducción", "t"), entry("d", "t"),
-        entry("desc", "t"), entry("descendiente", "t"), entry("a", "a"), entry("acepcion", "a"),
-        entry("acepción", "a"), entry("niv", "niv"), entry("nivel", "niv"), entry("nl", "nl"),
-        entry("nolink", "nl"), entry("nota", "nota"), entry("tl", "tl"), entry("tr", "tl"),
-        entry("transliteración", "tl"), entry("transliteracion", "tl"), entry("g", "g"),
-        entry("genero", "g"), entry("género", "g"), entry("n", "n"), entry("numero", "n"),
-        entry("número", "n"), entry("c", "c"), entry("cat", "c"), entry("categoria", "c"),
-        entry("categoría", "c"), entry("caso", "c"), entry("m", "m"), entry("modo", "m"),
-        entry("r", "r"), entry("relacion", "r"), entry("relación", "r"), entry("ne", "ne"),
-        entry("noequivalente", "ne"), entry("i", "i"), entry("inc", "i"), entry("incompleto", "i"),
-        entry("incompleta", "i"), entry("na", "na"), entry("noaplica", "na"), entry("f", "f"),
+    tParametersStandardizer = new ParameterStandardizer(Map.ofEntries(entry("t", "t"), entry("trad", "t"), entry("traduccion", "t"), entry("traducción", "t"),
+        entry("d", "t"), entry("desc", "t"), entry("descendiente", "t"), entry("a", "a"), entry("acepcion", "a"), entry("acepción", "a"), entry("niv", "niv"),
+        entry("nivel", "niv"), entry("nl", "nl"), entry("nolink", "nl"), entry("nota", "nota"), entry("tl", "tl"), entry("tr", "tl"),
+        entry("transliteración", "tl"), entry("transliteracion", "tl"), entry("g", "g"), entry("genero", "g"), entry("género", "g"), entry("n", "n"),
+        entry("numero", "n"), entry("número", "n"), entry("c", "c"), entry("cat", "c"), entry("categoria", "c"), entry("categoría", "c"), entry("caso", "c"),
+        entry("m", "m"), entry("modo", "m"), entry("r", "r"), entry("relacion", "r"), entry("relación", "r"), entry("ne", "ne"), entry("noequivalente", "ne"),
+        entry("i", "i"), entry("inc", "i"), entry("incompleto", "i"), entry("incompleta", "i"), entry("na", "na"), entry("noaplica", "na"), entry("f", "f"),
         entry("falta", "f")));
   }
 
@@ -62,8 +55,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
 
   private final static String senseNumberOrRangeRegExp = "(?:[\\s\\d,\\-—–?]|&ndash;)+";
-  private final static Pattern senseNumberOrRangePattern =
-      Pattern.compile(senseNumberOrRangeRegExp);
+  private final static Pattern senseNumberOrRangePattern = Pattern.compile(senseNumberOrRangeRegExp);
   private final Matcher senseNumberOrRangeMatcher = senseNumberOrRangePattern.matcher("");
   private static final Set<String> gender = new HashSet<>();
 
@@ -107,8 +99,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     StructuredGloss currentGloss = null; // This currentGloss is mainly local inside the t+,
     // however, when a trad appears, it applies to the last gloss specified by t+
     if ("t+".equals(templateName)) {
@@ -128,20 +119,17 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
           // Just ignore empty parameters
         } else if (s.matches("[,;]")) {
           if (null != trans) {
-            delegate.registerTranslation(lang,
-                delegate.createGlossResource(merge(currentGloss, globalGloss)),
-                usage.length() == 0 ? null : usage.substring(1), trans);
+            delegate.registerTranslation(lang, delegate.createGlossResource(merge(currentGloss, globalGloss)), usage.length() == 0 ? null : usage.substring(1),
+                trans);
           }
           trans = null;
           usage = new StringBuilder();
         } else if (senseNumberOrRangeMatcher.matches()) {
           // the current item is a senseNumber or range
           if (null != trans && null != currentGloss) {
-            log.debug("Missing Comma after translation (was {}) when parsing a new gloss in {}",
-                trans, delegate.currentPagename());
-            delegate.registerTranslation(lang,
-                delegate.createGlossResource(merge(currentGloss, globalGloss)),
-                usage.length() == 0 ? null : usage.substring(1), trans);
+            log.debug("Missing Comma after translation (was {}) when parsing a new gloss in {}", trans, delegate.currentPagename());
+            delegate.registerTranslation(lang, delegate.createGlossResource(merge(currentGloss, globalGloss)), usage.length() == 0 ? null : usage.substring(1),
+                trans);
             trans = null;
             usage = new StringBuilder();
           }
@@ -174,12 +162,10 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
         } else {
           // translation
           if (null != trans) {
-            log.debug("Non null translation (was {}) when registering new translation {} in {}",
-                trans, s, delegate.currentPagename());
+            log.debug("Non null translation (was {}) when registering new translation {} in {}", trans, s, delegate.currentPagename());
             // Register previous translation before keeping the new one
-            delegate.registerTranslation(lang,
-                delegate.createGlossResource(merge(currentGloss, globalGloss)),
-                usage.length() == 0 ? null : usage.substring(1), trans);
+            delegate.registerTranslation(lang, delegate.createGlossResource(merge(currentGloss, globalGloss)), usage.length() == 0 ? null : usage.substring(1),
+                trans);
             usage = new StringBuilder();
           }
           trans = s;
@@ -187,9 +173,8 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
         i++;
       }
       if (null != trans) {
-        delegate.registerTranslation(lang,
-            delegate.createGlossResource(merge(currentGloss, globalGloss)),
-            usage.length() == 0 ? null : usage.substring(1), trans);
+        delegate.registerTranslation(lang, delegate.createGlossResource(merge(currentGloss, globalGloss)), usage.length() == 0 ? null : usage.substring(1),
+            trans);
       }
     } else if ("t".equals(templateName)) {
       String lang = LangTools.normalize(parameterMap.get("1"));
@@ -224,8 +209,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
         currentGloss = delegate.getGlossFilter().extractGlossStructure(gloss);
       }
       if (null != trans) {
-        delegate.registerTranslation(lang,
-            delegate.createGlossResource(merge(currentGloss, globalGloss)), "", trans);
+        delegate.registerTranslation(lang, delegate.createGlossResource(merge(currentGloss, globalGloss)), "", trans);
       }
       // append translation into writer so that it will be available if trad template is called
       // inside another template
@@ -249,8 +233,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
       }
       writer.append(text);
     } else {
-      log.debug("Called template: {} while parsing translations of: {}", templateName,
-          this.getPageName());
+      log.debug("Called template: {} while parsing translations of: {}", templateName, this.getPageName());
       // Just ignore the other template calls (uncomment to expand the template calls).
       // super.substituteTemplateCall(templateName, parameterMap, writer);
     }
@@ -263,8 +246,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
    * @param i the rank of the translation to be processed
    * @return true if a new translation was processed, false otherwise
    */
-  private boolean processTranslationAtPosition(String lang, Map<String, String> parameterMap,
-      int i) {
+  private boolean processTranslationAtPosition(String lang, Map<String, String> parameterMap, int i) {
     StructuredGloss currentGloss = null;
     StringBuilder usage = new StringBuilder();
     String trans = parameterMap.get("t" + i);
@@ -290,9 +272,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
     if ((cat = parameterMap.get("c" + i)) != null) {
       usage.append("|").append(cat);
     }
-    delegate.registerTranslation(lang,
-        delegate.createGlossResource(merge(currentGloss, globalGloss)),
-        usage.length() == 0 ? null : usage.substring(1), trans);
+    delegate.registerTranslation(lang, delegate.createGlossResource(merge(currentGloss, globalGloss)), usage.length() == 0 ? null : usage.substring(1), trans);
     return true;
   }
 
@@ -312,8 +292,7 @@ public class SpanishTranslationExtractorWikiModel extends DbnaryWikiModel {
       String localGlossValue = localGloss.getSenseNumber();
       String globalGlossValue = globalGloss.getSenseNumber();
       if (null != globalGlossValue && !localGlossValue.equals(globalGloss.getSenseNumber())) {
-        log.debug("incompatible senseNumbers : [" + localGloss.getSenseNumber() + "] vs ["
-            + globalGloss.getSenseNumber() + "] in: " + this.getPageName());
+        log.debug("incompatible senseNumbers : [" + localGloss.getSenseNumber() + "] vs [" + globalGloss.getSenseNumber() + "] in: " + this.getPageName());
       }
     }
 

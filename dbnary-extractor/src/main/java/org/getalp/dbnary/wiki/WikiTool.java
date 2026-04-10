@@ -14,8 +14,8 @@ public class WikiTool {
   static Logger log = LoggerFactory.getLogger(WikiTool.class);
 
   /**
-   * @param argsString the String containing all the args (the part of a template contained after
-   *        the first pipe).
+   * @param argsString the String containing all the args (the part of a template contained after the
+   *        first pipe).
    * @return a Map associating each argument name with its value.
    * @deprecated Parse the args of a Template, e.g., parses a string like xxx=yyy|zzz=ttt It can
    *             handle nested parentheses, e.g., xxx=yyy|zzz={{aaa=bbb|ccc=ddd}}|kkk=hhh and
@@ -31,9 +31,9 @@ public class WikiTool {
    * parentheses, e.g., xxx=yyy|zzz={{aaa=bbb|ccc=ddd}}|kkk=hhh and
    * xxx=yyy|zzz=[[aaa|bbb|ccc]]|kkk=hhh. If withTemplateName is true, the first argument will be
    * considered as the template name and added to the parseArgs under key "0"
-   * 
-   * @param argsString the String containing all the args (the part of a template contained after
-   *        the first pipe).
+   *
+   * @param argsString the String containing all the args (the part of a template contained after the
+   *        first pipe).
    * @param withTemplateName pass true if the argString starts with the template name
    * @return a Map associating each argument name with its value.
    * @deprecated use WikiText package
@@ -61,8 +61,7 @@ public class WikiTool {
       while (j < argString.length()) {// iterate over characters in string argString
         if (argString.charAt(j) == '=') {
           Span p = new Span(j, j + 1);
-          if (templatesAndLinksLocation.size() == 0
-              || !(p.containedIn(templatesAndLinksLocation))) {
+          if (templatesAndLinksLocation.size() == 0 || !(p.containedIn(templatesAndLinksLocation))) {
             if (j == argString.length() - 1) {
               argsMap.put(argString.substring(0, j).trim(), "");
             } else {
@@ -157,21 +156,19 @@ public class WikiTool {
   /**
    * This function locates the start and end position of two symbols (enclosingStringStart and
    * enclosingStringEnd) in input String s. It can handle nested symbols e.g.,
-   * locateEnclosedString("string {{at}}","{{","}}") returns (7,13) e.g.,
-   * locateEnclosedString("string {{at {{position}} }}","{{","}}") returns (7,27)
+   * locateEnclosedString("string {{at}}","{{","}}") returns (7,13) e.g., locateEnclosedString("string
+   * {{at {{position}} }}","{{","}}") returns (7,27)
    *
    * @param s the string to be parsed, this function returns the position of the second parameter
-   *        enclosingStringStart and the position of the third parameter enclosingStringEnd in
-   *        string s
-   * @param enclosingStringStart this function returns the position of the String
-   *        enclosingStringStart in String s
+   *        enclosingStringStart and the position of the third parameter enclosingStringEnd in string
+   *        s
+   * @param enclosingStringStart this function returns the position of the String enclosingStringStart
+   *        in String s
    * @param enclosingStringEnd this function returns the position of the String enclosingStringEn in
    *        String s
-   * @return an ArrayList with the start and ens positions of the enclosing Strings in input String
-   *         s
+   * @return an ArrayList with the start and ens positions of the enclosing Strings in input String s
    */
-  public static ArrayList<Span> locateEnclosedString(String s, String enclosingStringStart,
-      String enclosingStringEnd) {
+  public static ArrayList<Span> locateEnclosedString(String s, String enclosingStringStart, String enclosingStringEnd) {
     int eSS = enclosingStringStart.length();
     int eSE = enclosingStringEnd.length();
     int numberOfEnclosings = 0, start = -1, end = -1;
@@ -216,8 +213,7 @@ public class WikiTool {
     while (j < s.length() - 1) {
       if (s.charAt(j) == c) {
         Span p = new Span(j, j + 1);
-        if (templatesAndLinksLocation.size() == 0
-            || (!(p.containedIn(templatesAndLinksLocation)))) {
+        if (templatesAndLinksLocation.size() == 0 || (!(p.containedIn(templatesAndLinksLocation)))) {
           a.add(s.substring(i, j).trim());
           i = j + 1;
         }
@@ -238,8 +234,7 @@ public class WikiTool {
   public static String toParameterString(Map<String, String> parameterMap) {
     StringBuffer buf = new StringBuffer();
     for (Map.Entry<String, String> stringStringEntry : parameterMap.entrySet()) {
-      buf.append(stringStringEntry.getKey()).append("=").append(stringStringEntry.getValue())
-          .append("|");
+      buf.append(stringStringEntry.getKey()).append("=").append(stringStringEntry.getValue()).append("|");
     }
     if (buf.length() > 0) {
       buf.delete(buf.length() - 1, buf.length());

@@ -25,8 +25,7 @@ public class DefinitionExpanderWikiModel extends SwedishWikiModel {
     this(wi, new Locale("sv"), "/IMG", "/LINK");
   }
 
-  public DefinitionExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public DefinitionExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
@@ -46,8 +45,7 @@ public class DefinitionExpanderWikiModel extends SwedishWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     long startTime = 0;
     if (log.isTraceEnabled()) {
       startTime = System.nanoTime();
@@ -56,9 +54,8 @@ public class DefinitionExpanderWikiModel extends SwedishWikiModel {
     if (ignoreTemplates.contains(templateName.toLowerCase())) {
       // Ignore inflection templates
     } else if ("tagg".equals(templateName)) {
-      String topics = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9").stream()
-          .map(key -> Optional.ofNullable(parameterMap.get(key))).flatMap(Optional::stream)
-          .collect(Collectors.joining(", "));
+      String topics = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9").stream().map(key -> Optional.ofNullable(parameterMap.get(key)))
+          .flatMap(Optional::stream).collect(Collectors.joining(", "));
       if (!topics.isEmpty()) {
         writer.append("(").append(topics).append(") ");
       }

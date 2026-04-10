@@ -26,12 +26,12 @@ public class ParameterStandardizer {
 
   public Pattern getParameterPattern() {
     if (normalizerPattern == null) {// invert the aliasesDeclaration map
-      Map<String, List<String>> params = aliasesDeclarations.entrySet().stream().collect(Collectors
-          .groupingBy(Entry::getValue, Collectors.mapping(Entry::getKey, Collectors.toList())));
+      Map<String, List<String>> params =
+          aliasesDeclarations.entrySet().stream().collect(Collectors.groupingBy(Entry::getValue, Collectors.mapping(Entry::getKey, Collectors.toList())));
       // Then create the regex for each parameter and aggregate them as a set of named patterns
       StringBuilder pattern = new StringBuilder();
-      params.forEach((target, aliases) -> pattern.append("(?<").append(target).append(">")
-          .append(String.join("|", aliases)).append(")(?<").append(target).append("N>\\d*)|"));
+      params.forEach((target, aliases) -> pattern.append("(?<").append(target).append(">").append(String.join("|", aliases)).append(")(?<").append(target)
+          .append("N>\\d*)|"));
       if (pattern.length() != 0) {
         pattern.deleteCharAt(pattern.length() - 1);
       }
@@ -44,9 +44,8 @@ public class ParameterStandardizer {
 
   public Set<String> getCanonicalParameters() {
     if (null == canonicalParameters) {
-      canonicalParameters = aliasesDeclarations.entrySet().stream()
-          .filter(entry -> entry.getKey().equals(entry.getValue())).map(Entry::getKey)
-          .collect(Collectors.toSet());
+      canonicalParameters =
+          aliasesDeclarations.entrySet().stream().filter(entry -> entry.getKey().equals(entry.getValue())).map(Entry::getKey).collect(Collectors.toSet());
     }
     return canonicalParameters;
   }

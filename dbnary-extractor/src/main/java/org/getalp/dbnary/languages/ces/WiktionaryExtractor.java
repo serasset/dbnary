@@ -37,8 +37,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
    * subsections may be 3rd or 4th level depending on whether or not the word class is present as a
    * 3rd level subsection
    */
-  protected final static String subSectionPatternString =
-      "(?:={3}\\s*(.*)\\s*={3})|(?:={4}\\s*(.*)\\s*={4})";
+  protected final static String subSectionPatternString = "(?:={3}\\s*(.*)\\s*={3})|(?:={4}\\s*(.*)\\s*={4})";
 
   protected final static HashSet<String> sectionHeadings = new HashSet<>();
   protected final static HashSet<String> ignoredHeadings = new HashSet<>();
@@ -98,8 +97,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     WikiText doc = new WikiText(getWiktionaryPageName(), pageContent);
 
-    List<Pair<Token, List<Token>>> languageData =
-        split(doc.tokens(), t -> getLanguageCode(t) != null);
+    List<Pair<Token, List<Token>>> languageData = split(doc.tokens(), t -> getLanguageCode(t) != null);
 
     for (Pair<Token, List<Token>> language : languageData) {
       extractLanguageData(language.getLeft(), language.getRight());
@@ -123,8 +121,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (null == language)
       return;
 
-    String lang =
-        CzechLanguageCodes.threeLettersCode(language.asHeading().getContent().getText().trim());
+    String lang = CzechLanguageCodes.threeLettersCode(language.asHeading().getContent().getText().trim());
 
     log.trace("'{}': Extracting data for: {}", getWiktionaryPageName(), lang);
 
@@ -162,12 +159,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         } else if (ignoredHeadings.contains(name)) {
           log.debug("'{}': Ignoring known heading {}", getWiktionaryPageName(), name);
         } else {
-          log.debug("'{}': Ignoring unknown heading {} (level {})", getWiktionaryPageName(), name,
-              header.asHeading().getLevel());
+          log.debug("'{}': Ignoring unknown heading {} (level {})", getWiktionaryPageName(), name, header.asHeading().getLevel());
         }
       } else {
-        log.debug("'{}': Unexpected non-heading token after section split: {}",
-            getWiktionaryPageName(), header);
+        log.debug("'{}': Unexpected non-heading token after section split: {}", getWiktionaryPageName(), header);
       }
     }
   }
@@ -234,12 +229,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         Template tm = t.asTemplate();
         Map<String, String> args = tm.getParsedArgs();
 
-        if (tm.getName().trim().equals("Příklad") && args.size() == 2
-            && args.get("1").equals("cs")) {
+        if (tm.getName().trim().equals("Příklad") && args.size() == 2 && args.get("1").equals("cs")) {
           super.extractExample(args.get("2"));
         } else {
-          log.debug("'{}': Unexpected example template: '{}' ({} arguments)",
-              getWiktionaryPageName(), tm.getName(), args.size());
+          log.debug("'{}': Unexpected example template: '{}' ({} arguments)", getWiktionaryPageName(), tm.getName(), args.size());
         }
       }
     }
@@ -295,8 +288,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           }
         }
       } else {
-        log.debug("'{}': Expected 'Překlady' template for translations, found '{}' template",
-            getWiktionaryPageName(), tm.getName());
+        log.debug("'{}': Expected 'Překlady' template for translations, found '{}' template", getWiktionaryPageName(), tm.getName());
       }
     } else {
       if (!t.getText().trim().equals("")) {

@@ -15,8 +15,8 @@ class ParameterStandardizerTest {
 
   @org.junit.jupiter.api.BeforeEach
   void setUp() {
-    normalizer = new ParameterStandardizer(Map.ofEntries(entry("t", "t"), entry("trans", "t"),
-        entry("transl", "t"), entry("other", "o"), entry("o", "o"), entry("alt", "a")));
+    normalizer = new ParameterStandardizer(
+        Map.ofEntries(entry("t", "t"), entry("trans", "t"), entry("transl", "t"), entry("other", "o"), entry("o", "o"), entry("alt", "a")));
   }
 
   @org.junit.jupiter.api.AfterEach
@@ -55,10 +55,8 @@ class ParameterStandardizerTest {
 
   @org.junit.jupiter.api.Test
   void normalizeParameters() {
-    Map<String, String> parameters =
-        Map.ofEntries(entry("transl1", "traduction 1"), entry("transl2", "traduction 2"),
-            entry("trans3", "traduction 3"), entry("t4", "traduction 4"), entry("other", "autre"),
-            entry("1", "autre"), entry("alt1", "alternative 1"), entry("a2", "alternative 2"));
+    Map<String, String> parameters = Map.ofEntries(entry("transl1", "traduction 1"), entry("transl2", "traduction 2"), entry("trans3", "traduction 3"),
+        entry("t4", "traduction 4"), entry("other", "autre"), entry("1", "autre"), entry("alt1", "alternative 1"), entry("a2", "alternative 2"));
     Map<String, String> normalizedParameters = normalizer.normalizeParameters(parameters);
     assertEquals(normalizedParameters.get("t1"), "traduction 1");
     assertEquals(normalizedParameters.get("t2"), "traduction 2");

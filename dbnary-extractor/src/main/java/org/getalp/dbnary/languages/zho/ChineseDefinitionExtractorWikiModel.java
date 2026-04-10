@@ -12,13 +12,11 @@ public class ChineseDefinitionExtractorWikiModel extends ChineseDbnaryWikiModel 
 
   private final IWiktionaryDataHandler delegate;
 
-  public ChineseDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public ChineseDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public ChineseDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public ChineseDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
   }

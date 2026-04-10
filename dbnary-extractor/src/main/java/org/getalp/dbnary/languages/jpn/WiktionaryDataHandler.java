@@ -21,11 +21,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap = new HashMap<>(20);
     posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
     posAndTypeValueMap.put("名詞", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
-    posAndTypeValueMap.put("idiom",
-        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("成句", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("四字熟語",
-        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("四字熟語", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
     posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
     posAndTypeValueMap.put("adjective", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));

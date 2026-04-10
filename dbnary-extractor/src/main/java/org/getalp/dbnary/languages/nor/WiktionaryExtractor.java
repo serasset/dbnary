@@ -31,8 +31,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected final static String posPatternString = "\\{{2}([^\\}]*)\\}{2}\n";
   protected final static String defPatternString = "#\\s*([^:=#]+)";
   protected final static String examplePatternString = "#:\\s*([^=#-]+)|\\*\\s*([^\\*\n]+)";
-  protected final static String tradPatternString =
-      "\\*\\s*\\{*([^:\\}]+)\\}*:\\s*\\[{2}([^\\]]+)\\]{2}|\\{{2}([^\\}]*)[^:]*\\}{2}";
+  protected final static String tradPatternString = "\\*\\s*\\{*([^:\\}]+)\\}*:\\s*\\[{2}([^\\]]+)\\]{2}|\\{{2}([^\\}]*)[^:]*\\}{2}";
   protected final static String nymPatternString = "([^\\[,\\]]+)";
   protected final static String writtenRepPatternString = "([^\\[,\\]]+)";
   protected final static String pronPatternString = "\\{{2}([^\\}]+)\\}{2}";
@@ -205,8 +204,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizeLanguageSection();
   }
 
-  protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,
-      String blockString) {
+  protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock, String blockString) {
     switch (currentBlock) {
       case NOBLOCK:
         break;
@@ -240,8 +238,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case MORPHOBLOCK:
         break;
       default:
-        assert false
-            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
+        assert false : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
   }
 
@@ -526,8 +523,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     Resource currentGloss = null;
     int rank = 1;
     if (log.isDebugEnabled()) {
-      if (wikiText.links().stream().map(Token::asLink)
-          .anyMatch(l -> !l.getTargetText().toLowerCase().startsWith("kategori:"))) {
+      if (wikiText.links().stream().map(Token::asLink).anyMatch(l -> !l.getTargetText().toLowerCase().startsWith("kategori:"))) {
         log.debug("Translation section contains links in {}", wdh.currentPagename());
         log.trace("TRANSSECTION = {}", wikiText);
       }
@@ -601,8 +597,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         case "trans-bottom":
           break;
         default:
-          log.debug("Unknown Translation Template value {} --in-- {}", t.getName(),
-              wdh.currentPagename());
+          log.debug("Unknown Translation Template value {} --in-- {}", t.getName(), wdh.currentPagename());
       }
     }
   }

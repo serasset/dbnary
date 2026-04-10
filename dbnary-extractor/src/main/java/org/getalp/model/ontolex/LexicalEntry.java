@@ -77,8 +77,7 @@ public class LexicalEntry implements AcceptTranslation {
   }
 
   public Resource attachTo(Resource page) {
-    Resource lexEntry =
-        page.getModel().createResource(computeResourceName(page), OntolexOnt.LexicalEntry);
+    Resource lexEntry = page.getModel().createResource(computeResourceName(page), OntolexOnt.LexicalEntry);
     canonicalForm.attachTo(lexEntry);
     // TODO...
     page.getModel().add(page, DBnaryOnt.describes, lexEntry);

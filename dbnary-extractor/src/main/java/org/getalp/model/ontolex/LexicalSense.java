@@ -19,8 +19,7 @@ public class LexicalSense implements AcceptTranslation {
   }
 
   public Resource attachTo(Resource lexEntry) {
-    Resource sense =
-        lexEntry.getModel().createResource(computeResourceName(lexEntry), OntolexOnt.LexicalEntry);
+    Resource sense = lexEntry.getModel().createResource(computeResourceName(lexEntry), OntolexOnt.LexicalEntry);
     // TODO...
     lexEntry.getModel().add(lexEntry, OntolexOnt.sense, sense);
     return lexEntry;

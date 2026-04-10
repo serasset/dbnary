@@ -74,8 +74,7 @@ public class ImpersonalMoodTableExtractor extends RefactoredTableExtractor {
   // TODO : remove otherForms corresponding to the canonical form in entry post processing ?
   // TODO: les formes extraites à partir des définitions de formes fléchies sont en double
   @Override
-  protected Set<LexicalForm> getLexicalFormsFromCell(int i, int j, Element cell,
-      List<String> context) {
+  protected Set<LexicalForm> getLexicalFormsFromCell(int i, int j, Element cell, List<String> context) {
     // In the French language edition, pronunciation are often given in independant cells below
     // the lexical Form written rep. In case of a pronunication information, we attach the
     // ponounciation to the lexicalForm that were extracted from the cell immediately on the left.
@@ -97,8 +96,7 @@ public class ImpersonalMoodTableExtractor extends RefactoredTableExtractor {
         for (Representation v : f.getValues()) {
           if (v instanceof WrittenRepresentation && v.getValue().contains(" ou ")) {
             f.removeValue(v);
-            Arrays.stream(v.getValue().split(" ou "))
-                .forEach(wr -> f.addValue(new WrittenRepresentation(wr, v.getLanguage())));
+            Arrays.stream(v.getValue().split(" ou ")).forEach(wr -> f.addValue(new WrittenRepresentation(wr, v.getLanguage())));
           }
         }
       });
@@ -148,7 +146,6 @@ public class ImpersonalMoodTableExtractor extends RefactoredTableExtractor {
   protected boolean shouldProcessCell(Element cell) {
     // the French verbal tables use cells that contains subjects ("je/tu/il") or other grammatical
     // contexts of the inflection. We should only process cells containing a selflink or an anchor.
-    return super.shouldProcessCell(cell) && (!cell.select("strong.selflink").isEmpty()
-        || !cell.select("a").isEmpty() || isIsolatedPronunciation(cell));
+    return super.shouldProcessCell(cell) && (!cell.select("strong.selflink").isEmpty() || !cell.select("a").isEmpty() || isIsolatedPronunciation(cell));
   }
 }

@@ -36,8 +36,7 @@ public class GermanDefinitionExpander extends GermanDBnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if (templates != null) {
       templates.add(templateName);
     }

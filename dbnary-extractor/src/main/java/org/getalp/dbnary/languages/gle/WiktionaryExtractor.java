@@ -221,8 +221,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    this.templateRender =
-        new ExpandAllWikiModel(this.wi, new Locale("ga"), "/${image}", "/${title}");
+    this.templateRender = new ExpandAllWikiModel(this.wi, new Locale("ga"), "/${image}", "/${title}");
   }
 
   @Override
@@ -251,11 +250,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String nextLanguage;
 
     while (page.hasNext()) {
-      if (page.next() instanceof WikiText.Template
-          && (nextLanguage = parseLanguageTemplate(page.get().asTemplate())) != null) // If a
-                                                                                      // language
-                                                                                      // template is
-                                                                                      // found.
+      if (page.next() instanceof WikiText.Template && (nextLanguage = parseLanguageTemplate(page.get().asTemplate())) != null) // If a
+                                                                                                                               // language
+                                                                                                                               // template is
+                                                                                                                               // found.
         switchCurrentLanguage(nextLanguage);
       else if (this.currentLanguage != null) // If current token isn't a language template and a
                                              // language is initialized.
@@ -276,12 +274,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (this.currentLanguage == null)
       return;
 
-    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
-        && !this.currentLanguage.equals("gle"))
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !this.currentLanguage.equals("gle"))
       this.currentLanguage = null;
     else {
-      log.trace("{} => Language swap {} was found on the page ---> {}.", getWiktionaryPageName(),
-          this.currentLanguage, url());
+      log.trace("{} => Language swap {} was found on the page ---> {}.", getWiktionaryPageName(), this.currentLanguage, url());
       this.wdh.initializeLanguageSection(this.currentLanguage); // Initialize the new
                                                                 // currentLanguage.
     }
@@ -291,12 +287,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   protected void templateDispatcher(final WikiText.Token token, final PageIterator page) {
     if (!(token instanceof WikiText.Template)) {
 
-      if (!ignoredStringContent.contains(token.getText().trim())
-          && !token.getText().startsWith("[[Íomhá:") && !token.getText().contains("*{{t:")
+      if (!ignoredStringContent.contains(token.getText().trim()) && !token.getText().startsWith("[[Íomhá:") && !token.getText().contains("*{{t:")
           && !token.getText().startsWith("[[Image:")) {
 
-        log.trace("{} => Unhandled text found -> \"{}\" ---> {}", getWiktionaryPageName(),
-            token.getText().trim(), url());
+        log.trace("{} => Unhandled text found -> \"{}\" ---> {}", getWiktionaryPageName(), token.getText().trim(), url());
       }
 
     } else {
@@ -352,8 +346,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // Ignore
           break;
         default:
-          log.debug("{} => {} template was found in {} language. ---> {}.", getWiktionaryPageName(),
-              page.get().asTemplate().getName(), this.currentLanguage, url());
+          log.debug("{} => {} template was found in {} language. ---> {}.", getWiktionaryPageName(), page.get().asTemplate().getName(), this.currentLanguage,
+              url());
           break;
       }
     }
@@ -363,13 +357,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractLexicalField(final PageIterator page) { // FIELD EXTRACTOR MAIN.
     LexicalBuilder builder =
-        new LexicalBuilder(page.get() != page.shadowNext() ? page.get().asTemplate().getName()
-            : "-ainm-" /* USED TO SET A DEFAULT FIELD NAME */);
+        new LexicalBuilder(page.get() != page.shadowNext() ? page.get().asTemplate().getName() : "-ainm-" /* USED TO SET A DEFAULT FIELD NAME */);
 
     this.wdh.initializeLexicalEntry(builder.field);
 
-    while (insideField(page) || (page.hasNext() && page.isNextATemplate()
-        && page.shadowNext().asTemplate().getName().equals("-fuaim-"))) {
+    while (insideField(page) || (page.hasNext() && page.isNextATemplate() && page.shadowNext().asTemplate().getName().equals("-fuaim-"))) {
       if (page.next() instanceof WikiText.Template) {
 
         WikiText.Template template = page.get().asTemplate();
@@ -474,8 +466,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           case "iol":
             break;
           default:
-            log.debug("{} => Lexical content \"{}\" template non handled -> {} ---> {}",
-                getWiktionaryPageName(), builder.field, page.get().getText(), url());
+            log.debug("{} => Lexical content \"{}\" template non handled -> {} ---> {}", getWiktionaryPageName(), builder.field, page.get().getText(), url());
             break;
         }
 
@@ -484,30 +475,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (page.get().getText().startsWith("#*")) {
 
           if (builder.definitions.size() != 0)
-            builder.definitions.get(builder.definitions.size() - 1).append(" ")
-                .append(page.get().getText().substring(2));
+            builder.definitions.get(builder.definitions.size() - 1).append(" ").append(page.get().getText().substring(2));
           else
             builder.addDefinition(page.get().getText().substring(2));
 
         } else if (page.get().getText().startsWith("#")) {
 
           if (page.get().getText().contains("{{comh|"))
-            extractSynonymes(
-                PageIterator.of(page.get().getText().substring(2)).goToNextTemplate("comh"),
-                builder);
+            extractSynonymes(PageIterator.of(page.get().getText().substring(2)).goToNextTemplate("comh"), builder);
 
           builder.addDefinition(page.get().getText().substring(1).split("\\{\\{comh")[0]);
-          log.trace("{} => Definition found -> \"{}\" ---> {}", getWiktionaryPageName(),
-              page.get().getText().substring(1), url());
+          log.trace("{} => Definition found -> \"{}\" ---> {}", getWiktionaryPageName(), page.get().getText().substring(1), url());
         } else
-          log.trace("{} => Noun content text non handled     -> {} ---> {}",
-              getWiktionaryPageName(), page.get().getText().trim(), url());
+          log.trace("{} => Noun content text non handled     -> {} ---> {}", getWiktionaryPageName(), page.get().getText().trim(), url());
 
       }
     }
 
-    builder.definitions
-        .replaceAll(stringBuilder -> new StringBuilder(render(stringBuilder.toString())));
+    builder.definitions.replaceAll(stringBuilder -> new StringBuilder(render(stringBuilder.toString())));
 
     saveToDataHandler(builder);
 
@@ -516,9 +501,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected static class LexicalBuilder {
-    public String field, gender = null, genitiveSingular = null, genitivePlural = null,
-        plural = null, dativeSingular = null, singular = null, verbType = null, conjugaison = null,
-        nounVerbal = null, adjVerbal = null;
+    public String field, gender = null, genitiveSingular = null, genitivePlural = null, plural = null, dativeSingular = null, singular = null, verbType = null,
+        conjugaison = null, nounVerbal = null, adjVerbal = null;
 
     public List<String> synonymes;
     public List<StringBuilder> definitions;
@@ -548,26 +532,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // TODO EXTRACT NOUN VERBAL AND ADJECTIV VERBAL FROM VERB TEMPLATE
 
     /*
-     * 
+     *
      * FormBuilder.of(builder.nounVerbal, this.glewdh) .addMorpho(LexinfoOnt.derivedForm) .save();
-     * 
+     *
      * FormBuilder.of(builder.adjVerbal, this.glewdh) .addMorpho(LexinfoOnt.derivedForm) .save();
      */
 
-    FormBuilder.of(builder.singular, this.glewdh).addGender(builder.gender)
-        .addMorpho(Number.SINGULAR).save();
+    FormBuilder.of(builder.singular, this.glewdh).addGender(builder.gender).addMorpho(Number.SINGULAR).save();
 
-    FormBuilder.of(builder.plural, this.glewdh).addGender(builder.gender).addMorpho(Number.PLURAL)
-        .save();
+    FormBuilder.of(builder.plural, this.glewdh).addGender(builder.gender).addMorpho(Number.PLURAL).save();
 
-    FormBuilder.of(builder.genitiveSingular, this.glewdh).addGender(builder.gender)
-        .addMorpho(Case.GENITIVE).addMorpho(Number.SINGULAR).save();
+    FormBuilder.of(builder.genitiveSingular, this.glewdh).addGender(builder.gender).addMorpho(Case.GENITIVE).addMorpho(Number.SINGULAR).save();
 
-    FormBuilder.of(builder.genitivePlural, this.glewdh).addGender(builder.gender)
-        .addMorpho(Case.GENITIVE).addMorpho(Number.PLURAL).save();
+    FormBuilder.of(builder.genitivePlural, this.glewdh).addGender(builder.gender).addMorpho(Case.GENITIVE).addMorpho(Number.PLURAL).save();
 
-    FormBuilder.of(builder.dativeSingular, this.glewdh).addGender(builder.gender)
-        .addMorpho(Case.DATIVE).addMorpho(Number.SINGULAR).save();
+    FormBuilder.of(builder.dativeSingular, this.glewdh).addGender(builder.gender).addMorpho(Case.DATIVE).addMorpho(Number.SINGULAR).save();
 
   }
 
@@ -595,8 +574,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         type = LexinfoOnt.IntransitiveFrame;
       else { // "an" || "ti" -> transitive AND intransitive.
         type = LexinfoOnt.TransitiveFrame;
-        this.glewdh.registerPropertyOnCanonicalForm(LexinfoOnt.verbFormMood,
-            LexinfoOnt.IntransitiveFrame);
+        this.glewdh.registerPropertyOnCanonicalForm(LexinfoOnt.verbFormMood, LexinfoOnt.IntransitiveFrame);
       }
 
       this.glewdh.registerPropertyOnCanonicalForm(LexinfoOnt.verbFormMood, type);
@@ -655,8 +633,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return false;
 
       this.form.setFeature(this.sch);
-      this.form
-          .addValue(new WrittenRepresentation(this.value, this.glewdh.getCurrentEntryLanguage()));
+      this.form.addValue(new WrittenRepresentation(this.value, this.glewdh.getCurrentEntryLanguage()));
 
       this.glewdh.addLexicalForm(this.form);
 
@@ -670,15 +647,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected void extractSynonymes(final WikiText.Template temp, final LexicalBuilder builder) {
-    log.trace("{} => Synonymes extractor -> {}  ---> {}", getWiktionaryPageName(), temp.getArgs(),
-        url());
+    log.trace("{} => Synonymes extractor -> {}  ---> {}", getWiktionaryPageName(), temp.getArgs(), url());
     for (int i = 1; i < temp.getArgs().size() + 1; i++)
       if (temp.getArgs().get(String.valueOf(i)) == null)
         break;
       else {
         builder.synonymes.add(temp.getArg(String.valueOf(i)).getText());
-        log.trace("{} => {} <=> {} ---> {}", getWiktionaryPageName(), getWiktionaryPageName(),
-            temp.getArg(String.valueOf(i)).getText(), url());
+        log.trace("{} => {} <=> {} ---> {}", getWiktionaryPageName(), getWiktionaryPageName(), temp.getArg(String.valueOf(i)).getText(), url());
       }
   }
 
@@ -692,12 +667,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // Collect the list in the translation field.
     List<WikiText.Token> internToken = new ArrayList<>();
     internToken.add(page.get());
-    while (insideField(page) && page.hasNext() && (!(page.next() instanceof WikiText.Template)
-        || !page.get().asTemplate().getName().equals(")")))
+    while (insideField(page) && page.hasNext() && (!(page.next() instanceof WikiText.Template) || !page.get().asTemplate().getName().equals(")")))
       internToken.add(page.get());
 
-    if (!(page.get() instanceof WikiText.Template)
-        || !page.get().asTemplate().getName().equals(")")) {
+    if (!(page.get() instanceof WikiText.Template) || !page.get().asTemplate().getName().equals(")")) {
       log.trace("{} => translation field didn't closed !  ---> {}", getWiktionaryPageName(), url());
     }
 
@@ -724,16 +697,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     TransBuilder builder = new TransBuilder();
     while (transIt.hasNext()) {
 
-      if (transIt.next() instanceof WikiText.Template
-          && (transIt.get().asTemplate().getName().equals("aistr")
-              || transIt.get().asTemplate().getName().equals("aistr2")
-              || transIt.get().asTemplate().getName().equals("trad"))) {
+      if (transIt.next() instanceof WikiText.Template && (transIt.get().asTemplate().getName().equals("aistr")
+          || transIt.get().asTemplate().getName().equals("aistr2") || transIt.get().asTemplate().getName().equals("trad"))) {
 
         if (builder.word != null && builder.lang != null) {
-          this.wdh.registerTranslation(builder.lang, this.wdh.createGlossResource(gloss),
-              builder.usage, builder.word);
-          log.trace("{} => translation -> {}  --{}-> {}, {}.  ---> {}.", getWiktionaryPageName(),
-              getWiktionaryPageName(), builder.lang, builder.word, builder.usage, url());
+          this.wdh.registerTranslation(builder.lang, this.wdh.createGlossResource(gloss), builder.usage, builder.word);
+          log.trace("{} => translation -> {}  --{}-> {}, {}.  ---> {}.", getWiktionaryPageName(), getWiktionaryPageName(), builder.lang, builder.word,
+              builder.usage, url());
         }
 
         builder = new TransBuilder();
@@ -744,11 +714,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                                                                // Like {{fir}}, {{bain}}, {{n}}.
         builder.usage += transIt.get().asTemplate().getName();
 
-        if (!transIt.get().asTemplate().getName().equals("fir")
-            && !transIt.get().asTemplate().getName().equals("bain")
+        if (!transIt.get().asTemplate().getName().equals("fir") && !transIt.get().asTemplate().getName().equals("bain")
             && !transIt.get().asTemplate().getName().equals("n"))
-          log.debug("{} => Strange translation usage field ID -> {} ---> {} ",
-              getWiktionaryPageName(), transIt.get().asTemplate().getName(), url());
+          log.debug("{} => Strange translation usage field ID -> {} ---> {} ", getWiktionaryPageName(), transIt.get().asTemplate().getName(), url());
 
       } else if (!transIt.get().getText().trim().equals(",")) // Adding classic text between 2
                                                               // traduction as usage.
@@ -757,10 +725,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     if (builder.word != null && builder.lang != null) { // Save the last trans.
-      this.wdh.registerTranslation(builder.lang, this.wdh.createGlossResource(gloss), builder.usage,
-          builder.word);
-      log.trace("{} => translation -> {}  --{}-> {}, {}.  ---> {}.", getWiktionaryPageName(),
-          getWiktionaryPageName(), builder.lang, builder.word, builder.usage, url());
+      this.wdh.registerTranslation(builder.lang, this.wdh.createGlossResource(gloss), builder.usage, builder.word);
+      log.trace("{} => translation -> {}  --{}-> {}, {}.  ---> {}.", getWiktionaryPageName(), getWiktionaryPageName(), builder.lang, builder.word,
+          builder.usage, url());
     }
 
   }
@@ -770,8 +737,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     StringBuilder etym = new StringBuilder();
     while (insideField(page))
       etym.append(" ").append(page.next()).append(" ");
-    String etymText = render(
-        etym.toString().replaceAll("\\s+", " ").replaceAll(" \\.", ".").replaceAll(" ,", "."));
+    String etymText = render(etym.toString().replaceAll("\\s+", " ").replaceAll(" \\.", ".").replaceAll(" ,", "."));
     log.trace("{} => Etymology -> \"{}\" ---> {}", getWiktionaryPageName(), etymText, url());
 
     if (this.wdh.isDisabled(ExtractionFeature.ETYMOLOGY))
@@ -794,10 +760,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         if (template.getArg("1").getText().isBlank())
           continue;
 
-        this.wdh.registerPronunciation(template.getArg("1").getText(),
-            this.wdh.getCurrentEntryLanguage() + "-fonipa");
-        log.trace("{} => Prononciation \"{}\" found. --> {}.", getWiktionaryPageName(),
-            template.getArg("1").getText(), url());
+        this.wdh.registerPronunciation(template.getArg("1").getText(), this.wdh.getCurrentEntryLanguage() + "-fonipa");
+        log.trace("{} => Prononciation \"{}\" found. --> {}.", getWiktionaryPageName(), template.getArg("1").getText(), url());
       }
 
     }
@@ -812,8 +776,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected boolean insideField(final PageIterator page) {
     return page.hasNext() && (!page.isNextATemplate()
-        || (!fieldsName.contains(page.shadowNext().asTemplate().getName())
-            && parseLanguageTemplate(page.shadowNext().asTemplate()) == null));
+        || (!fieldsName.contains(page.shadowNext().asTemplate().getName()) && parseLanguageTemplate(page.shadowNext().asTemplate()) == null));
   }
 
   protected static String toText(final WikiText.WikiContent content) {
@@ -824,8 +787,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     String lang = null;
     if (template.getName().equals("t"))
       lang = template.getArgs().get("1").getText();
-    if (template.getName().matches("-[a-z][a-z]-")
-        || template.getName().matches("-[a-z][a-z][a-z]-"))
+    if (template.getName().matches("-[a-z][a-z]-") || template.getName().matches("-[a-z][a-z][a-z]-"))
       lang = template.getName().substring(1, template.getName().length() - 1);
 
     if (ignoredLanguage.contains(lang))

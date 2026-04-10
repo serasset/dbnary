@@ -11,8 +11,8 @@ public class GermanInPageKonjugationExtractorWikiModel extends GermanTableExtrac
 
   private Logger log = LoggerFactory.getLogger(getClass());
 
-  public GermanInPageKonjugationExtractorWikiModel(IWiktionaryDataHandler wdh,
-      WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+  public GermanInPageKonjugationExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi, Locale locale, String imageBaseURL,
+      String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL, wdh, new GermanInPageKonjugationTableExtractor());
   }
 

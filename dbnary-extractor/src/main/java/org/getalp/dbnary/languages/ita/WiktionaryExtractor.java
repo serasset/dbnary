@@ -97,12 +97,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
     expander = new ItalianExpandAllWikiModel(this.wi, new Locale("it"), "/${image}", "/${title}");
-    italianDefinitionExtractorWikiModel = new ItalianDefinitionExtractorWikiModel(this.wdh, this.wi,
-        new Locale("it"), "/${image}", "/${title}");
-    italianExampleExtractorWikiModel = new ItalianExampleExtractorWikiModel(this.wdh, this.wi,
-        new Locale("it"), "/${image}", "/${title}");
-    italianPronunciationExtractorWikiModel = new ItalianPronunciationExtractorWikiModel(this.wdh,
-        this.wi, new Locale("it"), "/${image}", "/${title}");
+    italianDefinitionExtractorWikiModel = new ItalianDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("it"), "/${image}", "/${title}");
+    italianExampleExtractorWikiModel = new ItalianExampleExtractorWikiModel(this.wdh, this.wi, new Locale("it"), "/${image}", "/${title}");
+    italianPronunciationExtractorWikiModel = new ItalianPronunciationExtractorWikiModel(this.wdh, this.wi, new Locale("it"), "/${image}", "/${title}");
   }
 
   @Override
@@ -137,8 +134,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if ("".equals(lang)) {
       return;
     }
-    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
-        && !wdh.getExtractedLanguage().equals(lang)) {
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !wdh.getExtractedLanguage().equals(lang)) {
       return;
     }
     String normalizedLanguage = validateAndStandardizeLanguageCode(lang);
@@ -153,12 +149,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private String getLanguage(Heading h) {
-    Optional<String> lg =
-        h.getContent().wikiTokens().stream().filter(tok -> tok instanceof Template)
-            .map(Token::asTemplate).filter(tok -> tok.getName().trim().matches("-.*-")).map(tok -> {
-              String name = tok.getName().trim();
-              return name.substring(1, name.length() - 1);
-            }).findFirst();
+    Optional<String> lg = h.getContent().wikiTokens().stream().filter(tok -> tok instanceof Template).map(Token::asTemplate)
+        .filter(tok -> tok.getName().trim().matches("-.*-")).map(tok -> {
+          String name = tok.getName().trim();
+          return name.substring(1, name.length() - 1);
+        }).findFirst();
     if (lg.isPresent()) {
       return lg.get().toLowerCase();
     } else {
@@ -181,8 +176,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
       // If current block is IGNOREPOS, we should ignore everything but a new
       // DEFBLOCK/INFLECTIONBLOCK
-      if (Block.IGNOREPOS != currentBlock
-          || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
+      if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
         leaveCurrentBlock(m);
         gotoNextBlock(nextBlock, context);
       }
@@ -329,8 +323,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // This only captures the links that are outside of an indentation
         Link l = (Link) t;
         String target = l.getFullTargetText();
-        if (target.startsWith("Categoria:") || target.startsWith("File:")
-            || target.startsWith("Image:")) {
+        if (target.startsWith("Categoria:") || target.startsWith("File:") || target.startsWith("Image:")) {
           // Beginning of links to categories means end of translation section
           ti = toks.size();
         } else {

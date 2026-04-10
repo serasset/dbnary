@@ -25,13 +25,11 @@ public class GreekDefinitionExtractorWikiModel extends ExpandAllWikiModel {
   private final IWiktionaryDataHandler delegate;
 
 
-  public GreekDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public GreekDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public GreekDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public GreekDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
   }
@@ -45,8 +43,7 @@ public class GreekDefinitionExtractorWikiModel extends ExpandAllWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     super.substituteTemplateCall(templateName, parameterMap, writer);
   }
@@ -55,14 +52,14 @@ public class GreekDefinitionExtractorWikiModel extends ExpandAllWikiModel {
 
   /*
    * Old code as the template (and others) has been fixed in wiktionary
-   * 
+   *
    * @Override
-   * 
+   *
    * public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws
    * WikiModelContentException { // Patch Module:labels/data as the passed labels are incorrectly
    * trimed by bliki. if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY) &&
-   * "ετ".equals(parsedPagename.pagename)) { // Patch the template that introduces spaces and
-   * newline that play havoc with bliki and Lua if (patched_ετ == null) { String rawText =
+   * "ετ".equals(parsedPagename.pagename)) { // Patch the template that introduces spaces and newline
+   * that play havoc with bliki and Lua if (patched_ετ == null) { String rawText =
    * super.getRawWikiContent(parsedPagename, map); if (null != rawText) patched_ετ =
    * rawText.replaceAll("}\n\\|", "}<!--\n-->|").replaceAll("-->\n\\|", "\n-->\\|"); } return
    * patched_ετ; } else { return super.getRawWikiContent(parsedPagename, map); } }

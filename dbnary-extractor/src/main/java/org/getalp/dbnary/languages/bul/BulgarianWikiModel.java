@@ -26,21 +26,17 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
   protected final static HashMap<String, String> nymMarkerToNymName;
 
   protected final static String translationExpression = "\\s?\\*?\\s?.*\\s?:\\s*.*";
-  protected final static Pattern translationPattern =
-      Pattern.compile(BulgarianWikiModel.translationExpression);
-  protected final static String glossExpression =
-      "(\\]|\\})(\\]|\\})[^\\]\\[\\}\\{\\:\\n]*((\\[|\\{)(\\[|\\{)|$)";
+  protected final static Pattern translationPattern = Pattern.compile(BulgarianWikiModel.translationExpression);
+  protected final static String glossExpression = "(\\]|\\})(\\]|\\})[^\\]\\[\\}\\{\\:\\n]*((\\[|\\{)(\\[|\\{)|$)";
   static final Pattern glossPattern = Pattern.compile(glossExpression);
   protected final static String translationLangExpression = "\\s*\\*\\s*[^\\:]*";
-  protected final static Pattern translationLangPattern =
-      Pattern.compile(BulgarianWikiModel.translationLangExpression);
+  protected final static Pattern translationLangPattern = Pattern.compile(BulgarianWikiModel.translationLangExpression);
   // protected final static String translationBodyExpression =
   // "(\\[\\[[^\\]]+\\]\\]\\s?\\(?[^\\)\\[\\,]*\\)?\\)?)";
   // protected final static String translationBodyExpression =
   // "(\\[\\[[^\\]]+\\]\\]\\s?\\(?[^\\)\\[]+\\)?;?)";
   protected final static String translationBodyExpression = "([^:\\*]*(\\[|\\{)*)$";
-  protected final static Pattern translationBodyPattern =
-      Pattern.compile(BulgarianWikiModel.translationBodyExpression);
+  protected final static Pattern translationBodyPattern = Pattern.compile(BulgarianWikiModel.translationBodyExpression);
 
   static {
 
@@ -79,20 +75,17 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
   private final DefinitionsWikiModel definitionExpander;
   Set<String> templates = null;
 
-  public BulgarianWikiModel(IWiktionaryDataHandler wdh, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public BulgarianWikiModel(IWiktionaryDataHandler wdh, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(wdh, null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public BulgarianWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public BulgarianWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = wdh;
     if (log.isDebugEnabled()) {
       templates = new HashSet<>();
     }
-    this.definitionExpander = new DefinitionsWikiModel(wi, this.fLocale, this.getImageBaseURL(),
-        this.getWikiBaseURL(), templates);
+    this.definitionExpander = new DefinitionsWikiModel(wi, this.fLocale, this.getImageBaseURL(), this.getWikiBaseURL(), templates);
   }
 
   @Override
@@ -114,8 +107,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     String pos = getPOS(templateName);
     if (null != pos) {
       hasAPOS = true;
@@ -125,8 +117,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
         if (section.contains("ЗНАЧЕНИЕ")) {
           extractDefinitions(parameterMap.get(section));
         } else if (section.contains("ПРЕВОД")) {
-          String sectionContent = parameterMap.get(section)
-              .replaceAll("\\[\\[:[^:]*:[^\\|]*\\|\\s*\\(?[^\\)\\]]*\\)?\\s*\\]\\]", "");
+          String sectionContent = parameterMap.get(section).replaceAll("\\[\\[:[^:]*:[^\\|]*\\|\\s*\\(?[^\\)\\]]*\\)?\\s*\\]\\]", "");
           sectionContent = sectionContent.replaceAll("\\[\\[\\s*\\]\\]", "");
           // if (sectionContent.contains("\n# ")) log.debug("Translation with sens number in {}",
           // this.getPageName());
@@ -170,8 +161,7 @@ public class BulgarianWikiModel extends DbnaryWikiModel {
   }
 
 
-  private void appendTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) {
+  private void appendTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) {
     try {
       writer.append("{{").append(templateName);
       for (Map.Entry<String, String> entry : parameterMap.entrySet()) {

@@ -29,13 +29,13 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
 
   private Logger log = LoggerFactory.getLogger(ChineseTranslationExtractorWikiModel.class);
 
-  public ChineseTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+  public ChineseTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL,
+      AbstractGlossFilter glossFilter) {
     this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL, glossFilter);
   }
 
-  public ChineseTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+  public ChineseTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL,
+      AbstractGlossFilter glossFilter) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
     this.glossFilter = glossFilter;
@@ -72,8 +72,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
   private Resource currentGloss = null;
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if ("trad".equals(templateName)) {
       // Trad macro contains a set of translations with no usage note.
       String lang = normalizeLang(parameterMap.get("1"));
@@ -86,8 +85,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
     } else if ("xlatio".equals(templateName) || "trad-".equals(templateName)) {
       // xlatio and trad- macro contains a translation and a transcription.
       String lang = normalizeLang(parameterMap.get("1"));
-      delegate.registerTranslation(lang, currentGloss, parameterMap.get("3"),
-          parameterMap.get("2"));
+      delegate.registerTranslation(lang, currentGloss, parameterMap.get("3"), parameterMap.get("2"));
     } else if ("t".equals(templateName) || "t+".equals(templateName)) {
       // t macro contains a translation, a transcription and an usage note.
       String lang = normalizeLang(parameterMap.get("1"));
@@ -150,8 +148,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
   static {
     // les caractères visible
     carPatternString = new StringBuilder().append("(.)").toString();
-    starChinesePatternString =
-        new StringBuilder().append("\\*").append("([\\u4e00-\\u9fa5]+)").toString();
+    starChinesePatternString = new StringBuilder().append("\\*").append("([\\u4e00-\\u9fa5]+)").toString();
 
 
     // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
@@ -170,8 +167,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
 
   static {
     carPattern = Pattern.compile(carPatternString);
-    macroOrLinkOrcarPattern =
-        Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
+    macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
   }
   static HashSet<String> commonUsageMacros = new HashSet<>();
   static HashSet<String> fontMacros = new HashSet<>();
@@ -219,8 +215,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
     String langname = "";
 
     while (macroOrLinkOrcarMatcher.find()) {
-      String macro = macroOrLinkOrcarMatcher.group(3) != null ? macroOrLinkOrcarMatcher.group(3)
-          : macroOrLinkOrcarMatcher.group(1); // 显示语言种类 Ar 或者 中文
+      String macro = macroOrLinkOrcarMatcher.group(3) != null ? macroOrLinkOrcarMatcher.group(3) : macroOrLinkOrcarMatcher.group(1); // 显示语言种类 Ar 或者 中文
       String link = macroOrLinkOrcarMatcher.group(4);
       String star = macroOrLinkOrcarMatcher.group(6);
       String term = macroOrLinkOrcarMatcher.group(7);
@@ -232,8 +227,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
             if (macro.equalsIgnoreCase("翻译-顶") || macro.equalsIgnoreCase("翻譯-頂")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGloss =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
               } else {
                 currentGloss = null;
               }
@@ -243,17 +237,14 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
             } else if (macro.equalsIgnoreCase("翻译-中") || macro.equalsIgnoreCase("翻譯-中")) {
               // ignore
             } else {
-              log.debug("Got {} macro while in INIT state. for page: {}", macro,
-                  this.delegate.currentPagename());
+              log.debug("Got {} macro while in INIT state. for page: {}", macro, this.delegate.currentPagename());
             }
           } else if (link != null) {
-            log.debug("Unexpected link {} while in INIT state. for page: {}", link,
-                this.delegate.currentPagename());
+            log.debug("Unexpected link {} while in INIT state. for page: {}", link, this.delegate.currentPagename());
           } else if (star != null) {
             ETAT = LANGUE;
           } else if (term != null) {
-            currentGloss =
-                delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
+            currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
           } else if (car != null) {
             switch (car) {
               case ":":
@@ -280,8 +271,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
             if (macro.equalsIgnoreCase("翻译-顶") || macro.equalsIgnoreCase("翻譯-頂")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGloss =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
               } else {
                 currentGloss = null;
               }
@@ -310,8 +300,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
           } else if (star != null) {
             // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (term != null) {
-            currentGloss =
-                delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
+            currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
             langname = "";
             word = "";
             usage = "";
@@ -341,8 +330,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
             if (macro.equalsIgnoreCase("翻译-顶") || macro.equalsIgnoreCase("翻譯-頂")) {
               if (macroOrLinkOrcarMatcher.group(2) != null) {
                 String g = macroOrLinkOrcarMatcher.group(2);
-                currentGloss =
-                    delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
+                currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(g), rank++);
               } else {
                 currentGloss = null;
               }
@@ -421,8 +409,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
               // if (null != word && word.length() != 0) System.err.println("Word is not null when
               // handling trans_link macro in " + this.delegate.currentLexEntry());
               word = argmap.get("2");
-            } else if (macro.equals("t+") || macro.equals("t-") || macro.equals("t")
-                || macro.equals("tø") || macro.equals("trad")) {
+            } else if (macro.equals("t+") || macro.equals("t-") || macro.equals("t") || macro.equals("tø") || macro.equals("trad")) {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               if (null != word && word.length() != 0) {
                 // log.debug("Word is not null ({}) when handling t+- macro in {}", word,
@@ -442,8 +429,7 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
             } else if (macro.equals("lang") || macro.equals("Lang")) {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               if (null != word && word.length() != 0) {
-                log.debug("Word is not null ({}) when handling lang macro in {}", word,
-                    this.delegate.currentPagename());
+                log.debug("Word is not null ({}) when handling lang macro in {}", word, this.delegate.currentPagename());
               }
               String l = argmap.get("1");
               if (null != l && (null != lang) && !lang.equals(LangTools.getCode(l))) {
@@ -477,14 +463,12 @@ public class ChineseTranslationExtractorWikiModel extends ChineseDbnaryWikiModel
             }
           } else if (link != null) {
             if (!isAnExternalLink(link)) {
-              word = word + " " + ((macroOrLinkOrcarMatcher.group(4) == null) ? link
-                  : macroOrLinkOrcarMatcher.group(4));
+              word = word + " " + ((macroOrLinkOrcarMatcher.group(4) == null) ? link : macroOrLinkOrcarMatcher.group(4));
             }
           } else if (star != null) {
             // System.err.println("Skipping '*' while in LANGUE state.");
           } else if (term != null) {
-            currentGloss =
-                delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
+            currentGloss = delegate.createGlossResource(glossFilter.extractGlossStructure(term), rank++);
             langname = "";
             word = "";
             usage = "";

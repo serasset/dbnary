@@ -21,8 +21,7 @@ public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
 
   SerboCroatianInflectionData inflectionData;
 
-  public SerboCroatianMorphoExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public SerboCroatianMorphoExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.wdh = wdh;
     inflectionData = new SerboCroatianInflectionData();
@@ -80,8 +79,7 @@ public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
     }
   }
 
-  protected void registerInflexion(String canonicalForm, String flexionForm,
-      String flexionProperties) {
+  protected void registerInflexion(String canonicalForm, String flexionForm, String flexionProperties) {
     WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
     inflectionData.init();
     String pos = "";
@@ -213,8 +211,7 @@ public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
       }
     }
 
-    dwdh.registerInflection("hbs", pos, flexionForm, canonicalForm, 1,
-        inflectionData.toPropertyObjectMap());
+    dwdh.registerInflection("hbs", pos, flexionForm, canonicalForm, 1, inflectionData.toPropertyObjectMap());
   }
 
   protected void parseTable(Element table, String contextDiv) {
@@ -292,8 +289,7 @@ public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
     }
   }
 
-  protected void checkOtherForm(String word, int curr, int size,
-      ArrayList<ArrayList<String>> contextTop, ArrayList<String> contextLeft, String contextDiv) {
+  protected void checkOtherForm(String word, int curr, int size, ArrayList<ArrayList<String>> contextTop, ArrayList<String> contextLeft, String contextDiv) {
     inflectionData.init();
     addContextDiv(contextDiv);
     addContextLeft(contextLeft);
@@ -398,8 +394,7 @@ public class SerboCroatianMorphoExtractorWikiModel extends DbnaryWikiModel {
     if (word != null && !word.equals(("")) && !word.contains("1   Standardni hrvatski zapis;")
         && !word.contains("2   Za muški rod; u slučaju vršitelja radnje")) {
       word = word.replaceAll("\\d", "");
-      wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), word, wdh.currentPagename(), 1,
-          inflectionData.toPropertyObjectMap());
+      wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), word, wdh.currentPagename(), 1, inflectionData.toPropertyObjectMap());
     }
   }
 

@@ -119,8 +119,7 @@ public class GermanLanguageCodes {
 
   private static void readCodesFromWikipediaTables() {
     try (InputStream fis = GermanLanguageCodes.class.getResourceAsStream("iso639-3-deu.csv");
-        BufferedReader br =
-            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
 
       String s = br.readLine();
       while (s != null) {
@@ -135,8 +134,7 @@ public class GermanLanguageCodes {
 
     } catch (IOException e) {
       // don't know what I should do here, as the data should be bundled with the code.
-      log.error("Error reading Wiktionary Language Codes during german extractor initialization",
-          e);
+      log.error("Error reading Wiktionary Language Codes during german extractor initialization", e);
     }
   }
 
@@ -163,8 +161,7 @@ public class GermanLanguageCodes {
       }
       languageName = buf.toString();
     }
-    languageName = languageName.replaceAll(",(\\s+,)\\s", ", ").replaceAll("^[\\s,]+", "")
-        .replaceAll("[\\s,]+$", "");
+    languageName = languageName.replaceAll(",(\\s+,)\\s", ", ").replaceAll("^[\\s,]+", "").replaceAll("[\\s,]+$", "");
     if (languageName.contains(",")) {
       log.debug("{} --> {} non trivial language name !", languageName, languageCode);
     }
@@ -179,16 +176,14 @@ public class GermanLanguageCodes {
     languageName = languageName.toLowerCase().trim();
     String oldCode = languageNamesToCode.put(languageName, languageCode);
     if (null != oldCode) {
-      log.debug("LANGUAGE NAME CONFLICT: {} --> {} has been redefined to {}", languageName, oldCode,
-          languageCode);
+      log.debug("LANGUAGE NAME CONFLICT: {} --> {} has been redefined to {}", languageName, oldCode, languageCode);
     }
   }
 
   public static String getCode(String languageName) {
     if (null == languageName || languageName.isEmpty())
       return null;
-    languageName = languageName.toLowerCase().replaceAll("[\\p{Cf}\\p{Cc}\\s]+$", "")
-        .replaceAll("^[\\p{Cf}\\p{Cc}\\s]+", "");
+    languageName = languageName.toLowerCase().replaceAll("[\\p{Cf}\\p{Cc}\\s]+$", "").replaceAll("^[\\p{Cf}\\p{Cc}\\s]+", "");
     return languageNamesToCode.get(languageName);
   }
 }

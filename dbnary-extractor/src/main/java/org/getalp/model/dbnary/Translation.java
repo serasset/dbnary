@@ -19,8 +19,7 @@ public class Translation {
   String writtenForm;
   String usage;
 
-  public Translation(Lang language, Set<AcceptTranslation> isTranslationOf, String writtenForm,
-      StructuredGloss gloss, String usage) {
+  public Translation(Lang language, Set<AcceptTranslation> isTranslationOf, String writtenForm, StructuredGloss gloss, String usage) {
     this.gloss = gloss;
     this.isTranslationOf = isTranslationOf;
     this.language = language;
@@ -28,8 +27,7 @@ public class Translation {
     this.usage = usage;
   }
 
-  public Translation(Lang language, Set<AcceptTranslation> isTranslationOf, String writtenForm,
-      StructuredGloss gloss) {
+  public Translation(Lang language, Set<AcceptTranslation> isTranslationOf, String writtenForm, StructuredGloss gloss) {
     this(language, isTranslationOf, writtenForm, gloss, null);
   }
 
@@ -37,13 +35,11 @@ public class Translation {
     this(language, isTranslationOf, writtenForm, null, null);
   }
 
-  public Translation(Lang language, AcceptTranslation isTranslationOf, String writtenForm,
-      StructuredGloss gloss, String usage) {
+  public Translation(Lang language, AcceptTranslation isTranslationOf, String writtenForm, StructuredGloss gloss, String usage) {
     this(language, new HashSet<>(List.of(isTranslationOf)), writtenForm, gloss, usage);
   }
 
-  public Translation(Lang language, AcceptTranslation isTranslationOf, String writtenForm,
-      StructuredGloss gloss) {
+  public Translation(Lang language, AcceptTranslation isTranslationOf, String writtenForm, StructuredGloss gloss) {
     this(language, isTranslationOf, writtenForm, gloss, null);
   }
 

@@ -16,13 +16,11 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
 
   private Logger log = LoggerFactory.getLogger(SpanishHeaderExtractorWikiModel.class);
 
-  public SpanishHeaderExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public SpanishHeaderExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public SpanishHeaderExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public SpanishHeaderExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
   }
@@ -38,8 +36,7 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
   }
 
 
-  static final String[] pronunciationVariants =
-      new String[] {"s", "c", "ll", "y", "yc", "ys", "lls", "llc"};
+  static final String[] pronunciationVariants = new String[] {"s", "c", "ll", "y", "yc", "ys", "lls", "llc"};
 
 
   private boolean isApi(String s) {
@@ -50,16 +47,14 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
     return s.equals("-") || s.equals("afi") || s.equals("");
   }
 
-  private static final String[] PRON_GRAF_IGNORABLE_ARGS = {"leng", "lang", "división",
-      "longitud_silábica", "ls", "número_letras", "nl", "dnota", "parónimo", "p", "homófono", "h",
-      "halt", "hnum", "hnúm", "htr", "hnota", "acentuación", "ac"};
+  private static final String[] PRON_GRAF_IGNORABLE_ARGS = {"leng", "lang", "división", "longitud_silábica", "ls", "número_letras", "nl", "dnota", "parónimo",
+      "p", "homófono", "h", "halt", "hnum", "hnúm", "htr", "hnota", "acentuación", "ac"};
 
   private static final String[] ALT_PREFIXES = {"", "2", "3", "4", "5", "6"};
 
   @Override
   // TODO: handle pronunciation that use the pron-graf template.
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if ("pronunciación".equalsIgnoreCase(templateName)) {
       String p1;
       if ((p1 = parameterMap.get("1")) != null && p1.length() > 0) {
@@ -82,8 +77,7 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
             log.debug("Remaining pronunciations : {} in {}", parameterMap, this.getPageName());
           }
         } else {
-          log.debug("Unknown pronunciation transcription {} in {}", parameterMap.get("2"),
-              this.getPageName());
+          log.debug("Unknown pronunciation transcription {} in {}", parameterMap.get("2"), this.getPageName());
         }
       }
     } else if ("pron-graf".equalsIgnoreCase(templateName)) {
@@ -128,8 +122,7 @@ public class SpanishHeaderExtractorWikiModel extends DbnaryWikiModel {
     String fone = parameterMap.get("1");
     if (null != fone) {
       if (null != parameterMap.get("fone")) {
-        log.debug("fone arg and first args are both given in pron-graf template in {}",
-            getPageName());
+        log.debug("fone arg and first args are both given in pron-graf template in {}", getPageName());
         // Use the fone parameter value as it is usually the correct one.
         fone = parameterMap.get("fone");
       }

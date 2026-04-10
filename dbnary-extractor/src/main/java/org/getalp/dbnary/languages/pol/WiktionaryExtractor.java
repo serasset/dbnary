@@ -26,14 +26,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String senseNumberRegExp = "[^\\)]*";
   // == cebula ({{język polski}}) ==
-  protected final static String languageSectionPatternString =
-      "={2}\\s*([^\\(]*)\\((.*)\\)\\s*={2}";
+  protected final static String languageSectionPatternString = "={2}\\s*([^\\(]*)\\((.*)\\)\\s*={2}";
 
   protected final static String partOfSpeechPatternString = "''(.*)''";
   protected final static String subSection4PatternString = "={4}\\s*(.*)\\s*={4}";
   protected final static String polishCitationPatternString = "<ref>(.*)</ref>";
-  protected final static String polishDefinitionPatternString =
-      "^:{1,3}\\s*(?:\\((" + senseNumberRegExp + ")\\))?\\s*([^\n\r]*)$";
+  protected final static String polishDefinitionPatternString = "^:{1,3}\\s*(?:\\((" + senseNumberRegExp + ")\\))?\\s*([^\n\r]*)$";
 
   protected WiktionaryDataHandler polwdh;
 
@@ -85,20 +83,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     sectionPattern = WikiPatterns.macroPattern;
 
-    String nymLinePattern = new StringBuilder().append("(?:").append(polishDefinitionPatternString)
-        .append(")|(?:").append("^(.*)$").append(")").toString();
+    String nymLinePattern = new StringBuilder().append("(?:").append(polishDefinitionPatternString).append(")|(?:").append("^(.*)$").append(")").toString();
 
     polishNymLinePattern = Pattern.compile(nymLinePattern, Pattern.MULTILINE);
 
-    String defPattern = new StringBuilder().append("(?:").append(polishDefinitionPatternString)
-        .append(")|(?:").append(partOfSpeechPatternString).append(")|(?:").append("^(.*)$")
-        .append(")").toString();
+    String defPattern = new StringBuilder().append("(?:").append(polishDefinitionPatternString).append(")|(?:").append(partOfSpeechPatternString)
+        .append(")|(?:").append("^(.*)$").append(")").toString();
 
     polishDefinitionPattern = Pattern.compile(defPattern, Pattern.MULTILINE);
 
-    String ExamplePattern = new StringBuilder().append("(?:").append(polishDefinitionPatternString)
-        .append(")|(?:").append(partOfSpeechPatternString).append(")|(?:").append("^(.*)$")
-        .append(")").toString();
+    String ExamplePattern = new StringBuilder().append("(?:").append(polishDefinitionPatternString).append(")|(?:").append(partOfSpeechPatternString)
+        .append(")|(?:").append("^(.*)$").append(")").toString();
     polishExampleLinePattern = Pattern.compile(ExamplePattern, Pattern.MULTILINE);
 
     polishCitationPattern = Pattern.compile(polishCitationPatternString);
@@ -160,8 +155,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     // Advance till end of sequence or new language section
     languageFilter.find();
-    int polishSectionEndOffset =
-        languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+    int polishSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
     extractPolishData(polishSectionStartOffset, polishSectionEndOffset);
     polwdh.finalizePageExtraction();
@@ -548,8 +542,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   static final Pattern bulletListPattern;
 
   static {
-    glossOrMacroPatternString =
-        "(?:\\[([^\\]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\|?([^\\}]*)\\}\\})";
+    glossOrMacroPatternString = "(?:\\[([^\\]]*)\\])|(?:\\{\\{([^\\}\\|]*)\\|([^\\}\\|]*)\\|([^\\}\\|]*)\\|?([^\\}]*)\\}\\})";
     glossOrMacroPattern = Pattern.compile(glossOrMacroPatternString);
     linePatternString = "^[^\n\r]*$";
     linePattern = Pattern.compile(linePatternString, Pattern.MULTILINE);
@@ -591,10 +584,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   static final Pattern translationLexer;
 
   static {
-    translationLexerString = new StringBuffer().append("(?:").append("\\(([\\d\\.\\-—–\\,\\s]*)\\)")
-        .append(")|(?:").append(WikiPatterns.linkPatternString).append(")|(?:")
-        .append(WikiPatterns.macroPatternString).append(")|(?:").append("\\(([^\\)]*)\\)")
-        .append(")|(?:").append("(.)").append(")").toString();
+    translationLexerString = new StringBuffer().append("(?:").append("\\(([\\d\\.\\-—–\\,\\s]*)\\)").append(")|(?:").append(WikiPatterns.linkPatternString)
+        .append(")|(?:").append(WikiPatterns.macroPatternString).append(")|(?:").append("\\(([^\\)]*)\\)").append(")|(?:").append("(.)").append(")").toString();
 
     translationLexer = Pattern.compile(translationLexerString);
 
@@ -633,8 +624,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String character = lexer.group(7);
 
         if (character.equals(",") || character.equals(";")) {
-          polwdh.registerTranslation(lang, currentGloss, currentUsage.trim(),
-              currentTranslation.trim());
+          polwdh.registerTranslation(lang, currentGloss, currentUsage.trim(), currentTranslation.trim());
           currentTranslation = "";
           currentUsage = "";
         } else {
@@ -669,8 +659,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         def = def.replaceAll("&gt;", ">");
         String senseNum = definitionMatcher.group(1);
         if (null == senseNum) {
-          log.debug("Null sense number in definition\"{}\" for entry {}", def,
-              this.getWiktionaryPageName());
+          log.debug("Null sense number in definition\"{}\" for entry {}", def, this.getWiktionaryPageName());
           if (def != null && !def.equals("")) {
             Resource res_sense = polwdh.registerNewDefinition(def);
             definitionSenseLink.put(senseNum, res_sense);
@@ -686,10 +675,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (definitionMatcher.group(3) != null) {
         // It's a part of speech
         polwdh.initializeLexicalEntry(definitionMatcher.group(3));
-      } else if (definitionMatcher.group(4) != null
-          && definitionMatcher.group(4).trim().length() > 0) {
-        log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", definitionMatcher.group(4),
-            this.getWiktionaryPageName());
+      } else if (definitionMatcher.group(4) != null && definitionMatcher.group(4).trim().length() > 0) {
+        log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", definitionMatcher.group(4), this.getWiktionaryPageName());
       }
     }
   }
@@ -703,8 +690,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // It's a line with a sense number
         String senseNum = nymLineMatcher.group(1);
         if (null == senseNum) {
-          log.debug("Null sense number in nym line\"{}\" for entry {}", nymLineMatcher.group(),
-              this.getWiktionaryPageName());
+          log.debug("Null sense number in nym line\"{}\" for entry {}", nymLineMatcher.group(), this.getWiktionaryPageName());
           // TODO: attach the nym to the Vocable
         } else {
           senseNum = senseNum.trim();
@@ -714,15 +700,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           while (linkMatcher.find()) {
             // It's a link, only keep the alternate string if present.
             String leftGroup = linkMatcher.group(1);
-            if (leftGroup != null && !leftGroup.equals("") && !leftGroup.startsWith("Wikisaurus:")
-                && !leftGroup.startsWith("Catégorie:") && !leftGroup.startsWith("#")) {
+            if (leftGroup != null && !leftGroup.equals("") && !leftGroup.startsWith("Wikisaurus:") && !leftGroup.startsWith("Catégorie:")
+                && !leftGroup.startsWith("#")) {
               polwdh.registerNymRelation(leftGroup, synRelation, senseNum);
             }
           }
         }
       } else if (nymLineMatcher.group(3) != null && nymLineMatcher.group(3).trim().length() > 0) {
-        log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", nymLineMatcher.group(3),
-            this.getWiktionaryPageName());
+        log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", nymLineMatcher.group(3), this.getWiktionaryPageName());
       }
     }
 
@@ -756,14 +741,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         example = example.replaceAll("&gt;", ">");
 
         if (ref != null && !ref.isEmpty()) {
-          context.add(Pair.of(DCTerms.bibliographicCitation,
-              ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
+          context.add(Pair.of(DCTerms.bibliographicCitation, ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
         }
 
         String senseNum = exampleLineMatcher.group(1);
         if (null == senseNum) {
-          log.debug("Null sense number in example\"{}\" for entry {}", example,
-              this.getWiktionaryPageName());
+          log.debug("Null sense number in example\"{}\" for entry {}", example, this.getWiktionaryPageName());
         } else {
           senseNum = senseNum.trim();
           senseNum = senseNum.replaceAll("<[^>]*>", "");
@@ -772,10 +755,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             context.clear();
           }
         }
-      } else if (exampleLineMatcher.group(3) != null
-          && !exampleLineMatcher.group(3).trim().isEmpty()) {
-        log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", exampleLineMatcher.group(3),
-            this.getWiktionaryPageName());
+      } else if (exampleLineMatcher.group(3) != null && !exampleLineMatcher.group(3).trim().isEmpty()) {
+        log.debug("UNKNOWN LINE: \"{}\" in \"{}\"", exampleLineMatcher.group(3), this.getWiktionaryPageName());
       }
     }
   }
@@ -797,8 +778,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           log.debug("More than 5 pronunciations: {} in {}", args, this.getWiktionaryPageName());
         }
       } else {
-        log.debug("UNKNOWN PRONOUNCIATION MACRO: \"{}\" in \"{}\"", macroMatcher.group(1),
-            this.getWiktionaryPageName());
+        log.debug("UNKNOWN PRONOUNCIATION MACRO: \"{}\" in \"{}\"", macroMatcher.group(1), this.getWiktionaryPageName());
       }
     }
   }

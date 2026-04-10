@@ -52,11 +52,9 @@ public class JapaneseTranslationsExtractor {
 
     // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
     // line.
-    macroOrLinkOrcarPatternString =
-        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
-            .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)")
-            .append(")|(?:").append("^;([^:\\n\\r]*)") // Term definition
-            .append(")|(?:").append(carPatternString).append(")").toString();
+    macroOrLinkOrcarPatternString = new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
+        .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)").append(")|(?:").append("^;([^:\\n\\r]*)") // Term definition
+        .append(")|(?:").append(carPatternString).append(")").toString();
   }
 
   protected final static Pattern macroOrLinkOrcarPattern;
@@ -64,8 +62,7 @@ public class JapaneseTranslationsExtractor {
 
   static {
     carPattern = Pattern.compile(carPatternString);
-    macroOrLinkOrcarPattern =
-        Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
+    macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
   }
 
   static HashSet<String> commonUsageMacros = new HashSet<>();
@@ -141,12 +138,10 @@ public class JapaneseTranslationsExtractor {
             } else if (macro.equalsIgnoreCase("trans-mid") || macro.equalsIgnoreCase("mid")) {
               // ignore
             } else {
-              log.debug("Got {} macro while in INIT state. for page: {}", macro,
-                  this.delegate.currentPagename());
+              log.debug("Got {} macro while in INIT state. for page: {}", macro, this.delegate.currentPagename());
             }
           } else if (link != null) {
-            log.debug("Unexpected link {} while in INIT state. for page: {}", link,
-                this.delegate.currentPagename());
+            log.debug("Unexpected link {} while in INIT state. for page: {}", link, this.delegate.currentPagename());
           } else if (star != null) {
             ETAT = LANGUE;
           } else if (term != null) {
@@ -319,17 +314,14 @@ public class JapaneseTranslationsExtractor {
               // if (null != word && word.length() != 0) System.err.println("Word is not null when
               // handling trans_link macro in " + this.delegate.currentLexEntry());
               word = argmap.get("2");
-            } else if (macro.equals("t+") || macro.equals("t-") || macro.equals("t")
-                || macro.equals("tø") || macro.equals("trad")) {
+            } else if (macro.equals("t+") || macro.equals("t-") || macro.equals("t") || macro.equals("tø") || macro.equals("trad")) {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               if (null != word && word.length() != 0) {
-                log.debug("Word is not null ({}) when handling t+- macro in {}", word,
-                    this.delegate.currentPagename());
+                log.debug("Word is not null ({}) when handling t+- macro in {}", word, this.delegate.currentPagename());
               }
               String l = argmap.get("1");
               if (null != l && (null != lang) && !lang.equals(LangTools.getCode(l))) {
-                log.debug("Language ({}) in t+ macro does not map language ({}) in list in {}",
-                    LangTools.getCode(l), lang, this.delegate.currentPagename());
+                log.debug("Language ({}) in t+ macro does not map language ({}) in list in {}", LangTools.getCode(l), lang, this.delegate.currentPagename());
               }
               word = argmap.get("2");
               argmap.remove("1");
@@ -340,8 +332,7 @@ public class JapaneseTranslationsExtractor {
             } else if (macro.equals("lang") || macro.equals("Lang")) {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               if (null != word && word.length() != 0) {
-                log.debug("Word is not null ({}) when handling lang macro in {}", word,
-                    this.delegate.currentPagename());
+                log.debug("Word is not null ({}) when handling lang macro in {}", word, this.delegate.currentPagename());
               }
               String l = argmap.get("1");
               if (null != l && (null != lang) && !lang.equals(LangTools.getCode(l))) {
@@ -375,8 +366,7 @@ public class JapaneseTranslationsExtractor {
             }
           } else if (link != null) {
             if (!isAnExternalLink(link)) {
-              word = word + " " + ((macroOrLinkOrcarMatcher.group(4) == null) ? link
-                  : macroOrLinkOrcarMatcher.group(4));
+              word = word + " " + ((macroOrLinkOrcarMatcher.group(4) == null) ? link : macroOrLinkOrcarMatcher.group(4));
             }
           } else if (star != null) {
             // System.err.println("Skipping '*' while in LANGUE state.");

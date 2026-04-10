@@ -53,14 +53,14 @@ public interface IWiktionaryDataHandler {
 
   /**
    * returns the short (2 letter code) id of the language of the current LexicalEntry
-   * 
+   *
    * @return current entry short language code
    */
   String getCurrentEntryLanguage();
 
   /**
    * returns the short (2 letter code) id of the language of the language edition
-   * 
+   *
    * @return wiktionary edition short language code
    */
   String getExtractedLanguage();
@@ -82,8 +82,8 @@ public interface IWiktionaryDataHandler {
   /**
    * Register definition def for the current lexical entry.
    * <p>
-   * This method will compute a sense number based on the rank of the definition in the entry,
-   * taking into account the level of the definition. 1, 1a, 1b, 1c, 2, etc.
+   * This method will compute a sense number based on the rank of the definition in the entry, taking
+   * into account the level of the definition. 1, 1a, 1b, 1c, 2, etc.
    *
    * @param def the definition string
    * @param lvl an integer giving the level of the definition (1 or 2).
@@ -109,8 +109,7 @@ public interface IWiktionaryDataHandler {
    * @return a Resource
    *
    */
-  Resource registerExampleOnResource(String ex, Set<Pair<Property, RDFNode>> context,
-      Resource sense);
+  Resource registerExampleOnResource(String ex, Set<Pair<Property, RDFNode>> context, Resource sense);
 
   /**
    * Register definition def for the current lexical entry.
@@ -164,8 +163,7 @@ public interface IWiktionaryDataHandler {
     registerNymRelationOnCurrentSense(target, synRelation, null, null);
   }
 
-  void registerNymRelationOnCurrentSense(String target, String synRelation, Resource gloss,
-      String usage);
+  void registerNymRelationOnCurrentSense(String target, String synRelation, Resource gloss, String usage);
 
 
   void registerPropertyOnLexicalEntry(Property p, RDFNode r);
@@ -176,12 +174,10 @@ public interface IWiktionaryDataHandler {
 
   void registerDerivation(String derived, String note);
 
-  void registerInflection(String languageCode, String pos, String inflection, String canonicalForm,
-      int defNumber, HashSet<PropertyObjectPair> properties,
+  void registerInflection(String languageCode, String pos, String inflection, String canonicalForm, int defNumber, HashSet<PropertyObjectPair> properties,
       HashSet<PronunciationPair> pronunciations);
 
-  void registerInflection(String languageCode, String pos, String inflection, String canonicalForm,
-      int defNumber, HashSet<PropertyObjectPair> properties);
+  void registerInflection(String languageCode, String pos, String inflection, String canonicalForm, int defNumber, HashSet<PropertyObjectPair> properties);
 
   void registerInflection(InflectionData key, Set<String> value);
 
@@ -189,11 +185,9 @@ public interface IWiktionaryDataHandler {
 
   Resource currentLexinfoPos();
 
-  void populateMetadata(Model metadataModel, Model sourceModel, String dumpFilename,
-      String extractorVersion, boolean isExolex);
+  void populateMetadata(Model metadataModel, Model sourceModel, String dumpFilename, String extractorVersion, boolean isExolex);
 
-  void buildDatacubeObservations(String l, TranslationGlossesStat translationGlossesStat, Stat stat,
-      String dumpFileVersion);
+  void buildDatacubeObservations(String l, TranslationGlossesStat translationGlossesStat, Stat stat, String dumpFileVersion);
 
   void computeStatistics(Model statsModel, Model sourceModel, String dumpVersion);
 

@@ -37,10 +37,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("-adv-", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
     posAndTypeValueMap.put("-réim-", new PosAndType(LexinfoOnt.prefix, OntolexOnt.Word));
     posAndTypeValueMap.put("-pfx-", new PosAndType(LexinfoOnt.prefix, OntolexOnt.Word));
-    posAndTypeValueMap.put("-forc-",
-        new PosAndType(LexinfoOnt.interrogativePronoun, OntolexOnt.Word));
-    posAndTypeValueMap.put("-intpr-",
-        new PosAndType(LexinfoOnt.interrogativePronoun, OntolexOnt.Word));
+    posAndTypeValueMap.put("-forc-", new PosAndType(LexinfoOnt.interrogativePronoun, OntolexOnt.Word));
+    posAndTypeValueMap.put("-intpr-", new PosAndType(LexinfoOnt.interrogativePronoun, OntolexOnt.Word));
     posAndTypeValueMap.put("-giorr-", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.Word));
     posAndTypeValueMap.put("-abbr-", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.Word));
     posAndTypeValueMap.put("-contr-", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.Word));
@@ -48,14 +46,11 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("-num-", new PosAndType(LexinfoOnt.number, OntolexOnt.Word));
     posAndTypeValueMap.put("-inis-", new PosAndType(LexinfoOnt.initialism, OntolexOnt.Word));
     posAndTypeValueMap.put("-sym-", new PosAndType(LexinfoOnt.symbol, OntolexOnt.Word));
-    posAndTypeValueMap.put("-aidsheal-",
-        new PosAndType(LexinfoOnt.possessiveAdjective, OntolexOnt.Word));
-    posAndTypeValueMap.put("-possadj-",
-        new PosAndType(LexinfoOnt.possessiveAdjective, OntolexOnt.Word));
+    posAndTypeValueMap.put("-aidsheal-", new PosAndType(LexinfoOnt.possessiveAdjective, OntolexOnt.Word));
+    posAndTypeValueMap.put("-possadj-", new PosAndType(LexinfoOnt.possessiveAdjective, OntolexOnt.Word));
     posAndTypeValueMap.put("-alt-", new PosAndType(LexinfoOnt.article, OntolexOnt.Word));
     posAndTypeValueMap.put("-art-", new PosAndType(LexinfoOnt.article, OntolexOnt.Word));
-    posAndTypeValueMap.put("-seanfh-",
-        new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-seanfh-", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("-conj-", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.Word));
     posAndTypeValueMap.put("-cón-", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.Word));
     posAndTypeValueMap.put("-mgm-", new PosAndType(LexinfoOnt.formalRegister, OntolexOnt.Word));

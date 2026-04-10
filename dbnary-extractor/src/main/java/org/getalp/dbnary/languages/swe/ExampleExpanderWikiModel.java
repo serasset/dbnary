@@ -57,15 +57,13 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
     this(wi, wdh, new Locale("sv"), "/IMG", "/LINK");
   }
 
-  public ExampleExpanderWikiModel(WiktionaryPageSource wi, WiktionaryDataHandler wdh, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public ExampleExpanderWikiModel(WiktionaryPageSource wi, WiktionaryDataHandler wdh, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.wdh = wdh;
     this.swedishWikiModel = new SwedishWikiModel(wi, locale, imageBaseURL, linkBaseURL);
     this.simpleExpander = new ExpandAllWikiModel(wi, locale, imageBaseURL, linkBaseURL) {
       @Override
-      public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-          throws WikiModelContentException {
+      public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
         return swedishWikiModel.getRawWikiContent(parsedPagename, map);
       }
     };
@@ -79,8 +77,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     return swedishWikiModel.getRawWikiContent(parsedPagename, map);
   }
 
@@ -110,8 +107,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
     this.context = new HashSet<>();
     String exampleText = simpleExpander.expandAll(translation, this.templates);
     if (!exampleText.isEmpty()) {
-      context.add(Pair.of(RDF.value,
-          ResourceFactory.createLangLiteral(exampleText, wdh.getExtractedLanguage())));
+      context.add(Pair.of(RDF.value, ResourceFactory.createLangLiteral(exampleText, wdh.getExtractedLanguage())));
       if (null != example)
         wdh.addTo(example, context);
     }
@@ -119,8 +115,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
 
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     long startTime = 0;
     if (log.isTraceEnabled()) {
       startTime = System.nanoTime();
@@ -137,12 +132,10 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       String ref = citation.toString().replaceAll("\n#:+[^\n]*", "").replaceAll(":$", "").trim();
       ref = simpleExpander.expandAll(ref, this.templates);
       text = simpleExpander.expandAll(text, this.templates);
-      context
-          .add(Pair.of(DCTerms.bibliographicCitation, rdfNode(ref, wdh.getCurrentEntryLanguage())));
+      context.add(Pair.of(DCTerms.bibliographicCitation, rdfNode(ref, wdh.getCurrentEntryLanguage())));
       if (null != translation) {
         translation = simpleExpander.expandAll(translation, this.templates);
-        context.add(Pair.of(RDF.value,
-            ResourceFactory.createLangLiteral(translation, wdh.getExtractedLanguage())));
+        context.add(Pair.of(RDF.value, ResourceFactory.createLangLiteral(translation, wdh.getExtractedLanguage())));
       }
       writer.append(text);
     } else if (WiktionaryDataHandler.isValidNym(templateName)) {

@@ -221,8 +221,7 @@ public class EnglishInflectionData extends InflectionData {
     }
     switch (this.inflectionType) {
       case STRONG:
-        inflections
-            .add(PropertyObjectPair.get(OliaOnt.hasInflectionType, OliaOnt.StrongInflection));
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasInflectionType, OliaOnt.StrongInflection));
         break;
       case WEAK:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasInflectionType, OliaOnt.WeakInflection));

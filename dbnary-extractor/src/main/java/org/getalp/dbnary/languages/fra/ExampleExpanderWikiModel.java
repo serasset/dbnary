@@ -35,8 +35,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
   private String shortSectionLanguage;
   private final ExpandAllWikiModel simpleExpander;
 
-  public ExampleExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public ExampleExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     simpleExpander = new ExpandAllWikiModel(wi, locale, imageBaseURL, linkBaseURL);
   }
@@ -56,15 +55,13 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
    * @param context if not null, the method will add all contextual relation to the map.
    * @return the converted wiki code
    */
-  public String expandExample(String definition, Set<String> templates,
-      Set<Pair<Property, RDFNode>> context) {
+  public String expandExample(String definition, Set<String> templates, Set<Pair<Property, RDFNode>> context) {
     return expandExample(definition, templates, context, null, null);
   }
 
   private static final String NOTE_SPLIT = "///NOTES///";
 
-  public String expandExample(String definition, Set<String> templates,
-      Set<Pair<Property, RDFNode>> context, String shortEditionLanguage,
+  public String expandExample(String definition, Set<String> templates, Set<Pair<Property, RDFNode>> context, String shortEditionLanguage,
       String shortSectionLanguage) {
     this.context = context;
     this.shortEditionLanguage = shortEditionLanguage;
@@ -75,8 +72,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       for (int i = 1; i < textAndNote.length; i++) {
         String note;
         if (textAndNote[i] != null && !"".equals(note = textAndNote[i].trim())) {
-          context.add(
-              Pair.of(SKOS.note, ResourceFactory.createLangLiteral(note, shortEditionLanguage)));
+          context.add(Pair.of(SKOS.note, ResourceFactory.createLangLiteral(note, shortEditionLanguage)));
         }
       }
     }
@@ -84,12 +80,10 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
   }
 
 
-  private static final Predicate<String> isLanguageTag =
-      Pattern.compile("[a-z]{2,3}(?:-.*)?").asMatchPredicate();
+  private static final Predicate<String> isLanguageTag = Pattern.compile("[a-z]{2,3}(?:-.*)?").asMatchPredicate();
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if (ignoredTemplates.contains(templateName)) {
       // NOP
     } else if ("w".equals(templateName)) {
@@ -108,8 +102,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       }
     } else if ("source".equals(templateName)) {
       if (context != null) {
-        context.add(Pair.of(DCTerms.bibliographicCitation,
-            rdfNode(parameterMap.get("1"), shortEditionLanguage)));
+        context.add(Pair.of(DCTerms.bibliographicCitation, rdfNode(parameterMap.get("1"), shortEditionLanguage)));
       }
       parameterMap.remove("1");
       if (!parameterMap.isEmpty()) {
@@ -134,8 +127,7 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       if ("’".equals(pattern) && "'".equals(repl)) {
         writer.append(s.replaceAll(pattern, repl));
       } else {
-        log.trace("gsub {} | {} | {}", parameterMap.get("1"), parameterMap.get("2"),
-            parameterMap.get("3"));
+        log.trace("gsub {} | {} | {}", parameterMap.get("1"), parameterMap.get("2"), parameterMap.get("3"));
         super.substituteTemplateCall(templateName, parameterMap, writer);
       }
     } else if ("str find".equals(templateName) || "str_find".equals(templateName)) {

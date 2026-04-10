@@ -24,8 +24,7 @@ public class JapaneseRelatedWordsExtractorWikiModel {
     this(we, (WiktionaryPageSource) null);
   }
 
-  public JapaneseRelatedWordsExtractorWikiModel(IWiktionaryDataHandler we,
-      WiktionaryPageSource wi) {
+  public JapaneseRelatedWordsExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi) {
     this.delegate = we;
   }
 
@@ -48,11 +47,10 @@ public class JapaneseRelatedWordsExtractorWikiModel {
 
     // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
     // line.
-    macroOrLinkOrcarPatternString =
-        new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
-            .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)") // sub list
-            .append(")|(?:").append("^;([^:\\n\\r]*)") // Term definition
-            .append(")|(?:").append(carPatternString).append(")").toString();
+    macroOrLinkOrcarPatternString = new StringBuilder().append("(?:").append(WikiPatterns.macroPatternString).append(")|(?:")
+        .append(WikiPatterns.linkPatternString).append(")|(?:").append("(:*\\*)") // sub list
+        .append(")|(?:").append("^;([^:\\n\\r]*)") // Term definition
+        .append(")|(?:").append(carPatternString).append(")").toString();
   }
 
   protected final static Pattern macroOrLinkOrcarPattern;
@@ -60,8 +58,7 @@ public class JapaneseRelatedWordsExtractorWikiModel {
 
   static {
     carPattern = Pattern.compile(carPatternString);
-    macroOrLinkOrcarPattern =
-        Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
+    macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
   }
 
   protected final static HashMap<String, String> relMarkerToRelName;
@@ -118,11 +115,9 @@ public class JapaneseRelatedWordsExtractorWikiModel {
 
         case INIT:
           if (macro != null) {
-            log.debug("RELWORDS: Got {} macro while in INIT state. for page: {}", macro,
-                this.delegate.currentPagename());
+            log.debug("RELWORDS: Got {} macro while in INIT state. for page: {}", macro, this.delegate.currentPagename());
           } else if (link != null) {
-            log.debug("RELWORDS: Unexpected link {} while in INIT state. for page: {}", link,
-                this.delegate.currentPagename());
+            log.debug("RELWORDS: Unexpected link {} while in INIT state. for page: {}", link, this.delegate.currentPagename());
           } else if (star != null) {
             ETAT = RELATION;
           } else if (term != null) {
@@ -169,8 +164,7 @@ public class JapaneseRelatedWordsExtractorWikiModel {
               currentNym = AbstractWiktionaryExtractor.stripParentheses(currentNym);
               currentNym = relMarkerToRelName.get(currentNym);
               if (null == currentNym) {
-                log.debug("RELWORDS: Unknown relation: {} in page {}", currentRelation,
-                    this.delegate.currentPagename());
+                log.debug("RELWORDS: Unknown relation: {} in page {}", currentRelation, this.delegate.currentPagename());
               }
               currentRelation = "";
               ETAT = VALUES;
@@ -195,13 +189,11 @@ public class JapaneseRelatedWordsExtractorWikiModel {
               usage = argmap.toString();
               registerRelation(word, currentNym);
             } else {
-              log.debug("RELWORDS: Got macro {} while in VALUE state in page {}", macro,
-                  this.delegate.currentPagename());
+              log.debug("RELWORDS: Got macro {} while in VALUE state in page {}", macro, this.delegate.currentPagename());
             }
           } else if (link != null) {
             if (!isAnExternalLink(link)) {
-              word = word + " " + ((macroOrLinkOrcarMatcher.group(4) == null) ? link
-                  : macroOrLinkOrcarMatcher.group(4));
+              word = word + " " + ((macroOrLinkOrcarMatcher.group(4) == null) ? link : macroOrLinkOrcarMatcher.group(4));
             }
           } else if (star != null) {
             // System.err.println("Skipping '*' while in LANGUE state.");

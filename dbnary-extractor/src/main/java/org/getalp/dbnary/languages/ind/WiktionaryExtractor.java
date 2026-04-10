@@ -16,15 +16,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String languageSectionPatternString =
-      "={2}\\s*\\{{2}=*([^\\}=]+)=*\\}{2}\\s*={2}|\\{{2}\\s*-([^-]+)-\\s*\\}{2}|={2}\\s*([^=]+)={2}\n";
-  protected final static String blockPatternString =
-      "\n\\{{2}([^\\}]+)\\}{2}|={3}\\s*([^=]+)={3}\n";
-  protected final static String tradPatternString =
-      "\\{{2}([^\\\\}]+)\\}{2}\\s*:\\s*\\[{2}([^\\]]+)\\]{2}|\\{{2}(t[^\\|][^\\}]+)\\}{2}";
+  protected final static String languageSectionPatternString = "={2}\\s*\\{{2}=*([^\\}=]+)=*\\}{2}\\s*={2}|\\{{2}\\s*-([^-]+)-\\s*\\}{2}|={2}\\s*([^=]+)={2}\n";
+  protected final static String blockPatternString = "\n\\{{2}([^\\}]+)\\}{2}|={3}\\s*([^=]+)={3}\n";
+  protected final static String tradPatternString = "\\{{2}([^\\\\}]+)\\}{2}\\s*:\\s*\\[{2}([^\\]]+)\\]{2}|\\{{2}(t[^\\|][^\\}]+)\\}{2}";
   protected final static String nymsPatternString = "\\{{2}([^\\}]+)\\}{2}";
-  protected final static String defPatternString =
-      "#\\s*([^\\n]+)|\\'{5}Definisi\\'{5}\\s*:\\s*([^\\n]+)";
+  protected final static String defPatternString = "#\\s*([^\\n]+)|\\'{5}Definisi\\'{5}\\s*:\\s*([^\\n]+)";
   protected final static String examplePatternString = "\\*\\s*([^\n]+)\n";
 
   protected final static Pattern languageSectionPattern;
@@ -230,9 +226,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected String cleanBlockName(String blockS, String blockString) {
     blockS = blockS.replaceAll("[-=]", "").trim();
-    if (blockS.contains("kan") || blockS.contains("ber") || blockS.contains("di")
-        || blockS.endsWith("mei") || blockS.endsWith("me") || blockS.startsWith("lihat v")
-        || blockS.startsWith("lihat2 v")) {
+    if (blockS.contains("kan") || blockS.contains("ber") || blockS.contains("di") || blockS.endsWith("mei") || blockS.endsWith("me")
+        || blockS.startsWith("lihat v") || blockS.startsWith("lihat2 v")) {
       blockS = "verb";
     } else if (blockS.equals("lihat 2")) {
       blockS = "";
@@ -298,18 +293,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       blockS = "KBBI";
     } else if (blockS.endsWith("se")) { // num
       blockS = "num";
-    } else if (!blockS.equalsIgnoreCase("singkatan")
-        && (blockS.contains("syn") || blockS.contains("sin"))) {
+    } else if (!blockS.equalsIgnoreCase("singkatan") && (blockS.contains("syn") || blockS.contains("sin"))) {
       blockS = "syn";
-    } else if (blockS.endsWith("em") || blockS.equals("Kata sifat")
-        || blockS.startsWith("lihat2 a")) { // adj
+    } else if (blockS.endsWith("em") || blockS.equals("Kata sifat") || blockS.startsWith("lihat2 a")) { // adj
       blockS = "adj";
     } else if (blockS.startsWith("lihat2 adv") || blockS.startsWith("lihat adv")) {
       blockS = "adv";
     } else if (blockS.endsWith("ke")) { // particle
       blockS = "p";
-    } else if (blockS.contains("nya") || blockS.contains("pe") || blockS.contains("nomina")
-        || blockS.startsWith("lihat n")) {
+    } else if (blockS.contains("nya") || blockS.contains("pe") || blockS.contains("nomina") || blockS.startsWith("lihat n")) {
       blockS = "Nomina";
     } else if (blockS.contains("etym")) {
       blockS = "etym";
@@ -372,8 +364,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizeLanguageSection();
   }
 
-  protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,
-      String blockString) {
+  protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock, String blockString) {
     switch (currentBlock) {
       case NOBLOCK:
       case IGNOREPOS:
@@ -394,8 +385,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractTranslations(startOffset, endOffset);
         break;
       default:
-        assert false
-            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
+        assert false : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
   }
 

@@ -18,8 +18,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String languageSectionPatternString =
-      "^={2}\\h*\\{{2}([^}|]*)}{2}\\h*={2}$";
+  protected final static String languageSectionPatternString = "^={2}\\h*\\{{2}([^}|]*)}{2}\\h*={2}$";
   protected final static String blockPatternString = "^={2,4}([^=]*)={2,4}$";
   protected final static String posPatternString = "\\{{2}([^}]*)}{2}";
   protected final static String defPatternString = "#\\s*([^#<]*)\\s*|\\*\\s*([^*<]*)\\s*";
@@ -212,8 +211,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizeLanguageSection();
   }
 
-  protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,
-      String blockString) {
+  protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock, String blockString) {
     switch (currentBlock) {
       case NOBLOCK:
       case IGNOREPOS:
@@ -237,8 +235,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractTranslations(startOffset, endOffset);
         break;
       default:
-        assert false
-            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
+        assert false : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
   }
 
@@ -279,8 +276,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (!tmp.equals("")) {
         if (tmp.contains("Pvz.")) {
           String def = tmp.substring(0, tmp.indexOf("Pvz.")).replaceAll("'", "").trim();
-          String ex =
-              tmp.substring(tmp.indexOf("Pvz.") + 4, tmp.length() - 1).replaceAll("'", "").trim();
+          String ex = tmp.substring(tmp.indexOf("Pvz.") + 4, tmp.length() - 1).replaceAll("'", "").trim();
           wdh.registerNewDefinition(cleanUpMarkup(def), "" + senseNum);
           wdh.registerExample(ex, null);
           senseNum++;
@@ -346,8 +342,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (c != null) {
               parseTrans(c);
             }
-          } else if (!tTrad[0].contains("1") && !tTrad[0].contains("2")
-              && !tTrad[0].contains("3")) {
+          } else if (!tTrad[0].contains("1") && !tTrad[0].contains("2") && !tTrad[0].contains("3")) {
             log.debug("Unknown Trad value {} --in-- {}", tTrad[0], wdh.currentPagename());
           }
       }

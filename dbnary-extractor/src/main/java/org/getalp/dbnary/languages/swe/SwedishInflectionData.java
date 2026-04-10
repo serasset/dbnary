@@ -124,8 +124,8 @@ public class SwedishInflectionData extends InflectionData {
 
   // -- kept from German
   public enum Mode {
-    INFINITIV("i"), ZU_INFINITIV("z"), PRESENT_PARTICIPLE("p"), PAST_PARTICIPLE("P"), GERUNDIVUM(
-        "g"), IMPERATIV("I"), INDICATIV("i"), KONJUNKTIV2("K"), KONJUNKTIV1("k"), NOTHING("_");
+    INFINITIV("i"), ZU_INFINITIV("z"), PRESENT_PARTICIPLE("p"), PAST_PARTICIPLE("P"), GERUNDIVUM("g"), IMPERATIV("I"), INDICATIV("i"), KONJUNKTIV2(
+        "K"), KONJUNKTIV1("k"), NOTHING("_");
 
     private final String shortForm;
 
@@ -140,8 +140,7 @@ public class SwedishInflectionData extends InflectionData {
   }
 
   public enum Voice {
-    AKTIV("a"), VORGANGSPASSIV("v"), ZUSTANDSPASSIV("P"), PASSIV("p"), ZUSTANDSREFLEXIVEPASSIV(
-        "R"), REFLEXIV("r"), NOTHING("_");
+    AKTIV("a"), VORGANGSPASSIV("v"), ZUSTANDSPASSIV("P"), PASSIV("p"), ZUSTANDSREFLEXIVEPASSIV("R"), REFLEXIV("r"), NOTHING("_");
 
     private final String shortForm;
 
@@ -156,8 +155,7 @@ public class SwedishInflectionData extends InflectionData {
   }
 
   public enum Tense {
-    PRESENT("p"), PRETERIT("P"), PERFEKT("k"), SUPINUM("s"), FUTURE1("f"), FUTURE2(
-        "F"), PLUSQUAMPERFEKT("q"), NOTHING("_");
+    PRESENT("p"), PRETERIT("P"), PERFEKT("k"), SUPINUM("s"), FUTURE1("f"), FUTURE2("F"), PLUSQUAMPERFEKT("q"), NOTHING("_");
 
     private final String shortForm;
 
@@ -496,12 +494,10 @@ public class SwedishInflectionData extends InflectionData {
     }
     switch (this.subClass) {
       case ATTRIBUTIVE:
-        inflections
-            .add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.AttributiveAdjective));
+        inflections.add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.AttributiveAdjective));
         break;
       case PREDICATIVE:
-        inflections
-            .add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.PredicativeAdjective));
+        inflections.add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.PredicativeAdjective));
         break;
       case REFLEXIVE:
         inflections.add(PropertyObjectPair.get(LexinfoOnt.partOfSpeech, OliaOnt.ReflexivePronoun));
@@ -620,8 +616,7 @@ public class SwedishInflectionData extends InflectionData {
     }
     switch (this.inflectionType) {
       case STRONG:
-        inflections
-            .add(PropertyObjectPair.get(OliaOnt.hasInflectionType, OliaOnt.StrongInflection));
+        inflections.add(PropertyObjectPair.get(OliaOnt.hasInflectionType, OliaOnt.StrongInflection));
         break;
       case WEAK:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasInflectionType, OliaOnt.WeakInflection));

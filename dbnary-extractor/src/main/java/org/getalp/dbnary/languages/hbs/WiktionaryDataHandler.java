@@ -17,8 +17,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   static {
 
-    posAndTypeValueMap.put("sh-pridjev",
-        new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
+    posAndTypeValueMap.put("sh-pridjev", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
 
     posAndTypeValueMap.put("sh-prilog", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
 
@@ -28,8 +27,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("-znači-država-", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
     posAndTypeValueMap.put("-znači-grad-", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
     posAndTypeValueMap.put("sh-noun", new PosAndType(LexinfoOnt.noun, LexinfoOnt.Noun));
-    posAndTypeValueMap.put("sh-vlastito ime",
-        new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
+    posAndTypeValueMap.put("sh-vlastito ime", new PosAndType(LexinfoOnt.properNoun, LexinfoOnt.ProperNoun));
 
     posAndTypeValueMap.put("sh-glagol", new PosAndType(LexinfoOnt.verb, LexinfoOnt.Verb));
   }
@@ -69,7 +67,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         case "PAGENAME":
           return;
         default:
-          log.debug("Unknown posMaccro {} --in-- {}", t[0], this.currentPagename());
+          log.debug("Unknown posMacro {} --in-- {}", t[0], this.currentPagename());
           return;
       }
       addExtraPartOfSpeech(t[0]);
@@ -112,20 +110,16 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               if (infos[0].equals("sh-imenica")) {
                 switch (pair[1]) {
                   case "e":
-                    log.debug("Pronunciation ekavski unused in {} --in-- {}", infos[i], infos[0],
-                        this.currentPagename());
+                    log.debug("Pronunciation ekavski unused in {} --in-- {}", infos[i], infos[0], this.currentPagename());
                     break;
                   case "ije":
-                    log.debug("Pronunciation ijekavski unused in {} --in-- {}", infos[i], infos[0],
-                        this.currentPagename());
+                    log.debug("Pronunciation ijekavski unused in {} --in-- {}", infos[i], infos[0], this.currentPagename());
                     break;
                   case "i":
-                    log.debug("Pronunciation ikavski unused in {} --in-- {}", infos[i], infos[0],
-                        this.currentPagename());
+                    log.debug("Pronunciation ikavski unused in {} --in-- {}", infos[i], infos[0], this.currentPagename());
                     break;
                   default:
-                    log.debug("Pronunciation unused : {} in {} --in-- {}", infos[i], infos[0],
-                        this.currentPagename());
+                    log.debug("Pronunciation unused : {} in {} --in-- {}", infos[i], infos[0], this.currentPagename());
                 }
               } else {
                 addGender(pair[1]);
@@ -140,8 +134,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               // this.currentLexEntry());
               break;
             case "p":
-              log.debug("Paradigme unused : {} in {} --in-- {}", infos[i], infos[0],
-                  this.currentPagename());
+              log.debug("Paradigme unused : {} in {} --in-- {}", infos[i], infos[0], this.currentPagename());
               break;
             case "def":
             case "def_a":
@@ -152,8 +145,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               // this.currentLexEntry());
               break;
             default:
-              log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0],
-                  this.currentPagename());
+              log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0], this.currentPagename());
           }
         }
       } else {
@@ -168,10 +160,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               i++;
               if (cirilica != null) {
                 try {
-                  Resource canonicalForm =
-                      currentLexEntry.getRequiredProperty(OntolexOnt.canonicalForm).getResource();
-                  canonicalForm.addProperty(OntolexOnt.writtenRep, cirilica,
-                      getCurrentEntryLanguage() + "-Cyrl");
+                  Resource canonicalForm = currentLexEntry.getRequiredProperty(OntolexOnt.canonicalForm).getResource();
+                  canonicalForm.addProperty(OntolexOnt.writtenRep, cirilica, getCurrentEntryLanguage() + "-Cyrl");
                 } catch (Exception e) {
                   log.error("Could not get canonical form in {}", currentPage.getName());
                 }
@@ -182,8 +172,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
               }
               break;
             default:
-              log.debug("Unused info {} in {} --in-- {}", infos[i], infos[0],
-                  this.currentPagename());
+              log.debug("Unused info {} in {} --in-- {}", infos[i], infos[0], this.currentPagename());
           }
         }
       }

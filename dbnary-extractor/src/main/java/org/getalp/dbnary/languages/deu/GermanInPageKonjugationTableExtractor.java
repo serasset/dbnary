@@ -27,8 +27,7 @@ public class GermanInPageKonjugationTableExtractor extends GermanKonjugationTabl
     super();
   }
 
-  Set<String> significativeValues =
-      Set.of("singular", "plural", "ich", "du", "er, sie, es", "wir", "ihr", "sie");
+  Set<String> significativeValues = Set.of("singular", "plural", "ich", "du", "er, sie, es", "wir", "ihr", "sie");
 
   protected boolean isHeaderCell(Element cell) {
     // Ignore note cells in morphology tables

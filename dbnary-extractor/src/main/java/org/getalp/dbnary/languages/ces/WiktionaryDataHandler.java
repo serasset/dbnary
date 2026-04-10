@@ -16,12 +16,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("částice", new PosAndType(LexinfoOnt.particle, OntolexOnt.Word));
     posAndTypeValueMap.put("citoslovce", new PosAndType(LexinfoOnt.interjection, OntolexOnt.Word));
 
-    posAndTypeValueMap.put("přísloví",
-        new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("idiom",
-        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("fráze",
-        new PosAndType(LexinfoOnt.setPhrase, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("přísloví", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("idiom", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("fráze", new PosAndType(LexinfoOnt.setPhrase, OntolexOnt.MultiWordExpression));
   }
 
   public boolean isPartOfSpeech(String s) {

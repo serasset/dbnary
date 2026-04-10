@@ -24,13 +24,11 @@ public class FrenchDefinitionExtractorWikiModel extends DbnaryWikiModel {
   private IWiktionaryDataHandler delegate;
 
 
-  public FrenchDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public FrenchDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public FrenchDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public FrenchDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
   }
@@ -50,8 +48,7 @@ public class FrenchDefinitionExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     if (templateName.equals("nom langue") || templateName.endsWith(":nom langue")) {
       // intercept this template as it leads to a very inefficient Lua Script.
@@ -72,8 +69,7 @@ public class FrenchDefinitionExtractorWikiModel extends DbnaryWikiModel {
       if ("’".equals(pattern) && "'".equals(repl)) {
         writer.append(s.replaceAll(pattern, repl));
       } else {
-        log.debug("gsub {} | {} | {}", parameterMap.get("1"), parameterMap.get("2"),
-            parameterMap.get("3"));
+        log.debug("gsub {} | {} | {}", parameterMap.get("1"), parameterMap.get("2"), parameterMap.get("3"));
         super.substituteTemplateCall(templateName, parameterMap, writer);
       }
     } else if ("str find".equals(templateName) || "str_find".equals(templateName)) {

@@ -82,8 +82,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     for (String n : numlist) {
       Resource[] senseAndEntry = currentWordsenses.get(n);
       if (null == senseAndEntry) {
-        log.debug("Could not fetch sense resource for nym property of {} in {}", n,
-            currentPagename());
+        log.debug("Could not fetch sense resource for nym property of {} in {}", n, currentPagename());
         StructuredGloss sg = new StructuredGloss(n, "");
         Resource g = super.createGlossResource(sg);
         super.registerNymRelation(target, synRelation, g, null);
@@ -98,45 +97,40 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   private DecodedPOS decodePOS(String group) {
     String orig = group;
 
-    if (group.startsWith("rzeczownik") || group.startsWith("przymiotnik")
-        || group.startsWith("czasownik") || group.startsWith("przysłówek")
+    if (group.startsWith("rzeczownik") || group.startsWith("przymiotnik") || group.startsWith("czasownik") || group.startsWith("przysłówek")
         || group.startsWith("fraza") || group.startsWith("związek frazeologiczny")) {
       group = group.split("''|\\(|<")[0];
     }
 
     DecodedPOS dpos = computeDecodedPOS(group);
     if (dpos != null) {
-      if (group.contains("rodzaj żeński/męski") || group.contains("rodzaj męski/żeński")
-          || group.contains("rodzaj męski lub żeński") || group.contains("rodzaj żeński, męski")) {
+      if (group.contains("rodzaj żeński/męski") || group.contains("rodzaj męski/żeński") || group.contains("rodzaj męski lub żeński")
+          || group.contains("rodzaj żeński, męski")) {
         dpos.addAnnotation(LexinfoOnt.gender, LexinfoOnt.masculine);
         dpos.addAnnotation(LexinfoOnt.gender, LexinfoOnt.feminine);
         group = group.replace("rodzaj żeński/męski", "");
         group = group.replace("rodzaj męski/żeński", "");
       }
-      if (group.contains("rodzaj żeński") || group.contains("rodzaju żeńskiego")
-          || group.contains("lub żeński") || group.contains("i żeński")) {
+      if (group.contains("rodzaj żeński") || group.contains("rodzaju żeńskiego") || group.contains("lub żeński") || group.contains("i żeński")) {
         dpos.addAnnotation(LexinfoOnt.gender, LexinfoOnt.feminine);
         group = group.replace("rodzaj żeński", "");
         group = group.replace("rodzaju żeńskiego", "");
         group = group.replace("lub żeński", "");
         group = group.replace("i żeński", "");
       }
-      if (group.contains("rodzaj nijaki") || group.contains("rodzaju nijakiego")
-          || group.contains("lub nijaki")) {
+      if (group.contains("rodzaj nijaki") || group.contains("rodzaju nijakiego") || group.contains("lub nijaki")) {
         dpos.addAnnotation(LexinfoOnt.gender, LexinfoOnt.neuter);
         group = group.replace("rodzaj nijaki", "");
         group = group.replace("rodzaju nijakiego", "");
         group = group.replace("lub nijaki", "");
       }
-      if (group.contains("rodzaj męski") || group.contains("rodzaju męskiego")
-          || group.contains("lub męski") || group.contains(", męski")) {
+      if (group.contains("rodzaj męski") || group.contains("rodzaju męskiego") || group.contains("lub męski") || group.contains(", męski")) {
         dpos.addAnnotation(LexinfoOnt.gender, LexinfoOnt.masculine);
         group = group.replace("rodzaj męski", "");
         group = group.replace("rodzaju męskiego", "");
         group = group.replace("lub męski", "");
       }
-      if (group.contains("rodzaj męskorzeczowy") || group.contains("rodzaju męskorzeczowego")
-          || group.contains("lub męskorzeczowy")) {
+      if (group.contains("rodzaj męskorzeczowy") || group.contains("rodzaju męskorzeczowego") || group.contains("lub męskorzeczowy")) {
         dpos.addAnnotation(LexinfoOnt.gender, LexinfoOnt.masculine);
         dpos.addAnnotation(LexinfoOnt.animacy, LexinfoOnt.inanimate);
         group = group.replace("rodzaj męskorzeczowy", "");
@@ -299,8 +293,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         return new DecodedPOS("rzeczownik", LexinfoOnt.noun, OntolexOnt.Word);
       }
     } else if (group.startsWith("przymiotnik dzierżawczy")) {
-      DecodedPOS res = new DecodedPOS("przymiotnik_dzierżawczy", LexinfoOnt.possessiveAdjective,
-          OntolexOnt.Word);
+      DecodedPOS res = new DecodedPOS("przymiotnik_dzierżawczy", LexinfoOnt.possessiveAdjective, OntolexOnt.Word);
       res.addAnnotation(LexinfoOnt.partOfSpeech, LexinfoOnt.adjective);
       return res;
     } else if (group.startsWith("przymiotnik")) {
@@ -320,8 +313,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     } else if (group.startsWith("fraza")) {
       if (group.contains("rzeczownikowa")) {
         if (group.contains("nazwa własna")) {
-          return new DecodedPOS("rzeczownik_nazwa_własna", LexinfoOnt.properNoun,
-              OntolexOnt.MultiWordExpression);
+          return new DecodedPOS("rzeczownik_nazwa_własna", LexinfoOnt.properNoun, OntolexOnt.MultiWordExpression);
         } else {
           return new DecodedPOS("rzeczownik", LexinfoOnt.noun, OntolexOnt.MultiWordExpression);
         }
@@ -332,12 +324,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       } else if (group.contains("przysłówekowa") || group.contains("przysłówkowa")) {
         return new DecodedPOS("przysłówek", LexinfoOnt.adverb, OntolexOnt.MultiWordExpression);
       } else if (group.contains("wykrzyknikowa") || group.contains("wykrzyknkowa")) {
-        return new DecodedPOS("wykrzyknik", LexinfoOnt.interjection,
-            OntolexOnt.MultiWordExpression);
+        return new DecodedPOS("wykrzyknik", LexinfoOnt.interjection, OntolexOnt.MultiWordExpression);
       }
     } else if (group.startsWith("związek frazeologiczny")) {
-      return new DecodedPOS("związek frazeologiczny", LexinfoOnt.idiom,
-          OntolexOnt.MultiWordExpression);
+      return new DecodedPOS("związek frazeologiczny", LexinfoOnt.idiom, OntolexOnt.MultiWordExpression);
     } else if (group.startsWith("{{przysłowie polskie")) {
       return new DecodedPOS("przysłowie", LexinfoOnt.proverb, OntolexOnt.MultiWordExpression);
     } else if (group.startsWith("skrótowiec")) {
@@ -346,11 +336,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return new DecodedPOS("skrót", LexinfoOnt.abbreviation, OntolexOnt.Word);
     } else if (group.startsWith("zaimek")) {
       if (group.contains("pytajny")) {
-        return new DecodedPOS("zaimek_pytajny", LexinfoOnt.interrogativePronoun,
-            LexinfoOnt.Pronoun);
+        return new DecodedPOS("zaimek_pytajny", LexinfoOnt.interrogativePronoun, LexinfoOnt.Pronoun);
       } else if (group.contains("nieokreślony")) {
-        return new DecodedPOS("zaimek_nieokreślony", LexinfoOnt.indefinitePronoun,
-            LexinfoOnt.Pronoun);
+        return new DecodedPOS("zaimek_nieokreślony", LexinfoOnt.indefinitePronoun, LexinfoOnt.Pronoun);
       } else if (group.contains("osobowy")) {
         return new DecodedPOS("zaimek_osobowy", LexinfoOnt.personalPronoun, LexinfoOnt.Pronoun);
       } else {
@@ -369,15 +357,13 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       if (group.contains("porządkowy")) {
         return new DecodedPOS("liczebnik_porządkowy", LexinfoOnt.ordinalAdjective, OntolexOnt.Word);
       } else if (group.contains("mnożny")) {
-        return new DecodedPOS("liczebnik_mnożny", LexinfoOnt.multiplicativeNumeral,
-            LexinfoOnt.Numeral);
+        return new DecodedPOS("liczebnik_mnożny", LexinfoOnt.multiplicativeNumeral, LexinfoOnt.Numeral);
       } else if (group.contains("główny")) {
         return new DecodedPOS("liczebnik_główny", LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral);
       } else if (group.contains("zbiorowy")) {
         return new DecodedPOS("liczebnik_zbiorowy", LexinfoOnt.collective, LexinfoOnt.Numeral);
       } else if (group.contains("nieokreślony")) {
-        return new DecodedPOS("liczebnik_nieokreślony", LexinfoOnt.indefiniteCardinalNumeral,
-            LexinfoOnt.Numeral);
+        return new DecodedPOS("liczebnik_nieokreślony", LexinfoOnt.indefiniteCardinalNumeral, LexinfoOnt.Numeral);
       } else if (group.contains("ułamkowy")) {
         return new DecodedPOS("liczebnik_ułamkowy", LexinfoOnt.numeralFraction, LexinfoOnt.Numeral);
       } else {
@@ -395,11 +381,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     } else if (group.startsWith("przedrostek")) {
       return new DecodedPOS("przedrostek", LexinfoOnt.prefix, LexinfoOnt.Prefix);
     } else if (group.startsWith("imiesłów przymiotnikowy przeszły")) {
-      return new DecodedPOS("imiesłów przymiotnikowy przeszły", LexinfoOnt.pastParticipleAdjective,
-          LexinfoOnt.Adjective);
+      return new DecodedPOS("imiesłów przymiotnikowy przeszły", LexinfoOnt.pastParticipleAdjective, LexinfoOnt.Adjective);
     } else if (group.startsWith("imiesłów przymiotnikowy")) {
-      return new DecodedPOS("imiesłów przymiotnikowy", LexinfoOnt.participleAdjective,
-          LexinfoOnt.Adjective);
+      return new DecodedPOS("imiesłów przymiotnikowy", LexinfoOnt.participleAdjective, LexinfoOnt.Adjective);
     }
 
     return null;
@@ -447,8 +431,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         registerTranslationToEntity(entry, lang, null, usage, word);
       } else {
         // Forget this translation.
-        log.debug("No gloss for a translation in a multi entry page: {}, {} : {} / {}",
-            currentPagename(), lang, word, usage);
+        log.debug("No gloss for a translation in a multi entry page: {}, {} : {} / {}", currentPagename(), lang, word, usage);
       }
     } else {
       // parse the gloss to get the sense number(s)
@@ -479,8 +462,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       }
       for (Entry<Resource, ArrayList<Resource>> es : sensesByEntry.entrySet()) {
         // register definition to the currentLexEntry
-        Resource trans =
-            registerTranslationToEntity(es.getKey(), lang, currentGlossResource, usage, word);
+        Resource trans = registerTranslationToEntity(es.getKey(), lang, currentGlossResource, usage, word);
 
         // add a reference to the correct word sense(s)
         if (null != trans) {

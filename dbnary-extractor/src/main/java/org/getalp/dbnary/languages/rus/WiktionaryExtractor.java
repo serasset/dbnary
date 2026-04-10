@@ -19,8 +19,7 @@ import org.getalp.dbnary.api.WiktionaryPageSource;
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
 
-  protected final static String languageSectionPatternString =
-      "(?m)^\\s*=\\s*([^=]*)\\}\\}\\s*=\\s*$";
+  protected final static String languageSectionPatternString = "(?m)^\\s*=\\s*([^=]*)\\}\\}\\s*=\\s*$";
   protected final static String sectionPatternString = "(?m)^={2,5}\\s*(.*?)\\s*={2,5}$";
 
   // TODO: handle pronounciation
@@ -46,12 +45,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    definitionExtractor = new RussianDefinitionExtractorWikiModel(wdh, wi, new Locale("ru"),
-        "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
-    translationExtractor = new RussianTranslationExtractorWikiModel(wdh, wi, new Locale("ru"),
-        "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
-    morphoExtractor = new RussianMorphoExtractorWikiModel(this.wdh, this.wi, new Locale("ru"),
-        "/${image}", "/${title}");
+    definitionExtractor = new RussianDefinitionExtractorWikiModel(wdh, wi, new Locale("ru"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    translationExtractor = new RussianTranslationExtractorWikiModel(wdh, wi, new Locale("ru"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    morphoExtractor = new RussianMorphoExtractorWikiModel(this.wdh, this.wi, new Locale("ru"), "/${image}", "/${title}");
   }
 
   // protected final static Pattern languageSectionPattern;
@@ -104,7 +100,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
    * org.getalp.blexisma.semnet.SemanticNetwork)
    */
@@ -123,8 +119,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int russianSectionStartOffset = languageFilter.end();
     // Advance till end of sequence or new language section
     languageFilter.find();
-    int russianSectionEndOffset =
-        languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+    int russianSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
     extractRussianData(russianSectionStartOffset, russianSectionEndOffset);
     wdh.finalizePageExtraction();
@@ -450,8 +445,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case IGNOREPOS:
         break;
       default:
-        assert false
-            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
+        assert false : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
     wdh.finalizeLanguageSection();
   }

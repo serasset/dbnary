@@ -96,8 +96,7 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
   // TODO : remove otherForms corresponding to the canonical form in entry post processing ?
   // TODO: les formes extraites à partir des définitions de formes fléchies sont en double
   @Override
-  protected Set<LexicalForm> getLexicalFormsFromCell(int i, int j, Element cell,
-      List<String> context) {
+  protected Set<LexicalForm> getLexicalFormsFromCell(int i, int j, Element cell, List<String> context) {
     // In the standard mood tables of the French language edition, pronunciation are given in
     // two separate cells on the right of the lexical Form written rep. The first one is the
     // pronunciation of the subjects (grammatical context), the second one is the pronunciation
@@ -125,8 +124,7 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
         for (Representation v : f.getValues()) {
           if (v instanceof WrittenRepresentation && v.getValue().contains(" ou ")) {
             f.removeValue(v);
-            Arrays.stream(v.getValue().split(" ou "))
-                .forEach(wr -> f.addValue(new WrittenRepresentation(wr, v.getLanguage())));
+            Arrays.stream(v.getValue().split(" ou ")).forEach(wr -> f.addValue(new WrittenRepresentation(wr, v.getLanguage())));
           }
         }
       });
@@ -134,14 +132,12 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
     }
   }
 
-  private final static Map<Pattern, Consumer<Set<MorphoSyntacticFeature>>> actions =
-      new LinkedHashMap<>();
+  private final static Map<Pattern, Consumer<Set<MorphoSyntacticFeature>>> actions = new LinkedHashMap<>();
   static {
     actions.put(Pattern.compile("^(?:je|j’)"), Person.first.andThen(Number.singular));
     actions.put(Pattern.compile("^tu"), Person.second.andThen(Number.singular));
     actions.put(Pattern.compile("^il/elle"), Person.third.andThen(Number.singular));
-    actions.put(Pattern.compile("^(?:il\\s*|il\\s+se\\s*|il\\s+s'\\s*)$"),
-        Person.third.andThen(Number.singular));
+    actions.put(Pattern.compile("^(?:il\\s*|il\\s+se\\s*|il\\s+s'\\s*)$"), Person.third.andThen(Number.singular));
     actions.put(Pattern.compile("^nous"), Person.first.andThen(Number.plural));
     actions.put(Pattern.compile("^vous"), Person.second.andThen(Number.plural));
     actions.put(Pattern.compile("^ils/elles"), Person.third.andThen(Number.plural));
@@ -178,8 +174,7 @@ public class StandardMoodTableExtractor extends RefactoredTableExtractor {
   protected boolean shouldProcessCell(Element cell) {
     // the French verbal tables use cells that contains subjects ("je/tu/il") or other grammatical
     // contexts of the inflection. We should only process cells containing a selflink or an anchor.
-    return super.shouldProcessCell(cell) && (!cell.select("strong.selflink").isEmpty()
-        || !cell.select("a").isEmpty() || isInflectedFormPronunciation(cell));
+    return super.shouldProcessCell(cell) && (!cell.select("strong.selflink").isEmpty() || !cell.select("a").isEmpty() || isInflectedFormPronunciation(cell));
   }
 
 

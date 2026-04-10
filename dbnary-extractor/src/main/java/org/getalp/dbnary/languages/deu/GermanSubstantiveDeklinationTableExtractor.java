@@ -14,8 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtractor {
-  private final Logger log =
-      LoggerFactory.getLogger(GermanSubstantiveDeklinationTableExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(GermanSubstantiveDeklinationTableExtractor.class);
 
   public GermanSubstantiveDeklinationTableExtractor() {
     super();
@@ -50,8 +49,7 @@ public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtra
       h = h.trim();
       if ("Singular".equals(h)) {
         inflection.number = GNumber.SINGULAR;
-      } else if ("Singular 1".equals(h) || "Singular 2".equals(h) || "Singular 3".equals(h)
-          || "Singular 4".equals(h)) {
+      } else if ("Singular 1".equals(h) || "Singular 2".equals(h) || "Singular 3".equals(h) || "Singular 4".equals(h)) {
         // TODO: for Morphisto we would need to "bundle" the Plurals according to their index
         // (1-4)
         inflection.number = GNumber.SINGULAR;
@@ -67,8 +65,7 @@ public class GermanSubstantiveDeklinationTableExtractor extends GermanTableExtra
         inflection.genre = Genre.FEMININ;
       } else if ("Plural".equals(h)) {
         inflection.number = GNumber.PLURAL;
-      } else if ("Plural 1".equals(h) || "Plural 2".equals(h) || "Plural 3".equals(h)
-          || "Plural 4".equals(h)) {
+      } else if ("Plural 1".equals(h) || "Plural 2".equals(h) || "Plural 3".equals(h) || "Plural 4".equals(h)) {
         // TODO: for Morphisto we would need to "bundle" the Plurals according to their index
         // (1-4)
         inflection.number = GNumber.PLURAL;

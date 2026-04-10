@@ -49,7 +49,7 @@ evaluate:sampling:1:
 evaluate:sampling:2:
   <<: *evaluate
   variables:
-    LANGUAGE_BATCH: "fr no mg id la ku zh"
+    LANGUAGE_BATCH: "fr no mg id la ku zh et"
 
 evaluate:sampling:3:
   <<: *evaluate

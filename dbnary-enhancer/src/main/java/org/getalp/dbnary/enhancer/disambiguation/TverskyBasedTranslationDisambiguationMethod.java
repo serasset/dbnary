@@ -46,14 +46,11 @@ public class TverskyBasedTranslationDisambiguationMethod implements Disambiguati
   private final Map<String, Set<Resource>> gloss2SensesCache = new HashMap<>();
 
   @Override
-  public Set<Resource> selectWordSenses(Resource lexicalEntry, Object context)
-      throws InvalidContextException, InvalidEntryException {
+  public Set<Resource> selectWordSenses(Resource lexicalEntry, Object context) throws InvalidContextException, InvalidEntryException {
     HashSet<Resource> res = new HashSet<>();
 
-    if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
-        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
-        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)
-        && !lexicalEntry.hasProperty(RDF.type, DBnaryOnt.Page)) {
+    if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
+        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression) && !lexicalEntry.hasProperty(RDF.type, DBnaryOnt.Page)) {
       throw new InvalidEntryException("Expecting an ontolex Lexical Entry.");
     }
     if (context instanceof Resource) {

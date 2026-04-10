@@ -25,8 +25,6 @@ public class ShortErrorMessageHandler implements IParameterExceptionHandler {
     CommandSpec spec = cmd.getCommandSpec();
     err.printf("Try '%s --help' for more information.%n", spec.qualifiedName());
 
-    return cmd.getExitCodeExceptionMapper() != null
-        ? cmd.getExitCodeExceptionMapper().getExitCode(ex)
-        : spec.exitCodeOnInvalidInput();
+    return cmd.getExitCodeExceptionMapper() != null ? cmd.getExitCodeExceptionMapper().getExitCode(ex) : spec.exitCodeOnInvalidInput();
   }
 }

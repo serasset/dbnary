@@ -34,7 +34,7 @@ public class Extractor {
 
   /**
    * Setup the extraction handlers
-   * 
+   *
    * @param tdbDir the directory containing the TDB database
    * @return 0 if successful, -1 otherwise
    * @throws NoWiktionaryExtractorException if the extraction handlers could not be set up
@@ -46,10 +46,8 @@ public class Extractor {
     we = WiktionaryExtractorFactory.getExtractor(lm.getLanguage(), wdh);
 
     if (null == we) {
-      spec.commandLine().getErr().println(
-          "Wiktionary Extraction not yet available for " + LangTools.inEnglish(lm.getLanguage()));
-      throw new NoWiktionaryExtractorException(
-          "Wiktionary Extraction not yet available for " + lm.getLanguage());
+      spec.commandLine().getErr().println("Wiktionary Extraction not yet available for " + LangTools.inEnglish(lm.getLanguage()));
+      throw new NoWiktionaryExtractorException("Wiktionary Extraction not yet available for " + lm.getLanguage());
     }
     we.setWiktionaryIndex(wi);
 

@@ -73,28 +73,20 @@ public class DBnaryEnhancer {
   static {
     options = new Options();
     options.addOption("h", false, "Prints usage and exits. ");
-    options.addOption(RDF_FORMAT_OPTION, true,
-        "RDF file format (xmlrdf, turtle, n3, etc.). " + DEFAULT_RDF_FORMAT + " by default.");
-    options.addOption(DIR_OPTION, true,
-        "Process the given directory (no url should be given if this option is specified.");
+    options.addOption(RDF_FORMAT_OPTION, true, "RDF file format (xmlrdf, turtle, n3, etc.). " + DEFAULT_RDF_FORMAT + " by default.");
+    options.addOption(DIR_OPTION, true, "Process the given directory (no url should be given if this option is specified.");
     options.addOption(STATS_FILE_OPTION, true,
         "if present generate a csv file of the specified name containing statistics about available glosses in translations.");
     options.addOption(CONFIDENCE_FILE_OPTION, true,
         "if present generate a csv file of the specified name containing confidence score of the similarity disambiguation.");
-    options.addOption(OUTPUT_FILE_SUFFIX_OPTION, true,
-        "if present, use the specified value as the filename suffix for the output "
-            + "RDF model containing the computed disambiguated relations for each language."
-            + DEFAULT_OUTPUT_FILE_SUFFIX + " by default.");
+    options.addOption(OUTPUT_FILE_SUFFIX_OPTION, true, "if present, use the specified value as the filename suffix for the output "
+        + "RDF model containing the computed disambiguated relations for each language." + DEFAULT_OUTPUT_FILE_SUFFIX + " by default.");
     options.addOption(COMPRESS_OPTION, false, "if present, compress the ouput with BZip2.");
-    options.addOption(USE_GLOSSES_OPTION, false,
-        "Use translation glosses for disambiguation when available (default=false)");
-    options.addOption(PARAM_ALPHA_OPTION, true,
-        "Alpha parameter for the Tversky index (default=" + DEFAULT_ALPHA_VALUE + ")");
-    options.addOption(PARAM_BETA_OPTION, true,
-        "Beta parameter for the Tversky index (default=" + DEFAULT_BETA_VALUE + ")");
+    options.addOption(USE_GLOSSES_OPTION, false, "Use translation glosses for disambiguation when available (default=false)");
+    options.addOption(PARAM_ALPHA_OPTION, true, "Alpha parameter for the Tversky index (default=" + DEFAULT_ALPHA_VALUE + ")");
+    options.addOption(PARAM_BETA_OPTION, true, "Beta parameter for the Tversky index (default=" + DEFAULT_BETA_VALUE + ")");
     options.addOption(PARAM_DELTA_OPTION, true,
-        "Delta parameter for the choice of disambiguations to keep as a solution (default="
-            + DEFAULT_DELTA_VALUE + ")");
+        "Delta parameter for the choice of disambiguations to keep as a solution (default=" + DEFAULT_DELTA_VALUE + ")");
 
   }
 
@@ -113,8 +105,7 @@ public class DBnaryEnhancer {
         if (filename.endsWith(".bz2")) {
           filename = filename.substring(0, filename.length() - 4);
         }
-        outputModelFileName =
-            dir.resolve(filename.replaceAll("_ontolex", "_enhancement")).normalize().toString();
+        outputModelFileName = dir.resolve(filename.replaceAll("_ontolex", "_enhancement")).normalize().toString();
       }
     }
 
@@ -123,8 +114,7 @@ public class DBnaryEnhancer {
     try {
       if (doCompress) {
         outputModelFileName = outputModelFileName + ".bz2";
-        outputModelStream =
-            new BZip2CompressorOutputStream(new FileOutputStream(outputModelFileName));
+        outputModelStream = new BZip2CompressorOutputStream(new FileOutputStream(outputModelFileName));
       } else {
         outputModelStream = new FileOutputStream(outputModelFileName);
       }
@@ -169,8 +159,7 @@ public class DBnaryEnhancer {
         } else {
           // It's a file
           if (modelFile.endsWith(".bz2")) {
-            InputStreamReader modelReader = new InputStreamReader(
-                new BZip2CompressorInputStream(new FileInputStream(modelFile)));
+            InputStreamReader modelReader = new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(modelFile)));
             inputModel.read(modelReader, null, rdfFormat);
           } else {
             InputStreamReader modelReader = new InputStreamReader(new FileInputStream(modelFile));
@@ -213,8 +202,7 @@ public class DBnaryEnhancer {
     HelpFormatter formatter = new HelpFormatter();
     String help = "urlOrFile must point on an RDF model file extracted from wiktionary by DBnary.\n"
         + "Alternatively specifying a directory will process all files named ??_dbnary_ontolex.ttl in the given dir";
-    formatter.printHelp(
-        "java -cp /path/to/wiktionary.jar org.getalp.dbnary.experiment.DisambiguateTranslationSources [OPTIONS] (urlOrFile ...|DIR)",
+    formatter.printHelp("java -cp /path/to/wiktionary.jar org.getalp.dbnary.experiment.DisambiguateTranslationSources [OPTIONS] (urlOrFile ...|DIR)",
         "With OPTIONS in:", options, help, false);
   }
 
@@ -300,15 +288,13 @@ public class DBnaryEnhancer {
     alpha = Double.valueOf(cmd.getOptionValue(PARAM_ALPHA_OPTION, DEFAULT_ALPHA_VALUE));
     beta = Double.valueOf(cmd.getOptionValue(PARAM_BETA_OPTION, DEFAULT_BETA_VALUE));
 
-    disambiguator =
-        new TranslationSourcesDisambiguator(alpha, beta, delta, useGlosses, stats, evaluator);
+    disambiguator = new TranslationSourcesDisambiguator(alpha, beta, delta, useGlosses, stats, evaluator);
   }
 
   protected void fillInLanguageModels(String processDir) {
     Path processPath = Paths.get(processDir);
 
-    try (DirectoryStream<Path> stream =
-        Files.newDirectoryStream(processPath, "*_dbnary_ontolex*.ttl{.bz2,}")) {
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(processPath, "*_dbnary_ontolex*.ttl{.bz2,}")) {
       for (Path entry : stream) {
         if (Files.isSymbolicLink(entry)) {
           Path link = Files.readSymbolicLink(entry);

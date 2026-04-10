@@ -65,15 +65,12 @@ class JenaModelsIteratorTest {
   void iteratorWithNoModel() {
     JenaModelsIterator empty = new JenaModelsIterator();
     assertFalse(empty.hasNext(), "An iterator on no models should be empty.");
-    assertEquals(0L, empty.estimatedNumResults(),
-        "An iterator on no model should estimate no result.");
+    assertEquals(0L, empty.estimatedNumResults(), "An iterator on no model should estimate no result.");
   }
 
   void testIterator(JenaModelsIterator iterator, int numberOfTriples, int numberOfUniqueTriples) {
     assertTrue(iterator.hasNext(), "An iterator with non empty model should have next.");
-    assertTrue(iterator.estimatedNumResults() <= numberOfTriples,
-        () -> "Estimate of iterator on first model should be lower or equals to "
-            + numberOfTriples);
+    assertTrue(iterator.estimatedNumResults() <= numberOfTriples, () -> "Estimate of iterator on first model should be lower or equals to " + numberOfTriples);
     TripleString item;
     int nb = 0;
     while (iterator.hasNext()) {
@@ -87,8 +84,7 @@ class JenaModelsIteratorTest {
       }
     }
     assertEquals(numberOfTriples, nb, "incorrect number of statements returned.");
-    assertThrows(NoSuchElementException.class, iterator::next,
-        "Calling next() after iterator exhaustion should throw a NoSuchMethodException.");
+    assertThrows(NoSuchElementException.class, iterator::next, "Calling next() after iterator exhaustion should throw a NoSuchMethodException.");
 
     iterator.goToStart();
     assertDoesNotThrow(iterator::next, "Unexpected Exception after restarting iterator.");
@@ -105,8 +101,7 @@ class JenaModelsIteratorTest {
         assertThat(item.getObject().toString(), startsWith("http://test.example.org/"));
       }
     }
-    assertEquals(numberOfTriples, nb,
-        "incorrect number of statements returned after iterator reinitialisation.");
+    assertEquals(numberOfTriples, nb, "incorrect number of statements returned after iterator reinitialisation.");
 
     HashSet<String> items = new HashSet<>();
     iterator.goToStart();

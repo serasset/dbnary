@@ -17,13 +17,11 @@ public class ExtractionPreferences {
     extractionDir = directory.resolve("extracts").resolve("ontolex");
   }
 
-  public static String outputFilename(ExtractionFeature feature, String language,
-      String outputFormat, boolean compress, boolean isExolex) {
+  public static String outputFilename(ExtractionFeature feature, String language, String outputFormat, boolean compress, boolean isExolex) {
     return outputFilename(feature, language, null, outputFormat, compress, isExolex);
   }
 
-  public static String outputFilename(ExtractionFeature feature, String language, String suffix,
-      String outputFormat, boolean compress, boolean isExolex) {
+  public static String outputFilename(ExtractionFeature feature, String language, String suffix, String outputFormat, boolean compress, boolean isExolex) {
     StringBuilder fnb = new StringBuilder().append(shortLanguage(language)).append("_dbnary_");
     if (isExolex) {
       fnb.append("exolex_");
@@ -69,13 +67,11 @@ public class ExtractionPreferences {
     return getExtractionDir().resolve("latest");
   }
 
-  public Path outputFileForFeature(ExtractionFeature feature, String language, String outputFormat,
-      boolean compress, boolean isExolex) {
+  public Path outputFileForFeature(ExtractionFeature feature, String language, String outputFormat, boolean compress, boolean isExolex) {
     return outputFileForFeature(feature, language, null, outputFormat, compress, isExolex);
   }
 
-  public Path outputFileForFeature(ExtractionFeature feature, String language, String suffix,
-      String outputFormat, boolean compress, boolean isExolex) {
+  public Path outputFileForFeature(ExtractionFeature feature, String language, String suffix, String outputFormat, boolean compress, boolean isExolex) {
     String fn = outputFilename(feature, language, suffix, outputFormat, compress, isExolex);
     return getExtractionDir(language).resolve(fn);
   }

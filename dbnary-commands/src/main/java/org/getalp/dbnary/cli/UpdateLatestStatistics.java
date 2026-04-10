@@ -51,11 +51,8 @@ public class UpdateLatestStatistics extends DbnaryModel {
   static {
     options = new Options();
     options.addOption("h", false, "Prints usage and exits. ");
-    options.addOption(PREFIX_DIR_OPTION, true,
-        "directory containing the extracts and stats. " + DEFAULT_PREFIX_DIR + " by default ");
-    options.addOption(COUNT_LANGUAGE_OPTION, true,
-        "Languages to count (as a comma separated list). " + DEFAULT_COUNT_LANGUAGE
-            + " by default.");
+    options.addOption(PREFIX_DIR_OPTION, true, "directory containing the extracts and stats. " + DEFAULT_PREFIX_DIR + " by default ");
+    options.addOption(COUNT_LANGUAGE_OPTION, true, "Languages to count (as a comma separated list). " + DEFAULT_COUNT_LANGUAGE + " by default.");
   }
 
   String[] remainingArgs;
@@ -136,8 +133,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
       try {
         m1 = null;
         System.gc();
-        System.err.println("Used memory: "
-            + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+        System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 
         m1 = ModelFactory.createDefaultModel();
         InputStream in = new FileInputStream(e);
@@ -146,8 +142,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
         }
         m1.read(in, DbnaryModel.DBNARY_NS_PREFIX + "/" + language + "/", "TURTLE");
 
-        System.err.println("Used memory: "
-            + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+        System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 
         // Compute general stats
         StringWriter ow = new StringWriter();
@@ -178,8 +173,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
 
       m1 = null;
       System.gc();
-      System.err.println("Used memory: "
-          + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+      System.err.println("Used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 
     }
 
@@ -190,8 +184,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
     // TranslationsStatistics.printStats(m1, language, countLanguages, System.out, verbose);
   }
 
-  private void writeStats(Map<String, String> gstats, String headers, String gstatFile)
-      throws IOException {
+  private void writeStats(Map<String, String> gstats, String headers, String gstatFile) throws IOException {
     File gs = new File(gstatFile);
 
     if (!gs.exists() || (gs.isFile() && gs.canWrite())) {
@@ -216,8 +209,7 @@ public class UpdateLatestStatistics extends DbnaryModel {
     File gs = new File(gstatFile);
 
     if (gs.isFile() && gs.canRead()) {
-      BufferedReader br =
-          new BufferedReader(new InputStreamReader(new FileInputStream(gs), "UTF-8"));
+      BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(gs), "UTF-8"));
       String h = br.readLine(); // reading header
       String s = br.readLine();
       while (s != null) {
@@ -233,9 +225,8 @@ public class UpdateLatestStatistics extends DbnaryModel {
   public static void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
     String help = "Update Latest statistics based on latest extracts.";
-    formatter.printHelp("java -cp /path/to/dbnary.jar "
-        + UpdateLatestStatistics.class.getCanonicalName() + "[OPTIONS]", "With OPTIONS in:",
-        options, help, false);
+    formatter.printHelp("java -cp /path/to/dbnary.jar " + UpdateLatestStatistics.class.getCanonicalName() + "[OPTIONS]", "With OPTIONS in:", options, help,
+        false);
   }
 
   public static byte[] createChecksum(File file) throws Exception {

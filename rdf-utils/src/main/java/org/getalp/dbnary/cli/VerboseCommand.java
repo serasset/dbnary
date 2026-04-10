@@ -44,7 +44,7 @@ public abstract class VerboseCommand {
 
   /**
    * Load additional command arguments.
-   * 
+   *
    * @param cmd The parsed command options
    */
   protected abstract void loadArgs(CommandLine cmd);

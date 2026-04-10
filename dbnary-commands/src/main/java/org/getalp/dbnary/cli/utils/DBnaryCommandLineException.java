@@ -16,8 +16,7 @@ public class DBnaryCommandLineException extends RuntimeException {
     super(cause);
   }
 
-  public DBnaryCommandLineException(String message, Throwable cause, boolean enableSuppression,
-      boolean writableStackTrace) {
+  public DBnaryCommandLineException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 }

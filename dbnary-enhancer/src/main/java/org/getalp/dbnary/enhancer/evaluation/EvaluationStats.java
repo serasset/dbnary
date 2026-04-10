@@ -11,16 +11,14 @@ public class EvaluationStats {
   private Map<String, Stat> confidenceMap = new TreeMap<>();
   private Stat currentStat;
 
-  public static final String HEADERS =
-      "Similarity Precision,Similarity Recall, Similarity F1, Random Precision, Random Recall";
+  public static final String HEADERS = "Similarity Precision,Similarity Recall, Similarity F1, Random Precision, Random Recall";
 
   public void reset(String lang) {
     confidenceMap.put(lang, new Stat());
     currentStat = confidenceMap.get(lang);
   }
 
-  public <T> void registerAnswer(Collection<T> expected, Collection<T> provided,
-      int nbAlternatives) {
+  public <T> void registerAnswer(Collection<T> expected, Collection<T> provided, int nbAlternatives) {
     currentStat.registerAnswer(expected, provided, nbAlternatives);
   }
 
@@ -34,8 +32,8 @@ public class EvaluationStats {
 
   public void printStat(String lang, PrintWriter out) {
     Stat lstat = confidenceMap.get(lang);
-    out.format("%s,%.4f,%.4f,%.4f,%.4f,%.4f", lang, lstat.getPrecision(), lstat.getRecall(),
-        lstat.getF1Score(), lstat.getRandomPrecision(), lstat.getRandomRecall());
+    out.format("%s,%.4f,%.4f,%.4f,%.4f,%.4f", lang, lstat.getPrecision(), lstat.getRecall(), lstat.getF1Score(), lstat.getRandomPrecision(),
+        lstat.getRandomRecall());
   }
 
   public void printConfidenceStats(PrintStream out) {
@@ -86,8 +84,7 @@ public class EvaluationStats {
       }
     }
 
-    public <T> void registerAnswer(Collection<T> expected, Collection<T> provided,
-        int nbAlternatives) {
+    public <T> void registerAnswer(Collection<T> expected, Collection<T> provided, int nbAlternatives) {
       double numExp = expected.size();
       double numRet = provided.size();
       double numRel = 0;
@@ -115,9 +112,8 @@ public class EvaluationStats {
 
     @Override
     public String toString() {
-      return "Stat{" + "sumPrec=" + sumPrec + ", sumRecall=" + sumRecall + ", nbReq=" + nbReq
-          + ", P=" + getPrecision() + ", R=" + getRecall() + ", randPrec=" + getRandomPrecision()
-          + ", randRecall=" + getRandomRecall() + '}';
+      return "Stat{" + "sumPrec=" + sumPrec + ", sumRecall=" + sumRecall + ", nbReq=" + nbReq + ", P=" + getPrecision() + ", R=" + getRecall() + ", randPrec="
+          + getRandomPrecision() + ", randRecall=" + getRandomRecall() + '}';
     }
 
     public double getRandomRecall() {
@@ -140,8 +136,7 @@ public class EvaluationStats {
       if (0 == getRandomPrecision() + getRandomRecall()) {
         return 0;
       } else {
-        return (2.0 * getRandomPrecision() * getRandomRecall())
-            / (getRandomPrecision() + getRandomRecall());
+        return (2.0 * getRandomPrecision() * getRandomRecall()) / (getRandomPrecision() + getRandomRecall());
       }
     }
   }

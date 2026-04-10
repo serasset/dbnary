@@ -21,14 +21,11 @@ public class SingleLanguageAsOptionMixin {
   protected String language = DEFAULT_LANGUAGE;
 
   @Option(names = {"-l", "--language"}, paramLabel = "LANGUAGE", defaultValue = DEFAULT_LANGUAGE,
-      description = "language edition of the dump to be extracted; uses a 2 or 3 iso letter code;"
-          + " Default: ${DEFAULT-VALUE}.",
-      scope = ScopeType.INHERIT)
+      description = "language edition of the dump to be extracted; uses a 2 or 3 iso letter code;" + " Default: ${DEFAULT-VALUE}.", scope = ScopeType.INHERIT)
   public void setLanguage(String language) {
     this.language = LangTools.getCode(language);
     if (null == this.language) {
-      throw new ParameterException(mixee.commandLine(), String.format(
-          "Invalid language '%s' for option '--language': unknown language code.", language));
+      throw new ParameterException(mixee.commandLine(), String.format("Invalid language '%s' for option '--language': unknown language code.", language));
     }
   }
 

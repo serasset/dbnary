@@ -19,27 +19,22 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "dbnary-hdt", mixinStandardHelpOptions = true, helpCommand = true,
-    versionProvider = VersionProvider.class)
+@Command(name = "dbnary-hdt", mixinStandardHelpOptions = true, helpCommand = true, versionProvider = VersionProvider.class)
 public class CreateHDTVersions implements Callable<Integer> {
   private static final Logger log = LoggerFactory.getLogger(CreateHDTVersions.class);
 
-  @Parameters(index = "0",
-      description = "directory containing the latest extracts that need to be converted to HDT.")
+  @Parameters(index = "0", description = "directory containing the latest extracts that need to be converted to HDT.")
   Path latestDir;
 
   @Override
   public Integer call() throws Exception {
     try (Stream<Path> stream = Files.list(latestDir)) {
-      Map<String, List<Path>> filesByLanguage =
-          stream.filter(path -> !Files.isDirectory(path) && path.toString().endsWith(".ttl.bz2"))
-              .flatMap(p -> toRealPath(p).stream())
-              .collect(Collectors.groupingBy(CreateHDTVersions::language));
+      Map<String, List<Path>> filesByLanguage = stream.filter(path -> !Files.isDirectory(path) && path.toString().endsWith(".ttl.bz2"))
+          .flatMap(p -> toRealPath(p).stream()).collect(Collectors.groupingBy(CreateHDTVersions::language));
 
       filesByLanguage.forEach((lg, paths) -> {
         System.err.format("Processing %s:%n", lg);
-        List<String> hdtFiles =
-            paths.stream().map(CreateHDTVersions::rdf2hdt).collect(Collectors.toList());
+        List<String> hdtFiles = paths.stream().map(CreateHDTVersions::rdf2hdt).collect(Collectors.toList());
 
       });
     }

@@ -28,8 +28,7 @@ public class TverskiIndex implements SimilarityMeasure {
     fuzzyMatching = false;
   }
 
-  public TverskiIndex(double alpha, double beta, boolean fuzzyMatching, boolean symmetric,
-      AbstractStringDistance distance) {
+  public TverskiIndex(double alpha, double beta, boolean fuzzyMatching, boolean symmetric, AbstractStringDistance distance) {
     this.distance = distance;
     lcss = false;
     segmenter = new SpaceSegmenter();
@@ -55,8 +54,7 @@ public class TverskiIndex implements SimilarityMeasure {
     fuzzyMatching = false;
   }
 
-  public TverskiIndex(Segmenter segmenter, double alpha, double beta, boolean fuzzyMatching,
-      boolean symmetric) {
+  public TverskiIndex(Segmenter segmenter, double alpha, double beta, boolean fuzzyMatching, boolean symmetric) {
     this.segmenter = segmenter;
     this.alpha = alpha;
     this.beta = beta;

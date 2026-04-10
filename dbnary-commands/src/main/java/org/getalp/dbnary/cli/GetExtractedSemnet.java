@@ -1,7 +1,6 @@
 package org.getalp.dbnary.cli;
 
 import com.github.jsonldjava.shaded.com.google.common.io.Files;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
@@ -12,7 +11,6 @@ import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.cli.mixins.Extractor;
 import org.getalp.dbnary.cli.utils.NoWiktionaryExtractorException;
 import org.getalp.dbnary.cli.utils.VersionProvider;
-import org.getalp.wiktionary.WiktionaryIndexerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;

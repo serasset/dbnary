@@ -1,9 +1,6 @@
 package org.getalp.dbnary.cli.utils;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.getalp.dbnary.cli.DBnary;

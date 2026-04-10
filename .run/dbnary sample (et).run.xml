@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="dbnary sample (et)" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
+    <module name="dbnary-commands" />
+    <option name="PROGRAM_PARAMETERS" value="sample --trace=org.getalp.dbnary.languages -l et --endolex=etymology,lime --exolex=ontolex etwkt-20260401.xml toivoton mati" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/et/20260401" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

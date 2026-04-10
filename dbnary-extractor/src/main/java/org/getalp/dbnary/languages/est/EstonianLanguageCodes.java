@@ -16,7 +16,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("adangme", "ada");
     h.put("adõgee", "ady");
     h.put("avesta", "ae");
-    h.put("Tuneesia araabia", "aeb");
+    h.put("tuneesia araabia", "aeb");
     h.put("afrikaani", "af");
     h.put("afrihili", "afh");
     h.put("aghemi", "agq");
@@ -32,21 +32,21 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("vanainglise", "ang");
     h.put("obolo", "ann");
     h.put("angika", "anp");
-    h.put("Levandi araabia", "apc");
+    h.put("levandi araabia", "apc");
     h.put("araabia", "ar");
     h.put("tänapäeva araabia kirjakeel", "ar-001");
     h.put("aramea", "arc");
     h.put("mapudunguni", "arn");
     h.put("araona", "aro");
     h.put("arapaho", "arp");
-    h.put("Alžeeria araabia", "arq");
-    h.put("Najdi araabia", "ars");
+    h.put("alžeeria araabia", "arq");
+    h.put("najdi araabia", "ars");
     h.put("aravaki", "arw");
-    h.put("Maroko araabia", "ary");
-    h.put("Egiptuse araabia", "arz");
+    h.put("maroko araabia", "ary");
+    h.put("egiptuse araabia", "arz");
     h.put("assami", "as");
     h.put("asu", "asa");
-    h.put("Ameerika viipekeel", "ase");
+    h.put("ameerika viipekeel", "ase");
     h.put("astuuria", "ast");
     h.put("atikameki", "atj");
     h.put("avaari", "av");
@@ -77,7 +77,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("bikoli", "bik");
     h.put("edo", "bin");
     h.put("bandžari", "bjn");
-    h.put("komi (Aafrika)", "bkm");
+    h.put("komi (aafrika)", "bkm");
     h.put("mustjalaindiaani", "bla");
     h.put("anii", "blo");
     h.put("tai-dami", "blt");
@@ -131,7 +131,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("tasandikukrii", "crk");
     h.put("põhja-idakrii", "crl");
     h.put("põdrakrii", "crm");
-    h.put("Carolina algonkini", "crr");
+    h.put("carolina algonkini", "crr");
     h.put("seišelli", "crs");
     h.put("tšehhi", "cs");
     h.put("kašuubi", "csb");
@@ -144,8 +144,8 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("dargi", "dar");
     h.put("davida", "dav");
     h.put("saksa", "de");
-    h.put("Austria saksa", "de-AT");
-    h.put("Šveitsi ülemsaksa", "de-CH");
+    h.put("austria saksa", "de-AT");
+    h.put("šveitsi ülemsaksa", "de-CH");
     h.put("delavari", "del");
     h.put("sleivi", "den");
     h.put("dogribi", "dgr");
@@ -170,17 +170,17 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("kreeka", "el");
     h.put("eelami", "elx");
     h.put("inglise", "en");
-    h.put("Austraalia inglise", "en-AU");
-    h.put("Kanada inglise", "en-CA");
-    h.put("Briti inglise", "en-GB");
-    h.put("Ameerika inglise", "en-US");
-    h.put("USA inglise", "en-US-alt-short");
+    h.put("austraalia inglise", "en-AU");
+    h.put("kanada inglise", "en-CA");
+    h.put("briti inglise", "en-GB");
+    h.put("ameerika inglise", "en-US");
+    h.put("usa inglise", "en-US-alt-short");
     h.put("keskinglise", "enm");
     h.put("esperanto", "eo");
     h.put("hispaania", "es");
-    h.put("Ladina-Ameerika hispaania", "es-419");
-    h.put("Euroopa hispaania", "es-ES");
-    h.put("Mehhiko hispaania", "es-MX");
+    h.put("ladina-ameerika hispaania", "es-419");
+    h.put("euroopa hispaania", "es-ES");
+    h.put("mehhiko hispaania", "es-MX");
     h.put("keskjupiki", "esu");
     h.put("eesti", "et");
     h.put("baski", "eu");
@@ -198,8 +198,8 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("fääri", "fo");
     h.put("foni", "fon");
     h.put("prantsuse", "fr");
-    h.put("Kanada prantsuse", "fr-CA");
-    h.put("Šveitsi prantsuse", "fr-CH");
+    h.put("kanada prantsuse", "fr-CA");
+    h.put("šveitsi prantsuse", "fr-CH");
     h.put("cajun’i", "frc");
     h.put("keskprantsuse", "frm");
     h.put("vanaprantsuse", "fro");
@@ -241,7 +241,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("heebrea", "he");
     h.put("hindi", "hi");
     h.put("hinglishi", "hi-Latn-alt-variant");
-    h.put("Fidži hindi", "hif");
+    h.put("fidži hindi", "hif");
     h.put("hiligainoni", "hil");
     h.put("heti", "hit");
     h.put("hmongi", "hmn");
@@ -263,7 +263,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("ibo", "ig");
     h.put("nuosu", "ii");
     h.put("injupiaki", "ik");
-    h.put("Lääne-Kanada inuktituti", "ikt");
+    h.put("lääne-kanada inuktituti", "ikt");
     h.put("iloko", "ilo");
     h.put("inguši", "inh");
     h.put("ido", "io");
@@ -272,7 +272,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("inuktituti", "iu");
     h.put("isuri", "izh");
     h.put("jaapani", "ja");
-    h.put("Jamaica kreoolkeel", "jam");
+    h.put("jamaica kreoolkeel", "jam");
     h.put("ložban", "jbo");
     h.put("ngomba", "jgo");
     h.put("matšame", "jmc");
@@ -325,7 +325,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("bafia", "ksf");
     h.put("kölni", "ksh");
     h.put("kurdi", "ku");
-    h.put("kurdi", "ku-menu-core");
+    // h.put("kurdi", "ku-menu-core");
     h.put("kurmandži", "ku-menu-extension");
     h.put("kumõki", "kum");
     h.put("kutenai", "kut");
@@ -352,13 +352,13 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("lingala", "ln");
     h.put("lao", "lo");
     h.put("mongo", "lol");
-    h.put("Louisiana kreoolkeel", "lou");
+    h.put("louisiana kreoolkeel", "lou");
     h.put("lozi", "loz");
     h.put("põhjaluri", "lrc");
     h.put("samia", "lsm");
     h.put("leedu", "lt");
     h.put("latgali", "ltg");
-    h.put("Katanga luba", "lu");
+    h.put("katanga luba", "lu");
     h.put("lulua", "lua");
     h.put("luisenjo", "lui");
     h.put("lunda", "lun");
@@ -379,7 +379,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("mandari", "mdr");
     h.put("mende", "men");
     h.put("meru", "mer");
-    h.put("Mauritiuse kreoolkeel", "mfe");
+    h.put("mauritiuse kreoolkeel", "mfe");
     h.put("malagassi", "mg");
     h.put("keskiiri", "mga");
     h.put("makhuwa-meetto", "mgh");
@@ -418,7 +418,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("norra bokmål", "nb");
     h.put("põhjandebele", "nd");
     h.put("alamsaksa", "nds");
-    h.put("Hollandi alamsaksa", "nds-NL");
+    h.put("hollandi alamsaksa", "nds-NL");
     h.put("nepali", "ne");
     h.put("nevari", "new");
     h.put("ndonga", "ng");
@@ -449,7 +449,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("odžibvei", "oj");
     h.put("loodeodžibvei", "ojb");
     h.put("keskodžibvei", "ojc");
-    h.put("Severni odžibvei", "ojs");
+    h.put("severni odžibvei", "ojs");
     h.put("lääneodžibvei", "ojw");
     h.put("okanagani", "oka");
     h.put("oromo", "om");
@@ -464,8 +464,8 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("papiamento", "pap");
     h.put("belau", "pau");
     h.put("pikardi", "pcd");
-    h.put("Nigeeria pidžinkeel", "pcm");
-    h.put("Pennsylvania saksa", "pdc");
+    h.put("nigeeria pidžinkeel", "pcm");
+    h.put("pennsylvania saksa", "pdc");
     h.put("mennoniidisaksa", "pdt");
     h.put("vanapärsia", "peo");
     h.put("pfaltsi", "pfl");
@@ -481,8 +481,8 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("vanaprovansi", "pro");
     h.put("puštu", "ps");
     h.put("portugali", "pt");
-    h.put("Brasiilia portugali", "pt-BR");
-    h.put("Euroopa portugali", "pt-PT");
+    h.put("brasiilia portugali", "pt-BR");
+    h.put("euroopa portugali", "pt-PT");
     h.put("ketšua", "qu");
     h.put("kitše", "quc");
     h.put("radžastani", "raj");
@@ -507,7 +507,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("sanskriti", "sa");
     h.put("sandave", "sad");
     h.put("jakuudi", "sah");
-    h.put("Samaaria aramea", "sam");
+    h.put("samaaria aramea", "sam");
     h.put("samburu", "saq");
     h.put("sasaki", "sas");
     h.put("santali", "sat");
@@ -531,19 +531,19 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("serbia-horvaadi", "sh");
     h.put("šilha", "shi");
     h.put("šani", "shn");
-    h.put("Tšaadi araabia", "shu");
+    h.put("tšaadi araabia", "shu");
     h.put("singali", "si");
     h.put("sidamo", "sid");
     h.put("slovaki", "sk");
     h.put("seraiki", "skr");
     h.put("sloveeni", "sl");
-    h.put("Lõuna-Puget-Soundi sališi", "slh");
+    h.put("lõuna-puget-soundi sališi", "slh");
     h.put("alamsileesia", "sli");
     h.put("selajari", "sly");
     h.put("samoa", "sm");
     h.put("lõunasaami", "sma");
-    h.put("Lule saami", "smj");
-    h.put("Inari saami", "smn");
+    h.put("lule saami", "smj");
+    h.put("inari saami", "smn");
     h.put("koltasaami", "sms");
     h.put("šona", "sn");
     h.put("soninke", "snk");
@@ -565,7 +565,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("sunvari", "suz");
     h.put("rootsi", "sv");
     h.put("suahiili", "sw");
-    h.put("Kongo suahiili", "sw-CD");
+    h.put("kongo suahiili", "sw-CD");
     h.put("komoori", "swb");
     h.put("vanasüüria", "syc");
     h.put("süüria", "syr");
@@ -628,7 +628,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("vepsa", "vep");
     h.put("vietnami", "vi");
     h.put("lääneflaami", "vls");
-    h.put("Maini frangi", "vmf");
+    h.put("maini frangi", "vmf");
     h.put("makua", "vmw");
     h.put("volapüki", "vo");
     h.put("vadja", "vot");
@@ -658,10 +658,10 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("hiina (kantoni)", "yue-alt-menu");
     h.put("tšuangi", "za");
     h.put("sapoteegi", "zap");
-    h.put("Blissi sümbolid", "zbl");
+    h.put("blissi sümbolid", "zbl");
     h.put("zeelandi", "zea");
     h.put("zenaga", "zen");
-    h.put("tamasikti (Maroko)", "zgh");
+    h.put("tamasikti (maroko)", "zgh");
     h.put("hiina", "zh");
     h.put("hiina (mandariinihiina)", "zh-alt-menu");
     h.put("lihtsustatud hiina", "zh-Hans");
@@ -680,19 +680,20 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("jamamadi", "jaa");
     h.put("tupii", "tpn");
     h.put("dolgaani", "dlg");
-    h.put("Niidumari", "mhr");
+    h.put("niidumari", "mhr");
     h.put("kreeka (vanakreeka)", "grc");
     h.put("livviko", "olo");
     h.put("karagassi", "kim");
-    h.put("krimmitatari", "crh");
+    h.put("bärndütsch", "bern1242");
+    h.put("abasiini", "abq");
 
     // Others
     // Bieweri ?
     // Junk in H2
-    //  'Keeltevaheline' ---> Interlingua
-    //  'Vaata ka' ---> See Also
-    //  'Viited' ---> References
-    //  'Välislingid' ---> Links
+    // 'Keeltevaheline' ---> Interlingua
+    // 'Vaata ka' ---> See Also
+    // 'Viited' ---> References
+    // 'Välislingid' ---> Links
   }
 
   public static String threeLettersCode(String s) {

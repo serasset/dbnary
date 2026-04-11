@@ -5,6 +5,7 @@ import static org.getalp.dbnary.wiki.WikiEventFilter.Action.KEEP;
 import static org.getalp.dbnary.wiki.WikiEventFilter.Action.VOID;
 import java.util.HashSet;
 import java.util.Set;
+import org.getalp.dbnary.wiki.WikiText.Token;
 
 /**
  * Created by serasset on 01/02/16.
@@ -13,19 +14,19 @@ import java.util.Set;
 // Eventually, do rely on stream/filter functions instead...
 public class ClassBasedFilter implements WikiEventFilter {
 
-  private HashSet<Class> classesToKeep = new HashSet<>();
-  private HashSet<Class> classesToEnter = new HashSet<>();
+  private HashSet<Class<? extends Token>> classesToKeep = new HashSet<>();
+  private HashSet<Class<? extends Token>> classesToEnter = new HashSet<>();
 
   public ClassBasedFilter() {
     super();
   }
 
-  public ClassBasedFilter(Set<Class> allowedClasses) {
+  public ClassBasedFilter(Set<Class<? extends Token>> allowedClasses) {
     super();
     this.classesToKeep.addAll(allowedClasses);
   }
 
-  public ClassBasedFilter(Set<Class> allowedClasses, Set<Class> goIntoClasses) {
+  public ClassBasedFilter(Set<Class<? extends Token>> allowedClasses, Set<Class> goIntoClasses) {
     super();
     this.classesToKeep.addAll(allowedClasses);
     this.enterAll();
@@ -200,12 +201,12 @@ public class ClassBasedFilter implements WikiEventFilter {
 
   @Override
   public Action apply(WikiText.Token tok) {
-    for (Class allowedClass : classesToKeep) {
+    for (Class<? extends Token> allowedClass : classesToKeep) {
       if (allowedClass.isInstance(tok)) {
         return KEEP;
       }
     }
-    for (Class allowedClass : classesToEnter) {
+    for (Class<? extends Token> allowedClass : classesToEnter) {
       if (allowedClass.isInstance(tok)) {
         return ENTER;
       }

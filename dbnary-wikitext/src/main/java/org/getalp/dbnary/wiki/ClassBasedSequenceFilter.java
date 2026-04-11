@@ -31,7 +31,7 @@ import org.getalp.dbnary.wiki.WikiText.WikiContent;
  */
 public class ClassBasedSequenceFilter implements Function<Token, Action> {
 
-  private HashMap<Class, Action> actions = new HashMap<>();
+  private HashMap<Class<? extends Token>, Action> actions = new HashMap<>();
 
   /**
    * Creates a default Class based filter that :
@@ -487,10 +487,10 @@ public class ClassBasedSequenceFilter implements Function<Token, Action> {
 
   @Override
   public Action apply(Token tok) {
-    Class clazz = tok.getClass();
+    Class<? extends Token> clazz = tok.getClass();
     Action action = null;
     while (clazz != Token.class && (action = actions.get(clazz)) == null) {
-      clazz = clazz.getSuperclass();
+      clazz = (Class<? extends Token>) clazz.getSuperclass();
     }
     return (action == null) ? new WikiSequenceFiltering.Void() : action;
   }

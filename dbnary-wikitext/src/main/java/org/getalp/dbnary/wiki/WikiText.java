@@ -2121,7 +2121,7 @@ public class WikiText {
     return wikiTextString;
   }
 
-  public static class LevelBasedWikiSectionsIterator implements Iterator<WikiSection> {
+  public static final class LevelBasedWikiSectionsIterator implements Iterator<WikiSection> {
 
     int level;
     WikiContent content;
@@ -2144,17 +2144,17 @@ public class WikiText {
 
 
     // My model 1 primitives...
-    public void init() {
+    private void init() {
       if (baseIterator.hasNext()) {
         currentToken = baseIterator.next();
       }
     }
 
-    public boolean eof() {
+    private boolean eof() {
       return currentToken == null;
     }
 
-    public void advance() {
+    private void advance() {
       if (!baseIterator.hasNext()) {
         currentToken = null;
       } else {

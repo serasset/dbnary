@@ -209,9 +209,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case NOBLOCK:
         break;
       case IGNOREPOS:
-        if (blockString != null && blockString.contains("tymol")) {
-          extractDefinitions(startOffset, endOffset);
-        }
+        //if (blockString != null && blockString.contains("tymol")) {
+        //  extractDefinitions(startOffset, endOffset);
+        //}
         break;
       case DEFBLOCK:
         extractDefinitions(startOffset, endOffset, blockString);

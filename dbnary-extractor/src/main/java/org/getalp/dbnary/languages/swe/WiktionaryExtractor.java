@@ -273,8 +273,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  private static final Matcher indents = Pattern.compile("^:+").matcher("");
-
   private Resource processExample(WikiContent content, Resource target) {
     Resource exampleNode;
     // It is an example or information line of the target.
@@ -284,8 +282,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         .filter(token -> !(token instanceof Template) || !ExampleExpanderWikiModel.ignoredTemplates.contains(token.asTemplate().getName())) //
         .map(Token::getText) //
         .collect(Collectors.joining());
-    // curatedContent = indents.reset(curatedContent).replaceFirst("").trim();
-    exampleNode = exampleExtractor.processDefinitionLine(curatedContent, target);
+    exampleNode = exampleExtractor.processDefinitionLine(curatedContent.trim(), target);
     return exampleNode;
   }
 

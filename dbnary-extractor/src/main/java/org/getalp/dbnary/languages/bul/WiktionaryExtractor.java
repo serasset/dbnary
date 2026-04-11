@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.getalp.dbnary.languages.bul;
 
 import java.util.Locale;

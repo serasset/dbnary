@@ -278,12 +278,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token indent : indentationsOrTemplates) {
       if (indent instanceof NumberedListItem) {
         // Do not extract numbered list items that begin with ":" as they are indeed examples.
-        if (indent.asNumberedListItem().getContent().getText().startsWith(":") || indent.asNumberedListItem().getContent().getText().startsWith("*")) {
-          String expandedExample = expander.expandAll(indent.asNumberedListItem().getContent().toString().substring(1), null);
+        NumberedListItem numberedListItem = indent.asNumberedListItem();
+        String additionalPrefix = numberedListItem.getListPrefix().substring(numberedListItem.getLevel());
+        if (additionalPrefix.startsWith(":") || additionalPrefix.startsWith("*")) {
+          String expandedExample = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
           expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
           wdh.registerExample(expandedExample, null);
         } else {
-          String expandedDefinition = expander.expandAll(indent.asNumberedListItem().getContent().toString(), null);
+          String expandedDefinition = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
           expandedDefinition = CONTROL_CHAR.matcher(expandedDefinition).replaceAll("");
           wdh.registerNewDefinition(expandedDefinition.replace("\n", ""));
         }
@@ -294,7 +296,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           wdh.registerNewDefinition(def.substring(m.end()), m.group(1));
         } else {
           // TODO: it's usually an example given after a definition.
-          String expandedExample = expander.expandAll(indent.asIndentation().getContent().toString(), null);
+          String expandedExample = expander.expandAll(indent.asIndentation().getContent().getText().trim(), null);
           expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
           wdh.registerExample(expandedExample, null);
         }

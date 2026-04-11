@@ -844,7 +844,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     content.filteredTokens(new ClassBasedFilter().allowNumberedListItem()).stream().map(Token::asNumberedListItem).forEach(item -> {
       // DONE: parsing part of the prefix in the content while it is not there anymore
       if (item.getListPrefix().contains("*") || item.getListPrefix().contains(":")) {
-        extractExample(item.getContent().getText());
+        extractExample(item.getContent().getText().trim());
       } else {
         extractDefinition(item.getContent().getText().trim(), item.asNumberedListItem().getLevel());
       }

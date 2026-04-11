@@ -198,13 +198,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token indent : indentationsOrTemplates) {
       if (isAnExample(indent)) {
         // TODO: Kurdish wiktionary now encodes synonyms below definitions (with examples); see 'mij'
-        String nli = indent.asIndentedItem().getContent().getText();
+        String nli = indent.asIndentedItem().getContent().getText().trim();
         String expandedExample = definitionExpander.expandAll(nli, null);
         wdh.registerExample(expandedExample.replace("\n", ""), null);
       } else if (indent instanceof NumberedListItem) {
         // It's a definition
-        NumberedListItem nli = indent.asNumberedListItem();
-        String expandedDefinition = definitionExpander.expandAll(nli.getContent().getText().trim(), null);
+        String nli = indent.asNumberedListItem().getContent().getText().trim();
+        String expandedDefinition = definitionExpander.expandAll(nli, null);
         wdh.registerNewDefinition(expandedDefinition.replace("\n", ""));
       } else if (indent instanceof Template) {
         String tname = indent.asTemplate().getName();

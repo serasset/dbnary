@@ -323,7 +323,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 break;
             }
           }
-          String expandedDef = exampleExpander.expandAll(item.getContent().getText(), null);
+          String expandedDef = exampleExpander.expandAll(item.getContent().getText().trim(), null);
           wdh.registerExample(expandedDef, null);
 
         } else {

@@ -291,10 +291,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token t : prologue.wikiTokens()) {
       if (t instanceof ListItem || t instanceof NumberedListItem) {
         IndentedItem item = t.asIndentedItem();
-        if (item.getListPrefix().substring(item.getLevel()).startsWith("::")) {
+        String additionalPrefix = item.getListPrefix().substring(item.getLevel());
+        if (additionalPrefix.startsWith("::")) {
           // It's a reference for the previous example
           // String ref = exampleExpander.expandAll(item.getContent().getText().substring(1), null);
-        } else if (item.getListPrefix().substring(item.getLevel()).startsWith(":")) {
+        } else if (additionalPrefix.startsWith(":")) {
           // It's an example or a synonym/antonym information
           Optional<Token> firstToken = item.getContent().wikiTokens().stream().findFirst();
           if (firstToken.isPresent() && firstToken.get() instanceof Template) {
@@ -322,7 +323,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 break;
             }
           }
-          String expandedDef = exampleExpander.expandAll(item.getContent().getText().substring(1), null);
+          String expandedDef = exampleExpander.expandAll(item.getContent().getText(), null);
           wdh.registerExample(expandedDef, null);
 
         } else {

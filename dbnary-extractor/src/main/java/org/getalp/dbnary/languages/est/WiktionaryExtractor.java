@@ -276,10 +276,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  private enum MAIN_SUBSECTION_STATE {
-    MAIN, NYM, TRANSLATIONS
-  }
-
   private void extractDefinitions(List<Token> mainSection) {
     // Iterate through list tokens and extract definition, examples or other info
     String currentSubsection = null;

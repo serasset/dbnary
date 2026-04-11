@@ -9,7 +9,7 @@ import org.apache.jena.rdf.model.Resource;
 
 public class PropertyObjectPair extends SimpleImmutableEntry<Property, RDFNode> {
 
-  private static HashMap<Property, HashMap<RDFNode, PropertyObjectPair>> instances = new HashMap<Property, HashMap<RDFNode, PropertyObjectPair>>();
+  private static final HashMap<Property, HashMap<RDFNode, PropertyObjectPair>> instances = new HashMap<Property, HashMap<RDFNode, PropertyObjectPair>>();
 
   private PropertyObjectPair(Property p, RDFNode o) {
     super(p, o);
